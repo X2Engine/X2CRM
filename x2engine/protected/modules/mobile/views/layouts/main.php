@@ -1,0 +1,78 @@
+<?php
+/*********************************************************************************
+ * X2Engine is a contact management program developed by
+ * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. at P.O. Box 66752,
+ * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ ********************************************************************************/
+
+$cs = Yii::app()->clientScript;
+$cs->scriptMap = array();
+$baseUrl = $this->module->assetsUrl;
+$cs->registerPackage('jquerymobile');
+
+// JQuery Mobile CSS framework
+//$cs->registerCssFile($baseUrl.'/css/jquery.mobile-1.0b2.css','all');
+//
+//$cs->registerScriptFile($baseUrl.'/js/jquery-1.6.2.js');
+//$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.0b2.js');
+//
+$cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
+?><!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="language" content="en" />
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1"/> 
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
+        <link rel="shortcut icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
+        <title><?php echo CHtml::encode($this->pageTitle); ?></title>
+    </head>
+    <body>
+        <div id="container">
+            <div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="b">
+                <div data-role="header" data-theme="b">
+                    <div  class="figure"><a href="<?php echo $this->createUrl('site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touchlg.png'; ?>" alt="x2engine" /></a></div>
+                </div>
+                <div data-role="content">
+                    <?php
+                    echo $content;
+                    ?>
+                </div>
+                <div data-role="footer" data-theme="b">
+                    <p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com'); ?>
+                        <?php echo Yii::t('app', 'Rights Reserved.'); ?></p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

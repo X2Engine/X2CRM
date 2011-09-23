@@ -1,0 +1,9 @@
+/* multiselect styles */
+.multiselect {
+	width: 460px;
+	height: 200px;
+}
+
+#switcher {
+	margin-top: 20px;
+}
