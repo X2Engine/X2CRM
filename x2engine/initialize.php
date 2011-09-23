@@ -385,8 +385,10 @@ foreach($backgrounds as $background) {
 		mysql_query("INSERT INTO x2_media (associationType, fileName) VALUES ('bg', '$background')"); // or die("Unable to install background image $background.");
 	//}
 }
-
-$data=$_POST['data'];
+if(isset($_POST['data']))
+	$data=$_POST['data'];
+else
+	$data=0;
 
 if($data==1){
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Chris','Hames','chames',md5('password'),
