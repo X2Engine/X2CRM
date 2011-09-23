@@ -30,3 +30,5 @@ X2Contacts is unique in the crowded Customer Relationship Management (CRM) field
 4) KNOWN ISSUES
 	-If you re-arrange Top Menu items while in a different language, the top bar will always display the menu items in that language, regardless of user. We are aware of this bug, and it will be fixed for the next release.
 		There is also a temporary work-around.  If you go to "Rename a Module" from the Admin tab and rename each module back to the English version (Contacts, Actions, Sales, Docs, Accounts), they will translate properly per user again.
+
+	-The .htaccess file may cause issues on some servers.  If you get a 500 Internal Server Error when you try to load the installer, delete the .htaccess file, the application will work without it.
