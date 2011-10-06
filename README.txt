@@ -1,6 +1,20 @@
 README
 
-Welcome to X2Contacts v0.9 Beta!  X2Contacts is a next-generation, open source social sales application for small and medium sized businesses. 
+INSTRUCTIONS FOR UPDATE PLEASE READ
+
+There's no concrete updater right now, so what you need to do to update is to go into Admin and export your data. Then upload all of the new files to your server and run the install again.  Finally, go into Admin on the new setup and import the data back into the system.
+
+Beta 0.9.1 Changelog
+
+-More compact Contact/Action views with the option to use the old view
+-Changelog for all records, viewable by Admin
+-User activity reports
+-Login screen style defaults to Admin preferences
+-Fixed advanced search issues & menu text color CSS
+-Lots and lots of little bug fixes
+
+
+Welcome to X2Contacts v0.9.1 Beta!  X2Contacts is a next-generation, open source social sales application for small and medium sized businesses. 
 X2Contacts was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 X2Contacts is unique in the crowded Customer Relationship Management (CRM) field with its compact, blog-style user interface. Interactive and collaborative tools which users are already familiar with from social networking sites such as; tagging, pictures, docs, web pages, group chat, discussions boards and rich mobile and iPad apps are combined within a compact and fast contact sales management application. Reps are able to make more sales contacts while leveraging the combined social intelligence of peers enabling them to add more value to their customer interactions resulting in higher close rates. 
 
