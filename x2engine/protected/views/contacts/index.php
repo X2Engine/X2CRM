@@ -59,6 +59,7 @@ $('.search-form form').submit(function(){
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
 	'model'=>$model, 
+        'users'=>UserChild::getNames(),
 )); ?> 
 </div><!-- search-form -->
 <?php
@@ -83,7 +84,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			"name"=>'phone',
-			'header'=>Yii::t('contacts','Phone'),
+			'header'=>Yii::t('contacts','Work Phone'),
 		),
 		array(
 			'name'=>'createDate',

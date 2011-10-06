@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -119,7 +119,7 @@ return array(
 'Set user session time out (in seconds) here. Default is 1 hour.'=>'设置用户会话超时（秒）。默认是1小时。',
 'Timeout'=>'超时',
 'Set Chat Poll Rate'=>'设置聊天投票率',
-'Set the duration between chat update requests in miliseconds.'=>'设置之间的聊天以毫秒为单位的更新请求时间。',
+'Set the duration between chat update requests in milliseconds.'=>'设置之间的聊天以毫秒为单位的更新请求时间。',
 'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'=>'降低这个数字可以更瞬时聊天，但会产生更多的服务器请求，因此，调整它的味道。默认值是2000（2秒）。',
 'Chat Poll Time'=>'聊天投票的时间',
 'Upload Your Logo'=>'上传您的徽标',

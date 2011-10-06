@@ -69,6 +69,7 @@ return array (
 'Update Action'=>'Mise à jour de l\'action',
 'Complete Action'=>'Action complète',
 'Complete + New Action'=>'Complet + Nouvelle action',
+'Uncomplete'=>'Faire incomplète',
 
 //	Actions Titles
 'Manage Actions'=>'Gérer les actions',
@@ -80,6 +81,7 @@ return array (
 'Action'=>'Action',
 'Action:'=>'Action:',
 "Today's Actions"=>'Aujourd\'hui, les actions',
+'My Actions'=>'Mes actions',
 'All My Actions'=>'Toutes Mes Actions',
 "Everyone's Actions"=>'Tout le monde Actions',
 'Delete Action'=>'Supprimer l\'action',
@@ -87,6 +89,12 @@ return array (
 
 
 //	Misc
+'Email Message:'=>'Email Message:',
+'Attachment:'=>'Les pièces jointes',
+'Assigned to {name}'=>'Assigné à {name}',
+'Completed by {name}'=>'Complété par {name}',
+'Completed {date}'=>'Terminé {date}',
+'Completion Notes'=>'Remarques d\'achèvement',
 'That action is not assigned to you.'=>'Cette action n\'est pas affecté à vous.',
 'Associated With'=>'Avec l\'Associated',
 'Association Info'=>'Infos Association',
@@ -96,8 +104,8 @@ return array (
 'Status'=>'Statut',
 'Contact Info'=>'Contact Info',
 'View'=>'Voir',
-'<b>Overdue</b> {time}'=>'<b>Retard</b> {time}',
-'Due <b>{date}</b>'=>'En raison <b>{date}</b>',
+'Overdue {time}'=>'Retard {time}',
+'Due {date}'=>'En raison {date}',
 
 //	Create Action Types
 'None'=>'Aucun',

@@ -47,11 +47,12 @@ return array (
 // Actions
 'View Attachment'=>'Anlage Anzeigen',
 'Delete Media'=>'Löschen Medien',
-''=>'',
 
+// Misc
+'File:'=>'Datei:',
+'(deleted)'=>'(gelöscht)',
+'Uploaded by {name}'=>'Hochgeladen von {name}',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Sind Sie sicher, dass Sie dieses Element wirklich löschen?',
-
-
 );

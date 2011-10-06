@@ -184,7 +184,7 @@ $model->city, $model->state $model->zipcode
 			if($model->country == $attributeLabels['country'])
 				$model->country = '';
 			
-			$model=$this->updateChangelog($model);
+			$model=$this->updateChangelog($model,'Create');
 			$model->createDate=time();
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -233,7 +233,7 @@ $model->city, $model->state $model->zipcode
 			
 			// validate user input and save contact
 			
-			$model=$this->updateChangelog($model);
+			$model=$this->updateChangelog($model,'Create');
 			$model->createDate=time();
 			if($model->save()) {
 				$this->renderPartial('application.components.views.quickContact',array());
@@ -249,6 +249,7 @@ $model->city, $model->state $model->zipcode
 			}else{
 				$company=false;
 			}
+                        $temp=$contact->attributes;
 			$contact->attributes=$_POST['Contacts'];
 			if($company){
 				$contact->company=$_POST['companyAutoComplete'];
@@ -267,7 +268,8 @@ $model->city, $model->state $model->zipcode
 			if($contact->country == $attributeLabels['country'])
 				$contact->country = '';
 			
-			$contact=$this->updateChangelog($contact);
+                        $changes=$this->calculateChanges($temp,$contact->attributes);
+			$contact=$this->updateChangelog($contact,$changes);
 			if($contact->save()){
 				$this->redirect(array('view','id'=>$contact->id));
 			}
@@ -290,6 +292,7 @@ $model->city, $model->state $model->zipcode
 		
 
 		if(isset($_POST[$name])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST[$name];
 			$attributeLabels = ContactChild::attributeLabels();
 			if($model->address == $attributeLabels['address'])
@@ -302,7 +305,8 @@ $model->city, $model->state $model->zipcode
 				$model->zipcode = '';
 			if($model->country == $attributeLabels['country'])
 				$model->country = '';
-			$model=$this->updateChangelog($model);
+                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

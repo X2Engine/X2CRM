@@ -76,14 +76,17 @@ div.form, div.wide.form {
 	border-radius:4px;
 	border:1px solid #ddd;
 	clear:both;
-	margin:0 0 10px 0;
-	padding:10px;
+	margin:0 0 5px 0;
+	padding:5px 10px;
 	width:auto;
 	overflow:auto;
 }
 div.form.no-border {
 	border:none;
 	padding:0;
+}
+div.form.details a {
+	text-decoration:none;
 }
 div.form.no-border input, div.form.no-border textarea, div.form.no-border select, div.form.no-border button {
 	margin:0;
@@ -103,8 +106,8 @@ div.form.thin input, div.form.thin textarea, div.form.thin select {
 }
 
 div.form input,div.form textarea,div.form select {
-	margin: 3px 0 10px 0;
-	border:1px solid #aaa;
+	margin: 3px 0 5px 0;
+	border:1px solid #ccc;
 }
 div.form input, div.form textarea {
 	-webkit-appearance:none;
@@ -292,7 +295,7 @@ div.form .float-row input, div.form .float-row button, div.form .float-row selec
 }
 
 div.form .row.buttons {
-	margin-top:10px;
+	/* margin-top:10px; */
 }
 div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
 	clear:left;

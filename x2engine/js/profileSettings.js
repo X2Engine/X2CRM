@@ -49,7 +49,7 @@ $(document).ready(function() {
 		callback_on_ok : function() {
 			var text = $('#backgroundColor').val();
 			$('#backgroundColor').val(text.substring(1,7));
-			$('body').css('background-color',text);
+			$('body').css('background',text);
 			highlightSave();
 		}
 	});
@@ -65,7 +65,7 @@ $(document).ready(function() {
 		callback_on_ok : function() {
 			var text = $('#menuBgColor').val();
 			$('#menuBgColor').val(text.substring(1,7));
-			$('#main-menu-bar').css('background-color',text);
+			$('#main-menu-bar').css('background',text);
 			highlightSave();
 		}
 	});

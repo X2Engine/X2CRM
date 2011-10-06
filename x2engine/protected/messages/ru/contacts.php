@@ -44,7 +44,10 @@ return array (
 'Last Name'=>'Фамилия',
 'Title'=>'название',
 'Account'=>'счет',
-'Phone'=>'телефон',
+'Work'=>'Рабочий',
+'Cell'=>'Сотовые',
+'Work Phone'=>'Рабочий телефон',
+'Cell Phone'=>'Сотовые телефоны',
 'Email'=>'Email',
 'IM'=>'И. М.',
 'Website'=>'веб-сайт',
@@ -67,6 +70,12 @@ return array (
 'High'=>'высокий',
 'Public'=>'общественность',
 'Private'=>'частный',
+
+// Misc
+'Assigned to {name}'=>'Назначена {name}',
+'Social Media'=>'Социальные медиа',
+'Detail View'=>'Детальный просмотр',
+'Simple View'=>'Простой вид',
 
 //	Contacts Actions
 'Contact List'=>'Список контактов',

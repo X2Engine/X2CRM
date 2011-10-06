@@ -34,33 +34,37 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 ?>
+
 <div class="view">
 	<!--<div class="deleteButton">
 		<?php //echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button') ?>
 	</div>-->
 	<div class="header">
-	<?php
-	if ($data->type == 'note' || $data->type == 'attachment') {
-		if($data->completedBy=="Email")
-			echo '<b>'.Yii::t('app','Email Message:').'</b> ';
-		else
-			echo UserChild::getUserLinks($data->completedBy);
-	} else {
-		if ($data->complete == 'Yes') {
-			echo Yii::t('actions','Completed by').' ';
-			echo UserChild::getUserLinks($data->completedBy);
-		} else {
-			echo Yii::t('actions','Assigned To').' ';
-			$userLink = UserChild::getUserLinks($data->assignedTo);
-			echo empty($userLink)? Yii::t('actions','Anyone') : $userLink;
+		<?php
+		if(empty($data->type)) {
+			if ($data->complete=='Yes') {
+				echo CHtml::link(Yii::t('actions','Action').':',array('actions/view','id'=>$data->id)).' ';
+				echo Yii::t('actions','Completed {date}',array('{date}'=>ActionChild::formatDate($data->completeDate)));
+			} else {
+				echo '<b>'.CHtml::link(Yii::t('actions','Action').':',array('actions/view','id'=>$data->id)).' ';
+				echo ActionChild::parseStatus($data->dueDate).'</b>';
+			}
+				
+		} else if ($data->type == 'attachment') {
+			if($data->completedBy=='Email')
+				echo Yii::t('actions','Email Message:').' '.ActionChild::formatDate($data->completeDate);
+			else
+				echo Yii::t('actions','Attachment:').' '.ActionChild::formatDate($data->completeDate);
+				//UserChild::getUserLinks($data->completedBy);
+				
+			echo ' ';
+			
+			//if ($data->complete=='Yes')
+				//echo ActionChild::formatDate($data->completeDate);
+			//else
+				//echo ActionChild::parseStatus($data->dueDate);
 		}
-	}
-	echo ' ';
-
-	if ($data->complete=='Yes') {
-		echo ActionChild::formatDate($data->completeDate);
-	} else
-		echo ActionChild::parseStatus($data->dueDate); ?>
+		?>
 		<div class="buttons">
 			<?php
 			if (empty($data->type)) {
@@ -71,17 +75,38 @@
 					//echo CHtml::link(Yii::t('actions','Complete + New'),array('actions/complete','id'=>$data->id,'redirect'=>1,'createNew'=>1),array('class'=>'x2-button'));
 				}
 			}
-			echo CHtml::link(Yii::t('actions','View'),array('actions/view','id'=>$data->id),array('class'=>'x2-button'));
+			//if ($data->type != 'note')
+				//echo CHtml::link(Yii::t('actions','View'),array('actions/view','id'=>$data->id),array('class'=>'x2-button'));
 			?>
 		</div>
 	</div>
-	<?php
-	$template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
-		$info=$data->actionDescription;
-		$info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
-	if($data->type=='attachment')
-		echo MediaChild::attachmentActionText($data->actionDescription,true,true);
-	else
-		echo $this->convertLineBreaks($info,true);	// convert LF and CRLF to <br />
+	<div class="description">
+		<?php
+		$template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
+			$info=$data->actionDescription;
+			$info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
+		if($data->type=='attachment' && $data->completedBy!='Email')
+			echo MediaChild::attachmentActionText($data->actionDescription,true,true);
+		else
+			echo $this->convertLineBreaks($info,true);	// convert LF and CRLF to <br />
+		?>
+	</div>
+	<div class="footer">
+	<?php if(empty($data->type)) {
+		if ($data->complete == 'Yes') {
+			echo Yii::t('actions','Completed by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
+		} else {
+			$userLink = UserChild::getUserLinks($data->assignedTo);
+			$userLink = empty($userLink)? Yii::t('actions','Anyone') : $userLink;
+			echo Yii::t('actions','Assigned to {name}',array('{name}'=>$userLink));
+		}
+	} else if ($data->type == 'note') {
+		echo UserChild::getUserLinks($data->completedBy);
+		echo ' '.ActionChild::formatDate($data->completeDate);
+	} else if ($data->type == 'attachment' && $data->completedBy!='Email') {
+		echo Yii::t('media','Uploaded by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
+	}
 	?>
+	</div>
+
 </div>

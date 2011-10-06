@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -49,7 +49,7 @@ return array (
 'Contacts'=>'コンタクト',
 'Sales'=>'セールス',
 'Projects'=>'プロジェクト',
-'Chat'=>'チャット',
+'Group Chat'=>'グループチャット',
 'Marketing'=>'マーケティング',
 'Cases'=>'ケース',
 'Accounts'=>'アカウント',

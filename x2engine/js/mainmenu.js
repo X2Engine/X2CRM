@@ -33,7 +33,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$(document).ready(function() {
+$(function() {
 
 	$("#main-menu li span").click(function() {
 		$("#main-menu ul").toggle();
@@ -58,14 +58,29 @@ $(document).ready(function() {
 			// $("#transparency-slider").hide();
 	});
 
-	$("#transparency-button").click(toggleSlider);
+	$("#transparency-button").click(showTransparencySlider);
 });
 
-var toggleSlider = function(e) {
+var sliderTimeout;
+
+function resetSliderTimeout() {
+	clearTimeout(sliderTimeout);
+	sliderTimeout = setTimeout(hideTransparencySlider,3000);
+}
+
+function showTransparencySlider() {
 	//get the position of the placeholder element
 	var pos = $("#transparency-button").position();
 	var height = $("#transparency-button").height();
 	//show the menu directly over the placeholder
-	$("#transparency-slider").css( { "left": (pos.left + 50) + "px", "top":(pos.top + height - 6) + "px" } );
-	$("#transparency-slider").toggle();
+	$("#transparency-slider-box").css( { "left": (pos.left - 3) + "px", "top":(pos.top + height + 5) + "px" } );
+	$("#transparency-slider-box").toggle();
+	
+	resetSliderTimeout();
 }
+function hideTransparencySlider(e) {
+	$("#transparency-slider-box").fadeOut(800);
+}
+
+
+

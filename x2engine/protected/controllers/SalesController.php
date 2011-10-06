@@ -41,7 +41,8 @@ class SalesController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact','saveChanges','delete','shareSale'),
+				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact',
+                                    'saveChanges','delete','shareSale'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -125,7 +126,7 @@ class SalesController extends x2base {
 			// process currency into an INT
 			$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 			
-			$model=$this->updateChangelog($model); 
+			$model=$this->updateChangelog($model,'Create'); 
 			if(isset($model->assignedTo))
 				$model->assignedTo = SaleChild::parseUsers($model->assignedTo);
 			if(isset($model->associatedContacts))
@@ -184,12 +185,12 @@ class SalesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Sales'])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST['Sales'];
 			
 			// process currency into an INT
 			$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 			
-			$model=$this->updateChangelog($model);
 			$arr=$model->assignedTo;
 			if(isset($model->assignedTo))
 				$model->assignedTo=SaleChild::parseUsers($arr);
@@ -200,6 +201,8 @@ class SalesController extends x2base {
 			if($model->expectedCloseDate!=""){
 				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
 			}
+                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -214,15 +217,18 @@ class SalesController extends x2base {
 	public function actionSaveChanges($id) {
 		$sale=$this->loadModel($id);
 		if(isset($_POST['Sales'])) {
+                        $temp=$sale->attributes;
 			$sale->attributes=$_POST['Sales'];
 			
 			// process currency into an INT
 			$sale->quoteAmount = $this->parseCurrency($sale->quoteAmount,false);
 			
-			$sale=$this->updateChangelog($sale);
+			
 			if($sale->expectedCloseDate!=""){
 				$sale->expectedCloseDate=strtotime($sale->expectedCloseDate);
 			}
+                        $changes=$this->calculateChanges($temp,$sale->attributes);
+                        $sale=$this->updateChangelog($sale,$changes);
 			$sale->save();
 			$this->redirect(array('view','id'=>$sale->id));
 		}
@@ -239,9 +245,10 @@ class SalesController extends x2base {
 
 		if(isset($_POST['Sales'])) {
 			$temp=$model->assignedTo; 
+                        $tempArr=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
 			$arr=$model->assignedTo;
-			$model=$this->updateChangelog($model);
+			
 
 			$model->assignedTo=SaleChild::parseUsers($arr);
 			if($temp!="")
@@ -249,6 +256,8 @@ class SalesController extends x2base {
 			else
 				$temp=$model->assignedTo;
 			$model->assignedTo=$temp;
+                        $changes=$this->calculateChanges($tempArr,$model->attributes);
+                        $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -273,13 +282,16 @@ class SalesController extends x2base {
 
 		if(isset($_POST['Sales'])) {
 			$temp=$model->associatedContacts; 
+                        $tempArr=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
 			$arr=$model->associatedContacts;
-			$model=$this->updateChangelog($model);
+			
 
 			$model->associatedContacts=SaleChild::parseContacts($arr);
 			$temp.=" ".$model->associatedContacts;
 			$model->associatedContacts=$temp;
+                        $changes=$this->calculateChanges($tempArr,$model->attributes);
+                        $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -303,9 +315,10 @@ class SalesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Sales'])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
 			$arr=$model->assignedTo;
-			$model=$this->updateChangelog($model);
+			
 			
 			foreach($arr as $id=>$user){
 				unset($pieces[$user]);
@@ -314,6 +327,8 @@ class SalesController extends x2base {
 			$temp=SaleChild::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
+                        $changes=$this->calculateChanges($temp,$model->attributes);
+                        $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -336,9 +351,10 @@ class SalesController extends x2base {
 
 		if(isset($_POST['Sales']))
 		{
+                        $temp=$model->attribtes;
 			$model->attributes=$_POST['Sales'];  
 			$arr=$model->associatedContacts;
-			$model=$this->updateChangelog($model);
+			
 			
 			foreach($arr as $id=>$contact){
 				unset($pieces[$contact]);
@@ -347,6 +363,8 @@ class SalesController extends x2base {
 			$temp=SaleChild::parseContactsTwo($pieces);
 
 			$model->associatedContacts=$temp;
+                        $changes=$this->calculateChanges($temp,$model->attributes);
+                        $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

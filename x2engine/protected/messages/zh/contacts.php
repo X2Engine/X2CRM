@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -44,7 +44,10 @@ return array (
 'Last Name'=>'姓氏',
 'Title'=>'标题',
 'Account'=>'帐户',
-'Phone'=>'电话',
+'Work'=>'工作电话',
+'Cell'=>'手机',
+'Work Phone'=>'工作电话',
+'Cell Phone'=>'手机',
 'Email'=>'电子邮件',
 'IM'=>'即时通讯',
 'Website'=>'网站',
@@ -67,6 +70,12 @@ return array (
 'High'=>'高',
 'Public'=>'公共',
 'Private'=>'私人',
+
+// Misc
+'Assigned to {name}'=>'分配给 {name}',
+'Social Media'=>'社会化媒体',
+'Detail View'=>'详细信息视图',
+'Simple View'=>'简单查看',
 
 //	Contacts Actions
 'Contact List'=>'联络名单',

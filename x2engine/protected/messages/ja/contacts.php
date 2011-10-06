@@ -44,7 +44,10 @@ return array (
 'Last Name'=>'姓',
 'Title'=>'肩書',
 'Account'=>'アカウント',
-'Phone'=>'電話番号',
+'Work'=>'勤務先電話',
+'Cell'=>'携帯電話',
+'Work Phone'=>'勤務先電話',
+'Cell Phone'=>'携帯電話',
 'Email'=>'メール',
 'IM'=>'IM',
 'Website'=>'ウェブサイト',
@@ -67,6 +70,12 @@ return array (
 'High'=>'高',
 'Public'=>'公開',
 'Private'=>'秘密',
+
+// Misc
+'Assigned to {name}'=>'{name} に割り当て',
+'Social Media'=>'ソーシャルメディア',
+'Detail View'=>'詳細ビュー',
+'Simple View'=>'簡単なビュー',
 
 //	Contacts Actions
 'Contact List'=>'コンタクトリスト',

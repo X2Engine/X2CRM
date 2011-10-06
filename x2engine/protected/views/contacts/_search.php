@@ -35,7 +35,7 @@
  ********************************************************************************/
 ?>
 <div class="wide form">
-
+<?php echo CHtml::link(Yii::t('app','Minimize'),'#',array('class'=>'search-button'));?>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'action'=>Yii::app()->createUrl($this->route),
 	'method'=>'get',
@@ -70,10 +70,20 @@
 		<?php echo $form->label($model,'address'); ?>
 		<?php echo $form->textField($model,'address',array('size'=>60,'maxlength'=>100)); ?>
 	</div>
+    
+        <div class="row">
+		<?php echo $form->label($model,'city'); ?>
+		<?php echo $form->textField($model,'city',array('size'=>60,'maxlength'=>100)); ?>
+	</div>
+    
+        <div class="row">
+		<?php echo $form->label($model,'state'); ?>
+		<?php echo $form->textField($model,'state',array('size'=>60,'maxlength'=>100)); ?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->label($model,'assignedTo'); ?>
-		<?php echo $form->textField($model,'assignedTo',array('size'=>20,'maxlength'=>20)); ?>
+		<?php echo $form->dropDownList($model,'assignedTo',$users); ?>
 	</div>
 
 	<div class="row">

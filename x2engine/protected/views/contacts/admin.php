@@ -67,6 +67,7 @@ $cs->registerScriptFile(Yii::app()->request->baseUrl.'/assets/js/test.js');
 <?php
 $this->renderPartial('_search',array(
 	'model'=>$model, 
+        'users'=>UserChild::getNames(),
 )); ?>
 </div><!-- search-form -->
 <?php 

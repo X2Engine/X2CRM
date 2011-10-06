@@ -35,21 +35,27 @@
  ********************************************************************************/
 
 Yii::app()->clientScript->registerScript('validate','
-		$(document).ready(function(){
-			$("#actions-newCreate-form").submit(function(){
-				if($("#'.CHtml::activeId($actionModel,'associationType').'").val()=="contacts" || $("#'.CHtml::activeId($actionModel,'associationType').'").val()=="accounts"
-					|| $("#'.CHtml::activeId($actionModel,'associationType').'").val()=="sales"){
-					if($("#'.CHtml::activeId($actionModel,'associationId').'").val()==""){
-						alert("Please enter a valid association");
-						return false;
-					}
-				}
+$(document).ready(function(){
+	$("#actions-newCreate-form").submit(function(){
+		if($("#'.CHtml::activeId($actionModel,'associationType').'").val()=="contacts" || $("#'.CHtml::activeId($actionModel,'associationType').'").val()=="accounts"
+			|| $("#'.CHtml::activeId($actionModel,'associationType').'").val()=="sales"){
+			if($("#'.CHtml::activeId($actionModel,'associationId').'").val()==""){
+				alert("Please enter a valid association");
+				return false;
 			}
-			);
-		}	
-		);'
+		}
+	}
 	);
-
+}
+);');
+Yii::app()->clientScript->registerScript('highlightSaveAction',"
+$(function(){
+	$('#action-form input, #action-form select, #action-form textarea').change(function(){
+		$('#save-button, #save-button1, #save-button2').css('background','yellow');
+	}
+	);
+}
+);");
 $inlineForm = (isset($inlineForm)); // true if this is in the InlineActionForm
 $quickCreate = $inlineForm? false : ($this->getAction()->getId() == 'quickCreate');	// true if we're inside the quickCreate view
 if(isset($_GET['inline']))
@@ -77,7 +83,7 @@ echo $form->errorSummary($actionModel);
 <div class="row">
 	<b><?php echo $form->labelEx($actionModel,'actionDescription'); ?></b>
 	<?php //echo $form->label($actionModel,'actionDescription'); ?>
-	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>6, 'cols'=>50)); ?>
+	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>50)); ?>
 	<?php //echo $form->error($actionModel,'actionDescription'); ?>
 </div>
 <div class="row">
@@ -93,9 +99,9 @@ echo $form->errorSummary($actionModel);
 	<?php echo $form->dropDownList($actionModel,'associationType',
 		array(
 			'none'=>Yii::t('actions','None'),
-			'contact'=>Yii::t('actions','Contact'),
-			'sale'=>Yii::t('actions','Sale'),
-			'account'=>Yii::t('actions','Account'),
+			'contacts'=>Yii::t('actions','Contact'),
+			'sales'=>Yii::t('actions','Sale'),
+			'accounts'=>Yii::t('actions','Account'),
 		),
 		array(
 			'ajax' => array(
@@ -116,7 +122,7 @@ echo $form->errorSummary($actionModel);
 		echo $form->label($actionModel,'associationName');
 		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 			'name'=>'auto_select',
-			//'value'=>$actionModel->associationName,
+			'value'=>$actionModel->associationName,
 			'source' => $this->createUrl('actions/getTerms',array('type'=>$actionModel->associationType)),
 			'options'=>array(
 				'minLength'=>'2',
@@ -186,10 +192,9 @@ if (!$quickCreate) {	//if we're not in quickCreate, end the form
 ?>
 	<div class="row buttons">
 		<?php echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app','Save Action'):Yii::t('app','Save'),
-				array('type'=>'submit','class'=>'x2-button','name'=>'submit','value'=>'action')); ?>
-
+				array('type'=>'submit','class'=>'x2-button','id'=>'save-button1','name'=>'submit','value'=>'action')); ?>
 		<?php if($actionModel->isNewRecord && $inlineForm)
-				echo CHtml::htmlButton(Yii::t('app','Save Comment'),array('type'=>'submit','class'=>'x2-button','name'=>'submit','value'=>'comment'));
+				echo CHtml::htmlButton(Yii::t('app','Save Comment'),array('type'=>'submit','class'=>'x2-button','id'=>'save-button2','name'=>'submit','value'=>'comment'));
 		?>
 	</div>
 <?php

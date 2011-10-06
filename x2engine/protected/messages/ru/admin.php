@@ -121,7 +121,7 @@ return array(
 		'Set user session time out (in seconds) here. Default is 1 hour.'=>'Установить сеанс пользователя тайм-аут (в секундах) можно здесь. По умолчанию 1 час.',
 		'Timeout'=>'Тайм-аут',
 		'Set Chat Poll Rate'=>'Установить Чат Опрос Оценить',
-		'Set the duration between chat update requests in miliseconds.'=>'Установить продолжительность между чате запросы на обновление в миллисекундах.',
+		'Set the duration between chat update requests in milliseconds.'=>'Установить продолжительность между чате запросы на обновление в миллисекундах.',
 		'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'=>'Уменьшение этого числа позволяет более мгновенной чате, но создает больше запросов серверу, поэтому настроить его по вкусу.Значение по умолчанию 2000 (2 секунды).',
 		'Chat Poll Time'=>'Чат Опрос время',
 		'Upload Your Logo'=>'Загрузить Ваш логотип',

@@ -46,7 +46,8 @@ if($model->associationType!='feed') {
 	// $list = $this->parseType($model->associationType);
 	// $contact=$list[$model->associationId];
 	$association = $this->getAssociationModel($model->associationType,$model->associationId);
-}
+} else
+	$association = null;
 	
 $this->renderPartial('_detailView',array('model'=>$model,'association'=>$association));
 /*

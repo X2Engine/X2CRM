@@ -70,6 +70,7 @@ return array (
 'Update Action'=>'更新行动',
 'Complete Action'=>'完整的行动',
 'Complete + New Action'=>'完成+新动作',
+'Uncomplete'=>'请不完整',
 
 //	Actions Titles
 'Manage Actions'=>'管理操作',
@@ -81,6 +82,7 @@ return array (
 'Action'=>'行动',
 'Action:'=>'行动：',
 "Today's Actions"=>'今天的行动',
+'My Actions'=>'我的行动',
 'All My Actions'=>'我的行动',
 "Everyone's Actions"=>'每个人的行动',
 'Delete Action'=>'删除操作',
@@ -88,6 +90,12 @@ return array (
 
 
 //	Misc
+'Email Message:'=>'电邮讯息:',
+'Attachment:'=>'附件:',
+'Assigned to {name}'=>'分配给 {name}',
+'Completed by {name}'=>'完成 {name}',
+'Completed {date}'=>'{date} 完成',
+'Completion Notes'=>'完成票据',
 'That action is not assigned to you.'=>'这一行动是没有分配给您。',
 'Associated With'=>'与',
 'Association Info'=>'协会信息',
@@ -97,8 +105,8 @@ return array (
 'Status'=>'状态',
 'Contact Info'=>'联系方式',
 'View'=>'查看',
-'<b>Overdue</b> {time}'=>'<B>逾期</ B>{time}',
-'Due <b>{date}</b>'=>'由于<B>{date}</ B>',
+'Overdue {time}'=>'逾期{time}',
+'Due {date}'=>'由于{date}',
 
 //	Create Action Types
 'None'=>'没有',

@@ -33,6 +33,54 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
+div.record {
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border:1px solid #ddd;
+	clear:both;
+	margin:0 0 5px 0;
+	padding:5px 0;
+	width:auto;
+	overflow:auto;
+}
+div.record.no-border {
+	border:none;
+	padding:0;
+	margin:0;
+}
+div.record a{
+	text-decoration:none;
+}
+div.record .row {
+	margin:0 10px;
+	width:auto;
+	clear:both;
+	overflow:auto;
+}
+div.record .cell {
+	display:block;
+	float:left;
+	margin-right:5px;
+}
+div.record hr {
+	margin:5px 0;
+	width:100%;
+}
+div.social-media {
+	
+}
+div.social-media img {
+	vertical-align:text-bottom;
+}
+div.social-media .row {
+	margin-bottom:5px;
+}
+div.social-media .cell {
+	margin-bottom:5px;
+}
+
 div.details div.header {
 	border-radius:4px 4px 0 0;
 	-moz-border-radius:4px 4px 0 0;

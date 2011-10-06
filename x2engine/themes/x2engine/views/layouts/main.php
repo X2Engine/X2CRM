@@ -45,7 +45,7 @@ Yii::app()->clientScript->registerCoreScript('jquery.ui');
 // custom scripts
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/mainmenu.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-if(!$isGuest) Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
 
 // blueprint CSS framework
 $themeURL = Yii::app()->theme->getBaseUrl();
@@ -105,9 +105,10 @@ foreach($checkFiles as $key=>$value) {
 $theme2Css = '';
 if($checkResult)
 	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
-if(!$isGuest) {
 	// get user record
 	$userModel = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+        if(!isset($userModel))
+            $userModel=ProfileChild::model()->findByPk(1);
 	
 	if (!empty($userModel->pageOpacity)) {
 		$defaultOpacity = $userModel->pageOpacity / 100;
@@ -144,13 +145,15 @@ if(!$isGuest) {
 box-shadow: 0 0 30px $shadowRgb;
 }\n";
 	}
-	if(!empty($userModel->menuBgColor))
+	if(!empty($userModel->menuBgColor)){
 		$themeCss .= '#main-menu-bar {background:#'.$userModel->menuBgColor.";}\n";
-	if(!empty($userModel->menuTextColor))
-		$themeCss .= '#main-menu-bar a, #main-menu-bar span {color:#'.$userModel->menuTextColor.";}\n";
+        }
+	if(!empty($userModel->menuTextColor)){
+		$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.$userModel->menuTextColor.";}\n";
+        }
 	
 	Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
-}
+
 Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
 $admin=Admin::model()->findByPk(1);
@@ -212,7 +215,7 @@ if ($menuItemCount > $maxMenuItems) {
 }
 
 $userMenu = array(
-	array('label' => Yii::t('app','Chat'), 'url' => array('/site/groupChat')),
+	array('label' => Yii::t('app','Group Chat'), 'url' => array('/site/groupChat')),
 	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin'&&Yii::app()->controller->action->id!='viewPage')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'), 'visible'=>$isAdmin),
@@ -278,6 +281,7 @@ $userMenu = array(
 			<input type="text" class="text" id="search-bar-box" name="term" value="<?php echo Yii::t('app','Search for contact, action, deal...'); ?>" onFocus="toggleText(this);" onBlur="toggleText(this);" />
 			<a class="x2-button" href="#" onClick="submitForm('search');"><span><?php echo Yii::t('app','Go'); ?></span></a>
 		</form>
+		<div id="transparency-slider-box" style="position:absolute;height:90px;padding:20px 10px;background:white;display:none;">
 		<?php
 		$this->widget('zii.widgets.jui.CJuiSlider', array(
 			'value'=>$defaultOpacity,
@@ -289,14 +293,15 @@ $userMenu = array(
 				'step'=>0.05,
 				'slide'=>"js:function(event,ui) {
 					$('#page').fadeTo(0,ui.value);
+					resetSliderTimeout();
 				}",
 				'change'=>"js:function(event,ui) {saveOpacity(event,ui);}"
 			),
 			'htmlOptions'=>array(
 				'id'=>'transparency-slider',
-				'style'=>'position:absolute;height:90px;display:none;'
+				//'style'=>'position:absolute;height:90px;display:none;'
 			),
-		));
+		));?></div><?php
 		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'transparency-button'))." \n";
 		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('contacts/create'),array('class'=>'x2-button'))." \n";
 		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('actions/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
@@ -308,9 +313,12 @@ $userMenu = array(
 	echo $content;
 	?>
 	<div id="footer">
-		<hr>
-		<?php $imghtml=CHtml::image($themeURL.'/images/x2footer.png','',array('id'=>'footer-logo'));
-		echo CHtml::link($imghtml,array('site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php'); ?><br />
+		<hr><div id="footer-logos">
+		<?php
+		$imghtml = CHtml::image($themeURL.'/images/x2footer.png','');
+		echo CHtml::link($imghtml,array('site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
+		
+		?></div>
 		Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
 		<?php echo Yii::t('app','Rights reservered.'); ?>
 		<?php
@@ -320,7 +328,9 @@ $userMenu = array(
 			'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
 		));?><br />
 		<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(CLogger::getExecutionTime(),3)));
-		?>
+		?><br />
+		<?php $imghtml = CHtml::image($themeURL.'/images/x2touch.png','');
+		echo CHtml::link($imghtml,Yii::app()->getBaseUrl().'/index.php/x2touch'); ?>
 	</div>
 </div>
 </body>

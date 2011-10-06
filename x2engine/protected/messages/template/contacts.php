@@ -44,7 +44,10 @@ return array (
 'Last Name'=>'',
 'Title'=>'',
 'Account'=>'',
-'Phone'=>'',
+'Work'=>'',
+'Cell'=>'',
+'Work Phone'=>'',
+'Cell Phone'=>'',
 'Email'=>'',
 'IM'=>'',
 'Website'=>'',
@@ -67,6 +70,12 @@ return array (
 'High'=>'',
 'Public'=>'',
 'Private'=>'',
+
+// Misc
+'Assigned to {name}'=>'',
+'Social Media'=>'',
+'Detail View'=>'',
+'Simple View'=>'',
 
 //	Contacts Actions
 'Contact List'=>'',

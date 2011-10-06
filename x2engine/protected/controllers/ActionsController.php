@@ -179,7 +179,7 @@ class ActionsController extends x2base {
 	// $this->performAjaxValidation($model);
 
 		if(isset($_POST['ActionChild'])) {
-			$model=$this->updateChangelog($model);
+			$model=$this->updateChangelog($model,'Create');
 			$model->attributes=$_POST['ActionChild'];
 			if($model->associationId=='')
 				$model->associationId=0;
@@ -257,9 +257,9 @@ class ActionsController extends x2base {
 
 		if(isset($_POST['ActionChild']) && isset($_POST['ContactChild'])) {
 			$actionModel->attributes=$_POST['ActionChild'];
-			$actionModel=$this->updateChangelog($actionModel);
+			$actionModel=$this->updateChangelog($actionModel,'Create');
 			$contactModel->attributes=$_POST['ContactChild'];
-			$contactModel=$this->updateChangelog($contactModel);
+			$contactModel=$this->updateChangelog($contactModel,'Create');
 			$actionModel->createDate=time();
 			$contactModel->createDate=time();
 			
@@ -329,8 +329,9 @@ class ActionsController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['ActionChild'])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST['ActionChild'];
-			$model=$this->updateChangelog($model);
+                        
 
 			$dueDate = strtotime($model->dueDate);
 			$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
@@ -343,7 +344,8 @@ class ActionsController extends x2base {
 				$model->associationName = 'None';
 				$model->associationId = 0;
 			}
-
+                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -388,7 +390,7 @@ class ActionsController extends x2base {
 			if(isset($_POST['note']))
 				$model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
 				
-			$model=$this->updateChangelog($model);
+			$model=$this->updateChangelog($model,'Completed');
 			$model->save();
 			ActionChild::completeAction($id);
 

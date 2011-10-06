@@ -54,17 +54,20 @@ class MediaChild extends Media {
 		$data = explode(':',$actionDescription);
 		if(count($data) == 2 && is_numeric($data[1])) {
 
-			$str = Yii::t('app','Attached file:') . ' ';
+			$str = Yii::t('media','File:') . ' ';
 			
-			if($makeLink)
+			$file = Yii::app()->file->set('uploads/'.$data[0]);
+			
+			if($makeLink && $file->exists)
 				$str .= CHtml::link($data[0],array('media/view','id'=>$data[1]));
 			else
 				$str .= $data[0];
+			if (!$file->exists)
+				$str .= ' '.Yii::t('media','(deleted)');
 
-			if($makeImage) {						// to render an image, first check file extension
-				$parts = explode('.',$data[0]);			// split filename on '.'
-				$file_ext = strtolower($parts[count($parts)-1]);	// extension is the last part
-				
+			if($makeImage && $file->exists) {	// to render an image, first check file extension
+
+				$file_ext = $file->getExtension();
 				$legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
 				
 				if(in_array($file_ext,$legal_extensions))

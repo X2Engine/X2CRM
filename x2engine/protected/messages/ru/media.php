@@ -47,11 +47,12 @@ return array (
 // Actions
 'View Attachment'=>'Просмотр вложения',
 'Delete Media'=>'Удалить Медиа',
-''=>'',
 
+// Misc
+'File:'=>'Файл:',
+'(deleted)'=>'(удалено)',
+'Uploaded by {name}'=>'Автор {name}',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Вы действительно хотите удалить этот элемент?',
-
-
 );

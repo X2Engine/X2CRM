@@ -47,11 +47,12 @@ return array (
 // Actions
 'View Attachment'=>'Afficher la pièce jointe',
 'Delete Media'=>'Supprimer les médias',
-''=>'',
 
+// Misc
+'File:'=>'Fichier:',
+'(deleted)'=>'(supprimé)',
+'Uploaded by {name}'=>'Transféré par {name}',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Etes-vous sûr de vouloir supprimer cet élément?',
-
-
 );

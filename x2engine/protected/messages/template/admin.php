@@ -119,7 +119,7 @@ return array(
 'Set user session time out (in seconds) here. Default is 1 hour.'=>'',
 'Timeout'=>'',
 'Set Chat Poll Rate'=>'',
-'Set the duration between chat update requests in miliseconds.'=>'',
+'Set the duration between chat update requests in milliseconds.'=>'',
 'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'=>'',
 'Chat Poll Time'=>'',
 'Upload Your Logo'=>'',

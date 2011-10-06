@@ -69,6 +69,7 @@ return array (
 'Update Action'=>'Actualizar Acción',
 'Complete Action'=>'Completar Acción',
 'Complete + New Action'=>'Completar + Nueva Acción',
+'Uncomplete'=>'Hacer incompleta',
 
 //	Actions Titles
 'Manage Actions'=>'Administrar Acciónes',
@@ -80,6 +81,7 @@ return array (
 'Action'=>'Acción',
 'Action:'=>'Acción:',
 "Today's Actions"=>"Acciones Para Hoy",
+'My Actions'=>'Mis acciones',
 'All My Actions'=>'Todas Mis Acciónes',
 "Everyone's Actions"=>"Las Acciones de Todo el Mundo",
 'Delete Action'=>'Eliminar Acción',
@@ -87,6 +89,12 @@ return array (
 
 
 //	Misc
+'Email Message:'=>'Correo electrónico Mensaje',
+'Attachment:'=>'Anexo:',
+'Assigned to {name}'=>'Asignado a {name}',
+'Completed by {name}'=>'Completado por {name}',
+'Completed {date}'=>'Completado {date}',
+'Completion Notes'=>'Notas de finalización',
 'That action is not assigned to you.'=>'Esa tarea no se le ha asignado.',
 'Associated With'=>'Asociado Con',
 'Association Info'=>'Info de Asociación',
@@ -96,8 +104,8 @@ return array (
 'Status'=>'Estado',
 'Contact Info'=>'Información de Contacto',
 'View'=>'Ver',
-'<b>Overdue</b> {time}'=>'<b>Atrasado</b> {time}',
-'Due <b>{date}</b>'=>'Debido <b>{date}</b>',
+'Overdue {time}'=>'Atrasado {time}',
+'Due {date}'=>'Debido {date}',
 
 //	Create Action Types
 'None'=>'Nada',

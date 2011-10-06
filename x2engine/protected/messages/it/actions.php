@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -70,6 +70,7 @@ return array (
 'Update Action'=>'Aggiornamento azione',
 'Complete Action'=>'Azione completa',
 'Complete + New Action'=>'Completa + Nuova azione',
+'Uncomplete'=>'Fai incompleta',
 
 //	Actions Titles
 'Manage Actions'=>'Gestire le azioni',
@@ -81,6 +82,7 @@ return array (
 'Action'=>'Azione',
 'Action:'=>'Azione:',
 "Today's Actions"=>'Le azioni di oggi',
+'My Actions'=>'Le mie azioni',
 'All My Actions'=>'Tutte le mie azioni',
 "Everyone's Actions"=>'Azioni di ognuno',
 'Delete Action'=>'Elimina azione',
@@ -88,6 +90,12 @@ return array (
 
 
 //	Misc
+'Email Message:'=>'Messaggio E-mail:',
+'Attachment:'=>'Attaccamento:',
+'Assigned to {name}'=>'Assegnato a {name}',
+'Completed by {name}'=>'Completato da {name}',
+'Completed {date}'=>'Completato {date}',
+'Completion Notes'=>'Completamento Note',
 'That action is not assigned to you.'=>'Che l\'azione non è assegnato a voi.',
 'Associated With'=>'Con associati',
 'Association Info'=>'Info associazione',
@@ -97,8 +105,8 @@ return array (
 'Status'=>'Stato',
 'Contact Info'=>'Informazioni di contatto',
 'View'=>'vista',
-'<b>Overdue</b> {time}'=>'<b>Scadute</ b> {time}',
-'Due <b>{date}</b>'=>'<b>Causa {date}</ b>',
+'Overdue {time}'=>'Scadute {time}',
+'Due {date}'=>'Causa {date}',
 
 //	Create Action Types
 'None'=>'Nessuno',

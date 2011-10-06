@@ -76,8 +76,18 @@ function cleanupUrl($url) {
 		// $info=$model->backgroundInfo;
 		// $info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 ?>
+<div class="record no-border">
+	<div class="cell">
+		<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b>
+		<?php echo CHtml::link(Yii::t('contacts','Simple View'),array('view','id'=>$model->id,'detail'=>0),array('class'=>'x2-button','style'=>'margin-left:20px;')); ?></h2>
+		
+	</div>
+	<div class="cell" style="float:right;">
+		
+	</div>
+</div>
 <div class="form no-border">
-<table class="details">
+<table class="details" style="margin-top:0;">
 	<tr>
 		<td class="label"><?php echo $attributeLabels['firstName']; ?></td>
 		<td id="firstName" onclick="showField(this,true);" width="145">
@@ -138,8 +148,21 @@ function cleanupUrl($url) {
 		</td>
 	</tr>
 	<tr>
+		<td class="label"><?php echo (empty($model->phone2))? "<b>".$attributeLabels['phone2']."</b>" : CHtml::link($attributeLabels['phone2'],'callto:+'.preg_replace('[^0-9]', '',$model->phone2)); ?></td>
+		<td id="phone2" onclick="showField(this,true);">
+			<div class="detail-field"><?php echo $model->phone2; ?></div>
+			<div class="detail-form">
+				<?php
+				echo $form->textField($model, 'phone2', array(
+					'size'=>30,
+					'maxlength'=>20,
+					'tabindex'=>5,
+					'style'=>'width:135px;'
+				)); ?>
+			</div>
+		</td>
 		<td class="label"><?php echo ($model->accountId==0)? "<b>".$attributeLabels['company']."</b>" : CHtml::link($attributeLabels['company'],array('accounts/view','id'=>$model->accountId)); ?></td>
-		<td id="company" onclick="showField(this,true);">
+		<td colspan="3" id="company" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo $model->company; ?></div>
 			<div class="detail-form">
 				<?php echo $form->hiddenField($model, 'company');
@@ -150,7 +173,7 @@ function cleanupUrl($url) {
 					'htmlOptions'=>array(
 						'size'=>30,
 						'maxlength'=>100,
-						'tabindex'=>5,
+						'tabindex'=>6,
 						'style'=>
 						'width:135px;'
 					),
@@ -168,8 +191,22 @@ function cleanupUrl($url) {
 				?>
 			</div>
 		</td>
-		<td class="label" rowspan="4"><b><?php echo $attributeLabels['address']; ?></b></td>
-		<td id="address" rowspan="4" colspan="3" style="padding:0.3em 0 0 0.6em;" onclick="showField(this,false);">
+	</tr>
+	<tr>
+		<td class="label"><b><?php echo $attributeLabels['rating']; ?></b></td>
+		<td><?php
+			$this->widget('CStarRating',array(
+				'model'=>$model,
+				'attribute'=>'rating',
+				//'callback'=>'highlightSave',
+				'minRating'=>1, //minimal valuez
+				'maxRating'=>5,//max value
+				'starCount'=>5, //number of stars
+				'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+			)); ?>
+		</td>
+		<td class="label" rowspan="3"><b><?php echo $attributeLabels['address']; ?></b></td>
+		<td id="address" rowspan="3" colspan="3" style="padding:0.3em 0 0 0.6em;" onclick="showField(this,false);">
 			<div class="detail-field">
 				<?php if(!empty($model->address)) echo $model->address . '<br />'; ?>
 				<?php echo $model->city; if(!empty($model->city) && !empty($model->state)) echo ', ';?>
@@ -185,7 +222,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'address', array(
 				'size'=>30,
 				'maxlength'=>100,
-				'tabindex'=>6,
+				'tabindex'=>7,
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:225px;'.($default? 'color:#aaa;' : '')
@@ -198,7 +235,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'city', array(
 				'size'=>12,
 				'maxlength'=>40,
-				'tabindex'=>7,
+				'tabindex'=>8,
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
@@ -209,7 +246,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'state', array(
 				'size'=>12,
 				'maxlength'=>40,
-				'tabindex'=>8,
+				'tabindex'=>9,
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
@@ -222,7 +259,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'zipcode', array(
 				'size'=>12,
 				'maxlength'=>20,
-				'tabindex'=>9,
+				'tabindex'=>10,
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
@@ -233,25 +270,12 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'country', array(
 				'size'=>12,
 				'maxlength'=>100,
-				'tabindex'=>10,
+				'tabindex'=>11,
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
 			)); ?>
 			</div>
-		</td>
-	</tr>
-	<tr>
-		<td class="label"><b><?php echo $attributeLabels['rating']; ?></b></td>
-		<td><?php
-			$this->widget('CStarRating',array(
-				'model'=>$model,
-				'attribute'=>'rating',
-				//'callback'=>'highlightSave',
-				'minRating'=>1, //minimal valuez
-				'maxRating'=>5,//max value
-				'starCount'=>5, //number of stars
-			)); ?>
 		</td>
 	</tr>
 	<tr>
@@ -263,7 +287,7 @@ function cleanupUrl($url) {
 				'size'=>25,
 				'maxlength'=>100,
 				'style'=>'width:135px;',
-				'tabindex'=>11,
+				'tabindex'=>12,
 				)); ?>
 			</div>
 		</td>
@@ -277,7 +301,7 @@ function cleanupUrl($url) {
 					'size'=>30,
 					'maxlength'=>100,
 					'style'=>'width:135px;',
-					'tabindex'=>12
+					'tabindex'=>13
 				)); ?>
 			</div>
 		</td>
@@ -292,7 +316,7 @@ function cleanupUrl($url) {
 				'rows'=>3,
 				'cols'=>50,
 				'style'=>'width:455px;height:80px;',
-				'tabindex'=>17
+				'tabindex'=>14
 			)); ?>
 			</div>
 		</td>
@@ -318,7 +342,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'skype', array(
 				'size'=>10,
 				'maxlength'=>32,
-				'tabindex'=>13,
+				'tabindex'=>15,
 				'style'=>'width:135px;'
 			));?>
 			</div>
@@ -361,7 +385,7 @@ function cleanupUrl($url) {
 			<?php echo $form->textField($model, 'twitter', array(
 				'size'=>10,
 				'maxlength'=>20,
-				'tabindex'=>14,
+				'tabindex'=>17,
 				'style'=>'width:135px;'
 			)); ?>
 			</div>
@@ -382,7 +406,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'googleplus', array(
 				'size'=>10,
 				'maxlength'=>100, 
-				'tabindex'=>16,
+				'tabindex'=>18,
 				'style'=>'width:225px;'
 			)); ?>
 			</div>
@@ -405,7 +429,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'linkedin', array(
 				'size'=>10,
 				'maxlength'=>100,
-				'tabindex'=>15,
+				'tabindex'=>19,
 				'style'=>'width:135px;'
 			));?>
 			</div>
@@ -426,7 +450,7 @@ function cleanupUrl($url) {
 			echo $form->textField($model, 'otherUrl', array(
 				'size'=>10,
 				'maxlength'=>100,
-				'tabindex'=>16,
+				'tabindex'=>20,
 				'style'=>'width:225px;'
 			)); ?>
 			</div>
@@ -442,7 +466,7 @@ function cleanupUrl($url) {
 		
 		?></td>
 		<td id="assignedTo">
-				<?php echo $form->dropDownList($model,'assignedTo',$users,array('tabindex'=>18)); ?>
+				<?php echo $form->dropDownList($model,'assignedTo',$users,array('tabindex'=>21)); ?>
 		</td>
 		<td class="label"><b><?php echo $attributeLabels['priority']; ?></b></td>
 		<td>
@@ -453,7 +477,7 @@ function cleanupUrl($url) {
 				'Low'=>Yii::t('contacts','Low'),
 				'Medium'=>Yii::t('contacts','Medium'),
 				'High'=>Yii::t('contacts','High')
-			),array('tabindex'=>19)); ?>
+			),array('tabindex'=>22)); ?>
 		</td>
 		<td class="label"><b><?php echo $attributeLabels['visibility']; ?></b></td>
 		<td>
@@ -461,7 +485,7 @@ function cleanupUrl($url) {
 			echo $form->dropDownList($model,'visibility',array(
 				1=>Yii::t('contacts','Public'),
 				0=>Yii::t('contacts','Private')
-			),array('tabindex'=>21));
+			),array('tabindex'=>23));
 			// $model->createDate = time();
 			// echo date("Y-m-d",$model->createDate);
 			?>

@@ -48,6 +48,11 @@ return array (
 'View Attachment'=>'添付ファイルを見る',
 'Delete Media'=>'を削除する',
 
+// Misc
+'File:'=>'ファイル:',
+'(deleted)'=>'(削除した)',
+'Uploaded by {name}'=>'{name} にアップロードされました',
+
 // Errors
 'Are you sure you want to delete this item?'=>'あなたがこのアイテムを削除してもよろしいですか？',
 );

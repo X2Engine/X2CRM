@@ -39,7 +39,7 @@ class UserChild extends Users {
 	public static function getNames() {
 		$order = 'desc';
 		$userArray = CActiveRecord::model('UserChild')->findAll();
-		$names = array('Anyone' => 'Anyone');
+		$names = array('' => 'Anyone');
 		foreach ($userArray as $user) {
 			$first = $user->firstName;
 			$last = $user->lastName;
@@ -139,7 +139,7 @@ class UserChild extends Users {
 		$pieces = explode(', ',$str);
 		$links='';
 			foreach($pieces as $user) {
-				if($user=='Anyone')
+				if($user=='Anyone' || $user=='Email')
 					$link='';
 				else {
 					$model = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$user));

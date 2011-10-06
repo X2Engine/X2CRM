@@ -35,15 +35,15 @@
  ********************************************************************************/
 
 return array (
-
-	// Text
-	'Logout ({username})'=>'',
-	'New Record'=>'',
-	'Find Contacts'=>'',
-	'Top Contacts'=>'',
-	'No top contacts for this user!'=>'',
-	'Create Message'=>'',
-	'Message List'=>'',
-	'Clear'=>'',
-	'Search for a Contact'=>'',
+// Text
+'Logout ({username})'=>'',
+'New Record'=>'',
+'Find Contacts'=>'',
+'Top Contacts'=>'',
+'No top contacts for this user!'=>'',
+'Create Message'=>'',
+'Message List'=>'',
+'Clear'=>'',
+'Search for a Contact'=>'',
+'Go to Full Site'=>'',
 );

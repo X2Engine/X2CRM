@@ -35,19 +35,16 @@
  ********************************************************************************/
 
 return array (
-
-	// Text
-	'Logout ({username})'=>'Déconnexion ({username})',
-	'New Record'=>'Nouveau record',
-	'Find Contacts'=>'Trouver des contacts',
-	'Top Contacts'=>'Contacts Haut',
-	"No top contacts for this user!"=>'Aucun contact supérieure pour cet utilisateur!',
-	'Create Message'=>'Créer un message',
-	'Message List'=>'Liste des messages',
-	'Clear'=>'Effacer',
-	'New Record'=>'Nouveau record',
-	'Find Contacts'=>'Trouver des contacts',
-	'Search for a Contact'=>'Rechercher un contact',
-	'Logout ({username})'=>'Déconnexion ({username})',
-	
+// Text
+'Logout ({username})'=>'Déconnexion ({username})',
+'New Record'=>'Nouveau record',
+'Find Contacts'=>'Trouver des contacts',
+'Top Contacts'=>'Contacts Haut',
+"No top contacts for this user!"=>'Aucun contact supérieure pour cet utilisateur!',
+'Create Message'=>'Créer un message',
+'Message List'=>'Liste des messages',
+'Clear'=>'Effacer',
+'Search for a Contact'=>'Rechercher un contact',
+'Logout ({username})'=>'Déconnexion ({username})',
+'Go to Full Site'=>'Aller au site principal',
 );

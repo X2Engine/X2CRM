@@ -35,16 +35,16 @@
  ********************************************************************************/
 
 return array (
-
-	// Text
-	'Logout ({username})'=>'Выход ({username})',
-	'New Record'=>'Новый рекорд',
-	'Find Contacts'=>'Найти контакты',
-	'Top Contacts'=>'Топ Контакты',
-	"No top contacts for this user!"=>"Нет контактов на высшем для этого пользователя!",
-	'Create Message'=>'Создать сообщение',
-	'Message List'=>'Список тем',
-	'Clear'=>'ясно',
-	'Search for a Contact'=>'Поиск Контакт',
+// Text
+'Logout ({username})'=>'Выход ({username})',
+'New Record'=>'Новый рекорд',
+'Find Contacts'=>'Найти контакты',
+'Top Contacts'=>'Топ Контакты',
+"No top contacts for this user!"=>"Нет контактов на высшем для этого пользователя!",
+'Create Message'=>'Создать сообщение',
+'Message List'=>'Список тем',
+'Clear'=>'ясно',
+'Search for a Contact'=>'Поиск Контакт',
+'Go to Full Site'=>'Перейти на главную сайта',
 	
 );

@@ -182,48 +182,51 @@ class UsersController extends x2base {
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	public function actionAddTopContact($id) {
+	public function actionAddTopContact() {
 		if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-			if($id == Yii::app()->user->getId()) {
+		
+			//$viewId = (isset($_GET['viewId']) && is_numeric($_GET['viewId'])) ? $_GET['viewId'] : null;
+			
+			$id = Yii::app()->user->getId();
+			$model=$this->loadModel($id);
 
-				$model=$this->loadModel($id);
+			$topContacts = empty($model->topContacts)? array() : explode(',',$model->topContacts);
 
-				$topContacts = empty($model->topContacts)? array() : explode(',',$model->topContacts);
-
-				if(!in_array($_GET['contactId'],$topContacts)) {		// only add to list if it isn't already in there
-					array_unshift($topContacts,$_GET['contactId']);
-					$model->topContacts = implode(',',$topContacts);
-				}
-				if ($model->save())
-					$this->renderTopContacts();
+			if(!in_array($_GET['contactId'],$topContacts)) {		// only add to list if it isn't already in there
+				array_unshift($topContacts,$_GET['contactId']);
+				$model->topContacts = implode(',',$topContacts);
 			}
+			if ($model->save())
+				$this->renderTopContacts();
 
 		}
 	}
 
-	public function actionRemoveTopContact($id) {
+	public function actionRemoveTopContact() {
 		if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-			if($id == Yii::app()->user->getId()) {
+		
+			//$viewId = (isset($_GET['viewId']) && is_numeric($_GET['viewId'])) ? $_GET['viewId'] : null;
+			
+			$id = Yii::app()->user->getId();
+			$model=$this->loadModel($id);
 
-				$model=$this->loadModel($id);
+			$topContacts = empty($model->topContacts)? array() : explode(',',$model->topContacts);
+			$index = array_search($_GET['contactId'],$topContacts);
 
-				$topContacts = empty($model->topContacts)? array() : explode(',',$model->topContacts);
-				$index = array_search($_GET['contactId'],$topContacts);
+			if($index!==false)
+				unset($topContacts[$index]);
 
-				if($index!==false)
-					unset($topContacts[$index]);
-
-				$model->topContacts = implode(',',$topContacts);
-				
-				if ($model->save())
-					$this->renderTopContacts();
-			}
+			$model->topContacts = implode(',',$topContacts);
+			
+			if ($model->save())
+				$this->renderTopContacts();
 		}
 	}
 	
 	private function renderTopContacts() {
 		$this->renderPartial('application.components.views.topContacts',array(
-			'topContacts'=>UserChild::getTopContacts()
+			'topContacts'=>UserChild::getTopContacts(),
+			//'viewId'=>$viewId
 		));
 	}
 }

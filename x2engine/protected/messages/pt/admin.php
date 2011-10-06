@@ -121,7 +121,7 @@ return array(
 		'Set user session time out (in seconds) here. Default is 1 hour.'=>'Tempo limite da sessão do usuário definido (em segundos) aqui. Padrão é de 1 hora.',
 		'Timeout'=>'Tempo limite',
 		'Set Chat Poll Rate'=>'Conjunto de bate-papo taxa de poll',
-		'Set the duration between chat update requests in miliseconds.'=>'Definir a duração entre pedidos de actualização de bate-papo em milissegundos.',
+		'Set the duration between chat update requests in milliseconds.'=>'Definir a duração entre pedidos de actualização de bate-papo em milissegundos.',
 		'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'=>'Diminuindo este número permite mais instantânea conversando, mas gera mais pedidos servidor, portanto, ajustar a gosto. O valor padrão é 2000 (2 segundos).',
 		'Chat Poll Time'=>'Tempo de bate-papo Poll',
 		'Upload Your Logo'=>'Carregue o seu Logo',

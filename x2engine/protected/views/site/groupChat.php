@@ -52,7 +52,7 @@ Yii::app()->clientScript->registerScript('groupChat', "
 	});",CClientScript::POS_HEAD);
 ?>
 
-<h2><?php echo Yii::t('app','Chat'); ?></h2>
+<h2><?php echo Yii::t('app','Group Chat'); ?></h2>
 <?php echo Yii::t('profile','A larger Chat Box');?>
 <div id="chat" class="full-screen">
 <div id="chat-box"></div>

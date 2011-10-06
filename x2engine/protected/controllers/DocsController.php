@@ -103,7 +103,7 @@ class DocsController extends x2base {
 
 			$model->createdBy=Yii::app()->user->getName();
 			$model->createDate=time();
-			$model=$this->updateChangeLog($model);
+			$model=$this->updateChangeLog($model,'Create');
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -183,8 +183,9 @@ class DocsController extends x2base {
 			if(isset($_POST['DocChild']))
 			{
 				$model->attributes=$_POST['DocChild'];
-							$model->text=$_POST['msgpost'];
-							$model=$this->updateChangeLog($model);
+                                
+                                $model->text=$_POST['msgpost'];
+                                $model=$this->updateChangeLog($model,'Edited');
 				if($model->save())
 					$this->redirect(array('view','id'=>$model->id));
 			}

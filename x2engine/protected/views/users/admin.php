@@ -52,6 +52,14 @@ $('.search-form form').submit(function(){
 });
 ");
 ?>
+
+<?php 
+
+    if(isset($_GET['offset'])){
+        $offset=$_GET['offset'];
+    }else
+        $offset=7;
+?>
 <h2><?php echo Yii::t('users','Manage Users'); ?></h2>
 <?php echo Yii::t('app','You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'); ?>
 <br />
@@ -66,16 +74,32 @@ $('.search-form form').submit(function(){
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview/',
 	'template'=> '<div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array('admin','clearFilters'=>1)). ' | '
+		.CHtml::link(Yii::t('app','Records Today'),array('admin','offset'=>1)). ' | '
+		.CHtml::link(Yii::t('app','Records This Week'),array('admin','offset'=>7)). ' | '
+		.CHtml::link(Yii::t('app','Records This Month'),array('admin','offset'=>30))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
-		'firstName',
+		array(
+                    'name'=>'username',
+                    'value'=>'CHtml::link($data->username,$data->id)',
+                    'type'=>'raw',
+                ),
+                'firstName',
 		'lastName',
-		'username',
-		'title',
-		'department',
+		array(
+                    'name'=>'login',
+                    'header'=>'Last Login',
+                    'value'=>'date("Y-m-d",$data->login)',
+                    'type'=>'raw',
+                ),
+                array(
+                    'header'=>'<b>Records Updated</b>',
+                    'value'=>'count(Changelog::model()->findAllBySql("SELECT * FROM x2_changelog WHERE changedBy=\"$data->username\" AND timestamp > '.mktime('0','0','0',date('m'),date('d')-$offset).'"))',
+                    'type'=>'raw',
+                ),
 		'emailAddress',
 		//'cellPhone',
 		//'homePhone',
@@ -83,9 +107,6 @@ $('.search-form form').submit(function(){
 		//'officePhone',
 		//'emailAddress',
 		//'status',
-		array(
-			'class'=>'CButtonColumn',
-		),
 	),
 ));
 ?>

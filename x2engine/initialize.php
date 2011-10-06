@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9';
+$x2Version = '0.9.1';
  
 $host=$_POST['host'];
 $db=$_POST['db'];
@@ -106,7 +106,7 @@ $con = mysql_connect($host,$user,$pass) or die("Unable to connect to database.  
 mysql_select_db($db,$con) or die ("Unable to select database.  Please make sure the name is spelled properly and that the database exists.".mysql_error());
 
 mysql_query("DROP TABLE IF EXISTS x2_users, x2_contacts, x2_actions, x2_sales, x2_projects, x2_marketing, x2_cases, x2_profile,
-	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin") or die("Unable to update tables, check user permissions.".mysql_error());
+	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog") or die("Unable to update tables, check user permissions.".mysql_error());
 
 mysql_query("CREATE TABLE x2_users(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -129,6 +129,7 @@ mysql_query("CREATE TABLE x2_users(
 	recentItems VARCHAR(100),
 	topContacts VARCHAR(100),
 	lastLogin INT DEFAULT 0,
+        login INT DEFAULT 0,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
 	") or die('Unable to create table x2_users, check user permissions.'.mysql_error());
@@ -162,7 +163,8 @@ mysql_query("CREATE TABLE x2_contacts(
 	rating INT,
 	createDate INT,
 	facebook VARCHAR(100) NULL,
-	otherUrl VARCHAR(100) NULL)
+	otherUrl VARCHAR(100) NULL,
+        phone2 VARCHAR(40))
 	COLLATE = utf8_general_ci
  ") or die('Unable to create table x2_contacts, check user permissions.'.mysql_error());
 
@@ -282,6 +284,7 @@ mysql_query("CREATE TABLE x2_actions(
 	pageOpacity INT NULL,
 	startPage VARCHAR(30) NULL,
 	showSocialMedia TINYINT(1) NOT NULL DEFAULT 1,
+	showDetailView TINYINT(1) NOT NULL DEFAULT 0,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
  ") or die('Unable to create table x2_profile, check user permissions.'.mysql_error());
@@ -352,6 +355,16 @@ mysql_query("CREATE TABLE x2_admin(
 	chatPollTime INT DEFAULT 2000)
 	COLLATE = utf8_general_ci
 	") or die('Unable to create table x2_social, check user permissions.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_changelog( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	type VARCHAR(50) NOT NULL,
+	itemId INT NOT NULL,
+	changedBy VARCHAR(50) NOT NULL,
+	changed TEXT NOT NULL,
+	timestamp INT NOT NULL DEFAULT 0)
+	COLLATE = utf8_general_ci
+ ") or die('Unable to create table x2_changelog, check user permissions.'.mysql_error());
 
 
 $adminPassword=md5($adminPassword); 
@@ -485,17 +498,6 @@ $x2Version = urlencode($x2Version);
 $dbType = urlencode('MySQL');
 $stats = "lang=$lang&currency=$currency&x2Version=$x2Version&dummyData=$data&phpVersion=$phpVersion&dbType=$dbType&GD=$GDSupport&browser=$browser";
 
-if(ini_get('allow_url_fopen') == 1) {
-	$context = stream_context_create(array(
-		'http' => array(
-			'timeout' => 2		// Timeout in seconds
-		)
-	));
-	$ping = file_get_contents('http://x2planet.com/listen.php?'.$stats,0,$context);
-}
-
-
-
 // Generate splash page
 
 if (!empty($lang))
@@ -558,6 +560,7 @@ body {
 	<img src="images/x2engine_big.png">
 	Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 	<?php echo installer_t('All Rights Reserved.'); ?>
+	<img src="http://x2planet.com/listen.php?<?php echo $stats; ?>" style="display:inline">
 </div>
 </div>
 </body>

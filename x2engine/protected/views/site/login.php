@@ -35,23 +35,32 @@
  ********************************************************************************/
 
 $this->pageTitle=Yii::app()->name . ' - Login';
+
+Yii::app()->clientScript->registerCss('fixMenuShadow',"
+#page .container {
+	position:relative;
+	z-index:2;
+}
+",'screen',CClientScript::POS_HEAD);
 ?>
+
 <div id="login-box">
 <?php echo Yii::t('app','Please log in to continue:'); ?>
 <div class="form">
 <!--<div id="login-logo"></div>-->
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'login-form',
-	'enableClientValidation'=>true,
+	//'enableClientValidation'=>true,
 	'clientOptions'=>array(
 	'validateOnSubmit'=>true,
 	),
-)); ?>
+));
+?>
 <div class="row">
 	<div class="cell">
 		<div class="row">
 			<?php echo $form->label($model,'username'); ?>
-			<?php echo $form->textField($model,'username'); ?>
+			<?php echo $form->textField($model,'username',array('id'=>'username')); ?>
 			<?php echo $form->error($model,'username'); ?>
 		</div>
 		<div class="row">
@@ -74,3 +83,9 @@ $this->pageTitle=Yii::app()->name . ' - Login';
 <?php $this->endWidget(); ?>
 </div>
 </div>
+
+<script>
+    $(function(){
+            $('#username').focus();
+    });
+</script>

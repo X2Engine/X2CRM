@@ -48,6 +48,11 @@ return array (
 'View Attachment'=>'',
 'Delete Media'=>'',
 
+// Misc
+'File:'=>'',
+'(deleted)'=>'',
+'Uploaded by {name}'=>'',
+
 // Errors
 'Are you sure you want to delete this item?'=>'',
 );

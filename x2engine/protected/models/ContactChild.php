@@ -127,6 +127,7 @@ class ContactChild extends Contacts {
 		$criteria->compare('company',$this->company,true);
 		$criteria->compare('accountId',$this->accountId);
 		$criteria->compare('phone',$this->phone,true);
+		$criteria->compare('phone2',$this->phone2,true);
 		$criteria->compare('email',$this->email,true);
 		$criteria->compare('website',$this->website,true);
 		$criteria->compare('address',$this->address,true);
@@ -174,6 +175,7 @@ class ContactChild extends Contacts {
 		$criteria->compare('company',$this->company,true);
 		$criteria->compare('accountId',$this->accountId);
 		$criteria->compare('phone',$this->phone,true);
+		$criteria->compare('phone2',$this->phone2,true);
 		$criteria->compare('email',$this->email,true);
 		$criteria->compare('website',$this->website,true);
 		$criteria->compare('address',$this->address,true);
@@ -194,6 +196,7 @@ class ContactChild extends Contacts {
 		$criteria->compare('leadSource',$this->leadSource,true);
 		$criteria->compare('rating',$this->rating);
 		$criteria->compare('createDate',$this->createDate);
+		
 
 
 		return new SmartDataProvider(get_class($this), array(
@@ -215,7 +218,8 @@ class ContactChild extends Contacts {
 			'title'=>Yii::t('contacts','Title'),
 			'company'=>Yii::t('contacts','Account'),
 			'accountId'=>Yii::t('contacts','Account ID'),
-			'phone'=>Yii::t('contacts','Phone'),
+			'phone'=>Yii::t('contacts','Work Phone'),
+			'phone2'=>Yii::t('contacts','Cell Phone'),
 			'email'=>Yii::t('contacts','Email'),
 			'website'=>Yii::t('contacts','Website'),
 			'twitter'=>Yii::t('contacts','Twitter'),

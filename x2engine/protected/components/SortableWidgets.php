@@ -63,6 +63,26 @@ class SortableWidgets extends CJuiWidget
 	 * This method registers necessary javascript and renders the needed HTML code.
 	*/
 	public function run() {
+	
+		Yii::app()->clientScript->registerScript('toggleWidgetState',"
+			function toggleWidgetState(widget,state) {
+				$.ajax({
+					url: '" . CHtml::normalizeUrl(array('site/widgetState')) . "',
+					type: 'GET',
+					data: 'widget='+widget+'&state='+state,
+					success: function(response) {
+						if(response=='success') {
+							var link = $('#widget_'+widget+' .portlet-minimize a');
+							var newLink = (link.html()=='[+]')? '[&ndash;]' : '[+]';			// toggle link between [+] and [-]
+							link.html(newLink);
+							$('#widget_'+widget+' .portlet-content').toggle('blind',{},200);	// slide widget open or closed
+						}
+					}
+				});
+			}
+		",CClientScript::POS_HEAD);
+		
+		
 		$id=$this->getId();	//get generated id
 		if (isset($this->htmlOptions['id']))
 			$id = $this->htmlOptions['id'];
@@ -77,26 +97,12 @@ class SortableWidgets extends CJuiWidget
 		$hideWidgetJs = '';
 		
 		foreach($this->portlets as $class=>$properties) {
-			// echo "------ ".var_dump($properties)." -----";
 			$visible = ($properties['visibility'] == '1');
 			
 			if(!$visible)
 				$hideWidgetJs .= "$('#widget_" . $class . " .portlet-content').hide();\n";
-			//echo var_dump($class) . var_dump($properties);
 			
-			$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('onclick'=>CHtml::ajax(array(
-					'url'=>CHtml::normalizeUrl(array('site/widgetState','widget'=>$class,'state'=>$visible? 0 : 1)),
-					//'beforeSend'=>"function() { alert('".CHtml::normalizeUrl(array('site/widgetState','widget'=>$class,'state'=>$visible? 0 : 1))."'); }",
-					'success'=>"function(response) {
-						if(response=='success') {
-							var link = $('#widget_" . $class . " .portlet-minimize a');
-							var newLink = (link.html()=='[+]')? '[&ndash;]' : '[+]';
-							link.html(newLink);
-							$('#widget_" . $class . " .portlet-content').toggle('blind',{},200);
-						}
-					}")).'return false;'
-				)
-			);
+			$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;"));
 
 			$this->beginWidget('zii.widgets.CPortlet',array(
 				'title'=>Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div>',

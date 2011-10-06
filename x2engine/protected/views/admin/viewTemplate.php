@@ -39,4 +39,4 @@
 
 <h1><?php echo $model->title; ?></h1>
 
-<?php echo $model->text; ?>
+<?php echo x2base::convertUrls($model->text); ?>

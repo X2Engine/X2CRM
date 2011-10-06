@@ -48,6 +48,11 @@ return array (
 'View Attachment'=>'Visualizza l\'allegato',
 'Delete Media'=>'Eliminare media',
 
+// Misc
+'File:'=>'File:',
+'(deleted)'=>'(soppresso)',
+'Uploaded by {name}'=>'Caricato da {nome}',
+
 // Errors
 'Are you sure you want to delete this item?'=>'Sei sicuro di voler cancellare questo elemento?',
 );

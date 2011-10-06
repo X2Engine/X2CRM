@@ -43,7 +43,7 @@ foreach($recentItems as $item) {
 		if(strlen($description)>123)
 			$description = substr($description,0,120).'...';
 		
-		$link = '<strong>'.Yii::t('app','Action').' #'.$item['model']->id.'</strong><br />'.MediaChild::attachmentActionText($description);
+		$link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).'</strong><br />'.MediaChild::attachmentActionText($description);
 		//$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
 		echo CHtml::link($link,array('actions/view','id'=>$item['model']->id));
 

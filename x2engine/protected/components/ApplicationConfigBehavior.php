@@ -59,6 +59,10 @@ class ApplicationConfigBehavior extends CBehavior {
 		$prof=Profile::model()->findByPk(Yii::app()->user->getId());
 		if (isset($prof->language))
 			$this->owner->language=$prof->language;
+                else{
+                    $adminProf=ProfileChild::model()->findByPk(1);
+                    $this->owner->language=$adminProf->language;
+                }
 		if(isset($prof->timeZone) && $prof->timeZone!='')
 			date_default_timezone_set($prof->timeZone);
 		$adminProf=ProfileChild::model()->findByAttributes(array('username'=>'admin'));

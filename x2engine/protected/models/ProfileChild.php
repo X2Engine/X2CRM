@@ -61,6 +61,7 @@ class ProfileChild extends Profile {
 			'pageOpacity'=>Yii::t('profile','Page Opacity'),
 			'startPage'=>Yii::t('profile','Start Page'),
 			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
+			'showDetailView'=>Yii::t('profile','Show Detail View'),
 		);
 	}
 	
@@ -74,6 +75,17 @@ class ProfileChild extends Profile {
 		);
 	}
 	
+	public static function setDetailView($value) {
+		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// set user's preference for contact detail view
+		$model->showDetailView = ($value == 1)? 1 : 0;
+		$model->save();
+	}
+	
+	public static function getDetailView() {
+		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact detail view
+		return $model->showDetailView;
+	}
+
 	public static function getSocialMedia() {
 		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact social media info
 		return $model->showSocialMedia;

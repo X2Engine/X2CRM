@@ -70,6 +70,7 @@ return array (
 'Update Action'=>'',
 'Complete Action'=>'',
 'Complete + New Action'=>'',
+'Uncomplete'=>'',
 
 //	Actions Titles
 'Manage Actions'=>'',
@@ -81,6 +82,7 @@ return array (
 'Action'=>'',
 'Action:'=>'',
 "Today's Actions"=>'',
+'My Actions'=>'',
 'All My Actions'=>'',
 "Everyone's Actions"=>'',
 'Delete Action'=>'',
@@ -88,6 +90,12 @@ return array (
 
 
 //	Misc
+'Email Message:'=>'',
+'Attachment:'=>'',
+'Assigned to {name}'=>'',
+'Completed by {name}'=>'',
+'Completed {date}'=>'',
+'Completion Notes'=>'',
 'That action is not assigned to you.'=>'',
 'Associated With'=>'',
 'Association Info'=>'',
@@ -97,8 +105,8 @@ return array (
 'Status'=>'',
 'Contact Info'=>'',
 'View'=>'',
-'<b>Overdue</b> {time}'=>'',
-'Due <b>{date}</b>'=>'',
+'Overdue {time}'=>'',
+'Due {date}'=>'',
 
 //	Create Action Types
 'None'=>'',

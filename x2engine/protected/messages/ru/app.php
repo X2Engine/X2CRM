@@ -49,7 +49,7 @@ return array (
 'Contacts'=>'связи',
 'Sales'=>'реализация',
 'Projects'=>'Проекты',
-'Chat'=>'чат',
+'Group Chat'=>'чат-группы',
 'Marketing'=>'маркетинг',
 'Cases'=>'случаи',
 'Accounts'=>'счета',

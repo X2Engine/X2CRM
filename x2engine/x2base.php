@@ -234,7 +234,7 @@ class x2base extends Controller {
 				'/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/iex',
 				'/<a([^>]*)target="?[^"\']+"?/i',
 				'/<a([^>]+)>/i',
-				'/(^|\s)(www.[^<> \n\r]+)/iex',
+				'/(^|\s|>)(www.[^<> \n\r]+)/iex',
 				'/(([_A-Za-z0-9-]+)(\\.[_A-Za-z0-9-]+)*@([A-Za-z0-9-]+)(\\.[A-Za-z0-9-]+)*)/iex'
 			),
 			array(
@@ -258,6 +258,7 @@ class x2base extends Controller {
 		// }
 		$template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'."> #\\2</a>";
 		$text = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$text);
+                $text = mb_ereg_replace('(>)#(\w\w+)',">".$template,$text);
 		if($convertLineBreaks)
 			return x2base::convertLineBreaks($text,true,false);
 		else
@@ -393,11 +394,37 @@ class x2base extends Controller {
 	 * @param type $model The model to be updated
 	 * @return type $model The model with modified attributes
 	 */
-	protected function updateChangelog($model) {
+	protected function updateChangelog($model, $change) {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
+                
+                $changelog=new Changelog;
+                $changelog->type=get_class($model);
+                $changelog->itemId=$model->id;
+                $changelog->changedBy=Yii::app()->user->getName();
+                $changelog->changed=$change;
+                $changelog->timestamp=time();
+                
+                $changelog->save();
+                
 		return $model;
 	}
+        
+        protected function calculateChanges($old, $new){
+            
+            $arr=array();
+            $keys=array_keys($new);
+            for($i=0;$i<count($new);$i++){
+                if($old[$keys[$i]]!=$new[$keys[$i]]){
+                    $arr[$keys[$i]]=$new[$keys[$i]];
+                }
+            }
+            $str='';
+            foreach($arr as $key=>$item){
+                $str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
+            }
+            return $str;
+        }
 	
 	/**
 	 * Sets widgets on the page on a per user basis.

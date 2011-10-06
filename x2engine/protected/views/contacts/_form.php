@@ -48,6 +48,14 @@ function hideSocialMedia() {
 }
 $(function() {
 ".($showSocialMedia? "showSocialMedia(); });" : "hideSocialMedia(); });"),CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScript('highlightSaveContact',"
+$(function(){
+	$('#contacts-form input, #contacts-form select, #contacts-form textarea').change(function(){
+		$('#save-button, #save-button1, #save-button2').css('background','yellow');
+	}
+	);
+}
+);");
 
 if (!isset($isQuickCreate)) {	//check if this form is being recycled in the quickCreate view
 
@@ -69,8 +77,8 @@ echo $form->errorSummary($contactModel);
 
 <table class="details">
 	<tr>
-		<td width="20%" class="label"><?php echo $form->labelEx($contactModel,'firstName'); ?></td>
-		<td width="20%" id="firstName">
+		<td class="label"><?php echo $form->label($contactModel,'firstName'); ?></td>
+		<td width="145" id="firstName">
 			<?php
 			echo $form->textField($contactModel, 'firstName', array(
 				'size'=>15,
@@ -79,13 +87,13 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:135px;'
 			)); ?>
 		</td>
-		<td width="18%" class="label"><?php echo $form->labelEx($contactModel,'lastName'); ?></td>
+		<td class="label"><?php echo $form->label($contactModel,'lastName'); ?></td>
 		<td id="lastName" colspan="3">
 			<?php
 			echo $form->textField($contactModel,'lastName',array(
 				'size'=>15,
 				'maxlength'=>40,
-				'style'=>'width:225px;',
+				'style'=>'width:220px;',
 				'tabindex'=>2
 			)); ?>
 		</td>
@@ -108,13 +116,23 @@ echo $form->errorSummary($contactModel);
 				'size'=>15,
 				'maxlength'=>100,
 				'tabindex'=>4,
-				'style'=>'width:225px;'
+				'style'=>'width:220px;'
 			)); ?>
 		</td>
 	</tr>
 	<tr>
+		<td class="label"><?php echo $form->labelEx($contactModel,'phone2'); ?></td>
+		<td id="phone2">
+			<?php
+			echo $form->textField($contactModel, 'phone2', array(
+				'size'=>30,
+				'maxlength'=>20,
+				'tabindex'=>5,
+				'style'=>'width:135px;'
+			)); ?>
+		</td>
 		<td class="label"><?php echo $form->labelEx($contactModel,'company'); ?></td>
-		<td id="company">
+		<td id="company" colspan="3">
 			<?php echo $form->hiddenField($contactModel, 'company');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 				'name'=>'companyAutoComplete',
@@ -123,8 +141,8 @@ echo $form->errorSummary($contactModel);
 				'htmlOptions'=>array(
 					'size'=>30,
 					'maxlength'=>100,
-					'tabindex'=>5,
-					'style'=>'width:135px;'
+					'tabindex'=>6,
+					'style'=>'width:220px;'
 				),
 				'options'=>array(
 					'minLength'=>'2',
@@ -138,68 +156,6 @@ echo $form->errorSummary($contactModel);
 			));
 			echo $form->hiddenField($contactModel, 'accountId');?>
 		</td>
-		<td class="label" rowspan="4"><?php echo $form->labelEx($contactModel,'address'); ?></td>
-		<td id="address" rowspan="4" colspan="3">
-			<?php
-			$default = empty($contactModel->address);
-				$contactModel->address = $attributeLabels['address'];
-			echo $form->textField($contactModel, 'address', array(
-				'size'=>30,
-				'maxlength'=>100,
-				'tabindex'=>6,
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'style'=>'width:225px;'.($default? 'color:#aaa;' : '')
-			)); ?>
-			<br />
-			<?php
-			$default = empty($contactModel->city);
-			if($default)
-				$contactModel->city = $attributeLabels['city'];
-			echo $form->textField($contactModel, 'city', array(
-				'size'=>12,
-				'maxlength'=>40,
-				'tabindex'=>7,
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
-			));
-			$default = empty($contactModel->state);
-			if($default)
-				$contactModel->state = $attributeLabels['state'];
-			echo $form->textField($contactModel, 'state', array(
-				'size'=>12,
-				'maxlength'=>40,
-				'tabindex'=>8,
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
-			)); ?>
-			<br />
-			<?php
-			$default = empty($contactModel->zipcode);
-			if($default)
-				$contactModel->zipcode = $attributeLabels['zipcode'];
-			echo $form->textField($contactModel, 'zipcode', array(
-				'size'=>12,
-				'maxlength'=>20,
-				'tabindex'=>9,
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
-			));
-			$default = empty($contactModel->country);
-			if($default)
-				$contactModel->country = $attributeLabels['country'];
-			echo $form->textField($contactModel, 'country', array(
-				'size'=>12,
-				'maxlength'=>100,
-				'tabindex'=>10,
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
-			)); ?>
-		</td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo $form->labelEx($contactModel,'rating'); ?></td>
@@ -211,6 +167,69 @@ echo $form->errorSummary($contactModel);
 				'minRating'=>1, //minimal valuez
 				'maxRating'=>5,//max value
 				'starCount'=>5, //number of stars
+				'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+			)); ?>
+		</td>
+		<td class="label" rowspan="3"><?php echo $form->labelEx($contactModel,'address'); ?></td>
+		<td id="address" rowspan="3" colspan="3" style="padding:0.3em 0 0 0.6em;">
+			<?php
+			$default = empty($contactModel->address);
+				$contactModel->address = $attributeLabels['address'];
+			echo $form->textField($contactModel, 'address', array(
+				'size'=>30,
+				'maxlength'=>100,
+				'tabindex'=>7,
+				'onfocus'=>$default? 'toggleText(this);' : null,
+				'onblur'=>$default? 'toggleText(this);' : null,
+				'style'=>'width:220px;'.($default? 'color:#aaa;' : '')
+			)); ?>
+			<br />
+			<?php
+			$default = empty($contactModel->city);
+			if($default)
+				$contactModel->city = $attributeLabels['city'];
+			echo $form->textField($contactModel, 'city', array(
+				'size'=>12,
+				'maxlength'=>40,
+				'tabindex'=>8,
+				'onfocus'=>$default? 'toggleText(this);' : null,
+				'onblur'=>$default? 'toggleText(this);' : null,
+				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
+			));
+			$default = empty($contactModel->state);
+			if($default)
+				$contactModel->state = $attributeLabels['state'];
+			echo $form->textField($contactModel, 'state', array(
+				'size'=>12,
+				'maxlength'=>40,
+				'tabindex'=>9,
+				'onfocus'=>$default? 'toggleText(this);' : null,
+				'onblur'=>$default? 'toggleText(this);' : null,
+				'style'=>'width:85px;'.($default? 'color:#aaa;' : '')
+			)); ?>
+			<br />
+			<?php
+			$default = empty($contactModel->zipcode);
+			if($default)
+				$contactModel->zipcode = $attributeLabels['zipcode'];
+			echo $form->textField($contactModel, 'zipcode', array(
+				'size'=>12,
+				'maxlength'=>20,
+				'tabindex'=>10,
+				'onfocus'=>$default? 'toggleText(this);' : null,
+				'onblur'=>$default? 'toggleText(this);' : null,
+				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
+			));
+			$default = empty($contactModel->country);
+			if($default)
+				$contactModel->country = $attributeLabels['country'];
+			echo $form->textField($contactModel, 'country', array(
+				'size'=>12,
+				'maxlength'=>100,
+				'tabindex'=>11,
+				'onfocus'=>$default? 'toggleText(this);' : null,
+				'onblur'=>$default? 'toggleText(this);' : null,
+				'style'=>'width:115px;'.($default? 'color:#aaa;' : '')
 			)); ?>
 		</td>
 	</tr>
@@ -221,7 +240,7 @@ echo $form->errorSummary($contactModel);
 				'size'=>25,
 				'maxlength'=>100,
 				'style'=>'width:135px;',
-				'tabindex'=>11,
+				'tabindex'=>12,
 				)); ?>
 		</td>
 	</tr>
@@ -232,7 +251,7 @@ echo $form->errorSummary($contactModel);
 				'size'=>30,
 				'maxlength'=>100,
 				'style'=>'width:135px;',
-				'tabindex'=>12
+				'tabindex'=>13
 			)); ?>
 		</td>
 	</tr>
@@ -243,8 +262,8 @@ echo $form->errorSummary($contactModel);
 			echo $form->textArea($contactModel, 'backgroundInfo', array(
 				'rows'=>3,
 				'cols'=>50,
-				'style'=>'width:470px;height:80px;',
-				'tabindex'=>13
+				'style'=>'width:450px;height:80px;',
+				'tabindex'=>14
 			)); ?>
 		</td>
 	</tr>
@@ -259,7 +278,7 @@ echo $form->errorSummary($contactModel);
 			echo $form->textField($contactModel, 'skype', array(
 				'size'=>10,
 				'maxlength'=>32,
-				'tabindex'=>14,
+				'tabindex'=>15,
 				'style'=>'width:135px;'
 			));?>
 		</td>
@@ -269,8 +288,8 @@ echo $form->errorSummary($contactModel);
 			echo $form->textField($contactModel, 'facebook', array(
 				'size'=>10,
 				'maxlength'=>100,
-				'tabindex'=>15,
-				'style'=>'width:225px;'
+				'tabindex'=>16,
+				'style'=>'width:220px;'
 			)); ?>
 		</td>
 	</tr>
@@ -281,7 +300,7 @@ echo $form->errorSummary($contactModel);
 			echo $form->textField($contactModel, 'twitter', array(
 				'size'=>10,
 				'maxlength'=>20,
-				'tabindex'=>16,
+				'tabindex'=>17,
 				'style'=>'width:135px;'
 			)); ?>
 		</td>
@@ -291,8 +310,8 @@ echo $form->errorSummary($contactModel);
 			echo $form->textField($contactModel, 'googleplus', array(
 				'size'=>10,
 				'maxlength'=>100,
-				'tabindex'=>17,
-				'style'=>'width:225px;'
+				'tabindex'=>18,
+				'style'=>'width:220px;'
 			)); ?>
 		</td>
 	</tr>
@@ -303,7 +322,7 @@ echo $form->errorSummary($contactModel);
 			echo $form->textField($contactModel, 'linkedin', array(
 				'size'=>10,
 				'maxlength'=>100,
-				'tabindex'=>18,
+				'tabindex'=>19,
 				'style'=>'width:135px;'
 			));?>
 		</td>
@@ -313,8 +332,8 @@ echo $form->errorSummary($contactModel);
 			echo $form->textField($contactModel, 'otherUrl', array(
 				'size'=>10,
 				'maxlength'=>100,
-				'tabindex'=>19,
-				'style'=>'width:225px;'
+				'tabindex'=>20,
+				'style'=>'width:220px;'
 			)); ?><br />
 		</td>
 	</tr>
@@ -325,7 +344,7 @@ echo $form->errorSummary($contactModel);
 				<?php
 				if(empty($contactModel->assignedTo))
 					$contactModel->assignedTo = Yii::app()->user->getName();
-				echo $form->dropDownList($contactModel,'assignedTo',$users,array('tabindex'=>20)); ?>
+				echo $form->dropDownList($contactModel,'assignedTo',$users,array('tabindex'=>21)); ?>
 
 		</td>
 		<td class="label"><?php echo $form->labelEx($contactModel,'priority'); ?></td>
@@ -337,15 +356,15 @@ echo $form->errorSummary($contactModel);
 				'Low'=>Yii::t('contacts','Low'),
 				'Medium'=>Yii::t('contacts','Medium'),
 				'High'=>Yii::t('contacts','High')
-			),array('tabindex'=>21)); ?>
+			),array('tabindex'=>22)); ?>
 		</td>
-		<td class="label"><?php echo $form->labelEx($contactModel,'visibility'); ?></td>
+		<td class="label"><?php echo $form->label($contactModel,'visibility'); ?></td>
 		<td>
 			<?php 
 			echo $form->dropDownList($contactModel,'visibility',array(
 				1=>Yii::t('contacts','Public'),
 				0=>Yii::t('contacts','Private')
-			),array('tabindex'=>22));
+			),array('tabindex'=>23));
 			// $contactModel->createDate = time();
 			// echo date("Y-m-d",$contactModel->createDate);
 			?>
@@ -358,7 +377,7 @@ echo $form->errorSummary($contactModel);
 
 if (!isset($isQuickCreate)) {	//if we're not in quickCreate, end the form
 echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton($contactModel->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','tabindex'=>23))."\n";
+echo '		'.CHtml::submitButton($contactModel->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
 echo "	</div>\n";
 
 $this->endWidget();

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -45,11 +45,11 @@ return array (
 'Login'=>'登录',
 
 // Main Menu
-'Actions'=>'行动',
+'Actions'=>'任务',
 'Contacts'=>'联系',
 'Sales'=>'销售',
 'Projects'=>'项目',
-'Chat'=>'聊天',
+'Group Chat'=>'群聊',
 'Marketing'=>'市场营销',
 'Cases'=>'案例',
 'Accounts'=>'帐户',
@@ -69,35 +69,35 @@ return array (
 'X2Engine CRM Groupware'=>'X2Engine的CRM组件',
 'Go'=>'转到',
 'Contact'=>'联系',
-'Action'=>'行动',
-'Contact + Action'=>'联系方式+行动',
-'Search for contact, action, deal...'=>'搜索联系，行动，处理...',
+'Action'=>'任务',
+'Contact + Action'=>'联系方式+任务',
+'Search for contact, action, deal...'=>'搜索联系，任务，处理...',
 
 // Footer
 'All Rights Reserved.'=>'保留所有权利。',
 
 // Widgets
-'My Actions'=>'我的行动',
+'My Actions'=>'我的任务',
 'Twitter Feed'=>'Twitter的饲料',
 'Quick Contact'=>'快速联系',
 'Google Map'=>'谷歌地图',
 'Recently Viewed'=>'最近浏览的',
 
-'Total Action|Total Actions'=>'总行动|共有行动',
-'Unfinished Action|Unfinished Actions'=>'未完成的行动|未完成的动作',
-'Overdue Action|Overdue Actions'=>'逾期行动|逾期行动',
-'Completed Action|Completed Actions'=>'完成的行动|完成的动作',
+'Total Action|Total Actions'=>'总共的任务|总共的任务',
+'Unfinished Action|Unfinished Actions'=>'未完成的任务|未完成的任务',
+'Overdue Action|Overdue Actions'=>'逾期任务|逾期任务',
+'Completed Action|Completed Actions'=>'完成的任务|完成的任务',
 
 'Message Board'=>'留言板',
 'Please enter a message of the day!'=>'请输入消息的一天！',
 'Edit Message'=>'编辑留言',
 
 'Note Pad'=>'记事本',
-'Add Note'=>'注を追加',
+'Add Note'=>'添加',
 'Feel free to enter some notes!'=>'随意进入的一些注意事项！',
 
 'Top Contacts'=>'顶部触点',
-'Add {name}'=>'将{name}',
+'Add {name}'=>'添加{name}',
 
 
 // Chat
@@ -108,7 +108,7 @@ return array (
 
 // Comments
 'Add Comment'=>'发表评论',
-'Create Action'=>'创建动作',
+'Create Action'=>'创建任务',
 'Add a comment...'=>'添加评论...',
 'History'=>'历史',
 'Today'=>'今天',

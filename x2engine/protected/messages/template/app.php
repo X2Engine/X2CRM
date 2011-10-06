@@ -49,7 +49,7 @@ return array (
 'Contacts'=>'',
 'Sales'=>'',
 'Projects'=>'',
-'Chat'=>'',
+'Group Chat'=>'',
 'Marketing'=>'',
 'Cases'=>'',
 'Accounts'=>'',

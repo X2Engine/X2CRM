@@ -80,7 +80,8 @@ class AdminController extends Controller {
 			array('allow',
 				'actions'=>array('index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
-					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules','createPage','contactUs'),
+					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules',
+                                        'createPage','contactUs','viewChangelog'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -136,6 +137,18 @@ class AdminController extends Controller {
 		
 		$this->render('contactUs');
 	}
+        
+        public function actionViewChangelog(){
+            
+            $changeLog=new CActiveDataProvider('Changelog', array(
+			'criteria'=>array(
+				'order'=>'timestamp DESC',
+		)));
+            
+            $this->render('viewChangelog',array(
+                'changeLog'=>$changeLog,
+            ));
+        }
 	
 	public function actionToggleAccounts() {
 		$admin=Admin::model()->findByPk(1);
@@ -926,7 +939,7 @@ updatedBy VARCHAR(40)
 		$docs=Docs::model()->findAll();
 		$profiles=Profile::model()->findAll();
 		
-		fputcsv($fp,array("1.0"));
+		fputcsv($fp,array("0.9.1"));
 		
 		$userList=array();
 		foreach($users as $user) {
@@ -1039,10 +1052,10 @@ updatedBy VARCHAR(40)
 				$this->importContact($pieces,$version);
 			}else if($pieces[$end]=='user') {
 				unset($pieces[$end]);
-				$this->importUser($pieces,$version);
+				//$this->importUser($pieces,$version);
 			}else if ($pieces[$end]=='action') {
 				unset($pieces[$end]);
-				$this->importAction($pieces,$version);
+				//$this->importAction($pieces,$version);
 			}else if($pieces[$end]=='sale') {
 				unset($pieces[$end]);
 				$this->importSale($pieces,$version);
@@ -1054,7 +1067,7 @@ updatedBy VARCHAR(40)
 				$this->importDoc($pieces,$version);
 			}else if($pieces[$end]=='profile') {
 				unset($pieces[$end]);
-				$this->importProfile($pieces,$version);
+				//$this->importProfile($pieces,$version);
 			} else {
 				
 			}
@@ -1123,13 +1136,17 @@ updatedBy VARCHAR(40)
 		$model->leadSource=$pieces[23];
 		$model->rating=$pieces[24];
 		$model->createDate=$pieces[25];
+                $model->facebook=$pieces[26];
+                $model->otherUrl=$pieces[27];
+                if(isset($pieces[28]))
+                    $model->phone2=$pieces[28];
 
 		$model=Rules::applyRules($model,$version);
 		
 		if($model->save()) {
 
 		} else {
-			
+                    print_r($model->getErrors());
 		}
 	}
 		
@@ -1256,6 +1273,12 @@ updatedBy VARCHAR(40)
 		$model->menuTextColor=$pieces[18];
 		$model->backgroundImg=$pieces[19];
 		$model->pageOpacity=$pieces[20];
+                if(isset($pieces[21]))
+                    $model->startPage=$pieces[21];
+                if(isset($pieces[22]))
+                    $model->showSocialMedia=$pieces[22];
+                if(isset($pieces[23]))
+                    $model->showDetailView=$pieces[23];
 		
 		$model=Rules::applyRules($model,$version);
 		

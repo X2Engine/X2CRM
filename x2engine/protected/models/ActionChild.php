@@ -68,10 +68,10 @@ class ActionChild extends Actions {
 	
 		$timeLeft = $dueDate - time();	// calculate how long till due date
 		if ($timeLeft < 0)
-			return Yii::t('actions','<b>Overdue</b> {time}',array('{time}'=>ActionChild::formatDate($dueDate)));	// overdue by X hours/etc
+			return Yii::t('actions','Overdue {time}',array('{time}'=>ActionChild::formatDate($dueDate)));	// overdue by X hours/etc
 
 		else
-			return Yii::t('actions','Due <b>{date}</b>',array('{date}'=>ActionChild::formatDate($dueDate)));
+			return Yii::t('actions','Due {date}',array('{date}'=>ActionChild::formatDate($dueDate)));
 	}
 	
 	public static function formatDate($date) {

@@ -44,7 +44,10 @@ return array (
 'Last Name'=>'Apellido',
 'Title'=>'Título',
 'Account'=>'Compañía',
-'Phone'=>'Teléfono',
+'Work'=>'Trabajo',
+'Cell'=>'Celular',
+'Work Phone'=>'Teléfono del trabajo',
+'Cell Phone'=>'Teléfonos celular',
 'Email'=>'E-mail',
 'IM'=>'IM',
 'Website'=>'Sitio Web',
@@ -67,6 +70,12 @@ return array (
 'High'=>'Alto',
 'Public'=>'Público',
 'Private'=>'Privado',
+
+// Misc
+'Assigned to {name}'=>'Asignado a {name}',
+'Social Media'=>'Social Media',
+'Detail View'=>'Ver el detalle',
+'Simple View'=>'Ver el simple',
 
 //	Contacts Actions
 'Contact List'=>'Lista de Contactos',

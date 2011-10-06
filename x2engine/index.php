@@ -39,7 +39,7 @@
 $matches = array();
 preg_match('/(.+)index.php/',$_SERVER["REQUEST_URI"],$matches);
 
-$filename='install.php';
+$filename='install.php'; 
 
 if(file_exists($filename)) {
 	header('Location: '.$matches[1].$filename);

@@ -114,6 +114,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app','Submit Contact + Action'):Yii::t('app','Save'),
 			array('type'=>'submit',
 				'class'=>'x2-button',
+				'id'=>'save-button1',
 				'name'=>'submit',
 				'value'=>'action',
 				'tabindex'=>26
@@ -125,6 +126,7 @@ $form=$this->beginWidget('CActiveForm', array(
 				array(
 					'type'=>'submit',
 					'class'=>'x2-button',
+					'id'=>'save-button2',
 					'name'=>'submit',
 					'value'=>'comment',
 					'tabindex'=>27

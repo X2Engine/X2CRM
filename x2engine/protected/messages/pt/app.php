@@ -49,7 +49,7 @@ return array (
 'Contacts'=>'Contactos',
 'Sales'=>'Vendas',
 'Projects'=>'Projetos',
-'Chat'=>'Bate-papo',
+'Group Chat'=>'Bate-papo do Grupo',
 'Marketing'=>'Marketing',
 'Cases'=>'Casos',
 'Accounts'=>'Contas',

@@ -540,6 +540,9 @@ class SiteController extends x2base {
 			$model->attributes=$_POST['LoginForm'];
 			// validate user input and redirect to the previous page if valid
 			if($model->validate() && $model->login()){
+                                $user = UserChild::model()->findByPk(Yii::app()->user->getId());
+                                $user->login=time();
+                                $user->save();
 				Yii::app()->session['loginTime']=time();
 				$this->redirect('index');
 			}

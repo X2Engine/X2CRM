@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -47,6 +47,11 @@ return array (
 // Actions
 'View Attachment'=>'查看附件',
 'Delete Media'=>'删除媒体',
+
+// Misc
+'File:'=>'文件:',
+'(deleted)'=>'(删除)',
+'Uploaded by {name}'=>'上传 {name}',
 
 // Errors
 'Are you sure you want to delete this item?'=>'是否确定要删除这个项目吗？',

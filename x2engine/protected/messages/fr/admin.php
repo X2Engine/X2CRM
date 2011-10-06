@@ -121,7 +121,7 @@ return array(
 		'Set user session time out (in seconds) here. Default is 1 hour.'=>'Set timeout de session utilisateur (en secondes) ici. Par défaut est 1 heure.',
 		'Timeout'=>'Timeout',
 		'Set Chat Poll Rate'=>'Set Chat Taux Sondage',
-		'Set the duration between chat update requests in miliseconds.'=>'Réglez la durée entre les demandes de modification de chat en millisecondes.',
+		'Set the duration between chat update requests in milliseconds.'=>'Réglez la durée entre les demandes de modification de chat en millisecondes.',
 		'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'=>'Diminuer ce nombre permet de plus instantanée chat, mais génère des demandes de serveur plus, afin de l\'ajuster à votre goût. La valeur par défaut est 2000 (2 secondes).',
 		'Chat Poll Time'=>'Temps Sondage Tchat',
 		'Upload Your Logo'=>'Téléchargez votre logo',

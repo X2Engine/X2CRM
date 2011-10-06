@@ -77,17 +77,17 @@ $(function() {
 <!--<div class="about-list" style="height:450px;width:auto;overflow-y:scroll;border:1px solid #ddd;padding:10px;"></div>
 <hr>-->
 <h4><?php echo Yii::t('about','Version Info'); ?></h4>
-X2Engine: 0.9 (Beta)<br />
+X2Engine: 0.9.1 (Beta 2)<br />
 <!--<?php echo Yii::t('about','Build'); ?>: 1234<br />-->
 Yii: <?php echo Yii::getVersion(); ?><br />
 jQuery: <span id="jqueryVersion"></span><br />
 PHP: <?php echo phpversion(); ?><br /><br />
 <!--jQuery Mobile: 1.0b2<br />-->
 <h4><?php echo Yii::t('about','Code Base'); ?></h4>
-GitHub: <a href="http://github.com/X2Engine/X2Engine" target="_blank">http://github.com/X2Engine/X2Engine</a><br />
-SourceForge: <a href="http://sourceforge.net/projects/X2Engine" target="_blank">http://sourceforge.net/projects/X2Engine</a><br />
-BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a><br />
-Google Code: <a href="http://code.google.com/p/x2engine" target="_blank">http://code.google.com/p/X2Engine/</a><br /><br />
+GitHub: <a href="https://github.com/X2Engine/X2Engine" target="_blank">https://github.com/X2Engine/X2Engine</a><br />
+Google Code: <a href="http://code.google.com/p/x2engine/" target="_blank">http://code.google.com/p/x2engine/</a><br />
+SourceForge: <a href="https://sourceforge.net/projects/x2engine/" target="_blank">https://sourceforge.net/projects/x2engine/</a><br />
+<!--BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a><br />--><br />
 <h4><?php echo Yii::t('about','Plugins/Extensions'); ?></h4>
 YUI Editor: <a href="http://developer.yahoo.com/yui" target="_blank"><?php echo Yii::t('about','Developer'); ?></a><br />
 CFile Class: <a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a><br />

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -70,6 +70,7 @@ return array (
 'Update Action'=>'アクションを更新します。',
 'Complete Action'=>'アクションを完了する',
 'Complete + New Action'=>'完了する+新規アクション',
+'Uncomplete'=>'不完全にする',
 
 //	Actions Titles
 'Manage Actions'=>'アクションの管理',
@@ -81,6 +82,7 @@ return array (
 'Action'=>'アクション',
 'Action:'=>'アクション:',
 "Today's Actions"=>'今日のアクション',
+'My Actions'=>'私のアクション',
 'All My Actions'=>'すべて私のアクション',
 "Everyone's Actions"=>'みんなのアクション',
 'Delete Action'=>'アクションを削除',
@@ -88,6 +90,12 @@ return array (
 
 
 //	Misc
+'Email Message:'=>'メールメッセージ:',
+'Attachment:'=>'添付:',
+'Assigned to {name}'=>'{name} に割り当て',
+'Completed by {name}'=>'{name} が完了しました',
+'Completed {date}'=>'{date} に完了した',
+'Completion Notes'=>'完了のノート',
 'That action is not assigned to you.'=>'そのアクションは、お客様に割り当てられていません。',
 'Associated With'=>'関連付け',
 'Association Info'=>'関連付け情報',
@@ -97,8 +105,8 @@ return array (
 'Status'=>'状態',
 'Contact Info'=>'コンタクト情報',
 'View'=>'見る',
-'<b>Overdue</b> {time}'=>'{time}で延滞',
-'Due <b>{date}</b>'=>'{date}に起因',
+'Overdue {time}'=>'{time}で延滞',
+'Due {date}'=>'{date}に起因',
 
 //	Create Action Types
 'None'=>'なし',

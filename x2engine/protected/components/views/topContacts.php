@@ -33,39 +33,67 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
+ 
+Yii::app()->clientScript->registerScript('topContacts',"
+function addTopContact(contactId) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('users/addTopContact')) . "',
+		type: 'GET',
+		data: 'contactId='+contactId,
+		//data: 'contactId='+contactId+'&viewId='+viewId,
+		success: function(response) {
+			if(response!='')
+				$('#top-contacts-list').html(response);
+			}
+	});
+}
+function removeTopContact(contactId) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('users/removeTopContact')) . "',
+		type: 'GET',
+		data: 'contactId='+contactId,
+		// data: 'contactId='+contactId+'&viewId='+viewId,
+		success: function(response) {
+			if(response!='')
+				$('#top-contacts-list').html(response);
+			}
+	});
+	//$('#contact'+id).remove();
+}",CClientScript::POS_HEAD);
+
+$actionParams = Yii::app()->controller->getActionParams();
+//if(!isset($viewId) || $viewId == null)
+	$viewId = isset($actionParams['id'])? $actionParams['id'] : null;
+
 ?>
 <ul id="top-contacts-list">
 <?php
 $contactIdList = array();
 foreach($topContacts as $contact) {
 	$contactIdList[] = $contact->id;
-	echo '<li>';
+	echo '<li id="contact' . $contact->id . '">';
 	$link = '<strong>'.$contact->firstName.' '.$contact->lastName.'</strong><br />'.$contact->phone;
 	echo CHtml::link($link,array('contacts/view','id'=>$contact->id));
-
-	echo CHtml::ajaxLink(
-		'[x]',
-		array('users/removeTopContact','id'=>Yii::app()->user->getId(),'contactId'=>$contact->id),
-		array('replace'=>'#top-contacts-list'),
-		array('class'=>'delete-link')
-	);
+	
+	echo CHtml::link('[x]','#',array(
+		'class'=>'delete-link',
+		'onclick'=>"removeTopContact('".$contact->id."'); return false;" //."','".$viewId."'); return false;"
+	));
 	echo "</li>\n";
 }
-$actionParams = Yii::app()->controller->getActionParams();
 
 if(Yii::app()->controller->id=='contacts'			// must be a contact
 	&& Yii::app()->controller->action->id=='view'	// must be viewing it
-	&& isset($actionParams['id'])							// must have an actual ID value
-	&& !in_array($actionParams['id'],$contactIdList)) {		// must not already be in Top Contacts
-	
-	$currentId = $actionParams['id'];
-	$currentRecord = ContactChild::model()->findByPk($currentId);
+	&& $viewId != null							// must have an actual ID value
+	&& !in_array($viewId,$contactIdList)) {		// must not already be in Top Contacts
+
+	$currentRecord = ContactChild::model()->findByPk($viewId);
 
 	echo '<li>';
-	echo CHtml::ajaxLink(
+	echo CHtml::link(
 		Yii::t('app','Add {name}',array('{name}'=>$currentRecord->firstName.' '.$currentRecord->lastName)),
-		array('users/addTopContact','id'=>Yii::app()->user->getId(),'contactId'=>$currentId),
-		array('replace'=>'#top-contacts-list')
+		'#',
+		array('onclick'=>"addTopContact('".$viewId."'); return false;") //"','".$viewId."'); return false;")
 	);
 	echo "</li>\n";;
 }

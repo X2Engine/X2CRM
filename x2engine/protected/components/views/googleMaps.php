@@ -38,7 +38,7 @@ if($address != null) {
 ?>
 
 <iframe width="100%" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-src="http://maps.google.com/maps?ie=UTF8&t=m&q=<?php echo $address; ?>&iwloc=near&z=8&output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?ie=UTF8&t=m&q=<?php echo $address; ?>&iwloc=near&z=6&output=embed" style="margin-left:10px;"><?php echo Yii::t('app','View Larger Map'); ?></a></small>
+src="http://maps.google.com/maps?ie=UTF8&t=m&q=<?php echo urlencode($address); ?>&iwloc=near&z=8&output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?ie=UTF8&t=m&q=<?php echo $address; ?>&iwloc=near&z=6&output=embed" style="margin-left:10px;"><?php echo Yii::t('app','View Larger Map'); ?></a></small>
 <?php
 } else {
 	Yii::app()->getClientScript()->registerCss('hideGoogleMaps',"#widget_GoogleMaps{display:none;}",'all');

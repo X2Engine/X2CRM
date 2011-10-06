@@ -11,6 +11,7 @@
  * @property string $company
  * @property integer $accountId
  * @property string $phone
+ * @property string $phone2
  * @property string $email
  * @property string $website
  * @property string $address
@@ -64,7 +65,7 @@ class Contacts extends CActiveRecord
 			array('firstName, lastName, visibility', 'required'),
 			array('accountId, visibility, rating, createDate', 'numerical', 'integerOnly'=>true),
 			array('email','email'),
-			array('firstName, lastName, title, phone, city, state, country, priority, leadSource', 'length', 'max'=>40),
+			array('firstName, lastName, title, phone, phone2, city, state, country, priority, leadSource', 'length', 'max'=>40),
 			array('company, email, website, address, linkedin, googleplus, facebook, otherUrl', 'length', 'max'=>100),
 			array('zipcode, assignedTo, twitter, updatedBy', 'length', 'max'=>20),
 			array('skype', 'length', 'max'=>32),
@@ -72,7 +73,7 @@ class Contacts extends CActiveRecord
 			array('backgroundInfo', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, firstName, lastName, title, company, accountId, phone, email, website, address, city, state, zipcode, country, visibility, assignedTo, backgroundInfo, twitter, linkedin, skype, googleplus, lastUpdated, updatedBy, priority, leadSource, rating, createDate, facebook, otherUrl', 'safe', 'on'=>'search'),
+			array('id, firstName, lastName, title, company, accountId, phone, phone2, email, website, address, city, state, zipcode, country, visibility, assignedTo, backgroundInfo, twitter, linkedin, skype, googleplus, lastUpdated, updatedBy, priority, leadSource, rating, createDate, facebook, otherUrl', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -100,6 +101,7 @@ class Contacts extends CActiveRecord
 			'company'=>Yii::t('contacts','Account'),
 			'accountId'=>Yii::t('contacts','Account ID'),
 			'phone'=>Yii::t('contacts','Phone'),
+			'phone2'=>Yii::t('contacts','Phone 2'),
 			'email'=>Yii::t('contacts','Email'),
 			'website'=>Yii::t('contacts','Website'),
 			'twitter'=>Yii::t('contacts','Twitter'),
@@ -143,6 +145,7 @@ class Contacts extends CActiveRecord
 		$criteria->compare('company',$this->company,true);
 		$criteria->compare('accountId',$this->accountId);
 		$criteria->compare('phone',$this->phone,true);
+		$criteria->compare('phone2',$this->phone2,true);
 		$criteria->compare('email',$this->email,true);
 		$criteria->compare('website',$this->website,true);
 		$criteria->compare('address',$this->address,true);

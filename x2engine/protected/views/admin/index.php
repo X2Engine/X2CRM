@@ -52,7 +52,8 @@
 		<?php echo CHtml::link(Yii::t('admin','Set session timeout'),'setTimeout'); ?><br /><?php echo Yii::t('admin','Set time before an idle user is logged out');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Set chat poll rate'),'setChatPoll'); ?><br /><?php echo Yii::t('admin','Adjust chat refresh rate for performance');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Toggle default logo'),'toggleDefaultLogo'); ?><br /><?php echo Yii::t('admin','Change logo back to X2Contacts');?><br /><br />
-		<?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br /><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?>
+		<?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br /><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?><br /><br />
+                <?php echo CHtml::link(Yii::t('admin','View User Changelog'),'viewChangelog'); ?><br /><?php echo Yii::t('admin','View a log of everything that has been changed');?>
 	</div>
 </div>
 <div class="span-7">

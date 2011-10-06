@@ -45,4 +45,5 @@ return array (
 'Message List'=>'Elenco dei messaggi',
 'Clear'=>'chiaro',
 'Search for a Contact'=>'Ricerca di un contatto',
+'Go to Full Site'=>'Vai al sito principale',
 );

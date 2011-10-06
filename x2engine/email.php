@@ -155,6 +155,9 @@ foreach($body_array as $value){
     } elseif(preg_match("/This is a multi-part/",$value,$matches)){
         continue;
         
+    } elseif(preg_match("/^------_=_(.*?)\n/",$value,$matches)){
+        continue;
+        
     }elseif(preg_match("/^Content-Transfer-Encoding/",$value,$matches)){
         continue;
         
@@ -164,7 +167,34 @@ foreach($body_array as $value){
     } elseif(preg_match("/^Content-Type: text\/html/",$value,$matches)){
             break;
         
-    }else {  
+    }elseif(preg_match("/=20/",$value,$matches)){ 
+            continue;
+        
+    }elseif(preg_match("/^-+_((.*?)_)+/",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/^-+_(.*?)+/",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/^charset=\"(.*?)\"/",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/From:(.*)/",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/Sent:(.*)/",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/To:(.*)/",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/CC:(.*)/i",$value,$matches)){
+            continue;
+        
+    }elseif(preg_match("/Subject:(.*)/",$value,$matches)){
+            continue;
+        
+    }else {   
         $message .= "$value\n";  
     }  
   
@@ -194,17 +224,19 @@ foreach($body_array as $value){
         $message="1";
         $email=$fromEmail;
         $id=$contact['id'];
+        $note.="\n\nSent from Contact";
         $fullName=$contact['firstName']." ".$contact['lastName'];
         $sql="INSERT INTO x2_actions (actionDescription, createDate, dueDate, completeDate, complete, visibility, completedBy, assignedTo, type, associationType, associationId, associationName) 
-            VALUES ('$note','$time','$time','$time','Yes','1','Email','Anyone','note','contact','$id','$fullName')";
+            VALUES ('$note','$time','$time','$time','Yes','1','Email','Anyone','note','contacts','$id','$fullName')";
         mysql_query($sql);
     }else if($contact=mysql_fetch_array($selection2)){
         $message="2";
         $email=$toEmail;
         $id=$contact['id'];
+        $note.="\n\nSent to Contact";
         $fullName=$contact['firstName']." ".$contact['lastName'];
         $sql="INSERT INTO x2_actions (actionDescription, createDate, dueDate, completeDate, complete, visibility, completedBy, assignedTo, type, associationType, associationId, associationName) 
-            VALUES ('$note','$time','$time','$time','Yes','1','Email','Anyone','note','contact','$id','$fullName')";
+            VALUES ('$note','$time','$time','$time','Yes','1','Email','Anyone','note','contacts','$id','$fullName')";
         mysql_query($sql) or $message="FAILURE";
     }else{
         $message=$firstName." ".$lastName." : ".$toEmail." : ".$note;
@@ -215,8 +247,10 @@ foreach($body_array as $value){
         if($contact=mysql_fetch_array($selection)){
             $id=$contact['id'];
             $fullName=$contact['firstName']." ".$contact['lastName'];
+            $note.="\n\nSent to Contact";
             $sql="INSERT INTO x2_actions (actionDescription, createDate, dueDate, completeDate, complete, visibility, completedBy, assignedTo, type, associationType, associationId, associationName) 
-                VALUES ('$note','$time','$time','$time','Yes','1','Email','Anyone','note','contact','$id','$fullName')";
+                VALUES ('$note','$time','$time','$time','Yes','1','Email','Anyone','note','contacts','$id','$fullName')";
+            mysql_query($sql) or die(mysql_error());
         }
     }
    

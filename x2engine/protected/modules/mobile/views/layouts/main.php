@@ -48,31 +48,33 @@ $cs->registerPackage('jquerymobile');
 $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="language" content="en" />
-        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1"/> 
-        <meta name="apple-mobile-web-app-capable" content="yes"/>
-        <link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
-        <link rel="shortcut icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
-        <title><?php echo CHtml::encode($this->pageTitle); ?></title>
-    </head>
-    <body>
-        <div id="container">
-            <div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="b">
-                <div data-role="header" data-theme="b">
-                    <div  class="figure"><a href="<?php echo $this->createUrl('site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touchlg.png'; ?>" alt="x2engine" /></a></div>
-                </div>
-                <div data-role="content">
-                    <?php
-                    echo $content;
-                    ?>
-                </div>
-                <div data-role="footer" data-theme="b">
-                    <p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com'); ?>
-                        <?php echo Yii::t('app', 'Rights Reserved.'); ?></p>
-                </div>
-            </div>
-        </div>
-    </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="language" content="en" />
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1"/> 
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
+<link rel="shortcut icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
+<title><?php echo CHtml::encode($this->pageTitle); ?></title>
+</head>
+<body>
+<div id="container">
+	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="b">
+		<div data-role="header" data-theme="b">
+			<div  class="figure"><a href="<?php echo $this->createUrl('site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touchlg.png'; ?>" alt="x2engine" /></a></div>
+		</div>
+		<div data-role="content">
+			<?php
+			echo $content;
+			?>
+		</div>
+		<div data-role="footer" data-theme="b">
+			<p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com');
+				echo Yii::t('app', 'Rights Reserved.'); ?>
+				<?php echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php',array('rel'=>'external')); ?>
+			</p>
+		</div>
+	</div>
+</div>
+</body>
 </html>

@@ -57,19 +57,27 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 
 
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
+<!--<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>-->
 <?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users));
+
+if(isset($_GET['detail'])) {
+	$detailView = ($_GET['detail']=='1')? 1 : 0;
+	ProfileChild::setDetailView($detailView);
+} else {
+	$detailView = ProfileChild::getDetailView();
+}
+
+$this->renderPartial($detailView? '_detailView' : '_simpleView',array('model'=>$model,'form'=>$form,'users'=>$users));
 
 $this->endWidget(); ?>
 
-<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
-<?php /*<a class="x2-button" href="#" onClick="toggleForm('#note-form',400);return false;"><span><?php echo Yii::t('app','Add Comment'); ?></span></a>
-<a class="x2-button" href="#" onClick="toggleForm('#action-form',400);return false;"><span><?php echo Yii::t('app','Create Action'); ?></span></a> */ ?>
-<a class="x2-button" href="mailto:<?php echo $model->email; ?>?cc=dropbox@<?php echo substr(Yii::app()->request->getServerName(),4);?>"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
-<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
-<a class="x2-button" href="shareContact/<?php echo $model->id;?>"><span><?php echo Yii::t('contacts','Share Contact'); ?></span></a>
-<br /><br />
+	<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
+	<?php /*<a class="x2-button" href="#" onClick="toggleForm('#note-form',400);return false;"><span><?php echo Yii::t('app','Add Comment'); ?></span></a>
+	<a class="x2-button" href="#" onClick="toggleForm('#action-form',400);return false;"><span><?php echo Yii::t('app','Create Action'); ?></span></a> */ ?>
+	<a class="x2-button" href="mailto:<?php echo $model->email; ?>?cc=dropbox@<?php echo substr(Yii::app()->request->getServerName(),4);?>"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
+	<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
+	<a class="x2-button" href="shareContact/<?php echo $model->id;?>"><span><?php echo Yii::t('contacts','Share Contact'); ?></span></a>
+	<br />
 <div id="attachment-form" style="display:none;">
 	<?php $this->widget('Attachments',array('type'=>'contacts','associationId'=>$model->id)); ?>
 </div>
