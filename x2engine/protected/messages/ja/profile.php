@@ -35,20 +35,20 @@
  ********************************************************************************/
 
 return array (
-//	Profile Attributes
+//  Profile Attributes
 'ID'=>'ID',
-'Full Name'=>'完全な名前',
+'Full Name'=>'フルネーム',
 'Username'=>'ユーザ名',
 'Tag Line'=>'キャッチフレーズ',
 'Office Phone'=>'オフィス電話',
 'Cell Phone'=>'携帯電話',
-'Email Address'=>'メール',
-'Notes'=>'ノート',
-'Status'=>'ステータス',
-'Description'=>'説明',
-'Last Updated'=>'最後を更新する',
-'Updated By'=>'更新した人',
-'Allow users to post on your profile?'=>'ユーザーはプロフィールに掲載する許可しますか？',
+'Email Address'=>'電子メール',
+'Notes'=>'メモ',
+'Status'=>'状態',
+'Description'=>'備考',
+'Last Updated'=>'最終更新日',
+'Updated By'=>'最終更新者',
+'Allow users to post on your profile?'=>'あなたのプロフィールへの投稿を許可しますか？',
 'Language'=>'言語',
 'Time Zone'=>'タイムゾーン',
 'Enable group chat?'=>'グループチャットを有効にしますか？',
@@ -57,28 +57,28 @@ return array (
 'Menu Color'=>'メニューの色',
 'Menu Text Color'=>'メニューのテキストの色',
 'Background Image'=>'背景画像',
-'Start Page'=>'ホメパゲ',
+'Start Page'=>'開始ページ',
 'Results Per Page'=>'ページ毎の結果',
 'Show Social Media'=>'ソーシャルメディアを見せますか？',
-'Upload a Background'=>'背景をアップロードする',
+'Upload a Background'=>'背景をアップロード',
 
 //	Profile Actions
-'View Profile'=>'プロフィールを見る',
-'Update Profile'=>'プロファイルを更新する',
+'View Profile'=>'プロフィールを閲覧',
+'Update Profile'=>'プロファイルを更新',
 'Change Settings'=>'設定の変更',
-'Social Feed'=>'社会のフィード',
+'Social Feed'=>'ソーシャルフィード',
 'People'=>'人々',
 'Change Personal Settings'=>'個人設定を変更する',
 
 //	Profile Titles
 'Profile:'=>'プロフィール：',
-'Update Your Profile'=>'プロフィールを更新する',
+'Update Your Profile'=>'プロフィールを更新',
 
 //	Group
 'Feed'=>'フィード',
-'Social'=>'社会',
+'Social'=>'ソーシャル',
 'Reply'=>'返信',
-'A larger Chat Box'=>'より大きいチャットボックス',
-'A blog-like discussion forum'=>'ブログ的なディスカッションフォーラム',
+'A larger Chat Box'=>'大きなチャットボックス',
+'A blog-like discussion forum'=>'ブログ的な掲示板',
 
 );
