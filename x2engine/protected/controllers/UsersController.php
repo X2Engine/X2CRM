@@ -88,7 +88,7 @@ class UsersController extends x2base {
 
 		if(isset($_POST['UserChild'])) {
 			$model->attributes=$_POST['UserChild'];
-			$this->updateChangelog($model);
+			//$this->updateChangelog($model);
 			$model->password = md5($model->password);
 
 			$profile=new ProfileChild;
@@ -121,7 +121,7 @@ class UsersController extends x2base {
 		if(isset($_POST['Users'])) {
 			$model->attributes=$_POST['Users'];
 			$model->password = md5($model->password);
-			$this->updateChangelog($model);
+			//$this->updateChangelog($model);
 			$updatePass = $model->updatePassword;
 			if($updatePass==1) {
 				if($model->save())

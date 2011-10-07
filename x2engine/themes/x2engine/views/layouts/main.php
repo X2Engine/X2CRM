@@ -235,8 +235,13 @@ $userMenu = array(
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 <?php 
-	if(time()-Yii::app()->session['loginTime']>$admin->timeout){
-		Yii::app()->user->logout();
+	if(Yii::app()->session['loginTime']<time()-$admin->timeout){
+            if(!Yii::app()->user->isGuest){
+                Yii::app()->user->logout();
+                $this->redirect(Yii::app()->controller->createUrl('site/login'));
+            }
+            
+     
 	}else{
 		Yii::app()->session['loginTime']=time();
 	}
