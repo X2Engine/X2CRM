@@ -37,32 +37,34 @@
 return array(
 
 // Attribute Labels
-'Title'=>'題名',
-'Text'=>'ぶん',
-'Created By'=>'作った人',
-'Updated By'=>'更新した人',
-'Last Updated'=>'最後を更新する',
+'Title'=>'件名',
+'Text'=>'テキスト',
+'Created By'=>'作成者',
+'Updated By'=>'最終更新者',
+'Last Updated'=>'最終更新日',
 'Create Date'=>'作成日',
 'Edit Permissions'=>'権限を編集',
 
 // Labels
-'Doc'=>'ドク',
+'Doc'=>'文書',
 'Document:'=>'文書',
-'Edit Document:'=>'ドキュメントの編集',
+'Edit Document:'=>'文書の編集',
+'Manage Docs'=>'文書の管理',
 'Documents'=>'文書',
-'Docs'=>'ドク',
-'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'ユーザーが文書を編集するために許可されている選択してください。コントロールを使用する+個々のユーザーを選択または選択解除する]をクリックします。',
-'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'右下のリンクをクリックすると、ドキュメントをダウンロードするには、"名前を付けて保存"を選択してください！左クリックは、プリンタフレンドリモードで文書を開きます。',
+'Docs'=>'文書',
+'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'文書を編集できるユーザを選択してください。Ctrl+クリックで複数ユーザを選択したり、選択を解除することができます。',
+'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'右下のリンクをクリックして「名前を付けて保存」をクリックすると文書をダウンロードできます。左クリックは、印刷モードで文書を開きます。',
 
 // Doc Navbar
-'List　Docs'=>'ドクのリスト',
-'Create Docs'=>'ドクを作る',
-'View Doc'=>'ドクを見る',
-'Edit Doc'=>'ドクの編集',
-'Delete Doc'=>'ドクを削除する',
-'Export Doc'=>'ドクをエクスポートする',
-'Edit Doc Permissions'=>'ドクの権限を編集',
-'Edit'=>'編集する',
+'List Docs'=>'文書一覧',
+'Create Docs'=>'文書を作成',
+'Create Doc'=>'文書を作成',
+'View Doc'=>'文書を閲覧',
+'Edit Doc'=>'文書を編集',
+'Delete Doc'=>'文書を削除',
+'Export Doc'=>'文書をエクスポートする',
+'Edit Doc Permissions'=>'文書の権限を編集',
+'Edit'=>'編集',
 'Export'=>'エクスポート',
 );
 ?>
