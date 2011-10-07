@@ -37,42 +37,42 @@
 return array (
 // Attributes
 'ID'=>'ID',
-'Assigned To'=>'割り当て',
+'Assigned To'=>'担当者',
 'Name'=>'名前',
-'Description'=>'説明', 
+'Description'=>'備考', 
 'Create Date'=>'作成日',
-'Last Updated'=>'最後を更新する',
-'Updated By'=>'更新した人',
+'Last Updated'=>'最終更新者',
+'Updated By'=>'更新者',
 
 'Data fields'=>'データフィールド',
-'Show'=>'見せる',
+'Show'=>'閲覧',
 'Hide'=>'隠す',
-'Module Title'=>'モジュールのタイトル',
-'The name for your new module'=>'あなたの新しいモジュールの名前',
+'Module Title'=>'モジュールタイトル',
+'The name for your new module'=>'新モジュールの名前',
 'Item Name'=>'アイテム名',
-'(Optional) What to call individual records, e.g. "Create new X"'=>'（オプション）個々のレコードを呼び出すために何が、例えば「新しいXを作る」',
-'DB Table Name'=>'DBのテーブル名',
-'Optional (alphanumeric only, must start with a letter)'=>'オプション（英数字のみ、文字で始まる必要があります）',
+'(Optional) What to call individual records, e.g. "Create new X"'=>'（オプション）個々のレコードの呼称は？ 例：「Xの作成」',
+'DB Table Name'=>'DBテーブル名',
+'Optional (alphanumeric only, must start with a letter)'=>'オプション（英数字のみで、英字で開始）',
 
 // Menu Items
-'{X} List'=>'{X}のリスト',
-'View {X}'=>'{X}を見る',
-'Create {X}'=>'{X}を作る',
-'Update {X}'=>'{X}を更新する',
-'Delete {X}'=>'{X}を削除する',
+'{X} List'=>'{X}一覧',
+'View {X}'=>'{X}を閲覧',
+'Create {X}'=>'{X}を作成',
+'Update {X}'=>'{X}を更新',
+'Delete {X}'=>'{X}を削除',
 
 // Page Titles
-'Create New Module'=>'新しいモジュールを作る',
-'Create New {X}'=>'新しい{X}を作る',
-'Manage {X}'=>'{X}を削除する',
+'Create New Module'=>'モジュールを作成',
+'Create New {X}'=>'{X}を作成',
+'Manage {X}'=>'{X}を削除',
 
-//	Errors
+//  Errors
 'Invalid table name'=>'無効なテーブル名',
-'A module with that title already exists'=>'そのタイトルを持つモジュールが既に存在しています',
+'A module with that title already exists'=>'同じ名前のモジュールが存在します',
 
 // Misc
-'Please fill out the fields below to create a new module.'=>'新しいモジュールを作成するには、下のフィールドにご記入ください。',
-'Enter field name here'=>'フィールド名をここに入力してください',
+'Please fill out the fields below to create a new module.'=>'以下のフィールドに入力してモジュールを作成してください。',
+'Enter field name here'=>'フィールド名を入力',
 
 
 );
