@@ -36,9 +36,9 @@
 
 return array (
 // Install screen
-'Install X2Engine'=>'インストールX2Engine',
+'Install X2Engine'=>'X2Engineをインストール',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2Engineアプリケーションインストーラへようこそ！我々はアプリケーションを起動して実行する前に、我々は、少し情報を収集する必要があります。以下のフィールドに記入してください。',
+'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2Engineアプリケーションインストーラへようこそ！アプリケーションを起動する前に、若干の情報を収集する必要があります。以下のフィールドに入力してください。',
 
 'X2Engine Application Info'=>'X2Engineアプリケーション情報',
 
@@ -47,10 +47,10 @@ return array (
 'Currency'=>'通貨',
 'Admin Password'=>'管理者パスワード',
 'Confirm Password'=>'パスワードを確認',
-'Administrator Email'=>'管理者のメール',
+'Administrator Email'=>'管理者の電子メール',
 
 'Database Connection Info'=>'データベース接続情報',
-'Do you want dummy data?'=>'あなたは、ダミーデータが欲しいですか？',
+'Do you want dummy data?'=>'ダミーデータが必要ですか？',
 
 'Host Name'=>'ホスト名',
 'Database Name'=>'データベース名',
@@ -58,17 +58,17 @@ return array (
 'Password'=>'パスワード',
 
 'Install'=>'インストール',
-'For help or more information - X2Engine.com'=>'ヘルプまたは詳細については、X2Engine.com',
+'For help or more information - X2Engine.com'=>'ヘルプまたは詳細については、X2Engine.comへ',
 
-'All Rights Reserved.'=>'すべての内容は著作権を有します。',
+'All Rights Reserved.'=>'すべての権利は保護されます。',
 
-'This beta release only supports MySQL.'=>'このベータリリースは、MySQLのみをサポートしています。',
+'This beta release only supports MySQL.'=>'ベータリリースはMySQLのみをサポートしています。',
 'Please create a database before install.'=>'インストールの前にデータベースを作成してください。',
 
 // Splash screen
-'Installation Complete!'=>'インストールが完了します！',
-'Click here to log in to X2Engine'=>'X2Engineにログインするためにここをクリック',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engineは正常にWebサーバーにインストール！これで、ユーザ名"admin"とインストール中に指定したパスワードでログインできます。',
-'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'あなたがGIIのインストールを選択した場合、あなたは見つけることができるそれ<a href="index.php/gii/">ここ</ a>。パスワードは、管理者パスワードと同じです。',
+'Installation Complete!'=>'インストールが完了しました！',
+'Click here to log in to X2Engine'=>'ここをクリックしてX2Engineにログイン',
+'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engineは正常にWebサーバーにインストールされました！ ユーザ名"admin"と、インストール中に指定したパスワードでログインできます。',
+'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Giiをインストールする場合は<a href="index.php/gii/">ここ</ a>で入手可能です。パスワードは管理者パスワードと同じです。',
 
 );
