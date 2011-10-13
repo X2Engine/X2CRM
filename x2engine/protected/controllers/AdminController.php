@@ -141,6 +141,9 @@ class AdminController extends Controller {
         public function actionViewChangelog(){
             
             $changeLog=new CActiveDataProvider('Changelog', array(
+                        'pagination'=>array(
+				'pageSize'=>'50'
+			),
 			'criteria'=>array(
 				'order'=>'timestamp DESC',
 		)));

@@ -59,7 +59,8 @@ Yii::app()->clientScript->registerScript('groupChat', "
 <?php
 
 echo CHtml::beginForm();
-echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
+//echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
+echo CHtml::textArea('chat-message','',array('style'=>'color:#aaa;'));
 
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Send'),

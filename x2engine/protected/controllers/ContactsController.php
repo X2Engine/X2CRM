@@ -47,6 +47,7 @@ class ContactsController extends x2base {
 			array('allow',	// allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array(
 					'index',
+					'viewAll',
 					'view',
 					'update',
 					'create',
@@ -170,6 +171,11 @@ $model->city, $model->state $model->zipcode
 				$model->company=$_POST['companyAutoComplete'];
 				$model->accountId="";
 			}
+                        
+                        $account=Accounts::model()->findByAttributes(array('name'=>$model->company));
+                        if(isset($account)){
+                            $contact->accountId=$account->id;
+                        }
 			
 			// reset to blank if it's the default value
 			$attributeLabels = ContactChild::attributeLabels();
@@ -255,6 +261,11 @@ $model->city, $model->state $model->zipcode
 				$contact->company=$_POST['companyAutoComplete'];
 				$contact->accountId="";
 			}
+                        
+                        $account=Accounts::model()->findByAttributes(array('name'=>$contact->company));
+                        if(isset($account)){
+                            $contact->accountId=$account->id;
+                        }
 			// reset to blank if it's the default value
 			$attributeLabels = ContactChild::attributeLabels();
 			if($contact->address == $attributeLabels['address'])
@@ -321,10 +332,18 @@ $model->city, $model->state $model->zipcode
 	/**
 	 * Lists all models.
 	 */
+	// Lists all contacts assigned to this user
 	public function actionIndex() {
-		$model = new  ContactChild('search');
-		$name = 'ContactChild';
-		parent::actionIndex($model, $name);
+		$model=new ContactChild('search');
+		$name='ContactChild';
+		parent::actionIndex($model,$name);
+	}
+
+	// List all public contacts
+	public function actionViewAll() {
+		$model=new ContactChild('search');
+		$name='ContactChild';
+		parent::actionIndex($model,$name);
 	}
 
 	public function actionImportContacts() {
@@ -490,47 +509,12 @@ $model->city, $model->state $model->zipcode
 		$model = $this->loadModel($id);
 		if (Yii::app()->request->isPostRequest) {
 			$dataProvider = new CActiveDataProvider('Actions', array(
-						'criteria' => array('condition' => 'associationId=' . $id . ' AND associationType=\'contact\'')));
+						'criteria' => array('condition' => 'associationId=' . $id . ' AND associationType=\'contacts\'')));
 
 			$actions = $dataProvider->getData();
 			foreach ($actions as $action) {
-				$action->delete();
+                            $action->delete();
 			}
-
-			$dataProvider = new CActiveDataProvider('Accounts');
-			$accounts = $dataProvider->getData();
-			foreach ($accounts as $account) {
-				$contacts = $account->associatedContacts;
-				$pieces = explode(' ', $contacts);
-				$str = '';
-				foreach ($pieces as $piece) {
-					if ($piece == $id || $contacts == $id) {
-
-					} else {
-						$str.=$piece . ' ';
-					}
-				}
-				$account->associatedContacts = $str;
-				$account->update();
-			}
-
-			$dataProvider = new CActiveDataProvider('Cases');
-			$cases = $dataProvider->getData();
-			foreach ($cases as $case) {
-				$contacts = $case->associatedContacts;
-				$pieces = explode(' ', $contacts);
-				$str = '';
-				foreach ($pieces as $piece) {
-					if ($piece == $id || $contacts == $id) {
-
-					} else {
-						$str.=$piece . ' ';
-					}
-				}
-				$case->associatedContacts = $str;
-				$case->update();
-			}
-
 			$model->delete();
 		}
 		else

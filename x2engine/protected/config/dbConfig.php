@@ -1,6 +1,6 @@
 <?php
 $db=array(
-	'connectionString' => 'mysql:host=localhost;dbname=x3-x2engine',
+	'connectionString' => 'mysql:host=localhost;dbname=x2merge',
 	'emulatePrepare' => true,
 	'username' => 'x3engine',
 	'password' => 'x32011!!',

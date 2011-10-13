@@ -45,7 +45,7 @@ $(function() {
 <a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=877+Cedar+Street+Suite+150+Santa+Cruz,+CA+95060+USA&hl=en&ll=36.971838,-122.211914&spn=3.444774,4.586792&sll=37.926868,-95.712891&sspn=51.515218,73.388672&vpsrc=6&t=m&z=8">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:50px;margin-right:-20px;')); ?>
 </a>
-<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta 0.9</b> September 22, 2011.<br /><br />
+<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> October 13, 2011.<br /><br />
 <div id="about-intro">
 	<?php echo Yii::t('app','X2Engine is a Social Sales Management application designed by John Roberts. Special thanks to software engineers Jake Houser and Matthew Pearson, along with many other folks who helped make this release possible.'); ?><br /><br />
 </div>
@@ -77,7 +77,7 @@ $(function() {
 <!--<div class="about-list" style="height:450px;width:auto;overflow-y:scroll;border:1px solid #ddd;padding:10px;"></div>
 <hr>-->
 <h4><?php echo Yii::t('about','Version Info'); ?></h4>
-X2Engine: 0.9.1 (Beta 2)<br />
+X2Engine: <?php echo Yii::app()->params->version;?><br />
 <!--<?php echo Yii::t('about','Build'); ?>: 1234<br />-->
 Yii: <?php echo Yii::getVersion(); ?><br />
 jQuery: <span id="jqueryVersion"></span><br />

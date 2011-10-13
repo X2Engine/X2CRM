@@ -117,10 +117,15 @@ $form=$this->beginWidget('CActiveForm', array(
 
 	<?php echo $form->errorSummary($model); ?>
 
-	<div class="row">
+	<div class="row" style="margin-bottom:10px;">
 		<div class="cell">
-			<?php echo $form->checkBox($model,'allowPost'); ?> 
-			<?php echo $form->labelEx($model,'allowPost',array('style'=>'display:inline;','onchange'=>'js:highlightSave();')); ?>
+			<?php echo $form->checkBox($model,'allowPost',array('onchange'=>'js:highlightSave();')); ?> 
+			<?php echo $form->labelEx($model,'allowPost',array('style'=>'display:inline;')); ?>
+		</div>
+		<div class="cell">
+			<?php echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();')); ?> 
+			<?php echo $form->labelEx($model,'showSocialMedia',array('style'=>'display:inline;')); ?>
+			<?php //echo $form->dropDownList($model,'showSocialMedia',array(1=>Yii::t('actions','Yes'),0=>Yii::t('actions','No')),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
 		</div>
 	</div>
 	<div class="row">
@@ -132,10 +137,7 @@ $form=$this->beginWidget('CActiveForm', array(
 			<?php echo $form->labelEx($model,'resultsPerPage'); ?>
 			<?php echo $form->dropDownList($model,'resultsPerPage',array(10=>'10',15=>'15',20=>'20',30=>'30',50=>'50'),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
 		</div>
-		<div class="cell">
-			<?php echo $form->labelEx($model,'showSocialMedia'); ?>
-			<?php echo $form->dropDownList($model,'showSocialMedia',array(1=>Yii::t('actions','Yes'),0=>Yii::t('actions','No')),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
-		</div>
+
 	</div>
 	<div class="row">
 		<div class="cell">

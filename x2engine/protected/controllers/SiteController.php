@@ -348,20 +348,21 @@ class SiteController extends x2base {
 				$arr=explode('.',$name);
 				$name=$arr[0];
 				while(count($check)!=0){
-					$newName=$name.'('.$count.').'.$temp->getExtensionName();
-					$check=Media::model()->findAllByAttributes(array('fileName'=>$newName));
-					$count++;
+						$newName=$name.'('.$count.').'.$temp->getExtensionName();
+						$check=Media::model()->findAllByAttributes(array('fileName'=>$newName));
+						$count++;
 				}
 				$name=$newName;
 			}
 			if($temp->saveAs('uploads/'.$name)) {
-				$model->associationId=$_POST['associationId'];
+				if(isset($_POST['associationId']))
+					$model->associationId=$_POST['associationId'];
 				$model->associationType=$_POST['type'];
 				$model->uploadedBy=Yii::app()->user->getName();
 				$model->createDate=time();
 				$model->fileName=$name;
 				if($model->save()){
-					
+
 				}
 				if($model->associationType=='feed') {
 					$soc = new Social;
@@ -373,19 +374,21 @@ class SiteController extends x2base {
 					$soc->associationId = $model->associationId;
 					$soc->data = CHtml::link($model->fileName,array('media/view','id'=>$model->id));
 					if($soc->save()) {
-						$this->redirect(array('profile/'.$model->associationId));
+							$this->redirect(array('profile/'.$model->associationId));
 					} else {
-						unlink('uploads/'.$name);
+							unlink('uploads/'.$name);
 					}
 					$this->redirect(array($model->associationType.'/'.$model->associationId));
-					
+
 				} else if($model->associationType=='bg' || $model->associationType=='bg-private') {
 
 					$profile=CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 					$profile->backgroundImg = $name;
 					$profile->save();
 					$this->redirect(array('profile/settings','id'=>Yii::app()->user->getId()));
-				} else {
+				} else if($model->associationType=='docs'){
+					$this->redirect(array('docs/index'));
+				}else {
 					$note=new ActionChild;
 					$note->createDate = time();
 					$note->dueDate = time();
@@ -397,15 +400,15 @@ class SiteController extends x2base {
 					$note->type='attachment';
 					$note->associationId=$_POST['associationId'];
 					$note->associationType=$_POST['type'];
-					
+
 					$association = $this->getAssociation($note->associationType,$note->associationId);
 					if($association != null)
-						$note->associationName = $association->name;
+							$note->associationName = $association->name;
 
 					$note->actionDescription = $model->fileName . ':' . $model->id;
 					if($note->save()){
 					} else {
-						unlink('uploads/'.$name);
+							unlink('uploads/'.$name);
 					}
 					$this->redirect(array($model->associationType.'/'.$model->associationId));
 				}

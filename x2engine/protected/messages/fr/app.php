@@ -138,6 +138,7 @@ return array (
 'Account'=>'Compte',
 'Sale'=>'Vente',
 'All'=>'Tous les',
+'Optional'=>'En option',
 'Records that have been modified since your last login.'=>'Les documents qui ont été modifiés depuis votre dernière connexion.',
 'Are you sure you want to delete this item?'=>'Etes-vous sûr de vouloir supprimer cet élément?',
 

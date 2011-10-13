@@ -179,8 +179,9 @@ class ActionsController extends x2base {
 	// $this->performAjaxValidation($model);
 
 		if(isset($_POST['ActionChild'])) {
-			$model=$this->updateChangelog($model,'Create');
+			
 			$model->attributes=$_POST['ActionChild'];
+                        
 			if($model->associationId=='')
 				$model->associationId=0;
 			//if($model->
@@ -215,6 +216,7 @@ class ActionsController extends x2base {
 				$model->completedBy=Yii::app()->user->getName();
 				$model->type='note';
 			}
+                        $model=$this->updateChangelog($model,'Create');
 			if ($model->save()) {
 				if(isset($_GET['inline']) || $model->type=='note')
 					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
@@ -257,9 +259,9 @@ class ActionsController extends x2base {
 
 		if(isset($_POST['ActionChild']) && isset($_POST['ContactChild'])) {
 			$actionModel->attributes=$_POST['ActionChild'];
-			$actionModel=$this->updateChangelog($actionModel,'Create');
+			
 			$contactModel->attributes=$_POST['ContactChild'];
-			$contactModel=$this->updateChangelog($contactModel,'Create');
+			
 			$actionModel->createDate=time();
 			$contactModel->createDate=time();
 			
@@ -293,14 +295,14 @@ class ActionsController extends x2base {
 				$actionModel->completedBy=Yii::app()->user->getName();
 				$actionModel->type='note';
 			}
-			
+			$contactModel=$this->updateChangelog($contactModel,'Create');
 			if($contactModel->save()) {
-
+                            
 				// $actionModel->dueDate=$actionModel->dueDate;
 				$actionModel->associationId = $contactModel->id;
 				$actionModel->associationType = 'contacts';
 				$actionModel->associationName = $contactModel->firstName.' '.$contactModel->lastName;
-
+                                $actionModel=$this->updateChangelog($actionModel,'Create');
 				if($actionModel->save())
 					$this->redirect(array('contacts/view','id'=>$contactModel->id));
 				else
@@ -479,10 +481,10 @@ class ActionsController extends x2base {
 	public function actionGetTerms(){
 		$type=$_GET['type'];
 		if($type!='none'){
-		if($type=='contact'){
+		if($type=='contacts'){
 			$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm ORDER BY firstName ASC';
 		}else{
-			$sql = 'SELECT id, name as value FROM x2_'.$type.'s WHERE name LIKE :qterm ORDER BY name ASC';
+			$sql = 'SELECT id, name as value FROM x2_'.$type.' WHERE name LIKE :qterm ORDER BY name ASC';
 		}
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';

@@ -290,7 +290,7 @@ class x2base extends Controller {
 			if(isset($_POST['auto_select']) && $model instanceof Contacts){
 				$model->company=$_POST['auto_select'];
 			}
-			$model=$this->updateChangelog($model);
+			$model=$this->updateChangelog($model, 'Create');
 			$model->createDate=time();
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -315,8 +315,10 @@ class x2base extends Controller {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST[$name])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST[$name];
-			$model=$this->updateChangelog($model);
+                        $changes=$this->calculateChanges($temp, $model->attributes);
+			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -407,6 +409,72 @@ class x2base extends Controller {
                 
                 $changelog->save();
                 
+                $type=get_class($model);
+                if(substr($type,-1)!="s"){
+                    $type=substr($type,0,-5)."s";
+                }
+                
+                if($change!='Create' && $change!='Completed' && $change!='Edited'){
+                    
+                    if($change!=""){
+                        $pieces=explode("TO:",$change);
+                        $change=$pieces[1]; 
+                        $forDeletion=$pieces[0];
+                        preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
+                        $deleteMatches=$deleteMatches[0];
+                        foreach($deleteMatches as $match){
+                            $oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
+                            if(isset($oldTag))
+                                $oldTag->delete();
+                        }
+                    }
+                }else{
+                    if($model instanceof Actions){
+                        $change=$model->actionDescription;
+                    }else if($model instanceof Contacts){
+                        $change=$model->backgroundInfo;
+                    }else if($model instanceof Docs){
+                        
+                    }    
+                    else{
+                    
+                        $change=$model->description;
+                    }
+                }
+                
+                preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
+                $matches=$matches[0];
+                foreach($matches as $match){
+                    $tag=new Tags;
+                    $tag->type=$type;
+                    $tag->taggedBy=Yii::app()->user->getName();
+                    $tag->type=$type;
+                    $tag->tag=$match;
+                    if($model instanceof Contacts)
+                        $tag->itemName=$model->firstName." ".$model->lastName;
+                    else if($model instanceof Actions)
+                        $tag->itemName=$model->actionDescription;
+                    else
+                        $tag->itemName=$model->name;
+                    if(!isset($model->id)){
+                        $model->save();
+                    }
+                    $tag->itemId=$model->id;
+                    $tag->timestamp=time();
+                    if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
+                        if(substr($tag->tag,1,1)=='#')
+                            $tag->tag=substr($tag->tag,1);
+                        if($tag->save()){
+                            
+                        }else{
+                            print_r($tag->getErrors());
+                            exit;
+                        }
+                    }else{
+                        echo $tag->tag;
+                        exit;
+                    }
+                }
 		return $model;
 	}
         
@@ -426,6 +494,44 @@ class x2base extends Controller {
             return $str;
         }
 	
+	public function partialDateRange($input) {
+		$datePatterns = array(
+			array('/^(0-9)$/',									'000-01-01',	'999-12-31'),
+			array('/^([0-9]{2})$/',								'00-01-01',		'99-12-31'),
+			array('/^([0-9]{3})$/',								'0-01-01',		'9-12-31'),
+			array('/^([0-9]{4})$/',								'-01-01',		'-12-31'),
+			array('/^([0-9]{4})-$/',							'01-01',		'12-31'),
+			array('/^([0-9]{4})-([0-1])$/',						'0-01',			'9-31'),
+			array('/^([0-9]{4})-([0-1][0-9])$/',				'-01',			'-31'),
+			array('/^([0-9]{4})-([0-1][0-9])-$/',				'01',			'31'),
+			array('/^([0-9]{4})-([0-1][0-9])-([0-3])$/',		'0',			'9'),
+			array('/^([0-9]{4})-([0-1][0-9])-([0-3][0-9])$/',	'',				''),
+		);
+
+		$inputLength = strlen($input);
+
+		$minDateParts = array();
+		$maxDateParts = array();
+
+		if($inputLength > 0 && preg_match($datePatterns[$inputLength-1][0],$input)) {
+
+			$minDateParts = explode('-',$input . $datePatterns[$inputLength-1][1]);
+			$maxDateParts = explode('-',$input . $datePatterns[$inputLength-1][2]);
+			
+			$minDateParts[1] = max(1,min(12,$minDateParts[1]));
+			$minDateParts[2] = max(1,min(cal_days_in_month(CAL_GREGORIAN, $minDateParts[1], $minDateParts[0]),$minDateParts[2]));
+			
+			$maxDateParts[1] = max(1,min(12,$maxDateParts[1]));
+			$maxDateParts[2] = max(1,min(cal_days_in_month(CAL_GREGORIAN, $maxDateParts[1], $maxDateParts[0]),$maxDateParts[2]));
+			
+			$minTimestamp = mktime(0,0,0,$minDateParts[1],$minDateParts[2],$minDateParts[0]);
+			$maxTimestamp = mktime(23,59,59,$maxDateParts[1],$maxDateParts[2],$maxDateParts[0]);
+		
+			return array($minTimestamp, $maxTimestamp);
+		} else
+			return false;
+	}
+
 	/**
 	 * Sets widgets on the page on a per user basis.
 	 */

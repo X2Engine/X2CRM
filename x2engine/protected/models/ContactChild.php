@@ -110,65 +110,31 @@ class ContactChild extends Contacts {
 		return $mailingList;
 	}
 	
-	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-		
-		$profile = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preferred results per page
-		$resultsPerPage = $profile->resultsPerPage;
-		
+	public function searchAll() {
 		$criteria=new CDbCriteria;
 		$parameters=array('condition'=>"visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
-		$criteria->compare('id',$this->id);
-		$criteria->compare('firstName',$this->firstName,true);
-		$criteria->compare('CONCAT(firstName," ",lastName)',$this->lastName,true);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('company',$this->company,true);
-		$criteria->compare('accountId',$this->accountId);
-		$criteria->compare('phone',$this->phone,true);
-		$criteria->compare('phone2',$this->phone2,true);
-		$criteria->compare('email',$this->email,true);
-		$criteria->compare('website',$this->website,true);
-		$criteria->compare('address',$this->address,true);
-		$criteria->compare('city',$this->city,true);
-		$criteria->compare('state',$this->state,true);
-		$criteria->compare('zipcode',$this->zipcode,true);
-		$criteria->compare('country',$this->country,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('backgroundInfo',$this->backgroundInfo,true);
-		$criteria->compare('twitter',$this->twitter,true);
-		$criteria->compare('linkedin',$this->linkedin,true);
-		$criteria->compare('skype',$this->skype,true);
-		$criteria->compare('googleplus',$this->googleplus,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated,true);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('leadSource',$this->leadSource,true);
-		$criteria->compare('rating',$this->rating);
-		$criteria->compare('createDate',$this->createDate);
-
 		
-		
-
-		return new SmartDataProvider('Contacts', array(
-			'sort'=>array(
-				'defaultOrder'=>'lastUpdated DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
+		return $this->searchBase($criteria);
 	}
 
+	public function search() {
+		$criteria=new CDbCriteria;
+		$parameters=array('condition'=>"assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$criteria->scopes=array('findAll'=>array($parameters));
+		
+		return $this->searchBase($criteria);
+	}
+	
 	public function searchAdmin() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
+		return $this->searchBase($criteria);
+	}
+
+	
+	public function searchBase($criteria) {
+		// $criteria->compare('id',$this->id);
 		$criteria->compare('firstName',$this->firstName,true);
 		$criteria->compare('lastName',$this->lastName,true);
 		$criteria->compare('title',$this->title,true);
@@ -190,14 +156,20 @@ class ContactChild extends Contacts {
 		$criteria->compare('linkedin',$this->linkedin,true);
 		$criteria->compare('skype',$this->skype,true);
 		$criteria->compare('googleplus',$this->googleplus,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated,true);
+		// $criteria->compare('lastUpdated',$this->lastUpdated,true);
 		$criteria->compare('updatedBy',$this->updatedBy,true);
 		$criteria->compare('priority',$this->priority,true);
 		$criteria->compare('leadSource',$this->leadSource,true);
 		$criteria->compare('rating',$this->rating);
-		$criteria->compare('createDate',$this->createDate);
+		//$criteria->compare('createDate',$this->createDate);
 		
-
+		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		if($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+			
+		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
+		if($dateRange !== false)
+			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
@@ -209,7 +181,7 @@ class ContactChild extends Contacts {
 			'criteria'=>$criteria,
 		));
 	}
-
+	
 	public function attributeLabels() {
 		return array(
 			'id'=>Yii::t('contacts','ID'),

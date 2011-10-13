@@ -45,7 +45,7 @@ $author = $authorRecord->firstName.' '.$authorRecord->lastName;
 			echo CHtml::link('[x]',array('deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
 	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)); ?> <span class="comment-age"><?php echo x2base::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
-	<?php echo x2base::convertLineBreaks($this->convertUrls(CHtml::encode($data->data))); ?>
+	<?php echo $this->convertUrls(CHtml::encode($data->data)); ?>
 </div>
 
 

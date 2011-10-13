@@ -118,7 +118,7 @@ class AccountsController extends x2base {
 		$model=new AccountChild;
 		$users=UserChild::getNames();
 		unset($users['admin']);
-		unset($users['Anyone']);
+		unset($users['']);
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 

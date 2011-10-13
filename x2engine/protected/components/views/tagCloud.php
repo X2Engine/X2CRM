@@ -34,37 +34,47 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$this->menu=array(
-	array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','View Contact')),
-	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
-if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
-	$this->menu[] = array('label'=>'Update Contact', 'url'=>array('update', 'id'=>$model->id));
+echo CHtml::link('Just Me','#',array('onclick'=>'$("#myTags").show();$("#allTags").hide();return false;'))." | ".CHtml::link('All Users','#',array('onclick'=>'$("#allTags").show();$("#myTags").hide();return false;'))."<br />";
+$template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'."> #\\2</a>";
+?> <br />
+<div id="myTags">
+<?php
+foreach($myTags as $tag){
+    $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
+    $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
+    echo "<span class='tag'>".$tag->tag."</span> ";
 }
-
-
-
 ?>
-<h2><?php echo Yii::t('contacts','Share Contact');?>: <b><?php echo $model->firstName." ".$model->lastName;?></b></h2>
-<div class="form">
-<form method="POST" name="share-contact-form">
-	<b><?php echo Yii::t('contacts','E-Mail');?></b><br /><input type="text" name="email" size="50" /><br />
-	<b><?php echo Yii::t('app','Message Body');?></b><br /><textarea name="body" style="height:200px;width:558px;"><?php echo $body; ?></textarea><br />
-	<input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
-</form>
 </div>
+
+<div id="allTags" style="display:none;">
 <?php
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
-));
+foreach($allTags as $tag){
+    $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
+    $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
+    echo "<span class='tag'>".$tag->tag."</span> ";
+}
 ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
-<?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users)); 
-$this->endWidget(); ?>
+</div>
+
+<style>
+    .tag{
+        -moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+        border-style:solid;
+        border-width:1px;
+        border-color:gray;
+        margin:2px 2px;
+        display:block;
+        float:left;
+        padding:2px;
+        background-color:#CCCCCC;
+    }
+    .tag a{
+        text-decoration:none;
+        color:black;
+    }
+    
+</style>

@@ -33,12 +33,16 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
+div.record div, div.record .cell#social-media-toggle a {
+	border:1px solid #ddd;
+	border-width:0;
+}
 div.record {
 	-moz-border-radius:4px;
 	-o-border-radius:4px;
 	-webkit-border-radius:4px;
 	border-radius:4px;
-	border:1px solid #ddd;
+	border-width:1px;
 	clear:both;
 	margin:0 0 5px 0;
 	padding:5px 0;
@@ -54,7 +58,6 @@ div.record a{
 	text-decoration:none;
 }
 div.record .row {
-	margin:0 10px;
 	width:auto;
 	clear:both;
 	overflow:auto;
@@ -62,24 +65,49 @@ div.record .row {
 div.record .cell {
 	display:block;
 	float:left;
-	margin-right:5px;
+	margin:0 10px 5px 10px;
 }
 div.record hr {
 	margin:5px 0;
 	width:100%;
 }
-div.social-media {
+
+div.record .cell#social-media-toggle {
+/* 	margin:0 0 -1px 0; */
+	float:right;
+}
+div.record .cell#social-media-toggle a {
+	display:block;
+	margin:0 10px 0 0;
+	min-width:108px;
+	padding:0 5px;
+	float:right;
+	line-height:24px;
+	background:white;
+	border-width:1px;
+	border-bottom:none;
 	
+	border-radius:4px 4px 0 0;
+	-moz-border-radius:4px 4px 0 0;
+	-webkit-border-radius:4px 4px 0 0;
+	-o-border-radius:4px 4px 0 0;
+}
+div.record .row.social-media  {
+	background:#fff;
+	border-top-width:1px;
+	padding:0 10px 5px 10px;
+	overflow:hidden;
+}
+div.record .row.social-media div{
+	margin-top:5px;
 }
 div.social-media img {
 	vertical-align:text-bottom;
+	height:16px;
+	width:16px;
 }
-div.social-media .row {
-	margin-bottom:5px;
-}
-div.social-media .cell {
-	margin-bottom:5px;
-}
+
+
 
 div.details div.header {
 	border-radius:4px 4px 0 0;
@@ -111,8 +139,9 @@ table.details {
 	border:none;
 	border-collapse:separate; /* no border collapse to make rounded corners work */
 	width:590px;
+	table-layout:auto;
 }
-/* rounded corner on top left TH cell */
+/* rounded corner on top left TD cell */
 table.details tr:first-child td:first-child {
 	border-radius:4px 0 0 0;
 	-moz-border-radius:4px 0 0 0;
@@ -120,7 +149,7 @@ table.details tr:first-child td:first-child {
 	-o-border-radius:4px 0 0 0;
 	border-left-width:1px;
 }
-/* rounded corner on top left TH cell */
+/* rounded corner on top right TD cell */
 table.details tr:first-child td:last-child {
 	border-radius:0 4px 0 0;
 	-moz-border-radius:0 4px 0 0;
@@ -128,6 +157,14 @@ table.details tr:first-child td:last-child {
 	-o-border-radius:0 4px 0 0;
 	border-right-width:1px;
 }
+/* rounded corner on top full-width TD cell */
+table.details tr:first-child td:only-child {
+	border-radius:4px 4px 0 0;
+	-moz-border-radius:4px 4px 0 0;
+	-webkit-border-radius:4px 4px 0 0;
+	-o-border-radius:4px 4px 0 0;
+}
+
 
 /* left border on all left TD cells */
 table.details tr td:first-child {
@@ -151,10 +188,17 @@ table.details tr:last-child td:last-child {
 	-webkit-border-radius:0 0 4px 0;
 	-o-border-radius:0 0 4px 0;
 }
+/* rounded corner on bottom full-width TD cells in TBODY */
+table.details tr:last-child td:only-child {
+	border-radius:0 0 4px 4px;
+	-moz-border-radius:0 0 4px 4px;
+	-webkit-border-radius:0 0 4px 4px;
+	-o-border-radius:0 0 4px 4px;
+}
 
 table.details th, table.details td {
 	padding:0.3em 0.6em;
-	border:solid #ccc;
+	border:solid #ddd;
 	border-width:1px 1px 0 0; /* top and right borders for all TD and TH cells */
 	vertical-align:top;
 	font-family:sans-serif;

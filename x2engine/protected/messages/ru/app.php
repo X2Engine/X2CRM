@@ -137,6 +137,7 @@ return array (
 'Account'=>'счет',
 'Sale'=>'продажа',
 'All'=>'все',
+'Optional'=>'необязательный',
 'Records that have been modified since your last login.'=>'Записи, которые были изменены со времени вашего последнего Войти.',
 'Are you sure you want to delete this item?'=>'Вы действительно хотите удалить этот элемент?',
 

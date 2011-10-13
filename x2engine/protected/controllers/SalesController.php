@@ -110,7 +110,7 @@ class SalesController extends x2base {
 		$users = UserChild::getNames();
 		$contacts=ContactChild::getAllNames();
 		unset($users['admin']);
-		unset($users['Anyone']);
+		unset($users['']);
 		unset($contacts['0']);
 
 		// Uncomment the following line if AJAX validation is needed
@@ -351,7 +351,7 @@ class SalesController extends x2base {
 
 		if(isset($_POST['Sales']))
 		{
-                        $temp=$model->attribtes;
+                        $temp=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
 			$arr=$model->associatedContacts;
 			

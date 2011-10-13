@@ -53,6 +53,13 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
+
+function trimText($text) {
+	if(strlen($text)>150)
+		return substr($text,0,147).'...';
+	else
+		return $text;
+}
 ?>
 
 <h2><?php echo Yii::t('module','Manage {X}',array('{X}'=>$moduleConfig['title'])); ?></h2>
@@ -77,7 +84,13 @@ $('.search-form form').submit(function(){
 		'id',
 		'assignedTo',
 		'name',
-		'description',
+		array(
+			'name'=>'description',
+			'header'=>Yii::t('templates','Description'),
+			'value'=>'CHtml::link(trimText($data->description),array("view","id"=>$data->id))',
+			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'40%'),
+		),
 		'fieldOne',
 		'fieldTwo',
 		/*

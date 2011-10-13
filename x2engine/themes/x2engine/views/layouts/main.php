@@ -60,7 +60,7 @@ function saveOpacity(e,ui) {
 	$.ajax({
 		url: '" . CHtml::normalizeUrl(array('site/pageOpacity')) . "',
 		type: 'GET',
-		data:  'opacity='+ui.value
+		data: 'opacity='+ui.value
 	});
 }
 ",CClientScript::POS_HEAD);

@@ -37,6 +37,7 @@
 $this->menu=array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
+	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
 	array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
 	array('label'=>Yii::t('actions','Create Action')),
 );

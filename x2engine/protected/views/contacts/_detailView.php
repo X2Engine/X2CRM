@@ -76,16 +76,6 @@ function cleanupUrl($url) {
 		// $info=$model->backgroundInfo;
 		// $info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 ?>
-<div class="record no-border">
-	<div class="cell">
-		<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b>
-		<?php echo CHtml::link(Yii::t('contacts','Simple View'),array('view','id'=>$model->id,'detail'=>0),array('class'=>'x2-button','style'=>'margin-left:20px;')); ?></h2>
-		
-	</div>
-	<div class="cell" style="float:right;">
-		
-	</div>
-</div>
 <div class="form no-border">
 <table class="details" style="margin-top:0;">
 	<tr>
@@ -322,7 +312,7 @@ function cleanupUrl($url) {
 		</td>
 	</tr>
 	<tr id="social-media-toggle">
-		<td class="label"><label><?php echo Yii::t('contacts','Social Media'); ?></label></td>
+		<td class="label"><label><?php echo Yii::t('contacts','Social Networks'); ?></label></td>
 		<td colspan="5"><a href="#" onclick="showSocialMedia(); return false;"><?php echo Yii::t('app','Show'); ?></a></td>
 	</tr>
 	<tr id="social-media-1">

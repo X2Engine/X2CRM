@@ -34,37 +34,22 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$this->menu=array(
-	array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','View Contact')),
-	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
-if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
-	$this->menu[] = array('label'=>'Update Contact', 'url'=>array('update', 'id'=>$model->id));
+Yii::import('zii.widgets.CWidget');
+
+class TagCloud extends CWidget {
+	
+	public $visibility;
+	public function init() {
+		parent::init();
+	}
+
+	public function run() {
+                $myTags=Tags::model()->findAllBySql("SELECT *, COUNT(*) as num FROM x2_tags WHERE taggedBy='".Yii::app()->user->getName()."' GROUP BY tag ORDER BY num DESC LIMIT 20");
+                $allTags=Tags::model()->findAllBySql("SELECT *, COUNT(*) as num FROM x2_tags GROUP BY tag ORDER BY num DESC LIMIT 20");
+		$this->render('tagCloud',array(
+                    'myTags'=>$myTags,
+                    'allTags'=>$allTags,
+                )); //array(
+	}
 }
-
-
-
 ?>
-<h2><?php echo Yii::t('contacts','Share Contact');?>: <b><?php echo $model->firstName." ".$model->lastName;?></b></h2>
-<div class="form">
-<form method="POST" name="share-contact-form">
-	<b><?php echo Yii::t('contacts','E-Mail');?></b><br /><input type="text" name="email" size="50" /><br />
-	<b><?php echo Yii::t('app','Message Body');?></b><br /><textarea name="body" style="height:200px;width:558px;"><?php echo $body; ?></textarea><br />
-	<input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
-</form>
-</div>
-<?php
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
-));
-?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
-<?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users)); 
-$this->endWidget(); ?>

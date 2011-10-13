@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 Yii::app()->clientScript->registerScript('uploadExtensionCheck', "
-var illegal_ext = ['exe','bat','dmg','js','jar','swf'];	// array with disallowed extensions
+var illegal_ext = ['exe','bat','dmg','js','jar','swf', 'php'];	// array with disallowed extensions
 
 function checkName(el, sbm) {
 	// - www.coursesweb.net

@@ -53,7 +53,7 @@
 	</div>
 	<div class="cell">
 		<?php
-		echo $form->label($model,'accountName');
+		echo '<label for="accountAutoComplete">'. Yii::t('sales','Account').' ('.Yii::t('app','Optional').')<label>';
 		echo $form->hiddenField($model,'accountName');
 		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 			'name'=>'accountAutoComplete',
@@ -103,7 +103,7 @@
 					'Cold Call'=>Yii::t('sales','Cold Call'), 
 					"E-Mail"=>Yii::t('sales','E-Mail'), 
 					"Store"=>Yii::t('sales','Store')
-					)); ?>
+				)); ?>
 		<?php echo $form->error($model,'leadSource'); ?>
 	</div>
 </div>

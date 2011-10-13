@@ -33,38 +33,23 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-
-$this->menu=array(
-	array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','View Contact')),
-	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
-if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
-	$this->menu[] = array('label'=>'Update Contact', 'url'=>array('update', 'id'=>$model->id));
-}
-
-
-
 ?>
-<h2><?php echo Yii::t('contacts','Share Contact');?>: <b><?php echo $model->firstName." ".$model->lastName;?></b></h2>
-<div class="form">
-<form method="POST" name="share-contact-form">
-	<b><?php echo Yii::t('contacts','E-Mail');?></b><br /><input type="text" name="email" size="50" /><br />
-	<b><?php echo Yii::t('app','Message Body');?></b><br /><textarea name="body" style="height:200px;width:558px;"><?php echo $body; ?></textarea><br />
-	<input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
-</form>
-</div>
-<?php
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
+<h1><?php echo Yii::t('app','Search Results'); ?></h1>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'dataProvider' => $tags,
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'columns' => array(
+		array(
+			'name' => Yii::t('app','Record Type'),
+			'type' => 'raw',
+			'value' => 'substr($data->type,0,-1)', 
+		),
+                array(
+			'name' => Yii::t('app','Record'),
+			'type' => 'raw',
+			'value' => 'CHtml::link($data->itemName,Yii::app()->request->baseUrl."/index.php/".lcfirst($data->type)."/".$data->itemId)', 
+		),
+		
+	),
 ));
 ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
-<?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users)); 
-$this->endWidget(); ?>

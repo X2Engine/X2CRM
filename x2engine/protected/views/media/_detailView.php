@@ -64,7 +64,7 @@ if(in_array($file_ext,$legal_extensions))
 	<tr>
 		<td class="label"><label><?php echo ucwords($model->associationType); ?></label></td>
 		<td colspan="3"><?php 
-			if($model->associationType!='feed')
+			if($model->associationType!='feed' && $model->associationType!='docs')
 				echo CHtml::link($association->name,array($model->associationType.'/view','id'=>$model->associationId));
 			else
 				echo CHtml::link(Yii::t('social','Feed Post'),array('profile/'.$model->associationId));

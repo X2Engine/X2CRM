@@ -82,13 +82,10 @@
 	</div>
 	<div class="description">
 		<?php
-		$template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
-			$info=$data->actionDescription;
-			$info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 		if($data->type=='attachment' && $data->completedBy!='Email')
-			echo MediaChild::attachmentActionText($data->actionDescription,true,true);
+			echo MediaChild::attachmentActionText($this->convertUrls($data->actionDescription),true,true);
 		else
-			echo $this->convertLineBreaks($info,true);	// convert LF and CRLF to <br />
+			echo $this->convertUrls($data->actionDescription);	// convert LF and CRLF to <br />
 		?>
 	</div>
 	<div class="footer">

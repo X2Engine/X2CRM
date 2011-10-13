@@ -63,113 +63,124 @@ class SearchController extends x2base {
 	public function actionSearch(){
 		
 		$term=$_GET['term'];
+                
+                if(substr($term,0,1)!="#"){
 		
-		$contacts=ContactChild::model()->findAllBySql('SELECT * FROM x2_contacts WHERE CONCAT(firstName," ",lastName) LIKE "%'.$term.'%" OR backgroundInfo LIKE "%'.$term.'%"
-			OR email LIKE "%'.$term.'%" OR firstName LIKE "%'.$term.'%" OR lastName LIKE "%'.$term.'%" OR phone LIKE "%'.$term.'%" OR address LIKE "%'.$term.'%"');
-		$actions=ActionChild::model()->findAllBySql('SELECT * FROM x2_actions WHERE actionDescription LIKE "%'.$term.'%" LIMIT 10000');
-		$sales=SaleChild::model()->findAllBySql('SELECT * FROM x2_sales WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%"');
-		$accounts=AccountChild::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
-			OR tickerSymbol LIKE "%'.$term.'%"');
-		$projects=ProjectChild::model()->findAll();
-		$cases=CaseChild::model()->findAll();
-		$marketing=MarketingChild::model()->findAll();
+                    $contacts=ContactChild::model()->findAllBySql('SELECT * FROM x2_contacts WHERE CONCAT(firstName," ",lastName) LIKE "%'.$term.'%" OR backgroundInfo LIKE "%'.$term.'%"
+                            OR email LIKE "%'.$term.'%" OR firstName LIKE "%'.$term.'%" OR lastName LIKE "%'.$term.'%" OR phone LIKE "%'.$term.'%" OR address LIKE "%'.$term.'%"');
+                    $actions=ActionChild::model()->findAllBySql('SELECT * FROM x2_actions WHERE actionDescription LIKE "%'.$term.'%" LIMIT 10000');
+                    $sales=SaleChild::model()->findAllBySql('SELECT * FROM x2_sales WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%"');
+                    $accounts=AccountChild::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
+                            OR tickerSymbol LIKE "%'.$term.'%"');
+                    $projects=ProjectChild::model()->findAll();
+                    $cases=CaseChild::model()->findAll();
+                    $marketing=MarketingChild::model()->findAll();
 
-		$names=array();
-		$descriptions=array();
-		$notes=array();
-		
-		$records=array();
+                    $names=array();
+                    $descriptions=array();
+                    $notes=array();
 
-		$regEx="/$term/i";
+                    $records=array();
 
-		foreach($contacts as $contact){
-			if(preg_match($regEx,$contact->firstName." ".$contact->lastName)>0){
-				$names[]=$contact;
-			}elseif(preg_match($regEx,$contact->firstName)>0 || preg_match($regEx,$contact->lastName)>0){
-				$notes[]=$contact;
-			}elseif(preg_match($regEx,$contact->backgroundInfo)>0){
-				$descriptions[]=$contact;
-			}elseif(preg_match($regEx,$contact->email)>0){
-				$names[]=$contact;
-			}elseif(preg_match($regEx,$contact->phone)>0){
-				$names[]=$contact;
-			}elseif(preg_match($regEx,$contact->address)>0){
-				$names[]=$contact;
-			}
-		}
+                    $regEx="/$term/i";
 
-		foreach($actions as $action){
-			if(preg_match($regEx,$action->actionDescription)>0){
-				$names[]=$action;
-			}
-		}
+                    foreach($contacts as $contact){
+                            if(preg_match($regEx,$contact->firstName." ".$contact->lastName)>0){
+                                    $names[]=$contact;
+                            }elseif(preg_match($regEx,$contact->firstName)>0 || preg_match($regEx,$contact->lastName)>0){
+                                    $notes[]=$contact;
+                            }elseif(preg_match($regEx,$contact->backgroundInfo)>0){
+                                    $descriptions[]=$contact;
+                            }elseif(preg_match($regEx,$contact->email)>0){
+                                    $names[]=$contact;
+                            }elseif(preg_match($regEx,$contact->phone)>0){
+                                    $names[]=$contact;
+                            }elseif(preg_match($regEx,$contact->address)>0){
+                                    $names[]=$contact;
+                            }
+                    }
 
-		foreach($sales as $sale){
-			if(preg_match($regEx,$sale->name)>0){
-				$names[]=$sale;
-			}elseif(preg_match($regEx,$sale->description)>0){
-				$descriptions[]=$sale;
-			}
-		}
+                    foreach($actions as $action){
+                            if(preg_match($regEx,$action->actionDescription)>0){
+                                    $names[]=$action;
+                            }
+                    }
 
-		foreach($accounts as $account){
-			if(preg_match($regEx,$account->name)>0){
-				$names[]=$account;
-			}elseif(preg_match($regEx,$account->tickerSymbol)>0){
-				$names[]=$account;
-			}elseif(preg_match($regEx,$account->description)>0){
-				$descriptions[]=$account;
-			}elseif(preg_match($regEx,$account->website)>0){
-				$names[]=$account;
-			}
-		}
+                    foreach($sales as $sale){
+                            if(preg_match($regEx,$sale->name)>0){
+                                    $names[]=$sale;
+                            }elseif(preg_match($regEx,$sale->description)>0){
+                                    $descriptions[]=$sale;
+                            }
+                    }
 
-		foreach($projects as $project){
-			if(preg_match($regEx,$project->name)>0){
-				$names[]=$project;
-			}elseif(preg_match($regEx,$project->description)>0){
-				$descriptions[]=$project;
-			}
-		}
+                    foreach($accounts as $account){
+                            if(preg_match($regEx,$account->name)>0){
+                                    $names[]=$account;
+                            }elseif(preg_match($regEx,$account->tickerSymbol)>0){
+                                    $names[]=$account;
+                            }elseif(preg_match($regEx,$account->description)>0){
+                                    $descriptions[]=$account;
+                            }elseif(preg_match($regEx,$account->website)>0){
+                                    $names[]=$account;
+                            }
+                    }
 
-		foreach($cases as $case){
-			if(preg_match($regEx,$case->name)>0){
-				$names[]=$case;
-			}elseif(preg_match($regEx,$case->description)>0){
-				$descriptions[]=$case;
-			}
-		}
+                    foreach($projects as $project){
+                            if(preg_match($regEx,$project->name)>0){
+                                    $names[]=$project;
+                            }elseif(preg_match($regEx,$project->description)>0){
+                                    $descriptions[]=$project;
+                            }
+                    }
 
-		foreach($marketing as $item){
-			if(preg_match($regEx,$item->name)>0){
-				$names[]=$item;
-			}elseif(preg_match($regEx,$item->description)>0){
-				$descriptions[]=$item;
-			}
-		}
-		
-		
-		$records=array_merge($names,$descriptions);
-		
-		$records=array_merge($records,$notes);
+                    foreach($cases as $case){
+                            if(preg_match($regEx,$case->name)>0){
+                                    $names[]=$case;
+                            }elseif(preg_match($regEx,$case->description)>0){
+                                    $descriptions[]=$case;
+                            }
+                    }
 
-		asort($records);
-		
-		$records=Record::convert($records);
-		
-		$dataProvider=new CArrayDataProvider($records,array(
-			'id'=>'id',
-			'pagination'=>array(
-				'pageSize'=>10,
-			),
-		));
-		
-		$this->render('search',array(
-			'records'=>$records,
-			'dataProvider'=>$dataProvider,
-			'term'=>$term,
-		));
-	}
+                    foreach($marketing as $item){
+                            if(preg_match($regEx,$item->name)>0){
+                                    $names[]=$item;
+                            }elseif(preg_match($regEx,$item->description)>0){
+                                    $descriptions[]=$item;
+                            }
+                    }
+
+
+                    $records=array_merge($names,$descriptions);
+
+                    $records=array_merge($records,$notes);
+
+                    asort($records);
+
+                    $records=Record::convert($records);
+
+                    $dataProvider=new CArrayDataProvider($records,array(
+                            'id'=>'id',
+                            'pagination'=>array(
+                                    'pageSize'=>10,
+                            ),
+                    ));
+
+                    $this->render('search',array(
+                            'records'=>$records,
+                            'dataProvider'=>$dataProvider,
+                            'term'=>$term,
+                    ));
+            }else{
+                $results=new CActiveDataProvider('Tags',array(
+                    'criteria'=>array(
+				'condition'=>'tag="'.$term.'"',
+		)));
+                $this->render('searchTags',array(
+                    'tags'=>$results,
+                ));
+            }
+        }
 }
 
 ?>

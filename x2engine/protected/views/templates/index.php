@@ -52,6 +52,13 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
+
+function trimText($text) {
+	if(strlen($text)>150)
+		return substr($text,0,147).'...';
+	else
+		return $text;
+}
 ?>
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
@@ -74,7 +81,13 @@ $('.search-form form').submit(function(){
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
-		'description',
+		array(
+			'name'=>'description',
+			'header'=>Yii::t('templates','Description'),
+			'value'=>'CHtml::link(trimText($data->description),array("view","id"=>$data->id))',
+			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'40%'),
+		),
 		'assignedTo',
 		array(
 			'name'=>'name',

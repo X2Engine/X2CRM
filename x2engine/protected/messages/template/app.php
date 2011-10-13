@@ -132,6 +132,7 @@ return array (
 'Account'=>'',
 'Sale'=>'',
 'All'=>'',
+'Optional'=>'',
 'Records that have been modified since your last login.'=>'',
 'Are you sure you want to delete this item?'=>'',
 

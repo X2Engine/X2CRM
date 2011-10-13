@@ -45,7 +45,7 @@ $this->menu=array(
 
 if($user=='admin' || $user==$model->createdBy)
 	$this->menu[] = array('label'=>Yii::t('docs','Edit Doc'));
-if($user=='admin')
+if($user=='admin' || $user==$model->createdBy)
 	$this->menu[] = array('label'=>Yii::t('docs','Delete Doc'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('docs','Are you sure you want to delete this item?')));
 if(array_search($user,$pieces)!=false || $user==$model->editPermissions || $user=='admin' || $user==$model->createdBy)
 	$this->menu[]=array('label'=>Yii::t('docs','Edit Doc Permissions'), 'url'=>array('changePermissions', 'id'=>$model->id));

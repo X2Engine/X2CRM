@@ -133,6 +133,7 @@ return array (
 'Account'=>'帐户',
 'Sale'=>'销售',
 'All'=>'所有',
+'Optional'=>'可选',
 'Records that have been modified since your last login.'=>'自您上次登录的记录已被修改。',
 'Are you sure you want to delete this item?'=>'是否确定要删除这个项目吗？',
 

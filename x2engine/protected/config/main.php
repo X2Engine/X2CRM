@@ -40,6 +40,7 @@
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
 require_once "dbConfig.php";
+require_once "emailConfig.php";
 
 
 return array(
@@ -148,7 +149,9 @@ return array(
 			'ChatBox'=>'Chat',
 			'NoteBox'=>'Note Pad',
 			'ActionMenu'=>'My Actions',
+                        'TagCloud'=>'Tag Cloud',
 		),
-		'currency'=>''
+		'currency'=>'',
+                'version'=>$version,
 	),
 );

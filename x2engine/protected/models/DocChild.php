@@ -43,15 +43,23 @@ class DocChild extends Docs {
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
+		// $criteria->compare('id',$this->id);
 		$criteria->compare('title',$this->title,true);
-		$criteria->compare('text',$this->text,true);
+		// $criteria->compare('text',$this->text,true);
 		$criteria->compare('createdBy',$this->createdBy,true);
 		$criteria->compare('createDate',$this->createDate);
 		$criteria->compare('updatedBy',$this->updatedBy,true);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
-		$criteria->compare('editPermissions',$this->editPermissions,true);
+		// $criteria->compare('editPermissions',$this->editPermissions,true);
 
+		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		if($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+			
+		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
+		if($dateRange !== false)
+			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		
 		return new CActiveDataProvider(get_class($this), array(
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),

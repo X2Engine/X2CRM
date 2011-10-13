@@ -73,12 +73,13 @@ return array (
 
 // Misc
 'Assigned to {name}'=>'分配给 {name}',
-'Social Media'=>'社会化媒体',
+'Social Networks'=>'社会网络',
 'Detail View'=>'详细信息视图',
 'Simple View'=>'简单查看',
 
 //	Contacts Actions
-'Contact List'=>'联络名单',
+'My Contacts'=>'我的联系人',
+'All Contacts'=>'所有联系人',
 'Create Contact'=>'建立联系',
 'View Contact'=>'查看联系方式',
 'Update Contact'=>'更新联系',

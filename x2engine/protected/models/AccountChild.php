@@ -154,18 +154,30 @@
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
+		// $criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('website',$this->website,true);
+		// $criteria->compare('website',$this->website,true);
 		$criteria->compare('type',$this->type,true);
 		$criteria->compare('annualRevenue',$this->annualRevenue);
 		$criteria->compare('phone',$this->phone,true);
-		$criteria->compare('tickerSymbol',$this->tickerSymbol,true);
-		$criteria->compare('employees',$this->employees);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('associatedContacts',$this->associatedContacts,true);
-		$criteria->compare('description',$this->description,true);
+		// $criteria->compare('tickerSymbol',$this->tickerSymbol,true);
+		// $criteria->compare('employees',$this->employees);
+		// $criteria->compare('assignedTo',$this->assignedTo,true);
+		// $criteria->compare('createDate',$this->createDate);
+		// $criteria->compare('associatedContacts',$this->associatedContacts,true);
+		// $criteria->compare('description',$this->description,true);
+		// $criteria->compare('lastUpdated',$this->lastUpdated);
+		// $criteria->compare('updatedBy',$this->updatedBy,true);
 
+		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		if($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+			
+		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
+		if($dateRange !== false)
+			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+
+		
 		$dataProvider=new SmartDataProvider(get_class($this), array(
 			'sort'=>array('defaultOrder'=>'name ASC'),
 			'pagination'=>array(

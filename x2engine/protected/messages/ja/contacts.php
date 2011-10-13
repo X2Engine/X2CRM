@@ -73,12 +73,13 @@ return array (
 
 // Misc
 'Assigned to {name}'=>'{name} に割り当て',
-'Social Media'=>'ソーシャルメディア',
+'Social Networks'=>'ネットワーク',
 'Detail View'=>'詳細ビュー',
 'Simple View'=>'簡単なビュー',
 
 //	Contacts Actions
-'Contact List'=>'コンタクトリスト',
+'My Contacts'=>'私のコンタクト',
+'All Contacts'=>'すべてのコンタクト',
 'Create Contact'=>'コンタクトを作る',
 'View Contact'=>'コンタクトを見る',
 'Update Contact'=>'コンタクトを更新する',

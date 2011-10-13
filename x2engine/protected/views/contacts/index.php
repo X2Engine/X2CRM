@@ -33,15 +33,42 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
+if($this->route=='contacts/viewAll') {
+	$heading = Yii::t('contacts','All Contacts'); 
+	$dataProvider = $model->searchAll();
+	
+	$this->menu=array(
+		array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
+		array('label'=>Yii::t('contacts','All Contacts')),
+		array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+		array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+		array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
+		array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
+		array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
+	);
+} else {
+	$heading = Yii::t('contacts','My Contacts'); 
+	$dataProvider = $model->search();
+	
+	$this->menu=array(
+		array('label'=>Yii::t('contacts','My Contacts')),
+		array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
+		array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+		array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+		array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
+		array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
+		array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
+	);
+}
+// $this->menu=array(
+	// array('label'=>Yii::t('contacts','Contact List')),
+	// array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+	// array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
+	// array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
+	// array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
+// );
 
-$this->menu=array(
-	array('label'=>Yii::t('contacts','Contact List')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-	array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
-);
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();
@@ -67,11 +94,11 @@ $('.search-form form').submit(function(){
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('contacts','Contacts').'</h2><div class="title-bar">'
+	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$model->search(),
+	'dataProvider'=>$dataProvider,
 	'filter'=>$model,
 	'columns'=>array(
 		//'id',
@@ -93,16 +120,17 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'15%')
 		),
+                array(
+			'name'=>'lastUpdated',
+			'header'=>Yii::t('contacts','Last Updated'),
+			'value'=>'date("Y-m-d",$data->lastUpdated)',
+			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'15%')
+		),
 		array(
 			'name'=>'leadSource',
 			'header'=>Yii::t('contacts','Lead Source'),
 		),
-		array(
-			'name'=>'priority',
-			'header'=>Yii::t('contacts','Priority'),
-			'value'=>'Yii::t("contacts",$data->priority)',
-			'htmlOptions'=>array('width'=>'15%')
-		)
 		
 	),
 ));

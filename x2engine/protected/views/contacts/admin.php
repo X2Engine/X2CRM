@@ -35,7 +35,8 @@
  ********************************************************************************/
 
 $this->menu=array(
-	array('label'=>Yii::t('contacts','Contact List'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
 	array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
@@ -85,7 +86,10 @@ $this->renderPartial('_search',array(
 		'firstName',
 		'lastName',
 		'phone',
-		'email',
+		array(
+			'name'=>'email',
+			'htmlOptions'=>array('width'=>'200px')
+		),
 		'address',
 		//'visibility',
 		'assignedTo',

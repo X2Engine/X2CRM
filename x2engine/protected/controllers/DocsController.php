@@ -56,11 +56,11 @@ class DocsController extends x2base {
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','update','exportToHtml','changePermissions'),
+				'actions'=>array('index','view','create','update','exportToHtml','changePermissions', 'delete'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
+				'actions'=>array('admin'),
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
@@ -226,7 +226,29 @@ class DocsController extends x2base {
 	{
 		$model=new DocChild('search');
 		$name="Docs";
-		parent::actionIndex($model,$name);
+                
+                $attachments=new CActiveDataProvider('Media',array(
+                    'criteria'=>array(
+				'order'=>'createDate DESC',
+				'condition'=>'associationType="docs"'
+		)));
+                
+		$pageParam = ucfirst($this->modelClass). '_page';
+		if (isset($_GET[$pageParam])) {
+			$page = $_GET[$pageParam];
+			Yii::app()->user->setState($this->id.'-page',(int)$page);
+		} else {
+			$page=Yii::app()->user->getState($this->id.'-page',1);
+			$_GET[$pageParam] = $page;
+		}
+
+		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
+		}
+			$this->render('index',array(
+			'model'=>$model,
+                        'attachments'=>$attachments,
+		));
 	}
 
 	/**

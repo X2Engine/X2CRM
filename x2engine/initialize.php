@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.1';
+$x2Version = '0.9.2';
  
 $host=$_POST['host'];
 $db=$_POST['db'];
@@ -96,6 +96,7 @@ $write =
 \$user='$user';
 \$pass='$pass';
 \$dbname='$db';
+\$version='$x2Version';
 ?>";
 fwrite($handle,$write);
 fclose($handle);
@@ -106,7 +107,7 @@ $con = mysql_connect($host,$user,$pass) or die("Unable to connect to database.  
 mysql_select_db($db,$con) or die ("Unable to select database.  Please make sure the name is spelled properly and that the database exists.".mysql_error());
 
 mysql_query("DROP TABLE IF EXISTS x2_users, x2_contacts, x2_actions, x2_sales, x2_projects, x2_marketing, x2_cases, x2_profile,
-	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog") or die("Unable to update tables, check user permissions.".mysql_error());
+	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog, x2_tags") or die("Unable to update tables, check user permissions.".mysql_error());
 
 mysql_query("CREATE TABLE x2_users(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -366,6 +367,17 @@ mysql_query("CREATE TABLE x2_changelog(
 	COLLATE = utf8_general_ci
  ") or die('Unable to create table x2_changelog, check user permissions.'.mysql_error());
 
+mysql_query("CREATE TABLE x2_tags( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	type VARCHAR(50) NOT NULL,
+	itemId INT NOT NULL,
+	taggedBy VARCHAR(50) NOT NULL,
+	tag VARCHAR(250) NOT NULL,
+        itemName VARCHAR(250),
+	timestamp INT NOT NULL DEFAULT 0)
+	COLLATE = utf8_general_ci
+ ") or die('Unable to create table x2_tags, check user permissions.'.mysql_error());
+
 
 $adminPassword=md5($adminPassword); 
 $adminEmail=mysql_escape_string($adminEmail);
@@ -379,6 +391,7 @@ mysql_query("INSERT INTO x2_admin (accounts, sales, timeout, webLeadEmail, menuO
 		'contacts:actions:sales:accounts:docs','Contacts:Actions:Sales:Accounts:Docs','1:1:1:0:1','$currency')") or die("Unable to input admin config");
 
 $backgrounds = array(
+	'santacruznight_blur.jpg',
 	'screens2cc.jpg',
 	'calico.jpg',
 	'calico_blur.jpg',

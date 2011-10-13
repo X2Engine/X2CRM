@@ -133,6 +133,7 @@ return array (
 'Account'=>'アカウント',
 'Sale'=>'販売',
 'All'=>'全部',
+'Optional'=>'オプション',
 'Records that have been modified since your last login.'=>'あなたの最後のログイン以降に変更したレコード。',
 'Are you sure you want to delete this item?'=>'あなたがこのアイテムを削除してもよろしいですか？',
 

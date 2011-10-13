@@ -86,8 +86,8 @@ $this->beginContent('/layouts/main'); ?>
 			'jQueryOptions'=>array(
 				'opacity'=>0.6,	//set the dragged object's opacity to 0.6
 				'handle'=>'.portlet-decoration',	//specify tag to be used as handle
-				'distance'=>10,
-				'delay'=>250,
+				'distance'=>20,
+				'delay'=>150,
 				'revert'=>50,
 				'update'=>"js:function(){
 					$.ajax({

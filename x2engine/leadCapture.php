@@ -78,9 +78,9 @@ if($row=mysql_fetch_array($admin))
         
         mysql_query($sql) or die("Unable to upate contact record.");
     }else{
-    
-        $sql="INSERT INTO x2_contacts (firstName, lastName, email, assignedTo, visibility, backgroundInfo, phone) VALUES
-            ('$firstName','$lastName','$email','Anyone','1','$info', '$phone')";
+        $time=time();
+        $sql="INSERT INTO x2_contacts (firstName, lastName, email, assignedTo, visibility, backgroundInfo, phone, lastUpdated, updatedBy) VALUES
+            ('$firstName','$lastName','$email','Anyone','1','$info', '$phone', 'admin', '$time')";
 
         mysql_query($sql) or die(mysql_error());
 

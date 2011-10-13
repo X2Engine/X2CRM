@@ -73,12 +73,13 @@ return array (
 
 // Misc
 'Assigned to {name}'=>'',
-'Social Media'=>'',
+'Social Networks'=>'',
 'Detail View'=>'',
 'Simple View'=>'',
 
 //	Contacts Actions
-'Contact List'=>'',
+'My Contacts'=>'',
+'All Contacts'=>'',
 'Create Contact'=>'',
 'View Contact'=>'',
 'Update Contact'=>'',

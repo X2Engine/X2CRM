@@ -35,7 +35,8 @@
  ********************************************************************************/
 
 $this->menu=array(
-	array('label'=>Yii::t('contacts','Contact List'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
 	array('label'=>Yii::t('contacts','View Contact')),
@@ -53,10 +54,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'enableAjaxValidation'=>false,
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
-
 ?>
-
-
 <!--<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>-->
 <?php
 
@@ -67,16 +65,28 @@ if(isset($_GET['detail'])) {
 	$detailView = ProfileChild::getDetailView();
 }
 
-$this->renderPartial($detailView? '_detailView' : '_simpleView',array('model'=>$model,'form'=>$form,'users'=>$users));
+if($detailView) { ?>
+	<?php echo CHtml::link('['.Yii::t('contacts','Simple View').']',array('view','id'=>$model->id,'detail'=>0),array('style'=>'float:right;text-decoration:none;')); ?>
+	<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
+	<?php
+	$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users));
+	$this->endWidget();
+} else { ?>
+	<?php echo CHtml::link('['.Yii::t('contacts','Detail View').']',array('view','id'=>$model->id,'detail'=>1),array('style'=>'float:right;text-decoration:none;')); ?>
+	<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
+	<?php
+	$this->renderPartial('_simpleView',array('model'=>$model,'form'=>$form,'users'=>$users));
+	$this->endWidget();
+}
 
-$this->endWidget(); ?>
-
+if($detailView) { ?>
 	<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
 	<?php /*<a class="x2-button" href="#" onClick="toggleForm('#note-form',400);return false;"><span><?php echo Yii::t('app','Add Comment'); ?></span></a>
 	<a class="x2-button" href="#" onClick="toggleForm('#action-form',400);return false;"><span><?php echo Yii::t('app','Create Action'); ?></span></a> */ ?>
 	<a class="x2-button" href="mailto:<?php echo $model->email; ?>?cc=dropbox@<?php echo substr(Yii::app()->request->getServerName(),4);?>"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
+<?php } ?>
 	<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
-	<a class="x2-button" href="shareContact/<?php echo $model->id;?>"><span><?php echo Yii::t('contacts','Share Contact'); ?></span></a>
+	<a class="x2-button" style="margin-bottom:15px;" href="shareContact/<?php echo $model->id;?>"><span><?php echo Yii::t('contacts','Share Contact'); ?></span></a>
 	<br />
 <div id="attachment-form" style="display:none;">
 	<?php $this->widget('Attachments',array('type'=>'contacts','associationId'=>$model->id)); ?>

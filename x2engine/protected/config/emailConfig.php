@@ -2,5 +2,6 @@
 $host='localhost';
 $user='x3engine';
 $pass='x32011!!';
-$dbname='x3-x2engine';
+$dbname='x2merge';
+$version='0.9.2';
 ?>

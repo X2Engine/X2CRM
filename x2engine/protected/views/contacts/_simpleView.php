@@ -39,19 +39,42 @@ $showSocialMedia = ProfileChild::getSocialMedia();
 
 Yii::app()->clientScript->registerScript('detailVewFields', "
 
+var socialMediaOpen = true;
+var socialMediaHeight = 0;
 function hideSocialMedia() {
-	$('#social-media').hide();
+	socialMediaHeight = $('#social-media').height();
+	//$('#social-media').hide();
+	$('#social-media').css('height',0);
+	$('#social-media').css('padding-bottom',0);
+	$('#social-media').css('border-bottom-width',0);
 	$('#social-media-minimize').html('[+]');
+	//$('#social-media-toggle').css('z-index','0');
+	//$('#social-media-toggle').css('border-bottom','1px solid #ddd');
+	socialMediaOpen = false;
 }
 function toggleSocialMedia() {
-	$('#social-media').toggle('blind',{},400);
 	var button = $('#social-media-minimize');
-	if(button.html() == '[+]')
-		button.html('[&ndash;]');
-	else
+
+	if(socialMediaOpen) {
+		$('#social-media').stop();
+		$('#social-media').animate({height:0,paddingBottom:0},400,'swing', function() {
+			$('#social-media').hide();
+			$('#social-media-toggle').css('border-bottom-width','1px');
+		});
+		
 		button.html('[+]');
+	} else {
+		$('#social-media').show();
+		$('#social-media').stop();
+		$('#social-media').animate({height:socialMediaHeight,paddingBottom:5},400,'swing');
+		$('#social-media-toggle').css('border-bottom-width','0');
+		
+		button.html('[&ndash;]');
+	}
+
+	socialMediaOpen = !socialMediaOpen;
 }
-".($showSocialMedia? '' : "$(function(){hideSocialMedia();});"),CClientScript::POS_HEAD);
+".($showSocialMedia? "$(function() {socialMediaHeight = $('#social-media').css('height'); });" : "$(function(){hideSocialMedia();});"),CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('stopEdit','
 	$(document).ready(function(){
 		$("td#background a").click(function(e){
@@ -75,11 +98,133 @@ function humanUrl($url) {
 		// $info=$model->backgroundInfo;
 		// $info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 ?>
-<div class="record">
-	<div class="row">
+<div class="record no-border">
+<table class="details">
+<tr>
+	<td colspan="4" style="background:#eee;padding:5px 0 0 0;">
+		<div class="row">
+			<div class="cell span-6">
+				<?php
+				if(!empty($model->phone))
+					echo '<b>'.Yii::t('contacts','Work').'</b> '.$model->phone."</b><br />\n";
+				if(!empty($model->phone2))
+					echo '<b>'.Yii::t('contacts','Cell').' </b>'.$model->phone2."</b><br />\n";
+				?>
+			</div>
+			<div class="cell">
+				<?php if(!empty($model->address)) echo $model->address . '<br />'; ?>
+				<?php echo $model->city; if(!empty($model->city) && !empty($model->state)) echo ', ';?>
+				<?php echo $model->state; ?>
+				<?php echo $model->zipcode; ?>
+				<?php if(!empty($model->country)) echo ' ' . $model->country; ?><br />
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell span-6">
+				<?php
+				$str=substr(Yii::app()->request->getServerName(),4);
+				if(!empty($model->email)) echo CHtml::mailto($model->email,$model->email."?cc=dropbox@".$str);
+				?>
+			</div>
+			<div class="cell">
+				<?php if (!empty($model->website))
+					echo CHtml::link(preg_replace('/^(http)s?:\/\//i','',$model->website),cleanupUrl($model->website));?>
+			</div>
+		</div>
+		<div class="row" style="margin-bottom:-1px;">
+			<div class="cell">
+				<?php
+				$this->widget('CStarRating',array(
+					'model'=>$model,
+					'attribute'=>'rating',
+					'readOnly'=>true,
+					'minRating'=>1, //minimal valuez
+					'maxRating'=>5,//max value
+					'starCount'=>5, //number of stars
+					'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+				)); ?>
+			</div>
+			<div class="cell" id="social-media-toggle" style="margin:0">
+				<a href="#" onclick="toggleSocialMedia(); return false;"><?php echo Yii::t('contacts','Social Networks'); ?> <span id="social-media-minimize">[&ndash;]</span></a>
+			</div>
+		</div>
+		<div class="row social-media" id="social-media">
+		<?php 
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png');
+		if(!empty($model->skype))
+			echo '<div class="span-6">'.CHtml::link($img.' '.$model->skype,'skype:'.$model->skype.'?call')."</div>\n";
+
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/facebook.png');
+		if(!empty($model->facebook))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->facebook),cleanupUrl($model->facebook),array('target'=>'_blank'))."</div>\n";
+
+		$img = CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/twitter.png');
+		if(!empty($model->twitter))
+			echo '<div class="span-6">'.CHtml::link($img.' '.$model->twitter,'http://www.twitter.com/'.$model->twitter,array('target'=>'_blank'))."</div>\n";
+
+		$img = CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/googleplus.png');
+		if(!empty($model->googleplus))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->googleplus),cleanupUrl($model->googleplus),array('target'=>'_blank'))."</div>\n";
+
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/linkedin.png');
+		if(!empty($model->linkedin))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->linkedin),cleanupUrl($model->linkedin),array('target'=>'_blank'))."</div>\n";
+
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/other.png');
+		if(!empty($model->otherUrl))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->otherUrl),cleanupUrl($model->otherUrl),array('target'=>'_blank'))."</div>\n";
+		?>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan="4" style="padding:10px;">
+		<?php echo $this->convertUrls($model->backgroundInfo); ?>
+	</td>
+</tr>
+<tr>
+	<td class="label" width="80">Assigned to</td>
+	<td>
+		<?php
+		if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
+			//$assignedUser = $users[$model->assignedTo];
+			
+			$assignedUser = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$model->assignedTo));
+			$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
+		} else
+			//echo $form->label($model,'assignedTo');
+			$userLink = Yii::t('app','anyone');
+		
+		//$assignedUser 
+		echo $userLink;
+		?>
+	</td>
+	<td class="label" width="80">Account</td>
+	<td>
+		<?php
+		// if(empty($model->company)) {
+		if(!empty($model->accountId)) {
+			$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
+			if($accountModel != null)
+				echo $accountModel->name . ' ' . CHtml::link('['.Yii::t('accounts','account').']',array('accounts/view','id'=>$accountModel->id))."<br />\n";
+		} else if(!empty($model->company))
+			echo $model->company."<br />\n";
+		?>
+	</td>
+</tr>
+</table>
+</div>
+<?php
+/*
+?>
+<div class="record" style="background:#f0f0f0;">
+	<div class="row" style="margin-right:0;">
 		<div class="cell">
 			<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b>
-			<?php echo CHtml::link(Yii::t('contacts','Detail View'),array('view','id'=>$model->id,'detail'=>1),array('class'=>'x2-button','style'=>'margin-left:20px;')); ?></h2>
+			</h2>
+		</div>
+		<div class="cell" style="float:right;">
+			<?php echo CHtml::link(Yii::t('contacts','Detail View'),array('view','id'=>$model->id,'detail'=>1),array('class'=>'x2-button')); ?>
 		</div>
 	</div>
 	<div class="row" style="margin-top:0;">
@@ -152,48 +297,43 @@ function humanUrl($url) {
 			<?php if (!empty($model->website))
 				echo CHtml::link(preg_replace('/^(http)s?:\/\//i','',$model->website),cleanupUrl($model->website));?>
 		</div>
-		<div class="cell" style="float:right;">
-			<a href="#" onclick="toggleSocialMedia(); return false;"><?php echo Yii::t('contacts','Social Media'); ?> <span id="social-media-minimize">[&ndash;]</span></a>
-		</div>
-	</div>
-	<div id="social-media" class="social-media" style="margin-top:5px;">
-	<hr>
-	<div class="row" style="margin-top:5px;">
-			<?php 
-			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png');
-			if(!empty($model->skype))
-				echo '<div class="cell span-6">'.CHtml::link($img.' '.$model->skype,'skype:'.$model->skype.'?call')."</div>\n";
-
-			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/facebook.png');
-			if(!empty($model->facebook))
-				echo '<div class="cell span-6">'.CHtml::link($img.' '.humanUrl($model->facebook),cleanupUrl($model->facebook),array('target'=>'_blank'))."</div>\n";
-
-			$img = CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/twitter.png');
-			if(!empty($model->twitter))
-				echo '<div class="cell span-6">'.CHtml::link($img.' '.$model->twitter,'http://www.twitter.com/'.$model->twitter,array('target'=>'_blank'))."</div>\n";
-
-			$img = CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/googleplus.png');
-			if(!empty($model->googleplus))
-				echo '<div class="cell span-6">'.CHtml::link($img.' '.humanUrl($model->googleplus),cleanupUrl($model->googleplus),array('target'=>'_blank'))."</div>\n";
-
-			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/linkedin.png');
-			if(!empty($model->linkedin))
-				echo '<div class="cell span-6">'.CHtml::link($img.' '.humanUrl($model->linkedin),cleanupUrl($model->linkedin),array('target'=>'_blank'))."</div>\n";
-
-			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/other.png');
-			if(!empty($model->otherUrl))
-				echo '<div class="cell span-6">'.CHtml::link($img.' '.humanUrl($model->otherUrl),cleanupUrl($model->otherUrl),array('target'=>'_blank'))."</div>\n";
-			?>
 
 	</div>
+	<div class="cell" id="social-media-toggle" style="margin:0 0 -2 0;">
+		<a href="#" onclick="toggleSocialMedia(); return false;"><?php echo Yii::t('contacts','Social Networks'); ?> <span id="social-media-minimize">[&ndash;]</span></a>
 	</div>
-	
-	<?php if(!empty($model->backgroundInfo)) { ?>
-	<hr>
-	<div class="row" style="margin-top:5px;">
+	<div class="row shadow">
+	<div id="social-media" class="cell social-media">
+		<?php 
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png');
+		if(!empty($model->skype))
+			echo '<div class="span-6">'.CHtml::link($img.' '.$model->skype,'skype:'.$model->skype.'?call')."</div>\n";
+
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/facebook.png');
+		if(!empty($model->facebook))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->facebook),cleanupUrl($model->facebook),array('target'=>'_blank'))."</div>\n";
+
+		$img = CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/twitter.png');
+		if(!empty($model->twitter))
+			echo '<div class="span-6">'.CHtml::link($img.' '.$model->twitter,'http://www.twitter.com/'.$model->twitter,array('target'=>'_blank'))."</div>\n";
+
+		$img = CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/googleplus.png');
+		if(!empty($model->googleplus))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->googleplus),cleanupUrl($model->googleplus),array('target'=>'_blank'))."</div>\n";
+
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/linkedin.png');
+		if(!empty($model->linkedin))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->linkedin),cleanupUrl($model->linkedin),array('target'=>'_blank'))."</div>\n";
+
+		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/other.png');
+		if(!empty($model->otherUrl))
+			echo '<div class="span-6">'.CHtml::link($img.' '.humanUrl($model->otherUrl),cleanupUrl($model->otherUrl),array('target'=>'_blank'))."</div>\n";
+		?>
+	</div>
+	<div class="row" style="border-top:1px solid #ddd;padding-top:5px;margin-top:-1px;">
 		<div class="cell">
 			<?php echo $this->convertUrls($model->backgroundInfo); ?>
 		</div>
 	</div>
-<?php } ?>
-</div>
+	</div>
+</div> */

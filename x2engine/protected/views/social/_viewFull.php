@@ -69,7 +69,7 @@ $commentDataProvider=new CActiveDataProvider('Social', array(
 	}
 	?>
 	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,$data->associationId); ?> <span class="comment-age"><?php echo x2base::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
-	<?php echo x2base::convertLineBreaks($this->convertUrls($data->data)); ?><br />
+	<?php echo MediaChild::attachmentSocialText($data->data,true,true); ?><br />
 	<?php 
 	if(count($commentDataProvider->getData())>0){
 		$this->widget('zii.widgets.CListView', array(

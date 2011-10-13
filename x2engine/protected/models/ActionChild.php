@@ -139,259 +139,95 @@ class ActionChild extends Actions {
 	
 	
 	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 		$parameters=array('condition'=>"(assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."') AND complete!='Yes' AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 		
-		
-		$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('actionDescription',$this->actionDescription,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationName',$this->associationName,true);
-		$criteria->compare('dueDate',$this->dueDate,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('complete',$this->complete,true);
-		$criteria->compare('reminder',$this->reminder,true);
-		$criteria->compare('completedBy',$this->completedBy,true);
-		$criteria->compare('completeDate',$this->completeDate,true);
-
-		$dataProvider=new SmartDataProvider('Actions', array(
-			'sort'=>array(
-				'defaultOrder'=>'dueDate DESC, createDate DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2),
-			),
-			'criteria'=>$criteria,
-		));
-		
-		//$dataProvider->setData($arr);
-		
-		//$arr=$dataProvider->getData();
-		//foreach($arr as $action){
-			//$action=ActionChild::changeDates($action);
-		//}
-		//$dataProvider->setData($arr);
-		
-		return $dataProvider;
+		return $this->searchBase($criteria);
 	}
 
 	public function searchComplete() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 		$parameters=array("condition"=>"(assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."') AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('actionDescription',$this->actionDescription,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationName',$this->associationName,true);
-		$criteria->compare('dueDate',$this->dueDate,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('complete',$this->complete,true);
-		$criteria->compare('reminder',$this->reminder,true);
-		$criteria->compare('completedBy',$this->completedBy,true);
-		$criteria->compare('completeDate',$this->completeDate,true);
-
-		$dataProvider=new SmartDataProvider('Actions', array(
-			'sort'=>array(
-				'defaultOrder'=>'completeDate DESC, createDate DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
-			),
-			'criteria'=>$criteria
-	));
-
-	//$arr=$dataProvider->getData();
-	//foreach($arr as $action){
-	//	$action=ActionChild::changeDates($action);
-	//}
-	//$dataProvider->setData($arr);
-	
-	return $dataProvider;
+		return $this->searchBase($criteria);
 	}
 
 	public function searchAll() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$parameters=array("condition"=>"assignedTo='".Yii::app()->user->getName()."' AND complete!='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
-
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('actionDescription',$this->actionDescription,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationName',$this->associationName,true);
-		$criteria->compare('dueDate',$this->dueDate,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('complete',$this->complete,true);
-		$criteria->compare('reminder',$this->reminder,true);
-		$criteria->compare('completedBy',$this->completedBy,true);
-		$criteria->compare('completeDate',$this->completeDate,true);
-
-		$dataProvider=new SmartDataProvider('Actions', array(
-			'sort'=>array(
-				'defaultOrder'=>'dueDate DESC, createDate DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
-			),
-			'criteria'=>$criteria
-		));
-		
-		// $arr=$dataProvider->getData();
-		// foreach($arr as $action){
-			// $action=ActionChild::changeDates($action);
-		// }
-		// $dataProvider->setData($arr);
-		
-		return $dataProvider;
+		return $this->searchBase($criteria);
 	}
 	
 	public function searchGroup() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$parameters=array("condition"=>"visibility='1' AND complete!='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
-
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('actionDescription',$this->actionDescription,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationName',$this->associationName,true);
-		$criteria->compare('dueDate',$this->dueDate,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('complete',$this->complete,true);
-		$criteria->compare('reminder',$this->reminder,true);
-		$criteria->compare('completedBy',$this->completedBy,true);
-		$criteria->compare('completeDate',$this->completeDate,true);
-
-		$dataProvider=new SmartDataProvider('Actions', array(
-			'sort'=>array(
-				'defaultOrder'=>'dueDate DESC, createDate DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
-			),
-			'criteria'=>$criteria
-		));
-		
-		// $arr=$dataProvider->getData();
-		// foreach($arr as $action){
-			// $action=ActionChild::changeDates($action);
-		// }
-		// $dataProvider->setData($arr);
-		
-		return $dataProvider;
+		return $this->searchBase($criteria);
 	}
 
 	public function searchAllComplete() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 		$parameters=array("condition"=>"visibility='1' AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		$criteria->compare('id',$this->id);
+		return $this->searchBase($criteria);
+	}
+
+	public function searchAdmin() {
+		$criteria=new CDbCriteria;
+
+		return $this->searchBase($criteria);
+	}
+	
+	private function searchBase($criteria) {
+		
+		//$criteria->compare('id',$this->id);
 		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('actionDescription',$this->actionDescription,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('associationType',$this->associationType,true);
+		//$criteria->compare('actionDescription',$this->actionDescription,true);
+		//$criteria->compare('visibility',$this->visibility);
+		//$criteria->compare('associationId',$this->associationId);
+		//$criteria->compare('associationType',$this->associationType,true);
 		$criteria->compare('associationName',$this->associationName,true);
-		$criteria->compare('dueDate',$this->dueDate,true);
+		// $criteria->compare('dueDate',$this->dueDate,true);
 		$criteria->compare('priority',$this->priority,true);
 		$criteria->compare('type',$this->type,true);
 		$criteria->compare('createDate',$this->createDate,true);
 		$criteria->compare('complete',$this->complete,true);
-		$criteria->compare('reminder',$this->reminder,true);
-		$criteria->compare('completedBy',$this->completedBy,true);
-		$criteria->compare('completeDate',$this->completeDate,true);
+		// $criteria->compare('reminder',$this->reminder,true);
+		// $criteria->compare('completedBy',$this->completedBy,true);
+		// $criteria->compare('completeDate',$this->completeDate,true);
 
+		$dateRange = Yii::app()->controller->partialDateRange($this->dueDate);
+		if($dateRange !== false)
+			$criteria->addCondition('dueDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		
+		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		if($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+			
+		$dateRange = Yii::app()->controller->partialDateRange($this->completeDate);
+		if($dateRange !== false)
+			$criteria->addCondition('completeDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		
+		
 		$dataProvider=new SmartDataProvider('Actions', array(
 			'sort'=>array(
 				'defaultOrder'=>'completeDate DESC, createDate DESC',
 			),
 			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
+				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
 			),
 			'criteria'=>$criteria
 		));
-		
-		// $arr=$dataProvider->getData();
-		// foreach($arr as $action){
-			// $action=ActionChild::changeDates($action);
-		// }
-		// $dataProvider->setData($arr);
-
+	
 		return $dataProvider;
 	}
-
-	public function searchAdmin() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('actionDescription',$this->actionDescription,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationName',$this->associationName,true);
-		$criteria->compare('dueDate',$this->dueDate,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('complete',$this->complete,true);
-		$criteria->compare('reminder',$this->reminder,true);
-		$criteria->compare('completedBy',$this->completedBy,true);
-		$criteria->compare('completeDate',$this->completeDate,true);
-
-		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'createDate DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
-	}
+	
 	
 	public function attributeLabels() {
 		return array(

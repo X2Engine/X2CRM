@@ -191,6 +191,13 @@ body {
 #main-menu-bar ul ul li.active {
 	height:auto;
 	margin:0;
+	-moz-box-shadow:none;
+	-webkit-box-shadow:none;
+	box-shadow:none;
+	border-radius:0;
+	-moz-border-radius:0;
+	-webkit-border-radius:0;
+	-o-border-radius:0;
 }
 /* End Dropdown Menu */
 
@@ -308,7 +315,7 @@ a.x2-button span.add-button {
 }
 
 #content {
-	padding:0 20px 20px 45px;	/* create padding for pages without column2.php layout */
+	padding:0 45px 20px 45px;	/* create padding for pages without column2.php layout */
 }
 .span-15 #content {
 	padding:0;			/* remove padding for column2.php layout */
@@ -327,11 +334,13 @@ a.x2-button span.add-button {
 }
 .portlet-decoration {
 	padding:3px;
-	background:#ddd;
-	background:-webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));
-	background:-moz-linear-gradient(top,  #eee,  #ddd);
+	background:#eee;
+/* 	background:-webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));
+	background:-moz-linear-gradient(top,  #eee,  #ddd); */
+/* 	background:-webkit-gradient(linear, left top, left bottom, from(#ccc), to(#f6f6f6));
+	background:-moz-linear-gradient(top,  #ccc,  #f6f6f6); */
 	text-align:center;
-	border:1px solid #999;
+	border:1px solid #ccc;
 	border-radius:4px 4px 0 0;
 	-moz-border-radius:4px 4px 0 0;
 	-webkit-border-radius:4px 4px 0 0;
@@ -354,7 +363,6 @@ a.x2-button span.add-button {
 	padding:5px 10px;
 	overflow:auto;
 	background:/* url(../images/widget-shadow.png) top left repeat-x  */#f6f6f6;
-	border-bottom:1px solid #ccc;
 	
 	border-radius:0 0 5px 5px;
 	-moz-border-radius:0 0 5px 5px;

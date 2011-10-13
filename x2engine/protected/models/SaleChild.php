@@ -154,8 +154,6 @@ class SaleChild extends Sales {
 		return $temp;
 	}
 
-
-
 	public function behaviors() {
 		return array(
 			'ERememberFiltersBehavior' => array(
@@ -167,52 +165,48 @@ class SaleChild extends Sales {
 	}
 
 	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 		$parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		$criteria->compare('id',$this->id);
-		//$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('quoteAmount',$this->quoteAmount);
-		$criteria->compare('salesStage',$this->salesStage,true);
-		$criteria->compare('expectedCloseDate',$this->expectedCloseDate,true);
-		$criteria->compare('probability',$this->probability);
-		$criteria->compare('leadSource',$this->leadSource,true);
-		$criteria->compare('description',$this->description,true);
-		$criteria->compare('createDate',$this->createDate,true);
-
-		return new SmartDataProvider('Sales', array(
-			'sort'=>array(
-				'defaultOrder'=>'createDate ASC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
+		return $this->searchBase($criteria);
 	}
 
 	public function searchAdmin() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
-		//$criteria->compare('assignedTo',$this->assignedTo,true);
+		return $this->searchBase($criteria);
+	}
+	
+	private function searchBase($criteria) {
+		// $criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
+		$criteria->compare('accountName',$this->accountName,true);
+		$criteria->compare('accountId',$this->accountId);
 		$criteria->compare('quoteAmount',$this->quoteAmount);
 		$criteria->compare('salesStage',$this->salesStage,true);
-		$criteria->compare('expectedCloseDate',$this->expectedCloseDate,true);
+		// $criteria->compare('expectedCloseDate',$this->expectedCloseDate,true);
 		$criteria->compare('probability',$this->probability);
 		$criteria->compare('leadSource',$this->leadSource,true);
 		$criteria->compare('description',$this->description,true);
-		$criteria->compare('createDate',$this->createDate,true);
+		$criteria->compare('assignedTo',$this->assignedTo,true);
+		// $criteria->compare('createDate',$this->createDate);
+		$criteria->compare('associatedContacts',$this->associatedContacts,true);
+		// $criteria->compare('lastUpdated',$this->lastUpdated);
+		$criteria->compare('updatedBy',$this->updatedBy,true);
 
+		$dateRange = Yii::app()->controller->partialDateRange($this->expectedCloseDate);
+		if($dateRange !== false)
+			$criteria->addCondition('expectedCloseDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		
+		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		if($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+			
+		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
+		if($dateRange !== false)
+			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
 				'defaultOrder'=>'createDate ASC',
@@ -223,6 +217,7 @@ class SaleChild extends Sales {
 			'criteria'=>$criteria,
 		));
 	}
+	
 
 	public function attributeLabels() {
 		return array(
@@ -233,7 +228,7 @@ class SaleChild extends Sales {
 			'quoteAmount' => Yii::t('sales','Quote Amount'),
 			'salesStage' => Yii::t('sales','Sales Stage'),
 			'expectedCloseDate' => Yii::t('sales','Expected Close Date'),
-			'probability' => Yii::t('sales','Probability'),
+			'probability' => Yii::t('sales','Probability').' %',
 			'leadSource' => Yii::t('sales','Lead Source'),
 			'description' => Yii::t('sales','Description'),
 			'assignedTo' => Yii::t('sales','Assigned To'),

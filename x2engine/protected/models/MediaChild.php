@@ -80,6 +80,44 @@ class MediaChild extends Media {
 		} else
 			return $actionDescription;
 	}
+	
+	public static function attachmentSocialText($str,$makeLink = false,$makeImage = false) {
+		// $a = '<a href="/x2merge/index.php/media/16">footer.png</a>';
+		
+		// echo ,preg_match('/^<a href=".+(media\/[0-9]+)" target="_blank">.+<\/a>$/i',$description
+		$matches = array();
+		// die(CHtml::encode($description));
+		if(preg_match('/^<a href=".+media\/([0-9]+)">.+<\/a>$/i',$str,$matches)) {
+			
+			if(count($matches) == 2 && is_numeric($matches[1])) {
+			
+				$media = CActiveRecord::model('MediaChild')->findByPk($matches[1]);
+				if(isset($media)) {
+					$file = Yii::app()->file->set('uploads/'.$media->fileName);
+
+					$str = Yii::t('media','File:') . ' ';
+					
+					if($makeLink && $file->exists)
+						$str .= CHtml::link($media->fileName,array('media/view','id'=>$media->id));
+					else
+						$str .= $media->fileName;
+					if (!$file->exists)
+						$str .= ' '.Yii::t('media','(deleted)');
+
+					if($makeImage && $file->exists) {	// to render an image, first check file extension
+
+						$file_ext = $file->getExtension();
+						$legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
+						
+						if(in_array($file_ext,$legal_extensions))
+							$str .= CHtml::image(Yii::app()->request->baseUrl.'/uploads/'.$media->fileName,'',array('class'=>'attachment-img'));
+					}
+					return $str;
+				}
+			}
+		}
+		return x2base::convertUrls($str);
+	}
 
 
 	/**
