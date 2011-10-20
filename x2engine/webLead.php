@@ -1,77 +1,52 @@
 <?php 
-/*********************************************************************************
- * X2Engine is a contact management program developed by
- * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. at P.O. Box 66752,
- * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- ********************************************************************************/
-?>
-
-
-
-<html>
+/**
+ * Copyright 2011 by X2Engine Inc. All rights reserved. 
+ * http://www.x2engine.com 
+ * Confidential, X2Engine Inc. Scotts Valley, CA USA 
+ */
+?><html>
 <head>
 <style type="text/css">
 
 body {
-	font-size: 10px;
-	font-family: sans-serif;
+	font-size:12px;
+	font-family:Arial, Helvetica, sans-serif;
+	width:189px;
+}
+html * {
+	font-size:12px;
+}
+#contact-header{
+color:white;
+text-align:center;
+font-size: 16px;
+}
+#submit{
+position:absolute;
+right:10px;
+bottom:10px;
 }
 
 </style>
-</head>
-
-<h3>Contact Us:</h3>
-
-<form name="leadCapture" action="leadCapture.php" method="POST">
-    <b>First Name: *</b><br /> <input type="text" name="firstName" /><br />
-    <b>Last Name: *</b><br /> <input type="text" name="lastName" /><br />
-    <b>E-Mail Address: *</b><br /> <input type="text" name="email" /><br />
-    <b>Phone Number:</b><br /> <input type="text" name="phone" /><br />
-    <b>Interest:</b><br /> <textarea name="info" rows="6" cols="20" onfocus="clearText(this);">Enter any additional information you want us to know.
-	</textarea><br />
-    <input type="submit" value="Submit" />
-    
-</form>
-
-</html>
-
 <script>
-
-/*
-Clear default form value script- By Ada Shimar (ada@chalktv.com)
-*/
-
 function clearText(thefield){
 if (thefield.defaultValue==thefield.value)
 thefield.value = ""
 } 
 </script>
+</head>
+<body>
+<h3 id="contact-header">Contact Us:</h3>
+
+<form name="leadCapture" action="leadCapture.php" method="POST">
+    <div class="row"><b>First Name: *</b><br /> <input style="width:170px;" type="text" name="firstName" /><br /></div>
+    <div class="row"><b>Last Name: *</b><br /> <input style="width:170px;" type="text" name="lastName" /><br /></div>
+    <div class="row"><b>E-Mail Address: *</b><br /> <input style="width:170px;" type="text" name="email" /><br /></div>
+    <div class="row"><b>Phone Number:</b><br /> <input style="width:170px;" type="text" name="phone" /><br /></div>
+    <div class="row"><b>Interest:</b><br /> <textarea style="height:100px;width:170px;font-family:arial;font-size:10px;" name="info" onfocus="clearText(this);">Enter any additional information or questions regarding your interest here.
+	</textarea><br /></div>
+    <input id='submit' type="submit" value="Submit" />
+    
+</form>
+</body>
+</html>

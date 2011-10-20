@@ -79,21 +79,21 @@ class ContactChild extends Contacts {
 		return $names;
 	}
 
-	public static function getContactLinks($str) {
-		$pieces = explode(' ',$str);
-		$links='';
-			foreach($pieces as $user){
-				if($user==0) {
-					$link='';
-				} else {
-					$model = Contacts::model()->findByPk($user);
-					$link = CHtml::link($model->firstName.' '.$model->lastName,array('contacts/view','id'=>$user));
-					$links.=$link.', ';
-					
-				}
+	public static function getContactLinks($contacts) {
+		if(!is_array($contacts))
+			$contacts = explode(' ',$contacts);
+		
+		$links = array();
+		foreach($contacts as &$id){
+			if($id !=0 ) {
+				$model = CActiveRecord::model('ContactChild')->findByPk($id);
+				$links[] = CHtml::link($model->name,array('contacts/view','id'=>$id));
+				//$links.=$link.', ';
+				
+			}
 		}
-		$links=substr($links,0,strlen($links)-2);
-		return $links;
+		//$links=substr($links,0,strlen($links)-2);
+		return implode(', ',$links);
 	}
 	
 	public static function getMailingList($criteria) {
@@ -173,7 +173,7 @@ class ContactChild extends Contacts {
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
-				'defaultOrder'=>'lastName ASC',
+				'defaultOrder'=>'lastUpdated DESC',
 			),
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),

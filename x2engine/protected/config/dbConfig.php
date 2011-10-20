@@ -1,9 +1,9 @@
 <?php
 $db=array(
-	'connectionString' => 'mysql:host=localhost;dbname=x2merge',
+	'connectionString' => 'mysql:host=localhost;dbname=x2engine',
 	'emulatePrepare' => true,
-	'username' => 'x3engine',
-	'password' => 'x32011!!',
+	'username' => 'root',
+	'password' => ' ',
 	'charset' => 'utf8',
 );
 $appName='X2Engine';

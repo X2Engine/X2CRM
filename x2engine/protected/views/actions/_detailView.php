@@ -36,9 +36,6 @@
 
 $attributeLabels = ActionChild::attributeLabels();
 
-$template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
-		$info=$model->actionDescription;
-		$info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 if($model->complete=='Yes')
 	$status = Yii::t('actions','FINISHED');
 else {
@@ -59,7 +56,7 @@ if($model->type=='note' || $model->type=='attachment') {
 			if($model->type=='attachment')
 				echo MediaChild::attachmentActionText($model->actionDescription,true,true);
 			else
-				echo $this->convertLineBreaks($info,true);	// convert LF and CRLF to <br />
+				echo $this->convertUrls($model->actionDescription);
 			?>
 		</td>
 	</tr>
@@ -80,7 +77,7 @@ if($model->type=='note' || $model->type=='attachment') {
 			<?php echo $attributeLabels['actionDescription']; ?>
 		</td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
-			<?php echo $this->convertLineBreaks($info); ?>
+			<?php echo $this->convertUrls($model->actionDescription); ?>
 		</td>
 	</tr>
 <?php

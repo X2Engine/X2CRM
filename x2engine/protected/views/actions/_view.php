@@ -33,9 +33,28 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
+
+Yii::app()->clientScript->registerScript('deleteActionJs',"
+function deleteAction(actionId) {
+
+	if(confirm('".Yii::t('app','Are you sure you want to delete this item?')."')) {
+		$.ajax({
+			url: '" . CHtml::normalizeUrl(array('actions/delete')) . "/'+actionId+'?ajax=1',
+			type: 'POST',
+			//data: 'id='+actionId,
+			success: function(response) {
+				if(response=='Success')
+					$('#history-'+actionId).fadeOut(200,function() { $('#history-'+actionId).remove(); });
+				}
+		});
+	}
+}
+",CClientScript::POS_HEAD);
 ?>
 
-<div class="view">
+
+
+<div class="view" id="history-<?php echo $data->id; ?>">
 	<!--<div class="deleteButton">
 		<?php //echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button') ?>
 	</div>-->
@@ -69,14 +88,16 @@
 			<?php
 			if (empty($data->type)) {
 				if ($data->complete=='Yes')
-					echo CHtml::link(Yii::t('actions','Uncomplete'),array('actions/uncomplete','id'=>$data->id,'redirect'=>1),array('class'=>'x2-button'));
+					echo CHtml::link('['.Yii::t('actions','Uncomplete').']',array('actions/uncomplete','id'=>$data->id,'redirect'=>1),array());
 				else {
-					echo CHtml::link(Yii::t('actions','Complete'),array('actions/complete','id'=>$data->id,'redirect'=>1),array('class'=>'x2-button'));
-					//echo CHtml::link(Yii::t('actions','Complete + New'),array('actions/complete','id'=>$data->id,'redirect'=>1,'createNew'=>1),array('class'=>'x2-button'));
+					echo CHtml::link('['.Yii::t('actions','Complete').']',array('actions/complete','id'=>$data->id,'redirect'=>1),array());
 				}
+				
+				echo ' '.CHtml::link('['.Yii::t('actions','Update').']',array('actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ';
 			}
-			//if ($data->type != 'note')
-				//echo CHtml::link(Yii::t('actions','View'),array('actions/view','id'=>$data->id),array('class'=>'x2-button'));
+			echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
+			
+				//'class'=>'x2-button',
 			?>
 		</div>
 	</div>

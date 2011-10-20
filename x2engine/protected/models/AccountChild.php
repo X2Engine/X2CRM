@@ -138,6 +138,63 @@
 		return $temp;
 	}
 
+	public static function getAvailableContacts($accountId = 0) {
+	
+		$availableContacts = array();
+		
+		$criteria = new CDbCriteria;
+		$criteria->addCondition("accountId='$accountId'");
+		$criteria->addCondition(array("accountId=''"),'OR');
+		
+		
+		$contactRecords = CActiveRecord::model('ContactChild')->findAll($criteria);
+		foreach($contactRecords as $record)
+			$availableContacts[$record->id] = $record->name;
+
+		return $availableContacts;
+	}
+		
+	
+	public static function getContacts($accountId) {
+		$contacts = array();
+		$contactRecords = CActiveRecord::model('ContactChild')->findAllByAttributes(array('accountId'=>$accountId));
+		if(!isset($contactRecords))
+			return array();
+		
+		foreach($contactRecords as $record)
+			$contacts[$record->id] = $record->name;
+		
+		return $contacts;
+	}
+	
+	public static function setContacts($contactIds,$accountId) {
+	
+		$account = CActiveRecord::model('AccountChild')->findByPk($accountId);
+		
+		if(!isset($account))
+			return false;
+		
+		// get all contacts currently associated
+		$oldContacts = CActiveRecord::model('ContactChild')->findAllByAttributes(array('accountId'=>$accountId));
+		foreach($oldContacts as $contact) {
+			if(!in_array($contact->id,$contactIds)) {
+				$contact->accountId = 0;
+				$contact->company = '';		// dissociate if they are no longer in the list
+				$contact->save();
+			}
+		}
+		
+		// now set association for all contacts in the list
+		foreach($contactIds as $id) {
+			$contactRecord = CActiveRecord::model('ContactChild')->findByPk($id);
+			$contactRecord->accountId = $account->id;
+			$contactRecord->company = $account->name;
+			$contactRecord->save();
+		}
+		return true;
+	}
+	
+	
 	public function behaviors() {
 		return array(
 			'ERememberFiltersBehavior' => array(

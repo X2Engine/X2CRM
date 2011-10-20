@@ -119,17 +119,14 @@ class UsersController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Users'])) {
-			$model->attributes=$_POST['Users'];
-			$model->password = md5($model->password);
-			//$this->updateChangelog($model);
-			$updatePass = $model->updatePassword;
-			if($updatePass==1) {
-				if($model->save())
-					$this->redirect(array('view','id'=>$model->id));
-			} else {
-				if($model->save(true, array('firstName','lastName','username','title','department','officePhone','cellPhone','homePhone','address','backgroundInfo','emailAddress','lastUpdated','updatedBy')))
-					$this->redirect(array('view','id'=>$model->id));
-			}
+                    $temp=$model->password;
+                    $model->attributes=$_POST['Users'];
+                    if($model->password!="")
+                        $model->password = md5($model->password);
+                    else
+                        $model->password=$temp;
+                    if($model->save())
+                        $this->redirect(array('view','id'=>$model->id));
 		}
 		$this->render('update',array(
 			'model'=>$model,
@@ -146,7 +143,7 @@ class UsersController extends x2base {
 	public function actionAdmin() {
 		$model=new UserChild('search');
 		$name='UserChild';
-		parent::actionAdmin($model, $name);
+		parent::admin($model, $name);
 	}
 
 	/**
@@ -164,8 +161,6 @@ class UsersController extends x2base {
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
-			$model->status=0;
-			$model->save();
 			$dataProvider=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
 				'condition'=>"assignedTo='$model->username' AND type!='note'",
@@ -173,7 +168,12 @@ class UsersController extends x2base {
 			$actions=$dataProvider->getData();
 			foreach($actions as $action){
 				$action->assignedTo="Anyone";
+                                $action->save();
 			}
+                        
+                        $prof=ProfileChild::model()->findByAttributes(array('username'=>$model->username));
+                        $prof->delete();
+                        $model->delete();
 			
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));

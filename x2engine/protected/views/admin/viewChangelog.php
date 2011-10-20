@@ -25,7 +25,7 @@
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
+ * Section 5 of the GNU General Public License version 3. 
  * 
  * In accordance with Section 7(b) of the GNU General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
@@ -38,7 +38,11 @@
     $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'changelog-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'dataProvider'=>$changeLog,
+        'template'=> '<h2>Changelog</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$model->search(),
+        'filter'=>$model,
 	'columns'=>array(
 		array(
 

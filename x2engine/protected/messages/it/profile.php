@@ -81,4 +81,6 @@ return array (
 'A larger Chat Box'=>'Una Chat Box grande',
 'A blog-like discussion forum'=>'Un blog, come forum di discussione',
 
+// Misc
+'This user does not allow posting on their feed.'=>'Questo utente non consente la pubblicazione sul loro alimentazione.',
 );

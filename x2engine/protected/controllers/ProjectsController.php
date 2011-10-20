@@ -68,7 +68,7 @@ class ProjectsController extends x2base {
 		$model->assignedTo=UserChild::getUserLinks($model->assignedTo);
 		$type='project';
 		
-		parent::actionView($model,$type);
+		parent::view($model,$type);
 	}
 
 	/**
@@ -249,7 +249,7 @@ class ProjectsController extends x2base {
 	public function actionIndex() {
 		$model=new ProjectChild('search'); 
 		$name='ProjectChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	/**
@@ -258,7 +258,7 @@ class ProjectsController extends x2base {
 	public function actionAdmin() {
 		$model=new ProjectChild('search'); 
 		$name='ProjectChild';
-		parent::actionAdmin($model, $name);
+		parent::admin($model, $name);
 	}
 
 	/**

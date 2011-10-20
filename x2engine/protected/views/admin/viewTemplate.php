@@ -34,9 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 ?>
-<a href="<?php echo Yii::app()->request->baseUrl;?>/index.php/docs/update/<?php echo $model->id; ?>" class="x2-button"><?php echo Yii::t('docs','Edit');?></a>
-<a href="<?php echo Yii::app()->request->baseUrl;?>/index.php/docs/exportToHtml/<?php echo $model->id; ?>" class="x2-button"><?php echo Yii::t('docs','Export');?></a>
-
-<h1><?php echo $model->title; ?></h1>
-
+<a href="<?php echo Yii::app()->request->baseUrl;?>/index.php/docs/update/<?php echo $model->id; ?>" class="x2-button" style="float:right;"><?php echo Yii::t('docs','Edit');?></a>
+<a href="<?php echo Yii::app()->request->baseUrl;?>/index.php/docs/exportToHtml/<?php echo $model->id; ?>" class="x2-button" style="float:right;"><?php echo Yii::t('docs','Export');?></a>
+<br />
 <?php echo x2base::convertUrls($model->text); ?>

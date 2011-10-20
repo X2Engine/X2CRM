@@ -54,6 +54,49 @@ Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css','print');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css','screen');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/details.css','screen');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css','screen');
+Yii::app()->clientScript->registerScript('fullscreenToggle',"
+
+var fullscreen = " . (Yii::app()->session['fullscreen']? 'true':'false') . ";
+
+$(function() {
+	$('#fullscreen-button').bind('click',function() { fullscreenToggle(); });
+	
+	if($('#content-box').hasClass('span-19'))
+		return;
+
+	if(fullscreen) {
+		$('#sidebar-left-box').removeClass().addClass('span-0');
+		$('#content-box').removeClass().addClass('span-24');
+		$('#sidebar-right-box').removeClass().addClass('span-0');
+	}
+});
+
+function fullscreenToggle() {
+	if($('#content-box').hasClass('span-19'))
+		return;
+
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('site/fullscreen')) . "',
+		type: 'GET',
+		data: 'fs='+(fullscreen?'0':'1'),
+		// success: function(response) {
+			// if(response=='Success')
+				// $('#history-'+actionId).fadeOut(200,function() { $('#history-'+actionId).remove(); });
+			// }
+	});
+		
+	if (fullscreen) {
+		$('#sidebar-left-box').removeClass().addClass('span-4');
+		$('#content-box').removeClass().addClass('span-15');
+		$('#sidebar-right-box').removeClass().addClass('span-5 last');
+	} else {
+		$('#sidebar-left-box').removeClass().addClass('span-0');
+		$('#content-box').removeClass().addClass('span-24');
+		$('#sidebar-right-box').removeClass().addClass('span-0');
+	}
+	fullscreen = !fullscreen;
+}
+",CClientScript::POS_HEAD);
 
 Yii::app()->clientScript->registerScript('savePageOpacity',"
 function saveOpacity(e,ui) {
@@ -235,14 +278,12 @@ $userMenu = array(
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 <?php 
-	if(Yii::app()->session['loginTime']<time()-$admin->timeout){
-            if(!Yii::app()->user->isGuest){
-                Yii::app()->user->logout();
-                $this->redirect(Yii::app()->controller->createUrl('site/login'));
-            }
-            
-     
-	}else{
+	if(Yii::app()->session['loginTime']<time()-$admin->timeout) {
+		if(!Yii::app()->user->isGuest){
+			Yii::app()->user->logout();
+			$this->redirect(Yii::app()->controller->createUrl('site/login'));
+		}
+	} else {
 		Yii::app()->session['loginTime']=time();
 	}
 ?>
@@ -282,7 +323,12 @@ $userMenu = array(
 	?>
 	<div id="search-bar">
 		<form name="search" action="<?php echo $this->createUrl('search/search');?>" method="get">
-			<span id="search-bar-title"><?php echo '<a href="'.Yii::app()->request->baseUrl.'/index.php/site/whatsNew"><img height="30" width="200" src='.Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo.'></a>'; ?></span>
+                        <?php
+                            if(isset(Yii::app()->session['versionCheck']) && Yii::app()->session['versionCheck']==false){
+                        ?>
+                        <a href="<?php echo Yii::app()->request->baseUrl;?>/updater.php" style="text-decoration:none;"><span id="search-bar-title" style="color:red;font-size:12px;">A new version is available <br />Click here to update.</span></a>
+                        <?php } else { ?>
+			<span id="search-bar-title"><?php echo '<a href="'.Yii::app()->request->baseUrl.'/index.php/site/whatsNew"><img height="30" width="200" src='.Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo.'></a>'; ?></span><?php } ?>
 			<input type="text" class="text" id="search-bar-box" name="term" value="<?php echo Yii::t('app','Search for contact, action, deal...'); ?>" onFocus="toggleText(this);" onBlur="toggleText(this);" />
 			<a class="x2-button" href="#" onClick="submitForm('search');"><span><?php echo Yii::t('app','Go'); ?></span></a>
 		</form>
@@ -307,6 +353,7 @@ $userMenu = array(
 				//'style'=>'position:absolute;height:90px;display:none;'
 			),
 		));?></div><?php
+		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button'))." \n";
 		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'transparency-button'))." \n";
 		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('contacts/create'),array('class'=>'x2-button'))." \n";
 		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('actions/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";

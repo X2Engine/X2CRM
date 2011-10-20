@@ -65,7 +65,7 @@ class MarketingController extends x2base {
 	public function actionView($id) {
 		$type='marketing';
 		$model=$this->loadModel($id);
-		parent::actionView($model, $type);
+		parent::view($model, $type);
 	}
 
 	/**
@@ -75,7 +75,7 @@ class MarketingController extends x2base {
 	public function actionCreate() {
 		$model=new MarketingChild;
 		$name='MarketingChild';
-		parent::actionCreate($model, $name);
+		parent::create($model, $name);
 	}
 
 	/**
@@ -86,7 +86,7 @@ class MarketingController extends x2base {
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
 		$name='Marketing';
-		parent::actionUpdate($model, $name);
+		parent::update($model, $name);
 	}
 	
 	
@@ -113,7 +113,7 @@ class MarketingController extends x2base {
 
 		$model=new MarketingChild('search'); 
 		$name='MarketingChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	/**
@@ -122,7 +122,7 @@ class MarketingController extends x2base {
 	public function actionAdmin() {
 		$model=new MarketingChild('search');
 		$name='MarketingChild';
-		parent::actionAdmin($model, $name);
+		parent::admin($model, $name);
 	}
 
 	/**

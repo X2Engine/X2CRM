@@ -60,7 +60,7 @@ if($model->id==Yii::app()->user->getId())
 	<div class="float-row">
 		<?php
 		if($model->allowPost==1)
-			echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;'));
+			echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		else
 			echo "This user does not allow posting on their feed.";
 		if($model->allowPost==1) {

@@ -40,7 +40,7 @@ $this->menu=array(
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
 	array('label'=>Yii::t('contacts','View Contact')),
-	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
 if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
 	$this->menu[] = array('label'=>Yii::t('contacts','Update Contact'), 'url'=>array('update', 'id'=>$model->id));
@@ -94,13 +94,13 @@ if($detailView) { ?>
 <?php
 
 $this->widget('InlineActionForm',
-		array(
-			'associationType'=>'contacts',
-			'associationId'=>$model->id,
-			'assignedTo'=>Yii::app()->user->getName(),
-			'users'=>$users,
-			'startHidden'=>false
-		)
+	array(
+		'associationType'=>'contacts',
+		'associationId'=>$model->id,
+		'assignedTo'=>Yii::app()->user->getName(),
+		'users'=>$users,
+		'startHidden'=>false
+	)
 );
 
 $this->widget('zii.widgets.CListView', array(

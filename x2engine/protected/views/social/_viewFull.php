@@ -86,7 +86,7 @@ $commentDataProvider=new CActiveDataProvider('Social', array(
 			'style'=>'display:none;',
 			'id'=>'addReply-'.$data->id,
 		));
-	echo CHtml::textArea('comment','',array('style'=>'heght:40px; width:440px'));
+	echo CHtml::textArea('comment','',array('style'=>'heght:40px; width:440px;display:block;clear:both;'));
 	echo CHtml::hiddenField('id',$data->id);
 	echo CHtml::hiddenField('redirect',Yii::app()->controller->action->id);
 	echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button float'));

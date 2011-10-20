@@ -93,15 +93,28 @@ function humanUrl($url) {
 	$url = preg_replace('/^(http)s?:\/\/(www\.)?/i','',$url);		//remove protocol (http://, etc)
 	return $url;
 }
-
-// $template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
-		// $info=$model->backgroundInfo;
-		// $info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 ?>
 <div class="record no-border">
 <table class="details">
 <tr>
-	<td colspan="4" style="background:#eee;padding:5px 0 0 0;">
+	<td colspan="6" style="background:#eee;padding:5px 0 0 0;">
+		<div class="row">
+			<div class="cell span-6">
+				<?php
+				if(!empty($model->title))
+					echo '<b>'.$model->title.'</b>';
+				if(!empty($model->title) && !empty($model->company))
+					echo ', ';
+				
+				if(!empty($model->accountId) && $model->accountId!=0) {
+					$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
+					if($accountModel != null)
+						echo CHtml::link($accountModel->name,array('accounts/view','id'=>$accountModel->id))."<br />\n";
+				} else if(!empty($model->company))
+					echo $model->company."<br />\n";
+				?>
+			</div>
+		</div>
 		<div class="row">
 			<div class="cell span-6">
 				<?php
@@ -178,7 +191,7 @@ function humanUrl($url) {
 	</td>
 </tr>
 <tr>
-	<td colspan="4" style="padding:10px;">
+	<td colspan="6" style="padding:10px;">
 		<?php echo $this->convertUrls($model->backgroundInfo); ?>
 	</td>
 </tr>
@@ -199,16 +212,26 @@ function humanUrl($url) {
 		echo $userLink;
 		?>
 	</td>
-	<td class="label" width="80">Account</td>
+	<td class="label"><b><?php echo $attributeLabels['priority']; ?></b></td>
 	<td>
 		<?php
-		// if(empty($model->company)) {
-		if(!empty($model->accountId)) {
-			$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
-			if($accountModel != null)
-				echo $accountModel->name . ' ' . CHtml::link('['.Yii::t('accounts','account').']',array('accounts/view','id'=>$accountModel->id))."<br />\n";
-		} else if(!empty($model->company))
-			echo $model->company."<br />\n";
+		if(empty($model->priority))
+			$model->priority = 'Medium';
+		echo CHtml::dropDownList('priority',$model->priority,array(
+			'Low'=>Yii::t('contacts','Low'),
+			'Medium'=>Yii::t('contacts','Medium'),
+			'High'=>Yii::t('contacts','High')
+		),array('disabled'=>true)); ?>
+	</td>
+	<td class="label"><b><?php echo $attributeLabels['visibility']; ?></b></td>
+	<td>
+		<?php 
+		echo CHtml::dropDownList('visibility',$model->visibility,array(
+			1=>Yii::t('contacts','Public'),
+			0=>Yii::t('contacts','Private')
+		),array('disabled'=>true));
+		// $model->createDate = time();
+		// echo date("Y-m-d",$model->createDate);
 		?>
 	</td>
 </tr>

@@ -37,7 +37,7 @@
 $this->beginContent('/layouts/main'); ?>
 <div class="container">
 	<?php if(Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew'){ ?>
-	<div class="span-4">
+	<div class="span-4" id="sidebar-left-box">
 		<?php }else{ ?>
 	<div class="span-0">
 		<?php } ?>
@@ -67,16 +67,16 @@ $this->beginContent('/layouts/main'); ?>
 		</div>
 	</div>
 	<?php if(Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew'){ ?>
-	<div class="span-15">
+	<div class="span-15" id="content-box">
 		<?php }else{ ?>
-	<div class="span-19">
+	<div class="span-19" id="content-box">
 		<?php } ?>
 		<div id="content">
 		<!-- content -->
 		<?php echo $content; ?>
 		</div>
 	</div>
-	<div class="span-5 last">
+	<div class="span-5 last" id="sidebar-right-box">
 		<div id="sidebar-right">
 		<?php
 		

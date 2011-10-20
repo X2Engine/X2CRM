@@ -65,16 +65,16 @@ class AccountsController extends x2base {
 		$model->assignedTo=UserChild::getUserLinks($model->assignedTo);
 		
 		$str = '';
-		$contacts=ContactChild::model()->findAllByAttributes(array('company'=>$model->name));
-		foreach($contacts as $contact){
-			$str.=$contact->id.' ';
-		}
-		$model->associatedContacts=$str;
+		$contacts = array_keys(AccountChild::getContacts($id));	//ContactChild::model()->findAllByAttributes(array('company'=>$model->name));
+		// foreach($contacts as $contact){
+			// $str.=$contact->id.' ';
+		// }
+		//$model->associatedContacts=$str;
 		
-		$model->associatedContacts=ContactChild::getContactLinks($model->associatedContacts);
+		$model->associatedContacts = ContactChild::getContactLinks($contacts);
 		
 		$type='accounts';
-		parent::actionView($model, $type);
+		parent::view($model, $type);
 	}
 	
 	public function actionShareAccount($id){
@@ -119,30 +119,29 @@ class AccountsController extends x2base {
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
+		$availableContacts = AccountChild::getAvailableContacts();
 
 		if(isset($_POST['AccountChild'])) {
 			$model->attributes=$_POST['AccountChild'];
 			
 			// process currency into an INT
 			$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
-			
-			$model=$this->updateChangelog($model,"Created");
+
+			$model=$this->updateChangelog($model,"Create");
 			if(isset($model->assignedTo))
 				$model->assignedTo = AccountChild::parseUsers($model->assignedTo);
-			if(isset($model->associatedContacts))
-				$model->associatedContacts = AccountChild::parseContacts($model->associatedContacts);
 			$model->createDate=time();
-		
-			
-			if($model->save())
+
+			if($model->save()) {
+				AccountChild::setContacts($model->associatedContacts,$model->id);
 				$this->redirect(array('view','id'=>$model->id));
+			}
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
+			'contacts'=>$availableContacts,
 		));
 	}
 
@@ -155,9 +154,11 @@ class AccountsController extends x2base {
 		$model=$this->loadModel($id);
 		$users=UserChild::getNames();
 		unset($users['admin']);
-		unset($users['Anyone']);
-		$contacts=ContactChild::getAllNames();
-		unset($contacts['0']);
+		unset($users['']);
+		$availableContacts = AccountChild::getAvailableContacts($id);
+		$selectedContacts = AccountChild::getContacts($id);
+
+		$model->associatedContacts = array_keys($selectedContacts);
 		
 		$curUsers=$model->assignedTo;
 		$userPieces=explode(', ',$curUsers);
@@ -168,23 +169,21 @@ class AccountsController extends x2base {
 		
 		$model->assignedTo=$arr;
 		
-		$curContacts=$model->associatedContacts;
-		$contactPieces=explode(" ",$curContacts);
-		$arr=array();
-		foreach($contactPieces as $piece){
-			$arr[]=$piece;
-		}
+		// $curContacts=$model->associatedContacts;
+		// $contactPieces=explode(" ",$curContacts);
+		// $arr=array();
+		// foreach($contactPieces as $piece){
+			// $arr[]=$piece;
+		// }
 		
-		$model->associatedContacts=$arr;
+		// $model->associatedContacts=$arr;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Accounts'])) {
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes=$_POST['Accounts'];
-                        
-                        
 			
 			// process currency into an INT
 			$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
@@ -192,11 +191,15 @@ class AccountsController extends x2base {
 			$arr=$model->assignedTo;
 			if(isset($model->assignedTo))
 				$model->assignedTo=AccountChild::parseUsers($arr);
-			$arr=$model->associatedContacts;
-			if(isset($model->associatedContacts))
-				$model->associatedContacts=AccountChild::parseContacts($arr);
+				
 			
-                        $changes=$this->calculateChanges($temp,$model->attributes);
+			AccountChild::setContacts($model->associatedContacts,$model->id);
+			$model->associatedContacts = null;
+			// $arr=$model->associatedContacts;
+			// if(isset($model->associatedContacts))
+				// $model->associatedContacts=AccountChild::parseContacts($arr);
+			
+			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -205,16 +208,16 @@ class AccountsController extends x2base {
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$contacts,
+			'contacts'=>$availableContacts,
 		));
 	}
 	
 	public function actionSaveChanges($id) {
 		$account=$this->loadModel($id);
 		if(isset($_POST['Accounts'])) {
-                        $temp=$account->attributes;
+			$temp=$account->attributes;
 			$account->attributes=$_POST['Accounts'];
-                        
+
 			// process currency into an INT
 			$account->annualRevenue = $this->parseCurrency($account->annualRevenue,false);
 			$changes=$this->calculateChanges($temp,$account->attributes);
@@ -235,11 +238,9 @@ class AccountsController extends x2base {
 
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->assignedTo; 
-                        $tempArr=$model->attributes;
+			$tempArr=$model->attributes;
 			$model->attributes=$_POST['Accounts'];  
 			$arr=$model->assignedTo;
-                        
-                        
 
 			$model->assignedTo=AccountChild::parseUsers($arr);
 			if($temp!="")
@@ -247,7 +248,7 @@ class AccountsController extends x2base {
 			else
 				$temp=$model->assignedTo;
 			$model->assignedTo=$temp;
-                        $changes=$this->calculateChanges($tempArr,$model->attributes);
+			$changes=$this->calculateChanges($tempArr,$model->attributes);
 			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -272,11 +273,10 @@ class AccountsController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Accounts'])) {
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes=$_POST['Accounts'];  
 			$arr=$model->assignedTo;
-                        
-                        
+
 			
 			foreach($arr as $id=>$user){
 				unset($pieces[$user]);
@@ -285,7 +285,7 @@ class AccountsController extends x2base {
 			$temp=AccountChild::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
-                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -315,6 +315,7 @@ class AccountsController extends x2base {
 			foreach($actions as $action){
 				$action->delete();
 			}
+                        $this->cleanUpTags($model);
 			$model->delete();
 		} else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -330,7 +331,7 @@ class AccountsController extends x2base {
 		
 		$model=new AccountChild('search');
 		$name='AccountChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	/**
@@ -339,7 +340,7 @@ class AccountsController extends x2base {
 	public function actionAdmin() {
 		$model=new AccountChild('search');
 		$name='AccountChild';
-		parent::actionAdmin($model,$name);
+		parent::admin($model,$name);
 	}
 
 	/**

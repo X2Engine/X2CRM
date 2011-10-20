@@ -140,16 +140,23 @@ class AdminController extends Controller {
         
         public function actionViewChangelog(){
             
-            $changeLog=new CActiveDataProvider('Changelog', array(
-                        'pagination'=>array(
-				'pageSize'=>'50'
-			),
-			'criteria'=>array(
-				'order'=>'timestamp DESC',
-		)));
+            $model=new Changelog('search');
+            $model->timestamp=null;
+            
+            $pageParam = ucfirst('Changelog'). '_page';
+		if (isset($_GET[$pageParam])) {
+			$page = $_GET[$pageParam];
+			Yii::app()->user->setState($this->id.'-page',(int)$page);
+		} else {
+			$page=Yii::app()->user->getState($this->id.'-page',1);
+			$_GET[$pageParam] = $page;
+		}
+		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
+		}
             
             $this->render('viewChangelog',array(
-                'changeLog'=>$changeLog,
+                'model'=>$model,
             ));
         }
 	
@@ -232,9 +239,9 @@ class AdminController extends Controller {
 			$admin=Admin::model()->findByPk(1);
 			if(isset($admin)) {
 				if($admin->menuOrder!="") {
-					$admin->menuOrder.=":".mb_ereg_replace(':','&#58;',$model->title);
+					$admin->menuOrder.=":".preg_replace('/:/u','&#58;',$model->title);
 					$admin->menuVisibility.=":1";
-					$admin->menuNicknames.=":".mb_ereg_replace(':','&#58;',$model->title);
+					$admin->menuNicknames.=":".preg_replace('/:/u','&#58;',$model->title);
 				}
 				else{
 					$admin->menuOrder=$model->title;
@@ -269,7 +276,7 @@ class AdminController extends Controller {
 		$menuItems = AdminChild::getMenuItems();
 		
 		foreach($menuItems as $key => $value)
-			$menuItems[$key] = mb_ereg_replace('&#58;',':',$value);	// decode any colons
+			$menuItems[$key] = preg_replace('/&#58;/',':',$value);	// decode any colons
 
 		if(isset($_POST['module']) && isset($_POST['name'])) {
 			$module=$_POST['module'];
@@ -284,7 +291,7 @@ class AdminController extends Controller {
 				//$orderStr .= $key.":";
 				//$nickStr .= $value.":";
 				
-				$menuItems[$key] = mb_ereg_replace(':','&#58;',$value);	// encode any colons in nicknames
+				$menuItems[$key] = preg_replace('/:/u','&#58;',$value);	// encode any colons in nicknames
 			}
 			
 			//$orderStr=substr($orderStr,0,-1);
@@ -357,7 +364,7 @@ class AdminController extends Controller {
 			$newNicknames = array_merge(array_values($newMenuItems), array_values($menuItems));
 			
 			foreach($newNicknames as &$value)
-				$value = mb_ereg_replace(':','&#58;',$value);	// encode any colons
+				$value = preg_replace('/:/u','&#58;',$value);	// encode any colons
 			
 			$admin->menuVisibility = implode(":",$newMenuVis);
 			$admin->menuOrder = implode(":",$newMenuOrder);
@@ -466,7 +473,7 @@ class AdminController extends Controller {
 			$menuOrder = explode(':',$admin->menuOrder);
 			$menuNickNames = explode(':',$admin->menuNicknames);
 			
-			if(in_array(mb_ereg_replace(':','&#58;',$title),$menuNickNames)
+			if(in_array(preg_replace('/:/u','&#58;',$title),$menuNickNames)
 				|| in_array($moduleName,$menuOrder)
 				|| array_key_exists('x2_'.$moduleName,Yii::app()->db->schema->getTables()))
 				$errors[] = Yii::t('module','A module with that title already exists');
@@ -534,7 +541,7 @@ class AdminController extends Controller {
 				} else {
 					$admin->menuOrder .= ":" . $moduleName;
 					$admin->menuVisibility .= ":1";
-					$admin->menuNicknames .= ":" . mb_ereg_replace(':','&#58;',$title);	// encode any colons so they don't break the admin menuOrder field;
+					$admin->menuNicknames .= ":" . preg_replace('/:/u','&#58;',$title);	// encode any colons so they don't break the admin menuOrder field;
 				}
 				$admin->save();
 				
@@ -942,15 +949,15 @@ updatedBy VARCHAR(40)
 		$docs=Docs::model()->findAll();
 		$profiles=Profile::model()->findAll();
 		
-		fputcsv($fp,array("0.9.1"));
+		fputcsv($fp,array("0.9.3"));
 		
 		$userList=array();
 		foreach($users as $user) {
+                        if($user->username!='admin')
 			$userList[]=$user->attributes;
 		}
 		foreach ($userList as $fields) {
 			unset($fields['id']);
-			unset($fields['updatePassword']);
 			$fields[]='user';
 			fputcsv($fp, $fields);
 			

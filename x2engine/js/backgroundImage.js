@@ -109,7 +109,13 @@ $(function() {
 	var pageBottom = pageTop + $('#page').height();
 	
 	$(document).bind('click', function(e) {
-		var opacity = $('#transparency-slider').slider('value');
+		if($('#transparency-slider').length)
+			var opacity = $('#transparency-slider').slider('value');
+		else
+			var opacity = 1;
+		//alert(opacity);
+		//if(opacity == null)
+			//opacity = 1;
 		//var clicked = $(e.target);
 		//if (clicked.parents().attr('id')=='page')
 			//$('#page').stop();

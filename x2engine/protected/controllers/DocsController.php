@@ -179,7 +179,7 @@ class DocsController extends x2base {
 		$model=$this->loadModel($id);
 		$perm=$model->editPermissions;
 		$pieces=explode(", ",$perm);
-		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!=false || Yii::app()->user->getName()==$perm){  
+		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm){  
 			if(isset($_POST['DocChild']))
 			{
 				$model->attributes=$_POST['DocChild'];
@@ -187,7 +187,7 @@ class DocsController extends x2base {
                                 $model->text=$_POST['msgpost'];
                                 $model=$this->updateChangeLog($model,'Edited');
 				if($model->save())
-					$this->redirect(array('view','id'=>$model->id));
+					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));
 			}
 
 			$this->render('update',array(
@@ -209,7 +209,9 @@ class DocsController extends x2base {
 		if(Yii::app()->request->isPostRequest)
 		{
 			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			$model=$this->loadModel($id);
+                        $this->cleanUpTags($model);
+                        $model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
@@ -258,7 +260,7 @@ class DocsController extends x2base {
 	{
 		$model=new DocChild('search');
 		$name='DocChild';
-		parent::actionAdmin($model,$name);
+		parent::admin($model,$name);
 	}
 
 	/**

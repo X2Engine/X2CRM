@@ -18,7 +18,6 @@
  * @property string $backgroundInfo
  * @property string $emailAddress
  * @property integer $status
- * @property integer $updatePassword
  * @property string $lastUpdated
  * @property string $updatedBy
  * @property string $recentItems
@@ -54,7 +53,7 @@ class Users extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('firstName, lastName, username, password, emailAddress, status', 'required'),
-			array('status, updatePassword, lastLogin, login', 'numerical', 'integerOnly'=>true),
+			array('status, lastLogin, login', 'numerical', 'integerOnly'=>true),
 			array('firstName, username, title, updatedBy', 'length', 'max'=>20),
 			array('lastName, department, officePhone, cellPhone, homePhone', 'length', 'max'=>40),
 			array('password, address, emailAddress, recentItems, topContacts', 'length', 'max'=>100),
@@ -62,7 +61,7 @@ class Users extends CActiveRecord
 			array('backgroundInfo', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, updatePassword, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on'=>'search'),
+			array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -97,7 +96,6 @@ class Users extends CActiveRecord
 			'backgroundInfo' => 'Background Info',
 			'emailAddress' => 'Email Address',
 			'status' => 'Status',
-			'updatePassword' => 'Update Password',
 			'lastUpdated' => 'Last Updated',
 			'updatedBy' => 'Updated By',
 			'recentItems' => 'Recent Items',
@@ -132,7 +130,6 @@ class Users extends CActiveRecord
 		$criteria->compare('backgroundInfo',$this->backgroundInfo,true);
 		$criteria->compare('emailAddress',$this->emailAddress,true);
 		$criteria->compare('status',$this->status);
-		$criteria->compare('updatePassword',$this->updatePassword);
 		$criteria->compare('lastUpdated',$this->lastUpdated,true);
 		$criteria->compare('updatedBy',$this->updatedBy,true);
 		$criteria->compare('recentItems',$this->recentItems,true);

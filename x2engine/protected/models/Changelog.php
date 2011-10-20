@@ -43,7 +43,17 @@ class Changelog extends CActiveRecord
 			array('type, changedBy', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, type, itemId, changedBy, changed, timestamp', 'safe', 'on'=>'search'),
+			array('id, type, itemId, changedBy, changed', 'safe', 'on'=>'search'),
+		);
+	}
+        
+        public function behaviors() {
+		return array(
+			'ERememberFiltersBehavior' => array(
+				'class' => 'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),				/* optional line */
+				'defaultStickOnClear'=>false		/* optional line */
+			),
 		);
 	}
 
@@ -83,6 +93,8 @@ class Changelog extends CActiveRecord
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
+                $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$criteria->scopes=array('findAll'=>array($parameters));
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('type',$this->type,true);
@@ -91,7 +103,13 @@ class Changelog extends CActiveRecord
 		$criteria->compare('changed',$this->changed,true);
 		$criteria->compare('timestamp',$this->timestamp);
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new SmartDataProvider(get_class($this), array(
+			'sort'=>array(
+				'defaultOrder'=>'timestamp DESC',
+			),
+			'pagination'=>array(
+				'pageSize'=>ProfileChild::getResultsPerPage(),
+			),
 			'criteria'=>$criteria,
 		));
 	}

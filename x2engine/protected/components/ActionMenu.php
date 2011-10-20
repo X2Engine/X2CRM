@@ -47,7 +47,7 @@ class ActionMenu extends CWidget {
 		$total = ActionChild::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName()));
 		$total = count($total);
 
-		$temp = ActionChild::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => '0'));
+		$temp = ActionChild::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'));
 		$unfinished = count($temp);
 
 		$overdue = 0;

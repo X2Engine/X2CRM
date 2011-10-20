@@ -41,7 +41,7 @@ Yii::app()->clientScript->registerScript('avatarUploader',"function showAttach()
 	else
 		e.style.display='none';
 }
-var ar_ext = ['png', 'gif', 'jpg'];        // array with allowed extensions
+var ar_ext = ['png', 'gif', 'jpg', 'jpeg'];        // array with allowed extensions
 
 function checkPictureExt(el, sbm) {
 // - www.coursesweb.net

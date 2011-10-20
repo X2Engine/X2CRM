@@ -100,7 +100,7 @@ class x2base extends Controller {
 	 * @param CActiveRecord $model The model to be displayed
 	 * @param String $type The type of the module being displayed
 	 */
-	public function actionView($model, $type) {
+	public function view($model, $type) {
 
 		$actionHistory=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
@@ -278,7 +278,7 @@ class x2base extends Controller {
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate($model, $name) {
+	public function create($model, $name) {
 		$users=UserChild::getNames();
 
 		// Uncomment the following line if AJAX validation is needed
@@ -308,7 +308,7 @@ class x2base extends Controller {
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($model, $name) {
+	public function update($model, $name) {
 		$users=UserChild::getNames();
 		$accounts=AccountChild::getNames();
 		// Uncomment the following line if AJAX validation is needed
@@ -339,7 +339,7 @@ class x2base extends Controller {
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex($model,$name) {
+	public function index($model,$name) {
 
 		$pageParam = ucfirst($this->modelClass). '_page';
 		if (isset($_GET[$pageParam])) {
@@ -363,7 +363,7 @@ class x2base extends Controller {
 	 * @param $model The model to use admin on, created in a controller subclass.  The model must be constucted with the parameter 'search'
 	 * @param $name The name of the model being viewed (Sales, Actions, etc.)
 	 */
-	public function actionAdmin($model, $name) {
+	public function admin($model, $name) {
 
 		$pageParam = ucfirst($this->modelClass). '_page';
 		if (isset($_GET[$pageParam])) {
@@ -400,19 +400,26 @@ class x2base extends Controller {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
                 
+                $type=get_class($model);
+                if(substr($type,-1)!="s"){
+                    $type=substr($type,0,-5)."s";
+                }
+                
                 $changelog=new Changelog;
-                $changelog->type=get_class($model);
+                $changelog->type=$type;
+                if(!isset($model->id)){
+                    if($model->save()){}
+                }
                 $changelog->itemId=$model->id;
                 $changelog->changedBy=Yii::app()->user->getName();
                 $changelog->changed=$change;
                 $changelog->timestamp=time();
                 
-                $changelog->save();
-                
-                $type=get_class($model);
-                if(substr($type,-1)!="s"){
-                    $type=substr($type,0,-5)."s";
+                if($changelog->save()){
+                    
                 }
+                
+                
                 
                 if($change!='Create' && $change!='Completed' && $change!='Edited'){
                     
@@ -428,19 +435,16 @@ class x2base extends Controller {
                                 $oldTag->delete();
                         }
                     }
-                }else{
-                    if($model instanceof Actions){
-                        $change=$model->actionDescription;
-                    }else if($model instanceof Contacts){
+                }else if($change=='Create' || $change=='Edited'){
+                    if($model instanceof Contacts)
                         $change=$model->backgroundInfo;
-                    }else if($model instanceof Docs){
-                        
-                    }    
-                    else{
-                    
-                        $change=$model->description;
-                    }
-                }
+                    else if($model instanceof Actions)
+                        $change=$model->actionDescription;
+                    else if($model instanceof Docs)
+                        $change=$model->text;
+                    else
+                        $change=$model->name;
+                } 
                 
                 preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
                 $matches=$matches[0];
@@ -454,6 +458,8 @@ class x2base extends Controller {
                         $tag->itemName=$model->firstName." ".$model->lastName;
                     else if($model instanceof Actions)
                         $tag->itemName=$model->actionDescription;
+                    else if($model instanceof Docs)
+                        $tag->itemName=$model->title;
                     else
                         $tag->itemName=$model->name;
                     if(!isset($model->id)){
@@ -471,12 +477,38 @@ class x2base extends Controller {
                             exit;
                         }
                     }else{
-                        echo $tag->tag;
+                        print_r($tag->getErrors());
                         exit;
                     }
                 }
 		return $model;
 	}
+        
+        public function cleanUpTags($model){
+            $type=get_class($model);
+            if(substr($type,-1)!="s"){
+                $type=substr($type,0,-5)."s";
+            }
+            $change="";
+             if($model instanceof Contacts)
+                $change=$model->backgroundInfo;
+            else if($model instanceof Actions)
+                $change=$model->actionDescription;
+            else if($model instanceof Docs)
+                $change=$model->text;
+            else
+                $change=$model->description;
+            if($change!=""){
+                $forDeletion=$change;
+                preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
+                $deleteMatches=$deleteMatches[0];
+                foreach($deleteMatches as $match){
+                    $oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
+                    if(isset($oldTag))
+                        $oldTag->delete();
+                }
+            }
+        }
         
         protected function calculateChanges($old, $new){
             

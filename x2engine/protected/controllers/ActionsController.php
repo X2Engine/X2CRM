@@ -297,12 +297,12 @@ class ActionsController extends x2base {
 			}
 			$contactModel=$this->updateChangelog($contactModel,'Create');
 			if($contactModel->save()) {
-                            
+
 				// $actionModel->dueDate=$actionModel->dueDate;
 				$actionModel->associationId = $contactModel->id;
 				$actionModel->associationType = 'contacts';
 				$actionModel->associationName = $contactModel->firstName.' '.$contactModel->lastName;
-                                $actionModel=$this->updateChangelog($actionModel,'Create');
+				$actionModel=$this->updateChangelog($actionModel,'Create');
 				if($actionModel->save())
 					$this->redirect(array('contacts/view','id'=>$contactModel->id));
 				else
@@ -331,9 +331,8 @@ class ActionsController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['ActionChild'])) {
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes=$_POST['ActionChild'];
-                        
 
 			$dueDate = strtotime($model->dueDate);
 			$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
@@ -346,10 +345,14 @@ class ActionsController extends x2base {
 				$model->associationName = 'None';
 				$model->associationId = 0;
 			}
-                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			if($model->save()) {
+				if(isset($_GET['redirect']) && $model->associationType!='none')	// if the action has an association
+					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
+				else	// no association
+					$this->redirect(array('actions/view','id'=>$model->id));	// view the action
+			}
 		}
 
 		$this->render('update',array(
@@ -374,13 +377,18 @@ class ActionsController extends x2base {
 
 	// Deletes a particular model
 	public function actionDelete($id) {
+
 		$model=$this->loadModel($id);
-		if(Yii::app()->request->isPostRequest)
+		if(Yii::app()->request->isPostRequest){
+                        $this->cleanUpTags($model);
 			$model->delete();
+                }
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
+		if(isset($_GET['ajax']))
+			echo 'Success';
+		else
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 	
@@ -440,27 +448,27 @@ class ActionsController extends x2base {
 	public function actionIndex() {
 		$model=new ActionChild('search');
 		$name='ActionChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	// List all public actions
 	public function actionViewAll() {
 		$model=new ActionChild('search');
 		$name='ActionChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 	
 	public function actionViewGroup() {
 		$model=new ActionChild('search');
 		$name='ActionChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	// Admin view of all actions
 	public function actionAdmin() {
 		$model=new ActionChild('search');
 		$name='ActionChild';
-		parent::actionAdmin($model,$name);
+		parent::admin($model,$name);
 	}
 	
 	// display error page

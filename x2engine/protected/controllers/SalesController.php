@@ -66,7 +66,7 @@ class SalesController extends x2base {
 		$model->assignedTo = UserChild::getUserLinks($model->assignedTo);
 		$model->associatedContacts = ContactChild::getContactLinks($model->associatedContacts);
 		
-		parent::actionView($model, $type);
+		parent::view($model, $type);
 	}
 	
 	public function actionShareSale($id){
@@ -108,7 +108,7 @@ class SalesController extends x2base {
 	public function actionCreate() {
 		$model = new SaleChild;
 		$users = UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts = ContactChild::getAllNames();
 		unset($users['admin']);
 		unset($users['']);
 		unset($contacts['0']);
@@ -159,7 +159,7 @@ class SalesController extends x2base {
 		}
 		$users=UserChild::getNames();
 		unset($users['admin']);
-		unset($users['Anyone']);
+		unset($users['']);
 		$contacts=ContactChild::getAllNames();
 		unset($contacts['0']);
 		
@@ -185,7 +185,7 @@ class SalesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Sales'])) {
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes=$_POST['Sales'];
 			
 			// process currency into an INT
@@ -201,7 +201,7 @@ class SalesController extends x2base {
 			if($model->expectedCloseDate!=""){
 				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
 			}
-                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -217,7 +217,7 @@ class SalesController extends x2base {
 	public function actionSaveChanges($id) {
 		$sale=$this->loadModel($id);
 		if(isset($_POST['Sales'])) {
-                        $temp=$sale->attributes;
+			$temp=$sale->attributes;
 			$sale->attributes=$_POST['Sales'];
 			
 			// process currency into an INT
@@ -227,8 +227,8 @@ class SalesController extends x2base {
 			if($sale->expectedCloseDate!=""){
 				$sale->expectedCloseDate=strtotime($sale->expectedCloseDate);
 			}
-                        $changes=$this->calculateChanges($temp,$sale->attributes);
-                        $sale=$this->updateChangelog($sale,$changes);
+			$changes=$this->calculateChanges($temp,$sale->attributes);
+			$sale=$this->updateChangelog($sale,$changes);
 			$sale->save();
 			$this->redirect(array('view','id'=>$sale->id));
 		}
@@ -382,7 +382,7 @@ class SalesController extends x2base {
 	public function actionIndex() {
 		$model=new SaleChild('search');
 		$name='SaleChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	/**
@@ -391,7 +391,7 @@ class SalesController extends x2base {
 	public function actionAdmin() {
 		$model=new SaleChild('search');
 		$name='SaleChild';
-		parent::actionAdmin($model, $name);
+		parent::admin($model, $name);
 	}
 
 	/**
@@ -418,6 +418,7 @@ class SalesController extends x2base {
 			foreach($actions as $action){
 				$action->delete();
 			}
+                        $this->cleanUpTags($model);
 			$model->delete();
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));

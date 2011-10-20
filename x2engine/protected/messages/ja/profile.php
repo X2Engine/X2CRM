@@ -81,4 +81,6 @@ return array (
 'A larger Chat Box'=>'より大きいチャットボックス',
 'A blog-like discussion forum'=>'ブログ的なディスカッションフォーラム',
 
+// Misc
+'This user does not allow posting on their feed.'=>'このユーザーはフィードに投稿することはできません。',
 );

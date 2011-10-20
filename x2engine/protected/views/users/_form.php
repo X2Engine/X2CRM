@@ -124,13 +124,6 @@
 		<?php echo $form->dropDownList($model,'status', array(1=>'Active', 0=>'Inactive')); ?>
 		<?php echo $form->error($model,'status'); ?>
 	</div>
-
-    <div class="row">
-        <?php echo $form->labelEx($model,'updatePassword'); ?>
-        <?php echo $form->checkBox($model,'updatePassword'); ?>
-        <?php echo $form->error($model,'updatePassword'); ?>
-    </div>
-
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save')); ?>
 	</div>

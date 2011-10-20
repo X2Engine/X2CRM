@@ -38,13 +38,17 @@
 
 <?php
 
-require_once("webLeadConfig.php");
+require_once("protected/config/emailConfig.php");
 
 $firstName=$_POST['firstName'];
 $lastName=$_POST['lastName'];
 $email=$_POST['email'];
 $phone=$_POST['phone'];
 $info=$_POST['info'];
+
+if($info=="Enter any additional information or questions regarding your interest here."){
+    $info="";
+}
 
 $con=mysql_connect($host,$user,$pass) or die(mysql_error());
     mysql_select_db($dbname) or die(mysql_error());
@@ -54,7 +58,7 @@ $lastName=mysql_real_escape_string($lastName);
 $info=mysql_real_escape_string($info);
 $phone=mysql_real_escape_string($phone);
 
-$date=date("Y-m-d");
+$date=mktime(0,0,0,date('m'),date('d'),date('Y'));
 
 $count=preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email);
 if($count==0){
@@ -80,7 +84,7 @@ if($row=mysql_fetch_array($admin))
     }else{
         $time=time();
         $sql="INSERT INTO x2_contacts (firstName, lastName, email, assignedTo, visibility, backgroundInfo, phone, lastUpdated, updatedBy) VALUES
-            ('$firstName','$lastName','$email','Anyone','1','$info', '$phone', 'admin', '$time')";
+            ('$firstName','$lastName','$email','Anyone','1','$info', '$phone', '$time', 'admin')";
 
         mysql_query($sql) or die(mysql_error());
 
@@ -91,7 +95,7 @@ if($row=mysql_fetch_array($admin))
         $id=$row['id'];
 
         $sql="INSERT INTO x2_actions (type, actionDescription, dueDate, visibility, associationType, associationId, associationName, assignedTo, priority) VALUES
-        ('Web Lead', 'Web Lead', '$date', '1', 'contact', '$id', '$firstName $lastName', 'Anyone', 'High')";
+        ('Web Lead', 'Web Lead', '$date', '1', 'contacts', '$id', '$firstName $lastName', 'Anyone', 'High')";
 
         mysql_query($sql) or die(mysql_error());
     }
@@ -100,6 +104,7 @@ if($row=mysql_fetch_array($admin))
 			Name: $firstName $lastName \n\n
 			Email: $email \n\n
 			Info: $info\n\n";
+        mail($adminEmail,'New Web Lead',$body);
     
 ?>
 
@@ -107,6 +112,6 @@ if($row=mysql_fetch_array($admin))
     <h1>
         Thank You!
     </h1>
-    <p>Thank you for your interest in San Jose BMW!</p>
+    <p>Thank you for your interest!</p>
     <p>Someone will be in touch shortly.</p>
 </html>

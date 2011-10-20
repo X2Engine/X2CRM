@@ -157,7 +157,7 @@ class ProfileController extends x2base {
 		if ($id==Yii::app()->user->getId()) {
 			$model=$this->loadModel($id);
 			$name="ProfileChild";
-			parent::actionUpdate($model, $name);
+			parent::update($model, $name);
 		} else {
 			$this->redirect('view/'.$model->id);
 		}

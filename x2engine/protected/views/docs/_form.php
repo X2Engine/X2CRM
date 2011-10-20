@@ -66,7 +66,11 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->label($model,'title'); ?>
 		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'title'); ?>
-	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
+	<?php if(isset($_GET['saved'])){
+                $date=date("g:i:s A",$_GET['time']);
+                echo "Saved at $date.";
+        }
+            echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
 	</div>
 	<div class="row">
 		<?php 

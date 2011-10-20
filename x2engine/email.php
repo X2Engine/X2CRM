@@ -176,7 +176,7 @@ foreach($body_array as $value){
     }elseif(preg_match("/^-+_(.*?)+/",$value,$matches)){
             continue;
         
-    }elseif(preg_match("/^charset=\"(.*?)\"/",$value,$matches)){
+    }elseif(preg_match("/charset=\"(.*?)\"/",$value,$matches)){
             continue;
         
     }elseif(preg_match("/From:(.*)/",$value,$matches)){

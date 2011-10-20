@@ -58,7 +58,7 @@ $('.search-form form').submit(function(){
     if(isset($_GET['offset'])){
         $offset=$_GET['offset'];
     }else
-        $offset=7;
+        $offset=6;
 ?>
 <h2><?php echo Yii::t('users','Manage Users'); ?></h2>
 <?php echo Yii::t('app','You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'); ?>
@@ -75,9 +75,9 @@ $('.search-form form').submit(function(){
 	'template'=> '<div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('admin','clearFilters'=>1)). ' | '
-		.CHtml::link(Yii::t('app','Records Today'),array('admin','offset'=>1)). ' | '
-		.CHtml::link(Yii::t('app','Records This Week'),array('admin','offset'=>7)). ' | '
-		.CHtml::link(Yii::t('app','Records This Month'),array('admin','offset'=>30))
+		.CHtml::link(Yii::t('app','Records Today'),array('admin','offset'=>0)). ' | '
+		.CHtml::link(Yii::t('app','Records This Week'),array('admin','offset'=>6)). ' | '
+		.CHtml::link(Yii::t('app','Records This Month'),array('admin','offset'=>29))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,

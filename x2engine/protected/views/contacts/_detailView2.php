@@ -81,6 +81,7 @@ function cleanupUrl($url) {
 			<div class="detail-form">
 			<?php
 				echo $form->textField($model, 'firstName', array(
+					'size'=>15,
 					'maxlength'=>40,
 					'tabindex'=>1,
 					'style'=>'width:135px;'
@@ -93,60 +94,11 @@ function cleanupUrl($url) {
 			<div class="detail-form">
 				<?php
 				echo $form->textField($model,'lastName',array(
+					'size'=>15,
 					'maxlength'=>40,
 					'style'=>'width:225px;',
 					'tabindex'=>2
 				)); ?>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['title']; ?></td>
-		<td id="title" onclick="showField(this,true);" width="145">
-			<div class="detail-field"><?php echo $model->title; ?></div>
-			<div class="detail-form">
-			<?php
-				echo $form->textField($model, 'title', array(
-					'maxlength'=>40,
-					'tabindex'=>1,
-					'style'=>'width:135px;'
-				)); ?>
-			</div>
-		</td>
-		<td class="label"><?php
-		if(!empty($model->accountId) && $model->accountId!=0) {
-			$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
-			if($accountModel != null)
-				$model->company = $accountModel->name;
-		}
-		echo empty($model->accountId)? "<b>".$attributeLabels['company']."</b>" : CHtml::link($attributeLabels['company'],array('accounts/view','id'=>$model->accountId)); ?></td>
-		<td colspan="3" id="company" onclick="showField(this,true);">
-			<div class="detail-field"><?php echo $model->company; ?></div>
-			<div class="detail-form">
-				<?php echo $form->hiddenField($model, 'company');
-					$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-					'name'=>'companyAutoComplete',
-					'value'=>$model->company,
-					'source' => $this->createUrl('contacts/getTerms'),
-					'htmlOptions'=>array(
-						'size'=>30,
-						'maxlength'=>100,
-						'tabindex'=>6,
-						'style'=>
-						'width:135px;'
-					),
-					'options'=>array(
-						'minLength'=>'2',
-						'select'=>'js:function( event, ui ) {
-							$("#'.CHtml::activeId($model,'accountId').'").val(ui.item.id);
-							$(this).val(ui.item.value);
-							$("#'.CHtml::activeId($model,'company').'").val(ui.item.value);
-							return false;
-						}',
-					),
-				));
-				echo $form->hiddenField($model, 'accountId');
-				?>
 			</div>
 		</td>
 	</tr>
@@ -195,16 +147,40 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
-		<td class="label"><?php echo empty($model->website)? "<b>".$attributeLabels['website']."</b>" : CHtml::link($attributeLabels['website'],cleanupUrl($model->website)); ?></td>
-		<td id="website" colspan="3" onclick="showField(this,true);">
-			<div class="detail-field"><?php echo $model->website; ?></div>
+		<td class="label"><?php
+		if(!empty($model->accountId) && $model->accountId!=0) {
+			$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
+			if($accountModel != null)
+				$model->company = $accountModel->name;
+		}
+		echo empty($model->accountId)? "<b>".$attributeLabels['company']."</b>" : CHtml::link($attributeLabels['company'],array('accounts/view','id'=>$model->accountId)); ?></td>
+		<td colspan="3" id="company" onclick="showField(this,true);">
+			<div class="detail-field"><?php echo $model->company; ?></div>
 			<div class="detail-form">
-				<?php echo $form->textField($model, 'website', array(
-					'size'=>30,
-					'maxlength'=>100,
-					'style'=>'width:135px;',
-					'tabindex'=>13
-				)); ?>
+				<?php echo $form->hiddenField($model, 'company');
+					$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+					'name'=>'companyAutoComplete',
+					'value'=>$model->company,
+					'source' => $this->createUrl('contacts/getTerms'),
+					'htmlOptions'=>array(
+						'size'=>30,
+						'maxlength'=>100,
+						'tabindex'=>6,
+						'style'=>
+						'width:135px;'
+					),
+					'options'=>array(
+						'minLength'=>'2',
+						'select'=>'js:function( event, ui ) {
+							$("#'.CHtml::activeId($model,'accountId').'").val(ui.item.id);
+							$(this).val(ui.item.value);
+							$("#'.CHtml::activeId($model,'company').'").val(ui.item.value);
+							return false;
+						}',
+					),
+				));
+				echo $form->hiddenField($model, 'accountId');
+				?>
 			</div>
 		</td>
 	</tr>
@@ -221,8 +197,8 @@ function cleanupUrl($url) {
 				'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 			)); ?>
 		</td>
-		<td class="label" rowspan="2"><b><?php echo $attributeLabels['address']; ?></b></td>
-		<td id="address" rowspan="2" colspan="3" style="padding:0.3em 0 0 0.6em;" onclick="showField(this,false);">
+		<td class="label" rowspan="3"><b><?php echo $attributeLabels['address']; ?></b></td>
+		<td id="address" rowspan="3" colspan="3" style="padding:0.3em 0 0 0.6em;" onclick="showField(this,false);">
 			<div class="detail-field">
 				<?php if(!empty($model->address)) echo $model->address . '<br />'; ?>
 				<?php echo $model->city; if(!empty($model->city) && !empty($model->state)) echo ', ';?>
@@ -304,6 +280,20 @@ function cleanupUrl($url) {
 				'maxlength'=>100,
 				'style'=>'width:135px;',
 				'tabindex'=>12,
+				)); ?>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="label"><?php echo empty($model->website)? "<b>".$attributeLabels['website']."</b>" : CHtml::link($attributeLabels['website'],cleanupUrl($model->website)); ?></td>
+		<td id="website" onclick="showField(this,true);">
+			<div class="detail-field"><?php echo $model->website; ?></div>
+			<div class="detail-form">
+				<?php echo $form->textField($model, 'website', array(
+					'size'=>30,
+					'maxlength'=>100,
+					'style'=>'width:135px;',
+					'tabindex'=>13
 				)); ?>
 			</div>
 		</td>

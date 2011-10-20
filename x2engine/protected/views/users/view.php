@@ -39,6 +39,7 @@ $this->menu=array(
 	array('label'=>Yii::t('users','Create User'), 'url'=>array('create')),
 	array('label'=>Yii::t('users','View User')),
 	array('label'=>Yii::t('users','Update User'), 'url'=>array('update', 'id'=>$model->id)),
+        array('label'=>Yii::t('contacts','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
 ?>
 <h1><?php echo Yii::t('users','User: {name}',array('{name}'=>$model->firstName.' '.$model->lastName)); ?></h1>

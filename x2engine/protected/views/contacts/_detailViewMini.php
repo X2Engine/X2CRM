@@ -35,9 +35,7 @@
  ********************************************************************************/
 
 $attributeLabels = ContactChild::attributeLabels();
-$template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
-		$info=$model->backgroundInfo;
-		$info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
+
 if($actionModel->associationId!=0)
 	$link = CHtml::link(CHtml::encode($actionModel->associationName),
 		array($actionModel->associationType.'/view','id'=>$actionModel->associationId));
@@ -51,9 +49,14 @@ else
 		<td width="25%">
 			<b><?php echo $link; ?></b>
 		</td>
+                <?php
+                    $str=Yii::app()->request->getServerName();
+                    if(substr($str,0,4)=='www.')
+                        $str=substr($str,4);
+                ?>
 		<td class="label" width="15%"><?php echo $attributeLabels['email']; ?></td>
 		<td>
-			<b><?php echo CHtml::mailto($model->email,$model->email); ?></b>
+			<b><?php echo CHtml::mailto($model->email,$model->email."?cc=dropbox@".$str); ?></b>
 		</td>
 	</tr>
 	<tr>
@@ -80,7 +83,7 @@ else
 	<tr>
 		<td class="label"><?php echo $attributeLabels['backgroundInfo']; ?></td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
-			<?php echo $this->convertLineBreaks($info); ?>
+			<?php echo $this->convertUrls($model->backgroundInfo); ?>
 		</td>
 	</tr>
 </table>

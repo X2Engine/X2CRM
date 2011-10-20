@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.2';
+$x2Version = '0.9.3';
  
 $host=$_POST['host'];
 $db=$_POST['db'];
@@ -124,7 +124,6 @@ mysql_query("CREATE TABLE x2_users(
 	backgroundInfo TEXT,
 	emailAddress VARCHAR(100) NOT NULL,
 	status TINYINT NOT NULL,
-	updatePassword TINYINT,
 	lastUpdated VARCHAR(30),
 	updatedBy VARCHAR(20),
 	recentItems VARCHAR(100),
@@ -388,7 +387,7 @@ mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddre
 		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or die("Error inserting dummy data");
 mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or die("Unable to set starting MOTD.");
 mysql_query("INSERT INTO x2_admin (accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, menuVisibility, currency) VALUES ('0','1','3600','$adminEmail',
-		'contacts:actions:sales:accounts:docs','Contacts:Actions:Sales:Accounts:Docs','1:1:1:0:1','$currency')") or die("Unable to input admin config");
+		'contacts:actions:sales:accounts:docs','Contacts:Actions:Sales:Accounts:Docs','1:1:1:1:1','$currency')") or die("Unable to input admin config");
 
 $backgrounds = array(
 	'santacruznight_blur.jpg',

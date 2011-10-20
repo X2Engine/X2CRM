@@ -45,14 +45,8 @@ class SaleChild extends Sales {
 		return $names;
 	}
 
-
-	public static function parseUsers($arr){
-		$str="";
-		foreach($arr as $user){
-			 $str.=$user.", ";
-		}
-		$str=substr($str,0,strlen($str)-2);
-		return $str;
+	public static function parseUsers($userArray){
+		return implode(', ',$userArray);
 	}
 
 	public static function parseUsersTwo($arr){
@@ -65,12 +59,8 @@ class SaleChild extends Sales {
 		return $str;
 	}
 
-	public static function parseContacts($arr){
-		$str="";
-		foreach($arr as $contact){
-			$str.=$contact." ";
-		}
-		return $str;
+	public static function parseContacts($contactArray){
+		return implode(' ',$contactArray);
 	}
 
 	public static function parseContactsTwo($arr){

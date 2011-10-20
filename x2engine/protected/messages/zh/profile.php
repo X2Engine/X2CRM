@@ -81,4 +81,6 @@ return array (
 'A larger Chat Box'=>'一个更大的聊天框',
 'A blog-like discussion forum'=>'一个博客类似的讨论论坛',
 
+// Misc
+'This user does not allow posting on their feed.'=>'此用户不允许张贴于饲料。',
 );

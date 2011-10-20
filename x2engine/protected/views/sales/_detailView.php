@@ -54,9 +54,6 @@ Yii::app()->clientScript->registerScript('stopEdit','
 	});
 ');
 
-$template="<a href=".$this->createUrl('search/search?term=%23\\2')."> #\\2</a>";
-$info=$model->description;
-$info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 ?>
 <table class="details">
 	<tr>
@@ -71,7 +68,7 @@ $info=mb_ereg_replace('(^|\s)#(\w\w+)',$template,$info);
 			<?php echo $attributeLabels['description']; ?>
 		</td>
 		<td colspan="3" class="text-field" id="description" onclick="toggleField(this)"><div class="spacer"></div>
-			<div class="detail-field"><?php echo $this->convertLineBreaks($info); 
+			<div class="detail-field"><?php echo $this->convertUrls($model->description); 
 				// replace any CR or LF characters with <br />, maximum of 2 in a row
 			?></div>
 			<div class="detail-form"><?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?></div>

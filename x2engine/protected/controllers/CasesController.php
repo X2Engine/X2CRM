@@ -66,7 +66,7 @@ class CasesController extends x2base {
 		
 		$type='case';
 		
-		parent::actionView($model,$type);
+		parent::view($model,$type);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class CasesController extends x2base {
 	public function actionIndex() {
 		$model=new CaseChild('search');
 		$name='CaseChild';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	/**
@@ -156,7 +156,7 @@ class CasesController extends x2base {
 	public function actionAdmin() {
 		$model=new CaseChild('search');
 		$name='CaseChild';
-		parent::actionAdmin($model, $name);
+		parent::admin($model, $name);
 	}
 
 	/**

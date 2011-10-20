@@ -59,7 +59,7 @@ class TemplatesController extends x2base {
 	public function actionView($id) {
 		$type='templates';
 		$model=$this->loadModel($id);
-		parent::actionView($model, $type);
+		parent::view($model, $type);
 	}
 
 	/**
@@ -69,7 +69,7 @@ class TemplatesController extends x2base {
 	public function actionCreate() {
 		$model=new Templates;
 		$name='Templates';
-		parent::actionCreate($model, $name);
+		parent::create($model, $name);
 	}
 
 	/**
@@ -80,7 +80,7 @@ class TemplatesController extends x2base {
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
 		$name='Templates';
-		parent::actionUpdate($model, $name);
+		parent::update($model, $name);
 	}
 	/**
 	 * Deletes a particular model.
@@ -92,7 +92,9 @@ class TemplatesController extends x2base {
 		if(Yii::app()->request->isPostRequest)
 		{
 			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			$model=$this->loadModel($id);
+                        $this->cleanUpTags($model);
+                        $model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
@@ -108,7 +110,7 @@ class TemplatesController extends x2base {
 	public function actionIndex() {
 		$model=new Templates('search');
 		$name='Templates';
-		parent::actionIndex($model,$name);
+		parent::index($model,$name);
 	}
 
 	/**
@@ -117,7 +119,7 @@ class TemplatesController extends x2base {
 	public function actionAdmin() {
 		$model=new Templates('search');
 		$name='Templates';
-		parent::actionAdmin($model, $name);
+		parent::admin($model, $name);
 	}
 
 	/**

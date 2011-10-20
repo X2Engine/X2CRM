@@ -144,7 +144,8 @@ function trimText($text) {
 			//'type'
 	),
 ));
-
+?><br />
+<?php
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actionsComplete-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',

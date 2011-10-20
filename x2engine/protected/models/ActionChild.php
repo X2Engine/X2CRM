@@ -217,7 +217,7 @@ class ActionChild extends Actions {
 		
 		$dataProvider=new SmartDataProvider('Actions', array(
 			'sort'=>array(
-				'defaultOrder'=>'completeDate DESC, createDate DESC',
+				'defaultOrder'=>'completeDate DESC, dueDate DESC',
 			),
 			'pagination'=>array(
 				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)

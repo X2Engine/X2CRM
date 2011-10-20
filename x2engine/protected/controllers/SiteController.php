@@ -241,6 +241,12 @@ class SiteController extends x2base {
 		$this->redirect($url);
 	} 
 
+	public function actionFullscreen() {
+		Yii::app()->session['fullscreen'] = (isset($_GET['fs']) && $_GET['fs'] == 1);
+		// echo var_dump(Yii::app()->session['fullscreen']);
+		echo 'Success';
+	}
+	
 	public function actionPageOpacity() {
 		if(isset($_GET['opacity']) && is_numeric($_GET['opacity'])) {
 
@@ -546,6 +552,15 @@ class SiteController extends x2base {
                                 $user = UserChild::model()->findByPk(Yii::app()->user->getId());
                                 $user->login=time();
                                 $user->save();
+                                if($user->username=='admin'){
+                                    $version=file_get_contents('http://www.x2base.com/updates/versionCheck.php');
+                                    if($version!=Yii::app()->params->version)
+                                        Yii::app()->session['versionCheck']=false;
+                                    else
+                                        Yii::app()->session['versionCheck']=true;
+                                }
+                                else
+                                    Yii::app()->session['versionCheck']=true;
 				Yii::app()->session['loginTime']=time();
 				$this->redirect('index');
 			}

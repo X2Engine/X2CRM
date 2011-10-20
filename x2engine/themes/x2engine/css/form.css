@@ -107,7 +107,11 @@ div.form.thin input, div.form.thin textarea, div.form.thin select {
 
 div.form input,div.form textarea,div.form select {
 	margin: 3px 0 5px 0;
-	border:1px solid #ccc;
+	border:1px solid #aaa;
+	-moz-border-radius:2px;
+	-o-border-radius:2px;
+	-webkit-border-radius:2px;
+	border-radius:2px;
 }
 div.form input, div.form textarea {
 	-webkit-appearance:none;
