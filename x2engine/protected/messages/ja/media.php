@@ -41,18 +41,13 @@ return array (
 'Association Type'=>'関連付けの種類',
 'Association'=>'関連付け',
 'File Name'=>'ファイル名',
-'Uploaded By'=>'アップロードした人',
+'Uploaded By'=>'アップロードしたユーザ',
 'Create Date'=>'作成日',
 
 // Actions
-'View Attachment'=>'添付ファイルを見る',
-'Delete Media'=>'を削除する',
-
-// Misc
-'File:'=>'ファイル:',
-'(deleted)'=>'(削除した)',
-'Uploaded by {name}'=>'{name} にアップロードされました',
+'View Attachment'=>'添付ファイルを閲覧',
+'Delete Media'=>'を削除',
 
 // Errors
-'Are you sure you want to delete this item?'=>'あなたがこのアイテムを削除してもよろしいですか？',
+'Are you sure you want to delete this item?'=>'このアイテムを削除しても良いですか？',
 );
