@@ -36,13 +36,13 @@
 
 return array (
 	// Text
-	'Logout ({username})'=>'ログアウト({username})',
-	'New Record'=>'新しいレコード',
-	'Find Contacts'=>'連絡先を見つける',
-	'Top Contacts'=>'最高のコンタクト',
-	'No top contacts for this user!'=>'このユーザは最高のコンタクトがない!',
-	'Create Message'=>'メッセージを作成します',
-	'Message List'=>'メッセージリスト',
+	'Logout ({username})'=>'({username})をログアウト',
+	'New Record'=>'レコード作成',
+	'Find Contacts'=>'個人顧客を検索',
+	'Top Contacts'=>'重要個人顧客',
+	'No top contacts for this user!'=>'重要個人顧客無し!',
+	'Create Message'=>'メッセージを作成',
+	'Message List'=>'メッセージ一覧',
 	'Clear'=>'クリア',
-	'Search for a Contact'=>'コンタクトの検索',
+	'Search for a Contact'=>'個人顧客を検索',
 );
