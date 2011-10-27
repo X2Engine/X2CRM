@@ -35,33 +35,33 @@
  ********************************************************************************/
 
 return array (
-//	Users Attributes
+//  Users Attributes
 'ID'=>'ID',
 'First Name'=>'名前',
 'Last Name'=>'姓',
-'Username'=>'ユーザー名',
+'Username'=>'ユーザ名',
 'Password'=>'パスワード',
-'Title'=>'肩書',
-'Department'=>'部',
-'Office Phone'=>'オフィス電話',
+'Title'=>'職制',
+'Department'=>'部門',
+'Office Phone'=>'仕事電話',
 'Cell Phone'=>'携帯電話',
-'Home Phone'=>'ホーム電話',
+'Home Phone'=>'自宅電話',
 'Address'=>'住所',
 'Background Info'=>'背景情報',
-'Email'=>'メール',
-'Status'=>'ステータス',
-'Update Password'=>'パスワードを更新する',
-'Last Updated'=>'最後を更新する',
-'Updated By'=>'更新した人',
-'Recent Items'=>'最近のこと',
+'Email'=>'電子メール',
+'Status'=>'状態',
+'Update Password'=>'パスワードを更新',
+'Last Updated'=>'最終更新日',
+'Updated By'=>'最終更新者',
+'Recent Items'=>'最新情報',
 
 //	Users Actions
-'Create User'=>'ユーザーを作る',
-'View User'=>'ユーザーを見る',
-'Update User'=>'ユーザーを更新する',
-'Manage Users'=>'ユーザーの管理',
+'Create User'=>'ユーザを作成',
+'View User'=>'ユーザを閲覧',
+'Update User'=>'ユーザを更新',
+'Manage Users'=>'ユーザの管理',
 
 //	Users Titles
-'User: {name}'=>'ユーザー: {name}',
-'Update User: {name}'=>'ユーザーを更新する: {name}',
+'User: {name}'=>'ユーザ: {name}',
+'Update User: {name}'=>'ユーザを更新: {name}',
 );
