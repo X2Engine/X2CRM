@@ -50,7 +50,6 @@ return array (
 'Administrator Email'=>'Администратор Email',
 
 'Database Connection Info'=>'Информация подключения к базе данных',
-'Do you want dummy data?'=>'Вы хотите, чтобы фиктивные данные?',
 
 'Host Name'=>'Имя компьютера',
 'Database Name'=>'Имя базы данных',
@@ -61,17 +60,11 @@ return array (
 'For help or more information - X2Engine.com'=>'За помощью или дополнительной информацией - X2Engine.com',
 
 'All Rights Reserved.'=>'Все права защищены.',
-	
-'This beta release only supports MySQL.'=>'Это бета-версия поддерживает только MySQL.',
-'Please create a database before install.'=>'Пожалуйста, создайте базу данных перед установкой.',
 
 // Splash screen
-
 'Installation Complete!'=>'Установка завершена!',
 'Click here to log in to X2Engine'=>'Нажмите здесь, чтобы войти в X2Engine',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine успешно установлен на вашем веб-сервере! Теперь вы можете войти в систему с именем пользователя "администратор" и пароль, который вы указали при установке.',
+'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine успешно установлен на вашем веб-сервере! Теперь вы можете войти в систему с именем пользователя "admin" и пароль, который вы указали при установке.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Если вы выбрали установку с ГИИ, вы можете найти его <a href="index.php/gii/"> здесь </ A>.Пароль такой же, как пароль администратора.',
-
-''=>'',
 
 );

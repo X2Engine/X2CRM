@@ -78,13 +78,9 @@ return array (
 
 // Widgets
 'My Actions'=>'Minhas Ações',
-	
-'Quick Contact'=>'Contato Rápido',
-	
 'Twitter Feed'=>'Twiiter Feed',
-	
+'Quick Contact'=>'Contato Rápido',
 'Google Map'=>'Google Mapa',
-
 'Recently Viewed'=>'Recentemente Vista',
 
 'Total Action|Total Actions'=>'Ação Total | Total de Ações',
@@ -94,17 +90,16 @@ return array (
 
 'Message Board'=>'Placa da Mensagem',
 'Please enter a message of the day!'=>'Por favor, escreva uma mensagem do dia!',
-	
+'Edit Message'=>'Editar Mensagem',
+
 'Note Pad'=>'Bloco de Notas',
 'Feel free to enter some notes!'=>'Sinta-se livre para entrar algumas notas!',
-	
+
 'Top Contacts'=>'Contactos Topo',
 'Add {name}'=>'Adicionar {name}',
-'Add Note'=>'Adicionar Nota',
-	
+
 
 // Chat
-'Chat'=>'Bate-papo',
 'Message Body'=>'Corpo da Mensagem',
 'Enter text here...'=>'Digite o texto aqui...',
 'Send'=>'Enviar',
@@ -120,11 +115,10 @@ return array (
 'Comments'=>'Comentários',
 'Post'=>'Postar',
 
-
 // Misc
 'Advanced Search'=>'Busca avançada',
 'Clear Filters'=>'Limpar Filtros',
-'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Você pode, opcionalmente, digite um operador de comparação (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) no início de cada um dos valores a sua pesquisa para especificar como a comparação deve ser feito.',
+'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Você pode, opcionalmente, digite um operador de comparação (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>or <b>=</b>) no início de cada um dos valores a sua pesquisa para especificar como a comparação deve ser feito.',
 'Fields with <span class="required">*</span> are required.'=>'Os campos com <span class="required">*</span>  são obrigatórios.',
 'Click here to return to where you were'=>'Clique aqui para voltar para onde você estava',
 'Private'=>'Privado',
@@ -134,7 +128,7 @@ return array (
 'Anyone'=>'Alguém',
 'Share'=>'Compartilhar',
 'Link'=>'Link',
-'Theme'=>'Tema', 
+'Theme'=>'Tema',
 'Account'=>'Conta',
 'Sale'=>'Venda',
 'All'=>'Todos',
@@ -159,7 +153,7 @@ return array (
 'Status'=>'Estado',
 'E-mail'=>'E-mail',
 'Download'=>'Baixar',
-	
+
 // Timestamps
 'Just now'=>'Agora Mesmo',
 '{n} minutes ago'=>'{n} minutos atrás',
@@ -180,4 +174,5 @@ return array (
 'Send Mass E-mail'=>'Enviar E-mail em Massa',
 'How to use Gii'=>'Como usar Gii',
 'How to add a database field'=>'Como adicionar um campo de banco de dados',
+
 );

@@ -35,7 +35,6 @@
  ********************************************************************************/
 
 return array (
-
 // Attribute Labels
 'ID'=>'ID',
 'Association Type'=>'Verband Type',

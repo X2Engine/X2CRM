@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
+return array (
 
 // Attribute Labels
 'Title'=>'',
@@ -50,12 +50,13 @@ return array(
 'Document:'=>'',
 'Edit Document:'=>'',
 'Documents'=>'',
+'Manage Docs'=>'',
 'Docs'=>'',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'',
 
 // Doc Navbar
-'List　Docs'=>'',
+'List Docs'=>'',
 'Create Docs'=>'',
 'View Doc'=>'',
 'Edit Doc'=>'',
@@ -65,4 +66,3 @@ return array(
 'Edit'=>'',
 'Export'=>'',
 );
-?>

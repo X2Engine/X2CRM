@@ -35,9 +35,9 @@
  ********************************************************************************/
 
 return array (
-//	Contact Form Attributes
+// Contact Form Attributes
 'Verification Code'=>'Código de Verificación',
-//	Contact Attributes
+// Contact Attributes
 'ID'=>'ID',
 'First Name'=>'Nombre',
 'Name'=>'Nombre',
@@ -77,18 +77,17 @@ return array (
 'Detail View'=>'Ver el detalle',
 'Simple View'=>'Ver el simple',
 
-//	Contacts Actions
+// Contacts Actions
 'My Contacts'=>'Mis Contactos',
 'All Contacts'=>'Todos los Contactos',
-'View Contact'=>'Ver Contacto',
 'Create Contact'=>'Crear Contacto',
-'Create Lead'=>'Crear Pista',
+'View Contact'=>'Ver Contacto',
 'Update Contact'=>'Actualizar Contacto',
-'View Notes'=>'Ver Notas',
 'Delete Contact'=>'Eliminar Contacto',
+'Create Lead'=>'Crear Pista',
 'Share Contact'=>'Compartir este Contacto',
 
-//	Contacts Titles
+// Contacts Titles
 'Contacts'=>'Contactos',
 'Manage Contacts'=>'Administrar Contactos',
 'Contact:'=>'Contacto:',

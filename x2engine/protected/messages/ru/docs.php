@@ -34,37 +34,35 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
-	
-	// Attribute Labels
-	'Title'=>'название',
-	'Text'=>'текст',
-	'Created By'=>'Создано',
-	'Updated By'=>'Обновил',
-	'Last Updated'=>'Последнее обновление',
-	'Create Date'=>'Дата создания',
-	'Edit Permissions'=>'Изменить разрешения',
-	
-	// Labels
-	'Doc'=>'',
-	'Document:'=>'документ',
-	'Edit Document:'=>'документ:',
-	'Documents'=>'документация',
-	'Docs'=>'документация',
-	'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>
-		'Пожалуйста, выберите пользователей, которым разрешено редактировать документ. Используйте Ctrl + Нажмите, чтобы выбрать или отменить выбор отдельных пользователей.',
-	'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>
-		'Пожалуйста, щелкните правой кнопкой мыши на ссылку внизу и выберите "Сохранить как", чтобы загрузить документ! Щелчок левой кнопкой мыши открывает документ в печати режиме ..',
-	
-	// Doc Navbar
-	'List Docs'=>'Список документов',
-	'Create Doc'=>'Создать Док',
-	'View Doc'=>'Посмотреть Док',
-	'Edit Doc'=>'Изменить Док',
-	'Export Doc'=>'Экспорт Док',
-	'Edit Doc Permissions'=>'Изменить Док Разрешения',
-	'Delete Doc'=>'Удалить Док',
-	'Edit'=>'редактировать',
-	'Export'=>'экспорт',
+return array (
+
+// Attribute Labels
+'Title'=>'название',
+'Text'=>'текст',
+'Created By'=>'Создано',
+'Updated By'=>'Обновил',
+'Last Updated'=>'Последнее обновление',
+'Create Date'=>'Дата создания',
+'Edit Permissions'=>'Изменить разрешения',
+
+// Labels
+'Doc'=>'документ',
+'Document:'=>'документ',
+'Edit Document:'=>'документ:',
+'Documents'=>'документация',
+'Manage Docs'=>'Управление документами',
+'Docs'=>'документация',
+'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Пожалуйста, выберите пользователей, которым разрешено редактировать документ. Используйте Ctrl + Нажмите, чтобы выбрать или отменить выбор отдельных пользователей.',
+'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Пожалуйста, щелкните правой кнопкой мыши на ссылку внизу и выберите "Сохранить как", чтобы загрузить документ! Щелчок левой кнопкой мыши открывает документ в печати режиме.',
+
+// Doc Navbar
+'List Docs'=>'Список документов',
+'Create Docs'=>'Создание документов',
+'View Doc'=>'Посмотреть Док',
+'Edit Doc'=>'Изменить Док',
+'Delete Doc'=>'Удалить Док',
+'Export Doc'=>'Экспорт Док',
+'Edit Doc Permissions'=>'Изменить Док Разрешения',
+'Edit'=>'редактировать',
+'Export'=>'экспорт',
 );
-?>

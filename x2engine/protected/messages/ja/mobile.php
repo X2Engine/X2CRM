@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -35,14 +35,15 @@
  ********************************************************************************/
 
 return array (
-	// Text
-	'Logout ({username})'=>'ログアウト({username})',
-	'New Record'=>'新しいレコード',
-	'Find Contacts'=>'連絡先を見つける',
-	'Top Contacts'=>'最高のコンタクト',
-	'No top contacts for this user!'=>'このユーザは最高のコンタクトがない!',
-	'Create Message'=>'メッセージを作成します',
-	'Message List'=>'メッセージリスト',
-	'Clear'=>'クリア',
-	'Search for a Contact'=>'コンタクトの検索',
+// Text
+'Logout ({username})'=>'ログアウト({username})',
+'New Record'=>'新しいレコード',
+'Find Contacts'=>'連絡先を見つける',
+'Top Contacts'=>'最高のコンタクト',
+'No top contacts for this user!'=>'このユーザは最高のコンタクトがない!',
+'Create Message'=>'メッセージを作成します',
+'Message List'=>'メッセージリスト',
+'Clear'=>'クリア',
+'Search for a Contact'=>'コンタクトの検索',
+'Go to Full Site'=>'フルサイトに行く',
 );

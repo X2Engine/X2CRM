@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -35,10 +35,10 @@
  ********************************************************************************/
 
 return array (
-//	Action Attributes
+// Action Attributes
 'Assigned To'=>'Zugeordnet Zu',
 'Action Description'=>'Aktion Beschreibung',
-'Description'=>'Beschreibung', 
+'Description'=>'Beschreibung',
 'Visibility'=>'Sichtbarkeit',
 'Association'=>'Verein',
 'Association Type'=>'Verband Typ',
@@ -61,7 +61,7 @@ return array (
 'No'=>'Nicht',
 'Yes'=>'Ja',
 
-//	Actions Nav
+// Actions Nav
 'All Actions'=>'Alle Aktionen',
 'Create Lead'=>'Erstellen Blei',
 'Create Action'=>'Aktion Erstellen',
@@ -71,7 +71,7 @@ return array (
 'Complete + New Action'=>'Komplette + Neue Aktion',
 'Uncomplete'=>'Machen Sie unvollständige',
 
-//	Actions Titles
+// Actions Titles
 'Manage Actions'=>'Aktionen Verwalten',
 'Completed Actions'=>'Abgeschlossene Aktionen',
 'Create Action for {type}'=>'Erstellen Action for {type}',
@@ -80,15 +80,15 @@ return array (
 'Update Action:'=>'Aktualisieren Aktion:',
 'Action'=>'Aktion',
 'Action:'=>'Aktion:',
-"Today's Actions"=>"Die heutige Aktionen",
+'Today\'s Actions'=>'Die heutige Aktionen',
 'My Actions'=>'Meine Aktionen',
 'All My Actions'=>'Alle meine Handlungen',
-"Everyone's Actions"=>"Jeder ist Actions",
+'Everyone\'s Actions'=>'Jeder ist Actions',
 'Delete Action'=>'Aktion Löschen',
 'Share Action'=>'Anteil Aktion',
 
 
-//	Misc
+// Misc
 'Email Message:'=>'E-Mail Nachricht:',
 'Attachment:'=>'Attachment:',
 'Assigned to {name}'=>'Zugewiesen an {name}',
@@ -107,7 +107,7 @@ return array (
 'Overdue {time}'=>'Überfällig {time}',
 'Due {date}'=>'Aufgrund {date} ',
 
-//	Create Action Types
+// Create Action Types
 'None'=>'Keiner',
 'Contact'=>'Kontakt',
 'Account'=>'Konto',
@@ -115,15 +115,15 @@ return array (
 'Case'=>'Fall',
 'Sale'=>'Verkauf',
 
-//	Action Reminder Email
+// Action Reminder Email
 'No one'=>'Niemand',
 'Not specified'=>'Nicht angegeben',
 'Action Reminder:'=>'Aktion Erinnerung:',
-"Reminder, the following action is due"=>"Reminder, wird die folgende Aktion durch",
-"Description"=>"Beschreibung",
-"Type"=>"Typ",
-"Associations"=>"Verbände",
-"Link to the action"=>"Link zur Aktion",
+'Reminder, the following action is due'=>'Reminder, wird die folgende Aktion durch',
+'Description'=>'Beschreibung',
+'Type'=>'Typ',
+'Associations'=>'Verbände',
+'Link to the action'=>'Link zur Aktion',
 'Link to the'=>'Link zur',
 'Powered by '=>'Präsentiert von',
 );

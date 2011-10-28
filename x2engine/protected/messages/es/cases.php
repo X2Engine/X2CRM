@@ -67,5 +67,4 @@ return array (
 
 //	Misc
 
-''=>'',
 );

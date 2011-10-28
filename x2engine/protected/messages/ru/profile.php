@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Profile Attributes
+// Profile Attributes
 'ID'=>'ID',
 'Full Name'=>'полное имя',
 'Username'=>'имя пользователя',
@@ -62,7 +62,7 @@ return array (
 'Show Social Media'=>'Показать социальных медиа',
 'Upload a Background'=>'Загрузить фон',
 
-//	Profile Actions
+// Profile Actions
 'View Profile'=>'Просмотр профиля',
 'Update Profile'=>'Обновление профиля',
 'Change Settings'=>'Изменить параметры',
@@ -70,13 +70,13 @@ return array (
 'People'=>'люди',
 'Change Personal Settings'=>'Изменение абонентских установок',
 
-//	Profile Titles
+// Profile Titles
 'Profile:'=>'Профиль:',
 'Update Your Profile'=>'Обновить профиль',
 
-//	Group
+// Social
 'Feed'=>'кормить',
-'Group'=>'группа',
+'Social'=>'социальный',
 'Reply'=>'ответ',
 'A larger Chat Box'=>'Больше окне чата',
 'A blog-like discussion forum'=>'Блог-подобный форум',

@@ -35,10 +35,10 @@
  ********************************************************************************/
 
 return array (
-//	Action Attributes
+// Action Attributes
 'Assigned To'=>'Назначено',
 'Action Description'=>'Действие Описание',
-'Description'=>'описание', 
+'Description'=>'описание',
 'Visibility'=>'видимость',
 'Association'=>'ассоциация',
 'Association Type'=>'Ассоциация Тип',
@@ -61,7 +61,7 @@ return array (
 'No'=>'нет',
 'Yes'=>'да',
 
-//	Actions Nav
+// Actions Nav
 'All Actions'=>'Все действия',
 'Create Lead'=>'Создать Ведущий',
 'Create Action'=>'Создать действия',
@@ -71,7 +71,7 @@ return array (
 'Complete + New Action'=>'Полный комплект + Новая акция',
 'Uncomplete'=>'Сделайте неполное ',
 
-//	Actions Titles
+// Actions Titles
 'Manage Actions'=>'Управление действиями',
 'Completed Actions'=>'завершенных действий',
 'Create Action for {type}'=>'Создание действий для {type}',
@@ -80,15 +80,15 @@ return array (
 'Update Action:'=>'Обновление действий:',
 'Action'=>'действие',
 'Action:'=>'Действие:',
-"Today's Actions"=>"Сегодняшние действия",
+'Today\'s Actions'=>'Сегодняшние действия',
 'My Actions'=>'Мои действия',
 'All My Actions'=>'Все мои действия',
-"Everyone's Actions"=>"У всех действий",
+'Everyone\'s Actions'=>'У всех действий',
 'Delete Action'=>'Действие Удалить',
 'Share Action'=>'Доля Действие',
 
 
-//	Misc
+// Misc
 'Email Message:'=>'E-mail Сообщение:',
 'Attachment:'=>'Привязанность:',
 'Assigned to {name}'=>'Назначена {name} ',
@@ -107,7 +107,7 @@ return array (
 'Overdue {time}'=>'просроченный {time}',
 'Due {date}'=>'Благодаря {date}',
 
-//	Create Action Types
+// Create Action Types
 'None'=>'ни один',
 'Contact'=>'контакт',
 'Account'=>'счет',
@@ -115,15 +115,15 @@ return array (
 'Case'=>'случай',
 'Sale'=>'продажа',
 
-//	Action Reminder Email
+// Action Reminder Email
 'No one'=>'никто',
 'Not specified'=>'Не указано',
 'Action Reminder:'=>'Действие Напоминание:',
-"Reminder, the following action is due"=>"Напоминание, следующее действие которого обусловлено",
-"Description"=>"описание",
-"Type"=>"тип",
-"Associations"=>"ассоциации",
-"Link to the action"=>"Ссылка на действие",
+'Reminder, the following action is due'=>'Напоминание, следующее действие которого обусловлено',
+'Description'=>'описание',
+'Type'=>'тип',
+'Associations'=>'ассоциации',
+'Link to the action'=>'Ссылка на действие',
 'Link to the'=>'Ссылка',
 'Powered by '=>'Работает на ',
 );

@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Profile Attributes
+// Profile Attributes
 'ID'=>'ID',
 'Full Name'=>'Nombre Completo',
 'Username'=>'Nombre de Usuario',
@@ -62,7 +62,7 @@ return array (
 'Show Social Media'=>'Mostrar Medios Social',
 'Upload a Background'=>'Subir un Fondo',
 
-//	Profile Actions
+// Profile Actions
 'View Profile'=>'Ver Perfil',
 'Update Profile'=>'Actualizar Perfil',
 'Change Settings'=>'Cambiar la Configuración',
@@ -70,13 +70,13 @@ return array (
 'People'=>'Personas',
 'Change Personal Settings'=>'Cambiar la Configuración del Personal',
 
-//	Profile Titles
+// Profile Titles
 'Profile:'=>'Perfil:',
 'Update Your Profile'=>'Actualizar Su Perfil',
 
-//	Group
+// Social
 'Feed'=>'Fuente',
-'Group'=>'Grupo',
+'Social'=>'Social',
 'Reply'=>'Responder',
 'A larger Chat Box'=>'Una Charla más grande Caja',
 'A blog-like discussion forum'=>'Un estilo blog foro de discusión',

@@ -38,6 +38,15 @@ $isGuest = Yii::app()->user->isGuest;
 $isAdmin = !$isGuest && Yii::app()->user->getName()=='admin';
 $isUser = !($isGuest || $isAdmin);
 
+if(Yii::app()->session['alertUpdate']){
+    ?><script>
+        alert('A new version is available.  To update X2Contacts or to turn off these notifications, please go to the Admin tab.');
+    </script>
+    
+<?php
+Yii::app()->session['alertUpdate']=false;
+}
+
 // jQuery and jQuery UI libraries
 Yii::app()->clientScript->registerCoreScript('jquery');
 Yii::app()->clientScript->registerCoreScript('jquery.ui');
@@ -244,7 +253,7 @@ if($isGuest) {
 		$menuItems['users'] = array('label'=>Yii::t('app','Users'), 'url'=>array('/users/admin'), 'active'=>($module=='users')? true : null);
 }
 
-$maxMenuItems = 6;
+$maxMenuItems = 5;
 //check if menu has too many items to fit nicely
 $menuItemCount = count($menuItems);
 if ($menuItemCount > $maxMenuItems) {
@@ -323,12 +332,7 @@ $userMenu = array(
 	?>
 	<div id="search-bar">
 		<form name="search" action="<?php echo $this->createUrl('search/search');?>" method="get">
-                        <?php
-                            if(isset(Yii::app()->session['versionCheck']) && Yii::app()->session['versionCheck']==false){
-                        ?>
-                        <a href="<?php echo Yii::app()->request->baseUrl;?>/updater.php" style="text-decoration:none;"><span id="search-bar-title" style="color:red;font-size:12px;">A new version is available <br />Click here to update.</span></a>
-                        <?php } else { ?>
-			<span id="search-bar-title"><?php echo '<a href="'.Yii::app()->request->baseUrl.'/index.php/site/whatsNew"><img height="30" width="200" src='.Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo.'></a>'; ?></span><?php } ?>
+			<span id="search-bar-title"><?php echo '<a href="'.Yii::app()->request->baseUrl.'/index.php/site/whatsNew"><img height="30" width="200" src='.Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo.'></a>'; ?></span>
 			<input type="text" class="text" id="search-bar-box" name="term" value="<?php echo Yii::t('app','Search for contact, action, deal...'); ?>" onFocus="toggleText(this);" onBlur="toggleText(this);" />
 			<a class="x2-button" href="#" onClick="submitForm('search');"><span><?php echo Yii::t('app','Go'); ?></span></a>
 		</form>

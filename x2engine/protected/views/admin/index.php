@@ -36,7 +36,10 @@
 ?>
 <h1><?php echo Yii::t('app','Administration Tools'); ?>&nbsp;&nbsp;<a href="contactUs" style="position:relative;bottom:5px;" class="x2-button"><?php echo Yii::t('admin','Contact Us');?></a></h1>
 <?php echo Yii::t('app','Welcome to the administration tool set.'); ?>
-<br /><br />
+<br />
+<?php $admin=AdminChild::model()->findByPk(1);?>
+<span style="color:red;"><?php echo (Yii::app()->session['versionCheck']==false && !$admin->ignoreUpdates)?Yii::t('app','A new version is available! Click here to update to version '.Yii::app()->session['newVersion'])." ".CHtml::link(Yii::t('app','Update'),Yii::app()->request->baseUrl.'/updater.php',array('class'=>'x2-button')):'' ?></span>
+<br />
 
 <div class="span-7">
 	<h2><?php echo Yii::t('admin','Utilities'); ?></h2>
@@ -53,7 +56,8 @@
 		<?php echo CHtml::link(Yii::t('admin','Set chat poll rate'),'setChatPoll'); ?><br /><?php echo Yii::t('admin','Adjust chat refresh rate for performance');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Toggle default logo'),'toggleDefaultLogo'); ?><br /><?php echo Yii::t('admin','Change logo back to X2Contacts');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br /><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?><br /><br />
-                <?php echo CHtml::link(Yii::t('admin','View User Changelog'),'viewChangelog'); ?><br /><?php echo Yii::t('admin','View a log of everything that has been changed');?>
+                <?php echo CHtml::link(Yii::t('admin','View User Changelog'),'viewChangelog'); ?><br /><?php echo Yii::t('admin','View a log of everything that has been changed');?><br /><br />
+                <?php echo CHtml::link(Yii::t('admin','Toggle Automatic Update'),'toggleUpdater'); ?><br /><?php echo Yii::t('admin','Turn off/on notifications for new versions of X2Contacts');?>
 	</div>
 </div>
 <div class="span-7">
@@ -65,8 +69,8 @@
 		<?php echo CHtml::link(Yii::t('admin','Export a module'),'exportModule'); ?><br /><?php echo Yii::t('admin','Export one of your custom modules to a .zip');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Import a module'),'importModule'); ?><br /><?php echo Yii::t('admin','Import a .zip of a module');?><br /><br />  
 		<?php echo CHtml::link(Yii::t('admin','Rename a module'),'renameModules'); ?><br /><?php echo Yii::t('admin','Change module titles on top bar');?><br /><br />
-		<?php echo CHtml::link(Yii::t('admin','Gii - A Code Generation Module'),Yii::app()->request->baseUrl."/index.php/gii/"); ?><br /><?php echo Yii::t('admin','Use the Yii framework\'s code generation tools');?><br /><br />
-		
+		<?php echo CHtml::link(Yii::t('admin','Gii - A Code Generation Module'),Yii::app()->request->baseUrl.'/index.php/gii/'); ?><br /><?php echo Yii::t('admin','Use the Yii framework\'s code generation tools');?><br /><br />
+		<?php echo CHtml::link(Yii::t('admin','X2Translations'),array('translationManager')); ?><br /><?php echo Yii::t('admin','Add, remove and update message translations in the X2Contacts language packs.');?><br /><br />
 		<?php //echo CHtml::link(Yii::t('app','Toggle Accounts Module'),'toggleAccounts'); ?>
 		<?php //echo CHtml::link(Yii::t('app','Toggle Sales Module'),'toggleSales'); ?>
 	</div>

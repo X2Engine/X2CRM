@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
+return array (
 
 // Attribute Labels
 'Title'=>'題名',
@@ -50,12 +50,13 @@ return array(
 'Document:'=>'文書',
 'Edit Document:'=>'ドキュメントの編集',
 'Documents'=>'文書',
+'Manage Docs'=>'ドキュメントの管理',
 'Docs'=>'ドク',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'ユーザーが文書を編集するために許可されている選択してください。コントロールを使用する+個々のユーザーを選択または選択解除する]をクリックします。',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'右下のリンクをクリックすると、ドキュメントをダウンロードするには、"名前を付けて保存"を選択してください！左クリックは、プリンタフレンドリモードで文書を開きます。',
 
 // Doc Navbar
-'List　Docs'=>'ドクのリスト',
+'List Docs'=>'ドクのリスト',
 'Create Docs'=>'ドクを作る',
 'View Doc'=>'ドクを見る',
 'Edit Doc'=>'ドクの編集',
@@ -65,4 +66,3 @@ return array(
 'Edit'=>'編集する',
 'Export'=>'エクスポート',
 );
-?>

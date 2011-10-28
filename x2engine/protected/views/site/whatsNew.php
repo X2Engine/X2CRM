@@ -63,7 +63,7 @@
 		array(
 			'name' => Yii::t('actions','Updated By'),
 			'type' => 'raw',
-			'value' => 'CHtml::encode($data["updatedBy"])'
+			'value' => '$data["updatedBy"]'
 		),
 	),
 ));

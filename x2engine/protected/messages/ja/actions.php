@@ -35,11 +35,10 @@
  ********************************************************************************/
 
 return array (
-//	Action Attributes
-'ID'=>'ID',
+// Action Attributes
 'Assigned To'=>'割り当て',
-'Action Description'=>'',
-'Description'=>'説明', 
+'Action Description'=>'アクション説明',
+'Description'=>'説明',
 'Visibility'=>'可視性',
 'Association'=>'関連付け',
 'Association Type'=>'関連付けの種類',
@@ -51,7 +50,7 @@ return array (
 'Complete'=>'完了',
 'Reminder'=>'リマインダー',
 'Completed By'=>'完成した人',
-'Complete Date'=>'',
+'Complete Date'=>'終了日',
 'Last Updated'=>'最後を更新する',
 'Updated By'=>'更新した人',
 'Low'=>'低',
@@ -62,7 +61,7 @@ return array (
 'No'=>'いいえ',
 'Yes'=>'はい',
 
-//	Actions Nav
+// Actions Nav
 'All Actions'=>'すべてのアクション',
 'Create Lead'=>'リードを作成する',
 'Create Action'=>'アクションを作る。',
@@ -72,7 +71,7 @@ return array (
 'Complete + New Action'=>'完了する+新規アクション',
 'Uncomplete'=>'不完全にする',
 
-//	Actions Titles
+// Actions Titles
 'Manage Actions'=>'アクションの管理',
 'Completed Actions'=>'完了したアクション',
 'Create Action for {type}'=>'{type}のアクションを作る。',
@@ -81,15 +80,15 @@ return array (
 'Update Action:'=>'アクションを更新します:',
 'Action'=>'アクション',
 'Action:'=>'アクション:',
-"Today's Actions"=>'今日のアクション',
+'Today\'s Actions'=>'今日のアクション',
 'My Actions'=>'私のアクション',
 'All My Actions'=>'すべて私のアクション',
-"Everyone's Actions"=>'みんなのアクション',
+'Everyone\'s Actions'=>'みんなのアクション',
 'Delete Action'=>'アクションを削除',
 'Share Action'=>'アクションを共有する',
 
 
-//	Misc
+// Misc
 'Email Message:'=>'メールメッセージ:',
 'Attachment:'=>'添付:',
 'Assigned to {name}'=>'{name} に割り当て',
@@ -108,7 +107,7 @@ return array (
 'Overdue {time}'=>'{time}で延滞',
 'Due {date}'=>'{date}に起因',
 
-//	Create Action Types
+// Create Action Types
 'None'=>'なし',
 'Contact'=>'コンタクト',
 'Account'=>'アカウント',
@@ -116,7 +115,7 @@ return array (
 'Case'=>'ケース',
 'Sale'=>'セール',
 
-//	Action Reminder Email
+// Action Reminder Email
 'No one'=>'誰も',
 'Not specified'=>'指定しない',
 'Action Reminder:'=>'アクションリマインダー:',

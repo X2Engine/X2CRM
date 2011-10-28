@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Language Name
+// Language Name
 'languageName'=>'Template',
 // Login
 'Please log in to continue:'=>'',
@@ -91,13 +91,13 @@ return array (
 'Message Board'=>'',
 'Please enter a message of the day!'=>'',
 'Edit Message'=>'',
-	
+
 'Note Pad'=>'',
 'Feel free to enter some notes!'=>'',
-	
+
 'Top Contacts'=>'',
 'Add {name}'=>'',
-	
+
 
 // Chat
 'Message Body'=>'',
@@ -128,7 +128,7 @@ return array (
 'Anyone'=>'',
 'Share'=>'',
 'Link'=>'',
-'Theme'=>'', 
+'Theme'=>'',
 'Account'=>'',
 'Sale'=>'',
 'All'=>'',
@@ -153,7 +153,7 @@ return array (
 'Status'=>'',
 'E-mail'=>'',
 'Download'=>'',
-	
+
 // Timestamps
 'Just now'=>'',
 '{n} minutes ago'=>'',
@@ -174,5 +174,5 @@ return array (
 'Send Mass E-mail'=>'',
 'How to use Gii'=>'',
 'How to add a database field'=>'',
-);
 
+);

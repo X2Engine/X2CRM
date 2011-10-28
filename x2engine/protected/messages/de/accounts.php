@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Account Attributes
+// Account Attributes
 'ID'=>'ID',
 'Name'=>'Name',
 'Website'=>'Webseite',
@@ -52,7 +52,7 @@ return array (
 'Updated By'=>'Aktualisiert von',
 'None'=>'Keiner',
 
-//	Accounts Actions
+// Accounts Actions
 'Accounts List'=>'Konten-Liste',
 'Create Account'=>'Konto Erstellen',
 'View Account'=>'Konto Anzeigen',
@@ -64,16 +64,15 @@ return array (
 'Remove a Contact'=>'Nehmen Sie einen Kontakt',
 'Share Account'=>'Anteil Konto',
 
-//	Accounts Titles
+// Accounts Titles
 'Accounts'=>'Konten',
 'Manage Accounts'=>'Konten Verwalten',
 'Update Account: {name}'=>'Konto Aktualisieren: {name}',
 'Account:'=>'Konto:',
 
-	
-//	Misc
+// Misc
 'Please click any new users you wish to add.'=>'Bitte klicken Sie alle neuen Benutzer Sie hinzufügen möchten.',
 'Please click any new users you wish to remove.'=>'Bitte klicken Sie auf eine neue Benutzer, die Sie entfernen möchten.',
 'Account Record Details'=>'Konto Rekord Einzelheiten',
-'Account Record'=>'Konto Rekord'
+'Account Record'=>'Konto Rekord',
 );

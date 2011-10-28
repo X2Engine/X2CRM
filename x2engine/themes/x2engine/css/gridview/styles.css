@@ -45,7 +45,7 @@
 	margin:0 20px 0 0;
 }
 .grid-view table.items {
-	/* table-layout:fixed; */
+	table-layout:fixed;
 	margin-top:5px;
 	clear:both;
 	border:none;
@@ -96,10 +96,7 @@
 	font-family:sans-serif;
 	font-size:12px;
 	font-weight:normal;
-	white-space: pre-wrap; /* css-3 */
-	white-space:-moz-pre-wrap; /* Mozilla, since 1999 */
-	white-space:-pre-wrap; /* Opera 4-6 */
-	white-space:-o-pre-wrap; /* Opera 7 */
+
 	word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 .grid-view table.items th {

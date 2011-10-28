@@ -35,9 +35,9 @@
  ********************************************************************************/
 
 return array (
-//	Contact Form Attributes
+// Contact Form Attributes
 'Verification Code'=>'',
-//	Contact Attributes
+// Contact Attributes
 'ID'=>'',
 'First Name'=>'',
 'Name'=>'',
@@ -77,7 +77,7 @@ return array (
 'Detail View'=>'',
 'Simple View'=>'',
 
-//	Contacts Actions
+// Contacts Actions
 'My Contacts'=>'',
 'All Contacts'=>'',
 'Create Contact'=>'',
@@ -87,7 +87,7 @@ return array (
 'Create Lead'=>'',
 'Share Contact'=>'',
 
-//	Contacts Titles
+// Contacts Titles
 'Contacts'=>'',
 'Manage Contacts'=>'',
 'Contact:'=>'',

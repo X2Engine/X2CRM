@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
+// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
 
 $admin = Admin::model()->findByPk(1);
@@ -51,7 +51,7 @@ echo "<div id=\"chat-box\"></div>";
 
 echo CHtml::beginForm();
 // echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message','',array('style'=>'color:#aaa;'));
+echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
 
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Send'),
@@ -60,9 +60,9 @@ echo CHtml::ajaxSubmitButton(
 		'update'=>'#chat-box',
 		'success'=>"function(response) {
 			updateChat();
-			$('#chat-message').val('".Yii::t('app','Enter text here...')."');
-			$('#chat-message').css('color','#aaa');
-			toggleText($('#chat-message').get());
+			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
+			// $('#chat-message').css('color','#aaa');
+			// toggleText($('#chat-message').get());
 		}",
 	),
 	array('class'=>'x2-button')

@@ -34,37 +34,35 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
-	
-	// Attribute Labels
-	'Title'=>'Titre',
-	'Text'=>'Texte',
-	'Created By'=>'Créé par',
-	'Updated By'=>'Mis à jour par',
-	'Last Updated'=>'Dernière mise à jour',
-	'Create Date'=>'Créez date',
-	'Edit Permissions'=>'Modifier les autorisations',
-	
-	// Labels
-	'Doc'=>'Doc',
-	'Document:'=>'Document de:',
-	'Edit Document:'=>'Modifier un document:',
-	'Documents'=>'Documents',
-	'Docs'=>'Docs',
-	'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>
-		'S\'il vous plaît sélectionner les utilisateurs qui sont autorisés à modifier le document. Utilisez Ctrl + clic pour sélectionner ou désélectionner les utilisateurs individuels.',
-	'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>
-		'S\'il vous plaît faites un clic droit sur ​​le lien ci-dessous et sélectionnez "Enregistrer sous" pour télécharger le document! Clic gauche ouvre le document dans un mode imprimable.',
-	
-	// Doc Navbar
-	'List Docs'=>'Liste Docs',
-	'Create Doc'=>'Créer Doc',
-	'View Doc'=>'Voir Doc',
-	'Edit Doc'=>'Modifier Doc',
-	'Export Doc'=>'Exporter Doc',
-	'Edit Doc Permissions'=>'Modifier les autorisations Doc',
-	'Delete Doc'=>'Supprimer Doc',
-	'Edit'=>'Modifier',
-	'Export'=>'Exporter',
+return array (
+
+// Attribute Labels
+'Title'=>'Titre',
+'Text'=>'Texte',
+'Created By'=>'Créé par',
+'Updated By'=>'Mis à jour par',
+'Last Updated'=>'Dernière mise à jour',
+'Create Date'=>'Créez date',
+'Edit Permissions'=>'Modifier les autorisations',
+
+// Labels
+'Doc'=>'Doc',
+'Document:'=>'Document de:',
+'Edit Document:'=>'Modifier un document:',
+'Documents'=>'Documents',
+'Manage Docs'=>'Gestion des documents',
+'Docs'=>'Docs',
+'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'S\'il vous plaît sélectionner les utilisateurs qui sont autorisés à modifier le document. Utilisez Ctrl + clic pour sélectionner ou désélectionner les utilisateurs individuels.',
+'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'S\'il vous plaît faites un clic droit sur ​​le lien ci-dessous et sélectionnez "Enregistrer sous" pour télécharger le document! Clic gauche ouvre le document dans un mode imprimable.',
+
+// Doc Navbar
+'List Docs'=>'Liste de documents',
+'Create Docs'=>'Créer Docs',
+'View Doc'=>'Voir Doc',
+'Edit Doc'=>'Modifier Doc',
+'Delete Doc'=>'Supprimer Doc',
+'Export Doc'=>'Exporter Doc',
+'Edit Doc Permissions'=>'Modifier les autorisations Doc',
+'Edit'=>'Modifier',
+'Export'=>'Exporter',
 );
-?>

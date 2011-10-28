@@ -50,7 +50,6 @@ return array (
 'Administrator Email'=>'électronique de l\'administrateur',
 
 'Database Connection Info'=>'Informations sur la connexion base de données',
-'Do you want dummy data?'=>'Voulez-vous des données factices?',
 
 'Host Name'=>'Nom de l\'hôte',
 'Database Name'=>'Nom de la base',
@@ -61,17 +60,11 @@ return array (
 'For help or more information - X2Engine.com'=>'Pour l\'aide ou plus d\'informations - X2Engine.com',
 
 'All Rights Reserved.'=>'Tous droits réservés.',
-	
-'This beta release only supports MySQL.'=>'Cette version bêta ne supporte que MySQL.',
-'Please create a database before install.'=>'S\'il vous plaît créer une base de données avant d\'installer.',
 
 // Splash screen
-
 'Installation Complete!'=>'Installation terminée!',
 'Click here to log in to X2Engine'=>'Cliquez ici pour vous connecter à X2Engine',
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine correctement installé sur votre serveur web! Vous pouvez maintenant vous connecter avec identifiant «admin» et le mot de passe fourni lors de l\'installation.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Si vous avez choisi d\'installer GII, vous pouvez le trouver <a href="index.php/gii/">ici</ a>. Le mot de passe est le même que votre mot de passe admin.',
-
-''=>'',
 
 );

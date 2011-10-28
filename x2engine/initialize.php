@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.3';
+$x2Version = '0.9.4';
  
 $host=$_POST['host'];
 $db=$_POST['db'];
@@ -48,7 +48,7 @@ if($lang=="")
 $adminEmail=$_POST['adminEmail'];
 $adminPassword=$_POST['adminPass'];
 $app=mysql_escape_string($app);
-if(!preg_match('/[a-zA-Z0-9]+@/',$adminEmail))
+if(!empty($adminEmail) && !preg_match('/[a-zA-Z0-9]+@/',$adminEmail))
 	die('Please enter a valid email address.');
 
 $gii=1;
@@ -107,7 +107,7 @@ $con = mysql_connect($host,$user,$pass) or die("Unable to connect to database.  
 mysql_select_db($db,$con) or die ("Unable to select database.  Please make sure the name is spelled properly and that the database exists.".mysql_error());
 
 mysql_query("DROP TABLE IF EXISTS x2_users, x2_contacts, x2_actions, x2_sales, x2_projects, x2_marketing, x2_cases, x2_profile,
-	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog, x2_tags") or die("Unable to update tables, check user permissions.".mysql_error());
+	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog, x2_tags, x2_relationships") or die("Unable to update tables, check user permissions.".mysql_error());
 
 mysql_query("CREATE TABLE x2_users(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -142,7 +142,7 @@ mysql_query("CREATE TABLE x2_contacts(
 	company VARCHAR(100),
 	accountId INT DEFAULT 0,
 	phone VARCHAR(40),
-	email VARCHAR(100),
+	email VARCHAR(250),
 	website VARCHAR(100),
 	address VARCHAR(100),
 	city VARCHAR(40),
@@ -280,7 +280,7 @@ mysql_query("CREATE TABLE x2_actions(
 	backgroundColor VARCHAR(6) NULL,
 	menuBgColor VARCHAR(6) NULL,
 	menuTextColor VARCHAR(6) NULL,
-	backgroundImg VARCHAR(100) NULL DEFAULT 'santa_cruz_blur.jpg',
+	backgroundImg VARCHAR(100) NULL DEFAULT 'santacruznight_blur.jpg',
 	pageOpacity INT NULL,
 	startPage VARCHAR(30) NULL,
 	showSocialMedia TINYINT(1) NOT NULL DEFAULT 1,
@@ -352,7 +352,8 @@ mysql_query("CREATE TABLE x2_admin(
 	menuOrder VARCHAR(255),
 	menuVisibility VARCHAR(100),
 	menuNicknames VARCHAR(255),
-	chatPollTime INT DEFAULT 2000)
+	chatPollTime INT DEFAULT 2000,
+        ignoreUpdates TINYINT DEFAULT 0)
 	COLLATE = utf8_general_ci
 	") or die('Unable to create table x2_social, check user permissions.'.mysql_error());
 
@@ -376,6 +377,15 @@ mysql_query("CREATE TABLE x2_tags(
 	timestamp INT NOT NULL DEFAULT 0)
 	COLLATE = utf8_general_ci
  ") or die('Unable to create table x2_tags, check user permissions.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_relationships( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	firstType VARCHAR(100),
+	firstId INT,
+	secondType VARCHAR(100),
+        secondId INT)
+	COLLATE = utf8_general_ci
+ ") or die('Unable to create table x2_relationshps, check user permissions.'.mysql_error());
 
 
 $adminPassword=md5($adminPassword); 

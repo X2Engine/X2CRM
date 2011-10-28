@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -35,11 +35,10 @@
  ********************************************************************************/
 
 return array (
-//	Action Attributes
-'ID'=>'',
+// Action Attributes
 'Assigned To'=>'',
 'Action Description'=>'',
-'Description'=>'', 
+'Description'=>'',
 'Visibility'=>'',
 'Association'=>'',
 'Association Type'=>'',
@@ -62,7 +61,7 @@ return array (
 'No'=>'',
 'Yes'=>'',
 
-//	Actions Nav
+// Actions Nav
 'All Actions'=>'',
 'Create Lead'=>'',
 'Create Action'=>'',
@@ -72,7 +71,7 @@ return array (
 'Complete + New Action'=>'',
 'Uncomplete'=>'',
 
-//	Actions Titles
+// Actions Titles
 'Manage Actions'=>'',
 'Completed Actions'=>'',
 'Create Action for {type}'=>'',
@@ -81,15 +80,15 @@ return array (
 'Update Action:'=>'',
 'Action'=>'',
 'Action:'=>'',
-"Today's Actions"=>'',
+'Today\'s Actions'=>'',
 'My Actions'=>'',
 'All My Actions'=>'',
-"Everyone's Actions"=>'',
+'Everyone\'s Actions'=>'',
 'Delete Action'=>'',
 'Share Action'=>'',
 
 
-//	Misc
+// Misc
 'Email Message:'=>'',
 'Attachment:'=>'',
 'Assigned to {name}'=>'',
@@ -108,7 +107,7 @@ return array (
 'Overdue {time}'=>'',
 'Due {date}'=>'',
 
-//	Create Action Types
+// Create Action Types
 'None'=>'',
 'Contact'=>'',
 'Account'=>'',
@@ -116,7 +115,7 @@ return array (
 'Case'=>'',
 'Sale'=>'',
 
-//	Action Reminder Email
+// Action Reminder Email
 'No one'=>'',
 'Not specified'=>'',
 'Action Reminder:'=>'',

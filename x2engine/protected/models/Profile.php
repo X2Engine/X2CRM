@@ -58,12 +58,12 @@ class Profile extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('fullName, username, emailAddress, status', 'required'),
+			array('fullName, username, status', 'required'),
 			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView', 'numerical', 'integerOnly'=>true),
 			array('fullName', 'length', 'max'=>60),
 			array('username, updatedBy', 'length', 'max'=>20),
-			array('officePhone, cellPhone, emailAddress, language', 'length', 'max'=>40),
-			array('tagLine', 'length', 'max'=>250),
+			array('officePhone, cellPhone, language', 'length', 'max'=>40),
+			array('tagLine, emailAddress', 'length', 'max'=>250),
 			array('timeZone, backgroundImg', 'length', 'max'=>100),
 			array('widgets, widgetOrder', 'length', 'max'=>255),
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),

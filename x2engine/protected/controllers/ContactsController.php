@@ -66,6 +66,7 @@ class ContactsController extends x2base {
 					'getContacts',
 					'delete',
 					'shareContact',
+                                        'viewSales',
 				),
 				'users'=>array('@'),
 			),
@@ -97,6 +98,22 @@ class ContactsController extends x2base {
 		} else
 			$this->redirect('index');
 	}
+        
+        public function actionViewSales($id){
+            
+            $sales=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','firstId'=>$id,'secondType'=>'Sales'));
+            $temp=array();
+            foreach($sales as $sale){
+                $temp[]=SaleChild::model()->findByPk($sale->secondId);
+            }
+            $sales=$temp;
+            $model=$this->loadModel($id);
+            
+            $this->render('viewSales',array(
+                'sales'=>$sales,
+                'model'=>$model,
+            ));
+        }
 	
 	public function actionGetTerms(){
 		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
@@ -228,8 +245,9 @@ $model->city, $model->state $model->zipcode
 		if(isset($_POST['ContactChild'])) {
 			// clear values that haven't been changed from the default
 			foreach($_POST['ContactChild'] as $name => $value) {
-				if($value == $contact->getAttributeLabel($name))
-					$value = '';
+				if($value == $contact->getAttributeLabel($name)){
+                                    $_POST['ContactChild'][$name] = '';
+                                }
 			}
 			$temp=$contact->attributes;
 			$contact->attributes=$_POST['ContactChild'];
@@ -260,9 +278,9 @@ $model->city, $model->state $model->zipcode
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
-		$accounts=AccountChild::getNames();
+		$accounts=AccountChild::getNames();  
 		
-		
+		 
 
 		if(isset($_POST['ContactChild'])) {
 			$temp=$model->attributes;

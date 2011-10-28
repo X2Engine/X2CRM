@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Users Attributes
+// Users Attributes
 'ID'=>'ID',
 'First Name'=>'имя',
 'Last Name'=>'Фамилия',
@@ -55,13 +55,13 @@ return array (
 'Updated By'=>'Обновил',
 'Recent Items'=>'Последние элементы',
 
-//	Users Actions
-'Manage Users'=>'Управление пользователями',
+// Users Actions
 'Create User'=>'Создать пользователя',
 'View User'=>'Просмотр пользователей',
 'Update User'=>'Обновление Пользователь',
+'Manage Users'=>'Управление пользователями',
 
-//	Users Titles
+// Users Titles
 'User: {name}'=>'Пользователь: {name}',
 'Update User: {name}'=>'Обновление Пользователь: {name}',
 );

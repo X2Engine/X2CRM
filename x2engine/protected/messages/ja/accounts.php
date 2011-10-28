@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Account Attributes
+// Account Attributes
 'ID'=>'ID',
 'Name'=>'名前',
 'Website'=>'ウェブサイト',
@@ -52,7 +52,7 @@ return array (
 'Updated By'=>'更新した人',
 'None'=>'なし',
 
-//	Accounts Actions
+// Accounts Actions
 'Accounts List'=>'アカウントリスト',
 'Create Account'=>'アカウントを作る',
 'View Account'=>'アカウントを見る',
@@ -64,15 +64,15 @@ return array (
 'Remove a Contact'=>'コンタクトを削除する',
 'Share Account'=>'アカウントを共有する',
 
-//	Accounts Titles
+// Accounts Titles
 'Accounts'=>'アカウント',
 'Manage Accounts'=>'アカウントの管理',
 'Update Account: {name}'=>'更新アカウント：{name}',
 'Account:'=>'アカウント：',
 
-//	Misc
+// Misc
 'Please click any new users you wish to add.'=>'追加したい新しいユーザーをクリックしてください。',
 'Please click any new users you wish to remove.'=>'削除したいすべての新規ユーザをクリックしてください。',
 'Account Record Details'=>'アカウントレコードの詳細',
-'Account Record'=>'アカウントレコード'
+'Account Record'=>'アカウントレコード',
 );

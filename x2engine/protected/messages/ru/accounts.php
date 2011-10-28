@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Account Attributes
+// Account Attributes
 'ID'=>'ID',
 'Name'=>'имя',
 'Website'=>'веб-сайт',
@@ -52,7 +52,7 @@ return array (
 'Updated By'=>'Обновил',
 'None'=>'ни один',
 
-//	Accounts Actions
+// Accounts Actions
 'Accounts List'=>'Список счетов',
 'Create Account'=>'Создать учетную запись',
 'View Account'=>'Просмотр счета',
@@ -64,16 +64,15 @@ return array (
 'Remove a Contact'=>'Удалить Контакт',
 'Share Account'=>'паевой счет',
 
-//	Accounts Titles
+// Accounts Titles
 'Accounts'=>'счета',
 'Manage Accounts'=>'Управление учетными записями',
 'Update Account: {name}'=>'Обновление счет: {name}',
 'Account:'=>'счет:',
 
-	
-//	Misc
+// Misc
 'Please click any new users you wish to add.'=>'Пожалуйста, нажмите на любую новых пользователей вы хотите добавить.',
 'Please click any new users you wish to remove.'=>'Пожалуйста, нажмите на любую новых пользователей вы хотите удалить.',
 'Account Record Details'=>'Реквизиты записей',
-'Account Record'=>'счет запись'
+'Account Record'=>'счет запись',
 );

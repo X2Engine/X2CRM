@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -39,7 +39,7 @@ return array (
 'ID'=>'ID',
 'Assigned To'=>'割り当て',
 'Name'=>'名前',
-'Description'=>'説明', 
+'Description'=>'説明',
 'Create Date'=>'作成日',
 'Last Updated'=>'最後を更新する',
 'Updated By'=>'更新した人',
@@ -66,7 +66,7 @@ return array (
 'Create New {X}'=>'新しい{X}を作る',
 'Manage {X}'=>'{X}を削除する',
 
-//	Errors
+// Errors
 'Invalid table name'=>'無効なテーブル名',
 'A module with that title already exists'=>'そのタイトルを持つモジュールが既に存在しています',
 

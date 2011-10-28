@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Account Attributes
+// Account Attributes
 'ID'=>'',
 'Name'=>'',
 'Website'=>'',
@@ -52,7 +52,7 @@ return array (
 'Updated By'=>'',
 'None'=>'',
 
-//	Accounts Actions
+// Accounts Actions
 'Accounts List'=>'',
 'Create Account'=>'',
 'View Account'=>'',
@@ -64,13 +64,13 @@ return array (
 'Remove a Contact'=>'',
 'Share Account'=>'',
 
-//	Accounts Titles
+// Accounts Titles
 'Accounts'=>'',
 'Manage Accounts'=>'',
 'Update Account: {name}'=>'',
 'Account:'=>'',
 
-//	Misc
+// Misc
 'Please click any new users you wish to add.'=>'',
 'Please click any new users you wish to remove.'=>'',
 'Account Record Details'=>'',

@@ -34,37 +34,35 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
-	
-	// Attribute Labels
-	'Title'=>'Titel',
-	'Text'=>'Text',
-	'Created By'=>'Erstellt von',
-	'Updated By'=>'Aktualisiert von',
-	'Last Updated'=>'Zuletzt Aktualisiert',
-	'Create Date'=>'Erstellen Datum',
-	'Edit Permissions'=>'Berechtigungen bearbeiten',
-	
-	// Labels
-	'Doc'=>'Dokument',
-	'Document:'=>'Dokument',
-	'Edit Document:'=>'Dokument Bearbeiten:',
-	'Documents'=>'Unterlagen',
-	'Docs'=>'Unterlagen',
-	'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>
-		'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.',
-	'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>
-		'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.',
-	
-	// Doc Navbar
-	'List Docs'=>'Liste Docs',
-	'Create Doc'=>'Erstellen Doc',
-	'View Doc'=>'Zeige Doc',
-	'Edit Doc'=>'Bearbeiten Doc',
-	'Export Doc'=>'Exportieren Doc',
-	'Edit Doc Permissions'=>'Bearbeiten Doc Berechtigungen',
-	'Delete Doc'=>'Löschen Doc',
-	'Edit'=>'Bearbeiten',
-	'Export'=>'Exportieren',
+return array (
+
+// Attribute Labels
+'Title'=>'Titel',
+'Text'=>'Text',
+'Created By'=>'Erstellt von',
+'Updated By'=>'Aktualisiert von',
+'Last Updated'=>'Zuletzt Aktualisiert',
+'Create Date'=>'Erstellen Datum',
+'Edit Permissions'=>'Berechtigungen bearbeiten',
+
+// Labels
+'Doc'=>'Dokument',
+'Document:'=>'Dokument',
+'Edit Document:'=>'Dokument Bearbeiten:',
+'Documents'=>'Unterlagen',
+'Manage Docs'=>'Verwalten Docs',
+'Docs'=>'Unterlagen',
+'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Bitte wählen Sie, welche Benutzer das Dokument bearbeiten. Verwenden Sie Control-Click aktivieren oder deaktivieren einzelne Benutzer.',
+'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Bitte rechten Maustaste auf den unten stehenden Link und wählen "Speichern unter" um das Dokument herunterzuladen! Ein Linksklick öffnet das Dokument in einen Drucker-freundlichen Modus.',
+
+// Doc Navbar
+'List Docs'=>'Liste Docs',
+'Create Docs'=>'Erstellen docs',
+'View Doc'=>'Zeige Doc',
+'Edit Doc'=>'Bearbeiten Doc',
+'Delete Doc'=>'Löschen Doc',
+'Export Doc'=>'Exportieren Doc',
+'Edit Doc Permissions'=>'Bearbeiten Doc Berechtigungen',
+'Edit'=>'Bearbeiten',
+'Export'=>'Exportieren',
 );
-?>

@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Profile Attributes
+// Profile Attributes
 'ID'=>'',
 'Full Name'=>'',
 'Username'=>'',
@@ -62,7 +62,7 @@ return array (
 'Show Social Media'=>'',
 'Upload a Background'=>'',
 
-//	Profile Actions
+// Profile Actions
 'View Profile'=>'',
 'Update Profile'=>'',
 'Change Settings'=>'',
@@ -70,11 +70,11 @@ return array (
 'People'=>'',
 'Change Personal Settings'=>'',
 
-//	Profile Titles
+// Profile Titles
 'Profile:'=>'',
 'Update Your Profile'=>'',
 
-//	Social
+// Social
 'Feed'=>'',
 'Social'=>'',
 'Reply'=>'',

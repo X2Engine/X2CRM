@@ -256,9 +256,8 @@ class x2base extends Controller {
 				// $text = mb_ereg_replace($pattern, '<a href="$1">$1</a>', $text);
 			// }
 		// }
-		$template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'."> #\\2</a>";
-		$text = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$text);
-                $text = mb_ereg_replace('(>)#(\w\w+)',">".$template,$text);
+		$template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.">\\1#\\2\\3</a>";
+                $text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
 		if($convertLineBreaks)
 			return x2base::convertLineBreaks($text,true,false);
 		else
@@ -514,7 +513,7 @@ class x2base extends Controller {
             
             $arr=array();
             $keys=array_keys($new);
-            for($i=0;$i<count($new);$i++){
+            for($i=0;$i<count($keys);$i++){
                 if($old[$keys[$i]]!=$new[$keys[$i]]){
                     $arr[$keys[$i]]=$new[$keys[$i]];
                 }

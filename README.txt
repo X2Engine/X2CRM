@@ -6,17 +6,16 @@ The automatic updater has been added!  This doesn't mean anything for you now, b
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.3 Changelog
+Beta 0.9.4 Changelog
 
 -Lots of bug fixes and polishing
--Fullscreen view for pages
--Rework of Changelog feature to be much more functional
--Added ability to delete history items with AJAX
--Added ability to add/remove contacts to an Account from the Account record (will only show unassociated contacts)
--Fixed Lead Capture
--Fixed the issue with PHP's Strict Error Reporting
+-Added ability to view sales linked to a contact
+-Added translation manager
+-Updated translation files
+-Fixed an issue with colored text in Docs
 
-Welcome to X2Contacts v0.9.3 Beta!  X2Contacts is a next-generation, open source social sales application for small and medium sized businesses. 
+
+Welcome to X2Contacts v0.9.4 Beta!  X2Contacts is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2Contacts was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

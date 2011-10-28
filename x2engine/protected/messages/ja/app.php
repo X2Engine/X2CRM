@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Language Name
+// Language Name
 'languageName'=>'日本語',
 // Login
 'Please log in to continue:'=>'続行するにはログインしてください。',
@@ -91,14 +91,13 @@ return array (
 'Message Board'=>'メッセージボード',
 'Please enter a message of the day!'=>'毎日のメッセージを入力してください！',
 'Edit Message'=>'メッセージを編集する',
-	
+
 'Note Pad'=>'メモ帳',
-'Add Note'=>'メモを追加する',
 'Feel free to enter some notes!'=>'いくつかの音符を入力して自由に感じる！',
-	
+
 'Top Contacts'=>'最高のコンタクト',
 'Add {name}'=>'{name}を追加する。',
-	
+
 
 // Chat
 'Message Body'=>'メッセージ本文',
@@ -119,7 +118,7 @@ return array (
 // Misc
 'Advanced Search'=>'高度な検索',
 'Clear Filters'=>'フィルタをクリア',
-'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'必要に応じて、比較が行われる方法を指定する検索値のそれぞれの先頭に比較演算子（<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>, <b>=</b>）を入力することができます。',
+'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'必要に応じて、比較が行われる方法を指定する検索値のそれぞれの先頭に比較演算子（<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>, <b>=</b>）を入力することができます。',
 'Fields with <span class="required">*</span> are required.'=>'<span class="required">*</span>のフィールドは必須です。',
 'Click here to return to where you were'=>'あなたがいた場所に戻るにはここをクリック',
 'Private'=>'プライベート',
@@ -129,7 +128,7 @@ return array (
 'Anyone'=>'誰も',
 'Share'=>'シェア',
 'Link'=>'リンク',
-'Theme'=>'テーマ', 
+'Theme'=>'テーマ',
 'Account'=>'アカウント',
 'Sale'=>'販売',
 'All'=>'全部',
@@ -154,7 +153,7 @@ return array (
 'Status'=>'ステータス',
 'E-mail'=>'メール',
 'Download'=>'ダウンロード',
-	
+
 // Timestamps
 'Just now'=>'ちょうど今',
 '{n} minutes ago'=>'{n}分前',
@@ -175,5 +174,5 @@ return array (
 'Send Mass E-mail'=>'大量の電子メールの送信',
 'How to use Gii'=>'GIIを使用する方法',
 'How to add a database field'=>'データベースのフィールドを追加する方',
-);
 
+);

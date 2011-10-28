@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Sales Attributes
+// Sales Attributes
 'ID'=>'ID',
 'Assigned To'=>'Asignado a',
 'Name'=>'Nombre',
@@ -59,25 +59,25 @@ return array (
 'E-Mail'=>'E-Mail',
 'Store'=>'Tienda',
 
-//	Sales Actions
+// Sales Actions
 'Sales List'=>'Lista de Ventas',
-'View Sale'=>'Ver Venta',
-'Manage Sales'=>'Administrar Ventas',
 'Create Sale'=>'Crear una Venta',
+'View Sale'=>'Ver Venta',
 'Update Sale'=>'Actualizar Venta',
-'Add A Contact'=>'Agregar un Contacto',
-'Add A User'=>'Añadir un Usuario',
-'Remove A Contact'=>'Eliminar un Contacto',
-'Remove A User'=>'Eliminar un Usuario',
 'Delete Sale'=>'Eliminar Venta',
+'Manage Sales'=>'Administrar Ventas',
+
+'Add a User'=>'Agregar un usuario',
+'Add a Contact'=>'Agregar un contacto',
+'Remove a User'=>'Eliminar un usuario',
+'Remove a Contact'=>'Eliminar un contacto',
 'Share Sale'=>'Compartir este Venta',
 
-//	Sales Titles
+// Sales Titles
 'Sales'=>'Ventas',
 'Sale'=>'Venta',
 'Sale:'=>'Venta:',
 'Update Sale: {name}'=>'Actualizar Venta: {name}',
-
 
 // Misc Text
 'Please click any new users you wish to add.'=>'Por favor, haga clic en cualquier usuario nuevo que desee agregar.',

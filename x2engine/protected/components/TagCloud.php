@@ -49,7 +49,7 @@ class TagCloud extends CWidget {
 		$this->render('tagCloud',array(
                     'myTags'=>$myTags,
                     'allTags'=>$allTags,
-                )); //array(
+                ));
 	}
 }
 ?>

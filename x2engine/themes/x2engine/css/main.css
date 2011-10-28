@@ -619,13 +619,13 @@ div.portlet-minimize a {
 .list-view .view {
 	clear:both;
 	margin:0 0 5px 0;
-	padding:2px 5px;
+	padding:0;
 	width:auto;
 /* 	-moz-border-radius:4px;
 	-o-border-radius:4px;
 	-webkit-border-radius:4px;
 	border-radius:4px; */
-	border-top:1px solid #ddd;
+	/* border-top:1px solid #ddd; */
 }
 .list-view a {
 	text-decoration:none;
@@ -675,7 +675,15 @@ div.portlet-minimize a {
 }
 .action.list-view .header {
 	display:block;
+	overflow:auto;
+	padding:2px 5px;
 	color:#666;
+	border-radius:4px 4px 0 0;
+	-moz-border-radius:4px 4px 0 0;
+	-o-border-radius:4px 4px 0 0;
+	-webkit-border-radius:4px 4px 0 0;
+	border:1px solid #ddd;
+	background-color:#f8f8f8;
 }
 .action.list-view .header b {
 	color:#333;
@@ -688,11 +696,20 @@ div.portlet-minimize a {
 }
 .action.list-view .description {
 	color:#000;
+	padding:5px;
+	border:1px solid #ddd;
+	border-width:0 1px 0 1px;
 }
 .action.list-view .footer {
-	margin-top:10px;
 	color:#666;
+	padding:2px 5px;
 	font-size:11px;
+	border:1px solid #ddd;
+	border-top:none;
+	border-radius:0 0 4px 4px;
+	-moz-border-radius:0 0 4px 4px;
+	-o-border-radius:0 0 4px 4px;
+	-webkit-border-radius:0 0 4px 4px;
 }
 
 
@@ -811,4 +828,15 @@ div.search-form div.wide.form textarea {
 	font-size:10px;
 	color:#999;
 	margin-bottom:20px;
+}
+
+div#code-snippet {
+	font-family: "Courier New", Courier, monospace;
+	background: #f8f8f8;
+	border:1px solid #ddd;
+	padding:5px;
+	border-radius:4px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	-o-border-radius:4px;
 }

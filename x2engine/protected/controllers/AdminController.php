@@ -32,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- ********************************************************************************/
+// ********************************************************************************/  
 class AdminController extends Controller {
 	
 	public $portlets=array();
@@ -81,7 +81,7 @@ class AdminController extends Controller {
 				'actions'=>array('index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
 					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules',
-                                        'createPage','contactUs','viewChangelog'),
+					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -123,6 +123,14 @@ class AdminController extends Controller {
 			'criteria'=>$criteria,
 		));
 	}
+        
+        public function actionToggleUpdater(){
+            
+            $admin=AdminChild::model()->findByPk(1);
+            $admin->ignoreUpdates?$admin->ignoreUpdates=0:$admin->ignoreUpdates=1;
+            $admin->save();
+            $this->redirect('index');
+        }
 	
 	public function actionContactUs() {
 
@@ -426,6 +434,13 @@ class AdminController extends Controller {
 			$logo->delete();
 		}
 		$this->redirect(array('index'));
+	}
+	
+	public function actionTranslationManager() {
+		$this->layout = null;
+		$messagePath = 'protected/messages';
+		include('protected/extensions/TranslationManager.php');
+		// die('hello:'.var_dump($_POST));
 	}
 	
 	public function actionCreateModule() {

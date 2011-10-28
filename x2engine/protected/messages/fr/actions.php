@@ -35,10 +35,10 @@
  ********************************************************************************/
 
 return array (
-//	Action Attributes
+// Action Attributes
 'Assigned To'=>'Assignée à',
 'Action Description'=>'Description de L\'action',
-'Description'=>'Descriptif', 
+'Description'=>'Descriptif',
 'Visibility'=>'Visibilité',
 'Association'=>'Association',
 'Association Type'=>'Association de type',
@@ -61,7 +61,7 @@ return array (
 'No'=>'Non',
 'Yes'=>'Oui',
 
-//	Actions Nav
+// Actions Nav
 'All Actions'=>'Toutes les actions',
 'Create Lead'=>'Créer plomb',
 'Create Action'=>'Créer une action',
@@ -71,7 +71,7 @@ return array (
 'Complete + New Action'=>'Complet + Nouvelle action',
 'Uncomplete'=>'Faire incomplète',
 
-//	Actions Titles
+// Actions Titles
 'Manage Actions'=>'Gérer les actions',
 'Completed Actions'=>'Actions Terminé',
 'Create Action for {type}'=>'Créer une action pour {type}',
@@ -80,15 +80,15 @@ return array (
 'Update Action:'=>'Mise à jour de l\'action:',
 'Action'=>'Action',
 'Action:'=>'Action:',
-"Today's Actions"=>'Aujourd\'hui, les actions',
+'Today\'s Actions'=>'Aujourd\'hui, les actions',
 'My Actions'=>'Mes actions',
 'All My Actions'=>'Toutes Mes Actions',
-"Everyone's Actions"=>'Tout le monde Actions',
+'Everyone\'s Actions'=>'Tout le monde Actions',
 'Delete Action'=>'Supprimer l\'action',
 'Share Action'=>'Partager action',
 
 
-//	Misc
+// Misc
 'Email Message:'=>'Email Message:',
 'Attachment:'=>'Les pièces jointes',
 'Assigned to {name}'=>'Assigné à {name}',
@@ -107,7 +107,7 @@ return array (
 'Overdue {time}'=>'Retard {time}',
 'Due {date}'=>'En raison {date}',
 
-//	Create Action Types
+// Create Action Types
 'None'=>'Aucun',
 'Contact'=>'Contactez',
 'Account'=>'Compte',
@@ -115,15 +115,15 @@ return array (
 'Case'=>'Cas',
 'Sale'=>'Vente',
 
-//	Action Reminder Email
+// Action Reminder Email
 'No one'=>'Nul',
 'Not specified'=>'Non spécifié',
 'Action Reminder:'=>'Rappel d\'action:',
-"Reminder, the following action is due"=>'Rappel, l\'action suivante est due',
-"Description"=>'Descriptif',
-"Type"=>'Tapez',
-"Associations"=>'Associations',
-"Link to the action"=>'Lien vers l\'action',
+'Reminder, the following action is due'=>'Rappel, l\'action suivante est due',
+'Description'=>'Descriptif',
+'Type'=>'Tapez',
+'Associations'=>'Associations',
+'Link to the action'=>'Lien vers l\'action',
 'Link to the'=>'Lien vers le',
 'Powered by '=>'Propulsé par',
 );

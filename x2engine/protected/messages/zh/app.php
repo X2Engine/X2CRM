@@ -1,32 +1,32 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- *
+ * 
  * You can contact X2Engine, Inc. at P.O. Box 66752,
  * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
- *
+ * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU General Public License version 3.
- *
+ * 
  * In accordance with Section 7(b) of the GNU General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Language Name
+// Language Name
 'languageName'=>'中文',
 // Login
 'Please log in to continue:'=>'请登录以继续：',
@@ -63,13 +63,13 @@ return array (
 'Logout'=>'登出',
 'Login'=>'登录',
 'More'=>'更多',
-"What's New"=>'“最新消息”',
+'What\'s New'=>'“最新消息”',
 
 // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine的CRM组件',
 'Go'=>'转到',
 'Contact'=>'联系',
-'Action'=>'任务',
+'Action'=>'行动',
 'Contact + Action'=>'联系方式+任务',
 'Search for contact, action, deal...'=>'搜索联系，任务，处理...',
 
@@ -93,7 +93,6 @@ return array (
 'Edit Message'=>'编辑留言',
 
 'Note Pad'=>'记事本',
-'Add Note'=>'添加',
 'Feel free to enter some notes!'=>'随意进入的一些注意事项！',
 
 'Top Contacts'=>'顶部触点',
@@ -119,7 +118,7 @@ return array (
 // Misc
 'Advanced Search'=>'高级搜索',
 'Clear Filters'=>'清除筛选',
-'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'您可以选择性地进入比较运算符(<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>)开始在您的每一个搜索值指定如何应该做的比较。',
+'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'您可以选择性地进入比较运算符(<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>or <b>=</b>)开始在您的每一个搜索值指定如何应该做的比较。',
 'Fields with <span class="required">*</span> are required.'=>'与字段<span class="required">*</span>的需要。',
 'Click here to return to where you were'=>'点击这里返回到你在哪里',
 'Private'=>'私人',
@@ -170,10 +169,10 @@ return array (
 'Administration Tools'=>'管理工具',
 'Welcome to the administration tool set.'=>'欢迎的管理工具集，。',
 'Links'=>'链接',
-"How To's"=>'“如何”',
+'How To\'s'=>'“如何”',
 'Gii - A Code Generation Module'=>'全球信息基础设施 - 一个代码生成模块',
 'Send Mass E-mail'=>'发送大量电子邮件',
 'How to use Gii'=>'如何使用Gii',
 'How to add a database field'=>'如何添加一个数据库中的字段',
-);
 
+);

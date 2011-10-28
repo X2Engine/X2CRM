@@ -42,7 +42,14 @@ class Record {
 		
 		foreach ($records as $record) {
 			$user=UserChild::model()->findByAttributes(array('username'=>$record->updatedBy));
-			$name=$user->firstName." ".$user->lastName;
+                        if(isset($user)){
+                            $name=$user->firstName." ".$user->lastName;
+                            $userId=$user->id;
+                        }
+                        else{
+                            $name='web admin';
+                            $userId=1;
+                        }
 			if ($record instanceof Contacts) {
 				$temp=array();
 				$temp['id']=$id;
@@ -52,7 +59,7 @@ class Record {
 				$temp['link']='/contacts/'.$record->id;
 				$temp['type']='Contact';
 				$temp['lastUpdated']=$record->lastUpdated;
-				$temp['updatedBy']=$name;
+				$temp['updatedBy']=CHtml::link($name,array('profile/'.$userId));
 				$arr[]=$temp;
 			} elseif ($record instanceof Actions) {
 				$temp=array();

@@ -35,10 +35,10 @@
  ********************************************************************************/
 
 return array (
-//	Action Attributes
+// Action Attributes
 'Assigned To'=>'Atribuído a',
 'Action Description'=>'Descrição ação',
-'Description'=>'Descrição', 
+'Description'=>'Descrição',
 'Visibility'=>'Visibilidade',
 'Association'=>'Associação',
 'Association Type'=>'Tipo associação',
@@ -61,7 +61,7 @@ return array (
 'No'=>'Não',
 'Yes'=>'Sim',
 
-//	Actions Nav
+// Actions Nav
 'All Actions'=>'Todas as acções',
 'Create Lead'=>'Criar chumbo',
 'Create Action'=>'Criar Ação',
@@ -71,7 +71,7 @@ return array (
 'Complete + New Action'=>'Completo + Ação Novo',
 'Uncomplete'=>'Faça incompleta',
 
-//	Actions Titles
+// Actions Titles
 'Manage Actions'=>'Gerenciar ações',
 'Completed Actions'=>'Ações concluídas',
 'Create Action for {type}'=>'Ação para criar {type}',
@@ -80,15 +80,15 @@ return array (
 'Update Action:'=>'Ação de atualização',
 'Action'=>'Ação',
 'Action:'=>'Ação:',
-"Today's Actions"=>'Ações de hoje',
+'Today\'s Actions'=>'Ações de hoje',
 'My Actions'=>'Minhas ações',
 'All My Actions'=>'Todas as minhas ações',
-"Everyone's Actions"=>'Ações de todos',
+'Everyone\'s Actions'=>'Ações de todos',
 'Delete Action'=>'Excluir Ação',
 'Share Action'=>'Ação Compartilhar',
 
 
-//	Misc
+// Misc
 'Email Message:'=>'Mensagem de e-mail:',
 'Attachment:'=>'Ligação',
 'Assigned to {name}'=>'Atribuídos a {name}',
@@ -107,7 +107,7 @@ return array (
 'Overdue {time}'=>'Vencido {time}',
 'Due {date}'=>'Devido {date}',
 
-//	Create Action Types
+// Create Action Types
 'None'=>'Nenhum',
 'Contact'=>'Contato',
 'Account'=>'Conta',
@@ -115,15 +115,15 @@ return array (
 'Case'=>'Caso',
 'Sale'=>'Venda',
 
-//	Action Reminder Email
+// Action Reminder Email
 'No one'=>'Ninguém',
 'Not specified'=>'Não especificado',
 'Action Reminder:'=>'Lembrete Ação:',
-"Reminder, the following action is due"=>'Lembrete, a seguinte ação é devido',
-"Description"=>'Descrição',
-"Type"=>'Tipo',
-"Associations"=>'Associações',
-"Link to the action"=>'Link para a ação',
+'Reminder, the following action is due'=>'Lembrete, a seguinte ação é devido',
+'Description'=>'Descrição',
+'Type'=>'Tipo',
+'Associations'=>'Associações',
+'Link to the action'=>'Link para a ação',
 'Link to the'=>'Link para o',
 'Powered by '=>'Desenvolvido por ',
 );

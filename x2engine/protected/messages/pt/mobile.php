@@ -40,14 +40,10 @@ return array (
 'New Record'=>'Novo Registro',
 'Find Contacts'=>'Encontrar Contatos',
 'Top Contacts'=>'Contactos Topo',
-"No top contacts for this user!"=>'Nenhum contato top para este usuário!',
+'No top contacts for this user!'=>'Nenhum contato top para este usuário!',
 'Create Message'=>'Criar Mensagem',
 'Message List'=>'Lista Mensagem',
 'Clear'=>'Claro',
-'New Record'=>'Novo Registro',
-'Find Contacts'=>'Encontrar Contatos',
 'Search for a Contact'=>'Busca de um contato',
-'Logout ({username})'=>'Sair ({username})',
 'Go to Full Site'=>'Ir para o site principal',
-	
 );

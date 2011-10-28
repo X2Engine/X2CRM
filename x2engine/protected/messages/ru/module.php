@@ -61,18 +61,14 @@ return array (
 'Update {X}'=>'Обновление {X}',
 'Delete {X}'=>'Удалить {X}',
 
-
 // Page Titles
 'Create New Module'=>'Создать новый модуль',
 'Create New {X}'=>'Создать новую {X}',
 'Manage {X}'=>'Управление {X}',
 
-//	Errors
+// Errors
 'Invalid table name'=>'Недопустимое имя таблицы',
 'A module with that title already exists'=>'Модуль с таким названием уже существует',
-''=>'',
-''=>'',
-''=>'',
 
 // Misc
 'Please fill out the fields below to create a new module.'=>'Пожалуйста, заполните поля ниже, чтобы создать новый модуль.',

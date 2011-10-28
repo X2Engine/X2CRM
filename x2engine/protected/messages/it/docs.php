@@ -2,31 +2,31 @@
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- *
+ * 
  * You can contact X2Engine, Inc. at P.O. Box 66752,
  * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
- *
+ * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU General Public License version 3.
- *
+ * 
  * In accordance with Section 7(b) of the GNU General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
+return array (
 
 // Attribute Labels
 'Title'=>'Titolo',
@@ -50,12 +50,13 @@ return array(
 'Document:'=>'Documento:',
 'Edit Document:'=>'Modifica documento:',
 'Documents'=>'Documentazione',
+'Manage Docs'=>'Gestione di documenti',
 'Docs'=>'Documenti',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Si prega di selezionare gli utenti che sono autorizzati a modificare il documento. Utilizzare Ctrl + Click per selezionare o deselezionare i singoli utenti.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Si prega di fare clic destro sul link qui sotto e selezionare "Salva con nome" per scaricare il documento! Cliccando sinistra si apre il documento in una versione stampabile in modalità.',
 
 // Doc Navbar
-'List　Docs'=>'Elenco documenti',
+'List Docs'=>'Elenco documenti',
 'Create Docs'=>'Creare Documenti',
 'View Doc'=>'Visualizza Doc',
 'Edit Doc'=>'Modifica Doc',
@@ -65,4 +66,3 @@ return array(
 'Edit'=>'Modifica',
 'Export'=>'Esportazione',
 );
-?>

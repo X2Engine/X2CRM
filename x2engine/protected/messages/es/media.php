@@ -35,18 +35,17 @@
  ********************************************************************************/
 
 return array (
-
 // Attribute Labels
-'ID'=>'',
-'Association Type'=>'',
-'Association'=>'',
-'File Name'=>'',
-'Uploaded By'=>'',
-'Create Date'=>'',
+'ID'=>'Identificación',
+'Association Type'=>'Asociación de tipos de',
+'Association'=>'Asociación',
+'File Name'=>'Nombre de archivo',
+'Uploaded By'=>'Cargado por',
+'Create Date'=>'Fecha de Creación',
 
 // Actions
-'View Attachment'=>'',
-'Delete Media'=>'',
+'View Attachment'=>'Ver archivo adjunto',
+'Delete Media'=>'Eliminar los medios de comunicación',
 
 // Misc
 'File:'=>'Archivo:',
@@ -54,5 +53,5 @@ return array (
 'Uploaded by {name}'=>'Subido por {name}',
 
 // Errors
-'Are you sure you want to delete this item?'=>'',
+'Are you sure you want to delete this item?'=>'¿Está seguro que desea eliminar este elemento?',
 );

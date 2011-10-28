@@ -163,10 +163,14 @@ class UsersController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
 			$dataProvider=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
-				'condition'=>"assignedTo='$model->username' AND type!='note'",
+				'condition'=>"assignedTo='$model->username'",
 			)));
 			$actions=$dataProvider->getData();
 			foreach($actions as $action){
+                                if($action->updatedBy==$model->username)
+                                    $action->updatedby='admin';
+                                if($action->completedBy=$model->username)
+                                    $action->completedBy='admin';
 				$action->assignedTo="Anyone";
                                 $action->save();
 			}

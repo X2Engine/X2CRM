@@ -78,13 +78,9 @@ return array (
 
 // Widgets
 'My Actions'=>'Meine Aktionen',
-	
-'Quick Contact'=>'Quick Contact',
-	
 'Twitter Feed'=>'Twitter-Feed',
-	
+'Quick Contact'=>'Quick Contact',
 'Google Map'=>'Google Map',
-
 'Recently Viewed'=>'Kürzlich Gesehen',
 
 'Total Action|Total Actions'=>'Total Action | Total Aktionen',
@@ -94,17 +90,16 @@ return array (
 
 'Message Board'=>'Message Board',
 'Please enter a message of the day!'=>'Bitte geben Sie eine Nachricht des Tages!',
-	
+'Edit Message'=>'Nachricht bearbeiten',
+
 'Note Pad'=>'Notizblock',
 'Feel free to enter some notes!'=>'Fühlen Sie sich frei, um ein paar Notizen eingeben!',
-'Add Note'=>'Notiz Hinzufügen',
-	
+
 'Top Contacts'=>'Top Kontakte',
 'Add {name}'=>'Add {name}',
-	
+
 
 // Chat
-'Chat'=>'Chatte',
 'Message Body'=>'Nachrichtentext',
 'Enter text here...'=>'Geben Sie den Text hier ...',
 'Send'=>'Senden',
@@ -120,7 +115,6 @@ return array (
 'Comments'=>'Kommentare',
 'Post'=>'Buchen',
 
-
 // Misc
 'Advanced Search'=>'Erweiterte Suche',
 'Clear Filters'=>'Filter Löschen',
@@ -134,7 +128,7 @@ return array (
 'Anyone'=>'Jedermann',
 'Share'=>'Anteil',
 'Link'=>'Link',
-'Theme'=>'Thema', 
+'Theme'=>'Thema',
 'Account'=>'Konto',
 'Sale'=>'Verkauf',
 'All'=>'Alle',
@@ -159,7 +153,7 @@ return array (
 'Status'=>'Status',
 'E-mail'=>'E-Mail',
 'Download'=>'Herunterladen',
-	
+
 // Timestamps
 'Just now'=>'Soeben',
 '{n} minutes ago'=>'{n} Minuten',
@@ -180,4 +174,5 @@ return array (
 'Send Mass E-mail'=>'Senden E-Mail-Masse',
 'How to use Gii'=>'Wie benutzt man Gii',
 'How to add a database field'=>'So fügen Sie ein Datenbankfeld',
+
 );

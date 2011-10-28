@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Sales Attributes
+// Sales Attributes
 'ID'=>'',
 'Assigned To'=>'',
 'Name'=>'',
@@ -59,7 +59,7 @@ return array (
 'E-Mail'=>'',
 'Store'=>'',
 
-//	Sales Actions
+// Sales Actions
 'Sales List'=>'',
 'Create Sale'=>'',
 'View Sale'=>'',
@@ -73,7 +73,7 @@ return array (
 'Remove a Contact'=>'',
 'Share Sale'=>'',
 
-//	Sales Titles
+// Sales Titles
 'Sales'=>'',
 'Sale'=>'',
 'Sale:'=>'',

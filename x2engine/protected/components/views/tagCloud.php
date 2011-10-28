@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-echo CHtml::link('Just Me','#',array('onclick'=>'$("#myTags").show();$("#allTags").hide();return false;'))." | ".CHtml::link('All Users','#',array('onclick'=>'$("#allTags").show();$("#myTags").hide();return false;'))."<br />";
+echo CHtml::link(Yii::t('app','Just Me'),'#',array('onclick'=>'$("#myTags").show();$("#allTags").hide();return false;'))." | ".CHtml::link(Yii::t('app','All Users'),'#',array('onclick'=>'$("#allTags").show();$("#myTags").hide();return false;'))."<br />";
 $template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'."> #\\2</a>";
 ?> <br />
 <div id="myTags">

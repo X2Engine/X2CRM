@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
+return array (
 
-//Index
+// Index
 // Titles
 'Utilities'=>'',
 'Χ2Studio'=>'',
@@ -63,6 +63,8 @@ return array(
 'Import a module'=>'',
 'Rename a module'=>'',
 'Gii - A Code Generation Module'=>'',
+'X2Translate'=>'',
+'Add, remove and update message translations in the X2Contacts language packs.'=>'',
 
 // Text
 'Administrator profile'=>'',
@@ -83,7 +85,7 @@ return array(
 'Export one of your custom modules to a .zip'=>'',
 'Import a .zip of a module'=>'',
 'Change module titles on top bar'=>'',
-"Use the Yii framework's code generation tools"=>'',
+'Use the Yii framework\'s code generation tools'=>'',
 'Commercial support and hosting'=>'',
 'X2Engine Support Forums'=>'',
 'Yii Open Source web framework'=>'',
@@ -125,6 +127,5 @@ return array(
 'Upload Your Logo'=>'',
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'',
 'Create Page'=>'',
-'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'',		
+'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'',
 );
-?>

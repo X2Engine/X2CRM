@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -50,7 +50,6 @@ return array (
 'Administrator Email'=>'管理者のメール',
 
 'Database Connection Info'=>'データベース接続情報',
-'Do you want dummy data?'=>'あなたは、ダミーデータが欲しいですか？',
 
 'Host Name'=>'ホスト名',
 'Database Name'=>'データベース名',
@@ -61,9 +60,6 @@ return array (
 'For help or more information - X2Engine.com'=>'ヘルプまたは詳細については、X2Engine.com',
 
 'All Rights Reserved.'=>'すべての内容は著作権を有します。',
-
-'This beta release only supports MySQL.'=>'このベータリリースは、MySQLのみをサポートしています。',
-'Please create a database before install.'=>'インストールの前にデータベースを作成してください。',
 
 // Splash screen
 'Installation Complete!'=>'インストールが完了します！',

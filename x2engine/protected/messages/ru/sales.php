@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Sales Attributes
+// Sales Attributes
 'ID'=>'ID',
 'Assigned To'=>'Назначено',
 'Name'=>'имя',
@@ -59,25 +59,25 @@ return array (
 'E-Mail'=>'E-Mail',
 'Store'=>'магазин',
 
-//	Sales Actions
+// Sales Actions
 'Sales List'=>'Продажи Список',
-'View Sale'=>'Посмотреть продажу',
-'Manage Sales'=>'Управление продаж',
 'Create Sale'=>'Создать продажу',
+'View Sale'=>'Посмотреть продажу',
 'Update Sale'=>'Обновление продажу',
-'Add A Contact'=>'Добавить Контакт',
-'Add A User'=>'Добавить пользователя',
-'Remove A Contact'=>'Удалить Контакт',
-'Remove A User'=>'Удалить пользователя',
 'Delete Sale'=>'Удалить продажу',
+'Manage Sales'=>'Управление продаж',
+
+'Add a User'=>'Добавить пользователя',
+'Add a Contact'=>'Добавить контакт',
+'Remove a User'=>'Удаление пользователя',
+'Remove a Contact'=>'Удалить Контакт',
 'Share Sale'=>'Доля продажи',
 
-//	Sales Titles
+// Sales Titles
 'Sales'=>'реализация',
 'Sale'=>'продажа',
 'Sale:'=>'Продажа:',
 'Update Sale: {name}'=>'Обновление Продажа: {name}',
-
 
 // Misc Text
 'Please click any new users you wish to add.'=>'Пожалуйста, нажмите на любую новых пользователей вы хотите добавить.',

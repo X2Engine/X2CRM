@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Users Attributes
+// Users Attributes
 'ID'=>'',
 'First Name'=>'',
 'Last Name'=>'',
@@ -55,13 +55,13 @@ return array (
 'Updated By'=>'',
 'Recent Items'=>'',
 
-//	Users Actions
+// Users Actions
 'Create User'=>'',
 'View User'=>'',
 'Update User'=>'',
 'Manage Users'=>'',
 
-//	Users Titles
+// Users Titles
 'User: {name}'=>'',
 'Update User: {name}'=>'',
 );

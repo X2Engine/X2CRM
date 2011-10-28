@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 return array (
-//	Language Name
+// Language Name
 'languageName'=>'Русский',
 // Login
 'Please log in to continue:'=>'Пожалуйста, войдите для продолжения:',
@@ -56,6 +56,7 @@ return array (
 'Users'=>'Пользователи',
 'Admin'=>'администратор',
 'Docs'=>'Документы',
+'Chat'=>'чат',
 'Social'=>'социальный',
 'Profile'=>'профиль',
 'Settings'=>'настройки',
@@ -77,13 +78,9 @@ return array (
 
 // Widgets
 'My Actions'=>'Мои действия',
-	
-'Quick Contact'=>'Быстрый контакт',
-	
 'Twitter Feed'=>'Twitter Feed',
-	
+'Quick Contact'=>'Быстрый контакт',
 'Google Map'=>'карту Google',
-
 'Recently Viewed'=>'Недавно просмотренные',
 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
@@ -93,17 +90,16 @@ return array (
 
 'Message Board'=>'Форум',
 'Please enter a message of the day!'=>'Пожалуйста, введите сообщение дня!',
-	
+'Edit Message'=>'Изменить сообщение',
+
 'Note Pad'=>'Блокнот',
 'Feel free to enter some notes!'=>'Не стесняйтесь ввести некоторые ноты!',
-'Add Note'=>'Заметка',
-	
+
 'Top Contacts'=>'Топ Контакты',
 'Add {name}'=>'Добавьте {name}',
-	
+
 
 // Chat
-'Chat'=>'чат',
 'Message Body'=>'Тело сообщения',
 'Enter text here...'=>'Введите текст здесь ...',
 'Send'=>'послать',
@@ -119,7 +115,6 @@ return array (
 'Comments'=>'Комментарии',
 'Post'=>'пост',
 
-
 // Misc
 'Advanced Search'=>'Расширенный поиск',
 'Clear Filters'=>'Очистить фильтры',
@@ -133,7 +128,7 @@ return array (
 'Anyone'=>'кто-нибудь',
 'Share'=>'доля',
 'Link'=>'ссылка',
-'Theme'=>'тема', 
+'Theme'=>'тема',
 'Account'=>'счет',
 'Sale'=>'продажа',
 'All'=>'все',
@@ -158,7 +153,7 @@ return array (
 'Status'=>'статус',
 'E-mail'=>'Email',
 'Download'=>'скачать',
-	
+
 // Timestamps
 'Just now'=>'сейчас',
 '{n} minutes ago'=>'{n} минут назад',
@@ -177,7 +172,7 @@ return array (
 'How To\'s'=>'Как это',
 'Gii - A Code Generation Module'=>'Gii - модуль генерации кода',
 'Send Mass E-mail'=>'Отправить Массовая Email',
-'How to use Gii'=>'Как использовать Gii', 
+'How to use Gii'=>'Как использовать Gii',
 'How to add a database field'=>'Как добавить поле базы данных',
-);
 
+);

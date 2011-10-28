@@ -35,9 +35,9 @@
  ********************************************************************************/
 
 return array (
-//	Contact Form Attributes
+// Contact Form Attributes
 'Verification Code'=>'Код подтверждения',
-//	Contact Attributes
+// Contact Attributes
 'ID'=>'ID',
 'First Name'=>'имя',
 'Name'=>'имя',
@@ -77,18 +77,17 @@ return array (
 'Detail View'=>'Детальный просмотр',
 'Simple View'=>'Простой вид',
 
-//	Contacts Actions
+// Contacts Actions
 'My Contacts'=>'Мои контакты',
 'All Contacts'=>'Все контакты',
-'View Contact'=>'Посмотреть Контакт',
 'Create Contact'=>'Создать контакт',
-'Create Lead'=>'Создание возможностей',
+'View Contact'=>'Посмотреть Контакт',
 'Update Contact'=>'Обновление контакта',
-'View Notes'=>'Посмотреть примечания:',
 'Delete Contact'=>'Удалить контакт',
+'Create Lead'=>'Создание возможностей',
 'Share Contact'=>'Доля Контакт',
 
-//	Contacts Titles
+// Contacts Titles
 'Contacts'=>'связи',
 'Manage Contacts'=>'Управление контактами',
 'Contact:'=>'контакт:',

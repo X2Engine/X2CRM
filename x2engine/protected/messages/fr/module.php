@@ -61,18 +61,14 @@ return array (
 'Update {X}'=>'Mise à jour {X}',
 'Delete {X}'=>'Supprimer {X}',
 
-
 // Page Titles
 'Create New Module'=>'Créer Nouveau Module',
 'Create New {X}'=>'Créer un nouveau {X}',
 'Manage {X}'=>'Gérer {X}',
 
-//	Errors
+// Errors
 'Invalid table name'=>'Invalid nom de la table',
 'A module with that title already exists'=>'Un module avec ce titre existe déjà',
-''=>'',
-''=>'',
-''=>'',
 
 // Misc
 'Please fill out the fields below to create a new module.'=>'S\'il vous plaît remplir les champs ci-dessous pour créer un nouveau module.',

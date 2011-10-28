@@ -57,7 +57,7 @@ return array (
 'Admin'=>'Admin',
 'Docs'=>'Docs',
 'Chat'=>'Chat',
-'Group'=>'Groupe',
+'Social'=>'Social',
 'Profile'=>'Profil',
 'Settings'=>'Réglages',
 'Logout'=>'Déconnexion',
@@ -78,13 +78,9 @@ return array (
 
 // Widgets
 'My Actions'=>'Mes actions',
-	
-'Quick Contact'=>'Contact Rapide',
-	
 'Twitter Feed'=>'Twitter Feed',
-	
+'Quick Contact'=>'Contact Rapide',
 'Google Map'=>'Google Map',
-
 'Recently Viewed'=>'Vu récemment',
 
 'Total Action|Total Actions'=>'Total Action|Total des Actiona',
@@ -92,19 +88,18 @@ return array (
 'Overdue Action|Overdue Actions'=>'Action en souffrance | Actions en souffrance',
 'Completed Action|Completed Actions'=>'Action terminée | Actions Terminé',
 
-'Message Board'=>'',
+'Message Board'=>'Babillard électronique',
 'Please enter a message of the day!'=>'S\'il vous plaît entrer un message de la journée!',
-	
-'Note Pad'=>'',
+'Edit Message'=>'Modifier le message',
+
+'Note Pad'=>'Bloc-notes',
 'Feel free to enter some notes!'=>'N\'hésitez pas à entrer quelques notes!',
-	
+
 'Top Contacts'=>'Contacts Haut',
 'Add {name}'=>'Ajouter {name}',
-'Add Note'=>'Ajouter Une Note',
-	
+
 
 // Chat
-'Chat'=>'Chat',
 'Message Body'=>'Corps du message',
 'Enter text here...'=>'Entrez le texte ici...',
 'Send'=>'Envoyer',
@@ -120,11 +115,10 @@ return array (
 'Comments'=>'Commentaires',
 'Post'=>'Message',
 
-
 // Misc
 'Advanced Search'=>'Recherche avancée',
 'Clear Filters'=>'Effacer la',
-'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Vous pouvez éventuellement entrer un opérateur de comparaison (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>), au début de chacune de vos valeurs de recherche pour préciser comment la comparaison devrait être faite.',
+'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Vous pouvez éventuellement entrer un opérateur de comparaison (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>or <b>=</b>), au début de chacune de vos valeurs de recherche pour préciser comment la comparaison devrait être faite.',
 'Fields with <span class="required">*</span> are required.'=>'Les champs <span class="required">*</span> sont obligatoires.',
 'Click here to return to where you were'=>'Cliquez ici pour retourner à l\'endroit où vous étiez',
 'Private'=>'Privé',
@@ -134,7 +128,7 @@ return array (
 'Anyone'=>'N\'importe qui',
 'Share'=>'Partager',
 'Link'=>'Lien',
-'Theme'=>'Thème', 
+'Theme'=>'Thème',
 'Account'=>'Compte',
 'Sale'=>'Vente',
 'All'=>'Tous les',
@@ -159,7 +153,7 @@ return array (
 'Status'=>'Statut',
 'E-mail'=>'E-mail',
 'Download'=>'Télécharger',
-	
+
 // Timestamps
 'Just now'=>'Juste aujourd\'hui',
 '{n} minutes ago'=>'{n} minutes ago',
@@ -180,4 +174,5 @@ return array (
 'Send Mass E-mail'=>'Envoyer masse E-mail',
 'How to use Gii'=>'Comment utiliser Gii',
 'How to add a database field'=>'Comment ajouter un champ de base',
+
 );

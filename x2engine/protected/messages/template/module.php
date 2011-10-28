@@ -39,7 +39,7 @@ return array (
 'ID'=>'',
 'Assigned To'=>'',
 'Name'=>'',
-'Description'=>'', 
+'Description'=>'',
 'Create Date'=>'',
 'Last Updated'=>'',
 'Updated By'=>'',
@@ -66,7 +66,7 @@ return array (
 'Create New {X}'=>'',
 'Manage {X}'=>'',
 
-//	Errors
+// Errors
 'Invalid table name'=>'',
 'A module with that title already exists'=>'',
 

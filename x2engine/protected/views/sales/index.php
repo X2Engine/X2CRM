@@ -108,7 +108,6 @@ $('.search-form form').submit(function(){
 	),
 ));
 
-$test = '$123,3094.95';
 
 //echo preg_replace('/\.([0-9]{2})$',
 

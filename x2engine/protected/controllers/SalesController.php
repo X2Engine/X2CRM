@@ -195,8 +195,17 @@ class SalesController extends x2base {
 			if(isset($model->assignedTo))
 				$model->assignedTo=SaleChild::parseUsers($arr);
 			$arr=$model->associatedContacts;
-			if(isset($model->associatedContacts))
+			if(isset($model->associatedContacts)){
+                            foreach($model->associatedContacts as $contact){
+                                $rel=new Relationships;
+                                $rel->firstType='Contacts';
+                                $rel->firstId=$contact;
+                                $rel->secondType='Sales';
+                                $rel->secondId=$model->id;
+                                $rel->save();
+                            }
 				$model->associatedContacts=SaleChild::parseContacts($arr);
+                        }
 			$model->createDate=time();
 			if($model->expectedCloseDate!=""){
 				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
@@ -285,6 +294,14 @@ class SalesController extends x2base {
                         $tempArr=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
 			$arr=$model->associatedContacts;
+                        foreach($arr as $contactId){
+                            $rel=new Relationships;
+                            $rel->firstType='Contacts';
+                            $rel->firstId=$contactId;
+                            $rel->secondType='Sales';
+                            $rel->secondId=$model->id;
+                            $rel->save();
+                        }
 			
 
 			$model->associatedContacts=SaleChild::parseContacts($arr);
@@ -357,12 +374,15 @@ class SalesController extends x2base {
 			
 			
 			foreach($arr as $id=>$contact){
+                                $rel=CActiveRecord::model('Relationships')->findByAttributes(array('firstType'=>'Contacts','firstId'=>$contact,'secondType'=>'Sales','secondId'=>$model->id));
+                                if(isset($rel))
+                                    $rel->delete();
 				unset($pieces[$contact]);
 			}
 			
-			$temp=SaleChild::parseContactsTwo($pieces);
+			$temp2=SaleChild::parseContactsTwo($pieces);
 
-			$model->associatedContacts=$temp;
+			$model->associatedContacts=$temp2;
                         $changes=$this->calculateChanges($temp,$model->attributes);
                         $model=$this->updateChangelog($model,$changes);
 			if($model->save())

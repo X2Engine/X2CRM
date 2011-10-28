@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
+return array (
 
-//Index
+// Index
 // Titles
 'Utilities'=>'ユーティリティ',
 'Χ2Studio'=>'Χ2Studio',
@@ -63,6 +63,8 @@ return array(
 'Import a module'=>'モジュールをインポート',
 'Rename a module'=>'モジュールの名前を変更する',
 'Gii - A Code Generation Module'=>'Gii - コード生成モジュール',
+'X2Translate'=>'X2Translate',
+'Add, remove and update message translations in the X2Contacts language packs.'=>'追加とX2Contacts言語パックのメッセージの翻訳を削除し、更新する。',
 
 // Text
 'Administrator profile'=>'管理者プロフィール',
@@ -83,7 +85,7 @@ return array(
 'Export one of your custom modules to a .zip'=>'.zipファイルにカスタムモジュールのいずれかをエクスポートする',
 'Import a .zip of a module'=>'モジュールの.zipファイルをインポート',
 'Change module titles on top bar'=>'トップバーにモジュールのタイトルを変更する',
-"Use the Yii framework's code generation tools"=>'Yiiフレームワークのコード生成ツールを使用して、',
+'Use the Yii framework\'s code generation tools'=>'Yiiフレームワークのコード生成ツールを使用して、',
 'Commercial support and hosting'=>'商用サポートおよびホスティング',
 'X2Engine Support Forums'=>'X2Engineサポートフォーラム',
 'Yii Open Source web framework'=>'YiiのオープンソースのWebフレームワーク',
@@ -119,13 +121,11 @@ return array(
 'Set user session time out (in seconds) here. Default is 1 hour.'=>'セットのユーザーセッションのタイムアウト（秒単位）をここに。デフォルトは1時間です。',
 'Timeout'=>'タイムアウト',
 'Set Chat Poll Rate'=>'ポーリングレートをチャットに設定',
-'Set the duration between chat update requests in miliseconds.'=>'ミリ秒単位でのチャットの更新要求との間の期間を設定します。',
+'Set the duration between chat update requests in milliseconds.'=>'ミリ秒単位でのチャットの更新要求との間の期間を設定します。',
 'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'=>'この数値を小さくすると、チャットより瞬間的なためにできますが、より多くのサーバ要求を生成するので、味に調整します。デフォルト値は2000（2秒）です。',
 'Chat Poll Time'=>'チャットのポーリング時間',
 'Upload Your Logo'=>'ロゴをアップロード',
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'検索バーの横に表示するためにあなたのロゴをアップロードするには、下記のフォームを使用して、ここにファイルをアップロードしてください。',
 'Create Page'=>'ページを作成する',
-'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application.
-X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'高性能なコンタクト管理のWebアプリケーション - X2Engine株式会社はX2Contacts後ろの会社です。 X2Engineは、組織のプロフェッショナルサポートとX2Contactsの訓練に提供することができます。私達に連絡するために下記のフォームに記入してください。',		
+'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'高性能な連絡先管理Webアプリケーション - X2Engine株式会社はX2Contacts後ろの会社です。 X2Engineは、組織のプロフェッショナルサポートとX2Contactsの訓練に提供することができます。私達に連絡するために下記のフォームに記入してください。',
 );
-?>

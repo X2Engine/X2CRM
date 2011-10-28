@@ -143,7 +143,10 @@ class UserChild extends Users {
 					$link='';
 				else {
 					$model = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$user));
-					$link = CHtml::link($model->firstName.' '.$model->lastName,array('profile/view','id'=>$model->id));
+                                        if(isset($model))
+                                            $link = CHtml::link($model->firstName.' '.$model->lastName,array('profile/view','id'=>$model->id));
+                                        else
+                                            $link='';
 					$links.=$link.', ';
 				}
 			}

@@ -35,9 +35,9 @@
  ********************************************************************************/
 
 return array (
-//	Contact Form Attributes
+// Contact Form Attributes
 'Verification Code'=>'認証コード',
-//	Contact Attributes
+// Contact Attributes
 'ID'=>'ID',
 'First Name'=>'名前',
 'Name'=>'名前',
@@ -77,7 +77,7 @@ return array (
 'Detail View'=>'詳細ビュー',
 'Simple View'=>'簡単なビュー',
 
-//	Contacts Actions
+// Contacts Actions
 'My Contacts'=>'私のコンタクト',
 'All Contacts'=>'すべてのコンタクト',
 'Create Contact'=>'コンタクトを作る',
@@ -87,7 +87,7 @@ return array (
 'Create Lead'=>'リードを作る',
 'Share Contact'=>'コンタクトを共有する',
 
-//	Contacts Titles
+// Contacts Titles
 'Contacts'=>'コンタクト',
 'Manage Contacts'=>'コンタクトの管理',
 'Contact:'=>'コンタクト:',

@@ -2,31 +2,31 @@
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- *
+ * 
  * You can contact X2Engine, Inc. at P.O. Box 66752,
  * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
- *
+ * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU General Public License version 3.
- *
+ * 
  * In accordance with Section 7(b) of the GNU General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-return array(
+return array (
 
-//Index
+// Index
 // Titles
 'Utilities'=>'Utilità',
 'Χ2Studio'=>'Χ2Studio',
@@ -63,6 +63,8 @@ return array(
 'Import a module'=>'Importare un modulo',
 'Rename a module'=>'Rinominare un modulo',
 'Gii - A Code Generation Module'=>'GII - Un modulo di generazione del codice',
+'X2Translate'=>'X2Translate',
+'Add, remove and update message translations in the X2Contacts language packs.'=>'Aggiungere, rimuovere e aggiornare le traduzioni messaggio in pacchetti di lingua del X2Contacts.',
 
 // Text
 'Administrator profile'=>'Amministratore profilo',
@@ -83,7 +85,7 @@ return array(
 'Export one of your custom modules to a .zip'=>'Esportare uno dei tuoi moduli personalizzati in un file. Zip',
 'Import a .zip of a module'=>'Importare un file. Zip di un modulo',
 'Change module titles on top bar'=>'Cambiare i titoli del modulo sulla barra in alto',
-"Use the Yii framework's code generation tools"=>'Utilizzare gli strumenti di generazione del quadro Yù codice',
+'Use the Yii framework\'s code generation tools'=>'Utilizzare gli strumenti di generazione del quadro Yù codice',
 'Commercial support and hosting'=>'Supporto commerciale e di hosting',
 'X2Engine Support Forums'=>'X2Engine Supporto Forum',
 'Yii Open Source web framework'=>'Yu Open Source framework web',
@@ -125,7 +127,5 @@ return array(
 'Upload Your Logo'=>'Carica il tuo Logo',
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Per caricare il logo per la visualizzazione accanto alla barra di ricerca, si prega di caricare il file qui utilizzando il modulo sottostante.',
 'Create Page'=>'Crea pagina',
-'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application.
-X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. è la società dietro X2Contacts - una potente applicazione per la gestione sui contatti web. X2Engine in grado di offrire al vostro sostegno organizzazione professionale e formazione in X2Contacts. Si prega di compilare il modulo sottostante per contattarci.',
+'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. è la società dietro X2Contacts - una potente applicazione per la gestione contatti web. X2Engine in grado di offrire al vostro sostegno organizzazione professionale e di formazione su X2Contacts. Si prega di compilare il modulo sottostante per contattarci.',
 );
-?>
