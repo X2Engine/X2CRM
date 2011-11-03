@@ -34,31 +34,44 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-/**
- * UserIdentity represents the data needed to identity a user.
- * It contains the authentication method that checks if the provided
- * data can identity the user.
- */
-class UserIdentity extends CUserIdentity {
+Yii::import('zii.widgets.CWidget');
 
-	private $_id;
-	private $_name;
+class InlineEmailForm extends CWidget {
+	public $to;
+	public $subject;
+	public $message;
+	public $redirectId;
+	public $redirectType;
 
-	public function authenticate() {
-		$user = CActiveRecord::model('UserChild')->findByAttributes(array('username' => $this->username));
-		if ($user === null || $user->status < 1)
-			$this->errorCode = self::ERROR_USERNAME_INVALID;
-		else if ($user->password !== md5($this->password))
-			$this->errorCode = self::ERROR_PASSWORD_INVALID;
-		else {
-			$this->_id = $user->id;
-			//$this->setState('lastLoginTime', $user->lastLoginTime); //not yet set up
-			$this->errorCode = self::ERROR_NONE;
-		}
-		return !$this->errorCode;
-	}
+	public $errors = array();
+	public $startHidden = false;
+
+	public function init() {
 	
-	public function getId() {
-		return $this->_id;
+		
+		Yii::app()->clientScript->registerScript('toggleEmailForm',
+			($this->startHidden? "$(document).ready(function() { $('#email-form').hide(); });\n" : '')
+			. "function toggleEmailForm() {
+				$('#email-form').toggle('blind',300);
+				$('#email-form #email-subject').focus();
+			}
+			",CClientScript::POS_HEAD);
+		parent::init();
+	}
+
+	public function run() {
+		// $actionModel = new ActionChild;
+		// $actionModel->associationType = $this->associationType;
+		// $actionModel->associationId = $this->associationId;
+		// $actionModel->assignedTo = $this->assignedTo;
+		echo $this->render('emailForm',array(
+			'to'=>$this->to,
+			'subject'=>$this->subject,
+			'message'=>$this->message,
+			'redirectId'=>$this->redirectId,
+			'redirectType'=>$this->redirectType,
+			'errors'=>$this->errors
+		));	//, array('actionModel'=>$actionModel,'users'=>$this->users,'inlineForm'=>true)
 	}
 }
+?>

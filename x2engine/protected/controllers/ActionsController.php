@@ -179,8 +179,10 @@ class ActionsController extends x2base {
 	// $this->performAjaxValidation($model);
 
 		if(isset($_POST['ActionChild'])) {
-			
+			$temp=$model->attributes;
 			$model->attributes=$_POST['ActionChild'];
+                        
+                        
                         
 			if($model->associationId=='')
 				$model->associationId=0;
@@ -216,8 +218,19 @@ class ActionsController extends x2base {
 				$model->completedBy=Yii::app()->user->getName();
 				$model->type='note';
 			}
+                        $changes=$this->calculateChanges($temp,$model->attributes);
                         $model=$this->updateChangelog($model,'Create');
 			if ($model->save()) {
+                                if($model->assignedTo!=Yii::app()->user->getName()){
+                                    $notif=new Notifications;
+                                    $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                    $notif->text="$profile->fullName has created an Action for you";
+                                    $notif->user=$model->assignedTo;
+                                    $notif->createDate=time();
+                                    $notif->viewed=0;
+                                    $notif->record="actions:$model->id";
+                                    $notif->save();
+                                }
 				if(isset($_GET['inline']) || $model->type=='note')
 					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
 				else
@@ -258,8 +271,10 @@ class ActionsController extends x2base {
 		// $this->performAjaxValidation($actionModel);
 
 		if(isset($_POST['ActionChild']) && isset($_POST['ContactChild'])) {
+                        $actionTemp=$actionModel->attributes;
 			$actionModel->attributes=$_POST['ActionChild'];
 			
+                        $contactTemp=$contactModel->attributes;
 			$contactModel->attributes=$_POST['ContactChild'];
 			
 			$actionModel->createDate=time();
@@ -295,6 +310,7 @@ class ActionsController extends x2base {
 				$actionModel->completedBy=Yii::app()->user->getName();
 				$actionModel->type='note';
 			}
+                        $changes=$this->calculateChanges($contactTemp,$contactModel->attributes);
 			$contactModel=$this->updateChangelog($contactModel,'Create');
 			if($contactModel->save()) {
 
@@ -302,6 +318,7 @@ class ActionsController extends x2base {
 				$actionModel->associationId = $contactModel->id;
 				$actionModel->associationType = 'contacts';
 				$actionModel->associationName = $contactModel->firstName.' '.$contactModel->lastName;
+                                $changes=$this->calculateChanges($actionTemp,$actionModel->attributes);
 				$actionModel=$this->updateChangelog($actionModel,'Create');
 				if($actionModel->save())
 					$this->redirect(array('contacts/view','id'=>$contactModel->id));
@@ -393,7 +410,6 @@ class ActionsController extends x2base {
 	}
 	
 	public function actionComplete($id) {
-		//die(var_dump($_POST));
 		$model=$this->loadModel($id);
 		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || Yii::app()->user->getName()=='admin') {
 			
@@ -403,6 +419,15 @@ class ActionsController extends x2base {
 			$model=$this->updateChangelog($model,'Completed');
 			$model->save();
 			ActionChild::completeAction($id);
+                        
+                        $notif=new Notifications;
+                        $notif->record="Actions:$model->id";
+                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                        $notif->text=$profile->fullName." completed an action.";
+                        $notif->user='admin';
+                        $notif->createDate=time();
+                        $notif->viewed=0;
+                        $notif->save();
 
 			$createNew = isset($_GET['createNew']) || (isset($_POST['submit']) && ($_POST['submit']=='completeNew'));
 			$redirect = isset($_GET['redirect']) || $createNew;

@@ -33,24 +33,47 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.4';
- 
-$host=$_POST['host'];
-$db=$_POST['db'];
-$user=$_POST['user'];
-$pass=$_POST['password'];
-$app=$_POST['app'];
-$currency=$_POST['currency'];
-$lang=$_POST['lang'];
-if($lang=="")
-	$lang="en";
-//$gii=$_POST['gii'];
-$adminEmail=$_POST['adminEmail'];
-$adminPassword=$_POST['adminPass'];
-$app=mysql_escape_string($app);
-if(!empty($adminEmail) && !preg_match('/[a-zA-Z0-9]+@/',$adminEmail))
-	die('Please enter a valid email address.');
+$x2Version = '0.9.5';
 
+// run silent installer with default values?
+$silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
+
+if($silent) {
+	if(file_exists('installConfig.php'))
+		require('installConfig.php');
+	else
+		die('Error: Installer config file not found.');
+} else {
+	$host = $_POST['host'];
+	$db = $_POST['db'];
+	$user = $_POST['user'];
+	$pass = $_POST['password'];
+	$app = $_POST['app'];
+	$currency = $_POST['currency'];
+	$lang = $_POST['lang'];
+	
+	$adminEmail = $_POST['adminEmail'];
+	$adminPassword = $_POST['adminPass'];
+	$adminPassword2 = $_POST['adminPass2'];
+	$dummyData = (isset($_POST['data']) && $_POST['data']==1)? 1 : 0;
+}
+
+if(empty($lang))
+	$lang='en';
+
+//$gii=$_POST['gii'];
+
+$app = mysql_escape_string($app);
+if(!empty($adminEmail) && !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i',$adminEmail))
+	die('Please enter a valid email address.');
+	
+if($adminPassword == '')
+	die('Admin password cannot be blank.');
+
+if(isset($adminPassword2) && $adminPassword != $adminPassword2)
+	die('Passwords did not match.');
+ 
+	
 $gii=1;
 if($gii=='1'){
 	$gii="array('class'=>'system.gii.GiiModule',
@@ -107,7 +130,7 @@ $con = mysql_connect($host,$user,$pass) or die("Unable to connect to database.  
 mysql_select_db($db,$con) or die ("Unable to select database.  Please make sure the name is spelled properly and that the database exists.".mysql_error());
 
 mysql_query("DROP TABLE IF EXISTS x2_users, x2_contacts, x2_actions, x2_sales, x2_projects, x2_marketing, x2_cases, x2_profile,
-	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog, x2_tags, x2_relationships") or die("Unable to update tables, check user permissions.".mysql_error());
+	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog, x2_tags, x2_relationships, x2_notifications, x2_criteria") or die("Unable to update tables, check user permissions.".mysql_error());
 
 mysql_query("CREATE TABLE x2_users(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -129,7 +152,7 @@ mysql_query("CREATE TABLE x2_users(
 	recentItems VARCHAR(100),
 	topContacts VARCHAR(100),
 	lastLogin INT DEFAULT 0,
-        login INT DEFAULT 0,
+	login INT DEFAULT 0,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
 	") or die('Unable to create table x2_users, check user permissions.'.mysql_error());
@@ -387,6 +410,26 @@ mysql_query("CREATE TABLE x2_relationships(
 	COLLATE = utf8_general_ci
  ") or die('Unable to create table x2_relationshps, check user permissions.'.mysql_error());
 
+mysql_query("CREATE TABLE x2_notifications( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	text TEXT,
+	record VARCHAR(250), 
+	user VARCHAR(100),
+        viewed INT,
+        createDate INT)
+	COLLATE = utf8_general_ci
+ ") or die('Unable to create table x2_notifications, check user permissions.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_criteria( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	modelType VARCHAR(100),
+	modelField VARCHAR(250),
+	modelValue TEXT,
+        comparisonOperator VARCHAR(10),
+        users TEXT)
+	COLLATE = utf8_general_ci
+ ") or die('Unable to create table x2_criteria, check user permissions.'.mysql_error());
+
 
 $adminPassword=md5($adminPassword); 
 $adminEmail=mysql_escape_string($adminEmail);
@@ -420,12 +463,8 @@ foreach($backgrounds as $background) {
 		mysql_query("INSERT INTO x2_media (associationType, fileName) VALUES ('bg', '$background')"); // or die("Unable to install background image $background.");
 	//}
 }
-if(isset($_POST['data']))
-	$data=$_POST['data'];
-else
-	$data=0;
 
-if($data==1){
+if($dummyData){
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Chris','Hames','chames',md5('password'),
 		'831-555-5555','10 Downing St. Santa Cruz, CA 95060', 'chris@hames.com','1')") or die("Error inserting dummy data");
 	 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
@@ -518,7 +557,7 @@ $browser = urlencode($_SERVER['HTTP_USER_AGENT']);
 $phpVersion = urlencode(phpversion());
 $x2Version = urlencode($x2Version);
 $dbType = urlencode('MySQL');
-$stats = "lang=$lang&currency=$currency&x2Version=$x2Version&dummyData=$data&phpVersion=$phpVersion&dbType=$dbType&GD=$GDSupport&browser=$browser";
+$stats = "lang=$lang&currency=$currency&x2Version=$x2Version&dummyData=$dummyData&phpVersion=$phpVersion&dbType=$dbType&GD=$GDSupport&browser=$browser";
 
 // Generate splash page
 
@@ -590,5 +629,6 @@ body {
 <?php
 // delete install files (including self)
 unlink('install.php');
+unlink('installConfig.php');
 unlink(__FILE__);
 ?>

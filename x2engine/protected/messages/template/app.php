@@ -104,6 +104,12 @@ return array (
 'Enter text here...'=>'',
 'Send'=>'',
 
+// Email Form
+'To:'=>'',
+'Subject:'=>'',
+'Message:'=>'',
+'Error: Could not send email.'=>'',
+'Email Sent!'=>'',
 
 // Comments
 'Add Comment'=>'',

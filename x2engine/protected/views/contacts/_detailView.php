@@ -174,7 +174,7 @@ function cleanupUrl($url) {
 				<?php
 				echo $form->textField($model, 'email', array(
 					'size'=>15,
-					'maxlength'=>100,
+					'maxlength'=>250,
 					'tabindex'=>4,
 					'style'=>'width:225px;'
 				)); ?>

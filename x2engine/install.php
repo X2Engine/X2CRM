@@ -34,6 +34,15 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
+// run silent installer with default values?
+$silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
+
+if($silent) {
+	header('Location: initialize.php?silent');
+	exit;
+}
+
+
 $languageDirs = scandir('./protected/messages');	// scan for installed language folders
 
 $languages = array();

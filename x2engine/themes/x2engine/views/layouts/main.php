@@ -37,7 +37,6 @@
 $isGuest = Yii::app()->user->isGuest;
 $isAdmin = !$isGuest && Yii::app()->user->getName()=='admin';
 $isUser = !($isGuest || $isAdmin);
-
 if(Yii::app()->session['alertUpdate']){
     ?><script>
         alert('A new version is available.  To update X2Contacts or to turn off these notifications, please go to the Admin tab.');
@@ -157,13 +156,9 @@ foreach($checkFiles as $key=>$value) {
 $theme2Css = '';
 if($checkResult)
 	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
-	// get user record
-	$userModel = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-        if(!isset($userModel))
-            $userModel=ProfileChild::model()->findByPk(1);
 	
-	if (!empty($userModel->pageOpacity)) {
-		$defaultOpacity = $userModel->pageOpacity / 100;
+	if (!empty(Yii::app()->params->profile->pageOpacity)) {
+		$defaultOpacity = Yii::app()->params->profile->pageOpacity / 100;
 		Yii::app()->clientScript->registerScript('loadPageOpacity',"
 			$(document).ready(function() {
 				$('#page').fadeTo(0,".$defaultOpacity.");
@@ -172,19 +167,19 @@ if($checkResult)
 	}
 	
 	// check for background image, use it if one is set
-	if(empty($userModel->backgroundImg))
+	if(empty(Yii::app()->params->profile->backgroundImg))
 		$backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
 	else
-		$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/'.$userModel->backgroundImg,'',array('id'=>'bg'));
+		$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
 
 	// check for background image
-	if(!empty($userModel->backgroundColor)) {
-		$themeCss .= 'body {background-color:#'.$userModel->backgroundColor.";}\n";
+	if(!empty(Yii::app()->params->profile->backgroundColor)) {
+		$themeCss .= 'body {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
 		
 		if(!empty($backgroundImg)) {
 			$shadowRgb = 'rgb(0,0,0,0.5)';	// use a black shadow if there is an image
 		} else {
-			$shadowColor = hex2rgb($userModel->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
+			$shadowColor = hex2rgb(Yii::app()->params->profile->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
 			
 			foreach($shadowColor as &$value) {
 				$value = floor(0.5*$value);
@@ -197,11 +192,11 @@ if($checkResult)
 box-shadow: 0 0 30px $shadowRgb;
 }\n";
 	}
-	if(!empty($userModel->menuBgColor)){
-		$themeCss .= '#main-menu-bar {background:#'.$userModel->menuBgColor.";}\n";
+	if(!empty(Yii::app()->params->profile->menuBgColor)){
+		$themeCss .= '#main-menu-bar {background:#'.Yii::app()->params->profile->menuBgColor.";}\n";
         }
-	if(!empty($userModel->menuTextColor)){
-		$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.$userModel->menuTextColor.";}\n";
+	if(!empty(Yii::app()->params->profile->menuTextColor)){
+		$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.Yii::app()->params->profile->menuTextColor.";}\n";
         }
 	
 	Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
@@ -275,6 +270,7 @@ $userMenu = array(
 	array('label' => Yii::t('app','Profile').' ('.Yii::app()->user->getName().')', 'visible'=>$isUser,
 		'items' => array(
 			array('label' => Yii::t('app','Profile'),'url' => array('/profile/view','id' => Yii::app()->user->getId()), 'visible'=>$isUser),
+                        array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications'), 'visible'=>$isUser),
 			array('label' => Yii::t('app','Settings'),'url' => array('/profile/settings'), 'visible'=>$isUser),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
@@ -308,8 +304,11 @@ $userMenu = array(
 <!--<div class="ie-shadow" style="display:none;"></div>-->
 <div class="container" id="page">
 	<div id="main-menu-bar">
-		<?php echo CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')); ?>
-		<?php
+                <?php
+                    $notifications=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0))
+                ?>
+                <?php echo count($notifications)>0?CHtml::link(count($notifications),array('site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;')):CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
+                <?php
 		//render main menu items
 		$this->widget('zii.widgets.CMenu', array(
 			'id'=>'main-menu',

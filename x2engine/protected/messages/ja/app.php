@@ -104,6 +104,12 @@ return array (
 'Enter text here...'=>'ここにテキストを入力してください...',
 'Send'=>'送信',
 
+// Email Form
+'To:'=>'へ：',
+'Subject:'=>'件名：',
+'Message:'=>'メッセージ：',
+'Error: Could not send email.'=>'エラー：メールを送信できませんでした。',
+'Email Sent!'=>'メールを送信しました！',
 
 // Comments
 'Add Comment'=>'コメントを追加',

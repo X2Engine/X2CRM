@@ -263,6 +263,14 @@ div#install-form #lang {
 #login-box input.x2-button {
 	padding: 10px 30px;	/* extra big! */
 }
+
+#email-form label {
+	width:80px;
+}
+#email-form input[type="text"], #email-form textarea {
+	width:465px;
+}
+
 div.form select[multiple="multiple"] {
 	min-width:130px;
 }

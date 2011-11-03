@@ -139,8 +139,10 @@ return array(
 	'params'=>array(
 		// this is used in contact page
 		'adminEmail'=>$email,
+		'adminModel'=>null,
+		'profile'=>null,
 		'logo'=>"uploads/logos/yourlogohere.png",
-		'webRoot'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
+		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
 		'registeredWidgets'=>array(
 			'MessageBox'=>'Message Board',
 			'QuickContact'=>'Quick Contact',
@@ -149,9 +151,9 @@ return array(
 			'ChatBox'=>'Chat',
 			'NoteBox'=>'Note Pad',
 			'ActionMenu'=>'My Actions',
-                        'TagCloud'=>'Tag Cloud',
+			'TagCloud'=>'Tag Cloud',
 		),
 		'currency'=>'',
-                'version'=>$version,
+		'version'=>$version,
 	),
 );

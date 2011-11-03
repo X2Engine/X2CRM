@@ -117,6 +117,7 @@ class SalesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['SaleChild'])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST['SaleChild'];
 			
 			if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
@@ -126,6 +127,7 @@ class SalesController extends x2base {
 			// process currency into an INT
 			$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 			
+                        $changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,'Create'); 
 			if(isset($model->assignedTo))
 				$model->assignedTo = SaleChild::parseUsers($model->assignedTo);
@@ -137,8 +139,19 @@ class SalesController extends x2base {
 			}
 		
 			
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			if($model->save()){
+                            if($model->assignedTo!=Yii::app()->user->getName()){
+                                $notif=new Notifications;
+                                $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                $notif->text="$profile->fullName has created a Sale for you";
+                                $notif->user=$model->assignedTo;
+                                $notif->createDate=time();
+                                $notif->viewed=0;
+                                $notif->record="sales:$model->id";
+                                $notif->save();
+                            }
+                            $this->redirect(array('view','id'=>$model->id));
+                        }
 		}
 
 		$this->render('create',array(

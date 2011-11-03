@@ -104,6 +104,12 @@ return array (
 'Enter text here...'=>'在此处输入文字...',
 'Send'=>'发送',
 
+// Email Form
+'To:'=>'要：',
+'Subject:'=>'主题：',
+'Message:'=>'消息：',
+'Error: Could not send email.'=>'错误：无法发送电子邮件。',
+'Email Sent!'=>'电子邮件已发送！',
 
 // Comments
 'Add Comment'=>'发表评论',

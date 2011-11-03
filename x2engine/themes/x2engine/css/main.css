@@ -44,13 +44,14 @@ body {
 	margin:8px auto 20px auto;
 	padding-bottom:5px;
 	position:relative;
-	border-radius:8px;
-	-moz-border-radius:8px;
-	-webkit-border-radius:8px;
-	-o-border-radius:8px;
-	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+	border:1px solid black;
+	border-radius:6px;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	-o-border-radius:6px;
+/* 	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.5);
 	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5);
-	box-shadow: 0 0 10px rgba(0,0,0,0.5);
+	box-shadow: 0 0 10px rgba(0,0,0,0.5); */
 }
 #page .container {
 	/* position:relative; */
@@ -84,6 +85,23 @@ body {
 	width:30px;
 	margin:5px 3px;
 }
+#main-menu-notif {
+	display:block;
+	float:right;
+        border-radius:4px 4px 4px 4px;
+	-moz-border-radius:4px 4px 4px 4px;
+	-webkit-border-radius:4px 4px 4px 4px;
+	-o-border-radius:4px 4px 4px 4px;
+        background-color:white;
+        padding:2.5px;
+	height:25px;
+        text-decoration:none;
+	width:25px;
+        color:#579100; 
+        text-align:center;
+        font-size:18px;
+	margin:5px 3px;
+}
 #main-menu-bar ul {
 	list-style:none;
 	margin:0;
@@ -98,10 +116,9 @@ body {
 }
 #user-menu {
 	float:right;
-}
+} 
 #user-menu ul li {
 	min-width:120px;
-	text-shadow:none;
 }
 #main-menu-bar ul a, #main-menu-bar ul span {
 	color:white;
@@ -143,19 +160,22 @@ body {
 }
 /*Dropdown Menu*/
 #main-menu-bar ul ul {
-	margin:0;
 	display:none;
 	position:absolute;
 	z-index:1000;
 	background:#ddd;
-	border:1px solid black;
-/* 	-moz-box-shadow: 0 0 20px 0 rgba(0,0,0,0.7);
-	-webkit-box-shadow: 0 0 20px 0 rgba(0,0,0,0.7);
-	box-shadow: 0 0 20px 0 rgba(0,0,0,0.7); */
-/* 	border-radius:0 0 4px 4px;
-	-moz-border-radius:0 0 4px 4px;
-	-webkit-border-radius:0 0 4px 4px;
-	-o-border-radius:0 0 4px 4px; */
+	border:1px solid #999;
+	background-color:#eee;
+
+	border-radius:0 0 2px 2px;
+	-moz-border-radius:0 0 2px 2px;
+	-webkit-border-radius:0 0 2px 2px;
+	-o-border-radius:0 0 2px 2px;
+
+	clip:rect(1px, 1000px, 1000px, -10px);
+	-moz-box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
+	box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
 }
 #main-menu-bar ul ul li {
 	font-size:12px;
@@ -181,6 +201,7 @@ body {
 	text-decoration:none;
 	line-height:24px;
 	height:auto;
+	text-shadow:none;
 }
 #main-menu-bar ul li:hover ul li:hover {
 	background-color:white;/* #445566; */

@@ -35,7 +35,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-require_once("/home/x3engine/public_html/x2jake/protected/config/emailConfig.php");
+require_once(__DIR__.'/protected/config/emailConfig.php');
 
 // fetch data from stdin
 $data = file_get_contents("php://stdin");

@@ -57,7 +57,8 @@
 		<?php echo CHtml::link(Yii::t('admin','Toggle default logo'),'toggleDefaultLogo'); ?><br /><?php echo Yii::t('admin','Change logo back to X2Contacts');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br /><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?><br /><br />
                 <?php echo CHtml::link(Yii::t('admin','View User Changelog'),'viewChangelog'); ?><br /><?php echo Yii::t('admin','View a log of everything that has been changed');?><br /><br />
-                <?php echo CHtml::link(Yii::t('admin','Toggle Automatic Update'),'toggleUpdater'); ?><br /><?php echo Yii::t('admin','Turn off/on notifications for new versions of X2Contacts');?>
+                <?php echo CHtml::link(Yii::t('admin','Toggle Automatic Update'),'toggleUpdater'); ?><br /><?php echo Yii::t('admin','Turn off/on notifications for new versions of X2Contacts');?><br /><br />
+                <?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),'addCriteria'); ?><br /><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?>
 	</div>
 </div>
 <div class="span-7">

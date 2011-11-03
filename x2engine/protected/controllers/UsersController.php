@@ -168,7 +168,7 @@ class UsersController extends x2base {
 			$actions=$dataProvider->getData();
 			foreach($actions as $action){
                                 if($action->updatedBy==$model->username)
-                                    $action->updatedby='admin';
+                                    $action->updatedBy='admin';
                                 if($action->completedBy=$model->username)
                                     $action->completedBy='admin';
 				$action->assignedTo="Anyone";

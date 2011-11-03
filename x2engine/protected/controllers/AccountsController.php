@@ -122,19 +122,33 @@ class AccountsController extends x2base {
 		$availableContacts = AccountChild::getAvailableContacts();
 
 		if(isset($_POST['AccountChild'])) {
+                        $temp=$model->attributes;
 			$model->attributes=$_POST['AccountChild'];
 			
 			// process currency into an INT
 			$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
-
+                        $arr=$model->assignedTo;
+                        $changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,"Create");
 			if(isset($model->assignedTo))
 				$model->assignedTo = AccountChild::parseUsers($model->assignedTo);
 			$model->createDate=time();
 
 			if($model->save()) {
-				AccountChild::setContacts($model->associatedContacts,$model->id);
-				$this->redirect(array('view','id'=>$model->id));
+                            foreach($arr as $user){
+                                if($user!=Yii::app()->user->getName()){
+                                    $notif=new Notifications;
+                                    $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                    $notif->text="$profile->fullName has created an Action for you";
+                                    $notif->user=$user;
+                                    $notif->createDate=time();
+                                    $notif->viewed=0;
+                                    $notif->record="actions:$model->id";
+                                    $notif->save();
+                                }
+                            }
+                            AccountChild::setContacts($model->associatedContacts,$model->id);
+                            $this->redirect(array('view','id'=>$model->id));
 			}
 		}
 

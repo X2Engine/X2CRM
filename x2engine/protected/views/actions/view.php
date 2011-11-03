@@ -64,6 +64,21 @@ if (empty($model->type) || $model->type=='Web Lead') {
 	else {
 ?>
 <a class="x2-button" href="shareAction/<?php echo $model->id;?>"><span><?php echo Yii::t('actions','Share Action'); ?></span></a>
+<?php
+if(isset($associationModel) && $model->associationType=='contacts') {
+	?>
+	<a class="x2-button" href="#" onclick="toggleEmailForm(); return false;"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
+	<?php
+	$this->widget('InlineEmailForm',
+		array(
+			'to'=>'<'.$associationModel->name.'> '.$associationModel->email,
+			'redirectId'=>$model->id,
+			'redirectType'=>'actions',
+			'startHidden'=>true,
+		)
+	);
+}
+?>
 <div class="form" id="action-form">
 	<form name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">
 		<b><?php echo Yii::t('actions','Completion Notes'); ?></b>

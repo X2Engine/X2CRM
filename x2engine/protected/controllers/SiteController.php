@@ -197,6 +197,16 @@ class SiteController extends x2base {
 		echo json_encode($messages);
 	}
 
+	public function actionCheckNotifications(){
+		
+		$list=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
+		if(count($list)>0){
+			echo json_encode(count($list));
+		}else{
+			echo null;
+		}
+	}
+
 	public function actionUpdateNotes(){
 		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()), 'order timestamp DESC');
 		$res="";
@@ -340,6 +350,61 @@ class SiteController extends x2base {
 			}
 		}
 	}
+	
+	
+	
+	public function actionInlineEmail() {
+		
+		$to = '';
+		$subject = '';
+		$message = '';
+		$redirectId = '';
+		$redirectType = '';
+		
+		$errors = array();
+
+		if(isset($_POST['to']) && isset($_POST['subject']) && isset($_POST['message'])) {
+			
+			$to = $this->decodeQuotes($_POST['to']);
+			$subject = $this->decodeQuotes($_POST['subject']);
+			$message = $this->decodeQuotes($_POST['message']);
+			
+			if(empty($to))
+				$errors[] = 'to';
+			if(empty($subject))
+				$errors[] = 'subject';
+			if(empty($message))
+				$errors[] = 'message';
+			
+			if(empty($errors)) {
+                                $user=CActiveRecord::model('UserChild')->findByPk(Yii::app()->user->getId());
+				//$to = 'mpearson@x2engine.com';
+				$headers = "From: <".$user->name."> ".Yii::app()->params->profile->emailAddress."\r\n";
+				$headers .= "Cc: dropbox@".substr(Yii::app()->request->getServerName(),4)."\r\n";
+				$headers .= "MIME-Version: 1.0\r\n";
+				$headers .= "Content-Type: text/html; charset=utf-8\r\n";
+				$headers .= "Content-Transfer-Encoding: 8bit\r\n";
+
+				// die($headers);
+				if(mail($to,$subject,$message,$headers)) {
+					if(isset($_GET['ajax'])) {
+						echo '<div class="form">'.Yii::t('app','Email Sent!').'</div><br />';
+						return;
+					} else if(isset($_POST['redirectId']) && isset($_POST['redirectType'])) {
+						$this->redirect(array($_POST['redirectType'].'/view/'.$_POST['redirectId']));
+						return;
+					} else {
+						$this->redirect(array('contacts/index'));
+						return;
+					}
+				} else {
+					echo '<div class="form">'.Yii::t('app','Erorr: Could not send email.').'</div>';
+					return;
+				}
+			}
+		}
+		echo $this->renderPartial('application.components.views.emailForm',array('to'=>$to,'subject'=>$subject,'message'=>$message,'redirectId'=>$redirectId,'redirectType'=>$redirectType,'errors'=>$errors));
+	}
 
 	public function actionUpload() {
 		if(isset($_FILES['upload'])) {
@@ -461,9 +526,11 @@ class SiteController extends x2base {
 		}
 			
 	}
+        
+         
 
 	// This is the action to handle external exceptions.
-	public function actionError() {
+	public function actionError() { 
 		if($error=Yii::app()->errorHandler->error) {
 			if(Yii::app()->request->isAjaxRequest)
 				echo $error['message'];
@@ -503,6 +570,21 @@ class SiteController extends x2base {
 		else
 			return null;
 	}
+        
+        public function actionViewNotifications(){
+            
+            $dataProvider=new CActiveDataProvider('Notifications',array(
+                'criteria'=>array(
+				'order'=>'createDate DESC',
+				'condition'=>'user="'.Yii::app()->user->getName().'"'
+		
+            )));
+            $this->render('viewNotifications',array(
+                'dataProvider'=>$dataProvider,
+            ));
+        }
+        
+        
 	
 /* 	protected function parseName($arr) {
 		$type=$arr[0]; 

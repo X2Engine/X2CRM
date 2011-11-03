@@ -247,7 +247,17 @@ class ProfileController extends x2base {
 			if(!isset($soc->associationId) || $soc->associationId==0)
 				$soc->associationId=$id;
 			if($soc->save()){
-
+                            if($soc->associationId!=Yii::app()->user->getId()){
+                                $notif=new Notifications;
+                                $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$soc->user));
+                                $notif->text="$prof->fullName posted on your profile.";
+                                $notif->record="profile:$prof->id";
+                                $notif->viewed=0;
+                                $notif->createDate=time();
+                                $subject=CActiveRecord::model('ProfileChild')->findByPk($id);
+                                $notif->user=$subject->username;
+                                $notif->save();
+                            }
 			}
 			
 		}
@@ -269,7 +279,27 @@ class ProfileController extends x2base {
 				$soc->associationId=$id;
 				$model->lastUpdated=time();
 				if($soc->save() && $model->save()){
-
+                                    $notif=new Notifications;
+                                    $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$soc->user));
+                                    $notif->text="$prof->fullName added a comment to a post.";
+                                    $notif->record="profile:$model->associationId";
+                                    $notif->viewed=0;
+                                    $notif->createDate=time();
+                                    $subject=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->user));
+                                    $notif->user=$subject->username;
+                                    if($notif->user!=Yii::app()->user->getName())
+                                        $notif->save();
+                                    
+                                    $notif=new Notifications;
+                                    $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$soc->user));
+                                    $subject=CActiveRecord::model('ProfileChild')->findByPk($model->associationId);
+                                    $notif->text="$prof->fullName added a comment to a post.";
+                                    $notif->record="profile:$model->associationId";
+                                    $notif->viewed=0;
+                                    $notif->createDate=time();
+                                    $notif->user=$subject->username;
+                                    if($notif->user!=Yii::app()->user->getName())
+                                        $notif->save();
 				}
 			}
 			if(isset($_GET['redirect'])) {

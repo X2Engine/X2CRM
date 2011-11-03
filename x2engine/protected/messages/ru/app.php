@@ -104,6 +104,12 @@ return array (
 'Enter text here...'=>'Введите текст здесь ...',
 'Send'=>'послать',
 
+// Email Form
+'To:'=>'Кому:',
+'Subject:'=>'Тема:',
+'Message:'=>'сообщение:',
+'Error: Could not send email.'=>'Ошибка: не удалось отправить электронную почту.',
+'Email Sent!'=>'Отправки сообщения!',
 
 // Comments
 'Add Comment'=>'Добавить комментарий',

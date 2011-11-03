@@ -84,8 +84,8 @@ if($detailView) { ?>
 	<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
 	<?php /*<a class="x2-button" href="#" onClick="toggleForm('#note-form',400);return false;"><span><?php echo Yii::t('app','Add Comment'); ?></span></a>
 	<a class="x2-button" href="#" onClick="toggleForm('#action-form',400);return false;"><span><?php echo Yii::t('app','Create Action'); ?></span></a> */ ?>
-	<a class="x2-button" href="mailto:<?php echo $model->email; ?>?cc=dropbox@<?php echo substr(Yii::app()->request->getServerName(),4);?>"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
 <?php } ?>
+	<a class="x2-button" href="#" onclick="toggleEmailForm(); return false;"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
 	<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
 	<a class="x2-button" style="margin-bottom:15px;" href="shareContact/<?php echo $model->id;?>"><span><?php echo Yii::t('contacts','Share Contact'); ?></span></a>
 	<br />
@@ -93,14 +93,21 @@ if($detailView) { ?>
 	<?php $this->widget('Attachments',array('type'=>'contacts','associationId'=>$model->id)); ?>
 </div>
 <?php
-
+$this->widget('InlineEmailForm',
+	array(
+		'to'=>'<'.$model->name.'> '.$model->email,
+		'redirectId'=>$model->id,
+		'redirectType'=>'contacts',
+		'startHidden'=>true,
+	)
+);
 $this->widget('InlineActionForm',
 	array(
 		'associationType'=>'contacts',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
 		'users'=>$users,
-		'startHidden'=>false
+		'startHidden'=>false,
 	)
 );
 

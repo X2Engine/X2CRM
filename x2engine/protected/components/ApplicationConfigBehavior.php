@@ -44,8 +44,7 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Declares events and the event handler methods
 	 * See yii documentation on behaviour
 	 */
-	public function events()
-	{
+	public function events() {
 		return array_merge(parent::events(), array(
 			'onBeginRequest'=>'beginRequest',
 		));
@@ -55,23 +54,25 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Load configuration that cannot be put in config/main
 	 */
 	public function beginRequest() {
-	
-		$prof=Profile::model()->findByPk(Yii::app()->user->getId());
-		if (isset($prof->language))
-			$this->owner->language=$prof->language;
-                else{
-                    $adminProf=ProfileChild::model()->findByPk(1);
-                    $this->owner->language=$adminProf->language;
-                }
-		if(isset($prof->timeZone) && $prof->timeZone!='')
-			date_default_timezone_set($prof->timeZone);
-		$adminProf=ProfileChild::model()->findByAttributes(array('username'=>'admin'));
-		$logo=Media::model()->findByAttributes(array('associationId'=>$adminProf->id,'associationType'=>'logo'));
-		if(isset($logo)){
-			$this->owner->params->logo=$logo->fileName;
-		}
 		
-		$admin = CActiveRecord::model('Admin')->findByPk(1);
-		$this->owner->params->currency = $admin->currency;
-    }
+		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
+		$this->owner->params->profile = CActiveRecord::model('Profile')->findByPk(Yii::app()->user->getId());
+		
+		$adminProf = ProfileChild::model()->findByPk(1);
+
+		$this->owner->params->currency = $this->owner->params->admin->currency;
+		
+		if (!empty($this->owner->params->profile->language))
+			$this->owner->language = $this->owner->params->profile->language;
+		else
+			$this->owner->language = $adminProf->language;
+
+		if(!empty($this->owner->params->profile->timeZone))
+			date_default_timezone_set($this->owner->params->profile->timeZone);
+		
+		$logo = Media::model()->findByAttributes(array('associationId'=>1,'associationType'=>'logo'));
+		if(isset($logo))
+			$this->owner->params->logo = $logo->fileName;
+		
+	}
 }

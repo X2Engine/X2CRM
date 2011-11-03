@@ -186,6 +186,7 @@ $model->city, $model->state $model->zipcode
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
+                        $temp=$model->attributes;
 			$model->attributes = $_POST['ContactChild'];
 
 			$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
@@ -193,12 +194,23 @@ $model->city, $model->state $model->zipcode
 				$contact->accountId = $account->id;
 			else
 				$model->accountId = 0;
-			
+                        
+			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,'Create');
 			$model->createDate=time();
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-			else{
+			if($model->save()){
+                            if($model->assignedTo!=Yii::app()->user->getName()){
+                                $notif=new Notifications;
+                                $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                $notif->text="$profile->fullName has created a Contact for you";
+                                $notif->user=$model->assignedTo;
+                                $notif->createDate=time();
+                                $notif->viewed=0;
+                                $notif->record="contacts:$model->id";
+                                $notif->save();
+                            }
+                            $this->redirect(array('view','id'=>$model->id));
+                        }else{
 			}
 		}
 		$this->render('create',array(
@@ -227,11 +239,18 @@ $model->city, $model->state $model->zipcode
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
+                        $temp=$model->attributes;
 			$model->attributes = $_POST['ContactChild'];
 
 			$model->visibility = 1;
+                        
+                        $account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
+			if(isset($account))
+				$contact->accountId = $account->id;
+			else
+				$contact->accountId = 0; 
 			// validate user input and save contact
-			
+			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,'Create');
 			$model->createDate=time();
 			if($model->save()) {
@@ -284,18 +303,18 @@ $model->city, $model->state $model->zipcode
 
 		if(isset($_POST['ContactChild'])) {
 			$temp=$model->attributes;
+                        foreach($_POST['ContactChild'] as $name => $value) {
+				if($value == $model->getAttributeLabel($name)){
+                                    $_POST['ContactChild'][$name] = '';
+                                }
+			}
 			$model->attributes=$_POST['ContactChild'];
-			$attributeLabels = ContactChild::attributeLabels();
-			if($model->address == $attributeLabels['address'])
-				$model->address = '';
-			if($model->city == $attributeLabels['city'])
-				$model->city = '';
-			if($model->state == $attributeLabels['state'])
-				$model->state = '';
-			if($model->zipcode == $attributeLabels['zipcode'])
-				$model->zipcode = '';
-			if($model->country == $attributeLabels['country'])
-				$model->country = '';
+			
+                        $account = Accounts::model()->findByAttributes(array('name'=>$model->company));
+			if(isset($account))
+				$model->accountId = $account->id;
+			else
+				$model->accountId = 0; 
 				
 			$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model,$changes);

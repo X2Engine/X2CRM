@@ -1,4 +1,4 @@
-<?php
+ <?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -52,7 +52,8 @@ class x2base extends Controller {
 	}
 	
 	public $portlets=array(); // This is the array of widgets on the sidebar.
-
+        public $modelClass = 'AdminChild';
+        
 
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -257,7 +258,7 @@ class x2base extends Controller {
 			// }
 		// }
 		$template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.">\\1#\\2\\3</a>";
-                $text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
+		$text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
 		if($convertLineBreaks)
 			return x2base::convertLineBreaks($text,true,false);
 		else
@@ -284,16 +285,27 @@ class x2base extends Controller {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST[$name])) {
-			
+			$temp=$model->attributes;
 			$model->attributes=$_POST[$name];
 			if(isset($_POST['auto_select']) && $model instanceof Contacts){
 				$model->company=$_POST['auto_select'];
 			}
+                        $changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangelog($model, 'Create');
 			$model->createDate=time();
-			if($model->save())
+			if($model->save()){
+				if($model->assignedTo!=Yii::app()->user->getName()){
+					$notif=new Notifications;
+					$profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+					$notif->text="$profile->fullName has created a(n) ".substr($name,0,-1)." for you";
+					$notif->user=$model->assignedTo;
+					$notif->createDate=time();
+					$notif->viewed=0;
+					$notif->record="$name:$model->id";
+					$notif->save();
+				}
 				$this->redirect(array('view','id'=>$model->id));
-			else{
+			}else{
 			}
 		}
 		$this->render('create',array(
@@ -379,6 +391,8 @@ class x2base extends Controller {
 			'model'=>$model,
 		));
 	}
+        
+        
 	
 	
 	/**
@@ -398,133 +412,195 @@ class x2base extends Controller {
 	protected function updateChangelog($model, $change) {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
-                
-                $type=get_class($model);
-                if(substr($type,-1)!="s"){
-                    $type=substr($type,0,-5)."s";
-                }
-                
-                $changelog=new Changelog;
-                $changelog->type=$type;
-                if(!isset($model->id)){
-                    if($model->save()){}
-                }
-                $changelog->itemId=$model->id;
-                $changelog->changedBy=Yii::app()->user->getName();
-                $changelog->changed=$change;
-                $changelog->timestamp=time();
-                
-                if($changelog->save()){
-                    
-                }
-                
-                
-                
-                if($change!='Create' && $change!='Completed' && $change!='Edited'){
-                    
-                    if($change!=""){
-                        $pieces=explode("TO:",$change);
-                        $change=$pieces[1]; 
-                        $forDeletion=$pieces[0];
-                        preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
-                        $deleteMatches=$deleteMatches[0];
-                        foreach($deleteMatches as $match){
-                            $oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
-                            if(isset($oldTag))
-                                $oldTag->delete();
-                        }
-                    }
-                }else if($change=='Create' || $change=='Edited'){
-                    if($model instanceof Contacts)
-                        $change=$model->backgroundInfo;
-                    else if($model instanceof Actions)
-                        $change=$model->actionDescription;
-                    else if($model instanceof Docs)
-                        $change=$model->text;
-                    else
-                        $change=$model->name;
-                } 
-                
-                preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
-                $matches=$matches[0];
-                foreach($matches as $match){
-                    $tag=new Tags;
-                    $tag->type=$type;
-                    $tag->taggedBy=Yii::app()->user->getName();
-                    $tag->type=$type;
-                    $tag->tag=$match;
-                    if($model instanceof Contacts)
-                        $tag->itemName=$model->firstName." ".$model->lastName;
-                    else if($model instanceof Actions)
-                        $tag->itemName=$model->actionDescription;
-                    else if($model instanceof Docs)
-                        $tag->itemName=$model->title;
-                    else
-                        $tag->itemName=$model->name;
-                    if(!isset($model->id)){
-                        $model->save();
-                    }
-                    $tag->itemId=$model->id;
-                    $tag->timestamp=time();
-                    if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
-                        if(substr($tag->tag,1,1)=='#')
-                            $tag->tag=substr($tag->tag,1);
-                        if($tag->save()){
-                            
-                        }else{
-                            print_r($tag->getErrors());
-                            exit;
-                        }
-                    }else{
-                        print_r($tag->getErrors());
-                        exit;
-                    }
-                }
+
+		$type=get_class($model);
+		if(substr($type,-1)!="s"){
+			$type=substr($type,0,-5)."s";
+		}
+		
+		$changelog=new Changelog;
+		$changelog->type=$type;
+		if(!isset($model->id)){
+			if($model->save()){}
+		}
+		$changelog->itemId=$model->id;
+		$changelog->changedBy=Yii::app()->user->getName();
+		$changelog->changed=$change;
+		$changelog->timestamp=time();
+		
+		if($changelog->save()){
+			
+		}
+		
+		
+		
+		if($change!='Create' && $change!='Completed' && $change!='Edited'){
+			
+			if($change!=""){
+				$pieces=explode("TO:",$change);
+				$change=$pieces[1]; 
+				$forDeletion=$pieces[0];
+				preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
+				$deleteMatches=$deleteMatches[0];
+				foreach($deleteMatches as $match){
+					$oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
+					if(isset($oldTag))
+						$oldTag->delete();
+				}
+			}
+		}else if($change=='Create' || $change=='Edited'){
+			if($model instanceof Contacts)
+				$change=$model->backgroundInfo;
+			else if($model instanceof Actions)
+				$change=$model->actionDescription;
+			else if($model instanceof Docs)
+				$change=$model->text;
+			else
+				$change=$model->name;
+		} 
+		
+		preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
+		$matches=$matches[0];
+		foreach($matches as $match){
+			$tag=new Tags;
+			$tag->type=$type;
+			$tag->taggedBy=Yii::app()->user->getName();
+			$tag->type=$type;
+			$tag->tag=$match;
+			if($model instanceof Contacts)
+				$tag->itemName=$model->firstName." ".$model->lastName;
+			else if($model instanceof Actions)
+				$tag->itemName=$model->actionDescription;
+			else if($model instanceof Docs)
+				$tag->itemName=$model->title;
+			else
+				$tag->itemName=$model->name;
+			if(!isset($model->id)){
+				$model->save();
+			}
+			$tag->itemId=$model->id;
+			$tag->timestamp=time();
+			if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
+				if(substr($tag->tag,1,1)=='#')
+					$tag->tag=substr($tag->tag,1);
+				if($tag->save()){
+					
+				}else{
+					print_r($tag->getErrors());
+					exit;
+				}
+			}else{
+				print_r($tag->getErrors());
+				exit;
+			}
+		}
 		return $model;
 	}
-        
-        public function cleanUpTags($model){
-            $type=get_class($model);
-            if(substr($type,-1)!="s"){
-                $type=substr($type,0,-5)."s";
-            }
-            $change="";
-             if($model instanceof Contacts)
-                $change=$model->backgroundInfo;
-            else if($model instanceof Actions)
-                $change=$model->actionDescription;
-            else if($model instanceof Docs)
-                $change=$model->text;
-            else
-                $change=$model->description;
-            if($change!=""){
-                $forDeletion=$change;
-                preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
-                $deleteMatches=$deleteMatches[0];
-                foreach($deleteMatches as $match){
-                    $oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
-                    if(isset($oldTag))
-                        $oldTag->delete();
-                }
-            }
-        }
-        
-        protected function calculateChanges($old, $new){
-            
-            $arr=array();
-            $keys=array_keys($new);
-            for($i=0;$i<count($keys);$i++){
-                if($old[$keys[$i]]!=$new[$keys[$i]]){
-                    $arr[$keys[$i]]=$new[$keys[$i]];
-                }
-            }
-            $str='';
-            foreach($arr as $key=>$item){
-                $str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
-            }
-            return $str;
-        }
 	
+	public function cleanUpTags($model){
+		$type=get_class($model);
+		if(substr($type,-1)!="s"){
+			$type=substr($type,0,-5)."s";
+		}
+		$change="";
+		 if($model instanceof Contacts)
+			$change=$model->backgroundInfo;
+		else if($model instanceof Actions)
+			$change=$model->actionDescription;
+		else if($model instanceof Docs)
+			$change=$model->text;
+		else
+			$change=$model->description;
+		if($change!=""){
+			$forDeletion=$change;
+			preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
+			$deleteMatches=$deleteMatches[0];
+			foreach($deleteMatches as $match){
+				$oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
+				if(isset($oldTag))
+					$oldTag->delete();
+			}
+		}
+	}
+	
+	protected function calculateChanges($old, $new){
+		$arr=array();
+		$keys=array_keys($new);
+		for($i=0;$i<count($keys);$i++){
+                    if($old[$keys[$i]]!=$new[$keys[$i]]){
+                        $arr[$keys[$i]]=$new[$keys[$i]];
+                        $allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>substr($this->modelClass,0,-5)."s",'modelField'=>$keys[$i]));
+                        foreach($allCriteria as $criteria){
+                            if($criteria->comparisonOperator=="="){
+                                if($new[$keys[$i]]==$criteria->modelValue){
+                                    $pieces=explode(", ",$criteria->users);
+                                    foreach($pieces as $piece){
+                                        $notif=new Notifications;
+                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        $notif->user=$piece;
+                                        $notif->createDate=time();
+                                        $notif->viewed=0;
+                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+                                        $notif->save();
+                                    }
+                                }
+                            }
+                            else if($criteria->comparisonOperator==">"){
+                                if($new[$keys[$i]]>=$criteria->modelValue){
+                                    $pieces=explode(":",$criteria->users);
+                                    foreach($pieces as $piece){
+                                        $notif=new Notifications;
+                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        $notif->user=$piece;
+                                        $notif->createDate=time();
+                                        $notif->viewed=0;
+                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+                                        $notif->save();
+                                    }
+                                }
+                            }
+                            else if($criteria->comparisonOperator=="<"){
+                                if($new[$keys[$i]]<=$criteria->modelValue){
+                                    $pieces=explode(":",$criteria->users);
+                                    foreach($pieces as $piece){
+                                        $notif=new Notifications;
+                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        $notif->user=$piece;
+                                        $notif->createDate=time();
+                                        $notif->viewed=0;
+                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+                                        $notif->save();
+                                    }
+                                }
+                            }
+                            else if($criteria->comparisonOperator=="change"){
+                                if($new[$keys[$i]]!=$old[$keys[$i]]){
+                                    $pieces=explode(":",$criteria->users);
+                                    foreach($pieces as $piece){
+                                        $notif=new Notifications;
+                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        $notif->user=$piece;
+                                        $notif->createDate=time();
+                                        $notif->viewed=0;
+                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+                                        $notif->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                $str='';
+                foreach($arr as $key=>$item){
+                        $str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
+                }
+                return $str;
+	}   
+
 	public function partialDateRange($input) {
 		$datePatterns = array(
 			array('/^(0-9)$/',									'000-01-01',	'999-12-31'),
@@ -563,6 +639,15 @@ class x2base extends Controller {
 			return false;
 	}
 
+	public function decodeQuotes($str) {
+		return preg_replace('/&quot;/u','"',$str);
+	}
+	public function encodeQuotes($str) {
+		// return htmlspecialchars($str);
+		return preg_replace('/"/u','&quot;',$str);
+	}
+	
+	
 	/**
 	 * Sets widgets on the page on a per user basis.
 	 */

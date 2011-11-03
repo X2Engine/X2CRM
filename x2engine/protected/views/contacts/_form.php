@@ -178,7 +178,7 @@ echo $form->errorSummary($contactModel);
 			if($default)
 				$contactModel->email = $contactModel->getAttributeLabel('email');
 			echo $form->textField($contactModel, 'email', array(
-				'maxlength'=>20,
+				'maxlength'=>250,
 				'style'=>'width:240px;margin-bottom:4px;'.($default?'color:#aaa;':''),
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,

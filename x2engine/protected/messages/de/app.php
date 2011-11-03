@@ -104,6 +104,12 @@ return array (
 'Enter text here...'=>'Geben Sie den Text hier ...',
 'Send'=>'Senden',
 
+// Email Form
+'To:'=>'To:',
+'Subject:'=>'Betreff:',
+'Message:'=>'Nachricht:',
+'Error: Could not send email.'=>'Fehler: Konnte keine E-Mail.',
+'Email Sent!'=>'E-Mail gesendet!',
 
 // Comments
 'Add Comment'=>'Kommentar Hinzufügen',

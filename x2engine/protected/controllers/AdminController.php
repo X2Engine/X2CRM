@@ -74,14 +74,14 @@ class AdminController extends Controller {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('viewPage'),
+				'actions'=>array('viewPage','getAttributes'),
 				'users'=>array('@'),
 			),
 			array('allow',
 				'actions'=>array('index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
 					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules',
-					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager'),
+					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria','deleteCriteria'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -166,6 +166,61 @@ class AdminController extends Controller {
             $this->render('viewChangelog',array(
                 'model'=>$model,
             ));
+        }
+        
+        public function actionAddCriteria(){
+            $criteria=new Criteria;
+            $users=UserChild::getNames();
+            $dataProvider=new CActiveDataProvider('Criteria');
+            unset($users['']);
+            if(isset($_POST['Criteria'])){
+               $criteria->attributes=$_POST['Criteria'];
+               $str="";
+               $arr=$criteria->users;
+               if(isset($arr)){
+                   foreach($arr as $user){
+                       $str.=$user.", ";
+                   }
+                   $str=substr($str,0,-2);
+               }
+               $criteria->users=$str;
+               if($criteria->modelType!=null && $criteria->comparisonOperator!=null){
+                   if($criteria->save()){
+
+                   }
+                   $this->redirect('index');
+               }else{
+                   print_r($criteria->attributes);
+                   exit;
+               }
+               
+            }
+            $this->render('addCriteria',array(
+                'users'=>$users,
+                'model'=>$criteria,
+                'dataProvider'=>$dataProvider,
+            ));
+        }
+        
+        public function actionDeleteCriteria($id){
+            
+            $model=Criteria::model()->findByPk($id);
+            $model->delete();
+            $this->redirect(array('addCriteria'));
+        }
+        
+        public function actionGetAttributes(){
+            if(isset($_POST['Criteria']['modelType'])){
+                $type=$_POST['Criteria']['modelType'];
+                
+                $arr=CActiveRecord::model($type)->attributeLabels();
+                
+                foreach($arr as $key=>$value){
+                    echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
+                }
+            }else{
+                echo CHtml::tag('option', array('value'=>''),CHtml::encode(var_dump($_POST)),true); 
+            }
         }
 	
 	public function actionToggleAccounts() {
