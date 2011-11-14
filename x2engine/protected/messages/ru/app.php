@@ -145,6 +145,7 @@ return array (
 // Misc Actions
 'Submit'=>'представлять',
 'Save'=>'экономить',
+'Cancel'=>'отменить',
 'Send Email'=>'Отправить по почте',
 'Attach A File'=>'Прикрепить файл',
 'Save Changes'=>'Сохранить изменения',

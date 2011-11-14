@@ -1,4 +1,4 @@
- <?php
+<?php
 /*********************************************************************************
  * X2Engine is a contact management program developed by
  * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
@@ -278,40 +278,40 @@ class x2base extends Controller {
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function create($model, $name) {
-		$users=UserChild::getNames();
+	public function create($model, $oldAttributes, $api) {
+            $changes=$this->calculateChanges($oldAttributes, $model->attributes);
+            if(substr($this->modelClass,-5)=="Child")
+                $name=substr($this->modelClass,0,-5)."s";
+            if($model->save()){
+                $this->updateChangelog($model,$changes);
+                if($model->assignedTo!=Yii::app()->user->getName()){
+                    $notif=new Notifications;
+                    if($api==0){
+                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+                        $notif->text="$profile->fullName has created a(n) ".$name." for you";
+                    }else{
+                        $notif->text="An API request has created a(n) ".$name." for you";
+                    }
+                    $notif->user=$model->assignedTo;
+                    $notif->createDate=time();
+                    $notif->viewed=0;
+                    $notif->record="$name:$model->id";
+                    $notif->save();
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST[$name])) {
-			$temp=$model->attributes;
-			$model->attributes=$_POST[$name];
-			if(isset($_POST['auto_select']) && $model instanceof Contacts){
-				$model->company=$_POST['auto_select'];
-			}
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model, 'Create');
-			$model->createDate=time();
-			if($model->save()){
-				if($model->assignedTo!=Yii::app()->user->getName()){
-					$notif=new Notifications;
-					$profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-					$notif->text="$profile->fullName has created a(n) ".substr($name,0,-1)." for you";
-					$notif->user=$model->assignedTo;
-					$notif->createDate=time();
-					$notif->viewed=0;
-					$notif->record="$name:$model->id";
-					$notif->save();
-				}
-				$this->redirect(array('view','id'=>$model->id));
-			}else{
-			}
-		}
-		$this->render('create',array(
-			'model'=>$model,
-			'users'=>$users,
-		));
+                }
+                if($model instanceof Actions && $api==0){
+                    if(isset($_GET['inline']) || $model->type=='note')
+                        $this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
+                    else
+                        $this->redirect(array('view','id'=>$model->id));
+                }else if($api==0){
+                    $this->redirect(array('view','id'=>$model->id));
+                }else{
+                    return true;
+                }
+            }else{
+                return false;
+            }
 	}
 
 	/**
@@ -319,26 +319,25 @@ class x2base extends Controller {
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function update($model, $name) {
-		$users=UserChild::getNames();
-		$accounts=AccountChild::getNames();
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
+	public function update($model, $oldAttributes, $api) {
+            $temp=$oldAttributes;
+            $changes=$this->calculateChanges($temp, $model->attributes);
+            $model=$this->updateChangelog($model,$changes);
+            if($model->save()){
+                if($model instanceof Actions && $api==0){
+                    if(isset($_GET['redirect']) && $model->associationType!='none')	// if the action has an association
+					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
+				else	// no association
+					$this->redirect(array('actions/view','id'=>$model->id));	// view the action
+                }else if($api==0){
+                    $this->redirect(array('view','id'=>$model->id));
+                }else{
+                    return true;
+                }
+            }else{
+                return false;
+            }
 
-		if(isset($_POST[$name])) {
-                        $temp=$model->attributes;
-			$model->attributes=$_POST[$name];
-                        $changes=$this->calculateChanges($temp, $model->attributes);
-			$model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
-
-		$this->render('update',array(
-			'model'=>$model,
-			'users'=>$users,
-			'accounts'=>$accounts,
-		));
 	}
 
 	/**

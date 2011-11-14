@@ -276,14 +276,14 @@ class SiteController extends x2base {
 			}
 		}
 	}
-	
+
 	public function actionWidgetState() {
 		
 		if(isset($_GET['widget']) && isset($_GET['state'])) {
 			$widgetName = $_GET['widget'];
 			$widgetState = ($_GET['state']==0)? 0 : 1;
 			
-			$profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+			$profile = &Yii::app()->params->profile;
 			
 			$order = explode(":",$profile->widgetOrder);
 			$visibility = explode(":",$profile->widgets);
@@ -296,7 +296,7 @@ class SiteController extends x2base {
 				$profile->widgets = implode(':',$visibility);
 				
 				if($profile->save()){
-					echo "success";
+					echo 'success';
 				}
 			}
 		}
@@ -307,9 +307,9 @@ class SiteController extends x2base {
 
 			$widgetList = $_POST['widget'];
 			
-			$prof = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-			$order = $prof->widgetOrder;
-			$visibility=$prof->widgets;
+			$profile = &Yii::app()->params->profile;
+			$order = $profile->widgetOrder;
+			$visibility=$profile->widgets;
 			
 			$order = explode(":",$order);
 			$visibility = explode(":",$visibility);
@@ -319,17 +319,6 @@ class SiteController extends x2base {
 			foreach($widgetList as $item) {
 				if(array_key_exists($item,Yii::app()->params->registeredWidgets))
 					$newOrder[] = $item;
-				// if($item=='quickContact'){
-					// $newOrder[]='QuickContact';
-				// }else if($item=='actionMenu'){
-					// $newOrder[]='ActionMenu';
-				// }else if($item=='chat'){
-					// $newOrder[]="ChatBox";
-				// }else if($item=='motd'){
-					// $newOrder[]="MessageBox";
-				// }else if($item=='noteForm'){
-					// $newOrder[]='NoteBox';
-				// }
 			}
 			$str="";
 			$visStr="";
@@ -342,17 +331,15 @@ class SiteController extends x2base {
 			$str=substr($str,0,-1);
 			$visStr=substr($visStr,0,-1);
 			
-			$prof->widgetOrder=$str;
-			$prof->widgets=$visStr;
+			$profile->widgetOrder=$str;
+			$profile->widgets=$visStr;
 			
-			if($prof->save()){
-				
+			if($profile->save()){
+				echo 'success';
 			}
 		}
 	}
-	
-	
-	
+
 	public function actionInlineEmail() {
 		
 		$to = '';
@@ -638,45 +625,45 @@ class SiteController extends x2base {
 
 		// collect user input data
 		if(isset($_POST['LoginForm'])) {
-                    $model->attributes=$_POST['LoginForm'];
-                    // validate user input and redirect to the previous page if valid
-                    if($model->validate() && $model->login()){
-                            $user = UserChild::model()->findByPk(Yii::app()->user->getId());
-                            $user->login=time();
-                            $user->save();
-                            if($user->username=='admin'){
-                                if(ini_get('allow_url_fopen') == 1) {
-                                    $context = stream_context_create(array(
-                                        'http' => array(
-                                                'timeout' => 2		// Timeout in seconds
-                                        )
-                                    ));
-                                    $version1 = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
-                                    $version2 = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
-                                    if($version1!=false)
-                                        $version=$version1;
-                                    else if($version2!=false)
-                                        $version=$version2;
-                                    else
-                                        $version=Yii::app()->params->version;
-                                    if($version!==Yii::app()->params->version){
-                                        Yii::app()->session['versionCheck']=false;
-                                        Yii::app()->session['newVersion']=$version;
-                                    }
-                                    else
-                                        Yii::app()->session['versionCheck']=true;
-                                }
-                                else
-                                    Yii::app()->session['versionCheck']=true;
-                            }
-                            else
-                                Yii::app()->session['versionCheck']=true;
-                            Yii::app()->session['loginTime']=time();
-                            if(Yii::app()->user->returnUrl=='site/index')
-                                $this->redirect('index');
-                            else
-                                $this->redirect(Yii::app()->user->returnUrl);
-                    }
+			$model->attributes=$_POST['LoginForm'];
+			// validate user input and redirect to the previous page if valid
+			if($model->validate() && $model->login()){
+					$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+					$user->login=time();
+					$user->save();
+					if($user->username=='admin'){
+						if(ini_get('allow_url_fopen') == 1) {
+							$context = stream_context_create(array(
+								'http' => array(
+										'timeout' => 2		// Timeout in seconds
+								)
+							));
+							$version1 = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
+							$version2 = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
+							if($version1!=false)
+								$version=$version1;
+							else if($version2!=false)
+								$version=$version2;
+							else
+								$version=Yii::app()->params->version;
+							if($version!==Yii::app()->params->version){
+								Yii::app()->session['versionCheck']=false;
+								Yii::app()->session['newVersion']=$version;
+							}
+							else
+								Yii::app()->session['versionCheck']=true;
+						}
+						else
+							Yii::app()->session['versionCheck']=true;
+					}
+					else
+						Yii::app()->session['versionCheck']=true;
+					Yii::app()->session['loginTime']=time();
+					if(Yii::app()->user->returnUrl=='site/index')
+						$this->redirect('index');
+					else
+						$this->redirect(Yii::app()->user->returnUrl);
+			}
 		}
 		// display the login form
 		$this->render('login',array('model'=>$model));

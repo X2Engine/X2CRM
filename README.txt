@@ -2,19 +2,16 @@ README
 
 INSTRUCTIONS FOR UPDATE PLEASE READ
 
-The automatic updater has been added!  This doesn't mean anything for you now, but when we release the next version, all you'll have to do is log in to 'admin' and you'll see a red link in the top left corner to update your software!
-
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.5 Changelog
+Beta 0.9.6 Changelog
 
 -Lots of bug fixes and polishing
--Added notification system
--Added better email support
--Updated the dropbox to not require PHP config (still requires server end config)
+-Fixed a major bug with x2base
+-REST API Implemented
+-Big changes to Web Lead.  More secure but requires 1 line of user config.  In leadCapture.php set $url="" to $url="[yourserveraddress]"
 
-
-Welcome to X2Contacts v0.9.5 Beta!  X2Contacts is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2Contacts v0.9.6 Beta!  X2Contacts is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2Contacts was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

@@ -1132,10 +1132,10 @@ updatedBy VARCHAR(40)
 				$this->importContact($pieces,$version);
 			}else if($pieces[$end]=='user') {
 				unset($pieces[$end]);
-				//$this->importUser($pieces,$version);
+				$this->importUser($pieces,$version);
 			}else if ($pieces[$end]=='action') {
 				unset($pieces[$end]);
-				//$this->importAction($pieces,$version);
+				$this->importAction($pieces,$version);
 			}else if($pieces[$end]=='sale') {
 				unset($pieces[$end]);
 				$this->importSale($pieces,$version);
@@ -1147,7 +1147,7 @@ updatedBy VARCHAR(40)
 				$this->importDoc($pieces,$version);
 			}else if($pieces[$end]=='profile') {
 				unset($pieces[$end]);
-				//$this->importProfile($pieces,$version);
+				$this->importProfile($pieces,$version);
 			} else {
 				
 			}

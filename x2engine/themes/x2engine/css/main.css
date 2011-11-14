@@ -811,6 +811,24 @@ div.search-form {
 div.search-form div.wide.form textarea {
 	width:420px;
 }
+
+div.contact-lists th {
+	padding-left:8px !important;
+	text-align:left !important;
+}
+div.contact-lists th.contact-count {
+	width:100px;
+}
+
+div.contact-lists td.contact-count {
+	background:url(../images/contact-icon.png) 5px center no-repeat;
+	padding-left:24px;
+}
+div.contact-lists table.items tbody tr:last-child td {
+	font-weight:bold;
+}
+
+
 /* #modcoder_colorpicker {z-index:3;} */
 #profile {
 	float:left;

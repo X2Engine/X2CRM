@@ -2,6 +2,12 @@
 
 include('protected/config/emailConfig.php');
 
+$context = stream_context_create(array(
+    'http' => array(
+        'timeout' => 15		// Timeout in seconds
+    )
+));
+
 if($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context)){
     $url='x2planet';
 }

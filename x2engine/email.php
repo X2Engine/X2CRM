@@ -240,7 +240,7 @@ foreach($body_array as $value){
         mysql_query($sql) or $message="FAILURE";
     }else{
         $message=$firstName." ".$lastName." : ".$toEmail." : ".$note;
-        $sql="INSERT INTO x2_contacts (firstName, lastName, email, visibility, assignedTo, createDate) VALUES ('$firstName','$lastName','$toEmail', '1', 'Anyone', '$time')";
+        $sql="INSERT INTO x2_contacts (firstName, lastName, email, visibility, assignedTo, createDate, lastUpdated) VALUES ('$firstName','$lastName','$toEmail', '1', 'Anyone', '$time', '$time')";
         mysql_query($sql);
         $sql="SELECT * FROM x2_contacts WHERE email='$toEmail'";
         $selection=mysql_query($sql) or $message="FAILURE";

@@ -47,7 +47,9 @@ class ContactsController extends x2base {
 			array('allow',	// allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array(
 					'index',
+					'list',
 					'viewAll',
+					'viewMy',
 					'view',
 					'update',
 					'create',
@@ -66,7 +68,7 @@ class ContactsController extends x2base {
 					'getContacts',
 					'delete',
 					'shareContact',
-                                        'viewSales',
+					'viewSales',
 				),
 				'users'=>array('@'),
 			),
@@ -98,22 +100,22 @@ class ContactsController extends x2base {
 		} else
 			$this->redirect('index');
 	}
-        
-        public function actionViewSales($id){
-            
-            $sales=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','firstId'=>$id,'secondType'=>'Sales'));
-            $temp=array();
-            foreach($sales as $sale){
-                $temp[]=SaleChild::model()->findByPk($sale->secondId);
-            }
-            $sales=$temp;
-            $model=$this->loadModel($id);
-            
-            $this->render('viewSales',array(
-                'sales'=>$sales,
-                'model'=>$model,
-            ));
-        }
+	
+	public function actionViewSales($id){
+		
+		$sales=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','firstId'=>$id,'secondType'=>'Sales'));
+		$temp=array();
+		foreach($sales as $sale){
+			$temp[]=SaleChild::model()->findByPk($sale->secondId);
+		}
+		$sales=$temp;
+		$model=$this->loadModel($id);
+		
+		$this->render('viewSales',array(
+			'sales'=>$sales,
+			'model'=>$model,
+		));
+	}
 	
 	public function actionGetTerms(){
 		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
@@ -166,6 +168,20 @@ $model->city, $model->state $model->zipcode
 			'body'=>$body,
 		));
 	}
+	
+	public function create($model, $oldAttributes, $api){
+		$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
+		if(isset($account))
+				$contact->accountId = $account->id;
+		else
+				$model->accountId = 0;
+		$model->createDate=time();
+		$model->lastUpdated=time();
+		if($api==0)
+			parent::create($model,$oldAttributes,$api);
+		else
+			return parent::create($model,$oldAttributes,$api);
+	}
 
 	/**
 	 * Creates a new model.
@@ -173,7 +189,7 @@ $model->city, $model->state $model->zipcode
 	*/
 	public function actionCreate() {
 		$model = new ContactChild;
-                $name='ContactChild';
+		$name='ContactChild';
 		$users=UserChild::getNames();
 		$accounts=AccountChild::getNames();
 
@@ -186,32 +202,11 @@ $model->city, $model->state $model->zipcode
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes = $_POST['ContactChild'];
 
-			$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
-			if(isset($account))
-				$contact->accountId = $account->id;
-			else
-				$model->accountId = 0;
-                        
-			$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,'Create');
-			$model->createDate=time();
-			if($model->save()){
-                            if($model->assignedTo!=Yii::app()->user->getName()){
-                                $notif=new Notifications;
-                                $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                $notif->text="$profile->fullName has created a Contact for you";
-                                $notif->user=$model->assignedTo;
-                                $notif->createDate=time();
-                                $notif->viewed=0;
-                                $notif->record="contacts:$model->id";
-                                $notif->save();
-                            }
-                            $this->redirect(array('view','id'=>$model->id));
-                        }else{
-			}
+			$this->create($model,$temp,'0'); 
+			
 		}
 		$this->render('create',array(
 			'model'=>$model,
@@ -239,12 +234,12 @@ $model->city, $model->state $model->zipcode
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes = $_POST['ContactChild'];
 
 			$model->visibility = 1;
-                        
-                        $account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
+			
+			$account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
 			if(isset($account))
 				$contact->accountId = $account->id;
 			else
@@ -265,8 +260,8 @@ $model->city, $model->state $model->zipcode
 			// clear values that haven't been changed from the default
 			foreach($_POST['ContactChild'] as $name => $value) {
 				if($value == $contact->getAttributeLabel($name)){
-                                    $_POST['ContactChild'][$name] = '';
-                                }
+					$_POST['ContactChild'][$name] = '';
+				}
 			}
 			$temp=$contact->attributes;
 			$contact->attributes=$_POST['ContactChild'];
@@ -287,6 +282,19 @@ $model->city, $model->state $model->zipcode
 			$this->redirect(array('view','id'=>$contact->id));
 		
 	}
+
+	public function update($model,$oldAttributes, $api){
+		
+		$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
+		if(isset($account))
+				$model->accountId = $account->id;
+		else
+				$model->accountId = 0;
+		if($api==0)
+			parent::create($model,$oldAttributes,$api);
+		else
+			return parent::create($model,$oldAttributes,$api);
+	}
 	
 
 	/**
@@ -303,23 +311,14 @@ $model->city, $model->state $model->zipcode
 
 		if(isset($_POST['ContactChild'])) {
 			$temp=$model->attributes;
-                        foreach($_POST['ContactChild'] as $name => $value) {
+			foreach($_POST['ContactChild'] as $name => $value) {
 				if($value == $model->getAttributeLabel($name)){
-                                    $_POST['ContactChild'][$name] = '';
-                                }
+					$_POST['ContactChild'][$name] = '';
+				}
 			}
 			$model->attributes=$_POST['ContactChild'];
 			
-                        $account = Accounts::model()->findByAttributes(array('name'=>$model->company));
-			if(isset($account))
-				$model->accountId = $account->id;
-			else
-				$model->accountId = 0; 
-				
-			$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$this->update($model,$temp,'0');
 		}
 
 		$this->render('update',array(
@@ -334,17 +333,127 @@ $model->city, $model->state $model->zipcode
 	 */
 	// Lists all contacts assigned to this user
 	public function actionIndex() {
+		$model = new ContactChild('search');
+		
+		// $contactLists = ContactList::model()->findAll();
+	
+		$contactLists = new CActiveDataProvider('ContactList', array(
+			'sort'=>array(
+				'defaultOrder'=>'createDate DESC',
+			),
+			// 'pagination'=>array(
+				// 'pageSize'=>ProfileChild::getResultsPerPage(),
+			// ),
+			'criteria'=>array('condition' => 'assignedTo="' . Yii::app()->user->getName() . '" OR visibility = 1'),
+		));
+
+		$totalContacts = CActiveRecord::model('Contacts')->count();
+		$totalMyContacts = CActiveRecord::model('Contacts')->count('assignedTo="'.Yii::app()->user->getName().'"');
+		
+		$allContacts = new ContactList;
+		$allContacts->attributes = array(
+			'id' => 'all',
+			'campaignId' => 0,
+			'name' => Yii::t('contacts','All Contacts'),
+			'description' => '',
+			'type' => 'dynamic',
+			'visibility' => 1,
+			'count' => $totalContacts,
+			'createDate' => 0,
+			'lastUpdated' => 0,
+		);
+		$myContacts = new ContactList;
+		$myContacts->attributes = array(
+			'id' => 'my',
+			'campaignId' => 0,
+			'name' => Yii::t('contacts','My Contacts'),
+			'description' => '',
+			'type' => 'dynamic',
+			'visibility' => 1,
+			'count' => $totalMyContacts,
+			'createDate' => 0,
+			'lastUpdated' => 0,
+		);
+
+			
+		$contactListData = $contactLists->getData();
+		// $contactListData[] = $allContacts3;
+		$contactListData[] = $myContacts;
+		$contactListData[] = $allContacts;
+		$contactLists->setData($contactListData);
+		
+		
+		$this->render('listIndex',array(
+			'contactLists'=>$contactLists,
+		));
+	}
+
+	public function actionViewMy() {
 		$model=new ContactChild('search');
 		$name='ContactChild';
 		parent::index($model,$name);
 	}
-
-	// List all public contacts
+	
 	public function actionViewAll() {
 		$model=new ContactChild('search');
 		$name='ContactChild';
 		parent::index($model,$name);
 	}
+
+	
+	public function actionList() {
+	
+		$id = isset($_GET['id'])? $_GET['id'] : 'all';
+
+		if(is_numeric($id))
+			$list = CActiveRecord::model('ContactList')->findByPk($id);
+		if(isset($list)) {
+
+			$dataProvider = CActiveRecord::model('ContactChild')->searchList($id);
+			
+			$this->render('list',array(
+				'listName'=>$list->name,
+				'listId'=>$id,
+				'dataProvider'=>$dataProvider,
+			));
+			
+		} else {
+			// $model=new ContactChild('search');
+
+			// $pageParam = ucfirst($this->modelClass). '_page';
+			// if (isset($_GET[$pageParam])) {
+				// $page = $_GET[$pageParam];
+				// Yii::app()->user->setState($this->id.'-page',(int)$page);
+			// } else {
+				// $page=Yii::app()->user->getState($this->id.'-page',1);
+				// $_GET[$pageParam] = $page;
+			// }
+
+			// if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+				// EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
+			// }
+			// die($id);
+			if($id = 'all')
+				$this->redirect(array('contacts/viewAll'));
+				// $dataProvider = CActiveRecord::model('ContactChild')->searchAll();
+			else
+				$this->redirect(array('contacts/viewMy'));
+				// $dataProvider = CActiveRecord::model('ContactChild')->search();
+
+			// $this->render('index',array(
+				// 'model'=>$model,
+				// 'dataProvider'=>$dataProvider,
+			// ));
+		}
+	}
+	
+	
+	// List all public contacts
+	// public function actionViewAll() {
+		// $model=new ContactChild('search');
+		// $name='ContactChild';
+		// parent::index($model,$name);
+	// }
 
 	public function actionImportContacts() {
 		if (isset($_FILES['contacts'])) {

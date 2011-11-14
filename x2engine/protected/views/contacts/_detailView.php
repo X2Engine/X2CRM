@@ -165,7 +165,10 @@ function cleanupUrl($url) {
 			</div>
 		</td>
 		<?php 
+                    if(substr(Yii::app()->request->getServerName(),0,4)=="www.")
 			$str=substr(Yii::app()->request->getServerName(),4);
+                    else
+                        $str=Yii::app()->request->getServerName();
 		?>
 		<td class="label"><label><?php echo $model->email!=""?CHtml::mailto($attributeLabels['email'],$model->email."?cc=dropbox@".$str):$attributeLabels['email']; ?></label></td>
 		<td id="email" colspan="3" onclick="showField(this,true);">

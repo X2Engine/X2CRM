@@ -69,7 +69,7 @@
 		echo CHtml::textArea('message',Yii::app()->controller->encodeQuotes($message),array('id'=>'email-message','style'=>'height:80px;','class'=>$class));
 		?>
 	</div>
-	
+	<div class="row buttons">
 	<?php
 	echo CHtml::ajaxSubmitButton(
 		Yii::t('app','Send'),
@@ -83,10 +83,13 @@
 					// } else
 				// }",
 			),
-		array('id'=>'send-button','class'=>'x2-button','style'=>'margin-left:90px;')
+		array('id'=>'send-button','class'=>'x2-button','style'=>'margin-left:-20px;background:yellow;')
 	);
-
+	?>
+	<?php
+	echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button','onclick'=>"$('#email-form').toggle('blind',300);"));
 	// echo CHtml::htmlButton(Yii::t('app','Send'),array('type'=>'submit','class'=>'x2-button','id'=>'send-button','style'=>'margin-left:90px;')); ?>
+	</div>
 	<?php echo CHtml::endForm(); ?>
 </div>
 

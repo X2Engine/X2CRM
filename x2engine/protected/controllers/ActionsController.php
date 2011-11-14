@@ -164,6 +164,48 @@ class ActionsController extends x2base {
 			}
 		}
 	}
+        
+        public function create($model, $oldAttributes, $api){
+            
+            if($model->associationId=='')
+                $model->associationId=0;
+            //if($model->
+
+            $model->createDate = time();	// created now, full datetime
+            //$model->associationId=$_POST['ActionChild']['associationId'];
+            $dueDate = strtotime($model->dueDate);
+            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+
+            //if($type=='none')
+            //	$model->associationId=0;
+            //$model->associationType=$type;
+
+            $association = $this->getAssociation($model->associationType,$model->associationId);
+
+            if($association != null) {
+                $model->associationName = $association->name;
+            } else {
+                $model->associationName='None';
+                //$model->associationId = 0;
+            }
+            if($model->associationName=='None' && $model->associationType!='none'){
+                $model->associationName=ucfirst($model->associationType);
+            }
+            if(isset($_POST['submit']) && $_POST['submit']=='comment') {	// if user clicked "New Comment" rather than "New Action"
+                $model->createDate = time();
+                $model->dueDate = time();
+                $model->completeDate = time();
+                $model->complete='Yes';
+                $model->visibility='1';
+                $model->assignedTo=Yii::app()->user->getName();
+                $model->completedBy=Yii::app()->user->getName();
+                $model->type='note';
+            }
+            if($api==0)
+                parent::create($model,$oldAttributes,$api);
+            else
+                return parent::create($model,$oldAttributes,$api);
+        }
 
 	/**
 	 * Creates a new model.
@@ -182,60 +224,8 @@ class ActionsController extends x2base {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['ActionChild'];
                         
+                        $this->create($model,$temp,'0');
                         
-                        
-			if($model->associationId=='')
-				$model->associationId=0;
-			//if($model->
-
-			$model->createDate = time();	// created now, full datetime
-			//$model->associationId=$_POST['ActionChild']['associationId'];
-			$dueDate = strtotime($model->dueDate);
-			$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
-
-			//if($type=='none')
-			//	$model->associationId=0;
-			//$model->associationType=$type;
-			
-			$association = $this->getAssociation($model->associationType,$model->associationId);
-			
-			if($association != null) {
-				$model->associationName = $association->name;
-			} else {
-				$model->associationName='None';
-				//$model->associationId = 0;
-			}
-			if($model->associationName=='None' && $model->associationType!='none'){
-				$model->associationName=ucfirst($model->associationType);
-			}
-			if($_POST['submit']=='comment') {	// if user clicked "New Comment" rather than "New Action"
-				$model->createDate = time();
-				$model->dueDate = time();
-				$model->completeDate = time();
-				$model->complete='Yes';
-				$model->visibility='1';
-				$model->assignedTo=Yii::app()->user->getName();
-				$model->completedBy=Yii::app()->user->getName();
-				$model->type='note';
-			}
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-                        $model=$this->updateChangelog($model,'Create');
-			if ($model->save()) {
-                                if($model->assignedTo!=Yii::app()->user->getName()){
-                                    $notif=new Notifications;
-                                    $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                    $notif->text="$profile->fullName has created an Action for you";
-                                    $notif->user=$model->assignedTo;
-                                    $notif->createDate=time();
-                                    $notif->viewed=0;
-                                    $notif->record="actions:$model->id";
-                                    $notif->save();
-                                }
-				if(isset($_GET['inline']) || $model->type=='note')
-					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
-				else
-					$this->redirect(array('view','id'=>$model->id));
-			}
 		}
 		if(isset($_GET['param'])) {
 			$pieces=explode(';',$_GET['param']);
@@ -333,6 +323,25 @@ class ActionsController extends x2base {
 			'users'=>$users,
 		));
 	}
+        
+        public function update($model, $oldAttributes, $api){
+            
+            $dueDate = strtotime($model->dueDate);
+            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+
+            $association = $this->getAssociation($model->associationType,$model->associationId);
+
+            if($association != null) {
+                    $model->associationName = $association->name;
+            } else {
+                    $model->associationName = 'None';
+                    $model->associationId = 0;
+            }
+            if($api==0)
+                parent::create($model,$oldAttributes,$api);
+            else
+                return parent::create($model,$oldAttributes,$api);
+        }
 
 	/**
 	 * Updates a particular model.
@@ -351,25 +360,8 @@ class ActionsController extends x2base {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['ActionChild'];
 
-			$dueDate = strtotime($model->dueDate);
-			$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
-
-			$association = $this->getAssociation($model->associationType,$model->associationId);
 			
-			if($association != null) {
-				$model->associationName = $association->name;
-			} else {
-				$model->associationName = 'None';
-				$model->associationId = 0;
-			}
-			$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,$changes);
-			if($model->save()) {
-				if(isset($_GET['redirect']) && $model->associationType!='none')	// if the action has an association
-					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
-				else	// no association
-					$this->redirect(array('actions/view','id'=>$model->id));	// view the action
-			}
+			$this->update($model,$temp,'0');
 		}
 
 		$this->render('update',array(
@@ -391,6 +383,12 @@ class ActionsController extends x2base {
 				$this->redirect(array('view','id'=>$id));
 		}
 	}
+        
+        public function delete($id){
+            $model=$this->loadModel($id);
+            $this->cleanUpTags($model);
+            $model->delete();
+        }
 
 	// Deletes a particular model
 	public function actionDelete($id) {

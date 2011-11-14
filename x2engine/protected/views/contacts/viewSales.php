@@ -35,12 +35,11 @@
  ********************************************************************************/
 
 $this->menu=array(
-	array('label'=>Yii::t('contacts','My Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
+	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
 	array('label'=>Yii::t('contacts','View Contact'),'url'=>array('view','id'=>$model->id)),
-        array('label'=>Yii::t('contacts','View Sales')),
+	array('label'=>Yii::t('contacts','View Sales')),
 	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
 if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {

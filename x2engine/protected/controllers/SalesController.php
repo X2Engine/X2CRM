@@ -100,6 +100,26 @@ class SalesController extends x2base {
 			'body'=>$body,
 		));
 	}
+        
+        public function create($model,$oldAttributes){
+            
+            if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
+                $model->accountName=$_POST['companyAutoComplete'];
+                $model->accountId="";
+            }
+            // process currency into an INT
+            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+            
+            if(isset($model->assignedTo))
+                    $model->assignedTo = SaleChild::parseUsers($model->assignedTo);
+            if(isset($model->associatedContacts))
+                    $model->associatedContacts = SaleChild::parseContacts($model->associatedContacts);
+            $model->createDate=time();
+            if($model->expectedCloseDate!=""){
+                    $model->expectedCloseDate=strtotime($model->expectedCloseDate);
+            }
+            parent::create($model,$oldAttributes,'0');
+        }
 
 	/**
 	 * Creates a new model.
@@ -117,41 +137,10 @@ class SalesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['SaleChild'])) {
-                        $temp=$model->attributes;
-			$model->attributes=$_POST['SaleChild'];
-			
-			if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
-				$model->accountName=$_POST['companyAutoComplete'];
-				$model->accountId="";
-			}
-			// process currency into an INT
-			$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
-			
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,'Create'); 
-			if(isset($model->assignedTo))
-				$model->assignedTo = SaleChild::parseUsers($model->assignedTo);
-			if(isset($model->associatedContacts))
-				$model->associatedContacts = SaleChild::parseContacts($model->associatedContacts);
-			$model->createDate=time();
-			if($model->expectedCloseDate!=""){
-				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
-			}
-		
-			
-			if($model->save()){
-                            if($model->assignedTo!=Yii::app()->user->getName()){
-                                $notif=new Notifications;
-                                $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                $notif->text="$profile->fullName has created a Sale for you";
-                                $notif->user=$model->assignedTo;
-                                $notif->createDate=time();
-                                $notif->viewed=0;
-                                $notif->record="sales:$model->id";
-                                $notif->save();
-                            }
-                            $this->redirect(array('view','id'=>$model->id));
-                        }
+                    $temp=$model->attributes;
+                    $model->attributes=$_POST['SaleChild'];
+
+                    $this->create($model,$temp);
 		}
 
 		$this->render('create',array(
@@ -160,6 +149,34 @@ class SalesController extends x2base {
 			'contacts'=>$contacts,
 		));
 	}
+        
+        public function update($model,$oldAttributes){
+            
+            // process currency into an INT
+            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+
+            $arr=$model->assignedTo;
+            if(isset($model->assignedTo))
+                    $model->assignedTo=SaleChild::parseUsers($arr);
+            $arr=$model->associatedContacts;
+            if(isset($model->associatedContacts)){
+                foreach($model->associatedContacts as $contact){
+                    $rel=new Relationships;
+                    $rel->firstType='Contacts';
+                    $rel->firstId=$contact;
+                    $rel->secondType='Sales';
+                    $rel->secondId=$model->id;
+                    $rel->save();
+                }
+                    $model->associatedContacts=SaleChild::parseContacts($arr);
+            }
+            $model->createDate=time();
+            if($model->expectedCloseDate!=""){
+                    $model->expectedCloseDate=strtotime($model->expectedCloseDate);
+            }
+            
+            parent::update($model,$oldAttributes,'0');
+        }
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -198,35 +215,10 @@ class SalesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Sales'])) {
-			$temp=$model->attributes;
-			$model->attributes=$_POST['Sales'];
-			
-			// process currency into an INT
-			$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
-			
-			$arr=$model->assignedTo;
-			if(isset($model->assignedTo))
-				$model->assignedTo=SaleChild::parseUsers($arr);
-			$arr=$model->associatedContacts;
-			if(isset($model->associatedContacts)){
-                            foreach($model->associatedContacts as $contact){
-                                $rel=new Relationships;
-                                $rel->firstType='Contacts';
-                                $rel->firstId=$contact;
-                                $rel->secondType='Sales';
-                                $rel->secondId=$model->id;
-                                $rel->save();
-                            }
-				$model->associatedContacts=SaleChild::parseContacts($arr);
-                        }
-			$model->createDate=time();
-			if($model->expectedCloseDate!=""){
-				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
-			}
-			$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+                    $temp=$model->attributes;
+                    $model->attributes=$_POST['Sales'];
+
+                    $this->update($model,$temp);
 		}
 
 		$this->render('update',array(
@@ -439,6 +431,20 @@ class SalesController extends x2base {
 			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
 		return $model;
 	}
+        
+        public function delete($id){
+            $model=$this->loadModel($id);
+            $dataProvider=new CActiveDataProvider('Actions', array(
+                    'criteria'=>array(
+                    'condition'=>'associationId='.$id.' AND associationType=\'sale\'',
+            )));
+            $actions=$dataProvider->getData();
+            foreach($actions as $action){
+                    $action->delete();
+            }
+            $this->cleanUpTags($model);
+            $model->delete();
+        }
 
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);

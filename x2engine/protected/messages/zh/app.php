@@ -145,6 +145,7 @@ return array (
 // Misc Actions
 'Submit'=>'提交',
 'Save'=>'保存',
+'Cancel'=>'取消',
 'Send Email'=>'发送电子邮件',
 'Attach A File'=>'附加文件',
 'Save Changes'=>'保存更改',

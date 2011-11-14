@@ -140,7 +140,7 @@ class ActionChild extends Actions {
 	
 	public function search() {
 		$criteria=new CDbCriteria;
-		$parameters=array('condition'=>"(assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."') AND complete!='Yes' AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+		$parameters=array('condition'=>"(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."') AND complete!='Yes' AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 		
 		return $this->searchBase($criteria);
@@ -148,7 +148,7 @@ class ActionChild extends Actions {
 
 	public function searchComplete() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"(assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."') AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
+		$parameters=array("condition"=>"(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."') AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria);

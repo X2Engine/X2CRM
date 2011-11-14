@@ -129,11 +129,34 @@ $con = mysql_connect($host,$user,$pass) or die("Unable to connect to database.  
 
 mysql_select_db($db,$con) or die ("Unable to select database.  Please make sure the name is spelled properly and that the database exists.".mysql_error());
 
-mysql_query("DROP TABLE IF EXISTS x2_users, x2_contacts, x2_actions, x2_sales, x2_projects, x2_marketing, x2_cases, x2_profile,
-	x2_accounts, x2_notes, x2_social, x2_docs, x2_media, x2_admin, x2_changelog, x2_tags, x2_relationships, x2_notifications, x2_criteria") or die("Unable to update tables, check user permissions.".mysql_error());
+mysql_query("DROP TABLE IF EXISTS
+	x2_users,
+	x2_contacts,
+	x2_actions,
+	x2_sales,
+	x2_projects,
+	x2_marketing,
+	x2_campaigns,
+	x2_contact_lists,
+	x2_list_items,
+	x2_list_criteria,
+	x2_cases,
+	x2_profile,
+	x2_accounts,
+	x2_notes,
+	x2_social,
+	x2_docs,
+	x2_media,
+	x2_admin,
+	x2_changelog,
+	x2_tags,
+	x2_relationships,
+	x2_notifications,
+	x2_criteria
+") or die("Unable to update tables, check user permissions.".mysql_error());
 
 mysql_query("CREATE TABLE x2_users(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	firstName VARCHAR(20) NOT NULL,
 	lastName VARCHAR(40) NOT NULL,
 	username VARCHAR(20) NOT NULL,
@@ -158,7 +181,7 @@ mysql_query("CREATE TABLE x2_users(
 	") or die('Unable to create table x2_users, check user permissions.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_contacts(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	firstName VARCHAR(40) NOT NULL,
 	lastName VARCHAR(40) NOT NULL,
 	title VARCHAR(40),
@@ -194,7 +217,7 @@ mysql_query("CREATE TABLE x2_contacts(
 //mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
 
 mysql_query("CREATE TABLE x2_actions(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	assignedTo VARCHAR(20),
 	actionDescription text NOT NULL,
 	visibility INT NOT NULL,
@@ -216,7 +239,7 @@ mysql_query("CREATE TABLE x2_actions(
  ") or die('Unable to create table x2_actions, check user permissions.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_sales(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(40) NOT NULL,
 	accountName VARCHAR(100),
 	accountId INT DEFAULT 0,
@@ -235,7 +258,7 @@ mysql_query("CREATE TABLE x2_actions(
  ") or die('Unable to create table x2_sales, check user permissions.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_projects(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(60) NOT NULL,
 	status VARCHAR(20),
 	type VARCHAR(20), 
@@ -251,19 +274,71 @@ mysql_query("CREATE TABLE x2_actions(
 	COLLATE = utf8_general_ci
  ") or die('Unable to create table x2_projects, check user permissions.'.mysql_error());
 
- mysql_query("CREATE TABLE x2_marketing(
-	id INT NOT NULL AUTO_INCREMENT primary key,
-	name VARCHAR(20) NOT NULL,
-	cost INT,
-	result TEXT,
-	createDate INT,
-	description TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20))
-	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_marketing, check user permissions.'.mysql_error());
+ // mysql_query("CREATE TABLE x2_marketing(
+	// id INT NOT NULL AUTO_INCREMENT primary key,
+	// name VARCHAR(20) NOT NULL,
+	// cost INT,
+	// result TEXT,
+	// createDate INT,
+	// description TEXT,
+	// lastUpdated INT,
+	// updatedBy VARCHAR(20))
+	// COLLATE = utf8_general_ci
+ // ") or die('Unable to create table x2_marketing, check user permissions.'.mysql_error());
+ 
+mysql_query("CREATE TABLE x2_campaigns (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	masterId INT UNSIGNED NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	description TEXT NULL,
+	type VARCHAR(20) NULL,
+	cost VARCHAR(100) NULL,
+	result TEXT NULL,
+	content TEXT NULL,
+	createdBy VARCHAR(20) NOT NULL,
+	createDate INT UNSIGNED NOT NULL,
+	launchDate INT UNSIGNED NOT NULL,
+	lastUpdated INT UNSIGNED NOT NULL
+	) COLLATE utf8_general_ci
+") or die('Unable to create table x2_campaigns, check user permissions.'.mysql_error());
 
- mysql_query("CREATE TABLE x2_cases(
+mysql_query("CREATE TABLE x2_contact_lists (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	campaignId INT UNSIGNED NOT NULL DEFAULT 0,
+	assignedTo VARCHAR(20),
+	name VARCHAR(100) NOT NULL,
+	description VARCHAR(250) NULL,
+	type VARCHAR(20) NULL,
+	visibility INT NOT NULL DEFAULT 1,
+	count INT UNSIGNED NOT NULL DEFAULT 0,
+	createDate INT UNSIGNED NOT NULL,
+	lastUpdated INT UNSIGNED NOT NULL
+	) COLLATE utf8_general_ci
+") or die('Unable to create table x2_lists, check user permissions.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_list_items (
+	contactId INT UNSIGNED NOT NULL,
+	listId INT UNSIGNED NOT NULL,
+	code VARCHAR(32) NULL,
+	result TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	INDEX (contactId),
+	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (contactId) REFERENCES x2_contacts(id) ON UPDATE CASCADE ON DELETE CASCADE
+	) COLLATE utf8_general_ci
+") or die('Unable to create table x2_listItems, check user permissions.'.mysql_error());
+
+
+mysql_query("CREATE TABLE x2_list_criteria (
+	listId INT UNSIGNED NOT NULL,
+	type VARCHAR(20) NULL,
+	attribute VARCHAR(40) NULL,
+	comparison VARCHAR(10) NULL,
+	value VARCHAR(100) NOT NULL,
+	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
+	) COLLATE utf8_general_ci
+") or die('Unable to create table x2_listCriteria, check user permissions.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_cases(
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(60) NOT NULL,
 	status VARCHAR(20) NOT NULL,

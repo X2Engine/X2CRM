@@ -38,8 +38,6 @@
 
 <?php
 
-require_once("protected/config/emailConfig.php");
-
 $firstName=$_POST['firstName'];
 $lastName=$_POST['lastName'];
 $email=$_POST['email'];
@@ -50,61 +48,104 @@ if($info=="Enter any additional information or questions regarding your interest
     $info="";
 }
 
-$con=mysql_connect($host,$user,$pass) or die(mysql_error());
-    mysql_select_db($dbname) or die(mysql_error());
+$url=""; // Add your server URL here, including any folders the app may be in.  i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. 
 
-$firstName=mysql_real_escape_string($firstName);
-$lastName=mysql_real_escape_string($lastName);
-$info=mysql_real_escape_string($info);
-$phone=mysql_real_escape_string($phone);
+echo $ccResult;
+
+
 
 $date=mktime(0,0,0,date('m'),date('d'),date('Y'));
-
 $count=preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email);
 if($count==0){
     die("Invalid e-mail address!");
 }
 
-$admin=mysql_query("SELECT webLeadEmail FROM x2_admin WHERE id='1'") or die(mysql_error());
-if($row=mysql_fetch_array($admin))
-	$adminEmail=$row[0];
+$ccUrl = 'http://'.$url.'/index.php/api/lookUp?model=Contacts&email='.$email; 
+$ccSession = curl_init($ccUrl);
+curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+$ccResult = curl_exec($ccSession);
+curl_close($ccSession);
 
-    
-    $sql="SELECT * FROM x2_contacts WHERE email='$email'";
-    
-    $selection=mysql_query($sql) or die(mysql_error());
-    
-    if($row=mysql_fetch_array($selection)){
-        $data=$row['backgroundInfo'];
-        $info.="\n\n".$data;
-        $id=$row['id'];
-        $sql="UPDATE x2_contacts SET backgroundInfo='$info' WHERE id='$id'";
-        
-        mysql_query($sql) or die("Unable to upate contact record.");
-    }else{
+if($ccResult!="No Item found with specified attributes."){
+		$pieces=explode(",",$ccResult);
+		$oldInfo=$pieces[16];
+		$oldInfo=explode(":",$oldInfo);
+		$oldInfo=substr($oldInfo[1],1,-1);
+		$pieces=explode(":",$pieces[0]);
+		$id=substr($pieces[1],1,-1);
+		$newInfo=$oldInfo."\n\n".$info;
+		 
+		$ccUrl = 'http://'.$url.'/index.php/api/update?model=Contacts&id='.$id;
+		$ccSession = curl_init($ccUrl);
+		$data=array('backgroundInfo'=>$newInfo); 
+		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($ccSession,CURLOPT_POST,1);
+		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
+		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		$ccResult = curl_exec($ccSession);
+		curl_close($ccSession);
+}else{
         $time=time();
-        $sql="INSERT INTO x2_contacts (firstName, lastName, email, assignedTo, visibility, backgroundInfo, phone, lastUpdated, updatedBy) VALUES
-            ('$firstName','$lastName','$email','Anyone','1','$info', '$phone', '$time', 'admin')";
-
-        mysql_query($sql) or die(mysql_error());
-
-        $sql="SELECT * FROM x2_contacts WHERE email='$email'";
-
-        $selection=mysql_query($sql) or die("Unable to find new contact in database.");
-        $row=mysql_fetch_array($selection);
-        $id=$row['id'];
-
-        $sql="INSERT INTO x2_actions (type, actionDescription, dueDate, visibility, associationType, associationId, associationName, assignedTo, priority) VALUES
-        ('Web Lead', 'Web Lead', '$date', '1', 'contacts', '$id', '$firstName $lastName', 'Anyone', 'High')";
-
-        mysql_query($sql) or die(mysql_error());
+		
+		
+			
+		$ccUrl = 'http://'.$url.'/index.php/api/create?model=Contacts';
+		$ccSession = curl_init($ccUrl);
+		$data=array(
+			'firstName'=>$firstName,
+			'lastName'=>$lastName,
+			'assignedTo'=>'Anyone',
+			'visibility'=>'1',
+			'phone'=>$phone,
+			'email'=>$email,
+			'createDate'=>$time,
+			'lastUpdated'=>$time,
+			'updatedBy'=>'admin',
+			'backgroundInfo'=>$info,
+		); 
+		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($ccSession,CURLOPT_POST,1);
+		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
+		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		$ccResult = curl_exec($ccSession);
+		curl_close($ccSession);
+		
+		$ccUrl = 'http://'.$url.'/index.php/api/lookUp?model=Contacts&email='.$email; 
+		$ccSession = curl_init($ccUrl);
+		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		$ccResult = curl_exec($ccSession);
+		
+		$pieces=explode(",",$ccResult);
+		$pieces=explode(":",$pieces[0]);
+		$id=substr($pieces[1],1,-1);
+		
+		curl_close($ccSession);
+		
+		$ccUrl = 'http://'.$url.'/index.php/api/create?model=Actions';
+		$ccSession = curl_init($ccUrl);
+		$data=array(
+			'type'=>'Web Lead',
+			'actionDescription'=>'Web Lead',
+			'assignedTo'=>'Anyone',
+			'visibility'=>'1',
+			'dueDate'=>$date,
+			'associationType'=>'contacts',
+			'associationId'=>$id,
+			'associationName'=>$firstName." ".$lastName,
+			'priority'=>'High',
+			'createDate'=>$time,
+			'lastUpdated'=>$time,
+			'updatedBy'=>'admin',
+		); 
+		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($ccSession,CURLOPT_POST,1);
+		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
+		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		$ccResult = curl_exec($ccSession);
+		curl_close($ccSession);
     }
-	
-	$body="New Web Lead Contact!\n\n
-			Name: $firstName $lastName \n\n
-			Email: $email \n\n
-			Info: $info\n\n";
-        mail($adminEmail,'New Web Lead',$body);
     
 ?>
 

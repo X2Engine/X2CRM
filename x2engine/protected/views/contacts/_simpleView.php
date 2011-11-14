@@ -135,7 +135,9 @@ function humanUrl($url) {
 		<div class="row">
 			<div class="cell span-6">
 				<?php
-				$str=substr(Yii::app()->request->getServerName(),4);
+				$str=Yii::app()->request->getServerName();
+                                if(substr($str,0,4)=='www.')
+                                    $str=substr($str,4);
 				if(!empty($model->email)) echo CHtml::mailto($model->email,$model->email."?cc=dropbox@".$str);
 				?>
 			</div>

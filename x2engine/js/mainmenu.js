@@ -65,7 +65,7 @@ var sliderTimeout;
 
 function resetSliderTimeout() {
 	clearTimeout(sliderTimeout);
-	sliderTimeout = setTimeout(hideTransparencySlider,3000);
+	sliderTimeout = setTimeout(hideTransparencySlider,2000);
 }
 
 function showTransparencySlider() {

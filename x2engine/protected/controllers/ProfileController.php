@@ -155,9 +155,29 @@ class ProfileController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		if ($id==Yii::app()->user->getId()) {
-			$model=$this->loadModel($id);
-			$name="ProfileChild";
-			parent::update($model, $name);
+                    $model = $this->loadModel($id);
+                    $users=UserChild::getNames();
+                    $accounts=AccountChild::getNames();  
+                    
+                    if(isset($_POST['ProfileChild'])) {
+                            $temp=$model->attributes;
+                            foreach($_POST['ProfileChild'] as $name => $value) {
+                                    if($value == $model->getAttributeLabel($name)){
+                                            $_POST['ProfileChild'][$name] = '';
+                                    }
+                            }
+                            $model->attributes=$_POST['ProfileChild'];
+
+                            if($model->save()){
+                                $this->redirect(array('view','id'=>$model->id));
+                            }
+                    }
+
+                    $this->render('update',array(
+                            'model'=>$model,
+                            'users'=>$users,
+                            'accounts'=>$accounts,
+                    ));
 		} else {
 			$this->redirect('view/'.$model->id);
 		}

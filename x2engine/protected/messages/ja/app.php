@@ -145,6 +145,7 @@ return array (
 // Misc Actions
 'Submit'=>'提出す',
 'Save'=>'保存',
+'Cancel'=>'キャンセル',
 'Send Email'=>'メールをお送る',
 'Attach A File'=>'ファイルを添付する',
 'Save Changes'=>'変更の保存',

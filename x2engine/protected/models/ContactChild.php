@@ -132,6 +132,66 @@ class ContactChild extends Contacts {
 		return $this->searchBase($criteria);
 	}
 
+	public function searchList($id) {
+	
+		if(!empty($id))
+			$list = CActiveRecord::model('ContactList')->findByPk($id);
+
+		if(isset($list)) {
+			$contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
+			// die(var_dump($contactIds));
+			// $search = CActiveRecord::model('ContactChild')->findAllByPk($contactIds);
+			// return $search;
+			
+			$sql = Yii::app()->db->createCommand()
+				->select('x2_contacts.*')
+				->from('x2_contacts')
+				->join('x2_list_items','x2_contacts.id = x2_list_items.contactId')
+				->where('x2_list_items.listId='.$id.' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo="'.Yii::app()->user->getName().'")')
+				->getText();
+			
+			$count = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryScalar();
+
+			return new CSqlDataProvider($sql,array(
+				// 'criteria'=>$criteria,
+				// 'data'=>$results,
+				// 'modelClass'=>'ContactChild',
+				'totalItemCount'=>$count,
+				'sort'=>array(
+					'attributes'=>array('firstName','lastName','phone','phone2','createDate','lastUpdated','leadSource'),
+					'defaultOrder'=>'lastUpdated DESC',
+				),
+				'pagination'=>array(
+					'pageSize'=>ProfileChild::getResultsPerPage(),
+				),
+			));
+		} else {
+			return new CActiveDataProvider('ContactChild',array(
+				// 'criteria'=>$criteria,
+				// 'data'=>$results,
+				// 'modelClass'=>'ContactChild',
+				// 'totalItemCount'=>$count,
+				'sort'=>array(
+					'defaultOrder'=>'lastUpdated DESC',
+				),
+				'pagination'=>array(
+					'pageSize'=>ProfileChild::getResultsPerPage(),
+				),
+			));
+			// Yii::app()->controller->redirect(array('contacts/listAll'));
+		}
+		
+
+		// $criteria=new CDbCriteria;
+		// $parameters=array(
+			
+			// 'condition'=>"(SELECT count(*) FROM x2_list_items WHERE listId=".$id." AND contactId = t.id) > 0 AND visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",
+			// 'limit'=>ProfileChild::getResultsPerPage()
+		// );
+		// $criteria->scopes=array('findAll'=>array($parameters));
+		// return $this->searchBase($criteria);
+	}
+	
 	
 	public function searchBase($criteria) {
 		// $criteria->compare('id',$this->id);

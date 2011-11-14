@@ -145,6 +145,7 @@ return array (
 // Misc Actions
 'Submit'=>'Presentare',
 'Save'=>'Salvare',
+'Cancel'=>'Annullare',
 'Send Email'=>'Invia email',
 'Attach A File'=>'Allega un file',
 'Save Changes'=>'Salva le modifiche',

@@ -114,6 +114,21 @@ class AccountsController extends x2base {
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
+        
+        public function create($model,$oldAttributes, $api){
+            
+            $model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
+            $arr=$model->assignedTo;
+            if(isset($model->assignedTo) && $model->assignedTo!="")
+                $model->assignedTo = AccountChild::parseUsers($model->assignedTo);
+            $model->createDate=time();
+            AccountChild::setContacts($model->associatedContacts,$model->id);
+            if($api==0)
+                parent::create($model,$oldAttributes,$api);
+            else
+                return parent::create($model,$oldAttributes,$api);
+        }
+        
 	public function actionCreate() {
 		$model=new AccountChild;
 		$users=UserChild::getNames();
@@ -124,32 +139,7 @@ class AccountsController extends x2base {
 		if(isset($_POST['AccountChild'])) {
                         $temp=$model->attributes;
 			$model->attributes=$_POST['AccountChild'];
-			
-			// process currency into an INT
-			$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
-                        $arr=$model->assignedTo;
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,"Create");
-			if(isset($model->assignedTo))
-				$model->assignedTo = AccountChild::parseUsers($model->assignedTo);
-			$model->createDate=time();
-
-			if($model->save()) {
-                            foreach($arr as $user){
-                                if($user!=Yii::app()->user->getName()){
-                                    $notif=new Notifications;
-                                    $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                    $notif->text="$profile->fullName has created an Action for you";
-                                    $notif->user=$user;
-                                    $notif->createDate=time();
-                                    $notif->viewed=0;
-                                    $notif->record="actions:$model->id";
-                                    $notif->save();
-                                }
-                            }
-                            AccountChild::setContacts($model->associatedContacts,$model->id);
-                            $this->redirect(array('view','id'=>$model->id));
-			}
+                        $this->create($model,$temp, '0');
 		}
 
 		$this->render('create',array(
@@ -158,6 +148,22 @@ class AccountsController extends x2base {
 			'contacts'=>$availableContacts,
 		));
 	}
+        
+        public function update($model, $oldAttributes,$api){
+            // process currency into an INT
+            $model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
+
+            $arr=$model->assignedTo;
+            if(isset($model->assignedTo) && $model->assignedTo!="")
+                    $model->assignedTo=AccountChild::parseUsers($arr);
+
+            if($model->associatedContacts!=null)
+                AccountChild::setContacts($model->associatedContacts,$model->id);
+            if($api==0)
+                parent::create($model,$oldAttributes,$api);
+            else
+                return parent::create($model,$oldAttributes,$api);
+        }
 
 	/**
 	 * Updates a particular model.
@@ -182,41 +188,12 @@ class AccountsController extends x2base {
 		}
 		
 		$model->assignedTo=$arr;
-		
-		// $curContacts=$model->associatedContacts;
-		// $contactPieces=explode(" ",$curContacts);
-		// $arr=array();
-		// foreach($contactPieces as $piece){
-			// $arr[]=$piece;
-		// }
-		
-		// $model->associatedContacts=$arr;
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['Accounts'];
 			
-			// process currency into an INT
-			$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
-			
-			$arr=$model->assignedTo;
-			if(isset($model->assignedTo))
-				$model->assignedTo=AccountChild::parseUsers($arr);
-				
-			
-			AccountChild::setContacts($model->associatedContacts,$model->id);
-			$model->associatedContacts = null;
-			// $arr=$model->associatedContacts;
-			// if(isset($model->associatedContacts))
-				// $model->associatedContacts=AccountChild::parseContacts($arr);
-			
-			$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$this->update($model,$temp,'0');
 		}
 
 		$this->render('update',array(
@@ -311,6 +288,22 @@ class AccountsController extends x2base {
 			'action'=>'Remove'
 		));
 	}
+        
+        public function delete($id){
+            
+            $model=$this->loadModel($id);
+            $dataProvider=new CActiveDataProvider('Actions', array(
+                'criteria'=>array(
+                    'condition'=>'associationId='.$id.' AND associationType=\'account\'',
+            )));
+
+            $actions=$dataProvider->getData();
+            foreach($actions as $action){
+                    $action->delete();
+            }
+            $this->cleanUpTags($model);
+            $model->delete();
+        }
 
 	/**
 	 * Deletes a particular model.

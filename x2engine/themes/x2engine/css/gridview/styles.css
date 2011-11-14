@@ -115,7 +115,7 @@
 	box-shadow: inset 0 1px 0 0 #fff;
 	-webkit-appearance:none;
 }
-.grid-view table.items tr:first-child:hover {
+.grid-view table.items thead tr:hover {
 	background:none;
 }
 .grid-view table.items th a {

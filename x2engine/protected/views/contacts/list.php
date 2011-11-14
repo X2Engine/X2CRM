@@ -33,24 +33,23 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$this->menu=array(
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('index')),
-	// array('label'=>Yii::t('contacts','All Contacts')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-	array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
-);
- 
-if($this->route=='contacts/viewAll') {
-	$heading = Yii::t('contacts','All Contacts'); 
-	$dataProvider = $model->searchAll();
+// if($this->route=='contacts/viewAll') {
+	$heading = $listName; //Yii::t('contacts','All Contacts');
 	
+	// $dataProvider = $model->searchAll();
 	
-} else {
-	$heading = Yii::t('contacts','My Contacts'); 
-	$dataProvider = $model->search();
+	$this->menu=array(
+		array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('index')),
+		// array('label'=>Yii::t('contacts','All Contacts')),
+		array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+		array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+		array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
+		array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
+		array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
+	);
+// } else {
+	// $heading = Yii::t('contacts','My Contacts'); 
+	// $dataProvider = $model->search();
 	
 	// $this->menu=array(
 		// array('label'=>Yii::t('contacts','My Contacts')),
@@ -61,7 +60,7 @@ if($this->route=='contacts/viewAll') {
 		// array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
 		// array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
 	// );
-}
+// }
 // $this->menu=array(
 	// array('label'=>Yii::t('contacts','Contact List')),
 	// array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
@@ -86,46 +85,46 @@ $('.search-form form').submit(function(){
 ?>
 
 <div class="search-form" style="display:none">
-<?php $this->renderPartial('_search',array(
+<?php /* $this->renderPartial('_search',array(
 	'model'=>$model, 
         'users'=>UserChild::getNames(),
-)); ?> 
+)); */ ?> 
 </div><!-- search-form -->
 <?php
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'contacts-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1))
+		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		// .CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listId,'clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$dataProvider,
-	'filter'=>$model,
+	'dataProvider'=>$dataProvider, //CActiveRecord::model('ContactChild')->searchList($listId),
+	// 'filter'=>$model,
 	'columns'=>array(
 		//'id',
 		array(
 			'name'=>'lastName',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data["firstName"]." ".$data["lastName"],array("view","id"=>$data["id"]))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'30%')
 		),
 		array(
-			"name"=>'phone',
+			'name'=>'phone',
 			'header'=>Yii::t('contacts','Work Phone'),
 		),
 		array(
 			'name'=>'createDate',
 			'header'=>Yii::t('contacts','Create Date'),
-			'value'=>'date("Y-m-d",$data->createDate)',
+			'value'=>'date("Y-m-d",$data["createDate"])',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'15%')
 		),
                 array(
 			'name'=>'lastUpdated',
 			'header'=>Yii::t('contacts','Last Updated'),
-			'value'=>'date("Y-m-d",$data->lastUpdated)',
+			'value'=>'date("Y-m-d",$data["lastUpdated"])',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'15%')
 		),
