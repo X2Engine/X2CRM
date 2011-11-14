@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.5';
+$x2Version = '0.9.6';
 
 // run silent installer with default values?
 $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
