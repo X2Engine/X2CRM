@@ -35,14 +35,58 @@
  ********************************************************************************/
 
 $attributeLabels = ContactChild::attributeLabels();
-$showSocialMedia = ProfileChild::getSocialMedia();
+
+$showSocialMedia = Yii::app()->params->profile->showSocialMedia;
+
+$showWorkflow = Yii::app()->params->profile->showWorkflow;
+
+Yii::app()->clientScript->registerScript('updateWorkflow',"
+
+function startWorkflowStage(workflowId,stageNumber) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('workflow/startStage')) . "',
+		type: 'GET',
+		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=contacts',
+		success: function(response) {
+			if(response!='')
+				$('#workflow-diagram').html(response);
+		}
+	});
+}
+
+function completeWorkflowStage(workflowId,stageNumber) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('workflow/completeStage')) . "',
+		type: 'GET',
+		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=contacts',
+		success: function(response) {
+			if(response!='')
+				$('#workflow-diagram').html(response);
+		}
+	});
+}
+
+function revertWorkflowStage(workflowId,stageNumber) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('workflow/revertStage')) . "',
+		type: 'GET',
+		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=contacts',
+		success: function(response) {
+			if(response!='')
+				$('#workflow-diagram').html(response);
+		}
+	});
+}
+",CClientScript::POS_HEAD);
+
 
 Yii::app()->clientScript->registerScript('detailVewFields', "
 function showField(field,focus){
-	$('#'+field.id+' .detail-field').hide();
-	$('#'+field.id+' .detail-form').show();
+	// $(field).css('background','red');
+	$(field).find('.detail-field').hide();
+	$(field).find('.detail-form').show();
 	if(focus)
-		$('#'+field.id+' input').focus();
+		$(field).find('input').focus();
 	highlightSave();
 }
 function highlightSave() {
@@ -56,8 +100,18 @@ function hideSocialMedia() {
 	$('#social-media-1, #social-media-2, #social-media-3').hide();
 	$('#social-media-toggle').show();
 }
-$(function() {
-".($showSocialMedia? "showSocialMedia(); });" : "hideSocialMedia(); });"),CClientScript::POS_HEAD);
+function showWorkflow() {
+	$('tr#workflow-row').show();
+	$('tr#workflow-toggle').hide();
+}
+function hideWorkflow() {
+	$('tr#workflow-row').hide();
+	$('tr#workflow-toggle').show();
+}
+$(function() {\n"
+.($showSocialMedia? "showSocialMedia();\n" : "hideSocialMedia()\n")
+.($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
+."});",CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('stopEdit','
 	$(document).ready(function(){
 		$("td#background a").click(function(e){
@@ -165,10 +219,10 @@ function cleanupUrl($url) {
 			</div>
 		</td>
 		<?php 
-                    if(substr(Yii::app()->request->getServerName(),0,4)=="www.")
+		if(substr(Yii::app()->request->getServerName(),0,4)=="www.")
 			$str=substr(Yii::app()->request->getServerName(),4);
-                    else
-                        $str=Yii::app()->request->getServerName();
+		else
+			$str=Yii::app()->request->getServerName();
 		?>
 		<td class="label"><label><?php echo $model->email!=""?CHtml::mailto($attributeLabels['email'],$model->email."?cc=dropbox@".$str):$attributeLabels['email']; ?></label></td>
 		<td id="email" colspan="3" onclick="showField(this,true);">
@@ -311,9 +365,39 @@ function cleanupUrl($url) {
 			</div>
 		</td>
 	</tr>
+	<?php $workflowList = Workflow::getList(); ?>
+	<tr id="workflow-toggle">
+		<td class="label"><label><?php echo Yii::t('workflow','Workflow'); ?></label></td>
+		<td colspan="5"><a href="#" onclick="showWorkflow(); return false;"><?php echo Yii::t('app','Show'); ?></a></td>
+	</tr>
+	<tr id="workflow-row">
+		<td class="label"><?php echo Yii::t('workflow','Workflow'); ?></td>
+		<td colspan="5" id="workflow">
+			<div class="detail-field" style="width:170px; text-align:center;margin-bottom:5px;" onclick="showField($('#workflow').get(),false);"><?php echo $workflowList[$currentWorkflow]; ?></div>
+			<div class="detail-form" style="width:170px; text-align:center;margin-bottom:5px;">
+			<?php
+			echo CHtml::dropDownList('workflowId',$currentWorkflow,$workflowList,	//$model->workflow
+				array(
+					'ajax' => array(
+						'type'=>'GET', //request type
+						'url'=>CHtml::normalizeUrl(array('workflow/getWorkflow','modelId'=>$model->id,'type'=>'contacts')), //url to call.
+						//Style: CController::createUrl('currentController/methodToCall')
+						'update'=>'#workflow-diagram', //selector to update
+						//'data'=>'js:javascript statement' 
+						//leave out the data key to pass all form values through
+				))
+			); 
+			?>
+			</div>
+			<div id="workflow-diagram">
+			<?php
+			$workflowStatus = Workflow::getWorkflowStatus($currentWorkflow,$model->id,'contacts');	// true = include dropdowns
+			echo Workflow::renderWorkflow($workflowStatus);
+		?></div></td>
+	</tr>
 	<tr>
 		<td class="label"><b><?php echo $attributeLabels['backgroundInfo']; ?></b></td>
-		<td id="background" onclick="showField(this,true);" colspan="5" style="height:80px;">
+		<td id="background" onclick="showField(this,true);" colspan="5" style="height:40px;">
 			<div class="detail-field"><?php echo $this->convertUrls($model->backgroundInfo); ?></div>
 			<div class="detail-form">
 			<?php

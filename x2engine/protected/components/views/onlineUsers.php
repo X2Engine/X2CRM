@@ -34,40 +34,14 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
-
-$admin = Admin::model()->findByPk(1);
-$updateInterval = $admin->chatPollTime;
-
-$ajaxUrl = $this->controller->createUrl('site/getMessages');
-Yii::app()->clientScript->registerScript('updateChatJs', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
-	$(document).ready(updateChat());	//update on page load
-",CClientScript::POS_HEAD); 
-
-
-echo "<div id=\"chat-box\"></div>";
-
-echo CHtml::beginForm();
-// echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
-
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Send'),
-	array('site/newMessage'),
-	array(
-		'update'=>'#chat-box',
-		'success'=>"function(response) {
-			updateChat();
-			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-			// $('#chat-message').css('color','#aaa');
-			// toggleText($('#chat-message').get());
-		}",
-	),
-	array('class'=>'x2-button')
-);
-echo CHtml::endForm(); 
 
 ?>
+<div id="onlineUsers">
+<?php
+$users=explode(", ",$users);
+foreach($users as $user){
+    echo "<span>".$user."</span> ";
+}
+
+?>
+</div>

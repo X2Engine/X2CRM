@@ -34,40 +34,47 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
-
-$admin = Admin::model()->findByPk(1);
-$updateInterval = $admin->chatPollTime;
-
-$ajaxUrl = $this->controller->createUrl('site/getMessages');
-Yii::app()->clientScript->registerScript('updateChatJs', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
-	$(document).ready(updateChat());	//update on page load
-",CClientScript::POS_HEAD); 
-
-
-echo "<div id=\"chat-box\"></div>";
-
-echo CHtml::beginForm();
-// echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
-
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Send'),
-	array('site/newMessage'),
-	array(
-		'update'=>'#chat-box',
-		'success'=>"function(response) {
-			updateChat();
-			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-			// $('#chat-message').css('color','#aaa');
-			// toggleText($('#chat-message').get());
-		}",
-	),
-	array('class'=>'x2-button')
-);
-echo CHtml::endForm(); 
-
 ?>
+<div class="span-12">
+<h2><?php echo Yii::t('admin','Set Lead Routing Options'); ?></h2>
+<?php echo Yii::t('admin','Change how web leads are assigned to users.'); ?>
+<br /><br />
+<div class="form">
+<?php
+$form=$this->beginWidget('CActiveForm', array(
+		'id'=>'lead-form',
+		'enableAjaxValidation'=>false,
+	));
+?>
+
+<?php echo $form->labelEx($admin,'leadDistribution'); ?>
+<?php echo $form->dropDownList($admin,'leadDistribution',array(
+    ''=>'Free For All',
+    'evenDistro'=>'Even Distribution',
+    'trueRoundRobin'=>'Round Robin',
+    'customRoundRobin'=>'Custom Round Robin',
+)); ?>
+    
+    <?php echo $form->labelEx($admin,'onlineOnly'); ?>
+<?php echo $form->dropDownList($admin,'onlineOnly',array(
+    '0'=>'No',
+    '1'=>'Yes',
+)); ?>
+
+<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button'))."\n";?>
+<?php $this->endWidget();?></div>
+
+<b>Free For All</b><br />
+Assigns all web leads to "Anyone" and users can re-assign to themselves.<br /><br />
+<b>Even Distribution</b><br />
+Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br /><br />
+<b>Round Robin</b><br />
+Assigns leads to each user going through the list one by one. <br /><br />
+<b>Custom Round Robin</b><br />
+Same as above but allows you to set custom rules.  i.e. if a contact comes in with a specific value, it will be distributed to a group of users you specify.
+This option will not work unless you create custom rules.
+<br /><br /><br />
+<b>Online Only</b><br />
+This option will filter your routing rule so that leads only go to a subset of the users who are logged in.  
+i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads
+</div>

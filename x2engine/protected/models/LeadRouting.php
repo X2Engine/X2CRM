@@ -1,22 +1,19 @@
 <?php
 
 /**
- * This is the model class for table "x2_criteria".
+ * This is the model class for table "x2_lead_routing".
  *
- * The followings are the available columns in table 'x2_criteria':
+ * The followings are the available columns in table 'x2_lead_routing':
  * @property integer $id
- * @property string $modelType
- * @property string $modelField
- * @property string $modelValue
- * @property string $comparisonOperator
+ * @property string $field
+ * @property string $value
  * @property string $users
- * @property string $type
  */
-class Criteria extends CActiveRecord
+class LeadRouting extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return Criteria the static model class
+	 * @return LeadRouting the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -28,7 +25,7 @@ class Criteria extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'x2_criteria';
+		return 'x2_lead_routing';
 	}
 
 	/**
@@ -39,13 +36,11 @@ class Criteria extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('modelType', 'length', 'max'=>100),
-			array('modelField, type', 'length', 'max'=>250),
-			array('comparisonOperator', 'length', 'max'=>10),
-			array('modelValue, users', 'safe'),
+			array('field, value', 'length', 'max'=>250),
+			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, modelType, modelField, modelValue, comparisonOperator, users, type', 'safe', 'on'=>'search'),
+			array('id, field, value, users', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -67,12 +62,9 @@ class Criteria extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'modelType' => 'Model Type',
-			'modelField' => 'Model Field',
-			'modelValue' => 'Model Value',
-			'comparisonOperator' => 'Comparison Operator',
+			'field' => 'Field',
+			'value' => 'Value',
 			'users' => 'Users',
-			'type' => 'Type',
 		);
 	}
 
@@ -88,12 +80,9 @@ class Criteria extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('modelType',$this->modelType,true);
-		$criteria->compare('modelField',$this->modelField,true);
-		$criteria->compare('modelValue',$this->modelValue,true);
-		$criteria->compare('comparisonOperator',$this->comparisonOperator,true);
+		$criteria->compare('field',$this->field,true);
+		$criteria->compare('value',$this->value,true);
 		$criteria->compare('users',$this->users,true);
-		$criteria->compare('type',$this->type,true);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

@@ -33,41 +33,20 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
-
-$admin = Admin::model()->findByPk(1);
-$updateInterval = $admin->chatPollTime;
-
-$ajaxUrl = $this->controller->createUrl('site/getMessages');
-Yii::app()->clientScript->registerScript('updateChatJs', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
-	$(document).ready(updateChat());	//update on page load
-",CClientScript::POS_HEAD); 
-
-
-echo "<div id=\"chat-box\"></div>";
-
-echo CHtml::beginForm();
-// echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
-
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Send'),
-	array('site/newMessage'),
-	array(
-		'update'=>'#chat-box',
-		'success'=>"function(response) {
-			updateChat();
-			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-			// $('#chat-message').css('color','#aaa');
-			// toggleText($('#chat-message').get());
-		}",
-	),
-	array('class'=>'x2-button')
-);
-echo CHtml::endForm(); 
-
 ?>
+<div class="view">
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
+	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
+	<br />
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('name')); ?>:</b>
+	<?php echo CHtml::encode($data->name); ?>
+	<br />
+
+	<b><?php echo CHtml::encode($data->getAttributeLabel('lastUpdated')); ?>:</b>
+	<?php echo CHtml::encode($data->lastUpdated); ?>
+	<br />
+
+
+</div>

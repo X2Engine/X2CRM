@@ -45,25 +45,19 @@ $(function() {
 <a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=877+Cedar+Street+Suite+150+Santa+Cruz,+CA+95060+USA&hl=en&ll=36.971838,-122.211914&spn=3.444774,4.586792&sll=37.926868,-95.712891&sspn=51.515218,73.388672&vpsrc=6&t=m&z=8">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:50px;margin-right:-20px;')); ?>
 </a>
-<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> October 13, 2011.<br /><br />
+<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> November 28, 2011.<br /><br />
 <div id="about-intro">
-	<?php echo Yii::t('app','X2Engine is a Social Sales Management application designed by John Roberts. Special thanks to software engineers Jake Houser and Matthew Pearson, along with many other folks who helped make this release possible.'); ?><br /><br />
+	<?php echo Yii::t('app','X5CRM is a Customer Relationship Management application designed by John Roberts. Special thanks to software engineers Jake Houser and Matthew Pearson, along with many other folks who helped make this release possible.'); ?><br /><br />
 </div>
-<div style="width:200px;float:left;">
+<div style="width:200px;float:left;margin-bottom:10px;">
 	<b>Headquarters</b><br />
-	X2Engine, Inc.<br />
-	877 Cedar Street<br />
-	Suite 150<br />
-	Santa Cruz, CA 95060<br />
+	University Town Center<br />
+	1101 Pacific Avenue<br />
+	Suite 210<br />
+	Santa Cruz, California 95060<br />
 	USA
 </div>
-<div style="width:200px;height:110px;float:left;">
-	<b>Mail</b><br />
-	X2Engine, Inc.<br />
-	P.O. Box 66752<br />
-	Scotts Valley, CA 95067<br />
-	USA
-</div>
+
 <div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a><br /><br /></div>
 <div id="about-legal">
 	Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty. Licensed under <?php echo CHtml::link('GPLv3',Yii::app()->getBaseUrl().'/GPL-3.0 License.txt'); ?>.
@@ -77,7 +71,7 @@ $(function() {
 <!--<div class="about-list" style="height:450px;width:auto;overflow-y:scroll;border:1px solid #ddd;padding:10px;"></div>
 <hr>-->
 <h4><?php echo Yii::t('about','Version Info'); ?></h4>
-X2Engine: <?php echo Yii::app()->params->version;?><br />
+X5<b style="color:#666;">CRM</b>: <?php echo Yii::app()->params->version;?><br />
 <!--<?php echo Yii::t('about','Build'); ?>: 1234<br />-->
 Yii: <?php echo Yii::getVersion(); ?><br />
 jQuery: <span id="jqueryVersion"></span><br />

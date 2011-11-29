@@ -619,6 +619,63 @@ div.portlet-minimize a {
 	padding:10px 7px;
 	width:auto;
 }
+div#workflow-stages a{
+	text-decoration:none;
+}
+a.add-workflow-stage {
+	display:block;
+	text-decoration:none;
+	margin-bottom:5px;
+}
+div#workflow-stages ol {
+	margin:0;
+	padding:0;
+	list-style-position:inside;
+}
+div#workflow-stages div.cell {
+	float:none;
+	display:inline-block;
+}
+div.workflow-funnel-box {
+	display:block;
+	overflow:auto;
+	text-align:center;
+	padding-top:1px;
+}
+
+div.workflow-funnel-stage {
+	display:block;
+	margin-right:auto;
+	margin-left:auto;
+	text-align:center;
+	border:1px solid #999;
+	margin-top:-1px;
+	line-height:20px;
+}
+div.workflow-status {
+	display:block;
+	line-height:20px;
+	height:22px;
+}
+.workflow-funnel-stage span.name {
+/* 	display:inline-block;
+	width:80px;
+	text-align:right; */
+}
+.workflow-funnel-stage span.name a {
+	text-decoration:none;
+}
+.workflow-funnel-stage span.contact-icon {
+	display:inline-block;
+	background:url(../images/contact-icon.png) 5px center no-repeat;
+	padding-left:24px;
+}
+.workflow-funnel-stage span.sales-icon {
+	display:inline-block;
+	background:url(../images/sales-icon.png) 5px center no-repeat;
+	padding-left:24px;
+}
+
 .rating-cancel {		/* get rid of horrid "cancel rating" on star ratings widget */
 	display:none !important;
 }
@@ -837,9 +894,9 @@ div.contact-lists table.items tbody tr:last-child td {
 
 #installer-box {
 	width:500px;
-	padding:90px 30px 20px 30px;
+	padding:80px 30px 20px 30px;
 	color:black;
-	background:url(../images/x2engine_big.png) center 10px no-repeat white;
+	background:url(../images/x5crm.png) center 20px no-repeat white;
 	margin:25px auto 25px auto;
 	border-radius:8px;
 	-moz-border-radius:8px;

@@ -69,6 +69,9 @@ class ContactsController extends x2base {
 					'delete',
 					'shareContact',
 					'viewSales',
+					'createList',
+					'updateList',
+					'deleteList',
 				),
 				'users'=>array('@'),
 			),
@@ -92,9 +95,7 @@ class ContactsController extends x2base {
 
 		$contact = $this->loadModel($id);
 
-		if ($contact->assignedTo == Yii::app()->user->getName()
-				|| $contact->visibility == 1
-				|| Yii::app()->user->getName() == 'admin') {
+		if ($contact->assignedTo == Yii::app()->user->getName() || $contact->visibility == 1 || Yii::app()->user->getName() == 'admin') {
 			UserChild::addRecentItem('c',$id,Yii::app()->user->getId());	////add contact to user's recent item list
 			parent::view($contact, 'contacts');
 		} else
@@ -169,12 +170,13 @@ $model->city, $model->state $model->zipcode
 		));
 	}
 	
+	// Creates contact record
 	public function create($model, $oldAttributes, $api){
 		$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
 		if(isset($account))
-				$contact->accountId = $account->id;
+			$contact->accountId = $account->id;
 		else
-				$model->accountId = 0;
+			$model->accountId = 0;
 		$model->createDate=time();
 		$model->lastUpdated=time();
 		if($api==0)
@@ -183,10 +185,7 @@ $model->city, $model->state $model->zipcode
 			return parent::create($model,$oldAttributes,$api);
 	}
 
-	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
-	*/
+	// Controller/action wrapper for create()
 	public function actionCreate() {
 		$model = new ContactChild;
 		$name='ContactChild';
@@ -265,24 +264,26 @@ $model->city, $model->state $model->zipcode
 			}
 			$temp=$contact->attributes;
 			$contact->attributes=$_POST['ContactChild'];
-
+                        $contact->company=$_POST['companyAutoComplete'];
 			$account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
 			if(isset($account))
 				$contact->accountId = $account->id;
 			else
 				$contact->accountId = 0; 
 
-			$changes=$this->calculateChanges($temp,$contact->attributes);
-			$contact=$this->updateChangelog($contact,$changes);
 			if($contact->save()){
-				// $this->redirect(array('view','id'=>$contact->id));
-			}
+				$changes=$this->calculateChanges($temp,$contact->attributes);
+                                $contact=$this->updateChangelog($contact,$changes);
+			}else{
+                            print_r($contact->getErrors());exit;
+                        }
 			$this->redirect(array('view','id'=>$contact->id));
 		} else
 			$this->redirect(array('view','id'=>$contact->id));
 		
 	}
 
+	// Updates a contact record
 	public function update($model,$oldAttributes, $api){
 		
 		$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
@@ -297,11 +298,7 @@ $model->city, $model->state $model->zipcode
 	}
 	
 
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
+	// Controller/action wrapper for update()
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
@@ -328,10 +325,7 @@ $model->city, $model->state $model->zipcode
 		));
 	}
 
-	/**
-	 * Lists all models.
-	 */
-	// Lists all contacts assigned to this user
+	// Default action - displays all visible Contact Lists
 	public function actionIndex() {
 		$model = new ContactChild('search');
 		
@@ -388,19 +382,21 @@ $model->city, $model->state $model->zipcode
 		));
 	}
 
+	// Lists all contacts assigned to this user
 	public function actionViewMy() {
 		$model=new ContactChild('search');
 		$name='ContactChild';
 		parent::index($model,$name);
 	}
 	
+	// Lists all visible contacts
 	public function actionViewAll() {
 		$model=new ContactChild('search');
 		$name='ContactChild';
 		parent::index($model,$name);
 	}
 
-	
+	// Shows contacts in the specified list
 	public function actionList() {
 	
 		$id = isset($_GET['id'])? $_GET['id'] : 'all';
@@ -446,15 +442,82 @@ $model->city, $model->state $model->zipcode
 			// ));
 		}
 	}
-	
-	
-	// List all public contacts
-	// public function actionViewAll() {
-		// $model=new ContactChild('search');
-		// $name='ContactChild';
-		// parent::index($model,$name);
-	// }
 
+	public function actionCreateList() {
+		return;
+	
+		$model = new ContactList;
+		$test = new ContactListCriterion;
+		$test->value = 'sausages';
+		$test->attribute = 'leadSource';
+		$test->comparison = '=';
+		$criteriaModels = array($test);
+		
+		// $name='ContactList';
+		// $users=UserChild::getNames();
+		// $accounts=AccountChild::getNames();
+
+		if(isset($_POST['ContactList'])) {
+			// clear values that haven't been changed from the default
+			// foreach($_POST['ContactChild'] as $name => &$value) {
+				// if($value == $model->getAttributeLabel($name))
+					// $value = '';
+			// }
+			$model->attributes = $_POST['ContactList'];
+
+			$model->createDate=time();
+			$model->lastUpdated=time();
+			
+			
+			
+			$model->save();
+			
+		}
+		$attributeList = array_flip(ContactChild::attributeLabels());
+		$users = UserChild::getNames();
+		
+		
+		$this->render('createList',array(
+			'model'=>$model,
+			'criteriaModels'=>$criteriaModels,
+			'users'=>$users,
+			'attributeList'=>$attributeList,
+			'comparisonList'=>array(
+				'='=>'=',
+				'>'=>'<',
+				'<'=>'<',
+				'empty'=>Yii::t('empty','empty'),
+				'contains'=>Yii::t('contacts','contains'),
+			),
+			'listTypes'=>array(
+				'dynamic'=>Yii::t('contacts','Dynamic'),
+				'static'=>Yii::t('contacts','Static')
+			),
+		));
+	
+	}
+
+	
+	
+	
+	public function actionUpdateList() {
+	
+
+	}
+	
+	
+	
+	
+	
+	public function actionDeleteList() {
+	
+	}
+	
+	
+	
+
+	
+	
 	public function actionImportContacts() {
 		if (isset($_FILES['contacts'])) {
 

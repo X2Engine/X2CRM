@@ -33,41 +33,33 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
-
-$admin = Admin::model()->findByPk(1);
-$updateInterval = $admin->chatPollTime;
-
-$ajaxUrl = $this->controller->createUrl('site/getMessages');
-Yii::app()->clientScript->registerScript('updateChatJs', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
-	$(document).ready(updateChat());	//update on page load
-",CClientScript::POS_HEAD); 
-
-
-echo "<div id=\"chat-box\"></div>";
-
-echo CHtml::beginForm();
-// echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
-
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Send'),
-	array('site/newMessage'),
-	array(
-		'update'=>'#chat-box',
-		'success'=>"function(response) {
-			updateChat();
-			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-			// $('#chat-message').css('color','#aaa');
-			// toggleText($('#chat-message').get());
-		}",
-	),
-	array('class'=>'x2-button')
-);
-echo CHtml::endForm(); 
-
 ?>
+<div class="wide form">
+
+<?php $form=$this->beginWidget('CActiveForm', array(
+	'action'=>Yii::app()->createUrl($this->route),
+	'method'=>'get',
+)); ?>
+
+	<div class="row">
+		<?php echo $form->label($model,'id'); ?>
+		<?php echo $form->textField($model,'id'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->label($model,'name'); ?>
+		<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>250)); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->label($model,'lastUpdated'); ?>
+		<?php echo $form->textField($model,'lastUpdated'); ?>
+	</div>
+
+	<div class="row buttons">
+		<?php echo CHtml::submitButton('Search'); ?>
+	</div>
+
+<?php $this->endWidget(); ?>
+
+</div><!-- search-form -->

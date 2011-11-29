@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.6';
+$x2Version = '0.9.7';
 
 // run silent installer with default values?
 $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
@@ -57,6 +57,13 @@ if($silent) {
 	$adminPassword2 = $_POST['adminPass2'];
 	$dummyData = (isset($_POST['data']) && $_POST['data']==1)? 1 : 0;
 }
+
+$webLeadUrl=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+$webLeadUrl=substr($webLeadUrl,0,-15);
+
+$contents=file_get_contents('leadCapture.php');
+$contents=preg_replace('/\$url=\"\";/',"\$url='$webLeadUrl'",$contents);
+file_put_contents('leadCapture.php',$contents);
 
 if(empty($lang))
 	$lang='en';
@@ -152,8 +159,12 @@ mysql_query("DROP TABLE IF EXISTS
 	x2_tags,
 	x2_relationships,
 	x2_notifications,
-	x2_criteria
-") or die("Unable to update tables, check user permissions.".mysql_error());
+	x2_criteria,
+	x2_lead_routing,
+	x2_sessions,
+	x2_workflows,
+	x2_workflow_stages
+") or die("Unable to delete exsting tables.".mysql_error());
 
 mysql_query("CREATE TABLE x2_users(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -178,7 +189,7 @@ mysql_query("CREATE TABLE x2_users(
 	login INT DEFAULT 0,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
-	") or die('Unable to create table x2_users, check user permissions.'.mysql_error());
+	") or die('Unable to create table x2_users.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_contacts(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -212,7 +223,7 @@ mysql_query("CREATE TABLE x2_contacts(
 	otherUrl VARCHAR(100) NULL,
         phone2 VARCHAR(40))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_contacts, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_contacts.'.mysql_error());
 
 //mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
 
@@ -236,7 +247,7 @@ mysql_query("CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_actions, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_actions.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_sales(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -255,7 +266,7 @@ mysql_query("CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_sales, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_sales.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_projects(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -272,7 +283,7 @@ mysql_query("CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_projects, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_projects.'.mysql_error());
 
  // mysql_query("CREATE TABLE x2_marketing(
 	// id INT NOT NULL AUTO_INCREMENT primary key,
@@ -284,7 +295,7 @@ mysql_query("CREATE TABLE x2_actions(
 	// lastUpdated INT,
 	// updatedBy VARCHAR(20))
 	// COLLATE = utf8_general_ci
- // ") or die('Unable to create table x2_marketing, check user permissions.'.mysql_error());
+ // ") or die('Unable to create table x2_marketing.'.mysql_error());
  
 mysql_query("CREATE TABLE x2_campaigns (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -300,7 +311,7 @@ mysql_query("CREATE TABLE x2_campaigns (
 	launchDate INT UNSIGNED NOT NULL,
 	lastUpdated INT UNSIGNED NOT NULL
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_campaigns, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_campaigns.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_contact_lists (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -314,7 +325,7 @@ mysql_query("CREATE TABLE x2_contact_lists (
 	createDate INT UNSIGNED NOT NULL,
 	lastUpdated INT UNSIGNED NOT NULL
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_lists, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_lists.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_list_items (
 	contactId INT UNSIGNED NOT NULL,
@@ -325,7 +336,7 @@ mysql_query("CREATE TABLE x2_list_items (
 	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (contactId) REFERENCES x2_contacts(id) ON UPDATE CASCADE ON DELETE CASCADE
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_listItems, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_listItems.'.mysql_error());
 
 
 mysql_query("CREATE TABLE x2_list_criteria (
@@ -336,7 +347,7 @@ mysql_query("CREATE TABLE x2_list_criteria (
 	value VARCHAR(100) NOT NULL,
 	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_listCriteria, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_listCriteria.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_cases(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -354,7 +365,7 @@ mysql_query("CREATE TABLE x2_cases(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_cases, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_cases.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_profile(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -381,11 +392,12 @@ mysql_query("CREATE TABLE x2_cases(
 	backgroundImg VARCHAR(100) NULL DEFAULT 'santacruznight_blur.jpg',
 	pageOpacity INT NULL,
 	startPage VARCHAR(30) NULL,
-	showSocialMedia TINYINT(1) NOT NULL DEFAULT 1,
-	showDetailView TINYINT(1) NOT NULL DEFAULT 0,
+	showSocialMedia TINYINT(1) NOT NULL DEFAULT 0,
+	showDetailView TINYINT(1) NOT NULL DEFAULT 1,
+	showWorkflow TINYINT(1) NOT NULL DEFAULT 1,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_profile, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_profile.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_accounts(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -403,7 +415,7 @@ mysql_query("CREATE TABLE x2_cases(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_accounts, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_accounts.'.mysql_error());
 
 
  mysql_query("CREATE TABLE x2_social(
@@ -416,7 +428,7 @@ mysql_query("CREATE TABLE x2_cases(
 	timestamp INT,
 	lastUpdated INT)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_social, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_social.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_docs(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -428,7 +440,7 @@ mysql_query("CREATE TABLE x2_docs(
 	updatedBy VARCHAR(40),
 	lastUpdated INT)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_docs, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_docs.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_media(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -438,7 +450,7 @@ mysql_query("CREATE TABLE x2_media(
 	fileName VARCHAR(100),
 	createDate INT)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_social, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_social.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_admin(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -451,9 +463,12 @@ mysql_query("CREATE TABLE x2_admin(
 	menuVisibility VARCHAR(100),
 	menuNicknames VARCHAR(255),
 	chatPollTime INT DEFAULT 2000,
-        ignoreUpdates TINYINT DEFAULT 0)
+        ignoreUpdates TINYINT DEFAULT 0,
+        rrId INT, 
+        leadDistribution VARCHAR(250),
+        onlineOnly INT)
 	COLLATE = utf8_general_ci
-	") or die('Unable to create table x2_social, check user permissions.'.mysql_error());
+	") or die('Unable to create table x2_social.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_changelog( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -463,7 +478,7 @@ mysql_query("CREATE TABLE x2_changelog(
 	changed TEXT NOT NULL,
 	timestamp INT NOT NULL DEFAULT 0)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_changelog, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_changelog.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_tags( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -474,7 +489,7 @@ mysql_query("CREATE TABLE x2_tags(
         itemName VARCHAR(250),
 	timestamp INT NOT NULL DEFAULT 0)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_tags, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_tags.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_relationships( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -483,17 +498,17 @@ mysql_query("CREATE TABLE x2_relationships(
 	secondType VARCHAR(100),
         secondId INT)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_relationshps, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_relationshps.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_notifications( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	text TEXT,
 	record VARCHAR(250), 
 	user VARCHAR(100),
-        viewed INT,
-        createDate INT)
+	viewed INT,
+	createDate INT)
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_notifications, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_notifications.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_criteria( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -501,9 +516,46 @@ mysql_query("CREATE TABLE x2_criteria(
 	modelField VARCHAR(250),
 	modelValue TEXT,
         comparisonOperator VARCHAR(10),
-        users TEXT)
+        users TEXT,
+        type VARCHAR(250))
 	COLLATE = utf8_general_ci
- ") or die('Unable to create table x2_criteria, check user permissions.'.mysql_error());
+") or die('Unable to create table x2_criteria.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_lead_routing( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	field VARCHAR(250),
+	value VARCHAR(250),
+	users TEXT)
+	COLLATE = utf8_general_ci
+") or die('Unable to create table x2_lead_routing.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_sessions(
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	user VARCHAR(250),
+	lastUpdated INT)
+	COLLATE = utf8_general_ci
+") or die('Unable to create table x2_sessions.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_workflows( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	name VARCHAR(250),
+	lastUpdated INT)
+	COLLATE = utf8_general_ci
+") or die('Unable to create table x2_workflows.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_workflow_stages( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	workflowId INT NOT NULL,
+	stageNumber INT,
+	name VARCHAR(40),
+	conversionRate DECIMAL(10,2),
+	value DECIMAL(10,2),
+	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE)
+	COLLATE = utf8_general_ci
+") or die('Unable to create table x2_workflow_stages.'.mysql_error());
+
+
+//UNSIGNED
 
 
 $adminPassword=md5($adminPassword); 
@@ -515,7 +567,7 @@ mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddre
 		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or die("Error inserting dummy data");
 mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or die("Unable to set starting MOTD.");
 mysql_query("INSERT INTO x2_admin (accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, menuVisibility, currency) VALUES ('0','1','3600','$adminEmail',
-		'contacts:actions:sales:accounts:docs','Contacts:Actions:Sales:Accounts:Docs','1:1:1:1:1','$currency')") or die("Unable to input admin config");
+		'contacts:actions:sales:accounts:workflow:docs','Contacts:Actions:Sales:Accounts:Workflow:Docs','1:1:1:1:1:1','$currency')") or die("Unable to input admin config");
 
 $backgrounds = array(
 	'santacruznight_blur.jpg',

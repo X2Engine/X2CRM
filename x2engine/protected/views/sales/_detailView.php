@@ -36,10 +36,52 @@
 
 $attributeLabels = SaleChild::attributeLabels();
 
+Yii::app()->clientScript->registerScript('updateWorkflow',"
+
+function startWorkflowStage(workflowId,stageNumber) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('workflow/startStage')) . "',
+		type: 'GET',
+		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=sales',
+		success: function(response) {
+			if(response!='')
+				$('#workflow-diagram').html(response);
+		}
+	});
+}
+
+function completeWorkflowStage(workflowId,stageNumber) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('workflow/completeStage')) . "',
+		type: 'GET',
+		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=sales',
+		success: function(response) {
+			if(response!='')
+				$('#workflow-diagram').html(response);
+		}
+	});
+}
+
+function revertWorkflowStage(workflowId,stageNumber) {
+	$.ajax({
+		url: '" . CHtml::normalizeUrl(array('workflow/revertStage')) . "',
+		type: 'GET',
+		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=sales',
+		success: function(response) {
+			if(response!='')
+				$('#workflow-diagram').html(response);
+		}
+	});
+}
+",CClientScript::POS_HEAD);
+
 Yii::app()->clientScript->registerScript('detailVewFields', "
-function toggleField(field){
-	$('#'+field.id+' .detail-field').hide();
-	$('#'+field.id+' .detail-form').show();
+function showField(field,focus){
+	// $(field).css('background','red');
+	$(field).find('.detail-field').hide();
+	$(field).find('.detail-form').show();
+	if(focus)
+		$(field).find('input').focus();
 	highlightSave();
 }
 function highlightSave() {
@@ -55,30 +97,20 @@ Yii::app()->clientScript->registerScript('stopEdit','
 ');
 
 ?>
+<div class="form no-border">
 <table class="details">
 	<tr>
 		<td class="label" width="20%"><?php echo $attributeLabels['name']; ?></td>
-		<td colspan="3" id="name" onclick="toggleField(this)">
+		<td colspan="3" id="name" onclick="showField(this,true)">
 			<div class="detail-field"><?php echo $model->name; ?></div>
 			<div class="detail-form"><?php echo $form->textField($model,'name',array('size'=>48,'maxlength'=>40)); ?></div>
-		</td>
-	</tr>
-	<tr>
-		<td class="label">
-			<?php echo $attributeLabels['description']; ?>
-		</td>
-		<td colspan="3" class="text-field" id="description" onclick="toggleField(this)"><div class="spacer"></div>
-			<div class="detail-field"><?php echo $this->convertUrls($model->description); 
-				// replace any CR or LF characters with <br />, maximum of 2 in a row
-			?></div>
-			<div class="detail-form"><?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?></div>
 		</td>
 	</tr>
 	<tr>
 		<td class="label" width="20%"><?php echo CHtml::link($attributeLabels['associatedContacts'],array('addContact', 'id'=>$model->id)); ?></td>
 		<td><?php echo $model->associatedContacts; ?></td>
 		<td class="label"><?php echo ($model->accountId==0)? $attributeLabels['accountName'] : CHtml::link($attributeLabels['accountName'],array('accounts/view','id'=>$model->accountId)); ?></td>
-		<td colspan="3" id="accountName" onclick="toggleField(this);">
+		<td colspan="3" id="accountName" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->accountName; ?></b></div>
 			<div class="detail-form"><?php echo $form->hiddenField($model, 'accountName');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
@@ -99,12 +131,49 @@ Yii::app()->clientScript->registerScript('stopEdit','
 			echo $form->hiddenField($model, 'accountId');?></div>
 		</td>
 	</tr>
+	<?php $workflowList = Workflow::getList(); ?>
+	<tr id="workflow-row">
+		<td class="label"><?php echo Yii::t('workflow','Workflow'); ?></td>
+		<td colspan="3" id="workflow">
+			<div class="detail-field" style="width:170px; text-align:center;margin-bottom:5px;" onclick="showField($('#workflow').get(),false);"><?php echo $workflowList[$currentWorkflow]; ?></div>
+			<div class="detail-form" style="width:170px; text-align:center;margin-bottom:5px;">
+			<?php
+			echo CHtml::dropDownList('workflowId',$currentWorkflow,$workflowList,	//$model->workflow
+				array(
+					'ajax' => array(
+						'type'=>'GET', //request type
+						'url'=>CHtml::normalizeUrl(array('workflow/getWorkflow','modelId'=>$model->id,'type'=>'sales')), //url to call.
+						//Style: CController::createUrl('currentController/methodToCall')
+						'update'=>'#workflow-diagram', //selector to update
+						//'data'=>'js:javascript statement' 
+						//leave out the data key to pass all form values through
+				))
+			); 
+			?>
+			</div>
+			<div id="workflow-diagram">
+			<?php
+			$workflowStatus = Workflow::getWorkflowStatus($currentWorkflow,$model->id,'sales');	// true = include dropdowns
+			echo Workflow::renderWorkflow($workflowStatus);
+		?></div></td>
+	</tr>
+	<tr>
+		<td class="label">
+			<?php echo $attributeLabels['description']; ?>
+		</td>
+		<td colspan="3" class="text-field" id="description" onclick="showField(this,true)"><div class="spacer"></div>
+			<div class="detail-field"><?php echo $this->convertUrls($model->description); 
+				// replace any CR or LF characters with <br />, maximum of 2 in a row
+			?></div>
+			<div class="detail-form"><?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?></div>
+		</td>
+	</tr>
 	<tr>
 		<td class="label" width="20%"><?php echo CHtml::link($attributeLabels['assignedTo'],array('addUser', 'id'=>$model->id)); ?></td>
 		<td><?php echo $model->assignedTo; ?></td>
 		
 		<td class="label" width="25%" ><?php echo $attributeLabels['expectedCloseDate']; ?></td>
-		<td id="expectedCloseDate" onclick="toggleField(this);">
+		<td id="expectedCloseDate" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php $model->expectedCloseDate=empty($model->expectedCloseDate)? '' : date('Y-m-d',$model->expectedCloseDate);
 												echo $model->expectedCloseDate; ?></b></div>
 			<div class="detail-form"><?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
@@ -121,13 +190,13 @@ Yii::app()->clientScript->registerScript('stopEdit','
 	</tr>
 	<tr>
 		<td class="label"><?php echo $attributeLabels['quoteAmount']; ?>
-		<td id="quoteAmount" onclick="toggleField(this);">
+		<td id="quoteAmount" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo Yii::app()->locale->numberFormatter->formatCurrency($model->quoteAmount,Yii::app()->params->currency); ?></b></div>
 			<div class="detail-form"><?php echo $form->textField($model,'quoteAmount'); ?></div>		
 		</td>
 					
 		<td class="label"><?php echo $attributeLabels['leadSource']; ?></td>
-		<td id="leadSource" onclick="toggleField(this);">
+		<td id="leadSource" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo Yii::t('sales',$model->leadSource); ?></div>
 			<div class="detail-form"><?php echo $form->dropDownList($model,'leadSource',array(
 					'Website'=>Yii::t('sales','Website'), 
@@ -139,7 +208,7 @@ Yii::app()->clientScript->registerScript('stopEdit','
 	</tr>
 	<tr>
 		<td class="label"><?php echo $attributeLabels['salesStage']; ?></td>
-		<td id="salesStage" onclick="toggleField(this);">
+		<td id="salesStage" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo Yii::t('sales',$model->salesStage); ?></b></div>
 			<div class="detail-form"><?php echo $form->dropDownList($model,'salesStage',array(
 					'Working'=>Yii::t('sales','Working'),
@@ -149,9 +218,10 @@ Yii::app()->clientScript->registerScript('stopEdit','
 		</td>
 		
 		<td class="label"><?php echo $attributeLabels['probability']; ?></td>
-		<td id="probability" onclick="toggleField(this);">
+		<td id="probability" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->probability; ?></b></div>
 			<div class="detail-form"><?php echo $form->textField($model,'probability'); ?></div>
 		</td>
 	</tr>
 </table>
+</div>

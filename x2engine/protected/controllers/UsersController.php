@@ -202,6 +202,8 @@ class UsersController extends x2base {
 			}
 			if ($model->save())
 				$this->renderTopContacts();
+			// else
+				// echo print_r($model->getErrors());
 
 		}
 	}

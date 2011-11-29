@@ -50,6 +50,12 @@ function deleteAction(actionId) {
 	}
 }
 ",CClientScript::POS_HEAD);
+
+
+
+
+
+
 ?>
 
 
@@ -82,6 +88,13 @@ function deleteAction(actionId) {
 				//echo ActionChild::formatDate($data->completeDate);
 			//else
 				//echo ActionChild::parseStatus($data->dueDate);
+		} else if ($data->type == 'workflow') {
+			$actionData = explode(':',$data->actionDescription);
+			
+			$workflowRecord = CActiveRecord::model('Workflow')->findByPk($actionData[0]);
+			$stageRecords = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$actionData[0]),new CDbCriteria(array('order'=>'id ASC')));
+			
+			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$actionData[1]-1]->name.'</b> ';
 		}
 		?>
 		<div class="buttons">
@@ -95,9 +108,8 @@ function deleteAction(actionId) {
 				
 				echo ' '.CHtml::link('['.Yii::t('actions','Update').']',array('actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ';
 			}
-			echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
-			
-				//'class'=>'x2-button',
+			if ($data->type != 'workflow')
+				echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
 			?>
 		</div>
 	</div>
@@ -105,12 +117,23 @@ function deleteAction(actionId) {
 		<?php
 		if($data->type=='attachment' && $data->completedBy!='Email')
 			echo MediaChild::attachmentActionText($this->convertUrls($data->actionDescription),true,true);
-		else
+		else if($data->type=='workflow') {
+		
+			if(count($actionData) == 2) {
+				if(count($workflowRecord) > 0 && $actionData[1] <= count($stageRecords)) {
+					
+					if($data->complete == 'Yes')
+						echo ' <b>'.Yii::t('workflow','Completed').'</b> '.date('Y-m-d',$data->completeDate);
+					else
+						echo ' <b>'.Yii::t('workflow','Started').'</b> '.date('Y-m-d',$data->createDate);
+				}
+			}
+		} else
 			echo $this->convertUrls($data->actionDescription);	// convert LF and CRLF to <br />
 		?>
 	</div>
 	<div class="footer">
-	<?php if(empty($data->type)) {
+	<?php if(empty($data->type) || $data->type=='workflow') {
 		if ($data->complete == 'Yes') {
 			echo Yii::t('actions','Completed by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
 		} else {

@@ -196,6 +196,7 @@ class SiteController extends x2base {
 		}
 		echo json_encode($messages);
 	}
+        
 
 	public function actionCheckNotifications(){
 		
@@ -657,8 +658,18 @@ class SiteController extends x2base {
 							Yii::app()->session['versionCheck']=true;
 					}
 					else
-						Yii::app()->session['versionCheck']=true;
+                                        Yii::app()->session['versionCheck']=true;
 					Yii::app()->session['loginTime']=time();
+                                        $session=Sessions::model()->findByAttributes(array('user'=>$user->username));
+                                        if(isset($session)){
+                                            $session->lastUpdated=time();
+                                            $session->save();
+                                        }else{
+                                            $session=new Sessions;
+                                            $session->user=$user->username;
+                                            $session->lastUpdated=time();
+                                            $session->save();
+                                        }
 					if(Yii::app()->user->returnUrl=='site/index')
 						$this->redirect('index');
 					else
@@ -673,6 +684,9 @@ class SiteController extends x2base {
 	public function actionLogout() {
 		$user = UserChild::model()->findByPk(Yii::app()->user->getId());
 		$user->lastLogin=time();
+                $session=Sessions::model()->findByAttributes(array('user'=>$user->username));
+                if(isset($session))
+                    $session->delete();
 		$user->save();
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);

@@ -62,6 +62,8 @@ class ProfileChild extends Profile {
 			'startPage'=>Yii::t('profile','Start Page'),
 			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
+			'showDetailView'=>Yii::t('profile','Show Detail View'),
+			'showWorkflow'=>Yii::t('profile','Show Workflow'),
 		);
 	}
 	
@@ -86,14 +88,16 @@ class ProfileChild extends Profile {
 		return $model->showDetailView;
 	}
 
-	public static function getSocialMedia() {
-		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact social media info
-		return $model->showSocialMedia;
-	}
+	// public static function getSocialMedia() {
+		// $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact social media info
+		// return $model->showSocialMedia;
+	// }
 	
 	public static function getResultsPerPage() {
-		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preferred results per page
-		$resultsPerPage = $model->resultsPerPage;
+	
+		$resultsPerPage = Yii::app()->params->profile->resultsPerPage;
+		// $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preferred results per page
+		// $resultsPerPage = $model->resultsPerPage;
 		
 		return empty($resultsPerPage)? 15 : $resultsPerPage;
 	}

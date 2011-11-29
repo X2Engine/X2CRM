@@ -70,7 +70,7 @@ if($detailView) { ?>
 	<?php echo CHtml::link('['.Yii::t('contacts','Simple View').']',array('view','id'=>$model->id,'detail'=>0),array('style'=>'float:right;text-decoration:none;')); ?>
 	<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
 	<?php
-	$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users));
+	$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users,'currentWorkflow'=>$currentWorkflow));
 	$this->endWidget();
 } else { ?>
 	<?php echo CHtml::link('['.Yii::t('contacts','Detail View').']',array('view','id'=>$model->id,'detail'=>1),array('style'=>'float:right;text-decoration:none;')); ?>
@@ -110,11 +110,19 @@ $this->widget('InlineActionForm',
 		'startHidden'=>false,
 	)
 );
-
+if(isset($_GET['history']))
+    $history=$_GET['history'];
+else
+    $history="all";
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$actionHistory,
 	'itemView'=>'../actions/_view',
 	'htmlOptions'=>array('class'=>'action list-view'),
-	'template'=> '<h3>'.Yii::t('app','History').'</h3>{summary}{sorter}{items}{pager}',
+	'template'=> 
+            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),"?history=all")).
+            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),"?history=actions")).
+            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),"?history=comments")).
+            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),"?history=attachments")).
+            '</h3>{summary}{sorter}{items}{pager}',
 ));
 ?>

@@ -34,12 +34,16 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 ?>
+<?php $admin=AdminChild::model()->findByPk(1);?>
 <h1><?php echo Yii::t('app','Administration Tools'); ?>&nbsp;&nbsp;<a href="contactUs" style="position:relative;bottom:5px;" class="x2-button"><?php echo Yii::t('admin','Contact Us');?></a></h1>
 <?php echo Yii::t('app','Welcome to the administration tool set.'); ?>
 <br />
-<?php $admin=AdminChild::model()->findByPk(1);?>
+<?php echo "Automatic updates are currently: ";echo $admin->ignoreUpdates==1?"<b>Off</b>":"<b>On</b>"?>
+<br />
+
 <span style="color:red;"><?php echo (Yii::app()->session['versionCheck']==false && !$admin->ignoreUpdates)?Yii::t('app','A new version is available! Click here to update to version '.Yii::app()->session['newVersion'])." ".CHtml::link(Yii::t('app','Update'),Yii::app()->request->baseUrl.'/updater.php',array('class'=>'x2-button')):'' ?></span>
 <br />
+
 
 <div class="span-7">
 	<h2><?php echo Yii::t('admin','Utilities'); ?></h2>
@@ -58,6 +62,8 @@
 		<?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br /><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?><br /><br />
                 <?php echo CHtml::link(Yii::t('admin','View User Changelog'),'viewChangelog'); ?><br /><?php echo Yii::t('admin','View a log of everything that has been changed');?><br /><br />
                 <?php echo CHtml::link(Yii::t('admin','Toggle Automatic Update'),'toggleUpdater'); ?><br /><?php echo Yii::t('admin','Turn off/on notifications for new versions of X2Contacts');?><br /><br />
+                <?php echo CHtml::link(Yii::t('admin','Set Lead Distribution'),'setLeadRouting'); ?><br /><?php echo Yii::t('admin','Change how new web leads are distributed.');?><br /><br />
+                <?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),'roundRobinRules'); ?><br /><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?><br /><br />
                 <?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),'addCriteria'); ?><br /><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?>
 	</div>
 </div>

@@ -157,6 +157,7 @@ return array(
 			'NoteBox'=>'Note Pad',
 			'ActionMenu'=>'My Actions',
 			'TagCloud'=>'Tag Cloud',
+                        'OnlineUsers'=>'Active Users',
 		),
 		'currency'=>'',
 		'version'=>$version,

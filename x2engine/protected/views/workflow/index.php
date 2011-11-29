@@ -34,40 +34,28 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
-
-$admin = Admin::model()->findByPk(1);
-$updateInterval = $admin->chatPollTime;
-
-$ajaxUrl = $this->controller->createUrl('site/getMessages');
-Yii::app()->clientScript->registerScript('updateChatJs', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
-	$(document).ready(updateChat());	//update on page load
-",CClientScript::POS_HEAD); 
-
-
-echo "<div id=\"chat-box\"></div>";
-
-echo CHtml::beginForm();
-// echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
-
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Send'),
-	array('site/newMessage'),
-	array(
-		'update'=>'#chat-box',
-		'success'=>"function(response) {
-			updateChat();
-			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-			// $('#chat-message').css('color','#aaa');
-			// toggleText($('#chat-message').get());
-		}",
-	),
-	array('class'=>'x2-button')
+$isAdmin = (Yii::app()->user->getName()=='admin');
+$this->menu=array(
+	array('label'=>Yii::t('workflow','List Workflows')),
+	array('label'=>Yii::t('workflow','Create Workflows'), 'url'=>array('create'), 'visible'=>$isAdmin),
 );
-echo CHtml::endForm(); 
 
-?>
+$this->widget('zii.widgets.grid.CGridView', array(
+	'dataProvider'=>$dataProvider,
+	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
+	'template'=> '<h2>'.Yii::t('workflow','Workflows').'</h2><div class="title-bar">{summary}</div>{items}',
+	'enableSorting'=>false,
+	'columns'=>array(
+		array(
+			'name'=>'name',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'type'=>'raw',
+			'headerHtmlOptions'=>array('style'=>'width:75%;'),
+		),
+		array(
+			'name'=>'Stages',
+			'value'=>'CActiveRecord::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
+			'type'=>'raw',
+		),
+	),
+)); ?>

@@ -121,6 +121,16 @@ $(document).ready(function() {
 	$('#main-menu-icon, #footer-logo, #footer-logo img').css({'display':'inline','visibility':'visible','z-index':'2147483647'});
 });
 ",CClientScript::POS_HEAD);
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/notifications.js');
+$notifUrl = $this->createUrl('site/checkNotifications');
+Yii::app()->clientScript->registerScript('updateNotificationJs', "
+        notifUrl='".$this->createUrl('site/checkNotifications')."'
+	$(document).ready(updateNotifications());	//update on page load
+",CClientScript::POS_HEAD); 
+
+
+
 $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
@@ -244,8 +254,9 @@ if($isGuest) {
 			}
 		}
 	}
-	if($isAdmin)
+	if($isAdmin) {
 		$menuItems['users'] = array('label'=>Yii::t('app','Users'), 'url'=>array('/users/admin'), 'active'=>($module=='users')? true : null);
+	}
 }
 
 $maxMenuItems = 5;
@@ -283,14 +294,20 @@ $userMenu = array(
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 <?php 
-	if(Yii::app()->session['loginTime']<time()-$admin->timeout) {
-		if(!Yii::app()->user->isGuest){
-			Yii::app()->user->logout();
-			$this->redirect(Yii::app()->controller->createUrl('site/login'));
-		}
-	} else {
-		Yii::app()->session['loginTime']=time();
-	}
+        $session=Sessions::model()->findByAttributes(array('user'=>Yii::app()->user->getName()));
+        if(isset($session)){
+            if(time()-$session->lastUpdated>$admin->timeout){
+                $session->delete();
+                Yii::app()->user->logout();
+                $this->redirect(Yii::app()->controller->createUrl('site/login'));
+            }else{
+                $session->lastUpdated=time();
+                $session->save();
+            }
+        }elseif(!Yii::app()->user->isGuest){
+            Yii::app()->user->logout();
+            $this->redirect(Yii::app()->controller->createUrl('site/login'));
+        }
 ?>
 <link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
 <link rel="shortcut-icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
@@ -307,7 +324,8 @@ $userMenu = array(
                 <?php
                     $notifications=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0))
                 ?>
-                <?php echo count($notifications)>0?CHtml::link(count($notifications),array('site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;')):CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
+                <?php echo CHtml::link(count($notifications),array('site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
+                      echo CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
                 <?php
 		//render main menu items
 		$this->widget('zii.widgets.CMenu', array(

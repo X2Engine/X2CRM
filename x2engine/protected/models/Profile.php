@@ -30,6 +30,7 @@
  * @property string $startPage
  * @property integer $showSocialMedia
  * @property integer $showDetailView
+ * @property integer $showWorkflow
  */
 class Profile extends CActiveRecord
 {
@@ -59,7 +60,7 @@ class Profile extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('fullName, username, status', 'required'),
-			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView', 'numerical', 'integerOnly'=>true),
+			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView, showWorkflow', 'numerical', 'integerOnly'=>true),
 			array('fullName', 'length', 'max'=>60),
 			array('username, updatedBy', 'length', 'max'=>20),
 			array('officePhone, cellPhone, language', 'length', 'max'=>40),
@@ -71,7 +72,7 @@ class Profile extends CActiveRecord
 			array('notes, avatar', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, fullName, username, officePhone, cellPhone, emailAddress, notes, status, tagLine, lastUpdated, updatedBy, avatar, allowPost, language, timeZone, resultsPerPage, widgets, widgetOrder, backgroundColor, menuBgColor, menuTextColor, backgroundImg, pageOpacity, startPage, showSocialMedia, showDetailView', 'safe', 'on'=>'search'),
+			array('id, fullName, username, officePhone, cellPhone, emailAddress, notes, status, tagLine, lastUpdated, updatedBy, avatar, allowPost, language, timeZone, resultsPerPage, widgets, widgetOrder, backgroundColor, menuBgColor, menuTextColor, backgroundImg, pageOpacity, startPage, showSocialMedia, showDetailView, showWorkflow', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -114,6 +115,7 @@ class Profile extends CActiveRecord
 			'startPage'=>Yii::t('profile','Start Page'),
 			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
+			'showWorkflow'=>Yii::t('profile','Show Workflow'),
 		);
 	}
 
@@ -154,6 +156,7 @@ class Profile extends CActiveRecord
 		$criteria->compare('startPage',$this->startPage,true);
 		$criteria->compare('showSocialMedia',$this->showSocialMedia);
 		$criteria->compare('showDetailView',$this->showDetailView);
+		$criteria->compare('showWorkflow',$this->showWorkflow);
 		
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

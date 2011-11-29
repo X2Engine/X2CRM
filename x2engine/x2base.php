@@ -101,24 +101,78 @@ class x2base extends Controller {
 	 * @param CActiveRecord $model The model to be displayed
 	 * @param String $type The type of the module being displayed
 	 */
-	public function view($model, $type) {
+	public function view($model, $type, $params = array()) {
 
 		$actionHistory=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
 				'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
 				'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\''
-		)));
-
+			)
+		));
+		if(isset($_GET['history'])) {
+			$history=$_GET['history'];
+		} else {
+			$history='all';
+		}
+		if($history=='actions') {
+			$actionHistory=new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+					'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND type IS NULL'
+				)
+			));
+		} elseif($history=='comments') {
+			$actionHistory=new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+					'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND type="note"'
+				)
+			));
+		} elseif($history=='attachments') {
+			$actionHistory = new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+					'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND type="attachment"'
+				)
+			));
+		}
+		
+		// check for currently active stages
+		$currentWorkflowActions = CActiveRecord::model('ActionChild')->findAllByAttributes(
+			array('associationType'=>$type,'associationId'=>$model->id,'type'=>'workflow'),
+			new CDbCriteria(array('condition'=>'completeDate = 0 OR completeDate IS NULL','order'=>'createDate DESC'))
+		);
+		if(count($currentWorkflowActions)) {	// are there any?
+			$actionData = explode(':',$currentWorkflowActions[0]->actionDescription);
+			if(count($actionData) == 2)
+				$currentWorkflow = $actionData[0];
+			else
+				$currentWorkflow = 0;
+		} else {							// if not, then check for completed stages
+			$completedWorkflowActions = CActiveRecord::model('ActionChild')->findAllByAttributes(
+				array('associationType'=>$type,'associationId'=>$model->id,'type'=>'workflow'),
+				new CDbCriteria(array('order'=>'createDate DESC'))
+			);
+			if(count($completedWorkflowActions)) {	// are there any?
+				$actionData = explode(':',$completedWorkflowActions[0]->actionDescription);
+				if(count($actionData) == 2)
+					$currentWorkflow = $actionData[0];
+				else
+					$currentWorkflow = 0;
+			} else
+				$currentWorkflow = 0;
+		}
+			
 		$users=UserChild::getNames();
 		$names=$this->parseType($type);
 		$showActionForm = isset($_GET['showActionForm']);
-		$this->render('view',array(
+		$this->render('view',array_merge($params,array(
 			'model'=>$model,
 			'actionHistory'=>$actionHistory,
 			'users'=>$users,
 			'names'=>$names,
-			'showActionForm'=>$showActionForm	//tell view whether or not to show 'add action'
-		));
+			'currentWorkflow'=>$currentWorkflow,
+		)));
 	}
 	
 	/**
@@ -279,10 +333,11 @@ class x2base extends Controller {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function create($model, $oldAttributes, $api) {
-            $changes=$this->calculateChanges($oldAttributes, $model->attributes);
+            
             if(substr($this->modelClass,-5)=="Child")
                 $name=substr($this->modelClass,0,-5)."s";
             if($model->save()){
+                $changes=$this->calculateChanges($oldAttributes, $model->attributes);
                 $this->updateChangelog($model,$changes);
                 if($model->assignedTo!=Yii::app()->user->getName()){
                     $notif=new Notifications;
@@ -430,22 +485,26 @@ class x2base extends Controller {
 		if($changelog->save()){
 			
 		}
-		
-		
-		
+                $changes=array();
 		if($change!='Create' && $change!='Completed' && $change!='Edited'){
 			
 			if($change!=""){
-				$pieces=explode("TO:",$change);
-				$change=$pieces[1]; 
-				$forDeletion=$pieces[0];
-				preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
-				$deleteMatches=$deleteMatches[0];
-				foreach($deleteMatches as $match){
-					$oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
-					if(isset($oldTag))
-						$oldTag->delete();
-				}
+                            $pieces=explode("<br />",$change);
+                            foreach($pieces as $piece){
+                                $newPieces=explode("TO:",$piece);
+                                $forDeletion=$newPieces[0];
+                                if(isset($newPieces[1]))
+                                    $changes[]=$newPieces[1];
+
+                                preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
+                                $deleteMatches=$deleteMatches[0];
+                                foreach($deleteMatches as $match){
+                                        $oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
+                                        if(isset($oldTag))
+                                                $oldTag->delete();
+
+                                }
+                            }
 			}
 		}else if($change=='Create' || $change=='Edited'){
 			if($model instanceof Contacts)
@@ -457,42 +516,37 @@ class x2base extends Controller {
 			else
 				$change=$model->name;
 		} 
-		
-		preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
-		$matches=$matches[0];
-		foreach($matches as $match){
-			$tag=new Tags;
-			$tag->type=$type;
-			$tag->taggedBy=Yii::app()->user->getName();
-			$tag->type=$type;
-			$tag->tag=$match;
-			if($model instanceof Contacts)
-				$tag->itemName=$model->firstName." ".$model->lastName;
-			else if($model instanceof Actions)
-				$tag->itemName=$model->actionDescription;
-			else if($model instanceof Docs)
-				$tag->itemName=$model->title;
-			else
-				$tag->itemName=$model->name;
-			if(!isset($model->id)){
-				$model->save();
-			}
-			$tag->itemId=$model->id;
-			$tag->timestamp=time();
-			if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
-				if(substr($tag->tag,1,1)=='#')
-					$tag->tag=substr($tag->tag,1);
-				if($tag->save()){
-					
-				}else{
-					print_r($tag->getErrors());
-					exit;
-				}
-			}else{
-				print_r($tag->getErrors());
-				exit;
-			}
-		}
+		foreach($changes as $change){
+                    preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
+                    $matches=$matches[0];
+                    foreach($matches as $match){
+                            $tag=new Tags;
+                            $tag->type=$type;
+                            $tag->taggedBy=Yii::app()->user->getName();
+                            $tag->type=$type;
+                            $tag->tag=$match;
+                            if($model instanceof Contacts)
+                                    $tag->itemName=$model->firstName." ".$model->lastName;
+                            else if($model instanceof Actions)
+                                    $tag->itemName=$model->actionDescription;
+                            else if($model instanceof Docs)
+                                    $tag->itemName=$model->title;
+                            else
+                                    $tag->itemName=$model->name;
+                            if(!isset($model->id)){
+                                    $model->save();
+                            }
+                            $tag->itemId=$model->id;
+                            $tag->timestamp=time();
+                            if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
+                                    if(substr($tag->tag,1,1)=='#')
+                                            $tag->tag=substr($tag->tag,1);
+                                    if($tag->save()){
+
+                                    }
+                            }
+                    }
+                }
 		return $model;
 	}
 	
@@ -530,65 +584,67 @@ class x2base extends Controller {
                         $arr[$keys[$i]]=$new[$keys[$i]];
                         $allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>substr($this->modelClass,0,-5)."s",'modelField'=>$keys[$i]));
                         foreach($allCriteria as $criteria){
-                            if($criteria->comparisonOperator=="="){
-                                if($new[$keys[$i]]==$criteria->modelValue){
+                            if(($criteria->comparisonOperator=="=" && $new[$keys[$i]]==$criteria->modelValue)
+                                        || ($criteria->comparisonOperator==">" && $new[$keys[$i]]>=$criteria->modelValue)
+                                        || ($criteria->comparisonOperator=="<" && $new[$keys[$i]]<=$criteria->modelValue)
+                                        || ($criteria->comparisonOperator=="change" && $new[$keys[$i]]!=$old[$keys[$i]])){
+                                if($criteria->type=='notification'){
                                     $pieces=explode(", ",$criteria->users);
                                     foreach($pieces as $piece){
                                         $notif=new Notifications;
                                         $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        if($criteria->comparisonOperator=="="){
+                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }else if($criteria->comparisonOperator==">"){
+                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }else if($criteria->comparisonOperator=="<"){
+                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }else if($criteria->comparisonOperator=="change"){
+                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has had field $criteria->modelField changed";
+                                        }
                                         $notif->user=$piece;
                                         $notif->createDate=time();
                                         $notif->viewed=0;
                                         $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
                                         $notif->save();
                                     }
-                                }
-                            }
-                            else if($criteria->comparisonOperator==">"){
-                                if($new[$keys[$i]]>=$criteria->modelValue){
-                                    $pieces=explode(":",$criteria->users);
+                                }else if($criteria->type=='action'){
+                                    $pieces=explode(", ",$criteria->users);
                                     foreach($pieces as $piece){
-                                        $notif=new Notifications;
-                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        $notif->user=$piece;
-                                        $notif->createDate=time();
-                                        $notif->viewed=0;
-                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
-                                        $notif->save();
+                                        $action=new ActionChild;
+                                        $action->assignedTo=$piece;
+                                        if($criteria->comparisonOperator=="="){
+                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }else if($criteria->comparisonOperator==">"){
+                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }else if($criteria->comparisonOperator=="<"){
+                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }else if($criteria->comparisonOperator=="change"){
+                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                        }
+                                        $action->dueDate=mktime('23','59','59');
+                                        $action->createDate=time();
+                                        $action->lastUpdated=time();
+                                        $action->updatedBy='admin';
+                                        $action->visibility=1;
+                                        $action->associationType=lcfirst(substr($this->modelClass,0,-5))."s";
+                                        $action->associationId=$new['id'];
+                                        $model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
+                                        $action->associationName=$model->name;
+                                        $action->save();
                                     }
-                                }
-                            }
-                            else if($criteria->comparisonOperator=="<"){
-                                if($new[$keys[$i]]<=$criteria->modelValue){
-                                    $pieces=explode(":",$criteria->users);
-                                    foreach($pieces as $piece){
-                                        $notif=new Notifications;
-                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        $notif->user=$piece;
-                                        $notif->createDate=time();
-                                        $notif->viewed=0;
-                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
-                                        $notif->save();
-                                    }
-                                }
-                            }
-                            else if($criteria->comparisonOperator=="change"){
-                                if($new[$keys[$i]]!=$old[$keys[$i]]){
-                                    $pieces=explode(":",$criteria->users);
-                                    foreach($pieces as $piece){
-                                        $notif=new Notifications;
-                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                        $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        $notif->user=$piece;
-                                        $notif->createDate=time();
-                                        $notif->viewed=0;
-                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
-                                        $notif->save();
-                                    }
-                                }
+                                }else if($criteria->type=='assignment'){
+                                    $model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
+                                    $model->assignedTo=$criteria->users;
+                                    $model->save();
+                                    $notif=new Notifications;  
+                                    $notif->text="A(n)".substr($this->modelClass,0,-5)." has been re-assigned to you.";
+                                    $notif->user=$model->assignedTo;
+                                    $notif->createDate=time();
+                                    $notif->viewed=0;
+                                    $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+                                    $notif->save();
+                                } 
                             }
                         }
                     }
@@ -645,6 +701,16 @@ class x2base extends Controller {
 		// return htmlspecialchars($str);
 		return preg_replace('/"/u','&quot;',$str);
 	}
+        
+        public static function cleanUpSessions(){
+            $admin=AdminChild::model()->findByPk(1);
+            $sessions=Sessions::model()->findAll();
+            foreach($sessions as $session){
+                if(time()-$session->lastUpdated>$admin->timeout){
+                    $session->delete();
+                }
+            }
+        }
 	
 	
 	/**

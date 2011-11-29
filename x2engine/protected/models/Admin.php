@@ -15,6 +15,9 @@
  * @property string $menuNicknames
  * @property integer $chatPollTime
  * @property integer $ignoreUpdates
+ * @property integer $rrId
+ * @property string $leadDistribution
+ * @property integer $onlineOnly
  */
 class Admin extends CActiveRecord
 {
@@ -43,14 +46,15 @@ class Admin extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('accounts, sales, timeout, chatPollTime, ignoreUpdates', 'numerical', 'integerOnly'=>true),
+			array('accounts, sales, timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly', 'numerical', 'integerOnly'=>true),
 			array('webLeadEmail', 'length', 'max'=>200),
 			array('currency', 'length', 'max'=>3),
 			array('menuOrder, menuNicknames', 'length', 'max'=>255),
 			array('menuVisibility', 'length', 'max'=>100),
+			array('leadDistribution', 'length', 'max'=>250),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, accounts, sales, timeout, webLeadEmail, currency, menuOrder, menuVisibility, menuNicknames, chatPollTime, ignoreUpdates', 'safe', 'on'=>'search'),
+			array('id, accounts, sales, timeout, webLeadEmail, currency, menuOrder, menuVisibility, menuNicknames, chatPollTime, ignoreUpdates, rrId, leadDistribution, onlineOnly', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -82,6 +86,9 @@ class Admin extends CActiveRecord
 			'menuNicknames' => 'Menu Nicknames',
 			'chatPollTime' => 'Chat Poll Time',
 			'ignoreUpdates' => 'Ignore Updates',
+			'rrId' => 'Rr',
+			'leadDistribution' => 'Lead Distribution',
+			'onlineOnly' => 'Online Only',
 		);
 	}
 
@@ -107,6 +114,9 @@ class Admin extends CActiveRecord
 		$criteria->compare('menuNicknames',$this->menuNicknames,true);
 		$criteria->compare('chatPollTime',$this->chatPollTime);
 		$criteria->compare('ignoreUpdates',$this->ignoreUpdates);
+		$criteria->compare('rrId',$this->rrId);
+		$criteria->compare('leadDistribution',$this->leadDistribution,true);
+		$criteria->compare('onlineOnly',$this->onlineOnly);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

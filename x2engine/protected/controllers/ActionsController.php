@@ -164,48 +164,48 @@ class ActionsController extends x2base {
 			}
 		}
 	}
-        
-        public function create($model, $oldAttributes, $api){
-            
-            if($model->associationId=='')
-                $model->associationId=0;
-            //if($model->
+	
+	public function create($model, $oldAttributes, $api){
+		
+		if($model->associationId=='')
+			$model->associationId=0;
+		//if($model->
 
-            $model->createDate = time();	// created now, full datetime
-            //$model->associationId=$_POST['ActionChild']['associationId'];
-            $dueDate = strtotime($model->dueDate);
-            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+		$model->createDate = time();	// created now, full datetime
+		//$model->associationId=$_POST['ActionChild']['associationId'];
+		$dueDate = strtotime($model->dueDate);
+		$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
 
-            //if($type=='none')
-            //	$model->associationId=0;
-            //$model->associationType=$type;
+		//if($type=='none')
+		//	$model->associationId=0;
+		//$model->associationType=$type;
 
-            $association = $this->getAssociation($model->associationType,$model->associationId);
+		$association = $this->getAssociation($model->associationType,$model->associationId);
 
-            if($association != null) {
-                $model->associationName = $association->name;
-            } else {
-                $model->associationName='None';
-                //$model->associationId = 0;
-            }
-            if($model->associationName=='None' && $model->associationType!='none'){
-                $model->associationName=ucfirst($model->associationType);
-            }
-            if(isset($_POST['submit']) && $_POST['submit']=='comment') {	// if user clicked "New Comment" rather than "New Action"
-                $model->createDate = time();
-                $model->dueDate = time();
-                $model->completeDate = time();
-                $model->complete='Yes';
-                $model->visibility='1';
-                $model->assignedTo=Yii::app()->user->getName();
-                $model->completedBy=Yii::app()->user->getName();
-                $model->type='note';
-            }
-            if($api==0)
-                parent::create($model,$oldAttributes,$api);
-            else
-                return parent::create($model,$oldAttributes,$api);
-        }
+		if($association != null) {
+			$model->associationName = $association->name;
+		} else {
+			$model->associationName='None';
+			//$model->associationId = 0;
+		}
+		if($model->associationName=='None' && $model->associationType!='none'){
+			$model->associationName=ucfirst($model->associationType);
+		}
+		if(isset($_POST['submit']) && $_POST['submit']=='comment') {	// if user clicked "New Comment" rather than "New Action"
+			$model->createDate = time();
+			$model->dueDate = time();
+			$model->completeDate = time();
+			$model->complete='Yes';
+			$model->visibility='1';
+			$model->assignedTo=Yii::app()->user->getName();
+			$model->completedBy=Yii::app()->user->getName();
+			$model->type='note';
+		}
+		if($api==0)
+			parent::create($model,$oldAttributes,$api);
+		else
+			return parent::create($model,$oldAttributes,$api);
+	}
 
 	/**
 	 * Creates a new model.

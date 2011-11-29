@@ -37,8 +37,8 @@
 $attributeLabels = ContactChild::attributeLabels();
 
 if($actionModel->associationId!=0)
-	$link = CHtml::link(CHtml::encode($actionModel->associationName),
-		array($actionModel->associationType.'/view','id'=>$actionModel->associationId));
+	$link = CHtml::link(CHtml::encode($model->name),
+		array('contacts/view','id'=>$model->id));
 else
 	$link = Yii::t('actions','No one');
 ?>

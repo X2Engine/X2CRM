@@ -73,6 +73,10 @@ class AdminController extends Controller {
 	*/
 	public function accessRules() {
 		return array(
+                        array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				'actions'=>array('getRoundRobin','updateRoundRobin','getRoutingRules','roundRobin','evenDistro','getRoutingType'),
+				'users'=>array('*'),
+			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('viewPage','getAttributes'),
 				'users'=>array('@'),
@@ -81,7 +85,8 @@ class AdminController extends Controller {
 				'actions'=>array('index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
 					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules',
-					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria','deleteCriteria'),
+					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
+                                        'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -123,6 +128,128 @@ class AdminController extends Controller {
 			'criteria'=>$criteria,
 		));
 	}
+        
+        public function actionGetRoundRobin(){
+		$admin=CActiveRecord::model('Admin')->findByPk(1);
+		$rrId=$admin->rrId;
+		echo $rrId;
+	}
+	
+	public function actionUpdateRoundRobin(){
+		$admin=CActiveRecord::model('Admin')->findByPk(1);
+		$admin->rrId=$admin->rrId+1;
+		$admin->save();
+		echo true;
+	}
+        
+        public function actionGetRoutingType(){
+            $admin=CActiveRecord::model('Admin')->findByPk(1);
+            echo $admin->leadDistribution;
+        }
+        
+        public function actionRoundRobin(){
+            $admin=AdminChild::model()->findByPk(1);
+            $online=$admin->onlineOnly;
+            x2base::cleanUpSessions();
+            $usernames=array();
+            $sessions=SessionChild::getOnlineUsers();
+            $users=CActiveRecord::model('UserChild')->findAll();
+            foreach($users as $user){
+                $usernames[]=$arr;
+            }
+            if($online==1){
+                $users=array_intersect($usernames,$sessions);
+            }else{
+                $users=$usernames;
+            }
+            $str="";
+            foreach($users as $user){
+                if($user!='admin'){
+                    $str.=$user.":";
+                }
+            }
+            if($str!="")
+                echo substr($str,0,-1);
+            else
+                echo $str;
+        }
+        
+        public function actionEvenDistro(){
+            $admin=AdminChild::model()->findByPk(1);
+            $online=$admin->onlineOnly;
+            x2base::cleanUpSessions();
+            $usernames=array();
+            $sessions=SessionChild::getOnlineUsers();
+            $users=CActiveRecord::model('UserChild')->findAll();
+            foreach($users as $user){
+                $usernames[]=$user->username;
+            }
+            
+            if($online==1){
+                $users=array_intersect($usernames,$sessions);
+            }else{
+                $users=$usernames;
+            }
+            
+            $numbers=array();
+            foreach($users as $user){
+                if($user!='admin'){
+                    $actions=CActiveRecord::model('ActionChild')->findAllByAttributes(array('assignedTo'=>$user,'complete'=>'No'));
+                    $numbers[$user->username]=count($actions);
+                }
+            }
+            asort($numbers);
+            reset($numbers);
+            echo key($numbers);
+        }
+        
+        public function actionGetRoutingRules(){
+            $field=$_GET['field'];
+            $value=$_GET['value'];
+            $admin=AdminChild::model()->findByPk(1);
+            $online=$admin->onlineOnly;
+            x2base::cleanUpSessions();
+            $sessions=SessionChild::getOnlineUsers();
+            
+            $rule=CActiveRecord::model('LeadRouting')->findByAttributes(array('field'=>$field,'value'=>$value));
+            if(isset($rule)){
+                $users=$rule->users;
+                $users=explode(", ",$users);
+                if($online==1)
+                    $users=array_intersect($users,$sessions);
+                $str="";
+                foreach($users as $user){
+                    $str.=$user.", ";
+                }
+                echo substr($str,0,-2);
+            }
+            else
+                echo "";
+        }
+        
+        public function actionRoundRobinRules(){
+                $model=new LeadRouting;
+                $users=UserChild::getNames();
+                unset($users['']);
+                unset($users['admin']);
+                $dataProvider=new CActiveDataProvider('LeadRouting');
+		if(isset($_POST['LeadRouting'])) {
+			$model->attributes=$_POST['LeadRouting'];
+                        
+                        $model->users=AccountChild::parseUsers($model->users);
+			
+			if($model->save()) {
+				$this->redirect('roundRobinRules');
+			}
+		}
+		
+		$this->render('customRules',array(
+			'model'=>$model,
+                        'users'=>$users,
+                        'dataProvider'=>$dataProvider,
+		));
+            
+        }
         
         public function actionToggleUpdater(){
             
@@ -177,6 +304,9 @@ class AdminController extends Controller {
                $criteria->attributes=$_POST['Criteria'];
                $str="";
                $arr=$criteria->users;
+               if($criteria->type=='assignment' && count($arr)>1){
+                   $this->redirect('addCriteria');
+               }
                if(isset($arr)){
                    foreach($arr as $user){
                        $str.=$user.", ";
@@ -189,9 +319,6 @@ class AdminController extends Controller {
 
                    }
                    $this->redirect('index');
-               }else{
-                   print_r($criteria->attributes);
-                   exit;
                }
                
             }
@@ -207,6 +334,13 @@ class AdminController extends Controller {
             $model=Criteria::model()->findByPk($id);
             $model->delete();
             $this->redirect(array('addCriteria'));
+        }
+        
+        public function actionDeleteRouting($id){
+            
+            $model=LeadRouting::model()->findByPk($id);
+            $model->delete();
+            $this->redirect(array('roundRobinRules'));
         }
         
         public function actionGetAttributes(){
@@ -261,6 +395,26 @@ class AdminController extends Controller {
 		}
 		
 		$this->render('setTimeout',array(
+			'admin'=>$admin,
+		));
+	}
+        
+        public function actionSetLeadRouting() {
+		
+		$admin=Admin::model()->findByPk(1);
+		if(isset($_POST['Admin'])) {
+			$routing=$_POST['Admin']['leadDistribution'];
+                        $online=$_POST['Admin']['onlineOnly'];
+			
+			$admin->leadDistribution=$routing;
+                        $admin->onlineOnly=$online;
+			
+			if($admin->save()) {
+				$this->redirect('index');
+			}
+		}
+		
+		$this->render('leadRouting',array(
 			'admin'=>$admin,
 		));
 	}

@@ -26,6 +26,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
                 array(
 
+			'name'=>'type',
+			'header'=>Yii::t('admin','Type'),
+			'value'=>'ucfirst($data->type)',
+			'type'=>'raw',
+		),
+                array(
+
 			'name'=>'delete',
 			'header'=>Yii::t('admin','Delete'),
 			'value'=>'CHtml::link("Delete","deleteCriteria/$data->id")',
@@ -90,6 +97,12 @@ To add a condition which will trigger notifications, please fill out the form be
             <?php echo $form->labelEx($model,'users'); ?>
             <?php echo $form->dropDownList($model,'users',$users,array('multiple'=>'multiple','size'=>7)); ?>
             <?php echo $form->error($model,'users'); ?>
+        </div>
+        
+        <div class="row">
+            <?php echo $form->labelEx($model,'type'); ?>
+            <?php echo $form->dropDownList($model,'type',array('notification'=>'Notification','action'=>'Action','assignment'=>'Assignment Change')); ?>
+            <?php echo $form->error($model,'type'); ?>
         </div>
         
 	<div class="row buttons">

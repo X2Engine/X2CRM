@@ -43,16 +43,14 @@ $lastName=$_POST['lastName'];
 $email=$_POST['email'];
 $phone=$_POST['phone'];
 $info=$_POST['info'];
+$school=$_POST['school'];
 
 if($info=="Enter any additional information or questions regarding your interest here."){
     $info="";
 }
 
-$url=""; // Add your server URL here, including any folders the app may be in.  i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. 
-
-echo $ccResult;
-
-
+$url="www.x3engine.com/x2jake"; // Add your server URL here, including any folders the app may be in.  
+         //i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. Installer should do this manually.
 
 $date=mktime(0,0,0,date('m'),date('d'),date('Y'));
 $count=preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email);
@@ -87,8 +85,6 @@ if($ccResult!="No Item found with specified attributes."){
 		curl_close($ccSession);
 }else{
         $time=time();
-		
-		
 			
 		$ccUrl = 'http://'.$url.'/index.php/api/create?model=Contacts';
 		$ccSession = curl_init($ccUrl);
@@ -96,6 +92,7 @@ if($ccResult!="No Item found with specified attributes."){
 			'firstName'=>$firstName,
 			'lastName'=>$lastName,
 			'assignedTo'=>'Anyone',
+                        'account'=>$school,
 			'visibility'=>'1',
 			'phone'=>$phone,
 			'email'=>$email,
@@ -103,12 +100,65 @@ if($ccResult!="No Item found with specified attributes."){
 			'lastUpdated'=>$time,
 			'updatedBy'=>'admin',
 			'backgroundInfo'=>$info,
+		);
+                
+                $actionData=array(
+			'type'=>'',
+			'actionDescription'=>'Web Lead',
+			'assignedTo'=>'Anyone',
+			'visibility'=>'1',
+			'dueDate'=>$date,
+			'associationType'=>'contacts',
+			'associationId'=>'',
+			'associationName'=>$firstName." ".$lastName,
+			'priority'=>'High',
+			'createDate'=>$time,
+			'lastUpdated'=>$time,
+			'updatedBy'=>'admin',
 		); 
+                $leadDistribution=file_get_contents("http://$url/index.php/admin/getRoutingType");
+                $leadDistribution=trim($leadDistribution);
+                
+                if($leadDistribution==""){
+                    
+                }elseif($leadDistribution=="evenDistro"){
+                    $user=file_get_contents("http://$url/index.php/admin/evenDistro");
+                    $data['assignedTo']=$user;
+                    $actionData['assignedTo']=$user;
+                    
+                }elseif($leadDistribution=="trueRoundRobin"){
+                    $users=file_get_contents("http://$url/index.php/admin/roundRobin");
+                    $users=explode(":",$users);
+                    $rrId=file_get_contents("http://$url/index.php/admin/getRoundRobin");
+                    $i=$rrId%count($users);
+                    $user=$users[$i];
+                    $data['assignedTo']=$user;
+                    $actionData['assignedTo']=$user;
+                    
+                }elseif($leadDistribution=="customRoundRobin"){
+                    foreach($data as $key=>$value){
+                        $rule=file_get_contents("http://$url/index.php/admin/getRoutingRules?field=$key&value=$value");
+
+                        if(isset($rule) && $rule!=""){
+                            $users=$rule;
+                            $users=explode(", ",$users);
+                            $rrId=file_get_contents("http://$url/index.php/admin/getRoundRobin");
+                            $i=$rrId%count($users);
+                            $user=$users[$i];
+                            $data['assignedTo']=$user;
+                            $actionData['assignedTo']=$user;
+                        }
+                    }
+                }
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ccSession,CURLOPT_POST,1);
 		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 		$ccResult = curl_exec($ccSession);
+                $res=curl_getinfo($ccSession,CURLINFO_HTTP_CODE );
+                if($res=="200" && ($leadDistribution=="roundRobin" || $leadDistribution=="customRoundRobin")){
+                   $rrId=file_get_contents("http://$url/index.php/admin/updateRoundRobin"); 
+                }
 		curl_close($ccSession);
 		
 		$ccUrl = 'http://'.$url.'/index.php/api/lookUp?model=Contacts&email='.$email; 
@@ -121,27 +171,17 @@ if($ccResult!="No Item found with specified attributes."){
 		$pieces=explode(":",$pieces[0]);
 		$id=substr($pieces[1],1,-1);
 		
+                $actionData['associationId']=$id;
+                
 		curl_close($ccSession);
 		
 		$ccUrl = 'http://'.$url.'/index.php/api/create?model=Actions';
 		$ccSession = curl_init($ccUrl);
-		$data=array(
-			'type'=>'Web Lead',
-			'actionDescription'=>'Web Lead',
-			'assignedTo'=>'Anyone',
-			'visibility'=>'1',
-			'dueDate'=>$date,
-			'associationType'=>'contacts',
-			'associationId'=>$id,
-			'associationName'=>$firstName." ".$lastName,
-			'priority'=>'High',
-			'createDate'=>$time,
-			'lastUpdated'=>$time,
-			'updatedBy'=>'admin',
-		); 
+		
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                curl_setopt($ccSession, CURLOPT_USERPWD, "x3engine:x32011!!"); 
 		curl_setopt($ccSession,CURLOPT_POST,1);
-		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
+		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$actionData);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 		$ccResult = curl_exec($ccSession);
 		curl_close($ccSession);

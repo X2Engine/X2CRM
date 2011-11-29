@@ -138,7 +138,7 @@ class ContactChild extends Contacts {
 			$list = CActiveRecord::model('ContactList')->findByPk($id);
 
 		if(isset($list)) {
-			$contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
+			// $contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
 			// die(var_dump($contactIds));
 			// $search = CActiveRecord::model('ContactChild')->findAllByPk($contactIds);
 			// return $search;
