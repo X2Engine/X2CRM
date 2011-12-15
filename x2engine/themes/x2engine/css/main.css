@@ -88,18 +88,18 @@ body {
 #main-menu-notif {
 	display:block;
 	float:right;
-        border-radius:4px 4px 4px 4px;
-	-moz-border-radius:4px 4px 4px 4px;
-	-webkit-border-radius:4px 4px 4px 4px;
-	-o-border-radius:4px 4px 4px 4px;
-        background-color:white;
-        padding:2.5px;
+	border-radius:4px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	-o-border-radius:4px;
+	background-color:white;
+	padding:2.5px;
 	height:25px;
-        text-decoration:none;
+	text-decoration:none;
 	width:25px;
-        color:#579100; 
-        text-align:center;
-        font-size:18px;
+	color:#579100; 
+	text-align:center;
+	font-size:18px;
 	margin:5px 3px;
 }
 #main-menu-bar ul {
@@ -892,24 +892,6 @@ div.contact-lists table.items tbody tr:last-child td {
 	width:300px;
 }
 
-#installer-box {
-	width:500px;
-	padding:80px 30px 20px 30px;
-	color:black;
-	background:url(../images/x5crm.png) center 20px no-repeat white;
-	margin:25px auto 25px auto;
-	border-radius:8px;
-	-moz-border-radius:8px;
-	-webkit-border-radius:8px;
-	-o-border-radius:8px;
-	
-	-moz-box-shadow: 0 0 30px #c0bdb8;
-	-webkit-box-shadow: 0 0 30px #c0bdb8;
-	box-shadow: 0 0 30px #c0bdb8;
-}
-#installer-box h1, #installer-box h3 {
-	text-align:center;
-}
 #about-intro {
 	width:450px;
 	color:#666;

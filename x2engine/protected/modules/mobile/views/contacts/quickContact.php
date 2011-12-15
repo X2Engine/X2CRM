@@ -44,8 +44,8 @@ $prof=Profile::model()->findByPk(Yii::app()->user->getId());
 // }
 
 
-$model = new ContactChild;
-$attributeLabels = ContactChild::attributeLabels();
+$model = new Contacts;
+$attributeLabels = Contacts::attributeLabels();
 
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'quick-contact-form',

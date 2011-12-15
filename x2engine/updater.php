@@ -7,7 +7,9 @@ $context = stream_context_create(array(
         'timeout' => 15		// Timeout in seconds
     )
 ));
-
+if(!isset($updaterVersion)){
+    $updaterVersion="";
+}
 if($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context)){
     $url='x2planet';
 }
@@ -20,6 +22,28 @@ else {
     exit;
 }
 
+$updaterCheck=file_get_contents("http://www.$url.com/updates/updateCheck.php");
+if($updaterCheck!=$updaterVersion){
+    copy("http://www.$url.com/updates/x2engine/updater.php" , "updater.php");
+    $config="<?php
+\$host='$host';
+\$user='$user';
+\$pass='$pass';
+\$dbname='$dbname';
+\$version='$newVersion';
+\$updaterVersion='$updateCheck';
+?>";
+file_put_contents('protected/config/emailConfig.php', $config);
+?>
+<script>
+alert("The updater was changed.  The page will now refresh for the full update.");
+window.location.reload();
+</script>
+
+<?php
+
+}
+
 $contents=file_get_contents("http://www.$url.com/updates/update.php?version=$version");
 $pieces=explode(";",$contents);
 $newVersion=$pieces[2];
@@ -30,7 +54,7 @@ saveBackup($pieces);
 $fileCount=0;
 foreach($pieces as $file){
     if($file!=""){
-        if(!copy("http://www.$url.com/updates/x2engine/".$file , $file)){
+        if(!ccopy("http://www.$url.com/updates/x2engine/".$file , $file)){
             echo "Failed to copy file $file<br />";
             restoreBackup($pieces);
             cleanUp();
@@ -67,6 +91,7 @@ $config="<?php
 \$pass='$pass';
 \$dbname='$dbname';
 \$version='$newVersion';
+\$updateCheck='$updateCheck';
 ?>";
 file_put_contents('protected/config/emailConfig.php', $config);
 echo "$fileCount file(s) have been changed.";
@@ -104,11 +129,28 @@ function makeDirectories($file){
                 }
             }
         }
+} 
+
+function ccopy($filepath, $file){
+    
+    $pieces=explode('/',$file);
+    unset($pieces[count($pieces)]);
+    for($i=0;$i<count($pieces);$i++){
+        $str="";
+        for($j=0;$j<$i;$j++){
+            $str.=$pieces[$j].'/';
+        }
+        
+        if(!is_dir($str) && $str!=""){
+            mkdir($str);
+        }
+    }
+    return copy($filepath, $file);
 }
 
 function restoreBackup($fileList){
     foreach($fileList as $file){
-        if($file!=""){
+        if($file!="" && file_exists($file)){
             copy('backup/'.$file,$file);
         }
     }

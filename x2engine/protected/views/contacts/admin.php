@@ -71,27 +71,37 @@ $this->renderPartial('_search',array(
 )); ?>
 </div><!-- search-form -->
 <?php 
-    $this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->searchAdmin(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
 	'filter'=>$model,
-	'columns'=>array(
-		//'id',
-		'firstName',
-		'lastName',
-		'phone',
-		array(
-			'name'=>'email',
-			'htmlOptions'=>array('width'=>'200px')
-		),
-		'address',
-		//'visibility',
-		'assignedTo',
-		array('class'=>'CButtonColumn'),
+	// 'columns'=>$columns,
+	'modelName'=>'Contacts',
+	'viewName'=>'contactsadmin',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>185,
+		'phone'=>95,
+		'lastUpdated'=>96,
+		'leadSource'=>138,
+		'gvControls'=>70,
 	),
-)); ?>
+	'specialColumns'=>array(
+		'name'=>array(
+			'name'=>'lastName',
+			'header'=>Yii::t('contacts','Name'),
+			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>true,
+));
+?>

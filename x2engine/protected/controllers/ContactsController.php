@@ -36,7 +36,7 @@
 
 class ContactsController extends x2base {
 
-	public $modelClass = 'ContactChild';
+	public $modelClass = 'Contacts';
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -107,7 +107,7 @@ class ContactsController extends x2base {
 		$sales=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','firstId'=>$id,'secondType'=>'Sales'));
 		$temp=array();
 		foreach($sales as $sale){
-			$temp[]=SaleChild::model()->findByPk($sale->secondId);
+			$temp[]=Sales::model()->findByPk($sale->secondId);
 		}
 		$sales=$temp;
 		$model=$this->loadModel($id);
@@ -136,7 +136,7 @@ class ContactsController extends x2base {
 		echo CJSON::encode($result); exit;
 	}
 	
-	public function actionShareContact($id){
+	public function actionShareContact($id){	
 		$users=UserChild::getNames();
 		$model=$this->loadModel($id);
 		$body="\n\n\n\n".Yii::t('contacts','Contact Record Details')." \n
@@ -167,6 +167,7 @@ $model->city, $model->state $model->zipcode
 			'model'=>$model,
 			'users'=>$users,
 			'body'=>$body,
+			'currentWorkflow'=>$this->getCurrentWorkflow($model->id,'contacts'),
 		));
 	}
 	
@@ -187,23 +188,29 @@ $model->city, $model->state $model->zipcode
 
 	// Controller/action wrapper for create()
 	public function actionCreate() {
-		$model = new ContactChild;
-		$name='ContactChild';
+		$model = new Contacts;
+		$name='Contacts';
 		$users=UserChild::getNames();
-		$accounts=AccountChild::getNames();
+		$accounts=Accounts::getNames();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['ContactChild'])) {
+		if(isset($_POST['Contacts'])) {
 			// clear values that haven't been changed from the default
-			foreach($_POST['ContactChild'] as $name => &$value) {
+			foreach($_POST['Contacts'] as $name => &$value) {
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
 			$temp=$model->attributes;
-			$model->attributes = $_POST['ContactChild'];
-
+			foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Contacts'][$field])){
+                                
+                                $model->$field=$_POST['Contacts'][$field];
+                            }
+                        }
+                        if(!isset($model->visibility))
+                            $model->visibility=1;
 			$this->create($model,$temp,'0'); 
 			
 		}
@@ -217,8 +224,8 @@ $model->city, $model->state $model->zipcode
 	public function actionQuickContact() {
 		//exit("ha");
 		
-		$model = new ContactChild;
-		$attributeLabels = ContactChild::attributeLabels();
+		$model = new Contacts;
+		$attributeLabels = Contacts::attributeLabels();
 		
 		// if it is ajax validation request
 		// if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
@@ -227,14 +234,18 @@ $model->city, $model->state $model->zipcode
 		// }
 
 		// collect user input data
-		if(isset($_POST['ContactChild'])) {
+		if(isset($_POST['Contacts'])) {
 			// clear values that haven't been changed from the default
-			foreach($_POST['ContactChild'] as $name => &$value) {
+			foreach($_POST['Contacts'] as $name => &$value) {
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
 			$temp=$model->attributes;
-			$model->attributes = $_POST['ContactChild'];
+			foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Contacts'][$field])){
+                                $model->$field=$_POST['Contacts'][$field];
+                            }
+                        }
 
 			$model->visibility = 1;
 			
@@ -244,7 +255,7 @@ $model->city, $model->state $model->zipcode
 			else
 				$contact->accountId = 0; 
 			// validate user input and save contact
-			$changes=$this->calculateChanges($temp,$model->attributes);
+			$changes=$this->calculateChanges($temp,$model->attributes, $model);
 			$model=$this->updateChangelog($model,'Create');
 			$model->createDate=time();
 			if($model->save()) {
@@ -255,28 +266,29 @@ $model->city, $model->state $model->zipcode
 	
 	public function actionSaveChanges($id) {
 		$contact=$this->loadModel($id);
-		if(isset($_POST['ContactChild'])) {
+		if(isset($_POST['Contacts'])) {
 			// clear values that haven't been changed from the default
-			foreach($_POST['ContactChild'] as $name => $value) {
+			foreach($_POST['Contacts'] as $name => $value) {
 				if($value == $contact->getAttributeLabel($name)){
-					$_POST['ContactChild'][$name] = '';
+					$_POST['Contacts'][$name] = '';
 				}
 			}
 			$temp=$contact->attributes;
-			$contact->attributes=$_POST['ContactChild'];
+                        foreach(array_keys($contact->attributes) as $field){
+                            if(isset($_POST['Contacts'][$field])){
+                                $contact->$field=$_POST['Contacts'][$field];
+                            }
+                        }
                         $contact->company=$_POST['companyAutoComplete'];
 			$account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
 			if(isset($account))
 				$contact->accountId = $account->id;
 			else
 				$contact->accountId = 0; 
-
 			if($contact->save()){
-				$changes=$this->calculateChanges($temp,$contact->attributes);
+				$changes=$this->calculateChanges($temp,$contact->attributes, $contact);
                                 $contact=$this->updateChangelog($contact,$changes);
-			}else{
-                            print_r($contact->getErrors());exit;
-                        }
+			}
 			$this->redirect(array('view','id'=>$contact->id));
 		} else
 			$this->redirect(array('view','id'=>$contact->id));
@@ -302,18 +314,22 @@ $model->city, $model->state $model->zipcode
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
-		$accounts=AccountChild::getNames();  
+		$accounts=Accounts::getNames();  
 		
 		 
 
-		if(isset($_POST['ContactChild'])) {
+		if(isset($_POST['Contacts'])) {
 			$temp=$model->attributes;
-			foreach($_POST['ContactChild'] as $name => $value) {
+			foreach($_POST['Contacts'] as $name => $value) {
 				if($value == $model->getAttributeLabel($name)){
-					$_POST['ContactChild'][$name] = '';
+					$_POST['Contacts'][$name] = '';
 				}
 			}
-			$model->attributes=$_POST['ContactChild'];
+			foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Contacts'][$field])){
+                                $model->$field=$_POST['Contacts'][$field];
+                            }
+                        }
 			
 			$this->update($model,$temp,'0');
 		}
@@ -327,7 +343,7 @@ $model->city, $model->state $model->zipcode
 
 	// Default action - displays all visible Contact Lists
 	public function actionIndex() {
-		$model = new ContactChild('search');
+		$model = new Contacts('search');
 		
 		// $contactLists = ContactList::model()->findAll();
 	
@@ -384,15 +400,15 @@ $model->city, $model->state $model->zipcode
 
 	// Lists all contacts assigned to this user
 	public function actionViewMy() {
-		$model=new ContactChild('search');
-		$name='ContactChild';
+		$model=new Contacts('search');
+		$name='Contacts';
 		parent::index($model,$name);
 	}
 	
 	// Lists all visible contacts
 	public function actionViewAll() {
-		$model=new ContactChild('search');
-		$name='ContactChild';
+		$model=new Contacts('search');
+		$name='Contacts';
 		parent::index($model,$name);
 	}
 
@@ -405,7 +421,7 @@ $model->city, $model->state $model->zipcode
 			$list = CActiveRecord::model('ContactList')->findByPk($id);
 		if(isset($list)) {
 
-			$dataProvider = CActiveRecord::model('ContactChild')->searchList($id);
+			$dataProvider = CActiveRecord::model('Contacts')->searchList($id);
 			
 			$this->render('list',array(
 				'listName'=>$list->name,
@@ -414,7 +430,7 @@ $model->city, $model->state $model->zipcode
 			));
 			
 		} else {
-			// $model=new ContactChild('search');
+			// $model=new Contacts('search');
 
 			// $pageParam = ucfirst($this->modelClass). '_page';
 			// if (isset($_GET[$pageParam])) {
@@ -431,10 +447,10 @@ $model->city, $model->state $model->zipcode
 			// die($id);
 			if($id = 'all')
 				$this->redirect(array('contacts/viewAll'));
-				// $dataProvider = CActiveRecord::model('ContactChild')->searchAll();
+				// $dataProvider = CActiveRecord::model('Contacts')->searchAll();
 			else
 				$this->redirect(array('contacts/viewMy'));
-				// $dataProvider = CActiveRecord::model('ContactChild')->search();
+				// $dataProvider = CActiveRecord::model('Contacts')->search();
 
 			// $this->render('index',array(
 				// 'model'=>$model,
@@ -455,11 +471,11 @@ $model->city, $model->state $model->zipcode
 		
 		// $name='ContactList';
 		// $users=UserChild::getNames();
-		// $accounts=AccountChild::getNames();
+		// $accounts=Accounts::getNames();
 
 		if(isset($_POST['ContactList'])) {
 			// clear values that haven't been changed from the default
-			// foreach($_POST['ContactChild'] as $name => &$value) {
+			// foreach($_POST['Contacts'] as $name => &$value) {
 				// if($value == $model->getAttributeLabel($name))
 					// $value = '';
 			// }
@@ -473,7 +489,7 @@ $model->city, $model->state $model->zipcode
 			$model->save();
 			
 		}
-		$attributeList = array_flip(ContactChild::attributeLabels());
+		$attributeList = array_flip(Contacts::attributeLabels());
 		$users = UserChild::getNames();
 		
 		
@@ -547,7 +563,7 @@ $model->city, $model->state $model->zipcode
 			$i++;
 			$pieces = explode(',', $str);
 
-			$model = new ContactChild;
+			$model = new Contacts;
 
 			$model->visibility = 1;
 			$model->createDate=time();
@@ -579,7 +595,7 @@ $model->city, $model->state $model->zipcode
 		while($arr=fgetcsv($fp)){
 			if($count>0){
 				$pieces=$arr;                
-				$model = new ContactChild;
+				$model = new Contacts;
 
 				$model->visibility=1;
 				$model->assignedTo=Yii::app()->user->getName();
@@ -627,7 +643,7 @@ $model->city, $model->state $model->zipcode
 	}
 	
 	private function exportToTemplate(){
-		$contacts=ContactChild::model()->findAll();
+		$contacts=Contacts::model()->findAll();
 		$list=array(array('First Name','Last Name', 'Title','Company', 'Phone', 'Email', 'Website', 'Address', 'City', 'State', 'Zip Code', 'Country', 'Background Info', 'Last Updated', 'Priority', 'Lead Source', 'Create Date'));
 		foreach($contacts as $contact){
 			$list[]=$contact->attributes;
@@ -660,8 +676,8 @@ $model->city, $model->state $model->zipcode
 	 * Manages all models.
 	 */
 	public function actionAdmin() {
-		$model = new ContactChild('search');
-		$name = 'ContactChild';
+		$model = new Contacts('search');
+		$name = 'Contacts';
 		parent::admin($model, $name);
 	}
 
@@ -671,7 +687,7 @@ $model->city, $model->state $model->zipcode
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model = CActiveRecord::model('ContactChild')->findByPk((int) $id);
+		$model = CActiveRecord::model('Contacts')->findByPk((int) $id);
 		if ($model === null)
 			throw new CHttpException(404, Yii::t('app','The requested page does not exist.'));
 		return $model;

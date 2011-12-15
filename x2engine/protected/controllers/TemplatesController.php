@@ -43,16 +43,6 @@ class TemplatesController extends x2base {
 	public $layout='//layouts/column2';
 
 	/**
-	 * @return array action filters
-	 */
-
-	/**
-	 * Specifies the access control rules.
-	 * This method is used by the 'accessControl' filter.
-	 * @return array access control rules
-	 */
-
-	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
@@ -68,8 +58,28 @@ class TemplatesController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new Templates;
-		$name='Templates';
-		parent::create($model, $name);
+                $users=UserChild::getNames();
+                if(isset($_POST['Templates'])) {
+			$temp=$model->attributes;
+			foreach($_POST['Templates'] as $name => &$value) {;
+				if($value == $model->getAttributeLabel($name)){
+					$value = '';
+                                }
+			}
+                        
+			foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Templates'][$field])){
+                                $model->$field=$_POST['Templates'][$field];
+                            }
+                        }
+			parent::create($model, $temp, 0);
+			
+		}
+		$this->render('create',array(
+			'model'=>$model,
+			'users'=>$users,
+		));
+		
 	}
 
 	/**
@@ -78,9 +88,29 @@ class TemplatesController extends x2base {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-		$model=$this->loadModel($id);
-		$name='Templates';
-		parent::update($model, $name);
+		$model = $this->loadModel($id);
+		$users=UserChild::getNames(); 
+
+		if(isset($_POST['Templates'])) {
+			$temp=$model->attributes;
+			foreach($_POST['Templates'] as $name => $value) {
+				if($value == $model->getAttributeLabel($name)){
+					$_POST['Templates'][$name] = '';
+				}
+			}
+			foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Templates'][$field])){
+                                $model->$field=$_POST['Templates'][$field];
+                            }
+                        }
+			
+			parent::update($model,$temp,'0');
+		}
+
+		$this->render('update',array(
+			'model'=>$model,
+			'users'=>$users,
+		));
 	}
 	/**
 	 * Deletes a particular model.

@@ -65,5 +65,5 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
 <?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users)); 
+$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users,'currentWorkflow'=>$currentWorkflow)); 
 $this->endWidget(); ?>

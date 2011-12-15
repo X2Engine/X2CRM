@@ -81,7 +81,7 @@ class UserChild extends Users {
 		$topContacts = array();
 		//get record for each ID
 		foreach($topContactIds as $contactId) {
-			$record = CActiveRecord::model('ContactChild')->findByPk($contactId);
+			$record = CActiveRecord::model('Contacts')->findByPk($contactId);
 			if (!is_null($record))	//only include contact if the contact ID exists
 				$topContacts[] = $record;
 		}
@@ -101,11 +101,11 @@ class UserChild extends Users {
 			$itemId = strtok('-');
 
 			if($itemType=='c') {
-				$record = CActiveRecord::model('ContactChild')->findByPk($itemId);
+				$record = CActiveRecord::model('Contacts')->findByPk($itemId);
 				if (!is_null($record))	//only include contact if the contact ID exists
 					array_push($recentItems,array('type'=>$itemType,'model'=>$record));
 			} else if($itemType=='t') {
-				$record = CActiveRecord::model('ActionChild')->findByPk($itemId);
+				$record = CActiveRecord::model('Actions')->findByPk($itemId);
 				if (!is_null($record))	//only include action if the action ID exists
 					array_push($recentItems,array('type'=>$itemType,'model'=>$record));
 			}
@@ -134,8 +134,8 @@ class UserChild extends Users {
 	}
 
 	public static function getUserLinks($str) {
-		if($str=='')
-			return Yii::t('app','None');
+		if($str=='' || $str=="Anyone")
+			return Yii::t('app','Anyone');
 		$pieces = explode(', ',$str);
 		$links='';
 			foreach($pieces as $user) {

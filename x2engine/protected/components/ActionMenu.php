@@ -44,21 +44,20 @@ class ActionMenu extends CWidget {
 	}
 
 	public function run() {
-		$total = ActionChild::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName()));
+		$total = Actions::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(),'type'=>null));
 		$total = count($total);
 
-		$temp = ActionChild::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'));
+		$temp = Actions::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No','type'=>null));
 		$unfinished = count($temp);
 
 		$overdue = 0;
 		foreach ($temp as $action) {
-			//$action = ActionChild::changeDates($action);
-			if ($action->dueDate == 'Overdue') {
+			if ($action->dueDate < time() ) {
 				$overdue++;
 			}
 		}
 
-		$complete = ActionChild::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'Yes'));
+		$complete = Actions::model()->findAllByAttributes(array('completedBy' => Yii::app()->user->getName(), 'complete' => 'Yes','type'=>null));
 		$complete = count($complete);
 
 		$this->render('actionMenu', array(

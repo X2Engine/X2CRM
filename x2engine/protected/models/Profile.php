@@ -31,6 +31,7 @@
  * @property integer $showSocialMedia
  * @property integer $showDetailView
  * @property integer $showWorkflow
+ * @property string $gridviewSettings
  */
 class Profile extends CActiveRecord
 {
@@ -69,7 +70,7 @@ class Profile extends CActiveRecord
 			array('widgets, widgetOrder', 'length', 'max'=>255),
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
 			array('startPage', 'length', 'max'=>30),
-			array('notes, avatar', 'safe'),
+			array('notes, avatar, gridviewSettings', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, fullName, username, officePhone, cellPhone, emailAddress, notes, status, tagLine, lastUpdated, updatedBy, avatar, allowPost, language, timeZone, resultsPerPage, widgets, widgetOrder, backgroundColor, menuBgColor, menuTextColor, backgroundImg, pageOpacity, startPage, showSocialMedia, showDetailView, showWorkflow', 'safe', 'on'=>'search'),
@@ -116,6 +117,7 @@ class Profile extends CActiveRecord
 			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
 			'showWorkflow'=>Yii::t('profile','Show Workflow'),
+			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
 		);
 	}
 

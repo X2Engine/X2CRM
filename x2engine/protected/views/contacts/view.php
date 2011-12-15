@@ -76,7 +76,7 @@ if($detailView) { ?>
 	<?php echo CHtml::link('['.Yii::t('contacts','Detail View').']',array('view','id'=>$model->id,'detail'=>1),array('style'=>'float:right;text-decoration:none;')); ?>
 	<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
 	<?php
-	$this->renderPartial('_simpleView',array('model'=>$model,'form'=>$form,'users'=>$users));
+	$this->renderPartial('_simpleView',array('model'=>$model,'form'=>$form,'users'=>$users,'currentWorkflow'=>$currentWorkflow));
 	$this->endWidget();
 }
 

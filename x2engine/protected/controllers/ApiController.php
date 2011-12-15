@@ -38,18 +38,18 @@ class ApiController extends x2base {
         {
             // Get an instance of the respective model
             case 'Contacts':
-                $model = new ContactChild;   
-                $this->modelClass="ContactChild";
+                $model = new Contacts;   
+                $this->modelClass="Contacts";
                 $temp=$model->attributes;
                 break;
             case 'Actions':
-                $model = new ActionChild;   
-                $this->modelClass="ActionChild";
+                $model = new Actions;   
+                $this->modelClass="Actions";
                 $temp=$model->attributes;
                 break;
             case 'Accounts':
-                $model = new AccountChild;   
-                $this->modelClass="AccountChild";
+                $model = new Accounts;   
+                $this->modelClass="Accounts";
                 $temp=$model->attributes;
                 break;
             default:
@@ -157,18 +157,18 @@ class ApiController extends x2base {
         {
             // Find respective model
             case 'Contacts':
-                $model = ContactChild::model()->findByPk($_GET['id']);      
-                $this->modelClass="ContactChild";
+                $model = Contacts::model()->findByPk($_GET['id']);      
+                $this->modelClass="Contacts";
                 $temp=$model->attributes;
                 break;
             case 'Actions':
-                $model = ActionChild::model()->findByPk($_GET['id']);    
-                $this->modelClass="ActionChild";
+                $model = Actions::model()->findByPk($_GET['id']);    
+                $this->modelClass="Actions";
                 $temp=$model->attributes;
                 break;
             case 'Accounts':
-                $model = AccountChild::model()->findByPk($_GET['id']);     
-                $this->modelClass="AccountChild";
+                $model = Accounts::model()->findByPk($_GET['id']);     
+                $this->modelClass="Accounts";
                 $temp=$model->attributes;
                 break;
             default:
@@ -284,13 +284,13 @@ class ApiController extends x2base {
         {
             // Find respective model    
             case 'Contacts':
-                $model = ContactChild::model()->findByPk($_GET['id']);
+                $model = Contacts::model()->findByPk($_GET['id']);
                 break;
             case 'Actions':
-                $model = ActionChild::model()->findByPk($_GET['id']);
+                $model = Actions::model()->findByPk($_GET['id']);
                 break;
             case 'Accounts':
-                $model = AccountChild::model()->findByPk($_GET['id']);
+                $model = Accounts::model()->findByPk($_GET['id']);
                 break;
             default:
                 $this->_sendResponse(501, sprintf(
@@ -318,7 +318,7 @@ class ApiController extends x2base {
                     $attributes['lastName']=$_GET['lastName'];
                 if(isset($_GET['email']))
                     $attributes['email']=$_GET['email'];
-                $model = ContactChild::model()->findByAttributes($attributes);
+                $model = Contacts::model()->findByAttributes($attributes);
                 break;
             default:
                 $this->_sendResponse(501, sprintf(
@@ -339,13 +339,13 @@ class ApiController extends x2base {
         {
             // Load the respective model
             case 'Contacts':
-                $model = ContactChild::model()->findByPk($_GET['id']);                    
+                $model = Contacts::model()->findByPk($_GET['id']);                    
                 break;
             case 'Actions':
-                $model = ActionChild::model()->findByPk($_GET['id']);
+                $model = Actions::model()->findByPk($_GET['id']);
                 break;
             case 'Accounts':
-                $model = AccountChild::model()->findByPk($_GET['id']);
+                $model = Accounts::model()->findByPk($_GET['id']);
                 break;
             default:
                 $this->_sendResponse(501, 

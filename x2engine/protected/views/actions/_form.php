@@ -56,6 +56,18 @@ $(function(){
 	);
 }
 );");
+
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
+
 $inlineForm = (isset($inlineForm)); // true if this is in the InlineActionForm
 $quickCreate = $inlineForm? false : ($this->getAction()->getId() == 'quickCreate');	// true if we're inside the quickCreate view
 if(isset($_GET['inline']))
@@ -80,12 +92,14 @@ echo $form->errorSummary($actionModel);
 	<?php echo $form->textField($actionModel,'type',array('size'=>20,'maxlength'=>20)); ?>
 	<?php echo $form->error($actionModel,'type'); ?>
 </div> */?>
+<?php if($nonCustom['actionDescription']->visible==1){ ?>
 <div class="row">
 	<b><?php echo $form->labelEx($actionModel,'actionDescription'); ?></b>
 	<?php //echo $form->label($actionModel,'actionDescription'); ?>
 	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>50)); ?>
 	<?php //echo $form->error($actionModel,'actionDescription'); ?>
 </div>
+<?php } ?>
 <div class="row">
 	<?php
 	if (!$quickCreate) {
@@ -94,6 +108,7 @@ echo $form->errorSummary($actionModel);
 		} else {
 	?>
 <div class="row">
+        <?php if($nonCustom['associationType']->visible==1){ ?>
 	<div class="cell">
 	<?php echo $form->label($actionModel,'associationType'); ?>
 	<?php echo $form->dropDownList($actionModel,'associationType',
@@ -110,13 +125,15 @@ echo $form->errorSummary($actionModel);
 				//Style: CController::createUrl('currentController/methodToCall')
 				'update'=>'#', //selector to update
 				'success'=>'function(data){
-						window.location="create?param='.Yii::app()->user->getName().';"+data+":0";
+						window.location="?param='.Yii::app()->user->getName().';"+data+":0";
 					}'
 				)
 			)
 		);
 		echo $form->error($actionModel,'associationType'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['associationName']->visible==1){ ?>
 	<div class="cell" id="auto_complete">
 		<?php
 		echo $form->label($actionModel,'associationName');
@@ -136,13 +153,16 @@ echo $form->errorSummary($actionModel);
 		//echo $form->error($actionModel,'associationName');
 		?>
 	</div>
+        <?php } ?>
 </div>
 	<?php
 		}
 	}
 	?>
+        
 	<div class="cell">
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
+            <?php if($nonCustom['dueDate']->visible==1){ ?>
 		<?php echo $form->label($actionModel,'dueDate');
 		if ($actionModel->isNewRecord)
 			$actionModel->dueDate = date('Y-m-d',time()).' 23:59';	//default to tomorow for new actions
@@ -161,8 +181,9 @@ echo $form->errorSummary($actionModel);
 		));
 		?>
 		<?php echo $form->error($actionModel,'dueDate'); ?>
+            <?php } ?>
 	</div>
-
+        <?php if($nonCustom['priority']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'priority'); ?>
 		<?php echo $form->dropDownList($actionModel,'priority',array(
@@ -171,21 +192,46 @@ echo $form->errorSummary($actionModel);
 			'High'=>Yii::t('actions','High')));
 		//echo $form->error($actionModel,'priority'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['assignedTo']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'assignedTo'); ?>
 		<?php echo $form->dropDownList($actionModel,'assignedTo',$users); ?>
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['visibility']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'visibility'); ?>
 		<?php echo $form->dropDownList($actionModel,'visibility',array('1'=>Yii::t('actions','Public'),'0'=>Yii::t('actions','Private'))); ?>
 		<?php //echo $form->error($actionModel,'visibility'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['reminder']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'reminder'); ?>
 		<?php //echo $form->checkBox($actionModel,'reminder',array('value'=>'Yes','uncheckedValue'=>'No')); ?>
 		<?php echo $form->dropDownList($actionModel,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?> 
 	</div>
+        <?php } ?>
+        <?php 
+        
+            foreach($custom as $fieldName=>$field){
+                
+                if($field->visible==1){ 
+                    ?>
+                    <div class="row">
+                    <div class="cell">
+                        <?php echo $form->label($actionModel,$fieldName); ?>
+                        <?php echo $form->textField($actionModel,$fieldName,array('size'=>'70')); ?>
+                        <?php echo $form->error($actionModel,$fieldName); ?>
+                    </div>
+                    </div>
+                    <?php
+                        }
+                }
+        
+            ?>
 </div>
 <?php
 if (!$quickCreate) {	//if we're not in quickCreate, end the form

@@ -50,7 +50,7 @@ class SiteController extends MobileController {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('chat', 'logout', 'home', 'getMessages', 'newMessage','contact'),
+                'actions' => array('chat', 'logout', 'home', 'getMessages', 'newMessage','contact','home2','more','online'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -131,6 +131,24 @@ class SiteController extends MobileController {
             }
         }
     }
+    
+    public function actionOnline(){
+        x2base::cleanUpSessions();
+        $sessions=Sessions::model()->findAll();
+        $usernames=array();
+        $users=array();
+        foreach($sessions as $session){
+            $usernames[]=$session->user;
+        }
+        foreach($usernames as $username){
+            $user=Users::model()->findByAttributes(array('username'=>$username));
+            $users[]=$user->firstName." ".$user->lastName;
+        }
+        
+        $this->render('online',array(
+            'users'=>$users,
+        ));
+    }
 	
 
     /**
@@ -144,6 +162,15 @@ class SiteController extends MobileController {
             $this->redirect($this->createUrl('site/login/'));
         else
             $this->redirect($this->createUrl('site/home/'));
+    }
+    
+    public function actionMore(){
+        $user = Yii::app()->user;
+        if ($user == null || $user->isGuest)
+//            $this->render('index');
+            $this->redirect($this->createUrl('site/login/'));
+        else
+            $this->redirect($this->createUrl('site/home2/'));
     }
 
     /**
@@ -210,6 +237,13 @@ class SiteController extends MobileController {
         $this->dataUrl = $this->createUrl('site/home/');
         $this->pageId = 'site-home';
         $this->render('home', array());
+    }
+    
+    public function actionHome2() {
+        // display the home page
+        $this->dataUrl = $this->createUrl('site/home2/');
+        $this->pageId = 'site-home2';
+        $this->render('home2', array());
     }
 
     /**

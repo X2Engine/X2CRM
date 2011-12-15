@@ -34,6 +34,7 @@
  * @property integer $createDate
  * @property string $facebook
  * @property string $otherUrl
+ * @property string $newField
  */
 class Contacts extends CActiveRecord
 {
@@ -93,52 +94,174 @@ class Contacts extends CActiveRecord
 	 */
 	
 	public function attributeLabels() {
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+                $arr=array();
+                foreach($fields as $field){
+                    $arr[$field->fieldName]=Yii::t('contacts',$field->attributeLabel);
+                }
+                
+                return $arr;
+                
+	}
+        public static function getNames() {
+		$contactArray = Contacts::model()->findAll($condition='assignedTo=\''.Yii::app()->user->getName().'\' OR assignedTo=\'Anyone\'');
+		$names=array(0=>'None');
+		foreach($contactArray as $user){
+			$first = $user->firstName;
+			$last = $user->lastName;
+			$name = $first . ' ' . $last;
+			$names[$user->id]=$name;
+		}
+		return $names;
+	}
+	
+	// creates virtual "name" attribute
+	public function getName() {
+		return $this->firstName.' '.$this->lastName;
+	}
+	
+	public function behaviors() {
 		return array(
-			'id'=>Yii::t('contacts','ID'),
-			'firstName'=>Yii::t('contacts','First Name'),
-			'lastName'=>Yii::t('contacts','Last Name'),
-			'title'=>Yii::t('contacts','Title'),
-			'company'=>Yii::t('contacts','Account'),
-			'accountId'=>Yii::t('contacts','Account ID'),
-			'phone'=>Yii::t('contacts','Phone'),
-			'phone2'=>Yii::t('contacts','Phone 2'),
-			'email'=>Yii::t('contacts','Email'),
-			'website'=>Yii::t('contacts','Website'),
-			'twitter'=>Yii::t('contacts','Twitter'),
-			'linkedin'=>Yii::t('contacts','Linkedin'),
-			'skype'=>Yii::t('contacts','Skype'),
-			'googleplus'=>Yii::t('contacts','Googleplus'),
-			'address'=>Yii::t('contacts','Address'),
-			'city'=>Yii::t('contacts','City'),
-			'state'=>Yii::t('contacts','State'),
-			'zipcode'=>Yii::t('contacts','Zip Code'),
-			'country'=>Yii::t('contacts','Country'),
-			'visibility'=>Yii::t('contacts','Visibility'),
-			'assignedTo'=>Yii::t('contacts','Assigned To'),
-			'backgroundInfo'=>Yii::t('contacts','Background Info'),
-			'lastUpdated'=>Yii::t('contacts','Last Updated'),
-			'updatedBy'=>Yii::t('contacts','Updated By'),
-			'leadSource'=>Yii::t('contacts','Lead Source'),
-			'priority'=>Yii::t('contacts','Priority'),
-			'rating'=>Yii::t('contacts','Rating'),
-			'createDate'=>Yii::t('contacts','Create Date'),
-			'facebook'=>Yii::t('contacts','Facebook'),
-			'otherUrl'=>Yii::t('contacts','Other'),
+			'ERememberFiltersBehavior' => array(
+				'class' => 'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),		/* optional line */
+				'defaultStickOnClear'=>false	/* optional line */
+			),
 		);
 	}
 
 	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+	*	Returns all public contacts.
+	*	@return $names An array of strings containing the names of contacts.
+	*/
+	public static function getAllNames() {
+		$contactArray = Contacts::model()->findAll($condition='visibility=1');
+		$names=array(0=>'None');
+		foreach($contactArray as $user){
+			$first = $user->firstName;
+			$last = $user->lastName;
+			$name = $first . ' ' . $last;
+			$names[$user->id]=$name;
+		}
+		return $names;
+	}
 
+	public static function getContactLinks($contacts) {
+		if(!is_array($contacts))
+			$contacts = explode(' ',$contacts);
+		
+		$links = array();
+		foreach($contacts as &$id){
+			if($id !=0 ) {
+				$model = CActiveRecord::model('Contacts')->findByPk($id);
+				$links[] = CHtml::link($model->name,array('contacts/view','id'=>$id));
+				//$links.=$link.', ';
+				
+			}
+		}
+		//$links=substr($links,0,strlen($links)-2);
+		return implode(', ',$links);
+	}
+	
+	public static function getMailingList($criteria) {
+		
+		$mailingList=array();
+		
+		$arr=Contacts::model()->findAll();
+		foreach($arr as $contact){
+			$i=preg_match("/$criteria/i",$contact->backgroundInfo);
+			if($i>=1){
+				$mailingList[]=$contact->email;
+			}
+		}
+		return $mailingList;
+	}
+	
+	public function searchAll() {
+		$criteria=new CDbCriteria;
+		$parameters=array('condition'=>"visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$criteria->scopes=array('findAll'=>array($parameters));
+		
+		return $this->searchBase($criteria);
+	}
+
+	public function search() {
+		$criteria=new CDbCriteria;
+		$parameters=array('condition'=>"assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$criteria->scopes=array('findAll'=>array($parameters));
+		
+		return $this->searchBase($criteria);
+	}
+	
+	public function searchAdmin() {
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
+		return $this->searchBase($criteria);
+	}
+
+	public function searchList($id) {
+	
+		if(!empty($id))
+			$list = CActiveRecord::model('ContactList')->findByPk($id);
+
+		if(isset($list)) {
+			$contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
+			// die(var_dump($contactIds));
+			// $search = CActiveRecord::model('Contacts')->findAllByPk($contactIds);
+			// return $search;
+			
+			$sql = Yii::app()->db->createCommand()
+				->select('x2_contacts.*')
+				->from('x2_contacts')
+				->join('x2_list_items','x2_contacts.id = x2_list_items.contactId')
+				->where('x2_list_items.listId='.$id.' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo="'.Yii::app()->user->getName().'")')
+				->getText();
+			
+			$count = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryScalar();
+
+			return new CSqlDataProvider($sql,array(
+				// 'criteria'=>$criteria,
+				// 'data'=>$results,
+				// 'modelClass'=>'Contacts',
+				'totalItemCount'=>$count,
+				'sort'=>array(
+					'attributes'=>array('firstName','lastName','phone','phone2','createDate','lastUpdated','leadSource'),
+					'defaultOrder'=>'lastUpdated DESC',
+				),
+				'pagination'=>array(
+					'pageSize'=>ProfileChild::getResultsPerPage(),
+				),
+			));
+		} else {
+			return new CActiveDataProvider('Contacts',array(
+				// 'criteria'=>$criteria,
+				// 'data'=>$results,
+				// 'modelClass'=>'Contacts',
+				// 'totalItemCount'=>$count,
+				'sort'=>array(
+					'defaultOrder'=>'lastUpdated DESC',
+				),
+				'pagination'=>array(
+					'pageSize'=>ProfileChild::getResultsPerPage(),
+				),
+			));
+			// Yii::app()->controller->redirect(array('contacts/listAll'));
+		}
+		
+
+		// $criteria=new CDbCriteria;
+		// $parameters=array(
+			
+			// 'condition'=>"(SELECT count(*) FROM x2_list_items WHERE listId=".$id." AND contactId = t.id) > 0 AND visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",
+			// 'limit'=>ProfileChild::getResultsPerPage()
+		// );
+		// $criteria->scopes=array('findAll'=>array($parameters));
+		// return $this->searchBase($criteria);
+	}
+	
+	
+	public function searchBase($criteria) {
+		// $criteria->compare('id',$this->id);
 		$criteria->compare('firstName',$this->firstName,true);
 		$criteria->compare('lastName',$this->lastName,true);
 		$criteria->compare('title',$this->title,true);
@@ -160,17 +283,34 @@ class Contacts extends CActiveRecord
 		$criteria->compare('linkedin',$this->linkedin,true);
 		$criteria->compare('skype',$this->skype,true);
 		$criteria->compare('googleplus',$this->googleplus,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated,true);
+		// $criteria->compare('lastUpdated',$this->lastUpdated,true);
 		$criteria->compare('updatedBy',$this->updatedBy,true);
 		$criteria->compare('priority',$this->priority,true);
 		$criteria->compare('leadSource',$this->leadSource,true);
 		$criteria->compare('rating',$this->rating);
-		$criteria->compare('createDate',$this->createDate);
-		$criteria->compare('facebook',$this->facebook,true);
-		$criteria->compare('otherUrl',$this->otherUrl,true);
+		//$criteria->compare('createDate',$this->createDate);
+		
+		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		if($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+			
+		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
+		if($dateRange !== false)
+			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new SmartDataProvider(get_class($this), array(
+			'sort'=>array(
+				'defaultOrder'=>'lastUpdated DESC',
+			),
+			'pagination'=>array(
+				'pageSize'=>ProfileChild::getResultsPerPage(),
+			),
 			'criteria'=>$criteria,
 		));
 	}
+
+	/**
+	 * Retrieves a list of models based on the current search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 */
 }

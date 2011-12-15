@@ -76,15 +76,12 @@ class SearchController extends x2base {
 				.'%" OR address LIKE "%'
 				.$term.'%")';
 
-			$contacts=ContactChild::model()->findAllBySql($sql);
+			$contacts=Contacts::model()->findAllBySql($sql);
 
-			$actions=ActionChild::model()->findAllBySql('SELECT * FROM x2_actions WHERE actionDescription LIKE "%'.$term.'%" LIMIT 10000');
-			$sales=SaleChild::model()->findAllBySql('SELECT * FROM x2_sales WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%"');
-			$accounts=AccountChild::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
+			$actions=Actions::model()->findAllBySql('SELECT * FROM x2_actions WHERE actionDescription LIKE "%'.$term.'%" LIMIT 10000');
+			$sales=Sales::model()->findAllBySql('SELECT * FROM x2_sales WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%"');
+			$accounts=Accounts::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
 					OR tickerSymbol LIKE "%'.$term.'%"');
-			$projects=ProjectChild::model()->findAll();
-			$cases=CaseChild::model()->findAll();
-			$marketing=MarketingChild::model()->findAll();
 
 			$names=array();
 			$descriptions=array();
@@ -133,30 +130,6 @@ class SearchController extends x2base {
 							$descriptions[]=$account;
 					}elseif(preg_match($regEx,$account->website)>0){
 							$names[]=$account;
-					}
-			}
-
-			foreach($projects as $project){
-					if(preg_match($regEx,$project->name)>0){
-							$names[]=$project;
-					}elseif(preg_match($regEx,$project->description)>0){
-							$descriptions[]=$project;
-					}
-			}
-
-			foreach($cases as $case){
-					if(preg_match($regEx,$case->name)>0){
-							$names[]=$case;
-					}elseif(preg_match($regEx,$case->description)>0){
-							$descriptions[]=$case;
-					}
-			}
-
-			foreach($marketing as $item){
-					if(preg_match($regEx,$item->name)>0){
-							$names[]=$item;
-					}elseif(preg_match($regEx,$item->description)>0){
-							$descriptions[]=$item;
 					}
 			}
 

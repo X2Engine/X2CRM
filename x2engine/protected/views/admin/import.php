@@ -41,5 +41,7 @@
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <?php echo CHtml::form('import','post',array('enctype'=>'multipart/form-data')); ?>
 <?php echo CHtml::fileField('data', '', array('id'=>'data')); ?> <br /><br />
+Overwrite old data?<br />
+<?php echo CHtml::dropDownList('overwrite', '', array('0'=>'No','1'=>'Yes')); ?> <br /><br />
 <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?> 
 <?php echo CHtml::endForm(); ?> 

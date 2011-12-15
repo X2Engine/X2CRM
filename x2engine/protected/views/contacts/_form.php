@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$showSocialMedia = ProfileChild::getSocialMedia();
+$showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScript('showSocialMedia', "
@@ -67,9 +67,35 @@ if (!isset($isQuickCreate)) {	//check if this form is being recycled in the quic
 	echo '<em>'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 }
 
-$attributeLabels = ContactChild::attributeLabels();
+$attributeLabels = Contacts::attributeLabels();
 
-$showSocialMedia = ProfileChild::getSocialMedia();
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
+/*
+ * 
+ * 
+ * Hey Matthew, look here!
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
+if(isset($editor)){
+    if($editor){
+        // Put stuff here to make fields disabled and movable.  Also, disable the create button.
+    }
+}
+
 ?>
 <?php
 echo $form->errorSummary($contactModel);
@@ -77,8 +103,10 @@ echo $form->errorSummary($contactModel);
 
 <table class="details">
 	<tr>
-		<td class="label"><label for="ContactChild_firstName"><?php echo Yii::t('contacts','Name'); ?><span class="required">*</span></label></td>
+		<td class="label"><label for="Contacts_firstName"><?php echo Yii::t('contacts','Name'); ?><span class="required">*</span></label></td>
+                
 		<td colspan="3" id="firstName">
+                <?php if($nonCustom['firstName']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->firstName);
 			if($default)
@@ -90,6 +118,8 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>1,
 			)); ?>
+                        <?php } ?>
+                        <?php if($nonCustom['lastName']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->lastName);
 			if($default)
@@ -101,7 +131,9 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>2
 			)); ?>
+                        <?php } ?>
 			</td>
+                        <?php if($nonCustom['rating']->visible==1){ ?>
 			<td class="label"><?php echo $form->label($contactModel,'rating'); ?></td>
 			<td>
 			<?php
@@ -114,11 +146,14 @@ echo $form->errorSummary($contactModel);
 				'starCount'=>5, //number of stars
 				'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 			)); ?>
-		</td>
+                    </td>
+                    <?php } ?>
 	</tr>
 	<tr>
+                
 		<td class="label"><?php echo Yii::t('contacts','Position'); ?></td>
 		<td id="title" colspan="5">
+                <?php if($nonCustom['title']->visible==1){ ?>
 			<?php
 			if($default)
 				$contactModel->title = $contactModel->getAttributeLabel('title');
@@ -130,6 +165,8 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>3,
 			)); ?>
+                    <?php } ?>
+                    <?php if($nonCustom['company']->visible==1){ ?>
 			<?php //echo $form->hiddenField($contactModel, 'company');
 			if($default)
 				$contactModel->company = $contactModel->getAttributeLabel('company');
@@ -157,11 +194,15 @@ echo $form->errorSummary($contactModel);
 			),
 		));
 		?>
+                <?php } ?>
 		</td>
+                
 	</tr>
 	<tr>
+                
 		<td class="label"><?php echo Yii::t('contacts','Contact'); ?></td>
 		<td colspan="5" id="contact">
+                    <?php if($nonCustom['phone']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->phone);
 			if($default)
@@ -173,6 +214,8 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>5,
 			)); ?>
+                        <?php } ?>
+                        <?php if($nonCustom['email']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->email);
 			if($default)
@@ -185,6 +228,8 @@ echo $form->errorSummary($contactModel);
 				'tabindex'=>6,
 			)); ?>
 			<br />
+                        <?php } ?>
+                        <?php if($nonCustom['phone2']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->phone2);
 			if($default)
@@ -196,6 +241,8 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>7,
 			)); ?>
+                        <?php } ?>
+                        <?php if($nonCustom['website']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->website);
 			if($default)
@@ -207,11 +254,13 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>8
 			)); ?>
+                        <?php } ?>
 		</td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo $form->labelEx($contactModel,'address'); ?></td>
 		<td id="address" colspan="5">
+                    <?php if($nonCustom['address']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->address);
 				$contactModel->address = $attributeLabels['address'];
@@ -222,6 +271,8 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:240px;'.($default? 'color:#aaa;' : ''),
 				'tabindex'=>9,
 			)); ?>
+                        <?php } ?>
+                        <?php if($nonCustom['city']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->city);
 			if($default)
@@ -233,6 +284,8 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:120px;'.($default? 'color:#aaa;' : ''),
 				'tabindex'=>10,
 			)).' '; ?><br />
+                        <?php } ?>
+                        <?php if($nonCustom['state']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->state);
 			if($default)
@@ -244,6 +297,8 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:120px;'.($default? 'color:#aaa;' : ''),
 				'tabindex'=>11,
 			)); ?>
+                        <?php } ?>
+                        <?php if($nonCustom['zipcode']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->zipcode);
 			if($default)
@@ -256,6 +311,8 @@ echo $form->errorSummary($contactModel);
 				'tabindex'=>12,
 			)).' ';
 			?>
+                        <?php } ?>
+                        <?php if($nonCustom['country']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->country);
 			if($default)
@@ -267,11 +324,13 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>13,
 			)); ?>
+                        <?php } ?>
 		</td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo $form->labelEx($contactModel,'backgroundInfo'); ?></td>
 		<td id="background" colspan="5"><div class="spacer"></div>
+                    <?php if($nonCustom['leadSource']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->leadSource);
 			if($default)
@@ -283,6 +342,8 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>14,
 				)); ?><br />
+                                <?php } ?>
+                        <?php if($nonCustom['backgroundInfo']->visible==1){ ?>
 			<?php
 			$default = empty($contactModel->backgroundInfo);
 			if($default)
@@ -293,6 +354,7 @@ echo $form->errorSummary($contactModel);
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'tabindex'=>15
 			)); ?>
+                        <?php } ?>
 		</td>
 	</tr>
 	<tr id="social-media-toggle">
@@ -300,6 +362,7 @@ echo $form->errorSummary($contactModel);
 		<td colspan="5"><a href="#" onclick="showSocialMedia(); return false;"><?php echo Yii::t('app','Show'); ?></a></td>
 	</tr>
 	<tr id="social-media-1">
+                <?php if($nonCustom['skype']->visible==1){ ?>
 		<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png','Skype',array('title'=>'Skype')); ?></td>
 		<td>
 			<?php
@@ -310,6 +373,8 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:135px;'
 			));?>
 		</td>
+                <?php } ?>
+                <?php if($nonCustom['facebook']->visible==1){ ?>
 		<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/facebook.png','Facebook',array('title'=>'Facebook')); ?></td>
 		<td colspan="3">
 			<?php
@@ -320,9 +385,11 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:220px;'
 			)); ?>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr id="social-media-2">
-		<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/twitter.png','Twitter',array('title'=>'Twitter')); ?></td>
+                <?php if($nonCustom['twitter']->visible==1){ ?>
+            	<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/twitter.png','Twitter',array('title'=>'Twitter')); ?></td>
 		<td>
 			<?php
 			echo $form->textField($contactModel, 'twitter', array(
@@ -332,6 +399,8 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:135px;'
 			)); ?>
 		</td>
+                <?php } ?>
+                <?php if($nonCustom['googleplus']->visible==1){ ?>
 		<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/googleplus.png','Google+',array('title'=>'Google+')); ?></td>
 		<td colspan="3">
 			<?php
@@ -342,8 +411,10 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:220px;'
 			)); ?>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr id="social-media-3">
+                <?php if($nonCustom['linkedin']->visible==1){ ?>
 		<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/linkedin.png','LinkedIn',array('title'=>'LinkedIn')); ?></td>
 		<td>
 			<?php
@@ -354,6 +425,8 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:135px;'
 			));?>
 		</td>
+                <?php } ?>
+                <?php if($nonCustom['other']->visible==1){ ?>
 		<td class="label"><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/other.png',Yii::t('contacts','Other'),array('title'=>Yii::t('contacts','Other'))); ?></td>
 		<td colspan="3">
 			<?php
@@ -364,8 +437,10 @@ echo $form->errorSummary($contactModel);
 				'style'=>'width:220px;'
 			)); ?><br />
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php if($nonCustom['assignedTo']->visible==1){ ?>
 		<td class="label"><?php echo $form->labelEx($contactModel,'assignedTo'); ?></td>
 		<td id="assignedTo">
 			
@@ -375,6 +450,8 @@ echo $form->errorSummary($contactModel);
 				echo $form->dropDownList($contactModel,'assignedTo',$users,array('tabindex'=>22)); ?>
 
 		</td>
+                <?php } ?>
+                <?php if($nonCustom['priority']->visible==1){ ?>
 		<td class="label"><?php echo $form->labelEx($contactModel,'priority'); ?></td>
 		<td>
 			<?php
@@ -386,6 +463,8 @@ echo $form->errorSummary($contactModel);
 				'High'=>Yii::t('contacts','High')
 			),array('tabindex'=>23)); ?>
 		</td>
+                <?php } ?>
+                <?php if($nonCustom['visibility']->visible==1){ ?>
 		<td class="label"><?php echo $form->label($contactModel,'visibility'); ?></td>
 		<td>
 			<?php 
@@ -397,7 +476,33 @@ echo $form->errorSummary($contactModel);
 			// echo date("Y-m-d",$contactModel->createDate);
 			?>
 		</td>
+                <?php } ?>
 	</tr>
+        <?php 
+        
+            foreach($custom as $fieldName=>$field){
+                
+                if($field->visible==1){ 
+                    ?>
+                    <tr>
+                    <td class="label"><?php echo $form->label($contactModel,$fieldName); ?></td>
+                    <td colspan="5">
+                    <?php
+			$default = empty($contactModel->$fieldName);
+			if($default)
+				$contactModel->$fieldName = $attributeLabels[$fieldName];
+			echo $form->textField($contactModel,$fieldName,array(
+                                'size'=>'82',
+				'style'=>($default? 'color:#aaa;' : ''),
+				'onfocus'=>$default? 'toggleText(this);' : null,
+				'onblur'=>$default? 'toggleText(this);' : null,
+				));
+                        ?></td>
+                    </tr><?php
+                        }
+                }
+        
+        ?>
 </table>
 
 

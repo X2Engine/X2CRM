@@ -53,7 +53,7 @@ To add a condition which will affect how leads are distributed, please fill out 
         
         <div class="row">
             <?php echo $form->labelEx($model,'field'); ?>
-            <?php echo $form->dropDownList($model,'field',CActiveRecord::model('ContactChild')->attributeLabels()); ?>
+            <?php echo $form->dropDownList($model,'field',CActiveRecord::model('Contacts')->attributeLabels()); ?>
             <?php echo $form->error($model,'field'); ?>
         </div>
         

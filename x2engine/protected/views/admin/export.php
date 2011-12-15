@@ -37,5 +37,5 @@
 <html>
 <h2><?php echo Yii::t('admin','Export All Data'); ?></h2>
 <?php echo Yii::t('admin','Please click the link below to download data.');?><br /><br />
-<a href=<?php echo Yii::app()->request->baseUrl.'/'; ?>file.csv><?php echo Yii::t('app','Download');?>!</a>
+<a href=<?php echo Yii::app()->request->baseUrl.'/'; ?>data.csv><?php echo Yii::t('app','Download');?>!</a>
 </html>

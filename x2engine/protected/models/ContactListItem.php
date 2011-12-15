@@ -49,7 +49,7 @@ class ContactListItem extends CActiveRecord {
 		// class name for the relations automatically generated below.
 		return array(
 			'listId'=>array(self::BELONGS_TO, 'ContactList', 'id'),
-			'contactId'=>array(self::HAS_ONE, 'ContactChild', 'id'),
+			'contactId'=>array(self::HAS_ONE, 'Contacts', 'id'),
 		);
 	}
 

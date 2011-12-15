@@ -81,11 +81,11 @@ class Templates extends CActiveRecord
 			array('name', 'required'),
 			array('createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('assignedTo, updatedBy', 'length', 'max'=>40),
-			array('name, fieldOne, fieldTwo, fieldThree, fieldFour, fieldFive', 'length', 'max'=>255),
+			array('name', 'length', 'max'=>255),
 			array('description', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, assignedTo, name, description, fieldOne, fieldTwo, fieldThree, fieldFour, fieldFive, createDate, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
+			array('id, assignedTo, name, description, createDate, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -105,17 +105,18 @@ class Templates extends CActiveRecord
 	 */
 	public function attributeLabels()
 	{
-		
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Templates'));
+                $arr=array();
+                foreach($fields as $field){
+                    $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
+                }
+                
+                return $arr;
 		return array(
 			'id' => Yii::t('module','ID'),
 			'assignedTo' => Yii::t('module','Assigned To'),
 			'name' => Yii::t('module','Name'),
 			'description' => Yii::t('module','Description'),
-			'fieldOne' => Yii::t('module','$fieldOne'),
-			'fieldTwo' => Yii::t('module','$fieldTwo'),
-			'fieldThree' => Yii::t('module','$fieldThree'),
-			'fieldFour' => Yii::t('module','$fieldFour'),
-			'fieldFive' => Yii::t('module','$fieldFive'),
 			'createDate' => Yii::t('module','Create Date'),
 			'lastUpdated' => Yii::t('module','Last Updated'),
 			'updatedBy' => Yii::t('module','Updated By'),
@@ -137,11 +138,6 @@ class Templates extends CActiveRecord
 		$criteria->compare('assignedTo',$this->assignedTo,true);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('description',$this->description,true);
-		$criteria->compare('fieldOne',$this->fieldOne,true);
-		$criteria->compare('fieldTwo',$this->fieldTwo,true);
-		$criteria->compare('fieldThree',$this->fieldThree,true);
-		$criteria->compare('fieldFour',$this->fieldFour,true);
-		$criteria->compare('fieldFive',$this->fieldFive,true);
 		$criteria->compare('createDate',$this->createDate);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
 		$criteria->compare('updatedBy',$this->updatedBy,true);

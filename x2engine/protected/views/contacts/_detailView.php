@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$attributeLabels = ContactChild::attributeLabels();
+$attributeLabels = Contacts::attributeLabels();
 
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
@@ -120,6 +120,17 @@ Yii::app()->clientScript->registerScript('stopEdit','
 	});
 ');
 
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
+
 function cleanupUrl($url) {
 	if (!preg_match('/(http:\/\/|https:\/\/)/',$url))
 		$url = 'http://'.$url;
@@ -129,6 +140,7 @@ function cleanupUrl($url) {
 <div class="form no-border">
 <table class="details" style="margin-top:0;">
 	<tr>
+            <?php if($nonCustom['firstName']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['firstName']; ?></td>
 		<td id="firstName" onclick="showField(this,true);" width="145">
 			<div class="detail-field"><?php echo $model->firstName; ?></div>
@@ -141,6 +153,9 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } 
+                    if($nonCustom['lastName']->visible==1){
+                ?>
 		<td class="label"><b><?php echo $attributeLabels['lastName']; ?></b></td>
 		<td id="lastName" width="240" colspan="3" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo $model->lastName; ?></div>
@@ -153,8 +168,10 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+            <?php  if($nonCustom['title']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['title']; ?></td>
 		<td id="title" onclick="showField(this,true);" width="145">
 			<div class="detail-field"><?php echo $model->title; ?></div>
@@ -167,9 +184,11 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['company']->visible==1){ ?>
 		<td class="label"><?php
 		if(!empty($model->accountId) && $model->accountId!=0) {
-			$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
+			$accountModel = CActiveRecord::model('Accounts')->findByPk($model->accountId);
 			if($accountModel != null)
 				$model->company = $accountModel->name;
 		}
@@ -203,8 +222,10 @@ function cleanupUrl($url) {
 				?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php  if($nonCustom['phone']->visible==1){ ?>
 		<td class="label"><?php echo (empty($model->phone))? "<b>".$attributeLabels['phone']."</b>" : CHtml::link($attributeLabels['phone'],'callto:+'.preg_replace('/[^0-9]/u', '',$model->phone)); ?></td>
 		<td id="phone" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo $model->phone; ?></div>
@@ -218,6 +239,8 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['email']->visible==1){ ?>
 		<?php 
 		if(substr(Yii::app()->request->getServerName(),0,4)=="www.")
 			$str=substr(Yii::app()->request->getServerName(),4);
@@ -237,8 +260,10 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php  if($nonCustom['phone2']->visible==1){ ?>
 		<td class="label"><?php echo (empty($model->phone2))? "<b>".$attributeLabels['phone2']."</b>" : CHtml::link($attributeLabels['phone2'],'callto:+'.preg_replace('[^0-9]', '',$model->phone2)); ?></td>
 		<td id="phone2" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo $model->phone2; ?></div>
@@ -252,6 +277,8 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['website']->visible==1){ ?>
 		<td class="label"><?php echo empty($model->website)? "<b>".$attributeLabels['website']."</b>" : CHtml::link($attributeLabels['website'],cleanupUrl($model->website)); ?></td>
 		<td id="website" colspan="3" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo $model->website; ?></div>
@@ -264,8 +291,10 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php  if($nonCustom['rating']->visible==1){ ?>
 		<td class="label"><b><?php echo $attributeLabels['rating']; ?></b></td>
 		<td><?php
 			$this->widget('CStarRating',array(
@@ -278,6 +307,8 @@ function cleanupUrl($url) {
 				'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 			)); ?>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['address']->visible==1){ ?>
 		<td class="label" rowspan="2"><b><?php echo $attributeLabels['address']; ?></b></td>
 		<td id="address" rowspan="2" colspan="3" style="padding:0.3em 0 0 0.6em;" onclick="showField(this,false);">
 			<div class="detail-field">
@@ -301,6 +332,8 @@ function cleanupUrl($url) {
 				'style'=>'width:225px;'.($default? 'color:#aaa;' : '')
 			)); ?>
 			<br />
+                        
+                        <?php  if($nonCustom['city']->visible==1){ ?>
 			<?php
 			$default = empty($model->city);
 			if($default)
@@ -313,6 +346,8 @@ function cleanupUrl($url) {
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
 			));
+                        }
+                        if($nonCustom['state']->visible==1){
 			$default = empty($model->state);
 			if($default)
 				$model->state = $attributeLabels['state'];
@@ -325,6 +360,8 @@ function cleanupUrl($url) {
 				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
 			)); ?>
 			<br />
+                        <?php } ?>
+                        <?php  if($nonCustom['zipcode']->visible==1){ ?>
 			<?php
 			$default = empty($model->zipcode);
 			if($default)
@@ -337,6 +374,8 @@ function cleanupUrl($url) {
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:90px;'.($default? 'color:#aaa;' : '')
 			));
+                        }
+                        if($nonCustom['country']->visible==1){
 			$default = empty($model->country);
 			if($default)
 				$model->country = $attributeLabels['country'];
@@ -347,11 +386,13 @@ function cleanupUrl($url) {
 				'onfocus'=>$default? 'toggleText(this);' : null,
 				'onblur'=>$default? 'toggleText(this);' : null,
 				'style'=>'width:120px;'.($default? 'color:#aaa;' : '')
-			)); ?>
+			)); } ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php  if($nonCustom['leadSource']->visible==1){ ?>
 		<td class="label"><b><?php echo $attributeLabels['leadSource']; ?></b></td>
 		<td id="leadSource" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo $model->leadSource; ?></div>
@@ -364,6 +405,7 @@ function cleanupUrl($url) {
 				)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<?php $workflowList = Workflow::getList(); ?>
 	<tr id="workflow-toggle">
@@ -396,6 +438,7 @@ function cleanupUrl($url) {
 		?></div></td>
 	</tr>
 	<tr>
+                <?php  if($nonCustom['backgroundInfo']->visible==1){ ?>
 		<td class="label"><b><?php echo $attributeLabels['backgroundInfo']; ?></b></td>
 		<td id="background" onclick="showField(this,true);" colspan="5" style="height:40px;">
 			<div class="detail-field"><?php echo $this->convertUrls($model->backgroundInfo); ?></div>
@@ -409,12 +452,14 @@ function cleanupUrl($url) {
 			)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr id="social-media-toggle">
 		<td class="label"><label><?php echo Yii::t('contacts','Social Networks'); ?></label></td>
 		<td colspan="5"><a href="#" onclick="showSocialMedia(); return false;"><?php echo Yii::t('app','Show'); ?></a></td>
 	</tr>
 	<tr id="social-media-1">
+            <?php  if($nonCustom['skype']->visible==1){ ?>
 		<td class="label">
 			<?php 
 			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png');
@@ -436,6 +481,8 @@ function cleanupUrl($url) {
 			));?>
 			</div>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['facebook']->visible==1){ ?>
 		<td class="label">
 			<?php
 			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/facebook.png');
@@ -457,8 +504,10 @@ function cleanupUrl($url) {
 			)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr id="social-media-2">
+                <?php  if($nonCustom['twitter']->visible==1){ ?>
 		<td class="label">
 			<?php
 			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/twitter.png');
@@ -479,6 +528,8 @@ function cleanupUrl($url) {
 			)); ?>
 			</div>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['googleplus']->visible==1){ ?>
 		<td class="label">
 			<?php
 			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/googleplus.png');
@@ -500,8 +551,10 @@ function cleanupUrl($url) {
 			)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr id="social-media-3">
+            <?php  if($nonCustom['linkedin']->visible==1){ ?>
 		<td class="label">
 			<?php
 			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/linkedin.png');
@@ -523,6 +576,8 @@ function cleanupUrl($url) {
 			));?>
 			</div>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['other']->visible==1){ ?>
 		<td class="label">
 			<?php
 			$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/other.png');
@@ -544,8 +599,10 @@ function cleanupUrl($url) {
 			)); ?>
 			</div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php  if($nonCustom['assignedTo']->visible==1){ ?>
 		<td class="label"><?php
 		if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone') {
 			$assignedToUser = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$model->assignedTo));
@@ -557,6 +614,8 @@ function cleanupUrl($url) {
 		<td id="assignedTo">
 				<?php echo $form->dropDownList($model,'assignedTo',$users,array('tabindex'=>21)); ?>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['priority']->visible==1){ ?>
 		<td class="label"><b><?php echo $attributeLabels['priority']; ?></b></td>
 		<td>
 			<?php
@@ -568,6 +627,8 @@ function cleanupUrl($url) {
 				'High'=>Yii::t('contacts','High')
 			),array('tabindex'=>22)); ?>
 		</td>
+                <?php } ?>
+                <?php  if($nonCustom['visibility']->visible==1){ ?>
 		<td class="label"><b><?php echo $attributeLabels['visibility']; ?></b></td>
 		<td>
 			<?php 
@@ -579,6 +640,26 @@ function cleanupUrl($url) {
 			// echo date("Y-m-d",$model->createDate);
 			?>
 		</td>
+                <?php } ?>
 	</tr>
+        <?php 
+        
+            foreach($custom as $fieldName=>$field){
+                
+                if($field->visible==1){ 
+		echo "<tr>
+                <td class=\"label\"><b>".$attributeLabels[$fieldName]."</b></td>
+		<td id=\"$fieldName\" onclick=\"showField(this,true);\" colspan=\"5\">
+			<div class=\"detail-field\">".$model->$fieldName."</div>
+			<div class=\"detail-form\">
+			".$form->textField($model,$fieldName,array('size'=>'82'))."
+			</div>
+		</td>
+                </tr>";
+                }
+            }
+        
+        ?>
+        
 </table>
 </div>

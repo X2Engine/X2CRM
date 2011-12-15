@@ -58,7 +58,7 @@ class InlineActionForm extends CWidget {
 				function gotoActionForm() {
 					$('#action-form').show();
 					//toggleForm('#action-form',400);
-					$('#action-form #ActionChild_actionDescription').focus();
+					$('#action-form #Actions_actionDescription').focus();
 				}
 				",CClientScript::POS_HEAD);
 		}
@@ -66,7 +66,7 @@ class InlineActionForm extends CWidget {
 	}
 
 	public function run() {
-		$actionModel = new ActionChild;
+		$actionModel = new Actions;
 		$actionModel->associationType = $this->associationType;
 		$actionModel->associationId = $this->associationId;
 		$actionModel->assignedTo = $this->assignedTo;

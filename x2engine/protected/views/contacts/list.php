@@ -99,7 +99,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		// .CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listId,'clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$dataProvider, //CActiveRecord::model('ContactChild')->searchList($listId),
+	'dataProvider'=>$dataProvider, //CActiveRecord::model('Contacts')->searchList($listId),
 	// 'filter'=>$model,
 	'columns'=>array(
 		//'id',

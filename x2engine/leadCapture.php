@@ -43,13 +43,12 @@ $lastName=$_POST['lastName'];
 $email=$_POST['email'];
 $phone=$_POST['phone'];
 $info=$_POST['info'];
-$school=$_POST['school'];
 
 if($info=="Enter any additional information or questions regarding your interest here."){
     $info="";
 }
 
-$url="www.x3engine.com/x2jake"; // Add your server URL here, including any folders the app may be in.  
+$url=""; // Add your server URL here, including any folders the app may be in.  
          //i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. Installer should do this manually.
 
 $date=mktime(0,0,0,date('m'),date('d'),date('Y'));
@@ -64,7 +63,6 @@ curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 $ccResult = curl_exec($ccSession);
 curl_close($ccSession);
-
 if($ccResult!="No Item found with specified attributes."){
 		$pieces=explode(",",$ccResult);
 		$oldInfo=$pieces[16];
@@ -86,13 +84,11 @@ if($ccResult!="No Item found with specified attributes."){
 }else{
         $time=time();
 			
-		$ccUrl = 'http://'.$url.'/index.php/api/create?model=Contacts';
-		$ccSession = curl_init($ccUrl);
+		
 		$data=array(
 			'firstName'=>$firstName,
 			'lastName'=>$lastName,
 			'assignedTo'=>'Anyone',
-                        'account'=>$school,
 			'visibility'=>'1',
 			'phone'=>$phone,
 			'email'=>$email,
@@ -116,49 +112,24 @@ if($ccResult!="No Item found with specified attributes."){
 			'lastUpdated'=>$time,
 			'updatedBy'=>'admin',
 		); 
-                $leadDistribution=file_get_contents("http://$url/index.php/admin/getRoutingType");
-                $leadDistribution=trim($leadDistribution);
-                
-                if($leadDistribution==""){
-                    
-                }elseif($leadDistribution=="evenDistro"){
-                    $user=file_get_contents("http://$url/index.php/admin/evenDistro");
-                    $data['assignedTo']=$user;
-                    $actionData['assignedTo']=$user;
-                    
-                }elseif($leadDistribution=="trueRoundRobin"){
-                    $users=file_get_contents("http://$url/index.php/admin/roundRobin");
-                    $users=explode(":",$users);
-                    $rrId=file_get_contents("http://$url/index.php/admin/getRoundRobin");
-                    $i=$rrId%count($users);
-                    $user=$users[$i];
-                    $data['assignedTo']=$user;
-                    $actionData['assignedTo']=$user;
-                    
-                }elseif($leadDistribution=="customRoundRobin"){
-                    foreach($data as $key=>$value){
-                        $rule=file_get_contents("http://$url/index.php/admin/getRoutingRules?field=$key&value=$value");
-
-                        if(isset($rule) && $rule!=""){
-                            $users=$rule;
-                            $users=explode(", ",$users);
-                            $rrId=file_get_contents("http://$url/index.php/admin/getRoundRobin");
-                            $i=$rrId%count($users);
-                            $user=$users[$i];
-                            $data['assignedTo']=$user;
-                            $actionData['assignedTo']=$user;
-                        }
-                    }
-                }
+                $ccUrl = 'http://'.$url.'/index.php/admin/getRoutingType';
+		$ccSession = curl_init($ccUrl);
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ccSession,CURLOPT_POST,1);
 		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 		$ccResult = curl_exec($ccSession);
-                $res=curl_getinfo($ccSession,CURLINFO_HTTP_CODE );
-                if($res=="200" && ($leadDistribution=="roundRobin" || $leadDistribution=="customRoundRobin")){
-                   $rrId=file_get_contents("http://$url/index.php/admin/updateRoundRobin"); 
-                }
+		curl_close($ccSession);
+                $data['assignedTo']=$ccResult;
+                $actionData['assignedTo']=$ccResult;
+                
+                $ccUrl = 'http://'.$url.'/index.php/api/create?model=Contacts';
+		$ccSession = curl_init($ccUrl);
+		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($ccSession,CURLOPT_POST,1);
+		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
+		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		$ccResult = curl_exec($ccSession);
 		curl_close($ccSession);
 		
 		$ccUrl = 'http://'.$url.'/index.php/api/lookUp?model=Contacts&email='.$email; 

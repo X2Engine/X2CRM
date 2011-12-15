@@ -69,25 +69,25 @@ function deleteAction(actionId) {
 		if(empty($data->type)) {
 			if ($data->complete=='Yes') {
 				echo CHtml::link(Yii::t('actions','Action').':',array('actions/view','id'=>$data->id)).' ';
-				echo Yii::t('actions','Completed {date}',array('{date}'=>ActionChild::formatDate($data->completeDate)));
+				echo Yii::t('actions','Completed {date}',array('{date}'=>Actions::formatDate($data->completeDate)));
 			} else {
 				echo '<b>'.CHtml::link(Yii::t('actions','Action').':',array('actions/view','id'=>$data->id)).' ';
-				echo ActionChild::parseStatus($data->dueDate).'</b>';
+				echo Actions::parseStatus($data->dueDate).'</b>';
 			}
 				
 		} else if ($data->type == 'attachment') {
 			if($data->completedBy=='Email')
-				echo Yii::t('actions','Email Message:').' '.ActionChild::formatDate($data->completeDate);
+				echo Yii::t('actions','Email Message:').' '.Actions::formatDate($data->completeDate);
 			else
-				echo Yii::t('actions','Attachment:').' '.ActionChild::formatDate($data->completeDate);
+				echo Yii::t('actions','Attachment:').' '.Actions::formatDate($data->completeDate);
 				//UserChild::getUserLinks($data->completedBy);
 				
 			echo ' ';
 			
 			//if ($data->complete=='Yes')
-				//echo ActionChild::formatDate($data->completeDate);
+				//echo Actions::formatDate($data->completeDate);
 			//else
-				//echo ActionChild::parseStatus($data->dueDate);
+				//echo Actions::parseStatus($data->dueDate);
 		} else if ($data->type == 'workflow') {
 			$actionData = explode(':',$data->actionDescription);
 			
@@ -143,7 +143,7 @@ function deleteAction(actionId) {
 		}
 	} else if ($data->type == 'note') {
 		echo UserChild::getUserLinks($data->completedBy);
-		echo ' '.ActionChild::formatDate($data->completeDate);
+		echo ' '.Actions::formatDate($data->completeDate);
 	} else if ($data->type == 'attachment' && $data->completedBy!='Email') {
 		echo Yii::t('media','Uploaded by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
 	}

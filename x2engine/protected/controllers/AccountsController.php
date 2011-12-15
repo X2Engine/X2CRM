@@ -36,7 +36,7 @@
 
 class AccountsController extends x2base {
 
-	public $modelClass = 'AccountChild';
+	public $modelClass = 'Accounts';
 
 	public function accessRules() {
 		return array(
@@ -65,13 +65,13 @@ class AccountsController extends x2base {
 		$model->assignedTo=UserChild::getUserLinks($model->assignedTo);
 		
 		$str = '';
-		$contacts = array_keys(AccountChild::getContacts($id));	//ContactChild::model()->findAllByAttributes(array('company'=>$model->name));
+		$contacts = array_keys(Accounts::getContacts($id));	//Contacts::model()->findAllByAttributes(array('company'=>$model->name));
 		// foreach($contacts as $contact){
 			// $str.=$contact->id.' ';
 		// }
 		//$model->associatedContacts=$str;
 		
-		$model->associatedContacts = ContactChild::getContactLinks($contacts);
+		$model->associatedContacts = Contacts::getContactLinks($contacts);
 		
 		$type='accounts';
 		parent::view($model, $type);
@@ -120,9 +120,9 @@ class AccountsController extends x2base {
             $model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
             $arr=$model->assignedTo;
             if(isset($model->assignedTo) && $model->assignedTo!="")
-                $model->assignedTo = AccountChild::parseUsers($model->assignedTo);
+                $model->assignedTo = Accounts::parseUsers($model->assignedTo);
             $model->createDate=time();
-            AccountChild::setContacts($model->associatedContacts,$model->id);
+            Accounts::setContacts($model->associatedContacts,$model->id);
             if($api==0)
                 parent::create($model,$oldAttributes,$api);
             else
@@ -130,15 +130,19 @@ class AccountsController extends x2base {
         }
         
 	public function actionCreate() {
-		$model=new AccountChild;
+		$model=new Accounts;
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
-		$availableContacts = AccountChild::getAvailableContacts();
+		$availableContacts = Accounts::getAvailableContacts();
 
-		if(isset($_POST['AccountChild'])) {
+		if(isset($_POST['Accounts'])) {
                         $temp=$model->attributes;
-			$model->attributes=$_POST['AccountChild'];
+			foreach($model->attributes as $field=>$value){
+                            if(isset($_POST['Accounts'][$field])){
+                                $model->$field=$_POST['Accounts'][$field];
+                            }
+                        }
                         $this->create($model,$temp, '0');
 		}
 
@@ -155,14 +159,14 @@ class AccountsController extends x2base {
 
             $arr=$model->assignedTo;
             if(isset($model->assignedTo) && $model->assignedTo!="")
-                    $model->assignedTo=AccountChild::parseUsers($arr);
+                    $model->assignedTo=Accounts::parseUsers($arr);
 
             if($model->associatedContacts!=null)
-                AccountChild::setContacts($model->associatedContacts,$model->id);
+                Accounts::setContacts($model->associatedContacts,$model->id);
             if($api==0)
-                parent::create($model,$oldAttributes,$api);
+                parent::update($model,$oldAttributes,$api);
             else
-                return parent::create($model,$oldAttributes,$api);
+                return parent::update($model,$oldAttributes,$api);
         }
 
 	/**
@@ -175,8 +179,8 @@ class AccountsController extends x2base {
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
-		$availableContacts = AccountChild::getAvailableContacts($id);
-		$selectedContacts = AccountChild::getContacts($id);
+		$availableContacts = Accounts::getAvailableContacts($id);
+		$selectedContacts = Accounts::getContacts($id);
 
 		$model->associatedContacts = array_keys($selectedContacts);
 		
@@ -191,7 +195,11 @@ class AccountsController extends x2base {
 
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->attributes;
-			$model->attributes=$_POST['Accounts'];
+			foreach($model->attributes as $field=>$value){
+                            if(isset($_POST['Accounts'][$field])){
+                                $model->$field=$_POST['Accounts'][$field];
+                            }
+                        }
 			
 			$this->update($model,$temp,'0');
 		}
@@ -207,11 +215,15 @@ class AccountsController extends x2base {
 		$account=$this->loadModel($id);
 		if(isset($_POST['Accounts'])) {
 			$temp=$account->attributes;
-			$account->attributes=$_POST['Accounts'];
+			foreach($account->attributes as $field=>$value){
+                            if(isset($_POST['Accounts'][$field])){
+                                $account->$field=$_POST['Accounts'][$field];
+                            }
+                        }
 
 			// process currency into an INT
 			$account->annualRevenue = $this->parseCurrency($account->annualRevenue,false);
-			$changes=$this->calculateChanges($temp,$account->attributes);
+			$changes=$this->calculateChanges($temp,$account->attributes, $account);
 			$account=$this->updateChangelog($account,$changes);
 			$account->update();
 			$this->redirect(array('view','id'=>$account->id));
@@ -220,9 +232,9 @@ class AccountsController extends x2base {
 
 	public function actionAddUser($id) {
 		$users=UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
-		$users=AccountChild::editUserArray($users,$model);
+		$users=Accounts::editUserArray($users,$model);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -233,7 +245,7 @@ class AccountsController extends x2base {
 			$model->attributes=$_POST['Accounts'];  
 			$arr=$model->assignedTo;
 
-			$model->assignedTo=AccountChild::parseUsers($arr);
+			$model->assignedTo=Accounts::parseUsers($arr);
 			if($temp!="")
 				$temp.=", ".$model->assignedTo;
 			else
@@ -258,7 +270,7 @@ class AccountsController extends x2base {
 		$model=$this->loadModel($id);
 
 		$pieces=explode(', ',$model->assignedTo);
-		$pieces=AccountChild::editUsersInverse($pieces);
+		$pieces=Accounts::editUsersInverse($pieces);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -273,7 +285,7 @@ class AccountsController extends x2base {
 				unset($pieces[$user]);
 			}
 			
-			$temp=AccountChild::parseUsersTwo($pieces);
+			$temp=Accounts::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
 			$changes=$this->calculateChanges($temp,$model->attributes);
@@ -336,8 +348,8 @@ class AccountsController extends x2base {
 	 */
 	public function actionIndex() {
 		
-		$model=new AccountChild('search');
-		$name='AccountChild';
+		$model=new Accounts('search');
+		$name='Accounts';
 		parent::index($model,$name);
 	}
 
@@ -345,8 +357,8 @@ class AccountsController extends x2base {
 	 * Manages all models.
 	 */
 	public function actionAdmin() {
-		$model=new AccountChild('search');
-		$name='AccountChild';
+		$model=new Accounts('search');
+		$name='Accounts';
 		parent::admin($model,$name);
 	}
 
@@ -356,7 +368,7 @@ class AccountsController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model=AccountChild::model()->findByPk((int)$id);
+		$model=Accounts::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

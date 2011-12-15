@@ -73,53 +73,38 @@ function trimText($text) {
 )); ?>
 </div><!-- search-form -->
 <?php 
-    $this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	
 	'template'=> '<div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
-	
 	'dataProvider'=>$model->searchAdmin(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
 	'filter'=>$model,
-	'columns'=>array(
-		array(
+	// 'columns'=>$columns,
+	'modelName'=>'Actions',
+	'viewName'=>'actionsadmin',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'actionDescription'=>220,
+		// 'associationType'=>93,
+		'dueDate'=>93,
+		'complete'=>89,
+		'assignedTo'=>112,
+		'gvControls'=>72,
+	),
+	'specialColumns'=>array(
+		'actionDescription'=>array(
 			'name'=>'actionDescription',
 			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : trimText($data->actionDescription),array("view","id"=>$data->id))',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
 		),
-		'associationType',
-		array(
-			'name'=>'dueDate',
-			'value'=>'substr($data->dueDate,0,10)',
-			'type'=>'raw',
-		),
-		// array(
-			// 'name'=>'dueDate',
-			// 'value'=>'date("Y-m-d",$data->dueDate)',
-			// 'type'=>'raw',
-		// ),
-		//'createDate',
-		// array(
-			// 'name'=>'createDate',
-			// 'value'=>'date("Y-m-d",$data->createDate)',
-			// 'type'=>'raw',
-		// ),
-		array(
-			'name'=>'assignedTo',
-			'value'=>'UserChild::getUserLinks($data->assignedTo)',
-			'type'=>'raw',
-		),
-		'complete',
-		//'priority',
-		//'type',
-		array(
-			'class'=>'CButtonColumn'
-		)
-	)
+	),
+	'enableControls'=>true,
 ));
 ?>
 

@@ -86,7 +86,8 @@ class AdminController extends Controller {
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
 					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules',
 					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
-                                        'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting'),
+                                        'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
+                                        'customizeFields','manageFields', 'editor'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -102,7 +103,7 @@ class AdminController extends Controller {
 	public function actionSendEmail() {
 		$criteria=$_POST['searchTerm'];
 		
-		$mailingList=ContactChild::getMailingList($criteria);
+		$mailingList=Contacts::getMailingList($criteria);
 		
 		$this->render('sendEmail', array(
 			'criteria'=>$criteria,
@@ -117,7 +118,7 @@ class AdminController extends Controller {
 		
 		$headers='From: '.Yii::app()->name;
 		
-		$mailingList=ContactChild::getMailingList($criteria);
+		$mailingList=Contacts::getMailingList($criteria);
 		
 		foreach($mailingList as $email) {
 			mail($email,$subject,$body,$headers);
@@ -129,52 +130,65 @@ class AdminController extends Controller {
 		));
 	}
         
-        public function actionGetRoundRobin(){
+        public function getRoundRobin(){
 		$admin=CActiveRecord::model('Admin')->findByPk(1);
 		$rrId=$admin->rrId;
-		echo $rrId;
+		return $rrId;
 	}
 	
-	public function actionUpdateRoundRobin(){
+	public function updateRoundRobin(){
 		$admin=CActiveRecord::model('Admin')->findByPk(1);
 		$admin->rrId=$admin->rrId+1;
 		$admin->save();
-		echo true;
 	}
         
         public function actionGetRoutingType(){
             $admin=CActiveRecord::model('Admin')->findByPk(1);
-            echo $admin->leadDistribution;
+            $type=$admin->leadDistribution;
+            if($type==""){
+                echo "";
+            }elseif($type=="evenDistro"){
+                echo $this->evenDistro();
+            }elseif($type=="trueRoundRobin"){
+                echo $this->roundRobin();
+            }elseif($type=="customRoundRobin"){
+                $arr=$_POST;
+                foreach($arr as $key=>$value){
+                    $users=$this->getRoutingRules($key,$value);
+                    if($users!=""){
+                        $rrId=$users[count($users)-1];
+                        unset($users[count($users)-1]);
+                        $i=$rrId%count($users);
+                        echo $users[$i];
+                        break;
+                    }
+                }
+            }
         }
         
-        public function actionRoundRobin(){
+        public function roundRobin(){
             $admin=AdminChild::model()->findByPk(1);
             $online=$admin->onlineOnly;
             x2base::cleanUpSessions();
             $usernames=array();
             $sessions=SessionChild::getOnlineUsers();
             $users=CActiveRecord::model('UserChild')->findAll();
+            unset($users['admin']);
             foreach($users as $user){
-                $usernames[]=$arr;
+                $usernames[]=$user->username;
             }
             if($online==1){
                 $users=array_intersect($usernames,$sessions);
             }else{
                 $users=$usernames;
             }
-            $str="";
-            foreach($users as $user){
-                if($user!='admin'){
-                    $str.=$user.":";
-                }
-            }
-            if($str!="")
-                echo substr($str,0,-1);
-            else
-                echo $str;
+            $rrId=$this->getRoundRobin();
+            $i=$rrId%count($users);
+            $this->updateRoundRobin();
+            return $users[$i];
         }
         
-        public function actionEvenDistro(){
+        public function evenDistro(){
             $admin=AdminChild::model()->findByPk(1);
             $online=$admin->onlineOnly;
             x2base::cleanUpSessions();
@@ -194,18 +208,19 @@ class AdminController extends Controller {
             $numbers=array();
             foreach($users as $user){
                 if($user!='admin'){
-                    $actions=CActiveRecord::model('ActionChild')->findAllByAttributes(array('assignedTo'=>$user,'complete'=>'No'));
-                    $numbers[$user->username]=count($actions);
+                    $actions=CActiveRecord::model('Actions')->findAllByAttributes(array('assignedTo'=>$user,'complete'=>'No'));
+                    if(isset($actions))
+                        $numbers[$user]=count($actions);
+                    else
+                       $numbers[$user]=0; 
                 }
             }
             asort($numbers);
             reset($numbers);
-            echo key($numbers);
+            return key($numbers);
         }
         
-        public function actionGetRoutingRules(){
-            $field=$_GET['field'];
-            $value=$_GET['value'];
+        public function getRoutingRules($field, $value){
             $admin=AdminChild::model()->findByPk(1);
             $online=$admin->onlineOnly;
             x2base::cleanUpSessions();
@@ -215,16 +230,14 @@ class AdminController extends Controller {
             if(isset($rule)){
                 $users=$rule->users;
                 $users=explode(", ",$users);
+                $users[]=$rule->rrId;
+                $rule->rrId++;
+                $rule->save();
                 if($online==1)
                     $users=array_intersect($users,$sessions);
-                $str="";
-                foreach($users as $user){
-                    $str.=$user.", ";
-                }
-                echo substr($str,0,-2);
-            }
-            else
-                echo "";
+                return $users;
+            }else
+                return "";
         }
         
         public function actionRoundRobinRules(){
@@ -236,7 +249,7 @@ class AdminController extends Controller {
 		if(isset($_POST['LeadRouting'])) {
 			$model->attributes=$_POST['LeadRouting'];
                         
-                        $model->users=AccountChild::parseUsers($model->users);
+                        $model->users=Accounts::parseUsers($model->users);
 			
 			if($model->save()) {
 				$this->redirect('roundRobinRules');
@@ -344,8 +357,11 @@ class AdminController extends Controller {
         }
         
         public function actionGetAttributes(){
-            if(isset($_POST['Criteria']['modelType'])){
-                $type=$_POST['Criteria']['modelType'];
+            if(isset($_POST['Criteria']['modelType']) || isset($_POST['Fields']['modelName'])){
+                if(isset($_POST['Criteria']['modelType']))
+                    $type=$_POST['Criteria']['modelType'];
+                if(isset($_POST['Fields']['modelName']))
+                    $type=$_POST['Fields']['modelName'];
                 
                 $arr=CActiveRecord::model($type)->attributeLabels();
                 
@@ -436,6 +452,85 @@ class AdminController extends Controller {
 			'admin'=>$admin,
 		));
 	}
+        
+        public function actionAddField(){
+            $model=new Fields;
+            if(isset($_POST['Fields'])){
+                $model->attributes=$_POST['Fields'];
+                $model->visible=1;
+                $model->custom=1;
+                $model->modified=1;
+                $type=lcfirst($model->modelName);
+                $field=lcfirst($model->fieldName);
+                if(preg_match("/\s/",$field)){
+                    
+                }else{
+                    if($model->save()){
+                        $sql="ALTER TABLE x2_$type ADD COLUMN $field VARCHAR(250)";
+                        $command = Yii::app()->db->createCommand($sql);
+                        $result = $command->query();
+                        
+                    }   
+                }
+                $this->redirect('manageFields');
+            }
+            
+        }
+        
+        public function actionRemoveField(){
+            
+            if(isset($_POST['field'])){
+                $id=$_POST['field'];
+                $field=Fields::model()->findByPk($id);
+                $model=lcfirst($field->modelName);
+                $fieldName=lcfirst($field->fieldName);
+                if($field->delete()){
+                    $sql="ALTER TABLE x2_$model DROP COLUMN $fieldName";
+                    $command = Yii::app()->db->createCommand($sql);
+                    $result = $command->query();
+                }
+                $this->redirect('manageFields');
+            }
+        }
+        
+        public function actionCustomizeFields(){
+            
+            $model=new Fields;
+            if(isset($_POST['Fields'])){
+                $type=$_POST['Fields']['modelName'];
+                $field=$_POST['Fields']['fieldName'];
+                
+                $modelField=Fields::model()->findByAttributes(array('modelName'=>$type,'fieldName'=>$field));
+                if($_POST['Fields']['attributeLabel']!="")
+                    $modelField->attributeLabel=$_POST['Fields']['attributeLabel'];
+                $modelField->visible=$_POST['Fields']['visible'];
+                $modelField->modified=1;
+                
+                if($modelField->save())
+                    $this->redirect('manageFields');
+            }
+            
+        }
+        
+        public function actionManageFields(){
+            $model=new Fields;
+            $dataProvider=new CActiveDataProvider('Fields',array(
+                'criteria'=>array(
+                    'condition'=>'modified=1'
+                )
+            ));
+            $fields=Fields::model()->findAllByAttributes(array('custom'=>'1'));
+            $arr=array();
+            foreach($fields as $field){
+                $arr[$field->id]=$field->attributeLabel;
+            }
+            
+            $this->render('manageFields',array(
+                'dataProvider'=>$dataProvider,
+                'model'=>$model,
+                'fields'=>$arr,
+            ));
+        }
 
 	public function actionCreatePage() {
 
@@ -446,7 +541,7 @@ class AdminController extends Controller {
 			$model->attributes=$_POST['DocChild'];
 			$arr=$model->editPermissions;
 			if(isset($arr))
-				$model->editPermissions=AccountChild::parseUsers($arr);
+				$model->editPermissions=Accounts::parseUsers($arr);
 			$model->text=$_POST['msgpost'];
 			$model->createdBy='admin';
 			$model->createDate=time();
@@ -701,61 +796,25 @@ class AdminController extends Controller {
 				|| in_array($moduleName,$menuOrder)
 				|| array_key_exists('x2_'.$moduleName,Yii::app()->db->schema->getTables()))
 				$errors[] = Yii::t('module','A module with that title already exists');
-			
 			if(empty($errors)) {
 			
 				$assignedTo=$_POST['displayAssignedTo'];
 				$description=$_POST['displayDescription'];
 				
-				$displayOne=$_POST['displayOne'];
-				$fieldOne=$_POST['fieldOne'];
-				if($fieldOne==Yii::t('module','Enter field name here') || $fieldOne=="") {
-					$fieldOne="";
-					$displayOne=0;
-				}
-				
-				$displayTwo=$_POST['displayTwo'];
-				$fieldTwo=$_POST['fieldTwo'];
-				if($fieldTwo==Yii::t('module','Enter field name here') || $fieldTwo=='') {
-					$fieldTwo="";
-					$displayTwo=0;
-				}
-				
-				$displayThree=$_POST['displayThree'];
-				$fieldThree=$_POST['fieldThree'];
-				if($fieldThree==Yii::t('module','Enter field name here') || $fieldThree=="") {
-					$fieldThree="";
-					$displayThree=0;
-				}
-				
-				$displayFour=$_POST['displayFour'];
-				$fieldFour=$_POST['fieldFour'];
-				if($fieldFour==Yii::t('module','Enter field name here') || $fieldFour=='') {
-					$fieldFour="";
-					$displayFour=0;
-				}
-				
-				$displayFive=$_POST['displayFive'];
-				$fieldFive=$_POST['fieldFive'];
-				if($fieldFive==Yii::t('module','Enter field name here') || $fieldFive=='') {
-					$fieldFive="";
-					$displayFive=0;
-				}
-
-				$this->writeConfig($title,$moduleName,$recordName,$assignedTo,$description,$displayOne,$fieldOne,$displayTwo,$fieldTwo,$displayThree,$fieldThree,$displayFour,$fieldFour,$displayFive,$fieldFive);
-				
-				$this->createNewTable($moduleName);
+				$customFields=$_POST['CustomFields'];
+                                $visibility=$customFields['visible'];
+                                $names=$customFields['fieldName'];
+                                $labels=$customFields['attributeLabel'];
+                                
+                                foreach($names as $field){
+                                    if($field=="Enter field name here")
+                                        $field="";
+                                }
+                                $this->writeConfig($title,$moduleName,$recordName);
+				$this->createNewTable($moduleName, $visibility, $names, $labels);
 				
 				$this->createSkeletonDirectories($moduleName);
 				
-				$model = Yii::app()->file->set('protected/models/'.ucfirst($moduleName).'.php');
-				$contents = $model->getContents();
-				$contents = preg_replace('/\$fieldOne/',$fieldOne,$contents);
-				$contents = preg_replace('/\$fieldTwo/',$fieldTwo,$contents);
-				$contents = preg_replace('/\$fieldThree/',$fieldThree,$contents);
-				$contents = preg_replace('/\$fieldFour/',$fieldFour,$contents);
-				$contents = preg_replace('/\$fieldFive/',$fieldFive,$contents);
-				$model->setContents($contents);
 				
 				// add new module to the admin menuOrder fields
 				if(empty($admin->menuOrder)) {
@@ -775,61 +834,59 @@ class AdminController extends Controller {
 		
 		$this->render('createModule',array('errors'=>$errors));
 	}
-	
-	private function writeConfig($title,$moduleName,$recordName,$assignedTo,$description,$displayOne,$fieldOne,$displayTwo,$fieldTwo,$displayThree,$fieldThree,$displayFour,$fieldFour,$displayFive,$fieldFive) {
-		
+        
+        private function writeConfig($title,$moduleName,$recordName) {
+
 		$configFile = Yii::app()->file->set('protected/config/templatesConfig.php', true);
 		$configFile->copy($moduleName.'Config.php');
-		
+
 		$configFile=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php', true);
-		
+
 		$str = "<?php
 \$moduleConfig = array(
 	'title'=>'".addslashes($title)."',
 	'moduleName'=>'".addslashes($moduleName)."',
 	'recordName'=>'".addslashes($recordName)."',
-	'assignedToDisplay'=>'".addslashes($assignedTo)."',
-	'descriptionDisplay'=>'".addslashes($description)."',
-	'displayOne'=>'".addslashes($displayOne)."',
-	'displayTwo'=>'".addslashes($displayTwo)."',
-	'displayThree'=>'".addslashes($displayThree)."',
-	'displayFour'=>'".addslashes($displayFour)."',
-	'displayFive'=>'".addslashes($displayFive)."',
 );
 ?>";
-/* 		$str="<?php
-\$name=\"$name\";
-\$title=\"".ucfirst($name)."\";
-\$assignedToDisplay=\"$assignedTo\";
-\$descriptionDisplay=\"$description\";
-\$displayOne=\"$displayOne\";
-\$displayTwo=\"$displayTwo\";
-\$displayThree=\"$displayThree\";
-\$displayFour=\"$displayFour\";
-\$displayFive=\"$displayFive\";
-?>"; */
-		
-		$configFile->setContents($str);
-	}
+                
+                $configFile->setContents($str);
+}
 	
-	private function createNewTable($moduleName) {
-		
-		$sql="CREATE TABLE x2_".$moduleName."(
-id INT NOT NULL AUTO_INCREMENT primary key,
-assignedTo VARCHAR(40),
-name VARCHAR(100) NOT NULL,
-description TEXT,
-fieldOne VARCHAR(255),
-fieldTwo VARCHAR(255),
-fieldThree VARCHAR(255),
-fieldFour VARCHAR(255),
-fieldFive VARCHAR(255),
-createDate INT,
-lastUpdated INT,
-updatedBy VARCHAR(40)
-)";
-		$command = Yii::app()->db->createCommand($sql);
-		$command->execute();
+	private function createNewTable($moduleName, $visibility, $names, $labels) {
+		$sqlList=array("CREATE TABLE x2_".$moduleName."(
+                        id INT NOT NULL AUTO_INCREMENT primary key,
+                        assignedTo VARCHAR(40),
+                        name VARCHAR(100) NOT NULL,
+                        description TEXT,
+                        createDate INT,
+                        lastUpdated INT,
+                        updatedBy VARCHAR(40)
+                        )",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'id', 'ID', '1', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'name', 'Name', '1', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '1', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'description', 'Description', '1', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'createDate', 'Create Date', '1', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '1', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'updatedBy', 'Updated By', '1', '0')");
+                foreach($sqlList as $sql){
+                    $command = Yii::app()->db->createCommand($sql);
+                    $command->execute();
+                }
+                for($i=0;$i<count($names);$i++){
+                    $sql="ALTER TABLE x2_".$moduleName." ADD COLUMN $names[$i] VARCHAR(250)";
+                    $command = Yii::app()->db->createCommand($sql);
+                    $command->execute();
+                    $field=new Fields;
+                    $field->modelName=$moduleName;
+                    $field->fieldName=$names[$i];
+                    $field->visible=$visibility[$i];
+                    $field->custom=1;
+                    $field->modified=1;
+                    $field->attributeLabel=$labels[$i];
+                    $field->save();
+                }
 	}
 	
 	private function createSkeletonDirectories($moduleName) {
@@ -868,95 +925,7 @@ updatedBy VARCHAR(40)
 					$newFile->setContents($contents);
 				}
 			}
-/* 			$_form=Yii::app()->file->set('protected/views/templates/_form.php');
-			$_search=Yii::app()->file->set('protected/views/templates/_search.php');
-			$_view=Yii::app()->file->set('protected/views/templates/_view.php');
-			$admin=Yii::app()->file->set('protected/views/templates/admin.php');
-			$create=Yii::app()->file->set('protected/views/templates/create.php');
-			$index=Yii::app()->file->set('protected/views/templates/index.php');
-			$update=Yii::app()->file->set('protected/views/templates/update.php');
-			$view=Yii::app()->file->set('protected/views/templates/view.php');
-			$_detailView=Yii::app()->file->set('protected/views/templates/_detailView.php');
-			
-			$_form->copy('protected/views/'.$moduleName.'/_form.php');
-			$_form=Yii::app()->file->set('protected/views/'.$moduleName.'/_form.php');
-			$contents=$_form->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$_form->setContents($contents);
-			
-			$_search->copy('protected/views/'.$moduleName.'/_search.php');
-			$_search=Yii::app()->file->set('protected/views/'.$moduleName.'/_search.php');
-			$contents=$_search->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$_search->setContents($contents);
-			
-			$_view->copy('protected/views/'.$moduleName.'/_view.php');
-			$_view=Yii::app()->file->set('protected/views/'.$moduleName.'/_view.php');
-			$contents=$_view->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$_view->setContents($contents);
-			
-			$admin->copy('protected/views/'.$moduleName.'/admin.php');
-			$admin=Yii::app()->file->set('protected/views/'.$moduleName.'/admin.php');
-			$contents=$admin->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$admin->setContents($contents);
-			
-			$create->copy('protected/views/'.$moduleName.'/create.php');
-			$create=Yii::app()->file->set('protected/views/'.$moduleName.'/create.php');
-			$contents=$create->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$create->setContents($contents);
-			
-			$index->copy('protected/views/'.$moduleName.'/index.php');
-			$index=Yii::app()->file->set('protected/views/'.$moduleName.'/index.php');
-			$contents=$index->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$index->setContents($contents);
-			
-			$update->copy('protected/views/'.$moduleName.'/update.php');
-			$update=Yii::app()->file->set('protected/views/'.$moduleName.'/update.php');
-			$contents=$update->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$update->setContents($contents);
-			
-			$view->copy('protected/views/'.$moduleName.'/view.php');
-			$view=Yii::app()->file->set('protected/views/'.$moduleName.'/view.php');
-			$contents=$view->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$view->setContents($contents);
-			
-			$_detailView->copy('protected/views/'.$moduleName.'/_detailView.php');
-			$_detailView=Yii::app()->file->set('protected/views/'.$moduleName.'/_detailView.php');
-			$contents=$_detailView->getContents();
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$_detailView->setContents($contents);
-			
-			$controller=Yii::app()->file->set('protected/controllers/TemplatesController.php');
-			$controller->copy('protected/controllers/'.ucfirst($moduleName)."Controller.php");
-			$controller=Yii::app()->file->set('protected/controllers/'.ucfirst($moduleName)."Controller.php");
-			$contents=$controller->getContents();
-			$contents=preg_replace('/TemplatesController/',ucfirst($moduleName)."Controller",$contents);
-			$contents=preg_replace('/Templates/',ucfirst($moduleName),$contents);
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$controller->setContents($contents);
-			
-			$model=Yii::app()->file->set('protected/models/Templates.php');
-			$model->copy('protected/models/'.ucfirst($moduleName).'.php');
-			$model=Yii::app()->file->set('protected/models/'.ucfirst($moduleName).'.php');
-			$contents=$model->getContents();
-			$contents=preg_replace('/class Templates extends CActiveRecord/','class '.ucfirst($moduleName).' extends CActiveRecord',$contents);
-			$contents=preg_replace('/templates/',$moduleName,$contents);
-			$model->setContents($contents); */
+
 		}
 	}
 	
@@ -1000,7 +969,7 @@ updatedBy VARCHAR(40)
 		}
 		
 		$arr = array();
-		$standard = array('contacts','actions','docs','accounts','sales');
+		$standard = array('contacts','actions','docs','accounts','sales','workflow');
 
 		$pieces = explode(":",$admin->menuOrder);
 		foreach($pieces as $piece) {
@@ -1017,7 +986,10 @@ updatedBy VARCHAR(40)
 		
 		if(Yii::app()->db->schema->getTable("x2_$moduleName")) {
 			$command = Yii::app()->db->createCommand()->dropTable("x2_$moduleName");
-			//$command->execute();
+			$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($moduleName)));
+                        foreach($fields as $field){
+                            $field->delete();
+                        }
 		}
 		//$sql="DROP TABLE x2_$name IF EXISTS";
 		//$command=Yii::app()->db->createCommand($sql);
@@ -1054,15 +1026,51 @@ updatedBy VARCHAR(40)
 			
 			mkdir($moduleName);
 			mkdir("$moduleName/$moduleName");
-			
+                        
+                        $fields=Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($moduleName)));
+                        $sql="CREATE TABLE x2_".$moduleName."(
+                        id INT NOT NULL AUTO_INCREMENT primary key,
+                        assignedTo VARCHAR(40),
+                        name VARCHAR(100) NOT NULL,
+                        description TEXT,
+                        createDate INT,
+                        lastUpdated INT,
+                        updatedBy VARCHAR(40)
+                        );INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'id', 'ID', '1', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'name', 'Name', '1', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '1', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'description', 'Description', '1', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'createDate', 'Create Date', '1', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '1', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'updatedBy', 'Updated By', '1', '0');";
+                                
+                        $disallow=array(
+                            "id",
+                            "assignedTo",
+                            "name",
+                            "description",
+                            "createDate",
+                            "lastUpdated",
+                            "updatedBy",
+                        );
+                        foreach($fields as $field){
+                            if(array_search($field->fieldName,$disallow)===false)
+                                $sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName VARCHAR(250); INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
+                        }
+                        
+                        $db=Yii::app()->file->set("sqlData.sql");
+                        $db->create();
+                        $db->setContents($sql);
+                        $db->copy($moduleName.'/sqlData.sql');
+                        
+			$config=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php');
+			$config->copy("$moduleName/".$moduleName.'Config.php');
+                        
 			$model=Yii::app()->file->set('protected/models/'.ucfirst($moduleName).'.php');
 			$model->copy("$moduleName/".ucfirst($moduleName).".php");
 			
 			$controller=Yii::app()->file->set('protected/controllers/'.ucfirst($moduleName).'Controller.php');
 			$controller->copy("$moduleName/".ucfirst($moduleName)."Controller.php");
-			
-			$config=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php');
-			$config->copy("$moduleName/".$moduleName.'Config.php');
 			
 			$views=Yii::app()->file->set('protected/views/'.$moduleName);
 			$contents=$views->contents;
@@ -1106,14 +1114,22 @@ updatedBy VARCHAR(40)
 			$module=Yii::app()->file->set('data');
 			$moduleName=$module->filename;
 			
-			$this->createNewTable($moduleName);
-			
 			$zip=Yii::app()->zip;
 			$zip->extractZip("$moduleName.zip",'temp');
+                        
+                        $sql=$model=Yii::app()->file->set('temp/'.$moduleName.'/sqlData.sql');
+                        $sqlContents=$sql->getContents();
+                        $pieces=explode(";",$sqlContents);
+                        foreach($pieces as $query){
+                            if($query!=""){
+                                $command = Yii::app()->db->createCommand($query);
+                                $command->execute();
+                            }
+                        }
 			
-			$config=Yii::app()->file->set('temp/'.$moduleName.'/'.$moduleName.'Config.php');
+                        $config=Yii::app()->file->set('temp/'.$moduleName.'/'.$moduleName.'Config.php');
 			$config->copy('protected/config/'.$moduleName.'Config.php');
-			
+                        
 			$model=Yii::app()->file->set('temp/'.$moduleName.'/'.ucfirst($moduleName).'.php');
 			$model->copy('protected/models/'.ucfirst($moduleName).'.php');
 			
@@ -1152,6 +1168,24 @@ updatedBy VARCHAR(40)
 		}
 		$this->render('importModule');
 	}
+        
+        public function actionEditor(){
+            if(isset($_GET['model'])){
+                $modelName=$_GET['model'];
+                eval("\$model=new ".ucfirst($modelName).";");
+                $formUrl="//$modelName/_form";
+            }else{
+                $formUrl="";
+                $model=null;
+            }
+            
+            
+            
+            $this->render('formEditor',array(
+                'formUrl'=>$formUrl,
+                'model'=>$model,
+            ));
+        }
 		
 	
 	public function actionExport() {
@@ -1162,364 +1196,92 @@ updatedBy VARCHAR(40)
 	
 	private function globalExport() {
 		
-		$file='file.csv';
+		$file='data.csv';
 		$fp = fopen($file, 'w+');
+                
+                $admin=AdminChild::model()->findByPk(1);
+                $order=$admin->menuOrder; 
 		
-		$users=UserChild::model()->findAll();
-		$contacts=ContactChild::model()->findAll();
-		$actions=ActionChild::model()->findAll();
-		$sales=SaleChild::model()->findAll();
-		$accounts=AccountChild::model()->findAll();
-		$docs=Docs::model()->findAll();
-		$profiles=Profile::model()->findAll();
+                $pieces=explode(":",$order);
+                $tempArr=array();
+                foreach($pieces as $model){
+                    $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
+                }
+                
+		$tempArr['Users']=UserChild::model()->findAll();
+                $tempArr['Profile']=ProfileChild::model()->findAll();
+                $labels=array();
+                foreach($tempArr as $model=>$data){
+                    $temp=CActiveRecord::model($model);
+                    $tempKeys=array_keys($temp->attributes);
+                    $tempKeys[]=$model;
+                    $labels[$model]=$tempKeys;
+                }
 		
-		fputcsv($fp,array("0.9.3"));
-		
-		$userList=array();
-		foreach($users as $user) {
-                        if($user->username!='admin')
-			$userList[]=$user->attributes;
-		}
-		foreach ($userList as $fields) {
-			unset($fields['id']);
-			$fields[]='user';
-			fputcsv($fp, $fields);
-			
-		}
-		
-	
-		$contactList=array();
-		foreach($contacts as $contact) {
-			$contactList[]=$contact->attributes;
-		}
-		foreach ($contactList as $fields) {
-			unset($fields['id']);
-			$fields[]='contact';
-			fputcsv($fp, $fields);
-			
-		}
-		
-		$actionList=array();
-		foreach($actions as $action) {
-			$actionList[]=$action->attributes;
-		}
-		foreach ($actionList as $fields) {
-			unset($fields['id']);
-			$fields[]='action';
-			fputcsv($fp, $fields);
-			
-		}
-		
-		$saleList=array();
-		foreach($sales as $sale) {
-			$saleList[]=$sale->attributes;
-		}
-		foreach ($saleList as $fields) {
-			unset($fields['id']);
-			$fields[]='sale';
-			fputcsv($fp, $fields);
-			
-		}
-		
-		$accountList=array();
-		foreach($accounts as $account) {
-			$accountList[]=$account->attributes;
-		}
-		foreach ($accountList as $fields) {
-			unset($fields['id']);
-			$fields[]='account';
-			fputcsv($fp, $fields);
-			
-		}
-		
-		$docList=array();
-		foreach($docs as $doc) {
-			$docList[]=$doc->attributes;
-		}
-		foreach ($docList as $fields) {
-			unset($fields['id']);
-			$fields[]='doc';
-			fputcsv($fp, $fields);
-			
-		}
-		
-		$profileList=array();
-		foreach($profiles as $profile) {
-			if($profile->username!='admin')
-				$profileList[]=$profile->attributes;
-		}
-		foreach ($profileList as $fields) {
-			unset($fields['id']);
-			unset($fields['avatar']);
-			$fields[]='profile';
-			fputcsv($fp, $fields);
-			
-		}
+		fputcsv($fp,array(Yii::app()->params->version));
 
+                $keys=array_keys($tempArr);
+                
+                for($i=0;$i<count($tempArr);$i++){
+                    $meta=$labels[$keys[$i]];
+                    fputcsv($fp,$meta);
+                    foreach($tempArr[$keys[$i]] as $data){
+                        $tempAtr=$data->attributes;
+                        $tempAtr[]=$keys[$i];
+                        fputcsv($fp,$tempAtr);
+                    }
+                    
+                }
 
 		fclose($fp);
 
 	}
 	
 	public function actionImport() {
-		if (isset($_FILES['data'])) {
-
-				$temp = CUploadedFile::getInstanceByName('data');
-				$temp->saveAs('data.csv');
-				$this->globalImport('data.csv');
-			}
-			$this->render('import');
-		}
+            if (isset($_FILES['data'])) {
+                $overwrite=$_POST['overwrite'];
+                $temp = CUploadedFile::getInstanceByName('data');
+                $temp->saveAs('data.csv');
+                $this->globalImport('data.csv',$overwrite);
+            }
+            $this->render('import');
+        }
 		
-	private function globalImport($file) {
+	private function globalImport($file, $overwrite) {
 		$fp=fopen($file,'r+');
 		$version=fgetcsv($fp);
 		$version=$version[0];
-		
+		$type="";
+                $meta=array();
 		while($pieces=fgetcsv($fp)) {
-			$end=count($pieces)-1;
-			while($pieces[$end]=="" && $end>0) {
-				$end--;
-			}
-			if($pieces[$end]=='contact') {
-				unset($pieces[$end]);
-				$this->importContact($pieces,$version);
-			}else if($pieces[$end]=='user') {
-				unset($pieces[$end]);
-				$this->importUser($pieces,$version);
-			}else if ($pieces[$end]=='action') {
-				unset($pieces[$end]);
-				$this->importAction($pieces,$version);
-			}else if($pieces[$end]=='sale') {
-				unset($pieces[$end]);
-				$this->importSale($pieces,$version);
-			}else if($pieces[$end]=='account') {
-				unset($pieces[$end]);
-				$this->importAccount($pieces,$version);
-			}else if($pieces[$end]=='doc') {
-				unset($pieces[$end]);
-				$this->importDoc($pieces,$version);
-			}else if($pieces[$end]=='profile') {
-				unset($pieces[$end]);
-				$this->importProfile($pieces,$version);
-			} else {
-				
-			}
+                    if($pieces[count($pieces)-1]!=$type){
+                        $type=$pieces[count($pieces)-1];
+                        $meta=$pieces;
+                        continue;
+                    }
+                    eval('$model=new '.$pieces[count($pieces)-1].";");
+                    unset($pieces[count($pieces)-1]);
+                    $tempMeta=$meta;
+                    unset($tempMeta[count($tempMeta)-1]);
+                    $temp=array();
+                    for($i=0;$i<count($tempMeta);$i++){
+                        $temp[$tempMeta[$i]]=$pieces[$i];
+                    }
+                    foreach($model->attributes as $field=>$value){
+                        $model->$field=$temp[$field];
+                    }
+                    $lookup=CActiveRecord::model(get_class($model))->findByPk($model->id);
+                    if(!isset($lookup)){
+                        $model->save();
+                    }else if($overwrite){
+                        $lookup->delete();
+                        $model->save();
+                    }
+                    
 			
 		}
 		unlink($file);
 		$this->redirect('index');
 	}
 		
-		
-	private function importUser($pieces,$version) {
-		$model=new UserChild;
-		
-		$model->firstName=$pieces[0];
-		$model->lastName=$pieces[1];
-		$model->username=$pieces[2];
-		$model->password=$pieces[3];
-		$model->title=$pieces[4];
-		$model->department=$pieces[5];
-		$model->officePhone=$pieces[6];
-		$model->cellPhone=$pieces[7];
-		$model->homePhone=$pieces[8];
-		$model->address=$pieces[9];
-		$model->backgroundInfo=$pieces[10];
-		$model->emailAddress=$pieces[11];
-		$model->status=$pieces[12];
-		$model->lastUpdated=$pieces[13];
-		$model->updatedBy=$pieces[14];
-		$model->recentItems=$pieces[15];
-		$model->topContacts=$pieces[16];
-		
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-		}
-	}
-	
-	private function importContact($pieces,$version) {
-		$model = new ContactChild;
-		
-		$model->visibility=1;
-		$model->assignedTo=Yii::app()->user->getName();
-		$model->firstName=$pieces[0];
-		$model->lastName=$pieces[1];
-		$model->title=$pieces[2];
-		$model->company=$pieces[3];
-		$model->accountId=$pieces[4];
-		$model->phone=$pieces[5];
-		$model->email=$pieces[6];
-		$model->website=$pieces[7];
-		$model->address=$pieces[8];
-		$model->city=$pieces[9];
-		$model->state=$pieces[10];
-		$model->zipcode=$pieces[11];
-		$model->country=$pieces[12];
-		$model->visibility=$pieces[13];
-		$model->assignedTo=$pieces[14];
-		$model->backgroundInfo=$pieces[15];
-		$model->twitter=$pieces[16];;
-		$model->linkedin=$pieces[17];;
-		$model->skype=$pieces[18];;
-		$model->googleplus=$pieces[19];
-		$model->lastUpdated=$pieces[20];
-		$model->updatedBy=$pieces[21];
-		$model->priority=$pieces[22];
-		$model->leadSource=$pieces[23];
-		$model->rating=$pieces[24];
-		$model->createDate=$pieces[25];
-                $model->facebook=$pieces[26];
-                $model->otherUrl=$pieces[27];
-                if(isset($pieces[28]))
-                    $model->phone2=$pieces[28];
-
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-
-		} else {
-                    print_r($model->getErrors());
-		}
-	}
-		
-		
-	private function importAction($pieces,$version) {
-		$model=new ActionChild;
-		
-		$model->assignedTo=$pieces[0];
-		$model->actionDescription=$pieces[1];
-		$model->visibility=$pieces[2];
-		$model->associationId=$pieces[3];
-		$model->associationType=$pieces[4];
-		$model->associationName=$pieces[5];
-		$model->dueDate=$pieces[6];
-		$model->showTime=$pieces[7];
-		$model->priority=$pieces[8];
-		$model->type=$pieces[9];
-		$model->createDate=$pieces[10];
-		$model->complete=$pieces[11];
-		$model->reminder=$pieces[12];
-		$model->completedBy=$pieces[13];
-		$model->completeDate=$pieces[14];
-		$model->lastUpdated=$pieces[15];
-		$model->updatedBy=$pieces[16];
-		
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-			
-		} else {
-			
-		}
-	}
-		
-	private function importSale($pieces,$version) {
-		$model=new SaleChild;
-		
-		$model->assignedTo=$pieces[0];
-		$model->name=$pieces[1];
-		$model->quoteAmount=$pieces[2];
-		$model->salesStage=$pieces[3];
-		$model->expectedCloseDate=$pieces[4];
-		$model->probability=$pieces[5];
-		$model->leadSource=$pieces[6];
-		$model->description=$pieces[7];
-		$model->createDate=$pieces[8];
-		$model->lastUpdated=$pieces[9];
-		$model->updatedBy=$pieces[10];
-		
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-			
-		}
-	}
-	
-	private function importAccount($pieces,$version) {
-		$model=new AccountChild;					
-		$model->name=$pieces[0];
-		$model->website=$pieces[1];
-		$model->type=$pieces[2];
-		$model->annualRevenue=$pieces[3];
-		$model->phone=$pieces[4];
-		$model->tickerSymbol=$pieces[5];
-		$model->employees=$pieces[6];
-		$model->assignedTo=$pieces[7];
-		$model->createDate=$pieces[8];
-		$model->associatedContacts=$pieces[9];
-		$model->description=$pieces[10];
-		$model->lastUpdated=$pieces[11];
-		$model->updatedBy=$pieces[12];
-		
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-			
-		}
-	}
-
-	
-	private function importDoc($pieces,$version) {
-		$model=new Docs;
-		
-		$model->title=$pieces[0];
-		$model->text=$pieces[1];
-		$model->createdBy=$pieces[2];
-		$model->createDate=$pieces[3];
-		$model->updatedBy=$pieces[4];
-		$model->lastUpdated=$pieces[5];
-		
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-			
-		}
-	}
-
-	
-	
-	private function importProfile($pieces,$version) {
-		$model=new ProfileChild;
-		
-		$model->fullName=$pieces[0];
-		$model->username=$pieces[1];
-		$model->officePhone=$pieces[2];
-		$model->cellPhone=$pieces[3];
-		$model->emailAddress=$pieces[4];
-		$model->notes=$pieces[5];
-		$model->status=$pieces[6];
-		$model->tagLine=$pieces[7];
-		$model->lastUpdated=$pieces[8];
-		$model->updatedBy=$pieces[9];
-		$model->allowPost=$pieces[10];
-		$model->language=$pieces[11];
-		if($model->language=="") {
-			$model->language="en";
-		}
-		$model->timeZone=$pieces[12];
-		$model->resultsPerPage=$pieces[13];
-		$model->widgets=$pieces[14];
-		$model->widgetOrder=$pieces[15];
-		$model->backgroundColor=$pieces[16];
-		$model->menuBgColor=$pieces[17];
-		$model->menuTextColor=$pieces[18];
-		$model->backgroundImg=$pieces[19];
-		$model->pageOpacity=$pieces[20];
-                if(isset($pieces[21]))
-                    $model->startPage=$pieces[21];
-                if(isset($pieces[22]))
-                    $model->showSocialMedia=$pieces[22];
-                if(isset($pieces[23]))
-                    $model->showDetailView=$pieces[23];
-		
-		$model=Rules::applyRules($model,$version);
-		
-		if($model->save()) {
-		
-		} else {
-			
-		}
-	}
 }

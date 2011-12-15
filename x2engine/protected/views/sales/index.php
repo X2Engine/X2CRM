@@ -59,7 +59,7 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php 
-	$this->widget('zii.widgets.grid.CGridView', array(
+/* 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'sales-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.Yii::t('sales','Sales').'</h2><div class="title-bar">'
@@ -99,17 +99,46 @@ $('.search-form form').submit(function(){
 			'value'=>'empty($data->assignedTo)?Yii::t("app","Anyone"):$data->assignedTo',
 			'type'=>'raw',
 		),
-		/*
-		'leadSource',
 		
-		'createDate',
-		'notes',
-		*/
+		// 'leadSource',
+		
+		// 'createDate',
+		// 'notes',
+		
 	),
+)); */
+$this->widget('application.components.X2GridView', array(
+	'id'=>'sales-grid',
+	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
+	'template'=> '<h2>'.Yii::t('sales','Sales').'</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$model->search(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	'filter'=>$model,
+	// 'columns'=>$columns,
+	'modelName'=>'Sales',
+	'viewName'=>'sales',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>185,
+		'quoteAmount'=>95,
+		'probability'=>106,
+		'expectedCloseDate'=>106,
+		'assignedTo'=>94,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
+			'name'=>'name',
+			'header'=>Yii::t('sales','Name'),
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>true,
 ));
-
-
-//echo preg_replace('/\.([0-9]{2})$',
-
 
 ?>

@@ -98,95 +98,91 @@ function trimText($text) {
 	'model'=>$model, 
 )); ?>
 </div><!-- search-form -->
-<?php 
-	$this->widget('zii.widgets.grid.CGridView', array(
+<?php
+
+$this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
 	'filter'=>$model,
-	'columns'=>array(
-		array(
-
-			'name'=>'actionDescription',
-			'header'=>Yii::t('actions','Action Description'),
-			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : trimText($data->actionDescription),array("view","id"=>$data->id))',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
-		),
-		array(
-			'name'=>'associationName',
-			'header'=>Yii::t('actions','Association Name'),
-			'value'=>'$data->associationType=="none" ? Yii::t("app","None") : CHtml::link($data->associationName,array("./".$data->associationType."/view","id"=>$data->associationId))',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'dueDate',
-			'header'=>Yii::t('actions','Due Date'),
-			'value'=>'date("Y-m-d",$data->dueDate)',
-			'type'=>'raw',
-		),
-		// array(
-			// 'name'=>'dueDate',
-			// 'value'=>'date("Y-m-d",$data->dueDate)',
-			// 'type'=>'raw',
-		// ),
-		//'priority',
-		array(
-			'name'=>'assignedTo',
-			'header'=>Yii::t('actions','Assigned To'),
-			'value'=>'UserChild::getUserLinks($data->assignedTo)',
-			'type'=>'raw',
-		)
-			//'type'
+	// 'columns'=>$columns,
+	'modelName'=>'Actions',
+	'viewName'=>'actions',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'actionDescription'=>257,
+		'associationName'=>132,
+		'dueDate'=>91,
+		'assignedTo'=>105,
 	),
-));
-?><br />
-<?php
-$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'actionsComplete-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('actions','Completed Actions').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$dataProvider2,
-	'filter'=>$model,
-	'columns'=>array(
-		array(
+	'specialColumns'=>array(
+		'actionDescription'=>array(
 			'name'=>'actionDescription',
-			'header'=>Yii::t('actions','Action Description'),
 			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : trimText($data->actionDescription),array("view","id"=>$data->id))',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
 		),
-		array(
+		'associationName'=>array(
 			'name'=>'associationName',
 			'header'=>Yii::t('actions','Association Name'),
 			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("./".$data->associationType."/view","id"=>$data->associationId))',
 			'type'=>'raw',
 		),
-		array(
-			'name'=>'completeDate',
-			'header'=>Yii::t('actions','Complete Date'),
-			'value'=>'date("Y-m-d",$data->completeDate)',
+	),
+	'enableControls'=>true,
+));
+
+echo "<br />\n";
+
+$this->widget('application.components.X2GridView', array(
+	'id'=>'actionsComplete-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<h2>'.Yii::t('actions','Completed Actions').'</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1))// . ' | '
+		// .CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$dataProvider2,
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	'filter'=>$model,
+	// 'columns'=>$columns,
+	'modelName'=>'Actions',
+	'viewName'=>'actionscomplete',
+	'enableGvSettings'=>false,
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'actionDescription'=>257,
+		'associationName'=>113,
+		'completeDate'=>110,
+		'completedBy'=>105,
+	),
+	'specialColumns'=>array(
+		'actionDescription'=>array(
+			'name'=>'actionDescription',
+			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : trimText($data->actionDescription),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
-		//'assignedTo',
-		array(
+		'associationName'=>array(
+			'name'=>'associationName',
+			'header'=>Yii::t('actions','Association Name'),
+			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("./".$data->associationType."/view","id"=>$data->associationId))',
+			'type'=>'raw',
+		),
+		'completedBy'=>array(
 			'name'=>'completedBy',
 			'header'=>Yii::t('actions','Completed By'),
-			'value'=>'UserChild::getUserLinks($data->assignedTo)',
+			'value'=>'UserChild::getUserLinks($data->completedBy)',
 			'type'=>'raw',
 		)
-		// array(
-			// 'name'=>'completeDate',
-			// 'value'=>'date("Y-m-d",$data->completeDate)',
-			// 'type'=>'raw',
-		// ),
-		//'type'
-	)
+	),
+	'enableControls'=>true,
 ));
 ?>
 

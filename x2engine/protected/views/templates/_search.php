@@ -36,7 +36,8 @@
 ?>
 <div class="wide form">
 
-<?php include("protected/config/templatesConfig.php");
+<?php 
+include("protected/config/templatesConfig.php");
 $form=$this->beginWidget('CActiveForm', array(
 	'action'=>Yii::app()->createUrl($this->route),
 	'method'=>'get',
@@ -60,31 +61,6 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row">
 		<?php echo $form->label($model,'description'); ?>
 		<?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'fieldOne'); ?>
-		<?php echo $form->textField($model,'fieldOne',array('size'=>60,'maxlength'=>255)); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'fieldTwo'); ?>
-		<?php echo $form->textField($model,'fieldTwo',array('size'=>60,'maxlength'=>255)); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'fieldThree'); ?>
-		<?php echo $form->textField($model,'fieldThree',array('size'=>60,'maxlength'=>255)); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'fieldFour'); ?>
-		<?php echo $form->textField($model,'fieldFour',array('size'=>60,'maxlength'=>255)); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'fieldFive'); ?>
-		<?php echo $form->textField($model,'fieldFive',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
 	<div class="row">

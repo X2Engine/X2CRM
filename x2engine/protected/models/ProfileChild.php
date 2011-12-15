@@ -64,6 +64,7 @@ class ProfileChild extends Profile {
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
 			'showWorkflow'=>Yii::t('profile','Show Workflow'),
+			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
 		);
 	}
 	
@@ -101,6 +102,34 @@ class ProfileChild extends Profile {
 		
 		return empty($resultsPerPage)? 15 : $resultsPerPage;
 	}
+	
+	// lookup user's settings for a gridview (visible columns, column widths)
+	public static function getGridviewSettings($model = null) {
+		$gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings,true);	// converts JSON string to assoc. array
+
+		if(isset($model)) {
+			$model = strtolower($model);
+			if(isset($gvSettings[$model]))
+				return $gvSettings[$model];
+			else
+				return null;
+		} else {
+			return $gvSettings;
+		}
+	}
+	
+	// add/update settings for a specific gridview, or save all at once
+	public static function setGridviewSettings($gvSettings,$viewName = null) {
+		if(isset($viewName)) {
+			$fullGvSettings = ProfileChild::getGridviewSettings();
+			$fullGvSettings[strtolower($viewName)] = $gvSettings;
+			Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings);	// encode array in JSON
+		} else {
+			Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings);	// encode array in JSON
+		}
+		return Yii::app()->params->profile->save();
+	}
+
 	
 	public function getWidgets() {
 		

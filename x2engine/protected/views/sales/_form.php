@@ -35,7 +35,18 @@
  ********************************************************************************/
 ?>
 <div class="form">
-
+<?php
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
+?>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'sales-form',
 	'enableAjaxValidation'=>false,
@@ -46,11 +57,14 @@
 <?php echo $form->errorSummary($model); ?>
 
 <div class="row">
+        <?php if($nonCustom['name']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'name'); ?>
 		<?php echo $form->textField($model,'name',array('size'=>48,'maxlength'=>40)); ?>
 		<?php echo $form->error($model,'name'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['accountName']->visible==1){ ?>
 	<div class="cell">
 		<?php
 		echo '<label for="accountAutoComplete">'. Yii::t('sales','Account').' ('.Yii::t('app','Optional').')<label>';
@@ -73,6 +87,7 @@
 		echo $form->hiddenField($model,'accountId');
 		?>
 	</div>
+        <?php } ?>
 </div>
 <!--<div class="row">
 	<?php //echo $form->labelEx($model,'assignedTo'); ?>
@@ -80,11 +95,14 @@
 	<?php //echo $form->error($model,'assignedTo'); ?>
 </div>-->
 <div class="row">
+        <?php if($nonCustom['quoteAmount']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'quoteAmount'); ?>
 		<?php echo $form->textField($model,'quoteAmount'); ?>
 		<?php echo $form->error($model,'quoteAmount'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['salesStage']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'salesStage'); ?>
 		<?php echo $form->dropDownList($model,'salesStage',
@@ -95,6 +113,8 @@
 				); ?>
 		<?php echo $form->error($model,'salesStage'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['leadSource']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'leadSource'); ?>
 		<?php echo $form->dropDownList($model,'leadSource',
@@ -106,8 +126,10 @@
 				)); ?>
 		<?php echo $form->error($model,'leadSource'); ?>
 	</div>
+        <?php } ?>
 </div>
 <div class="row">
+        <?php if($nonCustom['expectedCloseDate']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'expectedCloseDate'); ?>
 		<?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
@@ -122,32 +144,59 @@
 		));?>
 		<?php echo $form->error($model,'expectedCloseDate'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['probability']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'probability'); ?>
 		<?php echo $form->textField($model,'probability'); ?>
 		<?php echo $form->error($model,'probability'); ?>
 	</div>
+        <?php } ?>
 </div>
 <div class="row">
+        <?php if($nonCustom['assignedTo']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'assignedTo'); ?>
 		<?php echo $form->dropDownList($model,'assignedTo',$users,array('multiple'=>'multiple', 'size'=>7)); ?>
 		<?php echo $form->error($model,'assignedTo'); ?>
 	</div>
+        <?php } ?>
+        <?php if($nonCustom['associatedContacts']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'associatedContacts'); ?>
 		<?php echo $form->dropDownList($model,'associatedContacts',$contacts,array('multiple'=>'multiple', 'size'=>7)); ?>
 		<?php echo $form->error($model,'associatedContacts'); ?>
 	</div>
+        <?php } ?>
 	<div class="cell">
 		<span class="information"><?php echo Yii::t('sales','Hold Control or Command key to select multiple items.'); ?></span> 
 	</div>
 </div>
+<?php if($nonCustom['description']->visible==1){ ?>
 <div class="row">
 	<?php echo $form->labelEx($model,'description'); ?>
 	<?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
 	<?php echo $form->error($model,'description'); ?>
 </div>
+<?php } ?>
+<?php 
+        
+            foreach($custom as $fieldName=>$field){
+                
+                if($field->visible==1){ 
+                    ?>
+                    <div class="row">
+                    <div class="cell">
+                        <?php echo $form->label($model,$fieldName); ?>
+                        <?php echo $form->textField($model,$fieldName,array('size'=>'70')); ?>
+                        <?php echo $form->error($model,$fieldName); ?>
+                    </div>
+                    </div>
+                    <?php
+                        }
+                }
+        
+            ?>
 <div class="row buttons">
 	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 </div>

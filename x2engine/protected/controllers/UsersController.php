@@ -169,10 +169,24 @@ class UsersController extends x2base {
 			foreach($actions as $action){
                                 if($action->updatedBy==$model->username)
                                     $action->updatedBy='admin';
-                                if($action->completedBy=$model->username)
+                                if($action->completedBy==$model->username)
                                     $action->completedBy='admin';
 				$action->assignedTo="Anyone";
                                 $action->save();
+			}
+                        
+                        $dataProvider=new CActiveDataProvider('Contacts', array(
+			'criteria'=>array(
+				'condition'=>"assignedTo='$model->username'",
+			)));
+			$contacts=$dataProvider->getData();
+                        foreach($contacts as $contact){
+                                if($contact->updatedBy==$model->username)
+                                    $contact->updatedBy='admin';
+                                if($contact->completedBy==$model->username)
+                                    $contact->completedBy='admin';
+				$contact->assignedTo="Anyone";
+                                $contact->save();
 			}
                         
                         $prof=ProfileChild::model()->findByAttributes(array('username'=>$model->username));

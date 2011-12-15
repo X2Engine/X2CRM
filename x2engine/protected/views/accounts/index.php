@@ -58,35 +58,36 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php
-$this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('application.components.X2GridView', array(
 	'id'=>'accounts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.Yii::t('accounts','Accounts').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
 	'filter'=>$model,
-	'columns'=>array(
-		array(
+	// 'columns'=>$columns,
+	'modelName'=>'Accounts',
+	'viewName'=>'accounts',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>234,
+		'type'=>108,
+		'annualRevenue'=>128,
+		'phone'=>115,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
 			'name'=>'name',
+			'header'=>Yii::t('accounts','Name'),
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
 		),
-		//'description',
-		'type',
-		array(
-			'name'=>'annualRevenue',
-			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data->annualRevenue,Yii::app()->params->currency)',
-			'type'=>'raw',
-		),
-		'phone',
-		/*
-		'tickerSymbol',
-		'employees',
-		'associatedContacts',
-		'notes',
-		*/
 	),
-)); ?>
+	'enableControls'=>true,
+));
+?>

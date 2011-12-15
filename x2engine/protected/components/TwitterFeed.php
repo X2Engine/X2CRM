@@ -52,7 +52,7 @@ class TwitterFeed extends CWidget {
 			&& Yii::app()->controller->action->id=='view'	// must be viewing it
 			&& isset($actionParams['id'])) {				// must have an actual ID value
 
-			$currentRecord = ContactChild::model()->findByPk($actionParams['id']);
+			$currentRecord = Contacts::model()->findByPk($actionParams['id']);
 			if(!empty($currentRecord->twitter))
 				$twitter = $currentRecord->twitter;
 		}

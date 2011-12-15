@@ -65,7 +65,7 @@ class ContactsController extends MobileController{
 		$pieces=explode(',',$topList);
 		$contacts=array();
 		foreach($pieces as $piece){
-			$contact=ContactChild::model()->findByPk($piece); 
+			$contact=Contacts::model()->findByPk($piece); 
 			if(isset($contact))
 				$contacts[]=$contact;
 		}
@@ -79,8 +79,8 @@ class ContactsController extends MobileController{
 	
 	public function actionNew(){
 		
-		$model=new ContactChild;
-		$attributeLabels = ContactChild::attributeLabels();
+		$model=new Contacts;
+		$attributeLabels = Contacts::attributeLabels();
 		
 		if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
 			echo CActiveForm::validate($model);
@@ -88,9 +88,9 @@ class ContactsController extends MobileController{
 		}
 
 		// collect user input data
-		if(isset($_POST['ContactChild'])) {
+		if(isset($_POST['Contacts'])) {
 			// $this->redirect('http://www.google.com/');
-			$model->attributes = $_POST['ContactChild'];
+			$model->attributes = $_POST['Contacts'];
 			//
 				// $model->firstName = 'bob';
 				// $model->lastName = 'dole';
@@ -120,10 +120,10 @@ class ContactsController extends MobileController{
 	}
 	
 	public function actionSearch(){
-		$attributeLabels = ContactChild::attributeLabels();
-		$model=new ContactChild;
-		if(isset($_POST['ContactChild'])){
-			$model->attributes=$_POST['ContactChild'];
+		$attributeLabels = Contacts::attributeLabels();
+		$model=new Contacts;
+		if(isset($_POST['Contacts'])){
+			$model->attributes=$_POST['Contacts'];
 			$firstName=true;
 			$lastName=true;
 			if($model->firstName == $attributeLabels['firstName'])
@@ -164,14 +164,14 @@ class ContactsController extends MobileController{
 	}
 	
 	public function actionViewAll(){
-		$model=new ContactChild;
+		$model=new Contacts;
 		
 		
 	}
 	
 	
 	public function loadModel($id) {
-		$model = ContactChild::model()->findByPk((int) $id);
+		$model = Contacts::model()->findByPk((int) $id);
 		if ($model === null)
 			throw new CHttpException(404, 'The requested page does not exist.');
 		return $model;

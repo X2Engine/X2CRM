@@ -33,8 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-
 include("protected/config/templatesConfig.php");
+
 $this->menu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
@@ -84,13 +84,17 @@ function trimText($text) {
 		array(
 			'name'=>'description',
 			'header'=>Yii::t('templates','Description'),
-			'value'=>'CHtml::link(trimText($data->description),array("view","id"=>$data->id))',
+			'value'=>'trimText($data->description)',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
-		'assignedTo',
 		array(
-			'name'=>'name',
+			'name'=>'assignedTo',
+			'value'=>'$data->assignedTo==""?"Anyone":$data->assignedTo',
+			'type'=>'raw',
+		),
+		array(
+			'name'=>'createDate',
 			'value'=>'date("Y-m-d",$data->createDate)',
 			'type'=>'raw',
 		),

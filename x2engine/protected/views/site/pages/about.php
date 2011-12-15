@@ -42,12 +42,12 @@ $(function() {
 });
 ",CClientScript::POS_HEAD);
 ?>
-<a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=877+Cedar+Street+Suite+150+Santa+Cruz,+CA+95060+USA&hl=en&ll=36.971838,-122.211914&spn=3.444774,4.586792&sll=37.926868,-95.712891&sspn=51.515218,73.388672&vpsrc=6&t=m&z=8">
+<a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+210+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:50px;margin-right:-20px;')); ?>
 </a>
-<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> November 28, 2011.<br /><br />
+<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> December 15, 2011.<br /><br />
 <div id="about-intro">
-	<?php echo Yii::t('app','X5CRM is a Customer Relationship Management application designed by John Roberts. Special thanks to software engineers Jake Houser and Matthew Pearson, along with many other folks who helped make this release possible.'); ?><br /><br />
+	<?php echo Yii::t('app','X2Engine is a Customer Relationship Management application designed by John Roberts. Special thanks to software engineers Jake Houser and Matthew Pearson, along with many other folks who helped make this release possible.'); ?><br /><br />
 </div>
 <div style="width:200px;float:left;margin-bottom:10px;">
 	<b>Headquarters</b><br />
@@ -63,15 +63,15 @@ $(function() {
 	Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty. Licensed under <?php echo CHtml::link('GPLv3',Yii::app()->getBaseUrl().'/GPL-3.0 License.txt'); ?>.
 	This program is free software; you can redistribute it and/or modify it under the terms of the <?php echo CHtml::link('GNU General Public License version 3',Yii::app()->getBaseUrl().'/GPL-3.0 License.txt'); ?> as published by the Free Software Foundation including the additional permission set forth in the source code header.
 	<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;clear:both;')); ?>
-	The interactive user interfaces in modified source and object code versions of this program must display Appropriate Legal Notices, as required under Section 5 of the GNU General Public License version 3. In accordance with Section 7(b) of the GNU General Public License version 3, these Appropriate Legal Notices must retain the display of the "X2Engine Social Sales Management" logo. If the display of the logo is not reasonably feasible for technical reasons, the Appropriate Legal Notices must display the words "X2Engine Social Sales Management".
-	X2Engine and X2Contacts are trademarks of X2Contacts Inc.
+	The interactive user interfaces in modified source and object code versions of this program must display Appropriate Legal Notices, as required under Section 5 of the GNU General Public License version 3. In accordance with Section 7(b) of the GNU General Public License version 3, these Appropriate Legal Notices must retain the display of the "X2Engine Customer Relationship Management" logo. If the display of the logo is not reasonably feasible for technical reasons, the Appropriate Legal Notices must display the words "X2Engine Customer Relationship Management".
+	X2Engine is a trademark of X2Engine Inc.
 </div>
 
 <div class="form" id="about-credits">
 <!--<div class="about-list" style="height:450px;width:auto;overflow-y:scroll;border:1px solid #ddd;padding:10px;"></div>
 <hr>-->
 <h4><?php echo Yii::t('about','Version Info'); ?></h4>
-X5<b style="color:#666;">CRM</b>: <?php echo Yii::app()->params->version;?><br />
+X2Engine: <?php echo Yii::app()->params->version;?><br />
 <!--<?php echo Yii::t('about','Build'); ?>: 1234<br />-->
 Yii: <?php echo Yii::getVersion(); ?><br />
 jQuery: <span id="jqueryVersion"></span><br />
@@ -87,5 +87,6 @@ YUI Editor: <a href="http://developer.yahoo.com/yui" target="_blank"><?php echo 
 CFile Class: <a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a><br />
 EZip Class: <a href="http://www.yiiframework.com/extension/ezip" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a><br />
 ExColor: <a href="http://modcoder.org" target="_blank"><?php echo Yii::t('about','Developer'); ?></a><br />
-
+<!--Dragtable: <a href="http://jebaird.com/blog/dragtable-jquery-ui-widget-re-arrange-table-columns-drag-drop" target="_blank"><?php echo Yii::t('about','Developer'); ?></a><br />-->
+<!--colResizable: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a><br />-->
 </div>

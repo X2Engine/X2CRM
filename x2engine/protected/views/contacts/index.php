@@ -51,89 +51,67 @@ if($this->route=='contacts/viewAll') {
 } else {
 	$heading = Yii::t('contacts','My Contacts'); 
 	$dataProvider = $model->search();
-	
-	// $this->menu=array(
-		// array('label'=>Yii::t('contacts','My Contacts')),
-		// array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
-		// array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-		// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-		// array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-		// array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-		// array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
-	// );
 }
-// $this->menu=array(
-	// array('label'=>Yii::t('contacts','Contact List')),
-	// array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	// array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-	// array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-	// array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
-// );
+
 
 Yii::app()->clientScript->registerScript('search', "
-$('.search-button').click(function(){
-	$('.search-form').toggle();
-	return false;
-});
-$('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('contacts-grid', {
-		data: $(this).serialize()
+$(function() {
+	$('.search-button').click(function(){
+		$('.search-form').toggle();
+		return false;
 	});
-	return false;
+	$('.search-form form').submit(function(){
+		$.fn.yiiGridView.update('contacts-grid', {
+			data: $(this).serialize()
+		});
+		return false;
+	});
 });
-");
+",CClientScript::POS_HEAD);
+
 ?>
+
 
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
 	'model'=>$model, 
-        'users'=>UserChild::getNames(),
-)); ?> 
+	'users'=>UserChild::getNames(),
+)); ?>
 </div><!-- search-form -->
 <?php
 
-$this->widget('zii.widgets.grid.CGridView', array(
+
+$this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
 	'filter'=>$model,
-	'columns'=>array(
-		//'id',
-		array(
+	// 'columns'=>$columns,
+	'modelName'=>'Contacts',
+	'viewName'=>'contacts',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>185,
+		'phone'=>95,
+		'lastUpdated'=>105,
+		'leadSource'=>145,
+		'gvControls'=>54,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
 			'name'=>'lastName',
 			'header'=>Yii::t('contacts','Name'),
 			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'30%')
 		),
-		array(
-			"name"=>'phone',
-			'header'=>Yii::t('contacts','Work Phone'),
-		),
-		array(
-			'name'=>'createDate',
-			'header'=>Yii::t('contacts','Create Date'),
-			'value'=>'date("Y-m-d",$data->createDate)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'15%')
-		),
-                array(
-			'name'=>'lastUpdated',
-			'header'=>Yii::t('contacts','Last Updated'),
-			'value'=>'date("Y-m-d",$data->lastUpdated)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'15%')
-		),
-		array(
-			'name'=>'leadSource',
-			'header'=>Yii::t('contacts','Lead Source'),
-		),
-		
 	),
+	'enableControls'=>true,
 ));
 ?>

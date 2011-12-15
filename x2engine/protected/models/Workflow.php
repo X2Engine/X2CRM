@@ -85,7 +85,7 @@ class Workflow extends CActiveRecord {
 		if(empty($modelId) || empty($modelId)) {
 			$workflowActions = array();
 		} else {
-			$workflowActions = CActiveRecord::model('ActionChild')->findAllByAttributes(
+			$workflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
 				array('associationId'=>$modelId,'associationType'=>$modelType,'type'=>'workflow'),
 				new CDbCriteria(array('order'=>'createDate ASC'))
 			);

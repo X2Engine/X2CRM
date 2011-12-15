@@ -37,12 +37,5 @@ $moduleConfig = array(
 	'title'=>"Template",
 	'moduleName'=>"template",
 	'recordName'=>"TemplateItem",
-	'assignedToDisplay'=>"1",
-	'descriptionDisplay'=>"1",
-	'displayOne'=>"1",
-	'displayTwo'=>"1",
-	'displayThree'=>"1",
-	'displayFour'=>"1",
-	'displayFive'=>"1",
 );
 ?>

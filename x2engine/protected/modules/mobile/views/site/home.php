@@ -49,8 +49,9 @@ $this->pageTitle = Yii::app()->name . ' - Home';
         $menuItems = array(
             array('label' => Yii::t('app', 'Top Contacts'), 'url' => array('contacts/index/')),
             array('label' => Yii::t('app', 'Chat'), 'url' => array('site/chat/')),
-			array('label' => Yii::t('mobile', 'New Record'), 'url' => array('contacts/new/')),
+            array('label' => Yii::t('mobile', 'New Record'), 'url' => array('contacts/new/')),
             array('label' => Yii::t('mobile', 'Find Contacts'), 'url' => array('contacts/search/')),
+            array('label' => Yii::t('mobile', 'More'), 'url' => array('site/more/')),
         );
     } else {
         $menuItems = array(

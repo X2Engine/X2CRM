@@ -62,7 +62,7 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php 
-	$this->widget('zii.widgets.grid.CGridView', array(
+/* 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'accounts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<div class="title-bar">'
@@ -99,4 +99,38 @@ $('.search-form form').submit(function(){
 			'class'=>'CButtonColumn',
 		),
 	),
-)); ?>
+)); */
+
+$this->widget('application.components.X2GridView', array(
+	'id'=>'accounts-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$model->search(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	'filter'=>$model,
+	// 'columns'=>$columns,
+	'modelName'=>'Accounts',
+	'viewName'=>'accountsAdmin',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>234,
+		'type'=>108,
+		'phone'=>128,
+		'gvControls'=>115,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
+			'name'=>'name',
+			'header'=>Yii::t('accounts','Name'),
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>true,
+));
+?>

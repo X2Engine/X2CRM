@@ -243,11 +243,11 @@ div#install-form #lang {
 	width:120px;
 }
 #login-form {
-	background:url(../images/x5crm.png) 165px 20px no-repeat;
+	background:url(../images/x2engine_big.png) 165px 10px no-repeat;
 }
 #login-box{
 	margin-top:20px;
-	width:420px;
+	width:480px;
 	overflow:auto;
 }
 #login-box .form {

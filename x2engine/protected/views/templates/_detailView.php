@@ -43,13 +43,26 @@ Yii::app()->clientScript->registerScript('stopEdit','
 		});
 	});
 ');
+
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Templates'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
 ?>
 <table class="details">
+        <?php if($nonCustom['name']->visible==1) { ?>
 	<tr>
 		<td class="label" width="25%"><?php echo $attributeLabels['name']; ?></td>
 		<td><?php echo $model->name; ?></td>
 	</tr>
-	<?php if($moduleConfig['descriptionDisplay']=='1'){ ?>
+        <?php } ?>
+        <?php if($nonCustom['description']->visible==1) { ?>
 	<tr>
 		<td class="label">
 			<?php echo $attributeLabels['description']; ?>
@@ -57,35 +70,23 @@ Yii::app()->clientScript->registerScript('stopEdit','
 		<td class="text-field"><div class="spacer"></div>
 			<?php echo $this->convertUrls($model->description); ?>
 		</td>
-	</tr><?php } ?>
-	<?php if($moduleConfig['assignedToDisplay']=='1'){ ?>
+	</tr>
+        <?php } ?>
+        <?php if($nonCustom['assignedTo']->visible==1) { ?>
 	<tr>
 		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
 		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : UserChild::getUserLinks($model->assignedTo); ?></td>
-	</tr><?php } ?>
-	<?php if($moduleConfig['displayOne']=='1'){ ?>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['fieldOne']; ?></td>
-		<td><?php echo $model->fieldOne; ?></td>
-	</tr><?php }?>
-	<?php if($moduleConfig['displayTwo']=='1'){ ?>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['fieldTwo']; ?></td>
-		<td><?php echo $model->fieldTwo; ?></td>
-	</tr><?php } ?>
-	<?php if($moduleConfig['displayThree']=='1'){ ?>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['fieldThree']; ?></td>
-		<td><?php echo $model->fieldThree; ?></td>
-	</tr><?php } ?>
-	<?php if($moduleConfig['displayFour']=='1'){ ?>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['fieldFour']; ?></td>
-		<td><?php echo $model->fieldFour; ?></td>
-	</tr><?php } ?>
-	<?php if($moduleConfig['displayFive']=='1'){ ?>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['fieldFive']; ?></td>
-		<td><?php echo $model->fieldFive; ?></td>
-	</tr><?php } ?>
+	</tr>
+        <?php } ?>
+        <?php 
+            foreach($custom as $fieldName=>$field){
+                if($field->visible==1){ 
+                    echo "<tr>
+                    <td class=\"label\"><b>".$attributeLabels[$fieldName]."</b></td>
+                    <td colspan='5'>".Yii::t('actions',$model->$fieldName)."</td>
+                    </tr>";
+                }
+            }
+        
+        ?>
 </table>

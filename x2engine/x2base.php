@@ -8,7 +8,7 @@
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.f
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -136,10 +136,22 @@ class x2base extends Controller {
 				)
 			));
 		}
-		
-		// check for currently active stages
-		$currentWorkflowActions = CActiveRecord::model('ActionChild')->findAllByAttributes(
-			array('associationType'=>$type,'associationId'=>$model->id,'type'=>'workflow'),
+
+		$users=UserChild::getNames();
+		$names=$this->parseType($type);
+		$showActionForm = isset($_GET['showActionForm']);
+		$this->render('view',array_merge($params,array(
+			'model'=>$model,
+			'actionHistory'=>$actionHistory,
+			'users'=>$users,
+			'names'=>$names,
+			'currentWorkflow'=>$this->getCurrentWorkflow($model->id,$type),
+		)));
+	}
+	
+	public function getCurrentWorkflow($id,$type) {
+		$currentWorkflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
+			array('associationType'=>$type,'associationId'=>$id,'type'=>'workflow'),
 			new CDbCriteria(array('condition'=>'completeDate = 0 OR completeDate IS NULL','order'=>'createDate DESC'))
 		);
 		if(count($currentWorkflowActions)) {	// are there any?
@@ -149,8 +161,8 @@ class x2base extends Controller {
 			else
 				$currentWorkflow = 0;
 		} else {							// if not, then check for completed stages
-			$completedWorkflowActions = CActiveRecord::model('ActionChild')->findAllByAttributes(
-				array('associationType'=>$type,'associationId'=>$model->id,'type'=>'workflow'),
+			$completedWorkflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
+				array('associationType'=>$type,'associationId'=>$id,'type'=>'workflow'),
 				new CDbCriteria(array('order'=>'createDate DESC'))
 			);
 			if(count($completedWorkflowActions)) {	// are there any?
@@ -162,19 +174,8 @@ class x2base extends Controller {
 			} else
 				$currentWorkflow = 0;
 		}
-			
-		$users=UserChild::getNames();
-		$names=$this->parseType($type);
-		$showActionForm = isset($_GET['showActionForm']);
-		$this->render('view',array_merge($params,array(
-			'model'=>$model,
-			'actionHistory'=>$actionHistory,
-			'users'=>$users,
-			'names'=>$names,
-			'currentWorkflow'=>$currentWorkflow,
-		)));
+		return $currentWorkflow;
 	}
-	
 	/**
 	 * Returns a model of the appropriate type with a particular record loaded.
 	 * 
@@ -185,11 +186,11 @@ class x2base extends Controller {
 	protected function getAssociationModel($type,$id) {
 	
 		$classes = array(
-			'actions'=>'ActionChild',
-			'contacts'=>'ContactChild',
+			'actions'=>'Actions',
+			'contacts'=>'Contacts',
 			'projects'=>'ProjectChild',
-			'accounts'=>'AccountChild',
-			'sales'=>'SaleChild',
+			'accounts'=>'Accounts',
+			'sales'=>'Sales',
 			'social'=>'SocialChild',
 		);
 		
@@ -207,15 +208,15 @@ class x2base extends Controller {
 	protected function parseType($type) {
 		switch($type) {
 			case 'contacts':
-				return ContactChild::getAllNames(); 
+				return Contacts::getAllNames(); 
 			case 'projects':
 				return ProjectChild::getNames();
 			case 'accounts':
-				return AccountChild::getNames();
+				return Accounts::getNames();
 			case 'cases':
 				return CaseChild::getNames();
 			case 'sales':
-				return SaleChild::getNames();
+				return Sales::getNames();
 			default:
 				return array('0'=>'None');
 		}
@@ -334,16 +335,16 @@ class x2base extends Controller {
 	 */
 	public function create($model, $oldAttributes, $api) {
             
-            if(substr($this->modelClass,-5)=="Child")
-                $name=substr($this->modelClass,0,-5)."s";
+            $name=$this->modelClass;
             if($model->save()){
-                $changes=$this->calculateChanges($oldAttributes, $model->attributes);
+                $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
                 $this->updateChangelog($model,$changes);
                 if($model->assignedTo!=Yii::app()->user->getName()){
                     $notif=new Notifications;
                     if($api==0){
-                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                        $notif->text="$profile->fullName has created a(n) ".$name." for you";
+                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
+                            if(isset($profile))
+                                $notif->text="$profile->fullName has created a(n) ".$name." for you";
                     }else{
                         $notif->text="An API request has created a(n) ".$name." for you";
                     }
@@ -376,7 +377,7 @@ class x2base extends Controller {
 	 */
 	public function update($model, $oldAttributes, $api) {
             $temp=$oldAttributes;
-            $changes=$this->calculateChanges($temp, $model->attributes);
+            $changes=$this->calculateChanges($temp, $model->attributes, $model);
             $model=$this->updateChangelog($model,$changes);
             if($model->save()){
                 if($model instanceof Actions && $api==0){
@@ -405,7 +406,6 @@ class x2base extends Controller {
 	 * Lists all models.
 	 */
 	public function index($model,$name) {
-
 		$pageParam = ucfirst($this->modelClass). '_page';
 		if (isset($_GET[$pageParam])) {
 			$page = $_GET[$pageParam];
@@ -420,6 +420,7 @@ class x2base extends Controller {
 		}
 			$this->render('index',array(
 			'model'=>$model,
+			// 'gvSettings'=>$gvSettings,
 		));
 	}
 
@@ -466,7 +467,7 @@ class x2base extends Controller {
 	protected function updateChangelog($model, $change) {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
-
+                $model->save();
 		$type=get_class($model);
 		if(substr($type,-1)!="s"){
 			$type=substr($type,0,-5)."s";
@@ -576,13 +577,13 @@ class x2base extends Controller {
 		}
 	}
 	
-	protected function calculateChanges($old, $new){
+	protected function calculateChanges($old, $new, &$model=null){
 		$arr=array();
 		$keys=array_keys($new);
 		for($i=0;$i<count($keys);$i++){
                     if($old[$keys[$i]]!=$new[$keys[$i]]){
                         $arr[$keys[$i]]=$new[$keys[$i]];
-                        $allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>substr($this->modelClass,0,-5)."s",'modelField'=>$keys[$i]));
+                        $allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>$this->modelClass,'modelField'=>$keys[$i]));
                         foreach($allCriteria as $criteria){
                             if(($criteria->comparisonOperator=="=" && $new[$keys[$i]]==$criteria->modelValue)
                                         || ($criteria->comparisonOperator==">" && $new[$keys[$i]]>=$criteria->modelValue)
@@ -594,13 +595,13 @@ class x2base extends Controller {
                                         $notif=new Notifications;
                                         $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
                                         if($criteria->comparisonOperator=="="){
-                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }else if($criteria->comparisonOperator==">"){
-                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }else if($criteria->comparisonOperator=="<"){
-                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }else if($criteria->comparisonOperator=="change"){
-                                            $notif->text="A(n) ".substr($this->modelClass,0,-5)." has had field $criteria->modelField changed";
+                                            $notif->text="A(n) ".$this->modelClass." has had field $criteria->modelField changed";
                                         }
                                         $notif->user=$piece;
                                         $notif->createDate=time();
@@ -611,38 +612,37 @@ class x2base extends Controller {
                                 }else if($criteria->type=='action'){
                                     $pieces=explode(", ",$criteria->users);
                                     foreach($pieces as $piece){
-                                        $action=new ActionChild;
+                                        $action=new Actions;
                                         $action->assignedTo=$piece;
                                         if($criteria->comparisonOperator=="="){
-                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }else if($criteria->comparisonOperator==">"){
-                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }else if($criteria->comparisonOperator=="<"){
-                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }else if($criteria->comparisonOperator=="change"){
-                                            $action->actionDescription="A(n) ".substr($this->modelClass,0,-5)." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
                                         }
                                         $action->dueDate=mktime('23','59','59');
                                         $action->createDate=time();
                                         $action->lastUpdated=time();
                                         $action->updatedBy='admin';
                                         $action->visibility=1;
-                                        $action->associationType=lcfirst(substr($this->modelClass,0,-5))."s";
+                                        $action->associationType=lcfirst($this->modelClass)."s";
                                         $action->associationId=$new['id'];
                                         $model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
                                         $action->associationName=$model->name;
                                         $action->save();
                                     }
                                 }else if($criteria->type=='assignment'){
-                                    $model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
                                     $model->assignedTo=$criteria->users;
                                     $model->save();
                                     $notif=new Notifications;  
-                                    $notif->text="A(n)".substr($this->modelClass,0,-5)." has been re-assigned to you.";
+                                    $notif->text="A(n)".$this->modelClass." has been re-assigned to you.";
                                     $notif->user=$model->assignedTo;
                                     $notif->createDate=time();
                                     $notif->viewed=0;
-                                    $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+                                    $notif->record=$this->modelClass.":".$new['id'];
                                     $notif->save();
                                 } 
                             }
@@ -727,10 +727,10 @@ class x2base extends Controller {
 
 
 	// This function needs to be made in your extensions of the class with similar code. 
-	// Replace "SaleChild" with the Model being used.
+	// Replace "Sales" with the Model being used.
 	/**public function loadModel($id)
 	{
-		$model=SaleChild::model()->findByPk((int)$id);
+		$model=Sales::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

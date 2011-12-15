@@ -33,8 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-
- include("protected/config/templatesConfig.php"); ?>
+include("protected/config/templatesConfig.php"); ?>
 <div class="view">
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
@@ -51,18 +50,6 @@
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('description')); ?>:</b>
 	<?php echo CHtml::encode($data->description); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('fieldOne')); ?>:</b>
-	<?php echo CHtml::encode($data->fieldOne); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('fieldTwo')); ?>:</b>
-	<?php echo CHtml::encode($data->fieldTwo); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('fieldThree')); ?>:</b>
-	<?php echo CHtml::encode($data->fieldThree); ?>
 	<br />
 
 	<?php /*

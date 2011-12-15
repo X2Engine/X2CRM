@@ -33,9 +33,49 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
+?><?php
+Yii::app()->clientScript->registerScript('customModuleFields', "
+function deleteStage(object) {
+	$(object).closest('li').remove();
+}
+
+function moveStageUp(object) {
+	var prev = $(object).closest('li').prev();
+	if(prev.length>0) {
+		prev.before('<li>'+$(object).closest('li').html()+'</li>');
+		$(object).closest('li').remove();
+	}
+}
+function moveStageDown(object) {
+	var next = $(object).closest('li').next();
+	if(next.length>0) {
+		next.after('<li>'+$(object).closest('li').html()+'</li>');
+		$(object).closest('li').remove();
+	}
+}
+
+function addStage() {
+	$('#workflow-stages ol').append(' \
+	<li>\
+	<select name=\"CustomFields[visible][]\">\
+		<option value=\"1\" selected=\"selected\">".Yii::t('module','Show')."</option>\
+		<option value=\"0\">".Yii::t('module','Hide')."</option></select>\
+                <input type=\"text\" size=\"30\" onFocus=\"toggleText(this);\" onBlur=\"toggleText(this);\" style=\"color:#aaa;\" name=\"CustomFields[fieldName][]\" value=\"".Yii::t('module','Enter field name here')."\" />\
+                <input type=\"text\" size=\"30\" onFocus=\"toggleText(this);\" onBlur=\"toggleText(this);\" style=\"color:#aaa;\" name=\"CustomFields[attributeLabel][]\" value=\"".Yii::t('module','Enter field label here')."\" />\
+        <div class=\"cell\">\
+            <a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow','Up')."]</a>\
+            <a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow','Down')."]</a>\
+            <a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow','Del')."]</a>\
+        </div><br />\
+	</li>');
+}
+
+",CClientScript::POS_HEAD);
 ?>
+
 <h2><?php echo Yii::t('module','Create New Module'); ?></h2>
 <?php echo Yii::t('module','Please fill out the fields below to create a new module.'); ?><br /><br />
+Field names must be one word, preferably camel cased (i.e. firstName, lastName, expectedCloseDate) and labels can be anything.<br /><br />
 <div class="form">
 <?php if(!empty($errors)) { ?>
 	<div class="errorSummary"><p><?php echo Yii::t('yii','Please fix the following input errors:'); ?></p>
@@ -52,44 +92,57 @@
 	<div class="row">
 		<div class="cell"><label for="moduleName"><?php echo Yii::t('module','DB Table Name'); ?></label><?php echo Yii::t('module','Optional (alphanumeric only, must start with a letter)'); ?><br /><input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="moduleName" id="moduleName" /><br /></div>
 	</div>
-	<label><?php echo Yii::t('module','Data fields'); ?></label>
-	<select name="displayOne" disabled="disabled">
+        <label><span style="margin-right:40px;">Visibility</span><span style="margin-right:140px;">Field Name</span><span>Field Label</span></label><br />
+	<select name="displayId" disabled="disabled" style="margin-right:20px;">
 		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','ID'); ?><br />
-	<select name="displayOne" disabled="disabled">
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:184px;">id</span><span><?php echo Yii::t('module','ID'); ?></span><br />
+	<select name="displayName" disabled="disabled" style="margin-right:20px;">
 		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','Name'); ?><br />
-	<select name="displayAssignedTo">
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:161px;">name</span><span><?php echo Yii::t('module','Name'); ?></span><br />
+	<select name="displayAssignedTo" style="margin-right:20px;">
 		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','Assigned To'); ?><br />
-	<select name="displayDescription">
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:127px;">assignedTo</span><span><?php echo Yii::t('module','Assigned To'); ?></span><br />
+	<select name="displayDescription" style="margin-right:20px;">
 		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','Description'); ?><br />
-	<select name="displayOne">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="fieldOne" value="<?php echo Yii::t('module','Enter field name here'); ?>" /><br />
-	<select name="displayTwo">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="fieldTwo" value="<?php echo Yii::t('module','Enter field name here'); ?>" /><br />
-	<select name="displayThree">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="fieldThree" value="<?php echo Yii::t('module','Enter field name here'); ?>" /><br />
-	<select name="displayFour">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="fieldFour" value="<?php echo Yii::t('module','Enter field name here'); ?>" /><br />
-	<select name="displayFive">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="fieldFive" value="<?php echo Yii::t('module','Enter field name here'); ?>" /><br />
-	<select name="displayCreateDate" disabled="disabled">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','Create Date'); ?><br />
-	<select name="displayUpdated" disabled="disabled">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','Last Updated'); ?><br />
-	<select name="displayUpdatedBy" disabled="disabled">
-		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
-		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <?php echo Yii::t('module','Updated By'); ?><br />
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:132px;">description</span><span><?php echo Yii::t('module','Description'); ?></span><br />
 	
-	<br /><br /><input type="Submit" name="Submit" value="<?php echo Yii::t('app','Submit'); ?>" class="x2-button" />
-</form>
+              
+	<div id="workflow-stages">
+	<?php
+	if(empty($stages))
+		$stages[] = new WorkflowStage;	// start with at least 1 blank row
+	?><ol><?php
+	foreach($stages as &$stage) { ?>
+	<li>
+            <select name="CustomFields[visible][]">
+		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> 
+                <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="CustomFields[fieldName][]" value="<?php echo Yii::t('module','Enter field name here'); ?>" />
+                <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="CustomFields[attributeLabel][]" value="<?php echo Yii::t('module','Enter field label here'); ?>" />
+	<div class="cell">
+			<a href="javascript:void(0)" onclick="moveStageUp(this);">[<?php echo Yii::t('workflow','Up'); ?>]</a>
+			<a href="javascript:void(0)" onclick="moveStageDown(this);">[<?php echo Yii::t('workflow','Down'); ?>]</a>
+			<a href="javascript:void(0)" onclick="deleteStage(this);">[<?php echo Yii::t('workflow','Del'); ?>]</a>
+        </div>
+        <br />
+        </li>
+	<?php 
+	}
+	?>
+	</ol>
+	</div>
+	<a href="javascript:void(0)" onclick="addStage();" class="add-workflow-stage">[<?php echo Yii::t('workflow','Add'); ?>]</a>
+
+                
+        <select name="displayCreateDate" disabled="disabled" style="margin-right:20px;">
+		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:133px;">createDate</span><span><?php echo Yii::t('module','Create Date'); ?></span><br />
+	<select name="displayUpdated" disabled="disabled" style="margin-right:20px;">
+		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:130px;">lastUpdated</span><span><?php echo Yii::t('module','Last Updated'); ?></span><br />
+	<select name="displayUpdatedBy" disabled="disabled" style="margin-right:20px;">
+		<option value="1" selected="selected"><?php echo Yii::t('module','Show'); ?></option>
+		<option value="0"><?php echo Yii::t('module','Hide'); ?></option></select> <span style="margin-right:137px;">updatedBy</span><span><?php echo Yii::t('module','Updated By'); ?></span><br />
+	
+	<br /><br /><input type="Submit" name="Submit" value="<?php echo Yii::t('app','Submit'); ?>" class="x2-button" /> 
 </div>

@@ -90,12 +90,6 @@ class Record {
 					$temp['link']='/accounts/'.$record->id;
 					$temp['type']='Account';
 				}
-				elseif($record instanceof Projects)
-					$temp['link']='/projects/'.$record->id;
-				elseif($record instanceof Cases)
-					$temp['link']='/cases/'.$record->id;
-				elseif($record instanceof Marketing)
-					$temp['link']='/marketing/'.$record->id;
 
 				$arr[]=$temp;
 			}

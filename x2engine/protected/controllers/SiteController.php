@@ -88,10 +88,10 @@ class SiteController extends x2base {
 			$user=UserChild::model()->findByPk(Yii::app()->user->getId());
 			$lastLogin=$user->lastLogin;
 
-			$contacts=ContactChild::model()->findAll("lastUpdated > $lastLogin");
-			$actions=ActionChild::model()->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone')");
-			$sales=SaleChild::model()->findAll("lastUpdated > $lastLogin");
-			$accounts=AccountChild::model()->findAll("lastUpdated > $lastLogin");
+			$contacts=Contacts::model()->findAll("lastUpdated > $lastLogin");
+			$actions=Actions::model()->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone')");
+			$sales=Sales::model()->findAll("lastUpdated > $lastLogin");
+			$accounts=Accounts::model()->findAll("lastUpdated > $lastLogin");
 
 			$arr=array_merge($contacts,$actions,$sales,$accounts);
 			//$arr=array_merge($arr,$sales);
@@ -340,6 +340,22 @@ class SiteController extends x2base {
 			}
 		}
 	}
+	
+	public function actionSaveGridviewSettings() {
+		
+		$result = false;
+		if(isset($_GET['gvSettings']) && isset($_GET['viewName'])) {
+			$gvSettings = json_decode($_GET['gvSettings'],true);
+			
+			if(isset($gvSettings))
+				$result = ProfileChild::setGridviewSettings($gvSettings,$_GET['viewName']);
+		// $gvSettings = ProfileChild::get
+		}
+		if($result)
+			echo '200 Success';
+		else
+			echo '400 Failure';
+	}
 
 	public function actionInlineEmail() {
 		
@@ -448,7 +464,7 @@ class SiteController extends x2base {
 				} else if($model->associationType=='docs'){
 					$this->redirect(array('docs/index'));
 				}else {
-					$note=new ActionChild;
+					$note=new Actions;
 					$note->createDate = time();
 					$note->dueDate = time();
 					$note->completeDate = time();
@@ -546,11 +562,11 @@ class SiteController extends x2base {
 	protected function getAssociation($type,$id) {
 	
 		$classes = array(
-			'action'=>'ActionChild',
-			'contact'=>'ContactChild',
+			'action'=>'Actions',
+			'contact'=>'Contacts',
 			'project'=>'ProjectChild',
-			'account'=>'AccountChild',
-			'sale'=>'SaleChild',
+			'account'=>'Accounts',
+			'sale'=>'Sales',
 		);
 		
 		if(array_key_exists($type,$classes) && $id != 0)
@@ -582,16 +598,16 @@ class SiteController extends x2base {
 				 $data=CActiveRecord::model('ProjectChild')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='contact') {
-				 $data=CActiveRecord::model('ContactChild')->findByPk($id);
+				 $data=CActiveRecord::model('Contacts')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='account') {
-				 $data=CActiveRecord::model('AccountChild')->findByPk($id);
+				 $data=CActiveRecord::model('Accounts')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='case') {
 				 $data=CActiveRecord::model('CaseChild')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='sale') {
-				 $data=CActiveRecord::model('SaleChild')->findByPk($id);
+				 $data=CActiveRecord::model('Sales')->findByPk($id);
 				 $name=$data->name;
 			} else {
 				$data='None';
@@ -656,20 +672,20 @@ class SiteController extends x2base {
 						}
 						else
 							Yii::app()->session['versionCheck']=true;
-					}
-					else
-                                        Yii::app()->session['versionCheck']=true;
+					} else
+						Yii::app()->session['versionCheck']=true;
+						
 					Yii::app()->session['loginTime']=time();
-                                        $session=Sessions::model()->findByAttributes(array('user'=>$user->username));
-                                        if(isset($session)){
-                                            $session->lastUpdated=time();
-                                            $session->save();
-                                        }else{
-                                            $session=new Sessions;
-                                            $session->user=$user->username;
-                                            $session->lastUpdated=time();
-                                            $session->save();
-                                        }
+					$session=Sessions::model()->findByAttributes(array('user'=>$user->username));
+					if(isset($session)){
+						$session->lastUpdated=time();
+						$session->save();
+					}else{
+						$session=new Sessions;
+						$session->user=$user->username;
+						$session->lastUpdated=time();
+						$session->save();
+					}
 					if(Yii::app()->user->returnUrl=='site/index')
 						$this->redirect('index');
 					else

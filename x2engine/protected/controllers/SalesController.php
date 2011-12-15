@@ -36,7 +36,7 @@
 
 class SalesController extends x2base {
 
-	public $modelClass = 'SaleChild';
+	public $modelClass = 'Sales';
 		
 	public function accessRules() {
 		return array(
@@ -64,7 +64,7 @@ class SalesController extends x2base {
 		$type = 'sales';
 		$model = $this->loadModel($id);
 		$model->assignedTo = UserChild::getUserLinks($model->assignedTo);
-		$model->associatedContacts = ContactChild::getContactLinks($model->associatedContacts);
+		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 		
 		parent::view($model, $type);
 	}
@@ -111,9 +111,9 @@ class SalesController extends x2base {
             $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
             
             if(isset($model->assignedTo))
-                    $model->assignedTo = SaleChild::parseUsers($model->assignedTo);
+                    $model->assignedTo = Sales::parseUsers($model->assignedTo);
             if(isset($model->associatedContacts))
-                    $model->associatedContacts = SaleChild::parseContacts($model->associatedContacts);
+                    $model->associatedContacts = Sales::parseContacts($model->associatedContacts);
             $model->createDate=time();
             if($model->expectedCloseDate!=""){
                     $model->expectedCloseDate=strtotime($model->expectedCloseDate);
@@ -126,9 +126,9 @@ class SalesController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
-		$model = new SaleChild;
+		$model = new Sales;
 		$users = UserChild::getNames();
-		$contacts = ContactChild::getAllNames();
+		$contacts = Contacts::getAllNames();
 		unset($users['admin']);
 		unset($users['']);
 		unset($contacts['0']);
@@ -136,9 +136,13 @@ class SalesController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['SaleChild'])) {
+		if(isset($_POST['Sales'])) {
                     $temp=$model->attributes;
-                    $model->attributes=$_POST['SaleChild'];
+                    foreach($model->attributes as $field=>$value){
+                        if(isset($_POST['Sales'][$field])){
+                            $model->$field=$_POST['Sales'][$field];
+                        }
+                    }
 
                     $this->create($model,$temp);
 		}
@@ -157,7 +161,7 @@ class SalesController extends x2base {
 
             $arr=$model->assignedTo;
             if(isset($model->assignedTo))
-                    $model->assignedTo=SaleChild::parseUsers($arr);
+                    $model->assignedTo=Sales::parseUsers($arr);
             $arr=$model->associatedContacts;
             if(isset($model->associatedContacts)){
                 foreach($model->associatedContacts as $contact){
@@ -168,7 +172,7 @@ class SalesController extends x2base {
                     $rel->secondId=$model->id;
                     $rel->save();
                 }
-                    $model->associatedContacts=SaleChild::parseContacts($arr);
+                    $model->associatedContacts=Sales::parseContacts($arr);
             }
             $model->createDate=time();
             if($model->expectedCloseDate!=""){
@@ -190,7 +194,7 @@ class SalesController extends x2base {
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		unset($contacts['0']);
 		
 		$curUsers=$model->assignedTo;
@@ -216,7 +220,11 @@ class SalesController extends x2base {
 
 		if(isset($_POST['Sales'])) {
                     $temp=$model->attributes;
-                    $model->attributes=$_POST['Sales'];
+                    foreach($model->attributes as $field=>$value){
+                        if(isset($_POST['Sales'][$field])){
+                            $model->$field=$_POST['Sales'][$field];
+                        }
+                    }
 
                     $this->update($model,$temp);
 		}
@@ -232,7 +240,11 @@ class SalesController extends x2base {
 		$sale=$this->loadModel($id);
 		if(isset($_POST['Sales'])) {
 			$temp=$sale->attributes;
-			$sale->attributes=$_POST['Sales'];
+			foreach($sale->attributes as $field=>$value){
+                            if(isset($_POST['Sales'][$field])){
+                                $sale->$field=$_POST['Sales'][$field];
+                            }
+                        }
 			
 			// process currency into an INT
 			$sale->quoteAmount = $this->parseCurrency($sale->quoteAmount,false);
@@ -241,7 +253,7 @@ class SalesController extends x2base {
 			if($sale->expectedCloseDate!=""){
 				$sale->expectedCloseDate=strtotime($sale->expectedCloseDate);
 			}
-			$changes=$this->calculateChanges($temp,$sale->attributes);
+			$changes=$this->calculateChanges($temp,$sale->attributes, $sale);
 			$sale=$this->updateChangelog($sale,$changes);
 			$sale->save();
 			$this->redirect(array('view','id'=>$sale->id));
@@ -250,9 +262,9 @@ class SalesController extends x2base {
 
 	public function actionAddUser($id) {
 		$users=UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
-		$users=SaleChild::editUserArray($users,$model);
+		$users=Sales::editUserArray($users,$model);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -264,7 +276,7 @@ class SalesController extends x2base {
 			$arr=$model->assignedTo;
 			
 
-			$model->assignedTo=SaleChild::parseUsers($arr);
+			$model->assignedTo=Sales::parseUsers($arr);
 			if($temp!="")
 				$temp.=", ".$model->assignedTo;
 			else
@@ -286,10 +298,10 @@ class SalesController extends x2base {
 
 	public function actionAddContact($id) {
 		$users=UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 
-		$contacts=SaleChild::editContactArray($contacts, $model);
+		$contacts=Sales::editContactArray($contacts, $model);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -309,7 +321,7 @@ class SalesController extends x2base {
                         }
 			
 
-			$model->associatedContacts=SaleChild::parseContacts($arr);
+			$model->associatedContacts=Sales::parseContacts($arr);
 			$temp.=" ".$model->associatedContacts;
 			$model->associatedContacts=$temp;
                         $changes=$this->calculateChanges($tempArr,$model->attributes);
@@ -331,7 +343,7 @@ class SalesController extends x2base {
 		$model=$this->loadModel($id);
 
 		$pieces=explode(', ',$model->assignedTo);
-		$pieces=SaleChild::editUsersInverse($pieces);
+		$pieces=Sales::editUsersInverse($pieces);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -346,7 +358,7 @@ class SalesController extends x2base {
 				unset($pieces[$user]);
 			}
 			
-			$temp=SaleChild::parseUsersTwo($pieces);
+			$temp=Sales::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
                         $changes=$this->calculateChanges($temp,$model->attributes);
@@ -366,7 +378,7 @@ class SalesController extends x2base {
 
 		$model=$this->loadModel($id);
 		$pieces=explode(" ",$model->associatedContacts);
-		$pieces=SaleChild::editContactsInverse($pieces);
+		$pieces=Sales::editContactsInverse($pieces);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -385,7 +397,7 @@ class SalesController extends x2base {
 				unset($pieces[$contact]);
 			}
 			
-			$temp2=SaleChild::parseContactsTwo($pieces);
+			$temp2=Sales::parseContactsTwo($pieces);
 
 			$model->associatedContacts=$temp2;
                         $changes=$this->calculateChanges($temp,$model->attributes);
@@ -405,8 +417,8 @@ class SalesController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-		$model=new SaleChild('search');
-		$name='SaleChild';
+		$model=new Sales('search');
+		$name='Sales';
 		parent::index($model,$name);
 	}
 
@@ -414,8 +426,8 @@ class SalesController extends x2base {
 	 * Manages all models.
 	 */
 	public function actionAdmin() {
-		$model=new SaleChild('search');
-		$name='SaleChild';
+		$model=new Sales('search');
+		$name='Sales';
 		parent::admin($model, $name);
 	}
 
@@ -426,7 +438,7 @@ class SalesController extends x2base {
 	 */
 	public function loadModel($id)
 	{
-		$model=SaleChild::model()->findByPk((int)$id);
+		$model=Sales::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
 		return $model;

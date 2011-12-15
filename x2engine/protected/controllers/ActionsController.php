@@ -36,7 +36,7 @@
 
 class ActionsController extends x2base {
 
-	public $modelClass = 'ActionChild';
+	public $modelClass = 'Actions';
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -69,7 +69,7 @@ class ActionsController extends x2base {
 	 */
 	public function actionView($id) {
 	
-		$action = ActionChild::model()->findByPk($id);
+		$action = Actions::model()->findByPk($id);
 
 		if($action != null) {
 		
@@ -129,7 +129,7 @@ class ActionsController extends x2base {
 		
 		$dataProvider=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
-				'condition'=>'(dueDate=\''.date('Y-m-d').'\' AND complete=\'No\')',
+				'condition'=>'(dueDate<"'.mktime(23,59,59).'" AND dueDate>"'.mktime(0,0,0).'" AND complete="No")',
 		)));
 
 		$emails= UserChild::getEmails();
@@ -140,7 +140,7 @@ class ActionsController extends x2base {
 			if($action->reminder=='Yes') {
 
 				if($action->associationId!=0) {
-					$contact=ContactChild::model()->findByPk($action->associationId);
+					$contact=Contacts::model()->findByPk($action->associationId);
 					$name=$contact->firstName.' '.$contact->lastName;
 				} else
 					$name=Yii::t('actions','No one');
@@ -171,10 +171,10 @@ class ActionsController extends x2base {
 			$model->associationId=0;
 		//if($model->
 
-		$model->createDate = time();	// created now, full datetime
-		//$model->associationId=$_POST['ActionChild']['associationId'];
-		$dueDate = strtotime($model->dueDate);
-		$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+            $model->createDate = time();	// created now, full datetime
+            //$model->associationId=$_POST['Actions']['associationId'];
+            $dueDate = strtotime($model->dueDate);
+            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
 
 		//if($type=='none')
 		//	$model->associationId=0;
@@ -214,15 +214,19 @@ class ActionsController extends x2base {
 	
 	public function actionCreate() {
 
-		$model = new ActionChild;
+		$model = new Actions;
 		$users = UserChild::getNames();
 
 	// Uncomment the following line if AJAX validation is needed
 	// $this->performAjaxValidation($model);
 
-		if(isset($_POST['ActionChild'])) {
+		if(isset($_POST['Actions'])) {
 			$temp=$model->attributes;
-			$model->attributes=$_POST['ActionChild'];
+			foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Actions'][$field])){
+                                $model->$field=$_POST['Actions'][$field];
+                            }
+                        }
                         
                         $this->create($model,$temp,'0');
                         
@@ -254,18 +258,26 @@ class ActionsController extends x2base {
 
 	public function actionQuickCreate() {
 		$users = UserChild::getNames();
-		$actionModel=new ActionChild;
-		$contactModel=new ContactChild;
+		$actionModel=new Actions;
+		$contactModel=new Contacts;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($actionModel);
 
-		if(isset($_POST['ActionChild']) && isset($_POST['ContactChild'])) {
+		if(isset($_POST['Actions']) && isset($_POST['Contacts'])) {
                         $actionTemp=$actionModel->attributes;
-			$actionModel->attributes=$_POST['ActionChild'];
+			foreach($actionModel->attributes as $field=>$value){
+                            if(isset($_POST['Actions'][$field])){
+                                $actionModel->$field=$_POST['Actions'][$field];
+                            }
+                        }
 			
                         $contactTemp=$contactModel->attributes;
-			$contactModel->attributes=$_POST['ContactChild'];
+			foreach($contactModel->attributes as $field=>$value){
+                            if(isset($_POST['Contacts'][$field])){
+                                $contactModel->$field=$_POST['Contacts'][$field];
+                            }
+                        }
 			
 			$actionModel->createDate=time();
 			$contactModel->createDate=time();
@@ -275,7 +287,7 @@ class ActionsController extends x2base {
 			$actionModel->priority = $contactModel->priority;
 			
 			// reset to blank if it's the default value
-			$attributeLabels = ContactChild::attributeLabels();
+			$attributeLabels = Contacts::attributeLabels();
 			if($contactModel->address == $attributeLabels['address'])
 				$contactModel->address = '';
 			if($contactModel->city == $attributeLabels['city'])
@@ -338,9 +350,9 @@ class ActionsController extends x2base {
                     $model->associationId = 0;
             }
             if($api==0)
-                parent::create($model,$oldAttributes,$api);
+                parent::update($model,$oldAttributes,$api);
             else
-                return parent::create($model,$oldAttributes,$api);
+                return parent::update($model,$oldAttributes,$api);
         }
 
 	/**
@@ -356,9 +368,13 @@ class ActionsController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['ActionChild'])) {
+		if(isset($_POST['Actions'])) {
 			$temp=$model->attributes;
-			$model->attributes=$_POST['ActionChild'];
+			foreach($model->attributes as $field=>$value){
+                            if(isset($_POST['Actions'][$field])){
+                                $model->$field=$_POST['Actions'][$field];
+                            }
+                        }
 
 			
 			$this->update($model,$temp,'0');
@@ -416,7 +432,7 @@ class ActionsController extends x2base {
 				
 			$model=$this->updateChangelog($model,'Completed');
 			$model->save();
-			ActionChild::completeAction($id);
+			Actions::completeAction($id);
                         
                         $notif=new Notifications;
                         $notif->record="Actions:$model->id";
@@ -469,28 +485,28 @@ class ActionsController extends x2base {
 	
 	// Lists all actions assigned to this user
 	public function actionIndex() {
-		$model=new ActionChild('search');
-		$name='ActionChild';
+		$model=new Actions('search');
+		$name='Actions';
 		parent::index($model,$name);
 	}
 
 	// List all public actions
 	public function actionViewAll() {
-		$model=new ActionChild('search');
-		$name='ActionChild';
+		$model=new Actions('search');
+		$name='Actions';
 		parent::index($model,$name);
 	}
 	
 	public function actionViewGroup() {
-		$model=new ActionChild('search');
-		$name='ActionChild';
+		$model=new Actions('search');
+		$name='Actions';
 		parent::index($model,$name);
 	}
 
 	// Admin view of all actions
 	public function actionAdmin() {
-		$model=new ActionChild('search');
-		$name='ActionChild';
+		$model=new Actions('search');
+		$name='Actions';
 		parent::admin($model,$name);
 	}
 	
@@ -501,8 +517,8 @@ class ActionsController extends x2base {
 
 	
 	public function actionParseType() {
-		if(isset($_POST['ActionChild']['associationType'])){
-			$type=$_POST['ActionChild']['associationType'];
+		if(isset($_POST['Actions']['associationType'])){
+			$type=$_POST['Actions']['associationType'];
 			echo $type;
 		}else{
 			echo 'none';
@@ -530,11 +546,11 @@ class ActionsController extends x2base {
 	protected function getAssociation($type,$id) {
 	
 		$classes = array(
-			'actions'=>'ActionChild',
-			'contacts'=>'ContactChild',
+			'actions'=>'Actions',
+			'contacts'=>'Contacts',
 			'projects'=>'ProjectChild',
-			'accounts'=>'AccountChild',
-			'sales'=>'SaleChild',
+			'accounts'=>'Accounts',
+			'sales'=>'Sales',
 		);
 		
 		if(array_key_exists($type,$classes) && $id != 0)
@@ -551,16 +567,16 @@ class ActionsController extends x2base {
 				 $data=CActiveRecord::model('ProjectChild')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='contact') {
-				 $data=CActiveRecord::model('ContactChild')->findByPk($id);
+				 $data=CActiveRecord::model('Contacts')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='account') {
-				 $data=CActiveRecord::model('AccountChild')->findByPk($id);
+				 $data=CActiveRecord::model('Accounts')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='case') {
 				 $data=CActiveRecord::model('CaseChild')->findByPk($id);
 				 $name=$data->name;
 			} else if($type=='sale') {
-				 $data=CActiveRecord::model('SaleChild')->findByPk($id);
+				 $data=CActiveRecord::model('Sales')->findByPk($id);
 				 $name=$data->name;
 			} else {
 				$data=null
@@ -579,9 +595,9 @@ class ActionsController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model=ActionChild::model('ActionChild')->findByPk((int)$id);
+		$model=Actions::model('Actions')->findByPk((int)$id);
 		//$dueDate=$model->dueDate;
-		//$model=ActionChild::changeDates($model);
+		//$model=Actions::changeDates($model);
 		// if($model->associationId!=0) {
 			// $model->associationName = $this->parseName(array($model->associationType,$model->associationId));
 		// } else

@@ -77,7 +77,7 @@ class ProjectsController extends x2base {
 	 */
 	public function actionCreate() {
 		$users=UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		$model=new ProjectChild;
 
 		// Uncomment the following line if AJAX validation is needed
@@ -111,7 +111,7 @@ class ProjectsController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$users=UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 		$model=$this->updateChangelog($model);
 
@@ -152,9 +152,9 @@ class ProjectsController extends x2base {
 
 	public function actionAddUser($id) {
 		$users=UserChild::getNames();
-		$contacts=ContactChild::getAllNames();
+		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
-		$users=AccountChild::editUserArray($users, $model);
+		$users=Accounts::editUserArray($users, $model);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -182,7 +182,7 @@ class ProjectsController extends x2base {
 	public function actionRemoveUser($id) {
 		$model=$this->loadModel($id);
 		$pieces=explode(', ',$model->assignedTo);
-		$pieces=AccountChild::editUsersInverse($pieces);
+		$pieces=Accounts::editUsersInverse($pieces);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -196,7 +196,7 @@ class ProjectsController extends x2base {
 				unset($pieces[$user]);
 			}
 			
-			$temp=AccountChild::parseUsersTwo($pieces);
+			$temp=Accounts::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
 			if($model->save())

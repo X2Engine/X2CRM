@@ -34,8 +34,8 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$attributeLabels = ContactChild::attributeLabels();
-$showSocialMedia = ProfileChild::getSocialMedia();
+$attributeLabels = Contacts::attributeLabels();
+$showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 Yii::app()->clientScript->registerScript('detailVewFields', "
 
@@ -107,7 +107,7 @@ function humanUrl($url) {
 					echo ', ';
 				
 				if(!empty($model->accountId) && $model->accountId!=0) {
-					$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
+					$accountModel = CActiveRecord::model('Accounts')->findByPk($model->accountId);
 					if($accountModel != null)
 						echo CHtml::link($accountModel->name,array('accounts/view','id'=>$accountModel->id))."<br />\n";
 				} else if(!empty($model->company))
@@ -272,7 +272,7 @@ function humanUrl($url) {
 			<?php
 			// if(empty($model->company)) {
 			if(!empty($model->accountId)) {
-				$accountModel = CActiveRecord::model('AccountChild')->findByPk($model->accountId);
+				$accountModel = CActiveRecord::model('Accounts')->findByPk($model->accountId);
 				if($accountModel != null)
 					echo $accountModel->name . ' ' . CHtml::link('['.Yii::t('accounts','account').']',array('accounts/view','id'=>$accountModel->id))."<br />\n";
 			} else if(!empty($model->company))

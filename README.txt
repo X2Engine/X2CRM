@@ -4,17 +4,15 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.7 Changelog
+Beta 0.9.8 Changelog
 
-- Misc. fixes and polishing
-- Added a Workflow module (i.e. sales funnel, sales process)
-- Admin can create custom workflows with unlimited stages, and track the progress of Contacts or Sales
-- Basic workflow/funnel status reporting (number of members in each stage), more features to come
-- Contacts are now organized in lists (just two default lists for now, lots of features in the works)
-- Notifications now refresh via AJAX. Added tabs to history
-- Added session management, updated lead routing. New Online Users widget.
+- Various bug fixes and polishing
+- You can now create, modify and disable fields for Contacts, Sales, Accounts and custom modules
+- Several changes to custom modules (particularly how they are stored)
+- Added fully customizable grid views to Contacts, Sales, Accounts and Actions (show/hide, resize and reorder columns, AJAX persistence)
+- Added Docs and Social pages to X2Touch mobile site
 
-Welcome to X5CRM v0.9.7 Beta!  X5CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X5CRM v0.9.8 Beta!  X5CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X5CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

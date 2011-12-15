@@ -38,10 +38,10 @@ $isGuest = Yii::app()->user->isGuest;
 $isAdmin = !$isGuest && Yii::app()->user->getName()=='admin';
 $isUser = !($isGuest || $isAdmin);
 if(Yii::app()->session['alertUpdate']){
-    ?><script>
-        alert('A new version is available.  To update X2Contacts or to turn off these notifications, please go to the Admin tab.');
-    </script>
-    
+?><script>
+	alert('A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.');
+</script>
+
 <?php
 Yii::app()->session['alertUpdate']=false;
 }
@@ -54,14 +54,20 @@ Yii::app()->clientScript->registerCoreScript('jquery.ui');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/mainmenu.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
+// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.contextMenu.js');
+
+Yii::app()->clientScript->registerScript('setYiiBaseUrl',"var yiiBaseUrl='".Yii::app()->getBaseUrl()."';", CClientScript::POS_HEAD);
+
 
 // blueprint CSS framework
 $themeURL = Yii::app()->theme->getBaseUrl();
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/screen.css','screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/dragtable.css','screen, projection');
+// Yii::app()->clientScript->registerCssFile($themeURL.'/css/jquery.contextMenu.css','screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css','print');
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css','screen');
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/details.css','screen');
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css','screen');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css','screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/details.css','screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css','screen, projection');
 Yii::app()->clientScript->registerScript('fullscreenToggle',"
 
 var fullscreen = " . (Yii::app()->session['fullscreen']? 'true':'false') . ";
@@ -84,7 +90,7 @@ function fullscreenToggle() {
 		return;
 
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('site/fullscreen')) . "',
+		url: yiiBaseUrl+'/site/fullscreen',
 		type: 'GET',
 		data: 'fs='+(fullscreen?'0':'1'),
 		// success: function(response) {
@@ -103,6 +109,8 @@ function fullscreenToggle() {
 		$('#sidebar-right-box').removeClass().addClass('span-0');
 	}
 	fullscreen = !fullscreen;
+	
+	$(window).trigger('resize');
 }
 ",CClientScript::POS_HEAD);
 
@@ -156,7 +164,7 @@ function hex2rgb($color) {
 
 $checkResult = false;
 $checkFiles = array(
-	'themes/x2engine/images/x2footer.png'=>'42a673ec030ac4030f4624fa93318812',
+	'themes/x2engine/images/x2footer.png'=>'f4337da22f78fccf32f4e76a75e9625f',
 	'themes/x2engine/images/x2-mini-icon.png'=>'153d66b514bf9fb0d82a7521a3c64f36',
 );
 foreach($checkFiles as $key=>$value) {

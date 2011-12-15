@@ -70,6 +70,7 @@
 <div class="span-7">
 	<h2><?php echo Yii::t('admin','Χ2Studio'); ?></h2> 
 	<div class="form">
+                <?php echo CHtml::link(Yii::t('admin','Manage Fields'),'manageFields'); ?><br /><?php echo Yii::t('admin','Customize fields for the modules.');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Create new module'),'createModule'); ?><br /><?php echo Yii::t('admin','Create a custom module to add to the top bar');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Create static page'),'createPage'); ?><br /><?php echo Yii::t('admin','Add a static page to the top bar');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Delete a module or Page'),'deleteModule'); ?><br /><?php echo Yii::t('admin','Remove a custom module or page');?><br /><br />

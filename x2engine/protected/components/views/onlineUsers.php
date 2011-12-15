@@ -40,6 +40,8 @@
 <?php
 $users=explode(", ",$users);
 foreach($users as $user){
+    if($user=="Anyone")
+        $user="None";
     echo "<span>".$user."</span> ";
 }
 

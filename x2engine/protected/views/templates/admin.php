@@ -91,12 +91,7 @@ function trimText($text) {
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
-		'fieldOne',
-		'fieldTwo',
 		/*
-		'fieldThree',
-		'fieldFour',
-		'fieldFive',
 		'createDate',
 		'lastUpdated',
 		'updatedBy',

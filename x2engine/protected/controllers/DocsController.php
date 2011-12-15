@@ -100,7 +100,7 @@ class DocsController extends x2base {
 
 			$arr=$model->editPermissions;
 			if(isset($arr))
-				$model->editPermissions=AccountChild::parseUsers($arr);
+				$model->editPermissions=Accounts::parseUsers($arr);
 
 			$model->createdBy=Yii::app()->user->getName();
 			$model->createDate=time();
@@ -130,7 +130,7 @@ class DocsController extends x2base {
 				$model->attributes=$_POST['DocChild'];
 				$arr=$model->editPermissions;
 				
-				$model->editPermissions=AccountChild::parseUsers($arr);
+				$model->editPermissions=Accounts::parseUsers($arr);
 				if($model->save()){
 					$this->redirect(array('view','id'=>$id));
 				}

@@ -157,7 +157,7 @@ class ProfileController extends x2base {
 		if ($id==Yii::app()->user->getId()) {
                     $model = $this->loadModel($id);
                     $users=UserChild::getNames();
-                    $accounts=AccountChild::getNames();  
+                    $accounts=Accounts::getNames();  
                     
                     if(isset($_POST['ProfileChild'])) {
                             $temp=$model->attributes;

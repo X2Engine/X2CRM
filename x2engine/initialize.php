@@ -33,7 +33,24 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  ********************************************************************************/
-$x2Version = '0.9.7';
+$x2Version = '0.9.8';
+
+$userData = '';
+
+if(isset($_POST['testDb'])) {
+	$con = @mysql_connect($_POST['dbHost'],$_POST['dbUser'],$_POST['dbPass']);
+	
+	if($con !== false) {
+		if($selectDb = @mysql_select_db($_POST['dbName'],$con))
+			echo 'DB_OK';
+		else
+			echo 'DB_COULD_NOT_SELECT';
+			
+		@mysql_close($con);
+	} else
+		echo 'DB_CONNECTION_FAILED';
+	exit;
+}
 
 // run silent installer with default values?
 $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
@@ -44,18 +61,30 @@ if($silent) {
 	else
 		die('Error: Installer config file not found.');
 } else {
-	$host = $_POST['host'];
-	$db = $_POST['db'];
-	$user = $_POST['user'];
-	$pass = $_POST['password'];
+	$host = $_POST['dbHost'];
+	$db = $_POST['dbName'];
+	$user = $_POST['dbUser'];
+	$pass = $_POST['dbPass'];
 	$app = $_POST['app'];
+	
+	
 	$currency = $_POST['currency'];
+	$currency2 = strtoupper($_POST['currency2']);
+	if($currency == 'other')
+		$currency = $currency2;
+	if(empty($currency))
+		$currency = 'USD';
+	$userData .= "";
+	
 	$lang = $_POST['lang'];
 	
 	$adminEmail = $_POST['adminEmail'];
 	$adminPassword = $_POST['adminPass'];
 	$adminPassword2 = $_POST['adminPass2'];
 	$dummyData = (isset($_POST['data']) && $_POST['data']==1)? 1 : 0;
+	
+	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&lang=$lang&adminEmail=$adminEmail&data=$dummyData";
+	
 }
 
 $webLeadUrl=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
@@ -70,17 +99,33 @@ if(empty($lang))
 
 //$gii=$_POST['gii'];
 
+$errors = array();
+
+// function test() {
+	// if(is_array($errors))
+		// die('ok');
+	// else
+		// die('not ok');
+// }
+// test();
+
 $app = mysql_escape_string($app);
 if(!empty($adminEmail) && !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i',$adminEmail))
-	die('Please enter a valid email address.');
+	addError('Please enter a valid email address.');
 	
 if($adminPassword == '')
-	die('Admin password cannot be blank.');
+	addError('Admin password cannot be blank.');
 
 if(isset($adminPassword2) && $adminPassword != $adminPassword2)
-	die('Passwords did not match.');
+	addError('Admin passwords did not match.');
  
-	
+
+$con = @mysql_connect($host,$user,$pass) or addError('DB_CONNECTION_FAILED');
+@mysql_select_db($db,$con) or addError('DB_COULD_NOT_SELECT');
+
+outputErrors();
+
+
 $gii=1;
 if($gii=='1'){
 	$gii="array('class'=>'system.gii.GiiModule',
@@ -100,7 +145,7 @@ if($gii=='1'){
 }
 
 $fileName='protected/config/dbConfig.php';
-$handle = fopen($fileName,'w+') or die("Couldn't create config file");
+$handle = fopen($fileName,'w+') or addError('Couldn\'t create config file');
 $write = 
 "<?php
 \$db=array(
@@ -119,7 +164,7 @@ fwrite($handle,$write);
 fclose($handle);
 
 $filename='protected/config/emailConfig.php';
-$handle = fopen($filename, 'w') or die ("Couldn't create e-mail drop box config");
+$handle = fopen($filename, 'w') or addError('Couldn\'t create e-mail drop box config');
 $write = 
 "<?php
 \$host='$host';
@@ -131,10 +176,36 @@ $write =
 fwrite($handle,$write);
 fclose($handle);
 
+outputErrors();
 
-$con = mysql_connect($host,$user,$pass) or die("Unable to connect to database.  Check connection info.");
+function outputErrors() {
+	global $errors;
+	global $userData;
+	if(count($errors)>0) {
+		$errorData = implode('&errors%5B%5D=',$errors);
+		$url = preg_replace('/initialize/','install',$_SERVER['REQUEST_URI']);
+		header("Location: $url?errors%5B%5D=".$errorData.$userData);
+		die();
+	}
+}
 
-mysql_select_db($db,$con) or die ("Unable to select database.  Please make sure the name is spelled properly and that the database exists.".mysql_error());
+function addError($message) {
+	global $errors;
+	$errors[] = $message;
+}
+
+$sqlError = '';
+function addSqlError($message) {
+	global $sqlError;
+	if(empty($sqlError))
+		$sqlError = $message;
+}
+
+// $dbSetupResult = setupDb();
+
+// function setupDb() {
+// global $sqlError;
+// global $lang;
 
 mysql_query("DROP TABLE IF EXISTS
 	x2_users,
@@ -163,8 +234,11 @@ mysql_query("DROP TABLE IF EXISTS
 	x2_lead_routing,
 	x2_sessions,
 	x2_workflows,
-	x2_workflow_stages
-") or die("Unable to delete exsting tables.".mysql_error());
+	x2_workflow_stages,
+	x2_fields
+") or addSqlError('Unable to delete exsting tables.'.mysql_error());
+
+// if(!empty($sqlError)) return $sqlError;
 
 mysql_query("CREATE TABLE x2_users(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -189,7 +263,7 @@ mysql_query("CREATE TABLE x2_users(
 	login INT DEFAULT 0,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
-	") or die('Unable to create table x2_users.'.mysql_error());
+	") or addSqlError('Unable to create table x2_users.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_contacts(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -223,7 +297,7 @@ mysql_query("CREATE TABLE x2_contacts(
 	otherUrl VARCHAR(100) NULL,
         phone2 VARCHAR(40))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_contacts.'.mysql_error());
+") or addSqlError('Unable to create table x2_contacts.'.mysql_error());
 
 //mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
 
@@ -247,7 +321,7 @@ mysql_query("CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_actions.'.mysql_error());
+") or addSqlError('Unable to create table x2_actions.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_sales(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
@@ -266,9 +340,9 @@ mysql_query("CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_sales.'.mysql_error());
+") or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
- mysql_query("CREATE TABLE x2_projects(
+mysql_query("CREATE TABLE x2_projects(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(60) NOT NULL,
 	status VARCHAR(20),
@@ -283,9 +357,9 @@ mysql_query("CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_projects.'.mysql_error());
+") or addSqlError('Unable to create table x2_projects.'.mysql_error());
 
- // mysql_query("CREATE TABLE x2_marketing(
+// mysql_query("CREATE TABLE x2_marketing(
 	// id INT NOT NULL AUTO_INCREMENT primary key,
 	// name VARCHAR(20) NOT NULL,
 	// cost INT,
@@ -295,8 +369,8 @@ mysql_query("CREATE TABLE x2_actions(
 	// lastUpdated INT,
 	// updatedBy VARCHAR(20))
 	// COLLATE = utf8_general_ci
- // ") or die('Unable to create table x2_marketing.'.mysql_error());
- 
+// ") or die('Unable to create table x2_marketing.'.mysql_error());
+
 mysql_query("CREATE TABLE x2_campaigns (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	masterId INT UNSIGNED NOT NULL,
@@ -311,7 +385,7 @@ mysql_query("CREATE TABLE x2_campaigns (
 	launchDate INT UNSIGNED NOT NULL,
 	lastUpdated INT UNSIGNED NOT NULL
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_campaigns.'.mysql_error());
+") or addSqlError('Unable to create table x2_campaigns.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_contact_lists (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -325,7 +399,7 @@ mysql_query("CREATE TABLE x2_contact_lists (
 	createDate INT UNSIGNED NOT NULL,
 	lastUpdated INT UNSIGNED NOT NULL
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_lists.'.mysql_error());
+") or addSqlError('Unable to create table x2_lists.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_list_items (
 	contactId INT UNSIGNED NOT NULL,
@@ -336,7 +410,7 @@ mysql_query("CREATE TABLE x2_list_items (
 	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (contactId) REFERENCES x2_contacts(id) ON UPDATE CASCADE ON DELETE CASCADE
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_listItems.'.mysql_error());
+") or addSqlError('Unable to create table x2_listItems.'.mysql_error());
 
 
 mysql_query("CREATE TABLE x2_list_criteria (
@@ -347,7 +421,7 @@ mysql_query("CREATE TABLE x2_list_criteria (
 	value VARCHAR(100) NOT NULL,
 	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 	) COLLATE utf8_general_ci
-") or die('Unable to create table x2_listCriteria.'.mysql_error());
+") or addSqlError('Unable to create table x2_listCriteria.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_cases(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -365,7 +439,7 @@ mysql_query("CREATE TABLE x2_cases(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_cases.'.mysql_error());
+") or addSqlError('Unable to create table x2_cases.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_profile(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -384,8 +458,8 @@ mysql_query("CREATE TABLE x2_cases(
 	language VARCHAR(40) DEFAULT '$lang',
 	timeZone VARCHAR(100) DEFAULT 'Europe/London',
 	resultsPerPage INT DEFAULT 20,
-	widgets VARCHAR(255) DEFAULT '1:1:1:1:1:0:1',
-	widgetOrder VARCHAR(255) DEFAULT 'MessageBox:QuickContact:GoogleMaps:TwitterFeed:ChatBox:NoteBox:ActionMenu',
+	widgets VARCHAR(255) DEFAULT '1:1:1:1:1:1:0:1:1',
+	widgetOrder VARCHAR(255) DEFAULT 'OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud',
 	backgroundColor VARCHAR(6) NULL,
 	menuBgColor VARCHAR(6) NULL,
 	menuTextColor VARCHAR(6) NULL,
@@ -395,9 +469,10 @@ mysql_query("CREATE TABLE x2_cases(
 	showSocialMedia TINYINT(1) NOT NULL DEFAULT 0,
 	showDetailView TINYINT(1) NOT NULL DEFAULT 1,
 	showWorkflow TINYINT(1) NOT NULL DEFAULT 1,
+	gridviewSettings TEXT,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_profile.'.mysql_error());
+") or addSqlError('Unable to create table x2_profile.'.mysql_error());
 
  mysql_query("CREATE TABLE x2_accounts(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -415,7 +490,7 @@ mysql_query("CREATE TABLE x2_cases(
 	lastUpdated INT,
 	updatedBy VARCHAR(20))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_accounts.'.mysql_error());
+") or addSqlError('Unable to create table x2_accounts.'.mysql_error());
 
 
  mysql_query("CREATE TABLE x2_social(
@@ -428,7 +503,7 @@ mysql_query("CREATE TABLE x2_cases(
 	timestamp INT,
 	lastUpdated INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_social.'.mysql_error());
+") or addSqlError('Unable to create table x2_social.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_docs(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -440,7 +515,7 @@ mysql_query("CREATE TABLE x2_docs(
 	updatedBy VARCHAR(40),
 	lastUpdated INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_docs.'.mysql_error());
+") or addSqlError('Unable to create table x2_docs.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_media(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -450,7 +525,7 @@ mysql_query("CREATE TABLE x2_media(
 	fileName VARCHAR(100),
 	createDate INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_social.'.mysql_error());
+") or addSqlError('Unable to create table x2_social.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_admin(
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -463,12 +538,12 @@ mysql_query("CREATE TABLE x2_admin(
 	menuVisibility VARCHAR(100),
 	menuNicknames VARCHAR(255),
 	chatPollTime INT DEFAULT 2000,
-        ignoreUpdates TINYINT DEFAULT 0,
-        rrId INT, 
-        leadDistribution VARCHAR(250),
-        onlineOnly INT)
+	ignoreUpdates TINYINT DEFAULT 0,
+	rrId INT DEFAULT 0, 
+	leadDistribution VARCHAR(250),
+	onlineOnly INT)
 	COLLATE = utf8_general_ci
-	") or die('Unable to create table x2_social.'.mysql_error());
+	") or addSqlError('Unable to create table x2_social.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_changelog( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -478,7 +553,7 @@ mysql_query("CREATE TABLE x2_changelog(
 	changed TEXT NOT NULL,
 	timestamp INT NOT NULL DEFAULT 0)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_changelog.'.mysql_error());
+") or addSqlError('Unable to create table x2_changelog.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_tags( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -489,7 +564,7 @@ mysql_query("CREATE TABLE x2_tags(
         itemName VARCHAR(250),
 	timestamp INT NOT NULL DEFAULT 0)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_tags.'.mysql_error());
+") or addSqlError('Unable to create table x2_tags.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_relationships( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -498,7 +573,7 @@ mysql_query("CREATE TABLE x2_relationships(
 	secondType VARCHAR(100),
         secondId INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_relationshps.'.mysql_error());
+") or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_notifications( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -508,7 +583,7 @@ mysql_query("CREATE TABLE x2_notifications(
 	viewed INT,
 	createDate INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_notifications.'.mysql_error());
+") or addSqlError('Unable to create table x2_notifications.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_criteria( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -519,29 +594,30 @@ mysql_query("CREATE TABLE x2_criteria(
         users TEXT,
         type VARCHAR(250))
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_criteria.'.mysql_error());
+") or addSqlError('Unable to create table x2_criteria.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_lead_routing( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	field VARCHAR(250),
 	value VARCHAR(250),
-	users TEXT)
+	users TEXT,
+        rrId INT DEFAULT 0)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_lead_routing.'.mysql_error());
+") or addSqlError('Unable to create table x2_lead_routing.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_sessions(
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	user VARCHAR(250),
 	lastUpdated INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_sessions.'.mysql_error());
+") or addSqlError('Unable to create table x2_sessions.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_workflows( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(250),
 	lastUpdated INT)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_workflows.'.mysql_error());
+") or addSqlError('Unable to create table x2_workflows.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_workflow_stages( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -552,9 +628,104 @@ mysql_query("CREATE TABLE x2_workflow_stages(
 	value DECIMAL(10,2),
 	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE)
 	COLLATE = utf8_general_ci
-") or die('Unable to create table x2_workflow_stages.'.mysql_error());
+") or addSqlError('Unable to create table x2_workflow_stages.'.mysql_error());
 
+mysql_query("CREATE TABLE x2_fields (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	modelName varchar(250) ,
+	fieldName varchar(250),
+	attributeLabel varchar(250),
+	visible int,
+	custom int,
+	modified INT DEFAULT 0)
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to creat table x2_fields.'.mysql_error());
 
+mysql_query("INSERT INTO  x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES 
+
+	('Contacts',	'id',				'ID',				1,	0),
+	('Contacts',	'firstName',		'First Name',		1,	0),
+	('Contacts',	'lastName',			'Last Name',		1,	0),
+	('Contacts',	'title',			'Title',			1,	0),
+	('Contacts',	'company',			'Account',			1,	0),
+	('Contacts',	'accountId',		'Account ID',		1,	0),
+	('Contacts',	'phone',			'Phone',			1,	0),
+	('Contacts',	'phone2',			'Phone 2',			1,	0),
+	('Contacts',	'email',			'Email',			1,	0),
+	('Contacts',	'website',			'Website',			1,	0),
+	('Contacts',	'twitter',			'Twitter',			1,	0),
+	('Contacts',	'linkedin',			'Linkedin',			1,	0),
+	('Contacts',	'skype',			'Skype',			1,	0),
+	('Contacts',	'googleplus',		'Googleplus',		1,	0),
+	('Contacts',	'address',			'Address',			1,	0),
+	('Contacts',	'city',				'City',				1,	0),
+	('Contacts',	'state',			'State',			1,	0),
+	('Contacts',	'zipcode',			'Postal Code',		1,	0),
+	('Contacts',	'country',			'Country',			1,	0),
+	('Contacts',	'visibility',		'Visibility',		1,	0),
+	('Contacts',	'assignedTo',		'Assigned To',		1,	0),
+	('Contacts',	'backgroundInfo',	'Background Info',	1,	0),
+	('Contacts',	'lastUpdated',		'Last Updated',		1,	0),
+	('Contacts',	'updatedBy',		'Updated By',		1,	0),
+	('Contacts',	'leadSource',		'Lead Source',		1,	0),
+	('Contacts',	'priority',			'Priority',			1,	0),
+	('Contacts',	'rating',			'Rating',			1,	0),
+	('Contacts',	'createDate',		'Create Date',		1,	0),
+	('Contacts',	'facebook',			'Facebook',			1,	0),
+	('Contacts',	'other',			'Other',			1,	0),
+			
+	('Accounts',	'name',					'Name',				1,	0),
+	('Accounts',	'id',					'ID',				1,	0),
+	('Accounts',	'website',				'Website',			1,	0),
+	('Accounts',	'type',					'Type',				1,	0),
+	('Accounts',	'annualRevenue',		'Revenue',			1,	0),
+	('Accounts',	'phone',				'Phone',			1,	0),
+	('Accounts',	'tickerSymbol',			'Symbol',			1,	0),
+	('Accounts',	'employees',			'Employees',		1,	0),
+	('Accounts',	'assignedTo',			'Assigned To',		1,	0),
+	('Accounts',	'createDate',			'Create Date',		1,	0),
+	('Accounts',	'associatedContacts',	'Contacts',			1,	0),
+	('Accounts',	'description',			'Description',		1,	0),
+	('Accounts',	'lastUpdated',			'Last Updated',		1,	0),
+	('Accounts',	'updatedBy',			'Updated By',		1,	0),
+	
+	('Actions',		'id',					'ID',				1,	0),
+	('Actions',		'assignedTo',			'Assigned To',		1,	0),
+	('Actions',		'actionDescription',	'Description',		1,	0),
+	('Actions',		'visibility',			'Visibility',		1,	0),
+	('Actions',		'associationId',		'Contact',			1,	0),
+	('Actions',		'associationType',		'Association Type',	1,	0),
+	('Actions',		'associationName',		'Association',		1,	0),
+	('Actions',		'dueDate',				'Due Date',			1,	0),
+	('Actions',		'priority',				'Priority',			1,	0),
+	('Actions',		'type',					'Action Type',		1,	0),
+	('Actions',		'createDate',			'Create Date',		1,	0),
+	('Actions',		'complete',				'Complete',			1,	0),
+	('Actions',		'reminder',				'Reminder',			1,	0),
+	('Actions',		'completedBy',			'Completed By',		1,	0),
+	('Actions',		'completeDate',			'Date Completed',	1,	0),
+	('Actions',		'lastUpdated',			'Last Updated',		1,	0),
+	('Actions',		'updatedBy',			'Updated By',		1,	0),
+	
+	('Sales',	'id',					'ID',					1,	0),
+	('Sales',	'name',					'Name',					1,	0),
+	('Sales',	'accountId',			'Account ID',			1,	0),
+	('Sales',	'accountName',			'Account',				1,	0),
+	('Sales',	'quoteAmount',			'Quote Amount',			1,	0),
+	('Sales',	'salesStage',			'Sales Stage',			1,	0),
+	('Sales',	'expectedCloseDate',	'Expected Close Date',	1,	0),
+	('Sales',	'probability',			'Probability',			1,	0),
+	('Sales',	'leadSource',			'Lead Source',			1,	0),
+	('Sales',	'description',			'Description',			1,	0),
+	('Sales',	'assignedTo',			'Assigned To',			1,	0),
+	('Sales',	'createDate',			'Create Date',			1,	0),
+	('Sales',	'associatedContacts',	'Contacts',				1,	0),
+	('Sales',	'lastUpdated',			'Last Updated',			1,	0),
+	('Sales',	'updatedBy',			'Updated By',			1,	0)
+;")
+or addSqlError("Unable to create fields.".mysql_error());
+
+// if(!empty($sqlError)) return $sqlError;
 //UNSIGNED
 
 
@@ -562,22 +733,22 @@ $adminPassword=md5($adminPassword);
 $adminEmail=mysql_escape_string($adminEmail);
 
 mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) VALUES ('web','admin','admin','$adminPassword',
-			'$adminEmail' ,'1', '0')") or die("Error inserting admin information.");
+			'$adminEmail' ,'1', '0')") or addSqlError("Error inserting admin information.");
 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or die("Error inserting dummy data");
-mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or die("Unable to set starting MOTD.");
+		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or addSqlError("Error inserting dummy data");
+mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or addSqlError("Unable to set starting MOTD.");
 mysql_query("INSERT INTO x2_admin (accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, menuVisibility, currency) VALUES ('0','1','3600','$adminEmail',
-		'contacts:actions:sales:accounts:workflow:docs','Contacts:Actions:Sales:Accounts:Workflow:Docs','1:1:1:1:1:1','$currency')") or die("Unable to input admin config");
+		'actions:contacts:sales:accounts:workflow:docs','Actions:Contacts:Sales:Accounts:Workflow:Docs','1:1:1:1:1:1','$currency')") or addSqlError("Unable to input admin config");
 
 $backgrounds = array(
 	'santacruznight_blur.jpg',
-	'screens2cc.jpg',
-	'calico.jpg',
-	'calico_blur.jpg',
+	// 'screens2cc.jpg',
+	// 'calico.jpg',
+	// 'calico_blur.jpg',
 	'santa_cruz.jpg',
 	'santa_cruz_blur.jpg',
-	'moss_landing.jpg',
-	'moss_landing_blur.jpg',
+	// 'moss_landing.jpg',
+	// 'moss_landing_blur.jpg',
 	'pigeon_point.jpg',
 	'pigeon_point_blur.jpg',
 	'redwoods.jpg',
@@ -592,34 +763,43 @@ foreach($backgrounds as $background) {
 }
 
 if($dummyData){
+
+	mysql_query("INSERT INTO x2_workflows (id, name) VALUES (1,'General Sales')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (1,1,1,'Lead')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (2,1,2,'Suspect')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (3,1,3,'Prospect')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (4,1,4,'Customer')") or addSqlError("Error inserting workflow data.");
+	
+	
+
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Chris','Hames','chames',md5('password'),
-		'831-555-5555','10 Downing St. Santa Cruz, CA 95060', 'chris@hames.com','1')") or die("Error inserting dummy data");
-	 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('Chris Hames', 'chames', '831-555-5555', 'chris@hames.com','1')") or die("Error inserting dummy data");
-	 
+		'831-555-5555','10 Downing St. Santa Cruz, CA 95060', 'chris@hames.com','1')") or addSqlError("Error inserting dummy data");
+	mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Chris Hames', 'chames', '831-555-5555', 'chris@hames.com','1')") or addSqlError("Error inserting dummy data");
+
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('James','Valerian','jvalerian',md5('password'),
-		'831-555-5555','123 Main St. Santa Cruz, CA 95060', 'james@valerian.com','1')") or die("Error inserting dummy data");
-	 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('James Valerian', 'jvalerian', '831-555-5555', 'james@valerian.com','1')") or die("Error inserting dummy data");
-	 
+		'831-555-5555','123 Main St. Santa Cruz, CA 95060', 'james@valerian.com','1')") or addSqlError("Error inserting dummy data");
+	mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('James Valerian', 'jvalerian', '831-555-5555', 'james@valerian.com','1')") or addSqlError("Error inserting dummy data");
+
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Sarah','Smith','ssmith',md5('password'),
-		'831-555-5555','467 2nd Ave. Santa Cruz, CA 95060', 'sarah@smith.com','1')") or die("Error inserting dummy data");
-	 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('Sarah Smith', 'ssmith', '831-555-5555', 'sarah@smith.com','1')") or die("Error inserting dummy data");
-	 
+		'831-555-5555','467 2nd Ave. Santa Cruz, CA 95060', 'sarah@smith.com','1')") or addSqlError("Error inserting dummy data");
+	mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Sarah Smith', 'ssmith', '831-555-5555', 'sarah@smith.com','1')") or addSqlError("Error inserting dummy data");
+
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Kevin','Flynn','kflynn',md5('password'),
-		'831-555-5555','10 Flynn\'s Arcade Way', 'flynn@encom.com','1')") or die("Error inserting dummy data");
-	 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('Kevin Flynn', 'kflynn', '831-555-5555', 'flynn@encom.com','1')") or die("Error inserting dummy data");
-	 
+		'831-555-5555','10 Flynn\'s Arcade Way', 'flynn@encom.com','1')") or addSqlError("Error inserting dummy data");
+	mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Kevin Flynn', 'kflynn', '831-555-5555', 'flynn@encom.com','1')") or addSqlError("Error inserting dummy data");
+
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Malcolm','Reynolds','mreynolds',md5('password'),
-		'831-555-5555','290 Serenity Valley Road Santa Cruz, CA 95060', 'malcolm@reynolds.com','1')") or die("Error inserting dummy data");
-	 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('Malcolm Reynolds', 'mreynolds', '831-555-5555', 'malcolm@reynolds.com','1')") or die("Error inserting dummy data");
-	 
-	 include("dummydata.php");
-	 /*
-	 
+		'831-555-5555','290 Serenity Valley Road Santa Cruz, CA 95060', 'malcolm@reynolds.com','1')") or addSqlError("Error inserting dummy data");
+	mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Malcolm Reynolds', 'mreynolds', '831-555-5555', 'malcolm@reynolds.com','1')") or addSqlError("Error inserting dummy data");
+
+	include("dummydata.php");
+	/*
+
 	mysql_query("INSERT INTO x2_contacts (firstName, lastName, phone, email, visibility, assignedTo, address, city, state, zipcode, company, title)
 		VALUES ('John','Smith','831-555-5555','john@smith.com','1','chames', '123 Main St.', 'Santa Cruz', 'CA', '95060', 'ACME Co.', 'Vice President')")
 	 or die("Error inserting dummy data");
@@ -677,7 +857,20 @@ if($dummyData){
 		VALUES ('Aperture Science', 'www.aperture.com', 'Science', '9000000', '831-555-5555', 'PRTL', '1', 'chames', 
 			'4', 'Currently working on transportation technologies.')") or die("Error inserting dummy data");
 		*/
+	// return $sqlErrors;
 }
+mysql_close($con);
+
+// }
+
+if(!empty($sqlError)) {
+	$errors[] = 'MySQL Error: '.$sqlError;
+	outputErrors();
+	// die();
+}
+outputErrors();
+
+
 
 $GDSupport = function_exists('gd_info')? '1':'0';
 $browser = urlencode($_SERVER['HTTP_USER_AGENT']);
@@ -714,6 +907,7 @@ function installer_t($str) {	// translates by looking up string in install.php l
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/form.css" />
+<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
 <style type="text/css">
 body {
 	background-color:black;
@@ -755,7 +949,9 @@ body {
 </html>
 <?php
 // delete install files (including self)
-unlink('install.php');
-unlink('installConfig.php');
+if(file_exists('install.php'))
+	unlink('install.php');
+if(file_exists('installConfig.php'))
+	unlink('installConfig.php');
 unlink(__FILE__);
 ?>

@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$attributeLabels = SaleChild::attributeLabels();
+$attributeLabels = Sales::attributeLabels();
 
 Yii::app()->clientScript->registerScript('updateWorkflow',"
 
@@ -96,19 +96,48 @@ Yii::app()->clientScript->registerScript('stopEdit','
 	});
 ');
 
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
+
 ?>
 <div class="form no-border">
 <table class="details">
 	<tr>
+                <?php if($nonCustom['name']->visible==1){ ?>
 		<td class="label" width="20%"><?php echo $attributeLabels['name']; ?></td>
 		<td colspan="3" id="name" onclick="showField(this,true)">
 			<div class="detail-field"><?php echo $model->name; ?></div>
 			<div class="detail-form"><?php echo $form->textField($model,'name',array('size'=>48,'maxlength'=>40)); ?></div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php if($nonCustom['description']->visible==1){ ?>
+		<td class="label">
+			<?php echo $attributeLabels['description']; ?>
+		</td>
+		<td colspan="3" class="text-field" id="description" onclick="toggleField(this)"><div class="spacer"></div>
+			<div class="detail-field"><?php echo $this->convertUrls($model->description); 
+				// replace any CR or LF characters with <br />, maximum of 2 in a row
+			?></div>
+			<div class="detail-form"><?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?></div>
+		</td>
+                <?php } ?>
+	</tr>
+	<tr>
+                <?php if($nonCustom['associatedContacts']->visible==1){ ?>
 		<td class="label" width="20%"><?php echo CHtml::link($attributeLabels['associatedContacts'],array('addContact', 'id'=>$model->id)); ?></td>
 		<td><?php echo $model->associatedContacts; ?></td>
+                <?php } ?>
+                <?php if($nonCustom['accountName']->visible==1){ ?>
 		<td class="label"><?php echo ($model->accountId==0)? $attributeLabels['accountName'] : CHtml::link($attributeLabels['accountName'],array('accounts/view','id'=>$model->accountId)); ?></td>
 		<td colspan="3" id="accountName" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->accountName; ?></b></div>
@@ -130,6 +159,7 @@ Yii::app()->clientScript->registerScript('stopEdit','
 			));
 			echo $form->hiddenField($model, 'accountId');?></div>
 		</td>
+                <?php } ?>
 	</tr>
 	<?php $workflowList = Workflow::getList(); ?>
 	<tr id="workflow-row">
@@ -169,9 +199,11 @@ Yii::app()->clientScript->registerScript('stopEdit','
 		</td>
 	</tr>
 	<tr>
+                <?php if($nonCustom['assignedTo']->visible==1){ ?>
 		<td class="label" width="20%"><?php echo CHtml::link($attributeLabels['assignedTo'],array('addUser', 'id'=>$model->id)); ?></td>
 		<td><?php echo $model->assignedTo; ?></td>
-		
+		<?php } ?>
+                <?php if($nonCustom['expectedCloseDate']->visible==1){ ?>
 		<td class="label" width="25%" ><?php echo $attributeLabels['expectedCloseDate']; ?></td>
 		<td id="expectedCloseDate" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php $model->expectedCloseDate=empty($model->expectedCloseDate)? '' : date('Y-m-d',$model->expectedCloseDate);
@@ -187,14 +219,17 @@ Yii::app()->clientScript->registerScript('stopEdit','
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			));?> </div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php if($nonCustom['quoteAmount']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['quoteAmount']; ?>
 		<td id="quoteAmount" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo Yii::app()->locale->numberFormatter->formatCurrency($model->quoteAmount,Yii::app()->params->currency); ?></b></div>
 			<div class="detail-form"><?php echo $form->textField($model,'quoteAmount'); ?></div>		
 		</td>
-					
+                <?php } ?>
+                <?php if($nonCustom['leadSource']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['leadSource']; ?></td>
 		<td id="leadSource" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo Yii::t('sales',$model->leadSource); ?></div>
@@ -205,8 +240,10 @@ Yii::app()->clientScript->registerScript('stopEdit','
 					"Store"=>Yii::t('sales','Store')
 					)); ?></div>
 		</td>
+                <?php } ?>
 	</tr>
 	<tr>
+                <?php if($nonCustom['salesStage']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['salesStage']; ?></td>
 		<td id="salesStage" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo Yii::t('sales',$model->salesStage); ?></b></div>
@@ -216,12 +253,32 @@ Yii::app()->clientScript->registerScript('stopEdit','
 					'Lost'=>Yii::t('sales','Lost'))
 				); ?></div>
 		</td>
-		
+		<?php } ?>
+                <?php if($nonCustom['probability']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['probability']; ?></td>
 		<td id="probability" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->probability; ?></b></div>
 			<div class="detail-form"><?php echo $form->textField($model,'probability'); ?></div>
 		</td>
+                <?php } ?>
 	</tr>
+        <?php 
+        
+            foreach($custom as $fieldName=>$field){
+                
+                if($field->visible==1){ 
+		echo "<tr>
+                <td class=\"label\"><b>".$attributeLabels[$fieldName]."</b></td>
+		<td id=\"$fieldName\" onclick=\"toggleField(this);\" colspan=\"5\">
+			<div class=\"detail-field\">".$model->$fieldName."</div>
+			<div class=\"detail-form\">
+			".$form->textField($model,$fieldName,array('size'=>'70'))."
+			</div>
+		</td>
+                </tr>";
+                }
+            }
+        
+        ?>
 </table>
 </div>

@@ -61,7 +61,7 @@ class InlineEmailForm extends CWidget {
 	}
 
 	public function run() {
-		// $actionModel = new ActionChild;
+		// $actionModel = new Actions;
 		// $actionModel->associationType = $this->associationType;
 		// $actionModel->associationId = $this->associationId;
 		// $actionModel->assignedTo = $this->assignedTo;

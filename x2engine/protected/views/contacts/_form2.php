@@ -67,7 +67,7 @@ if (!isset($isQuickCreate)) {	//check if this form is being recycled in the quic
 	echo '<em>'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 }
 
-$attributeLabels = ContactChild::attributeLabels();
+$attributeLabels = Contacts::attributeLabels();
 
 $showSocialMedia = ProfileChild::getSocialMedia();
 ?>

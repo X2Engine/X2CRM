@@ -76,14 +76,18 @@ class WorkflowController extends x2base {
 
 	// Admin view of all workflows
 	public function actionAdmin() {
-		$model=new Workflow('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Workflow']))
-			$model->attributes=$_GET['Workflow'];
-
-		$this->render('admin',array(
-			'model'=>$model,
+		$dataProvider = new CActiveDataProvider('Workflow');
+		$this->render('index',array(
+			'dataProvider'=>$dataProvider,
 		));
+		// $model=new Workflow('search');
+		// $model->unsetAttributes();  // clear any default values
+		// if(isset($_GET['Workflow']))
+			// $model->attributes=$_GET['Workflow'];
+
+		// $this->render('admin',array(
+			// 'model'=>$model,
+		// ));
 	}
 
 	// Displays workflow table/funnel diagram
@@ -239,7 +243,7 @@ class WorkflowController extends x2base {
 			
 			if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
 				&& (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
-				$action = new ActionChild;
+				$action = new Actions;
 				$action->associationId = $modelId;
 				$action->associationType = $type;
 				$action->assignedTo = Yii::app()->user->getName();
@@ -264,7 +268,7 @@ class WorkflowController extends x2base {
 			if(isset($workflowStatus[$stageNumber]['createDate']) && empty($workflowStatus[$stageNumber]['completeDate'])) {
 			
 				// find selected stage (and duplicates)
-				$actionModels = CActiveRecord::model('ActionChild')->findAllByAttributes(
+				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
 					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','actionDescription'=>$workflowId.':'.$stageNumber),
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
@@ -278,7 +282,7 @@ class WorkflowController extends x2base {
 				$actionModels[0]->save();
 				
 				if($stageNumber < $stageCount && !isset($workflowStatus[$stageNumber+1]['createDate'])) {	// if this isn't the final stage,
-					$nextAction = new ActionChild;														// start the next one (unless there is already one)
+					$nextAction = new Actions;														// start the next one (unless there is already one)
 					$nextAction->associationId = $modelId;
 					$nextAction->associationType = $type;
 					$nextAction->assignedTo = Yii::app()->user->getName();
@@ -305,7 +309,7 @@ class WorkflowController extends x2base {
 			if(isset($workflowStatus[$stageNumber]['createDate'])) {
 
 				// find selected stage (and duplicates)
-				$actionModels = CActiveRecord::model('ActionChild')->findAllByAttributes(
+				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
 					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','actionDescription'=>$workflowId.':'.$stageNumber),
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
@@ -321,7 +325,7 @@ class WorkflowController extends x2base {
 				} else {
 					// delete this and all subsequent stages
 					for($i=$stageNumber;$i<=$stageCount;$i++) {
-						CActiveRecord::model('ActionChild')->deleteAllByAttributes(
+						CActiveRecord::model('Actions')->deleteAllByAttributes(
 							array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','actionDescription'=>$workflowId.':'.$i)
 						);
 					}

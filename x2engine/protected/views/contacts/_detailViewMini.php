@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  ********************************************************************************/
 
-$attributeLabels = ContactChild::attributeLabels();
+$attributeLabels = Contacts::attributeLabels();
 
 if($actionModel->associationId!=0)
 	$link = CHtml::link(CHtml::encode($model->name),

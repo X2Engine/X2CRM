@@ -36,69 +36,67 @@
 ?>
 <div class="form">
 
-<?php  include("protected/config/templatesConfig.php");
+<?php  
+include("protected/config/templatesConfig.php");
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'templates-form',
 	'enableAjaxValidation'=>false,
-)); ?>
+)); 
+$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Templates'));
+$nonCustom=array();
+$custom=array();
+foreach($fields as $field){
+    if($field->custom==0){
+        $nonCustom[$field->fieldName]=$field;
+    }else{
+        $custom[$field->fieldName]=$field;
+    }
+}
+
+?>
 
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
 
 	<?php echo $form->errorSummary($model); ?>
-<?php if($moduleConfig['assignedToDisplay']=='1'){ ?>
+        <?php if($nonCustom['assignedTo']->visible==1) { ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'assignedTo'); ?>
 		<?php echo $form->dropDownList($model,'assignedTo',$users); ?>
 		<?php echo $form->error($model,'assignedTo'); ?>
 	</div>
-<?php } ?>
+        <?php } ?>
+        <?php if($nonCustom['name']->visible==1) { ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'name'); ?>
 		<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>255)); ?>
 		<?php echo $form->error($model,'name'); ?>
 	</div>
-<?php if($moduleConfig['descriptionDisplay']=='1'){ ?>
+        <?php } ?>
+        <?php if($nonCustom['description']->visible==1) { ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'description'); ?>
 		<?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'description'); ?>
 	</div>
-<?php } ?>
-	<?php if($moduleConfig['displayOne']=='1'){ ?>
-	<div class="row">
-		<?php echo $form->labelEx($model,'fieldOne'); ?>
-		<?php echo $form->textField($model,'fieldOne',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'fieldOne'); ?>
-	</div>
-<?php } ?>
-	<?php if($moduleConfig['displayTwo']=='1'){ ?>
-	<div class="row">
-		<?php echo $form->labelEx($model,'fieldTwo'); ?>
-		<?php echo $form->textField($model,'fieldTwo',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'fieldTwo'); ?>
-	</div>
-<?php } ?>
-	<?php if($moduleConfig['displayThree']=='1'){ ?>
-	<div class="row">
-		<?php echo $form->labelEx($model,'fieldThree'); ?>
-		<?php echo $form->textField($model,'fieldThree',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'fieldThree'); ?>
-	</div>
-<?php } ?>
-	<?php if($moduleConfig['displayFour']=='1'){ ?>
-	<div class="row">
-		<?php echo $form->labelEx($model,'fieldFour'); ?>
-		<?php echo $form->textField($model,'fieldFour',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'fieldFour'); ?>
-	</div>
-<?php } ?>
-	<?php if($moduleConfig['displayFive']=='1'){ ?>
-	<div class="row">
-		<?php echo $form->labelEx($model,'fieldFive'); ?>
-		<?php echo $form->textField($model,'fieldFive',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'fieldFive'); ?>
-	</div>
-<?php } ?>
+        <?php } ?>
+        <?php 
+            foreach($custom as $fieldName=>$field){
+                
+                if($field->visible==1){ 
+                    ?>
+                    <div class="row">
+                    <div class="cell">
+                        <?php echo $form->label($model,$fieldName); ?>
+                        <?php echo $form->textField($model,$fieldName,array('size'=>'70')); ?>
+                        <?php echo $form->error($model,$fieldName); ?>
+                    </div>
+                    </div>
+                    <?php
+                        }
+                }
+        
+            ?>
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>
