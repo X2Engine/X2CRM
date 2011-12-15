@@ -31,7 +31,7 @@ if($updaterCheck!=$updaterVersion){
 \$pass='$pass';
 \$dbname='$dbname';
 \$version='$newVersion';
-\$updaterVersion='$updateCheck';
+\$updaterVersion='$updaterCheck';
 ?>";
 file_put_contents('protected/config/emailConfig.php', $config);
 ?>
@@ -91,7 +91,7 @@ $config="<?php
 \$pass='$pass';
 \$dbname='$dbname';
 \$version='$newVersion';
-\$updateCheck='$updateCheck';
+\$updaterVersion='$updaterCheck';
 ?>";
 file_put_contents('protected/config/emailConfig.php', $config);
 echo "$fileCount file(s) have been changed.";
