@@ -76,6 +76,29 @@ class Tags extends CActiveRecord
 		);
 	}
 
+	public static function getTagLinks($model,$id,$limit = 0) {
+	
+		if(!is_numeric($limit) || empty($limit))
+			$limit = null;
+	
+		$tags = Tags::model()->findAllByAttributes(
+			array('type'=>$model,'itemId'=>$id),
+			new CDbCriteria(array('order'=>'id DESC','limit'=>$limit))
+		);
+		$tagCount = Tags::model()->countByAttributes(array('type'=>$model,'itemId'=>$id));
+		
+		$links = array();
+		foreach($tags as &$tag) {
+			$links[] = CHtml::link($tag->tag,array('search/search','term'=>$tag->tag));
+		}
+		if(!empty($limit) && $tagCount > $limit)
+			$links[] = '...';
+			
+		return implode(' ',$links);
+	}
+	
+	
+	
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.

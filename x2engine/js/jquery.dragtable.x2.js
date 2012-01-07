@@ -272,6 +272,7 @@ $.widget("jb.dragtable", {
 		//TODO: clean up this format 
 		tds = {
 			'semantic':{
+				// '0': [],//colgroup
 				'0': [],//head throws error if ei.head or ei['head']
 				'1': [],//body
 				'2': []//footer
@@ -285,6 +286,10 @@ $.widget("jb.dragtable", {
 			return tds;
 		}
 
+		// var col = elem.find('col')[index];
+		// tds.array.push(td);
+		// tds.semantic[ei.colgroup].push(td);
+		
 		for(var i = 0, length = elem.rows.length; i < length; i++){
 			var td = elem.rows[i].cells[index];
 
@@ -461,8 +466,20 @@ $.widget("jb.dragtable", {
 
 		from = this.startIndex;
 		this.endIndex = to;
-
+		
+		
+		var cols = this.element.find('col');
+		var colA = (typeof cols[from] == 'undefined')? false : $(cols[from]);
+		var colB = (typeof cols[to] == 'undefined')? false : $(cols[to]);
+		if(colA && colB) {
+			var widthA = colA.attr('width');
+			colA.attr('width',colB.attr('width'));
+			colB.attr('width',widthA);
+		}
 		if(from < to) {
+		
+			
+			
 			//console.log('move right');
 			// for(var i = from; i < to; i++) {
 				var row2 = this._getCells(this.element[0],to);

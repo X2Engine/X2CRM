@@ -1,37 +1,41 @@
 <?php
 /*********************************************************************************
- * X2Engine is a contact management program developed by
- * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
  * 
- * You can contact X2Engine, Inc. at P.O. Box 66752,
- * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
  * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
  * 
- * In accordance with Section 7(b) of the GNU General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
 class SiteController extends x2base {
@@ -359,55 +363,48 @@ class SiteController extends x2base {
 
 	public function actionInlineEmail() {
 		
-		$to = '';
+		$name = '';
 		$subject = '';
 		$message = '';
+		$redirect = '';
 		$redirectId = '';
 		$redirectType = '';
+		$status = array();
+		
 		
 		$errors = array();
 
-		if(isset($_POST['to']) && isset($_POST['subject']) && isset($_POST['message'])) {
+		if(isset($_POST['inlineEmail_name']) && isset($_POST['inlineEmail_subject']) && isset($_POST['inlineEmail_message'])) {
 			
-			$to = $this->decodeQuotes($_POST['to']);
-			$subject = $this->decodeQuotes($_POST['subject']);
-			$message = $this->decodeQuotes($_POST['message']);
+			$name = $this->decodeQuotes($_POST['inlineEmail_name']);
+			$address = $this->decodeQuotes($_POST['inlineEmail_address']);
+			$subject = $this->decodeQuotes($_POST['inlineEmail_subject']);
+			$message = $this->decodeQuotes($_POST['inlineEmail_message']);
 			
-			if(empty($to))
-				$errors[] = 'to';
+			if(empty($address))
+				$errors[] = 'address';
 			if(empty($subject))
 				$errors[] = 'subject';
 			if(empty($message))
 				$errors[] = 'message';
 			
-			if(empty($errors)) {
-                                $user=CActiveRecord::model('UserChild')->findByPk(Yii::app()->user->getId());
-				//$to = 'mpearson@x2engine.com';
-				$headers = "From: <".$user->name."> ".Yii::app()->params->profile->emailAddress."\r\n";
-				$headers .= "Cc: dropbox@".substr(Yii::app()->request->getServerName(),4)."\r\n";
-				$headers .= "MIME-Version: 1.0\r\n";
-				$headers .= "Content-Type: text/html; charset=utf-8\r\n";
-				$headers .= "Content-Transfer-Encoding: 8bit\r\n";
-
-				// die($headers);
-				if(mail($to,$subject,$message,$headers)) {
-					if(isset($_GET['ajax'])) {
-						echo '<div class="form">'.Yii::t('app','Email Sent!').'</div><br />';
-						return;
-					} else if(isset($_POST['redirectId']) && isset($_POST['redirectType'])) {
-						$this->redirect(array($_POST['redirectType'].'/view/'.$_POST['redirectId']));
-						return;
-					} else {
-						$this->redirect(array('contacts/index'));
-						return;
-					}
+			if(empty($errors))
+				$status = $this->sendUserEmail($name,$address,$subject,$message);
+			
+			
+			if(isset($_GET['ajax'])) {	// respond with the form partial view
+				echo $this->renderPartial('application.components.views.emailForm',array('status'=>$status,'name'=>$name,'address'=>$address,'subject'=>$subject,'message'=>$message,'redirect'=>$redirect,'redirectId'=>$redirectId,'redirectType'=>$redirectType,'errors'=>$errors));
+			} else {
+				// reload the whole page if this wasn't an AJAX request
+				if(isset($_POST['redirect'])) {
+					// $this->redirect(array($_POST['redirect']));
+					return;
 				} else {
-					echo '<div class="form">'.Yii::t('app','Erorr: Could not send email.').'</div>';
+					$this->redirect(array('contacts/index'));
 					return;
 				}
 			}
 		}
-		echo $this->renderPartial('application.components.views.emailForm',array('to'=>$to,'subject'=>$subject,'message'=>$message,'redirectId'=>$redirectId,'redirectType'=>$redirectType,'errors'=>$errors));
 	}
 
 	public function actionUpload() {
@@ -490,6 +487,63 @@ class SiteController extends x2base {
 			}
 		}
 	}
+
+    // upload contact profile picture from facebook
+	public function actionUploadProfilePicture() {
+		if(isset($_POST['photourl'])) {
+			$photourl = $_POST['photourl'];
+			$name = 'profile_picture_'.$_POST['associationId'].'.jpg';
+			$model = new Media;
+			$check=Media::model()->findAllByAttributes(array('fileName'=>$name));
+			if(count($check)!=0) {
+				$count=1;
+				$newName=$name;
+				$arr=explode('.',$name);
+				$name=$arr[0];
+				while(count($check)!=0){
+						$newName=$name.'('.$count.').jpg';
+						$check=Media::model()->findAllByAttributes(array('fileName'=>$newName));
+						$count++;
+				}
+				$name=$newName;
+			}
+			$model->associationId=$_POST['associationId'];
+			$model->associationType=$_POST['type'];
+			$model->createDate=time();
+			$model->fileName=$name;
+			
+			// download and save picture
+			$img = file_get_contents($photourl);
+			file_put_contents('uploads/'.$name, $img);
+			$model->save();
+			
+			// put picture into new action
+			$note = new Actions;
+			$note->createDate = time();
+			$note->dueDate = time();
+			$note->completeDate = time();
+			$note->complete='Yes';
+			$note->visibility='1';
+			$note->completedBy="Web Lead";
+			$note->assignedTo='Anyone';
+			$note->type='attachment';
+			$note->associationId=$_POST['associationId'];
+			$note->associationType=$_POST['type'];
+
+			$association = $this->getAssociation($note->associationType,$note->associationId);
+			if($association != null) {
+			    $note->associationName = $association->name;
+			}
+			$note->actionDescription = $model->fileName . ':' . $model->id;
+			if($note->save()){
+			} else {
+			    	unlink('uploads/'.$name);
+			}
+			$this->redirect(array($model->associationType.'/'.$model->associationId));
+
+		}
+	}
+
 	
 	// This is the default 'index' action that is invoked
 	// when an action is not explicitly requested by users.
@@ -500,16 +554,16 @@ class SiteController extends x2base {
 			$this->redirect('index.php/site/login');
 		else {
 			$profile = CActiveRecord::model('profile')->findByPk(Yii::app()->user->getId());
-                        if($profile->username=='admin'){
-                            $admin=AdminChild::model()->findByPk(1);
-                            if(Yii::app()->session['versionCheck']==false && $admin->ignoreUpdates==false){
-                                Yii::app()->session['alertUpdate']=true;
-                            }else{
-                                Yii::app()->session['alertUpdate']=false;
-                            }
-                        }else{
-                            Yii::app()->session['alertUpdate']=false;
-                        }
+			if($profile->username=='admin'){
+				$admin = &Yii::app()->params->admin;
+				if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()))
+					Yii::app()->session['alertUpdate']=true;
+				else
+					Yii::app()->session['alertUpdate']=false;
+
+			}else{
+				Yii::app()->session['alertUpdate']=false;
+			}
 			if(empty($profile->startPage)) {
 				$this->redirect(array('site/whatsNew'));
 			} else {
@@ -655,17 +709,40 @@ class SiteController extends x2base {
 										'timeout' => 2		// Timeout in seconds
 								)
 							));
-							$version1 = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
-							$version2 = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
-							if($version1!=false)
-								$version=$version1;
-							else if($version2!=false)
-								$version=$version2;
-							else
-								$version=Yii::app()->params->version;
-							if($version!==Yii::app()->params->version){
+							
+							
+							$updateSources = array(
+								'http://x2planet.com/updates/versionCheck.php',
+								'http://x2base.com/updates/versionCheck.php'
+							);
+							$newVersion = '';
+							
+							foreach($updateSources as $url) {
+								$sourceVersion = @file_get_contents($url,0,$context);
+								if($sourceVersion !== false) {
+									$newVersion = $sourceVersion;
+									break;
+								}
+							}
+							if(empty($newVersion))
+								$newVersion = Yii::app()->params->version;
+							/* 
+							// check X2Planet for updates
+							$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
+							if($x2planetVersion !== false)
+								$newVersion = $x2planetVersion;
+							else {
+								// try X2Base if that didn't work
+								$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
+								if($x2baseVersion !== false)
+									$newVersion=$x2baseVersion;
+								else
+									$newVersion=Yii::app()->params->version;
+							} */
+							
+							if(strcmp($newVersion,Yii::app()->params->version) > 1) {	// if the latest version is newer than our version
 								Yii::app()->session['versionCheck']=false;
-								Yii::app()->session['newVersion']=$version;
+								Yii::app()->session['newVersion']=$newVersion;
 							}
 							else
 								Yii::app()->session['versionCheck']=true;

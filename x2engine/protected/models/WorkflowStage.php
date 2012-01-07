@@ -76,6 +76,11 @@ class WorkflowStage extends CActiveRecord {
 
 		$criteria = new CDbCriteria(array('condition'=>'workflowId='.$id,'order'=>'stageNumber ASC'));
 
-		return new CActiveDataProvider(get_class($this), array('criteria'=>$criteria));
+		return new CActiveDataProvider(get_class($this), array(
+			'criteria'=>$criteria,
+			'pagination'=>array(
+				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
+			),
+		));
 	}
 }

@@ -1,37 +1,41 @@
 <?php
 /*********************************************************************************
- * X2Engine is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
  * 
- * You can contact X2Engine, Inc. at P.O. Box 66752,
- * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
  * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
  * 
- * In accordance with Section 7(b) of the GNU General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
  
 $isGuest = Yii::app()->user->isGuest;
@@ -54,10 +58,10 @@ Yii::app()->clientScript->registerCoreScript('jquery.ui');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/mainmenu.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.contextMenu.js');
+if(isset(Yii::app()->params->profile) && Yii::app()->params->profile->enableBgFade == 1)
+	Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundFade.js');
 
 Yii::app()->clientScript->registerScript('setYiiBaseUrl',"var yiiBaseUrl='".Yii::app()->getBaseUrl()."';", CClientScript::POS_HEAD);
-
 
 // blueprint CSS framework
 $themeURL = Yii::app()->theme->getBaseUrl();
@@ -164,7 +168,7 @@ function hex2rgb($color) {
 
 $checkResult = false;
 $checkFiles = array(
-	'themes/x2engine/images/x2footer.png'=>'f4337da22f78fccf32f4e76a75e9625f',
+	'themes/x2engine/images/x2footer.png'=>'78f7836c6c79e3c7a03667ba4320e637',
 	'themes/x2engine/images/x2-mini-icon.png'=>'153d66b514bf9fb0d82a7521a3c64f36',
 );
 foreach($checkFiles as $key=>$value) {
@@ -281,7 +285,7 @@ if ($menuItemCount > $maxMenuItems) {
 }
 
 $userMenu = array(
-	array('label' => Yii::t('app','Group Chat'), 'url' => array('/site/groupChat')),
+	array('label' => Yii::t('app','Chat'), 'url' => array('/site/groupChat')),
 	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin'&&Yii::app()->controller->action->id!='viewPage')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'), 'visible'=>$isAdmin),
@@ -306,15 +310,13 @@ $userMenu = array(
         if(isset($session)){
             if(time()-$session->lastUpdated>$admin->timeout){
                 $session->delete();
-                Yii::app()->user->logout();
-                $this->redirect(Yii::app()->controller->createUrl('site/login'));
+                $this->redirect(Yii::app()->controller->createUrl('site/logout'));
             }else{
                 $session->lastUpdated=time();
                 $session->save();
             }
         }elseif(!Yii::app()->user->isGuest){
-            Yii::app()->user->logout();
-            $this->redirect(Yii::app()->controller->createUrl('site/login'));
+            $this->redirect(Yii::app()->controller->createUrl('site/logout'));
         }
 ?>
 <link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
@@ -395,23 +397,22 @@ $userMenu = array(
 	?>
 	<div id="footer">
 		<hr><div id="footer-logos">
-		<?php
-		$imghtml = CHtml::image($themeURL.'/images/x2footer.png','');
-		echo CHtml::link($imghtml,array('site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
-		
-		?></div>
+		<?php $imghtml = CHtml::image($themeURL.'/images/x2touch.png','');
+		echo CHtml::link($imghtml,Yii::app()->getBaseUrl().'/index.php/x2touch'); ?></div>
 		Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
 		<?php echo Yii::t('app','Rights reservered.'); ?>
 		<?php
-		echo Yii::t('app','The Program is provided AS IS, without warranty.<br />Licensed under {GPLv3}. This program is free software; you can redistribute it and/or modify it<br />under the terms of the {GPLv3long} as published by the Free Software Foundation<br />including the additional permission set forth in the source code header.',
+		echo Yii::t('app','The Program is provided AS IS, without warranty.<br />Licensed under {BSD}.',
 		array(
-			'{GPLv3}'=>CHtml::link('GPLv3',Yii::app()->getBaseUrl().'/GPL-3.0 License.txt'),
+			'{BSD}'=>CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),
 			'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
 		));?><br />
 		<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(CLogger::getExecutionTime(),3)));
-		?><br />
-		<?php $imghtml = CHtml::image($themeURL.'/images/x2touch.png','');
-		echo CHtml::link($imghtml,Yii::app()->getBaseUrl().'/index.php/x2touch'); ?>
+		?><br /><?php
+		$imghtml = CHtml::image($themeURL.'/images/x2footer.png','');
+		echo CHtml::link($imghtml,array('site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
+		
+		?>
 	</div>
 </div>
 </body>

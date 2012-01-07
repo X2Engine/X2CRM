@@ -1,5 +1,42 @@
 <?php
-
+/*********************************************************************************
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
+ * 
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
+ * 
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
 /**
  * This is the model class for table "x2_profile".
  *
@@ -32,6 +69,11 @@
  * @property integer $showDetailView
  * @property integer $showWorkflow
  * @property string $gridviewSettings
+ * @property string $gridviewSettings
+ * @property string $gridviewSettings
+ * @property string emailUseSignature
+ * @property string emailSignature
+ * @property integer enableBgFade
  */
 class Profile extends CActiveRecord
 {
@@ -61,19 +103,21 @@ class Profile extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('fullName, username, status', 'required'),
-			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView, showWorkflow', 'numerical', 'integerOnly'=>true),
+			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView, showWorkflow, enableBgFade', 'numerical', 'integerOnly'=>true),
+			array('emailUseSignature', 'length', 'max'=>10),
 			array('fullName', 'length', 'max'=>60),
 			array('username, updatedBy', 'length', 'max'=>20),
 			array('officePhone, cellPhone, language', 'length', 'max'=>40),
 			array('tagLine, emailAddress', 'length', 'max'=>250),
 			array('timeZone, backgroundImg', 'length', 'max'=>100),
 			array('widgets, widgetOrder', 'length', 'max'=>255),
+			array('emailSignature', 'length', 'max'=>512),
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
 			array('startPage', 'length', 'max'=>30),
 			array('notes, avatar, gridviewSettings', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, fullName, username, officePhone, cellPhone, emailAddress, notes, status, tagLine, lastUpdated, updatedBy, avatar, allowPost, language, timeZone, resultsPerPage, widgets, widgetOrder, backgroundColor, menuBgColor, menuTextColor, backgroundImg, pageOpacity, startPage, showSocialMedia, showDetailView, showWorkflow', 'safe', 'on'=>'search'),
+			array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -118,6 +162,7 @@ class Profile extends CActiveRecord
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
 			'showWorkflow'=>Yii::t('profile','Show Workflow'),
 			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
+			'enableBgFade'=>Yii::t('profile','Enable Background Fading'),
 		);
 	}
 

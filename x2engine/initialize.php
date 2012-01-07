@@ -1,39 +1,43 @@
 <?php 
 /*********************************************************************************
- * X2Engine is a contact management program developed by
- * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
  * 
- * You can contact X2Engine, Inc. at P.O. Box 66752,
- * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
  * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
  * 
- * In accordance with Section 7(b) of the GNU General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '0.9.8';
+$x2Version = '0.9.9';
 
 $userData = '';
 
@@ -77,13 +81,14 @@ if($silent) {
 	$userData .= "";
 	
 	$lang = $_POST['lang'];
+	$timezone = $_POST['timezone'];
 	
 	$adminEmail = $_POST['adminEmail'];
 	$adminPassword = $_POST['adminPass'];
 	$adminPassword2 = $_POST['adminPass2'];
 	$dummyData = (isset($_POST['data']) && $_POST['data']==1)? 1 : 0;
 	
-	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&lang=$lang&adminEmail=$adminEmail&data=$dummyData";
+	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&lang=$lang&adminEmail=$adminEmail&data=$dummyData&timezone=".urlencode($timezone);
 	
 }
 
@@ -96,6 +101,9 @@ file_put_contents('leadCapture.php',$contents);
 
 if(empty($lang))
 	$lang='en';
+	
+if(empty($timezone))
+	$timezone='UTC';
 
 //$gii=$_POST['gii'];
 
@@ -122,6 +130,12 @@ if(isset($adminPassword2) && $adminPassword != $adminPassword2)
 
 $con = @mysql_connect($host,$user,$pass) or addError('DB_CONNECTION_FAILED');
 @mysql_select_db($db,$con) or addError('DB_COULD_NOT_SELECT');
+
+
+if(!empty($adminEmail))
+	$bulkEmail = $adminEmail;
+else
+	$bulkEmail = 'contact@'.preg_replace('/^www\./','',$_SERVER['HTTP_HOST']);
 
 outputErrors();
 
@@ -235,7 +249,11 @@ mysql_query("DROP TABLE IF EXISTS
 	x2_sessions,
 	x2_workflows,
 	x2_workflow_stages,
-	x2_fields
+	x2_fields,
+	x2_roles,
+	x2_role_to_user,
+	x2_role_to_permission,
+        x2_dropdowns
 ") or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // if(!empty($sqlError)) return $sqlError;
@@ -456,7 +474,7 @@ mysql_query("CREATE TABLE x2_cases(
 	avatar TEXT,
 	allowPost TINYINT(1) DEFAULT 1,
 	language VARCHAR(40) DEFAULT '$lang',
-	timeZone VARCHAR(100) DEFAULT 'Europe/London',
+	timeZone VARCHAR(100) DEFAULT '$timezone',
 	resultsPerPage INT DEFAULT 20,
 	widgets VARCHAR(255) DEFAULT '1:1:1:1:1:1:0:1:1',
 	widgetOrder VARCHAR(255) DEFAULT 'OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud',
@@ -470,6 +488,9 @@ mysql_query("CREATE TABLE x2_cases(
 	showDetailView TINYINT(1) NOT NULL DEFAULT 1,
 	showWorkflow TINYINT(1) NOT NULL DEFAULT 1,
 	gridviewSettings TEXT,
+	emailUseSignature VARCHAR(5) DEFAULT 'user',
+	emailSignature VARCHAR(512),
+	enableBgFade TINYINT DEFAULT 0,
 	UNIQUE(username, emailAddress))
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_profile.'.mysql_error());
@@ -525,14 +546,14 @@ mysql_query("CREATE TABLE x2_media(
 	fileName VARCHAR(100),
 	createDate INT)
 	COLLATE = utf8_general_ci
-") or addSqlError('Unable to create table x2_social.'.mysql_error());
+") or addSqlError('Unable to create table x2_media.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_admin(
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	accounts INT,
 	sales INT,
 	timeout INT,
-	webLeadEmail VARCHAR(200),
+	webLeadEmail VARCHAR(255),
 	currency VARCHAR(3) NULL,
 	menuOrder VARCHAR(255),
 	menuVisibility VARCHAR(100),
@@ -540,10 +561,24 @@ mysql_query("CREATE TABLE x2_admin(
 	chatPollTime INT DEFAULT 2000,
 	ignoreUpdates TINYINT DEFAULT 0,
 	rrId INT DEFAULT 0, 
-	leadDistribution VARCHAR(250),
-	onlineOnly INT)
+	leadDistribution VARCHAR(255),
+	onlineOnly TINYINT,
+	emailFromName VARCHAR(255) NOT NULL DEFAULT 'X2CRM',
+	emailFromAddr VARCHAR(255) NOT NULL DEFAULT '$bulkEmail',
+	emailUseSignature VARCHAR(5) DEFAULT 'user',
+	emailSignature VARCHAR(512),
+	emailType VARCHAR(20) DEFAULT 'mail',
+	emailHost VARCHAR(255),
+	emailPort INT DEFAULT 25,
+	emailUseAuth VARCHAR(5) DEFAULT 'user',
+	emailUser VARCHAR(255),
+	emailPass VARCHAR(255),
+	emailSecurity VARCHAR(10),
+	installDate INT UNSIGNED NOT NULL,
+	updateDate INT UNSIGNED NOT NULL,
+	updateInterval INT NOT NULL)
 	COLLATE = utf8_general_ci
-	") or addSqlError('Unable to create table x2_social.'.mysql_error());
+	") or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_changelog( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
@@ -561,7 +596,7 @@ mysql_query("CREATE TABLE x2_tags(
 	itemId INT NOT NULL,
 	taggedBy VARCHAR(50) NOT NULL,
 	tag VARCHAR(250) NOT NULL,
-        itemName VARCHAR(250),
+	itemName VARCHAR(250),
 	timestamp INT NOT NULL DEFAULT 0)
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_tags.'.mysql_error());
@@ -637,89 +672,125 @@ mysql_query("CREATE TABLE x2_fields (
 	attributeLabel varchar(250),
 	visible int,
 	custom int,
-	modified INT DEFAULT 0)
+	modified INT DEFAULT 0,
+        coordinates VARCHAR(250) DEFAULT '0:0',
+        size VARCHAR(250) DEFAULT '350px:30px',
+        tabOrder INT,
+        type VARCHAR(250) DEFAULT 'varchar')
 	COLLATE = utf8_general_ci
-") or addSqlError('Unable to creat table x2_fields.'.mysql_error());
+") or addSqlError('Unable to create table x2_fields.'.mysql_error());
 
+mysql_query("CREATE TABLE x2_dropdowns (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	name varchar(250) ,
+	options text)
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_dropdowns.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_roles (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	name varchar(250) ,
+	users text)
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_roles.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_role_to_user (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	roleId int ,
+	userId int)
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_role_to_permission (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	roleId int ,
+	fieldId int,
+        permission int)
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
+
+mysql_query("INSERT INTO  x2_fields (modelName, fieldName, attributeLabel, visible, custom, coordinates, size, type) VALUES 
+
+	('Contacts',	'id',				'ID',			1,	0,  '0:0',      '0px:0px',     'varchar'),
+	('Contacts',	'firstName',                    'First Name',		1,	0,  '0:0',      '155px:20px',  'varchar'),
+	('Contacts',	'lastName',			'Last Name',		1,	0,  '170:0',    '160px:20px',  'varchar'),
+	('Contacts',	'title',			'Title',		1,	0,  '0:40',     '175px:20px',  'varchar'),
+	('Contacts',	'company',			'Account',		1,	0,  '190:40',   '285px:20px',  'varchar'),
+	('Contacts',	'accountId',                    'Account ID',		0,	0,  '0:0',      '0px:0px',     'varchar'),
+	('Contacts',	'phone',			'Phone',		1,	0,  '0:80',     '125px:20px',  'varchar'),
+	('Contacts',	'phone2',			'Phone 2',		1,	0,  '0:120',    '125px:20px',  'varchar'),
+	('Contacts',	'email',			'Email',		1,	0,  '150:120',  '325px:20px',  'varchar'),
+	('Contacts',	'website',			'Website',		1,	0,  '150:80',   '325px:20px',  'varchar'),
+	('Contacts',	'twitter',			'Twitter',		1,	0,  '0:480',    '225px:20px',  'varchar'),
+	('Contacts',	'linkedin',			'Linkedin',		1,	0,  '0:520',    '225px:20px',  'varchar'),
+	('Contacts',	'skype',			'Skype',		1,	0,  '250:440',  '225px:20px',  'varchar'),
+	('Contacts',	'googleplus',                   'Googleplus',		1,	0,  '250:480',  '225px:20px',  'varchar'),
+	('Contacts',	'address',			'Address',		1,	0,  '0:160',    '325px:20px',  'varchar'),
+	('Contacts',	'city',				'City',			1,	0,  '340:160',  '135px:20px',  'varchar'),
+	('Contacts',	'state',			'State',		1,	0,  '0:200',    '140px:25px',  'varchar'),
+	('Contacts',	'zipcode',			'Postal Code',		1,	0,  '160:200',  '80px:20px',   'varchar'),
+	('Contacts',	'country',			'Country',		1,	0,  '260:200',  '215px:20px',  'varchar'),
+	('Contacts',	'visibility',                   'Visibility',		1,	0,  '330:400',  '145px:20px',  'varchar'),
+	('Contacts',	'assignedTo',                   'Assigned To',		1,	0,  '0:400',    '170px:20px',  'varchar'),
+	('Contacts',	'backgroundInfo',               'Background Info',	1,	0,  '0:280',    '475px:95px',  'text'),
+	('Contacts',	'lastUpdated',                  'Last Updated',		0,	0,  '0:0',      '350px:30px',  'varchar'),
+	('Contacts',	'updatedBy',                    'Updated By',		0,	0,  '0:0',      '350px:30px',  'varchar'),
+	('Contacts',	'leadSource',                   'Lead Source',		1,	0,  '0:240',    '240px:20px',  'varchar'),
+	('Contacts',	'priority',			'Priority',		1,	0,  '190:400',  '120px:20px',  'varchar'),
+	('Contacts',	'rating',			'Rating',		1,	0,  '350:0',    '125px:20px',  'varchar'),
+	('Contacts',	'createDate',                   'Create Date',		0,	0,  '0:0',      '350px:30px',  'varchar'),
+	('Contacts',	'facebook',			'Facebook',		1,	0,  '0:440',    '225px:20px',  'varchar'),
+	('Contacts',	'otherUrl',			'Other',		1,	0,  '250:520',  '225px:20px',  'varchar')
+;")
+or addSqlError("Unable to create contact fields.".mysql_error());	
 mysql_query("INSERT INTO  x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES 
-
-	('Contacts',	'id',				'ID',				1,	0),
-	('Contacts',	'firstName',		'First Name',		1,	0),
-	('Contacts',	'lastName',			'Last Name',		1,	0),
-	('Contacts',	'title',			'Title',			1,	0),
-	('Contacts',	'company',			'Account',			1,	0),
-	('Contacts',	'accountId',		'Account ID',		1,	0),
-	('Contacts',	'phone',			'Phone',			1,	0),
-	('Contacts',	'phone2',			'Phone 2',			1,	0),
-	('Contacts',	'email',			'Email',			1,	0),
-	('Contacts',	'website',			'Website',			1,	0),
-	('Contacts',	'twitter',			'Twitter',			1,	0),
-	('Contacts',	'linkedin',			'Linkedin',			1,	0),
-	('Contacts',	'skype',			'Skype',			1,	0),
-	('Contacts',	'googleplus',		'Googleplus',		1,	0),
-	('Contacts',	'address',			'Address',			1,	0),
-	('Contacts',	'city',				'City',				1,	0),
-	('Contacts',	'state',			'State',			1,	0),
-	('Contacts',	'zipcode',			'Postal Code',		1,	0),
-	('Contacts',	'country',			'Country',			1,	0),
-	('Contacts',	'visibility',		'Visibility',		1,	0),
-	('Contacts',	'assignedTo',		'Assigned To',		1,	0),
-	('Contacts',	'backgroundInfo',	'Background Info',	1,	0),
-	('Contacts',	'lastUpdated',		'Last Updated',		1,	0),
-	('Contacts',	'updatedBy',		'Updated By',		1,	0),
-	('Contacts',	'leadSource',		'Lead Source',		1,	0),
-	('Contacts',	'priority',			'Priority',			1,	0),
-	('Contacts',	'rating',			'Rating',			1,	0),
-	('Contacts',	'createDate',		'Create Date',		1,	0),
-	('Contacts',	'facebook',			'Facebook',			1,	0),
-	('Contacts',	'other',			'Other',			1,	0),
-			
-	('Accounts',	'name',					'Name',				1,	0),
-	('Accounts',	'id',					'ID',				1,	0),
-	('Accounts',	'website',				'Website',			1,	0),
-	('Accounts',	'type',					'Type',				1,	0),
+    
+	('Accounts',	'name',				'Name',				1,	0),
+	('Accounts',	'id',				'ID',				1,	0),
+	('Accounts',	'website',			'Website',			1,	0),
+	('Accounts',	'type',				'Type',				1,	0),
 	('Accounts',	'annualRevenue',		'Revenue',			1,	0),
-	('Accounts',	'phone',				'Phone',			1,	0),
+	('Accounts',	'phone',			'Phone',			1,	0),
 	('Accounts',	'tickerSymbol',			'Symbol',			1,	0),
 	('Accounts',	'employees',			'Employees',		1,	0),
 	('Accounts',	'assignedTo',			'Assigned To',		1,	0),
 	('Accounts',	'createDate',			'Create Date',		1,	0),
-	('Accounts',	'associatedContacts',	'Contacts',			1,	0),
+	('Accounts',	'associatedContacts',           'Contacts',			1,	0),
 	('Accounts',	'description',			'Description',		1,	0),
 	('Accounts',	'lastUpdated',			'Last Updated',		1,	0),
 	('Accounts',	'updatedBy',			'Updated By',		1,	0),
 	
-	('Actions',		'id',					'ID',				1,	0),
+	('Actions',		'id',				'ID',				1,	0),
 	('Actions',		'assignedTo',			'Assigned To',		1,	0),
-	('Actions',		'actionDescription',	'Description',		1,	0),
+	('Actions',		'actionDescription',            'Description',		1,	0),
 	('Actions',		'visibility',			'Visibility',		1,	0),
 	('Actions',		'associationId',		'Contact',			1,	0),
 	('Actions',		'associationType',		'Association Type',	1,	0),
 	('Actions',		'associationName',		'Association',		1,	0),
-	('Actions',		'dueDate',				'Due Date',			1,	0),
-	('Actions',		'priority',				'Priority',			1,	0),
-	('Actions',		'type',					'Action Type',		1,	0),
+	('Actions',		'dueDate',			'Due Date',			1,	0),
+	('Actions',		'priority',			'Priority',			1,	0),
+	('Actions',		'type',				'Action Type',		1,	0),
 	('Actions',		'createDate',			'Create Date',		1,	0),
-	('Actions',		'complete',				'Complete',			1,	0),
-	('Actions',		'reminder',				'Reminder',			1,	0),
+	('Actions',		'complete',			'Complete',			1,	0),
+	('Actions',		'reminder',			'Reminder',			1,	0),
 	('Actions',		'completedBy',			'Completed By',		1,	0),
 	('Actions',		'completeDate',			'Date Completed',	1,	0),
 	('Actions',		'lastUpdated',			'Last Updated',		1,	0),
 	('Actions',		'updatedBy',			'Updated By',		1,	0),
 	
-	('Sales',	'id',					'ID',					1,	0),
-	('Sales',	'name',					'Name',					1,	0),
+	('Sales',	'id',				'ID',					1,	0),
+	('Sales',	'name',                         'Name',					1,	0),
 	('Sales',	'accountId',			'Account ID',			1,	0),
 	('Sales',	'accountName',			'Account',				1,	0),
 	('Sales',	'quoteAmount',			'Quote Amount',			1,	0),
 	('Sales',	'salesStage',			'Sales Stage',			1,	0),
-	('Sales',	'expectedCloseDate',	'Expected Close Date',	1,	0),
+	('Sales',	'expectedCloseDate',            'Expected Close Date',	1,	0),
 	('Sales',	'probability',			'Probability',			1,	0),
 	('Sales',	'leadSource',			'Lead Source',			1,	0),
 	('Sales',	'description',			'Description',			1,	0),
 	('Sales',	'assignedTo',			'Assigned To',			1,	0),
 	('Sales',	'createDate',			'Create Date',			1,	0),
-	('Sales',	'associatedContacts',	'Contacts',				1,	0),
+	('Sales',	'associatedContacts',           'Contacts',				1,	0),
 	('Sales',	'lastUpdated',			'Last Updated',			1,	0),
 	('Sales',	'updatedBy',			'Updated By',			1,	0)
 ;")
@@ -729,16 +800,39 @@ or addSqlError("Unable to create fields.".mysql_error());
 //UNSIGNED
 
 
-$adminPassword=md5($adminPassword); 
-$adminEmail=mysql_escape_string($adminEmail);
+$adminPassword = md5($adminPassword); 
+$adminEmail = mysql_escape_string($adminEmail);
 
 mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) VALUES ('web','admin','admin','$adminPassword',
 			'$adminEmail' ,'1', '0')") or addSqlError("Error inserting admin information.");
 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
 		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or addSqlError("Error inserting dummy data");
 mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or addSqlError("Unable to set starting MOTD.");
-mysql_query("INSERT INTO x2_admin (accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, menuVisibility, currency) VALUES ('0','1','3600','$adminEmail',
-		'actions:contacts:sales:accounts:workflow:docs','Actions:Contacts:Sales:Accounts:Workflow:Docs','1:1:1:1:1:1','$currency')") or addSqlError("Unable to input admin config");
+
+mysql_query("INSERT INTO x2_admin (
+	accounts,
+	sales,
+	timeout,
+	webLeadEmail,
+	menuOrder,
+	menuNicknames,
+	menuVisibility,
+	currency,
+	installDate,
+	updateDate
+	
+) VALUES (
+	'0',
+	'1',
+	'3600',
+	'$adminEmail',
+	'actions:contacts:docs:sales:accounts:workflow',
+	'Actions:Contacts:Docs:Sales:Accounts:Workflow',
+	'1:1:1:1:1:1',
+	'$currency',
+	'".time()."',
+	0
+)") or addSqlError("Unable to input admin config");
 
 $backgrounds = array(
 	'santacruznight_blur.jpg',
@@ -876,8 +970,9 @@ $GDSupport = function_exists('gd_info')? '1':'0';
 $browser = urlencode($_SERVER['HTTP_USER_AGENT']);
 $phpVersion = urlencode(phpversion());
 $x2Version = urlencode($x2Version);
+$timezone = urlencode($timezone);
 $dbType = urlencode('MySQL');
-$stats = "lang=$lang&currency=$currency&x2Version=$x2Version&dummyData=$dummyData&phpVersion=$phpVersion&dbType=$dbType&GD=$GDSupport&browser=$browser";
+$stats = "lang=$lang&currency=$currency&x2Version=$x2Version&dummyData=$dummyData&phpVersion=$phpVersion&dbType=$dbType&GD=$GDSupport&browser=$browser&timezone=$timezone";
 
 // Generate splash page
 

@@ -6,6 +6,7 @@ $pass = '';
 $app = 'X2Engine';
 $currency = 'USD';
 $lang = '';
+$timezone = 'UTC';
 
 $adminEmail = '';
 $adminPassword = 'admin';

@@ -4,15 +4,21 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.8 Changelog
+Beta 0.9.9 Changelog
 
-- Various bug fixes and polishing
-- You can now create, modify and disable fields for Contacts, Sales, Accounts and custom modules
-- Several changes to custom modules (particularly how they are stored)
-- Added fully customizable grid views to Contacts, Sales, Accounts and Actions (show/hide, resize and reorder columns, AJAX persistence)
-- Added Docs and Social pages to X2Touch mobile site
+- Numerous bug fixes (esp. gridviews)
+- Misc. UI tweaks/improvements
+- Added advanced outgoing email config, using phpMailer (supports sendmail, qmail and SMTP)
+- Added email signatures (global template based, or user defined)
+- Added icons for record History view
+- Reorganized some admin settings
+- Added "enable background fade" setting to profile
+- Rebranded app to X2CRM
+- Added timezone setting in installer
+- Added form layout editor (work in progress)
+- Added facebook-enabled web capture form (automatically creates contact, attaches photo if available)
 
-Welcome to X5CRM v0.9.8 Beta!  X5CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X5CRM v0.9.9 (Beta 10)!  X5CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X5CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

@@ -1,37 +1,41 @@
 <?php
 /*********************************************************************************
- * X2Engine is a contact management program developed by
- * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
  * 
- * You can contact X2Engine, Inc. at P.O. Box 66752,
- * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
  * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
  * 
- * In accordance with Section 7(b) of the GNU General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
 // run silent installer with default values?
@@ -133,7 +137,127 @@ function checkCurrency($code) {
 		echo ' selected="selected"';
 }
 
+function checkTimezone($timezone) {
+	if((isset($_GET['timezone']) && $_GET['timezone']==$timezone) || (!isset($_GET['timezone']) && $timezone == date_default_timezone_get()))
+		return ' selected="selected"';
+}
 
+$timezones = array(
+	'Pacific/Midway'    => "(GMT-11:00) Midway Island",
+	'US/Samoa'          => "(GMT-11:00) Samoa",
+	'US/Hawaii'         => "(GMT-10:00) Hawaii",
+	'US/Alaska'         => "(GMT-09:00) Alaska",
+	'US/Pacific'        => "(GMT-08:00) Pacific Time (US & Canada)",
+	'America/Tijuana'   => "(GMT-08:00) Tijuana",
+	'US/Arizona'        => "(GMT-07:00) Arizona",
+	'US/Mountain'       => "(GMT-07:00) Mountain Time (US & Canada)",
+	'America/Chihuahua' => "(GMT-07:00) Chihuahua",
+	'America/Mazatlan'  => "(GMT-07:00) Mazatlan",
+	'America/Mexico_City' => "(GMT-06:00) Mexico City",
+	'America/Monterrey' => "(GMT-06:00) Monterrey",
+	'Canada/Saskatchewan' => "(GMT-06:00) Saskatchewan",
+	'US/Central'        => "(GMT-06:00) Central Time (US & Canada)",
+	'US/Eastern'        => "(GMT-05:00) Eastern Time (US & Canada)",
+	'US/East-Indiana'   => "(GMT-05:00) Indiana (East)",
+	'America/Bogota'    => "(GMT-05:00) Bogota",
+	'America/Lima'      => "(GMT-05:00) Lima",
+	'America/Caracas'   => "(GMT-04:30) Caracas",
+	'Canada/Atlantic'   => "(GMT-04:00) Atlantic Time (Canada)",
+	'America/La_Paz'    => "(GMT-04:00) La Paz",
+	'America/Santiago'  => "(GMT-04:00) Santiago",
+	'Canada/Newfoundland'  => "(GMT-03:30) Newfoundland",
+	'America/Buenos_Aires' => "(GMT-03:00) Buenos Aires",
+	'Greenland'         => "(GMT-03:00) Greenland",
+	'Atlantic/Stanley'  => "(GMT-02:00) Stanley",
+	'Atlantic/Azores'   => "(GMT-01:00) Azores",
+	'Atlantic/Cape_Verde' => "(GMT-01:00) Cape Verde Is.",
+	'Africa/Casablanca' => "(GMT) Casablanca",
+	'Europe/Dublin'     => "(GMT) Dublin",
+	'Europe/Lisbon'     => "(GMT) Lisbon",
+	'Europe/London'     => "(GMT) London",
+	'Africa/Monrovia'   => "(GMT) Monrovia",
+	'UTC'				=> "(UTC)",
+	'Europe/Amsterdam'  => "(GMT+01:00) Amsterdam",
+	'Europe/Belgrade'   => "(GMT+01:00) Belgrade",
+	'Europe/Berlin'     => "(GMT+01:00) Berlin",
+	'Europe/Bratislava' => "(GMT+01:00) Bratislava",
+	'Europe/Brussels'   => "(GMT+01:00) Brussels",
+	'Europe/Budapest'   => "(GMT+01:00) Budapest",
+	'Europe/Copenhagen' => "(GMT+01:00) Copenhagen",
+	'Europe/Ljubljana'  => "(GMT+01:00) Ljubljana",
+	'Europe/Madrid'     => "(GMT+01:00) Madrid",
+	'Europe/Paris'      => "(GMT+01:00) Paris",
+	'Europe/Prague'     => "(GMT+01:00) Prague",
+	'Europe/Rome'       => "(GMT+01:00) Rome",
+	'Europe/Sarajevo'   => "(GMT+01:00) Sarajevo",
+	'Europe/Skopje'     => "(GMT+01:00) Skopje",
+	'Europe/Stockholm'  => "(GMT+01:00) Stockholm",
+	'Europe/Vienna'     => "(GMT+01:00) Vienna",
+	'Europe/Warsaw'     => "(GMT+01:00) Warsaw",
+	'Europe/Zagreb'     => "(GMT+01:00) Zagreb",
+	'Europe/Athens'     => "(GMT+02:00) Athens",
+	'Europe/Bucharest'  => "(GMT+02:00) Bucharest",
+	'Africa/Cairo'      => "(GMT+02:00) Cairo",
+	'Africa/Harare'     => "(GMT+02:00) Harare",
+	'Europe/Helsinki'   => "(GMT+02:00) Helsinki",
+	'Europe/Istanbul'   => "(GMT+02:00) Istanbul",
+	'Asia/Jerusalem'    => "(GMT+02:00) Jerusalem",
+	'Europe/Kiev'       => "(GMT+02:00) Kyiv",
+	'Europe/Minsk'      => "(GMT+02:00) Minsk",
+	'Europe/Riga'       => "(GMT+02:00) Riga",
+	'Europe/Sofia'      => "(GMT+02:00) Sofia",
+	'Europe/Tallinn'    => "(GMT+02:00) Tallinn",
+	'Europe/Vilnius'    => "(GMT+02:00) Vilnius",
+	'Asia/Baghdad'      => "(GMT+03:00) Baghdad",
+	'Asia/Kuwait'       => "(GMT+03:00) Kuwait",
+	'Europe/Moscow'     => "(GMT+03:00) Moscow",
+	'Africa/Nairobi'    => "(GMT+03:00) Nairobi",
+	'Asia/Riyadh'       => "(GMT+03:00) Riyadh",
+	'Europe/Volgograd'  => "(GMT+03:00) Volgograd",
+	'Asia/Tehran'       => "(GMT+03:30) Tehran",
+	'Asia/Baku'         => "(GMT+04:00) Baku",
+	'Asia/Muscat'       => "(GMT+04:00) Muscat",
+	'Asia/Tbilisi'      => "(GMT+04:00) Tbilisi",
+	'Asia/Yerevan'      => "(GMT+04:00) Yerevan",
+	'Asia/Kabul'        => "(GMT+04:30) Kabul",
+	'Asia/Yekaterinburg' => "(GMT+05:00) Ekaterinburg",
+	'Asia/Karachi'      => "(GMT+05:00) Karachi",
+	'Asia/Tashkent'     => "(GMT+05:00) Tashkent",
+	'Asia/Kolkata'      => "(GMT+05:30) Kolkata",
+	'Asia/Kathmandu'    => "(GMT+05:45) Kathmandu",
+	'Asia/Almaty'       => "(GMT+06:00) Almaty",
+	'Asia/Dhaka'        => "(GMT+06:00) Dhaka",
+	'Asia/Novosibirsk'  => "(GMT+06:00) Novosibirsk",
+	'Asia/Bangkok'      => "(GMT+07:00) Bangkok",
+	'Asia/Jakarta'      => "(GMT+07:00) Jakarta",
+	'Asia/Krasnoyarsk'  => "(GMT+07:00) Krasnoyarsk",
+	'Asia/Chongqing'    => "(GMT+08:00) Chongqing",
+	'Asia/Hong_Kong'    => "(GMT+08:00) Hong Kong",
+	'Asia/Irkutsk'      => "(GMT+08:00) Irkutsk",
+	'Asia/Kuala_Lumpur' => "(GMT+08:00) Kuala Lumpur",
+	'Australia/Perth'   => "(GMT+08:00) Perth",
+	'Asia/Singapore'    => "(GMT+08:00) Singapore",
+	'Asia/Taipei'       => "(GMT+08:00) Taipei",
+	'Asia/Ulaanbaatar'  => "(GMT+08:00) Ulaan Bataar",
+	'Asia/Urumqi'       => "(GMT+08:00) Urumqi",
+	'Asia/Seoul'        => "(GMT+09:00) Seoul",
+	'Asia/Tokyo'        => "(GMT+09:00) Tokyo",
+	'Asia/Yakutsk'      => "(GMT+09:00) Yakutsk",
+	'Australia/Adelaide' => "(GMT+09:30) Adelaide",
+	'Australia/Darwin'  => "(GMT+09:30) Darwin",
+	'Australia/Brisbane' => "(GMT+10:00) Brisbane",
+	'Australia/Canberra' => "(GMT+10:00) Canberra",
+	'Pacific/Guam'      => "(GMT+10:00) Guam",
+	'Australia/Hobart'  => "(GMT+10:00) Hobart",
+	'Australia/Melbourne' => "(GMT+10:00) Melbourne",
+	'Pacific/Port_Moresby' => "(GMT+10:00) Port Moresby",
+	'Australia/Sydney'  => "(GMT+10:00) Sydney",
+	'Asia/Vladivostok'  => "(GMT+10:00) Vladivostok",
+	'Asia/Magadan'      => "(GMT+11:00) Magadan",
+	'Pacific/Auckland'  => "(GMT+12:00) Auckland",
+	'Pacific/Fiji'      => "(GMT+12:00) Fiji",
+	'Asia/Kamchatka'    => "(GMT+12:00) Kamchatka",
+);
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -263,7 +387,15 @@ function testDB() {
 		</select>
 		<input type="text" name="currency2" id="currency2" style="width:120px;<?php if(!isset($_GET['currency']) || $_GET['currency']!='other') echo 'display:none;'; ?>" value="<?php getField('currency2',''); ?>" />
 	</div>
-
+	<div class="row"><label for="timezone"><?php echo installer_t('Default Timezone'); ?></label>
+		<select name="timezone" id="timezone">
+			<?php
+			foreach($timezones as $key => $value)
+				echo '<option value="'.$key.'"'.checkTimezone($key).'>'.$value.'</option>';
+			?>
+		</select>
+		<input type="text" name="currency2" id="currency2" style="width:120px;<?php if(!isset($_GET['currency']) || $_GET['currency']!='other') echo 'display:none;'; ?>" value="<?php getField('currency2',''); ?>" />
+	</div>
 	<div class="row"><label for="dummyData"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='data' value='1' <?php getField('data',''); ?> /><br /><br /></div>
 	<div class="row"><label for="adminPass"><?php echo installer_t('Admin Password'); ?></label><input type="password" name="adminPass" id="adminPass" /></div>
 	<div class="row"><label for="adminPass2"><?php echo installer_t('Confirm Password'); ?></label><input type="password" name="adminPass2" id="adminPass2" /></div>

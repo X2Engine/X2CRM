@@ -266,7 +266,7 @@ class Actions extends CActiveRecord
 		if($dateRange !== false)
 			$criteria->addCondition('completeDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
 		
-		$criteria->addCondition('type != "workflow"');
+		$criteria->addCondition('type != "workflow" OR type IS NULL');
 		
 		
 		$dataProvider=new SmartDataProvider('Actions', array(

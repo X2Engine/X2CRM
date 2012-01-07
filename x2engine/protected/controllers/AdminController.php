@@ -1,38 +1,42 @@
 <?php
 /*********************************************************************************
- * X2Engine is a contact management program developed by
- * X2Engine, Inc. Copyright (C) 2011 X2Engine Inc.
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2Engine, X2Engine DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
  * 
- * You can contact X2Engine, Inc. at P.O. Box 66752,
- * Scotts Valley, CA 95067, USA. or at email address contact@X2Engine.com.
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
  * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU General Public License version 3.
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
  * 
- * In accordance with Section 7(b) of the GNU General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
-// ********************************************************************************/  
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
 class AdminController extends Controller {
 	
 	public $portlets=array();
@@ -74,20 +78,21 @@ class AdminController extends Controller {
 	public function accessRules() {
 		return array(
                         array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('getRoundRobin','updateRoundRobin','getRoutingRules','roundRobin','evenDistro','getRoutingType'),
+				'actions'=>array('getRoundRobin','updateRoundRobin','getRoutingRules','roundRobin','evenDistro','getRoutingType','getRole'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('viewPage','getAttributes'),
+				'actions'=>array('viewPage','getAttributes','getDropdown', 'getFieldType'),
 				'users'=>array('@'),
 			),
 			array('allow',
 				'actions'=>array('index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
-					'importModule','toggleSales','setTimeout','setChatPoll','renameModules','manageModules',
+					'importModule','toggleSales','setTimeout','emailSetup','setChatPoll','renameModules','manageModules',
 					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
-                                        'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
-                                        'customizeFields','manageFields', 'editor'),
+					'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
+					'customizeFields','manageFields', 'editor','dropDownEditor','manageDropDowns','deleteDropdown','editDropdown',
+					'roleEditor','deleteRole','editRole','manageRoles','appSettings'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -131,125 +136,125 @@ class AdminController extends Controller {
 	}
         
         public function getRoundRobin(){
-		$admin=CActiveRecord::model('Admin')->findByPk(1);
+		$admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
 		$rrId=$admin->rrId;
 		return $rrId;
 	}
 	
 	public function updateRoundRobin(){
-		$admin=CActiveRecord::model('Admin')->findByPk(1);
+		$admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
 		$admin->rrId=$admin->rrId+1;
 		$admin->save();
 	}
-        
-        public function actionGetRoutingType(){
-            $admin=CActiveRecord::model('Admin')->findByPk(1);
-            $type=$admin->leadDistribution;
-            if($type==""){
-                echo "";
-            }elseif($type=="evenDistro"){
-                echo $this->evenDistro();
-            }elseif($type=="trueRoundRobin"){
-                echo $this->roundRobin();
-            }elseif($type=="customRoundRobin"){
-                $arr=$_POST;
-                foreach($arr as $key=>$value){
-                    $users=$this->getRoutingRules($key,$value);
-                    if($users!=""){
-                        $rrId=$users[count($users)-1];
-                        unset($users[count($users)-1]);
-                        $i=$rrId%count($users);
-                        echo $users[$i];
-                        break;
-                    }
-                }
-            }
-        }
-        
-        public function roundRobin(){
-            $admin=AdminChild::model()->findByPk(1);
-            $online=$admin->onlineOnly;
-            x2base::cleanUpSessions();
-            $usernames=array();
-            $sessions=SessionChild::getOnlineUsers();
-            $users=CActiveRecord::model('UserChild')->findAll();
-            unset($users['admin']);
-            foreach($users as $user){
-                $usernames[]=$user->username;
-            }
-            if($online==1){
-                $users=array_intersect($usernames,$sessions);
-            }else{
-                $users=$usernames;
-            }
-            $rrId=$this->getRoundRobin();
-            $i=$rrId%count($users);
-            $this->updateRoundRobin();
-            return $users[$i];
-        }
-        
-        public function evenDistro(){
-            $admin=AdminChild::model()->findByPk(1);
-            $online=$admin->onlineOnly;
-            x2base::cleanUpSessions();
-            $usernames=array();
-            $sessions=SessionChild::getOnlineUsers();
-            $users=CActiveRecord::model('UserChild')->findAll();
-            foreach($users as $user){
-                $usernames[]=$user->username;
-            }
-            
-            if($online==1){
-                $users=array_intersect($usernames,$sessions);
-            }else{
-                $users=$usernames;
-            }
-            
-            $numbers=array();
-            foreach($users as $user){
-                if($user!='admin'){
-                    $actions=CActiveRecord::model('Actions')->findAllByAttributes(array('assignedTo'=>$user,'complete'=>'No'));
-                    if(isset($actions))
-                        $numbers[$user]=count($actions);
-                    else
-                       $numbers[$user]=0; 
-                }
-            }
-            asort($numbers);
-            reset($numbers);
-            return key($numbers);
-        }
-        
-        public function getRoutingRules($field, $value){
-            $admin=AdminChild::model()->findByPk(1);
-            $online=$admin->onlineOnly;
-            x2base::cleanUpSessions();
-            $sessions=SessionChild::getOnlineUsers();
-            
-            $rule=CActiveRecord::model('LeadRouting')->findByAttributes(array('field'=>$field,'value'=>$value));
-            if(isset($rule)){
-                $users=$rule->users;
-                $users=explode(", ",$users);
-                $users[]=$rule->rrId;
-                $rule->rrId++;
-                $rule->save();
-                if($online==1)
-                    $users=array_intersect($users,$sessions);
-                return $users;
-            }else
-                return "";
-        }
-        
-        public function actionRoundRobinRules(){
-                $model=new LeadRouting;
-                $users=UserChild::getNames();
-                unset($users['']);
-                unset($users['admin']);
-                $dataProvider=new CActiveDataProvider('LeadRouting');
+	
+	public function actionGetRoutingType(){
+		$admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
+		$type=$admin->leadDistribution;
+		if($type==""){
+			echo "";
+		}elseif($type=="evenDistro"){
+			echo $this->evenDistro();
+		}elseif($type=="trueRoundRobin"){
+			echo $this->roundRobin();
+		}elseif($type=="customRoundRobin"){
+			$arr=$_POST;
+			foreach($arr as $key=>$value){
+				$users=$this->getRoutingRules($key,$value);
+				if($users!=""){
+					$rrId=$users[count($users)-1];
+					unset($users[count($users)-1]);
+					$i=$rrId%count($users);
+					echo $users[$i];
+					break;
+				}
+			}
+		}
+	}
+	
+	public function roundRobin(){
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+		$online = $admin->onlineOnly;
+		x2base::cleanUpSessions();
+		$usernames=array();
+		$sessions=SessionChild::getOnlineUsers();
+		$users=CActiveRecord::model('UserChild')->findAll();
+		unset($users['admin']);
+		foreach($users as $user){
+			$usernames[]=$user->username;
+		}
+		if($online==1){
+			$users=array_intersect($usernames,$sessions);
+		}else{
+			$users=$usernames;
+		}
+		$rrId=$this->getRoundRobin();
+		$i=$rrId%count($users);
+		$this->updateRoundRobin();
+		return $users[$i];
+	}
+	
+	public function evenDistro(){
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+		$online = $admin->onlineOnly;
+		x2base::cleanUpSessions();
+		$usernames=array();
+		$sessions=SessionChild::getOnlineUsers();
+		$users=CActiveRecord::model('UserChild')->findAll();
+		foreach($users as $user){
+			$usernames[]=$user->username;
+		}
+		
+		if($online==1){
+			$users=array_intersect($usernames,$sessions);
+		}else{
+			$users=$usernames;
+		}
+		
+		$numbers=array();
+		foreach($users as $user){
+			if($user!='admin'){
+				$actions=CActiveRecord::model('Actions')->findAllByAttributes(array('assignedTo'=>$user,'complete'=>'No'));
+				if(isset($actions))
+					$numbers[$user]=count($actions);
+				else
+				   $numbers[$user]=0; 
+			}
+		}
+		asort($numbers);
+		reset($numbers);
+		return key($numbers);
+	}
+	
+	public function getRoutingRules($field, $value){
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+		$online = $admin->onlineOnly;
+		x2base::cleanUpSessions();
+		$sessions=SessionChild::getOnlineUsers();
+		
+		$rule=CActiveRecord::model('LeadRouting')->findByAttributes(array('field'=>$field,'value'=>$value));
+		if(isset($rule)){
+			$users=$rule->users;
+			$users=explode(", ",$users);
+			$users[]=$rule->rrId;
+			$rule->rrId++;
+			$rule->save();
+			if($online==1)
+				$users=array_intersect($users,$sessions);
+			return $users;
+		}else
+			return "";
+	}
+	
+	public function actionRoundRobinRules(){
+		$model=new LeadRouting;
+		$users=UserChild::getNames();
+		unset($users['']);
+		unset($users['admin']);
+		$dataProvider=new CActiveDataProvider('LeadRouting');
 		if(isset($_POST['LeadRouting'])) {
 			$model->attributes=$_POST['LeadRouting'];
-                        
-                        $model->users=Accounts::parseUsers($model->users);
+			
+			$model->users=Accounts::parseUsers($model->users);
 			
 			if($model->save()) {
 				$this->redirect('roundRobinRules');
@@ -258,19 +263,232 @@ class AdminController extends Controller {
 		
 		$this->render('customRules',array(
 			'model'=>$model,
-                        'users'=>$users,
-                        'dataProvider'=>$dataProvider,
+			'users'=>$users,
+			'dataProvider'=>$dataProvider,
 		));
-            
-        }
-        
-        public function actionToggleUpdater(){
-            
-            $admin=AdminChild::model()->findByPk(1);
-            $admin->ignoreUpdates?$admin->ignoreUpdates=0:$admin->ignoreUpdates=1;
-            $admin->save();
-            $this->redirect('index');
-        }
+		
+	}
+	
+	public function actionRoleEditor(){
+		$model=new Roles;
+		
+		if(isset($_POST['Roles'])){
+			$model->attributes=$_POST['Roles'];
+			$viewPermissions=$_POST['viewPermissions'];
+			$editPermissions=$_POST['editPermissions'];
+			$users=$model->users;
+			$model->users="";
+			if($model->save()){
+				foreach($users as $user){
+					$userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+					$role=new RoleToUser;
+					$role->roleId=$model->id;
+					$role->userId=$userRecord->id;
+					$role->save();
+				}
+				$fields=Fields::model()->findAll();
+				$temp=array();
+				foreach($fields as $field){
+					$temp[]=$field->id;
+				}
+				$both=array_intersect($viewPermissions,$editPermissions);
+				$view=array_diff($viewPermissions,$editPermissions);
+				$neither=array_diff($temp,$viewPermissions);
+				foreach($both as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=2;
+					$rolePerm->save();
+				}
+				foreach($view as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=1;
+					$rolePerm->save();
+				}
+				foreach($neither as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=0;
+					$rolePerm->save();
+				}
+				
+			}
+			$this->redirect('roleEditor');
+		}
+		
+		$this->render('roleEditor',array(
+			'model'=>$model,
+		));
+	}
+	
+	public function actionDeleteRole(){
+		$roles=Roles::model()->findAll();
+		if(isset($_POST['role'])){
+			$id=$_POST['role'];
+			$role=Roles::model()->findByAttributes(array('name'=>$id));
+			$id=$role->id;
+			$userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$role->id));
+			foreach($userRoles as $userRole){
+				$userRole->delete();
+			}
+			$permissions=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$role->id));
+			foreach($permissions as $permission){
+				$permission->delete();
+			}
+			$role->delete();
+			
+			$this->redirect('deleteRole');
+		}
+		
+		$this->render('deleteRole',array(
+			'roles'=>$roles,
+		));
+	}
+	
+	public function actionEditRole(){
+		$model=new Roles;
+		
+		if(isset($_POST['Roles'])){
+			$id=$_POST['Roles']['name'];
+			$model=Roles::model()->findByAttributes(array('name'=>$id));
+			$id=$model->id;
+			$viewPermissions=$_POST['viewPermissions'];
+			$editPermissions=$_POST['editPermissions'];
+			$users=$_POST['users'];
+			$model->users="";
+			if($model->save()){
+				$userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$model->id));
+				foreach($userRoles as $role){
+					$role->delete();
+				}
+				$permissions=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$model->id));
+				foreach($permissions as $permission){
+					$permission->delete();
+				}
+				foreach($users as $user){
+					$userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+					$role=new RoleToUser;
+					$role->roleId=$model->id;
+					$role->userId=$userRecord->id;
+					$role->save();
+				}
+				$fields=Fields::model()->findAll();
+				$temp=array();
+				foreach($fields as $field){
+					$temp[]=$field->id;
+				}
+				$both=array_intersect($viewPermissions,$editPermissions);
+				$view=array_diff($viewPermissions,$editPermissions);
+				$neither=array_diff($temp,$viewPermissions);
+				foreach($both as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=2;
+					$rolePerm->save();
+				}
+				foreach($view as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=1;
+					$rolePerm->save();
+				}
+				foreach($neither as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=0;
+					$rolePerm->save();
+				}
+				
+			}
+			$this->redirect('editRole');
+		}
+		
+		$this->render('editRole',array(
+			'model'=>$model,
+		));
+	}
+	
+	public function actionGetRole(){
+		if(isset($_POST['Roles'])){
+			$id=$_POST['Roles']['name'];
+			if(is_null($id)){
+				echo ""; 
+				exit;
+			}
+			$role=Roles::model()->findByAttributes(array('name'=>$id));
+			$id=$role->id;
+			$roles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$id));
+			$users=array();
+			foreach($roles as $link){
+				$users[]=UserChild::model()->findByPk($link->userId);
+			}
+			$allUsers=UserChild::model()->findAll();
+			$selected=array();
+			$unselected=array();
+			foreach($users as $user){
+				$selected[]=$user->username;
+			}
+			foreach($allUsers as $user){
+				$unselected[$user->username]=$user->firstName." ".$user->lastName;
+			}
+			unset($unselected['admin']);
+			echo "<label>Users</label>";
+			echo CHtml::dropDownList('users[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+			
+			$fields=Fields::model()->findAll();
+			$viewSelected=array();
+			$editSelected=array();
+			$fieldUnselected=array();
+			$fieldPerms=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$role->id));
+			foreach($fieldPerms as $perm){
+				if($perm->permission==2){
+					$viewSelected[]=$perm->fieldId;
+					$editSelected[]=$perm->fieldId;
+				}else if($perm->permission==1){
+					$viewSelected[]=$perm->fieldId;
+				}
+			}
+			foreach($fields as $field){
+				$fieldUnselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
+			}
+			echo "<br /><label>View Permissions</label>";
+			echo CHtml::dropDownList('viewPermissions[]',$viewSelected,$fieldUnselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+			echo "<br /><label>Edit Permissions</label>";
+			echo CHtml::dropDownList('editPermissions[]',$editSelected,$fieldUnselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+		}
+	}
+	
+	public function actionManageRoles(){
+		$model=new Roles;
+		$dataProvider=new CActiveDataProvider('Roles');
+		$roles=$dataProvider->getData();
+		$arr=array();
+		foreach($roles as $role){
+			$arr[$role->name]=$role->name;
+		}
+		
+		$this->render('manageRoles',array(
+			'dataProvider'=>$dataProvider,
+			'model'=>$model,
+			'roles'=>$arr,
+		));
+	}
+	
+	public function actionToggleUpdater(){
+		
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+		$admin->updateInterval = 1;
+		// $admin->ignoreUpdates? $admin->ignoreUpdates = 0 : $admin->ignoreUpdates=1;
+		$admin->save();
+		$this->redirect('index');
+	}
 	
 	public function actionContactUs() {
 
@@ -373,35 +591,35 @@ class AdminController extends Controller {
             }
         }
 	
-	public function actionToggleAccounts() {
-		$admin=Admin::model()->findByPk(1);
-		if($admin->accounts==1)
-			$admin->accounts=0;
-		else
-			$admin->accounts=1;
+	// public function actionToggleAccounts() {
+		// $admin=Admin::model()->findByPk(1);
+		// if($admin->accounts==1)
+			// $admin->accounts=0;
+		// else
+			// $admin->accounts=1;
 		
-		$admin->update();
+		// $admin->update();
 		
-		$this->redirect('index');
-	}
+		// $this->redirect('index');
+	// }
 		
-	public function actionToggleSales() {
-		$admin=Admin::model()->findByPk(1);
-		if($admin->sales==1)
-			$admin->sales=0;
-		else
-			$admin->sales=1;
+	// public function actionToggleSales() {
+		// $admin=Admin::model()->findByPk(1);
+		// if($admin->sales==1)
+			// $admin->sales=0;
+		// else
+			// $admin->sales=1;
 		
-		$admin->update();
+		// $admin->update();
 		
-		$this->redirect('index');
-	}
+		// $this->redirect('index');
+	// }
 	
 	public function actionSetTimeout() {
 		
-		$admin=Admin::model()->findByPk(1);
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 		if(isset($_POST['Admin'])) {
-			$timeout=$_POST['Admin']['timeout'];
+			$timeout = $_POST['Admin']['timeout'];
 			
 			$admin->timeout=$timeout;
 			
@@ -414,32 +632,12 @@ class AdminController extends Controller {
 			'admin'=>$admin,
 		));
 	}
-        
-        public function actionSetLeadRouting() {
-		
-		$admin=Admin::model()->findByPk(1);
-		if(isset($_POST['Admin'])) {
-			$routing=$_POST['Admin']['leadDistribution'];
-                        $online=$_POST['Admin']['onlineOnly'];
-			
-			$admin->leadDistribution=$routing;
-                        $admin->onlineOnly=$online;
-			
-			if($admin->save()) {
-				$this->redirect('index');
-			}
-		}
-		
-		$this->render('leadRouting',array(
-			'admin'=>$admin,
-		));
-	}
-
+	
 	public function actionSetChatPoll() {
 		
-		$admin = CActiveRecord::model('AdminChild')->findByPk(1);
-		if(isset($_POST['AdminChild'])) {
-			$timeout = $_POST['AdminChild']['chatPollTime'];
+		$admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
+		if(isset($_POST['Admin'])) {
+			$timeout = $_POST['Admin']['chatPollTime'];
 			
 			$admin->chatPollTime=$timeout;
 
@@ -452,85 +650,159 @@ class AdminController extends Controller {
 			'admin'=>$admin,
 		));
 	}
-        
-        public function actionAddField(){
-            $model=new Fields;
-            if(isset($_POST['Fields'])){
-                $model->attributes=$_POST['Fields'];
-                $model->visible=1;
-                $model->custom=1;
-                $model->modified=1;
-                $type=lcfirst($model->modelName);
-                $field=lcfirst($model->fieldName);
-                if(preg_match("/\s/",$field)){
-                    
-                }else{
-                    if($model->save()){
-                        $sql="ALTER TABLE x2_$type ADD COLUMN $field VARCHAR(250)";
-                        $command = Yii::app()->db->createCommand($sql);
-                        $result = $command->query();
-                        
-                    }   
-                }
-                $this->redirect('manageFields');
-            }
-            
-        }
-        
-        public function actionRemoveField(){
-            
-            if(isset($_POST['field'])){
-                $id=$_POST['field'];
-                $field=Fields::model()->findByPk($id);
-                $model=lcfirst($field->modelName);
-                $fieldName=lcfirst($field->fieldName);
-                if($field->delete()){
-                    $sql="ALTER TABLE x2_$model DROP COLUMN $fieldName";
-                    $command = Yii::app()->db->createCommand($sql);
-                    $result = $command->query();
-                }
-                $this->redirect('manageFields');
-            }
-        }
-        
-        public function actionCustomizeFields(){
-            
-            $model=new Fields;
-            if(isset($_POST['Fields'])){
-                $type=$_POST['Fields']['modelName'];
-                $field=$_POST['Fields']['fieldName'];
-                
-                $modelField=Fields::model()->findByAttributes(array('modelName'=>$type,'fieldName'=>$field));
-                if($_POST['Fields']['attributeLabel']!="")
-                    $modelField->attributeLabel=$_POST['Fields']['attributeLabel'];
-                $modelField->visible=$_POST['Fields']['visible'];
-                $modelField->modified=1;
-                
-                if($modelField->save())
-                    $this->redirect('manageFields');
-            }
-            
-        }
-        
-        public function actionManageFields(){
-            $model=new Fields;
-            $dataProvider=new CActiveDataProvider('Fields',array(
-                'criteria'=>array(
-                    'condition'=>'modified=1'
-                )
-            ));
-            $fields=Fields::model()->findAllByAttributes(array('custom'=>'1'));
-            $arr=array();
-            foreach($fields as $field){
-                $arr[$field->id]=$field->attributeLabel;
-            }
-            
-            $this->render('manageFields',array(
-                'dataProvider'=>$dataProvider,
-                'model'=>$model,
-                'fields'=>$arr,
-            ));
-        }
+	
+	public function actionAppSettings() {
+		
+		$admin = &Yii::app()->params->admin;
+		if(isset($_POST['Admin'])) {
+		
+			// if(!isset($_POST['Admin']['ignoreUpdates']))
+				// $admin->ignoreUpdates = 1;
+
+			$admin->attributes = $_POST['Admin'];
+			$admin->timeout *= 60;	//convert from minutes to seconds
+			
+
+			if($admin->save()) {
+				$this->redirect('appSettings');
+			}
+		}
+		$admin->timeout = ceil($admin->timeout / 60);
+		$this->render('appSettings',array(
+			'model'=>$admin,
+		));
+	}
+
+	public function actionSetLeadRouting() {
+		
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+		if(isset($_POST['Admin'])) {
+			$routing=$_POST['Admin']['leadDistribution'];
+			$online=$_POST['Admin']['onlineOnly'];
+			
+			$admin->leadDistribution=$routing;
+			$admin->onlineOnly=$online;
+			
+			if($admin->save()) {
+				$this->redirect('index');
+			}
+		}
+		
+		$this->render('leadRouting',array(
+			'admin'=>$admin,
+		));
+	}
+
+	public function actionEmailSetup() {
+		
+		$admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
+		if(isset($_POST['Admin'])) {
+			$admin->attributes = $_POST['Admin'];
+			
+			// $admin->chatPollTime=$timeout;
+
+			// $admin->save();
+			if($admin->save()) {
+				$this->redirect('emailSetup');
+			}
+		}
+		
+		$this->render('emailSetup',array(
+			'model'=>$admin,
+		));
+	}
+
+	public function actionAddField(){
+		$model=new Fields;
+		if(isset($_POST['Fields'])){
+			$model->attributes=$_POST['Fields'];
+			$model->type=$_POST['Fields']['type'];
+			$model->visible=1;
+			$model->custom=1;
+			$model->modified=1;
+			
+			$fieldType=$model->type;
+			if($fieldType=='dropdown' || $fieldType=='varchar' || $fieldType=='date'){
+				$fieldType='VARCHAR(250)';
+			}
+			
+			if($model->type=='dropdown'){
+				if(isset($_POST['dropdown'])){
+					$id=$_POST['dropdown'];
+					$model->type.=":$id";
+				}
+			}
+			$type=lcfirst($model->modelName);
+			$field=lcfirst($model->fieldName);
+			if(preg_match("/\s/",$field)){
+				
+			}else{
+				if($model->save()){
+					$sql="ALTER TABLE x2_$type ADD COLUMN $field $fieldType";
+					$command = Yii::app()->db->createCommand($sql);
+					$result = $command->query();
+					
+				}   
+			}
+			$this->redirect('manageFields');
+		}
+		
+	}
+	
+	public function actionRemoveField(){
+		
+		if(isset($_POST['field'])){
+			$id = $_POST['field'];
+			$field = Fields::model()->findByPk($id);
+			$model = lcfirst($field->modelName);
+			$fieldName = lcfirst($field->fieldName);
+			if($field->delete()){
+				$sql="ALTER TABLE x2_$model DROP COLUMN $fieldName";
+				$command = Yii::app()->db->createCommand($sql);
+				$result = $command->query();
+			}
+			$this->redirect('manageFields');
+		}
+	}
+	
+	public function actionCustomizeFields(){
+		
+		$model=new Fields;
+		if(isset($_POST['Fields'])){
+			$type=$_POST['Fields']['modelName'];
+			$field=$_POST['Fields']['fieldName'];
+			
+			$modelField=Fields::model()->findByAttributes(array('modelName'=>$type,'fieldName'=>$field));
+			if($_POST['Fields']['attributeLabel']!="")
+				$modelField->attributeLabel=$_POST['Fields']['attributeLabel'];
+			$modelField->visible=$_POST['Fields']['visible'];
+			$modelField->modified=1;
+			
+			if($modelField->save())
+				$this->redirect('manageFields');
+		}
+		
+	}
+	
+	public function actionManageFields(){
+		$model=new Fields;
+		$dataProvider=new CActiveDataProvider('Fields',array(
+			'criteria'=>array(
+				'condition'=>'modified=1'
+			)
+		));
+		$fields=Fields::model()->findAllByAttributes(array('custom'=>'1'));
+		$arr=array();
+		foreach($fields as $field){
+			$arr[$field->id]=$field->attributeLabel;
+		}
+		
+		$this->render('manageFields',array(
+			'dataProvider'=>$dataProvider,
+			'model'=>$model,
+			'fields'=>$arr,
+		));
+	}
 
 	public function actionCreatePage() {
 
@@ -548,7 +820,7 @@ class AdminController extends Controller {
 			$model->lastUpdated=time();
 			$model->updatedBy='admin';
 			
-			$admin=Admin::model()->findByPk(1);
+			$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 			if(isset($admin)) {
 				if($admin->menuOrder!="") {
 					$admin->menuOrder.=":".preg_replace('/:/u','&#58;',$model->title);
@@ -575,7 +847,10 @@ class AdminController extends Controller {
 	}
 	
 	public function actionViewPage($id) {
-		$model=DocChild::model()->findByPk($id);
+		$model = DocChild::model()->findByPk($id);
+		if(!isset($model))
+			$this->redirect(array('docs/index'));
+		
 		$this->render('viewTemplate',array(
 			'model'=>$model,
 		));
@@ -583,9 +858,9 @@ class AdminController extends Controller {
 	
 	public function actionRenameModules() {
 		
-		$admin=Admin::model()->findByPk(1);
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 
-		$menuItems = AdminChild::getMenuItems();
+		$menuItems = Admin::getMenuItems();
 		
 		foreach($menuItems as $key => $value)
 			$menuItems[$key] = preg_replace('/&#58;/',':',$value);	// decode any colons
@@ -625,7 +900,7 @@ class AdminController extends Controller {
 	public function actionManageModules() {
 
 		// get admin model
-		$admin=Admin::model()->findByPk(1);
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 
 		$nicknames = explode(":",$admin->menuNicknames);
 		$menuOrder = explode(":",$admin->menuOrder);
@@ -768,10 +1043,10 @@ class AdminController extends Controller {
 				$recordName = $title;	// if none is provided
 
 			$trans = array(
-				'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj','Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 
-				'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 
-				'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 
-				'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss','à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 
+				'Š'=>'S', 'š'=>'s', '�?'=>'Dj','Ž'=>'Z', 'ž'=>'z', 'À'=>'A', '�?'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 
+				'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', '�?'=>'I', 'Î'=>'I', 
+				'�?'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 
+				'Û'=>'U', 'Ü'=>'U', '�?'=>'Y', 'Þ'=>'B', 'ß'=>'Ss','à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 
 				'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 
 				'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 
 				'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', 'ƒ'=>'f'
@@ -788,7 +1063,7 @@ class AdminController extends Controller {
 			if($moduleName == '')								// if there is nothing left of moduleName at this point,
 				$moduleName = 'module' . substr(time(),5);		// just generate a random one
 
-			$admin = Admin::model()->findByPk(1);
+			$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 			$menuOrder = explode(':',$admin->menuOrder);
 			$menuNickNames = explode(':',$admin->menuNicknames);
 			
@@ -931,7 +1206,7 @@ class AdminController extends Controller {
 	
 	public function actionDeleteModule() {
 	
-		$admin = Admin::model()->findByPk(1);
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 		
 		if(isset($_POST['name'])) {
 			$moduleName = $_POST['name'];
@@ -1026,42 +1301,42 @@ class AdminController extends Controller {
 			
 			mkdir($moduleName);
 			mkdir("$moduleName/$moduleName");
-                        
-                        $fields=Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($moduleName)));
-                        $sql="CREATE TABLE x2_".$moduleName."(
-                        id INT NOT NULL AUTO_INCREMENT primary key,
-                        assignedTo VARCHAR(40),
-                        name VARCHAR(100) NOT NULL,
-                        description TEXT,
-                        createDate INT,
-                        lastUpdated INT,
-                        updatedBy VARCHAR(40)
-                        );INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'id', 'ID', '1', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'name', 'Name', '1', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '1', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'description', 'Description', '1', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'createDate', 'Create Date', '1', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '1', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'updatedBy', 'Updated By', '1', '0');";
-                                
-                        $disallow=array(
-                            "id",
-                            "assignedTo",
-                            "name",
-                            "description",
-                            "createDate",
-                            "lastUpdated",
-                            "updatedBy",
-                        );
-                        foreach($fields as $field){
-                            if(array_search($field->fieldName,$disallow)===false)
-                                $sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName VARCHAR(250); INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
-                        }
-                        
-                        $db=Yii::app()->file->set("sqlData.sql");
-                        $db->create();
-                        $db->setContents($sql);
-                        $db->copy($moduleName.'/sqlData.sql');
+
+			$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($moduleName)));
+			$sql="CREATE TABLE x2_".$moduleName."(
+			id INT NOT NULL AUTO_INCREMENT primary key,
+			assignedTo VARCHAR(40),
+			name VARCHAR(100) NOT NULL,
+			description TEXT,
+			createDate INT,
+			lastUpdated INT,
+			updatedBy VARCHAR(40)
+			);INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'id', 'ID', '1', '0');
+			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'name', 'Name', '1', '0');
+			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '1', '0');
+			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'description', 'Description', '1', '0');
+			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'createDate', 'Create Date', '1', '0');
+			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '1', '0');
+			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'updatedBy', 'Updated By', '1', '0');";
+					
+			$disallow=array(
+				"id",
+				"assignedTo",
+				"name",
+				"description",
+				"createDate",
+				"lastUpdated",
+				"updatedBy",
+			);
+			foreach($fields as $field){
+				if(array_search($field->fieldName,$disallow)===false)
+					$sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName VARCHAR(250); INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
+			}
+			
+			$db=Yii::app()->file->set("sqlData.sql");
+			$db->create();
+			$db->setContents($sql);
+			$db->copy($moduleName.'/sqlData.sql');
                         
 			$config=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php');
 			$config->copy("$moduleName/".$moduleName.'Config.php');
@@ -1092,7 +1367,7 @@ class AdminController extends Controller {
 			$finalFile->download();
 		}
 		
-		$admin=Admin::model()->findByPk(1);
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 		$arr=array();
 		$standard=array('contacts','actions','docs','accounts','sales');
 		$list=$admin->menuOrder;
@@ -1116,20 +1391,20 @@ class AdminController extends Controller {
 			
 			$zip=Yii::app()->zip;
 			$zip->extractZip("$moduleName.zip",'temp');
-                        
-                        $sql=$model=Yii::app()->file->set('temp/'.$moduleName.'/sqlData.sql');
-                        $sqlContents=$sql->getContents();
-                        $pieces=explode(";",$sqlContents);
-                        foreach($pieces as $query){
-                            if($query!=""){
-                                $command = Yii::app()->db->createCommand($query);
-                                $command->execute();
-                            }
-                        }
 			
-                        $config=Yii::app()->file->set('temp/'.$moduleName.'/'.$moduleName.'Config.php');
+			$sql=$model=Yii::app()->file->set('temp/'.$moduleName.'/sqlData.sql');
+			$sqlContents=$sql->getContents();
+			$pieces=explode(";",$sqlContents);
+			foreach($pieces as $query){
+				if($query!=""){
+					$command = Yii::app()->db->createCommand($query);
+					$command->execute();
+				}
+			}
+
+			$config=Yii::app()->file->set('temp/'.$moduleName.'/'.$moduleName.'Config.php');
 			$config->copy('protected/config/'.$moduleName.'Config.php');
-                        
+
 			$model=Yii::app()->file->set('temp/'.$moduleName.'/'.ucfirst($moduleName).'.php');
 			$model->copy('protected/models/'.ucfirst($moduleName).'.php');
 			
@@ -1146,7 +1421,7 @@ class AdminController extends Controller {
 				$res=$temp->copy('protected/views/'.$moduleName.'/'.$fileName);
 			}
 			
-			$admin=Admin::model()->findByPk(1);
+			$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 			if(isset($admin)) {
 				if($admin->menuOrder!="") {
 					$admin->menuOrder.=":".ucfirst($moduleName);
@@ -1168,24 +1443,168 @@ class AdminController extends Controller {
 		}
 		$this->render('importModule');
 	}
-        
-        public function actionEditor(){
-            if(isset($_GET['model'])){
-                $modelName=$_GET['model'];
-                eval("\$model=new ".ucfirst($modelName).";");
-                $formUrl="//$modelName/_form";
-            }else{
-                $formUrl="";
-                $model=null;
-            }
-            
-            
-            
-            $this->render('formEditor',array(
-                'formUrl'=>$formUrl,
-                'model'=>$model,
-            ));
-        }
+	
+	public function actionEditor(){
+		if(isset($_GET['model'])){
+			$modelName=$_GET['model'];
+			eval("\$model=new ".ucfirst($modelName).";");
+			$formUrl="//$modelName/_form";
+		}else{
+			$formUrl="";
+			$model=null;
+		}
+		
+		if(isset($_POST['coordinates'])){
+			$coords=$_POST['coordinates'];
+			$coords=explode(",",$coords);
+			$names=$_POST['names'];
+			$names=explode(",",$names);
+			$sizes=$_POST['sizes'];
+			$sizes=explode(",",$sizes);
+			$visibility=$_POST['shown'];
+			$visibility=explode(",",$visibility);
+			$tabOrder=$_POST['order'];
+			$tabOrder=explode(",",$tabOrder);
+			for($i=0;$i<count($names);$i++){
+				$temp=$names[$i];
+				$pieces=explode("[",$temp);
+				$model=$pieces[0];
+				$fieldName=substr($pieces[1],0,-1);
+				$field=Fields::model()->findByAttributes(array('modelName'=>$model,'fieldName'=>$fieldName));
+				if(isset($field)){
+					$field->size=$sizes[$i];
+					$field->coordinates=$coords[$i];
+					$field->visible=$visibility[$i];
+					
+					$tab=array_search($field->fieldName,$tabOrder);
+					$field->tabOrder=$tab+1;
+					
+					$field->save();
+				}
+			}
+			
+			$this->redirect(array('editor','model'=>$_GET['model']));
+		}
+		
+		$this->render('formEditor',array(
+			'formUrl'=>$formUrl,
+			'model'=>$model,
+		));
+	}
+	
+	public function actionManageDropDowns(){
+		
+		$dataProvider=new CActiveDataProvider('Dropdowns');
+		$model=new Dropdowns;
+		
+		$dropdowns=$dataProvider->getData();
+		foreach($dropdowns as $dropdown){
+			$temp=json_decode($dropdown->options);
+			$str="";
+			foreach($temp as $item){
+				$str.=$item.", ";
+			}
+			$str=substr($str,0,-2);
+			$dropdown->options=$str;
+		}
+		$dataProvider->setData($dropdowns);
+		
+		$this->render('manageDropDowns',array(
+			'dataProvider'=>$dataProvider,
+			'model'=>$model,
+			'dropdowns'=>$dataProvider->getData(),
+		));
+	}
+	
+	public function actionDropDownEditor(){
+		$model = new Dropdowns;
+		
+		if(isset($_POST['Dropdowns'])){
+			$model->attributes=$_POST['Dropdowns'];
+			$temp = array();
+			foreach($model->options as $option){
+				$temp[$option]=$option;
+			}
+			$model->options=json_encode($temp);
+			if($model->save()){
+				$this->redirect('manageDropDowns');
+			}
+		}
+		
+		$this->render('dropDownEditor',array(
+			'model'=>$model,
+		));
+	}
+	
+	public function actionDeleteDropdown(){
+		$dropdowns = Dropdowns::model()->findAll();
+		
+		if(isset($_POST['dropdown'])){
+			$model = Dropdowns::model()->findByPk($_POST['dropdown']);
+			
+			$model->delete();
+			$this->redirect('manageDropDowns');
+		}
+		
+		$this->render('deleteDropdowns',array(
+			'dropdowns'=>$dropdowns,
+		));
+	}
+	
+	public function actionEditDropdown(){
+		$model = new Dropdowns;
+		
+		if(isset($_POST['Dropdowns'])){
+			$model=Dropdowns::model()->findByAttributes(array('name'=>$_POST['Dropdowns']['name']));
+			$model->attributes=$_POST['Dropdowns'];
+			$temp=array();
+			foreach($model->options as $option){
+				$temp[$option]=$option;
+			}
+			$model->options=json_encode($temp);
+			if($model->save()){
+				$this->redirect('manageDropDowns');
+			}
+		}
+		$this->render('editDropdowns');
+	}
+	
+	public function actionGetDropdown(){
+		if(isset($_POST['Dropdowns']['name'])){
+			$name=$_POST['Dropdowns']['name'];
+			$model=Dropdowns::model()->findByAttributes(array('name'=>$name));
+			$str="";
+			
+			$options=json_decode($model->options);
+			foreach($options as $option){
+				$str.="<li>
+						<input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" value='$option' />
+						<div class=\"\">
+							<a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow','Up')."]</a>
+							<a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow','Down')."]</a>
+							<a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow','Del')."]</a>
+						</div>
+						<br />
+					</li>";
+			}
+			echo $str;
+		}
+	}
+	
+	public function actionGetFieldType(){
+		if(isset($_POST['Fields']['type'])){
+			$type=$_POST['Fields']['type'];
+			if($type=="dropdown"){
+				$dropdowns=Dropdowns::model()->findAll();
+				$arr=array();
+				foreach($dropdowns as $dropdown){
+					$arr[$dropdown->id]=$dropdown->name;
+				}
+				
+				echo CHtml::dropDownList('dropdown','',$arr);
+			}
+		}
+	}
 		
 	
 	public function actionExport() {
@@ -1199,7 +1618,7 @@ class AdminController extends Controller {
 		$file='data.csv';
 		$fp = fopen($file, 'w+');
                 
-                $admin=AdminChild::model()->findByPk(1);
+                $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
                 $order=$admin->menuOrder; 
 		
                 $pieces=explode(":",$order);
@@ -1248,37 +1667,35 @@ class AdminController extends Controller {
         }
 		
 	private function globalImport($file, $overwrite) {
-		$fp=fopen($file,'r+');
+		$fp = fopen($file,'r+');
 		$version=fgetcsv($fp);
 		$version=$version[0];
 		$type="";
                 $meta=array();
 		while($pieces=fgetcsv($fp)) {
-                    if($pieces[count($pieces)-1]!=$type){
-                        $type=$pieces[count($pieces)-1];
-                        $meta=$pieces;
-                        continue;
-                    }
-                    eval('$model=new '.$pieces[count($pieces)-1].";");
-                    unset($pieces[count($pieces)-1]);
-                    $tempMeta=$meta;
-                    unset($tempMeta[count($tempMeta)-1]);
-                    $temp=array();
-                    for($i=0;$i<count($tempMeta);$i++){
-                        $temp[$tempMeta[$i]]=$pieces[$i];
-                    }
-                    foreach($model->attributes as $field=>$value){
-                        $model->$field=$temp[$field];
-                    }
-                    $lookup=CActiveRecord::model(get_class($model))->findByPk($model->id);
-                    if(!isset($lookup)){
-                        $model->save();
-                    }else if($overwrite){
-                        $lookup->delete();
-                        $model->save();
-                    }
-                    
-			
+			if($pieces[count($pieces)-1]!=$type){
+				$type=$pieces[count($pieces)-1];
+				$meta=$pieces;
+				continue;
+			}
+			eval('$model=new '.$pieces[count($pieces)-1].";");
+			unset($pieces[count($pieces)-1]);
+			$tempMeta=$meta;
+			unset($tempMeta[count($tempMeta)-1]);
+			$temp=array();
+			for($i=0;$i<count($tempMeta);$i++){
+				$temp[$tempMeta[$i]]=$pieces[$i];
+			}
+			foreach($model->attributes as $field=>$value){
+				$model->$field=$temp[$field];
+			}
+			$lookup = CActiveRecord::model(get_class($model))->findByPk($model->id);
+			if(!isset($lookup)){
+				$model->save();
+			}else if($overwrite){
+				$lookup->delete();
+				$model->save();
+			}
 		}
 		unlink($file);
 		$this->redirect('index');

@@ -181,7 +181,31 @@ class Contacts extends CActiveRecord
 		$criteria=new CDbCriteria;
 		$parameters=array('condition'=>"visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
-		
+				
+		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {
+			
+			$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($_GET['tagField'])));	//remove any spaces around commas, then explode to array
+			
+			// $str = '';
+			for($i=0; $i<count($tags); $i++) {
+				// $str .= ' '.$i;
+				// if(empty($tags[$i])) {
+					// unset($tags[$i]);
+					// $i--;
+					// continue;
+				// } else {
+					if($tags[$i][0] != '#')
+						$tags[$i] = '#'.$tags[$i];
+					// $tagConditions .= 'OR x2_tags.tag'
+					$tags[$i] = 'x2_tags.tag = "'.$tags[$i].'"';
+				// }
+			}
+			// die($str);
+			$tagConditions = implode(' OR ',$tags);
+			
+			$criteria->distinct = true;
+			$criteria->join = 'RIGHT JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+		}
 		return $this->searchBase($criteria);
 	}
 

@@ -1,5 +1,5 @@
 <?php
-
+set_time_limit(0);
 include('protected/config/emailConfig.php');
 
 $context = stream_context_create(array(
@@ -23,7 +23,7 @@ else {
 }
 
 $updaterCheck=file_get_contents("http://www.$url.com/updates/updateCheck.php");
-if($updaterCheck!=$updaterVersion){
+if(strcmp($updaterCheck,$updaterVersion) > 0){
     copy("http://www.$url.com/updates/x2engine/updater.php" , "updater.php");
     $config="<?php
 \$host='$host';
