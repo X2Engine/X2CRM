@@ -104,6 +104,16 @@ class Workflow extends CActiveRecord {
 		}
 		return $workflowStatus;
 	}
+        
+        public static function getStages($id){
+            $stages=WorkflowStage::model()->findAllByAttributes(array('workflowId'=>$id));
+            $arr=array();
+            foreach($stages as $stage){
+                $arr[$stage->stageNumber]=$stage->name;
+            }
+            
+            return $arr;
+        }
 	
 	public static function renderWorkflow(&$workflowStatus) {
 	

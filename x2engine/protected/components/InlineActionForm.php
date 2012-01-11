@@ -62,7 +62,7 @@ class InlineActionForm extends CWidget {
 				function gotoActionForm() {
 					$('#action-form').show();
 					//toggleForm('#action-form',400);
-					$('#action-form #Actions_actionDescription').focus();
+					// $('#action-form #Actions_actionDescription').focus();
 				}
 				",CClientScript::POS_HEAD);
 		}

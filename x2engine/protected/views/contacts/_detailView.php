@@ -45,7 +45,6 @@ $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 $showWorkflow = Yii::app()->params->profile->showWorkflow;
 
 Yii::app()->clientScript->registerScript('updateWorkflow',"
-
 function startWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
 		url: '" . CHtml::normalizeUrl(array('workflow/startStage')) . "',
@@ -54,6 +53,7 @@ function startWorkflowStage(workflowId,stageNumber) {
 		success: function(response) {
 			if(response!='')
 				$('#workflow-diagram').html(response);
+			updateHistory();
 		}
 	});
 }
@@ -66,6 +66,7 @@ function completeWorkflowStage(workflowId,stageNumber) {
 		success: function(response) {
 			if(response!='')
 				$('#workflow-diagram').html(response);
+			updateHistory();
 		}
 	});
 }
@@ -78,7 +79,14 @@ function revertWorkflowStage(workflowId,stageNumber) {
 		success: function(response) {
 			if(response!='')
 				$('#workflow-diagram').html(response);
+			updateHistory();
 		}
+	});
+}
+
+function updateHistory() {
+	$('.action.list-view').each(function(i) {
+		$.fn.yiiListView.update($(this).attr('id'));
 	});
 }
 ",CClientScript::POS_HEAD);

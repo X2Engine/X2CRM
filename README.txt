@@ -4,19 +4,12 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.9 Changelog
+Beta 0.9.9.1 Changelog
 
-- Numerous bug fixes (esp. gridviews)
-- Misc. UI tweaks/improvements
-- Added advanced outgoing email config, using phpMailer (supports sendmail, qmail and SMTP)
-- Added email signatures (global template based, or user defined)
-- Added icons for record History view
-- Reorganized some admin settings
-- Added "enable background fade" setting to profile
-- Rebranded app to X2CRM
-- Added timezone setting in installer
-- Added form layout editor (work in progress)
-- Added facebook-enabled web capture form (automatically creates contact, attaches photo if available)
+- Fixed major bug with View Action
+- Email fields on email contact and share contact now support multiple addresses
+- Improved navigation with contacts
+- Fixed bug with login screen
 
 Welcome to X5CRM v0.9.9 (Beta 10)!  X5CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 

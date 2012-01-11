@@ -99,7 +99,7 @@ class ContactList extends CActiveRecord {
 	
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('contacts/viewAll');
+			return array('contacts/index');
 		else if (empty($id) || $id=='my')
 			return array('contacts/viewMy');
 		else

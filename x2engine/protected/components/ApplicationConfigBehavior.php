@@ -68,8 +68,10 @@ class ApplicationConfigBehavior extends CBehavior {
 		
 		if (!empty($this->owner->params->profile->language))
 			$this->owner->language = $this->owner->params->profile->language;
-		else
+		else if(isset($adminProf))
 			$this->owner->language = $adminProf->language;
+		else
+			$this->owner->language = '';
 
 		if(!empty($this->owner->params->profile->timeZone))
 			date_default_timezone_set($this->owner->params->profile->timeZone);

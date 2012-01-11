@@ -41,8 +41,9 @@
 Yii::import('zii.widgets.CWidget');
 
 class InlineEmailForm extends CWidget {
-	public $name;
-	public $address;
+	// public $name;
+	// public $address;
+	public $to;
 	public $subject;
 	public $message;
 	public $redirect;
@@ -57,11 +58,14 @@ class InlineEmailForm extends CWidget {
 		if(isset($_POST))
 			$startHidden = false;
 	
-		if(isset($_POST['inlineEmail_name']))
-			$this->name = $_POST['inlineEmail_name'];
+		if(isset($_POST['inlineEmail_to']))
+			$this->name = $_POST['inlineEmail_to'];
+	
+		// if(isset($_POST['inlineEmail_name']))
+			// $this->name = $_POST['inlineEmail_name'];
 			
-		if(isset($_POST['inlineEmail_address']))
-			$this->address = $_POST['inlineEmail_address'];
+		// if(isset($_POST['inlineEmail_address']))
+			// $this->address = $_POST['inlineEmail_address'];
 			
 		if(isset($_POST['inlineEmail_subject']))
 			$this->subject = $_POST['inlineEmail_subject'];
@@ -87,8 +91,9 @@ class InlineEmailForm extends CWidget {
 		// $actionModel->associationId = $this->associationId;
 		// $actionModel->assignedTo = $this->assignedTo;
 		echo $this->render('emailForm',array(
-			'name'=>$this->name,
-			'address'=>$this->address,
+			// 'name'=>$this->name,
+			// 'address'=>$this->address,
+			'to'=>$this->to,
 			'subject'=>$this->subject,
 			'message'=>$this->message,
 			'redirect'=>$this->redirect,

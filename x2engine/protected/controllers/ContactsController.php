@@ -52,7 +52,7 @@ class ContactsController extends x2base {
 				'actions'=>array(
 					'index',
 					'list',
-					'viewAll',
+					'lists',
 					'viewMy',
 					'view',
 					'update',
@@ -158,23 +158,28 @@ $model->city, $model->state $model->zipcode
 		$errors = array();
 		$status = array();
 		$email = '';
-		if(isset($_POST['email']) && isset($_POST['body'])){
+		if(isset($_POST['email'], $_POST['body'])){
 		
 			$subject = Yii::t('contacts','Contact Record Details');
-			$email=$_POST['email'];
-			$body=$_POST['body'];
-			if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
+			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
+			$body = $_POST['body'];
+			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
+			if($email === false)
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
 			
 			if(empty($errors))
-				$status = $this->sendUserEmail('',$email,$subject,$body);
+				$status = $this->sendUserEmail($email,$subject,$body);
 
 			if(array_search('200',$status)) {
 				$this->redirect(array('view','id'=>$model->id));
 				return;
 			}
+			if($email === false)
+				$email = $_POST['email'];
+			else
+				$email = $this->mailingListToString($email);
 		}
 		$this->render('shareContact',array(
 			'model'=>$model,
@@ -358,7 +363,7 @@ $model->city, $model->state $model->zipcode
 	}
 
 	// Default action - displays all visible Contact Lists
-	public function actionIndex() {
+	public function actionLists() {
 		$model = new Contacts('search');
 		
 		// $contactLists = ContactList::model()->findAll();
@@ -422,7 +427,7 @@ $model->city, $model->state $model->zipcode
 	}
 	
 	// Lists all visible contacts
-	public function actionViewAll() {
+	public function actionIndex() {
 		$model=new Contacts('search');
 		$name='Contacts';
 		parent::index($model,$name);
@@ -462,7 +467,7 @@ $model->city, $model->state $model->zipcode
 			// }
 			// die($id);
 			if($id = 'all')
-				$this->redirect(array('contacts/viewAll'));
+				$this->redirect(array('contacts/index'));
 				// $dataProvider = CActiveRecord::model('Contacts')->searchAll();
 			else
 				$this->redirect(array('contacts/viewMy'));

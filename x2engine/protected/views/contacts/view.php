@@ -39,7 +39,8 @@
  ********************************************************************************/
 
 $this->menu=array(
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
 	// array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
@@ -99,8 +100,9 @@ if($detailView) { ?>
 <?php
 $this->widget('InlineEmailForm',
 	array(
-		'address'=>$model->email,
-		'name'=>$model->name,
+		'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
+		// 'address'=>$model->email,
+		// 'name'=>$model->name,
 		'redirect'=>'contacts/'.$model->id,
 		// 'redirectType'=>'contacts',
 		'startHidden'=>true,

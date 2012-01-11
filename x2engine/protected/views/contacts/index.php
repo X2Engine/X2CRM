@@ -38,7 +38,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 $this->menu=array(
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
 	// array('label'=>Yii::t('contacts','All Contacts')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
@@ -47,11 +48,10 @@ $this->menu=array(
 	array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
 );
  
-if($this->route=='contacts/viewAll') {
+if($this->route=='contacts/index') {
 	$heading = Yii::t('contacts','All Contacts'); 
 	$dataProvider = $model->searchAll();
-	
-	
+	unset($this->menu[0]['url']);
 } else {
 	$heading = Yii::t('contacts','My Contacts'); 
 	$dataProvider = $model->search();

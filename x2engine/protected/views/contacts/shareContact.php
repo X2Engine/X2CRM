@@ -39,7 +39,8 @@
  ********************************************************************************/
 
 $this->menu=array(
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
+	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
 	array('label'=>Yii::t('contacts','View Contact')),
@@ -55,8 +56,8 @@ if(!empty($status)) {
 	$index = array_search('200',$status);
 	if($index !== false) {
 		unset($status[$index]);
-		// $email = '';
-		// $subject = '';
+		$email = '';
+		$subject = '';
 	}
 	echo '<div class="form">';
 	foreach($status as &$status_msg) echo $status_msg." \n";

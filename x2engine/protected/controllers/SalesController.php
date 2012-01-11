@@ -90,23 +90,28 @@ class SalesController extends x2base {
 		$errors = array();
 		$status = array();
 		$email = '';
-		if(isset($_POST['email']) && isset($_POST['body'])){
+		if(isset($_POST['email'], $_POST['body'])){
 		
 			$subject = Yii::t('sales','Sale Record Details');
-			$email=$_POST['email'];
-			$body=$_POST['body'];
-			if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
+			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
+			$body = $_POST['body'];
+			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
+			if($email === false)
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
 			
 			if(empty($errors))
-				$status = $this->sendUserEmail('',$email,$subject,$body);
+				$status = $this->sendUserEmail($email,$subject,$body);
 
 			if(array_search('200',$status)) {
 				$this->redirect(array('view','id'=>$model->id));
 				return;
 			}
+			if($email === false)
+				$email = $_POST['email'];
+			else
+				$email = $this->mailingListToString($email);
 		}
 		$this->render('shareSale',array(
 			'model'=>$model,
@@ -117,26 +122,26 @@ class SalesController extends x2base {
 			'errors'=>$errors
 		));
 	}
-        
-        public function create($model,$oldAttributes){
-            
-            if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
-                $model->accountName=$_POST['companyAutoComplete'];
-                $model->accountId="";
-            }
-            // process currency into an INT
-            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
-            
-            if(isset($model->assignedTo))
-                    $model->assignedTo = Sales::parseUsers($model->assignedTo);
-            if(isset($model->associatedContacts))
-                    $model->associatedContacts = Sales::parseContacts($model->associatedContacts);
-            $model->createDate=time();
-            if($model->expectedCloseDate!=""){
-                    $model->expectedCloseDate=strtotime($model->expectedCloseDate);
-            }
-            parent::create($model,$oldAttributes,'0');
-        }
+	
+	public function create($model,$oldAttributes){
+		
+		if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
+			$model->accountName=$_POST['companyAutoComplete'];
+			$model->accountId="";
+		}
+		// process currency into an INT
+		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+		
+		if(isset($model->assignedTo))
+				$model->assignedTo = Sales::parseUsers($model->assignedTo);
+		if(isset($model->associatedContacts))
+				$model->associatedContacts = Sales::parseContacts($model->associatedContacts);
+		$model->createDate=time();
+		if($model->expectedCloseDate!=""){
+				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
+		}
+		parent::create($model,$oldAttributes,'0');
+	}
 
 	/**
 	 * Creates a new model.

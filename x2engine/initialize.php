@@ -37,7 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '0.9.9';
+$x2Version = '0.9.9.1';
+$buildDate = 1326314361;
 
 $userData = '';
 
@@ -186,6 +187,8 @@ $write =
 \$pass='$pass';
 \$dbname='$db';
 \$version='$x2Version';
+\$buildDate=$buildDate;
+\$updaterVersion='1.0';
 ?>";
 fwrite($handle,$write);
 fclose($handle);
@@ -576,7 +579,8 @@ mysql_query("CREATE TABLE x2_admin(
 	emailSecurity VARCHAR(10),
 	installDate INT UNSIGNED NOT NULL,
 	updateDate INT UNSIGNED NOT NULL,
-	updateInterval INT NOT NULL)
+	updateInterval INT NOT NULL
+	)
 	COLLATE = utf8_general_ci
 	") or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
@@ -820,7 +824,6 @@ mysql_query("INSERT INTO x2_admin (
 	currency,
 	installDate,
 	updateDate
-	
 ) VALUES (
 	'0',
 	'1',

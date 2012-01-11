@@ -348,7 +348,7 @@ class X2GridView extends CGridView {
 			
 			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.2.x2.js');
 			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.dragtable.x2.js');
-			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/gvSettings.js');
+			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
 			Yii::app()->clientScript->registerScript(__CLASS__.'#'.$this->getId().'_gvSettings',
 			"$('#".$this->getId()." table').gvSettings({
 				viewName:'".$this->viewName."',

@@ -44,4 +44,4 @@ $this->menu=array(
 ?>
 <h2><?php echo Yii::t('accounts','Create Account'); ?></h2> 
 
-<?php echo $this->renderPartial('_form', array('model'=>$model, 'users'=>$users)); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$model, 'users'=>$users,'contacts'=>$contacts)); ?>

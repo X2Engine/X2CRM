@@ -374,26 +374,65 @@ class SiteController extends x2base {
 		
 		$errors = array();
 
-		if(isset($_POST['inlineEmail_name']) && isset($_POST['inlineEmail_subject']) && isset($_POST['inlineEmail_message'])) {
+		if(isset($_POST['inlineEmail_to'], $_POST['inlineEmail_subject'], $_POST['inlineEmail_message'])) {
 			
-			$name = $this->decodeQuotes($_POST['inlineEmail_name']);
-			$address = $this->decodeQuotes($_POST['inlineEmail_address']);
+			$to = $this->parseEmailTo($this->decodeQuotes($_POST['inlineEmail_to']));
+			// echo var_dump($to);
+			if($to === false)
+				$errors[] = 'to';
+			
+			// $name = $this->decodeQuotes($_POST['inlineEmail_name']);
+			// $address = $this->decodeQuotes($_POST['inlineEmail_address']);
 			$subject = $this->decodeQuotes($_POST['inlineEmail_subject']);
 			$message = $this->decodeQuotes($_POST['inlineEmail_message']);
 			
-			if(empty($address))
-				$errors[] = 'address';
+			// if(empty($to))
+				// $errors[] = 'to';
 			if(empty($subject))
 				$errors[] = 'subject';
 			if(empty($message))
 				$errors[] = 'message';
 			
-			if(empty($errors))
-				$status = $this->sendUserEmail($name,$address,$subject,$message);
+			if(empty($errors)) {
 			
+				// $status = array();
+				$status = $this->sendUserEmail($to,$subject,$message);
+				
+				if(in_array('200',$status)) {
+					
+					$contact = Contacts::model()->findByAttributes(array('email'=>$to[0][1]));
+					if(isset($contact)) {
+
+						$action = new Actions;
+						$action->associationType = 'contacts';
+						$action->associationId = $contact->id;
+						$action->associationName = $contact->name;
+						$action->visibility = $contact->visibility;
+						$action->complete = 'Yes';
+						$action->type = 'email';
+						$action->completedBy = Yii::app()->user->getName();
+						$action->assignedTo = $contact->assignedTo;
+						$action->createDate = time();
+						$action->dueDate = time();
+						$action->completeDate = time();
+						$action->actionDescription = "<b>$subject</b>\n\n$message";
+						
+						$action->save();
+						// $message="2";
+						// $email=$toEmail;
+						// $id=$contact['id'];
+						// $note.="\n\nSent to Contact";
+					}
+				}
+			}
+			
+			if($to === false)
+				$to = $_POST['inlineEmail_to'];
+			else
+				$to = $this->mailingListToString($to);
 			
 			if(isset($_GET['ajax'])) {	// respond with the form partial view
-				echo $this->renderPartial('application.components.views.emailForm',array('status'=>$status,'name'=>$name,'address'=>$address,'subject'=>$subject,'message'=>$message,'redirect'=>$redirect,'redirectId'=>$redirectId,'redirectType'=>$redirectType,'errors'=>$errors));
+				echo $this->renderPartial('application.components.views.emailForm',array('to'=>$to,'status'=>$status,'subject'=>$subject,'message'=>$message,'redirect'=>$redirect,'redirectId'=>$redirectId,'redirectType'=>$redirectType,'errors'=>$errors));
 			} else {
 				// reload the whole page if this wasn't an AJAX request
 				if(isset($_POST['redirect'])) {
@@ -686,6 +725,11 @@ class SiteController extends x2base {
 	
 	// Displays the login page
 	public function actionLogin() {
+	
+		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
+			$this->redirect(Yii::app()->homeUrl);
+			return;
+		}
 		$model=new LoginForm;
 
 		// if it is ajax validation request
@@ -776,11 +820,13 @@ class SiteController extends x2base {
 	// Logs out the current user and redirect to homepage.
 	public function actionLogout() {
 		$user = UserChild::model()->findByPk(Yii::app()->user->getId());
-		$user->lastLogin=time();
-                $session=Sessions::model()->findByAttributes(array('user'=>$user->username));
-                if(isset($session))
-                    $session->delete();
-		$user->save();
+		if(isset($user)) {
+			$user->lastLogin=time();
+			$session = Sessions::model()->findByAttributes(array('user'=>$user->username));
+			if(isset($session))
+				$session->delete();
+			$user->save();
+		}
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}

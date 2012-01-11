@@ -168,5 +168,6 @@ return array(
 		),
 		'currency'=>'',
 		'version'=>$version,
+		'buildDate'=>$buildDate,
 	),
 );

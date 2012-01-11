@@ -45,7 +45,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 <a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+210+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:0px;margin-right:-20px;')); ?>
 </a>
-<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> January 6, 2012.
+<h3><b><?php echo Yii::t('about','About X2Engine'); ?></b></h3><b>Beta <?php echo Yii::app()->params->version;?></b> <?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.
 	<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2engine_small.png','',array('style'=>'display:block;margin:5px 0;')); ?>
 
 <div id="about-intro">

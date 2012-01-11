@@ -62,6 +62,8 @@ if(!empty($status)) {
 	foreach($status as &$status_msg) echo $status_msg." \n";
 	echo '</div>';
 }
+
+
 ?>
 <div class="wide form">
 	<?php echo CHtml::beginForm(array('site/inlineEmail'),'post'); ?>
@@ -71,9 +73,10 @@ if(!empty($status)) {
 		<?php
 		$class = in_array('to',$errors)? 'error':null;
 		echo CHtml::label(Yii::t('app','To:'),'to',array('class'=>$class));
-		echo '&lt;'.$name.'&gt; '.$address;
-		echo CHtml::hiddenField('inlineEmail_name',$name,array('id'=>'email-to','class'=>$class));
-		echo CHtml::hiddenField('inlineEmail_address',$address,array('id'=>'email-address','class'=>$class));
+		echo CHtml::textField('inlineEmail_to',$to,array('id'=>'email-to','class'=>$class));
+		// echo '&lt;'.$name.'&gt; '.$address;
+		// echo CHtml::hiddenField('inlineEmail_name',$name,array('id'=>'email-to','class'=>$class));
+		// echo CHtml::hiddenField('inlineEmail_address',$address,array('id'=>'email-address','class'=>$class));
 		?>
 	</div>
 	<div class="row">

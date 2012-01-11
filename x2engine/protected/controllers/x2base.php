@@ -721,7 +721,7 @@ class x2base extends Controller {
         }
 
 
-	public function sendUserEmail($name,$address,$subject,$message) {
+	public function sendUserEmail($to,$subject,$message) {
 
 		$user = CActiveRecord::model('UserChild')->findByPk(Yii::app()->user->getId());
 
@@ -759,7 +759,16 @@ class x2base extends Controller {
 		try {
 			$phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress,$user->name);
 			$phpMail->SetFrom(Yii::app()->params->profile->emailAddress,$user->name);
-			$phpMail->AddAddress($address,$name);
+			
+			
+			if(count($to) == 2 && !is_array($to[0]))	// this is just an array of [name, address],
+				$phpMail->AddAddress($to[1],$to[0]);	// not an array of arrays
+			else {
+				foreach($to as $val) {					//this is an array of [name, address] subarrays
+					if(count($val) == 2)
+						$phpMail->AddAddress($val[1],$val[0]);
+				}
+			}
 			
 			// $dropbox = Yii::app()->params->admin->dropboxEmail;
 			$dropbox = 'dropbox@'.preg_replace('/^www\./','',$_SERVER['HTTP_HOST']);	// determine the dropbox email
@@ -784,6 +793,70 @@ class x2base extends Controller {
 		return $status;
 	}
 	
+	
+	public function parseEmailTo($string) {
+	
+		if(empty($string))
+			return false;
+		$mailingList = array();
+		$splitString = explode(',',$string);
+		
+		require_once('protected/components/phpMailer/class.phpmailer.php');
+		
+		foreach($splitString as &$token) {
+
+			$token = trim($token);
+			if(empty($token))
+				continue;
+			
+			$matches = array();
+			
+			if(PHPMailer::ValidateAddress($token)) {	// if it's just a simple email, we're done!
+				$mailingList[] = array('',$token);
+			} else if(preg_match('/^"?([^"]*)"?\s*<(.+)>$/i',$token,$matches)) {
+				if(count($matches) == 3 && PHPMailer::ValidateAddress($matches[2]))
+					$mailingList[] = array($matches[1],$matches[2]);
+				else
+					return false;
+			} else
+				return false;
+			
+			// "M P" <mpearson@x2engine.com>, "" <3apples.com>,4@tacos.com
+			
+			
+			
+			// if(preg_match('/^"(.*)"/i',$token,$matches)) {		// if there is a name like <First Last> at the beginning,
+				// $token = trim(preg_replace('/^".*"/i','',$token));	// remove it
+				// if(isset($matches[1]))
+					// $name = trim($matches[1]);						// and put it in $name
+			// }
+			// $address = trim(preg_replace($token);
+			
+			// if(PHPMailer::ValidateAddress($address))
+				// $mailingList[] = array($address,$name);
+			// else
+				// return false;
+		}
+		// echo var_dump($mailingList);
+		
+		if(count($mailingList) < 1)
+			return false;
+
+		return $mailingList;
+	}
+	
+	public function mailingListToString($list,$encodeQuotes = false) {
+		$string = '';
+		if(is_array($list)) {
+			foreach($list as &$value) {
+				if(!empty($value[0]))
+					$string .= '"'.$value[0].'" <'.$value[1].'>, ';
+				else
+					$string .= $value[1].', ';
+			}
+		}
+		return $encodeQuotes? $this->encodeQuotes($string) : $string;
+	}
 
 	/**
 	 * Sets widgets on the page on a per user basis.

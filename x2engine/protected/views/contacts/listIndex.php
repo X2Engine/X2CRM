@@ -42,6 +42,7 @@ $heading = Yii::t('contacts','Contacts Lists');
 // $dataProvider = $model->searchAll();
 
 $this->menu=array(
+	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Contacts Lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),

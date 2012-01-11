@@ -56,8 +56,8 @@ if(!empty($status)) {
 	$index = array_search('200',$status);
 	if($index !== false) {
 		unset($status[$index]);
-		// $email = '';
-		// $subject = '';
+		$email = '';
+		$subject = '';
 	}
 	echo '<div class="form">';
 	foreach($status as &$status_msg) echo $status_msg." \n";

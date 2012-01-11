@@ -57,7 +57,8 @@ $.widget("x2.gvSettings", {
 		viewName:'gridView',
 		columnSelectorId:'column-selector',
 		columnSelectorHtml:'',
-		ajaxUpdate:false
+		ajaxUpdate:false,
+		saveTimeout:1000,
 	},
 
 	// setGridviewModel:function(model) {
@@ -158,7 +159,7 @@ $.widget("x2.gvSettings", {
 					data: 'viewName='+self.options.viewName+'&gvSettings='+encodedGvSettings
 				});
 
-			},2000);
+			},o.saveTimeout);
 			
 			
 		}

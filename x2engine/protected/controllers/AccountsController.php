@@ -97,24 +97,31 @@ class AccountsController extends x2base {
 		$errors = array();
 		$status = array();
 		$email = '';
-		if(isset($_POST['email']) && isset($_POST['body'])){
+		if(isset($_POST['email'], $_POST['body'])){
 		
 			$subject = Yii::t('accounts',"Account Record").": $model->name";
-			$email=$_POST['email'];
-			$body=$_POST['body'];
-			if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
+			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
+			$body = $_POST['body'];
+			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
+			if($email === false)
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
 			
 			if(empty($errors))
-				$status = $this->sendUserEmail('',$email,$subject,$body);
+				$status = $this->sendUserEmail($email,$subject,$body);
 
 			if(array_search('200',$status)) {
 				$this->redirect(array('view','id'=>$model->id));
 				return;
 			}
+			
+			if($email === false)
+				$email = $_POST['email'];
+			else
+				$email = $this->mailingListToString($email);
 		}
+		
 		$this->render('shareAccount',array(
 			'model'=>$model,
 			'body'=>$body,
