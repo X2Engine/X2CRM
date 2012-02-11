@@ -38,8 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('zii.widgets.CWidget');
-
 class TagCloud extends CWidget {
 	
 	public $visibility;

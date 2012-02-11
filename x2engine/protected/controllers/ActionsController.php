@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -53,8 +53,8 @@ class ActionsController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','createSplash','quickCreate','createInline','viewGroup','complete',
-					'completeRedirect','update','viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction'),
+				'actions'=>array('index','view','create','createSplash','createInline','viewGroup','complete',	//quickCreate
+					'completeRedirect','update','viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -66,7 +66,14 @@ class ActionsController extends x2base {
 			),
 		);
 	}
-
+	public function actions() {
+		return array(
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
+			),
+		);
+	}
+	
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -111,14 +118,14 @@ class ActionsController extends x2base {
 
 		$errors = array();
 		$status = array();
-		$email = '';
+		$email = array();
 		if(isset($_POST['email'], $_POST['body'])){
 		
 			$subject = Yii::t('actions',"Reminder, the following action is due")." ".date("Y-m-d",$model->dueDate);
-			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
+			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
 			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
-			if($email === false)
+			if($email['to'] === false)
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
@@ -130,10 +137,10 @@ class ActionsController extends x2base {
 				$this->redirect(array('view','id'=>$model->id));
 				return;
 			}
-			if($email === false)
+			if($email['to'] === false)
 				$email = $_POST['email'];
 			else
-				$email = $this->mailingListToString($email);
+				$email = $this->mailingListToString($email['to']);
 		}
 		$this->render('shareAction',array(
 			'model'=>$model,
@@ -210,7 +217,7 @@ class ActionsController extends x2base {
 		if($model->associationName=='None' && $model->associationType!='none'){
 			$model->associationName=ucfirst($model->associationType);
 		}
-		if(isset($_POST['submit']) && $_POST['submit']=='comment') {	// if user clicked "New Comment" rather than "New Action"
+		if(isset($_POST['submit']) && ($_POST['submit']=='0' || $_POST['submit']=='2')) {	// if user clicked "New Comment" rather than "New Action"
 			$model->createDate = time();
 			$model->dueDate = time();
 			$model->completeDate = time();
@@ -218,7 +225,7 @@ class ActionsController extends x2base {
 			$model->visibility='1';
 			$model->assignedTo=Yii::app()->user->getName();
 			$model->completedBy=Yii::app()->user->getName();
-			$model->type='note';
+			$model->type=$_POST['submit']==2?'note':'call';
 		}
 		if($api==0)
 			parent::create($model,$oldAttributes,$api);
@@ -275,7 +282,7 @@ class ActionsController extends x2base {
 		
 	}
 
-	public function actionQuickCreate() {
+/* 	public function actionQuickCreate() {
 		$users = UserChild::getNames();
 		$actionModel=new Actions;
 		$contactModel=new Contacts;
@@ -292,6 +299,11 @@ class ActionsController extends x2base {
                         }
 			
                         $contactTemp=$contactModel->attributes;
+                        // reset to blank if it's the default value
+			foreach($_POST['Contacts'] as $name => &$value) {
+				if($value == $contactModel->getAttributeLabel($name))
+					$value = '';
+			}
 			foreach($contactModel->attributes as $field=>$value){
                             if(isset($_POST['Contacts'][$field])){
                                 $contactModel->$field=$_POST['Contacts'][$field];
@@ -305,18 +317,13 @@ class ActionsController extends x2base {
 			$actionModel->assignedTo = $contactModel->assignedTo;
 			$actionModel->priority = $contactModel->priority;
 			
-			// reset to blank if it's the default value
-			$attributeLabels = Contacts::attributeLabels();
-			if($contactModel->address == $attributeLabels['address'])
-				$contactModel->address = '';
-			if($contactModel->city == $attributeLabels['city'])
-				$contactModel->city = '';
-			if($contactModel->state == $attributeLabels['state'])
-				$contactModel->state = '';
-			if($contactModel->zipcode == $attributeLabels['zipcode'])
-				$contactModel->zipcode = '';
-			if($contactModel->country == $attributeLabels['country'])
-				$contactModel->country = '';
+			
+                        
+                        $account = Accounts::model()->findByAttributes(array('name'=>$contactModel->company));
+                        if(isset($account))
+                                $contact->accountId = $account->id;
+                        else
+                                $contactModel->accountId = 0;
 			
 			$dueDate = strtotime($actionModel->dueDate);
 			$actionModel->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
@@ -353,7 +360,7 @@ class ActionsController extends x2base {
 			'contactModel'=>$contactModel,
 			'users'=>$users,
 		));
-	}
+	} */
         
         public function update($model, $oldAttributes, $api){
             
@@ -444,7 +451,7 @@ class ActionsController extends x2base {
 	
 	public function actionComplete($id) {
 		$model=$this->loadModel($id);
-		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || Yii::app()->user->getName()=='admin') {
+		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || Yii::app()->user->getName()=='admin') {
 			
 			if(isset($_POST['note']))
 				$model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
@@ -462,11 +469,11 @@ class ActionsController extends x2base {
                         $notif->viewed=0;
                         $notif->save();
 
-			$createNew = isset($_GET['createNew']) || (isset($_POST['submit']) && ($_POST['submit']=='completeNew'));
+			$createNew = isset($_GET['createNew']) || ((isset($_POST['submit']) && ($_POST['submit']=='completeNew')));
 			$redirect = isset($_GET['redirect']) || $createNew;
 			
 			if($redirect) {
-				if($model->associationType!='none') {	// if the action has an association
+				if($model->associationType!='none' && !$createNew) {	// if the action has an association
 					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
 				} else {	// no association
 					if($createNew)

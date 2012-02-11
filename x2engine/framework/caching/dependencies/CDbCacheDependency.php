@@ -17,7 +17,7 @@
  * component. It is this DB connection that is used to perform the query.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbCacheDependency.php 2949 2011-02-11 03:48:01Z qiang.xue $
+ * @version $Id: CDbCacheDependency.php 3204 2011-05-05 21:36:32Z alexander.makarow $
  * @package system.caching.dependencies
  * @since 1.0
  */
@@ -52,6 +52,7 @@ class CDbCacheDependency extends CCacheDependency
 	/**
 	 * PHP sleep magic method.
 	 * This method ensures that the database instance is set null because it contains resource handles.
+	 * @return array
 	 */
 	public function __sleep()
 	{

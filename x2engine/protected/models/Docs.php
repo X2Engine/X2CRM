@@ -44,6 +44,7 @@
  * The followings are the available columns in table 'x2_docs':
  * @property integer $id
  * @property string $title
+ * @property string $type
  * @property string $text
  * @property string $createdBy
  * @property integer $createDate
@@ -83,9 +84,10 @@ class Docs extends CActiveRecord
 			array('title, editPermissions', 'length', 'max'=>100),
 			array('createdBy', 'length', 'max'=>60),
 			array('updatedBy', 'length', 'max'=>40),
+			array('type', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, title, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions', 'safe', 'on'=>'search'),
+			array('id, title, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions, type', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -107,6 +109,7 @@ class Docs extends CActiveRecord
 	{
 		return array(
 			'id' => Yii::t('docs','ID'),
+			'type' => Yii::t('docs','Doc Type'),
 			'title' => Yii::t('docs','Title'),
 			'text' => Yii::t('docs','Text'),
 			'createdBy' => Yii::t('docs','Created By'),
@@ -129,6 +132,7 @@ class Docs extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
+		$criteria->compare('type',$this->type);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('text',$this->text,true);
 		$criteria->compare('createdBy',$this->createdBy,true);

@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Accounts::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 Yii::app()->clientScript->registerScript('detailVewFields', "
 function toggleField(field){
@@ -47,7 +47,7 @@ function toggleField(field){
 	highlightSave();
 }
 function highlightSave() {
-	$('#save-changes').css('background','yellow');
+	$('#save-changes').addClass('highlight'); //css('background','yellow');
 }
 ",CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('stopEdit','

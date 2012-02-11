@@ -19,8 +19,13 @@
  *
  * Usage is described at {@link CBaseController} and {@link CBaseController::widget}.
  *
+ * @property CBaseController $owner Owner/creator of this widget. It could be either a widget or a controller.
+ * @property string $id Id of the widget.
+ * @property CController $controller The controller that this widget belongs to.
+ * @property string $viewPath The directory containing the view files for this widget.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CWidget.php 3097 2011-03-17 20:01:03Z qiang.xue $
+ * @version $Id: CWidget.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web.widgets
  * @since 1.0
  */
@@ -32,7 +37,6 @@ class CWidget extends CBaseController
 	 * a prefix can be specified to differentiate its action IDs from others.
 	 * The same prefix should then also be used to configure this property
 	 * when the widget is used in a view of the controller.
-	 * @since 1.0.1
 	 */
 	public $actionPrefix;
 	/**
@@ -72,9 +76,10 @@ class CWidget extends CBaseController
 	 * Note, when creating URLs referring to the actions listed in this method,
 	 * make sure the action IDs are prefixed with {@link actionPrefix}.
 	 *
+	 * @return array
+	 *
 	 * @see actionPrefix
 	 * @see CController::actions
-	 * @since 1.0.1
 	 */
 	public static function actions()
 	{
@@ -187,8 +192,7 @@ class CWidget extends CBaseController
 	 * The view script file is named as "ViewName.php". A localized view file
 	 * may be returned if internationalization is needed. See {@link CApplication::findLocalizedFile}
 	 * for more details.
-	 * Since version 1.0.2, the view name can also refer to a path alias
-	 * if it contains dot characters.
+	 * The view name can also refer to a path alias if it contains dot characters.
 	 * @param string $viewName name of the view (without file extension)
 	 * @return string the view file path. False if the view file does not exist
 	 * @see CApplication::findLocalizedFile

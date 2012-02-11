@@ -24,6 +24,7 @@
  *         // Important: you need to specify url as 'controller/action',
  *         // not just as 'controller' even if default acion is used.
  *         array('label'=>'Home', 'url'=>array('site/index')),
+ *         // 'Products' menu item will be selected no matter which tag parameter value is since it's not specified.
  *         array('label'=>'Products', 'url'=>array('product/index'), 'items'=>array(
  *             array('label'=>'New Arrivals', 'url'=>array('product/new', 'tag'=>'new')),
  *             array('label'=>'Most Popular', 'url'=>array('product/index', 'tag'=>'popular')),
@@ -36,7 +37,7 @@
  *
  * @author Jonah Turnquist <poppitypop@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CMenu.php 3034 2011-03-08 18:22:29Z qiang.xue $
+ * @version $Id: CMenu.php 3520 2011-12-29 09:54:22Z mdomba $
  * @package zii.widgets
  * @since 1.1
  */
@@ -131,6 +132,12 @@ class CMenu extends CWidget
 	 * @since 1.1.4
 	 */
 	public $lastItemCssClass;
+	/**
+	 * @var string the CSS class that will be assigned to every item.
+	 * Defaults to null, meaning no such CSS class will be assigned.
+	 * @since 1.1.9
+	 */
+	public $itemCssClass;
 
 	/**
 	 * Initializes the menu widget.
@@ -182,10 +189,12 @@ class CMenu extends CWidget
 			$class=array();
 			if($item['active'] && $this->activeCssClass!='')
 				$class[]=$this->activeCssClass;
-			if($count===1 && $this->firstItemCssClass!='')
+			if($count===1 && $this->firstItemCssClass!==null)
 				$class[]=$this->firstItemCssClass;
-			if($count===$n && $this->lastItemCssClass!='')
+			if($count===$n && $this->lastItemCssClass!==null)
 				$class[]=$this->lastItemCssClass;
+			if($this->itemCssClass!==null)
+				$class[]=$this->itemCssClass;
 			if($class!==array())
 			{
 				if(empty($options['class']))
@@ -220,6 +229,7 @@ class CMenu extends CWidget
 	 * Renders the content of a menu item.
 	 * Note that the container and the sub-menus are not rendered here.
 	 * @param array $item the menu item to be rendered. Please see {@link items} on what data might be in the item.
+	 * @return string
 	 * @since 1.1.6
 	 */
 	protected function renderMenuItem($item)
@@ -258,7 +268,14 @@ class CMenu extends CWidget
 			{
 				$items[$i]['items']=$this->normalizeItems($item['items'],$route,$hasActiveChild);
 				if(empty($items[$i]['items']) && $this->hideEmptyItems)
+				{
 					unset($items[$i]['items']);
+					if(!isset($item['url']))
+					{
+						unset($items[$i]);
+						continue;
+					}
+				}
 			}
 			if(!isset($item['active']))
 			{

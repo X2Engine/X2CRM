@@ -12,7 +12,7 @@
  * CMysqlColumnSchema class describes the column meta data of a MySQL table.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CMysqlColumnSchema.php 2799 2011-01-01 19:31:13Z qiang.xue $
+ * @version $Id: CMysqlColumnSchema.php 3204 2011-05-05 21:36:32Z alexander.makarow $
  * @package system.db.schema.mysql
  * @since 1.0
  */
@@ -36,7 +36,7 @@ class CMysqlColumnSchema extends CDbColumnSchema
 			$this->type='string';
 	}
 
-	/*
+	/**
 	 * Extracts the default value for the column.
 	 * The value is typecasted to correct PHP type.
 	 * @param mixed $defaultValue the default value obtained from metadata

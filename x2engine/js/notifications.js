@@ -61,3 +61,9 @@ function updateNotifications() {
 		}
     });
 }
+
+function updateHistory() {
+	$('.action.list-view').each(function(i) {
+		$.fn.yiiListView.update($(this).attr('id'));
+	});
+}

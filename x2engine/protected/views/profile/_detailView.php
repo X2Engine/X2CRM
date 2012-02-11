@@ -76,7 +76,7 @@ function checkPictureExt(el, sbm) {
 	}
 }",CClientScript::POS_HEAD);
 
-$attributeLabels = ProfileChild::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 ?>
 <table class="details">
 	<tr>
@@ -113,12 +113,13 @@ $attributeLabels = ProfileChild::attributeLabels();
 	</tr>
 	<tr>
 		<td class="label"><?php echo Yii::t('profile','Signature'); ?></td>
-		<td><?php echo $model->getSignature(true); ?></td>
-		<td>
-			<?php echo CHtml::form('uploadPhoto/'.$model->id,'post',array('enctype'=>'multipart/form-data')); ?>
-			<?php echo CHtml::fileField('photo','',array('id'=>'photo','onchange'=>"checkPictureExt(this, '#avatarSubmit')"));?><br />
-			<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'avatarSubmit','disabled'=>'disabled'),array('class'=>'x2-button'));?>
-			<?php echo CHtml::endForm();?>
+		<td><div style="height:50px;width:0px;float:left;"></div><?php echo $model->getSignature(true); ?></td>
+		<td><?php if($model->username == Yii::app()->user->getName()) {
+				echo CHtml::form('uploadPhoto/'.$model->id,'post',array('enctype'=>'multipart/form-data'));
+				echo CHtml::fileField('photo','',array('id'=>'photo','onchange'=>"checkPictureExt(this, '#avatarSubmit')")).'<br />';
+				echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'avatarSubmit','disabled'=>'disabled'),array('class'=>'x2-button'));
+				echo CHtml::endForm();
+			} ?>
 		</td>
 	</tr>
 </table>

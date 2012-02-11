@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -46,11 +46,11 @@
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
 		// array('label'=>Yii::t('contacts','All Contacts')),
-		array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-		array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-		array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-		array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-		array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
+		array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
+		// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+		array('label'=>Yii::t('contacts','Import from Outlook'),'url'=>array('importContacts')),
+		array('label'=>Yii::t('contacts','Import from Template'),'url'=>array('importExcel')),
+		array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
 	);
 // } else {
 	// $heading = Yii::t('contacts','My Contacts'); 
@@ -96,7 +96,42 @@ $('.search-form form').submit(function(){
 )); */ ?> 
 </div><!-- search-form -->
 <?php
+$this->widget('application.components.X2GridView', array(
+	'id'=>'contacts-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$dataProvider,
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	'filter'=>$model,
+	// 'columns'=>$columns,
+	'modelName'=>'Contacts',
+	'viewName'=>'contacts',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>185,
+		'phone'=>95,
+		'lastUpdated'=>106,
+		'leadSource'=>133,
+		'gvControls'=>66,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
+			'name'=>'lastName',
+			'header'=>Yii::t('contacts','Name'),
+			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>true,
+	'enableTags'=>true,
+));
 
+/* 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
@@ -105,7 +140,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		// .CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listId,'clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider, //CActiveRecord::model('Contacts')->searchList($listId),
-	// 'filter'=>$model,
+	'filter'=>$model,
 	'columns'=>array(
 		//'id',
 		array(
@@ -139,5 +174,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		
 	),
-));
+)); */
 ?>

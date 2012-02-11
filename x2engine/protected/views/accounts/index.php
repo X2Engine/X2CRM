@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,7 +40,7 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('accounts','Accounts List')),
-	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
+	array('label'=>Yii::t('accounts','Create'), 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

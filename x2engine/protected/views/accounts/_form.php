@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -46,7 +46,7 @@ echo '<div class="form no-border" style="float:left;width:590px;">';
 		'id'=>'accounts-form',
 		'enableAjaxValidation'=>false,
 	));
-$attributeLabels = Accounts::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
 if(isset($_GET['version'])){
     $version=$_GET['version'];
@@ -79,7 +79,13 @@ $roles=array();
 foreach($temp as $link){
     $roles[]=$link->roleId;
 }
-
+/* x2temp */
+$groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+foreach($groups as $link){
+    $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
+    $roles[]=$tempRole->roleId; 
+}
+/* end x2temp */
 echo $form->errorSummary($model);
 ?>
 <div class="span-15" id="form-box" style="position:relative;overflow:hidden;height:700px;">

@@ -36,7 +36,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * for possible options (name-value pairs).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiDatePicker.php 3077 2011-03-14 13:23:12Z qiang.xue $
+ * @version $Id: CJuiDatePicker.php 3302 2011-06-23 14:36:00Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1
  */
@@ -116,7 +116,7 @@ class CJuiDatePicker extends CJuiInputWidget
 		$options=CJavaScript::encode($this->options);
 		$js = "jQuery('#{$id}').datepicker($options);";
 
-		if (isset($this->language))
+		if ($this->language!='' && $this->language!='en')
 		{
 			$this->registerScriptFile($this->i18nScriptFile);
 			$js = "jQuery('#{$id}').datepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional['{$this->language}'], {$options}));";

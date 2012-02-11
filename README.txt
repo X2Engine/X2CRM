@@ -4,22 +4,24 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.9.1 Changelog
+Beta 0.9.10 Changelog
 
-- Fixed major bug with View Action
-- Email fields on email contact and share contact now support multiple addresses
-- Improved navigation with contacts
-- Fixed bug with login screen
+- Bug fixes
+- Greatly improved form editor
+- Groups
+- Roles (field-level permissions)
+- Improved workflows
+- Improved email
 
-Welcome to X5CRM v0.9.9 (Beta 10)!  X5CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2CRM v0.9.9 (Beta 10)!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
-X5CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
+X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 
-X5CRM is unique in the crowded Customer Relationship Management (CRM) field with its compact, blog-style user interface. Interactive and collaborative tools which users are already familiar with from social networking sites such as; tagging, pictures, docs, web pages, group chat, discussions boards and rich mobile and iPad apps are combined within a compact and fast contact sales management application. Reps are able to make more sales contacts while leveraging the combined social intelligence of peers enabling them to add more value to their customer interactions resulting in higher close rates. 
+X2CRM is unique in the crowded Customer Relationship Management (CRM) field with its compact, blog-style user interface. Interactive and collaborative tools which users are already familiar with from social networking sites such as; tagging, pictures, docs, web pages, group chat, discussions boards and rich mobile and iPad apps are combined within a compact and fast contact sales management application. Reps are able to make more sales contacts while leveraging the combined social intelligence of peers enabling them to add more value to their customer interactions resulting in higher close rates. 
 
 1) INSTALLATION
 	
-To install X5CRM, please extract and upload the X2Engine folder to your web root.  Navigate to the location in your browser and you will be redirected to the installer.  Fill out the form, click install, and that's it!  You are now ready to use X5CRM.
+To install X2CRM, please extract and upload the X2Engine folder to your web root.  Navigate to the location in your browser and you will be redirected to the installer.  Fill out the form, click install, and that's it!  You are now ready to use X2CRM.
 	
 If you selected to install Dummy Data, you should have about 150 contacts and 120 actions installed, along with around 30 accounts to play around with.
 	
@@ -31,7 +33,7 @@ We greatly appreciate any support with internationalization!
 	
 3) TIPS AND TRICKS
 
-X5CRM is designed to be intuitive, but we have included a few tips and tricks to get you started!
+X2CRM is designed to be intuitive, but we have included a few tips and tricks to get you started!
 
 -To change the background color, menu color, language or any other setting, click on the Profile (username) button in the top right and select 'Settings.'
 

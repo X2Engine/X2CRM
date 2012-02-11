@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,26 +38,43 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->beginContent('/layouts/main'); ?>
+$this->beginContent('/layouts/main');
+$themeURL = Yii::app()->theme->getBaseUrl();
+Yii::app()->clientScript->registerScript('logos',"
+$(window).load(function(){
+	if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+		$('a').removeAttr('href');
+		alert('Please put the logo back');
+		window.location='http://www.x2engine.com';
+	}
+	var touchlogosrc = $('#x2touch-logo').attr('src');
+	var logosrc=$('#x2crm-logo').attr('src');
+	if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+		$('a').removeAttr('href');
+		alert('Please put the logo back');
+		window.location='http://www.x2engine.com';
+	}
+});    
+");
+
+$showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew';
+
+?>
 <div class="container">
-	<?php if(Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew'){ ?>
-	<div class="span-4" id="sidebar-left-box">
-		<?php }else{ ?>
-	<div class="span-0">
-		<?php } ?>
+	<div class="<?php echo $showSidebars? 'span-4' : 'span-0'; ?>" id="sidebar-left-box">
 		<div id="sidebar-left">
 		<!-- sidebar -->
 		<?php 
-			if(Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew'){
-				$this->beginWidget('zii.widgets.CPortlet',array(
-					'title'=>Yii::t('app','Actions'),
-					'id'=>'actions'
-				));
-				$this->widget('zii.widgets.CMenu',array(
-					'items'=>$this->menu,
-				));
-				$this->endWidget();
-
+			if($showSidebars) {
+				if(isset($this->actionMenu)) {
+					$this->beginWidget('zii.widgets.CPortlet',array(
+						'title'=>Yii::t('app','Actions'),
+						'id'=>'actions'
+					));
+					
+					$this->widget('zii.widgets.CMenu',array('items'=>$this->actionMenu));
+					$this->endWidget();
+				}
 				$this->widget('TopContacts',array(
 					'id'=>'top-contacts'
 				));
@@ -70,17 +87,13 @@ $this->beginContent('/layouts/main'); ?>
 		?>
 		</div>
 	</div>
-	<?php if(Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew'){ ?>
-	<div class="span-15" id="content-box">
-		<?php }else{ ?>
-	<div class="span-19" id="content-box">
-		<?php } ?>
+	<div class="<?php echo $showSidebars? 'span-15' : 'span-19'; ?>" id="content-box">
 		<div id="content">
-		<!-- content -->
-		<?php echo $content; ?>
+			<!-- content -->
+			<?php echo $content; ?>
 		</div>
 	</div>
-	<div class="span-5 last" id="sidebar-right-box">
+	<div class="<?php echo $showSidebars? 'span-5' : 'span-0'; ?> last right" id="sidebar-right-box">
 		<div id="sidebar-right">
 		<?php
 		

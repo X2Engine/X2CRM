@@ -38,7 +38,7 @@
  ********************************************************************************/
 
 function highlightSave() {
-	$('#save-changes').css('background','yellow');
+	$('#save-changes').addClass('highlight'); //css('background','yellow');
 }
 $(document).ready(function() {
 	$('#backgroundColor').modcoder_excolor({

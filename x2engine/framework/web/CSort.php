@@ -36,10 +36,15 @@
  * represent the attribute names, while the values represent the virtual attribute definitions.
  * For more details, please check the documentation about {@link attributes}.
  *
+ * @property string $orderBy The order-by columns represented by this sort object.
+ * This can be put in the ORDER BY clause of a SQL statement.
+ * @property array $directions Sort directions indexed by attribute names.
+ * The sort direction is true if the corresponding attribute should be
+ * sorted in descending order.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CSort.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CSort.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
- * @since 1.0.1
  */
 class CSort extends CComponent
 {
@@ -172,7 +177,6 @@ class CSort extends CComponent
 	/**
 	 * @var array the additional GET parameters (name=>value) that should be used when generating sort URLs.
 	 * Defaults to null, meaning using the currently available GET parameters.
-	 * @since 1.0.9
 	 */
 	public $params;
 
@@ -325,7 +329,7 @@ class CSort extends CComponent
 		if($this->_directions===null)
 		{
 			$this->_directions=array();
-			if(isset($_GET[$this->sortVar]))
+			if(isset($_GET[$this->sortVar]) && is_string($_GET[$this->sortVar]))
 			{
 				$attributes=explode($this->separators[0],$_GET[$this->sortVar]);
 				foreach($attributes as $attribute)

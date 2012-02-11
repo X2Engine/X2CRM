@@ -11,8 +11,16 @@
 /**
  * CUniqueValidator validates that the attribute value is unique in the corresponding database table.
  *
+ * When using the {@link message} property to define a custom error message, the message
+ * may contain additional placeholders that will be replaced with the actual content. In addition
+ * to the "{attribute}" placeholder, recognized by all validators (see {@link CValidator}),
+ * CUniqueValidator allows for the following placeholders to be specified:
+ * <ul>
+ * <li>{value}: replaced with current value of the attribute.</li>
+ * </ul>
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CUniqueValidator.php 2799 2011-01-01 19:31:13Z qiang.xue $
+ * @version $Id: CUniqueValidator.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.validators
  * @since 1.0
  */
@@ -34,7 +42,6 @@ class CUniqueValidator extends CValidator
 	 * the class of the object currently being validated.
 	 * You may use path alias to reference a class name here.
 	 * @see attributeName
-	 * @since 1.0.8
 	 */
 	public $className;
 	/**
@@ -42,14 +49,12 @@ class CUniqueValidator extends CValidator
 	 * used to look for the attribute value being validated. Defaults to null,
 	 * meaning using the name of the attribute being validated.
 	 * @see className
-	 * @since 1.0.8
 	 */
 	public $attributeName;
 	/**
 	 * @var array additional query criteria. This will be combined with the condition
 	 * that checks if the attribute value exists in the corresponding table column.
 	 * This array will be used to instantiate a {@link CDbCriteria} object.
-	 * @since 1.0.8
 	 */
 	public $criteria=array();
 	/**
@@ -104,8 +109,11 @@ class CUniqueValidator extends CValidator
 			{
 				if($column->isPrimaryKey)  // primary key is modified and not unique
 					$exists=$object->getOldPrimaryKey()!=$object->getPrimaryKey();
-				else // non-primary key, need to exclude the current record based on PK
-					$exists=$objects[0]->getPrimaryKey()!=$object->getOldPrimaryKey();
+				else
+				{
+					// non-primary key, need to exclude the current record based on PK
+					$exists=array_shift($objects)->getPrimaryKey()!=$object->getOldPrimaryKey();
+				}
 			}
 			else
 				$exists=$n>1;

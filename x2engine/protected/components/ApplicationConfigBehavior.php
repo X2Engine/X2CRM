@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -58,10 +58,26 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Load configuration that cannot be put in config/main
 	 */
 	public function beginRequest() {
-		
 		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
 		$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-		
+
+		// die( var_dump($this->owner->request)); //->getRoute();
+		if(!Yii::app()->user->isGuest) {
+			$session = Session::model()->findByAttributes(array('user'=>Yii::app()->user->getName()));
+			if(isset($session)) {
+				if(time()-$session->lastUpdated > $this->owner->params->admin->timeout) {
+					$session->delete();
+					Yii::app()->user->logout();
+				} else {
+					$session->lastUpdated = time();
+					$session->save();
+				}
+			} else {
+				Yii::app()->user->logout();
+				// $this->redirect(Yii::app()->controller->createUrl('site/logout'));
+			}
+		}
+
 		$adminProf = ProfileChild::model()->findByPk(1);
 
 		$this->owner->params->currency = $this->owner->params->admin->currency;

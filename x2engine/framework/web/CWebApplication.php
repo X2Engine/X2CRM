@@ -36,8 +36,23 @@
  * For example, the controller 'article' is defined by the class 'ArticleController'
  * which is in the file 'protected/controllers/ArticleController.php'.
  *
+ * @property IAuthManager $authManager The authorization manager component.
+ * @property CAssetManager $assetManager The asset manager component.
+ * @property CHttpSession $session The session component.
+ * @property CWebUser $user The user session information.
+ * @property IViewRenderer $viewRenderer The view renderer.
+ * @property CClientScript $clientScript The client script manager.
+ * @property IWidgetFactory $widgetFactory The widget factory.
+ * @property CThemeManager $themeManager The theme manager.
+ * @property CTheme $theme The theme used currently. Null if no theme is being used.
+ * @property CController $controller The currently active controller.
+ * @property string $controllerPath The directory that contains the controller classes. Defaults to 'protected/controllers'.
+ * @property string $viewPath The root directory of view files. Defaults to 'protected/views'.
+ * @property string $systemViewPath The root directory of system view files. Defaults to 'protected/views/system'.
+ * @property string $layoutPath The root directory of layout files. Defaults to 'protected/views/layouts'.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CWebApplication.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CWebApplication.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
  * @since 1.0
  */
@@ -99,7 +114,6 @@ class CWebApplication extends CApplication
 	private $_systemViewPath;
 	private $_layoutPath;
 	private $_controller;
-	private $_homeUrl;
 	private $_theme;
 
 
@@ -247,72 +261,6 @@ class CWebApplication extends CApplication
 	}
 
 	/**
-	 * Creates a relative URL based on the given controller and action information.
-	 * @param string $route the URL route. This should be in the format of 'ControllerID/ActionID'.
-	 * @param array $params additional GET parameters (name=>value). Both the name and value will be URL-encoded.
-	 * @param string $ampersand the token separating name-value pairs in the URL.
-	 * @return string the constructed URL
-	 */
-	public function createUrl($route,$params=array(),$ampersand='&')
-	{
-		return $this->getUrlManager()->createUrl($route,$params,$ampersand);
-	}
-
-	/**
-	 * Creates an absolute URL based on the given controller and action information.
-	 * @param string $route the URL route. This should be in the format of 'ControllerID/ActionID'.
-	 * @param array $params additional GET parameters (name=>value). Both the name and value will be URL-encoded.
-	 * @param string $schema schema to use (e.g. http, https). If empty, the schema used for the current request will be used.
-	 * @param string $ampersand the token separating name-value pairs in the URL.
-	 * @return string the constructed URL
-	 */
-	public function createAbsoluteUrl($route,$params=array(),$schema='',$ampersand='&')
-	{
-		$url=$this->createUrl($route,$params,$ampersand);
-		if(strpos($url,'http')===0)
-			return $url;
-		else
-			return $this->getRequest()->getHostInfo($schema).$url;
-	}
-
-	/**
-	 * Returns the relative URL for the application.
-	 * This is a shortcut method to {@link CHttpRequest::getBaseUrl()}.
-	 * @param boolean $absolute whether to return an absolute URL. Defaults to false, meaning returning a relative one.
-	 * This parameter has been available since 1.0.2.
-	 * @return string the relative URL for the application
-	 * @see CHttpRequest::getBaseUrl()
-	 */
-	public function getBaseUrl($absolute=false)
-	{
-		return $this->getRequest()->getBaseUrl($absolute);
-	}
-
-	/**
-	 * @return string the homepage URL
-	 */
-	public function getHomeUrl()
-	{
-		if($this->_homeUrl===null)
-		{
-			if($this->getUrlManager()->showScriptName)
-				return $this->getRequest()->getScriptUrl();
-			else
-				return $this->getRequest()->getBaseUrl().'/';
-		}
-		else
-			return $this->_homeUrl;
-	}
-
-	/**
-	 * @param string $value the homepage URL
-	 */
-	public function setHomeUrl($value)
-	{
-		$this->_homeUrl=$value;
-	}
-
-	/**
 	 * Creates the controller and performs the specified action.
 	 * @param string $route the route of the current request. See {@link createController} for more details.
 	 * @throws CHttpException if the controller could not be created.
@@ -413,7 +361,6 @@ class CWebApplication extends CApplication
 	 * Parses a path info into an action ID and GET variables.
 	 * @param string $pathInfo path info
 	 * @return string action ID
-	 * @since 1.0.3
 	 */
 	protected function parseActionParams($pathInfo)
 	{
@@ -438,7 +385,6 @@ class CWebApplication extends CApplication
 
 	/**
 	 * @param CController $value the currently active controller
-	 * @since 1.0.6
 	 */
 	public function setController($value)
 	{
@@ -541,7 +487,6 @@ class CWebApplication extends CApplication
 	 * @param CController $controller the controller
 	 * @param CAction $action the action
 	 * @return boolean whether the action should be executed.
-	 * @since 1.0.4
 	 */
 	public function beforeControllerAction($controller,$action)
 	{
@@ -555,18 +500,15 @@ class CWebApplication extends CApplication
 	 * after all controller actions.
 	 * @param CController $controller the controller
 	 * @param CAction $action the action
-	 * @since 1.0.4
 	 */
 	public function afterControllerAction($controller,$action)
 	{
 	}
 
 	/**
-	 * Searches for a module by its ID.
-	 * This method is used internally. Do not call this method.
+	 * Do not call this method. This method is used internally to search for a module by its ID.
 	 * @param string $id module ID
 	 * @return CWebModule the module that has the specified ID. Null if no module is found.
-	 * @since 1.0.3
 	 */
 	public function findModule($id)
 	{

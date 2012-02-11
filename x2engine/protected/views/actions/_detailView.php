@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Actions::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 if($model->complete=='Yes')
 	$status = Yii::t('actions','Finished');
@@ -47,17 +47,6 @@ else {
 		$status = Yii::t('actions','Incomplete');
 	else
 		$status = Yii::t('actions','Overdue');
-}
-
-$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
-$nonCustom=array();
-$custom=array();
-foreach($fields as $field){
-    if($field->custom==0){
-        $nonCustom[$field->fieldName]=$field;
-    }else{
-        $custom[$field->fieldName]=$field;
-    }
 }
 
 if($model->type=='note' || $model->type=='attachment') {
@@ -89,70 +78,45 @@ if($model->type=='note' || $model->type=='attachment') {
 ?>
 <table class="details">
 	<tr>
-                <?php if($nonCustom['actionDescription']->visible==1){ ?>
 		<td class="label" width="20%">
 			<?php echo $attributeLabels['actionDescription']; ?>
 		</td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
 			<?php echo $this->convertUrls($model->actionDescription); ?>
 		</td>
-                <?php } ?>
 	</tr>
 <?php
 if ($model->associationType!="none") {
 ?>
 	<tr>
-                <?php if($nonCustom['associationName']->visible==1){ ?>
 		<td class="label" width="20%">
 			<?php echo $attributeLabels['associationName']; ?>
 		</td>
 		<td colspan="3">
 			<?php echo CHtml::link($model->associationName,array("./".$model->associationType."/view","id"=>$model->associationId)); ?>
 		</td>
-                <?php } ?>
 	</tr>
 	<tr>
 <?php } ?>
-                <?php if($nonCustom['assignedTo']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
 		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : UserChild::getUserLinks($model->assignedTo); ?></td>
-                <?php } ?>
-                <?php if($nonCustom['dueDate']->visible==1){ ?>
 		<td class="label" width="20%"><?php echo $attributeLabels['dueDate']; ?>
 		<td><b><?php echo date('Y-m-d',$model->dueDate); ?></b> <?php echo date('g:ia',$model->dueDate); ?></td>
-                <?php } ?>
 	</tr>
 	<tr>
-                <?php if($nonCustom['priority']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['priority']; ?></td>
 		<td><b><?php echo Yii::t('actions',$model->priority); ?></b></td>
-                <?php } ?>
-                <?php if($nonCustom['createDate']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['createDate']; ?></td>
 		<td><b><?php echo date('Y-m-d',$model->createDate); ?></b> <?php echo date('g:ia',$model->createDate); ?></b></td>
-                <?php } ?>
 	</tr>
 	<tr>
-                <?php if($nonCustom['complete']->visible==1){ ?>
 		<td class="label"><?php echo Yii::t('actions','Status'); ?></td>
 		<td><b><?php echo $status; ?></b></td>
-                <?php } ?>
-                <?php if($nonCustom['lastUpdated']->visible==1){ ?>
 		<td class="label"><?php echo $attributeLabels['lastUpdated']; ?></td>
 		<td><b><?php echo date('Y-m-d',$model->lastUpdated); ?></b> <?php echo date('g:ia',$model->lastUpdated); ?></b></td>
-                <?php } ?>
 	</tr>
         <?php 
         
-            foreach($custom as $fieldName=>$field){
-                
-                if($field->visible==1){ 
-		echo "<tr>
-                <td class=\"label\"><b>".$attributeLabels[$fieldName]."</b></td>
-		<td colspan='5'>".Yii::t('actions',$model->$fieldName)."</td>
-                </tr>";
-                }
-            }
         
         ?>
 </table>

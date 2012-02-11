@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,12 +40,17 @@
 
 $this->menu = array(
 	array('label'=>Yii::t('accounts','Accounts List'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-	array('label'=>Yii::t('accounts','View Account')),
-	array('label'=>Yii::t('accounts','Update Account'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('accounts','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('accounts','View')),
+	array('label'=>Yii::t('accounts','Update'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('accounts','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+);
+
+$this->actionMenu = array(
+	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleForm("#attachment-form",200); return false;')),
+	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
 );
 ?>
 
@@ -56,20 +61,56 @@ $this->menu = array(
 	'enableAjaxValidation'=>false,
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form));
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'form'=>$form,'modelName'=>'accounts'));
 
 $this->endWidget();
 ?>
-<a class="x2-button" id="save-changes" href="#" onClick="submitForm('accounts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
-<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
-<a class="x2-button" href="shareAccount/<?php echo $model->id;?>"><span><?php echo Yii::t('accounts','Share Account'); ?></span></a>
-<br /><br />
+
 
 <div id="attachment-form" style="display:none;">
 	<?php $this->widget('Attachments',array('type'=>'accounts','associationId'=>$model->id)); ?>
 </div>
 <?php
-
+$contactModel=new Contacts();
+$contactDataProvider=new CActiveDataProvider('Contacts',array(
+    'criteria'=>array(
+            'order'=>'lastName DESC, firstName DESC',
+            'condition'=>'company='.$model->id
+    )
+));
+$this->widget('application.components.X2GridView', array(
+	'id'=>'contacts-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<h2>'.Yii::t('contacts','Associated Contacts').'</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$contactDataProvider,
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	'filter'=>$contactModel,
+	// 'columns'=>$columns,
+	'modelName'=>'Contacts',
+	'viewName'=>'contacts',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>234,
+		'email'=>108,
+		'leadsource'=>128,
+		'assignedTo'=>115,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
+			'name'=>'name',
+			'header'=>Yii::t('contacts','Name'),
+			'value'=>'CHtml::link($data->name,array("contacts/".$data->id))',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>true,
+));
+echo "<br />";
 $this->widget('InlineActionForm',
 	array(
 		'associationType'=>'accounts',

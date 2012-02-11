@@ -124,12 +124,14 @@ class WorkflowController extends x2base {
 			 if(isset($_POST['WorkflowStages'])) {
 				$validStages = true;
 				$i = 0;
-				foreach($_POST['WorkflowStages']['name'] as &$stageData) {
+				foreach($_POST['WorkflowStages']['name'] as &$stageName) {
 					
 					$stageModel = new WorkflowStage;
-					$stageModel->name = $stageData;
+					$stageModel->name = $stageName;
 					$stageModel->conversionRate = $_POST['WorkflowStages']['conversionRate'][$i];
 					$stageModel->value = $_POST['WorkflowStages']['value'][$i];
+					$stageModel->requirePrevious = $_POST['WorkflowStages']['requirePrevious'][$i];
+					$stageModel->requireComment = $_POST['WorkflowStages']['requireComment'][$i];
 					
 					$i++;
 					$stageModel->stageNumber = $i;
@@ -183,6 +185,8 @@ class WorkflowController extends x2base {
 					$stageModel->name = $stageData;
 					$stageModel->conversionRate = $_POST['WorkflowStages']['conversionRate'][$i];
 					$stageModel->value = $_POST['WorkflowStages']['value'][$i];
+					$stageModel->requirePrevious = $_POST['WorkflowStages']['requirePrevious'][$i];
+					$stageModel->requireComment = $_POST['WorkflowStages']['requireComment'][$i];
 					
 					$i++;
 					$stageModel->stageNumber = $i;
@@ -236,6 +240,7 @@ class WorkflowController extends x2base {
 	
 		if(is_numeric($workflowId) && is_numeric($modelId) && ctype_alpha($type)) {
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+			// echo var_dump($workflowStatus);
 			echo Workflow::renderWorkflow($workflowStatus);
 		}
 	}
@@ -247,58 +252,95 @@ class WorkflowController extends x2base {
 			
 			if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
 				&& (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
-				$action = new Actions;
+				
+				$action = new Actions('workflow');
 				$action->associationId = $modelId;
 				$action->associationType = $type;
 				$action->assignedTo = Yii::app()->user->getName();
+				$action->updatedBy = Yii::app()->user->getName();
 				$action->complete = 'No';
 				$action->type = 'workflow';
 				$action->visibility = 1;
 				$action->createDate = time();
-				$action->actionDescription = $workflowId.':'.$stageNumber;
+				$action->lastUpdated = time();
+				$action->workflowId = (int)$workflowId;
+				$action->stageNumber = (int)$stageNumber;
+				// $action->actionDescription = '';
 				$action->save();
-				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+				// echo var_dump($action->getErrors());
+				// echo var_dump($action->attributes);
+				// echo var_dump($action->save());
+				// echo'derp';
 			}
-			echo Workflow::renderWorkflow($workflowStatus);
 		}
+		$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+		echo Workflow::renderWorkflow($workflowStatus);
 	}
 	
-	public function actionCompleteStage($workflowId,$stageNumber,$modelId,$type) {
+	public function actionCompleteStage($workflowId,$stageNumber,$modelId,$type,$comment = '') {
 		if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
 
+			$comment = trim($comment);
+		
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 			$stageCount = count($workflowStatus)-1;
 			
-			if(isset($workflowStatus[$stageNumber]['createDate']) && empty($workflowStatus[$stageNumber]['completeDate'])) {
+			$stage = &$workflowStatus[$stageNumber];
 			
-				// find selected stage (and duplicates)
-				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
-					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','actionDescription'=>$workflowId.':'.$stageNumber),
-					new CDbCriteria(array('order'=>'createDate DESC'))
-				);
-				if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
-				for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
-					$actionModels[$i]->delete();
-
-				$actionModels[0]->completeDate = time();	// set completeDate and save model
-				$actionModels[0]->complete = 'Yes';
-				$actionModels[0]->completedBy = Yii::app()->user->getName();
-				$actionModels[0]->save();
-				
-				if($stageNumber < $stageCount && !isset($workflowStatus[$stageNumber+1]['createDate'])) {	// if this isn't the final stage,
-					$nextAction = new Actions;														// start the next one (unless there is already one)
-					$nextAction->associationId = $modelId;
-					$nextAction->associationType = $type;
-					$nextAction->assignedTo = Yii::app()->user->getName();
-					$nextAction->type = 'workflow';
-					$nextAction->complete = 'No';
-					$nextAction->visibility = 1;
-					$nextAction->createDate = time();
-					$nextAction->actionDescription = $workflowId.':'.($stageNumber+1);
-					$nextAction->save();
+			if(isset($stage['createDate']) && empty($stage['completeDate'])) {
+			
+				$previousCheck = true;
+				if($stage['requirePrevious']) {
+					for($i=1; $i<$stageNumber; $i++) {
+						if(!$workflowStatus[$i]['complete']) {
+							$previousCheck = false;
+							$workflowStatus[$i]['highlight'] = true;
+						}
+					}
 				}
+				// is this stage is OK to complete? if a comment is required, then is $comment empty?
+				if($previousCheck && (!$stage['requireComment'] || ($stage['requireComment'] && !empty($comment)))) {
+				
+				
+					// find selected stage (and duplicates)
+					$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
+						array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
+						new CDbCriteria(array('order'=>'createDate DESC'))
+					);
+					
+					if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
+					for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
+						$actionModels[$i]->delete();
 
-				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
+					$actionModels[0]->completeDate = time();	// set completeDate and save model
+					$actionModels[0]->complete = 'Yes';
+					$actionModels[0]->completedBy = Yii::app()->user->getName();
+					// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
+					$actionModels[0]->actionDescription = $comment;
+					$actionModels[0]->save();
+					
+					for($i=$stageNumber+1; $i<=$stageCount; $i++) {
+						if(empty($workflowStatus[$i]['createDate'])) {
+							$nextAction = new Actions('workflow');					// start the next one (unless there is already one)
+							$nextAction->associationId = $modelId;
+							$nextAction->associationType = $type;
+							$nextAction->assignedTo = Yii::app()->user->getName();
+							$nextAction->type = 'workflow';
+							$nextAction->complete = 'No';
+							$nextAction->visibility = 1;
+							$nextAction->createDate = time();
+							$nextAction->workflowId = $workflowId;
+							$nextAction->stageNumber = $i;
+							// $nextAction->actionDescription = $comment;
+							$nextAction->save();
+							break;
+						}
+					}
+					// if($stageNumber < $stageCount && empty($workflowStatus[$stageNumber+1]['createDate'])) {	// if this isn't the final stage,
+						
+					// }
+					$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
+				}
 			}
 			echo Workflow::renderWorkflow($workflowStatus);
 		}
@@ -314,26 +356,31 @@ class WorkflowController extends x2base {
 
 				// find selected stage (and duplicates)
 				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
-					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','actionDescription'=>$workflowId.':'.$stageNumber),
+					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
+
 				if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
 				for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
 					$actionModels[$i]->delete();
 
 				if($workflowStatus[$stageNumber]['complete']) {
+					$actionModels[0]->setScenario('workflow');
 					$actionModels[0]->complete = 'No';
-					$actionModels[0]->completeDate = 0;
+					$actionModels[0]->completeDate = null;
 					$actionModels[0]->completedBy = '';
 					$actionModels[0]->save();
+					
+					// delete all incomplete stages after this one
+					// CActiveRecord::model('Actions')->deleteAll(new CDbCriteria(
+						// array('condition'=>"associationId=$modelId AND associationType='$type' AND type='workflow' AND workflowId=$workflowId AND stageNumber > $stageNumber AND (completeDate IS NULL OR completeDate=0)")
+					// ));
+					
+					
 				} else {
-					// delete this and all subsequent stages
-					for($i=$stageNumber;$i<=$stageCount;$i++) {
-						CActiveRecord::model('Actions')->deleteAllByAttributes(
-							array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','actionDescription'=>$workflowId.':'.$i)
-						);
-					}
-
+					CActiveRecord::model('Actions')->deleteAll(new CDbCriteria(
+						array('condition'=>"associationId=$modelId AND associationType='$type' AND type='workflow' AND workflowId=$workflowId AND stageNumber >= $stageNumber")
+					));
 				}
 				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 			}
@@ -357,10 +404,10 @@ class WorkflowController extends x2base {
 			->select('x2_contacts.*')
 			->from('x2_contacts')
 			->join('x2_actions','x2_contacts.id = x2_actions.associationId')
-			->where('x2_actions.actionDescription="'.$actionDescription.'" AND x2_actions.associationType="contacts" AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo="'.Yii::app()->user->getName().'")')
+			->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='contacts' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo='".Yii::app()->user->getName()."')")
 			->getText();
 		
-		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where('x2_actions.actionDescription="'.$actionDescription.'" AND x2_actions.associationType="contacts"')->queryScalar();
+		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='contacts'")->queryScalar();
 
 		$contactsDataProvider = new CSqlDataProvider($contactsSql,array(
 			// 'criteria'=>$criteria,
@@ -380,10 +427,10 @@ class WorkflowController extends x2base {
 			->select('x2_sales.*')
 			->from('x2_sales')
 			->join('x2_actions','x2_sales.id = x2_actions.associationId')
-			->where('x2_actions.actionDescription="'.$actionDescription.'" AND x2_actions.associationType="sales"')
+			->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='sales'")
 			->getText();
 		
-		$salesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where('x2_actions.actionDescription="'.$actionDescription.'" AND x2_actions.associationType="sales"')->queryScalar();
+		$salesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='sales'")->queryScalar();
 
 		$salesDataProvider = new CSqlDataProvider($salesSql,array(
 			// 'criteria'=>$criteria,

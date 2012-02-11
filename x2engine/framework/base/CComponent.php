@@ -66,7 +66,7 @@
  *
  * Both property names and event names are case-insensitive.
  *
- * Starting from version 1.0.2, CComponent supports behaviors. A behavior is an
+ * CComponent supports behaviors. A behavior is an
  * instance of {@link IBehavior} which is attached to a component. The methods of
  * the behavior can be invoked as if they belong to the component. Multiple behaviors
  * can be attached to the same component.
@@ -83,7 +83,7 @@
  * is attached to.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 3066 2011-03-13 14:22:55Z qiang.xue $
+ * @version $Id: CComponent.php 3521 2011-12-29 22:10:57Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -101,7 +101,7 @@ class CComponent
 	 * $handlers=$component->eventName;
 	 * </pre>
 	 * @param string $name the property name or event name
-	 * @return mixed the property value, event handlers attached to the event, or the named behavior (since version 1.0.2)
+	 * @return mixed the property value, event handlers attached to the event, or the named behavior
 	 * @throws CException if the property or event is not defined
 	 * @see __set
 	 */
@@ -142,6 +142,7 @@ class CComponent
 	 * </pre>
 	 * @param string $name the property name or the event name
 	 * @param mixed $value the property value or callback
+	 * @return mixed
 	 * @throws CException if the property/event is not defined or the property is read only.
 	 * @see __get
 	 */
@@ -179,7 +180,7 @@ class CComponent
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using isset() to detect if a component property is set or not.
 	 * @param string $name the property name or the event name
-	 * @since 1.0.1
+	 * @return boolean
 	 */
 	public function __isset($name)
 	{
@@ -198,7 +199,7 @@ class CComponent
 			foreach($this->_m as $object)
 			{
 				if($object->getEnabled() && (property_exists($object,$name) || $object->canGetProperty($name)))
-					return true;
+					return $object->$name!==null;
 			}
 		}
 		return false;
@@ -210,7 +211,7 @@ class CComponent
 	 * to allow using unset() to set a component property to be null.
 	 * @param string $name the property name or the event name
 	 * @throws CException if the property is read only.
-	 * @since 1.0.1
+	 * @return mixed
 	 */
 	public function __unset($name)
 	{
@@ -249,7 +250,6 @@ class CComponent
 	 * @param string $name the method name
 	 * @param array $parameters method parameters
 	 * @return mixed the method return value
-	 * @since 1.0.2
 	 */
 	public function __call($name,$parameters)
 	{
@@ -263,7 +263,7 @@ class CComponent
 		}
 		if(class_exists('Closure', false) && $this->canGetProperty($name) && $this->$name instanceof Closure)
 			return call_user_func_array($this->$name, $parameters);
-		throw new CException(Yii::t('yii','{class} does not have a method named "{name}".',
+		throw new CException(Yii::t('yii','{class} and its behaviors do not have a method or closure named "{name}".',
 			array('{class}'=>get_class($this), '{name}'=>$name)));
 	}
 
@@ -272,7 +272,6 @@ class CComponent
 	 * The name 'asa' stands for 'as a'.
 	 * @param string $behavior the behavior name
 	 * @return IBehavior the behavior object, or null if the behavior does not exist
-	 * @since 1.0.2
 	 */
 	public function asa($behavior)
 	{
@@ -292,7 +291,6 @@ class CComponent
 	 * )
 	 * </pre>
 	 * @param array $behaviors list of behaviors to be attached to the component
-	 * @since 1.0.2
 	 */
 	public function attachBehaviors($behaviors)
 	{
@@ -302,7 +300,6 @@ class CComponent
 
 	/**
 	 * Detaches all behaviors from the component.
-	 * @since 1.0.2
 	 */
 	public function detachBehaviors()
 	{
@@ -323,7 +320,6 @@ class CComponent
 	 * @param mixed $behavior the behavior configuration. This is passed as the first
 	 * parameter to {@link YiiBase::createComponent} to create the behavior object.
 	 * @return IBehavior the behavior object
-	 * @since 1.0.2
 	 */
 	public function attachBehavior($name,$behavior)
 	{
@@ -339,7 +335,6 @@ class CComponent
 	 * The behavior's {@link IBehavior::detach} method will be invoked.
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
 	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
-	 * @since 1.0.2
 	 */
 	public function detachBehavior($name)
 	{
@@ -354,7 +349,6 @@ class CComponent
 
 	/**
 	 * Enables all behaviors attached to this component.
-	 * @since 1.0.2
 	 */
 	public function enableBehaviors()
 	{
@@ -367,7 +361,6 @@ class CComponent
 
 	/**
 	 * Disables all behaviors attached to this component.
-	 * @since 1.0.2
 	 */
 	public function disableBehaviors()
 	{
@@ -383,7 +376,6 @@ class CComponent
 	 * A behavior is only effective when it is enabled.
 	 * A behavior is enabled when first attached.
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
-	 * @since 1.0.2
 	 */
 	public function enableBehavior($name)
 	{
@@ -395,7 +387,6 @@ class CComponent
 	 * Disables an attached behavior.
 	 * A behavior is only effective when it is enabled.
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
-	 * @since 1.0.2
 	 */
 	public function disableBehavior($name)
 	{
@@ -634,7 +625,7 @@ class CComponent
  * that are not invoked yet will not be invoked anymore.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 3066 2011-03-13 14:22:55Z qiang.xue $
+ * @version $Id: CComponent.php 3521 2011-12-29 22:10:57Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -686,7 +677,7 @@ class CEvent extends CComponent
  * TextAlign::Right.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 3066 2011-03-13 14:22:55Z qiang.xue $
+ * @version $Id: CComponent.php 3521 2011-12-29 22:10:57Z mdomba $
  * @package system.base
  * @since 1.0
  */

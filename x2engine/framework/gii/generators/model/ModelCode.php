@@ -7,6 +7,7 @@ class ModelCode extends CCodeModel
 	public $modelClass;
 	public $modelPath='application.models';
 	public $baseClass='CActiveRecord';
+	public $buildRelations=true;
 
 	/**
 	 * @var array list of candidate relation code. The array are indexed by AR class names and relation names.
@@ -25,7 +26,7 @@ class ModelCode extends CCodeModel
 			array('modelPath', 'validateModelPath', 'skipOnError'=>true),
 			array('baseClass, modelClass', 'validateReservedWord', 'skipOnError'=>true),
 			array('baseClass', 'validateBaseClass', 'skipOnError'=>true),
-			array('tablePrefix, modelPath, baseClass', 'sticky'),
+			array('tablePrefix, modelPath, baseClass, buildRelations', 'sticky'),
 		));
 	}
 
@@ -37,6 +38,7 @@ class ModelCode extends CCodeModel
 			'modelPath'=>'Model Path',
 			'modelClass'=>'Model Class',
 			'baseClass'=>'Base Class',
+			'buildRelations'=>'Build Relations',
 		));
 	}
 
@@ -144,7 +146,7 @@ class ModelCode extends CCodeModel
 
 	/*
 	 * Check that all database field names conform to PHP variable naming rules
-	 * For example mysql allows field name like "2011aa", but PHP does not allow variable liek "$model->2011aa"
+	 * For example mysql allows field name like "2011aa", but PHP does not allow variable like "$model->2011aa"
 	 * @param CDbTableSchema $table the table schema object
 	 * @return string the invalid table column name. Null if no error.
 	 */
@@ -152,7 +154,7 @@ class ModelCode extends CCodeModel
 	{
 		foreach($table->columns as $column)
 		{
-			if(!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/',$column->name))
+			if(!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/',$column->name))
 				return $table->name.'.'.$column->name;
 		}
 	}
@@ -269,6 +271,8 @@ class ModelCode extends CCodeModel
 
 	protected function generateRelations()
 	{
+		if(!$this->buildRelations)
+			return array();
 		$relations=array();
 		foreach(Yii::app()->db->schema->getTables() as $table)
 		{

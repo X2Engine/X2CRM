@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Sales::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 Yii::app()->clientScript->registerScript('updateWorkflow',"
 
@@ -89,7 +89,7 @@ function showField(field,focus){
 	highlightSave();
 }
 function highlightSave() {
-	$('#save-changes').css('background','yellow');
+	$('#save-changes').addClass('highlight'); //css('background','yellow');
 }
 ",CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('stopEdit','
@@ -190,17 +190,6 @@ foreach($fields as $field){
 			$workflowStatus = Workflow::getWorkflowStatus($currentWorkflow,$model->id,'sales');	// true = include dropdowns
 			echo Workflow::renderWorkflow($workflowStatus);
 		?></div></td>
-	</tr>
-	<tr>
-		<td class="label">
-			<?php echo $attributeLabels['description']; ?>
-		</td>
-		<td colspan="3" class="text-field" id="description" onclick="showField(this,true)"><div class="spacer"></div>
-			<div class="detail-field"><?php echo $this->convertUrls($model->description); 
-				// replace any CR or LF characters with <br />, maximum of 2 in a row
-			?></div>
-			<div class="detail-form"><?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?></div>
-		</td>
 	</tr>
 	<tr>
                 <?php if($nonCustom['assignedTo']->visible==1){ ?>

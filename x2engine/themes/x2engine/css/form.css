@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -73,6 +73,35 @@
  * @license http://www.yiiframework.com/license/
  */
 
+
+#form-box {
+	background:#f8f8f8;
+	border:1px solid #ccc;
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+}
+#form-box div.draggable {
+	/* background:white; */
+}
+#form-box div.label {
+	font-size:10px;
+	color:#666;
+	/* font-weight:bold; */
+	/* display:block;
+	width:auto;
+	padding:1px 3px; 
+	background:#eee;
+	border:1px solid #ccc;
+	-moz-border-radius:3px;
+	-o-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px; */
+}
+#form-box {
+	font-weight:bold;
+}
 div.form, div.wide.form {
 	-moz-border-radius:4px;
 	-o-border-radius:4px;
@@ -247,7 +276,7 @@ div#install-form #lang {
 	width:120px;
 }
 #login-form {
-	background:url(../images/x2engine_big.png) 165px 10px no-repeat;
+	background:url(../images/x2engine_big.png) 172px 8px no-repeat;
 }
 #login-box{
 	margin-top:20px;
@@ -268,11 +297,21 @@ div#install-form #lang {
 	padding: 10px 30px;	/* extra big! */
 }
 
-#email-form label {
+#inline-email-form label {
 	width:80px;
 }
-#email-form input[type="text"], #email-form textarea {
+#inline-email-form input[type="text"], #inline-email-form textarea {
 	width:465px;
+}
+#inline-email-form img#email-sending-icon {
+	position:absolute;
+	height:32px;
+	width:32px;
+	margin:10px 0 0 10px;
+	display:none;
+}
+#inline-email-form a {
+	text-decoration:none;
 }
 
 div.form select[multiple="multiple"] {
@@ -291,6 +330,9 @@ div.form input, div.form textarea, div.form select, div.form button {
 }
 div.form input.x2-button, div.form button.x2-button {
 	padding:5px 20px;
+}
+div.form input.x2-button.small, div.form button.x2-button.small {
+	padding:5px 10px;
 }
 div.form .row.checkbox label, div.form .row.checkbox input, .cell.checkbox label, .cell.checkbox input {
 	display:inline;

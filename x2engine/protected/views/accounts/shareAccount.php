@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,12 +40,13 @@
 
 $this->menu = array(
 	array('label'=>Yii::t('accounts','Accounts List'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-	array('label'=>Yii::t('accounts','View Account')),
-	array('label'=>Yii::t('accounts','Update Account'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('accounts','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('accounts','View'),'url'=>array('view','id'=>$model->id)),
+        array('label'=>Yii::t('accounts','Share')),
+	array('label'=>Yii::t('accounts','Update'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('accounts','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 ?>
 <h2><?php echo Yii::t('accounts','Share Account');?>: <b><?php echo $model->name; ?></b></h2>
@@ -79,5 +80,5 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <h2><?php echo Yii::t('accounts','Account:'); ?> <b><?php echo $model->name; ?></b></h2>
 <?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form)); 
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'accounts','form'=>$form)); 
 $this->endWidget(); ?>

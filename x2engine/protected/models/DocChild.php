@@ -40,8 +40,7 @@
 
 class DocChild extends Docs {
 
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -54,6 +53,7 @@ class DocChild extends Docs {
 		$criteria->compare('createDate',$this->createDate);
 		$criteria->compare('updatedBy',$this->updatedBy,true);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
+		$criteria->compare('type',$this->type);
 		// $criteria->compare('editPermissions',$this->editPermissions,true);
 
 		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
@@ -71,10 +71,30 @@ class DocChild extends Docs {
 			'criteria'=>$criteria,
 		));
 	}
-
+	
+	public static function getEmailTemplates() {
+		$templateLinks = array();
+		$templates = CActiveRecord::model('Docs')->findAllByAttributes(array('type'=>'email'),new CDbCriteria(array('order'=>'lastUpdated DESC')));
+		foreach($templates as &$template)
+			$templateLinks[$template->id] = $template->title;
+		return $templateLinks;
+	}
+	
+	public function parseType() {
+		if(!isset($this->type))
+			$this->type = '';
+		switch($this->type) {
+			case 'email':
+				return Yii::t('docs','Template');
+			default:
+				return Yii::t('docs','Document');
+		}
+	}
+	
 	public function attributeLabels() {
 		return array(
 			'id' => Yii::t('docs','ID'),
+			'type' => Yii::t('docs','Doc Type'),
 			'title' => Yii::t('docs','Title'),
 			'text' => Yii::t('docs','Text'),
 			'createdBy' => Yii::t('docs','Created By'),
@@ -82,6 +102,7 @@ class DocChild extends Docs {
 			'updatedBy' => Yii::t('docs','Updated By'),
 			'lastUpdated' => Yii::t('docs','Last Updated'),
 			'editPermissions' => Yii::t('docs','Edit Permissions'),
+			
 		);
 	}
 }

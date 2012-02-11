@@ -15,7 +15,7 @@
  * The method name is like 'actionXYZ' where 'XYZ' stands for the action name.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CInlineAction.php 3058 2011-03-13 04:20:12Z qiang.xue $
+ * @version $Id: CInlineAction.php 3137 2011-03-28 11:08:06Z mdomba $
  * @package system.web.actions
  * @since 1.0
  */
@@ -35,7 +35,7 @@ class CInlineAction extends CAction
 	/**
 	 * Runs the action with the supplied request parameters.
 	 * This method is internally called by {@link CController::runAction()}.
-	 * @param array the request parameters (name=>value)
+	 * @param array $params the request parameters (name=>value)
 	 * @return boolean whether the request parameters are valid
 	 * @since 1.1.7
 	 */

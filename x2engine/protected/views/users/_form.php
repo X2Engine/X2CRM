@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,7 +43,24 @@
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'users-form',
 	'enableAjaxValidation'=>false,
-)); ?>
+)); 
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
+Yii::app()->clientScript->registerCss('multiselectCss',"
+.multiselect {
+	width: 460px;
+	height: 200px;
+}
+#switcher {
+	margin-top: 20px;
+}
+",'screen, projection');
+Yii::app()->clientScript->registerScript('renderMultiSelect',"
+$(document).ready(function() {
+	 $('.multiselect').multiselect();
+});
+",CClientScript::POS_HEAD);
+?>
 
 	<?php $model->setAttribute('updatePassword',false); ?>
 
@@ -128,8 +145,22 @@
 		<?php echo $form->dropDownList($model,'status', array(1=>'Active', 0=>'Inactive')); ?>
 		<?php echo $form->error($model,'status'); ?>
 	</div>
+        
+            <label>Roles</label>
+            <br />
+            <?php
+            echo CHtml::dropDownList('roles[]',$selectedRoles,$roles,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));
+            ?>
+            <br />
+            <label>Groups</label>
+            <br />
+            <?php
+            echo CHtml::dropDownList('groups[]',$selectedGroups,$groups,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));
+            ?>
+            <br />
+        
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save')); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

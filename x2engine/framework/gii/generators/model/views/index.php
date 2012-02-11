@@ -53,7 +53,19 @@ $('.form .row.model-class').toggle($('#{$class}_tableName').val().substring($('#
 	</div>
 	<div class="row">
 		<?php echo $form->labelEx($model,'tableName'); ?>
-		<?php echo $form->textField($model,'tableName', array('size'=>65)); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
+			'model'=>$model,
+			'attribute'=>'tableName',
+			'name'=>'tableName',
+			'source'=>array_keys(Yii::app()->db->schema->getTables()),
+			'options'=>array(
+				'minLength'=>'0',
+			),
+			'htmlOptions'=>array(
+				'id'=>'ModelCode_tableName',
+				'size'=>'65'
+			),
+		)); ?>
 		<div class="tooltip">
 		This refers to the table name that a new model class should be generated for
 		(e.g. <code>tbl_user</code>). It can contain schema name, if needed (e.g. <code>public.tbl_post</code>).
@@ -88,6 +100,16 @@ $('.form .row.model-class').toggle($('#{$class}_tableName').val().substring($('#
 			It should be specified in the form of a path alias, for example, <code>application.models</code>.
 		</div>
 		<?php echo $form->error($model,'modelPath'); ?>
+	</div>
+	<div class="row">
+		<?php echo $form->labelEx($model,'buildRelations'); ?>
+		<?php echo $form->checkBox($model,'buildRelations'); ?>
+		<div class="tooltip">
+			Whether relations should be generated for the model class.
+			In order to generate relations, full scan of the whole database is needed.
+			You should disable this option if your database contains too many tables.
+		</div>
+		<?php echo $form->error($model,'buildRelations'); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

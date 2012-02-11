@@ -41,6 +41,7 @@ body {
 	margin:0;
 	padding:0;
 	font:normal 10pt Arial, Helvetica, sans-serif;
+	/* background:url(background2.gif) top left repeat-x #000; */
 }
 
 #page {
@@ -143,7 +144,7 @@ body {
 }
 #main-menu-bar li.active {
 	position:relative;
-	z-index:0;
+	/* z-index:0; */
 	background:white;
 	height:37px;
 	margin-bottom:-1px;
@@ -155,6 +156,7 @@ body {
 	-webkit-border-radius:4px 4px 0 0;
 	-o-border-radius:4px 4px 0 0;
 	
+	/* clip: rect(0px, 1000px, 10px, -100px); */
 	-moz-box-shadow: 0 0 20px 0 rgba(0,0,0,0.7);
 	-webkit-box-shadow: 0 0 20px 0 rgba(0,0,0,0.7);
 	box-shadow: 0 0 20px 0 rgba(0,0,0,0.7);
@@ -226,12 +228,55 @@ body {
 }
 /* End Dropdown Menu */
 
+/* Submenu Bar */
+#submenu-bar {
+	z-index:2;
+	position:relative;
+	background:#fff;
+	border-bottom:1px solid #ccc;
+}
+#submenu-bar ul {
+	display:block;
+	width:auto;
+	overflow:auto;
+	margin:0;
+	padding:5px 15px;
+}
+#submenu-bar li {
+	display:block;
+	float:left;
+	border-right:1px solid #aaa;
+	margin:0 5px 0 0;
+	padding:0 5px 0 0;
+}
+#submenu-bar li:last-child {
+	border-right:none;
+}
+
+#submenu-bar li a {
+	color:#000;
+	text-decoration:none;
+	font-size:14px;
+}
+#submenu-bar li a:hover {
+	color:#09F;
+	text-decoration:underline;
+}
+#submenu-bar li span {
+	font-weight:bold;
+}
+
+
+
 /* Search Bar */
 #search-bar {
+	/* visibility:hidden; */
 	position:relative;
-	padding:5px 0 5px 10px;
+	padding:3px 0 0 10px;
+	margin-bottom:5px;
 	z-index:2;
-	background:white;
+	background:#f8f8f8;
+	border-bottom:1px solid #ccc;
 }
 #search-bar-title {
 	font:bold 16px Arial, Helvetica, sans-serif;
@@ -266,7 +311,7 @@ a.x2-button, input.x2-button, button.x2-button { /* , a.search-button */
 	display:inline-block;
 	margin:0 5px 5px 0;
 	padding:0 8px;
-	border:1px solid #999 !important;
+	border:1px solid #999;
 	background-color:#eee;
 	background:-webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#ddd));
 	background:-moz-linear-gradient(top,  #f0f0f0,  #ddd);
@@ -291,8 +336,9 @@ a.x2-button:hover, input.x2-button:hover, button.x2-button:hover {
 	background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee));
 	background:-moz-linear-gradient(top,  #fff,  #eee);
 }
-a.x2-button:active, input.x2-button:active, button.x2-button:active {
+a.x2-button:active, input.x2-button:active, button.x2-button:active, a.x2-button.clicked, input.x2-button.clicked, button.x2-button.clicked {
 	color:black;
+	border-color:#666;
 	background-color:#bbb;
 	background:-webkit-gradient(linear, left top, left bottom, from(#bbb), to(#ccc));
 	background:-moz-linear-gradient(top,  #bbb,  #ccc);
@@ -300,12 +346,38 @@ a.x2-button:active, input.x2-button:active, button.x2-button:active {
 	-webkit-box-shadow: inset 0 1px 1px 0 #999;
 	box-shadow: inset 0 1px 1px 0 #999;
 }
+a.x2-button.clicked:hover, input.x2-button.clicked:hover, button.x2-button.clicked:hover {
+	background-color:#c0c0c0;
+	background:-webkit-gradient(linear, left top, left bottom, from(#c0c0c0), to(#ddd));
+	background:-moz-linear-gradient(top,  #c0c0c0,  #ddd);
+}
+a.x2-button.highlight, input.x2-button.highlight, button.x2-button.highlight { /* , a.search-button */
+	background-color:#579100;
+	background:-webkit-gradient(linear, left top, left bottom, from(#729C00), to(#579100));
+	background:-moz-linear-gradient(top,  #729C00,  #579100);
+	border-color:#315200 !important;
+	
+	-moz-box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+	-webkit-box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+	box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+	text-shadow:rgba(0,0,0,0.5) 0 1px 3px;
+	color:#fff;
+}
+a.x2-button.highlight:hover, input.x2-button.highlight:hover, button.x2-button.highlight:hover { /* , a.search-button */
+	background-color:#87b800;
+	background:-webkit-gradient(linear, left top, left bottom, from(#87b800), to(#6aad00));
+	background:-moz-linear-gradient(top,  #87b800,  #6aad00);
+	border-color:#416d00 !important;
+}
 
 input.x2-button, button.x2-button {
 	display:block;
 	margin:5px;
 	padding:5px 20px;
 	line-height:15px;
+}
+button.x2-button {
+	border:1px solid #999 !important;
 }
 input.x2-button.float, a.x2-button.float {
 	float:right;
@@ -339,10 +411,9 @@ a.x2-button span.add-button {
 }
 .x2-button:active, .search-button:active {
 	background:black;
-	border-color:black;
+	border-color:#666;
 	color:white;
 }
-
 #content {
 	padding:0 45px 20px 45px;	/* create padding for pages without column2.php layout */
 }
@@ -633,12 +704,42 @@ a.add-workflow-stage {
 }
 div#workflow-stages ol {
 	margin:0;
-	padding:0;
+	padding:0 15px;
 	list-style-position:inside;
+	border:1px solid #ccc;
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	margin-bottom:5px;
+}
+div#workflow-stages li {
+	border-bottom:1px solid #ccc;
+	padding:5px 0;
+}
+div#workflow-stages li:last-child {
+	border-bottom:none;
 }
 div#workflow-stages div.cell {
 	float:none;
 	display:inline-block;
+}
+div#workflow-stages a.up, div#workflow-stages a.down, div#workflow-stages a.del {
+	display:block;
+	float:left;
+	height:20px;
+	width:20px;
+	cursor:pointer;
+}
+
+div#workflow-stages a.up {
+	background:url(../images/list_arrow_up.png) 0px 0px no-repeat;
+}
+div#workflow-stages a.down {
+	background:url(../images/list_arrow_down.png) 0px 1px no-repeat;
+}
+div#workflow-stages a.del {
+	background:url(../images/list_delete.png) top left no-repeat;
 }
 div.workflow-funnel-box {
 	display:block;
@@ -935,7 +1036,6 @@ div.contact-lists table.items tbody tr:last-child td {
 	clear:both;
 	font-size:10px;
 	color:#999;
-	margin-bottom:20px;
 }
 
 div#code-snippet {

@@ -46,7 +46,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'enableAjaxValidation'=>false,
 	'method'=>'POST',
 ));
-$attributeLabels = Contacts::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 $model->firstName = $attributeLabels['firstName'];
 $model->lastName = $attributeLabels['lastName'];
 

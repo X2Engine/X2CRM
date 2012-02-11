@@ -36,8 +36,11 @@
  * php path/to/entry_script.php help <command name>
  * </pre>
  *
+ * @property string $commandPath The directory that contains the command classes. Defaults to 'protected/commands'.
+ * @property CConsoleCommandRunner $commandRunner The command runner.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CConsoleApplication.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CConsoleApplication.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.console
  * @since 1.0
  */
@@ -145,8 +148,9 @@ class CConsoleApplication extends CApplication
 	 */
 	public function getCommandPath()
 	{
-		if($this->_commandPath===null)
-			$this->setCommandPath($this->getBasePath().DIRECTORY_SEPARATOR.'commands');
+		$applicationCommandPath = $this->getBasePath().DIRECTORY_SEPARATOR.'commands';
+		if($this->_commandPath===null && file_exists($applicationCommandPath))
+			$this->setCommandPath($applicationCommandPath);
 		return $this->_commandPath;
 	}
 

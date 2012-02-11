@@ -37,7 +37,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * for possible options (name-value pairs).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiSelectable.php 2799 2011-01-01 19:31:13Z qiang.xue $
+ * @version $Id: CJuiSelectable.php 3207 2011-05-12 08:05:26Z mdomba $
  * @package zii.widgets.jui
  * @since 1.1
  */
@@ -48,7 +48,7 @@ class CJuiSelectable extends CJuiWidget {
 	 */
 	public $items=array();
 	/**
-	 * @var string the name of the container element that contains all items. Defaults to 'ul'.
+	 * @var string the name of the container element that contains all items. Defaults to 'ol'.
 	 */
 	public $tagName='ol';
 	/**

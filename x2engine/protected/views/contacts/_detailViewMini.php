@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Contacts::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 if($actionModel->associationId!=0)
 	$link = CHtml::link(CHtml::encode($model->name),

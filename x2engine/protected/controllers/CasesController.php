@@ -45,7 +45,7 @@ class CasesController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','update','search','closeCase','addNote','deleteNote','delete'),
+				'actions'=>array('index','view','create','update','search','closeCase','addNote','deleteNote','delete','inlineEmail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -58,6 +58,14 @@ class CasesController extends x2base {
 		);
 	}
 
+	public function actions() {
+		return array(
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
+			),
+		);
+	}
+	
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed

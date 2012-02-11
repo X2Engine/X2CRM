@@ -396,7 +396,7 @@ function testDB() {
 		</select>
 		<input type="text" name="currency2" id="currency2" style="width:120px;<?php if(!isset($_GET['currency']) || $_GET['currency']!='other') echo 'display:none;'; ?>" value="<?php getField('currency2',''); ?>" />
 	</div>
-	<div class="row"><label for="dummyData"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='data' value='1' <?php getField('data',''); ?> /><br /><br /></div>
+	<div class="row"><label for="dummyData"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='data' value='1' checked="checked" <?php getField('data',''); ?> /><br /><br /></div>
 	<div class="row"><label for="adminPass"><?php echo installer_t('Admin Password'); ?></label><input type="password" name="adminPass" id="adminPass" /></div>
 	<div class="row"><label for="adminPass2"><?php echo installer_t('Confirm Password'); ?></label><input type="password" name="adminPass2" id="adminPass2" /></div>
 	<div class="row"><label for="adminEmail"><?php echo installer_t('Administrator Email'); ?></label><input type="text" name="adminEmail" id="adminEmail" value="<?php getField('adminEmail',''); ?>" /></div>

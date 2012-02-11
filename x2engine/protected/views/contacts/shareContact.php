@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,10 +41,11 @@
 $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','View Contact')),
-	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
+	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+	array('label'=>Yii::t('contacts','View'),'url'=>array('view','id'=>$model->id)),
+        array('label'=>Yii::t('contacts','Share')),
+	array('label'=>Yii::t('contacts','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
 	$this->menu[] = array('label'=>'Update Contact', 'url'=>array('update', 'id'=>$model->id));
@@ -81,5 +82,5 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
 <?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users,'currentWorkflow'=>$currentWorkflow)); 
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget(); ?>

@@ -46,7 +46,7 @@ $this->menu=array(
 Yii::app()->clientScript->registerScript('highlightButton',"
 $(function(){
 	$('#feed-form input, #feed-form select, #feed-form textarea').change(function(){
-		$('#save-button').css('background','yellow');
+		$('#save-button').addClass('highlight'); //css('background','yellow');
 	}
 	);
 }

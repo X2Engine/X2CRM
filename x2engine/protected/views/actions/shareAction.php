@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,11 +41,11 @@
 $this->menu=array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
-	array('label'=>Yii::t('actions','View Action')),
-	array('label'=>Yii::t('actions','Update Action'),'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('actions','Delete Action'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
+	array('label'=>Yii::t('actions','Create'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
+	array('label'=>Yii::t('actions','View')),
+	array('label'=>Yii::t('actions','Update'),'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('actions','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 ?>
 <h2><?php echo Yii::t('actions','Share Action');?></h2>

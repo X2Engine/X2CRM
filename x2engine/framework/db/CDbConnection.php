@@ -78,8 +78,29 @@
  * )
  * </pre>
  *
+ * @property boolean $active Whether the DB connection is established.
+ * @property PDO $pdoInstance The PDO instance, null if the connection is not established yet.
+ * @property CDbTransaction $currentTransaction The currently active transaction. Null if no active transaction.
+ * @property CDbSchema $schema The database schema for the current connection.
+ * @property CDbCommandBuilder $commandBuilder The command builder.
+ * @property string $lastInsertID The row ID of the last row inserted, or the last value retrieved from the sequence object.
+ * @property mixed $columnCase The case of the column names.
+ * @property mixed $nullConversion How the null and empty strings are converted.
+ * @property boolean $autoCommit Whether creating or updating a DB record will be automatically committed.
+ * @property boolean $persistent Whether the connection is persistent or not.
+ * @property string $driverName Name of the DB driver.
+ * @property string $clientVersion The version information of the DB driver.
+ * @property string $connectionStatus The status of the connection.
+ * @property boolean $prefetch Whether the connection performs data prefetching.
+ * @property string $serverInfo The information of DBMS server.
+ * @property string $serverVersion The version information of DBMS server.
+ * @property integer $timeout Timeout settings for the connection.
+ * @property array $attributes Attributes (name=>value) that are previously explicitly set for the DB connection.
+ * @property array $stats The first element indicates the number of SQL statements executed,
+ * and the second element the total time spent in SQL execution.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbConnection.php 3123 2011-03-25 12:20:47Z qiang.xue $
+ * @version $Id: CDbConnection.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db
  * @since 1.0
  */
@@ -88,6 +109,10 @@ class CDbConnection extends CApplicationComponent
 	/**
 	 * @var string The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
+	 *
+	 * Note that if you're using GBK or BIG5 then it's highly recommended to
+	 * update to PHP 5.3.6+ and to specify charset via DSN like
+	 * 'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'.
 	 */
 	public $connectionString;
 	/**
@@ -114,7 +139,6 @@ class CDbConnection extends CApplicationComponent
 	 * @var string the ID of the cache application component that is used to cache the table metadata.
 	 * Defaults to 'cache' which refers to the primary cache application component.
 	 * Set this property to false if you want to disable caching table metadata.
-	 * @since 1.0.10
 	 */
 	public $schemaCacheID='cache';
 	/**
@@ -164,6 +188,10 @@ class CDbConnection extends CApplicationComponent
 	 * @var string the charset used for database connection. The property is only used
 	 * for MySQL and PostgreSQL databases. Defaults to null, meaning using default charset
 	 * as specified by the database.
+	 *
+	 * Note that if you're using GBK or BIG5 then it's highly recommended to
+	 * update to PHP 5.3.6+ and to specify charset via DSN like
+	 * 'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'.
 	 */
 	public $charset;
 	/**
@@ -171,22 +199,21 @@ class CDbConnection extends CApplicationComponent
 	 * will use the native prepare support if available. For some databases (such as MySQL),
 	 * this may need to be set true so that PDO can emulate the prepare support to bypass
 	 * the buggy native prepare support. Note, this property is only effective for PHP 5.1.3 or above.
+	 * The default value is null, which will not change the ATTR_EMULATE_PREPARES value of PDO.
 	 */
-	public $emulatePrepare=false;
+	public $emulatePrepare;
 	/**
 	 * @var boolean whether to log the values that are bound to a prepare SQL statement.
 	 * Defaults to false. During development, you may consider setting this property to true
 	 * so that parameter values bound to SQL statements are logged for debugging purpose.
 	 * You should be aware that logging parameter values could be expensive and have significant
 	 * impact on the performance of your application.
-	 * @since 1.0.5
 	 */
 	public $enableParamLogging=false;
 	/**
 	 * @var boolean whether to enable profiling the SQL statements being executed.
 	 * Defaults to false. This should be mainly enabled and used during development
 	 * to find out the bottleneck of SQL executions.
-	 * @since 1.0.6
 	 */
 	public $enableProfiling=false;
 	/**
@@ -218,6 +245,12 @@ class CDbConnection extends CApplicationComponent
 		'oci'=>'COciSchema',        // Oracle driver
 	);
 
+	/**
+	 * @var string Custom PDO wrapper class.
+	 * @since 1.1.8
+	 */
+	public $pdoClass = 'PDO';
+
 	private $_attributes=array();
 	private $_active=false;
 	private $_pdo;
@@ -244,6 +277,7 @@ class CDbConnection extends CApplicationComponent
 
 	/**
 	 * Close the connection when serializing.
+	 * @return array
 	 */
 	public function __sleep()
 	{
@@ -374,15 +408,14 @@ class CDbConnection extends CApplicationComponent
 	 * When some functionalities are missing in the pdo driver, we may use
 	 * an adapter class to provides them.
 	 * @return PDO the pdo instance
-	 * @since 1.0.4
 	 */
 	protected function createPdoInstance()
 	{
-		$pdoClass='PDO';
+		$pdoClass=$this->pdoClass;
 		if(($pos=strpos($this->connectionString,':'))!==false)
 		{
 			$driver=strtolower(substr($this->connectionString,0,$pos));
-			if($driver==='mssql' || $driver==='dblib')
+			if($driver==='mssql' || $driver==='dblib' || $driver==='sqlsrv')
 				$pdoClass='CMssqlPdoAdapter';
 		}
 		return new $pdoClass($this->connectionString,$this->username,
@@ -398,8 +431,8 @@ class CDbConnection extends CApplicationComponent
 	protected function initConnection($pdo)
 	{
 		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		if($this->emulatePrepare && constant('PDO::ATTR_EMULATE_PREPARES'))
-			$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,true);
+		if($this->emulatePrepare!==null && constant('PDO::ATTR_EMULATE_PREPARES'))
+			$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,$this->emulatePrepare);
 		if($this->charset!==null)
 		{
 			$driver=strtolower($pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
@@ -456,6 +489,7 @@ class CDbConnection extends CApplicationComponent
 	 */
 	public function beginTransaction()
 	{
+		Yii::trace('Starting transaction','system.db.CDbConnection');
 		$this->setActive(true);
 		$this->_pdo->beginTransaction();
 		return $this->_transaction=new CDbTransaction($this);
@@ -483,7 +517,6 @@ class CDbConnection extends CApplicationComponent
 	/**
 	 * Returns the SQL command builder for the current DB connection.
 	 * @return CDbCommandBuilder the command builder
-	 * @since 1.0.4
 	 */
 	public function getCommandBuilder()
 	{
@@ -761,7 +794,6 @@ class CDbConnection extends CApplicationComponent
 	 * In order to use this method, {@link enableProfiling} has to be set true.
 	 * @return array the first element indicates the number of SQL statements executed,
 	 * and the second element the total time spent in SQL execution.
-	 * @since 1.0.6
 	 */
 	public function getStats()
 	{

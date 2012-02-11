@@ -30,7 +30,7 @@ if(strcmp($updaterCheck,$updaterVersion) > 0){
 \$user='$user';
 \$pass='$pass';
 \$dbname='$dbname';
-\$version='$newVersion';
+\$version='$version';
 \$updaterVersion='$updaterCheck';
 ?>";
 file_put_contents('protected/config/emailConfig.php', $config);
@@ -41,7 +41,7 @@ window.location.reload();
 </script>
 
 <?php
-
+die();
 }
 
 $contents=file_get_contents("http://www.$url.com/updates/update.php?version=$version");
@@ -70,15 +70,15 @@ foreach($pieces as $file){
 $message="";
 $con=mysql_connect($host,$user,$pass);
 mysql_select_db($dbname);
-$sqlList=explode(":",$sqlList);
+$sqlList=explode(":&",$sqlList);
 $sqlCount=0;
 foreach($sqlList as $sql){
     if($sql!=""){
-        mysql_query($sql) or $message='SQL Failure';
+        mysql_query($sql) or $message=mysql_error();
         $sqlCount++;
     }
-    if($message=='SQL Failure'){
-        echo "Failed SQL query: $sql<br />";
+    if($message!=''){
+        echo "Failed SQL query: $sql<br />$message<br />";
         restoreBackup($pieces);
         cleanUp();
         echo "Update failed";
@@ -92,6 +92,7 @@ $config="<?php
 \$dbname='$dbname';
 \$version='$newVersion';
 \$updaterVersion='$updaterCheck';
+\$buildDate=".time().";
 ?>";
 file_put_contents('protected/config/emailConfig.php', $config);
 echo "$fileCount file(s) have been changed.";
@@ -109,27 +110,11 @@ function saveBackup($fileList){
         mkdir('backup');
     foreach($fileList as $file){
         if($file!="" && file_exists($file)){
-            makeDirectories($file);
-            copy($file,'backup/'.$file);
+            ccopy($file,'backup/'.$file);
         }
     }
 }
 
-function makeDirectories($file){
-    if($file!=""){
-            $pieces=explode('/',$file);
-            unset($pieces[count($pieces)]);
-            for($i=0;$i<count($pieces);$i++){
-                $str="";
-                for($j=0;$j<$i;$j++){
-                    $str.='/'.$pieces[$j];
-                }
-                if(!is_dir('backup'.$str)){
-                    mkdir('backup'.$str);
-                }
-            }
-        }
-} 
 
 function ccopy($filepath, $file){
     
@@ -153,9 +138,7 @@ function restoreBackup($fileList){
         if($file!="" && file_exists($file)){
             copy('backup/'.$file,$file);
         }
-    }
-    
-    
+    }  
 }
 
 function cleanUp(){

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,13 +38,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+$title = ($model->type=='email')? Yii::t('docs','Edit Template:') : Yii::t('docs','Edit Document:');
+ 
 $pieces = explode(", ",$model->editPermissions);
 $user = Yii::app()->user->getName();
 
 $this->menu=array(
 	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
-	array('label'=>Yii::t('docs','View Doc'), 'url'=>array('view','id'=>$model->id)),
+	array('label'=>Yii::t('docs','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
 );
 
 if(array_search($user,$pieces)!==false || $user==$model->editPermissions || $user=='admin' || $user==$model->createdBy)
@@ -57,6 +60,6 @@ if($user=='admin' || $user==$model->createdBy)
 $this->menu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('exportToHtml','id'=>$model->id));
 ?>
 
-<h2><?php echo Yii::t('docs','Edit Document:'); ?> <b><?php echo CHtml::encode($model->title); ?></b></h2>
+<h2><?php echo $title; ?> <b><?php echo CHtml::encode($model->title); ?></b></h2>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

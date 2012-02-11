@@ -31,8 +31,11 @@
  * // $dataProvider->getData() will return a list of Post objects
  * </pre>
  *
+ * @property CDbCriteria $criteria The query criteria.
+ * @property CSort $sort The sorting object. If this is false, it means the sorting is disabled.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveDataProvider.php 3106 2011-03-23 17:01:06Z qiang.xue $
+ * @version $Id: CActiveDataProvider.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.web
  * @since 1.1
  */
@@ -127,14 +130,25 @@ class CActiveDataProvider extends CDataProvider
 			$pagination->applyLimit($criteria);
 		}
 
-		if(($sort=$this->getSort())!==false)
-			$sort->applyOrder($criteria);
-
 		$baseCriteria=$this->model->getDbCriteria(false);
-		if($baseCriteria!==null)
-			$baseCriteria=clone $baseCriteria;
+
+		if(($sort=$this->getSort())!==false)
+		{
+			// set model criteria so that CSort can use its table alias setting
+			if($baseCriteria!==null)
+			{
+				$c=clone $baseCriteria;
+				$c->mergeWith($criteria);
+				$this->model->setDbCriteria($c);
+			}
+			else
+				$this->model->setDbCriteria($criteria);
+			$sort->applyOrder($criteria);
+		}
+
+		$this->model->setDbCriteria($baseCriteria!==null ? clone $baseCriteria : null);
 		$data=$this->model->findAll($criteria);
-		$this->model->setDbCriteria($baseCriteria);
+		$this->model->setDbCriteria($baseCriteria);  // restore original criteria
 		return $data;
 	}
 

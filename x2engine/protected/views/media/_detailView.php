@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
  
-$attributeLabels = MediaChild::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
 

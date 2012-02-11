@@ -54,18 +54,21 @@ Yii::app()->clientScript->registerCss('fixMenuShadow',"
 <!--<div id="login-logo"></div>-->
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'login-form',
-	//'enableClientValidation'=>true,
+	'enableClientValidation'=>true,
 	'clientOptions'=>array(
-	'validateOnSubmit'=>true,
+		'validateOnSubmit'=>true,
 	),
 ));
+// CHtml::$errorCss = '';
+// CHtml::$errorSummaryCss = '';
+
 ?>
 <div class="row">
 	<div class="cell">
 		<div class="row">
 			<?php echo $form->label($model,'username'); ?>
 			<?php echo $form->textField($model,'username',array('id'=>'username')); ?>
-			<?php echo $form->error($model,'username'); ?>
+			<?php //echo $form->error($model,'username'); ?>
 		</div>
 		<div class="row">
 			<?php echo $form->label($model,'password'); ?>
@@ -76,7 +79,26 @@ Yii::app()->clientScript->registerCss('fixMenuShadow',"
 			<?php echo $form->checkBox($model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); ?>
 			<?php echo $form->label($model,'rememberMe'); ?>
 			<?php echo $form->error($model,'rememberMe'); ?>
-		</div>
+		</div><?php if($model->useCaptcha && CCaptcha::checkRequirements()) { ?>
+		<br>
+		<div class="row">
+			<?php
+			// CHtml::$errorCss = 'error';
+			// CHtml::$errorSummaryCss = 'error';
+
+			echo '<div>';
+			$this->widget('CCaptcha',array(
+				'clickableImage'=>true,
+				'showRefreshButton'=>false,
+				'imageOptions'=>array(
+					'style'=>'display:block;cursor:pointer;',
+					'title'=>Yii::t('app','Click to get a new image')
+				)
+			)); echo '</div>';
+			echo '<p class="hint">'.Yii::t('app','Please enter the letters in the image above.').'</p>';
+			echo $form->textField($model,'verifyCode');
+		?>
+		</div><?php } ?>
 	</div>
 	<!--<div class="cell" id="login-logo"></div>-->
 </div>

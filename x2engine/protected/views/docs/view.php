@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -54,8 +54,8 @@ $user = Yii::app()->user->getName();
 
 $this->menu=array(
 	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
-	array('label'=>Yii::t('docs','View Doc')),
+	array('label'=>Yii::t('docs','View')),
+	array('label'=>Yii::t('docs','Create'), 'url'=>array('create')),
 );
 
 if($user=='admin' || $user==$model->createdBy)

@@ -41,15 +41,9 @@
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 
 $prof=Profile::model()->findByPk(Yii::app()->user->getId());
-// if($prof->widgets=='1'){
-// Yii::app()->clientScript->registerScript('updateChat', "
-
-// ",CClientScript::POS_HEAD);
-// }
-
 
 $model = new Contacts;
-$attributeLabels = Contacts::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'quick-contact-form',
@@ -65,17 +59,17 @@ $model->email = $attributeLabels['email'];
 
 ?>
 <div class="form thin">
-	<div class="row">
-		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:68px;')); ?>
+	<div class="row inlineLabel">
+		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'style'=>'color:#aaa;width:68px;','title'=>$model->getAttributeLabel('firstName'))); ?>
 		<?php echo $form->error($model,'firstName'); ?>
 
-		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:68px;')); ?>
+		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'style'=>'color:#aaa;width:68px;','title'=>$model->getAttributeLabel('lastName'))); ?>
 		<?php echo $form->error($model,'lastName'); ?>
 
-		<?php echo $form->textField($model,'phone',array('maxlength'=>40,'tabindex'=>102,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:150px;')); ?>
+		<?php echo $form->textField($model,'phone',array('maxlength'=>40,'tabindex'=>102,'style'=>'color:#aaa;width:150px;','title'=>$model->getAttributeLabel('phone'))); ?>
 		<?php echo $form->error($model,'phone'); ?>
 
-		<?php echo $form->textField($model,'email',array('maxlength'=>100,'tabindex'=>103,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:150px;')); ?>
+		<?php echo $form->textField($model,'email',array('maxlength'=>100,'tabindex'=>103,'style'=>'color:#aaa;width:150px;','title'=>$model->getAttributeLabel('email'))); ?>
 		<?php echo $form->error($model,'email'); ?>
 	</div>
 </div>

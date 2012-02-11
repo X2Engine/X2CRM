@@ -1,9 +1,10 @@
 <?php
 $cs=Yii::app()->clientScript;
+$cs->coreScriptPosition=CClientScript::POS_HEAD;
 $cs->scriptMap=array();
 $baseUrl=$this->module->assetsUrl;
 $cs->registerCoreScript('jquery');
-$cs->registerScriptFile($baseUrl.'/js/tools.tooltip-1.1.3.min.js');
+$cs->registerScriptFile($baseUrl.'/js/jquery.tooltip-1.2.6.min.js');
 $cs->registerScriptFile($baseUrl.'/js/fancybox/jquery.fancybox-1.3.1.pack.js');
 $cs->registerCssFile($baseUrl.'/js/fancybox/jquery.fancybox-1.3.1.css');
 ?>

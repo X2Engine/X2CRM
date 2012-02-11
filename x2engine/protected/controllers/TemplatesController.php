@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,7 +45,16 @@ class TemplatesController extends x2base {
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
 	public $layout='//layouts/column2';
-
+        
+        
+        public function actionGetItems(){
+		$sql = 'SELECT id, name as value FROM x2_templates WHERE name LIKE :qterm ORDER BY name ASC';
+		$command = Yii::app()->db->createCommand($sql);
+		$qterm = $_GET['term'].'%';
+		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+		$result = $command->queryAll();
+		echo CJSON::encode($result); exit;
+	}
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -74,6 +83,8 @@ class TemplatesController extends x2base {
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Templates'][$field])){
                                 $model->$field=$_POST['Templates'][$field];
+                                if(is_array($model->$field))
+                                    $model->$field=Accounts::parseUsers($model->$field);
                             }
                         }
 			parent::create($model, $temp, 0);
@@ -105,6 +116,8 @@ class TemplatesController extends x2base {
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Templates'][$field])){
                                 $model->$field=$_POST['Templates'][$field];
+                                if(is_array($model->$field))
+                                    $model->$field=Accounts::parseUsers($model->$field); 
                             }
                         }
 			

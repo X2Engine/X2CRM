@@ -59,7 +59,7 @@ $this->pageTitle = Yii::app()->name . ' - Login';
             'for' => CHtml::resolveName($model, $a='username')
         ));
         ?>
-        <?php echo $form->textField($model, 'username'); ?>
+        <?php echo $form->textField($model, 'username',array('style'=>'height:50px;')); ?>
         <?php echo $form->error($model, 'username'); ?>
     </div>
     <div data-role="fieldcontain">
@@ -68,7 +68,7 @@ $this->pageTitle = Yii::app()->name . ' - Login';
             'for' => CHtml::resolveName($model, $a='password')
         ));
         ?>
-        <?php echo $form->passwordField($model, 'password'); ?>
+        <?php echo $form->passwordField($model, 'password', array('style'=>'height:50px;')); ?>
         <?php echo $form->error($model, 'password'); ?>
     </div>
 <!--

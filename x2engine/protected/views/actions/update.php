@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,10 +41,10 @@
 $this->menu=array(
 	array('label'=>Yii::t('actions','My Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
-	array('label'=>Yii::t('actions','View Action'),'url'=>array('actions/view','id'=>$model->id)),
-	array('label'=>Yii::t('actions','Update Action')),
+	// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
+	array('label'=>Yii::t('actions','Create'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
+	array('label'=>Yii::t('actions','View'),'url'=>array('actions/view','id'=>$model->id)),
+	array('label'=>Yii::t('actions','Update')),
 );
 ?>
 <h2><?php

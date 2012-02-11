@@ -38,8 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('zii.widgets.CWidget');
-
 class InlineActionForm extends CWidget {
 	public $associationType;
 	public $associationId;

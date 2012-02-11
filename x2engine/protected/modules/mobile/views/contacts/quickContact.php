@@ -49,7 +49,7 @@ $prof=Profile::model()->findByPk(Yii::app()->user->getId());
 
 
 $model = new Contacts;
-$attributeLabels = Contacts::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'quick-contact-form',

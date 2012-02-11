@@ -26,17 +26,17 @@
  * }
  * </pre>
  * The {@link createAttribute} and {@link updateAttribute} options actually default to 'create_time' and 'update_time'
- * respectively, so it is not required that you configure them.  If you do not wish CTimestampBehavior
- * to set a timestamp for record update or creation, set the corrisponding attribute option to null.
+ * respectively, so it is not required that you configure them. If you do not wish CTimestampBehavior
+ * to set a timestamp for record update or creation, set the corresponding attribute option to null.
  *
- * By default, the update attribute is only set on record update.  If you also wish it to be set on record creation,
+ * By default, the update attribute is only set on record update. If you also wish it to be set on record creation,
  * set the {@link setUpdateOnCreate} option to true.
  *
  * Although CTimestampBehavior attempts to figure out on it's own what value to inject into the timestamp attribute,
  * you may specify a custom value to use instead via {@link timestampExpression}
  *
  * @author Jonah Turnquist <poppitypop@gmail.com>
- * @version $Id: CTimestampBehavior.php 2934 2011-02-02 21:34:43Z qiang.xue $
+ * @version $Id: CTimestampBehavior.php 3229 2011-05-21 00:20:29Z alexander.makarow $
  * @package zii.behaviors
  * @since 1.1
  */

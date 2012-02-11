@@ -33,8 +33,14 @@
  * CSecurityManager is a core application component that can be accessed via
  * {@link CApplication::getSecurityManager()}.
  *
+ * @property string $validationKey The private key used to generate HMAC.
+ * If the key is not explicitly set, a random one is generated and returned.
+ * @property string $encryptionKey The private key used to encrypt/decrypt data.
+ * If the key is not explicitly set, a random one is generated and returned.
+ * @property string $validation
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CSecurityManager.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CSecurityManager.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.base
  * @since 1.0
  */
@@ -146,6 +152,7 @@ class CSecurityManager extends CApplicationComponent
 	/**
 	 * This method has been deprecated since version 1.1.3.
 	 * Please use {@link hashAlgorithm} instead.
+	 * @return string
 	 */
 	public function getValidation()
 	{

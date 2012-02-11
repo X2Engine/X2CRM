@@ -1,4 +1,42 @@
 <?php
+/*********************************************************************************
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
+ * 
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
+ * 
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
 
 /**
  * This is the model class for table "x2_contacts".
@@ -60,8 +98,54 @@ class Contacts extends CActiveRecord
 	 */
 	public function rules()
 	{
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
+                $arr=array(
+                    'varchar'=>array(),
+                    'text'=>array(),
+                    'date'=>array(),
+                    'dropdown'=>array(),
+                    'int'=>array(),
+                    'email'=>array(),
+                    'currency'=>array(),
+                    'url'=>array(),
+                    'float'=>array(),
+                    'boolean'=>array(),
+                    'required'=>array(),
+                    
+                );
+                $return=array();
+                foreach($fields as $field){
+                    $arr[$field->type][]=$field->fieldName;
+                    if($field->required)
+                        $arr['required'][]=$field->fieldName;
+                }
+                foreach($arr as $key=>$array){
+                    switch($key){
+                        case 'email':
+                            $return[]=array(implode(", ",$array),$key);
+                            break;
+                        case 'required':
+                            $return[]=array(implode(", ",$array),$key);
+                            break;
+                        case 'int':
+                            $return[]=array(implode(", ",$array),'numerical','integerOnly'=>true);
+                            break;
+                        case 'float':
+                            $return[]=array(implode(", ",$array),'type','type'=>'float');
+                            break;
+                        case 'boolean':
+                            $return[]=array(implode(", ",$array),$key);
+                            break;
+                        default:
+                            break;
+                        
+                    }
+                    
+                } 
+                return $return;
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
+                /*
 		return array(
 			array('firstName, lastName, visibility', 'required'),
 			array('accountId, visibility, rating, createDate', 'numerical', 'integerOnly'=>true),
@@ -75,7 +159,7 @@ class Contacts extends CActiveRecord
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, firstName, lastName, title, company, accountId, phone, phone2, email, website, address, city, state, zipcode, country, visibility, assignedTo, backgroundInfo, twitter, linkedin, skype, googleplus, lastUpdated, updatedBy, priority, leadSource, rating, createDate, facebook, otherUrl', 'safe', 'on'=>'search'),
-		);
+		);*/
 	}
 
 	/**
@@ -179,7 +263,36 @@ class Contacts extends CActiveRecord
 	
 	public function searchAll() {
 		$criteria=new CDbCriteria;
-		$parameters=array('condition'=>"visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$condition = 'visibility="1" OR assignedTo="Anyone" OR assignedTo="'.Yii::app()->user->getName().'"';
+		$parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		/* x2temp */
+		$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+		if(!empty($groupLinks))
+			$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+		
+		
+		// $groupLinks=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+		// $tempArray=array();
+		// $temp="(";
+		// foreach($groupLinks as $link){
+			// $temp.=$link->groupId.", ";
+			// $tempArray[]=$link->groupId;
+		// }
+		// $temp=substr($temp,0,-2).")";
+		// if(count($temp)>2){
+			// $str.=" OR assignedTo IN ".$temp;
+		// }
+		// foreach($tempArray as $groupId){
+			// $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$groupId));
+			// foreach($links as $link){
+				// $userId=$link->userId;
+			// }
+		// }
+		$condition .= 'OR (visibility=2 AND assignedTo IN 
+			(SELECT username FROM x2_group_to_user WHERE groupId IN
+				(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		/* end x2temp */
+		$parameters['condition']=$condition;
 		$criteria->scopes=array('findAll'=>array($parameters));
 				
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {
@@ -211,7 +324,23 @@ class Contacts extends CActiveRecord
 
 	public function search() {
 		$criteria=new CDbCriteria;
-		$parameters=array('condition'=>"assignedTo='".Yii::app()->user->getName()."'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$condition = 'assignedTo="'.Yii::app()->user->getName().'"';
+			$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+			/* x2temp */
+			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			if(!empty($groupLinks))
+				$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+			
+			// $groupLinks=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+			// $temp="(";
+			// foreach($groupLinks as $link){
+				// $temp.=$link->groupId.", ";
+			// }
+			// $temp=substr($temp,0,-2).")";
+			// $condition.=" || assignedTo IN ".$temp;
+			
+			/* end x2temp */
+		$parameters['condition']=$condition;
 		$criteria->scopes=array('findAll'=>array($parameters));
 		
 		return $this->searchBase($criteria);
@@ -229,21 +358,71 @@ class Contacts extends CActiveRecord
 			$list = CActiveRecord::model('ContactList')->findByPk($id);
 
 		if(isset($list)) {
-			$contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
+			// $contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
 			// die(var_dump($contactIds));
 			// $search = CActiveRecord::model('Contacts')->findAllByPk($contactIds);
 			// return $search;
 			
-			$sql = Yii::app()->db->createCommand()
-				->select('x2_contacts.*')
-				->from('x2_contacts')
-				->join('x2_list_items','x2_contacts.id = x2_list_items.contactId')
-				->where('x2_list_items.listId='.$id.' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo="'.Yii::app()->user->getName().'")')
-				->getText();
+			// $sql = Yii::app()->db->createCommand()
+				// ->select('x2_contacts.*')
+				// ->from('x2_contacts')
+				// ->join('x2_list_items','x2_contacts.id = x2_list_items.contactId')
+				// ->where('x2_list_items.listId='.$id.' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo="'.Yii::app()->user->getName().'")')
+				// ->getText();
 			
-			$count = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryScalar();
+			// $count = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryScalar();
 
-			return new CSqlDataProvider($sql,array(
+			$criteria = new CDbCriteria(array(
+				'join'=>'LEFT JOIN x2_list_items ON t.id = x2_list_items.contactId',
+				'condition'=>'x2_list_items.listId='.$id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")',
+			
+			));
+				
+			$criteria->compare('firstName',$this->firstName,true);
+			$criteria->compare('lastName',$this->lastName,true);
+			$criteria->compare('title',$this->title,true);
+			$criteria->compare('company',$this->company,true);
+			$criteria->compare('phone',$this->phone,true);
+			$criteria->compare('phone2',$this->phone2,true);
+			$criteria->compare('email',$this->email,true);
+			$criteria->compare('website',$this->website,true);
+			$criteria->compare('address',$this->address,true);
+			$criteria->compare('city',$this->city,true);
+			$criteria->compare('state',$this->state,true);
+			$criteria->compare('zipcode',$this->zipcode,true);
+			$criteria->compare('country',$this->country,true);
+			$criteria->compare('visibility',$this->visibility);
+			$criteria->compare('assignedTo',$this->assignedTo,true);
+			$criteria->compare('backgroundInfo',$this->backgroundInfo,true);
+			$criteria->compare('twitter',$this->twitter,true);
+			$criteria->compare('linkedin',$this->linkedin,true);
+			$criteria->compare('skype',$this->skype,true);
+			$criteria->compare('googleplus',$this->googleplus,true);
+			// $criteria->compare('lastUpdated',$this->lastUpdated,true);
+			$criteria->compare('updatedBy',$this->updatedBy,true);
+			$criteria->compare('priority',$this->priority,true);
+			$criteria->compare('leadSource',$this->leadSource,true);
+			$criteria->compare('rating',$this->rating);
+			// return $this->searchBase($criteria);
+			echo  var_dump($this->attributes);
+			return new CActiveDataProvider('Contacts',array(
+				'criteria'=>$criteria,
+				// 'data'=>$results,
+				// 'modelClass'=>'Contacts',
+				// 'totalItemCount'=>$count,
+				'sort'=>array(
+					'defaultOrder'=>'lastUpdated DESC',
+				),
+				'pagination'=>array(
+					'pageSize'=>ProfileChild::getResultsPerPage(),
+				),
+			));
+			
+			
+			
+			
+			
+		/* 	return new CSqlDataProvider($sql,array(
 				// 'criteria'=>$criteria,
 				// 'data'=>$results,
 				// 'modelClass'=>'Contacts',
@@ -255,7 +434,7 @@ class Contacts extends CActiveRecord
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),
 				),
-			));
+			)); */
 		} else {
 			return new CActiveDataProvider('Contacts',array(
 				// 'criteria'=>$criteria,
@@ -290,7 +469,6 @@ class Contacts extends CActiveRecord
 		$criteria->compare('lastName',$this->lastName,true);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('company',$this->company,true);
-		$criteria->compare('accountId',$this->accountId);
 		$criteria->compare('phone',$this->phone,true);
 		$criteria->compare('phone2',$this->phone2,true);
 		$criteria->compare('email',$this->email,true);

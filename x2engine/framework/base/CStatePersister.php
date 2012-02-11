@@ -32,11 +32,11 @@
  * to improve the throughput.
  *
  * CStatePersister is a core application component used to store global application state.
- * It may be accessed via {@link CApplication::getStatePersister)}.
+ * It may be accessed via {@link CApplication::getStatePersister()}.
  * page state persistent method based on cache.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CStatePersister.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CStatePersister.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -52,7 +52,6 @@ class CStatePersister extends CApplicationComponent implements IStatePersister
 	 * @var string the ID of the cache application component that is used to cache the state values.
 	 * Defaults to 'cache' which refers to the primary cache application component.
 	 * Set this property to false if you want to disable caching state values.
-	 * @since 1.0.10
 	 */
 	public $cacheID='cache';
 

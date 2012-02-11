@@ -5,7 +5,7 @@
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2010 Yii Software LLC
  * @license http://www.yiiframework.com/license/
- * @version $Id: jquery.yiilistview.js 164 2010-04-29 21:03:33Z qiang.xue $
+ * @version $Id: jquery.yiilistview.js 3296 2011-06-22 17:15:17Z qiang.xue $
  */
 
 ;(function($) {
@@ -48,6 +48,7 @@
 		// updateSelector: '#id .pager a, '#id .sort a',
 		// beforeAjaxUpdate: function(id) {},
 		// afterAjaxUpdate: function(id, data) {},
+		// url: 'ajax request URL'
 	};
 
 	$.fn.yiiListView.settings = {};
@@ -68,7 +69,8 @@
 	 * @return string the URL that generates the list view content.
 	 */
 	$.fn.yiiListView.getUrl = function(id) {
-		return $('#'+id+' > div.keys').attr('title');
+		var settings = $.fn.yiiListView.settings[id];
+		return settings.url || $('#'+id+' > div.keys').attr('title');
 	};
 
 	/**
@@ -102,7 +104,7 @@
 			options.url = $.param.querystring(options.url, options.data);
 			options.data = {};
 		}
-		options.url = $.param.querystring(options.url, settings.ajaxVar+'='+id)
+		options.url = $.param.querystring(options.url, settings.ajaxVar+'='+id);
 
 		if(settings.beforeAjaxUpdate != undefined)
 			settings.beforeAjaxUpdate(id);

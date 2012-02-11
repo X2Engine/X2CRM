@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -137,20 +137,33 @@ class UserChild extends Users {
 		}
 	}
 
-	public static function getUserLinks($str) {
-		if($str=='' || $str=="Anyone")
-			return Yii::t('app','Anyone');
-		$pieces = explode(', ',$str);
+	public static function getUserLinks($users) {
+            if(!is_array($users)) {
+                 /* x2temp */
+                if(is_numeric($users)){
+                    $group=Groups::model()->findByPk($users);
+                    $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                    return $link;
+                }
+                /* end x2temp */
+                    if($users=='' || $users=="Anyone")
+                            return Yii::t('app','Anyone');
+                    $users = explode(', ',$users);
+		}
 		$links='';
-			foreach($pieces as $user) {
+			foreach($users as $user) {
 				if($user=='Anyone' || $user=='Email')
 					$link='';
-				else {
+                                else if(is_numeric($user)){
+                                    $group=Groups::model()->findByPk($users);
+                                    $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                                    $links.=$link.", ";
+                                }else {
 					$model = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$user));
-                                        if(isset($model))
-                                            $link = CHtml::link($model->firstName.' '.$model->lastName,array('profile/view','id'=>$model->id));
-                                        else
-                                            $link='';
+					if(isset($model))
+						$link = CHtml::link($model->name,array('profile/view','id'=>$model->id));
+					else
+						$link='';
 					$links.=$link.', ';
 				}
 			}

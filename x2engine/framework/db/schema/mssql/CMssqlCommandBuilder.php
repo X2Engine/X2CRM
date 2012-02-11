@@ -16,9 +16,8 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: CMssqlCommandBuilder.php 2821 2011-01-06 17:41:53Z qiang.xue $
+ * @version $Id: CMssqlCommandBuilder.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.mssql
- * @since 1.0.4
  */
 class CMssqlCommandBuilder extends CDbCommandBuilder
 {
@@ -73,7 +72,11 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 				if ($table->sequenceName !== null && $column->isPrimaryKey === true) continue;
 				if ($column->dbType === 'timestamp') continue;
 				if($value instanceof CDbExpression)
+				{
 					$fields[]=$column->rawName.'='.$value->expression;
+					foreach($value->params as $n=>$v)
+						$values[$n]=$v;
+				}
 				else if($bindByPosition)
 				{
 					$fields[]=$column->rawName.'=?';
@@ -318,7 +321,6 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 	 * @param array $values list of primary key values to be selected within
 	 * @param string $prefix column prefix (ended with dot)
 	 * @return string the expression for selection
-	 * @since 1.0.4
 	 */
 	protected function createCompositeInCondition($table,$values,$prefix)
 	{

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -47,8 +47,8 @@ if($this->route=='actions/index') {
 		array('label'=>Yii::t('actions','Today\'s Actions')),
 		array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
 		array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-		array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
-		array('label'=>Yii::t('actions','Create Action'),'url'=>array('create')), 
+		// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
+		array('label'=>Yii::t('actions','Create'),'url'=>array('create')), 
 	);
 } else if($this->route=='actions/viewAll') {
 	$heading = Yii::t('actions','All My Actions'); 
@@ -59,8 +59,8 @@ if($this->route=='actions/index') {
 		array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 		array('label'=>Yii::t('actions','All My Actions')),
 		array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-		array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
-		array('label'=>Yii::t('actions','Create Action'),'url'=>array('create')),
+		// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
+		array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
 	);
 }else{
 	$heading = Yii::t('actions','Everyone\'s Actions'); 
@@ -71,8 +71,8 @@ if($this->route=='actions/index') {
 		array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 		array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
 		array('label'=>Yii::t('actions','Everyone\'s Actions')),
-		array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
-		array('label'=>Yii::t('actions','Create Action'),'url'=>array('create')),
+		// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
+		array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
 	);
 }
 

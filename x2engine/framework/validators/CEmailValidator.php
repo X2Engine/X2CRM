@@ -12,7 +12,7 @@
  * CEmailValidator validates that the attribute value is a valid email address.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CEmailValidator.php 3120 2011-03-25 01:50:48Z qiang.xue $
+ * @version $Id: CEmailValidator.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.validators
  * @since 1.0
  */
@@ -26,13 +26,11 @@ class CEmailValidator extends CValidator
 	/**
 	 * @var string the regular expression used to validate email addresses with the name part.
 	 * This property is used only when {@link allowName} is true.
-	 * @since 1.0.5
 	 * @see allowName
 	 */
 	public $fullPattern='/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/';
 	/**
 	 * @var boolean whether to allow name in the email address (e.g. "Qiang Xue <qiang.xue@gmail.com>"). Defaults to false.
-	 * @since 1.0.5
 	 * @see fullPattern
 	 */
 	public $allowName=false;
@@ -45,7 +43,6 @@ class CEmailValidator extends CValidator
 	/**
 	 * @var boolean whether to check port 25 for the email address.
 	 * Defaults to false.
-	 * @since 1.0.4
 	 */
 	public $checkPort=false;
 	/**
@@ -82,7 +79,8 @@ class CEmailValidator extends CValidator
 	 */
 	public function validateValue($value)
 	{
-		$valid=is_string($value) && (preg_match($this->pattern,$value) || $this->allowName && preg_match($this->fullPattern,$value));
+		// make sure string length is limited to avoid DOS attacks
+		$valid=is_string($value) && strlen($value)<=254 && (preg_match($this->pattern,$value) || $this->allowName && preg_match($this->fullPattern,$value));
 		if($valid)
 			$domain=rtrim(substr($value,strpos($value,'@')+1),'>');
 		if($valid && $this->checkMX && function_exists('checkdnsrr'))

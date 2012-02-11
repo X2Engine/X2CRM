@@ -38,69 +38,73 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('zii.widgets.CWidget');
-
 class InlineEmailForm extends CWidget {
-	// public $name;
-	// public $address;
-	public $to;
-	public $subject;
-	public $message;
-	public $redirect;
-	public $redirectId;
-	public $redirectType;
+
+	public $model;
+	public $attributes;
 
 	public $errors = array();
 	public $startHidden = false;
 
 	public function init() {
+		// $this->startHidden = false;
 	
-		if(isset($_POST))
-			$startHidden = false;
-	
-		if(isset($_POST['inlineEmail_to']))
-			$this->name = $_POST['inlineEmail_to'];
-	
-		// if(isset($_POST['inlineEmail_name']))
-			// $this->name = $_POST['inlineEmail_name'];
-			
-		// if(isset($_POST['inlineEmail_address']))
-			// $this->address = $_POST['inlineEmail_address'];
-			
-		if(isset($_POST['inlineEmail_subject']))
-			$this->subject = $_POST['inlineEmail_subject'];
-			
-		if(isset($_POST['inlineEmail_message']))
-			$this->message = $_POST['inlineEmail_message'];
-	
+		$this->model = new InlineEmail;
+		$this->model->attributes = $this->attributes;
 		
-		Yii::app()->clientScript->registerScript('toggleEmailForm',
-			($this->startHidden? "$(document).ready(function() { $('#email-form').hide(); });\n" : '')
-			. "function toggleEmailForm() {
-				$('#email-form').toggle('blind',300,function() {
-					$('#email-form #email-subject').focus();
-				});
-			}
-			",CClientScript::POS_HEAD);
+		if(isset($_POST['InlineEmail'])) {
+			$this->model->attributes = $_POST['InlineEmail'];
+			$this->startHidden = false;
+		}
+
+ 		Yii::app()->clientScript->registerScript('toggleEmailForm',
+		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n") .
+		"function toggleEmailForm() {
+			setupEmailEditor();
+			$('#inline-email-form').animate({
+				opacity: 'toggle',
+				height: 'toggle'
+			}, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
+		}",CClientScript::POS_HEAD);
+		
+		Yii::app()->clientScript->registerScript('inlineEmailForm',
+		"$(document).delegate('#email-template','change',function() {
+			var box = $('#email-message-box');
+			// if(($(this).val() == '0' && box.is(':hidden')) || ($(this).val() != '0' && box.is(':visible'))) {
+				// box.animate({
+					// opacity: 'toggle',
+					// height: 'toggle'
+				// }, 400);
+			// }
+			if($(this).val() != '0') // && $('#email-subject').val() == ''
+				$('#email-subject').val($(this).find(':selected').text());
+			$('#preview-email-button').click();
+		});
+		$(document).delegate('#cc-toggle','click',function() {
+			$(this).animate({
+					opacity: 'toggle',
+					width: 0
+				}, 400);
+			
+			$('#cc-row').slideDown(300);
+		});
+		$(document).delegate('#bcc-toggle','click',function() {
+			$(this).animate({
+					opacity: 'toggle',
+					width: 0
+				}, 400);
+			
+			$('#bcc-row').slideDown(300);
+		});
+		
+		",CClientScript::POS_READY);
 		parent::init();
 	}
 
 	public function run() {
-		// $actionModel = new Actions;
-		// $actionModel->associationType = $this->associationType;
-		// $actionModel->associationId = $this->associationId;
-		// $actionModel->assignedTo = $this->assignedTo;
-		echo $this->render('emailForm',array(
-			// 'name'=>$this->name,
-			// 'address'=>$this->address,
-			'to'=>$this->to,
-			'subject'=>$this->subject,
-			'message'=>$this->message,
-			'redirect'=>$this->redirect,
-			// 'redirectId'=>$this->redirectId,
-			// 'redirectType'=>$this->redirectType,
-			'errors'=>$this->errors
-		));	//, array('actionModel'=>$actionModel,'users'=>$this->users,'inlineForm'=>true)
+		$action = new InlineEmailAction($this->controller,'inlineEmail');
+		$action->model = &$this->model;
+		$action->run(); 
 	}
 }
 ?>

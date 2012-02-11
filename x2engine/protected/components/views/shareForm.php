@@ -96,7 +96,7 @@ if(!empty($status)) {
 					// } else
 				// }",
 			),
-		array('id'=>'send-button','class'=>'x2-button','style'=>'margin-left:-20px;background:yellow;')
+		array('id'=>'send-button','class'=>'x2-button highlight','style'=>'margin-left:-20px;')
 	);
 	?>
 	<?php

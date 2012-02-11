@@ -1,4 +1,42 @@
 <?php
+/*********************************************************************************
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
+ * 
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
+ * 
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
 
 /**
  * This is the model class for table "x2_workflows".
@@ -79,43 +117,55 @@ class Workflow extends CActiveRecord {
 		$workflowStages = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$workflowId),new CDbCriteria(array('order'=>'id ASC')));
 		
 		$workflowStatus[] = $workflowId;
-		foreach($workflowStages as &$stage)
-			$workflowStatus[] = array('name'=>$stage->name);	// load all WorkflowStage names into workflowStatus
+		foreach($workflowStages as &$stage) {	// load all WorkflowStage names into workflowStatus
+			$workflowStatus[] = array(
+				'name'=>$stage->name,
+				'requirePrevious'=>$stage->requirePrevious,
+				'requireComment'=>$stage->requireComment
+			);
+		}
 
-		if(empty($modelId) || empty($modelId)) {
-			$workflowActions = array();
-		} else {
+		$workflowActions = array();
+		
+		if(!empty($modelId)) {
 			$workflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
-				array('associationId'=>$modelId,'associationType'=>$modelType,'type'=>'workflow'),
+				array('associationId'=>$modelId,'associationType'=>$modelType,'type'=>'workflow','workflowId'=>$workflowId),
 				new CDbCriteria(array('order'=>'createDate ASC'))
 			);
 		}
 
 		foreach($workflowActions as &$action) {
-		
-			$actionData = explode(':',$action->actionDescription);
-			
+
 			// decode workflowActions into a funnel list
-			if(count($actionData) == 2 && $actionData[0] == $workflowId && $actionData[1] <= count($workflowStages)) {		// ignore action if it's for a different workflow
+			$workflowStatus[$action->stageNumber]['createDate'] = $action->createDate;				// or the stage is beyond the possible range somehow
+			$workflowStatus[$action->stageNumber]['completeDate'] = $action->completeDate;		// Note: multiple actions with the same stage will overwrite each other
+			$workflowStatus[$action->stageNumber]['complete'] = ($action->complete == 'Yes') || (!empty($action->completeDate) && $action->completeDate < time());	// determine whether stage is complete			
+			$workflowStatus[$action->stageNumber]['description'] = $action->actionDescription;
+			
+			/* $actionData = explode(':',$action->actionDescription);
+			// decode workflowActions into a funnel list
+			if(count($actionData) >= 2 && $actionData[0] == $workflowId && $actionData[1] <= count($workflowStages)) {		// ignore action if it's for a different workflow
 				$workflowStatus[$actionData[1]]['createDate'] = $action->createDate;				// or the stage is beyond the possible range somehow
 				$workflowStatus[$actionData[1]]['completeDate'] = $action->completeDate;		// Note: multiple actions with the same stage will overwrite each other
 				$workflowStatus[$actionData[1]]['complete'] = ($action->complete == 'Yes') || (!empty($action->completeDate) && $action->completeDate < time());	// determine whether stage is complete
-			}
+			} */
 		}
 		return $workflowStatus;
 	}
-        
-        public static function getStages($id){
-            $stages=WorkflowStage::model()->findAllByAttributes(array('workflowId'=>$id));
-            $arr=array();
-            foreach($stages as $stage){
-                $arr[$stage->stageNumber]=$stage->name;
-            }
-            
-            return $arr;
-        }
+	
+	public static function getStages($id){
+		$stages=WorkflowStage::model()->findAllByAttributes(array('workflowId'=>$id));
+		$arr=array();
+		foreach($stages as $stage){
+			$arr[$stage->stageNumber]=$stage->name;
+		}
+		
+		return $arr;
+	}
 	
 	public static function renderWorkflow(&$workflowStatus) {
+	
+		$workflowId = &$workflowStatus[0];
 	
 		$stageCount = count($workflowStatus)-1;
 	
@@ -151,40 +201,69 @@ class Workflow extends CActiveRecord {
 		// die(var_dump($workflowStatus));
 		
 		$started = false;
-		for($i=1; $i<=$stageCount;$i++) {
+		for($stage=1; $stage<=$stageCount;$stage++) {
 		
 			$color = Workflow::rgb2hex(
-				$startingRgb[0] + ($rgbSteps[0]*$i),
-				$startingRgb[1] + ($rgbSteps[1]*$i),
-				$startingRgb[2] + ($rgbSteps[2]*$i)
+				$startingRgb[0] + ($rgbSteps[0]*$stage),
+				$startingRgb[1] + ($rgbSteps[1]*$stage),
+				$startingRgb[2] + ($rgbSteps[2]*$stage)
 			);
-			$width = round($startingWidth + $widthStep*$i);
+			$width = round($startingWidth + $widthStep*$stage);
 			
-			$funnelStr .= '<div class="workflow-funnel-stage" style="width:'.$width.'px;background:'.$color.';"><b>'.$workflowStatus[$i]['name'].'</b></div>';;
-			if(isset($workflowStatus[$i]['createDate'])) {
+			$funnelStr .= '<div class="workflow-funnel-stage" style="width:'.$width.'px;background:'.$color.';"><b>'.$workflowStatus[$stage]['name'].'</b></div>';;
+			if(isset($workflowStatus[$stage]['createDate'])) {
+			
+				// check if all stages before this one are complete
+				$previousComplete = true;
+				if($workflowStatus[$stage]['requirePrevious']) {
+					for($i=1; $i<$stage; $i++) {
+						if(!isset($workflowStatus[$i]['complete']) || !$workflowStatus[$i]['complete']) {
+							$previousComplete = false;
+							break;
+						}
+					}
+				}
+				// check if this is the last stage to be started or completed
+				$latestStage = true;
+				if($stage < $stageCount) {
+					for($i=$stage+1; $i<=$stageCount; $i++) {
+						if(!empty($workflowStatus[$i]['createDate'])) {
+							$latestStage = false;
+							break;
+						}
+					}
+				}
+				
 				// $started = true;
+
 				$statusStr .= '<div class="workflow-status">';
-				if($workflowStatus[$i]['complete']) {
-					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus[$i]['completeDate']);
-					$statusStr .= ' <a href="javascript:void(0)" onclick="revertWorkflowStage('.$workflowStatus[0].','.$i.');">['.Yii::t('workflow','Undo').']</a>';
+				if($workflowStatus[$stage]['complete']) {
+					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus[$stage]['completeDate']);
+					$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
 				} else {
 					$started = true;
-					$statusStr .= '<b>'.Yii::t('workflow','Started').' '.date("Y-m-d",$workflowStatus[$i]['createDate']).'</b>';
-					$statusStr .= ' <a href="javascript:void(0)" onclick="completeWorkflowStage('.$workflowStatus[0].','.$i.');">['.Yii::t('workflow','Complete').']</a> ';
-					$statusStr .= '<a href="javascript:void(0)" onclick="revertWorkflowStage('.$workflowStatus[0].','.$i.');">['.Yii::t('workflow','Undo').']</a>';
+					$statusStr .= '<b>'.Yii::t('workflow','Started').' '.date("Y-m-d",$workflowStatus[$stage]['createDate']).'</b>';
+					// if(!$latestStage)
+						$statusStr .= '<a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
+					if($previousComplete) {
+						if($workflowStatus[$stage]['requireComment'])
+							$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowCommentDialog('.$workflowId.','.$stage.');">['.Yii::t('workflow','Complete').']</a> ';
+						else
+							$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="completeWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Complete').']</a> ';
+					}
 				}
 				$statusStr .= '</div>';
 			} else {
 				if(!$started) {
 					$started = true;
-					$statusStr .= '<div class="workflow-status"><a href="javascript:void(0)" onclick="startWorkflowStage('.$workflowStatus[0].','.$i.');">['.Yii::t('workflow','Start').']</a></div>';
+					$statusStr .= '<div class="workflow-status"><a href="javascript:void(0)" class="right" onclick="startWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Start').']</a></div>';
 				}
 			}
 			
 		}
 		$str = '<div class="row">
 					<div class="cell"><div class="workflow-funnel-box" style="width:'.($startingWidth+10).'px">'.$funnelStr.'</div></div>
-					<div class="cell">'.$statusStr.'</div>
+					<div class="cell" style="width:250px;">'.$statusStr.'</div>
 				</div>';
 		return $str;
 	}

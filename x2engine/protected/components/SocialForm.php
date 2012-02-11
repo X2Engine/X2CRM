@@ -38,8 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('zii.widgets.CWidget');
-
 class SocialForm extends CWidget {
 	public $vars;
 

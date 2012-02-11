@@ -34,8 +34,14 @@
  * }
  * </pre>
  *
+ * @property string $name The command name.
+ * @property CConsoleCommandRunner $commandRunner The command runner instance.
+ * @property string $help The command description. Defaults to 'Usage: php entry-script.php command-name'.
+ * @property array $optionHelp The command option help information. Each array element describes
+ * the help information for a single action.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CConsoleCommand.php 3015 2011-03-02 17:51:26Z qiang.xue $
+ * @version $Id: CConsoleCommand.php 3501 2011-12-20 20:24:18Z alexander.makarow $
  * @package system.console
  * @since 1.0
  */
@@ -444,5 +450,42 @@ abstract class CConsoleCommand extends CComponent
 				return preg_replace($rule,$replacement,$name);
 		}
 		return $name.'s';
+	}
+
+	/**
+	 * Reads input via the readline PHP extension if that's available, or fgets() if readline is not installed.
+	 *
+	 * @param string $message to echo out before waiting for user input
+	 * @return mixed line read as a string, or false if input has been closed
+	 *
+	 * @since 1.1.9
+	 */
+	public function prompt($message)
+	{
+		if(extension_loaded('readline'))
+		{
+			$input = readline($message.' ');
+			readline_add_history($input);
+			return $input;
+		}
+		else
+		{
+			echo $message.' ';
+			return trim(fgets(STDIN));
+		}
+	}
+
+	/**
+	 * Asks user to confirm by typing y or n.
+	 *
+	 * @param string $message to echo out before waiting for user input
+	 * @return bool if user confirmed
+	 *
+	 * @since 1.1.9
+	 */
+	public function confirm($message)
+	{
+		echo $message.' [yes|no] ';
+		return !strncasecmp(trim(fgets(STDIN)),'y',1);
 	}
 }

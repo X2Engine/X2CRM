@@ -84,7 +84,7 @@ class ContactsController extends MobileController{
 	public function actionNew(){
 		
 		$model=new Contacts;
-		$attributeLabels = Contacts::attributeLabels();
+		$attributeLabels = $model->attributeLabels();
 		
 		if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
 			echo CActiveForm::validate($model);
@@ -124,8 +124,8 @@ class ContactsController extends MobileController{
 	}
 	
 	public function actionSearch(){
-		$attributeLabels = Contacts::attributeLabels();
 		$model=new Contacts;
+		$attributeLabels = $model->attributeLabels();
 		if(isset($_POST['Contacts'])){
 			$model->attributes=$_POST['Contacts'];
 			$firstName=true;

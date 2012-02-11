@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,4 +44,4 @@ $this->menu=array(
 ?>
 <h2><?php echo Yii::t('accounts','Create Account'); ?></h2> 
 
-<?php echo $this->renderPartial('_form', array('model'=>$model, 'users'=>$users,'contacts'=>$contacts)); ?>
+<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>

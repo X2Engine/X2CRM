@@ -46,113 +46,113 @@ class SiteController extends MobileController {
 //    }
 
 
-    /**
-     * Specifies the access control rules.
-     * This method is used by the 'accessControl' filter.
-     * @return array access control rules
-     */
-    public function accessRules() {
-        return array(
-            array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('chat', 'logout', 'home', 'getMessages', 'newMessage','contact','home2','more','online'),
-                'users' => array('@'),
-            ),
-            array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('index', 'login'),
-                'users' => array('*'),
-            ),
-            array('deny', // deny all users
-                'users' => array('*'),
-            ),
-        );
-    }
+	/**
+	 * Specifies the access control rules.
+	 * This method is used by the 'accessControl' filter.
+	 * @return array access control rules
+	 */
+	public function accessRules() {
+		return array(
+			array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				'actions' => array('chat', 'logout', 'home', 'getMessages', 'newMessage','contact','home2','more','online'),
+				'users' => array('@'),
+			),
+			array('allow', // allow admin user to perform 'admin' and 'delete' actions
+				'actions' => array('index', 'login'),
+				'users' => array('*'),
+			),
+			array('deny', // deny all users
+				'users' => array('*'),
+			),
+		);
+	}
 
-    public function actionChat() {
+	public function actionChat() {
 
-        $this->dataUrl = $this->createUrl('site/chat/');
-        $this->pageId = 'site-chat';
-        $this->render('chat');
-    }
+		$this->dataUrl = $this->createUrl('site/chat/');
+		$this->pageId = 'site-chat';
+		$this->render('chat');
+	}
 
-    public function actionNewMessage() {
-        $time=time();
-        if (isset($_POST['message']) && $_POST['message'] != '') {
-            $user = Yii::app()->user->getName();
-            $chat = new Social;
-            $chat->data = $_POST['message'];
-            $chat->timestamp = $time;
-            $chat->user = $user;
-            $chat->type = 'chat';
+	public function actionNewMessage() {
+		$time=time();
+		if (isset($_POST['message']) && $_POST['message'] != '') {
+			$user = Yii::app()->user->getName();
+			$chat = new Social;
+			$chat->data = $_POST['message'];
+			$chat->timestamp = $time;
+			$chat->user = $user;
+			$chat->type = 'chat';
 
-            if ($chat->save()) {
-                echo '1';
-            }
-        }
-    }
+			if ($chat->save()) {
+				echo '1';
+			}
+		}
+	}
 
-    public function actionGetMessages() {
-        $time=time();
+	public function actionGetMessages() {
+		$time=time();
 		$sinceMidnight=(3600*date("H"))+(60*date("i"))+date("s");
-        $latest = '';
-        if (isSet($_GET['latest']))
-            $latest = $_GET['latest'];
-        $retrys = 20;
-        $content = array();
-        $records = array();
-        while (true) {
-            $str = '';
-            $chatLog = new CActiveDataProvider('Social', array(
-                        'criteria' => array(
-                            'order' => 'timestamp DESC',
-                            'condition' => 'type="chat" AND timestamp > '. (($latest != '') ? (''.$latest) : ''.($time-$sinceMidnight))
-                        ),
-                        'pagination' => array(),
-                    ));
-            $records = $chatLog->getData();
-            if (sizeof($records) > 0) {
-                foreach ($records as $chat) {
-                    if ($latest != '' && $chat->timestamp < $latest)
-                        continue;
-                    $user = UserChild::model()->findByAttributes(array('username' => $chat->user));
-                    if ($user != null)
-                        $content[] = array('username' => $chat->user,
-                            'userid' => $user->id,
-                            'message' => $chat->data,
-                            'timestamp' => $chat->timestamp,
-                            'when' => date('g:i:s A',$chat->timestamp));
-                }
-                if (sizeof($content) > 0) {
-                    $str = json_encode($content);
-                    echo $str;
-                    break;
-                }
-            }
-            if (--$retrys > 0) {
-                sleep(1);
-            } else {
-                echo $str;
-                break;
-            }
-        }
-    }
-    
-    public function actionOnline(){
-        x2base::cleanUpSessions();
-        $sessions=Sessions::model()->findAll();
-        $usernames=array();
-        $users=array();
-        foreach($sessions as $session){
-            $usernames[]=$session->user;
-        }
-        foreach($usernames as $username){
-            $user=Users::model()->findByAttributes(array('username'=>$username));
-            $users[]=$user->firstName." ".$user->lastName;
-        }
-        
-        $this->render('online',array(
-            'users'=>$users,
-        ));
-    }
+		$latest = '';
+		if (isSet($_GET['latest']))
+			$latest = $_GET['latest'];
+		$retrys = 20;
+		$content = array();
+		$records = array();
+		while (true) {
+			$str = '';
+			$chatLog = new CActiveDataProvider('Social', array(
+						'criteria' => array(
+							'order' => 'timestamp DESC',
+							'condition' => 'type="chat" AND timestamp > '. (($latest != '') ? (''.$latest) : ''.($time-$sinceMidnight))
+						),
+						'pagination' => array(),
+					));
+			$records = $chatLog->getData();
+			if (sizeof($records) > 0) {
+				foreach ($records as $chat) {
+					if ($latest != '' && $chat->timestamp < $latest)
+						continue;
+					$user = UserChild::model()->findByAttributes(array('username' => $chat->user));
+					if ($user != null)
+						$content[] = array('username' => $chat->user,
+							'userid' => $user->id,
+							'message' => $chat->data,
+							'timestamp' => $chat->timestamp,
+							'when' => date('g:i:s A',$chat->timestamp));
+				}
+				if (sizeof($content) > 0) {
+					$str = json_encode($content);
+					echo $str;
+					break;
+				}
+			}
+			if (--$retrys > 0) {
+				sleep(1);
+			} else {
+				echo $str;
+				break;
+			}
+		}
+	}
+	
+	public function actionOnline(){
+		x2base::cleanUpSessions();
+		$sessions = Session::model()->findAll();
+		$usernames = array();
+		$users = array();
+		foreach($sessions as $session) {
+			$usernames[] = $session->user;
+		}
+		foreach($usernames as $username){
+			$user = Users::model()->findByAttributes(array('username'=>$username));
+			$users[] = $user->firstName." ".$user->lastName;
+		}
+		
+		$this->render('online',array(
+			'users'=>$users,
+		));
+	}
 	
 
     /**

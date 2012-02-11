@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -52,7 +52,44 @@ class SiteController extends x2base {
 	}
 	
 	public function accessRules() {
-		return array();
+		return array(
+			array('allow',
+				'actions'=>array('login','index','logout','warning','captcha'),
+				'users'=>array('*'),
+			),
+			array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
+					'getNotes','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
+					'inlineEmail','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
+				'users'=>array('@'),
+			),
+			// array('allow',
+				// 'actions'=>array('index'),
+				// 'users'=>array('admin'),
+			// ),
+			array('deny', 
+				'users'=>array('*')
+			)
+		);
+	}
+	
+	public function actions() {
+		return array(
+			// captcha action renders the CAPTCHA image displayed on the contact page
+			'captcha'=>array(
+				'class'=>'CCaptchaAction',
+				'backColor'=>0xFFFFFF,
+				'testLimit'=>1,
+			),
+			// page action renders "static" pages stored under 'protected/views/site/pages'
+			// They can be accessed via: index.php?r=site/page&view=FileName
+			'page'=>array(
+				'class'=>'CViewAction',
+			),
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
+			),
+		);
 	}
 	
 	public function filterSetPortlets($filterChain){
@@ -68,21 +105,6 @@ class SiteController extends x2base {
 			// }
 		}
 		$filterChain->run();
-	}
-	
-	public function actions() {
-		return array(
-			// captcha action renders the CAPTCHA image displayed on the contact page
-			'captcha'=>array(
-				'class'=>'CCaptchaAction',
-				'backColor'=>0xFFFFFF,
-			),
-			// page action renders "static" pages stored under 'protected/views/site/pages'
-			// They can be accessed via: index.php?r=site/page&view=FileName
-			'page'=>array(
-				'class'=>'CViewAction',
-			),
-		);
 	}
 	
 	public function actionWhatsNew(){
@@ -273,10 +295,10 @@ class SiteController extends x2base {
 		
 			$opacity = round(100*$opacity);
 			
-			$profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+			// $profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
-			$profile->pageOpacity = $opacity;
-			if($profile->save()){
+			Yii::app()->params->profile->pageOpacity = $opacity;
+			if(Yii::app()->params->profile->save()){
 				echo "success";
 			}
 		}
@@ -288,19 +310,19 @@ class SiteController extends x2base {
 			$widgetName = $_GET['widget'];
 			$widgetState = ($_GET['state']==0)? 0 : 1;
 			
-			$profile = &Yii::app()->params->profile;
+			// $profile = Yii::app()->params->profile;
 			
-			$order = explode(":",$profile->widgetOrder);
-			$visibility = explode(":",$profile->widgets);
+			$order = explode(":",Yii::app()->params->profile->widgetOrder);
+			$visibility = explode(":",Yii::app()->params->profile->widgets);
 
 			if(array_key_exists($widgetName,Yii::app()->params->registeredWidgets)) {
 
 				$pos = array_search($widgetName,$order);
 				$visibility[$pos] = $widgetState;
 			
-				$profile->widgets = implode(':',$visibility);
+				Yii::app()->params->profile->widgets = implode(':',$visibility);
 				
-				if($profile->save()){
+				if(Yii::app()->params->profile->save()){
 					echo 'success';
 				}
 			}
@@ -312,9 +334,9 @@ class SiteController extends x2base {
 
 			$widgetList = $_POST['widget'];
 			
-			$profile = &Yii::app()->params->profile;
-			$order = $profile->widgetOrder;
-			$visibility=$profile->widgets;
+			// $profile = Yii::app()->params->profile;
+			$order = Yii::app()->params->profile->widgetOrder;
+			$visibility = Yii::app()->params->profile->widgets;
 			
 			$order = explode(":",$order);
 			$visibility = explode(":",$visibility);
@@ -333,13 +355,13 @@ class SiteController extends x2base {
 				$str.=$item.":";
 				$visStr.=$vis.":";
 			}
-			$str=substr($str,0,-1);
-			$visStr=substr($visStr,0,-1);
+			$str = substr($str,0,-1);
+			$visStr = substr($visStr,0,-1);
 			
-			$profile->widgetOrder=$str;
-			$profile->widgets=$visStr;
+			Yii::app()->params->profile->widgetOrder = $str;
+			Yii::app()->params->profile->widgets = $visStr;
 			
-			if($profile->save()){
+			if(Yii::app()->params->profile->save()){
 				echo 'success';
 			}
 		}
@@ -353,97 +375,25 @@ class SiteController extends x2base {
 			
 			if(isset($gvSettings))
 				$result = ProfileChild::setGridviewSettings($gvSettings,$_GET['viewName']);
-		// $gvSettings = ProfileChild::get
 		}
 		if($result)
 			echo '200 Success';
 		else
 			echo '400 Failure';
 	}
-
-	public function actionInlineEmail() {
-		
-		$name = '';
-		$subject = '';
-		$message = '';
-		$redirect = '';
-		$redirectId = '';
-		$redirectType = '';
-		$status = array();
-		
-		
-		$errors = array();
-
-		if(isset($_POST['inlineEmail_to'], $_POST['inlineEmail_subject'], $_POST['inlineEmail_message'])) {
+	
+	public function actionSaveFormSettings() {
+		$result = false;
+		if(isset($_GET['formSettings']) && isset($_GET['formName'])) {
+			$formSettings = json_decode($_GET['formSettings'],true);
 			
-			$to = $this->parseEmailTo($this->decodeQuotes($_POST['inlineEmail_to']));
-			// echo var_dump($to);
-			if($to === false)
-				$errors[] = 'to';
-			
-			// $name = $this->decodeQuotes($_POST['inlineEmail_name']);
-			// $address = $this->decodeQuotes($_POST['inlineEmail_address']);
-			$subject = $this->decodeQuotes($_POST['inlineEmail_subject']);
-			$message = $this->decodeQuotes($_POST['inlineEmail_message']);
-			
-			// if(empty($to))
-				// $errors[] = 'to';
-			if(empty($subject))
-				$errors[] = 'subject';
-			if(empty($message))
-				$errors[] = 'message';
-			
-			if(empty($errors)) {
-			
-				// $status = array();
-				$status = $this->sendUserEmail($to,$subject,$message);
-				
-				if(in_array('200',$status)) {
-					
-					$contact = Contacts::model()->findByAttributes(array('email'=>$to[0][1]));
-					if(isset($contact)) {
-
-						$action = new Actions;
-						$action->associationType = 'contacts';
-						$action->associationId = $contact->id;
-						$action->associationName = $contact->name;
-						$action->visibility = $contact->visibility;
-						$action->complete = 'Yes';
-						$action->type = 'email';
-						$action->completedBy = Yii::app()->user->getName();
-						$action->assignedTo = $contact->assignedTo;
-						$action->createDate = time();
-						$action->dueDate = time();
-						$action->completeDate = time();
-						$action->actionDescription = "<b>$subject</b>\n\n$message";
-						
-						$action->save();
-						// $message="2";
-						// $email=$toEmail;
-						// $id=$contact['id'];
-						// $note.="\n\nSent to Contact";
-					}
-				}
-			}
-			
-			if($to === false)
-				$to = $_POST['inlineEmail_to'];
-			else
-				$to = $this->mailingListToString($to);
-			
-			if(isset($_GET['ajax'])) {	// respond with the form partial view
-				echo $this->renderPartial('application.components.views.emailForm',array('to'=>$to,'status'=>$status,'subject'=>$subject,'message'=>$message,'redirect'=>$redirect,'redirectId'=>$redirectId,'redirectType'=>$redirectType,'errors'=>$errors));
-			} else {
-				// reload the whole page if this wasn't an AJAX request
-				if(isset($_POST['redirect'])) {
-					// $this->redirect(array($_POST['redirect']));
-					return;
-				} else {
-					$this->redirect(array('contacts/index'));
-					return;
-				}
-			}
+			if(isset($formSettings))
+				$result = ProfileChild::setFormSettings($formSettings,$_GET['formName']);
 		}
+		if($result)
+			echo 'success';
+		else
+			throw new CHttpException(400,'Invalid request. Probabaly something wrong with the JSON string.');
 	}
 
 	public function actionUpload() {
@@ -521,6 +471,8 @@ class SiteController extends x2base {
 					} else {
 							unlink('uploads/'.$name);
 					}
+					if($model->associationType == 'product')
+						$this->redirect(array($model->associationType.'s/'.$model->associationId));
 					$this->redirect(array($model->associationType.'/'.$model->associationId));
 				}
 			}
@@ -610,7 +562,7 @@ class SiteController extends x2base {
 				if($file->exists)
 					$this->redirect(array(ucfirst($profile->startPage).'/index'));
 				else {
-					$page=DocChild::model()->findByAttributes(array('title'=>ucfirst($key)));
+					$page=DocChild::model()->findByAttributes(array('title'=>ucfirst($profile->startPage)));
 					if(isset($page)) {
 						$id=$page->id;
 						$menuItems[$key] = array('label' =>ucfirst($value),		'url' => array('/admin/viewPage/'.$id),		'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/admin/viewPage/'.$id?true:null);
@@ -719,98 +671,112 @@ class SiteController extends x2base {
 		$img = 'R0lGODlhZABQAPcAANgAAP///w';
 		for($i=0; $i<203; $i++)
 			$img .= 'AAAAA';
-		$img .= "CwAAAAAZABQAAAI/wABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjwkDiBS5cKRAkiBTKkQJIMBKlwNZqpxJUOZJkzdNjiS5s+VOnDph9qT5EqbPmzGNHk3acilSny6jClVK1CDQqUyzIpUKFaXMn1SrWuXq9CtVnmS9KrUptqBRtE+dLsUKd+7at23dDu2aFCdUpmrB+t2bt7Dhw4gTK57pV+viqmwfG7ZJ+GfOqYOHEn4cmaVnu1vTipYct+bbs5aPovWcWmPYiJ/jUg5bl29kjLcfxi6LNzZctWU3NpYItmvg04GNZ85NfDjptrWfiwUuHfrp6pDvTryKNaRzvWNdo//e3l33a9Mp2TL3HtqsWdPHMd+N/5KvXN0n0T9lfZC6ftCqnXdcafg1pZV/7vl3YHfR6bfXev01xh9vWSkoG4NkgXeZY+ZpCCCFAF63H12vsfYebMhxJ198mF024F/DJfgfdhlJGON5NDan12w54jabejj22FBnJQYpZFERIgShcS5eJ1VqKq5oZHhJVskQXgYaSFd+TWHpZUwQfXffjCGB2WVNSqLJ5ZdTUqnjlWbeeJaaWsa5JHxKijnmWJ8JSGeW8oHZJpnw4QihUGammSigay7qkJ6beahonWsiuuiXjXJ55aD1eZciUHLZ2GKTbeoZJqfY3bnpkZ4K5uqrrbHwWiistAom6624klchizC+aFlQtiKGKaVaWoqlpnNpiupHUfWXn3bEuuXgs5KV2BeazWYpraDFLpueVdiGa+xuZyLqLbPazilttseme6a2iQ1rKaVeXapmvcjmxd+v/Ga43GoBRprrwAQXbPDBCOMqZ6HXtvrkX/f1VNyfPDm60rbEzmukdl/RqTHG5XGqbrTKloRenxZnS/GkJnucL6MXc9tbyurtiHHLiY6r8sbicltps7SxPKixcRb98s1eamY0uM5arOjHMLfbdMlRL73WtE7zaSKeDecJrHIQR3m1oCMnjDPLZsdcZtpst+22QQEBADs=";
+		$img .= 'CwAAAAAZABQAAAI/wABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjwkDiBS5cKRAkiBTKkQJIMBKlwNZqpxJUOZJkzdNjiS5s+VOnDph9qT5EqbPmzGNHk3acilSny6jClVK1CDQqUyzIpUKFaXMn1SrWuXq9CtVnmS9KrUptqBRtE+dLsUKd+7at23dDu2aFCdUpmrB+t2bt7Dhw4gTK57pV+viqmwfG7ZJ+GfOqYOHEn4cmaVnu1vTipYct+bbs5aPovWcWmPYiJ/jUg5bl29kjLcfxi6LNzZctWU3NpYItmvg04GNZ85NfDjptrWfiwUuHfrp6pDvTryKNaRzvWNdo//e3l33a9Mp2TL3HtqsWdPHMd+N/5KvXN0n0T9lfZC6ftCqnXdcafg1pZV/7vl3YHfR6bfXev01xh9vWSkoG4NkgXeZY+ZpCCCFAF63H12vsfYebMhxJ198mF024F/DJfgfdhlJGON5NDan12w54jabejj22FBnJQYpZFERIgShcS5eJ1VqKq5oZHhJVskQXgYaSFd+TWHpZUwQfXffjCGB2WVNSqLJ5ZdTUqnjlWbeeJaaWsa5JHxKijnmWJ8JSGeW8oHZJpnw4QihUGammSigay7qkJ6beahonWsiuuiXjXJ55aD1eZciUHLZ2GKTbeoZJqfY3bnpkZ4K5uqrrbHwWiistAom6624klchizC+aFlQtiKGKaVaWoqlpnNpiupHUfWXn3bEuuXgs5KV2BeazWYpraDFLpueVdiGa+xuZyLqLbPazilttseme6a2iQ1rKaVeXapmvcjmxd+v/Ga43GoBRprrwAQXbPDBCOMqZ6HXtvrkX/f1VNyfPDm60rbEzmukdl/RqTHG5XGqbrTKloRenxZnS/GkJnucL6MXc9tbyurtiHHLiY6r8sbicltps7SxPKixcRb98s1eamY0uM5arOjHMLfbdMlRL73WtE7zaSKeDecJrHIQR3m1oCMnjDPLZsdcZtpst+22QQEBADs=';
 		echo base64_decode($img);
 	}
 	
 	// Displays the login page
 	public function actionLogin() {
 	
+		// echo var_dump(Session::getOnlineUsers());
 		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
 			$this->redirect(Yii::app()->homeUrl);
 			return;
 		}
-		$model=new LoginForm;
-
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+		
+		$model = new LoginForm;
+		$model->useCaptcha = false;
 
 		// collect user input data
 		if(isset($_POST['LoginForm'])) {
-			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login()){
-					$user = UserChild::model()->findByPk(Yii::app()->user->getId());
-					$user->login=time();
-					$user->save();
-					if($user->username=='admin'){
-						if(ini_get('allow_url_fopen') == 1) {
-							$context = stream_context_create(array(
-								'http' => array(
-										'timeout' => 2		// Timeout in seconds
-								)
-							));
-							
-							
-							$updateSources = array(
-								'http://x2planet.com/updates/versionCheck.php',
-								'http://x2base.com/updates/versionCheck.php'
-							);
-							$newVersion = '';
-							
-							foreach($updateSources as $url) {
-								$sourceVersion = @file_get_contents($url,0,$context);
-								if($sourceVersion !== false) {
-									$newVersion = $sourceVersion;
-									break;
-								}
+			$model->attributes = $_POST['LoginForm'];
+			$ip = $this->getRealIp();
+			
+			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
+			if(isset($session)) {
+				$session->lastUpdated = time();
+				
+				if($session->status < 1) {
+					if($session->status > -3)
+						$session->status -= 1;
+				} else {
+					$session->status = -1;
+				}
+				if($session->status < -1)
+					$model->useCaptcha = true;
+				if($session->status < -2)
+					$model->setScenario('loginWithCaptcha');
+			} else {
+				$session = new Session;
+				$session->user = $model->username;
+				$session->lastUpdated = time();
+				$session->status = 1;
+				$session->IP = $ip;
+			}
+
+			if($model->validate() && $model->login()) {
+				$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+				$user->login = time();
+				$user->save();
+				if($user->username=='admin'){
+					if(ini_get('allow_url_fopen') == 1) {
+						$context = stream_context_create(array(
+							'http' => array('timeout' => 2)		// set request timeout in seconds
+						));
+						$updateSources = array(
+							'http://x2planet.com/updates/versionCheck.php',
+							'http://x2base.com/updates/versionCheck.php'
+						);
+						$newVersion = '';
+						
+						foreach($updateSources as $url) {
+							$sourceVersion = @file_get_contents($url,0,$context);
+							if($sourceVersion !== false) {
+								$newVersion = $sourceVersion;
+								break;
 							}
-							if(empty($newVersion))
-								$newVersion = Yii::app()->params->version;
-							/* 
-							// check X2Planet for updates
-							$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
-							if($x2planetVersion !== false)
-								$newVersion = $x2planetVersion;
-							else {
-								// try X2Base if that didn't work
-								$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
-								if($x2baseVersion !== false)
-									$newVersion=$x2baseVersion;
-								else
-									$newVersion=Yii::app()->params->version;
-							} */
-							
-							if(strcmp($newVersion,Yii::app()->params->version) > 1) {	// if the latest version is newer than our version
-								Yii::app()->session['versionCheck']=false;
-								Yii::app()->session['newVersion']=$newVersion;
-							}
+						}
+						if(empty($newVersion))
+							$newVersion = Yii::app()->params->version;
+						/* 
+						// check X2Planet for updates
+						$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
+						if($x2planetVersion !== false)
+							$newVersion = $x2planetVersion;
+						else {
+							// try X2Base if that didn't work
+							$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
+							if($x2baseVersion !== false)
+								$newVersion=$x2baseVersion;
 							else
-								Yii::app()->session['versionCheck']=true;
+								$newVersion=Yii::app()->params->version;
+						} */
+						
+						if(strcmp($newVersion,Yii::app()->params->version) > 1) {	// if the latest version is newer than our version
+							Yii::app()->session['versionCheck']=false;
+							Yii::app()->session['newVersion']=$newVersion;
 						}
 						else
 							Yii::app()->session['versionCheck']=true;
-					} else
-						Yii::app()->session['versionCheck']=true;
-						
-					Yii::app()->session['loginTime']=time();
-					$session=Sessions::model()->findByAttributes(array('user'=>$user->username));
-					if(isset($session)){
-						$session->lastUpdated=time();
-						$session->save();
-					}else{
-						$session=new Sessions;
-						$session->user=$user->username;
-						$session->lastUpdated=time();
-						$session->save();
 					}
-					if(Yii::app()->user->returnUrl=='site/index')
-						$this->redirect('index');
 					else
-						$this->redirect(Yii::app()->user->returnUrl);
+						Yii::app()->session['versionCheck']=true;
+				} else
+					Yii::app()->session['versionCheck']=true;
+					
+				Yii::app()->session['loginTime']=time();
+				$session->save();
+
+				if(Yii::app()->user->returnUrl=='site/index')
+					$this->redirect('index');
+				else
+					$this->redirect(Yii::app()->user->returnUrl);
+			} else {
+				$session->save();
+				$model->verifyCode = '';
+				if($model->hasErrors())
+					$model->addError('username',Yii::t('app','Incorrect username or password.'));
+					$model->addError('password',Yii::t('app','Incorrect username or password.'));
 			}
 		}
 		// display the login form
@@ -822,7 +788,7 @@ class SiteController extends x2base {
 		$user = UserChild::model()->findByPk(Yii::app()->user->getId());
 		if(isset($user)) {
 			$user->lastLogin=time();
-			$session = Sessions::model()->findByAttributes(array('user'=>$user->username));
+			$session = Session::model()->findByAttributes(array('user'=>$user->username));
 			if(isset($session))
 				$session->delete();
 			$user->save();

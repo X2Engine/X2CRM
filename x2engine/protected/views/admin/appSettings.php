@@ -41,7 +41,7 @@
 Yii::app()->clientScript->registerScript('updateChatPollSlider',"
 
 $('#settings-form input, #settings-form select, #settings-form textarea').change(function() {
-	$('#save-button').css('background','yellow');
+	$('#save-button').addClass('highlight'); //css('background','yellow');
 });
 
 $('#chatPollTime').change(function() {

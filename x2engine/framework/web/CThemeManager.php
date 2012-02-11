@@ -26,8 +26,12 @@
  * Since a self-contained theme often contains resource files that are made
  * Web accessible, please make sure the view/layout files are protected from Web access.
  *
+ * @property array $themeNames List of available theme names.
+ * @property string $basePath The base path for all themes. Defaults to "WebRootPath/themes".
+ * @property string $baseUrl The base URL for all themes. Defaults to "/WebRoot/themes".
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CThemeManager.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CThemeManager.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.web
  * @since 1.0
  */
@@ -57,7 +61,7 @@ class CThemeManager extends CApplicationComponent
 		$themePath=$this->getBasePath().DIRECTORY_SEPARATOR.$name;
 		if(is_dir($themePath))
 		{
-			$class=Yii::import($this->themeClass);
+			$class=Yii::import($this->themeClass, true);
 			return new $class($name,$themePath,$this->getBaseUrl().'/'.$name);
 		}
 		else

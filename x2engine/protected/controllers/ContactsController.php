@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,6 +48,10 @@ class ContactsController extends x2base {
 	 */
 	public function accessRules() {
 		return array(
+                        array('allow',
+                            'actions'=>array('getItems'),
+                            'users'=>array('*'), 
+                        ),
 			array('allow',	// allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array(
 					'index',
@@ -76,6 +80,8 @@ class ContactsController extends x2base {
 					'createList',
 					'updateList',
 					'deleteList',
+					'inlineEmail',
+					'quickUpdateHistory',
 				),
 				'users'=>array('@'),
 			),
@@ -91,6 +97,14 @@ class ContactsController extends x2base {
 		);
 	}
 
+	public function actions() {
+		return array(
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
+			),
+		);
+	}
+	
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -98,8 +112,37 @@ class ContactsController extends x2base {
 	public function actionView($id) {
 
 		$contact = $this->loadModel($id);
-
-		if ($contact->assignedTo == Yii::app()->user->getName() || $contact->visibility == 1 || Yii::app()->user->getName() == 'admin') {
+                $viewPermissions=($contact->assignedTo == Yii::app()->user->getName() || $contact->visibility == 1 || Yii::app()->user->getName() == 'admin');
+                /* x2temp */
+                $groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+                $temp=array();
+                foreach($groups as $group){
+                    $temp[]=$group->groupId;
+                }
+                if(array_search($contact->assignedTo,$temp)!==false){
+                    $viewPermissions=true;
+                }
+                if($contact->visibility=='2'){
+                    $user=UserChild::model()->findByAttributes(array('username'=>$contact->assignedTo));
+                    $groups=GroupToUser::model()->findAllByAttributes(array('userId'=>$user->id));
+                    $tempOne=array();
+                    foreach($groups as $group){
+                        $tempOne[]=$group->groupId;
+                    }
+                    $userGroups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+                    $tempTwo=array();
+                    foreach($userGroups as $userGroup){
+                        $tempTwo[]=$userGroup->groupId;
+                    }
+                    if(count(array_intersect($tempOne,$tempTwo))>0){
+                        $viewPermissions=true;
+                    }
+                }
+                if(is_numeric($contact->assignedTo)){
+                    $contact->assignedTo=Groups::model()->findByPk($contact->assignedTo)->name;
+                }
+                /* end x2temp */
+		if ($viewPermissions) {
 			UserChild::addRecentItem('c',$id,Yii::app()->user->getId());	////add contact to user's recent item list
 			parent::view($contact, 'contacts');
 		} else
@@ -139,6 +182,16 @@ class ContactsController extends x2base {
 		$result = $command->queryAll();
 		echo CJSON::encode($result); exit;
 	}
+        
+        public function actionGetItems() {
+		$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm ORDER BY firstName ASC';
+		$command = Yii::app()->db->createCommand($sql);
+		$qterm = $_GET['term'].'%';
+		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+		$result = $command->queryAll();
+		echo CJSON::encode($result); exit;
+	}
+        
 	
 	public function actionShareContact($id) {
 		$users=UserChild::getNames();
@@ -157,14 +210,14 @@ $model->city, $model->state $model->zipcode
 
 		$errors = array();
 		$status = array();
-		$email = '';
+		$email = array();
 		if(isset($_POST['email'], $_POST['body'])){
 		
 			$subject = Yii::t('contacts','Contact Record Details');
-			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
+			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
 			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
-			if($email === false)
+			if($email['to'] === false)
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
@@ -176,10 +229,10 @@ $model->city, $model->state $model->zipcode
 				$this->redirect(array('view','id'=>$model->id));
 				return;
 			}
-			if($email === false)
+			if($email['to'] === false)
 				$email = $_POST['email'];
 			else
-				$email = $this->mailingListToString($email);
+				$email = $this->mailingListToString($email['to']);
 		}
 		$this->render('shareContact',array(
 			'model'=>$model,
@@ -194,11 +247,6 @@ $model->city, $model->state $model->zipcode
 	
 	// Creates contact record
 	public function create($model, $oldAttributes, $api){
-		$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
-		if(isset($account))
-			$contact->accountId = $account->id;
-		else
-			$model->accountId = 0;
 		$model->createDate=time();
 		$model->lastUpdated=time();
 		if($api==0)
@@ -223,11 +271,43 @@ $model->city, $model->state $model->zipcode
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
+                        foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
+                        
 			$temp=$model->attributes;
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Contacts'][$field])){
-                                
                                 $model->$field=$_POST['Contacts'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
+                                
                             }
                         }
                         if(!isset($model->visibility))
@@ -246,7 +326,7 @@ $model->city, $model->state $model->zipcode
 		//exit("ha");
 		
 		$model = new Contacts;
-		$attributeLabels = Contacts::attributeLabels();
+		$attributeLabels = $model->attributeLabels();
 		
 		// if it is ajax validation request
 		// if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
@@ -261,20 +341,45 @@ $model->city, $model->state $model->zipcode
 				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
+                        foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
 			$temp=$model->attributes;
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Contacts'][$field])){
                                 $model->$field=$_POST['Contacts'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                             }
                         }
 
 			$model->visibility = 1;
-			
-			$account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
-			if(isset($account))
-				$contact->accountId = $account->id;
-			else
-				$contact->accountId = 0; 
 			// validate user input and save contact
 			$changes=$this->calculateChanges($temp,$model->attributes, $model);
 			$model=$this->updateChangelog($model,'Create');
@@ -284,7 +389,7 @@ $model->city, $model->state $model->zipcode
 			} //else print_r($model->getErrors());
 		}
 	}
-	
+	/*
 	public function actionSaveChanges($id) {
 		$contact=$this->loadModel($id);
 		if(isset($_POST['Contacts'])) {
@@ -294,6 +399,31 @@ $model->city, $model->state $model->zipcode
 					$_POST['Contacts'][$name] = '';
 				}
 			}
+                        foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
 			$temp=$contact->attributes;
                         foreach(array_keys($contact->attributes) as $field){
                             if(isset($_POST['Contacts'][$field])){
@@ -301,11 +431,6 @@ $model->city, $model->state $model->zipcode
                             }
                         }
                         $contact->company=$_POST['companyAutoComplete'];
-			$account = Accounts::model()->findByAttributes(array('name'=>$contact->company));
-			if(isset($account))
-				$contact->accountId = $account->id;
-			else
-				$contact->accountId = 0; 
 			if($contact->save()){
 				$changes=$this->calculateChanges($temp,$contact->attributes, $contact);
                                 $contact=$this->updateChangelog($contact,$changes);
@@ -315,19 +440,14 @@ $model->city, $model->state $model->zipcode
 			$this->redirect(array('view','id'=>$contact->id));
 		
 	}
-
+        */
 	// Updates a contact record
 	public function update($model,$oldAttributes, $api){
 		
-		$account = Accounts::model()->findByAttributes(array('name'=>$model->company));
-		if(isset($account))
-				$model->accountId = $account->id;
-		else
-				$model->accountId = 0;
 		if($api==0)
-			parent::create($model,$oldAttributes,$api);
+			parent::update($model,$oldAttributes,$api);
 		else
-			return parent::create($model,$oldAttributes,$api);
+			return parent::update($model,$oldAttributes,$api);
 	}
 	
 
@@ -335,7 +455,22 @@ $model->city, $model->state $model->zipcode
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
-		$accounts=Accounts::getNames();  
+		$accounts=Accounts::getNames(); 
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
+                foreach($fields as $field){
+                    if($field->type=='link'){
+                        $fieldName=$field->fieldName;
+                        $type=$field->linkType;
+                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
+                            eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
+                            if(isset($lookupModel))
+                                $model->$fieldName=$lookupModel->name;
+                        }
+                    }elseif($field->type=='date'){
+                        $fieldName=$field->fieldName;
+                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
+                    }
+                }
 		
 		 
 
@@ -346,9 +481,40 @@ $model->city, $model->state $model->zipcode
 					$_POST['Contacts'][$name] = '';
 				}
 			}
+                        foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Contacts'][$field])){
                                 $model->$field=$_POST['Contacts'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                             }
                         }
 			
@@ -375,11 +541,46 @@ $model->city, $model->state $model->zipcode
 			// 'pagination'=>array(
 				// 'pageSize'=>ProfileChild::getResultsPerPage(),
 			// ),
-			'criteria'=>array('condition' => 'assignedTo="' . Yii::app()->user->getName() . '" OR visibility = 1'),
+			//'criteria'=>array('condition' => 'assignedTo="' . Yii::app()->user->getName() . '" OR visibility = 1'),
 		));
+                $tempArr=array();
+                foreach($contactLists->getData() as $contact){
+                    $flag=false;
+                    if($contact->assignedTo || $contact->visibility=='1'){
+                        $tempArr[]=$contact;
+                        $flag=true;
+                    }
+                    /* x2temp */
+                    if(!$flag){
+                        $groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+                        $temp=array();
+                        foreach($groups as $group){
+                            $temp[]=$group->groupId;
+                        }
+                        if(array_search($contact->assignedTo,$temp)!==false){
+                            $tempArr[]=$contact;
+                        }
+                        if(is_numeric($contact->assignedTo)){
+                            $contact->assignedTo=Groups::model()->findByPk($contact->assignedTo)->name;
+                        }
+                    }
+                    /* end x2temp */
+                }
+                $contactLists->setData($tempArr);
 
 		$totalContacts = CActiveRecord::model('Contacts')->count();
-		$totalMyContacts = CActiveRecord::model('Contacts')->count('assignedTo="'.Yii::app()->user->getName().'"');
+                $str='assignedTo="'.Yii::app()->user->getName().'"';
+                /* x2temp */
+                $groupLinks=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+                $temp="(";
+                foreach($groupLinks as $link){
+                    $temp.=$link->groupId.", ";
+                }
+                $temp=substr($temp,0,-2).")";
+                if(count($temp)>2)
+                    $str.=" || assignedTo IN ".$temp;
+                /* end x2temp */
+		$totalMyContacts = CActiveRecord::model('Contacts')->count($str);
 		
 		$allContacts = new ContactList;
 		$allContacts->attributes = array(
@@ -442,12 +643,14 @@ $model->city, $model->state $model->zipcode
 			$list = CActiveRecord::model('ContactList')->findByPk($id);
 		if(isset($list)) {
 
-			$dataProvider = CActiveRecord::model('Contacts')->searchList($id);
+			$model = new Contacts('searchList');
+			$dataProvider = $model->searchList($id);
 			
 			$this->render('list',array(
 				'listName'=>$list->name,
 				'listId'=>$id,
 				'dataProvider'=>$dataProvider,
+				'model'=>$model,
 			));
 			
 		} else {
@@ -510,7 +713,7 @@ $model->city, $model->state $model->zipcode
 			$model->save();
 			
 		}
-		$attributeList = array_flip(Contacts::attributeLabels());
+		$attributeList = array_flip(Contacts::model()->attributeLabels());
 		$users = UserChild::getNames();
 		
 		
@@ -588,6 +791,8 @@ $model->city, $model->state $model->zipcode
 
 			$model->visibility = 1;
 			$model->createDate=time();
+                        $model->lastUpdated=time();
+                        $model->updatedBy='admin';
 			$model->backgroundInfo = $this->stripquotes($pieces[77]);
 			$model->firstName = $this->stripquotes($pieces[1]);
 			$model->lastName = $this->stripquotes($pieces[3]);
@@ -612,47 +817,17 @@ $model->city, $model->state $model->zipcode
 
 	private function importExcel($file){
 		$fp=fopen($file,'r+');
-		$count=0;
-		while($arr=fgetcsv($fp)){
-			if($count>0){
-				$pieces=$arr;                
-				$model = new Contacts;
 
-				$model->visibility=1;
-				$model->assignedTo=Yii::app()->user->getName();
-				$model->firstName=$pieces[0];
-				$model->lastName=$pieces[1];
-				$model->title=$pieces[2];
-				$model->company=$pieces[3];
-				$model->phone=$pieces[4];
-				$model->email=$pieces[5];
-				$model->website=$pieces[6];
-				$model->address=$pieces[7];
-				$model->city=$pieces[8];
-				$model->state=$pieces[9];
-				$model->zipcode=$pieces[10];
-				$model->country=$pieces[11];
-				$model->backgroundInfo=$pieces[12];
-				$model->lastUpdated=$pieces[13];
-				$model->twitter=$pieces[14];
-				$model->linkedin=$pieces[15];
-				$model->skype=$pieces[16];
-				$model->googleplus=$piecs[17];
-				$model->priority=$pieces[18];
-				$model->leadSource=$pieces[19];
-				$model->rating=$pieces[20];
-				$model->createDate=$pieces[21];
-				$model->facebook=$pieces[22];
-				$model->otherUrl=$pieces[23];
-
-				if($model->save()){
-
-				}
-
-			}
-			$count++;
-
-		}
+		$meta=fgetcsv($fp);
+                while($arr=fgetcsv($fp)){
+                    $model=new Contacts;
+                    $attributes=array_combine($meta,$arr);
+                    $model->attributes=$attributes;
+                    if($model->save()){
+                        
+                    }
+                }
+                
 		unlink($file);
 		$this->redirect('index');	
 	}
@@ -665,7 +840,7 @@ $model->city, $model->state $model->zipcode
 	
 	private function exportToTemplate(){
 		$contacts=Contacts::model()->findAll();
-		$list=array(array('First Name','Last Name', 'Title','Company', 'Phone', 'Email', 'Website', 'Address', 'City', 'State', 'Zip Code', 'Country', 'Background Info', 'Last Updated', 'Priority', 'Lead Source', 'Create Date'));
+		$list=array(array_keys($contacts[0]->attributes));
 		foreach($contacts as $contact){
 			$list[]=$contact->attributes;
 		}
@@ -673,11 +848,6 @@ $model->city, $model->state $model->zipcode
 		$fp = fopen($file, 'w+');
 		
 		foreach ($list as $fields) {
-			unset($fields['id']);
-			unset($fields['accountId']);
-			unset($fields['visibility']);
-			unset($fields['assignedTo']);
-			unset($fields['updatedBy']);
 			fputcsv($fp, $fields);
 			
 		}
@@ -733,6 +903,46 @@ $model->city, $model->state $model->zipcode
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if (!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+	}
+	
+	public function actionQuickUpdateHistory($id) {
+		$actionHistory=new CActiveDataProvider('Actions', array(
+			'criteria'=>array(
+				'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+				'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
+			)
+		));
+		if(isset($_GET['history'])) {
+			$history=$_GET['history'];
+		} else {
+			$history='all';
+		}
+		if($history=='actions') {
+			$actionHistory=new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+					'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND type IS NULL'
+				)
+			));
+		} elseif($history=='comments') {
+			$actionHistory=new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+					'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND type="note"'
+				)
+			));
+		} elseif($history=='attachments') {
+			$actionHistory = new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+					'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND type="attachment"'
+				)
+			));
+		}
+		
+		Yii::app()->clientScript->scriptMap['*.js'] = false;
+		$this->renderPartial('history', array('actionHistory'=>$actionHistory), false, true);
+
 	}
 
 }

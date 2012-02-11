@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,13 +37,25 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+if($this->route=='docs/createEmail') {
+	$this->menu = array(
+		array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
+		array('label'=>Yii::t('docs','Create'), 'url'=>array('create')),
+		array('label'=>Yii::t('docs','Create Email')),
+	);
+	echo '<h2>'.Yii::t('docs','Create Email Template')."</h2>\n";
+} else {
+	$this->menu = array(
+		array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
+		array('label'=>Yii::t('docs','Create')),
+		array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	);
+	echo '<h2>'.Yii::t('docs','Create Document')."</h2>\n";
+}
+echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users));
 
-$this->menu=array(
-	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc')),
-);
-?>
 
-<h2><?php echo Yii::t('docs','Create Document'); ?></h2>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users)); ?>
+
+
+

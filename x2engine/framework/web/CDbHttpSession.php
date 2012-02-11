@@ -35,8 +35,10 @@
  * and set {@link autoCreateSessionTable} to be false. This will greatly improve the performance.
  * You may also create a DB index for the 'expire' column in the session table to further improve the performance.
  *
+ * @property boolean $useCustomStorage Whether to use custom storage.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbHttpSession.php 3069 2011-03-14 00:28:38Z qiang.xue $
+ * @version $Id: CDbHttpSession.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.web
  * @since 1.0
  */
@@ -77,6 +79,49 @@ class CDbHttpSession extends CHttpSession
 	public function getUseCustomStorage()
 	{
 		return true;
+	}
+
+	/**
+	 * Updates the current session id with a newly generated one.
+	 * Please refer to {@link http://php.net/session_regenerate_id} for more details.
+	 * @param boolean $deleteOldSession Whether to delete the old associated session file or not.
+	 * @since 1.1.8
+	 */
+	public function regenerateID($deleteOldSession=false)
+	{
+		$oldID=session_id();
+
+		// if no session is started, there is nothing to regenerate
+		if(empty($oldID))
+			return;
+
+		parent::regenerateID(false);
+		$newID=session_id();
+		$db=$this->getDbConnection();
+
+		$sql="SELECT * FROM {$this->sessionTableName} WHERE id=:id";
+		$row=$db->createCommand($sql)->bindValue(':id',$oldID)->queryRow();
+		if($row!==false)
+		{
+			if($deleteOldSession)
+			{
+				$sql="UPDATE {$this->sessionTableName} SET id=:newID WHERE id=:oldID";
+				$db->createCommand($sql)->bindValue(':newID',$newID)->bindValue(':oldID',$oldID)->execute();
+			}
+			else
+			{
+				$row['id']=$newID;
+				$db->createCommand()->insert($this->sessionTableName, $row);
+			}
+		}
+		else
+		{
+			// shouldn't reach here normally
+			$db->createCommand()->insert($this->sessionTableName, array(
+				'id'=>$newID,
+				'expire'=>time()+$this->getTimeout(),
+			));
+		}
 	}
 
 	/**

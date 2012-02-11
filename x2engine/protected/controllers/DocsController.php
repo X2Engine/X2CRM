@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -60,7 +60,7 @@ class DocsController extends x2base {
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','update','exportToHtml','changePermissions', 'delete'),
+				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -83,7 +83,7 @@ class DocsController extends x2base {
 	}
 
 	/**
-	 * Creates a new model.
+	 * Creates a new doc.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
@@ -96,11 +96,9 @@ class DocsController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['DocChild']))
-		{
-                        $temp=$model->attributes;
+		if(isset($_POST['DocChild'])) {
+			$temp=$model->attributes;
 			$model->attributes=$_POST['DocChild'];
-			$model->text=$_POST['msgpost'];
 
 			$arr=$model->editPermissions;
 			if(isset($arr))
@@ -117,6 +115,44 @@ class DocsController extends x2base {
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
+		));
+	}
+	
+	/**
+	 * Creates an email template.
+	 * If creation is successful, the browser will be redirected to the 'view' page.
+	 */
+	public function actionCreateEmail() {
+			$users = UserChild::getNames();
+			unset($users['Anyone']);
+			unset($users['admin']);
+			unset($users[Yii::app()->user->getName()]);
+			$model = new DocChild;
+
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['DocChild'])) {
+			$temp=$model->attributes;
+			$model->attributes=$_POST['DocChild'];
+			$model->type = 'email';
+
+			$model->editPermissions = '';
+			// $arr=$model->editPermissions;
+			// if(isset($arr))
+				// $model->editPermissions=Accounts::parseUsers($arr);
+
+			$model->createdBy=Yii::app()->user->getName();
+			$model->createDate=time();
+                        $changes=$this->calculateChanges($temp,$model->attributes);
+			$model=$this->updateChangeLog($model,'Create');
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->id));
+		}
+
+		$this->render('create',array(
+			'model'=>$model,
+			'users'=>null,
 		));
 	}
 	
@@ -190,7 +226,6 @@ class DocsController extends x2base {
 			{
 				$model->attributes=$_POST['DocChild'];
                                 
-                                $model->text=$_POST['msgpost'];
                                 $model=$this->updateChangeLog($model,'Edited');
 				if($model->save())
 					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));

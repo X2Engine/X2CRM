@@ -1,0 +1,39 @@
+#wide-quote-form {
+	background: #F8F8F8;
+}
+
+.viewQuote hr {
+	background-color: black;
+	overflow: visible;
+}
+
+.product-table th {
+	background-color: inherit;
+}
+
+.product-table tfoot {
+	font-style: normal;
+}
+
+.date-table {
+	padding: 0;
+}
+
+.date-table th {
+	background-color: inherit;
+	color: #666;
+	font-weight: normal;
+	font-size: 0.8em;
+	padding: 0;
+
+}
+
+.date-table td {
+	font-weight: bold;
+	padding: 0;
+}
+
+.items td {
+	border-top: none;
+	border-bottom: none;
+}

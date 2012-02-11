@@ -69,8 +69,7 @@
  * @property integer $showDetailView
  * @property integer $showWorkflow
  * @property string $gridviewSettings
- * @property string $gridviewSettings
- * @property string $gridviewSettings
+ * @property string $formSettings
  * @property string emailUseSignature
  * @property string emailSignature
  * @property integer enableBgFade
@@ -114,7 +113,7 @@ class Profile extends CActiveRecord
 			array('emailSignature', 'length', 'max'=>512),
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
 			array('startPage', 'length', 'max'=>30),
-			array('notes, avatar, gridviewSettings', 'safe'),
+			array('notes, avatar, gridviewSettings, formSettings', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on'=>'search'),
@@ -162,6 +161,7 @@ class Profile extends CActiveRecord
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
 			'showWorkflow'=>Yii::t('profile','Show Workflow'),
 			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
+			'formSettings'=>Yii::t('profile','Form Settings'),
 			'enableBgFade'=>Yii::t('profile','Enable Background Fading'),
 		);
 	}

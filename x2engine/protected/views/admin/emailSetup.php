@@ -72,7 +72,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo',"
 	});
 	
 	$('#email-setup input, #email-setup select, #email-setup textarea').change(function(){
-		$('#save-button').css('background','yellow');
+		$('#save-button').addClass('highlight'); //css('background','yellow');
 	});
 	
 ",CClientScript::POS_READY);

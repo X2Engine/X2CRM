@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,18 +38,40 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->menu=array(
+$this->pageTitle = $model->name; 
+
+$this->menu = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
+	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	// array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','View Contact')),
-        array('label'=>Yii::t('contacts','View Sales'),'url'=>array('viewSales','id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Delete Contact'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
+	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+	array('label'=>Yii::t('contacts','View')),
+	array('label'=>Yii::t('contacts','View Sales'),'url'=>array('viewSales','id'=>$model->id)),
+	array('label'=>Yii::t('contacts','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
-if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
-	$this->menu[] = array('label'=>Yii::t('contacts','Update Contact'), 'url'=>array('update', 'id'=>$model->id));
+
+$this->actionMenu = array(
+	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
+	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleForm("#attachment-form",200); return false;')),
+	array('label'=>Yii::t('contacts','Share Contact'),'url'=>array('shareContact','id'=>$model->id)),
+	array('label'=>Yii::t('quotes','Quotes'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
+);
+
+
+$editPermissions=($model->assignedTo == Yii::app()->user->getName() || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone');
+/* x2temp */
+$groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+$temp=array();
+foreach($groups as $group){
+    $temp[]=Groups::model()->findByPk($group->groupId)->name;
+}
+if(array_search($model->assignedTo,$temp)!==false){
+    $editPermissions=true;
+}
+/* end x2temp */
+if ($editPermissions) {
+	$this->menu[] = array('label'=>Yii::t('contacts','Update'), 'url'=>array('update', 'id'=>$model->id));
 }
 
 ?>
@@ -62,6 +84,7 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 ?>
 <!--<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>-->
+
 <?php
 
 if(isset($_GET['detail'])) {
@@ -73,9 +96,9 @@ if(isset($_GET['detail'])) {
 
 if($detailView) { ?>
 	<?php echo CHtml::link('['.Yii::t('contacts','Simple View').']',array('view','id'=>$model->id,'detail'=>0),array('style'=>'float:right;text-decoration:none;')); ?>
-	<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
+	<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
 	<?php
-	$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'users'=>$users,'currentWorkflow'=>$currentWorkflow));
+	$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 	$this->endWidget();
 } else { ?>
 	<?php echo CHtml::link('['.Yii::t('contacts','Detail View').']',array('view','id'=>$model->id,'detail'=>1),array('style'=>'float:right;text-decoration:none;')); ?>
@@ -84,30 +107,39 @@ if($detailView) { ?>
 	$this->renderPartial('_simpleView',array('model'=>$model,'form'=>$form,'users'=>$users,'currentWorkflow'=>$currentWorkflow));
 	$this->endWidget();
 }
-
-if($detailView) { ?>
-	<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
-	<?php /*<a class="x2-button" href="#" onClick="toggleForm('#note-form',400);return false;"><span><?php echo Yii::t('app','Add Comment'); ?></span></a>
-	<a class="x2-button" href="#" onClick="toggleForm('#action-form',400);return false;"><span><?php echo Yii::t('app','Create Action'); ?></span></a> */ ?>
-<?php } ?>
-	<a class="x2-button" href="#" onclick="toggleEmailForm(); return false;"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
-	<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
-	<a class="x2-button" style="margin-bottom:15px;" href="shareContact/<?php echo $model->id;?>"><span><?php echo Yii::t('contacts','Share Contact'); ?></span></a>
-	<br />
+// render workflow box
+$this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
+?>
+<br>
 <div id="attachment-form" style="display:none;">
 	<?php $this->widget('Attachments',array('type'=>'contacts','associationId'=>$model->id)); ?>
 </div>
+        
 <?php
 $this->widget('InlineEmailForm',
 	array(
-		'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
-		// 'address'=>$model->email,
-		// 'name'=>$model->name,
-		'redirect'=>'contacts/'.$model->id,
-		// 'redirectType'=>'contacts',
+		'attributes'=>array(
+			'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
+			// 'subject'=>'hi',
+			// 'redirect'=>'contacts/'.$model->id,
+			'modelName'=>'Contacts',
+			'modelId'=>$model->id,
+		),
 		'startHidden'=>true,
 	)
 );
+?>
+<div id="quote-form-wrapper">
+<?php
+$this->widget('InlineQuotes',
+	array(
+		'startHidden'=>true,
+		'contactId'=>$model->id,
+	)
+);
+?>
+</div>
+<?php
 $this->widget('InlineActionForm',
 	array(
 		'associationType'=>'contacts',
@@ -117,19 +149,23 @@ $this->widget('InlineActionForm',
 		'startHidden'=>false,
 	)
 );
+?>
+<div id="history-list-wrapper">
+<?php
 if(isset($_GET['history']))
-    $history=$_GET['history'];
+	$history=$_GET['history'];
 else
-    $history="all";
+	$history='all';
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$actionHistory,
 	'itemView'=>'../actions/_view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> 
-            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),"?history=all")).
-            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),"?history=actions")).
-            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),"?history=comments")).
-            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),"?history=attachments")).
-            '</h3>{summary}{sorter}{items}{pager}',
+	($history=='all'?'<h3>'.Yii::t('app','History').'</h3>':CHtml::link(Yii::t('app','History'),'?history=all')).
+	' | '.($history=='actions'?'<h3>'.Yii::t('app','Actions').'</h3>':CHtml::link(Yii::t('app','Actions'),'?history=actions')).
+	' | '.($history=='comments'?'<h3>'.Yii::t('app','Comments').'</h3>':CHtml::link(Yii::t('app','Comments'),'?history=comments')).
+	' | '.($history=='attachments'?'<h3>'.Yii::t('app','Attachments').'</h3>':CHtml::link(Yii::t('app','Attachments'),'?history=attachments')).
+	'</h3>{summary}{sorter}{items}{pager}',
 ));
 ?>
+</div>

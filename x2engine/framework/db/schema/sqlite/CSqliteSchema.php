@@ -12,7 +12,7 @@
  * CSqliteSchema is the class for retrieving metadata information from a SQLite (2/3) database.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CSqliteSchema.php 3099 2011-03-19 01:26:47Z qiang.xue $
+ * @version $Id: CSqliteSchema.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.sqlite
  * @since 1.0
  */
@@ -35,6 +35,7 @@ class CSqliteSchema extends CDbSchema
         'date' => 'date',
         'binary' => 'blob',
         'boolean' => 'tinyint(1)',
+		'money' => 'decimal(19,4)',
     );
 
 	/**
@@ -81,7 +82,6 @@ class CSqliteSchema extends CDbSchema
 	 * Returns all table names in the database.
 	 * @param string $schema the schema of the tables. This is not used for sqlite database.
 	 * @return array all table names in the database.
-	 * @since 1.0.2
 	 */
 	protected function findTableNames($schema='')
 	{

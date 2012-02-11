@@ -1,4 +1,43 @@
-<a href="#" class="x2-button" style="float:right;" onclick="lockEditor();">Hide Borders</a>
+<?php
+/*********************************************************************************
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
+ * 
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
+ * 
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
+?><a href="#" class="x2-button" style="float:right;" onclick="lockEditor();">Hide Borders</a>
 <h2>Form Editor</h2>
 Drag and drop to edit forms.  Press save when finished.
 <br /><br />
@@ -9,8 +48,6 @@ $disallow=array(
     'actions',
     'docs',
     'workflow',
-    'sales',
-    'accounts',
 );
 $pieces=explode(":",$order);
 $str="<h4>";
@@ -19,12 +56,40 @@ foreach($pieces as $piece){
         if(isset($_GET['model']) && $piece==$_GET['model']){
             $str.=ucfirst($piece)." | ";
         }else{
-            $str.="<a href='?model=".lcfirst($piece)."'>".ucfirst($piece)."</a> | ";
+            $str.="<a href='?model=".strtolower($piece)."'>".ucfirst($piece)."</a> | ";
         }
     }
 }
 $str=substr($str,0,-3)."</h4><br />";
 echo $str;
+?> 
+<h4>Versions</h4><br />
+<?php
+if(isset($_GET['model'])){
+    $str2="";
+    if(isset($_GET['version'])){
+        $str2.="<h4><a href='?model=".$_GET['model']."'>Current</a> | ";
+        $versions=FormVersions::model()->findAllByAttributes(array('modelName'=>ucfirst($_GET['model'])));
+        foreach($versions as $version){
+            if($_GET['version']!=$version->name)
+                $str2.="<a href='?model=".$_GET['model']."&version=".CHtml::encode($version->name)."'>".$version->name."</a> | ";
+            else
+                $str2.=CHtml::encode($version->name)." | ";
+        }
+    }
+    else{
+        $str2.="<h4>Current | ";
+        $versions=FormVersions::model()->findAllByAttributes(array('modelName'=>ucfirst($_GET['model'])));
+        foreach($versions as $version){
+                $str2.="<a href='?model=".$_GET['model']."&version=".CHtml::encode($version->name)."'>".$version->name."</a> | ";
+        }
+    }
+    $str2=substr($str2,0,-3);
+    $str2.="</h4><br />";
+    
+    echo $str2;
+            
+}
 
 if($formUrl==""){
     
@@ -37,6 +102,23 @@ if($formUrl==""){
 }
 
 $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($model)), array('order'=>'tabOrder'));
+if(isset($_GET['version'])){
+    $version=$_GET['version'];
+    $version=FormVersions::model()->findByAttributes(array('name'=>$version));
+    $sizes=json_decode($version->sizes, true);
+    $positions=json_decode($version->positions, true);
+    $visibilities=json_decode($version->visibility, true);
+    $tempArr=array();
+    foreach($fields as $field){
+        if(isset($positions[$field->fieldName])){
+            $field->coordinates=$positions[$field->fieldName];
+            $field->size=$sizes[$field->fieldName];
+            $field->visible=$visibilities[$field->fieldName];
+            $tempArr[]=$field;
+        }
+    }
+    $fields=$tempArr;
+}
 
 ?>
 <br />
@@ -55,11 +137,13 @@ $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($model
             }
         }
     ?>
-    
+    </ul>
 <script>
     $('#sortable').sortable();
 </script>
+
 </div>
+<a style="float:right;position:relative;top:10px;" href="deleteVersion?version=<?php echo isset($_GET['version'])?$_GET['version']:'';?>" class="x2-button">Delete Selected Version</a>
 </div>
 <form method="POST" onsubmit="calculateValues();">
 <input type="hidden" name="coordinates" id="coordinates" value="" />
@@ -68,6 +152,15 @@ $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($model
 <input type="hidden" name="shown" id="shown" value="" />
 <input type="hidden" name="order" id="order" value="" />
 <input type="submit" style="position:absolute;bottom:50px;"  class="x2-button" value="Save" />
+</form>
+<form method="POST" onsubmit="calculateValues();" action="saveVersion" style="position:absolute;bottom:100px;">
+<input type="hidden" name="coordinates" id="coordinates2" value="" />
+<input type="hidden" name="sizes" id="sizes2" value="" />
+<input type="hidden" name="names" id="names2" value="" />
+<input type="hidden" name="shown" id="shown2" value="" />
+<input type="hidden" name="order" id="order2" value="" />
+<label>Version Name?</label><input type="text" name="versionName" />
+<input type="submit"  class="x2-button" value="Save Version" /> 
 </form>
 
 <script>
@@ -119,6 +212,11 @@ $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($model
         $("#names").val(names);
         $("#shown").val(visibility);
         $("#order").val(order);
+        $("#coordinates2").val(coordinates);
+        $("#sizes2").val(sizes);
+        $("#names2").val(names);
+        $("#shown2").val(visibility);
+        $("#order2").val(order);
         
     }
     

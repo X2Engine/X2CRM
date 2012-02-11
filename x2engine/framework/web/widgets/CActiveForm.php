@@ -141,7 +141,7 @@
  * the <code>performAjaxValidation</code> method and its invocation.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveForm.php 3130 2011-03-26 17:44:15Z qiang.xue $
+ * @version $Id: CActiveForm.php 3336 2011-07-02 10:43:56Z mdomba $
  * @package system.web.widgets
  * @since 1.1.1
  */
@@ -236,7 +236,7 @@ class CActiveForm extends CWidget
 	 * from being encoded as a string. This option has been available since version 1.1.3.</li>
 	 * <li>afterValidateAttribute: function, the function that will be invoked after performing ajax-based validation
 	 * triggered by a single attribute input change. The expected function signature should be
-	 * <code>beforeValidateAttribute(form, attribute, data, hasError) {...}</code>, where 'form' is the jquery
+	 * <code>afterValidateAttribute(form, attribute, data, hasError) {...}</code>, where 'form' is the jquery
 	 * representation of the form object; 'attribute' refers to the js options for the triggering attribute (see {@link error});
 	 * 'data' is the JSON response from the server-side validation; 'hasError' is a boolean value indicating whether
 	 * there is any validation error.
@@ -416,6 +416,9 @@ class CActiveForm extends CWidget
 		if(!$this->enableClientValidation)
 			$enableClientValidation=false;
 
+		if(!isset($htmlOptions['class']))
+			$htmlOptions['class']=$this->errorMessageCssClass;
+
 		if(!$enableAjaxValidation && !$enableClientValidation)
 			return CHtml::error($model,$attribute,$htmlOptions);
 
@@ -472,8 +475,6 @@ class CActiveForm extends CWidget
 				$option['clientValidation']="js:function(value, messages, attribute) {\n".implode("\n",$validators)."\n}";
 		}
 
-		if(!isset($htmlOptions['class']))
-			$htmlOptions['class']=$this->errorMessageCssClass;
 		$html=CHtml::error($model,$attribute,$htmlOptions);
 		if($html==='')
 		{

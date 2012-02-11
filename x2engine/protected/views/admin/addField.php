@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -54,17 +54,21 @@ This form allows you to add custom fields to models.
 
 	<div class="row">
             <?php echo $form->labelEx($model,'modelName'); ?>
-            <?php echo $form->dropDownList($model,'modelName',array('Actions'=>'Actions','Contacts'=>'Contacts','Sales'=>'Sales','Accounts'=>'Accounts'),
-                array(
-                'empty'=>'Select a model',
-                'ajax' => array(
-                'type'=>'POST', //request type
-                'url'=>$this->createUrl('admin/getAttributes'), //url to call.
-                //Style: CController::createUrl('currentController/methodToCall')
-                'update'=>'#'.CHtml::activeId($model,'fieldName'), //selector to update
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
-                //leave out the data key to pass all form values through
-                ))); ?>
+            <?php 
+            $admin=Admin::model()->findByPk(1);
+            $order=$admin->menuOrder;
+            $pieces=explode(":",$order);
+            $disallow=array(
+                'actions',
+                'docs',
+                'workflow',
+            );
+            foreach($pieces as $piece){
+                if(array_search($piece, $disallow)===false){
+                    $arr[$piece]=ucfirst($piece);
+                }
+            }
+            echo $form->dropDownList($model,'modelName',$arr); ?>
             <?php echo $form->error($model,'modelName'); ?>
 	</div>
         
@@ -87,8 +91,21 @@ This form allows you to add custom fields to models.
     
         <div class="row">
             <?php echo $form->labelEx($model,'type'); ?>
-            <?php echo $form->dropDownList($model,'type',array('varchar'=>'Single Line Text','text'=>'Multiple Line Text Area','date'=>'Date','dropdown'=>'Dropdown'),array(
-                'empty'=>'Select a type',
+            <?php echo $form->dropDownList($model,'type',
+                    array(
+                        'varchar'=>'Single Line Text',
+                        'text'=>'Multiple Line Text Area',
+                        'date'=>'Date',
+                        'dropdown'=>'Dropdown',
+                        'int'=>'Integer',
+                        'email'=>'E-Mail',
+                        'currency'=>'Currency',
+                        'url'=>'URL',
+                        'float'=>'Float',
+                        'boolean'=>'Boolean',
+                        'link'=>'Lookup',
+                    ),
+                array(
                 'ajax' => array(
                 'type'=>'POST', //request type
                 'url'=>CController::createUrl('admin/getFieldType'), //url to call.
@@ -97,11 +114,17 @@ This form allows you to add custom fields to models.
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
                 //leave out the data key to pass all form values through
                 ))); ?>
-            <?php echo $form->error($model,'type'); ?>
+            <?php echo $form->error($model,'type'); ?> 
         </div>
     
         <div class="row" id="dropdown">
 
+        </div>
+    
+        <div class="row">
+            <?php echo $form->labelEx($model,'required');?>
+            <?php echo $form->checkBox($model,'required');?>
+            <?php echo $form->error($model,'required');?>
         </div>
 
         

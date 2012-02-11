@@ -101,6 +101,10 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
 	phpMailer: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 	<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
+	<!--JS SHA-256: <a href="http://www.webtoolkit.info/javascript-sha256.html" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+	<a href="http://www.webtoolkit.info/license" target="_blank" class="no-underline" title="License">[License]</a><br>-->
+	TinyEditor: <a href="http://www.scriptiny.com/2010/02/javascript-wysiwyg-editor/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+	<a href="http://creativecommons.org/licenses/by/3.0/us/" target="_blank" class="no-underline" title="Creative Commons Attribution 3.0">[CC]</a><br>
 </div>
 
 

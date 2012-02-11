@@ -20,8 +20,10 @@
  * call {@link generateWsdl} or {@link renderWsdl}. To process the web service
  * requests, call {@link run}.
  *
+ * @property string $methodName The currently requested method name. Empty if no method is being requested.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CWebService.php 2799 2011-01-01 19:31:13Z qiang.xue $
+ * @version $Id: CWebService.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web.services
  * @since 1.0
  */
@@ -49,7 +51,6 @@ class CWebService extends CComponent
 	 * @var string the ID of the cache application component that is used to cache the generated WSDL.
 	 * Defaults to 'cache' which refers to the primary cache application component.
 	 * Set this property to false if you want to disable caching WSDL.
-	 * @since 1.0.10
 	 */
 	public $cacheID='cache';
 	/**
@@ -181,18 +182,21 @@ class CWebService extends CComponent
 		}
 		catch(Exception $e)
 		{
-			if($e->getCode()===self::SOAP_ERROR) // a PHP error
-				$message=$e->getMessage();
-			else
+			if($e->getCode()!==self::SOAP_ERROR) // non-PHP error
 			{
-				$message=$e->getMessage().' ('.$e->getFile().':'.$e->getLine().')';
 				// only log for non-PHP-error case because application's error handler already logs it
 				// php <5.2 doesn't support string conversion auto-magically
 				Yii::log($e->__toString(),CLogger::LEVEL_ERROR,'application');
 			}
+			$message=$e->getMessage();
 			if(YII_DEBUG)
-				$message.="\n".$e->getTraceAsString();
+				$message.=' ('.$e->getFile().':'.$e->getLine().")\n".$e->getTraceAsString();
+
+			// We need to end application explicitly because of
+			// http://bugs.php.net/bug.php?id=49513
+			Yii::app()->onEndRequest(new CEvent($this));
 			$server->fault(get_class($e),$message);
+			exit(1);
 		}
 	}
 
@@ -245,9 +249,8 @@ class CWebService extends CComponent
  * CSoapObjectWrapper is a wrapper class internally used when SoapServer::setObject() is not defined.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CWebService.php 2799 2011-01-01 19:31:13Z qiang.xue $
+ * @version $Id: CWebService.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web.services
- * @since 1.0.5
  */
 class CSoapObjectWrapper
 {

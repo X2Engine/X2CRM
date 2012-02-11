@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '0.9.9.1';
-$buildDate = 1326314361;
+$x2Version = '0.9.10';
+$buildDate = 1328920341;
 
 $userData = '';
 
@@ -229,6 +229,8 @@ mysql_query("DROP TABLE IF EXISTS
 	x2_contacts,
 	x2_actions,
 	x2_sales,
+	x2_quotes,
+	x2_products,
 	x2_projects,
 	x2_marketing,
 	x2_campaigns,
@@ -247,16 +249,20 @@ mysql_query("DROP TABLE IF EXISTS
 	x2_tags,
 	x2_relationships,
 	x2_notifications,
+	x2_quotes_products,
 	x2_criteria,
 	x2_lead_routing,
 	x2_sessions,
 	x2_workflows,
 	x2_workflow_stages,
 	x2_fields,
+	x2_form_layouts,
 	x2_roles,
 	x2_role_to_user,
 	x2_role_to_permission,
-        x2_dropdowns
+	x2_dropdowns,
+	x2_groups,
+	x2_group_to_user
 ") or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // if(!empty($sqlError)) return $sqlError;
@@ -282,7 +288,8 @@ mysql_query("CREATE TABLE x2_users(
 	topContacts VARCHAR(100),
 	lastLogin INT DEFAULT 0,
 	login INT DEFAULT 0,
-	UNIQUE(username, emailAddress))
+	UNIQUE(username, emailAddress),
+	INDEX (username))
 	COLLATE = utf8_general_ci
 	") or addSqlError('Unable to create table x2_users.'.mysql_error());
 
@@ -291,8 +298,7 @@ mysql_query("CREATE TABLE x2_contacts(
 	firstName VARCHAR(40) NOT NULL,
 	lastName VARCHAR(40) NOT NULL,
 	title VARCHAR(40),
-	company VARCHAR(100),
-	accountId INT DEFAULT 0,
+	company VARCHAR(250),
 	phone VARCHAR(40),
 	email VARCHAR(250),
 	website VARCHAR(100),
@@ -316,7 +322,12 @@ mysql_query("CREATE TABLE x2_contacts(
 	createDate INT,
 	facebook VARCHAR(100) NULL,
 	otherUrl VARCHAR(100) NULL,
-        phone2 VARCHAR(40))
+        phone2 VARCHAR(40),
+        leadtype VARCHAR(250),
+        closedate VARCHAR(250),
+        interest VARCHAR(250),
+        leadstatus VARCHAR(250),
+        dealvalue VARCHAR(250))
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_contacts.'.mysql_error());
 
@@ -340,7 +351,9 @@ mysql_query("CREATE TABLE x2_actions(
 	completedBy VARCHAR(20),
 	completeDate INT,
 	lastUpdated INT,
-	updatedBy VARCHAR(20))
+	updatedBy VARCHAR(20),
+	workflowId INT UNSIGNED,
+	stageNumber INT UNSIGNED)
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_actions.'.mysql_error());
 
@@ -348,8 +361,25 @@ mysql_query("CREATE TABLE x2_actions(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(40) NOT NULL,
 	accountName VARCHAR(100),
-	accountId INT DEFAULT 0,
 	quoteAmount INT,
+	salesStage VARCHAR(20),
+	expectedCloseDate VARCHAR(20),
+	probability INT,
+	leadSource VARCHAR(100),
+	description TEXT,
+	assignedTo TEXT,
+	createDate INT,
+	associatedContacts TEXT,
+	lastUpdated INT,
+	updatedBy VARCHAR(20))
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_sales.'.mysql_error());
+
+ mysql_query("CREATE TABLE x2_quotes(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	name VARCHAR(40) NOT NULL,
+	accountName VARCHAR(100),
+	accountId INT DEFAULT 0,
 	salesStage VARCHAR(20),
 	expectedCloseDate VARCHAR(20),
 	probability INT,
@@ -359,7 +389,27 @@ mysql_query("CREATE TABLE x2_actions(
 	createDate INT,
 	associatedContacts TEXT,
 	lastUpdated INT,
-	updatedBy VARCHAR(20))
+	updatedBy VARCHAR(20),
+	expirationDate INT,
+	status VARCHAR(20),
+	currency VARCHAR(40))
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_quotes.'.mysql_error());
+
+ mysql_query("CREATE TABLE x2_products(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(100),
+	price FLOAT,
+	inventory INT,
+	description TEXT,
+	assignedTo TEXT,
+	createDate INT,
+	lastUpdated INT,
+	updatedBy VARCHAR(20),
+	active TINYINT,
+	currency VARCHAR(40),
+	adjustment FLOAT)
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
@@ -491,6 +541,7 @@ mysql_query("CREATE TABLE x2_cases(
 	showDetailView TINYINT(1) NOT NULL DEFAULT 1,
 	showWorkflow TINYINT(1) NOT NULL DEFAULT 1,
 	gridviewSettings TEXT,
+	formSettings TEXT,
 	emailUseSignature VARCHAR(5) DEFAULT 'user',
 	emailSignature VARCHAR(512),
 	enableBgFade TINYINT DEFAULT 0,
@@ -532,6 +583,7 @@ mysql_query("CREATE TABLE x2_cases(
 mysql_query("CREATE TABLE x2_docs(
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	title VARCHAR(100) NOT NULL,
+	type VARCHAR(10) NOT NULL DEFAULT '',
 	text LONGTEXT NOT NULL,
 	createdBy VARCHAR(60) NOT NULL,
 	createDate INT,
@@ -614,6 +666,27 @@ mysql_query("CREATE TABLE x2_relationships(
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
 
+mysql_query("CREATE TABLE x2_quotes_products( 
+	id INT NOT NULL AUTO_INCREMENT primary key,
+	quoteId INT,
+	productId INT,
+	quantity INT,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(100),
+	price FLOAT,
+	inventory INT,
+	description TEXT,
+	assignedTo TEXT,
+	createDate INT,
+	lastUpdated INT,
+	updatedBy VARCHAR(20),
+	active TINYINT,
+	currency VARCHAR(40),
+	adjustment FLOAT,
+	adjustmentType VARCHAR(20))
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
+
 mysql_query("CREATE TABLE x2_notifications( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	text TEXT,
@@ -629,9 +702,9 @@ mysql_query("CREATE TABLE x2_criteria(
 	modelType VARCHAR(100),
 	modelField VARCHAR(250),
 	modelValue TEXT,
-        comparisonOperator VARCHAR(10),
-        users TEXT,
-        type VARCHAR(250))
+	comparisonOperator VARCHAR(10),
+	users TEXT,
+	type VARCHAR(250))
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_criteria.'.mysql_error());
 
@@ -640,22 +713,24 @@ mysql_query("CREATE TABLE x2_lead_routing(
 	field VARCHAR(250),
 	value VARCHAR(250),
 	users TEXT,
-        rrId INT DEFAULT 0)
-	COLLATE = utf8_general_ci
+	rrId INT DEFAULT 0
+) COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_lead_routing.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_sessions(
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	user VARCHAR(250),
-	lastUpdated INT)
-	COLLATE = utf8_general_ci
+	lastUpdated INT,
+	IP VARCHAR(40) NOT NULL,
+	status TINYINT NOT NULL DEFAULT 0
+) COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_sessions.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_workflows( 
 	id INT NOT NULL AUTO_INCREMENT primary key,
 	name VARCHAR(250),
-	lastUpdated INT)
-	COLLATE = utf8_general_ci
+	lastUpdated INT
+) COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_workflows.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_workflow_stages( 
@@ -665,8 +740,10 @@ mysql_query("CREATE TABLE x2_workflow_stages(
 	name VARCHAR(40),
 	conversionRate DECIMAL(10,2),
 	value DECIMAL(10,2),
-	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE)
-	COLLATE = utf8_general_ci
+	requirePrevious TINYINT DEFAULT 0,
+	requireComment TINYINT DEFAULT 0,
+	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
+) COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_workflow_stages.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_fields (
@@ -674,15 +751,24 @@ mysql_query("CREATE TABLE x2_fields (
 	modelName varchar(250) ,
 	fieldName varchar(250),
 	attributeLabel varchar(250),
-	visible int,
-	custom int,
 	modified INT DEFAULT 0,
-        coordinates VARCHAR(250) DEFAULT '0:0',
-        size VARCHAR(250) DEFAULT '350px:30px',
-        tabOrder INT,
-        type VARCHAR(250) DEFAULT 'varchar')
-	COLLATE = utf8_general_ci
+	type VARCHAR(250) DEFAULT 'varchar',
+        required INT DEFAULT 0,
+        linkType VARCHAR(250)
+) COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_fields.'.mysql_error());
+
+mysql_query("CREATE TABLE x2_form_layouts (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	model VARCHAR(250) NOT NULL,
+	version VARCHAR(250) NOT NULL,
+	layout TEXT,
+	defaultView TINYINT NOT NULL DEFAULT 0,
+	defaultForm TINYINT NOT NULL DEFAULT 0,
+	createDate INT UNSIGNED,
+	lastUpdated INT UNSIGNED)
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_form_versions.'.mysql_error());
 
 mysql_query("CREATE TABLE x2_dropdowns (
 	id int(11) NOT NULL AUTO_INCREMENT primary key,
@@ -701,7 +787,8 @@ mysql_query("CREATE TABLE x2_roles (
 mysql_query("CREATE TABLE x2_role_to_user (
 	id int(11) NOT NULL AUTO_INCREMENT primary key,
 	roleId int ,
-	userId int)
+	userId int,
+	type VARCHAR(250))
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
 
@@ -709,96 +796,48 @@ mysql_query("CREATE TABLE x2_role_to_permission (
 	id int(11) NOT NULL AUTO_INCREMENT primary key,
 	roleId int ,
 	fieldId int,
-        permission int)
+	permission int)
 	COLLATE = utf8_general_ci
 ") or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
 
-mysql_query("INSERT INTO  x2_fields (modelName, fieldName, attributeLabel, visible, custom, coordinates, size, type) VALUES 
+mysql_query("CREATE TABLE x2_groups (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	name varchar(250))
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
-	('Contacts',	'id',				'ID',			1,	0,  '0:0',      '0px:0px',     'varchar'),
-	('Contacts',	'firstName',                    'First Name',		1,	0,  '0:0',      '155px:20px',  'varchar'),
-	('Contacts',	'lastName',			'Last Name',		1,	0,  '170:0',    '160px:20px',  'varchar'),
-	('Contacts',	'title',			'Title',		1,	0,  '0:40',     '175px:20px',  'varchar'),
-	('Contacts',	'company',			'Account',		1,	0,  '190:40',   '285px:20px',  'varchar'),
-	('Contacts',	'accountId',                    'Account ID',		0,	0,  '0:0',      '0px:0px',     'varchar'),
-	('Contacts',	'phone',			'Phone',		1,	0,  '0:80',     '125px:20px',  'varchar'),
-	('Contacts',	'phone2',			'Phone 2',		1,	0,  '0:120',    '125px:20px',  'varchar'),
-	('Contacts',	'email',			'Email',		1,	0,  '150:120',  '325px:20px',  'varchar'),
-	('Contacts',	'website',			'Website',		1,	0,  '150:80',   '325px:20px',  'varchar'),
-	('Contacts',	'twitter',			'Twitter',		1,	0,  '0:480',    '225px:20px',  'varchar'),
-	('Contacts',	'linkedin',			'Linkedin',		1,	0,  '0:520',    '225px:20px',  'varchar'),
-	('Contacts',	'skype',			'Skype',		1,	0,  '250:440',  '225px:20px',  'varchar'),
-	('Contacts',	'googleplus',                   'Googleplus',		1,	0,  '250:480',  '225px:20px',  'varchar'),
-	('Contacts',	'address',			'Address',		1,	0,  '0:160',    '325px:20px',  'varchar'),
-	('Contacts',	'city',				'City',			1,	0,  '340:160',  '135px:20px',  'varchar'),
-	('Contacts',	'state',			'State',		1,	0,  '0:200',    '140px:25px',  'varchar'),
-	('Contacts',	'zipcode',			'Postal Code',		1,	0,  '160:200',  '80px:20px',   'varchar'),
-	('Contacts',	'country',			'Country',		1,	0,  '260:200',  '215px:20px',  'varchar'),
-	('Contacts',	'visibility',                   'Visibility',		1,	0,  '330:400',  '145px:20px',  'varchar'),
-	('Contacts',	'assignedTo',                   'Assigned To',		1,	0,  '0:400',    '170px:20px',  'varchar'),
-	('Contacts',	'backgroundInfo',               'Background Info',	1,	0,  '0:280',    '475px:95px',  'text'),
-	('Contacts',	'lastUpdated',                  'Last Updated',		0,	0,  '0:0',      '350px:30px',  'varchar'),
-	('Contacts',	'updatedBy',                    'Updated By',		0,	0,  '0:0',      '350px:30px',  'varchar'),
-	('Contacts',	'leadSource',                   'Lead Source',		1,	0,  '0:240',    '240px:20px',  'varchar'),
-	('Contacts',	'priority',			'Priority',		1,	0,  '190:400',  '120px:20px',  'varchar'),
-	('Contacts',	'rating',			'Rating',		1,	0,  '350:0',    '125px:20px',  'varchar'),
-	('Contacts',	'createDate',                   'Create Date',		0,	0,  '0:0',      '350px:30px',  'varchar'),
-	('Contacts',	'facebook',			'Facebook',		1,	0,  '0:440',    '225px:20px',  'varchar'),
-	('Contacts',	'otherUrl',			'Other',		1,	0,  '250:520',  '225px:20px',  'varchar')
+mysql_query("CREATE TABLE x2_group_to_user (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	groupId INT,
+        userId INT,
+	username VARCHAR(250))
+	COLLATE = utf8_general_ci
+") or addSqlError('Unable to create table x2_roles.'.mysql_error());
+
+
+mysql_query('INSERT INTO x2_form_layouts (id, model,version,layout, defaultView,defaultForm,createDate,lastUpdated) VALUES 
+("1","Contacts","Form","{\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_firstName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"312\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"167\",\"tabindex\":\"0\"},{\"name\":\"formItem_state\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"51\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
+("2","Sales","Form","{\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_salesStage\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Other Info\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expectedCloseDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_quoteAmount\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"184\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"482\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
+("3","Contacts","View","{\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"312\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"167\",\"tabindex\":\"0\"},{\"name\":\"formItem_state\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"inline\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"51\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
+("4","Sales","View","{\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_salesStage\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Other Info\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expectedCloseDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_quoteAmount\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"184\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"482\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
+("5","Products","Form","{\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"1\"},{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"188\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"3\"},{\"name\":\"formItem_adjustment\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Product Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_inventory\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"6\"},{\"name\":\"formItem_price\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"4\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"8\"},{\"name\":\"formItem_currency\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"188\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"62\",\"width\":\"477\",\"tabindex\":\"7\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
+("6","Products","View","{\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"9\"},{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"188\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"10\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"3\"},{\"name\":\"formItem_adjustment\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Product Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_inventory\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"6\"},{\"name\":\"formItem_price\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"4\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"8\"},{\"name\":\"formItem_currency\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"188\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"62\",\"width\":\"477\",\"tabindex\":\"7\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
+("7","Accounts","Form","{\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_tickerSymbol\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Additional Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_employees\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_annualRevenue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"189\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"487\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
+("8","Accounts","View","{\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_tickerSymbol\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Additional Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_employees\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_annualRevenue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"189\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"487\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")')
+or addSqlError("Unable to create contacts layout.".mysql_error());
+
+mysql_query("INSERT INTO `x2_fields` VALUES (1,'Contacts','id','ID',0,'varchar',0,''),(2,'Contacts','firstName','First Name',0,'varchar',1,''),(3,'Contacts','lastName','Last Name',0,'varchar',1,''),(4,'Contacts','title','Title',0,'varchar',0,''),(5,'Contacts','company','Account',0,'link',0,'accounts'),(6,'Contacts','phone','Phone',0,'varchar',0,''),(7,'Contacts','phone2','Phone 2',0,'varchar',0,''),(8,'Contacts','email','Email',0,'email',0,''),(9,'Contacts','website','Website',0,'url',0,''),(10,'Contacts','twitter','Twitter',0,'varchar',0,''),(11,'Contacts','linkedin','Linkedin',0,'varchar',0,''),(12,'Contacts','skype','Skype',0,'varchar',0,''),(13,'Contacts','googleplus','Googleplus',0,'varchar',0,''),(14,'Contacts','address','Address',0,'varchar',0,''),(15,'Contacts','city','City',0,'varchar',0,''),(16,'Contacts','state','State',0,'varchar',0,''),(17,'Contacts','zipcode','Postal Code',0,'varchar',0,''),(18,'Contacts','country','Country',0,'varchar',0,''),(19,'Contacts','visibility','Visibility',0,'visibility',1,''),(20,'Contacts','assignedTo','Assigned To',0,'assignment',0,''),(21,'Contacts','backgroundInfo','Background Info',0,'text',0,''),(22,'Contacts','lastUpdated','Last Updated',0,'date',0,''),(23,'Contacts','updatedBy','Updated By',0,'varchar',0,''),(24,'Contacts','leadSource','Lead Source',0,'dropdown',0,'4'),(25,'Contacts','priority','Priority',0,'varchar',0,''),(26,'Contacts','rating','Rating',0,'rating',0,''),(27,'Contacts','createDate','Create Date',0,'date',0,''),(28,'Contacts','facebook','Facebook',0,'varchar',0,''),(29,'Contacts','otherUrl','Other',0,'varchar',0,''),(30,'Contacts','leadtype','Lead Type',0,'dropdown',0,'3'),(31,'Contacts','closedate','Est. Close Date',0,'date',0,''),(32,'Contacts','interest','Interest',0,'varchar',0,''),(33,'Products','currency','Currency',0,'dropdown',0,'2'),(34,'Products','active','Active',0,'dropdown',0,'1'),(35,'Sales','id','ID',0,'varchar',0,''),(36,'Sales','name','Name',0,'varchar',0,''),(37,'Sales','accountName','Account',0,'link',0,'accounts'),(38,'Sales','quoteAmount','Quote Amount',0,'currency',0,''),(39,'Sales','salesStage','Sales Stage',0,'dropdown',0,'6'),(40,'Sales','expectedCloseDate','Expected Close Date',0,'date',0,''),(41,'Sales','probability','Probability',0,'int',0,''),(42,'Sales','leadSource','Lead Source',0,'dropdown',0,'4'),(43,'Sales','description','Description',0,'text',0,''),(44,'Sales','assignedTo','Assigned To',0,'assignment',0,''),(45,'Sales','createDate','Create Date',0,'date',0,''),(46,'Sales','associatedContacts','Contacts',0,'varchar',0,''),(47,'Sales','lastUpdated','Last Updated',0,'date',0,''),(48,'Sales','updatedBy','Updated By',0,'varchar',0,''),(49,'Accounts','name','Name',0,'varchar',0,NULL),(50,'Accounts','id','ID',0,'varchar',0,NULL),(51,'Accounts','website','Website',0,'url',0,NULL),(52,'Accounts','type','Type',0,'varchar',0,NULL),(53,'Accounts','annualRevenue','Revenue',0,'currency',0,NULL),(54,'Accounts','phone','Phone',0,'varchar',0,NULL),(55,'Accounts','tickerSymbol','Symbol',0,'varchar',0,NULL),(56,'Accounts','employees','Employees',0,'int',0,NULL),(57,'Accounts','assignedTo','Assigned To',0,'assignment',0,'multiple'),(58,'Accounts','createDate','Create Date',0,'date',0,NULL),(59,'Accounts','associatedContacts','Contacts',0,'varchar',0,NULL),(60,'Accounts','description','Description',0,'text',0,NULL),(61,'Accounts','lastUpdated','Last Updated',0,'date',0,NULL),(62,'Accounts','updatedBy','Updated By',0,'varchar',0,NULL),(63,'Actions','id','ID',0,'varchar',0,NULL),(64,'Actions','assignedTo','Assigned To',0,'varchar',0,NULL),(65,'Actions','actionDescription','Description',0,'varchar',0,NULL),(66,'Actions','visibility','Visibility',0,'varchar',0,NULL),(67,'Actions','associationId','Contact',0,'varchar',0,NULL),(68,'Actions','associationType','Association Type',0,'varchar',0,NULL),(69,'Actions','associationName','Association',0,'varchar',0,NULL),(70,'Actions','dueDate','Due Date',0,'varchar',0,NULL),(71,'Actions','priority','Priority',0,'varchar',0,NULL),(72,'Actions','type','Action Type',0,'varchar',0,NULL),(73,'Actions','createDate','Create Date',0,'varchar',0,NULL),(74,'Actions','complete','Complete',0,'varchar',0,NULL),(75,'Actions','reminder','Reminder',0,'varchar',0,NULL),(76,'Actions','completedBy','Completed By',0,'varchar',0,NULL),(77,'Actions','completeDate','Date Completed',0,'varchar',0,NULL),(78,'Actions','lastUpdated','Last Updated',0,'varchar',0,NULL),(79,'Actions','updatedBy','Updated By',0,'varchar',0,NULL),(80,'Quotes','id','ID',0,'varchar',0,NULL),(81,'Quotes','name','Name',0,'varchar',0,NULL),(82,'Quotes','accountId','Account ID',0,'varchar',0,NULL),(83,'Quotes','accountName','Account',0,'varchar',0,NULL),(84,'Quotes','existingProducts','Existing Products',0,'varchar',0,NULL),(85,'Quotes','salesStage','Sales Stage',0,'varchar',0,NULL),(86,'Quotes','expectedCloseDate','Expected Close Date',0,'varchar',0,NULL),(87,'Quotes','probability','Probability',0,'varchar',0,NULL),(88,'Quotes','leadSource','Lead Source',0,'varchar',0,NULL),(89,'Quotes','description','Notes',0,'varchar',0,NULL),(90,'Quotes','assignedTo','Assigned To',0,'varchar',0,NULL),(91,'Quotes','createDate','Create Date',0,'varchar',0,NULL),(92,'Quotes','associatedContacts','Contacts',0,'varchar',0,NULL),(93,'Quotes','lastUpdated','Last Updated',0,'varchar',0,NULL),(94,'Quotes','updatedBy','Updated By',0,'varchar',0,NULL),(95,'Quotes','status','Status',0,'varchar',0,NULL),(96,'Quotes','expirationDate','Expiration Date',0,'varchar',0,NULL),(97,'Quotes','products','Products',0,'varchar',0,NULL),(98,'Products','id','ID',0,'varchar',0,NULL),(99,'Products','name','Name',0,'varchar',0,NULL),(100,'Products','type','Type',0,'varchar',0,NULL),(101,'Products','price','Price',0,'currency',0,NULL),(102,'Products','inventory','Inventory',0,'varchar',0,NULL),(103,'Products','description','Description',0,'text',0,NULL),(104,'Products','assignedTo','Assigned To',0,'assignment',0,NULL),(105,'Products','createDate','Create Date',0,'date',0,NULL),(106,'Products','lastUpdated','Last Updated',0,'date',0,NULL),(107,'Products','updatedBy','Updated By',0,'varchar',0,NULL),(108,'Products','adjustment','Adjustment',0,'varchar',0,NULL),(109,'contacts','dealvalue','Deal Value',1,'currency',0,NULL),(110,'contacts','leadstatus','Lead Status',1,'dropdown',0,'5');") or addSqlError("Unable to create fields".mysql_error());
+
+mysql_query("INSERT INTO  x2_dropdowns (name, options) VALUES 
+	('Product Status','". json_encode(array("1"=>"Active", "0"=>"Inactive")) ."'),
+	('Currency List','". json_encode(array("USD"=>"USD", "EUR"=>"EUR", "GBP"=>"GBP", "CAD"=>"CAD", "JPY"=>"JPY", "CNY"=>"CNY", "CHF"=>"CHF", "INR"=>"INR", "BRL"=>"BRL")) ."'),
+        ('Lead Type','". json_encode(array("None"=>"None", "Web"=>"Web", "In Person"=>"In Person", "Phone"=>"Phone", "E-Mail"=>"E-Mail")) ."'),
+        ('Lead Source','". json_encode(array("None"=>"None", "Google"=>"Google","Facebook"=>"Facebook","Walk In"=>"Walk In")) ."'),
+        ('Lead Status', '{\"Unassigned\":\"Unassigned\",\"Assigned\":\"Assigned\",\"Accepted\":\"Accepted\",\"Working\":\"Working\",\"Dead\":\"Dead\",\"Rejected\":\"Rejected\"}'),
+        ('Sales Stage', '{\"Working\":\"Working\",\"Won\":\"Won\",\"Lost\":\"Lost\"}')
+
 ;")
-or addSqlError("Unable to create contact fields.".mysql_error());	
-mysql_query("INSERT INTO  x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES 
-    
-	('Accounts',	'name',				'Name',				1,	0),
-	('Accounts',	'id',				'ID',				1,	0),
-	('Accounts',	'website',			'Website',			1,	0),
-	('Accounts',	'type',				'Type',				1,	0),
-	('Accounts',	'annualRevenue',		'Revenue',			1,	0),
-	('Accounts',	'phone',			'Phone',			1,	0),
-	('Accounts',	'tickerSymbol',			'Symbol',			1,	0),
-	('Accounts',	'employees',			'Employees',		1,	0),
-	('Accounts',	'assignedTo',			'Assigned To',		1,	0),
-	('Accounts',	'createDate',			'Create Date',		1,	0),
-	('Accounts',	'associatedContacts',           'Contacts',			1,	0),
-	('Accounts',	'description',			'Description',		1,	0),
-	('Accounts',	'lastUpdated',			'Last Updated',		1,	0),
-	('Accounts',	'updatedBy',			'Updated By',		1,	0),
-	
-	('Actions',		'id',				'ID',				1,	0),
-	('Actions',		'assignedTo',			'Assigned To',		1,	0),
-	('Actions',		'actionDescription',            'Description',		1,	0),
-	('Actions',		'visibility',			'Visibility',		1,	0),
-	('Actions',		'associationId',		'Contact',			1,	0),
-	('Actions',		'associationType',		'Association Type',	1,	0),
-	('Actions',		'associationName',		'Association',		1,	0),
-	('Actions',		'dueDate',			'Due Date',			1,	0),
-	('Actions',		'priority',			'Priority',			1,	0),
-	('Actions',		'type',				'Action Type',		1,	0),
-	('Actions',		'createDate',			'Create Date',		1,	0),
-	('Actions',		'complete',			'Complete',			1,	0),
-	('Actions',		'reminder',			'Reminder',			1,	0),
-	('Actions',		'completedBy',			'Completed By',		1,	0),
-	('Actions',		'completeDate',			'Date Completed',	1,	0),
-	('Actions',		'lastUpdated',			'Last Updated',		1,	0),
-	('Actions',		'updatedBy',			'Updated By',		1,	0),
-	
-	('Sales',	'id',				'ID',					1,	0),
-	('Sales',	'name',                         'Name',					1,	0),
-	('Sales',	'accountId',			'Account ID',			1,	0),
-	('Sales',	'accountName',			'Account',				1,	0),
-	('Sales',	'quoteAmount',			'Quote Amount',			1,	0),
-	('Sales',	'salesStage',			'Sales Stage',			1,	0),
-	('Sales',	'expectedCloseDate',            'Expected Close Date',	1,	0),
-	('Sales',	'probability',			'Probability',			1,	0),
-	('Sales',	'leadSource',			'Lead Source',			1,	0),
-	('Sales',	'description',			'Description',			1,	0),
-	('Sales',	'assignedTo',			'Assigned To',			1,	0),
-	('Sales',	'createDate',			'Create Date',			1,	0),
-	('Sales',	'associatedContacts',           'Contacts',				1,	0),
-	('Sales',	'lastUpdated',			'Last Updated',			1,	0),
-	('Sales',	'updatedBy',			'Updated By',			1,	0)
-;")
-or addSqlError("Unable to create fields.".mysql_error());
+or addSqlError("Unable to create product fields.".mysql_error());
 
 // if(!empty($sqlError)) return $sqlError;
 //UNSIGNED
@@ -829,9 +868,9 @@ mysql_query("INSERT INTO x2_admin (
 	'1',
 	'3600',
 	'$adminEmail',
-	'actions:contacts:docs:sales:accounts:workflow',
-	'Actions:Contacts:Docs:Sales:Accounts:Workflow',
-	'1:1:1:1:1:1',
+	'actions:contacts:docs:sales:accounts:workflow:groups',
+	'Actions:Contacts:Docs:Sales:Accounts:Workflow:Groups',
+	'1:1:1:1:1:1:1',
 	'$currency',
 	'".time()."',
 	0
@@ -1037,10 +1076,10 @@ body {
 
 <hr />
 <div id="footer">
-	<img src="images/x2engine_big.png">
+	<!--<img src="images/x2engine_big.png">-->
 	Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 	<?php echo installer_t('All Rights Reserved.'); ?>
-	<img src="http://x2planet.com/listen.php?<?php echo $stats; ?>" style="display:inline">
+	<img src="http://x2planet.com/listen.php?<?php echo $stats; ?>" style="display:none">
 </div>
 </div>
 </body>

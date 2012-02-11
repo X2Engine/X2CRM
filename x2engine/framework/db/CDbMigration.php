@@ -1,6 +1,6 @@
 <?php
 /**
- * CMysqlSchema class file.
+ * CDbMigration class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
@@ -27,8 +27,10 @@
  * information showing the method parameters and execution time, which may be useful when
  * applying migrations.
  *
+ * @property CDbConnection $dbConnection The currently active database connection.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbMigration.php 3069 2011-03-14 00:28:38Z qiang.xue $
+ * @version $Id: CDbMigration.php 3514 2011-12-27 20:28:26Z alexander.makarow $
  * @package system.db
  * @since 1.1.6
  */
@@ -39,6 +41,7 @@ abstract class CDbMigration extends CComponent
 	/**
 	 * This method contains the logic to be executed when applying this migration.
 	 * Child classes may implement this method to provide actual migration logic.
+	 * @return boolean
 	 */
 	public function up()
 	{
@@ -65,6 +68,7 @@ abstract class CDbMigration extends CComponent
 	 * This method contains the logic to be executed when removing this migration.
 	 * The default implementation throws an exception indicating the migration cannot be removed.
 	 * Child classes may override this method if the corresponding migrations can be removed.
+	 * @return boolean
 	 */
 	public function down()
 	{
@@ -93,6 +97,7 @@ abstract class CDbMigration extends CComponent
 	 * be enclosed within a DB transaction.
 	 * Child classes may implement this method instead of {@link up} if the DB logic
 	 * needs to be within a transaction.
+	 * @return boolean
 	 * @since 1.1.7
 	 */
 	public function safeUp()
@@ -105,6 +110,7 @@ abstract class CDbMigration extends CComponent
 	 * be enclosed within a DB transaction.
 	 * Child classes may implement this method instead of {@link up} if the DB logic
 	 * needs to be within a transaction.
+	 * @return boolean
 	 * @since 1.1.7
 	 */
 	public function safeDown()
@@ -175,7 +181,7 @@ abstract class CDbMigration extends CComponent
 	 * @param string $table the table to be updated.
 	 * @param array $columns the column data (name=>value) to be updated.
 	 * @param mixed $conditions the conditions that will be put in the WHERE part. Please
-	 * refer to {@link where} on how to specify conditions.
+	 * refer to {@link CDbCommand::where} on how to specify conditions.
 	 * @param array $params the parameters to be bound to the query.
 	 */
 	public function update($table, $columns, $conditions='', $params=array())
@@ -190,7 +196,7 @@ abstract class CDbMigration extends CComponent
 	 * Creates and executes a DELETE SQL statement.
 	 * @param string $table the table where the data will be deleted from.
 	 * @param mixed $conditions the conditions that will be put in the WHERE part. Please
-	 * refer to {@link where} on how to specify conditions.
+	 * refer to {@link CDbCommand::where} on how to specify conditions.
 	 * @param array $params the parameters to be bound to the query.
 	 */
 	public function delete($table, $conditions='', $params=array())
@@ -378,6 +384,19 @@ abstract class CDbMigration extends CComponent
 		echo "    > drop index $name ...";
 		$time=microtime(true);
 		$this->getDbConnection()->createCommand()->dropIndex($name, $table);
+		echo " done (time: ".sprintf('%.3f', microtime(true)-$time)."s)\n";
+	}
+
+	/**
+	 * Refreshed schema cache for a table
+	 * @param string $table name of the table to refresh
+	 * @since 1.1.9
+	 */
+	public function refreshTableSchema($table)
+	{
+		echo "    > refresh table $table schema cache ...";
+		$time=microtime(true);
+		$this->getDbConnection()->getSchema()->getTable($table,true);
 		echo " done (time: ".sprintf('%.3f', microtime(true)-$time)."s)\n";
 	}
 }

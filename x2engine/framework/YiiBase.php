@@ -6,7 +6,7 @@
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
- * @version $Id: YiiBase.php 3134 2011-03-27 01:39:25Z qiang.xue $
+ * @version $Id: YiiBase.php 3526 2012-01-01 03:18:43Z qiang.xue $
  * @package system
  * @since 1.0
  */
@@ -49,7 +49,7 @@ defined('YII_ZII_PATH') or define('YII_ZII_PATH',YII_PATH.DIRECTORY_SEPARATOR.'z
  * you can customize methods of YiiBase.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: YiiBase.php 3134 2011-03-27 01:39:25Z qiang.xue $
+ * @version $Id: YiiBase.php 3526 2012-01-01 03:18:43Z qiang.xue $
  * @package system
  * @since 1.0
  */
@@ -61,6 +61,13 @@ class YiiBase
 	 * @since 1.1.5
 	 */
 	public static $classMap=array();
+	/**
+	 * @var boolean whether to rely on PHP include path to autoload class files. Defaults to true.
+	 * You may set this to be false if your hosting environment doesn't allow changing PHP include path,
+	 * or if you want to append additional autoloaders to the default Yii autoloader.
+	 * @since 1.1.8
+	 */
+	public static $enableIncludePath=true;
 
 	private static $_aliases=array('system'=>YII_PATH,'zii'=>YII_ZII_PATH); // alias => path
 	private static $_imports=array();					// alias => class name or directory
@@ -69,12 +76,13 @@ class YiiBase
 	private static $_logger;
 
 
+
 	/**
 	 * @return string the version of Yii framework
 	 */
 	public static function getVersion()
 	{
-		return '1.1.7';
+		return '1.1.9';
 	}
 
 	/**
@@ -85,6 +93,7 @@ class YiiBase
 	 * Please make sure you specify the {@link CApplication::basePath basePath} property in the configuration,
 	 * which should point to the directory containing all application logic, template and data.
 	 * If not, the directory will be defaulted to 'protected'.
+	 * @return CWebApplication
 	 */
 	public static function createWebApplication($config=null)
 	{
@@ -99,6 +108,7 @@ class YiiBase
 	 * Please make sure you specify the {@link CApplication::basePath basePath} property in the configuration,
 	 * which should point to the directory containing all application logic, template and data.
 	 * If not, the directory will be defaulted to 'protected'.
+	 * @return CConsoleApplication
 	 */
 	public static function createConsoleApplication($config=null)
 	{
@@ -111,7 +121,6 @@ class YiiBase
 	 * @param mixed $config application configuration. This parameter will be passed as the parameter
 	 * to the constructor of the application class.
 	 * @return mixed the application instance
-	 * @since 1.0.10
 	 */
 	public static function createApplication($class,$config=null)
 	{
@@ -165,8 +174,6 @@ class YiiBase
 	 *
 	 * Any additional parameters passed to this method will be
 	 * passed to the constructor of the object being created.
-	 *
-	 * NOTE: the array-typed configuration has been supported since version 1.0.1.
 	 *
 	 * @param mixed $config the configuration. It can be either a string or an array.
 	 * @return mixed the created object
@@ -326,8 +333,8 @@ class YiiBase
 
 				array_unshift(self::$_includePaths,$path);
 
-				if(set_include_path('.'.PATH_SEPARATOR.implode(PATH_SEPARATOR,self::$_includePaths))===false)
-					throw new CException(Yii::t('yii','Unable to import "{alias}". Please check your server configuration to make sure you are allowed to change PHP include_path.',array('{alias}'=>$alias)));
+				if(self::$enableIncludePath && set_include_path('.'.PATH_SEPARATOR.implode(PATH_SEPARATOR,self::$_includePaths))===false)
+					self::$enableIncludePath=false;
 
 				return self::$_imports[$alias]=$path;
 			}
@@ -386,14 +393,30 @@ class YiiBase
 	public static function autoload($className)
 	{
 		// use include so that the error PHP file may appear
-		if(isset(self::$_coreClasses[$className]))
-			include(YII_PATH.self::$_coreClasses[$className]);
-		else if(isset(self::$classMap[$className]))
+		if(isset(self::$classMap[$className]))
 			include(self::$classMap[$className]);
+		else if(isset(self::$_coreClasses[$className]))
+			include(YII_PATH.self::$_coreClasses[$className]);
 		else
 		{
-			if(strpos($className,'\\')===false)
-				include($className.'.php');
+			// include class file relying on include_path
+			if(strpos($className,'\\')===false)  // class without namespace
+			{
+				if(self::$enableIncludePath===false)
+				{
+					foreach(self::$_includePaths as $path)
+					{
+						$classFile=$path.DIRECTORY_SEPARATOR.$className.'.php';
+						if(is_file($classFile))
+						{
+							include($classFile);
+							break;
+						}
+					}
+				}
+				else
+					include($className.'.php');
+			}
 			else  // class name with namespace in PHP 5.3
 			{
 				$namespace=str_replace('\\','.',ltrim($className,'\\'));
@@ -500,17 +523,27 @@ class YiiBase
 	}
 
 	/**
+	 * Sets the logger object.
+	 * @param CLogger $logger the logger object.
+	 * @since 1.1.8
+	 */
+	public static function setLogger($logger)
+	{
+		self::$_logger=$logger;
+	}
+
+	/**
 	 * Returns a string that can be displayed on your Web page showing Powered-by-Yii information
 	 * @return string a string that can be displayed on your Web page showing Powered-by-Yii information
 	 */
 	public static function powered()
 	{
-		return 'Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a>.';
+		return Yii::t('yii','Powered by {yii}.', array('{yii}'=>'<a href="http://www.yiiframework.com/" rel="external">Yii Framework</a>'));
 	}
 
 	/**
 	 * Translates a message to the specified language.
-	 * Starting from version 1.0.2, this method supports choice format (see {@link CChoiceFormat}),
+	 * This method supports choice format (see {@link CChoiceFormat}),
 	 * i.e., the message returned will be chosen from a few candidates according to the given
 	 * number value. This feature is mainly used to solve plural format issue in case
 	 * a message has different plural forms in some languages.
@@ -519,7 +552,7 @@ class YiiBase
 	 * more interpretation about message category.
 	 * @param string $message the original message
 	 * @param array $params parameters to be applied to the message using <code>strtr</code>.
-	 * Starting from version 1.0.2, the first parameter can be a number without key.
+	 * The first parameter can be a number without key.
 	 * And in this case, the method will call {@link CChoiceFormat::format} to choose
 	 * an appropriate message translation.
 	 * Starting from version 1.1.6 you can pass parameter for {@link CChoiceFormat::format}
@@ -528,7 +561,6 @@ class YiiBase
 	 * Defaults to null, meaning using 'coreMessages' for messages belonging to
 	 * the 'yii' category and using 'messages' for the rest messages.
 	 * @param string $language the target language. If null (default), the {@link CApplication::getLanguage application language} will be used.
-	 * This parameter has been available since version 1.0.3.
 	 * @return string the translated message
 	 * @see CMessageSource
 	 */
@@ -575,13 +607,21 @@ class YiiBase
 	 * The new autoloader will be placed before {@link autoload} and after
 	 * any other existing autoloaders.
 	 * @param callback $callback a valid PHP callback (function name or array($className,$methodName)).
-	 * @since 1.0.10
+	 * @param boolean $append whether to append the new autoloader after the default Yii autoloader.
 	 */
-	public static function registerAutoloader($callback)
+	public static function registerAutoloader($callback, $append=false)
 	{
-		spl_autoload_unregister(array('YiiBase','autoload'));
-		spl_autoload_register($callback);
-		spl_autoload_register(array('YiiBase','autoload'));
+		if($append)
+		{
+			self::$enableIncludePath=false;
+			spl_autoload_register($callback);
+		}
+		else
+		{
+			spl_autoload_unregister(array('YiiBase','autoload'));
+			spl_autoload_register($callback);
+			spl_autoload_register(array('YiiBase','autoload'));
+		}
 	}
 
 	/**

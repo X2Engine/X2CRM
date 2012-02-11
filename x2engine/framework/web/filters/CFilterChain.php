@@ -15,7 +15,7 @@
  * CFilterChain executes the filter list by {@link run()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFilterChain.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CFilterChain.php 3204 2011-05-05 21:36:32Z alexander.makarow $
  * @package system.web.filters
  * @since 1.0
  */
@@ -52,6 +52,7 @@ class CFilterChain extends CList
 	 * @param CController $controller the controller who executes the action.
 	 * @param CAction $action the action being filtered by this chain.
 	 * @param array $filters list of filters to be applied to the action.
+	 * @return CFilterChain
 	 */
 	public static function create($controller,$action,$filters)
 	{

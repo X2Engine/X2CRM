@@ -38,8 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('zii.widgets.CWidget');
-
 class QuickContact extends CWidget {
 
 	public $visibility;

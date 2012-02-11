@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,16 +42,18 @@ $this->menu=array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
-	array('label'=>Yii::t('actions','View Action')),
-	array('label'=>Yii::t('actions','Update Action'),'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('actions','Delete Action'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
+	array('label'=>Yii::t('actions','Create'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
+	array('label'=>Yii::t('actions','View')),
+	array('label'=>Yii::t('actions','Update'),'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('actions','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 //Yii::app()->controller->action->id
 
 //echo Yii::t('actions','View Action #{n}',array('{n}'=>$model->id)); 
-
+$this->actionMenu = array( 
+	array('label'=>Yii::t('contacts','Share Action'),'url'=>array('shareAction','id'=>$model->id)),
+);
 ?>
 <h2><?php
 	if($model->associationType=='none')
@@ -67,24 +69,25 @@ if (empty($model->type) || $model->type=='Web Lead') {
 		echo CHtml::link(Yii::t('actions','Uncomplete'),array('actions/uncomplete','id'=>$model->id),array('class'=>'x2-button'));
 	else {
 ?>
-<a class="x2-button" href="shareAction/<?php echo $model->id;?>"><span><?php echo Yii::t('actions','Share Action'); ?></span></a>
 <?php
 if(isset($associationModel) && $model->associationType=='contacts') {
-	?>
-	<a class="x2-button" href="#" onclick="toggleEmailForm(); return false;"><span><?php echo Yii::t('app','Send Email'); ?></span></a>
-	<?php
+    $this->actionMenu[]=array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;'));
 	$this->widget('InlineEmailForm',
-		array(
-			'to'=>'<'.$associationModel->name.'> '.$associationModel->email,
-			'redirectId'=>$model->id,
-			'redirectType'=>'actions',
-			'startHidden'=>true,
-		)
-	);
+	array(
+		'attributes'=>array(
+			'to'=>'"'.$associationModel->name.'" <'.$associationModel->email.'>, ',
+			// 'subject'=>'hi',
+			// 'redirect'=>'contacts/'.$model->id,
+			'modelName'=>'Contacts',
+			'modelId'=>$associationModel->id,
+		),
+		'startHidden'=>true,
+	)
+);
 }
 ?>
 <div class="form" id="action-form">
-	<form name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">
+	<form id="complete-action" name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">
 		<b><?php echo Yii::t('actions','Completion Notes'); ?></b>
 		<textarea name="note" rows="4" ></textarea>
 <?php
@@ -137,3 +140,8 @@ if($model->associationId!=0) {
 	);
 	*/
 ?>
+<script>
+$('#complete-button').click(function(){
+    $("form#complete-action").submit();
+});
+</script>

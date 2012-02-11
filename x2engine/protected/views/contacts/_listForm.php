@@ -43,7 +43,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2for
 Yii::app()->clientScript->registerScript('highlightSaveContact',"
 $(function(){
 	$('#contacts-form input, #contacts-form select, #contacts-form textarea').change(function(){
-		$('#save-button, #save-button1, #save-button2').css('background','yellow');
+		$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
 	}
 	);
 }

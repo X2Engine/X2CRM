@@ -26,8 +26,12 @@
  * and reopen it. To declare an attribute is sticky, simply list it in a validation rule with
  * the validator name being "sticky".
  *
+ * @property array $templates A list of available code templates (name=>directory).
+ * @property string $templatePath The directory that contains the template files.
+ * @property string $stickyFile The file path that stores the sticky attribute values.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CCodeModel.php 2799 2011-01-01 19:31:13Z qiang.xue $
+ * @version $Id: CCodeModel.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.gii
  * @since 1.1.2
  */

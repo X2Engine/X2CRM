@@ -20,7 +20,7 @@ Yii::import('zii.widgets.grid.CGridColumn');
  * and customize the display order of the buttons.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CButtonColumn.php 2990 2011-02-22 11:44:50Z mdomba $
+ * @version $Id: CButtonColumn.php 3424 2011-10-24 20:13:19Z mdomba $
  * @package zii.widgets.grid
  * @since 1.1
  */
@@ -113,16 +113,18 @@ class CButtonColumn extends CGridColumn
 	/**
 	 * @var string the confirmation message to be displayed when delete button is clicked.
 	 * By setting this property to be false, no confirmation message will be displayed.
+	 * This property is used only if <code>$this->buttons['delete']['click']</code> is not set.
 	 */
 	public $deleteConfirmation;
 	/**
 	 * @var string a javascript function that will be invoked after the delete ajax call.
+	 * This property is used only if <code>$this->buttons['delete']['click']</code> is not set.
 	 *
 	 * The function signature is <code>function(link, success, data)</code>
 	 * <ul>
 	 * <li><code>link</code> references the delete link.</li>
 	 * <li><code>success</code> status of the ajax call, true if the ajax call was successful, false if the ajax call failed.
-	 * <li><code>data</code> the data returned by the server (in case of a successful call).
+	 * <li><code>data</code> the data returned by the server in case of a successful call or XHR object in case of error.
 	 * </ul>
 	 * Note that if success is true it does not mean that the delete was successful, it only means that the ajax call was successful.
 	 *
@@ -215,24 +217,26 @@ class CButtonColumn extends CGridColumn
 				$this->buttons[$id]=$button;
 		}
 
-		if(is_string($this->deleteConfirmation))
-			$confirmation="if(!confirm(".CJavaScript::encode($this->deleteConfirmation).")) return false;";
-		else
-			$confirmation='';
-
-		if(Yii::app()->request->enableCsrfValidation)
+		if(!isset($this->buttons['delete']['click']))
 		{
-	        $csrfTokenName = Yii::app()->request->csrfTokenName;
-	        $csrfToken = Yii::app()->request->csrfToken;
-	        $csrf = "\n\t\tdata:{ '$csrfTokenName':'$csrfToken' },";
-		}
-		else
-			$csrf = '';
+			if(is_string($this->deleteConfirmation))
+				$confirmation="if(!confirm(".CJavaScript::encode($this->deleteConfirmation).")) return false;";
+			else
+				$confirmation='';
 
-		if($this->afterDelete===null)
-			$this->afterDelete='function(){}';
+			if(Yii::app()->request->enableCsrfValidation)
+			{
+				$csrfTokenName = Yii::app()->request->csrfTokenName;
+				$csrfToken = Yii::app()->request->csrfToken;
+				$csrf = "\n\t\tdata:{ '$csrfTokenName':'$csrfToken' },";
+			}
+			else
+				$csrf = '';
 
-		$this->buttons['delete']['click']=<<<EOD
+			if($this->afterDelete===null)
+				$this->afterDelete='function(){}';
+
+			$this->buttons['delete']['click']=<<<EOD
 function() {
 	$confirmation
 	var th=this;
@@ -244,13 +248,14 @@ function() {
 			$.fn.yiiGridView.update('{$this->grid->id}');
 			afterDelete(th,true,data);
 		},
-		error:function() {
-			afterDelete(th,false);
+		error:function(XHR) {
+			return afterDelete(th,false,XHR);
 		}
 	});
 	return false;
 }
 EOD;
+		}
 	}
 
 	/**

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,26 +39,11 @@
  ********************************************************************************/
 
 // editor CSS file	
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/yui/build/editor/assets/skins/x2engine/simpleeditor.css');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/tinyeditor/style.css');
 
 // editor javascript files
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/yui/build/yahoo-dom-event/yahoo-dom-event.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/yui/build/element/element-min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/yui/build/container/container_core-min.js');
-//Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/yui/build/menu/menu-min.js');
-//Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/yui/build/button/button-min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/yui/build/editor/simpleeditor-min.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor/tinyeditor.js');
 
-Yii::app()->clientScript->registerScript('yuiEditor',"
-var myEditor = new YAHOO.widget.SimpleEditor('msgpost', {
-	height: '800px',
-	width: '100%',
-	handleSubmit: true,
-	dompath: false, //Turns on the bar at the bottom
-	animate: false //Animates the opening, closing and moving of Editor windows
-});
-myEditor.render();
-",CClientScript::POS_HEAD);
 
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'docs-form',
@@ -74,22 +59,50 @@ $form=$this->beginWidget('CActiveForm', array(
                 $date=date("g:i:s A",$_GET['time']);
                 echo "Saved at $date.";
         }
-            echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
-	</div>
+            echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float','onclick'=>'editor.post();')); ?>
+	</div><?php if($this->route=='docs/createEmail'): ?>
+	<div class="row">
+		<?php echo Yii::t('docs','<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
+	</div><?php endif; ?>
 	<div class="row">
 		<?php 
-		if($model->isNewRecord){
+		if($model->isNewRecord && isset($users)){
 			echo $form->label($model,'editPermissions');
 			echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
 			echo $form->error($model,'editPermissions');
 		}
+                echo $form->label($model,'text');
+                echo $form->textArea($model,'text',array('id'=>'input'));
+                echo $form->error($model,'text');
 		?>
 	</div>
-</div>
-<div class="yui-skin-x2engine">
-	<textarea name="msgpost" id="msgpost" cols="50" rows="10"><?php echo $model->text; ?>
-	</textarea>
+
 </div>
 <?php echo $form->error($model,'text'); ?>
 
 <?php $this->endWidget(); ?>
+
+
+
+<script>
+editor=new TINY.editor.edit('editor',{
+    id:'input', // (required) ID of the textarea
+    width:550, // (optional) width of the editor
+    height:175, // (optional) heightof the editor
+    cssclass:'te', // (optional) CSS class of the editor
+    controlclass:'tecontrol', // (optional) CSS class of the buttons
+    rowclass:'teheader', // (optional) CSS class of the button rows
+    dividerclass:'tedivider', // (optional) CSS class of the button diviers
+    controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|', 'orderedlist', 'unorderedlist', '|' ,'outdent' ,'indent', '|', 'leftalign', 'centeralign', 'rightalign', 'blockjustify', 'n', '|', 'unformat', '|', 'undo', 'redo', 'font', 'size', 'style','n', '|', 'image', 'hr', 'link', 'unlink', '|', 'cut', 'copy', 'paste'], // (required) options you want available, a '|' represents a divider and an 'n' represents a new row
+    footer:true, // (optional) show the footer
+    fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
+    xhtml:true, // (optional) generate XHTML vs HTML
+    cssfile:'style.css', // (optional) attach an external CSS file to the editor
+    css:'', // (optional) attach CSS to the editor
+    bodyid:'editor', // (optional) attach an ID to the editor body
+    footerclass:'tefooter', // (optional) CSS class of the footer
+    toggle:{text:'source',activetext:'wysiwyg',cssclass:'toggle'}, // (optional) toggle to markup view options
+    resize:{cssclass:'resize'} // (optional) display options for the editor resize
+});
+
+</script>

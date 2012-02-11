@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -101,12 +101,12 @@ if(empty($data->type)) {
 			//else
 				//echo Actions::parseStatus($data->dueDate);
 		} else if ($data->type == 'workflow') {
-			$actionData = explode(':',$data->actionDescription);
+			// $actionData = explode(':',$data->actionDescription);
 			
-			$workflowRecord = CActiveRecord::model('Workflow')->findByPk($actionData[0]);
-			$stageRecords = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$actionData[0]),new CDbCriteria(array('order'=>'id ASC')));
+			$workflowRecord = CActiveRecord::model('Workflow')->findByPk($data->workflowId);
+			$stageRecords = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$data->workflowId),new CDbCriteria(array('order'=>'id ASC')));
 			
-			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$actionData[1]-1]->name.'</b> ';
+			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
 		} else if($data->type == 'email')
 			echo Yii::t('actions','Email Message:').' '.Actions::formatDate($data->completeDate);
 		?>
@@ -118,11 +118,11 @@ if(empty($data->type)) {
 				else {
 					echo CHtml::link('['.Yii::t('actions','Complete').']',array('actions/complete','id'=>$data->id,'redirect'=>1),array());
 				}
-				
-				echo ' '.CHtml::link('['.Yii::t('actions','Update').']',array('actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ';
 			}
-			if ($data->type != 'workflow')
+			if ($data->type != 'workflow'){
+                                echo ' '.CHtml::link('['.Yii::t('actions','Update').']',array('actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ';
 				echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
+                        }
 			?>
 		</div>
 	</div>
@@ -132,15 +132,16 @@ if(empty($data->type)) {
 			echo MediaChild::attachmentActionText($this->convertUrls($data->actionDescription),true,true);
 		else if($type=='workflow') {
 		
-			if(count($actionData) == 2) {
-				if(count($workflowRecord) > 0 && $actionData[1] <= count($stageRecords)) {
-					
-					if($data->complete == 'Yes')
-						echo ' <b>'.Yii::t('workflow','Completed').'</b> '.date('Y-m-d',$data->completeDate);
-					else
-						echo ' <b>'.Yii::t('workflow','Started').'</b> '.date('Y-m-d',$data->createDate);
-				}
+			if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)) {
+				if($data->complete == 'Yes')
+					echo ' <b>'.Yii::t('workflow','Completed').'</b> '.date('Y-m-d',$data->completeDate);
+				else
+					echo ' <b>'.Yii::t('workflow','Started').'</b> '.date('Y-m-d',$data->createDate);
 			}
+			if(isset($data->actionDescription))
+				echo '<br>'.$data->actionDescription;
+			
+			
 		} else
 			echo $this->convertUrls($data->actionDescription);	// convert LF and CRLF to <br />
 		?>

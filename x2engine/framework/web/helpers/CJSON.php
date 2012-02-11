@@ -55,7 +55,7 @@
  * @author	 Michal Migurski <mike-json@teczno.com>
  * @author	 Matt Knapp <mdknapp[at]gmail[dot]com>
  * @author	 Brett Stimmerman <brettstimmerman[at]gmail[dot]com>
- * @version $Id: CJSON.php 3009 2011-02-28 14:22:53Z mdomba $
+ * @version $Id: CJSON.php 3204 2011-05-05 21:36:32Z alexander.makarow $
  * @package	system.web.helpers
  * @since 1.0
  */
@@ -90,7 +90,7 @@ class CJSON
 	* Encodes an arbitrary variable into JSON format
 	*
 	* @param mixed $var any number, boolean, string, array, or object to be encoded.
-	*  if var is a string, note that encode() always expects it to be in ASCII or UTF-8 format!
+	* If var is a string, it will be converted to UTF-8 format first before being encoded.
 	* @return string JSON string representation of input var
 	*/
 	public static function encode($var)
@@ -110,11 +110,11 @@ class CJSON
 				return str_replace(',','.',(float)$var); // locale-independent representation
 
 			case 'string':
-				if(function_exists('json_encode'))
-					return json_encode($var);
-
 				if (($enc=strtoupper(Yii::app()->charset))!=='UTF-8')
 					$var=iconv($enc, 'UTF-8', $var);
+
+				if(function_exists('json_encode'))
+					return json_encode($var);
 
 				// STRINGS ARE EXPECTED TO BE IN ASCII OR UTF-8 FORMAT
 				$ascii = '';
@@ -602,6 +602,7 @@ class CJSON
 	* This function returns any UTF-8 encoded text as a list of
 	* Unicode values:
 	* @param string $str string to convert
+	* @return string
 	* @author Scott Michael Reynen <scott@randomchaos.com>
 	* @link   http://www.randomchaos.com/document.php?source=php_and_unicode
 	* @see	unicodeToUTF8()
@@ -639,6 +640,7 @@ class CJSON
 	/**
 	* This function converts a Unicode array back to its UTF-8 representation
 	* @param string $str string to convert
+	* @return string
 	* @author Scott Michael Reynen <scott@randomchaos.com>
 	* @link   http://www.randomchaos.com/document.php?source=php_and_unicode
 	* @see	utf8ToUnicode()
@@ -673,6 +675,7 @@ class CJSON
 	* Maybe really UCS-2 without mb_string due to utf8ToUnicode limits
 	* @param string $str string to convert
 	* @param boolean $bom whether to output BOM header
+	* @return string
 	*/
 	protected static function utf8ToUTF16BE(&$str, $bom = false)
 	{
@@ -691,6 +694,7 @@ class CJSON
 	 *
 	 * Maybe really UCS-2 without mb_string due to utf8ToUnicode limits
 	 * @param string $str string to convert
+	 * @return string
 	 */
 	protected static function utf16beToUTF8(&$str)
 	{

@@ -17,10 +17,12 @@
  *
  * See {@link CCache} manual for common cache operations that are supported by CFileCache.
  *
+ * @property integer $gCProbability The probability (parts per million) that garbage collection (GC) should be performed
+ * when storing a piece of data in the cache. Defaults to 100, meaning 0.01% chance.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFileCache.php 2853 2011-01-14 09:53:06Z keyboard.idol@gmail.com $
+ * @version $Id: CFileCache.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching
- * @since 1.0.6
  */
 class CFileCache extends CCache
 {
@@ -105,7 +107,7 @@ class CFileCache extends CCache
 	{
 		$cacheFile=$this->getCacheFile($key);
 		if(($time=@filemtime($cacheFile))>time())
-			return file_get_contents($cacheFile);
+			return @file_get_contents($cacheFile);
 		else if($time>0)
 			@unlink($cacheFile);
 		return false;
@@ -199,7 +201,7 @@ class CFileCache extends CCache
 	 * @param boolean $expiredOnly whether to removed expired cache files only. If true, all cache files under {@link cachePath} will be removed.
 	 * @param string $path the path to clean with. If null, it will be {@link cachePath}.
 	 */
-	protected function gc($expiredOnly=true,$path=null)
+	public function gc($expiredOnly=true,$path=null)
 	{
 		if($path===null)
 			$path=$this->cachePath;

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,14 +40,14 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('sales','Sales List'), 'url'=>array('index')),
-	array('label'=>Yii::t('sales','Create Sale'), 'url'=>array('create')),
-	array('label'=>Yii::t('sales','View Sale')),
-	array('label'=>Yii::t('sales','Update Sale'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('sales','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('sales','View')),
+	array('label'=>Yii::t('sales','Update'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('sales','Delete Sale'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('sales','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 ?>
 <h2><?php echo Yii::t('sales','Share Sale');?>: <b><?php echo $model->name;?></b></h2>
@@ -81,5 +81,5 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <h2><?php echo Yii::t('sales','Sale:'); ?> <b><?php echo $model->name; ?></b></h2>
 <?php
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'currentWorkflow'=>$currentWorkflow)); 
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'sales','form'=>$form,'currentWorkflow'=>$currentWorkflow)); 
 $this->endWidget(); ?>

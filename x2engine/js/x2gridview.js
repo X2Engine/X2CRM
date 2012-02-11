@@ -163,6 +163,7 @@ $.widget("x2.gvSettings", {
 			
 			
 		}
+		// console.debug(gvSettings);
 		this.prevGvSettings = gvSettings;
 	},
 

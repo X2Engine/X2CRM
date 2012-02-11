@@ -25,8 +25,13 @@
  * {@link setFetchMode FetchMode}. See {@link http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php}
  * for more details.
  *
+ * @property boolean $isClosed Whether the reader is closed or not.
+ * @property integer $rowCount Number of rows contained in the result.
+ * @property integer $columnCount The number of columns in the result set.
+ * @property mixed $fetchMode Fetch mode.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbDataReader.php 3001 2011-02-24 16:42:44Z alexander.makarow $
+ * @version $Id: CDbDataReader.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.db
  * @since 1.0
  */
@@ -121,6 +126,7 @@ class CDbDataReader extends CComponent implements Iterator, Countable
 	 * Advances the reader to the next result when reading the results of a batch of statements.
 	 * This method is only useful when there are multiple result sets
 	 * returned by the query. Not all DBMS support this feature.
+	 * @return boolean Returns true on success or false on failure.
 	 */
 	public function nextResult()
 	{

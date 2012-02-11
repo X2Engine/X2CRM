@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -168,7 +168,7 @@ class X2GridView extends CGridView {
 		foreach($this->gvSettings as $columnName => $width) {
 			
 			// $width = (!empty($width) && is_numeric($width))? 'width:'.$width.'px;' : null;	// make sure width is reasonable, then convert it to CSS
-			$width = (!empty($width) && is_numeric($width))? $width : null;	// make sure width is reasonable, then convert it to CSS
+			$width = (!empty($width) && is_numeric($width))? $width : null;	// make sure width is reasonable
 			
 			$isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate','timestamp'));
 			
@@ -208,8 +208,10 @@ class X2GridView extends CGridView {
 				else if($isCurrency) {
 					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
-				} else if($columnName == 'assignedTo')
-					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):$data->assignedTo';
+				} else if($columnName == 'assignedTo'){
+					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):UserChild::getUserLinks($data->assignedTo)';
+                                        $newColumn['type'] = 'raw';
+                                }
 				
 				
 				$newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
@@ -287,7 +289,23 @@ class X2GridView extends CGridView {
 		// "$('#".$this->getId()." table').after('".addcslashes($columnHtml,"'")."');
 		
 		// ",CClientScript::POS_READY);
-	
+                $themeURL = Yii::app()->theme->getBaseUrl();
+                Yii::app()->clientScript->registerScript('logos',"
+                $(window).load(function(){
+                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+                        $('a').removeAttr('href');
+                        alert('Please put the logo back');
+                        window.location='http://www.x2engine.com';
+                    }
+                    var touchlogosrc = $('#x2touch-logo').attr('src');
+                    var logosrc=$('#x2crm-logo').attr('src');
+                    if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+                        $('a').removeAttr('href');
+                        alert('Please put the logo back');
+                        window.location='http://www.x2engine.com';
+                    }
+                });    
+                ");
 			
 		
 		
@@ -299,12 +317,12 @@ class X2GridView extends CGridView {
 	* Renders the data items for the grid view.
 	*/
  	public function renderItems() {
-		if($this->dataProvider->getItemCount()>0 || $this->showTableOnEmpty) {
+		if($this->dataProvider->getItemCount() > 0 || $this->showTableOnEmpty) {
 			echo "<table class=\"{$this->itemsCssClass}\">\n";
 			$this->renderTableHeader();
 			ob_start();
 			$this->renderTableBody();
-			$body=ob_get_clean();
+			$body = ob_get_clean();
 			$this->renderTableFooter();
 			echo $body; // TFOOT must appear before TBODY according to the standard.
 			echo "</table>";

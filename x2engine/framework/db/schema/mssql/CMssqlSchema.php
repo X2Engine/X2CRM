@@ -14,9 +14,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: CMssqlSchema.php 3099 2011-03-19 01:26:47Z qiang.xue $
+ * @version $Id: CMssqlSchema.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.mssql
- * @since 1.0.4
  */
 class CMssqlSchema extends CDbSchema
 {
@@ -276,14 +275,19 @@ EOD;
 	 */
 	protected function findColumns($table)
 	{
+		$columnsTable="INFORMATION_SCHEMA.COLUMNS";
 		$where=array();
 		$where[]="TABLE_NAME='".$table->name."'";
 		if (isset($table->catalogName))
+		{
 			$where[]="TABLE_CATALOG='".$table->catalogName."'";
+			$columnsTable = $table->catalogName.'.'.$columnsTable;
+		}
 		if (isset($table->schemaName))
 			$where[]="TABLE_SCHEMA='".$table->schemaName."'";
+
 		$sql="SELECT *, columnproperty(object_id(table_schema+'.'+table_name), column_name, 'IsIdentity') as IsIdentity ".
-			 "FROM INFORMATION_SCHEMA.COLUMNS WHERE ".join(' AND ',$where);
+			 "FROM ".$this->quoteTableName($columnsTable)." WHERE ".join(' AND ',$where);
 		if (($columns=$this->getDbConnection()->createCommand($sql)->queryAll())===array())
 			return false;
 
@@ -336,7 +340,6 @@ EOD;
 	 * If not empty, the returned table names will be prefixed with the schema name.
 	 * @param boolean $includeViews whether to include views in the result. Defaults to true.
 	 * @return array all table names in the database.
-	 * @since 1.0.4
 	 */
 	protected function findTableNames($schema='',$includeViews=true)
 	{

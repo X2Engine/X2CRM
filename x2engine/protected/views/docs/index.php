@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,10 +41,10 @@
 $this->breadcrumbs=array(
 	'Docs',
 );
-
-$this->menu=array(
+$this->menu = array(
         array('label'=>Yii::t('docs','List Docs')),
-		array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
+		array('label'=>Yii::t('docs','Create'), 'url'=>array('create')),
+		array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
 );
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -102,7 +102,71 @@ $('.search-form form').submit(function(){
 			'value'=>'date("Y-m-d",$data->lastUpdated)',
 		),
 	),
-)); ?>
+));
+/* $this->widget('application.components.X2GridView', array(
+	'id'=>'accounts-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<h2>'.Yii::t('accounts','Accounts').'</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$model->search(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	// 'filter'=>$model,
+	// 'columns'=>$columns,
+	'modelName'=>'DocChild',
+	'viewName'=>'docs',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'title'=>204,
+		'createDate'=>98,
+		'lastUpdated'=>94,
+		'createdBy'=>89,
+		'updatedBy'=>100,
+	),
+	'specialColumns'=>array(
+		array(
+			'header'=>Yii::t('docs','Title'),
+			'name'=>'title',
+			'value'=>'CHtml::link($data->title,array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>Yii::t('docs','Type'),
+			'name'=>'title',
+			'value'=>'$data->parseType()',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>Yii::t('docs','Created By'),
+			'name'=>'createdBy',
+			'value'=>'UserChild::getUserLinks($data->createdBy)',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>Yii::t('docs','Updated By'),
+			'name'=>'updatedBy',
+			'value'=>'UserChild::getUserLinks($data->updatedBy)',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>Yii::t('docs','Last Updated'),
+			'name'=>'lastUpdated',
+			'value'=>'date("Y-m-d",$data->lastUpdated)',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>Yii::t('docs','Create Date'),
+			'name'=>'createDate',
+			'value'=>'date("Y-m-d",$data->createDate)',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>false,
+)); */
+?>
 <br />
 <?php
 	$this->widget('zii.widgets.grid.CGridView', array(

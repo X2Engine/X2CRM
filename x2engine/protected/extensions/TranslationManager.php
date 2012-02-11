@@ -484,7 +484,7 @@ function removeLine(object) {
 		'{GPLv3}'=>CHtml::link('GPLv3',Yii::app()->getBaseUrl().'/GPL-3.0 License.txt'),
 		'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
 	));?>
-	<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(CLogger::getExecutionTime(),3))); ?>
+	<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(Yii::getLogger()->getExecutionTime(),3))); ?>
 </div>
 <?php
 }

@@ -37,6 +37,30 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
+$(function() {
+	$('div.x2-layout .formSection.hideSection .tableWrapper').hide();
+	// $('div.x2-layout .formItem').disableSelection();
+
+	$('div.x2-layout .formSectionShow, .formSectionHide').click(function() {
+		$(this).closest('.formSection').toggleClass('hideSection').find('.tableWrapper').slideToggle();
+		
+		var formSectionStatus = [];
+		$('div.x2-layout .formSection').each(function(i,section) {
+			formSectionStatus[i] = $(section).hasClass('hideSection')? '0' : '1';
+		});
+		
+		var formSettings = '['+formSectionStatus.join(',')+']';
+		$.ajax({
+			url: yiiBaseUrl+'/site/saveFormSettings',
+			type: 'GET',
+			data: 'formName='+window.formName+'&formSettings='+encodeURI(formSettings)
+		});
+	});
+	
+	$('.inlineLabel').find('input:text, textarea').focus(function() { formFieldFocus(this); }).blur(function() { formFieldBlur(this); });
+});
+
 function toggleText(field) {
 	if (field.defaultValue==field.value) {
 		field.value = ''
@@ -46,6 +70,20 @@ function toggleText(field) {
 		field.style.color = '#aaa'
 	}
 }
+function formFieldFocus(elem) {
+	var field = $(elem);
+	if (field.val() == field.attr('title')) {
+		field.val('');
+		field.css('color','#000');
+	}
+}
+function formFieldBlur(elem) {
+	var field = $(elem);
+	if (field.val() == '') {
+		field.val(field.attr('title'));
+		field.css('color','#aaa');
+	}
+}
 function submitForm(formName) {
 	document.forms[formName].submit();
 }
@@ -53,10 +91,24 @@ function toggleForm(formName,duration) {
 	$(formName).toggle('blind',{},duration);
 }
 function hide(field) {
-	field.style.display="none";
-	button=document.getElementById('save-changes');
-	button.style.background='yellow';
+	$(field).hide(); //field.style.display="none";
+	// button=document.getElementById('save-changes');
+	$('#save-changes').addClass('highlight'); //button.style.background='yellow';
 }
 function show(field) {
-	field.style.display="block";
+	$(field).show();
+	// field.style.display="block";
+}
+
+function toggleFormSection(button) {
+	var $button = $(button);
+
+	$button.closest('.formSection').find('.formSectionRow').css('min-height','').toggle(); 
+	// animate({
+		// height:'toggle'
+	// },300);
+	if($button.html() == '[ Show ]')
+		$button.html('[ Hide ]');
+	else
+		$button.html('[ Show ]');
 }

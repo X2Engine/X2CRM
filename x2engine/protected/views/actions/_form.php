@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,28 +55,50 @@ $(document).ready(function(){
 Yii::app()->clientScript->registerScript('highlightSaveAction',"
 $(function(){
 	$('#action-form input, #action-form select, #action-form textarea').change(function(){
-		$('#save-button, #save-button1, #save-button2').css('background','yellow');
+		$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
 	}
 	);
 }
 );");
 
 $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
-$nonCustom=array();
-$custom=array();
-foreach($fields as $field){
-    if($field->custom==0){
-        $nonCustom[$field->fieldName]=$field;
-    }else{
-        $custom[$field->fieldName]=$field;
-    }
-}
+
 
 $inlineForm = (isset($inlineForm)); // true if this is in the InlineActionForm
 $quickCreate = $inlineForm? false : ($this->getAction()->getId() == 'quickCreate');	// true if we're inside the quickCreate view
 if(isset($_GET['inline']))
     $inlineForm=$_GET['inline'];
 $action = $inlineForm? array('actions/create','inline'=>1) : null;
+
+if($inlineForm){ ?>
+
+<script>
+    $(function() {
+            var tabs=$( "#tabs" ).tabs();
+            $("#actions-newCreate-form").submit(function(){
+               $("#save-button1").val(tabs.tabs('option', 'selected'));
+           }) 
+    });
+
+</script>
+
+
+
+
+
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-1">Log A Call</a></li>
+		<li><a href="#tabs-2">New Action</a></li>
+		<li><a href="#tabs-3">New Comment</a></li>
+	</ul>
+	
+
+
+    
+<?php
+
+}
 
 // check if this form is being recycled in the quickCreate view
 if (!$quickCreate) {
@@ -96,14 +118,19 @@ echo $form->errorSummary($actionModel);
 	<?php echo $form->textField($actionModel,'type',array('size'=>20,'maxlength'=>20)); ?>
 	<?php echo $form->error($actionModel,'type'); ?>
 </div> */?>
-<?php if($nonCustom['actionDescription']->visible==1){ ?>
-<div class="row">
+    <div class="row">
 	<b><?php echo $form->labelEx($actionModel,'actionDescription'); ?></b>
 	<?php //echo $form->label($actionModel,'actionDescription'); ?>
-	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>50)); ?>
+	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>40,'style'=>'width:500px;')); ?>
 	<?php //echo $form->error($actionModel,'actionDescription'); ?>
+
+<div id="tabs-1">
+
 </div>
-<?php } ?>
+	
+<div id="tabs-2">
+		
+
 <div class="row">
 	<?php
 	if (!$quickCreate) {
@@ -112,7 +139,6 @@ echo $form->errorSummary($actionModel);
 		} else {
 	?>
 <div class="row">
-        <?php if($nonCustom['associationType']->visible==1){ ?>
 	<div class="cell">
 	<?php echo $form->label($actionModel,'associationType'); ?>
 	<?php echo $form->dropDownList($actionModel,'associationType',
@@ -136,8 +162,6 @@ echo $form->errorSummary($actionModel);
 		);
 		echo $form->error($actionModel,'associationType'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['associationName']->visible==1){ ?>
 	<div class="cell" id="auto_complete">
 		<?php
 		echo $form->label($actionModel,'associationName');
@@ -157,7 +181,6 @@ echo $form->errorSummary($actionModel);
 		//echo $form->error($actionModel,'associationName');
 		?>
 	</div>
-        <?php } ?>
 </div>
 	<?php
 		}
@@ -166,7 +189,6 @@ echo $form->errorSummary($actionModel);
         
 	<div class="cell">
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
-            <?php if($nonCustom['dueDate']->visible==1){ ?>
 		<?php echo $form->label($actionModel,'dueDate');
 		if ($actionModel->isNewRecord)
 			$actionModel->dueDate = date('Y-m-d',time()).' 23:59';	//default to tomorow for new actions
@@ -185,9 +207,7 @@ echo $form->errorSummary($actionModel);
 		));
 		?>
 		<?php echo $form->error($actionModel,'dueDate'); ?>
-            <?php } ?>
 	</div>
-        <?php if($nonCustom['priority']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'priority'); ?>
 		<?php echo $form->dropDownList($actionModel,'priority',array(
@@ -196,56 +216,73 @@ echo $form->errorSummary($actionModel);
 			'High'=>Yii::t('actions','High')));
 		//echo $form->error($actionModel,'priority'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['assignedTo']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'assignedTo'); ?>
-		<?php echo $form->dropDownList($actionModel,'assignedTo',$users); ?>
+		<?php echo $form->dropDownList($actionModel,'assignedTo',$users,array('id'=>'actionsAssignedToDropdown')); ?>
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
+            <?php /* x2temp */
+                            echo "<br />";
+                            if($this instanceof ActionsController){
+                                $url=$this->createUrl('groups/getGroups');
+                            }else{
+                                $url=$this->controller->createUrl('groups/getGroups');
+                            }
+                            echo "<label>Group?</label>";
+                            echo CHtml::checkBox('group','',array(
+                                'id'=>'groupCheckbox',
+                                'ajax'=>array(
+                                    'type'=>'POST', //request type
+                                        'url'=>$url, //url to call.
+                                        //Style: CController::createUrl('currentController/methodToCall')
+                                        'update'=>'#actionsAssignedToDropdown', //selector to update
+                                        'complete'=>'function(){
+                                            if($("#groupCheckbox").attr("checked")!="checked"){
+                                                $("#groupCheckbox").attr("checked","checked");
+                                                $("#Actions_visibility option[value=\'2\']").remove();
+                                            }else{
+                                                $("#groupCheckbox").removeAttr("checked");
+                                                $("#Actions_visibility").append(
+                                                    $("<option></option>").val("2").html("User\'s Groups")
+                                                );
+                                            }
+                                        }'
+                                )
+                            ));
+                        /* end x2temp */ ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['visibility']->visible==1){ ?>
+        
 	<div class="cell">
 		<?php echo $form->label($actionModel,'visibility'); ?>
-		<?php echo $form->dropDownList($actionModel,'visibility',array('1'=>Yii::t('actions','Public'),'0'=>Yii::t('actions','Private'))); ?>
+                <?php
+                    $visibility=array(1=>Yii::t('actions','Public'),0=>Yii::t('actions','Private'));
+                    /* x2temp */
+                    $visibility[2]='User\'s Groups';
+                    /* end x2temp */
+                    ?>
+		<?php echo $form->dropDownList($actionModel,'visibility',$visibility); ?> 
 		<?php //echo $form->error($actionModel,'visibility'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['reminder']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'reminder'); ?>
 		<?php //echo $form->checkBox($actionModel,'reminder',array('value'=>'Yes','uncheckedValue'=>'No')); ?>
 		<?php echo $form->dropDownList($actionModel,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?> 
 	</div>
-        <?php } ?>
         <?php 
         
-            foreach($custom as $fieldName=>$field){
-                
-                if($field->visible==1){ 
-                    ?>
-                    <div class="row">
-                    <div class="cell">
-                        <?php echo $form->label($actionModel,$fieldName); ?>
-                        <?php echo $form->textField($actionModel,$fieldName,array('size'=>'70')); ?>
-                        <?php echo $form->error($actionModel,$fieldName); ?>
-                    </div>
-                    </div>
-                    <?php
-                        }
-                }
-        
             ?>
+</div>
+</div>
+<div id="tabs-3">
+
+</div>
+</div>
 </div>
 <?php
 if (!$quickCreate) {	//if we're not in quickCreate, end the form
 ?>
 	<div class="row buttons">
-		<?php echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app','Save Action'):Yii::t('app','Save'),
-				array('type'=>'submit','class'=>'x2-button','id'=>'save-button1','name'=>'submit','value'=>'action')); ?>
-		<?php if($actionModel->isNewRecord && $inlineForm)
-				echo CHtml::htmlButton(Yii::t('app','Save Comment'),array('type'=>'submit','class'=>'x2-button','id'=>'save-button2','name'=>'submit','value'=>'comment'));
-		?>
+		<?php echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app','Save'):Yii::t('app','Save'),
+				array('type'=>'submit','class'=>'x2-button','id'=>'save-button1','name'=>'submit')); ?>
 	</div>
 <?php
 $this->endWidget();

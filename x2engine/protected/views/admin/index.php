@@ -38,9 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
- $admin = &Yii::app()->params->admin;
+$admin = &Yii::app()->params->admin;
 ?>
-<h1><?php echo Yii::t('app','Administration Tools'); ?>&nbsp;&nbsp;<a href="contactUs" style="position:relative;bottom:5px;" class="x2-button"><?php echo Yii::t('admin','Contact Us');?></a></h1>
+<h1><?php echo Yii::t('app','Administration Tools'); ?> <a href="contactUs" style="position:relative;bottom:5px;" class="x2-button"><?php echo Yii::t('admin','Contact Us');?></a></h1>
 <?php echo Yii::t('app','Welcome to the administration tool set.'); ?>
 <br>
 <?php
@@ -61,8 +61,6 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 }
 ?>
 <br><br>
-
-
 <div class="span-7">
 	<h2><?php echo Yii::t('admin','Utilities'); ?></h2>
 	<div class="form">
@@ -77,6 +75,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<?php echo CHtml::link(Yii::t('admin','General Settings'),'appSettings'); ?><br><?php echo Yii::t('admin','Configure automatic updates, session timeout and chat poll rate.');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Manage menu items'),'manageModules'); ?><br><?php echo Yii::t('admin','Re-order and add or remove top bar tabs');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','User Management'),Yii::app()->request->baseUrl.'/index.php/users/admin'); ?><br><?php echo Yii::t('admin','Add and manage users');?><br><br>
+		<?php echo CHtml::link(Yii::t('admin','Role Management'),'manageRoles'); ?><br /><?php echo Yii::t('admin','Create and manage user roles');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),'addCriteria'); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),'roundRobinRules'); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Email Configuration'),'emailSetup'); ?><br><?php echo Yii::t('admin','Configure X2Engine\'s email settings');?><br><br>
@@ -114,7 +113,5 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<?php echo CHtml::link(Yii::t('admin','X2Engine'),'http://www.x2engine.com'); ?><br><?php echo Yii::t('admin','Commercial support and hosting');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','X2Community'),'http://www.x2community.com'); ?><br><?php echo Yii::t('admin','X2Engine Support Forums');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Yii Framework'),'http://www.yiiframework.com/'); ?><br><?php echo Yii::t('admin','Yii Open Source web framework');?><br><br>
-		<?php echo CHtml::link(Yii::t('app','How to use Gii'),array('howTo','guide'=>'gii')); ?><br><br>
-		<?php echo CHtml::link(Yii::t('app','How to add a database field'),array('howTo','guide'=>'model'));?>
 	</div>
 </div>

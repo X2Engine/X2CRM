@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,9 +44,13 @@ class AccountsController extends x2base {
 
 	public function accessRules() {
 		return array(
+                        array('allow',
+                            'actions'=>array('getItems'),
+                            'users'=>array('*'), 
+                        ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact',
-					'addNote','deleteNote','saveChanges','delete','shareAccount'),
+					'addNote','deleteNote','saveChanges','delete','shareAccount','inlineEmail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -58,24 +62,30 @@ class AccountsController extends x2base {
 			),
 		);
 	}
+	
+	public function actions() {
+		return array(
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
+			),
+		);
+	}
+        
+        public function actionGetItems(){
+		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
+		$command = Yii::app()->db->createCommand($sql);
+		$qterm = $_GET['term'].'%';
+		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+		$result = $command->queryAll();
+		echo CJSON::encode($result); exit;
+	}
 
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model=$this->loadModel($id);
-		
-		$model->assignedTo=UserChild::getUserLinks($model->assignedTo);
-		
-		$str = '';
-		$contacts = array_keys(Accounts::getContacts($id));	//Contacts::model()->findAllByAttributes(array('company'=>$model->name));
-		// foreach($contacts as $contact){
-			// $str.=$contact->id.' ';
-		// }
-		//$model->associatedContacts=$str;
-		
-		$model->associatedContacts = Contacts::getContactLinks($contacts);
+		$model=$this->loadModel($id);	 
 		
 		$type='accounts';
 		parent::view($model, $type);
@@ -96,14 +106,14 @@ class AccountsController extends x2base {
 
 		$errors = array();
 		$status = array();
-		$email = '';
+		$email = array();
 		if(isset($_POST['email'], $_POST['body'])){
 		
 			$subject = Yii::t('accounts',"Account Record").": $model->name";
-			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
+			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
 			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
-			if($email === false)
+			if($email['to'] === false)
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
@@ -115,13 +125,11 @@ class AccountsController extends x2base {
 				$this->redirect(array('view','id'=>$model->id));
 				return;
 			}
-			
-			if($email === false)
+			if($email['to'] === false)
 				$email = $_POST['email'];
 			else
-				$email = $this->mailingListToString($email);
+				$email = $this->mailingListToString($email['to']);
 		}
-		
 		$this->render('shareAccount',array(
 			'model'=>$model,
 			'body'=>$body,
@@ -139,11 +147,7 @@ class AccountsController extends x2base {
         public function create($model,$oldAttributes, $api){
             
             $model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
-            $arr=$model->assignedTo;
-            if(isset($model->assignedTo) && $model->assignedTo!="")
-                $model->assignedTo = Accounts::parseUsers($model->assignedTo);
             $model->createDate=time();
-            Accounts::setContacts($model->associatedContacts,$model->id);
             if($api==0)
                 parent::create($model,$oldAttributes,$api);
             else
@@ -155,13 +159,46 @@ class AccountsController extends x2base {
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
-		$availableContacts = Accounts::getAvailableContacts();
+                foreach(Groups::model()->findAll() as $group){
+                    $users[$group->id]=$group->name;
+                }
 
 		if(isset($_POST['Accounts'])) {
                         $temp=$model->attributes;
-			foreach($model->attributes as $field=>$value){
+                        foreach($_POST['Accounts'] as $name => &$value) {
+				if($value == $model->getAttributeLabel($name))
+                                    $value = '';
+                        }
+                        foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
+			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Accounts'][$field])){
                                 $model->$field=$_POST['Accounts'][$field];
+                                if(is_array($model->$field))
+                                    $model->$field=Accounts::parseUsers($model->$field);
                             }
                         }
                         $this->create($model,$temp, '0');
@@ -170,7 +207,6 @@ class AccountsController extends x2base {
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$availableContacts,
 		));
 	}
         
@@ -178,12 +214,6 @@ class AccountsController extends x2base {
             // process currency into an INT
             $model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
 
-            $arr=$model->assignedTo;
-            if(isset($model->assignedTo) && $model->assignedTo!="")
-                    $model->assignedTo=Accounts::parseUsers($arr);
-
-            if($model->associatedContacts!=null)
-                Accounts::setContacts($model->associatedContacts,$model->id);
             if($api==0)
                 parent::update($model,$oldAttributes,$api);
             else
@@ -200,10 +230,9 @@ class AccountsController extends x2base {
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
-		$availableContacts = Accounts::getAvailableContacts($id);
-		$selectedContacts = Accounts::getContacts($id);
-
-		$model->associatedContacts = array_keys($selectedContacts);
+                foreach(Groups::model()->findAll() as $group){
+                    $users[$group->id]=$group->name;
+                }
 		
 		$curUsers=$model->assignedTo;
 		$userPieces=explode(', ',$curUsers);
@@ -211,14 +240,59 @@ class AccountsController extends x2base {
 		foreach($userPieces as $piece){
 			$arr[]=$piece;
 		}
-		
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>"Accounts"));
+                foreach($fields as $field){
+                    if($field->type=='link'){
+                        $fieldName=$field->fieldName;
+                        $type=$field->linkType;
+                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
+                            eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
+                            if(isset($lookupModel))
+                                $model->$fieldName=$lookupModel->name;
+                        }
+                    }elseif($field->type=='date'){
+                        $fieldName=$field->fieldName;
+                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
+                    }
+                }
 		$model->assignedTo=$arr;
 
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->attributes;
-			foreach($model->attributes as $field=>$value){
+                        foreach($_POST['Accounts'] as $name => &$value) {
+				if($value == $model->getAttributeLabel($name))
+                                    $value = null;
+                        }
+			foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
+			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Accounts'][$field])){
                                 $model->$field=$_POST['Accounts'][$field];
+                                if(is_array($model->$field))
+                                    $model->$field=Accounts::parseUsers($model->$field);
                             }
                         }
 			
@@ -228,10 +302,9 @@ class AccountsController extends x2base {
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$availableContacts,
 		));
 	}
-	
+	/*
 	public function actionSaveChanges($id) {
 		$account=$this->loadModel($id);
 		if(isset($_POST['Accounts'])) {
@@ -250,9 +323,14 @@ class AccountsController extends x2base {
 			$this->redirect(array('view','id'=>$account->id));
 		}
 	}
-
+        */
 	public function actionAddUser($id) {
 		$users=UserChild::getNames();
+		unset($users['admin']);
+		unset($users['']);
+                foreach(Groups::model()->findAll() as $group){
+                    $users[$group->id]=$group->name;
+                }
 		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 		$users=Accounts::editUserArray($users,$model);
@@ -284,14 +362,14 @@ class AccountsController extends x2base {
 			'contacts'=>$contacts,
 			'action'=>'Add'
 		));
-	}
+	} 
 
 	public function actionRemoveUser($id) {
 
 		$model=$this->loadModel($id);
 
-		$pieces=explode(', ',$model->assignedTo);
-		$pieces=Accounts::editUsersInverse($pieces);
+		$pieces=explode(', ',$model->assignedTo); 
+		$pieces=Sales::editUsersInverse($pieces);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);

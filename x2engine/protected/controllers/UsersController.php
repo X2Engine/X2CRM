@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,6 +86,14 @@ class UsersController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new UserChild;
+                $groups=array();
+                foreach(Groups::model()->findAll() as $group){
+                    $groups[$group->id]=$group->name;
+                }
+                $roles=array();
+                foreach(Roles::model()->findAll() as $role){
+                    $roles[$role->id]=$role->name;
+                }
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -102,12 +110,36 @@ class UsersController extends x2base {
 			$profile->emailAddress=$model->emailAddress;
 			$profile->status=$model->status;
 
-			if($model->save() && $profile->save())
+			if($model->save() && $profile->save()){
+                                if(isset($_POST['roles'])){
+                                    $roles=$_POST['roles'];
+                                    foreach($roles as $role){
+                                        $link=new RoleToUser;
+                                        $link->roleId=$role;
+                                        $link->userId=$model->id;
+                                        $link->save();
+                                    }
+                                }
+                                if(isset($_POST['groups'])){
+                                    $groups=$_POST['groups'];
+                                    foreach($group as $group){
+                                        $link=new GroupToUser;
+                                        $link->groupId=$group;
+                                        $link->userId=$model->id;
+                                        $link->username=$model->username;
+                                        $link->save();
+                                    }
+                                }
 				$this->redirect(array('view','id'=>$model->id));
+                        }
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
+                        'groups'=>$groups,
+                        'roles'=>$roles,
+                        'selectedGroups'=>array(),
+                        'selectedRoles'=>array(),
 		));
 	}
 
@@ -118,6 +150,22 @@ class UsersController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
+                $groups=array();
+                foreach(Groups::model()->findAll() as $group){
+                    $groups[$group->id]=$group->name;
+                }
+                $selectedGroups=array();
+                foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+                    $selectedGroups[]=$link->groupId;
+                }
+                $roles=array();
+                foreach(Roles::model()->findAll() as $role){
+                    $roles[$role->id]=$role->name;
+                }
+                $selectedRoles=array();
+                foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+                    $selectedRoles[]=$link->roleId;
+                }
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -129,11 +177,42 @@ class UsersController extends x2base {
                         $model->password = md5($model->password);
                     else
                         $model->password=$temp;
-                    if($model->save())
+                    
+                    if($model->save()){
+                        foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+                            $link->delete();
+                        }
+                        foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+                            $link->delete();
+                        }
+                        if(isset($_POST['roles'])){
+                            $roles=$_POST['roles'];
+                            foreach($roles as $role){
+                                $link=new RoleToUser;
+                                $link->roleId=$role;
+                                $link->userId=$model->id;
+                                $link->save();
+                            }
+                        }
+                        if(isset($_POST['groups'])){
+                            $groups=$_POST['groups'];
+                            foreach($group as $group){
+                                $link=new GroupToUser;
+                                $link->groupId=$group;
+                                $link->userId=$model->id;
+                                $link->username=$model->username;
+                                $link->save();
+                            }
+                        }
                         $this->redirect(array('view','id'=>$model->id));
+                    }
 		}
 		$this->render('update',array(
 			'model'=>$model,
+                        'groups'=>$groups,
+                        'roles'=>$roles,
+                        'selectedGroups'=>$selectedGroups,
+                        'selectedRoles'=>$selectedRoles,
 		));
 	}
 

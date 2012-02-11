@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,9 +38,31 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<div class="form">
-<?php
+
+
+<?php 
+echo '<div class="form no-border" style="float:left;width:590px;">';
+	$form=$this->beginWidget('CActiveForm', array(
+		'id'=>'sales-form',
+		'enableAjaxValidation'=>false,
+	));
+$attributeLabels = Sales::attributeLabels();
 $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
+if(isset($_GET['version'])){
+    $version=$_GET['version'];
+    $version=FormVersions::model()->findByAttributes(array('name'=>$version));
+    $sizes=json_decode($version->sizes, true);
+    $positions=json_decode($version->positions, true);
+    $tempArr=array();
+    foreach($fields as $field){
+        if(isset($positions[$field->fieldName])){
+            $field->coordinates=$positions[$field->fieldName];
+            $field->size=$sizes[$field->fieldName];
+            $tempArr[]=$field;
+        }
+    }
+    $fields=$tempArr;
+}
 $nonCustom=array();
 $custom=array();
 foreach($fields as $field){
@@ -50,159 +72,252 @@ foreach($fields as $field){
         $custom[$field->fieldName]=$field;
     }
 }
+
+
+$temp=RoleToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+$roles=array();
+foreach($temp as $link){
+    $roles[]=$link->roleId;
+}
+/* x2temp */
+$groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+foreach($groups as $link){
+    $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
+    $roles[]=$tempRole->roleId; 
+}
+/* end x2temp */
+echo $form->errorSummary($model);
 ?>
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'sales-form',
-	'enableAjaxValidation'=>false,
-)); ?>
-
-<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
-
-<?php echo $form->errorSummary($model); ?>
-
-<div class="row">
-        <?php if($nonCustom['name']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'name'); ?>
-		<?php echo $form->textField($model,'name',array('size'=>48,'maxlength'=>40)); ?>
-		<?php echo $form->error($model,'name'); ?>
-	</div>
-        <?php } ?>
-        <?php if($nonCustom['accountName']->visible==1){ ?>
-	<div class="cell">
-		<?php
-		echo '<label for="accountAutoComplete">'. Yii::t('sales','Account').' ('.Yii::t('app','Optional').')<label>';
-		echo $form->hiddenField($model,'accountName');
-		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-			'name'=>'accountAutoComplete',
-			'source' => $this->createUrl('contacts/getTerms'),
-			'htmlOptions'=>array('size'=>25,'maxlength'=>100,'tabindex'=>3),
-			'options'=>array(
-				'minLength'=>'2',
-				'select'=>'js:function( event, ui ) {
-					$("#'.CHtml::activeId($model,'accountId').'").val(ui.item.id);
-					$(this).val(ui.item.value);
-					$("#'.CHtml::activeId($model,'accountName').'").val(ui.item.value);
-					return false;
-				}',
-			),
-		));
-		echo $form->error($model,'accountName');
-		echo $form->hiddenField($model,'accountId');
-		?>
-	</div>
-        <?php } ?>
-</div>
-<!--<div class="row">
-	<?php //echo $form->labelEx($model,'assignedTo'); ?>
-	<?php //echo $form->dropDownList($model,'assignedTo',$users); ?>
-	<?php //echo $form->error($model,'assignedTo'); ?>
-</div>-->
-<div class="row">
-        <?php if($nonCustom['quoteAmount']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'quoteAmount'); ?>
-		<?php echo $form->textField($model,'quoteAmount'); ?>
-		<?php echo $form->error($model,'quoteAmount'); ?>
-	</div>
-        <?php } ?>
-        <?php if($nonCustom['salesStage']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'salesStage'); ?>
-		<?php echo $form->dropDownList($model,'salesStage',
-				array(
-					'Working'=>Yii::t('sales','Working'),
-					'Won'=>Yii::t('sales','Won'),
-					'Lost'=>Yii::t('sales','Lost'))
-				); ?>
-		<?php echo $form->error($model,'salesStage'); ?>
-	</div>
-        <?php } ?>
-        <?php if($nonCustom['leadSource']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'leadSource'); ?>
-		<?php echo $form->dropDownList($model,'leadSource',
-				array(
-					'Website'=>Yii::t('sales','Website'), 
-					'Cold Call'=>Yii::t('sales','Cold Call'), 
-					"E-Mail"=>Yii::t('sales','E-Mail'), 
-					"Store"=>Yii::t('sales','Store')
-				)); ?>
-		<?php echo $form->error($model,'leadSource'); ?>
-	</div>
-        <?php } ?>
-</div>
-<div class="row">
-        <?php if($nonCustom['expectedCloseDate']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'expectedCloseDate'); ?>
-		<?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-		$this->widget('CJuiDateTimePicker',array(
-			'model'=>$model, //Model object
-			'attribute'=>'expectedCloseDate', //attribute name
-			'mode'=>'datetime', //use "time","date" or "datetime" (default)
-			'options'=>array(
-				'dateFormat'=>'yy-mm-dd',
-			), // jquery plugin options
-			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-		));?>
-		<?php echo $form->error($model,'expectedCloseDate'); ?>
-	</div>
-        <?php } ?>
-        <?php if($nonCustom['probability']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'probability'); ?>
-		<?php echo $form->textField($model,'probability'); ?>
-		<?php echo $form->error($model,'probability'); ?>
-	</div>
-        <?php } ?>
-</div>
-<div class="row">
-        <?php if($nonCustom['assignedTo']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'assignedTo'); ?>
-		<?php echo $form->dropDownList($model,'assignedTo',$users,array('multiple'=>'multiple', 'size'=>7)); ?>
-		<?php echo $form->error($model,'assignedTo'); ?>
-	</div>
-        <?php } ?>
-        <?php if($nonCustom['associatedContacts']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'associatedContacts'); ?>
-		<?php echo $form->dropDownList($model,'associatedContacts',$contacts,array('multiple'=>'multiple', 'size'=>7)); ?>
-		<?php echo $form->error($model,'associatedContacts'); ?>
-	</div>
-        <?php } ?>
-	<div class="cell">
-		<span class="information"><?php echo Yii::t('sales','Hold Control or Command key to select multiple items.'); ?></span> 
-	</div>
-</div>
-<?php if($nonCustom['description']->visible==1){ ?>
-<div class="row">
-	<?php echo $form->labelEx($model,'description'); ?>
-	<?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
-	<?php echo $form->error($model,'description'); ?>
-</div>
-<?php } ?>
-<?php 
+<div class="span-15" id="form-box" style="position:relative;overflow:hidden;height:700px;">
+<?php
+foreach($fields as $field){ ?>
+    <?php if($field->fieldName!="id"){ 
+        $size=$field->size;
+        $pieces=explode(":",$size);
+        $width=$pieces[0];
+        $height=$pieces[1];
+        $position=$field->coordinates;
+        $pieces=explode(":",$position);
+        $left=$pieces[0];
+        $top=$pieces[1];
         
-            foreach($custom as $fieldName=>$field){
-                
-                if($field->visible==1){ 
-                    ?>
-                    <div class="row">
-                    <div class="cell">
-                        <?php echo $form->label($model,$fieldName); ?>
-                        <?php echo $form->textField($model,$fieldName,array('size'=>'70')); ?>
-                        <?php echo $form->error($model,$fieldName); ?>
-                    </div>
-                    </div>
-                    <?php
+        ?> 
+    <?php if(($field->fieldName!='assignedTo' && $field->fieldName!='associatedContacts')){ ?>
+    <div class="draggable" style="padding:10px;border:solid;border-width:1px;position:absolute;left:<?php echo $left;?>px;top:<?php echo $top;?>px;" id="<?php echo $field->fieldName ?>">
+    
+        <div class="label"><label for="Contacts_<?php echo $field->fieldName;?>"><?php echo Yii::t('contacts',$field->attributeLabel); ?></label></div>
+                <?php
+                    $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+                    $perms=array();
+                    foreach($fieldPerms as $permission){
+                        $perms[$permission->roleId]=$permission->permission;
+                    }
+                    $tempPerm=2;
+                    foreach($roles as $role){
+                        if(array_search($role,array_keys($perms))!==false){
+                            if($perms[$role]<$tempPerm)
+                                $tempPerm=$perms[$role];
                         }
-                }
-        
-            ?>
-<div class="row buttons">
-	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
+                    }
+                    $fieldName=$field->fieldName;(isset($editor) && $editor)?$disabled='disabled':$disabled="";
+                    $tempPerm==1?$disabled='disabled':$disabled=$disabled;
+                    
+                        if($field->type=='varchar'){
+                            $default = empty($model->$fieldName);
+                            if($default) 
+                                    $model->$fieldName = Yii::t('contacts',$field->attributeLabel);
+                            echo $form->textField($model, $fieldName, array(
+                                    'class'=>'resizable',
+                                    'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
+                                    'onfocus'=>$default? 'toggleText(this);' : null,
+                                    'onblur'=>$default? 'toggleText(this);' : null,
+                                    'tabindex'=>$field->tabOrder,
+                                    'disabled'=>$disabled,
+                            ));
+
+                            }elseif($field->type=='text'){
+                               $default = empty($model->$fieldName);
+                            if($default) 
+                                    $model->$fieldName = Yii::t('contacts',$field->attributeLabel);
+                            echo $form->textArea($model, $fieldName, array(
+                                    'class'=>'resizable',
+                                    'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
+                                    'onfocus'=>$default? 'toggleText(this);' : null,
+                                    'onblur'=>$default? 'toggleText(this);' : null,
+                                    'tabindex'=>$field->tabOrder,
+                                    'disabled'=>$disabled,
+                            )); 
+                            }elseif($field->type=='date'){
+                                $default = empty($model->$fieldName);
+                                if($default) 
+                                        $model->$fieldName = date("Y-m-d H:i:s");
+                                Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+                                $this->widget('CJuiDateTimePicker',array(
+                                    'model'=>$model, //Model object
+                                    'attribute'=>$field->fieldName, //attribute name
+                                    'mode'=>'datetime', //use "time","date" or "datetime" (default)
+                                    'options'=>array(
+                                        'dateFormat'=>'yy-mm-dd',
+
+                                    ), // jquery plugin options
+                                    'htmlOptions'=>array(
+                                        'class'=>'resizable',
+                                        'disabled'=>$disabled,
+                                        'style'=>"height:".$height.";width:".$width.";",
+                                        'tabindex'=>$field->tabOrder,
+                                    ),
+                                    'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+                                )); 
+                            }elseif(preg_match('/dropdown/',$field->type) && !isset($editor)){
+                                $pieces=explode(":",$field->type);
+                                $id=$pieces[1];
+                                $dropdown=Dropdowns::model()->findByPk($id);
+                                $default = empty($model->$fieldName);
+                                if($default) 
+                                        $model->$fieldName = Yii::t('contacts',$field->attributeLabel);
+                                echo $form->dropDownList($model, $fieldName,json_decode($dropdown->options), array(
+                                        'class'=>'resizable',
+                                        'style'=>"width:".$width.";",
+                                        'onfocus'=>$default? 'toggleText(this);' : null,
+                                        'onblur'=>$default? 'toggleText(this);' : null,
+                                        'tabindex'=>$field->tabOrder,
+                                        'disabled'=>$disabled,
+                                ));
+                            }
+                       
+                        
+                        
+                        ?>
+    </div>
+ <?php }elseif($field->fieldName=='assignedTo'){ ?>
+     <div class="draggable" style="padding:10px;border:solid;border-width:1px;position:absolute;left:<?php echo $left;?>px;top:<?php echo $top;?>px;" id="<?php echo $field->fieldName ?>">
+    
+        <div class="label"><label for="Contacts_<?php echo $field->fieldName;?>"><?php echo Yii::t('contacts',$field->attributeLabel); ?></label></div>
+                <?php
+                    $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+                    $perms=array();
+                    foreach($fieldPerms as $permission){
+                        $perms[$permission->roleId]=$permission->permission;
+                    }
+                    $tempPerm=2;
+                    foreach($roles as $role){
+                        if(array_search($role,array_keys($perms))!==false){
+                            if($perms[$role]<$tempPerm)
+                                $tempPerm=$perms[$role];
+                        }
+                    }
+                    $fieldName=$field->fieldName;(isset($editor) && $editor)?$disabled='disabled':$disabled="";
+                    $tempPerm==1?$disabled='disabled':$disabled=$disabled;
+                   
+                            $default = empty($model->$fieldName);
+                            if($default) 
+                                    $model->$fieldName = Yii::t('contacts',$field->attributeLabel);
+                            echo $form->dropDownList($model, $fieldName, $users, array(
+                                    'class'=>'resizable',
+                                    'style'=>"width:".$width.";",
+                                    'tabindex'=>$field->tabOrder,
+                                    'disabled'=>$disabled,
+                                    'id'=>'assignedToDropdown',
+                                    'multiple'=>'multiple',
+                                    'size'=>7,
+                            ));
+                            
+
+                       
+                        
+                        
+                        ?>
+    </div>
+ <?php }elseif($field->fieldName=='associatedContacts'){ ?>
+     <div class="draggable" style="padding:10px;border:solid;border-width:1px;position:absolute;left:<?php echo $left;?>px;top:<?php echo $top;?>px;" id="<?php echo $field->fieldName ?>">
+    
+        <div class="label"><label for="Contacts_<?php echo $field->fieldName;?>"><?php echo Yii::t('contacts',$field->attributeLabel); ?></label></div>
+                <?php
+                    $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+                    $perms=array();
+                    foreach($fieldPerms as $permission){
+                        $perms[$permission->roleId]=$permission->permission;
+                    }
+                    $tempPerm=2;
+                    foreach($roles as $role){
+                        if(array_search($role,array_keys($perms))!==false){
+                            if($perms[$role]<$tempPerm)
+                                $tempPerm=$perms[$role];
+                        }
+                    }
+                    $fieldName=$field->fieldName;(isset($editor) && $editor)?$disabled='disabled':$disabled="";
+                    $tempPerm==1?$disabled='disabled':$disabled=$disabled;
+                   
+                            $default = empty($model->$fieldName);
+                            if($default) 
+                                    $model->$fieldName = Yii::t('contacts',$field->attributeLabel);
+                            echo $form->dropDownList($model, $fieldName, $contacts, array(
+                                    'class'=>'resizable',
+                                    'style'=>"width:".$width.";",
+                                    'tabindex'=>$field->tabOrder,
+                                    'disabled'=>$disabled,
+                                    'id'=>'associatedContacts',
+                                    'multiple'=>'multiple',
+                                    'size'=>7,
+                            ));
+                            
+
+                       
+                        
+                        
+                        ?>
+    </div>
+ <?php }
+                        
+                        if($field->visible==0 || $tempPerm==0){
+                            Yii::app()->clientScript->registerScript($field->fieldName,'
+                                $("#'.$field->fieldName.'").css({"visibility":"hidden"});
+                            ');
+                        }
+                        
+                        }
+}
+
+
+
+?>
+
+<?php
+
+?>
+
 </div>
-<?php $this->endWidget(); ?>
-</div><!-- form -->
+<?php
+
+
+
+if (!isset($isQuickCreate)) {	//if we're not in quickCreate, end the form
+    if(!isset($editor)){
+        echo '	<div class="row buttons">'."\n";
+        echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+        echo "	</div>\n";
+    }
+$this->endWidget();
+echo "</div>\n";
+}
+
+
+if(isset($editor)){
+    if($editor){
+        ?>
+        <script>
+            $(function(){
+                $('.draggable').draggable({ grid: [10, 10], containment:'parent' });
+                $('.resizable').resizable({ grid: [5, 5] });
+            });
+        </script>
+        <?php
+    }
+}else{
+    ?>
+    <script>
+        $(".draggable").css({border: 'none'});
+    </script>
+    <?php
+}
+?>

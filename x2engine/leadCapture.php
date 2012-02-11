@@ -52,8 +52,12 @@ if($info=="Enter any additional information or questions regarding your interest
     $info="";
 }
 
-$url=""; // Add your server URL here, including any folders the app may be in.  
+$url="x3engine.com/x2dj/x2engine"; // Add your server URL here, including any folders the app may be in.  
          //i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. Installer should do this manually.
+
+if($url==""){
+    $url='http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl;
+}
 
 $date=mktime(0,0,0,date('m'),date('d'),date('Y'));
 $count=preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email);

@@ -69,6 +69,7 @@ class ProfileChild extends Profile {
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
 			'showWorkflow'=>Yii::t('profile','Show Workflow'),
 			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
+			'formSettings'=>Yii::t('profile','Form Settings'),
 			'emailUseSignature' => Yii::t('admin','Email Signature'),
 			'emailSignature' => Yii::t('admin','My Signature'),
 			'enableBgFade'=>Yii::t('profile','Enable Background Fading'),
@@ -122,8 +123,7 @@ class ProfileChild extends Profile {
 			case 'group': $signature == ''; break;
 			default: $signature == '';
 		}
-		if($html)
-			$signature = x2base::convertLineBreaks($signature);
+		
 		
 		$signature = preg_replace(
 			array(
@@ -142,7 +142,9 @@ class ProfileChild extends Profile {
 			),
 			$signature
 		);
-		
+		if($html)
+			$signature = '<span style="color:grey;">' . x2base::convertLineBreaks($signature) . '</span>';
+			
 		return $signature;
 	}
 	
@@ -156,20 +158,18 @@ class ProfileChild extends Profile {
 	}
 	
 	// lookup user's settings for a gridview (visible columns, column widths)
-	public static function getGridviewSettings($model = null) {
+	public static function getGridviewSettings($viewName = null) {
 		$gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings,true);	// converts JSON string to assoc. array
-
-		if(isset($model)) {
-			$model = strtolower($model);
-			if(isset($gvSettings[$model]))
-				return $gvSettings[$model];
+		if(isset($viewName)) {
+			$viewName = strtolower($viewName);
+			if(isset($gvSettings[$viewName]))
+				return $gvSettings[$viewName];
 			else
 				return null;
 		} else {
 			return $gvSettings;
 		}
 	}
-	
 	// add/update settings for a specific gridview, or save all at once
 	public static function setGridviewSettings($gvSettings,$viewName = null) {
 		if(isset($viewName)) {
@@ -181,11 +181,39 @@ class ProfileChild extends Profile {
 		}
 		return Yii::app()->params->profile->save();
 	}
+	
+	// lookup user's settings for a gridview (visible columns, column widths)
+	public static function getFormSettings($formName = null) {
+		$formSettings = json_decode(Yii::app()->params->profile->formSettings,true);	// converts JSON string to assoc. array
+		if(isset($formName)) {
+			$formName = strtolower($formName);
+			if(isset($formSettings[$formName]))
+				return $formSettings[$formName];
+			else
+				return null;
+		} else {
+			return $formSettings;
+		}
+	}
+	// add/update settings for a specific form, or save all at once
+	public static function setFormSettings($formSettings,$formName = null) {
+		if(isset($formName)) {
+			$fullFormSettings = ProfileChild::getFormSettings();
+			$fullFormSettings[strtolower($formName)] = $formSettings;
+			Yii::app()->params->profile->formSettings = json_encode($fullFormSettings);	// encode array in JSON
+		} else {
+			Yii::app()->params->profile->formSettings = json_encode($formSettings);	// encode array in JSON
+		}
+		return Yii::app()->params->profile->save();
+	}
 
 	
-	public function getWidgets() {
+	public static function getWidgets() {
 		
-		$model = ProfileChild::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+		if(Yii::app()->user->isGuest)	// no widgets if the user isn't logged in
+			return array();
+		// $model = ProfileChild::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+		$model = &Yii::app()->params->profile;
 		
 		$registeredWidgets = array_keys(Yii::app()->params->registeredWidgets);
 		

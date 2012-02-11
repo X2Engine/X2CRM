@@ -12,7 +12,7 @@
  * CUrlValidator validates that the attribute value is a valid http or https URL.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CUrlValidator.php 3120 2011-03-25 01:50:48Z qiang.xue $
+ * @version $Id: CUrlValidator.php 3242 2011-05-28 14:31:04Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */
@@ -73,7 +73,7 @@ class CUrlValidator extends CValidator
 	 */
 	public function validateValue($value)
 	{
-		if(is_string($value))
+		if(is_string($value) && strlen($value)<2000)  // make sure the length is limited to avoid DOS attacks
 		{
 			if($this->defaultScheme!==null && strpos($value,'://')===false)
 				$value=$this->defaultScheme.'://'.$value;

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,7 +37,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-class x2base extends Controller {
+abstract class x2base extends Controller {
 	/*
 	 * Class design:
 	 * Basic create method (mostly overridden, but should have basic functionality to avoid using Gii
@@ -53,6 +53,7 @@ class x2base extends Controller {
 	// Let locale and character encoding.
 	public function onBeginRequest() {
 		setlocale(LC_ALL, 'en_US.UTF-8');
+                
 	}
 	
 	public $portlets=array(); // This is the array of widgets on the sidebar.
@@ -64,6 +65,24 @@ class x2base extends Controller {
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
 	public $layout = '//layouts/column2';
+        
+        public $varString="\$themeURL = Yii::app()->theme->getBaseUrl();
+                Yii::app()->clientScript->registerScript('logos',\"
+                $(window).load(function(){
+                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+                        $('a').removeAttr('href');
+                        alert('Please put the logo back');
+                        window.location='http://www.x2engine.com';
+                    }
+                    var touchlogosrc = $('#x2touch-logo').attr('src');
+                    var logosrc=$('#x2crm-logo').attr('src');
+                    if(logosrc!='\$themeURL/images/x2footer.png'|| touchlogosrc!='\$themeURL/images/x2touch.png'){
+                        $('a').removeAttr('href');
+                        alert('Please put the logo back');
+                        window.location='http://www.x2engine.com';
+                    }
+                });";
+	public $actionMenu = array();
 
 	/**
 	 * @return array action filters
@@ -82,8 +101,12 @@ class x2base extends Controller {
 	 */
 	public function accessRules() {
 		return array(
+                        array('allow',
+                            'actions'=>array('getItems'),
+                            'users'=>array('*'), 
+                        ),
 			array('allow', // allow authenticated user to perform the following actions
-				'actions'=>array('index','view','create','update','search','delete'),
+				'actions'=>array('index','view','create','update','search','delete','inlineEmail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' action
@@ -92,6 +115,14 @@ class x2base extends Controller {
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
+			),
+		);
+	}
+	
+	public function actions() {
+		return array(
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
 			),
 		);
 	}
@@ -106,11 +137,11 @@ class x2base extends Controller {
 	 * @param String $type The type of the module being displayed
 	 */
 	public function view($model, $type, $params = array()) {
-
+                // eval($this->varString);
 		$actionHistory=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
 				'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-				'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\''
+				'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
 			)
 		));
 		if(isset($_GET['history'])) {
@@ -159,28 +190,30 @@ class x2base extends Controller {
 			new CDbCriteria(array('condition'=>'completeDate = 0 OR completeDate IS NULL','order'=>'createDate DESC'))
 		);
 		if(count($currentWorkflowActions)) {	// are there any?
-			$actionData = explode(':',$currentWorkflowActions[0]->actionDescription);
-			if(count($actionData) == 2)
-				$currentWorkflow = $actionData[0];
-			else
-				$currentWorkflow = 0;
+			// $actionData = explode(':',$currentWorkflowActions[0]->actionDescription);
+			// if(count($actionData) == 2)
+				// $currentWorkflow = $actionData[0];
+			// else
+				// $currentWorkflow = 0;
+			$currentWorkflow = $currentWorkflowActions[0]->workflowId;
 		} else {							// if not, then check for completed stages
 			$completedWorkflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
 				array('associationType'=>$type,'associationId'=>$id,'type'=>'workflow'),
 				new CDbCriteria(array('order'=>'createDate DESC'))
 			);
 			if(count($completedWorkflowActions)) {	// are there any?
-				$actionData = explode(':',$completedWorkflowActions[0]->actionDescription);
-				if(count($actionData) == 2)
-					$currentWorkflow = $actionData[0];
-				else
-					$currentWorkflow = 0;
+				// $actionData = explode(':',$completedWorkflowActions[0]->actionDescription);
+				// if(count($actionData) == 2)
+					// $currentWorkflow = $actionData[0];
+				// else
+					// $currentWorkflow = 0;
+				$currentWorkflow = $completedWorkflowActions[0]->workflowId;
 			} else
 				$currentWorkflow = 0;
 		}
-		// $default = CActiveRecord::model('Workflow')->findByPk(1);
-		// if(isset($default))
-		// $currentWorkflow = $default;
+		//$default = CActiveRecord::model('Workflow')->findByPk(1);
+		//if(isset($default))
+		//		$currentWorkflow = 1;
 		
 		return $currentWorkflow;
 	}
@@ -342,40 +375,42 @@ class x2base extends Controller {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function create($model, $oldAttributes, $api) {
-            
-            $name=$this->modelClass;
-            if($model->save()){
-                $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
-                $this->updateChangelog($model,$changes);
-                if($model->assignedTo!=Yii::app()->user->getName()){
-                    $notif=new Notifications;
-                    if($api==0){
-                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
-                            if(isset($profile))
-                                $notif->text="$profile->fullName has created a(n) ".$name." for you";
-                    }else{
-                        $notif->text="An API request has created a(n) ".$name." for you";
-                    }
-                    $notif->user=$model->assignedTo;
-                    $notif->createDate=time();
-                    $notif->viewed=0;
-                    $notif->record="$name:$model->id";
-                    $notif->save();
+		$name=$this->modelClass;
+		if($model->save()) {
+			$changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
+			$this->updateChangelog($model,$changes);
+			if($model->assignedTo!=Yii::app()->user->getName()) {
+				$notif=new Notifications;
+				if($api == 0) {
+					$profile = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
+					if(isset($profile))
+						$notif->text="$profile->fullName has created a(n) ".$name." for you";
+				} else {
+					$notif->text="An API request has created a(n) ".$name." for you";
+				}
+				$notif->user=$model->assignedTo;
+				$notif->createDate=time();
+				$notif->viewed=0;
+				$notif->record="$name:$model->id";
+				$notif->save();
 
-                }
-                if($model instanceof Actions && $api==0){
-                    if(isset($_GET['inline']) || $model->type=='note')
-                        $this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
-                    else
-                        $this->redirect(array('view','id'=>$model->id));
-                }else if($api==0){
-                    $this->redirect(array('view','id'=>$model->id));
-                }else{
-                    return true;
-                }
-            }else{
-                return false;
-            }
+			}
+			if($model instanceof Actions && $api==0) {
+				if(isset($_GET['inline']) || $model->type=='note')
+					if($model->associationType == 'product')
+						$this->redirect(array($model->associationType.'s/view','id'=>$model->associationId));
+					else
+						$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
+				else
+					$this->redirect(array('view','id'=>$model->id));
+			} else if($api==0) {
+				$this->redirect(array('view','id'=>$model->id));
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -384,23 +419,23 @@ class x2base extends Controller {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function update($model, $oldAttributes, $api) {
-            $temp=$oldAttributes;
-            $changes=$this->calculateChanges($temp, $model->attributes, $model);
-            $model=$this->updateChangelog($model,$changes);
-            if($model->save()){
-                if($model instanceof Actions && $api==0){
-                    if(isset($_GET['redirect']) && $model->associationType!='none')	// if the action has an association
+		$temp = $oldAttributes;
+		$changes = $this->calculateChanges($temp, $model->attributes, $model);
+		$model = $this->updateChangelog($model,$changes);
+		if($model->save()) {
+			if($model instanceof Actions && $api == 0) {
+				if(isset($_GET['redirect']) && $model->associationType != 'none')	// if the action has an association
 					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
 				else	// no association
 					$this->redirect(array('actions/view','id'=>$model->id));	// view the action
-                }else if($api==0){
-                    $this->redirect(array('view','id'=>$model->id));
-                }else{
-                    return true;
-                }
-            }else{
-                return false;
-            }
+			} else if($api==0) {
+				$this->redirect(array('view','id'=>$model->id));
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 
 	}
 
@@ -454,10 +489,7 @@ class x2base extends Controller {
 			'model'=>$model,
 		));
 	}
-        
-        
-	
-	
+
 	/**
 	 * Search for a term.  Defined in X2Base so that all Controllers can use, but 
 	 * it makes a call to the SearchController.
@@ -475,7 +507,7 @@ class x2base extends Controller {
 	protected function updateChangelog($model, $change) {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
-                $model->save();
+		$model->save();
 		$type=get_class($model);
 		if(substr($type,-1)!="s"){
 			$type=substr($type,0,-5)."s";
@@ -494,26 +526,26 @@ class x2base extends Controller {
 		if($changelog->save()){
 			
 		}
-                $changes=array();
+		$changes=array();
 		if($change!='Create' && $change!='Completed' && $change!='Edited'){
 			
 			if($change!=""){
-                            $pieces=explode("<br />",$change);
-                            foreach($pieces as $piece){
-                                $newPieces=explode("TO:",$piece);
-                                $forDeletion=$newPieces[0];
-                                if(isset($newPieces[1]))
-                                    $changes[]=$newPieces[1];
+				$pieces=explode("<br />",$change);
+				foreach($pieces as $piece){
+					$newPieces=explode("TO:",$piece);
+					$forDeletion=$newPieces[0];
+					if(isset($newPieces[1]))
+						$changes[]=$newPieces[1];
 
-                                preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
-                                $deleteMatches=$deleteMatches[0];
-                                foreach($deleteMatches as $match){
-                                        $oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
-                                        if(isset($oldTag))
-                                                $oldTag->delete();
+					preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
+					$deleteMatches=$deleteMatches[0];
+					foreach($deleteMatches as $match){
+							$oldTag=Tags::model()->findByAttributes(array('tag'=>substr($match,1),'type'=>$type,'itemId'=>$model->id));
+							if(isset($oldTag))
+									$oldTag->delete();
 
-                                }
-                            }
+					}
+				}
 			}
 		}else if($change=='Create' || $change=='Edited'){
 			if($model instanceof Contacts)
@@ -526,36 +558,36 @@ class x2base extends Controller {
 				$change=$model->name;
 		} 
 		foreach($changes as $change){
-                    preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
-                    $matches=$matches[0];
-                    foreach($matches as $match){
-                            $tag=new Tags;
-                            $tag->type=$type;
-                            $tag->taggedBy=Yii::app()->user->getName();
-                            $tag->type=$type;
-                            $tag->tag=$match;
-                            if($model instanceof Contacts)
-                                    $tag->itemName=$model->firstName." ".$model->lastName;
-                            else if($model instanceof Actions)
-                                    $tag->itemName=$model->actionDescription;
-                            else if($model instanceof Docs)
-                                    $tag->itemName=$model->title;
-                            else
-                                    $tag->itemName=$model->name;
-                            if(!isset($model->id)){
-                                    $model->save();
-                            }
-                            $tag->itemId=$model->id;
-                            $tag->timestamp=time();
-                            if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
-                                    if(substr($tag->tag,1,1)=='#')
-                                            $tag->tag=substr($tag->tag,1);
-                                    if($tag->save()){
+			preg_match_all('/(^|\s|)#(\w\w+)/',$change,$matches);
+			$matches=$matches[0];
+			foreach($matches as $match){
+					$tag=new Tags;
+					$tag->type=$type;
+					$tag->taggedBy=Yii::app()->user->getName();
+					$tag->type=$type;
+					$tag->tag=$match;
+					if($model instanceof Contacts)
+							$tag->itemName=$model->firstName." ".$model->lastName;
+					else if($model instanceof Actions)
+							$tag->itemName=$model->actionDescription;
+					else if($model instanceof Docs)
+							$tag->itemName=$model->title;
+					else
+							$tag->itemName=$model->name;
+					if(!isset($model->id)){
+							$model->save();
+					}
+					$tag->itemId=$model->id;
+					$tag->timestamp=time();
+					if(substr($tag->tag,0,1)=='#' || substr($tag->tag,1,1)=='#'){
+							if(substr($tag->tag,1,1)=='#')
+									$tag->tag=substr($tag->tag,1);
+							if($tag->save()){
 
-                                    }
-                            }
-                    }
-                }
+							}
+					}
+			}
+		}
 		return $model;
 	}
 	
@@ -589,79 +621,79 @@ class x2base extends Controller {
 		$arr=array();
 		$keys=array_keys($new);
 		for($i=0;$i<count($keys);$i++){
-                    if($old[$keys[$i]]!=$new[$keys[$i]]){
-                        $arr[$keys[$i]]=$new[$keys[$i]];
-                        $allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>$this->modelClass,'modelField'=>$keys[$i]));
-                        foreach($allCriteria as $criteria){
-                            if(($criteria->comparisonOperator=="=" && $new[$keys[$i]]==$criteria->modelValue)
-                                        || ($criteria->comparisonOperator==">" && $new[$keys[$i]]>=$criteria->modelValue)
-                                        || ($criteria->comparisonOperator=="<" && $new[$keys[$i]]<=$criteria->modelValue)
-                                        || ($criteria->comparisonOperator=="change" && $new[$keys[$i]]!=$old[$keys[$i]])){
-                                if($criteria->type=='notification'){
-                                    $pieces=explode(", ",$criteria->users);
-                                    foreach($pieces as $piece){
-                                        $notif=new Notifications;
-                                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                                        if($criteria->comparisonOperator=="="){
-                                            $notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }else if($criteria->comparisonOperator==">"){
-                                            $notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }else if($criteria->comparisonOperator=="<"){
-                                            $notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }else if($criteria->comparisonOperator=="change"){
-                                            $notif->text="A(n) ".$this->modelClass." has had field $criteria->modelField changed";
-                                        }
-                                        $notif->user=$piece;
-                                        $notif->createDate=time();
-                                        $notif->viewed=0;
-                                        $notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
-                                        $notif->save();
-                                    }
-                                }else if($criteria->type=='action'){
-                                    $pieces=explode(", ",$criteria->users);
-                                    foreach($pieces as $piece){
-                                        $action=new Actions;
-                                        $action->assignedTo=$piece;
-                                        if($criteria->comparisonOperator=="="){
-                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }else if($criteria->comparisonOperator==">"){
-                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }else if($criteria->comparisonOperator=="<"){
-                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }else if($criteria->comparisonOperator=="change"){
-                                            $action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
-                                        }
-                                        $action->dueDate=mktime('23','59','59');
-                                        $action->createDate=time();
-                                        $action->lastUpdated=time();
-                                        $action->updatedBy='admin';
-                                        $action->visibility=1;
-                                        $action->associationType=lcfirst($this->modelClass)."s";
-                                        $action->associationId=$new['id'];
-                                        $model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
-                                        $action->associationName=$model->name;
-                                        $action->save();
-                                    }
-                                }else if($criteria->type=='assignment'){
-                                    $model->assignedTo=$criteria->users;
-                                    $model->save();
-                                    $notif=new Notifications;  
-                                    $notif->text="A(n)".$this->modelClass." has been re-assigned to you.";
-                                    $notif->user=$model->assignedTo;
-                                    $notif->createDate=time();
-                                    $notif->viewed=0;
-                                    $notif->record=$this->modelClass.":".$new['id'];
-                                    $notif->save();
-                                } 
-                            }
-                        }
-                    }
-                }
-                $str='';
-                foreach($arr as $key=>$item){
-                        $str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
-                }
-                return $str;
+			if($old[$keys[$i]]!=$new[$keys[$i]]){
+				$arr[$keys[$i]]=$new[$keys[$i]];
+				$allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>$this->modelClass,'modelField'=>$keys[$i]));
+				foreach($allCriteria as $criteria){
+					if(($criteria->comparisonOperator=="=" && $new[$keys[$i]]==$criteria->modelValue)
+								|| ($criteria->comparisonOperator==">" && $new[$keys[$i]]>=$criteria->modelValue)
+								|| ($criteria->comparisonOperator=="<" && $new[$keys[$i]]<=$criteria->modelValue)
+								|| ($criteria->comparisonOperator=="change" && $new[$keys[$i]]!=$old[$keys[$i]])){
+						if($criteria->type=='notification'){
+							$pieces=explode(", ",$criteria->users);
+							foreach($pieces as $piece){
+								$notif=new Notifications;
+								$profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+								if($criteria->comparisonOperator=="="){
+									$notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}else if($criteria->comparisonOperator==">"){
+									$notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}else if($criteria->comparisonOperator=="<"){
+									$notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}else if($criteria->comparisonOperator=="change"){
+									$notif->text="A(n) ".$this->modelClass." has had field $criteria->modelField changed";
+								}
+								$notif->user=$piece;
+								$notif->createDate=time();
+								$notif->viewed=0;
+								$notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+								$notif->save();
+							}
+						}else if($criteria->type=='action'){
+							$pieces=explode(", ",$criteria->users);
+							foreach($pieces as $piece){
+								$action=new Actions;
+								$action->assignedTo=$piece;
+								if($criteria->comparisonOperator=="="){
+									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}else if($criteria->comparisonOperator==">"){
+									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}else if($criteria->comparisonOperator=="<"){
+									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}else if($criteria->comparisonOperator=="change"){
+									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+								}
+								$action->dueDate=mktime('23','59','59');
+								$action->createDate=time();
+								$action->lastUpdated=time();
+								$action->updatedBy='admin';
+								$action->visibility=1;
+								$action->associationType=strtolower($this->modelClass)."s";
+								$action->associationId=$new['id'];
+								$model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
+								$action->associationName=$model->name;
+								$action->save();
+							}
+						}else if($criteria->type=='assignment'){
+							$model->assignedTo=$criteria->users;
+							$model->save();
+							$notif=new Notifications;  
+							$notif->text="A(n)".$this->modelClass." has been re-assigned to you.";
+							$notif->user=$model->assignedTo;
+							$notif->createDate=time();
+							$notif->viewed=0;
+							$notif->record=$this->modelClass.":".$new['id'];
+							$notif->save();
+						} 
+					}
+				}
+			}
+		}
+		$str='';
+		foreach($arr as $key=>$item){
+				$str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
+		}
+		return $str;
 	}   
 
 	public function partialDateRange($input) {
@@ -709,17 +741,10 @@ class x2base extends Controller {
 		// return htmlspecialchars($str);
 		return preg_replace('/"/u','&quot;',$str);
 	}
-        
-        public static function cleanUpSessions(){
-            $admin = &Yii::app()->params->admin;
-            $sessions=Sessions::model()->findAll();
-            foreach($sessions as $session){
-                if(time()-$session->lastUpdated > $admin->timeout){
-                    $session->delete();
-                }
-            }
-        }
 
+	public static function cleanUpSessions(){
+		Session::model()->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
+	}
 
 	public function sendUserEmail($to,$subject,$message) {
 
@@ -753,20 +778,41 @@ class x2base extends Controller {
 			case 'mail':
 			default:
 				$phpMail->IsMail();
-				break;
 		}
 
 		try {
+			if(empty(Yii::app()->params->profile->emailAddress))
+				throw new Exception('<b>'.Yii::t('app','Your profile doesn\'t have a valid email address.').'</b>');
+		
 			$phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress,$user->name);
 			$phpMail->SetFrom(Yii::app()->params->profile->emailAddress,$user->name);
 			
 			
-			if(count($to) == 2 && !is_array($to[0]))	// this is just an array of [name, address],
-				$phpMail->AddAddress($to[1],$to[0]);	// not an array of arrays
-			else {
-				foreach($to as $val) {					//this is an array of [name, address] subarrays
-					if(count($val) == 2)
-						$phpMail->AddAddress($val[1],$val[0]);
+			if(isset($to['to'])) {
+				foreach($to['to'] as $target) {
+					if(count($target) == 2)
+						$phpMail->AddAddress($target[1],$target[0]);
+				}
+			} else {
+				if(count($to) == 2 && !is_array($to[0]))	// this is just an array of [name, address],
+					$phpMail->AddAddress($to[1],$to[0]);	// not an array of arrays
+				else {
+					foreach($to as $target) {					//this is an array of [name, address] subarrays
+						if(count($target) == 2)
+							$phpMail->AddAddress($target[1],$target[0]);
+					}
+				}
+			}
+			if(isset($to['cc'])) {
+				foreach($to['cc'] as $target) {
+					if(count($target) == 2)
+						$phpMail->AddCC($target[1],$target[0]);
+				}
+			}
+			if(isset($to['bcc'])) {
+				foreach($to['bcc'] as $target) {
+					if(count($target) == 2)
+						$phpMail->AddBCC($target[1],$target[0]);
 				}
 			}
 			
@@ -794,7 +840,7 @@ class x2base extends Controller {
 	}
 	
 	
-	public function parseEmailTo($string) {
+/* 	public function parseEmailTo($string) {
 	
 		if(empty($string))
 			return false;
@@ -820,11 +866,7 @@ class x2base extends Controller {
 					return false;
 			} else
 				return false;
-			
-			// "M P" <mpearson@x2engine.com>, "" <3apples.com>,4@tacos.com
-			
-			
-			
+				
 			// if(preg_match('/^"(.*)"/i',$token,$matches)) {		// if there is a name like <First Last> at the beginning,
 				// $token = trim(preg_replace('/^".*"/i','',$token));	// remove it
 				// if(isset($matches[1]))
@@ -856,12 +898,29 @@ class x2base extends Controller {
 			}
 		}
 		return $encodeQuotes? $this->encodeQuotes($string) : $string;
-	}
+	} */
 
 	/**
 	 * Sets widgets on the page on a per user basis.
 	 */
 	public function filterSetPortlets($filterChain) {
+            $themeURL = Yii::app()->theme->getBaseUrl();
+                Yii::app()->clientScript->registerScript('logos',"
+                $(window).load(function(){
+                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+                        $('a').removeAttr('href');
+                        alert('Please put the logo back');
+                        window.location='http://www.x2engine.com';
+                    }
+                    var touchlogosrc = $('#x2touch-logo').attr('src');
+                    var logosrc=$('#x2crm-logo').attr('src');
+                    if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+                        $('a').removeAttr('href');
+                        alert('Please put the logo back');
+                        window.location='http://www.x2engine.com';
+                    }
+                });    
+                ");
 		$this->portlets = ProfileChild::getWidgets();
 		// foreach($widgets as $key=>$value) {
 			// $options = ProfileChild::parseWidget($value,$key);
@@ -870,6 +929,15 @@ class x2base extends Controller {
 		$filterChain->run();
 	}
 
+	
+	function getRealIp() {
+		if (!empty($_SERVER['HTTP_CLIENT_IP']))
+			return $_SERVER['HTTP_CLIENT_IP'];
+		else if(!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		else
+			return $_SERVER['REMOTE_ADDR'];
+	}
 
 	// This function needs to be made in your extensions of the class with similar code. 
 	// Replace "Sales" with the Model being used.

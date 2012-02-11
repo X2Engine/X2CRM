@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,7 +37,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><?php
+
 Yii::app()->clientScript->registerScript('customModuleFields', "
 function deleteStage(object) {
 	$(object).closest('li').remove();
@@ -79,7 +79,7 @@ function addStage() {
 
 <h2><?php echo Yii::t('module','Create New Module'); ?></h2>
 <?php echo Yii::t('module','Please fill out the fields below to create a new module.'); ?><br /><br />
-Field names must be one word, preferably camel cased (i.e. firstName, lastName, expectedCloseDate) and labels can be anything.<br /><br />
+Extra fields should be added from the "Manage Fields" page.<br /><br />
 <div class="form">
 <?php if(!empty($errors)) { ?>
 	<div class="errorSummary"><p><?php echo Yii::t('yii','Please fix the following input errors:'); ?></p>

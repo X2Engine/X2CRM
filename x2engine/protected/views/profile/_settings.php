@@ -124,11 +124,11 @@ $form=$this->beginWidget('CActiveForm', array(
 			<?php echo $form->checkBox($model,'allowPost',array('onchange'=>'js:highlightSave();')); ?> 
 			<?php echo $form->labelEx($model,'allowPost',array('style'=>'display:inline;')); ?>
 		</div>
-		<div class="cell">
-			<?php echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();')); ?> 
-			<?php echo $form->labelEx($model,'showSocialMedia',array('style'=>'display:inline;')); ?>
+		<!--<div class="cell">
+			<?php //echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();')); ?> 
+			<?php //echo $form->labelEx($model,'showSocialMedia',array('style'=>'display:inline;')); ?>
 			<?php //echo $form->dropDownList($model,'showSocialMedia',array(1=>Yii::t('actions','Yes'),0=>Yii::t('actions','No')),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
-		</div>
+		</div>-->
 		<div class="cell">
 			<?php echo $form->checkBox($model,'showWorkflow',array('onchange'=>'js:highlightSave();')); ?> 
 			<?php echo $form->labelEx($model,'showWorkflow',array('style'=>'display:inline;')); ?>

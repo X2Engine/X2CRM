@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Contacts::attributeLabels();
+$attributeLabels = Contacts::model()->attributeLabels();
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 Yii::app()->clientScript->registerScript('detailVewFields', "

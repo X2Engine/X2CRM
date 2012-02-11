@@ -94,20 +94,33 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			// 'htmlOptions'=>array('width'=>'30%'),
 		),
 		array(
+			'name'=>'requirePrevious',
+			'value'=>'Yii::t("app",($data->requirePrevious? "Yes" : "No"))',
+			'type'=>'raw',
+			'headerHtmlOptions'=>array('style'=>'width:15%;'),
+		),
+		array(
+			'name'=>'requireComment',
+			'value'=>'Yii::t("app",($data->requireComment? "Yes" : "No"))',
+			'type'=>'raw',
+			'headerHtmlOptions'=>array('style'=>'width:15%;'),
+		),
+		array(
 			'name'=>'conversionRate',
 			// 'value'=>'UserChild::getUserLinks($data->createdBy)',
 			// 'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:25%;'),
+			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),
 		array(
 			'name'=>'value',
 			// 'value'=>'UserChild::getUserLinks($data->createdBy)',
 			// 'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:25%;'),
+			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),
 	),
 ));
 }
 ?>
 </div>
+
 

@@ -38,8 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('zii.widgets.CWidget');
-
 class OnlineUsers extends CWidget {
 	
 	public $visibility;
@@ -48,22 +46,27 @@ class OnlineUsers extends CWidget {
 	}
 
 	public function run() {
-            x2base::cleanUpSessions();
-            $sessions=Sessions::model()->findAll();
-            $str="";
-            foreach($sessions as $session){
-                if(time()-$session->lastUpdated<(15*60)){
-                    $str.=$session->user.", ";
-                }
-            }
-            if($str!=""){
-                $str=substr($str,0,-2);
-            }
-            $users=UserChild::getUserLinks($str);
-            
+		x2base::cleanUpSessions();
+		
+		// $criteria = new CDbCriteria(array('condition'=>'','distinct'=>true)
+		
+
+		// $sessions = Session::model()->findAll($criteria);
+		// $str = "";
+		// foreach($sessions as $session) {
+			// if(time()-$session->lastUpdated<(15*60)) {
+				// $str.=$session->user.", ";
+			// }
+		// }
+		// if($str!="") {
+			// $str=substr($str,0,-2);
+		// }
+
+		$onlineUsers = UserChild::getUserLinks(Session::getOnlineUsers());
+		
 		$this->render('onlineUsers',array(
-                    'users'=>$users,
-                )); //array(
+			'users'=>$onlineUsers,
+		)); //array(
 	}
 }
 ?>

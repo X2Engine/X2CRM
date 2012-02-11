@@ -51,7 +51,7 @@
                 array(
 			'name' => Yii::t('app','Record'),
 			'type' => 'raw',
-			'value' => 'CHtml::link($data->itemName,Yii::app()->request->baseUrl."/index.php/".lcfirst($data->type)."/".$data->itemId)', 
+			'value' => 'CHtml::link($data->itemName,Yii::app()->request->baseUrl."/index.php/".strtolower($data->type)."/".$data->itemId)', 
 		),
 		
 	),

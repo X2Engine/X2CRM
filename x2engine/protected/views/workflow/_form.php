@@ -40,7 +40,10 @@
  
 Yii::app()->clientScript->registerScript('addWorkflowStage', "
 function deleteStage(object) {
-	$(object).closest('li').remove();
+	$(object).closest('li').animate({
+		opacity: 0,
+		height: 0
+	}, 200,function() { $(this).remove(); });
 }
 
 function moveStageUp(object) {
@@ -60,35 +63,43 @@ function moveStageDown(object) {
 
 function addStage() {
 	$('#workflow-stages ol').append(' \
-	<li>\
+	<li style=\"display:none;\">\
 	<div class=\"row\">\
 		<div class=\"cell\">\
-			".addslashes(CHtml::label(Yii::t('workflow','Stage Name'),null)
+			".addslashes(CHtml::label($model->getAttributeLabel('name'),null)
 			.CHtml::textField('WorkflowStages[name][]','',array('size'=>40,'maxlength'=>40)))
 			// .CHtml::error('WorkflowStages_name'))
 		." \
 		</div> \
 		<div class=\"cell\">\
-			".addslashes(CHtml::label(Yii::t('workflow','Conversion Rate'),null)
+			".addslashes(CHtml::label($model->getAttributeLabel('conversionRate'),null)
 			.CHtml::textField('WorkflowStages[conversionRate][]','',array('size'=>10,'maxlength'=>20)))
 			// .CHtml::error('WorkflowStages_conversionRate'))
 		." \
 		</div> \
 		<div class=\"cell\">\
-			".addslashes(CHtml::label(Yii::t('workflow','Value'),null)
+			".addslashes(CHtml::label($model->getAttributeLabel('value'),null)
 			.CHtml::textField('WorkflowStages[value][]','',array('size'=>10,'maxlength'=>20)))
-			// .CHtml::error('WorkflowStages_value'))
-		." \
-		</div>\
+		."</div>\
 		<div class=\"cell\">\
-			<a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow','Up')."]</a>\
-			<a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow','Down')."]</a>\
-			<a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow','Del')."]</a>\
+			<a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\" title=\"".Yii::t('workflow','Up')."\" class=\"up\"></a>\
+			<a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\" title=\"".Yii::t('workflow','Down')."\" class=\"down\"></a>\
+			<a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\" title=\"".Yii::t('workflow','Delete')."\" class=\"del\"></a>\
 		</div>\
 	</div>\
+	<div class=\"row\" style=\"padding-left:15px;\">\
+		<div class=\"cell\">\
+			".addslashes(CHtml::label($model->getAttributeLabel('requirePrevious'),null)
+			.' '.preg_replace('/[\r\n]+/u','',CHtml::dropdownList('WorkflowStages[requirePrevious][]',0,array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('style'=>'width:160px;'))))
+		."</div>\
+		<div class=\"cell\">\
+			".addslashes(CHtml::label($model->getAttributeLabel('requireComment'),null)
+			.' '.preg_replace('/[\r\n]+/u','',CHtml::dropdownList('WorkflowStages[requireComment][]',0,array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('style'=>'width:140px;'))))
+		."</div>\
+	</div>\
 	</li>');
+	$('#workflow-stages li:last-child').slideDown(300);
 }
-
 ",CClientScript::POS_HEAD);
 ?>
 <div class="form">
@@ -131,13 +142,25 @@ function addStage() {
 			<?php echo $form->error($stage,'value'); ?>
 		</div>
 		<div class="cell">
-			<a href="javascript:void(0)" onclick="moveStageUp(this);">[<?php echo Yii::t('workflow','Up'); ?>]</a>
-			<a href="javascript:void(0)" onclick="moveStageDown(this);">[<?php echo Yii::t('workflow','Down'); ?>]</a>
-			<a href="javascript:void(0)" onclick="deleteStage(this);">[<?php echo Yii::t('workflow','Del'); ?>]</a>
+			<a href="javascript:void(0)" onclick="moveStageUp(this);" title="<?php echo Yii::t('workflow','Up'); ?>" class="up"></a>
+			<a href="javascript:void(0)" onclick="moveStageDown(this);" title="<?php echo Yii::t('workflow','Down'); ?>" class="down"></a>
+			<a href="javascript:void(0)" onclick="deleteStage(this);" title="<?php echo Yii::t('workflow','Del'); ?>" class="del"></a>
+		</div>
+	</div>
+	<div class="row" style="padding-left:15px;">
+		<div class="cell">
+			<?php echo $form->labelEx($stage,'requirePrevious'); ?>
+			<?php echo CHtml::dropdownList('WorkflowStages[requirePrevious][]',$stage->requirePrevious,array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('style'=>'width:160px;')); ?>
+			<?php echo $form->error($stage,'requirePrevious'); ?>
+		</div>
+		<div class="cell">
+			<?php echo $form->labelEx($stage,'requireComment'); ?>
+			<?php echo CHtml::dropdownList('WorkflowStages[requireComment][]',$stage->requireComment,array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('style'=>'width:140px;')); ?>
+			<?php echo $form->error($stage,'requireComment'); ?>
 		</div>
 	</div>
 	</li>
-	<?php 
+	<?php
 	}
 	?>
 	</ol>

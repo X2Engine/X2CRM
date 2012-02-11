@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Templates::attributeLabels();
+$attributeLabels = $model->attributeLabels();
 include("protected/config/templatesConfig.php");
 Yii::app()->clientScript->registerScript('stopEdit','
 	$(document).ready(function(){

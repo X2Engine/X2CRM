@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<div class="form no-border">
+
 <?php
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'contacts-form',
@@ -47,12 +47,13 @@ $form=$this->beginWidget('CActiveForm', array(
 ?>
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em>
 	<?php
-	$isQuickCreate = true;	//signal subforms not to call beginWidget()/endWidget(), create submit buttons, etc
+	// $isQuickCreate = true;	//signal subforms not to call beginWidget()/endWidget(), create submit buttons, etc
 	//var_dump(scandir(''));
 	//include('../x2engine/protected/views/contacts/_form.php');
-	echo $this->renderPartial('//contacts/_form',
+	echo $this->renderPartial('application.components.views._form',
 	array(
-		'contactModel'=>$contactModel,
+		'model'=>$contactModel,
+		'modelName'=>'contacts',
 		'users'=>$users,
 		'isQuickCreate'=>true,
 		'form'=>$form,
@@ -141,4 +142,4 @@ $form=$this->beginWidget('CActiveForm', array(
 
 <?php $this->endWidget(); ?>
 
-</div><!-- form -->
+<!-- form -->

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,9 +40,9 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('accounts','Accounts List'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-	array('label'=>Yii::t('accounts','View Account'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Update Account'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('accounts','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('accounts','View'), 'url'=>array('view', 'id'=>$model->id)),
+	array('label'=>Yii::t('accounts','Update'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Add a User'), 'url'=>($action=='Add')?null:array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>($action=='Remove')?null:array('removeUser', 'id'=>$model->id)),
 );

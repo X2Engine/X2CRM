@@ -72,8 +72,12 @@ Yii::import('zii.widgets.grid.CCheckBoxColumn');
  *
  * Please refer to {@link columns} for more details about how to configure this property.
  *
+ * @property boolean $hasFooter Whether the table should render a footer.
+ * This is true if any of the {@link columns} has a true {@link CGridColumn::hasFooter} value.
+ * @property CFormatter $formatter The formatter instance. Defaults to the 'format' application component.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CGridView.php 3083 2011-03-14 18:09:55Z qiang.xue $
+ * @version $Id: CGridView.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package zii.widgets.grid
  * @since 1.1
  */
@@ -161,6 +165,12 @@ class CGridView extends CBaseListView
 	 */
 	public $ajaxVar='ajax';
 	/**
+	 * @var mixed the URL for the AJAX requests should be sent to. {@link CHtml::normalizeUrl()} will be
+	 * called on this property. If not set, the current page URL will be used for AJAX requests.
+	 * @since 1.1.8
+	 */
+	public $ajaxUrl;
+	/**
 	 * @var string a javascript function that will be invoked before an AJAX update occurs.
 	 * The function signature is <code>function(id,options)</code> where 'id' refers to the ID of the grid view,
 	 * 'options' the AJAX request options  (see jQuery.ajax api manual).
@@ -238,6 +248,7 @@ class CGridView extends CBaseListView
 	 * at the top that users can fill in to filter the data.
 	 * Note that in order to show an input field for filtering, a column must have its {@link CDataColumn::name}
 	 * property set or have {@link CDataColumn::filter} as the HTML code for the input field.
+	 * When this property is not set (null) the filtering is disabled.
 	 * @since 1.1.1
 	 */
 	public $filter;
@@ -353,6 +364,8 @@ class CGridView extends CBaseListView
 			'tableClass'=>$this->itemsCssClass,
 			'selectableRows'=>$this->selectableRows,
 		);
+		if($this->ajaxUrl!==null)
+			$options['url']=CHtml::normalizeUrl($this->ajaxUrl);
 		if($this->updateSelector!==null)
 			$options['updateSelector']=$this->updateSelector;
 		if($this->enablePagination)
@@ -383,8 +396,11 @@ class CGridView extends CBaseListView
 		{
 			echo "<table class=\"{$this->itemsCssClass}\">\n";
 			$this->renderTableHeader();
+			ob_start();
 			$this->renderTableBody();
+			$body=ob_get_clean();
 			$this->renderTableFooter();
+			echo $body; // TFOOT must appear before TBODY according to the standard.
 			echo "</table>";
 		}
 		else

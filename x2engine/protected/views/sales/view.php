@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,16 +40,19 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('sales','Sales List'), 'url'=>array('index')),
-	array('label'=>Yii::t('sales','Create Sale'), 'url'=>array('create')),
-	array('label'=>Yii::t('sales','View Sale')),
-	array('label'=>Yii::t('sales','Update Sale'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('sales','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('sales','View')),
+	array('label'=>Yii::t('sales','Update'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('sales','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('sales','Delete Sale'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('sales','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
-
+$this->actionMenu = array(
+	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleForm("#attachment-form",200); return false;')),
+	array('label'=>Yii::t('accounts','Share Sale'),'url'=>array('shareSale','id'=>$model->id)),
+);
 ?>
 
 <h2><?php echo Yii::t('sales','Sale:'); ?> <b><?php echo $model->name; ?></b></h2>
@@ -60,14 +63,12 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 
-$this->renderPartial('_detailView',array('model'=>$model,'form'=>$form,'currentWorkflow'=>$currentWorkflow));
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'sales'));
 $this->endWidget();
 
+// render workflow box
+$this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'sales','currentWorkflow'=>$currentWorkflow));
 ?>
-<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
-<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
-<a class="x2-button" href="shareSale/<?php echo $model->id;?>"><span><?php echo Yii::t('sales','Share Sale'); ?></span></a>
-<br /><br />
 
 <div id="attachment-form" style="display:none;">
 	<?php $this->widget('Attachments',array('type'=>'sales','associationId'=>$model->id)); ?>
