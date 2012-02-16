@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -254,7 +254,7 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_dropdowns,
 	x2_groups,
 	x2_group_to_user,
-        x2_users,
+	x2_users,
 	x2_contacts,
 	x2_actions,
 	x2_sales,
@@ -329,8 +329,10 @@ mysql_query('CREATE TABLE x2_contacts(
 	interest VARCHAR(250),
 	leadstatus VARCHAR(250),
 	dealvalue VARCHAR(250),
-        leadscore INT,
-        dealstatus VARCHAR(250)
+	leadscore INT,
+	dealstatus VARCHAR(250),
+	INDEX (email),
+	INDEX (assignedTo)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_contacts.'.mysql_error());
 
 //mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
@@ -355,7 +357,9 @@ mysql_query('CREATE TABLE x2_actions(
 	lastUpdated INT,
 	updatedBy VARCHAR(20),
 	workflowId INT UNSIGNED,
-	stageNumber INT UNSIGNED
+	stageNumber INT UNSIGNED,
+	INDEX (assignedTo),
+	INDEX (associationType,associationId)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_actions.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_sales(
@@ -476,7 +480,7 @@ mysql_query('CREATE TABLE x2_list_items (
 	listId INT UNSIGNED NOT NULL,
 	code VARCHAR(32) NULL,
 	result TINYINT UNSIGNED NOT NULL DEFAULT 0,
-	INDEX (contactId),
+	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (contactId) REFERENCES x2_contacts(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listItems.'.mysql_error());
@@ -488,6 +492,7 @@ mysql_query('CREATE TABLE x2_list_criteria (
 	attribute VARCHAR(40) NULL,
 	comparison VARCHAR(10) NULL,
 	value VARCHAR(100) NOT NULL,
+	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listCriteria.'.mysql_error());
 
@@ -541,7 +546,8 @@ mysql_query('CREATE TABLE x2_cases(
 	emailUseSignature VARCHAR(5) DEFAULT "user",
 	emailSignature VARCHAR(512),
 	enableBgFade TINYINT DEFAULT 0,
-	UNIQUE(username, emailAddress)
+	UNIQUE(username, emailAddress),
+	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_profile.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_accounts(
@@ -844,9 +850,9 @@ mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defau
 or addSqlError("Unable to create contacts layout.".mysql_error());
 	
 mysql_query('INSERT INTO x2_fields 
-(modelName,		fieldName,				attributeLabel,			modified,	custom,	type,			required,	linkType) VALUES 
+(modelName,		fieldName,				attributeLabel,			modified, custom, type, required, linkType) VALUES 
 ("Contacts",	"id",					"ID",					0,	0,	"varchar",		0,	""),
-("Contacts",	"firstName",                            "First Name",			0,	0,	"varchar",		1,	""),
+("Contacts",	"firstName",			"First Name",			0,	0,	"varchar",		1,	""),
 ("Contacts",	"lastName",				"Last Name",			0,	0,	"varchar",		1,	""),
 ("Contacts",	"title",				"Title",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"company",				"Account",				0,	0,	"link",			0,	"accounts"),
@@ -857,30 +863,30 @@ mysql_query('INSERT INTO x2_fields
 ("Contacts",	"twitter",				"Twitter",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"linkedin",				"Linkedin",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"skype",				"Skype",				0,	0,	"varchar",		0,	""),
-("Contacts",	"googleplus",                           "Googleplus",			0,	0,	"varchar",		0,	""),
+("Contacts",	"googleplus",			"Googleplus",			0,	0,	"varchar",		0,	""),
 ("Contacts",	"address",				"Address",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"address2",				"Address 2",			0,	0,	"varchar",		0,	""),
 ("Contacts",	"city",					"City",					0,	0,	"varchar",		0,	""),
 ("Contacts",	"state",				"State",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"zipcode",				"Postal Code",			0,	0,	"varchar",		0,	""),
 ("Contacts",	"country",				"Country",				0,	0,	"varchar",		0,	""),
-("Contacts",	"visibility",                           "Visibility",			0,	0,	"visibility",	1,	""),
-("Contacts",	"assignedTo",                           "Assigned To",			0,	0,	"assignment",	0,	""),
-("Contacts",	"backgroundInfo",                       "Background Info",		0,	0,	"text",			0,	""),
-("Contacts",	"lastUpdated",                          "Last Updated",			0,	0,	"date",			0,	""),
-("Contacts",	"updatedBy",                            "Updated By",			0,	0,	"varchar",		0,	""),
-("Contacts",	"leadSource",                           "Lead Source",			0,	0,	"dropdown",		0,	"4"),
+("Contacts",	"visibility",			"Visibility",			0,	0,	"visibility",	1,	""),
+("Contacts",	"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	""),
+("Contacts",	"backgroundInfo",		"Background Info",		0,	0,	"text",			0,	""),
+("Contacts",	"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	""),
+("Contacts",	"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	""),
+("Contacts",	"leadSource",			"Lead Source",			0,	0,	"dropdown",		0,	"4"),
 ("Contacts",	"leadDate",				"Lead Date",			0,	0,	"date",			0,	""),
 ("Contacts",	"priority",				"Priority",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"rating",				"Confidence",			0,	0,	"rating",		0,	""),
-("Contacts",	"createDate",                           "Create Date",			0,	0,	"date",			0,	""),
+("Contacts",	"createDate",			"Create Date",			0,	0,	"date",			0,	""),
 ("Contacts",	"facebook",				"Facebook",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"otherUrl",				"Other",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"leadtype",				"Lead Type",			0,	0,	"dropdown",		0,	"3"),
-("Contacts",	"closedate",                            "Close Date",		0,	0,	"date",			0,	""),
+("Contacts",	"closedate",			"Close Date",			0,	0,	"date",			0,	""),
 ("Contacts",	"interest",				"Interest",				0,	0,	"varchar",		0,	""),
-("Contacts",	"dealvalue",                            "Deal Value",			0,	0,	"currency",		0,	NULL),
-("Contacts",	"leadstatus",                           "Lead Status",			0,	0,	"dropdown",		0,	"5"),
+("Contacts",	"dealvalue",			"Deal Value",			0,	0,	"currency",		0,	NULL),
+("Contacts",	"leadstatus",			"Lead Status",			0,	0,	"dropdown",		0,	"5"),
 ("Products",	"currency",				"Currency",				0,	0,	"dropdown",		0,	"2"),
 ("Products",	"status",				"Status",				0,	0,	"dropdown",		0,	"1"),
 ("Sales",		"id",					"ID",					0,	0,	"varchar",		0,	""),
@@ -943,7 +949,7 @@ mysql_query('INSERT INTO x2_fields
 ("Quotes",		"associatedContacts",	"Contacts",				0,	0,	"association",	0,	"multiple"),
 ("Quotes",		"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	NULL),
 ("Quotes",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
-("Quotes",		"status",				"Status",				0,	0,	"dropdown",	0,	"7"),
+("Quotes",		"status",				"Status",				0,	0,	"dropdown",		0,	"7"),
 ("Quotes",		"expirationDate",		"Expiration Date",		0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"products",				"Products",				0,	0,	"varchar",		0,	NULL),
 ("Products",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
@@ -958,7 +964,7 @@ mysql_query('INSERT INTO x2_fields
 ("Products",	"adjustment",			"Adjustment",			0,	0,	"varchar",		0,	NULL),
 ("Contacts",	"leadscore",			"Lead Score",			0,	0,	"rating",		0,	NULL),
 ("Contacts",	"dealstatus",			"Deal Status",			0,	0,	"dropdown",		0,	"6"),
-("Quotes",		"locked",				"Locked",				0,	0,	"varchar",		0,	NULL)
+("Quotes",		"locked",				"Locked",				0,	0,	"boolean",		0,	NULL)
 ;') or addSqlError('Unable to create fields'.mysql_error());
 
 mysql_query("INSERT INTO  x2_dropdowns (name, options) VALUES 
