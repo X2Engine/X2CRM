@@ -39,27 +39,45 @@
 
 $(function() {
 
+	// get the widths of the various menu sections
+	var menuBarWidth = $('#main-menu-bar').width() - 50;	// leave a little space so the menu doesn't get too crowded
+	var userMenuWidth = $('#user-menu').width();
+	var mainMenuWidth = 0;
+
+	$('#main-menu > li').each(function() {
+		mainMenuWidth += $(this).width();
+	});
+
+	// add items from the "More" submenu to the main menu until they don't fit
+	$('#main-menu ul > li').each(function() {
+		var itemWidth = 1.2 * $(this).find('a').width();
+		
+		var subMenuLi = $('#main-menu ul').parent();
+		// console.debug(itemWidth);
+		if((menuBarWidth - (userMenuWidth + mainMenuWidth)) > 1.3 * $(this).width()) {
+			$(this).insertBefore(subMenuLi);
+			mainMenuWidth += $(this).width();
+		}
+	});
+
+	// toggle menu when user clicks on "More" or whatever
 	$("#main-menu li span").click(function() {
-		$("#main-menu ul").toggle();
-		$("#user-menu ul").hide();
+		$("#main-menu ul").toggleClass('visible');
 		return false;
 	});
-
+	// same for user menu
 	$("#user-menu li span").click(function() {
-		$("#user-menu ul").toggle();
-		$("#main-menu ul").hide();
+		$("#user-menu ul").toggleClass('visible');
 		return false;
 	});
-
+	// close menu if they click anywhere else on the page
 	$(document).bind('click', function(e) {
 		var $clicked = $(e.target);
 		if (!$clicked.parents().hasClass("#main-menu ul"))
-			$("#main-menu ul").hide();
+			$("#main-menu ul").removeClass('visible');
 
 		if (!$clicked.parents().hasClass("#user-menu ul"))
-			$("#user-menu ul").hide();
-		// if (!($clicked.parents().attr('id')=="#transparency-slider" || $clicked.attr('id')=="transparency-button"))
-			// $("#transparency-slider").hide();
+			$("#user-menu ul").removeClass('visible');
 	});
 
 	$("#transparency-button").click(showTransparencySlider);
@@ -69,7 +87,7 @@ var sliderTimeout;
 
 function resetSliderTimeout() {
 	clearTimeout(sliderTimeout);
-	sliderTimeout = setTimeout(hideTransparencySlider,2000);
+	sliderTimeout = setTimeout(hideTransparencySlider,1500);
 }
 
 function showTransparencySlider() {

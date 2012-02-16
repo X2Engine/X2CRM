@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -199,7 +199,7 @@ class ActionsController extends x2base {
 
             $model->createDate = time();	// created now, full datetime
             //$model->associationId=$_POST['Actions']['associationId'];
-            $dueDate = strtotime($model->dueDate);
+            $dueDate = $this->parseDateTime($model->dueDate);
             $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
 
 		//if($type=='none')

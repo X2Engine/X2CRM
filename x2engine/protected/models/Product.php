@@ -43,7 +43,6 @@
  *
  * The followings are the available columns in table 'x2_template':
  * @property integer $id
- * @property string $assignedTo
  * @property string $name
  * @property string $description
  * @property string $fieldOne
@@ -84,13 +83,14 @@ class Product extends CActiveRecord
 		return array(
 			array('name', 'required'),
 			array('price', 'required'),
-			array('createDate, lastUpdated, price, inventory', 'numerical', 'integerOnly'=>true),
-			array('assignedTo, updatedBy', 'length', 'max'=>40),
+			array('createDate, lastUpdated, inventory', 'numerical', 'integerOnly'=>true),
+			array('price', 'numerical', 'integerOnly'=>false),
+			array('updatedBy', 'length', 'max'=>40),
 			array('name', 'length', 'max'=>255),
 			array('description', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, assignedTo, name, description, createDate, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
+			array('id, name, description, createDate, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -120,7 +120,6 @@ class Product extends CActiveRecord
                 return $arr;
 		return array(
 			'id' => Yii::t('module','ID'),
-			'assignedTo' => Yii::t('module','Assigned To'),
 			'name' => Yii::t('module','Name'),
 			'description' => Yii::t('module','Description'),
 			'createDate' => Yii::t('module','Create Date'),
@@ -141,7 +140,6 @@ class Product extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('description',$this->description,true);
 		$criteria->compare('createDate',$this->createDate);
@@ -154,5 +152,66 @@ class Product extends CActiveRecord
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),
 		));
+	}
+	
+	/**
+	 *
+	 */
+	public static function activeProducts() {
+		return Product::model()->findAllByAttributes(array('status'=>'Active'));
+	}
+	
+	/**
+	 * Get a list of active product names indexed by id
+	 */
+	public static function productNames() {
+		$products = Product::model()->findAll(
+			array(
+				'select'=>'id, name',
+				'condition'=>'status=:active',
+				'params'=>array(':active'=>'Active'),
+			)
+		);
+		$productNames = array(0 => '');
+		foreach($products as $product)
+			$productNames[$product->id] = $product->name;
+		
+		return $productNames;
+	}
+	
+	/**
+	 * Get a list of active product currencys indexed by id
+	 */
+	public static function productCurrency() {
+		$products = Product::model()->findAll(
+			array(
+				'select'=>'id, currency',
+				'condition'=>'status=:active',
+				'params'=>array(':active'=>'Active'),
+				)
+		);
+		$productCurrency = array(0 => '');
+		foreach($products as $product)
+			$productCurrency[$product->id] = $product->currency;
+		
+		return $productCurrency;
+	}
+	
+	/**
+	 * Get a list of active product currencys indexed by id
+	 */
+	public static function productPrices() {
+		$products = Product::model()->findAll(
+			array(
+				'select'=>'id, price',
+				'condition'=>'status=:active',
+				'params'=>array(':active'=>'Active'),
+				)
+		);
+		$productPrices = array(0 => '');
+		foreach($products as $product)
+			$productPrices[$product->id] = $product->price;
+		
+		return $productPrices;
 	}
 }

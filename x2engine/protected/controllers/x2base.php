@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -173,13 +173,11 @@ abstract class x2base extends Controller {
 		}
 
 		$users=UserChild::getNames();
-		$names=$this->parseType($type);
 		$showActionForm = isset($_GET['showActionForm']);
 		$this->render('view',array_merge($params,array(
 			'model'=>$model,
 			'actionHistory'=>$actionHistory,
 			'users'=>$users,
-			'names'=>$names,
 			'currentWorkflow'=>$this->getCurrentWorkflow($model->id,$type),
 		)));
 	}
@@ -241,27 +239,6 @@ abstract class x2base extends Controller {
 			return null;
 	}
 	
-	/**
-	 * Returns an array of names of database entries for a given type.
-	 * @param String $type The type of record to return
-	 * @return Array An array with id=>name of records for the type provided
-	 */
-	protected function parseType($type) {
-		switch($type) {
-			case 'contacts':
-				return Contacts::getAllNames(); 
-			case 'projects':
-				return ProjectChild::getNames();
-			case 'accounts':
-				return Accounts::getNames();
-			case 'cases':
-				return CaseChild::getNames();
-			case 'sales':
-				return Sales::getNames();
-			default:
-				return array('0'=>'None');
-		}
-	}
 	/**
 	 * Convert currency to the proper format
 	 * 
@@ -379,22 +356,23 @@ abstract class x2base extends Controller {
 		if($model->save()) {
 			$changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 			$this->updateChangelog($model,$changes);
-			if($model->assignedTo!=Yii::app()->user->getName()) {
-				$notif=new Notifications;
-				if($api == 0) {
-					$profile = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
-					if(isset($profile))
-						$notif->text="$profile->fullName has created a(n) ".$name." for you";
-				} else {
-					$notif->text="An API request has created a(n) ".$name." for you";
+			if(($model instanceof Product) == false) // products are not assigned to anyone
+				if($model->assignedTo!=Yii::app()->user->getName()) {
+					$notif=new Notifications;
+					if($api == 0) {
+						$profile = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
+						if(isset($profile))
+							$notif->text="$profile->fullName has created a(n) ".$name." for you";
+					} else {
+						$notif->text="An API request has created a(n) ".$name." for you";
+					}
+					$notif->user=$model->assignedTo;
+					$notif->createDate=time();
+					$notif->viewed=0;
+					$notif->record="$name:$model->id";
+					$notif->save();
+				
 				}
-				$notif->user=$model->assignedTo;
-				$notif->createDate=time();
-				$notif->viewed=0;
-				$notif->record="$name:$model->id";
-				$notif->save();
-
-			}
 			if($model instanceof Actions && $api==0) {
 				if(isset($_GET['inline']) || $model->type=='note')
 					if($model->associationType == 'product')
@@ -822,8 +800,8 @@ abstract class x2base extends Controller {
 				$phpMail->AddCC($dropbox);
 			
 			$phpMail->Subject = $subject;
-			$phpMail->AltBody = $message;
-			$phpMail->MsgHTML(x2base::convertLineBreaks($message));
+//			$phpMail->AltBody = $message;
+			$phpMail->MsgHTML($message);
 			// $phpMail->Body = $message;
 			$phpMail->Send();
 			
@@ -958,6 +936,88 @@ abstract class x2base extends Controller {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
+	}
+	
+	/*** Date Format Functions ***/
+	
+	/**
+	 * Format a date to be long (September 25, 2011)
+	 * @param timestamp unix time stamp
+	 */
+	function formatLongDate($timestamp) {
+		if(empty($timestamp))
+			return '';
+		else
+			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $timestamp);
+	}
+	
+	function formatDate($timestamp) {
+		if(empty($timestamp))
+		    return '';
+		else
+			if(Yii::app()->language == 'en')
+			    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $timestamp);
+			else
+			    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'), $timestamp);
+	}
+		
+	function formatDatePicker($width = '') {
+		if(Yii::app()->language == 'en') {
+			if($width == 'medium')
+				return "M d, yy";
+			else
+		    	return "MM d, yy";
+		} else {
+		    $format = Yii::app()->locale->getDateFormat('short'); // translate Yii date format to jquery
+		    $format = str_replace('yy', 'y', $format);
+		    $format = str_replace('MM', 'mm', $format);
+		    $format = str_replace('M','m', $format);
+		    return $format;
+		}
+	}
+	
+	function parseDate($date) {
+		if(Yii::app()->language == 'en')
+		    return strtotime($date);
+		else
+		    return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short'));
+	}
+	
+	
+	/*** Date Time Format Functions ***/
+	
+	function formatLongDateTime($timestamp) {
+		if(empty($timestamp))
+			return '';
+		else
+			return Yii::app()->dateFormatter->formatDateTime($timestamp, 'long', 'short');
+	}
+	
+	function formatDateEndOfDay($timestamp) {
+		if(empty($timestamp))
+		    return '';
+		else
+			if(Yii::app()->language == 'en')
+			    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'), $timestamp) .' 23:59';
+			else
+			    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'), $timestamp) .' 23:59';
+	}
+	
+	function formatDateTime($timestamp) {
+		if(empty($timestamp))
+		    return '';
+		else
+			if(Yii::app()->language == 'en')
+				return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium') .' HH:mm', $timestamp);
+			else
+			    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') .' HH:mm', $timestamp);
+	}
+	
+	function parseDateTime($date) {
+		if(Yii::app()->language == 'en')
+		    return strtotime($date);
+		else
+		    return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short') .' hh:mm');
 	}
 }
 ?>

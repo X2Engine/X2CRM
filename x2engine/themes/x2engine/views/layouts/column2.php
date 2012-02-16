@@ -40,6 +40,22 @@
 
 $this->beginContent('/layouts/main');
 $themeURL = Yii::app()->theme->getBaseUrl();
+Yii::app()->clientScript->registerScript('menuScroling',"
+
+if ($.browser != 'msie' || $.browser.version > 6) {
+	var sidebarMenu = $('#sidebar-left');
+	var top = sidebarMenu.offset().top - 5;
+	$(window).scroll(function(event) {
+		if ($(this).scrollTop() >= top) {
+			sidebarMenu.addClass('fixed');
+		} else {
+			sidebarMenu.removeClass('fixed');
+		}
+	});
+}
+
+
+",CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('logos',"
 $(window).load(function(){
 	if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
@@ -54,7 +70,7 @@ $(window).load(function(){
 		alert('Please put the logo back');
 		window.location='http://www.x2engine.com';
 	}
-});    
+});
 ");
 
 $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew';

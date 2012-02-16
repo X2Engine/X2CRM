@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -197,8 +197,12 @@ class AccountsController extends x2base {
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Accounts'][$field])){
                                 $model->$field=$_POST['Accounts'][$field];
-                                if(is_array($model->$field))
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Accounts','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                             }
                         }
                         $this->create($model,$temp, '0');
@@ -244,7 +248,7 @@ class AccountsController extends x2base {
                 foreach($fields as $field){
                     if($field->type=='link'){
                         $fieldName=$field->fieldName;
-                        $type=$field->linkType;
+                        $type=ucfirst($field->linkType);
                         if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
                             eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
                             if(isset($lookupModel))
@@ -291,8 +295,12 @@ class AccountsController extends x2base {
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Accounts'][$field])){
                                 $model->$field=$_POST['Accounts'][$field];
-                                if(is_array($model->$field))
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Accounts','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                             }
                         }
 			

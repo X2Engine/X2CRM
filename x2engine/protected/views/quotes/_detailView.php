@@ -38,8 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = Quote::attributeLabels();
-
 Yii::app()->clientScript->registerScript('updateWorkflow',"
 
 function startWorkflowStage(workflowId,stageNumber) {
@@ -100,17 +98,6 @@ Yii::app()->clientScript->registerScript('stopEdit','
 	});
 ');
 
-$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Quotes'));
-$nonCustom=array();
-$custom=array();
-foreach($fields as $field){
-    if($field->custom==0){
-        $nonCustom[$field->fieldName]=$field;
-    }else{
-        $custom[$field->fieldName]=$field;
-    }
-}
-
 $relationships = Relationships::model()->findAllByAttributes(
 	array(
 		'firstType'=>'quotes', 
@@ -126,24 +113,44 @@ foreach($relationships as $relationship) {
 $associatedContacts = implode(', ', $associatedContacts);
 
 ?>
+
+
+<div class="x2-layout">
+	<div class="formSection">
+		<div class="formSectionHeader">
+			<span class="sectionTitle">Basic Information</span>
+		</div>
+		<div class="tableWrapper">
+			<tbody>
+				<tr class="formSectionRow">
+					<td style="width:300px">
+						<div class="formItem leftLabel">
+							<label><?php echo $attributeLabels['name']; ?></label>
+							<div class="formInputBox" style="width:200px"><?php echo $model->name; ?></div>
+						</div>
+					</td>
+					<td style="width:293px">
+					
+					</td>
+				</tr>
+			</tbody>
+		</div>
+	</div>
+</div>
+
 <div class="form no-border">
 <table class="details">
 	<tr>
-                <?php if($nonCustom['name']->visible==1){ ?>
-		<td class="label" width="20%"><?php echo $attributeLabels['name']; ?></td>
+		<td class="label" width="20%"><?php echo $model->getAttributeLabel('name'); ?></td>
 		<td colspan="3" id="name" onclick="showField(this,true)">
 			<div class="detail-field"><?php echo $model->name; ?></div>
 			<div class="detail-form"><?php echo $form->textField($model,'name',array('size'=>48,'maxlength'=>40)); ?></div>
 		</td>
-                <?php } ?>
 	</tr>
 	<tr>
-                <?php if($nonCustom['associatedContacts']->visible==1){ ?>
-		<td class="label" width="20%"><?php echo CHtml::link($attributeLabels['associatedContacts'],array('addContact', 'id'=>$model->id)); ?></td>
+		<td class="label" width="20%"><?php echo CHtml::link($model->getAttributeLabel('associatedContacts'),array('addContact', 'id'=>$model->id)); ?></td>
 		<td><?php echo $associatedContacts; ?></td>
-                <?php } ?>
-                <?php if($nonCustom['accountName']->visible==1){ ?>
-		<td class="label"><?php echo ($model->accountId==0)? $attributeLabels['accountName'] : CHtml::link($attributeLabels['accountName'],array('accounts/view','id'=>$model->accountId)); ?></td>
+		<td class="label"><?php echo ($model->accountId==0)? $model->getAttributeLabel('accountName') : CHtml::link($model->getAttributeLabel('accountName'),array('accounts/view','id'=>$model->accountId)); ?></td>
 		<td colspan="3" id="accountName" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->accountName; ?></b></div>
 			<div class="detail-form"><?php echo $form->hiddenField($model, 'accountName');
@@ -164,17 +171,14 @@ $associatedContacts = implode(', ', $associatedContacts);
 			));
 			echo $form->hiddenField($model, 'accountId');?></div>
 		</td>
-                <?php } ?>
 	</tr>
 	<?php $workflowList = Workflow::getList(); ?>
 	<tr id="workflow-row">
-        <?php if($nonCustom['status']->visible==1){ ?>
-		<td class="label" width="20%"><?php echo $attributeLabels['status']; ?></td>
+		<td class="label" width="20%"><?php echo $model->getAttributeLabel('status'); ?></td>
 		<td id="status" onclick="showField(this,true);">
 			<div class="detail-field"><?php echo Yii::t('quotes',$model->status); ?></div>
 			<div class="detail-form"><?php echo $form->dropDownList($model, 'status', Quote::statusList()); ?></div>
 		</td>
-		<?php } ?>
 		<td class="label"><?php echo Yii::t('workflow','Workflow'); ?></td>
 		<td colspan="3" id="workflow">
 			<div class="detail-field" style="width:170px; text-align:center;margin-bottom:5px;" onclick="showField($('#workflow').get(),false);"><?php echo $workflowList[$currentWorkflow]; ?></div>
@@ -201,7 +205,7 @@ $associatedContacts = implode(', ', $associatedContacts);
 	</tr>
 	<tr>
 		<td class="label">
-			<?php echo $attributeLabels['description']; ?>
+			<?php echo $model->getAttributeLabel('description'); ?>
 		</td>
 		<td colspan="3" class="text-field" id="description" onclick="showField(this,true)"><div class="spacer"></div>
 			<div class="detail-field"><?php echo $this->convertUrls($model->description); 
@@ -211,21 +215,15 @@ $associatedContacts = implode(', ', $associatedContacts);
 		</td>
 	</tr>
 	<tr>
-                <?php if($nonCustom['assignedTo']->visible==1){ ?>
-		<td class="label" width="20%"><?php echo CHtml::link($attributeLabels['assignedTo'],array('addUser', 'id'=>$model->id)); ?></td>
+		<td class="label" width="20%"><?php echo CHtml::link($model->getAttributeLabel('assignedTo'),array('addUser', 'id'=>$model->id)); ?></td>
 		<td><?php echo $model->assignedTo; ?></td>
-		<?php } ?>
-                <?php if($nonCustom['expirationDate']->visible==1){ ?>
-		<td class="label" width="25%" ><?php echo $attributeLabels['expirationDate']; ?></td>
+		<td class="label" width="25%" ><?php echo $model->getAttributeLabel('expirationDate'); ?></td>
 		<td id="expirationDate" onclick="showField(this,true);">
 			<div class="detail-field">
 				<b>
 					<?php 
-					if(empty($model->expirationDate))
-						$model->expirationDate = '';
-					else
-						$model->expirationDate = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->expirationDate);
-						echo $model->expirationDate;
+					$model->expirationDate = $this->formatDate($model->expirationDate);
+					echo $model->expirationDate;
 					?>
 				</b>
 			</div>
@@ -233,33 +231,16 @@ $associatedContacts = implode(', ', $associatedContacts);
 			$this->widget('CJuiDateTimePicker',array(
 				'model'=>$model, //Model object
 				'attribute'=>'expirationDate', //attribute name
-				'mode'=>'datetime', //use "time","date" or "datetime" (default)
+				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=>'MM dd, yy',
-					'timeFormat'=>'',
+					'dateFormat'=>$this->formatDatePicker(),
 				), // jquery plugin options
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			));?> </div>
 		</td>
-                <?php } ?>
 	</tr>
 	<tr>
-                <?php if($nonCustom['leadSource']->visible==1){ ?>
-		<td class="label"><?php echo $attributeLabels['leadSource']; ?></td>
-		<td id="leadSource" colspan="5" onclick="showField(this,true);">
-			<div class="detail-field"><?php echo Yii::t('quotes',$model->leadSource); ?></div>
-			<div class="detail-form"><?php echo $form->dropDownList($model,'leadSource',array(
-					'Website'=>Yii::t('quotes','Website'), 
-					'Cold Call'=>Yii::t('quotes','Cold Call'), 
-					"E-Mail"=>Yii::t('quotes','E-Mail'), 
-					"Store"=>Yii::t('quotes','Store')
-					)); ?></div>
-		</td>
-                <?php } ?>
-	</tr>
-	<tr>
-                <?php if($nonCustom['salesStage']->visible==1){ ?>
-		<td class="label"><?php echo $attributeLabels['salesStage']; ?></td>
+		<td class="label"><?php echo $model->getAttributeLabel('salesStage'); ?></td>
 		<td id="salesStage" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo Yii::t('quotes',$model->salesStage); ?></b></div>
 			<div class="detail-form"><?php echo $form->dropDownList($model,'salesStage',array(
@@ -268,18 +249,15 @@ $associatedContacts = implode(', ', $associatedContacts);
 					'Lost'=>Yii::t('quotes','Lost'))
 				); ?></div>
 		</td>
-		<?php } ?>
-                <?php if($nonCustom['probability']->visible==1){ ?>
-		<td class="label"><?php echo $attributeLabels['probability']; ?></td>
+		<td class="label"><?php echo $model->getAttributeLabel('probability'); ?></td>
 		<td id="probability" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->probability; ?></b></div>
 			<div class="detail-form"><?php echo $form->textField($model,'probability'); ?></div>
 		</td>
-                <?php } ?>
 	</tr>
 	<tr>
 		<td class="label">
-			<?php echo $attributeLabels['products']; ?>
+			<?php echo $model->getAttributeLabel('products'); ?>
 		</td>
 		<td colspan="3"><div class="spacer"></div>
 <?php
@@ -291,13 +269,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'name',
-			'header'=>Yii::t('product','Product'),
+			'header'=>Yii::t('product','Line Item'),
 			'value'=>'$data["name"]',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'unit',
-			'header'=>Yii::t('product','Unit'),
+			'header'=>Yii::t('product','Unit Price'),
 			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$model->currency.'")',
 			'type'=>'raw',
 		),
@@ -306,13 +284,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'header'=>Yii::t('product','Quantity'),
 			'value'=>'$data["quantity"]',
 			'type'=>'raw',
-			'footer'=>'<b>Total</b>',
 		),
 		array(
 			'name'=>'adjustment',
 			'header'=> Yii::t('product', 'Adjustment'),
 			'value'=>'$data["adjustment"]',
 			'type'=>'raw',
+			'footer'=>'<b>Total</b>',
 		),
 		array(
 			'name'=>'price',
@@ -326,23 +304,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 ?>
 		</td>
 	</tr>
-        <?php 
-        
-            foreach($custom as $fieldName=>$field){
-                
-                if($field->visible==1){ 
-		echo "<tr>
-                <td class=\"label\"><b>".$attributeLabels[$fieldName]."</b></td>
-		<td id=\"$fieldName\" onclick=\"toggleField(this);\" colspan=\"5\">
-			<div class=\"detail-field\">".$model->$fieldName."</div>
-			<div class=\"detail-form\">
-			".$form->textField($model,$fieldName,array('size'=>'70'))."
-			</div>
-		</td>
-                </tr>";
-                }
-            }
-        
-        ?>
 </table>
 </div>

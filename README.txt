@@ -4,16 +4,13 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-Beta 0.9.10 Changelog
+Beta 0.9.10.1 Changelog
 
 - Bug fixes
-- Greatly improved form editor
-- Groups
-- Roles (field-level permissions)
-- Improved workflows
-- Improved email
+- Added quotes and products modules
+- Added dashboard and charts
 
-Welcome to X2CRM v0.9.9 (Beta 10)!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2CRM v0.9.10.1 (Beta 12)!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

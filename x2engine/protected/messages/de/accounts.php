@@ -54,19 +54,19 @@ return array (
 'Description'=>'Beschreibung',
 'Last Updated'=>'Zuletzt Aktualisiert',
 'Updated By'=>'Aktualisiert von',
-'None'=>'Keiner',
+'None'=>'Keine',
 
 // Accounts Actions
 'Accounts List'=>'Konten-Liste',
-'Create Account'=>'Konto Erstellen',
+'Create Account'=>'Erstellen Konto',
 'View Account'=>'Konto Anzeigen',
-'Update Account'=>'Konto Aktualisieren',
-'Delete Account'=>'Konto Löschen',
+'Update Account'=>'Konto aktualisieren',
+'Delete Account'=>'Konto löschen',
 'Add a User'=>'Hinzufügen eines Benutzers',
 'Add a Contact'=>'Hinzufügen eines Kontakts',
 'Remove a User'=>'Entfernen eines Benutzers',
-'Remove a Contact'=>'Nehmen Sie einen Kontakt',
-'Share Account'=>'Anteil Konto',
+'Remove a Contact'=>'Entfernen eines Kontakt',
+'Share Account'=>'Teile Konto',
 
 // Accounts Titles
 'Accounts'=>'Konten',
@@ -75,8 +75,8 @@ return array (
 'Account:'=>'Konto:',
 
 // Misc
-'Please click any new users you wish to add.'=>'Bitte klicken Sie alle neuen Benutzer Sie hinzufügen möchten.',
-'Please click any new users you wish to remove.'=>'Bitte klicken Sie auf eine neue Benutzer, die Sie entfernen möchten.',
-'Account Record Details'=>'Konto Rekord Einzelheiten',
-'Account Record'=>'Konto Rekord',
+'Please click any new users you wish to add.'=>'Bitte klicken Sie alle neuen Benutzer, die Sie hinzufügen möchten.',
+'Please click any new users you wish to remove.'=>'Bitte klicken Sie auf alle neuen Benutzer, die Sie entfernen möchten.',
+'Account Record Details'=>'Kontoblatt Einzelheiten',
+'Account Record'=>'Kontoblatt',
 );

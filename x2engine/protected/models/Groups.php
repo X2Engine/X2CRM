@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -78,6 +78,15 @@ class Groups extends CActiveRecord
 			// Please remove those attributes that should not be searched.
 			array('id, name', 'safe', 'on'=>'search'),
 		);
+	}
+        
+        public static function getNames() {
+		$groupArray = CActiveRecord::model('Groups')->findAll();
+		$names = array();
+		foreach ($groupArray as $group) {
+			$names[$group->id] = $group->name;
+		}
+		return $names;
 	}
 
 	/**

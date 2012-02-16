@@ -138,7 +138,7 @@ function checkCurrency($code) {
 }
 
 function checkTimezone($timezone) {
-	if((isset($_GET['timezone']) && $_GET['timezone']==$timezone) || (!isset($_GET['timezone']) && $timezone == date_default_timezone_get()))
+	if((isset($_GET['timezone']) && $_GET['timezone']==$timezone) || (!isset($_GET['timezone']) && $timezone == 'US/Pacific')) //date_default_timezone_get()))
 		return ' selected="selected"';
 }
 

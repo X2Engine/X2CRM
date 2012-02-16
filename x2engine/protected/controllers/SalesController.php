@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -149,15 +149,13 @@ class SalesController extends x2base {
 			$model->accountId="";
 		}
 		// process currency into an INT
-		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+//		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 		
 		if(isset($model->associatedContacts))
 				$model->associatedContacts = Sales::parseContacts($model->associatedContacts);
 		$model->createDate=time();
                 $model->lastUpdated=time();
-		if($model->expectedCloseDate!=""){
-				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
-		}
+		$model->expectedCloseDate = $this->parseDate($model->expectedCloseDate);
 		parent::create($model,$oldAttributes,'0');
 	}
 
@@ -213,8 +211,12 @@ class SalesController extends x2base {
                     foreach(array_keys($model->attributes) as $field){
                         if(isset($_POST['Sales'][$field])){
                             $model->$field=$_POST['Sales'][$field];
-                            if(is_array($model->$field))
+                            $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Sales','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                         }
                     }
                     
@@ -231,7 +233,7 @@ class SalesController extends x2base {
         public function update($model,$oldAttributes,$api=0){
             
             // process currency into an INT
-            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+//            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 
             $arr=$model->associatedContacts;
             if(isset($model->associatedContacts)){
@@ -259,9 +261,6 @@ class SalesController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		if($model->expectedCloseDate!=""){
-			$model->expectedCloseDate=date("Y-m-d H:i",$model->expectedCloseDate);
-		}
 		$users=UserChild::getNames();
 		unset($users['admin']);
 		unset($users['']);
@@ -281,15 +280,15 @@ class SalesController extends x2base {
                 foreach($fields as $field){
                     if($field->type=='link'){
                         $fieldName=$field->fieldName;
-                        $type=$field->linkType;
+                        $type=ucfirst($field->linkType);
                         if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
                             eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
                             if(isset($lookupModel))
                                 $model->$fieldName=$lookupModel->name;
                         }
                     }elseif($field->type=='date'){
-                        $fieldName=$field->fieldName;
-                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
+ //                       $fieldName=$field->fieldName;
+ //                       $model->$fieldName=date("Y-m-d",$model->$fieldName);
                     }
                 }
 		$model->assignedTo=$arr;
@@ -340,8 +339,12 @@ class SalesController extends x2base {
                     foreach(array_keys($model->attributes) as $field){
                         if(isset($_POST['Sales'][$field])){
                             $model->$field=$_POST['Sales'][$field];
-                            if(is_array($model->$field))
+                            $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Sales','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                         }
                     }
 

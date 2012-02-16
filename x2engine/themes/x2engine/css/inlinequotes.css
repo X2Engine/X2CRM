@@ -15,21 +15,38 @@
 	font-style: normal;
 }
 
-.date-table {
+.quote-detail-table {
 	padding: 0;
+	width: 100%;
 }
 
-.date-table th {
+.quote-detail-table th {
 	background-color: inherit;
 	color: #666;
 	font-weight: normal;
 	font-size: 0.8em;
-	padding: 0;
+	padding: 5px 0 0 0;
 
 }
 
-.date-table td {
+.quote-detail-table td {
 	font-weight: bold;
+	padding: 0;
+}
+
+.quote-create-table {
+	width: 100%;
+	padding: 0;
+}
+
+.quote-create-table th {
+	background-color: inherit;
+	font-weight: bold;
+	font-size: 0.8em;
+	padding: 5px 0 0 0;
+}
+
+.quote-detail-table td {
 	padding: 0;
 }
 

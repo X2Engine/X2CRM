@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,14 +40,18 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
+	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
-	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Update'))
+	array('label'=>Yii::t('contacts','View'),'url'=>array('view','id'=>$model->id)),
+	array('label'=>Yii::t('contacts','Share'),'url'=>array('shareContact','id'=>$model->id)),
 );
+if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone') {
+	$this->menu[] = array('label'=>Yii::t('contacts','Update'));
+	$this->menu[] = array('label'=>Yii::t('contacts','Delete'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
+}
 ?>
-
-<h2><?php echo Yii::t('contacts','Update Contact:'); ?> <strong><?php echo $model->firstName.' '.$model->lastName; ?></strong></h2>
+<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<h2 style="margin-bottom:0;"><?php echo Yii::t('contacts','Update Contact:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>
 
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>

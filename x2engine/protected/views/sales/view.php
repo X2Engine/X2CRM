@@ -54,8 +54,10 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('accounts','Share Sale'),'url'=>array('shareSale','id'=>$model->id)),
 );
 ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<h2><?php echo Yii::t('sales','Sale:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
 
-<h2><?php echo Yii::t('sales','Sale:'); ?> <b><?php echo $model->name; ?></b></h2>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'contacts-form',

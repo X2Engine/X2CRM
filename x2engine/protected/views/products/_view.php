@@ -44,10 +44,6 @@ include("protected/config/productConfig.php"); ?>
 	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('assignedTo')); ?>:</b>
-	<?php echo CHtml::encode($data->assignedTo); ?>
-	<br />
-
 	<b><?php echo CHtml::encode($data->getAttributeLabel('name')); ?>:</b>
 	<?php echo CHtml::encode($data->name); ?>
 	<br />

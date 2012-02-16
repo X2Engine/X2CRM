@@ -40,26 +40,83 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Create Quote'), 'url'=>array('create')),
-	array('label'=>Yii::t('quotes','View Quote')),
-	array('label'=>Yii::t('quotes','Update Quote'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Delete Quote'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('quotes','View')),
+	array('label'=>Yii::t('quotes','Update'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 
 ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<h2><?php echo Yii::t('quotes','Quote:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
 
-<h2><?php echo Yii::t('quotes','Quote:'); ?> <b><?php echo $model->name; ?></b></h2>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
+	'id'=>'quotes-form',
 	'enableAjaxValidation'=>false,
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 
+
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'quotes'));
+
+$productField = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'products'));
+
+?>
+<div class="x2-layout form-view" style="margin-bottom: 0;">
+	<div class="formSection">
+		<div class="formSectionHeader">
+			<span class="sectionTitle"><?php echo $productField->attributeLabel; ?></span>
+		</div>
+	</div>
+</div>
+<div class="form" style="border:1px solid #ccc; border-top: 0; padding: 0; margin-top:-1px; border-radius:0;-webkit-border-radius:0; background:#fafafa;">
+<?php
+$this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>"quote-products-grid",
+	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
+	'summaryText'=>'',
+	'dataProvider'=>$dataProvider,
+	'columns'=>array(
+		array(
+			'name'=>'name',
+			'header'=>Yii::t('product','Line Item'),
+			'value'=>'$data["name"]',
+			'type'=>'raw',
+		),
+		array(
+			'name'=>'unit',
+			'header'=>Yii::t('product','Unit Price'),
+			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$model->currency.'")',
+			'type'=>'raw',
+		),
+		array(
+			'name'=>'quantity',
+			'header'=>Yii::t('product','Quantity'),
+			'value'=>'$data["quantity"]',
+			'type'=>'raw',
+		),
+		array(
+			'name'=>'adjustment',
+			'header'=> Yii::t('product', 'Adjustment'),
+			'value'=>'$data["adjustment"]',
+			'type'=>'raw',
+			'footer'=>'<b>Total</b>',
+		),
+		array(
+			'name'=>'price',
+			'header'=>Yii::t('product', "Price"),
+			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$model->currency.'")',
+			'type'=>'raw',
+			'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$model->currency) .'</b>',
+		),
+	),
+));
+?>
+</div>
+<?php
+/*
 $this->renderPartial('_detailView',
 	array(
 		'model'=>$model,
@@ -69,12 +126,14 @@ $this->renderPartial('_detailView',
 		'total'=>$total
 	)
 );
+*/
 $this->endWidget();
 
 ?>
 <a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
 <a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
 <a class="x2-button" href="shareQuote/<?php echo $model->id;?>"><span><?php echo Yii::t('quotes','Share Quote'); ?></span></a>
+<a class="x2-button" href="#" onClick="window.open('<?php echo Yii::app()->createUrl('quotes/print', array('id'=>$model->id)); ?>')"><span><?php echo Yii::t('quotes','Print Quote'); ?></span></a>
 <br /><br />
 
 <div id="attachment-form" style="display:none;">
@@ -96,6 +155,7 @@ if(isset($_GET['history']))
     $history=$_GET['history'];
 else
     $history="all";
+
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$actionHistory,
 	'itemView'=>'../actions/_view',

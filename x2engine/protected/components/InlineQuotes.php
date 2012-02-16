@@ -49,7 +49,8 @@ class InlineQuotes extends CWidget {
 	
 		if(isset($_POST))
 			$startHidden = false;
-			
+
+		if($this->startHidden) {			
 		// register css
 		Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() .'/css/inlinequotes.css');
 
@@ -71,9 +72,13 @@ class InlineQuotes extends CWidget {
 			email.val(email.val() + line + ".'""'.");
 		}
 		function sendQuoteEmail(quote) {
-			var notes = ".'"\n"'." + quote['notes']['label'] + ".'"\n"'." + quote['notes']['notes'];
-			$('#email-message').val(quote['name'] + quote['products'] + notes);
-			$('#inline-email-form').show(300);
+			var notes = ".'"\n"'." + quote['notes']['label'] + ".'"\n"'." + quote['notes']['notes'] + ".'"\n"'.";
+			toggleEmailForm();
+			teditor.e.body.innerHTML = '' + quote['name'] + quote['products'] + notes;
+			var value = $('#email-template option:contains(\"Quote\")').val();
+			$('#email-template').val(value);
+			$('#InlineEmail_subject').val('Quote');
+			$('#email-template').change();
 		}
 		", CClientScript::POS_HEAD);
 
@@ -85,6 +90,9 @@ class InlineQuotes extends CWidget {
 			$jsProductList .= "\$(productList).append(\$('<option>', {value: {$product->id}}).append('{$product->name}'));\n";
 			$jsProductPrices .= "prices[{$product->id}] = {$product->price};\n";
 		}
+		
+		$productNames = Product::productNames();
+		$jsonProductList = json_encode($productNames);
 
 		$region = Yii::app()->getLocale()->getId();
 		Yii::app()->clientScript->registerScript('productTable', "
@@ -137,7 +145,7 @@ function updateProductTotal(id, currency) {
 
 
 
-function addProduct(id, currency) {
+function addProduct(id, currency, productNames, prices) {
 	var row = $('<tr></tr>');
 	$('#product-table-' + id + ' tbody').append(row);
 
@@ -161,7 +169,9 @@ function addProduct(id, currency) {
 		name: 'ExistingProducts[id][]'
 	});
 	$(row).append(td.clone().append(productList));
-	". $jsProductList ."
+	for(var i in productNames) {
+		$(productList).append($('<option>', {value: i}).append(productNames[i]));
+	}
 	
 	var price = $('<input>', {
 		type: 'text',
@@ -202,8 +212,7 @@ function addProduct(id, currency) {
 	});
 	$(row).append(td.clone().append(label));
 	$(label).append('0');
-
-	". $jsProductPrices ."
+	
 	$(productList).change(function() {
 		$(price).val('' + prices[$(this).attr('value')]);
 		$(price).css('color', 'black');
@@ -226,7 +235,7 @@ function addProduct(id, currency) {
 } 
 
 
-function addFilledProduct(id, fillId, fillPrice, fillQuantity, fillAdjustment, currency) {
+function addFilledProduct(id, fillId, fillPrice, fillQuantity, fillAdjustment, currency, productNames, prices) {
 	var row = $('<tr></tr>');
 	$('#product-table-' + id + ' tbody').append(row);
 
@@ -250,7 +259,9 @@ function addFilledProduct(id, fillId, fillPrice, fillQuantity, fillAdjustment, c
 		name: 'ExistingProducts[id][]',
 	});
 	$(row).append(td.clone().append(productList));
-	". $jsProductList ."
+	for(var i in productNames) {
+		$(productList).append($('<option>', {value: i}).append(productNames[i]));
+	}
 	$(productList).val(fillId);
 	
 	var price = $('<input>', {
@@ -298,7 +309,6 @@ function addFilledProduct(id, fillId, fillPrice, fillQuantity, fillAdjustment, c
 	
 	updateProduct(id, $(price).val(), $(quantity).val(), $(adjustments).val(), label, currency);
 
-	". $jsProductPrices ."
 	$(productList).change(function() {
 		$(price).val('' + prices[$(this).attr('value')]);
 		$(price).css('color', 'black');
@@ -322,9 +332,47 @@ function addFilledProduct(id, fillId, fillPrice, fillQuantity, fillAdjustment, c
 	});
 }
 
-function toggleUpdateProduct(id) {
-	$('#quote-' + id + '-grid').hide('blind', 'slow');
-	$('#update-quote-form-' + id).show('slow');
+function toggleUpdateQuote(id, locked, strict) {
+	var confirmBox = $('<div></div>')
+		.html('This quote is locked. Are you sure you want to update this quote?')
+		.dialog({
+			title: 'Locked', 
+			autoOpen: false,
+			resizable: false,
+			buttons: {
+				'Yes': function() {
+					$('#quote-detail-' + id).hide('blind', 'slow');
+					$('#quote-update-' + id).show('slow');
+					$(this).dialog('close');
+				},
+				'No': function() {
+					$(this).dialog('close');
+				}
+			},
+		});
+
+	var denyBox = $('<div></div>')
+		.html('This quote is locked.')
+		.dialog({
+			title: 'Locked', 
+			autoOpen: false,
+			resizable: false,
+			buttons: {
+				'OK': function() {
+					$(this).dialog('close');
+				},
+			},
+		});
+		
+	if(locked)
+		if(strict)
+			denyBox.dialog('open');
+		else
+			confirmBox.dialog('open');
+	else {
+		$('#quote-detail-' + id).hide('blind', 'slow');
+		$('#quote-update-' + id).show('slow');
+	}
 }
 
 function toggleNewQuote() {
@@ -346,24 +394,19 @@ function duplicateQuote(quote) {
 
 ", CClientScript::POS_HEAD);
 	
-
+	}
 		parent::init();
 	}
 
 	public function run() {
-		
+	
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->getBaseUrl() .'/css/gridview/jquery.yiigridview.js');
+
 		$relationships = Relationships::model()->findAllByAttributes(array(
 			'firstType'=>'quotes', 
 			'secondType'=>'contacts', 
 			'secondId'=>$this->contactId,
 		));
-		
-		/*
-		if(empty($relationships))
-			$showNewQuote = true;
-		else
-			$showNewQuote = false;
-		*/
 		
 		echo '<div id="quotes-form">';
 		echo '<div id="wide-quote-form" class="wide form" style="overflow: visible;">';
@@ -379,6 +422,7 @@ function duplicateQuote(quote) {
 		
 		foreach($relationships as $relate) {
 			$quote = Quote::model()->findByPk($relate->firstId);
+			if($quote != NULL) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
 			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
 
@@ -425,7 +469,9 @@ function duplicateQuote(quote) {
 				'orders'=>$quoteProducts,
 				'total'=>$total,
 			));
+			}
 		}
+		
 		
 		// Mini Create Quote Form
 		$model = new Quote;

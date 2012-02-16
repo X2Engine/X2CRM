@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -228,9 +228,9 @@ class Actions extends CActiveRecord
 			else if ($due['yday'] == $now['yday']+1)	// is it tomorrow?
 				return Yii::t('app','Tomorrow');
 			else 
-				return Yii::app()->dateFormatter->format('MMM d',$date);	// any other day this year
+				return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'),$date);	// any other day this year
 		} else {
-			return Yii::app()->dateFormatter->format('MMM d, yyyy',$date);	// due date is after this year
+			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'),$date);	// due date is after this year
 		}
 	}
 	

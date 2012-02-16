@@ -289,18 +289,6 @@ Yii::app()->clientScript->registerScript('productTable', $productTableScript ,CC
 ?>
 
 <div class="form">
-<?php
-$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Quotes'));
-$nonCustom=array();
-$custom=array();
-foreach($fields as $field){
-    if($field->custom==0){
-        $nonCustom[$field->fieldName]=$field;
-    }else{
-        $custom[$field->fieldName]=$field;
-    }
-}
-?>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'quotes-form',
 	'enableAjaxValidation'=>false,
@@ -311,14 +299,11 @@ foreach($fields as $field){
 <?php echo $form->errorSummary($model); ?>
 
 <div class="row">
-        <?php if($nonCustom['name']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'name'); ?>
 		<?php echo $form->textField($model,'name',array('size'=>48,'maxlength'=>40)); ?>
 		<?php echo $form->error($model,'name'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['accountName']->visible==1){ ?>
 	<div class="cell">
 		<?php
 		echo '<label for="accountAutoComplete">'. Yii::t('quotes','Account').' ('.Yii::t('app','Optional').')<label>';
@@ -341,70 +326,38 @@ foreach($fields as $field){
 		echo $form->hiddenField($model,'accountId');
 		?>
 	</div>
-        <?php } ?>
 </div>
-<!--<div class="row">
-	<?php //echo $form->labelEx($model,'assignedTo'); ?>
-	<?php //echo $form->dropDownList($model,'assignedTo',$users); ?>
-	<?php //echo $form->error($model,'assignedTo'); ?>
-</div>-->
 <div class="row">
-        <?php /* if($nonCustom['salesStage']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'salesStage'); ?>
-		<?php echo $form->dropDownList($model,'salesStage',
-				array(
-					'Working'=>Yii::t('quotes','Working'),
-					'Won'=>Yii::t('quotes','Won'),
-					'Lost'=>Yii::t('quotes','Lost'))
-				); ?>
-		<?php echo $form->error($model,'salesStage'); ?>
-	</div>
-        <?php } ?>
-        <?php if($nonCustom['leadSource']->visible==1){ ?>
-	<div class="cell">
-		<?php echo $form->labelEx($model,'leadSource'); ?>
-		<?php echo $form->dropDownList($model,'leadSource',
-				array(
-					'Website'=>Yii::t('quotes','Website'), 
-					'Cold Call'=>Yii::t('quotes','Cold Call'), 
-					"E-Mail"=>Yii::t('quotes','E-Mail'), 
-					"Store"=>Yii::t('quotes','Store')
-				)); ?>
-		<?php echo $form->error($model,'leadSource'); ?>
-	</div>
-        <?php } */ ?>
-        <?php if($nonCustom['status']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'status'); ?>
 		<?php echo $form->dropDownList($model,'status', Quote::statusList()); ?>
 		<?php echo $form->error($model,'status'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['expirationDate']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'expirationDate'); ?>
 		<?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+		$model->expirationDate = $this->formatDate($model->expirationDate);
 		$this->widget('CJuiDateTimePicker',array(
-			'model'=>$model, //Model object
-			'attribute'=>'expirationDate', //attribute name
-			'mode'=>'datetime', //use "time","date" or "datetime" (default)
-			'options'=>array(
-				'dateFormat'=>'MM dd, yy',
-				'timeFormat'=>'',
-			), // jquery plugin options
-			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+		    'model'=>$model, //Model object
+		    'attribute'=>'expirationDate', //attribute name
+		    'mode'=>'date', //use "time","date" or "datetime" (default)
+		    'options'=>array(
+		    	'dateFormat'=>$this->formatDatePicker(),
+		    ), // jquery plugin options
+		    'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 		));?>
 		<?php echo $form->error($model,'expirationDate'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['probability']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'probability'); ?>
 		<?php echo $form->textField($model,'probability'); ?>
 		<?php echo $form->error($model,'probability'); ?>
 	</div>
-        <?php } ?>
+	<div class="cell">
+		<?php echo $form->labelEx($model,'locked'); ?>
+		<?php echo $form->checkBox($model,'locked'); ?>
+		<?php echo $form->error($model,'locked'); ?>
+	</div>
 </div>
 <div class="row">
 	<div class="cell">
@@ -413,11 +366,11 @@ foreach($fields as $field){
 			<table frame="border">
 				<tr>
 					<th></th>
-					<th>Name</th>
-					<th>Unit</th>
-					<th>Quantity</th>
-					<th>Adjustments</th>
-					<th>Price</th>
+					<th><?php echo Yii::t('product', 'Line Item'); ?></th>
+					<th><?php echo Yii::t('product', 'Unit Price'); ?></th>
+					<th><?php echo Yii::t('product', 'Quantity'); ?></th>
+					<th><?php echo Yii::t('product', 'Adjustments'); ?></th>
+					<th><?php echo Yii::t('product', 'Price'); ?></th>
 				</tr>
 				<tr id="product-list-footer">
 					<td></td>
@@ -431,56 +384,6 @@ foreach($fields as $field){
 					<td><b>Total</b></td>
 					<td><label id="product-list-total" style="font-weight: bold;">0</label></td>
 				</tr>
-				<?php /*
-				<tr>
-					<td><?php echo CHtml::dropDownList('ExistingProducts[id][]', '', $productNames); ?></td>
-					<td>
-						<?php echo CHtml::textField('ExistingProducts[price][]', '0', array(
-							'size'=>10,
-							'onFocus'=>"toggleText(this)",
-							'onBlur'=>"toggleText(this)",
-							'style'=>"color:#aaa",
-						)); ?>
-					</td>
-                	<td><input type="text" size="10" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" 
-                	    name="ExistingProducts[quantity][]" value="0" /></td>
-                	<td><?php echo CHtml::label('0', false); ?></td>
-                	<td>
-						<a href="javascript:void(0)" onclick="removeProduct(this);">
-							<img src="<?php echo Yii::app()->request->baseUrl .'/themes/x2engine/css/gridview/delete.png'; ?>"
-								alt="<?php echo Yii::t('workflow', 'Del'); ?>" />
-						</a>
-        			</td>
-        			<br />
-        		</tr>
-			<?php /*
-			<ol style="list-style-type:none;">
-				<?php if(isset($orders)) { ?>
-					<?php // we are updating, so display this quote's products ?>
-					<?php foreach($orders as $order) { ?>
-						<li>
-							<?php echo CHtml::dropDownList('ExistingProducts[id][]', "$order->productId", $productNames) ?>
-                			<input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" 
-                				name="ExistingProducts[quantity][]" value="<?php echo $order->quantity; ?>" />
-                			<div class="cell">
-								<a href="javascript:void(0)" onclick="deleteStage(this);">[<?php echo Yii::t('workflow','Del'); ?>]</a>
-        					</div>
-        					<br />
-						</li>
-					<?php } ?>
-				<?php } else { ?>
-					<?php // not updateing, so display a new product selector ?>
-					<li>
-						<?php echo CHtml::dropDownList('ExistingProducts[id][]', '', $productNames) ?>
-                		<input type="text" size="10" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" 
-                			name="ExistingProducts[quantity][]" value="0" />
-                		<div class="cell">
-							<a href="javascript:void(0)" onclick="deleteStage(this);">[<?php echo Yii::t('workflow','Del'); ?>]</a>
-        				</div>
-        				<br />
-        			</li>
-        		<?php } ?>
-			</ol> */ ?>
 			</table>
 		</div>
 	</div>
@@ -490,49 +393,24 @@ foreach($fields as $field){
 		<span class="information"><?php echo Yii::t('quotes','Hold Control or Command key to select multiple items.'); ?></span> 
 	</div>
 </div>
-<?php if($nonCustom['description']->visible==1){ ?>
 <div class="row">
 	<?php echo $form->labelEx($model,'description'); ?>
 	<?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
 	<?php echo $form->error($model,'description'); ?>
 </div>
-<?php } ?>
 <div class="row">
-        <?php if($nonCustom['assignedTo']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'assignedTo'); ?>
 		<?php echo $form->dropDownList($model,'assignedTo',$users,array('multiple'=>'multiple', 'size'=>7)); ?>
 		<?php echo $form->error($model,'assignedTo'); ?>
 	</div>
-        <?php } ?>
-        <?php if($nonCustom['associatedContacts']->visible==1){ ?>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'associatedContacts'); ?>
 		<?php if(!isset($selectedContacts)) $selectedContacts = ''; ?>
 		<?php echo CHtml::listBox('associatedContacts', $selectedContacts, $contacts, array('multiple'=>'multiple', 'size'=>7)); ?>
-		<?php // echo $form->dropDownList($model,'associatedContacts',$contacts,array('multiple'=>'multiple', 'size'=>7)); ?>
 		<?php echo $form->error($model,'associatedContacts'); ?>
 	</div>
-        <?php } ?>
 </div>
-<?php 
-        
-            foreach($custom as $fieldName=>$field){
-                
-                if($field->visible==1){ 
-                    ?>
-                    <div class="row">
-                    <div class="cell">
-                        <?php echo $form->label($model,$fieldName); ?>
-                        <?php echo $form->textField($model,$fieldName,array('size'=>'70')); ?>
-                        <?php echo $form->error($model,$fieldName); ?>
-                    </div>
-                    </div>
-                    <?php
-                        }
-                }
-        
-            ?>
 <div class="row buttons">
 	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 </div>

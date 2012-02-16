@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -74,75 +74,71 @@
  * @property string $otherUrl
  * @property string $newField
  */
-class Contacts extends CActiveRecord
-{
+class Contacts extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Contacts the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_contacts';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-                $arr=array(
-                    'varchar'=>array(),
-                    'text'=>array(),
-                    'date'=>array(),
-                    'dropdown'=>array(),
-                    'int'=>array(),
-                    'email'=>array(),
-                    'currency'=>array(),
-                    'url'=>array(),
-                    'float'=>array(),
-                    'boolean'=>array(),
-                    'required'=>array(),
-                    
-                );
-                $return=array();
-                foreach($fields as $field){
-                    $arr[$field->type][]=$field->fieldName;
-                    if($field->required)
-                        $arr['required'][]=$field->fieldName;
-                }
-                foreach($arr as $key=>$array){
-                    switch($key){
-                        case 'email':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        case 'required':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        case 'int':
-                            $return[]=array(implode(", ",$array),'numerical','integerOnly'=>true);
-                            break;
-                        case 'float':
-                            $return[]=array(implode(", ",$array),'type','type'=>'float');
-                            break;
-                        case 'boolean':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        default:
-                            break;
-                        
-                    }
-                    
-                } 
-                return $return;
+	public function rules() {
+		$fields = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
+		$arr=array(
+			'varchar'=>array(),
+			'text'=>array(),
+			'date'=>array(),
+			'dropdown'=>array(),
+			'int'=>array(),
+			'email'=>array(),
+			'currency'=>array(),
+			'url'=>array(),
+			'float'=>array(),
+			'boolean'=>array(),
+			'required'=>array(),
+			
+		);
+		$rules=array();
+		foreach($fields as $field){
+			$arr[$field->type][]=$field->fieldName;
+			if($field->required)
+				$arr['required'][]=$field->fieldName;
+		}
+		foreach($arr as $key=>$array){
+			switch($key){
+				case 'email':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				case 'required':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				case 'int':
+					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
+					break;
+				case 'float':
+					$rules[]=array(implode(',',$array),'type','type'=>'float');
+					break;
+				case 'boolean':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				default:
+					break;
+				
+			}
+			
+		} 
+		return $rules;
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
                 /*

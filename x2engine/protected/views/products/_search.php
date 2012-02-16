@@ -53,11 +53,6 @@ $form=$this->beginWidget('CActiveForm', array(
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'assignedTo'); ?>
-		<?php echo $form->textField($model,'assignedTo',array('size'=>40,'maxlength'=>40)); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->label($model,'name'); ?>
 		<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>255)); ?>
 	</div>

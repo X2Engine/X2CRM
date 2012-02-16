@@ -57,13 +57,13 @@ class InlineEmailAction extends CAction {
 
 			$this->model->attributes = $_POST['InlineEmail'];
 			
+			
 			// if the user specified a template, look it up and use it for the message
 			if($this->model->template != 0) {
 				$templateDoc = CActiveRecord::model('Docs')->findByPk($this->model->template);
 				if(isset($templateDoc)) {
-				
-				// $this->model->message = preg_replace('/{content}/u','<!--BeginMsg-->'.$this->model->message.'<!--EndMsg-->',$templateDoc->text);
-				
+					$this->model->message = str_replace('\\\\', '\\\\\\', $this->model->message);
+					$this->model->message = str_replace('$', '\\$', $this->model->message);
 					$emailBody = preg_replace('/{content}/u','<!--BeginMsg-->'.$this->model->message.'<!--EndMsg-->',$templateDoc->text);
 					if(isset($this->model->modelName, $this->model->modelId)) {		// if there is a model name/id available, look it up and use its attributes
 						$targetModel = CActiveRecord::model($this->model->modelName)->findByPk($this->model->modelId);
@@ -86,6 +86,8 @@ class InlineEmailAction extends CAction {
 			} elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
 				$emailBody = $this->model->message.'<br><br>'.Yii::app()->params->profile->getSignature(true);
 			}
+			
+
 			
 			if($this->model->template == 0)
 				$this->model->setScenario('custom');

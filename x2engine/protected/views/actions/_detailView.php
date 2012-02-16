@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,7 +69,7 @@ if($model->type=='note' || $model->type=='attachment') {
 		<td class="label" width="20%"><?php echo $attributeLabels['completedBy']; ?></td>
 		<td width="25%"><?php echo ($model->completedBy=="Email") ? "Email" : UserChild::getUserLinks($model->completedBy) ?></td>
 		<td class="label" width="15%"><?php echo $attributeLabels['createDate']; ?></td>
-		<td><b><?php echo date('Y-m-d',$model->createDate); ?></b> <?php echo date('g:ia',$model->createDate); ?></td>
+		<td><b><?php echo $this->formatLongDateTime($model->createDate); ?></b></td>
 	</tr>
 </table>
 
@@ -101,19 +101,19 @@ if ($model->associationType!="none") {
 		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
 		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : UserChild::getUserLinks($model->assignedTo); ?></td>
 		<td class="label" width="20%"><?php echo $attributeLabels['dueDate']; ?>
-		<td><b><?php echo date('Y-m-d',$model->dueDate); ?></b> <?php echo date('g:ia',$model->dueDate); ?></td>
+		<td><b><?php echo $this->formatLongDateTime($model->dueDate);?></b></td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo $attributeLabels['priority']; ?></td>
 		<td><b><?php echo Yii::t('actions',$model->priority); ?></b></td>
 		<td class="label"><?php echo $attributeLabels['createDate']; ?></td>
-		<td><b><?php echo date('Y-m-d',$model->createDate); ?></b> <?php echo date('g:ia',$model->createDate); ?></b></td>
+		<td><b><?php echo $this->formatLongDateTime($model->createDate); ?></b></td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo Yii::t('actions','Status'); ?></td>
 		<td><b><?php echo $status; ?></b></td>
 		<td class="label"><?php echo $attributeLabels['lastUpdated']; ?></td>
-		<td><b><?php echo date('Y-m-d',$model->lastUpdated); ?></b> <?php echo date('g:ia',$model->lastUpdated); ?></b></td>
+		<td><b><?php echo $this->formatLongDateTime($model->lastUpdated); ?></b></td>
 	</tr>
         <?php 
         

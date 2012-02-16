@@ -41,10 +41,9 @@
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScript('formUIScripts',"
-$('#".$modelName."-form input, #".$modelName."-form select, #".$modelName."-form textarea').change(function(){
-		$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
-	}
-);
+$('.x2-layout.form-view :input').change(function() {
+	$('#save-button, #save-button1, #save-button2, h2 a.x2-button').addClass('highlight');
+});
 ",CClientScript::POS_READY);
 
 Yii::app()->clientScript->registerScript('setFormName',"
@@ -95,12 +94,13 @@ $formSettings = ProfileChild::getFormSettings($modelName);
 if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 	$i = 0;
 	foreach($layoutData['sections'] as &$section) {
-		echo '<div class="formSection'.((isset($formSettings[$i]) && $formSettings[$i] == 0)? ' hideSection' : '').'">';
-		
 			// set defaults
 			if(!isset($section['title'])) $section['title'] = '';
 			if(!isset($section['collapsible'])) $section['collapsible'] = false;
 			if(!isset($section['rows'])) $section['rows'] = array();
+			if(!isset($formSettings[$i])) $formSettings[$i] = 1;
+			
+			echo '<div class="formSection'.((!$formSettings[$i] && $section['collapsible'])? ' hideSection' : '').'">';
 			
 			if($section['collapsible'] || !empty($section['title'])) {
 				echo '<div class="formSectionHeader">';
@@ -199,16 +199,14 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'style'=>$default?'color:#aaa;':null,
 										));
 									}elseif($field->type=='date'){
-										$default = empty($model->$fieldName);
-										if($default) 
-												$model->$fieldName = date("Y-m-d H:i:s");
+										$model->$fieldName = $this->formatDate($model->$fieldName);
 										Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 										$this->widget('CJuiDateTimePicker',array(
 											'model'=>$model, //Model object
 											'attribute'=>$field->fieldName, //attribute name
-											'mode'=>'datetime', //use "time","date" or "datetime" (default)
+											'mode'=>'date', //use "time","date" or "datetime" (default)
 												'options'=>array(
-													'dateFormat'=>'yy-mm-dd',
+													'dateFormat'=>$this->formatDatePicker(),
 
 												), // jquery plugin options
 												'htmlOptions'=>array(
@@ -281,6 +279,49 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										));
                                                                             else
                                                                                 echo $form->dropDownList($model, $fieldName, $users, array(
+												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+												'disabled'=>$item['readOnly']? 'disabled' : null,
+												'title'=>$field->attributeLabel,
+												'id'=>$field->modelName.'_assignedToDropdown',
+                                                                                                'multiple'=>'multiple',
+										));
+                                                                                
+								   /* x2temp */
+                                                                                echo '<div class="checkboxWrapper">';
+										echo CHtml::checkBox('group','',array(
+												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+												'disabled'=>$item['readOnly']? 'disabled' : null,
+												'title'=>$field->attributeLabel,
+												'id'=>$field->modelName.'_groupCheckbox',
+												'ajax'=>array(
+													'type'=>'POST', //request type
+														'url'=>CController::createUrl('groups/getGroups'), //url to call.
+														//Style: CController::createUrl('currentController/methodToCall')
+														'update'=>'#'.$field->modelName.'_assignedToDropdown', //selector to update
+														'complete'=>'function(){
+															if($("#'.$field->modelName.'_groupCheckbox").attr("checked")!="checked"){
+																$("#'.$field->modelName.'_groupCheckbox").attr("checked","checked");
+																$("#'.$field->modelName.'_visibility option[value=\'2\']").remove();
+															}else{
+																$("#'.$field->modelName.'_groupCheckbox").removeAttr("checked");
+																$("#'.$field->modelName.'_visibility").append(
+																	$("<option></option>").val("2").html("User\'s Groups")
+																);
+															}
+														}'
+												)
+											)).'</div><label for="group" class="groupLabel">Group?</label>';
+										/* end x2temp */  
+									}elseif($field->type=='association'){
+                                                                            if($field->linkType!='multiple')
+										echo $form->dropDownList($model, $fieldName, $contacts, array(
+												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+												'disabled'=>$item['readOnly']? 'disabled' : null,
+												'title'=>$field->attributeLabel,
+												'id'=>$field->modelName.'_assignedToDropdown',
+										));
+                                                                            else
+                                                                                echo $form->listBox($model, $fieldName, $contacts, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,

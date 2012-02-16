@@ -146,9 +146,9 @@ div.form input,div.form textarea,div.form select {
 	-webkit-border-radius:2px;
 	border-radius:2px;
 }
-div.form input, div.form textarea {
+/*div.form input, div.form textarea {
 	-webkit-appearance:none;
-}
+}*/
 div.form input[type="checkbox"] {
 	-webkit-appearance:checkbox;
 }

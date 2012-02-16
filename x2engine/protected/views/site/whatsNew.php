@@ -62,7 +62,7 @@
 		array(
 			'name' => Yii::t('actions','Last Updated'),
 			'type' => 'raw',
-			'value' => 'CHtml::encode(date("Y-m-d",$data["lastUpdated"]))'
+			'value' => 'CHtml::encode(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["lastUpdated"]))'
 		),
 		array(
 			'name' => Yii::t('actions','Updated By'),

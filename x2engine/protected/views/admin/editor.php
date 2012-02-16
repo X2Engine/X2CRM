@@ -42,7 +42,7 @@
 
 // ",CClientScript::POS_READY);
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/formEditor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2formEditor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.3.min.js');
 
 if(isset($layoutModel) && !empty($layoutModel->layout)) {
@@ -176,29 +176,24 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			$field->type=='int' || $field->type=='float'|| $field->type=='currency' ||
 				$field->type=='rating' || $field->type=='link' || $field->type=='date') {
 			echo CHtml::textField($modelName.'_'.$field->fieldName,'', array( 
-					'tabindex'=>$field->tabOrder,
 					'title'=>$field->attributeLabel,
 			));
 		} else if($field->type == 'text') {
 			echo CHtml::textArea($modelName.'_'.$field->fieldName,'', array(
-					'tabindex'=>$field->tabOrder,
 					'title'=>$field->attributeLabel,
 			));
 		}elseif($field->type=='dropdown'){
 			$dropdown=Dropdowns::model()->findByPk($field->linkType);
 			echo CHtml::dropDownList($modelName.'_'.$field->fieldName,'',json_decode($dropdown->options), array(
-					'tabindex'=>$field->tabOrder,
 					'title'=>$field->attributeLabel,
 			));
 		}elseif($field->type=='boolean'){
 			echo '<div class="checkboxWrapper">';
 			echo CHtml::checkBox($modelName.'_'.$field->fieldName,false,array(
-				'tabindex'=>$field->tabOrder,
 				'title'=>$field->attributeLabel,
 			)).'</div>';
 		}elseif($field->type=='assignment'){
 			echo CHtml::dropDownList($field->fieldName,'', array('Users'), array(
-					'tabindex'=>$field->tabOrder,
 					'title'=>$field->attributeLabel,
 			));
 	   /* x2temp */
@@ -206,7 +201,6 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 		/* end x2temp */  
 		}elseif($field->type=='visibility'){
 			echo CHtml::dropDownList($field->fieldName,'',array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
-					'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 					'title'=>$field->attributeLabel,
 			));
 		}

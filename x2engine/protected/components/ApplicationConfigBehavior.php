@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -58,6 +58,10 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Load configuration that cannot be put in config/main
 	 */
 	public function beginRequest() {
+
+		// $this->owner->messages->forceTranslation = true;
+		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
+
 		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
 		$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
@@ -77,7 +81,20 @@ class ApplicationConfigBehavior extends CBehavior {
 				// $this->redirect(Yii::app()->controller->createUrl('site/logout'));
 			}
 		}
-
+                $modules=$this->owner->modules;
+                $arr=array();
+                foreach(scandir('protected/modules') as $module){
+                    if(file_exists("protected/modules/$module/register.php")){
+                        $arr[$module]=ucfirst($module);
+                    }
+                }
+                $menuOrder=explode(":",$this->owner->params->admin->menuOrder);
+                foreach($arr as $key=>$module){
+                    if(array_search($key,$menuOrder)!==false){
+                        $modules[]=$key;
+                    }
+                }
+                $this->owner->setModules($modules);
 		$adminProf = ProfileChild::model()->findByPk(1);
 
 		$this->owner->params->currency = $this->owner->params->admin->currency;

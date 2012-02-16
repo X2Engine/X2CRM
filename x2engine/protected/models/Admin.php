@@ -105,6 +105,7 @@ class Admin extends CActiveRecord
 			// array('emailSignature', 'length', 'max'=>512),
 			array('menuVisibility', 'length', 'max'=>100),
 			array('emailSignature', 'length', 'max'=>512),
+			array('quoteStrictLock', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			// array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),

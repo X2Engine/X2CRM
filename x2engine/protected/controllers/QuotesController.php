@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -49,7 +49,7 @@ class QuotesController extends x2base {
                             'users'=>array('*'), 
                         ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index', 'view', 'create', 'quickCreate', 'update', 'quickUpdate', 'search', 'addUser', 'addContact', 'removeUser', 'removeContact', 'saveChanges', 'delete', 'quickDelete', 'addProduct', 'deleteProduct', 'shareQuote'),
+				'actions'=>array('index', 'view', 'create', 'quickCreate', 'update', 'quickUpdate', 'search', 'addUser', 'addContact', 'removeUser', 'removeContact', 'saveChanges', 'print', 'delete', 'quickDelete', 'addProduct', 'deleteProduct', 'shareQuote'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -78,7 +78,6 @@ class QuotesController extends x2base {
 	public function actionView($id) {
 		$type = 'quotes';
 		$model = $this->loadModel($id);
-		$model->assignedTo = UserChild::getUserLinks($model->assignedTo);
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 				
 		// find associated products and their quantities
@@ -166,16 +165,17 @@ class QuotesController extends x2base {
 		));
 	}
 	
-	public function create($model, $oldAttributes, $contacts, $products){
+	public function createQuote($model, $oldAttributes, $contacts, $products){
 		
 		if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
 			$model->accountName=$_POST['companyAutoComplete'];
 			$model->accountId="";
 		}
 		
-		if(isset($model->assignedTo))
-				$model->assignedTo = Quote::parseUsers($model->assignedTo);
 		$model->createDate=time();
+		$model->lastUpdated = time();
+		$model->createdBy = Yii::app()->user->getName();
+		$model->updatedBy = Yii::app()->user->getName();
 		if($model->expectedCloseDate!=""){
 				$model->expectedCloseDate=strtotime($model->expectedCloseDate);
 		}
@@ -235,23 +235,11 @@ class QuotesController extends x2base {
 		$model = new Quote;
 		$users = UserChild::getNames();
 		$contacts = Contacts::getAllNames();
-		unset($users['admin']);
-		unset($users['']);
 		unset($contacts['0']);
 		
-		$products = Product::model()->findAll(
-			array(
-				'select'=>'id, name, price, currency',
-				'condition'=>'active=:active',
-				'params'=>array(':active'=>1),
-			)
-		);
-		$productNames = array(0 => '');
 		$currency = Yii::app()->params->currency;
-		foreach($products as $product) {
-			$productNames[$product->id] = $product->name;
-			$productCurrency[$product->id] = $product->currency;
-		}
+		$productNames = Product::productNames();
+		$productCurrency = Product::productCurrency();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -265,11 +253,11 @@ class QuotesController extends x2base {
         	    }
         	}
         	        	
-        	if($model->expirationDate) // if we have expiration date: convert it to a timestamp
-        		$model->expirationDate = strtotime($model->expirationDate);
+			$model->expirationDate = $this->parseDate($model->expirationDate);
         	
-        	if(isset($_POST['associatedContacts'])) {
-				$contacts = $_POST['associatedContacts']; // get contacts
+        	if(isset($model->associatedContacts)) {
+        		$contacts = $model->associatedContacts;
+        		$model->associatedContacts = Quote::parseContacts($model->associatedContacts);
         	} else {
         		$contacts = array();
         	}
@@ -300,9 +288,10 @@ class QuotesController extends x2base {
         	$model->currency = $currency;
 
 			
-        	$this->create($model, $temp, $contacts, $products);
+        	$this->createQuote($model, $temp, $contacts, $products);
 		}
 
+		$products = Product::activeProducts();
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
@@ -325,11 +314,12 @@ class QuotesController extends x2base {
         	    }
         	}
         	
-        	if($model->expirationDate) // if we have expiration date: convert it to a timestamp
-        		$model->expirationDate = strtotime($model->expirationDate);
-        	
+			$model->expirationDate = $this->parseDate($model->expirationDate);
+				    	
 			$contacts = $_POST['associatedContacts']; // get contacts
 			$contact = Contacts::model()->findByPk($contacts[0]);
+			$model->associatedContacts = $contact->id;
+			
 			$redirect = $_POST['redirect'];
 			
 			// get product names
@@ -343,32 +333,38 @@ class QuotesController extends x2base {
 
 			
 			// get products
-			$ids = $_POST['ExistingProducts']['id'];
-			$prices = $_POST['ExistingProducts']['price'];
-			$quantities = $_POST['ExistingProducts']['quantity'];
-			$adjustments = $_POST['ExistingProducts']['adjustment'];
-			$products = array();
-			foreach($ids as $key=>$id) {
-				if($id != 0) { // remove blanks
-					$products[$key]['id'] = $id;
-					$products[$key]['name'] = $productNames[$id];
-					$products[$key]['price'] = $prices[$key];
-					$products[$key]['quantity'] = $quantities[$key];
-					if(strchr($adjustments[$key], '%')) { // percent adjustment
-						$products[$key]['adjustment'] = floatval(str_replace("%", "", $adjustments[$key]));
-						$products[$key]['adjustmentType'] = 'percent';
-					} else {
-						$products[$key]['adjustment'] = $adjustments[$key];
-						$products[$key]['adjustmentType'] = 'linear';
+			if(isset($_POST['ExistingProducts'])) {
+				$ids = $_POST['ExistingProducts']['id'];
+				$prices = $_POST['ExistingProducts']['price'];
+				$quantities = $_POST['ExistingProducts']['quantity'];
+				$adjustments = $_POST['ExistingProducts']['adjustment'];
+				$products = array();
+				foreach($ids as $key=>$id) {
+					if($id != 0) { // remove blanks
+						$products[$key]['id'] = $id;
+						$products[$key]['name'] = $productNames[$id];
+						$products[$key]['price'] = $prices[$key];
+						$products[$key]['quantity'] = $quantities[$key];
+						if(strchr($adjustments[$key], '%')) { // percent adjustment
+							$products[$key]['adjustment'] = floatval(str_replace("%", "", $adjustments[$key]));
+							$products[$key]['adjustmentType'] = 'percent';
+						} else {
+							$products[$key]['adjustment'] = $adjustments[$key];
+							$products[$key]['adjustmentType'] = 'linear';
+						}
 					}
 				}
+			} else {
+				$products = array();
 			}
+			
 			if(!empty($products))
 				$currency = $productCurrency[$products[0]['id']];
         	$model->currency = $currency;
 			        	
 			$model->createDate = time();
 			$model->lastUpdated = time();
+			$model->createdBy = Yii::app()->user->getName();
 			$model->updatedBy = Yii::app()->user->getName();
 			
 			if($model->save()){
@@ -414,12 +410,15 @@ class QuotesController extends x2base {
 				$updated = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->lastUpdated);
 				$expires = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->expirationDate);
 			
-				$description = "New Quote: <b>{$model->name}</b> {$model->id} ({$model->status})
+				$description = "New Quote: <b>{$model->id}</b> {$model->name} ({$model->status})
 				Created: <b>$created</b>
 				Updated: <b>$updated</b> by <b>{$model->updatedBy}</b>
 				Expires: <b>$expires</b>\n\n";
-				
-				$description .= $model->productTable();
+
+				$table = $model->productTable();
+				$table = str_replace("\n", "", $table);
+				$table = str_replace("\t", "", $table);
+				$description .= $table;
 				$action->actionDescription = $description;
 				$action->save();
 			}
@@ -431,11 +430,7 @@ class QuotesController extends x2base {
         }
 	}
         
-	public function update($model, $oldAttributes, $contacts, $products) {
-	
-	    $arr=$model->assignedTo;
-	    if(isset($model->assignedTo))
-	            $model->assignedTo=Quote::parseUsers($arr);
+	public function updateQuote($model, $oldAttributes, $contacts, $products) {
 	    
 	    $model->lastUpdated = time();
 	    $model->updatedBy = Yii::app()->user->name;
@@ -521,8 +516,6 @@ class QuotesController extends x2base {
 		$model=$this->loadModel($id);
 		
 		$users=UserChild::getNames();
-		unset($users['admin']);
-		unset($users['']);
 		$contacts=Contacts::getAllNames();
 		unset($contacts['0']);
 		
@@ -532,21 +525,8 @@ class QuotesController extends x2base {
 		foreach($relationships as $relate) {
 			$selectedContacts[] = $relate->secondId;
 		}
-		
-		$curUsers=$model->assignedTo;
-		$userPieces=explode(', ',$curUsers);
-		$arr=array();
-		foreach($userPieces as $piece){
-			$arr[]=$piece;
-		}
-		
-		$model->assignedTo=$arr;
-		
-		$allProducts = Product::model()->findAll(array('select'=>'id, name, price'));
-		$productNames = array(0 => '');
-		foreach($allProducts as $product) {
-			$productNames[$product->id] = $product->name;
-		}
+		$model->associatedContacts = $selectedContacts;
+		$productNames = $model->productNames();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -559,50 +539,53 @@ class QuotesController extends x2base {
         	    }
         	}
         	
-        	if($model->expirationDate) // if we have expiration date: convert it to a timestamp
-        		$model->expirationDate = strtotime($model->expirationDate);
-        	
-        	if(isset($_POST['associatedContacts'])) {
-				$contacts = $_POST['associatedContacts']; // get contacts
+        	$model->expirationDate = $this->parseDate($model->expirationDate);
+        	if(isset($model->associatedContacts)) {
+        		$contacts = $model->associatedContacts;
+        		$model->associatedContacts = Quote::parseContacts($model->associatedContacts);
         	} else {
         		$contacts = array();
         	}
 			
 			// get products
-			$ids = $_POST['ExistingProducts']['id'];
-			$prices = $_POST['ExistingProducts']['price'];
-			$quantities = $_POST['ExistingProducts']['quantity'];
-			$adjustments = $_POST['ExistingProducts']['adjustment'];
-			$products = array();
-			foreach($ids as $key=>$id) {
-				if($id != 0) { // remove blanks
-					$products[$key]['id'] = $id;
-					$products[$key]['name'] = $productNames[$id];
-					$products[$key]['price'] = $prices[$key];
-					$products[$key]['quantity'] = $quantities[$key];
-					if(strchr($adjustments[$key], '%')) { // percent adjustment
-						$products[$key]['adjustment'] = floatval(str_replace("%", "", $adjustments[$key]));
-						$products[$key]['adjustmentType'] = 'percent';
-					} else {
-						$products[$key]['adjustment'] = $adjustments[$key];
-						$products[$key]['adjustmentType'] = 'linear';
+			if(isset($_POST['ExistingProducts'])) {
+				$ids = $_POST['ExistingProducts']['id'];
+				$prices = $_POST['ExistingProducts']['price'];
+				$quantities = $_POST['ExistingProducts']['quantity'];
+				$adjustments = $_POST['ExistingProducts']['adjustment'];
+				$products = array();
+				foreach($ids as $key=>$id) {
+					if($id != 0) { // remove blanks
+						$products[$key]['id'] = $id;
+						$products[$key]['name'] = $productNames[$id];
+						$products[$key]['price'] = $prices[$key];
+						$products[$key]['quantity'] = $quantities[$key];
+						if(strchr($adjustments[$key], '%')) { // percent adjustment
+							$products[$key]['adjustment'] = floatval(str_replace("%", "", $adjustments[$key]));
+							$products[$key]['adjustmentType'] = 'percent';
+						} else {
+							$products[$key]['adjustment'] = $adjustments[$key];
+							$products[$key]['adjustmentType'] = 'linear';
+						}
 					}
 				}
+			} else {
+				$products = array();
 			}
 			
-						
-        	$this->update($model, $temp, $contacts, $products);
+        	$this->updateQuote($model, $temp, $contacts, $products);
 
 		}
-		if(!empty($model->expirationDate)) // format expiration date
-			$model->expirationDate = Yii::app()->dateFormatter->format('MMM dd, yyyy', $model->expirationDate);
+//		if(!empty($model->expirationDate)) // format expiration date
+//			$model->expirationDate = Yii::app()->dateFormatter->format('MMM dd, yyyy', $model->expirationDate);
+		$products = $model->activeProducts();
 		$orders = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$model->id));
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
 			'contacts'=>$contacts,
 			'selectedContacts'=>$selectedContacts,
-			'products'=>$allProducts,
+			'products'=>$products,
 			'productNames'=>$productNames,
 			'orders'=>$orders,
 		));
@@ -611,101 +594,116 @@ class QuotesController extends x2base {
 	public function actionQuickUpdate($id) {
 		$model = $this->loadModel($id);
 
+        foreach($model->attributes as $field=>$value){
+            if(isset($_POST['Quote'][$field])){
+                $model->$field=$_POST['Quote'][$field];
+            }
+        }
+        
+		$model->expirationDate = $this->parseDate($model->expirationDate);
+    	
+        $model->save();
+        
+		$allProducts = Product::model()->findAll(array('select'=>'id, name, price'));
+		$productNames = array(0 => '');
+		foreach($allProducts as $product) {
+		    $productNames[$product->id] = $product->name;
+		}
+		
+	    $model->lastUpdated = time();
+	    $model->updatedBy = Yii::app()->user->name;
+			
+		// get products
 		if(isset($_POST['ExistingProducts'])) {
-
-			$allProducts = Product::model()->findAll(array('select'=>'id, name, price'));
-			$productNames = array(0 => '');
-			foreach($allProducts as $product) {
-				$productNames[$product->id] = $product->name;
-			}
-			
-			// get products
-			$ids = $_POST['ExistingProducts']['id'];
-			$prices = $_POST['ExistingProducts']['price'];
-			$quantities = $_POST['ExistingProducts']['quantity'];
-			$adjustments = $_POST['ExistingProducts']['adjustment'];
-			$products = array();
-			foreach($ids as $key=>$id) {
-			    if($id != 0) { // remove blanks
-			    	$products[$key]['id'] = $id;
-			    	$products[$key]['name'] = $productNames[$id];
-			    	$products[$key]['price'] = $prices[$key];
-			    	$products[$key]['quantity'] = $quantities[$key];
-			    	if(strchr($adjustments[$key], '%')) { // percent adjustment
-			    		$products[$key]['adjustment'] = floatval(str_replace("%", "", $adjustments[$key]));
-			    		$products[$key]['adjustmentType'] = 'percent';
-			    	} else {
-			    		$products[$key]['adjustment'] = $adjustments[$key];
-			    		$products[$key]['adjustmentType'] = 'linear';
-			    	}
-			    }
-			}
-			
-	   		// update products
-	   		$orders = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$model->id));
-	   		foreach($orders as $order) {
-	   		    $found = false;
-	   		    foreach($products as $key=>$product) {
-	   		    	if($order->productId == $product['id']) {
-	   		    		$order->price = $product['price'];
-	   		    		$order->quantity = $product['quantity'];
-	   		    		$order->adjustment = $product['adjustment'];
-	   		    		$order->adjustmentType = $product['adjustmentType'];
-	   		    		$order->save();
-	   		    		unset($products[$key]);
-	   		    		$found = true;
-	   		    		break;
-	   		    	}
-	   		    }
-	   		    if(!$found)
-	   		    	$order->delete();
-	   		}
-	   		
-	   		// tie new products to quote
-	   		foreach($products as $product) {
-			    $qp = new QuoteProduct;
-			    $qp->quoteId = $model->id;
-			    $qp->productId = $product['id'];
-			    $qp->name = $product['name'];
-			    $qp->price = $product['price'];
-			    $qp->quantity = $product['quantity'];
-			    $qp->adjustment = $product['adjustment'];
-			    $qp->adjustmentType = $product['adjustmentType'];
-			    $qp->save();
-	   		}
-	   		
-	   		$contact = Contacts::model()->findByPk($_POST['contactId']);
-	   		
-			// generate history
-			$action = new Actions;
-			$action->associationType = 'contacts';
-			$action->associationId = $contact->id;
-			$action->associationName = $contact->name;
-			$action->assignedTo = Yii::app()->user->getName();
-			$action->completedBy=Yii::app()->user->getName();
-			$action->dueDate = time();
-			$action->completeDate = time();
-			$action->visibility = 1;
-			$action->complete='Yes';
-			$created = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->createDate);
-			$updated = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->lastUpdated);
-			$expires = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->expirationDate);
-			
-			$description = "Updated Quote
-			<span style=\"font-weight: bold; font-size: 1.25em;\">ID: {$model->id}</span> <b>{$model->name}</b> {$model->id} ({$model->status})
-			Created: <b>$created</b>
-			Updated: <b>$updated</b> by <b>{$model->updatedBy}</b>
-			Expires: <b>$expires</b>\n\n";
-			
-			$description .= $model->productTable();
-			$action->actionDescription = $description;
-			$action->save();
-			
-			if(isset($_POST['contactId'])) {
-				Yii::app()->clientScript->scriptMap['*.js'] = false;
-				$contact = Contacts::model()->findByPk($_POST['contactId']);
-				$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
-			}
+		    $ids = $_POST['ExistingProducts']['id'];
+		    $prices = $_POST['ExistingProducts']['price'];
+		    $quantities = $_POST['ExistingProducts']['quantity'];
+		    $adjustments = $_POST['ExistingProducts']['adjustment'];
+		    $products = array();
+		    foreach($ids as $key=>$id) {
+		        if($id != 0) { // remove blanks
+		        	$products[$key]['id'] = $id;
+		        	$products[$key]['name'] = $productNames[$id];
+		        	$products[$key]['price'] = $prices[$key];
+		        	$products[$key]['quantity'] = $quantities[$key];
+		        	if(strchr($adjustments[$key], '%')) { // percent adjustment
+		        		$products[$key]['adjustment'] = floatval(str_replace("%", "", $adjustments[$key]));
+		        		$products[$key]['adjustmentType'] = 'percent';
+		        	} else {
+		        		$products[$key]['adjustment'] = $adjustments[$key];
+		        		$products[$key]['adjustmentType'] = 'linear';
+		        	}
+		        }
+		    }
+		
+	   	    // update products
+	   	    $orders = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$model->id));
+	   	    foreach($orders as $order) {
+	   	        $found = false;
+	   	        foreach($products as $key=>$product) {
+	   	        	if($order->productId == $product['id']) {
+	   	        		$order->price = $product['price'];
+	   	        		$order->quantity = $product['quantity'];
+	   	        		$order->adjustment = $product['adjustment'];
+	   	        		$order->adjustmentType = $product['adjustmentType'];
+	   	        		$order->save();
+	   	        		unset($products[$key]);
+	   	        		$found = true;
+	   	        		break;
+	   	        	}
+	   	        }
+	   	        if(!$found)
+	   	        	$order->delete();
+	   	    }
+	   	    
+	   	    // tie new products to quote
+	   	    foreach($products as $product) {
+		        $qp = new QuoteProduct;
+		        $qp->quoteId = $model->id;
+		        $qp->productId = $product['id'];
+		        $qp->name = $product['name'];
+		        $qp->price = $product['price'];
+		        $qp->quantity = $product['quantity'];
+		        $qp->adjustment = $product['adjustment'];
+		        $qp->adjustmentType = $product['adjustmentType'];
+		        $qp->save();
+	   	    }
+	   	}
+	   	
+	   	$contact = Contacts::model()->findByPk($_POST['contactId']);
+	   	
+		// generate history
+		$action = new Actions;
+		$action->associationType = 'contacts';
+		$action->associationId = $contact->id;
+		$action->associationName = $contact->name;
+		$action->assignedTo = Yii::app()->user->getName();
+		$action->completedBy=Yii::app()->user->getName();
+		$action->dueDate = time();
+		$action->completeDate = time();
+		$action->visibility = 1;
+		$action->complete='Yes';
+		$created = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->createDate);
+		$updated = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->lastUpdated);
+		$expires = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $model->expirationDate);
+		
+		$description = "Updated Quote
+		<span style=\"font-weight: bold; font-size: 1.25em;\">{$model->id}</span> {$model->name} ({$model->status})
+		Created: <b>$created</b>
+		Updated: <b>$updated</b> by <b>{$model->updatedBy}</b>
+		Expires: <b>$expires</b>\n\n";
+		
+		$table = $model->productTable();
+		$table = str_replace("\n", "", $table);
+		$table = str_replace("\t", "", $table);
+		$description .= $table;
+		$action->actionDescription = $description;
+		$action->save();
+		
+		if(isset($_POST['contactId'])) {
+		    Yii::app()->clientScript->scriptMap['*.js'] = false;
+		    $contact = Contacts::model()->findByPk($_POST['contactId']);
+		    $this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 		}
 	}
 	
@@ -719,14 +717,46 @@ class QuotesController extends x2base {
                             }
                         }
 						
-			if($quote->expirationDate != $temp["expirationDate"]) // if new expiration date
-        		$quote->expirationDate = strtotime($quote->expirationDate);
+			$quote->expirationDate = $this->parseDate($quote->expirationDate);
 			
 			$changes=$this->calculateChanges($temp,$quote->attributes, $quote);
 			$quote=$this->updateChangelog($quote,$changes);
 			$quote->save();
 			$this->redirect(array('view','id'=>$quote->id));
 			
+		}
+	}
+	
+	public function actionPrint($id) {
+		$model = $this->loadModel($id);
+		
+		if(isset($_POST['Quote'])) {
+		
+			if(isset($_POST['includeNotes']))
+				$includeNotes = $_POST['includeNotes'];
+			else
+				$includeNotes = false;
+
+			if(isset($_POST['includeLogo']))
+				$includeLogo = $_POST['includeLogo'];
+			else
+				$includeLogo = false;
+
+			if(isset($_POST['Quote']['description']))
+				$notes = $_POST['Quote']['description'];
+			else
+				$notes = '';
+			
+			$this->renderPartial('print',
+				array(
+					'model'=>$model,
+					'includeNotes'=>$includeNotes,
+					'notes'=>$notes,
+					'includeLogo'=>$includeLogo,
+				)
+			);
+		} else {
+			$this->renderPartial('printOptions', array('model'=>$model));
 		}
 	}
 
@@ -961,6 +991,7 @@ class QuotesController extends x2base {
 		$model=$this->loadModel($id);
 		
 		if($model) {
+
 			// delete associated actions
 			Actions::model()->deleteAllByAttributes(array('associationId'=>$id, 'associationType'=>'quotes'));
 			// delete product relationships
@@ -968,8 +999,12 @@ class QuotesController extends x2base {
 			// delete contact relationships
 			Relationships::model()->deleteAllByAttributes(array('firstType'=>'quotes', 'firstId'=>$id, 'secondType'=>'contacts'));
 
-			$contact = Contacts::model()->findByPk($_GET['contactId']);
+			$name = $model->name;
+
 			// generate history
+			
+			$contact = Contacts::model()->findByPk($_GET['contactId']);
+
 			$action = new Actions;
 			$action->associationType = 'contacts';
 			$action->associationId = $contact->id;
@@ -980,12 +1015,13 @@ class QuotesController extends x2base {
 			$action->completeDate = time();
 			$action->visibility = 1;
 			$action->complete='Yes';
-			$action->actionDescription = "Deleted Quote: <b>{$model->name}</b>";
+			$action->actionDescription = "Deleted Quote: <span style=\"font-weight:bold;\">{$model->id}</span> {$model->name}";
 			$action->save();
-			
+	
             $this->cleanUpTags($model);
 			$model->delete();
-		} else
+			
+		}  else 
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
 		
 		if($_GET['contactId']) {

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,9 +37,9 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h2>Modified Fields</h2>
-This page has a list of all fields that have been modified, and allows you to add or remove your own fields, as well as customizing the pre-set fields.
-<br /><br />
+?><h2><?php echo Yii::t('admin','Modified Fields'); ?></h2>
+<?php echo Yii::t('admin','This page has a list of all fields that have been modified, and allows you to add or remove your own fields, as well as customizing the pre-set fields.'); ?>
+<br><br>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'fields-grid',
@@ -51,12 +51,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		'modelName',
 		'fieldName',
 		'attributeLabel',
-		array(
-			'name'=>'visible',
-                        'header'=>'Visibility',
-			'value'=>'$data->visible==1?"Shown":"Hidden"',
-			'type'=>'raw',
-		),
+		// array(
+			// 'name'=>'visible',
+                        // 'header'=>'Visibility',
+			// 'value'=>'$data->visible==1?"Shown":"Hidden"',
+			// 'type'=>'raw',
+		// ),
                 array(
 			'name'=>'required',
                         'header'=>'Required',
@@ -71,12 +71,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		*/
 	),
 )); ?>
-<br />
+<br>
 <a href="#" onclick="$('#addField').toggle();$('#removeField').hide();$('#customizeField').hide();" class="x2-button">Add Field</a>
 <a href="#" onclick="$('#removeField').toggle();$('#addField').hide();$('#customizeField').hide();" class="x2-button">Remove Field</a>
 <a href="#" onclick="$('#customizeField').toggle();$('#addField').hide();$('#removeField').hide();" class="x2-button">Customize Field</a>
-<br />
-<br />
+<br>
+<br>
 <div id="addField" style="display:none;">
 <?php $this->renderPartial('addField',array(
     'model'=>$model,

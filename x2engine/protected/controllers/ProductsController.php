@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -123,14 +123,20 @@ class ProductsController extends x2base {
                 foreach(array_keys($model->attributes) as $field) {
                     if(isset($_POST['Product'][$field])) {
                         $model->$field=$_POST['Product'][$field];
-                        if(is_array($model->$field))
-                                    $model->$field=Accounts::parseUsers($model->$field);
+                        $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Products','fieldName'=>$field));
+                        if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                            $model->$field=Accounts::parseUsers($model->$field);
+                        }elseif($fieldData->type=='date'){
+                            $model->$field=strtotime($model->$field);
+                        }
                     }
                 }
 
-                $model->price = $this->parseCurrency($model->price,false);
+ //               $model->price = $this->parseCurrency($model->price,false);
                 $model->createDate=time();
-                        parent::create($model, $temp, 0);
+                
+      
+                parent::create($model, $temp, 0);
                 }
                 $this->render('create',array(
                     'model'=>$model,
@@ -147,19 +153,16 @@ class ProductsController extends x2base {
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames(); 
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Products"));
                 foreach($fields as $field){
                     if($field->type=='link'){
                         $fieldName=$field->fieldName;
-                        $type=$field->linkType;
+                        $type=ucfirst($field->linkType);
                         if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
                             eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
                             if(isset($lookupModel))
                                 $model->$fieldName=$lookupModel->name;
                         }
-                    }elseif($field->type=='date'){
-                        $fieldName=$field->fieldName;
-                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
                     }
                 }
 		if(isset($_POST['Product'])) {
@@ -197,11 +200,33 @@ class ProductsController extends x2base {
 			foreach(array_keys($model->attributes) as $field){
                             if(isset($_POST['Product'][$field])){
                                 $model->$field=$_POST['Product'][$field];
-                                if(is_array($model->$field))
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Products','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
                             }
                         }
-			 
+                        
+				// generate history
+				$action = new Actions;
+				$action->associationType = 'product';
+				$action->associationId = $model->id;
+				$action->associationName = $model->name;
+				$action->assignedTo = Yii::app()->user->getName();
+				$action->completedBy=Yii::app()->user->getName();
+				$action->dueDate = time();
+				$action->completeDate = time();
+				$action->visibility = 1;
+				$action->complete='Yes';
+			
+				$action->actionDescription = "Update: <b>{$model->name}</b>
+				Type: <b>{$model->type}</b>
+				Price: <b>{$model->price}</b>
+				Currency: <b>{$model->currency}</b>
+				Inventory: <b>{$model->inventory}</b>";
+				$action->save();		 
 			parent::update($model,$temp,'0');
 		}
 

@@ -76,12 +76,12 @@ class Fields extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('visible, custom', 'numerical', 'integerOnly'=>true),
 			array('modelName, fieldName, attributeLabel', 'length', 'max'=>250),
-                        array('modelName','required'),
+			array('modelName','required'),
+			array('custom, modified', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, modelName, fieldName, attributeLabel, visible, custom', 'safe', 'on'=>'search'),
+			array('id, modelName, fieldName, attributeLabel, custom, modified', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -106,8 +106,8 @@ class Fields extends CActiveRecord
 			'modelName' => 'Model Name',
 			'fieldName' => 'Field Name',
 			'attributeLabel' => 'Attribute Label',
-			'visible' => 'Visible',
 			'custom' => 'Custom',
+			'modified' => 'Modified',
 		);
 	}
 
@@ -126,8 +126,8 @@ class Fields extends CActiveRecord
 		$criteria->compare('modelName',$this->modelName,true);
 		$criteria->compare('fieldName',$this->fieldName,true);
 		$criteria->compare('attributeLabel',$this->attributeLabel,true);
-		$criteria->compare('visible',$this->visible);
 		$criteria->compare('custom',$this->custom);
+		$criteria->compare('modified',$this->modified);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -64,7 +64,10 @@ class Record {
 				$temp['type']='Contact';
 				$temp['lastUpdated']=$record->lastUpdated;
 				$temp['updatedBy']=CHtml::link($name,array('profile/'.$userId));
-				$arr[]=$temp;
+                                while(isset($arr[$temp['lastUpdated']]))
+                                    $temp['lastUpdated']++;
+                                $arr[$temp['lastUpdated']]=$temp;
+                                
 			} elseif ($record instanceof Actions) {
 				$temp=array();
 				$temp['id']=$id;
@@ -75,7 +78,9 @@ class Record {
 				$temp['type']='Action';
 				$temp['lastUpdated']=$record->lastUpdated;
 				$temp['updatedBy']=$name;
-				$arr[]=$temp;
+				while(isset($arr[$temp['lastUpdated']]))
+                                    $temp['lastUpdated']++;
+                                $arr[$temp['lastUpdated']]=$temp;
 			} else {
 				$temp=array();
 				$temp['id']=$id;
@@ -95,10 +100,13 @@ class Record {
 					$temp['type']='Account';
 				}
 
-				$arr[]=$temp;
+				while(isset($arr[$temp['lastUpdated']]))
+                                    $temp['lastUpdated']++;
+                                $arr[$temp['lastUpdated']]=$temp;
 			}
 		}
-		return $arr;
+                ksort($arr);
+		return array_values(array_reverse($arr));
 	}
 }
 

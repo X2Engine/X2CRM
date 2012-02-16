@@ -114,22 +114,25 @@ class SiteController extends x2base {
 			$user=UserChild::model()->findByPk(Yii::app()->user->getId());
 			$lastLogin=$user->lastLogin;
 
-			$contacts=Contacts::model()->findAll("lastUpdated > $lastLogin");
-			$actions=Actions::model()->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone')");
-			$sales=Sales::model()->findAll("lastUpdated > $lastLogin");
-			$accounts=Accounts::model()->findAll("lastUpdated > $lastLogin");
+			$contacts=Contacts::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$actions=Actions::model()->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
+			$sales=Sales::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$accounts=Accounts::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 
 			$arr=array_merge($contacts,$actions,$sales,$accounts);
-			//$arr=array_merge($arr,$sales);
-			//$arr=array_merge($arr,$accounts);
 
 			$records=Record::convert($arr);
 
 			$dataProvider=new CArrayDataProvider($records,array(
 				'id'=>'id',
 				'pagination'=>array(
-					'pageSize'=>10,
+					'pageSize'=>ProfileChild::getResultsPerPage(),
 				),
+                                'sort'=>array(
+                                    'attributes'=>array(
+                                         'lastUpdated', 'name',
+                                    ),
+                                ),
 			));
 
 			$this->render('whatsNew',array(

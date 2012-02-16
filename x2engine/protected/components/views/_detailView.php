@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright ? 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -163,11 +163,13 @@ $formSettings = ProfileChild::getFormSettings($modelName);
 if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 	$i = 0;
 	foreach($layoutData['sections'] as &$section) {
-		echo '<div class="formSection'.((isset($formSettings[$i]) && $formSettings[$i] == 0)? ' hideSection' : '').'">';
 		// set defaults
 		if(!isset($section['title'])) $section['title'] = '';
 		if(!isset($section['collapsible'])) $section['collapsible'] = false;
 		if(!isset($section['rows'])) $section['rows'] = array();
+		if(!isset($formSettings[$i])) $formSettings[$i] = 1;
+		
+		echo '<div class="formSection'.((!$formSettings[$i] && $section['collapsible'])? ' hideSection' : '').'">';
 		
 		if($section['collapsible'] || !empty($section['title'])) {
 			echo '<div class="formSectionHeader">';
@@ -234,7 +236,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											$style .= 'height:'.$item['height'].'px;';
 										echo '<div class="formInputBox" style="'.$style.'">';
 										if($field->type == 'date') {
-											echo date('Y-m-d',$model->$fieldName);
+											echo $this->formatLongDate($model->$fieldName).'&nbsp;';
 										}elseif($field->type=='rating'){
 											$this->widget('CStarRating',array(
 													'model'=>$model,
@@ -281,7 +283,9 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										}elseif($field->type=='link') {
 											if(!empty($model->$fieldName) && is_numeric($model->$fieldName)){
 												$type=ucfirst($field->linkType);
-												eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/".$model->$fieldName."'),array('target'=>'_blank'));");
+                                                                                                eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
+                                                                                                if(isset($lookupModel))
+                                                                                                    eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/".$model->$fieldName."'),array('target'=>'_blank'));");
 											}elseif(!empty($model->$fieldName)){
 												echo $model->$fieldName;
 											}else{
@@ -290,9 +294,16 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										} elseif($field->type=='boolean') {
 											echo CHtml::checkbox('',$model->$fieldName,array('onclick'=>'return false;', 'onkeydown'=>'return false;'));
 											
+										} elseif($field->type == 'currency') {
+											if($model instanceof Product) // products have their own currency
+												echo Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, $model->currency);
+											elseif(!empty($model->$fieldName))
+												echo Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, Yii::app()->params['currency']);
+											else
+												echo '&nbsp;';
 										} else {
 											echo !empty($model->$fieldName)?$model->$fieldName:'&nbsp;';
-										}  
+										}
 									}
 								}
 								unset($item);

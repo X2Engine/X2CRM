@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,7 +68,7 @@ return array(
 
 	'modules'=>array(
 		'gii'=>$gii,
-		'mobile',
+                'mobile',
 	),
 
 	'behaviors' => array('ApplicationConfigBehavior'),
@@ -119,9 +119,10 @@ return array(
 			'password' => ' ',
 			'charset' => 'utf8',
 		),*/
-		'messages'=>array(
-            // 'onMissingTranslation'=>array('TranslationLogger','log'),
-        ),
+		// 'messages'=>array(
+			// 'forceTranslation'=>true,
+            // 'onMissingTranslation'=>create_function('$event', 'Yii::log($event->message,"trace","translations");'),
+        // ),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
 			'errorAction'=>'site/error',
@@ -129,19 +130,21 @@ return array(
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
-				/*
-				array(
-					'class'=>'CFileLogRoute',
-					'levels'=>'trace, info, error, warning',
-					'categories' => 'system.db.*',
+				
+				// array(
+					// 'class'=>'CFileLogRoute',
+					// 'levels'=>'info',
+					// 'categories' => 'translations',
+					// 'logFile'=>'translations.log',
+					// 'categories' => 'system.db.*',
 					
-				),
+				// ),
 				// uncomment the following to show log messages on web pages
 				
-				array(
-					'class'=>'CWebLogRoute',
-				),
-				*/
+				// array(
+					// 'class'=>'CWebLogRoute',
+					// 'categories' => 'translations',
+				// ),
 			),
 		),
 	),

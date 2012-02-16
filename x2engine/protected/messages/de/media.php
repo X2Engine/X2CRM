@@ -41,15 +41,15 @@
 return array (
 // Attribute Labels
 'ID'=>'ID',
-'Association Type'=>'Verband Type',
-'Association'=>'Verein',
+'Association Type'=>'Verbindungstyp',
+'Association'=>'Verbindung',
 'File Name'=>'Dateiname',
 'Uploaded By'=>'Hochgeladen von',
-'Create Date'=>'Erstellen Datum',
+'Create Date'=>'Erstelle Datum',
 
 // Actions
-'View Attachment'=>'Anlage Anzeigen',
-'Delete Media'=>'Löschen Medien',
+'View Attachment'=>'Anhang anzeigen',
+'Delete Media'=>'Medium löschen',
 
 // Misc
 'File:'=>'Datei:',
@@ -57,5 +57,5 @@ return array (
 'Uploaded by {name}'=>'Hochgeladen von {name}',
 
 // Errors
-'Are you sure you want to delete this item?'=>'Sind Sie sicher, dass Sie dieses Element wirklich löschen?',
+'Are you sure you want to delete this item?'=>'Sind Sie sicher, dass Sie dieses Element wirklich löschen möchten?',
 );

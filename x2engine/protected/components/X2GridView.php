@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -170,7 +170,7 @@ class X2GridView extends CGridView {
 			// $width = (!empty($width) && is_numeric($width))? 'width:'.$width.'px;' : null;	// make sure width is reasonable, then convert it to CSS
 			$width = (!empty($width) && is_numeric($width))? $width : null;	// make sure width is reasonable
 			
-			$isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate','timestamp'));
+			$isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate', 'expectedCloseDate', 'expirationDate', 'timestamp'));
 			
 			$isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
 			
@@ -178,7 +178,7 @@ class X2GridView extends CGridView {
 			
 			if($isDate)
 				$datePickerJs .= ' $("#'.$columnName.'DatePicker").datepicker('
-					.'$.extend({showMonthAfterYear:false}, jQuery.datepicker.regional["'.$lang.'"], {"dateFormat":"yy-mm-dd"})); ';
+					.'$.extend({showMonthAfterYear:false}, {"dateFormat":"'.$this->controller->formatDatePicker().'"})); ';
 					// .'{"showAnim":"fold","dateFormat":"yy-mm-dd","changeMonth":"true","showButtonPanel":"true","changeYear":"true","constrainInput":"false"}));';
 			
 			
@@ -204,7 +204,7 @@ class X2GridView extends CGridView {
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
 				
 				if($isDate)
-					$newColumn['value'] = 'date("Y-m-d",$data->'.$columnName.')';
+					$newColumn['value'] = 'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["'.$columnName.'"])';
 				else if($isCurrency) {
 					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
@@ -212,8 +212,17 @@ class X2GridView extends CGridView {
 					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):UserChild::getUserLinks($data->assignedTo)';
                                         $newColumn['type'] = 'raw';
                                 }
-				
-				
+
+
+				if(Yii::app()->language == 'en') {
+					$format =  "M d, yy";
+				} else {
+		    		$format = Yii::app()->locale->getDateFormat('medium'); // translate Yii date format to jquery
+		    		$format = str_replace('yy', 'y', $format);
+		    		$format = str_replace('MM', 'mm', $format);
+		    		$format = str_replace('M','m', $format);
+		    	}
+		    	
 				$newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
 					'model'=>$this->filter, //Model object
 					// 'id'=>$columnName.'DatePicker',
@@ -221,7 +230,7 @@ class X2GridView extends CGridView {
 					// 'mode'=>'datetime', //use 'time','date' or 'datetime' (default)
 					// 'htmlOptions'=>array('style'=>'width:80%;'),
 					'options'=>array(
-						'dateFormat'=>'yy-mm-dd',
+						'dateFormat'=>$format,
 					), // jquery plugin options
 					'language'=>$lang,
 				),true) : null;

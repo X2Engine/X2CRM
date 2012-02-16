@@ -40,10 +40,9 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
+	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create List')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
+	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
 );
 ?>
 <h2><?php echo Yii::t('contacts','Create List'); ?></h2>

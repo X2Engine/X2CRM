@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,6 +37,15 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+$menuItems = array(
+            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
+        );
+
+$this->widget('MenuList', array(
+        'id' => 'main-menu',
+        'items' => $menuItems
+    ));
+
 ?>
 
 <h2><?php echo Yii::t('profile','Social Feed'); ?></h2>

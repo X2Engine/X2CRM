@@ -97,7 +97,7 @@ $form=$this->beginWidget('CActiveForm', array(
 
 		echo $form->textField($model,'chatPollTime',array('id'=>'chatPollTime'));
 		?><br>
-		<?php echo Yii::t('admin','Set the duration between chat update requests in miliseconds.'); ?>
+		<?php echo Yii::t('admin','Set the duration between chat update requests in milliseconds.'); ?>
 		<br><br>
 		<?php echo Yii::t('admin','Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
 	</div>
@@ -127,8 +127,15 @@ $form=$this->beginWidget('CActiveForm', array(
 
 	echo $form->textField($model,'timeout',array('id'=>'timeout')); ?>
 	<br>
-	<?php echo Yii::t('admin','Set user session expiration time (in minutes). Default is 60.'); ?>
+	<?php echo Yii::t('admin','Set user session expiration time (in minutes). Default is 60.'); ?><br />
+	<br />
+	
+	<?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?>
+	<?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
 	</div><br>
+
+	
+	
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button'))."\n";?>
 	<?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?>

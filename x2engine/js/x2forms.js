@@ -43,23 +43,45 @@ $(function() {
 	// $('div.x2-layout .formItem').disableSelection();
 
 	$('div.x2-layout .formSectionShow, .formSectionHide').click(function() {
-		$(this).closest('.formSection').toggleClass('hideSection').find('.tableWrapper').slideToggle();
-		
-		var formSectionStatus = [];
-		$('div.x2-layout .formSection').each(function(i,section) {
-			formSectionStatus[i] = $(section).hasClass('hideSection')? '0' : '1';
-		});
-		
-		var formSettings = '['+formSectionStatus.join(',')+']';
-		$.ajax({
-			url: yiiBaseUrl+'/site/saveFormSettings',
-			type: 'GET',
-			data: 'formName='+window.formName+'&formSettings='+encodeURI(formSettings)
-		});
+		toggleFormSection($(this).closest('.formSection'));
+		saveFormSections();
 	});
 	
+	$('a#showAll, a#hideAll').click(function() {
+		$('a#showAll, a#hideAll').toggleClass('hide');
+		if($('#showAll').hasClass('hide')) {
+			$('div.x2-layout .formSection.hideSection').each(function() {
+				if($(this).find('a.formSectionHide').length > 0)
+					toggleFormSection(this);
+			});
+		} else {
+			$('div.x2-layout .formSection:not(.hideSection)').each(function() {
+				if($(this).find('a.formSectionHide').length > 0)
+					toggleFormSection(this);
+			});
+		}
+		saveFormSections();
+	});
+
 	$('.inlineLabel').find('input:text, textarea').focus(function() { formFieldFocus(this); }).blur(function() { formFieldBlur(this); });
 });
+
+
+function toggleFormSection(section) {
+	$(section).toggleClass('hideSection').find('.tableWrapper').slideToggle();
+}
+function saveFormSections() {
+	var formSectionStatus = [];
+	$('div.x2-layout .formSection').each(function(i,section) {
+		formSectionStatus[i] = $(section).hasClass('hideSection')? '0' : '1';
+	});
+	var formSettings = '['+formSectionStatus.join(',')+']';
+	$.ajax({
+		url: yiiBaseUrl+'/site/saveFormSettings',
+		type: 'GET',
+		data: 'formName='+window.formName+'&formSettings='+encodeURI(formSettings)
+	});
+}
 
 function toggleText(field) {
 	if (field.defaultValue==field.value) {
@@ -98,17 +120,4 @@ function hide(field) {
 function show(field) {
 	$(field).show();
 	// field.style.display="block";
-}
-
-function toggleFormSection(button) {
-	var $button = $(button);
-
-	$button.closest('.formSection').find('.formSectionRow').css('min-height','').toggle(); 
-	// animate({
-		// height:'toggle'
-	// },300);
-	if($button.html() == '[ Show ]')
-		$button.html('[ Hide ]');
-	else
-		$button.html('[ Show ]');
 }

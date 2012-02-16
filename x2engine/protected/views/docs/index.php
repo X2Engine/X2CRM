@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -94,12 +94,12 @@ $('.search-form form').submit(function(){
 		array(
 			'name'=>'createDate',
 			'type'=>'raw',
-			'value'=>'date("Y-m-d",$data->createDate)',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
 		),
 		array(
 			'name'=>'lastUpdated',
 			'type'=>'raw',
-			'value'=>'date("Y-m-d",$data->lastUpdated)',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->lastUpdated)',
 		),
 	),
 ));
@@ -190,7 +190,7 @@ $('.search-form form').submit(function(){
 		array(
 			'name'=>'createDate',
 			'type'=>'raw',
-			'value'=>'date("Y-m-d",$data->createDate)',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
 		),
 	),
 )); ?>

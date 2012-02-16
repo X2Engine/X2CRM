@@ -54,18 +54,18 @@ return array (
 'Background Info'=>'Hintergrund-Infos',
 'Email'=>'E-Mail',
 'Status'=>'Status',
-'Update Password'=>'Passwort Aktualisieren',
-'Last Updated'=>'Zuletzt Aktualisiert',
+'Update Password'=>'Passwort aktualisieren',
+'Last Updated'=>'Zuletzt aktualisiert',
 'Updated By'=>'Aktualisiert von',
-'Recent Items'=>'Zuletzt Verwendet',
+'Recent Items'=>'Zuletzt verwendet',
 
 // Users Actions
 'Create User'=>'Benutzer erstellen',
-'View User'=>'Benutzer Erstellen',
-'Update User'=>'Benutzer Aktualisieren',
-'Manage Users'=>'Benutzer Verwalten',
+'View User'=>'Benutzer erstellen',
+'Update User'=>'Benutzer aktualisieren',
+'Manage Users'=>'Benutzer verwalten',
 
 // Users Titles
 'User: {name}'=>'Benutzer: {name}',
-'Update User: {name}'=>'Benutzer Aktualisieren: {name}',
+'Update User: {name}'=>'Benutzer aktualisieren: {name}',
 );

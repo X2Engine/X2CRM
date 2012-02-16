@@ -40,16 +40,49 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('quotes','Quotes List'),'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Create Quote')),
+	array('label'=>Yii::t('quotes','Create')),
 );
 ?>
 <h2><?php echo Yii::t('quotes','Create Quote'); ?></h2>
 
-<?php echo $this->renderPartial('_form', 
+
+<?php 
+$form=$this->beginWidget('CActiveForm', array(
+   'id'=>'quotes-form',
+   'enableAjaxValidation'=>false,
+));
+	
+echo $this->renderPartial('application.components.views._form', 
+	array(
+		'model'=>$model,
+		'form'=>$form,
+		'users'=>$users,
+		'contacts'=>$contacts,
+		'modelName'=>'quotes',
+		'isQuickCreate'=>true, // let us create the CActiveForm in this file
+	)
+);
+
+echo $this->renderPartial('productTable',
+	array(
+		'model'=>$model,
+		'products'=>$products,
+	)
+);
+
+echo '	<div class="row buttons">'."\n";
+echo '		'.CHtml::submitButton(Yii::t('app','Create'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo "	</div>\n";
+$this->endWidget();
+
+/*
+echo $this->renderPartial('_form', 
 	array(
 		'model'=>$model, 
 		'users'=>$users,
 		'contacts'=>$contacts,
 		'products'=>$products
 	)
-); ?>
+); 
+*/
+?>

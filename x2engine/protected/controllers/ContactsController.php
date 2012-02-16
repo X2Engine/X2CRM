@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,10 +48,10 @@ class ContactsController extends x2base {
 	 */
 	public function accessRules() {
 		return array(
-                        array('allow',
-                            'actions'=>array('getItems'),
-                            'users'=>array('*'), 
-                        ),
+			array('allow',
+				'actions'=>array('getItems'),
+				'users'=>array('*'), 
+			),
 			array('allow',	// allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array(
 					'index',
@@ -456,11 +456,11 @@ $model->city, $model->state $model->zipcode
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
 		$accounts=Accounts::getNames(); 
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
+     /*           $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
                 foreach($fields as $field){
                     if($field->type=='link'){
                         $fieldName=$field->fieldName;
-                        $type=$field->linkType;
+                        $type=ucfirst($field->linkType);
                         if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
                             eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
                             if(isset($lookupModel))
@@ -470,7 +470,7 @@ $model->city, $model->state $model->zipcode
                         $fieldName=$field->fieldName;
                         $model->$fieldName=date("Y-m-d",$model->$fieldName);
                     }
-                }
+                } */
 		
 		 
 
@@ -904,45 +904,4 @@ $model->city, $model->state $model->zipcode
 		if (!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
-	
-	public function actionQuickUpdateHistory($id) {
-		$actionHistory=new CActiveDataProvider('Actions', array(
-			'criteria'=>array(
-				'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-				'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
-			)
-		));
-		if(isset($_GET['history'])) {
-			$history=$_GET['history'];
-		} else {
-			$history='all';
-		}
-		if($history=='actions') {
-			$actionHistory=new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-					'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND type IS NULL'
-				)
-			));
-		} elseif($history=='comments') {
-			$actionHistory=new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-					'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND type="note"'
-				)
-			));
-		} elseif($history=='attachments') {
-			$actionHistory = new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-					'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-					'condition'=>'associationId='.$id.' AND associationType=\'contacts\' AND type="attachment"'
-				)
-			));
-		}
-		
-		Yii::app()->clientScript->scriptMap['*.js'] = false;
-		$this->renderPartial('history', array('actionHistory'=>$actionHistory), false, true);
-
-	}
-
 }

@@ -42,26 +42,20 @@
 
 <?php
 
-/*
-$initScript = "$(function() {\n";
-$initScript .= "	addProduct('create');\n";
-if($showNewQuote)
-	$initScript .= "	$('#show-new-quote-button').hide();\n";
-else
-	$initScript .= "	$('#new-quote').hide();\n";
-$initScript .= "});\n";
-*/
+$productNames = json_encode((object)Product::productNames());
+$prices = json_encode((object)Product::productPrices());
+$defaultCurrency = Yii::app()->params['currency'];
 
 Yii::app()->clientScript->registerScript("productTableQuoteCreate", "
 $(function() {
-	addProduct('create');
+	addProduct('create', '$defaultCurrency', $productNames, $prices);
 	$('#new-quote').hide();
-	/*
+   	/*
 	$('#create-quote-button').click(function() {
 		". CHtml::ajax(array('update'=>'#history-list-wrapper', 'url'=>Yii::app()->createUrl('contacts/quickUpdateHistory', array('id'=>$contactId)))) ."
 	}); */
 });
-", CClientScript::POS_HEAD);
+", CClientScript::POS_END);
 
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'quote-form-inside',
@@ -85,46 +79,66 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 <input name="associatedContacts[]" type="hidden" value="<?php echo $contactId; ?>">
 <input name="redirect" type="hidden" value="<?php echo Yii::app()->request->url; ?>">
 
-<div class="row">
-	<div class="cell">
-		<b><?php echo Yii::t('quotes', $nameField->attributeLabel); ?><span class="required">*</span></b>
-		<?php echo $form->textField($model,'name',array('size'=>10,'maxlength'=>40)); ?>
-		<?php echo $form->error($model,'name'); ?>
-	</div>
-	<div class="cell">
-		<?php echo $form->dropDownList($model,'status', Quote::statusList()); ?>
-		<?php echo $form->error($model,'status'); ?>
-	</div>
-	<div>
-		<b><?php echo Yii::t('quotes', $expirationField->attributeLabel); ?></b>
-		<?php
-		Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-		CHtml::$liveEvents=true;
-		$this->widget('CJuiDateTimePicker',array(
-			'model'=>$model, //Model object
-			'attribute'=>'expirationDate', //attribute name
-			'mode'=>'datetime', //use "time","date" or "datetime" (default)
-			'options'=>array(
-				'dateFormat'=>'MM dd, yy',
-				'timeFormat'=>'',
-			), // jquery plugin options
-			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-			'htmlOptions' => array('liveEvents'=>true),
-		)); 
-		?>
-		<?php echo $form->error($model,'expirationDate'); ?>
-	</div>
-</div>
+<table class="quote-create-table">
+	<tbody>
+		<tr>
+			<th><?php echo Yii::t('quote', 'Name'); ?><span class="required">*</span></th>
+			<th><?php echo Yii::t('quote', 'Status'); ?></th>
+			<th><?php echo Yii::t('quote', 'Expires'); ?></th>
+		</tr>
+		<tr>
+			<td>
+				<?php echo $form->textField($model,'name',array('size'=>10,'maxlength'=>40)); ?>
+				<?php echo $form->error($model,'name'); ?>
+			</td>
+			<td>
+				<?php echo $form->dropDownList($model,'status', Quote::statusList()); ?>
+				<?php echo $form->error($model,'status'); ?>
+				<span style="padding-left: 5px;">
+				    <?php echo Yii::t('quote', 'Locked'); ?>
+				    <?php echo $form->checkBox($model, 'locked'); ?>
+				</span>
+			</td>
+			<td>
+				<?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+				$model->expirationDate = $this->controller->formatDate($model->expirationDate);
+				$this->widget('CJuiDateTimePicker',array(
+					'model'=>$model, //Model object
+					'attribute'=>'expirationDate', //attribute name
+					'mode'=>'date', //use "time","date" or "datetime" (default)
+					'options'=>array(
+						'dateFormat'=>$this->controller->formatDatePicker(),
+					), // jquery plugin options
+					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+					'htmlOptions' => array('id'=>'create-quote-expires'),
+				));
+				?>
+				<?php echo $form->error($model,'expirationDate'); ?>
+			</td>
+		</tr>
+		<tr>
+			<th><?php echo Yii::t('quote', 'Notes/Terms'); ?></th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<?php echo $form->textArea($model,'description',array('rows'=>3, 'cols'=>50)); ?>
+				<?php echo $form->error($model,'description'); ?>
+			</td>
+		</tr>
+	</tbody>
+</table>
 
 <table id="product-table-create" class="product-table">
 	<thead>
     	<tr>
-    		<th></th>
-    		<th>Name</th>
-    		<th>Unit</th>
-    		<th>Quantity</th>
-    		<th>Adjustments</th>
-    		<th>Price</th>
+	    	<th style="padding: 0;"></th>
+	    	<th><?php echo Yii::t('product', 'Line Item'); ?></th>
+	    	<th><?php echo Yii::t('product', 'Unit Price'); ?></th>
+	    	<th><?php echo Yii::t('product', 'Quantity'); ?></th>
+	    	<th><?php echo Yii::t('product', 'Adjustments'); ?></th>
+	    	<th><?php echo Yii::t('product', 'Price'); ?></th>
     	</tr>
     </thead>
     <tbody>
@@ -133,9 +147,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
     	<tr id="product-list-footer-create">
     		<td></td>
     		<td>
-    			<a href="javascript:void(0)" onclick="addProduct('create');" class="add-workflow-stage">
-    				[<?php echo Yii::t('workflow','Add'); ?>]
-    			</a>
+    			<?php echo CHtml::link('['. Yii::t('workflow','Add') .']', 'javascript:void(0)', array('class'=>"add-workflow-stage", 'onClick'=>"addProduct('create', '$defaultCurrency', $productNames, $prices);"));?>
     		</td>
     		<td></td>
     		<td></td>
@@ -149,12 +161,9 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 	Yii::t('app','Create'),
 	array('quotes/quickCreate'),
 	array(
-		'success'=>"function(html){
-			jQuery('#quote-form-wrapper').html(html);
-			". CHtml::ajax(array('update'=>'#history-list-wrapper', 'url'=>Yii::app()->createUrl('contacts/quickUpdateHistory', array('id'=>$contactId)))) ."
-		}",
+		'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
+		'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }",
 		'type'=>'POST',
-		'beforeSend'=>"function(){\$('body').die('a.delete', 'click');}",
 	),
 	array('id'=>"create-quote-button", 'class'=>'x2-button', 'live'=>false)
 ); ?>

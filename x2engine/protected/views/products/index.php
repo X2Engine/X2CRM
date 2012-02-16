@@ -41,7 +41,7 @@ include("protected/config/productConfig.php");
 
 $this->menu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+	array('label'=>Yii::t('module','Create',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -100,7 +100,7 @@ function trimText($text) {
 		),
 		array(
 			'name'=>'createDate',
-			'value'=>'date("Y-m-d",$data->createDate)',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
 			'type'=>'raw',
 		),
 		array(

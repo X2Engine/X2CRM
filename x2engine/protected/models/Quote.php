@@ -47,7 +47,7 @@ class Quote extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('name', 'required'),
-			array('accountId, probability, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
+			array('accountId, probability', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>40),
 			array('accountName', 'length', 'max'=>100),
 			array('salesStage, expectedCloseDate, updatedBy', 'length', 'max'=>20),
@@ -82,16 +82,21 @@ class Quote extends CActiveRecord
 	}
 	
 	public static function statusList() {
+		$field = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'status'));
+		$dropdown = Dropdowns::model()->findByPk($field->linkType);
+		return json_decode($dropdown->options);
+		
+		/*
 		return array(
 		    'Draft'=>Yii::t('quotes','Draft'),
 		    'Presented'=>Yii::t('quotes','Presented'),
 		    "Issued"=>Yii::t('quotes','Issued'),
 		    "Won"=>Yii::t('quotes','Won')
-		);
+		); */
 	}
 	
 	public function productTable($emailTable = false) {
-		$tableStyle = 'border-collapse: collapse;';
+		$tableStyle = 'border-collapse: collapse; width: 100%;';
 		$thStyle = 'border: 1px solid black; background:#eee;';
 		$thProductStyle = $thStyle;
 		if(!$emailTable)
@@ -99,20 +104,21 @@ class Quote extends CActiveRecord
 		else
 			$thProductStyle .=  "width:60%;";
 
-		$tdStyle = 'border-left: 1px solid black; border-right: 1px solid black;';
-		$tdFooterStyle = "border-top: 1px solid black;";
+		$tdStyle = 'border-left: 1px solid black; border-right: 1px solid black; padding: 5px;';
+		$tdFooterStyle = "border-top: 1px solid black; border-spacing: 0; border-left: 0; border-right: 0; padding: 7px 0 0 0;";
 
 		$table = "
-		<table style=\"$tableStyle\">
-			<thead>
-		    	<tr>
-		    		<th style=\"$thProductStyle\">".Yii::t('product','Product')."</th>
-		    		<th style=\"$thStyle\">".Yii::t('product','Unit')."</th>
-		    		<th style=\"$thStyle\">".Yii::t('product','Quantity')."</th>
-		    		<th style=\"$thStyle\">".Yii::t('product', 'Adjustment')."</th>
-		    		<th style=\"$thStyle\">".Yii::t('product', "Price")."</th>
-		    	</tr>
-		    </thead>";
+<table style=\"$tableStyle\">
+    <thead>
+    	<tr>
+    		<th style=\"$thProductStyle\">".Yii::t('product','Line Item')."</th>
+    		<th style=\"$thStyle\">".Yii::t('product','Unit Price')."</th>
+    		<th style=\"$thStyle\">".Yii::t('product','Quantity')."</th>
+    		<th style=\"$thStyle\">".Yii::t('product', 'Adjustment')."</th>
+    		<th style=\"$thStyle\">".Yii::t('product', "Price")."</th>
+    	</tr>
+    </thead>
+    <tbody>";
 		$quotesProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$this->id));
 		$orders = array(); // array of product-quantity pairs
 		$total = 0; // total price for the quote
@@ -138,29 +144,28 @@ class Quote extends CActiveRecord
 		
 		foreach($orders as $order) {
 		    $table .= "
-		    <tr>
-		    	<td style=\"$tdStyle\">{$order['name']}</td>
-		    	<td style=\"$tdStyle\">".Yii::app()->locale->numberFormatter->formatCurrency($order["unit"],$this->currency)."</td>
-		    	<td style=\"$tdStyle\">{$order['quantity']}</td>
-		    	<td style=\"$tdStyle\">{$order['adjustment']}</td>
-		    	<td style=\"$tdStyle\">".Yii::app()->locale->numberFormatter->formatCurrency($order["price"],$this->currency)."</td>
-		    </tr>";
+		<tr>
+		    <td style=\"$tdStyle\">{$order['name']}</td>
+		    <td style=\"$tdStyle\">".Yii::app()->locale->numberFormatter->formatCurrency($order["unit"],$this->currency)."</td>
+		    <td style=\"$tdStyle\">{$order['quantity']}</td>
+		    <td style=\"$tdStyle\">{$order['adjustment']}</td>
+		    <td style=\"$tdStyle\">".Yii::app()->locale->numberFormatter->formatCurrency($order["price"],$this->currency)."</td>
+		</tr>";
 		}
 			
 		$table .= "
-		    <tr>
-		    	<td style=\"$tdFooterStyle\"></td>
-		    	<td style=\"$tdFooterStyle\"></td>
-		    	<td style=\"$tdFooterStyle\"></td>
-		    	<td style=\"$tdFooterStyle\"><b>Total</b></td>
-		    	<td style=\"$tdFooterStyle\"><b>".Yii::app()->locale->numberFormatter->formatCurrency($total,$this->currency)."</b></td>
-		    </tr>
-		</table>";
+    	<tr>
+    		<td style=\"$tdFooterStyle\"></td>
+    		<td style=\"$tdFooterStyle\"></td>
+    		<td style=\"$tdFooterStyle\"></td>
+    		<td style=\"$tdFooterStyle\"><hr style=\"width: 100%;height:2px;background:black;\" /><b>Total</b></td>
+    		<td style=\"$tdFooterStyle\"><hr style=\"width: 100%;height:2px;background:black;\" /><b>".Yii::app()->locale->numberFormatter->formatCurrency($total,$this->currency)."</b></td>
+    	</tr>
+    </tbody>
+</table>";
 		
-		$table = str_replace("\n", "", $table);
-		$table = str_replace("\t", "", $table);
-		if($emailTable)
-			$table = str_replace('"', "&#34;", $table); // escape quotes for html
+//		$table = str_replace("\n", "", $table);
+//		$table = str_replace("\t", "", $table);
 		
 		return $table;
 	}
@@ -334,5 +339,81 @@ class Quote extends CActiveRecord
 			),
 			'criteria'=>$criteria,
 		));
+	}
+	
+	
+	/**
+	 * Get all active products indexed by their id,
+	 * and any inactive products still in this quote
+	 */
+	public function productNames() {
+		$products = Product::model()->findAll(
+			array(
+				'select'=>'id, name',
+				'condition'=>'status=:active',
+				'params'=>array(':active'=>'Active'),
+			)
+		);
+		$productNames = array(0 => '');
+		foreach($products as $product)
+			$productNames[$product->id] = $product->name;
+		
+		// get any inactive products in this quote
+		$quoteProducts = QuoteProduct::model()->findAll(
+			array(
+				'select'=>'productId, name',
+				'condition'=>'quoteId=:quoteId',
+				'params'=>array(':quoteId'=>$this->id),
+			)
+		);
+		foreach($quoteProducts as $qp)
+			if(!isset($productNames[$qp->productId]))
+				$productNames[$qp->productId] = $qp->name;
+		
+		return $productNames;
+	}
+	
+	public function productPrices() {
+		$products = Product::model()->findAll(
+			array(
+				'select'=>'id, price',
+				'condition'=>'status=:active',
+				'params'=>array(':active'=>'Active'),
+			)
+		);
+		$productPrices = array(0 => '');
+		foreach($products as $product)
+			$productPrices[$product->id] = $product->price;
+		
+		// get any inactive products in this quote
+		$quoteProducts = QuoteProduct::model()->findAll(
+			array(
+				'select'=>'productId, price',
+				'condition'=>'quoteId=:quoteId',
+				'params'=>array(':quoteId'=>$this->id),
+			)
+		);
+		foreach($quoteProducts as $qp)
+			if(!isset($productPrices[$qp->productId]))
+				$productPrices[$qp->productId] = $qp->price;
+		
+		return $productPrices;
+	}
+	
+	public function activeProducts() {
+		$products = Product::model()->findAllByAttributes(array('status'=>'Active'));
+		$inactive = Product::model()->findAllByAttributes(array('status'=>'Inactive'));
+		$quoteProducts = QuoteProduct::model()->findAll(
+			array(
+				'select'=>'productId',
+				'condition'=>'quoteId=:quoteId',
+				'params'=>array(':quoteId'=>$this->id),
+			)
+		);
+		foreach($quoteProducts as $qp)
+			foreach($inactive as $i)
+				if($qp->productId == $i->id)
+					$products[] = $i;
+		return $products;
 	}
 }

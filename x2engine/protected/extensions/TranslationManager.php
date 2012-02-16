@@ -37,6 +37,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+
 // $translation = 'Field\'s wi\th <span class="required">*</span> are required.';
 // $test =  htmlspecialchars(stripslashes($translation));
 // echo addcslashes(htmlspecialchars_decode($test),'\'');
@@ -243,12 +244,26 @@ function googleTranslate(object) {
 	var message = $(object).closest('tr').find('.source input').val();
 	var lang = $(object).html();
 	if(lang == 'zh')
-		lang = 'zh-CN';
+		lang = 'zh-CN'; 	
 	var url = 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message);
-	$('#googleTranslate').attr('src',url);
+	// $('#googleTranslate').attr('src',url);
+
+	var windowName = "popUp";//$(this).attr("name");
+
+	window.open(url, windowName, "width=800,height=400");
+
+	// event.preventDefault();
 	
-	$('#contentPane').animate({height:400});
-	$('#iframeBox').animate({height:250});
+	// $.ajax({
+		// url: 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message),
+		// context: document.body,
+		// success: function(response){
+			// $('#googleTranslate').html(response);
+		// }
+	// });
+	
+	// $('#contentPane').animate({height:400});
+	// $('#iframeBox').animate({height:250});
 	
 }
 
@@ -407,11 +422,16 @@ function removeLine(object) {
 			<div class="scroll-box">
 			<table class="translation-list">
 			<?php
-			$index = 0;
+			$dataStarted = false;
 			$currentTemplate = file($messagePath.'/template/'.$targetFile);
 			foreach($currentTemplate as $line) {
-				if($index++ < 37)
-					continue;
+			
+				if(!$dataStarted) {
+					if(preg_match('/^\s*return array/',$line))
+						$dataStarted = true;
+					else
+						continue;
+				}
 
 				$matches = array();
 				
@@ -461,11 +481,11 @@ function removeLine(object) {
 		<td colspan="3" height="30" style="padding:0 0 0 5px;">
 			<input type="submit" class="x2-button" value="Save">
 			<input type="button" class="x2-button" value="Reset" onclick="window.location.reload();">
-			<input type="button" class="x2-button" style="float:right;" value="Translator" onclick="toggleGoogle();">
+			<!--<input type="button" class="x2-button" style="float:right;" value="Translator" onclick="toggleGoogle();">-->
 		</td>
 	</tr>
 	<tr>
-		<td colspan="3" id="translationPane"><div id="iframeBox"><iframe id="googleTranslate" scrolling="no" name="googleTranslate" src="http://translate.google.com/"></iframe></div></td>
+		<td colspan="3" id="translationPane"><div id="iframeBox"><!--<iframe id="googleTranslate" scrolling="no" name="googleTranslate" src="http://translate.google.com/"></iframe>--></div></td>
 	</tr>
 </table>
 </form>

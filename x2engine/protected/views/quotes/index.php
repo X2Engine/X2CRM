@@ -40,7 +40,7 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('quotes','Quotes List')),
-	array('label'=>Yii::t('quotes','Create Quote'), 'url'=>array('create')),
+	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

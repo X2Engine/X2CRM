@@ -40,19 +40,20 @@
 
 $this->menu=array(
 	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Create Quote'), 'url'=>array('create')),
-	array('label'=>Yii::t('quotes','View Quote'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Update Quote')),
-	array('label'=>Yii::t('quotes','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
+	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('quotes','View'), 'url'=>array('view', 'id'=>$model->id)),
+	array('label'=>Yii::t('quotes','Update')),
+	array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+
 );
 ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<h2 style="margin-bottom:0;"><?php echo Yii::t('quotes','Update Quote: {name}',array('{name}'=>$model->name)); ?> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>
 
-<h1><?php echo Yii::t('quotes','Update Quote: {name}',array('{name}'=>$model->name)); ?></h1>
-
-<?php echo $this->renderPartial('_form',
+<?php 
+/*
+echo $this->renderPartial('_form',
 	array(
 		'model'=>$model, 
 		'users'=>$users, 
@@ -61,4 +62,35 @@ $this->menu=array(
 		'products'=>$products,
 		'orders'=>$orders,
 	)
-); ?>
+);
+*/
+
+$form=$this->beginWidget('CActiveForm', array(
+   'id'=>'quotes-form',
+   'enableAjaxValidation'=>false,
+));
+	
+echo $this->renderPartial('application.components.views._form', 
+	array(
+		'model'=>$model,
+		'form'=>$form,
+		'users'=>$users,
+		'contacts'=>$contacts,
+		'modelName'=>'quotes',
+		'isQuickCreate'=>true, // let us create the CActiveForm in this file
+	)
+);
+
+echo $this->renderPartial('productTable',
+	array(
+		'model'=>$model,
+		'products'=>$products,
+		'orders'=>$orders,
+	)
+);
+
+echo '	<div class="row buttons">'."\n";
+echo '		'.CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo "	</div>\n";
+$this->endWidget();
+ ?>

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,20 +82,13 @@ if($inlineForm){ ?>
 
 </script>
 
-
-
-
-
 <div id="tabs">
 	<ul>
-		<li><a href="#tabs-1">Log A Call</a></li>
-		<li><a href="#tabs-2">New Action</a></li>
-		<li><a href="#tabs-3">New Comment</a></li>
+		<li class="publisher-label"><?php echo Yii::t('actions','Publisher'); ?></li>
+		<li><a href="#tabs-1"><?php echo Yii::t('actions','Log A Call'); ?></a></li>
+		<li><a href="#tabs-2"><?php echo Yii::t('actions','New Action'); ?></a></li>
+		<li><a href="#tabs-3"><?php echo Yii::t('actions','New Comment'); ?></a></li>
 	</ul>
-	
-
-
-    
 <?php
 
 }
@@ -112,16 +105,10 @@ if (!$quickCreate) {
 }
 echo $form->errorSummary($actionModel);
 ?>
-<?php /*
-<div class="top row">
-	<?php echo $form->labelEx($actionModel,'type'); ?>
-	<?php echo $form->textField($actionModel,'type',array('size'=>20,'maxlength'=>20)); ?>
-	<?php echo $form->error($actionModel,'type'); ?>
-</div> */?>
     <div class="row">
 	<b><?php echo $form->labelEx($actionModel,'actionDescription'); ?></b>
 	<?php //echo $form->label($actionModel,'actionDescription'); ?>
-	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>40,'style'=>'width:500px;')); ?>
+	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>40,'style'=>'width:550px;')); ?>
 	<?php //echo $form->error($actionModel,'actionDescription'); ?>
 
 <div id="tabs-1">
@@ -191,9 +178,15 @@ echo $form->errorSummary($actionModel);
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
 		<?php echo $form->label($actionModel,'dueDate');
 		if ($actionModel->isNewRecord)
-			$actionModel->dueDate = date('Y-m-d',time()).' 23:59';	//default to tomorow for new actions
+			if(isset($this->controller)) // inline action?
+				$actionModel->dueDate = $this->controller->formatDateEndOfDay(time());	//default to tomorow for new actions
+			else
+				$actionModel->dueDate = $this->formatDateEndOfDay(time());	//default to tomorow for new actions
 		else
-			$actionModel->dueDate = date('Y-m-d H:i',$actionModel->dueDate);	//format date from DATETIME
+			if(isset($this->controller)) // inline action?
+				$actionModel->dueDate = $this->controller->formatDateTime($actionModel->dueDate);	//format date from DATETIME
+			else
+				$actionModel->dueDate = $this->formatDateTime($actionModel->dueDate);	//format date from DATETIME
 
 		Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 		$this->widget('CJuiDateTimePicker',array(
@@ -201,7 +194,7 @@ echo $form->errorSummary($actionModel);
 			'attribute'=>'dueDate', //attribute name
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
-				'dateFormat'=>'yy-mm-dd',
+				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 		));

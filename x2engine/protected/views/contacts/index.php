@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,19 +39,16 @@
  ********************************************************************************/
 $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Contacts Lists'),'url'=>array('lists')),
-	// array('label'=>Yii::t('contacts','All Contacts')),
+	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
+	array('label'=>Yii::t('contacts','View List')),
 	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
-	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	array('label'=>Yii::t('contacts','Import from Outlook'),'url'=>array('importContacts')),
-	array('label'=>Yii::t('contacts','Import from Template'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
 );
  
 if($this->route=='contacts/index') {
 	$heading = Yii::t('contacts','All Contacts'); 
 	$dataProvider = $model->searchAll();
 	unset($this->menu[0]['url']);
+	unset($this->menu[2]);
 } else {
 	$heading = Yii::t('contacts','My Contacts'); 
 	$dataProvider = $model->search();

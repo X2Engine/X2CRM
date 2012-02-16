@@ -41,13 +41,13 @@
 return array (
 // Text
 'Logout ({username})'=>'Logout ({username})',
-'New Record'=>'Neuer Rekord',
-'Find Contacts'=>'Kontakte Suchen',
+'New Record'=>'Neues Blatt',
+'Find Contacts'=>'Kontakte suchen',
 'Top Contacts'=>'Top Kontakte',
 'No top contacts for this user!'=>'Keine Top-Kontakte für diesen Benutzer!',
-'Create Message'=>'Neue Nachricht',
-'Message List'=>'Nachrichtenliste',
+'Create Message'=>'Neue Mitteilung',
+'Message List'=>'Mitteilungsliste',
 'Clear'=>'Löschen',
 'Search for a Contact'=>'Suche nach einem Kontakt',
-'Go to Full Site'=>'Zur Haupt-Website',
+'Go to Full Site'=>'Großansicht',
 );

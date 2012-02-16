@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -93,7 +93,7 @@ class AdminController extends Controller {
 					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
 					'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
 					'customizeFields','manageFields', 'editor','createFormLayout','deleteFormLayout','formVersion','dropDownEditor','manageDropDowns','deleteDropdown','editDropdown',
-					'roleEditor','deleteRole','editRole','manageRoles','appSettings','updater'),
+					'roleEditor','deleteRole','editRole','manageRoles','appSettings','updater','registerModules','toggleModule', 'viewLogs'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -855,7 +855,7 @@ class AdminController extends Controller {
 			$model->attributes=$_POST['Fields'];
                         (isset($_POST['Fields']['required']) && $_POST['Fields']['required']==1)?$model->required=1:$model->required=0;
 			$model->type=$_POST['Fields']['type'];
-			$model->visible=1;
+			// $model->visible=1;
 			$model->custom=1;
 			$model->modified=1;
                         $model->fieldName=strtolower($model->fieldName);
@@ -934,7 +934,7 @@ class AdminController extends Controller {
 			$modelField=Fields::model()->findByAttributes(array('modelName'=>$type,'fieldName'=>$field));
 			if($_POST['Fields']['attributeLabel']!="")
 				$modelField->attributeLabel=$_POST['Fields']['attributeLabel'];
-			$modelField->visible=$_POST['Fields']['visible'];
+			// $modelField->visible=$_POST['Fields']['visible'];
 			$modelField->modified=1;
                         (isset($_POST['Fields']['required']) && $_POST['Fields']['required']==1)?$modelField->required=1:$modelField->required=0;
 			
@@ -1236,11 +1236,8 @@ class AdminController extends Controller {
 				$assignedTo=$_POST['displayAssignedTo'];
 				$description=$_POST['displayDescription'];
 				
-				$customFields=$_POST['CustomFields'];
-                                $visibility=$customFields['visible'];
-                                $labels=$customFields['attributeLabel'];
                                 $this->writeConfig($title,$moduleName,$recordName);
-				$this->createNewTable($moduleName, $visibility, $names, $labels);
+				$this->createNewTable($moduleName);
 				
 				$this->createSkeletonDirectories($moduleName);
 				
@@ -1282,23 +1279,23 @@ class AdminController extends Controller {
                 $configFile->setContents($str);
 }
 	
-	private function createNewTable($moduleName, $visibility, $names, $labels) {
+	private function createNewTable($moduleName) {
 		$sqlList=array("CREATE TABLE x2_".$moduleName."(
                         id INT NOT NULL AUTO_INCREMENT primary key,
-                        assignedTo VARCHAR(40),
-                        name VARCHAR(100) NOT NULL,
+                        assignedTo VARCHAR(250),
+                        name VARCHAR(250) NOT NULL,
                         description TEXT,
                         createDate INT,
                         lastUpdated INT,
-                        updatedBy VARCHAR(40)
+                        updatedBy VARCHAR(250)
                         )",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'id', 'ID', '1', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'name', 'Name', '1', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '1', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'description', 'Description', '1', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'createDate', 'Create Date', '1', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '1', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'updatedBy', 'Updated By', '1', '0')");
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleName', 'id', 'ID', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'name', 'Name', '0', 'varchar')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '0', 'assigment')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'description', 'Description', '0', 'text')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'createDate', 'Create Date', '0', 'date')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '0', 'date')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'updatedBy', 'Updated By', '0', 'assignment')");
                 foreach($sqlList as $sql){
                     $command = Yii::app()->db->createCommand($sql);
                     $command->execute();
@@ -1385,7 +1382,7 @@ class AdminController extends Controller {
 		}
 		
 		$arr = array();
-		$standard = array('contacts','actions','docs','accounts','sales','workflow');
+		$standard = array('contacts','actions','docs','accounts','sales','workflow','quotes','products','groups');
 
 		$pieces = explode(":",$admin->menuOrder);
 		foreach($pieces as $piece) {
@@ -1402,7 +1399,6 @@ class AdminController extends Controller {
 		$module=strtolower($moduleName);
 		if(Yii::app()->db->schema->getTable("x2_$moduleName")) {
 			$command = Yii::app()->db->createCommand()->dropTable("x2_$moduleName");
-                        $command->execute();
 			$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($moduleName)));
                         foreach($fields as $field){
                             $field->delete();
@@ -1455,13 +1451,13 @@ class AdminController extends Controller {
 			createDate INT,
 			lastUpdated INT,
 			updatedBy VARCHAR(40)
-			);INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'id', 'ID', '1', '0');
-			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'name', 'Name', '1', '0');
-			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '1', '0');
-			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'description', 'Description', '1', '0');
-			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'createDate', 'Create Date', '1', '0');
-			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '1', '0');
-			INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', 'updatedBy', 'Updated By', '1', '0');";
+			);INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleName', 'id', 'ID', '0');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'name', 'Name', '0', 'varchar');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '0', 'assigment');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'description', 'Description', '0', 'text');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'createDate', 'Create Date', '0', 'date');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '0', 'date');
+                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'updatedBy', 'Updated By', '0', 'assignment');";
 					
 			$disallow=array(
 				"id",
@@ -1473,9 +1469,28 @@ class AdminController extends Controller {
 				"updatedBy",
 			);
 			foreach($fields as $field){
-				if(array_search($field->fieldName,$disallow)===false)
-					$sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName VARCHAR(250); INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
-			}
+				if(array_search($field->fieldName,$disallow)===false){
+                                    $fieldType=$field->type;
+                                    switch($fieldType){
+                                        case "boolean":
+                                        $fieldType="BOOLEAN";
+                                        break;
+                                    case "float":
+                                        $fieldType="FLOAT";
+                                        break;
+                                    case "int":
+                                        $fieldType="INTEGER";
+                                        break;
+                                    case "text":
+                                        $fieldType="TEXT";
+                                        break;
+                                    default:
+                                        $fieldType='VARCHAR(250)'; 
+                                        break;
+                                    }
+					$sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType; INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
+                                }
+                        }
 			
 			$db=Yii::app()->file->set("sqlData.sql");
 			$db->create();
@@ -1587,6 +1602,62 @@ class AdminController extends Controller {
 		}
 		$this->render('importModule');
 	}
+        
+        public function actionRegisterModules(){
+            
+            $modules=scandir('protected/modules');
+            $modules=array_combine($modules,$modules);
+            $arr=array();
+            foreach($modules as $module){
+                if(file_exists("protected/modules/$module/register.php")){
+                    $arr[$module]=ucfirst($module);
+                }
+            }
+            $menuOrder=explode(":",Yii::app()->params->admin->menuOrder);
+            
+            $this->render('registerModules',array(
+                'modules'=>$arr,
+                'menuOrder'=>$menuOrder,
+            ));
+        }
+        
+        public function actionToggleModule($module){
+            $admin=&Yii::app()->params->admin;
+            $menuOrder=explode(":",$admin->menuOrder);
+            $nicknames=explode(":",$admin->menuNicknames);
+            $visibility=explode(":",$admin->menuVisibility);
+            $config=include("protected/modules/$module/register.php");  
+            
+            if(array_search($module,$menuOrder)!==false){
+                $uninstall=$config['uninstall'];
+                foreach($uninstall as $sql){
+                    $command=Yii::app()->db->createCommand($sql);
+                    $command->execute();
+                }
+                $index=array_search($module,$menuOrder);
+                unset($menuOrder[$index]);
+                unset($visibility[$index]);
+                unset($nicknames[$index]);
+                $admin->menuOrder=implode(":",$menuOrder);
+                $admin->menuNicknames=implode(":",$nicknames);
+                $admin->menuVisibility=implode(":",$visibility);
+                $admin->save();
+            }else{
+                $install=$config['install']; 
+                foreach($install as $sql){
+                    $command=Yii::app()->db->createCommand($sql);
+                    $command->execute();
+                }
+                $menuOrder[]=$module;
+                $visibility[]=1;
+                $nicknames[]=$config['name'];
+                $admin->menuOrder=implode(":",$menuOrder);
+                $admin->menuNicknames=implode(":",$nicknames);
+                $admin->menuVisibility=implode(":",$visibility);
+                $admin->save();
+            }
+            $this->redirect('registerModules');
+        }
 	
 	public function actionEditor() {
 
@@ -1643,7 +1714,6 @@ class AdminController extends Controller {
 			'actions',
 			'docs',
 			'workflow',
-                        'quotes',
                         'groups',
 		);
 		$moduleNames = explode(':',Yii::app()->params->admin->menuOrder);
@@ -2230,4 +2300,10 @@ file_put_contents('protected/config/emailConfig.php', $config);
             return (isset($codes[$status])) ? $codes[$status] : '';
         }
 		
+	public function actionViewLogs() {
+	
+		$this->render('viewLogs');
+	
+	
+	}
 }

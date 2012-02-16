@@ -26,7 +26,7 @@ $this->endWidget('zii.widgets.jui.CJuiDialog');
 
 $workflowList = Workflow::getList();
 ?>
-<div class="form" style="padding-bottom:10px;">
+<div class="form">
 <div class="row" style="text-align:center;"><b><?php echo Yii::t('workflow','Workflow'); ?></b>
 		<?php
 		echo CHtml::dropDownList('workflowId',$currentWorkflow,$workflowList,	//$model->workflow

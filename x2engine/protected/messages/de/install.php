@@ -42,7 +42,7 @@ return array (
 // Install screen
 'Install X2Engine'=>'Installieren X2Engine',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Willkommen auf der X2Engine Application Installer! Wir müssen ein wenig Informationen zu sammeln, bevor wir Ihre Anwendung kann zum Laufen zu bekommen. Bitte füllen Sie die Felder unten aufgeführt.',
+'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Willkommen bei der X2Engine Application Installer! Wir müssen ein wenig Informationen sammeln, bevor wir Ihre Anwendung zum Laufen bekommen. Bitte füllen Sie die unten aufgeführten Felder.',
 
 'X2Engine Application Info'=>'X2Engine Anwendung Info',
 
@@ -51,7 +51,7 @@ return array (
 'Currency'=>'Währung',
 'Admin Password'=>'Admin Passwort',
 'Confirm Password'=>'Passwort Bestätigen',
-'Administrator Email'=>'Administrator Email',
+'Administrator Email'=>'Administrator E-Mail',
 
 'Database Connection Info'=>'Datenbankverbindung Info',
 
@@ -63,12 +63,12 @@ return array (
 'Install'=>'Installieren',
 'For help or more information - X2Engine.com'=>'Für Hilfe oder weitere Informationen - X2Engine.com',
 
-'All Rights Reserved.'=>'All Rights Reserved.',
+'All Rights Reserved.'=>'Alle Rechte vorbehalten.',
 
 // Splash screen
-'Installation Complete!'=>'Installation Abgeschlossen!',
-'Click here to log in to X2Engine'=>'Klicken Sie hier, um sich in X2Engine',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine erfolgreich auf Ihrem Webserver installiert! Sie können sich jetzt anmelden mit dem Benutzernamen "admin" und dem Passwort, das Sie während der Installation zur Verfügung gestellt.',
-'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Wenn Sie Gii installiert haben, können Sie es <a href="index.php/gii/"> hier </ a>. Das Passwort ist das gleiche wie Ihr Admin-Passwort.',
+'Installation Complete!'=>'Installation abgeschlossen!',
+'Click here to log in to X2Engine'=>'Klicken Sie hier, um sich bei X2Engine anzumelden',
+'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine wurde erfolgreich auf Ihrem Webserver installiert! Sie können sich jetzt anmelden mit dem Benutzernamen "admin" und dem Passwort, das Sie während der Installation angegeben haben.',
+'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Wenn Sie Gii installiert haben, finden Sie es <a href="index.php/gii/"> hier </ a>. Das Passwort ist das gleiche wie Ihr Admin-Passwort.',
 
 );

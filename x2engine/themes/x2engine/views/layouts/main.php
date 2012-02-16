@@ -57,8 +57,8 @@ Yii::app()->clientScript->registerCoreScript('jquery.ui');
 // custom scripts
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/mainmenu.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.formatCurrency-1.4.0.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.formatCurrency.all.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/LGPL/jquery.formatCurrency-1.4.0.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/LGPL/jquery.formatCurrency.all.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
 if(isset(Yii::app()->params->profile) && Yii::app()->params->profile->enableBgFade == 1)
@@ -81,6 +81,15 @@ Yii::app()->clientScript->registerScript('fullscreenToggle',"
 var fullscreen = " . (Yii::app()->session['fullscreen']? 'true':'false') . ";
 
 $(function() {
+	// Yii CWebLogRoute display
+	$('.yiiLog').draggable({handle:'td,th'}).height(400).offset({top:200,left:80}).find('tr:first').dblclick(function() {
+		var x = $(this).closest('.yiiLog');
+		if(x.height() < 50)
+			x.height(400);
+		else
+			x.height(23);
+	});
+	
 	$('#fullscreen-button').bind('click',function() { fullscreenToggle(); });
 	
 	if($('#content-box').hasClass('span-19'))
@@ -140,11 +149,13 @@ $(document).ready(function() {
 ",CClientScript::POS_END);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/notifications.js');
+if($this->getModule()==null){
 $notifUrl = $this->createUrl('site/checkNotifications');
 Yii::app()->clientScript->registerScript('updateNotificationJs', "
         notifUrl='".$this->createUrl('site/checkNotifications')."'
 	$(document).ready(updateNotifications());	//update on page load
 ",CClientScript::POS_HEAD); 
+}
 
 
 
@@ -263,7 +274,11 @@ if($isGuest) {
 		$file=Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
 		if($file->exists)
 			$menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
-		else {
+		elseif(is_dir('protected/modules/'.$key)){
+                        if(!is_null($this->getModule()))
+                            $module=$this->getModule()->id;
+                        $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
+                }else{
 			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$key))));
 			if(isset($page)){
 				$id=$page->id;
@@ -276,7 +291,7 @@ if($isGuest) {
 	}
 }
 
-$maxMenuItems = 5;
+$maxMenuItems = 4;
 //check if menu has too many items to fit nicely
 $menuItemCount = count($menuItems);
 if ($menuItemCount > $maxMenuItems) {
@@ -322,12 +337,11 @@ $userMenu = array(
 <!--<div class="ie-shadow" style="display:none;"></div>-->
 <div class="container" id="page">
 	<div id="main-menu-bar">
-                <?php
-                    $notifications=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0))
-                ?>
-                <?php echo CHtml::link(count($notifications),array('site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
-                      echo CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
-                <?php
+		<?php
+			$notifications = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0));
+			echo CHtml::link($notifications,array('site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
+			echo CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
+		<?php
 		//render main menu items
 		$this->widget('zii.widgets.CMenu', array(
 			'id'=>'main-menu',
