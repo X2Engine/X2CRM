@@ -318,11 +318,23 @@ div.form select[multiple="multiple"] {
 	min-width:130px;
 }
 
-
 div.form textarea {
 	width:556px;
 	padding:2px 4px;
 }
+div.text-area-wrapper {
+	width:auto;
+	margin:0 0 5px 0;
+	padding:2px 4px;
+	border:1px solid #aaa;
+	-moz-border-radius:2px;
+	-o-border-radius:2px;
+	-webkit-border-radius:2px;
+	border-radius:2px;
+	background:#fff;
+}
+div.text-area-wrapper textarea {width:100%;margin:0;padding:0 !important;border:none;}
+
 div.form input, div.form textarea, div.form select, div.form button {
 	font-size:12px;
 	font-family:Arial, Helvetica, sans-serif;

@@ -6,7 +6,7 @@ If you have any custom code please save it before updating and modify the new fi
 
 X2CRM RC1 0.9.10.1 Changelog
 
-- Numerous Bug fixes
+- Numerous Bug fixes (esp in X2Studio, Accounts and Sales)
 - Products Products module
 	- Keep track of products used to generate quotes
 - Quotes Module

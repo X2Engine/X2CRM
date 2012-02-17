@@ -167,11 +167,6 @@ class QuotesController extends x2base {
 	
 	public function createQuote($model, $oldAttributes, $contacts, $products){
 		
-		if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
-			$model->accountName=$_POST['companyAutoComplete'];
-			$model->accountId="";
-		}
-		
 		$model->createDate=time();
 		$model->lastUpdated = time();
 		$model->createdBy = Yii::app()->user->getName();
@@ -245,13 +240,45 @@ class QuotesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Quote'])) {
+                    foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
 //			$this->render('test', array('model'=>$_POST));
             $temp=$model->attributes;
-        	foreach($model->attributes as $field=>$value){
-        	    if(isset($_POST['Quote'][$field])){
-        	        $model->$field=$_POST['Quote'][$field];
-        	    }
-        	}
+        	foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Quote'][$field])){
+                                $model->$field=$_POST['Quote'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Quotes','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
+                                
+                            }
+                        }
         	        	
 			$model->expirationDate = $this->parseDate($model->expirationDate);
         	
@@ -305,14 +332,46 @@ class QuotesController extends x2base {
 	public function actionQuickCreate() {
 		
 		if(isset($_POST['Quote'])) {
+                    foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
 //			$this->render('test', array('model'=>$_POST));
 			$model = new Quote;
             $oldAttributes=$model->attributes;
-        	foreach($model->attributes as $field=>$value){
-        	    if(isset($_POST['Quote'][$field])){
-        	        $model->$field=$_POST['Quote'][$field];
-        	    }
-        	}
+        	foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Quote'][$field])){
+                                $model->$field=$_POST['Quote'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Quotes','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
+                                
+                            }
+                        }
         	
 			$model->expirationDate = $this->parseDate($model->expirationDate);
 				    	
@@ -532,12 +591,44 @@ class QuotesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Quote'])) {
+                    foreach($_POST as $key=>$arr){
+                            $pieces=explode("_",$key);
+                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+                                $newKey=$pieces[1];
+                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+                                    $val=$_POST[$newKey."_id"];
+                                }else{
+                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+                                    if(isset($field)){
+                                        $type=ucfirst($field->linkType);
+                                        if($type!="Contacts"){
+                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                        }else{
+                                            $names=explode(" ",$arr);
+                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                        }
+                                        if(isset($lookupModel))
+                                            $val=$lookupModel->id;
+                                        else
+                                            $val=$arr;
+                                    }
+                                }
+                                $model->$newKey=$val;
+                            }
+                        }
             $temp=$model->attributes;
-        	foreach($model->attributes as $field=>$value){
-        	    if(isset($_POST['Quote'][$field])){
-        	        $model->$field=$_POST['Quote'][$field];
-        	    }
-        	}
+        	foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Quote'][$field])){
+                                $model->$field=$_POST['Quote'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Quotes','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
+                                
+                            }
+                        }
         	
         	$model->expirationDate = $this->parseDate($model->expirationDate);
         	if(isset($model->associatedContacts)) {
@@ -594,11 +685,18 @@ class QuotesController extends x2base {
 	public function actionQuickUpdate($id) {
 		$model = $this->loadModel($id);
 
-        foreach($model->attributes as $field=>$value){
-            if(isset($_POST['Quote'][$field])){
-                $model->$field=$_POST['Quote'][$field];
-            }
-        }
+        foreach(array_keys($model->attributes) as $field){
+                            if(isset($_POST['Quote'][$field])){
+                                $model->$field=$_POST['Quote'][$field];
+                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Quotes','fieldName'=>$field));
+                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+                                    $model->$field=Accounts::parseUsers($model->$field);
+                                }elseif($fieldData->type=='date'){
+                                    $model->$field=strtotime($model->$field);
+                                }
+                                
+                            }
+                        }
         
 		$model->expirationDate = $this->parseDate($model->expirationDate);
     	
@@ -707,25 +805,6 @@ class QuotesController extends x2base {
 		}
 	}
 	
-	public function actionSaveChanges($id) {
-		$quote=$this->loadModel($id);
-		if(isset($_POST['Quote'])) {
-			$temp=$quote->attributes;
-			foreach($quote->attributes as $field=>$value){
-                            if(isset($_POST['Quote'][$field])){
-                                $quote->$field=$_POST['Quote'][$field];
-                            }
-                        }
-						
-			$quote->expirationDate = $this->parseDate($quote->expirationDate);
-			
-			$changes=$this->calculateChanges($temp,$quote->attributes, $quote);
-			$quote=$this->updateChangelog($quote,$changes);
-			$quote->save();
-			$this->redirect(array('view','id'=>$quote->id));
-			
-		}
-	}
 	
 	public function actionPrint($id) {
 		$model = $this->loadModel($id);

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -130,7 +130,7 @@ $this->renderPartial('_detailView',
 $this->endWidget();
 
 ?>
-<a class="x2-button" id="save-changes" href="#" onClick="submitForm('contacts-form');return false;"><span><?php echo Yii::t('app','Save Changes'); ?></span></a>
+
 <a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
 <a class="x2-button" href="shareQuote/<?php echo $model->id;?>"><span><?php echo Yii::t('quotes','Share Quote'); ?></span></a>
 <a class="x2-button" href="#" onClick="window.open('<?php echo Yii::app()->createUrl('quotes/print', array('id'=>$model->id)); ?>')"><span><?php echo Yii::t('quotes','Print Quote'); ?></span></a>

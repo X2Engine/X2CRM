@@ -312,6 +312,7 @@ class WorkflowController extends x2base {
 					for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
 						$actionModels[$i]->delete();
 
+					$actionModels[0]->setScenario('workflow');
 					$actionModels[0]->completeDate = time();	// set completeDate and save model
 					$actionModels[0]->complete = 'Yes';
 					$actionModels[0]->completedBy = Yii::app()->user->getName();
@@ -319,7 +320,11 @@ class WorkflowController extends x2base {
 					$actionModels[0]->actionDescription = $comment;
 					$actionModels[0]->save();
 					
-					for($i=$stageNumber+1; $i<=$stageCount; $i++) {
+					for($i=0; $i<=$stageCount; $i++) {
+						if($i != $stageNumber && empty($workflowStatus[$i]['completeDate']) && !empty($workflowStatus[$i]['createDate']))
+							break;
+					
+					
 						if(empty($workflowStatus[$i]['createDate'])) {
 							$nextAction = new Actions('workflow');					// start the next one (unless there is already one)
 							$nextAction->associationId = $modelId;

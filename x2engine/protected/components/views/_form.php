@@ -312,57 +312,28 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												)
 											)).'</div><label for="group" class="groupLabel">Group?</label>';
 										/* end x2temp */  
-									}elseif($field->type=='association'){
-                                                                            if($field->linkType!='multiple')
-										echo $form->dropDownList($model, $fieldName, $contacts, array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName.'_assignedToDropdown',
-										));
-                                                                            else
-                                                                                echo $form->listBox($model, $fieldName, $contacts, array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName.'_assignedToDropdown',
-                                                                                                'multiple'=>'multiple',
-										));
-                                                                                
-								   /* x2temp */
-                                                                                echo '<div class="checkboxWrapper">';
-										echo CHtml::checkBox('group','',array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName.'_groupCheckbox',
-												'ajax'=>array(
-													'type'=>'POST', //request type
-														'url'=>CController::createUrl('groups/getGroups'), //url to call.
-														//Style: CController::createUrl('currentController/methodToCall')
-														'update'=>'#'.$field->modelName.'_assignedToDropdown', //selector to update
-														'complete'=>'function(){
-															if($("#'.$field->modelName.'_groupCheckbox").attr("checked")!="checked"){
-																$("#'.$field->modelName.'_groupCheckbox").attr("checked","checked");
-																$("#'.$field->modelName.'_visibility option[value=\'2\']").remove();
-															}else{
-																$("#'.$field->modelName.'_groupCheckbox").removeAttr("checked");
-																$("#'.$field->modelName.'_visibility").append(
-																	$("<option></option>").val("2").html("User\'s Groups")
-																);
-															}
-														}'
-												)
-											)).'</div><label for="group" class="groupLabel">Group?</label>';
-										/* end x2temp */  
-										}elseif($field->type=='visibility'){
-											echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
-													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>$item['readOnly']? 'disabled' : null,
-													'title'=>$field->attributeLabel,
-													'id'=>$field->modelName."_visibility",
-											));
-										}
+                                                                                }elseif($field->type=='association'){
+                                                                                    if($field->linkType!='multiple')
+                                                                                        echo $form->dropDownList($model, $fieldName, $contacts, array(
+                                                                                                        'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+                                                                                                        'disabled'=>$item['readOnly']? 'disabled' : null,
+                                                                                                        'title'=>$field->attributeLabel,
+                                                                                        ));
+                                                                                    else
+                                                                                        echo $form->listBox($model, $fieldName, $contacts, array(
+                                                                                                        'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+                                                                                                        'disabled'=>$item['readOnly']? 'disabled' : null,
+                                                                                                        'title'=>$field->attributeLabel,
+                                                                                                        'multiple'=>'multiple',
+                                                                                        ));
+                                                                                }elseif($field->type=='visibility'){
+                                                                                        echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
+                                                                                                        'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+                                                                                                        'disabled'=>$item['readOnly']? 'disabled' : null,
+                                                                                                        'title'=>$field->attributeLabel,
+                                                                                                        'id'=>$field->modelName."_visibility",
+                                                                                        ));
+                                                                                }
 									}
 								}
 								unset($item);

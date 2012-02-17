@@ -108,8 +108,10 @@ class Actions extends CActiveRecord
                 $return=array();
                 foreach($fields as $field){
                     $arr[$field->type][]=$field->fieldName;
-                    if($field->required)
-                        $arr['required'][]=$field->fieldName;
+                    if($field->required) {
+						if(!($field->fieldName == 'actionDescription' && $this->scenario == 'workflow'))
+							$arr['required'][]=$field->fieldName;
+					}
                 }
                 foreach($arr as $key=>$array){
                     switch($key){

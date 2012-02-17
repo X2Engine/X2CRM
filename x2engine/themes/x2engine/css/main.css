@@ -556,14 +556,14 @@ div.portlet-minimize a {text-decoration:none;}
 	overflow:hidden;
 }
 
-#action-form textarea {width:558px;font-family:Arial, Helvetica, sans-serif;font-size:12px;}
+/* #action-form textarea {width:558px;font-family:Arial, Helvetica, sans-serif;font-size:12px;} */
+
 
 .ui-tabs {
 	border:none;
 	margin:0 0 5px 0;
 	padding:0;
 }
-
 .ui-tabs .ui-tabs-nav {
 	background:none;
 	border:none;
@@ -590,8 +590,6 @@ div.portlet-minimize a {text-decoration:none;}
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected {border-color:#999;border-bottom-color:#fff;background:#eee;}
 .ui-tabs .ui-tabs-nav li.ui-state-hover {border-color:#ccc;background:#fff;}
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected.ui-state-hover {border-color:#999;background:#eee;}
-
-
 .ui-tabs .form {
 	background:#eee;
 	border-color:#999;
@@ -604,6 +602,9 @@ div.portlet-minimize a {text-decoration:none;}
 	border:none;
 	background:none;
 	padding:0.5em 0.5em 0.5em 0.25em;
+}
+.ui-tabs .ui-tabs-panel {
+	padding:0;
 }
 
 .detail-form {display:none;z-index:10;} 

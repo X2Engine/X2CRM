@@ -108,9 +108,10 @@ echo $form->errorSummary($actionModel);
     <div class="row">
 	<b><?php echo $form->labelEx($actionModel,'actionDescription'); ?></b>
 	<?php //echo $form->label($actionModel,'actionDescription'); ?>
-	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>40,'style'=>'width:550px;')); ?>
+	<div class="text-area-wrapper">
+	<?php echo $form->textArea($actionModel,'actionDescription',array('rows'=>($inlineForm?3:6), 'cols'=>40)); ?>
 	<?php //echo $form->error($actionModel,'actionDescription'); ?>
-
+	</div>
 <div id="tabs-1">
 
 </div>

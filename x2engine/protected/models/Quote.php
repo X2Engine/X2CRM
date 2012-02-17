@@ -47,7 +47,7 @@ class Quote extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('name', 'required'),
-			array('accountId, probability', 'numerical', 'integerOnly'=>true),
+			array('probability', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>40),
 			array('accountName', 'length', 'max'=>100),
 			array('salesStage, expectedCloseDate, updatedBy', 'length', 'max'=>20),
@@ -55,7 +55,7 @@ class Quote extends CActiveRecord
 			array('description, assignedTo, associatedContacts', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, accountName, accountId, salesStage, expectedCloseDate, probability, leadSource, description, assignedTo, createDate, associatedContacts, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
+			array('id, name, accountName, salesStage, expectedCloseDate, probability, leadSource, description, assignedTo, createDate, associatedContacts, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -207,7 +207,7 @@ class Quote extends CActiveRecord
 
 	public static function getQuotesLinks($accountId) {
 
-		$quotesList = CActiveRecord::model('Quote')->findAllByAttributes(array('accountId'=>$accountId));
+		$quotesList = CActiveRecord::model('Quote')->findAllByAttributes(array('accountName'=>$accountId));
 		// $quotesList = $this->model()->findAllByAttributes(array('accountId'),'=',array($accountId));
 		
 		$links = array();
@@ -306,7 +306,6 @@ class Quote extends CActiveRecord
 		// $criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('accountName',$this->accountName,true);
-		$criteria->compare('accountId',$this->accountId);
 		$criteria->compare('salesStage',$this->salesStage,true);
 		// $criteria->compare('expectedCloseDate',$this->expectedCloseDate,true);
 		$criteria->compare('probability',$this->probability);

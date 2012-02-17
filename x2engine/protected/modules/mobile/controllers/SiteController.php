@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -206,6 +206,15 @@ class SiteController extends MobileController {
         }
         $this->render('contact', array('model' => $model));
     }
+    
+    function getRealIp() {
+		if (!empty($_SERVER['HTTP_CLIENT_IP']))
+			return $_SERVER['HTTP_CLIENT_IP'];
+		else if(!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		else
+			return $_SERVER['REMOTE_ADDR'];
+	}
 
     /**
      * Displays the login page
@@ -222,11 +231,45 @@ class SiteController extends MobileController {
             Yii::app()->end();
         }
 
-        // collect user input data
+          // collect user input data
         if (isset($_POST['LoginForm'])) {
             $model->attributes = $_POST['LoginForm'];
+			$ip = $this->getRealIp();
+
+			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
+			if(isset($session)) {
+				$session->lastUpdated = time();
+
+				if($session->status < 1) {
+					if($session->status > -3)
+						$session->status -= 1;
+				} else {
+					$session->status = -1;
+				}
+				if($session->status < -1)
+					$model->useCaptcha = true;
+				if($session->status < -2)
+					$model->setScenario('loginWithCaptcha');
+			} else {
+				$session = new Session;
+				$session->user = $model->username;
+				$session->lastUpdated = time();
+				$session->status = 1;
+				$session->IP = $ip;
+			}
+
             // validate user input and redirect to the previous page if valid
-            if ($model->validate() && $model->login())
+			if($model->validate() && $model->login()) {
+
+				$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+				$user->login = time();
+				$user->save();
+				} else
+					Yii::app()->session['versionCheck']=true;
+
+				Yii::app()->session['loginTime']=time();
+				$session->save();
+
                 $this->redirect($this->createUrl('site/home/'));
         }
         // display the login form

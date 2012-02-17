@@ -259,10 +259,16 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												case '2':
 													echo "User's Groups";break;
 												default:
-													echo "&nbsp;";
+													echo '&nbsp;';
 											}
 										}elseif($field->type=='email'){
-											echo "<a href='mailto:".$model->$fieldName."'>".$model->$fieldName."</a>";
+										
+											if(empty($model->$fieldName))
+												echo '&nbsp;';
+											else {
+												$mailtoLabel = isset($model->name)? '"'.$model->name.'" <'.$model->$fieldName.'>' : $model->$fieldName;
+												echo CHtml::mailto($model->$fieldName,$mailtoLabel);
+											}
 										}elseif($field->type=='url'){
 											$text = trim(preg_replace(
 													array(

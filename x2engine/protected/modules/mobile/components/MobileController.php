@@ -55,7 +55,7 @@ class MobileController extends Controller {
      * override to allow user loginUrl to be reset for mobile
      * @return void
      */
-    public function filterAccessControl(CFilterChain $filterChain){
+    public function filterAccessControl($filterChain){
         $user = Yii::app()->getUser();
         if ($user != null)
             $user->loginUrl=$this->createUrl('site/login/');

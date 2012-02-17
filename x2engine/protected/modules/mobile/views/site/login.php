@@ -54,9 +54,9 @@ $this->pageTitle = Yii::app()->name . ' - Login';
     ?>
     <div data-role="fieldcontain">
         <?php
-        $for=CHtml::resolveName($model, $name);
+        // $for=CHtml::resolveName($model, $name);
         echo $form->label($model, 'username', array(
-            'for' => CHtml::resolveName($model, $a='username')
+            // 'for' => CHtml::resolveName($model, $a='username')
         ));
         ?>
         <?php echo $form->textField($model, 'username',array('style'=>'height:50px;')); ?>
@@ -65,31 +65,30 @@ $this->pageTitle = Yii::app()->name . ' - Login';
     <div data-role="fieldcontain">
         <?php
         echo $form->label($model, 'password', array(
-            'for' => CHtml::resolveName($model, $a='password')
+            // 'for' => CHtml::resolveName($model, $a='password')
         ));
         ?>
         <?php echo $form->passwordField($model, 'password', array('style'=>'height:50px;')); ?>
         <?php echo $form->error($model, 'password'); ?>
     </div>
-<!--
+
     <div data-role="fieldcontain">
         <?php
-        echo $form->label($model, 'rememberMe', array(
-            'for' => CHtml::resolveName($model, $a='rememberMe')
-        ));
+        // echo $form->label($model, 'rememberMe', array(
+            // 'for' => CHtml::resolveName($model, $a='rememberMe')
+        // ));
         ?>
         <?php
-        echo $form->dropDownList($model, 'rememberMe', array(
-            '0' => Yii::t('app', 'Off'),
-            '1' => Yii::t('app', 'On')
-                ), array(
-            'data-role' => 'slider'
-                )
-        );
+        // echo $form->dropDownList($model, 'rememberMe', array(
+            // true => Yii::t('app', 'Off'),
+            // false => Yii::t('app', 'On')
+                // ), array(
+            // 'data-role' => 'slider'
+                // )
+        // );
         ?>
-        <?php echo $form->error($model, 'rememberMe'); ?>
+        <?php //echo $form->error($model, 'rememberMe'); ?>
     </div>
--->
         <?php echo CHtml::submitButton(Yii::t('app', 'Login')); ?>
 
     <?php $this->endWidget(); ?>

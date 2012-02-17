@@ -86,7 +86,6 @@ class SalesController extends x2base {
 	public function actionView($id) {
 		$type = 'sales';
 		$model = $this->loadModel($id);
-		$model->assignedTo = UserChild::getUserLinks($model->assignedTo);
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 		
 		parent::view($model, $type);
@@ -144,10 +143,6 @@ class SalesController extends x2base {
 	
 	public function create($model,$oldAttributes,$api=0){
 		
-		if(isset($_POST['companyAutoComplete']) && $model->accountName==""){
-			$model->accountName=$_POST['companyAutoComplete'];
-			$model->accountId="";
-		}
 		// process currency into an INT
 //		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 		
