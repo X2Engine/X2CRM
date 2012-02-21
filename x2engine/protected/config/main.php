@@ -141,10 +141,10 @@ return array(
 				// ),
 				// uncomment the following to show log messages on web pages
 				
-				 array(
-					 'class'=>'CWebLogRoute',
-					 'categories' => 'translations',
-				 ),
+				// array(
+					// 'class'=>'CWebLogRoute',
+					// 'categories' => 'translations',
+				 //),
 			),
 		),
 	),
