@@ -10,7 +10,7 @@ X2CRM 1.0.1 Changelog
 
 
 
-Welcome to X2CRM v1.0!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2CRM v1.0.1!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 
