@@ -41,26 +41,29 @@
 <ul>
 <?php
 $themeURL = Yii::app()->theme->getBaseUrl();
-                Yii::app()->clientScript->registerScript('logos',"
-                $(window).load(function(){
-                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                    var touchlogosrc = $('#x2touch-logo').attr('src');
-                    var logosrc=$('#x2crm-logo').attr('src');
-                    if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                });    
-                ");
+Yii::app()->clientScript->registerScript('logos',"
+$(window).load(function(){
+	if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+		$('a').removeAttr('href');
+		alert('Please put the logo back');
+		window.location='http://www.x2engine.com';
+	}
+	var touchlogosrc = $('#x2touch-logo').attr('src');
+	var logosrc=$('#x2crm-logo').attr('src');
+	if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+		$('a').removeAttr('href');
+		alert('Please put the logo back');
+		window.location='http://www.x2engine.com';
+	}
+});
+");
+$count = 0;
 foreach($recentItems as $item) {
+	if(++$count > 5)
+		break;
 	echo '<li>';
 	if ($item['type']=='t') {	//item is a action
-		$description = $item['model']->actionDescription;
+		$description = CHtml::encode($item['model']->actionDescription);
 		if(strlen($description)>123)
 			$description = substr($description,0,120).'...';
 		

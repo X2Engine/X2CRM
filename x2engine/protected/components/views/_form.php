@@ -49,11 +49,12 @@ $('.x2-layout.form-view :input').change(function() {
 Yii::app()->clientScript->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
-
+if((isset($isQuickCreate) && !$isQuickCreate) || !isset($isQuickCreate)){
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>$modelName.'-form',
 	'enableAjaxValidation'=>false,
 ));
+}
 echo '<em style="display:block;margin:5px;">'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 
 
@@ -358,11 +359,11 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 </div>
 <?php
 }
-
+if((isset($isQuickCreate) && !$isQuickCreate) || !isset($isQuickCreate)){
 echo '	<div class="row buttons">'."\n";
 echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
 echo "	</div>\n";
 
 $this->endWidget();
-
+}
 ?>

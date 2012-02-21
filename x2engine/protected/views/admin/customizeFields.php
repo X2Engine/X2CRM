@@ -48,7 +48,23 @@
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
 	<div class="row">
 		<?php echo $form->labelEx($model,'modelName'); ?>
-		<?php echo $form->dropDownList($model,'modelName',array('Actions'=>'Actions','Contacts'=>'Contacts','Sales'=>'Sales','Accounts'=>'Accounts'),
+		<?php 
+                $admin=Admin::model()->findByPk(1);
+                $order=$admin->menuOrder;
+                $pieces=explode(":",$order);
+                $disallow=array(
+                    'actions',
+                    'docs',
+                    'workflow',
+                    'dashboard',
+                    'groups',
+                );
+                foreach($pieces as $piece){
+                    if(array_search($piece, $disallow)===false){
+                        $arr[ucfirst($piece)]=ucfirst($piece);
+                    }
+                }
+                echo $form->dropDownList($model,'modelName',$arr,
 			array(
 			'empty'=>'Select a model',
 			'ajax' => array(

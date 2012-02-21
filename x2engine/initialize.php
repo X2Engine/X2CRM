@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.0';
-$buildDate = 1329783701;
+$x2Version = '1.0.1';
+$buildDate = 1329863494;
 
 $userData = '';
 
@@ -859,10 +859,10 @@ mysql_query('INSERT INTO x2_fields
 ("Contacts",	"phone2",				"Phone 2",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"email",				"Email",				0,	0,	"email",		0,	""),
 ("Contacts",	"website",				"Website",				0,	0,	"url",			0,	""),
-("Contacts",	"twitter",				"Twitter",				0,	0,	"varchar",		0,	""),
-("Contacts",	"linkedin",				"Linkedin",				0,	0,	"varchar",		0,	""),
-("Contacts",	"skype",				"Skype",				0,	0,	"varchar",		0,	""),
-("Contacts",	"googleplus",			"Googleplus",			0,	0,	"varchar",		0,	""),
+("Contacts",	"twitter",				"Twitter",				0,	0,	"url",                  0,	"twitter"),
+("Contacts",	"linkedin",				"Linkedin",				0,	0,	"url",                  0,	"linkedin"),
+("Contacts",	"skype",				"Skype",				0,	0,	"url",  		0,	"skype"),
+("Contacts",	"googleplus",			"Googleplus",			0,	0,	"url",		0,	"googleplus"),
 ("Contacts",	"address",				"Address",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"address2",				"Address 2",			0,	0,	"varchar",		0,	""),
 ("Contacts",	"city",					"City",					0,	0,	"varchar",		0,	""),
@@ -879,8 +879,8 @@ mysql_query('INSERT INTO x2_fields
 ("Contacts",	"priority",				"Priority",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"rating",				"Confidence",			0,	0,	"rating",		0,	""),
 ("Contacts",	"createDate",			"Create Date",			0,	0,	"date",			0,	""),
-("Contacts",	"facebook",				"Facebook",				0,	0,	"varchar",		0,	""),
-("Contacts",	"otherUrl",				"Other",				0,	0,	"varchar",		0,	""),
+("Contacts",	"facebook",				"Facebook",				0,	0,	"url",		0,	"facebook"),
+("Contacts",	"otherUrl",				"Other",				0,	0,	"url",		0,	""),
 ("Contacts",	"leadtype",				"Lead Type",			0,	0,	"dropdown",		0,	"3"),
 ("Contacts",	"closedate",			"Close Date",			0,	0,	"date",			0,	""),
 ("Contacts",	"interest",				"Interest",				0,	0,	"varchar",		0,	""),

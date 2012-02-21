@@ -270,6 +270,20 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												echo CHtml::mailto($model->$fieldName,$mailtoLabel);
 											}
 										}elseif($field->type=='url'){
+                                                                                    if($field->linkType!="" && $model->$fieldName!=""){
+                                                                                        switch($field->linkType){
+                                                                                            case 'skype':
+                                                                                                $temp="<a href='callto:".$model->$fieldName."'>".$model->$fieldName."</a>";
+                                                                                                break;
+                                                                                            case 'googleplus':
+                                                                                                $temp="plus.google.com/".$model->$fieldName;
+                                                                                                break;
+                                                                                            default:
+                                                                                                $temp="www.$field->linkType.com/".$model->$fieldName;
+                                                                                        }
+                                                                                    }else{
+                                                                                        $temp=$model->$fieldName;
+                                                                                    }
 											$text = trim(preg_replace(
 													array(
 														'/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/iex',
@@ -278,13 +292,14 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 														'/(^|\s|>)(www.[^<> \n\r]+)/iex',
 													),
 													array(
-														"stripslashes((strlen('\\2')>0?'\\1<a href=\"\\2\" target=\"_blank\">\\2</a>\\3':'\\0'))",
+														"stripslashes((strlen('\\2')>0?'\\1<a href=\"\\2\" target=\"_blank\">".Yii::t($modelName,$field->attributeLabel)."</a>\\3':'\\0'))",
 														'<a\\1 target="_blank"',
 														'<a\\1 target="_blank">',
-														"stripslashes((strlen('\\2')>0?'\\1<a href=\"http://\\2\" target=\"_blank\">\\2</a>\\3':'\\0'))",
+														"stripslashes((strlen('\\2')>0?'\\1<a href=\"http://\\2\" target=\"_blank\">".Yii::t($modelName,$field->attributeLabel)."</a>\\3':'\\0'))",
 													),
-													$model->$fieldName
+													$temp
 											));
+                                                                                    
 											echo empty($text)? '&nbsp;' : $text;
 										}elseif($field->type=='link') {
 											if(!empty($model->$fieldName) && is_numeric($model->$fieldName)){

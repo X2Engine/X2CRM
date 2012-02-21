@@ -290,11 +290,13 @@ class QuotesController extends x2base {
         	}
 
 			// get products
+                $products = array();
+                if(isset($_POST['ExistingProducts'])){
 			$ids = $_POST['ExistingProducts']['id'];
 			$prices = $_POST['ExistingProducts']['price'];
 			$quantities = $_POST['ExistingProducts']['quantity'];
 			$adjustments = $_POST['ExistingProducts']['adjustment'];
-			$products = array();
+			
 			foreach($ids as $key=>$id) {
 				if($id != 0) { // remove blanks
 					$products[$key]['id'] = $id;
@@ -312,6 +314,7 @@ class QuotesController extends x2base {
 			}
 			if(!empty($products))
 				$currency = $productCurrency[$products[0]['id']];
+                }
         	$model->currency = $currency;
 
 			

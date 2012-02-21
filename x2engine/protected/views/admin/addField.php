@@ -62,6 +62,8 @@ This form allows you to add custom fields to models.
                 'actions',
                 'docs',
                 'workflow',
+                'dashboard',
+                'groups',
             );
             foreach($pieces as $piece){
                 if(array_search($piece, $disallow)===false){

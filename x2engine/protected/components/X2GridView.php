@@ -213,8 +213,13 @@ class X2GridView extends CGridView {
 				} else if($columnName == 'assignedTo'){
 					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):UserChild::getUserLinks($data->assignedTo)';
                                         $newColumn['type'] = 'raw';
-                                }
-
+                                }elseif($this->allFields[$columnName]->type=='link'){
+                                    $field=$this->allFields[$columnName];
+                                    $type=ucfirst($field->linkType);
+                                    $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/\$data->$columnName'),array('target'=>'_blank')):''";
+                                    $newColumn['type'] = 'raw';
+                            }
+                            
 
 				if(Yii::app()->language == 'en') {
 					$format =  "M d, yy";

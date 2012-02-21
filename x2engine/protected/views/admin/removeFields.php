@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,6 +43,7 @@ This form will allow you to remove any custom fields you have added.<br /> <b><s
 <form name="removeFields" action="removeField" method="POST">
 	<br />
 	<select name="field">
+            <option value="">Select A Field</option>
 		<?php foreach($fields as $id=>$field) echo "<option value='$id'>$field</option>"; ?>
 	</select>
 	<br /><br />

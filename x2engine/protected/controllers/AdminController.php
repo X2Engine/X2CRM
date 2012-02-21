@@ -910,7 +910,7 @@ class AdminController extends Controller {
 	
 	public function actionRemoveField(){
 		
-		if(isset($_POST['field'])){
+		if(isset($_POST['field']) && $_POST['field']!=""){
 			$id = $_POST['field'];
 			$field = Fields::model()->findByPk($id);
 			$model = strtolower($field->modelName);
@@ -920,8 +920,9 @@ class AdminController extends Controller {
 				$command = Yii::app()->db->createCommand($sql);
 				$result = $command->query();
 			}
-			$this->redirect('manageFields');
+			
 		}
+                $this->redirect('manageFields');
 	}
 	
 	public function actionCustomizeFields(){

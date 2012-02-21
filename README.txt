@@ -4,18 +4,11 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-X2CRM 1.0 GA Changelog
+X2CRM 1.0.1 Changelog
 
-- Various bug fixes
-- Translations are now mostly complete (except workflow and admin page). Expect a patch with the rest this week.
+- Various bug fixes and small improvements
 
-**
 
-IMPORTANT NOTE
-
-Automatic updates will not work at the moment.  We will be posting a file on x2community.com to download so that you can automatically update to this version.
-
-**
 
 Welcome to X2CRM v1.0!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 

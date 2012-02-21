@@ -61,7 +61,7 @@ if($model->type=='note' || $model->type=='attachment') {
 			if($model->type=='attachment')
 				echo MediaChild::attachmentActionText($model->actionDescription,true,true);
 			else
-				echo $this->convertUrls($model->actionDescription);
+				echo $this->convertUrls(CHtml::encode($model->actionDescription));
 			?>
 		</td>
 	</tr>
@@ -82,7 +82,7 @@ if($model->type=='note' || $model->type=='attachment') {
 			<?php echo $attributeLabels['actionDescription']; ?>
 		</td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
-			<?php echo $this->convertUrls($model->actionDescription); ?>
+			<?php echo $this->convertUrls(CHtml::encode($model->actionDescription)); ?>
 		</td>
 	</tr>
 <?php

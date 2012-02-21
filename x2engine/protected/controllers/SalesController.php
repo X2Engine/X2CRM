@@ -396,7 +396,7 @@ class SalesController extends x2base {
 			$temp=$model->assignedTo; 
                         $tempArr=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
-			$arr=$model->assignedTo;
+			$arr=$_POST['Sales']['assignedTo'];
 			
 
 			$model->assignedTo=Sales::parseUsers($arr);
@@ -439,7 +439,7 @@ class SalesController extends x2base {
 			$temp=$model->associatedContacts; 
                         $tempArr=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
-			$arr=$model->associatedContacts;
+			$arr=$_POST['Sales']['associatedContacts'];
                         foreach($arr as $contactId){
                             $rel=new Relationships;
                             $rel->firstType='Contacts';
@@ -480,7 +480,7 @@ class SalesController extends x2base {
 		if(isset($_POST['Sales'])) {
                         $temp=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
-			$arr=$model->assignedTo;
+			$arr=$_POST['Sales']['assignedTo'];
 			
 			
 			foreach($arr as $id=>$user){
@@ -516,7 +516,7 @@ class SalesController extends x2base {
 		{
                         $temp=$model->attributes;
 			$model->attributes=$_POST['Sales'];  
-			$arr=$model->associatedContacts;
+			$arr=$_POST['Sales']['associatedContacts'];
 			
 			
 			foreach($arr as $id=>$contact){

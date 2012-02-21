@@ -347,11 +347,11 @@ class AccountsController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Accounts'])) {
+                    
 			$temp=$model->assignedTo; 
 			$tempArr=$model->attributes;
 			$model->attributes=$_POST['Accounts'];  
-			$arr=$model->assignedTo;
-
+			$arr=$_POST['Accounts']['assignedTo'];
 			$model->assignedTo=Accounts::parseUsers($arr);
 			if($temp!="")
 				$temp.=", ".$model->assignedTo;
@@ -385,7 +385,7 @@ class AccountsController extends x2base {
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['Accounts'];  
-			$arr=$model->assignedTo;
+			$arr=$_POST['Accounts']['assignedTo'];
 
 			
 			foreach($arr as $id=>$user){

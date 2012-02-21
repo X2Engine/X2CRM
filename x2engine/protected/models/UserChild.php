@@ -142,7 +142,10 @@ class UserChild extends Users {
                  /* x2temp */
                 if(is_numeric($users)){
                     $group=Groups::model()->findByPk($users);
-                    $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                    if(isset($group))
+                        $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                    else
+                        $link="";
                     return $link;
                 }
                 /* end x2temp */
@@ -156,7 +159,10 @@ class UserChild extends Users {
 					$link='';
                                 else if(is_numeric($user)){
                                     $group=Groups::model()->findByPk($users);
-                                    $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                                    if(isset($group))
+                                        $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                                    else
+                                        $link='';
                                     $links.=$link.", ";
                                 }else {
 					$model = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$user));
