@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,10 +39,11 @@
  ********************************************************************************/
 
 return array (
+
 // Attribute Labels
 'ID'=>'编号',
 'Association Type'=>'关联类型',
-'Association'=>'协会',
+'Association'=>'关联',
 'File Name'=>'文件名',
 'Uploaded By'=>'上传者',
 'Create Date'=>'创建日期',
@@ -54,8 +55,8 @@ return array (
 // Misc
 'File:'=>'文件:',
 '(deleted)'=>'(删除)',
-'Uploaded by {name}'=>'上传 {name}',
+'Uploaded by {name}'=>'上传者{name}',
 
 // Errors
-'Are you sure you want to delete this item?'=>'是否确定要删除这个项目吗？',
+'Are you sure you want to delete this item?'=>'您确定要删除这个项目吗？',
 );

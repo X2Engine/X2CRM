@@ -974,7 +974,6 @@ class AdminController extends Controller {
 			$arr=$model->editPermissions;
 			if(isset($arr))
 				$model->editPermissions=Accounts::parseUsers($arr);
-			$model->text=$_POST['msgpost'];
 			$model->createdBy='admin';
 			$model->createDate=time();
 			$model->lastUpdated=time();
@@ -1233,8 +1232,6 @@ class AdminController extends Controller {
 				$errors[] = Yii::t('module','A module with that title already exists');
 			if(empty($errors)) {
 			
-				$assignedTo=$_POST['displayAssignedTo'];
-				$description=$_POST['displayDescription'];
 				
                                 $this->writeConfig($title,$moduleName,$recordName);
 				$this->createNewTable($moduleName);
@@ -1382,7 +1379,7 @@ class AdminController extends Controller {
 		}
 		
 		$arr = array();
-		$standard = array('contacts','actions','docs','accounts','sales','workflow','quotes','products','groups');
+		$standard = array('contacts','actions','docs','accounts','sales','workflow','quotes','products','groups','dashboard');
 
 		$pieces = explode(":",$admin->menuOrder);
 		foreach($pieces as $piece) {
@@ -1715,6 +1712,7 @@ class AdminController extends Controller {
 			'docs',
 			'workflow',
                         'groups',
+                        'dashboard',
 		);
 		$moduleNames = explode(':',Yii::app()->params->admin->menuOrder);
 		$moduleNicknames = explode(':',Yii::app()->params->admin->menuNicknames);
@@ -1943,6 +1941,7 @@ class AdminController extends Controller {
                                 'actions',
                                 'docs',
                                 'workflow',
+                                'dashboard',
                             );
                             foreach($pieces as $piece){
                                 if(array_search($piece, $disallow)===false){
@@ -2077,6 +2076,8 @@ class AdminController extends Controller {
             if($updaterCheck!=$updaterVersion){
                 $file="protected/controllers/AdminController.php";
                 $this->ccopy("http://$url.com/updatesTest/x2engine/".$file , $file);
+                $file="protected/views/admin/updater.php";
+                $this->ccopy("http://$url.com/updatesTest/x2engine/".$file , $file);
                 $config="<?php
 \$host='$host';
 \$user='$user';
@@ -2156,6 +2157,8 @@ class AdminController extends Controller {
                     $this->restoreBackup(json_decode($_POST['fileList'],true));
                     echo "Update failed.  Please try again or contact X2Engine.";
                 }else{
+                    $url=$_POST['url'];
+                    $updaterCheck=file_get_contents("http://www.$url.com/updates/updateCheck.php");
                     $newVersion=$_POST['version'];
                     $config="<?php
 \$host='$host';
@@ -2171,6 +2174,11 @@ file_put_contents('protected/config/emailConfig.php', $config);
             }
             if(is_dir('backup'))
                 $this->rrmdir('backup');
+            $assets=scandir('assets');
+            foreach($assets as $folder){
+                if($folder!=".." && $folder!=".")
+                    $this->rrmdir($folder);
+            }
         }
         
         function ccopy($filepath, $file){

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -93,6 +93,8 @@ return array (
 'Commercial support and hosting'=>'商用サポートおよびホスティング',
 'X2Engine Support Forums'=>'X2Engineサポートフォーラム',
 'Yii Open Source web framework'=>'YiiのオープンソースのWebフレームワーク',
+'Show'=>'表示する',
+'Hide'=>'隠す',
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'メインメニューのアイテムを並べ替える',

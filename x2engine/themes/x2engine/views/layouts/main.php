@@ -413,7 +413,7 @@ $userMenu = array(
 				<?php echo CHtml::image($themeURL.'/images/x2footer.png','', array('id'=>'x2crm-logo')); ?></a>
 		</div>
 		Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
-		<?php echo Yii::t('app','Rights reservered.'); ?>
+		<?php echo Yii::t('app','Rights reserved.'); ?>
 		<?php
 		echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.',
 		array(

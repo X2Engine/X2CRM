@@ -68,7 +68,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 ?>
 
 <?php echo CHtml::button(
-	Yii::t('quotes', 'New Quote'), 
+	Yii::t('quotess', 'New Quote'), 
 	array('id'=>'show-new-quote-button', 'onclick'=>'toggleNewQuote();', 'class'=>'x2-button')
 ); ?>
 
@@ -82,9 +82,9 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 <table class="quote-create-table">
 	<tbody>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Name'); ?><span class="required">*</span></th>
-			<th><?php echo Yii::t('quote', 'Status'); ?></th>
-			<th><?php echo Yii::t('quote', 'Expires'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Name'); ?><span class="required">*</span></th>
+			<th><?php echo Yii::t('quotes', 'Status'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Expires'); ?></th>
 		</tr>
 		<tr>
 			<td>
@@ -95,7 +95,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 				<?php echo $form->dropDownList($model,'status', Quote::statusList()); ?>
 				<?php echo $form->error($model,'status'); ?>
 				<span style="padding-left: 5px;">
-				    <?php echo Yii::t('quote', 'Locked'); ?>
+				    <?php echo Yii::t('quotes', 'Locked'); ?>
 				    <?php echo $form->checkBox($model, 'locked'); ?>
 				</span>
 			</td>
@@ -117,7 +117,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 			</td>
 		</tr>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Notes/Terms'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Notes/Terms'); ?></th>
 			<th></th>
 			<th></th>
 		</tr>
@@ -134,11 +134,11 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 	<thead>
     	<tr>
 	    	<th style="padding: 0;"></th>
-	    	<th><?php echo Yii::t('product', 'Line Item'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Unit Price'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Quantity'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Adjustments'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Price'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Line Item'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Unit Price'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Quantity'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Adjustments'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Price'); ?></th>
     	</tr>
     </thead>
     <tbody>

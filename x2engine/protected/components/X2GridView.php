@@ -66,6 +66,8 @@ class X2GridView extends CGridView {
 			// $this->modelName = $this->getId();
 		if(empty($this->viewName))
 			$this->viewName = $this->modelName;
+		if($this->modelName=='Quotes')
+			$this->modelName='Quote';
 		
 		
 		
@@ -114,7 +116,7 @@ class X2GridView extends CGridView {
 		
 
 		foreach($this->allFields as $fieldName=>&$field) {
-			$this->allFieldNames[$fieldName] = $field->attributeLabel;
+			$this->allFieldNames[$fieldName] = CActiveRecord::model($this->modelName)->getAttributeLabel($field->fieldName);
 		}
 		
 		
@@ -200,7 +202,7 @@ class X2GridView extends CGridView {
 
 				$newColumn['name'] = $columnName;
 				$newColumn['id'] = 'C_'.$columnName;
-				$newColumn['header'] = $this->allFields[$columnName]->attributeLabel;
+				$newColumn['header'] = CActiveRecord::model($this->modelName)->getAttributeLabel($columnName);
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
 				
 				if($isDate)

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,6 +41,7 @@
 return array (
 
 // Attribute Labels
+'ID'=>'ID',
 'Title'=>'Titre',
 'Text'=>'Texte',
 'Created By'=>'Créé par',
@@ -48,6 +49,7 @@ return array (
 'Last Updated'=>'Dernière mise à jour',
 'Create Date'=>'Créez date',
 'Edit Permissions'=>'Modifier les autorisations',
+'Doc Type'=>'Doc Type',
 
 // Labels
 'Doc'=>'Doc',
@@ -58,6 +60,7 @@ return array (
 'Docs'=>'Docs',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'S\'il vous plaît sélectionner les utilisateurs qui sont autorisés à modifier le document. Utilisez Ctrl + clic pour sélectionner ou désélectionner les utilisateurs individuels.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'S\'il vous plaît faites un clic droit sur ​​le lien ci-dessous et sélectionnez "Enregistrer sous" pour télécharger le document! Clic gauche ouvre le document dans un mode imprimable.',
+'Uploaded Documents'=>'Documents Téléchargés',
 
 // Doc Navbar
 'List Docs'=>'Liste de documents',
@@ -69,4 +72,6 @@ return array (
 'Edit Doc Permissions'=>'Modifier les autorisations Doc',
 'Edit'=>'Modifier',
 'Export'=>'Exporter',
+'Create'=>'Créer',
+'Create Email'=>'Créer E-mail',
 );

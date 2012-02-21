@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,6 +39,8 @@
  ********************************************************************************/
 
 return array (
+
+
 // Attributes
 'ID'=>'编号',
 'Assigned To'=>'分配给',
@@ -52,11 +54,11 @@ return array (
 'Show'=>'显示',
 'Hide'=>'隐藏',
 'Module Title'=>'模块标题',
-'The name for your new module'=>'新的模块的名称',
+'The name for your new module'=>'新模块的名称',
 'Item Name'=>'产品名称',
-'(Optional) What to call individual records, e.g. "Create new X"'=>'（可选）叫什么个人记录，例如“创建新的X”',
+'(Optional) What to call individual records, e.g. "Create new X"'=>'（可选）个人记录叫什么，例如“新建X”',
 'DB Table Name'=>'数据库表名称',
-'Optional (alphanumeric only, must start with a letter)'=>'可选（字母，必须以字母开头）',
+'Optional (alphanumeric only, must start with a letter)'=>'可选（只能用字母数字，必须以字母开头）',
 
 // Menu Items
 '{X} List'=>'{X}，列表',
@@ -71,12 +73,12 @@ return array (
 'Manage {X}'=>'管理{X}',
 
 // Errors
-'Invalid table name'=>'无效的表名称',
-'A module with that title already exists'=>'与该标题的模块已经存在',
+'Invalid table name'=>'表名无效',
+'A module with that title already exists'=>'该模块的名称已存在',
 
 // Misc
-'Please fill out the fields below to create a new module.'=>'请填写下面的字段创建一个新的模块。',
-'Enter field name here'=>'在此处输入栏位名称',
+'Please fill out the fields below to create a new module.'=>'请填写下面的字段以创建一个新的模块。',
+'Enter field name here'=>'在此处输入字段名',
 
 
 );

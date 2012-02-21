@@ -41,24 +41,37 @@
 return array (
 // Quotes Attributes
 'ID'=>'',
-'Assigned To'=>'',
+'Status'=>'',
 'Name'=>'',
-'Account'=>'',
+'Locked'=>'',
 'Contacts'=>'',
-'Quote Amount'=>'',
-'Sales Stage'=>'',
-'Expected Close Date'=>'',
-'Existing Products'=>'',
+'Assigned To'=>'',
+'Account'=>'',
 'Probability'=>'',
+'Expiration Date'=>'',
+'Last Updated'=>'',
+'Create Date'=>'',
+'Updated By'=>'',
+'Created By'=>'',
+'Notes'=>'',
+'Products'=>'',
+'Expected Close Date'=>'',
+
+'Sales Stage'=>'',
+'Existing Products'=>'',
 'Lead Source'=>'',
 'Description'=>'',
-'Create Date'=>'',
-'Last Updated'=>'',
-'Updated By'=>'',
+'Notes/Terms'=>'',
 'Hold Control or Command key to select multiple items.'=>'',
-'Working'=>'',
+
+'Draft'=>'',
+'Pending'=>'',
+'Issued'=>'',
 'Won'=>'',
+
+'Working'=>'',
 'Lost'=>'',
+
 'Website'=>'',
 'Cold Call'=>'',
 'E-Mail'=>'',
@@ -66,23 +79,29 @@ return array (
 
 // Quotes Actions
 'Quotes List'=>'',
-'Create Quote'=>'',
+'Create'=>'',
 'View Quote'=>'',
-'Update Quote'=>'',
+'Update'=>'',
+'Delete'=>'',
+'Manage'=>'',
 'Delete Quote'=>'',
 'Manage Quotes'=>'',
+'Create Quote'=>'',
 
 'Add a User'=>'',
 'Add a Contact'=>'',
 'Remove a User'=>'',
 'Remove a Contact'=>'',
 'Share Quote'=>'',
+'Print'=>'',
+'Print Quote'=>'',
 
 // Quotes Titles
 'Quotes'=>'',
 'Quote'=>'',
 'Quote:'=>'',
 'Update Quote: {name}'=>'',
+'Print Options'=>'',
 
 // Misc Text
 'Please click any new users you wish to add.'=>'',
@@ -90,4 +109,7 @@ return array (
 'Please select the users you wish to remove.'=>'',
 'Please select the contacts you wish to remove.'=>'',
 'Quote Record Details'=>'',
+'Include Logo'=>'',
+'Basic Information'=>'',
+'Sales'=>'',
 );

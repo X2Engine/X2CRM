@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,6 +40,7 @@
 
 return array (
 // Action Attributes
+'ID'=>'ID',
 'Assigned To'=>'Zugeordnet Zu',
 'Action Description'=>'Aktion Beschreibung',
 'Description'=>'Beschreibung',
@@ -64,6 +65,7 @@ return array (
 'Private'=>'Privat',
 'No'=>'Nein',
 'Yes'=>'Ja',
+'Date Completed'=>'Abschlussdatum',
 
 // Actions Nav
 'All Actions'=>'Alle Aktionen',
@@ -74,6 +76,10 @@ return array (
 'Complete Action'=>'Ändere Aktion',
 'Complete + New Action'=>'Ändere + Neue Aktion',
 'Uncomplete'=>'Deklariere als nicht fertig',
+'Log A Call'=>'Hinweise in Sachen',
+'New Action'=>'Neue Aktion',
+'New Comment'=>'Neuer Kommentar',
+'Publisher'=>'Verleger',
 
 // Actions Titles
 'Manage Actions'=>'Aktionen Verwalten',
@@ -90,6 +96,7 @@ return array (
 'Everyone\'s Actions'=>'Alle Aktionen',
 'Delete Action'=>'Aktion Löschen',
 'Share Action'=>'Teile Aktion',
+'Create'=>'Schaffen',
 
 
 // Misc

@@ -73,24 +73,24 @@ Yii::app()->clientScript->registerScript("productTableQuote{$quote->id}", $produ
 <div class="row viewQuote" style="overflow: visible;">
 <?php
 $viewButton = CHtml::link(
-	'['. Yii::t('product', 'View') .']',
+	'['. Yii::t('products', 'View') .']',
 	Yii::app()->createUrl('quotes/view', array('id'=>$quote->id)),
 	array('title'=>'View Quote')
 );
 $strict = Yii::app()->params['admin']['quoteStrictLock'];
 $updateButton = ' '. CHtml::link(
-	'['. Yii::t('product', 'Update') .']',
+	'['. Yii::t('products', 'Update') .']',
 	'javascript:void(0);',
 	array('title'=>'Update Quote', 'onclick'=>"toggleUpdateQuote({$quote->id}, {$quote->locked}, $strict);")
 );
 $deleteButton = ' '. CHtml::ajaxLink(
-	'['. Yii::t('quote', 'Delete') .']', 
+	'['. Yii::t('quotes', 'Delete') .']', 
 	Yii::app()->createUrl('quotes/quickDelete', array('id'=>$quote->id, 'contactId'=>$contactId)),
 	array(
 		'success' => "function(html) { jQuery('#quote-form-wrapper').html(html); }",
 		'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }"
 	),
-	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quote', "Delete Quote"), 'live'=>false)
+	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
 );
 ?>
 
@@ -116,20 +116,20 @@ $emailNotes = array();
 if(empty($quote->description))
 	$emailNotes['label'] = '';
 else
-	$emailNotes['label'] = '<b>'. Yii::t('quote', $attributeLabel['description']) .'</b><br />';
+	$emailNotes['label'] = '<b>'. Yii::t('quotes', $attributeLabel['description']) .'</b><br />';
 $emailNotes['notes'] = $quote->description .'<br /><br />';
 
 $jsEmailMessage = array('name'=>$emailName, 'products'=>$emailProducts, 'notes'=>$emailNotes);
 $jsEmailMessage = json_encode($jsEmailMessage); // encode for javascript
 
-$emailButton = CHtml::link('['. Yii::t('product','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail($jsEmailMessage)"));
+$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail($jsEmailMessage)"));
 
 /*** End Email Quote ***/
 ?>
 
 <?php /*** Print Quote ***/
 
-$printButton = CHtml::link('['. Yii::t('quote','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('quotes/print', array('id'=>$quote->id))."')"));
+$printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('quotes/print', array('id'=>$quote->id))."')"));
 /*** End Print Quote ***/
 ?>
 
@@ -155,7 +155,7 @@ $jsDuplicateQuote .= "'expirationDate': '". date("F d, Y",$quote->expirationDate
 $jsDuplicateQuote .= "'products': $jsProductArray, ";
 $jsDuplicateQuote .= ' }';
 
-$duplicateButton = CHtml::link('['. Yii::t('product', 'Duplicate') .']', 'javascript:void(0);', array('onClick'=>"duplicateQuote($jsDuplicateQuote)"));
+$duplicateButton = CHtml::link('['. Yii::t('products', 'Duplicate') .']', 'javascript:void(0);', array('onClick'=>"duplicateQuote($jsDuplicateQuote)"));
 
 /*** End Duplicate Quote ***/
 ?>
@@ -166,9 +166,9 @@ $duplicateButton = CHtml::link('['. Yii::t('product', 'Duplicate') .']', 'javasc
 <table class="quote-detail-table">
 	<tbody>
 		<tr>
-			<th><?php echo Yii::t('quote', 'ID'); ?></th>
-			<th><?php echo Yii::t('quote', 'Name'); ?></th>
-			<th><?php echo Yii::t('quote', 'Options'); ?></th>
+			<th><?php echo Yii::t('quotes', 'ID'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Name'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Options'); ?></th>
 		</tr>
 		<tr>
 			<td style="font-size: 1.5em;">
@@ -187,9 +187,9 @@ $duplicateButton = CHtml::link('['. Yii::t('product', 'Duplicate') .']', 'javasc
 			</td>
 		</tr>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Created'); ?></th>
-			<th><?php echo Yii::t('quote', 'Updated'); ?></th>
-			<th><?php echo Yii::t('quote', 'Expires'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Created'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Updated'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Expires'); ?></th>
 		</tr>
 		<tr>
 			<td>
@@ -203,9 +203,9 @@ $duplicateButton = CHtml::link('['. Yii::t('product', 'Duplicate') .']', 'javasc
 			</td>
 		</tr>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Created By'); ?></th>
-			<th><?php echo Yii::t('quote', 'Updated By'); ?></th>
-			<th><?php echo Yii::t('quote', 'Status'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Created By'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Updated By'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Status'); ?></th>
 		</tr>
 		<tr>
 			<td><?php echo $quote->createdBy; ?></td>
@@ -214,7 +214,7 @@ $duplicateButton = CHtml::link('['. Yii::t('product', 'Duplicate') .']', 'javasc
 		</tr>
 		<?php if(!empty($quote->description)) { ?>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Notes/Terms'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Notes/Terms'); ?></th>
 			<th></th>
 			<th></th>
 		</tr>
@@ -234,32 +234,32 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'name',
-			'header'=>Yii::t('product','Line Item'),
+			'header'=>Yii::t('products','Line Item'),
 			'value'=>'$data["name"]',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'unit',
-			'header'=>Yii::t('product','Unit Price'),
+			'header'=>Yii::t('products','Unit Price'),
 			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$quote->currency.'")',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'quantity',
-			'header'=>Yii::t('product','Quantity'),
+			'header'=>Yii::t('products','Quantity'),
 			'value'=>'$data["quantity"]',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'adjustment',
-			'header'=>Yii::t('product', 'Adjustment'),
+			'header'=>Yii::t('products', 'Adjustment'),
 			'value'=>'$data["adjustment"]',
 			'type'=>'raw',
 			'footer'=>'<b>Total</b>',
 		),
 		array(
 			'name'=>'price',
-			'header'=>Yii::t('product', "Price"),
+			'header'=>Yii::t('products', "Price"),
 			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$quote->currency.'")',
 			'type'=>'raw',
 			'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$quote->currency) .'</b>',
@@ -283,9 +283,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <table class="quote-detail-table">
 	<tbody>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Created'); ?></th>
-			<th><?php echo Yii::t('quote', 'Updated'); ?></th>
-			<th><?php echo Yii::t('quote', 'Expires'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Created'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Updated'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Expires'); ?></th>
 		</tr>
 		<tr>
 			<td>
@@ -311,9 +311,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			</td>
 		</tr>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Created By'); ?></th>
-			<th><?php echo Yii::t('quote', 'Updated By'); ?></th>
-			<th><?php echo Yii::t('quote', 'Status'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Created By'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Updated By'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Status'); ?></th>
 		</tr>
 		<tr>
 			<td><?php echo $quote->createdBy; ?></td>
@@ -322,7 +322,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 					<?php echo $form->dropDownList($quote,'status', Quote::statusList()); ?>
 					<?php echo $form->error($quote,'status'); ?>
 					<span style="padding-left: 5px;">
-						<?php echo Yii::t('quote', $attributeLabel['locked']); ?>
+						<?php echo Yii::t('quotes', $attributeLabel['locked']); ?>
 						<?php echo $form->checkBox($quote, 'locked', array('id'=>"quote-{$quote->id}-locked")); ?>
 					</span>
 			</td>
@@ -331,7 +331,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			</td>
 		</tr>
 		<tr>
-			<th><?php echo Yii::t('quote', 'Notes/Terms'); ?></th>
+			<th><?php echo Yii::t('quotes', 'Notes/Terms'); ?></th>
 			<th></th>
 			<th></th>
 		</tr>
@@ -349,11 +349,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		<thead>
 	    	<tr>
 	    		<th style="padding: 0;"></th>
-	    		<th><?php echo Yii::t('product', 'Line Item'); ?></th>
-	    		<th><?php echo Yii::t('product', 'Unit Price'); ?></th>
-	    		<th><?php echo Yii::t('product', 'Quantity'); ?></th>
-	    		<th><?php echo Yii::t('product', 'Adjustments'); ?></th>
-	    		<th><?php echo Yii::t('product', 'Price'); ?></th>
+	    		<th><?php echo Yii::t('products', 'Line Item'); ?></th>
+	    		<th><?php echo Yii::t('products', 'Unit Price'); ?></th>
+	    		<th><?php echo Yii::t('products', 'Quantity'); ?></th>
+	    		<th><?php echo Yii::t('products', 'Adjustments'); ?></th>
+	    		<th><?php echo Yii::t('products', 'Price'); ?></th>
 	    	</tr>
 	    </thead>
 	    <tbody>

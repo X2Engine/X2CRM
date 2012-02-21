@@ -40,35 +40,35 @@
 
 return array (
 // Install screen
-'Install X2Engine'=>'Установить X2Engine',
+'Install X2Engine'=>'Установка X2Engine',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Добро пожаловать в программу установки приложения X2Engine! Мы должны собрать немного информации, прежде чем мы можем получить ваше приложение и работает. Пожалуйста, заполните поля, перечисленные ниже.',
+'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Добро пожаловать в программу установки приложения X2Engine! Пожалуйста, заполните поля, перечисленные ниже.',
 
-'X2Engine Application Info'=>'X2Engine приложений информация',
+'X2Engine Application Info'=>'Информация о Вашем приложении X2Engine',
 
 'Application Name'=>'Имя приложения',
 'Default Language'=>'Язык по умолчанию',
-'Currency'=>'валюта',
+'Currency'=>'Укажите валюту',
 'Admin Password'=>'Пароль администратора',
 'Confirm Password'=>'Подтвердить пароль',
-'Administrator Email'=>'Администратор Email',
+'Administrator Email'=>'Email администратора',
 
-'Database Connection Info'=>'Информация подключения к базе данных',
+'Database Connection Info'=>'Введите данные для подключения к базе данных',
 
-'Host Name'=>'Имя компьютера',
+'Host Name'=>'Адрес базы данных',
 'Database Name'=>'Имя базы данных',
-'Username'=>'имя пользователя',
-'Password'=>'пароль',
+'Username'=>'Имя пользователя',
+'Password'=>'Пароль',
 
-'Install'=>'устанавливать',
-'For help or more information - X2Engine.com'=>'За помощью или дополнительной информацией - X2Engine.com',
+'Install'=>'Установить',
+'For help or more information - X2Engine.com'=>'Обращайтесь за помощью или дополнительной информацией - X2Engine.com',
 
 'All Rights Reserved.'=>'Все права защищены.',
 
 // Splash screen
 'Installation Complete!'=>'Установка завершена!',
 'Click here to log in to X2Engine'=>'Нажмите здесь, чтобы войти в X2Engine',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine успешно установлен на вашем веб-сервере! Теперь вы можете войти в систему с именем пользователя "admin" и пароль, который вы указали при установке.',
-'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Если вы выбрали установку с ГИИ, вы можете найти его <a href="index.php/gii/"> здесь </ A>.Пароль такой же, как пароль администратора.',
+'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine успешно установлен на вашем веб-сервере! Теперь вы можете войти в систему с именем пользователя "admin" и паролем, который вы указали при установке.',
+'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Если вы выбрали установку с Gii, нажмите <a href="index.php/gii/"> здесь </ A>. Пароль совпадает паролем администратора.',
 
 );

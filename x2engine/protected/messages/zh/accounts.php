@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,8 +39,12 @@
  ********************************************************************************/
 
 return array (
+
+
+
+
 // Account Attributes
-'ID'=>'编号',
+'ID'=>'账号',
 'Name'=>'名称',
 'Website'=>'网站',
 'Type'=>'类型',
@@ -50,7 +54,7 @@ return array (
 'Employees'=>'雇员',
 'Assigned To'=>'分配给',
 'Create Date'=>'创建日期',
-'Associated Contacts'=>'关联的联系人',
+'Associated Contacts'=>'相关联系人',
 'Description'=>'说明',
 'Last Updated'=>'最后更新',
 'Updated By'=>'更新',
@@ -66,7 +70,7 @@ return array (
 'Add a Contact'=>'添加联系人',
 'Remove a User'=>'删除用户',
 'Remove a Contact'=>'删除联系人',
-'Share Account'=>'份额',
+'Share Account'=>'共享账户',
 
 // Accounts Titles
 'Accounts'=>'帐户',
@@ -75,8 +79,8 @@ return array (
 'Account:'=>'帐号：',
 
 // Misc
-'Please click any new users you wish to add.'=>'请点击任何你想添加新用户。',
-'Please click any new users you wish to remove.'=>'请点击你想删除的任何新用户。',
-'Account Record Details'=>'账户记录的详细信息',
+'Please click any new users you wish to add.'=>'请点击任何你想添加的新用户。',
+'Please click any new users you wish to remove.'=>'请点击任何你想删除的新用户。',
+'Account Record Details'=>'账户详细记录',
 'Account Record'=>'帐户记录',
 );

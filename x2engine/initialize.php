@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '0.9.10.1';
-$buildDate = 1329506768;
+$x2Version = '1.0';
+$buildDate = 1329783701;
 
 $userData = '';
 
@@ -188,7 +188,7 @@ $write =
 \$dbname='$db';
 \$version='$x2Version';
 \$buildDate=$buildDate;
-\$updaterVersion='1.0';
+\$updaterVersion='1.2';
 ?>";
 fwrite($handle,$write);
 fclose($handle);

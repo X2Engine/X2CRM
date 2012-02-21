@@ -40,6 +40,7 @@
 
 return array (
 // Action Attributes
+'ID'=>'',
 'Assigned To'=>'',
 'Action Description'=>'',
 'Description'=>'',
@@ -64,6 +65,7 @@ return array (
 'Private'=>'',
 'No'=>'',
 'Yes'=>'',
+'Date Completed'=>'',
 
 // Actions Nav
 'All Actions'=>'',
@@ -74,6 +76,10 @@ return array (
 'Complete Action'=>'',
 'Complete + New Action'=>'',
 'Uncomplete'=>'',
+'Log A Call'=>'',
+'New Action'=>'',
+'New Comment'=>'',
+'Publisher'=>'',
 
 // Actions Titles
 'Manage Actions'=>'',
@@ -90,6 +96,7 @@ return array (
 'Everyone\'s Actions'=>'',
 'Delete Action'=>'',
 'Share Action'=>'',
+'Create'=>'',
 
 
 // Misc

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,6 +68,12 @@ return array (
 'Login'=>'ログイン',
 'More'=>'もっと',
 'What\'s New'=>'何が新しい',
+'Quotes'=>'引用',
+'Dashboard'=>'ダッシュボード',
+'Products'=>'製品',
+'Workflow'=>'ワークフロー',
+'Groups'=>'グループ',
+'Notifications'=>'通知',
 
 // Search Bar
 'X2Engine CRM Groupware'=>'グループウェアのシーアールエムのX2Engine',
@@ -86,6 +92,10 @@ return array (
 'Quick Contact'=>'クイックコンタクト',
 'Google Map'=>'グーグルマップ',
 'Recently Viewed'=>'最近見た',
+'Active Users'=>'アクティブユーザー',
+'Tag Cloud'=>'タグクラウド',
+'Just Me'=>'ジャスト·ミー',
+'All Users'=>'すべてのユーザー',
 
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
@@ -145,6 +155,16 @@ return array (
 'Optional'=>'オプション',
 'Records that have been modified since your last login.'=>'あなたの最後のログイン以降に変更したレコード。',
 'Are you sure you want to delete this item?'=>'あなたがこのアイテムを削除してもよろしいですか？',
+'Columns'=>'列',
+'Tools'=>'ツール',
+'Rights reserved.'=>'権利を保有。',
+'GNU General Public License version 3'=>'GNU General Public Licenseのバージョン3',
+'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'プログラムは、保証なしで、そのままの形で提供されています。<BR>は{BSD}の下でライセンスされます。',
+'Generated in {time} seconds'=>'{time}秒で生成',
+'Minimize'=>'最小限に抑える',
+'"{X}" is not an allowed filetype.'=>'"{X}"許可されてファイル形式ではありません。',
+'Loading'=>'負荷',
+'Edit'=>'編集',
 
 // Misc Actions
 'Submit'=>'提出す',
@@ -164,6 +184,8 @@ return array (
 'Status'=>'ステータス',
 'E-mail'=>'メール',
 'Download'=>'ダウンロード',
+'Contact Saved'=>'保存された連絡先',
+'Add Note'=>'メモの追加',
 
 // Timestamps
 'Just now'=>'ちょうど今',

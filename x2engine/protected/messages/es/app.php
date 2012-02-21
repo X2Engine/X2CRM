@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,6 +68,12 @@ return array (
 'Login'=>'Entrar',
 'More'=>'Más',
 'What\'s New'=>'Cosas Nuevas',
+'Quotes'=>'Comillas',
+'Dashboard'=>'Tablero de Instrumentos',
+'Products'=>'Productos',
+'Workflow'=>'Flujo de Trabajo',
+'Groups'=>'Grupos',
+'Notifications'=>'Notificaciones',
 
 // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine Sistema CRM',
@@ -86,6 +92,10 @@ return array (
 'Quick Contact'=>'Contacto Rápido',
 'Google Map'=>'Google Map',
 'Recently Viewed'=>'Visto Recientemente',
+'Active Users'=>'Usuarios Activos',
+'Tag Cloud'=>'Nube de Etiquetas',
+'Just Me'=>'Sólo Me',
+'All Users'=>'Todos los Usuarios',
 
 'Total Action|Total Actions'=>'Total de Acciones',
 'Unfinished Action|Unfinished Actions'=>'Accion Pendiente|Acciones Pendientes',
@@ -145,6 +155,16 @@ return array (
 'Optional'=>'Opcional',
 'Records that have been modified since your last login.'=>'Los registros que se han modificado desde el inicio de sesión anterior.',
 'Are you sure you want to delete this item?'=>'¿Está seguro que desea eliminar este elemento?',
+'Columns'=>'Columnas',
+'Tools'=>'Instrumentos',
+'Rights reserved.'=>'Derechos reservados.',
+'GNU General Public License version 3'=>'GNU General Public License versión 3',
+'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'El Programa se proporciona TAL CUAL, sin garantía. <br> Licenciado bajo {BSD}.',
+'Generated in {time} seconds'=>'Generada en {time} segundos',
+'Minimize'=>'Minimizar',
+'"{X}" is not an allowed filetype.'=>'"{X}" no es un tipo de archivo permitido.',
+'Loading'=>'Cargando',
+'Edit'=>'Editar',
 
 // Misc Actions
 'Submit'=>'Someter',
@@ -164,6 +184,8 @@ return array (
 'Status'=>'Estado',
 'E-mail'=>'E-mail',
 'Download'=>'Descargar',
+'Contact Saved'=>'Póngase en contacto con Guardado',
+'Add Note'=>'Agregar nota',
 
 // Timestamps
 'Just now'=>'En este Momento',

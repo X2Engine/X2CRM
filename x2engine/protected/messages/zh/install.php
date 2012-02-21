@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,10 +39,11 @@
  ********************************************************************************/
 
 return array (
+
 // Install screen
 'Install X2Engine'=>'安装X2Engine',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'欢迎光临X2Engine应用程序安装！我们需要收集的资料很少，才可以得到您的应用程序和运行。请填写下面列出的领域。',
+'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2Engine应用程序安装欢迎您！我们需要先收集一些的资料才能让您的应用程序运行。请填写以下的填空。',
 
 'X2Engine Application Info'=>'X2Engine应用信息',
 
@@ -68,7 +69,7 @@ return array (
 // Splash screen
 'Installation Complete!'=>'安装完成！',
 'Click here to log in to X2Engine'=>'点击这里登录到X2Engine',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine成功安装在Web服务器上！您现在可以登录用户名“admin”和密码，您在安装过程中中提供。',
-'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'如果您选择安装GII的，你可以找到它<a href="index.php/gii/">这里</a>。密码是您的管理员密码是相同的。',
+'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine成功安装在网站服务器上！您现在可以登录用户名“admin”和您在安装过程中提供的密码。',
+'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'如果您选择安装Gii，你可以找到它<a href="index.php/gii/">这里</a>。密码是您的管理员密码是相同的。',
 
 );

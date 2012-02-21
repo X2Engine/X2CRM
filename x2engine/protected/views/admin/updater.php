@@ -69,7 +69,7 @@ function cleanUp(status){
           url: "cleanUp",
           context: document.body,
           type: "POST",
-          data: {'status':status, 'version':<?php echo $newVersion; ?>, 'fileList':fileList},
+          data: {'status':status, 'version':'<?php echo $newVersion; ?>', 'fileList':fileList, 'url':'<?php echo $url;?>'},
           success: function(response){
               alert(response);
               window.location.reload();

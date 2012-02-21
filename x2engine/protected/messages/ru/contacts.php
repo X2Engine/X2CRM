@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -53,6 +53,8 @@ return array (
 'Work Phone'=>'Рабочий телефон',
 'Cell Phone'=>'Сотовые телефоны',
 'Email'=>'Email',
+'Phone'=>'телефон',
+'Phone 2'=>'Телефон 2',
 'IM'=>'И. М.',
 'Website'=>'веб-сайт',
 'Address'=>'адрес',
@@ -74,12 +76,32 @@ return array (
 'High'=>'высокий',
 'Public'=>'общественность',
 'Private'=>'частный',
+'Twitter'=>'щебетать',
+'Linkedin'=>'Linkedin',
+'Skype'=>'Skype',
+'Googleplus'=>'Googleplus',
+'Address 2'=>'Адрес 2',
+'Postal Code'=>'почтовый код',
+'Lead Date'=>'Возможность дате',
+'Confidence'=>'доверие',
+'Facebook'=>'Facebook',
+'Lead Type'=>'Возможность Тип',
+'Other'=>'другой',
+'Close Date'=>'Дата закрытия',
+'Interest'=>'интерес',
+'Deal Value'=>'Стоимость сделки',
+'Lead Status'=>'Возможность статус',
+'Lead Score'=>'Оценка возможностей',
+'Deal Status'=>'Статус сделки',
 
 // Misc
 'Assigned to {name}'=>'Назначена {name}',
 'Social Networks'=>'Социальных сетей',
 'Detail View'=>'Детальный просмотр',
 'Simple View'=>'Простой вид',
+'Contact Info'=>'Контактная информация',
+'Sales &amp; Marketing'=>'Продажи и маркетинг',
+'Social Media'=>'Социальные СМИ',
 
 // Contacts Actions
 'My Contacts'=>'Мои контакты',
@@ -90,6 +112,17 @@ return array (
 'Delete Contact'=>'Удалить контакт',
 'Create Lead'=>'Создание возможностей',
 'Share Contact'=>'Доля Контакт',
+'Create'=>'создавать',
+'Lists'=>'Списки',
+'View'=>'смотреть',
+'Share'=>'доля',
+'Update'=>'обновление',
+'View Sales'=>'Просмотр продажам',
+'Delete'=>'удалять',
+'Show All'=>'Показать все',
+'Hide All'=>'Скрыть все',
+'Show'=>'показывать',
+'Hide'=>'скрывать',
 
 // Contacts Titles
 'Contacts'=>'связи',
@@ -97,11 +130,11 @@ return array (
 'Contact:'=>'контакт:',
 
 // Import from Outlook
-'Import Contacts from Outlook'=>'Импорт контактов из перспективы',
-'Import Contacts from Template'=>'Импорт контактов из шаблона',
+'Import from Outlook'=>'Импорт контактов из перспективы',
+'Import from Template'=>'Импорт контактов из шаблона',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Чтобы импортировать контакты из шаблона, пожалуйста, заполните наш файл шаблона. Затем загрузите файл здесь, используя форму ниже.',
 'The template file can be found here:'=>'Файл шаблона можно найти здесь:',
-'Export Contacts'=>'Экспорт Контакты',
+'Export to CSV'=>'Экспорт Контакты',
 'Please click the link below to download contacts.'=>'Пожалуйста, нажмите на ссылку ниже для загрузки контактов.',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Чтобы импортировать контакты из Outlook, пожалуйста сначала создать файл CSV (DOS формата), открывая перспективу и экспорт контактов. Затем загрузите файл здесь, используя форму ниже.',
 'Upload File'=>'Загрузить файл',

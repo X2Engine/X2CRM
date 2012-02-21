@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,14 +39,15 @@
  ********************************************************************************/
 
 return array (
+
 // Users Attributes
 'ID'=>'编号',
 'First Name'=>'名字',
 'Last Name'=>'姓氏',
 'Username'=>'用户名',
 'Password'=>'密码',
-'Title'=>'标题',
-'Department'=>'部',
+'Title'=>'职位名称',
+'Department'=>'部门',
 'Office Phone'=>'办公电话',
 'Cell Phone'=>'手机',
 'Home Phone'=>'家庭电话',
@@ -56,7 +57,7 @@ return array (
 'Status'=>'状态',
 'Update Password'=>'更新密码',
 'Last Updated'=>'最后更新',
-'Updated By'=>'更新',
+'Updated By'=>'更新者',
 'Recent Items'=>'最近的项目',
 
 // Users Actions

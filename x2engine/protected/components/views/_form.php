@@ -50,14 +50,11 @@ Yii::app()->clientScript->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
 
-if (!isset($isQuickCreate)) {	//check if this form is being recycled in the quickCreate view
-
-	$form=$this->beginWidget('CActiveForm', array(
-		'id'=>$modelName.'-form',
-		'enableAjaxValidation'=>false,
-	));
-	echo '<em style="display:block;margin:5px;">'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
-}
+$form=$this->beginWidget('CActiveForm', array(
+	'id'=>$modelName.'-form',
+	'enableAjaxValidation'=>false,
+));
+echo '<em style="display:block;margin:5px;">'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 
 
 $layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultForm'=>1));
@@ -105,7 +102,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 			if($section['collapsible'] || !empty($section['title'])) {
 				echo '<div class="formSectionHeader">';
 				if(!empty($section['title']))
-					echo '<span class="sectionTitle">'.$section['title'].'</span>';
+					echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
 				if($section['collapsible']) {
 					echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
 					echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
@@ -218,8 +215,12 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											)); 
 										}elseif($field->type=='dropdown'){
 											$dropdown=Dropdowns::model()->findByPk($field->linkType);
-					   
-											echo $form->dropDownList($model,$field->fieldName,json_decode($dropdown->options), array(
+											
+											$dropdowns = json_decode($dropdown->options,true);
+											foreach(array_keys($dropdowns) as $key)
+												$dropdowns[$key] = Yii::t(strtolower(Yii::app()->controller->id),$dropdowns[$key]);
+											
+											echo $form->dropDownList($model,$field->fieldName,$dropdowns, array(
 													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 													'disabled'=>$item['readOnly']? 'disabled' : null,
 													'title'=>$field->attributeLabel,
@@ -310,7 +311,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 															}
 														}'
 												)
-											)).'</div><label for="group" class="groupLabel">Group?</label>';
+											)).'</div><label for="group" class="groupLabel">'.Yii::t('app','Group?').'</label>';
 										/* end x2temp */  
                                                                                 }elseif($field->type=='association'){
                                                                                     if($field->linkType!='multiple')
@@ -358,12 +359,10 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 <?php
 }
 
-if (!isset($isQuickCreate)) {	//if we're not in quickCreate, end the form
-	if(!isset($editor)){
-		echo '	<div class="row buttons">'."\n";
-		echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
-		echo "	</div>\n";
-	}
-	$this->endWidget();
-}
+echo '	<div class="row buttons">'."\n";
+echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo "	</div>\n";
+
+$this->endWidget();
+
 ?>

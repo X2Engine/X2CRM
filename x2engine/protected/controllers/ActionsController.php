@@ -268,7 +268,6 @@ class ActionsController extends x2base {
 			$type='none';
 			$id=null;
 		}
-		$names=$this->parseType($type);
 		$model->associationType=$type;
 		$model->assignedTo=$user;
 		if(!empty($id))
@@ -276,7 +275,6 @@ class ActionsController extends x2base {
 
 		$this->render('create',array(
 			'model'=>$model,
-			'names'=>$names,
 			'users'=>$users
 		));
 		
@@ -388,7 +386,6 @@ class ActionsController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$names=$this->parseType($model->type);
 		$users=UserChild::getNames();
 
 		// Uncomment the following line if AJAX validation is needed
@@ -408,7 +405,6 @@ class ActionsController extends x2base {
 
 		$this->render('update',array(
 			'model'=>$model,
-			'names'=>$names,
 			'users'=>$users,
 		));
 	}

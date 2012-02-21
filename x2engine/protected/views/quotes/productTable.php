@@ -123,7 +123,7 @@ function addProduct() {
 	});
 	var removeImage = $('<img>', {
 		src: '". Yii::app()->request->baseUrl .'/themes/x2engine/css/gridview/delete.png' . "',
-		alt: '[". Yii::t('quote', 'Delete Quote') ."]'
+		alt: '[". Yii::t('quotes', 'Delete Quote') ."]'
 	});
 	$(row).append(td.clone().append(remove));
 	$(remove).append(removeImage);
@@ -205,7 +205,7 @@ function addFilledProduct(fillId, fillPrice, fillQuantity, fillAdjustment) {
 	});
 	var removeImage = $('<img>', {
 		src: '". Yii::app()->request->baseUrl .'/themes/x2engine/css/gridview/delete.png' . "',
-		alt: '[". Yii::t('quote', 'Delete Quote') ."]'
+		alt: '[". Yii::t('quotes', 'Delete Quote') ."]'
 	});
 	$(row).append(td.clone().append(remove));
 	$(remove).append(removeImage);
@@ -322,11 +322,11 @@ $productField = Fields::model()->findByAttributes(array('modelName'=>'Quotes', '
 	<table frame="border">
 	    <tr>
 	    	<th></th>
-	    	<th><?php echo Yii::t('product', 'Line Item'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Unit Price'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Quantity'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Adjustments'); ?></th>
-	    	<th><?php echo Yii::t('product', 'Price'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Line Item'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Unit Price'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Quantity'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Adjustments'); ?></th>
+	    	<th><?php echo Yii::t('products', 'Price'); ?></th>
 	    </tr>
 	    <tr id="product-list-footer">
 	    	<td></td>

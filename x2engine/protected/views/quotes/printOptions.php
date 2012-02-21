@@ -47,9 +47,9 @@
 ));
 ?>
 
-<span style="font-weight:bold; font-size: 2em;"><?php echo Yii::t('quote', 'Print Options'); ?></span><br /><br />
+<span style="font-weight:bold; font-size: 2em;"><?php echo Yii::t('quotes', 'Print Options'); ?></span><br /><br />
 
-<?php echo Yii::t('quote', 'Include Logo'); ?>
+<?php echo Yii::t('quotes', 'Include Logo'); ?>
 <?php echo CHtml::checkBox('includeLogo', false); ?>
 <br />
 <?php echo CHtml::image(Yii::app()->baseUrl . '/' . Yii::app()->params['logo'], 'No Logo Found'); ?>
@@ -59,7 +59,7 @@
 		<tr>
 			<td><b><?php echo $model->name; ?></b></td>
 			<td style="text-align:right;font-weight:bold;">
-				<span><?Php echo Yii::t('quote', 'Quote'); ?> # <?php echo $model->id; ?></span><br />
+				<span><?Php echo Yii::t('quotes', 'Quote'); ?> # <?php echo $model->id; ?></span><br />
 				<span><?php echo Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), time()); ?></span>
 			</td>
 		</tr>
@@ -80,6 +80,6 @@ $defaultIncludeNotes = !empty($model->description);
 
 <br />
 
-<?php echo CHtml::submitButton(Yii::t('quote','Print'), array('class'=>'x2-button')); ?>
+<?php echo CHtml::submitButton(Yii::t('quotes','Print'), array('class'=>'x2-button')); ?>
 
 <?php $this->endWidget(); ?>

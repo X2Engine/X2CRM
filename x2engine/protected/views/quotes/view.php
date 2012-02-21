@@ -81,32 +81,32 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'name',
-			'header'=>Yii::t('product','Line Item'),
+			'header'=>Yii::t('products','Line Item'),
 			'value'=>'$data["name"]',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'unit',
-			'header'=>Yii::t('product','Unit Price'),
+			'header'=>Yii::t('products','Unit Price'),
 			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$model->currency.'")',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'quantity',
-			'header'=>Yii::t('product','Quantity'),
+			'header'=>Yii::t('products','Quantity'),
 			'value'=>'$data["quantity"]',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'adjustment',
-			'header'=> Yii::t('product', 'Adjustment'),
+			'header'=> Yii::t('products', 'Adjustment'),
 			'value'=>'$data["adjustment"]',
 			'type'=>'raw',
 			'footer'=>'<b>Total</b>',
 		),
 		array(
 			'name'=>'price',
-			'header'=>Yii::t('product', "Price"),
+			'header'=>Yii::t('products', "Price"),
 			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$model->currency.'")',
 			'type'=>'raw',
 			'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$model->currency) .'</b>',

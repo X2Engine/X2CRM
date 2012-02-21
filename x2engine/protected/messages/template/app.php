@@ -68,6 +68,12 @@ return array (
 'Login'=>'',
 'More'=>'',
 'What\'s New'=>'',
+'Quotes'=>'',
+'Dashboard'=>'',
+'Products'=>'',
+'Workflow'=>'',
+'Groups'=>'',
+'Notifications'=>'',
 
 // Search Bar
 'X2Engine CRM Groupware'=>'',
@@ -86,6 +92,10 @@ return array (
 'Quick Contact'=>'',
 'Google Map'=>'',
 'Recently Viewed'=>'',
+'Active Users'=>'',
+'Tag Cloud'=>'',
+'Just Me'=>'',
+'All Users'=>'',
 
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
@@ -145,6 +155,16 @@ return array (
 'Optional'=>'',
 'Records that have been modified since your last login.'=>'',
 'Are you sure you want to delete this item?'=>'',
+'Columns'=>'',
+'Tools'=>'',
+'Rights reserved.'=>'',
+'GNU General Public License version 3'=>'',
+'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'',
+'Generated in {time} seconds'=>'',
+'Minimize'=>'',
+'"{X}" is not an allowed filetype.'=>'',
+'Loading'=>'',
+'Edit'=>'',
 
 // Misc Actions
 'Submit'=>'',
@@ -164,6 +184,8 @@ return array (
 'Status'=>'',
 'E-mail'=>'',
 'Download'=>'',
+'Contact Saved'=>'',
+'Add Note'=>'',
 
 // Timestamps
 'Just now'=>'',

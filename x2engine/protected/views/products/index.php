@@ -87,13 +87,13 @@ function trimText($text) {
 		),
 		array(
 			'name'=>'type',
-			'header'=>Yii::t('product', 'Type'),
+			'header'=>Yii::t('products', 'Type'),
 			'value'=>'trimText($data->type)',
 			'type'=>'raw',
 		),
 		array(
 			'name'=>'description',
-			'header'=>Yii::t('product','Description'),
+			'header'=>Yii::t('products','Description'),
 			'value'=>'trimText($data->description)',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
@@ -104,7 +104,7 @@ function trimText($text) {
 			'type'=>'raw',
 		),
 		array(
-			'header'=>Yii::t('product', 'Tools'),
+			'header'=>Yii::t('products', 'Tools'),
 			'class'=>'CButtonColumn',
 		),
 	),

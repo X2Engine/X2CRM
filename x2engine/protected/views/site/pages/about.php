@@ -42,24 +42,15 @@ $this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','About');
 
 Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion').html($().jquery);",CClientScript::POS_READY);
 ?>
+
 <a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+210+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:0px;margin-right:-20px;')); ?>
 </a>
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2engine_small.png','',array('style'=>'display:block;margin:5px 0;')); ?>
 <b>Beta <?php echo Yii::app()->params->version;?></b> <?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.
-	
 
-<div id="about-intro">
-	<b><?php echo Yii::t('app','X2Engine is a Customer Relationship Management application designed by John Roberts. Special thanks to the following contributors:'); ?></b>
-	<ul>
-	<li>Jake Houser</li>
-	<li>Matthew Pearson</li>
-	<li>DJ Visbal</li>
-	<li>Demitri Morgan</li>
-	<li>Grant Emeny-Smith</li>
-	</ul>
-</div>
-<div style="width:200px;float:left;margin-bottom:10px;">
+<div>
+    <br />
 	<b>Headquarters</b><br>
 	University Town Center<br>
 	1101 Pacific Avenue<br>
@@ -67,6 +58,25 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	Santa Cruz, California 95060<br>
 	USA
 </div>
+
+<div id="about-intro">
+	<b><?php echo Yii::t('app','X2Engine is a Customer Relationship Management application designed by John Roberts.'); ?><br /><br />
+        <?php echo Yii::t('app','Core engineering team:');?></b>
+	<ul>
+	<li>Jake Houser</li>
+	<li>Matthew Pearson</li>
+	<li>DJ Visbal</li>
+	<li>Demitri Morgan</li>
+	</ul>
+        <b><?php echo Yii::t('app','Special thanks to the following contributors:'); ?></b>
+	<ul>
+	<li>Grant Emeny-Smith - jQplot Dashboard</li>
+	<li>Xinyi Lin - Chinese Language Pack</li>
+	<li>"dutchman" - German Language Pack</li>
+        <li>Andrew Hoffman - Documentation</li>
+	</ul>
+</div>
+
 
 <div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a><br><br></div>
 <div id="about-legal">

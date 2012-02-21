@@ -83,7 +83,7 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
+<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>"><?php echo Yii::t('app','Edit');?></a></h2>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget();

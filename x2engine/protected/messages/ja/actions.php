@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,6 +40,7 @@
 
 return array (
 // Action Attributes
+'ID'=>'ID',
 'Assigned To'=>'割り当て',
 'Action Description'=>'アクション説明',
 'Description'=>'説明',
@@ -64,6 +65,7 @@ return array (
 'Private'=>'秘密',
 'No'=>'いいえ',
 'Yes'=>'はい',
+'Date Completed'=>'日付が完了しました',
 
 // Actions Nav
 'All Actions'=>'すべてのアクション',
@@ -74,6 +76,10 @@ return array (
 'Complete Action'=>'アクションを完了する',
 'Complete + New Action'=>'完了する+新規アクション',
 'Uncomplete'=>'不完全にする',
+'Log A Call'=>'コールログ',
+'New Action'=>'新しいアクション',
+'New Comment'=>'新しいコメント',
+'Publisher'=>'出版社',
 
 // Actions Titles
 'Manage Actions'=>'アクションの管理',
@@ -90,6 +96,7 @@ return array (
 'Everyone\'s Actions'=>'みんなのアクション',
 'Delete Action'=>'アクションを削除',
 'Share Action'=>'アクションを共有する',
+'Create'=>'作る',
 
 
 // Misc

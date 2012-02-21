@@ -160,7 +160,7 @@ function addProduct(id, currency, productNames, prices) {
 	});
 	var removeImage = $('<img>', {
 		src: '". Yii::app()->request->baseUrl .'/themes/x2engine/css/gridview/delete.png' . "',
-		alt: '[". Yii::t('quote', 'Delete Quote') ."]'
+		alt: '[". Yii::t('quotes', 'Delete Quote') ."]'
 	});
 	$(row).append(tdRemove.clone().append(remove));
 	$(remove).append(removeImage);
@@ -250,7 +250,7 @@ function addFilledProduct(id, fillId, fillPrice, fillQuantity, fillAdjustment, c
 	});
 	var removeImage = $('<img>', {
 		src: '". Yii::app()->request->baseUrl .'/themes/x2engine/css/gridview/delete.png' . "',
-		alt: '[". Yii::t('quote', 'Delete Quote') ."]'
+		alt: '[". Yii::t('quotes', 'Delete Quote') ."]'
 	});
 	$(row).append(tdRemove.clone().append(remove));
 	$(remove).append(removeImage);

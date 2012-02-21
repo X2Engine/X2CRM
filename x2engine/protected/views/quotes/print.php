@@ -47,7 +47,7 @@
 		<tr>
 			<td><b><?php echo $model->name; ?></b></td>
 			<td style="text-align:right;font-weight:bold;">
-				<span><?Php echo Yii::t('quote', 'Quote'); ?> # <?php echo $model->id; ?></span><br />
+				<span><?Php echo Yii::t('quotes', 'Quote'); ?> # <?php echo $model->id; ?></span><br />
 				<span><?php echo Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), time()); ?></span>
 			</td>
 		</tr>

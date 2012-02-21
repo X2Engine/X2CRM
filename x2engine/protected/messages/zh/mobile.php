@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,15 +39,16 @@
  ********************************************************************************/
 
 return array (
+
 // Text
 'Logout ({username})'=>'登出（{username}）',
 'New Record'=>'新纪录',
 'Find Contacts'=>'查找联系人',
-'Top Contacts'=>'顶部触点',
-'No top contacts for this user!'=>'此用户没有接触！',
+'Top Contacts'=>'最常关注的联系人',
+'No top contacts for this user!'=>'此用户没有最常关注的联系人！',
 'Create Message'=>'创建消息',
-'Message List'=>'留言列表',
+'Message List'=>'消息列表',
 'Clear'=>'清除',
 'Search for a Contact'=>'搜索联系人',
-'Go to Full Site'=>'完整的网站',
+'Go to Full Site'=>'转到完整的网站',
 );

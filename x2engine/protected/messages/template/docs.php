@@ -41,6 +41,7 @@
 return array (
 
 // Attribute Labels
+'ID'=>'',
 'Title'=>'',
 'Text'=>'',
 'Created By'=>'',
@@ -48,6 +49,7 @@ return array (
 'Last Updated'=>'',
 'Create Date'=>'',
 'Edit Permissions'=>'',
+'Doc Type'=>'',
 
 // Labels
 'Doc'=>'',
@@ -58,6 +60,7 @@ return array (
 'Docs'=>'',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'',
+'Uploaded Documents'=>'',
 
 // Doc Navbar
 'List Docs'=>'',
@@ -69,4 +72,6 @@ return array (
 'Edit Doc Permissions'=>'',
 'Edit'=>'',
 'Export'=>'',
+'Create'=>'',
+'Create Email'=>'',
 );

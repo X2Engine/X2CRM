@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,6 +68,12 @@ return array (
 'Login'=>'Login',
 'More'=>'Mehr',
 'What\'s New'=>'Was ist neu',
+'Quotes'=>'Zitate',
+'Dashboard'=>'Armaturenbrett',
+'Products'=>'Produkte',
+'Workflow'=>'Workflow',
+'Groups'=>'Gruppen',
+'Notifications'=>'Benachrichtigungen',
 
 // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
@@ -86,6 +92,10 @@ return array (
 'Quick Contact'=>'Quick Kontakt',
 'Google Map'=>'Google Map',
 'Recently Viewed'=>'Kürzlich angesehen',
+'Active Users'=>'Aktive Benutzer',
+'Tag Cloud'=>'Tag Cloud',
+'Just Me'=>'Nur Ich',
+'All Users'=>'Alle Benutzer',
 
 'Total Action|Total Actions'=>'Jede Aktion | Alle Aktionen',
 'Unfinished Action|Unfinished Actions'=>'Unfertige aktion | Unfertige Aktionen',
@@ -145,6 +155,16 @@ return array (
 'Optional'=>'Optional',
 'Records that have been modified since your last login.'=>'Datensätze, die seit der letzten Anmeldung geändert wurden.',
 'Are you sure you want to delete this item?'=>'Sind Sie sicher, dass Sie dieses Element wirklich löschen wollen?',
+'Columns'=>'Spalten',
+'Tools'=>'Werkzeuge',
+'Rights reserved.'=>'Rechte vorbehalten.',
+'GNU General Public License version 3'=>'GNU General Public License Version 3',
+'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'Das Programm ist als vorgesehen ist, ohne Garantie. <br> Lizenziert unter {BSD}.',
+'Generated in {time} seconds'=>'Erzeugt in {time} Sekunden',
+'Minimize'=>'Minimieren',
+'"{X}" is not an allowed filetype.'=>'"{X}" ist kein erlaubter Dateityp.',
+'Loading'=>'Laden',
+'Edit'=>'Bearbeiten',
 
 // Misc Actions
 'Submit'=>'Abschicken',
@@ -164,6 +184,8 @@ return array (
 'Status'=>'Status',
 'E-mail'=>'E-Mail',
 'Download'=>'Herunterladen',
+'Contact Saved'=>'Kontakt Gespeichert',
+'Add Note'=>'Notiz hinzufügen',
 
 // Timestamps
 'Just now'=>'Jetzt',

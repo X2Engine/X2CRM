@@ -50,7 +50,7 @@ $this->menu = array(
 ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('product','Product:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
+<h2><?php echo Yii::t('products','Product:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'products')); ?>
 

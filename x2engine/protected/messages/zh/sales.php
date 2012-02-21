@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,32 +39,33 @@
  ********************************************************************************/
 
 return array (
+
 // Sales Attributes
 'ID'=>'编号',
 'Assigned To'=>'分配给',
 'Name'=>'名称',
 'Account'=>'帐户',
-'Contacts'=>'联系',
-'Quote Amount'=>'报价金额',
+'Contacts'=>'联系人',
+'Quote Amount'=>'报价数额',
 'Sales Stage'=>'销售阶段',
-'Expected Close Date'=>'预计关闭日期',
-'Probability'=>'概率',
-'Lead Source'=>'铅的来源',
-'Description'=>'说明',
+'Expected Close Date'=>'预计结束日期',
+'Probability'=>'机率',
+'Lead Source'=>'潜在客户的来源',
+'Description'=>'详细说明',
 'Create Date'=>'创建日期',
 'Last Updated'=>'最后更新',
 'Updated By'=>'更新',
 'Hold Control or Command key to select multiple items.'=>'按住CTRL或CMD键选择多个项目。',
-'Working'=>'工作',
-'Won'=>'赢得了',
-'Lost'=>'迷失',
+'Working'=>'谈判过程中',
+'Won'=>'赢得',
+'Lost'=>'失去',
 'Website'=>'网站',
 'Cold Call'=>'冷拨',
 'E-Mail'=>'电子信箱',
 'Store'=>'商店',
 
 // Sales Actions
-'Sales List'=>'销售排行榜',
+'Sales List'=>'销售列表',
 'Create Sale'=>'创建销售',
 'View Sale'=>'查看销售',
 'Update Sale'=>'更新销售',
@@ -75,7 +76,7 @@ return array (
 'Add a Contact'=>'添加联系人',
 'Remove a User'=>'删除用户',
 'Remove a Contact'=>'删除联系人',
-'Share Sale'=>'售股',
+'Share Sale'=>'共享销售',
 
 // Sales Titles
 'Sales'=>'销售',
@@ -84,9 +85,9 @@ return array (
 'Update Sale: {name}'=>'更新销售：{名称}',
 
 // Misc Text
-'Please click any new users you wish to add.'=>'请点击任何你想添加新用户。',
+'Please click any new users you wish to add.'=>'请点击任何你想添加的新用户。',
 'Please select the contacts you wish to add.'=>'请选择您想添加的联系人。',
-'Please select the users you wish to remove.'=>'请选择您要删除的用户。',
-'Please select the contacts you wish to remove.'=>'请选择您要删除的联系人。',
-'Sale Record Details'=>'销售记录详细信息',
+'Please select the users you wish to remove.'=>'请选择您想删除的用户。',
+'Please select the contacts you wish to remove.'=>'请选择您想删除的联系人。',
+'Sale Record Details'=>'销售记录详细资料',
 );

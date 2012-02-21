@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -39,52 +39,57 @@
  ********************************************************************************/
 
 return array (
-// Profile Attributes
+// // 
+// // 
+// // 
+// // 
+// // 
+// // Profile Attributes
 'ID'=>'编号',
 'Full Name'=>'姓名',
 'Username'=>'用户名',
-'Tag Line'=>'标记线',
+'Tag Line'=>'标语',
 'Office Phone'=>'办公电话',
 'Cell Phone'=>'手机',
 'Email Address'=>'电邮地址',
-'Notes'=>'注释',
+'Notes'=>'备注',
 'Status'=>'状态',
-'Description'=>'说明',
+'Description'=>'详细说明',
 'Last Updated'=>'最后更新',
 'Updated By'=>'更新',
-'Allow users to post on your profile?'=>'允许用户张贴在您的个人资料？',
+'Allow users to post on your profile?'=>'允许其他用户发布信息在您的个人资料吗？',
 'Language'=>'语言',
 'Time Zone'=>'时区',
 'Enable group chat?'=>'启用群聊？',
-'Widgets'=>'小部件',
+'Widgets'=>'窗口小部件',
 'Background Color'=>'背景颜色',
 'Menu Color'=>'菜单颜色',
 'Menu Text Color'=>'菜单文字颜色',
 'Background Image'=>'背景图片',
 'Start Page'=>'开始页',
-'Results Per Page'=>'结果每页',
-'Show Social Media'=>'显示社会媒体',
+'Results Per Page'=>'每页显示的结果数',
+'Show Social Media'=>'显示社交媒体',
 'Upload a Background'=>'上传背景',
-
-// Profile Actions
-'View Profile'=>'查看详细资料',
+// // 
+// // Profile Actions
+'View Profile'=>'查看个人资料',
 'Update Profile'=>'更新个人资料',
 'Change Settings'=>'更改设置',
-'Social Feed'=>'社会來源',
-'People'=>'人民',
+'Social Feed'=>'社交动态',
+'People'=>'用户',
 'Change Personal Settings'=>'更改个人设置',
-
-// Profile Titles
-'Profile:'=>'简介：',
+// // 
+// // Profile Titles
+'Profile:'=>'个人资料：',
 'Update Your Profile'=>'更新您的个人资料',
-
-// Social
-'Feed'=>'來源',
-'Social'=>'社会',
+// // 
+// // Social
+'Feed'=>'信息',
+'Social'=>'社交',
 'Reply'=>'回复',
-'A larger Chat Box'=>'一个更大的聊天框',
-'A blog-like discussion forum'=>'一个博客类似的讨论论坛',
-
-// Misc
-'This user does not allow posting on their feed.'=>'此用户不允许张贴于饲料。',
+'A larger Chat Box'=>'扩大的聊天框',
+'A blog-like discussion forum'=>'一个类似博客的讨论论坛',
+// // 
+// // Misc
+'This user does not allow posting on their feed.'=>'此用户不允许他人发布在他／她的信息栏上。',
 );

@@ -111,11 +111,11 @@ class Quote extends CActiveRecord
 <table style=\"$tableStyle\">
     <thead>
     	<tr>
-    		<th style=\"$thProductStyle\">".Yii::t('product','Line Item')."</th>
-    		<th style=\"$thStyle\">".Yii::t('product','Unit Price')."</th>
-    		<th style=\"$thStyle\">".Yii::t('product','Quantity')."</th>
-    		<th style=\"$thStyle\">".Yii::t('product', 'Adjustment')."</th>
-    		<th style=\"$thStyle\">".Yii::t('product', "Price")."</th>
+    		<th style=\"$thProductStyle\">".Yii::t('products','Line Item')."</th>
+    		<th style=\"$thStyle\">".Yii::t('products','Unit Price')."</th>
+    		<th style=\"$thStyle\">".Yii::t('products','Quantity')."</th>
+    		<th style=\"$thStyle\">".Yii::t('products', 'Adjustment')."</th>
+    		<th style=\"$thStyle\">".Yii::t('products', "Price")."</th>
     	</tr>
     </thead>
     <tbody>";

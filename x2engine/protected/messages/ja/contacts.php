@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -53,6 +53,8 @@ return array (
 'Work Phone'=>'勤務先電話',
 'Cell Phone'=>'携帯電話',
 'Email'=>'メール',
+'Phone'=>'電話',
+'Phone 2'=>'電話2',
 'IM'=>'IM',
 'Website'=>'ウェブサイト',
 'Address'=>'住所',
@@ -74,12 +76,32 @@ return array (
 'High'=>'高',
 'Public'=>'公開',
 'Private'=>'秘密',
+'Twitter'=>'さえずり',
+'Linkedin'=>'Linkedin',
+'Skype'=>'スカイプ',
+'Googleplus'=>'Googleplus',
+'Address 2'=>'アドレス2',
+'Postal Code'=>'郵便番号',
+'Lead Date'=>'機会日付',
+'Confidence'=>'自信',
+'Facebook'=>'Facebookの',
+'Lead Type'=>'機会の種類',
+'Other'=>'その他',
+'Close Date'=>'日付を閉じる',
+'Interest'=>'関心',
+'Deal Value'=>'取引値',
+'Lead Status'=>'機会のステータス',
+'Lead Score'=>'機会スコア',
+'Deal Status'=>'取引の状況',
 
 // Misc
 'Assigned to {name}'=>'{name} に割り当て',
 'Social Networks'=>'ネットワーク',
 'Detail View'=>'詳細ビュー',
 'Simple View'=>'簡単なビュー',
+'Contact Info'=>'情報を連絡する',
+'Sales &amp; Marketing'=>'セールス＆マーケティング',
+'Social Media'=>'ソーシャルメディア',
 
 // Contacts Actions
 'My Contacts'=>'私のコンタクト',
@@ -90,6 +112,17 @@ return array (
 'Delete Contact'=>'コンタクトを削除する',
 'Create Lead'=>'リードを作る',
 'Share Contact'=>'コンタクトを共有する',
+'Create'=>'作る',
+'Lists'=>'リスト',
+'View'=>'表示',
+'Share'=>'シェア',
+'Update'=>'更新',
+'View Sales'=>'売上高を見る',
+'Delete'=>'削除する',
+'Show All'=>'すべてを表示',
+'Hide All'=>'すべてを表示しない',
+'Show'=>'表示する',
+'Hide'=>'隠す',
 
 // Contacts Titles
 'Contacts'=>'コンタクト',
@@ -97,11 +130,11 @@ return array (
 'Contact:'=>'コンタクト:',
 
 // Import from Outlook
-'Import Contacts from Outlook'=>'Outlookから連絡先のインポート',
-'Import Contacts from Template'=>'テンプレートから連絡先のインポート',
+'Import from Outlook'=>'Outlookから連絡先のインポート',
+'Import from Template'=>'テンプレートから連絡先のインポート',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'テンプレートからコンタクトをインポートするには、当社のテンプレートファイルに必要事項を記入してください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
 'The template file can be found here:'=>'テンプレートファイルをここで見つけることができます:',
-'Export Contacts'=>'コンタクトのエクスポート',
+'Export to CSV'=>'コンタクトのエクスポート',
 'Please click the link below to download contacts.'=>'連絡先をダウンロードするには、以下のリンクをクリックしてください。',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Outlookからコンタクトをインポートするには、Outlookを開き、連絡先をエクスポートしてCSVファイル（DOS形式）を作成するには、まずしてください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
 'Upload File'=>'ファイルのアップロード',

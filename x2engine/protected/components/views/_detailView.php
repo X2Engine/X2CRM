@@ -174,7 +174,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 		if($section['collapsible'] || !empty($section['title'])) {
 			echo '<div class="formSectionHeader">';
 			if(!empty($section['title']))
-				echo '<span class="sectionTitle">'.$section['title'].'</span>';
+				echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
 			if($section['collapsible']) {
 				echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
 				echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
@@ -229,7 +229,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										}
 										
 										echo '<div class="formItem '.$labelClass.'">';
-										echo CHtml::label($field->attributeLabel,false);
+										echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
 											
 										$style = 'width:'.$item['width'].'px;';
 										if($field->type == 'text')
@@ -253,11 +253,11 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										}elseif($field->type=='visibility'){
 											switch($model->$fieldName){
 												case '1':
-													echo "Public";break;
+													echo Yii::t('app','Public'); break;
 												case '0': 
-													echo "Private";break;
+													echo Yii::t('app','Private'); break;
 												case '2':
-													echo "User's Groups";break;
+													echo Yii::t('app','User\'s Groups'); break;
 												default:
 													echo '&nbsp;';
 											}
@@ -307,8 +307,10 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												echo Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, Yii::app()->params['currency']);
 											else
 												echo '&nbsp;';
+										} elseif($field->type == 'dropdown') {
+											echo empty($model->$fieldName)? '&nbsp;' : Yii::t(strtolower(Yii::app()->controller->id),$model->$fieldName);
 										} else {
-											echo !empty($model->$fieldName)?$model->$fieldName:'&nbsp;';
+											echo empty($model->$fieldName)? '&nbsp;' : $model->$fieldName;
 										}
 									}
 								}

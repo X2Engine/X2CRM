@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,6 +68,12 @@ return array (
 'Login'=>'Войти',
 'More'=>'больше',
 'What\'s New'=>'Что нового',
+'Quotes'=>'кавычки',
+'Dashboard'=>'приборная панель',
+'Products'=>'Продукция',
+'Workflow'=>'рабочий процесс',
+'Groups'=>'Группы',
+'Notifications'=>'Уведомления',
 
 // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
@@ -86,6 +92,10 @@ return array (
 'Quick Contact'=>'Быстрый контакт',
 'Google Map'=>'карту Google',
 'Recently Viewed'=>'Недавно просмотренные',
+'Active Users'=>'Активные пользователи',
+'Tag Cloud'=>'Облако тегов',
+'Just Me'=>'Только Я',
+'All Users'=>'Все Пользователи',
 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
@@ -145,6 +155,16 @@ return array (
 'Optional'=>'необязательный',
 'Records that have been modified since your last login.'=>'Записи, которые были изменены со времени вашего последнего Войти.',
 'Are you sure you want to delete this item?'=>'Вы действительно хотите удалить этот элемент?',
+'Columns'=>'Колонны',
+'Tools'=>'инструменты',
+'Rights reserved.'=>'Права защищены.',
+'GNU General Public License version 3'=>'GNU General Public License версии 3',
+'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'Программа поставляется как есть, без гарантии. <br> Лицензия {BSD}.',
+'Generated in {time} seconds'=>'Сгенерировано за {time} секунд',
+'Minimize'=>'минимизировать',
+'"{X}" is not an allowed filetype.'=>'"{X}" не позволил типов файлов.',
+'Loading'=>'загрузка',
+'Edit'=>'редактировать',
 
 // Misc Actions
 'Submit'=>'представлять',
@@ -164,6 +184,8 @@ return array (
 'Status'=>'статус',
 'E-mail'=>'Email',
 'Download'=>'скачать',
+'Contact Saved'=>'Связаться с сохраненной',
+'Add Note'=>'Добавить примечание',
 
 // Timestamps
 'Just now'=>'сейчас',

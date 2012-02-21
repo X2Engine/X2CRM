@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -53,6 +53,8 @@ return array (
 'Work Phone'=>'Telefone de trabalho',
 'Cell Phone'=>'Telefone celular',
 'Email'=>'Email',
+'Phone'=>'Telefone',
+'Phone 2'=>'Telefone 2',
 'IM'=>'IM',
 'Website'=>'Site',
 'Address'=>'Endereço',
@@ -74,12 +76,32 @@ return array (
 'High'=>'Alto',
 'Public'=>'Público',
 'Private'=>'Privado',
+'Twitter'=>'Twitter',
+'Linkedin'=>'Linkedin',
+'Skype'=>'Skype',
+'Googleplus'=>'Googleplus',
+'Address 2'=>'Endereço 2',
+'Postal Code'=>'Código Postal',
+'Lead Date'=>'Data Oportunidade',
+'Confidence'=>'Confiança',
+'Facebook'=>'Facebook',
+'Lead Type'=>'Tipo de Pportunidade',
+'Other'=>'Outro',
+'Close Date'=>'Feche Data',
+'Interest'=>'Interesse',
+'Deal Value'=>'Valor do Negócio',
+'Lead Status'=>'Status da Oportunidade',
+'Lead Score'=>'Pontuação Oportunidade',
+'Deal Status'=>'Status do Negócio',
 
 // Misc
 'Assigned to {name}'=>'Atribuídos a {name}',
 'Social Networks'=>'Redes Sociais',
 'Detail View'=>'Ver detalhe',
 'Simple View'=>'Ver simples',
+'Contact Info'=>'Informações de Contato',
+'Sales &amp; Marketing'=>'Vendas e Marketing',
+'Social Media'=>'Mídias Sociais',
 
 // Contacts Actions
 'My Contacts'=>'Meus Contatos',
@@ -90,6 +112,17 @@ return array (
 'Delete Contact'=>'Excluir Contato',
 'Create Lead'=>'Criar Chumbo',
 'Share Contact'=>'Compartilhar Contato',
+'Create'=>'Criar',
+'Lists'=>'Listas',
+'View'=>'Ver',
+'Share'=>'Ação',
+'Update'=>'Atualizar',
+'View Sales'=>'Ver Vendas',
+'Delete'=>'Excluir',
+'Show All'=>'Mostrar todos',
+'Hide All'=>'Ocultar tudo',
+'Show'=>'Mostrar',
+'Hide'=>'Esconder',
 
 // Contacts Titles
 'Contacts'=>'Contactos',
@@ -97,11 +130,11 @@ return array (
 'Contact:'=>'Contato:',
 
 // Import from Outlook
-'Import Contacts from Outlook'=>'Importar Contatos do Outlook',
-'Import Contacts from Template'=>'Importar Contatos do Modelo',
+'Import from Outlook'=>'Importar Contatos do Outlook',
+'Import from Template'=>'Importar Contatos do Modelo',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Para importar seus contatos a partir do modelo, por favor preencha o nosso arquivo de modelo. Então, fazer o upload do arquivo aqui, usando o formulário abaixo.',
 'The template file can be found here:'=>'O arquivo de modelo pode ser encontrado aqui:',
-'Export Contacts'=>'Exportar Contatos',
+'Export to CSV'=>'Exportar Contatos',
 'Please click the link below to download contacts.'=>'Por favor, clique no link abaixo para baixar contatos.',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Para importar seus contatos do Outlook, por favor, primeiro criar um arquivo CSV (formato DOS), abrindo perspectivas e exportação dos contatos. Então, fazer o upload do arquivo aqui, usando o formulário abaixo.',
 'Upload File'=>'Upload de Arquivos',
