@@ -47,7 +47,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:0px;margin-right:-20px;')); ?>
 </a>
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2engine_small.png','',array('style'=>'display:block;margin:5px 0;')); ?>
-<b>Beta <?php echo Yii::app()->params->version;?></b> <?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.
+<b>Version <?php echo Yii::app()->params->version;?></b> <?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.
 
 <div>
     <br />
@@ -100,15 +100,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	SourceForge: <a href="https://sourceforge.net/projects/x2engine/" target="_blank">https://sourceforge.net/projects/x2engine/</a><br>
 	<!--BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a><br>--><br>
 	<h4><?php echo Yii::t('about','Plugins/Extensions'); ?></h4>
-	YUI Editor:
-	<a href="http://developer.yahoo.com/yui" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-	<a href="http://yuilibrary.com/license/" target="_blank" class="no-underline" title="License">[License]</a><br>
-	CFile Class:
-	<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
-	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-	EZip Class:
-	<a href="http://www.yiiframework.com/extension/ezip" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
-	<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
 	ExColor:
 	<a href="http://modcoder.org" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 	<a href="http://modcoder.org/?page=license" target="_blank" class="no-underline" title="License">[License]</a><br>
@@ -117,12 +108,28 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
 	colResizable: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
+	formatCurrency: <a href="http://code.google.com/p/jquery-formatcurrency/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+	<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
 	phpMailer: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 	<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
+	FullCalendar: <a href="http://arshaw.com/fullcalendar/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
 	<!--JS SHA-256: <a href="http://www.webtoolkit.info/javascript-sha256.html" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 	<a href="http://www.webtoolkit.info/license" target="_blank" class="no-underline" title="License">[License]</a><br>-->
 	TinyEditor: <a href="http://www.scriptiny.com/2010/02/javascript-wysiwyg-editor/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 	<a href="http://creativecommons.org/licenses/by/3.0/us/" target="_blank" class="no-underline" title="Creative Commons Attribution 3.0">[CC]</a><br>
+	CFile Class:
+	<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
+	EZip Class:
+	<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+	<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
+	CSaveRelationsBehavior Class:
+	<a href="http://www.yiiframework.com/extension/save-relations-ar-behavior/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+	<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
+	ERememberFiltersBehavior Class:
+	<a href="http://www.yiiframework.com/extension/remember-filters-gridview/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+	<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
 </div>
 
 

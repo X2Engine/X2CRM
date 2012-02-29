@@ -60,7 +60,7 @@ $(document).ready(function() {
 ",CClientScript::POS_HEAD);
 $selected=array();
 $unselected=array();
-$fields=Fields::model()->findAll();
+$fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelName ASC");
 foreach($fields as $field){
         $unselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
 }

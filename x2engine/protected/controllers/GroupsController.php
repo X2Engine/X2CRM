@@ -111,7 +111,10 @@ class GroupsController extends x2base
             if(isset($_POST['Groups'])){
 
                 $model->attributes=$_POST['Groups'];
-                $users=$_POST['users'];
+                if(isset($_POST['users']))
+                    $users=$_POST['users'];
+                else
+                    $users=array();
                 if($model->save()){
                     foreach($users as $user){
                         $link=new GroupToUser;
@@ -161,7 +164,10 @@ class GroupsController extends x2base
                     $userLink->delete();
                 }
                 $model->attributes=$_POST['Groups'];
-                $users=$_POST['users'];
+                if(isset($_POST['users']))
+                    $users=$_POST['users'];
+                else
+                    $users=array();
                 if($model->save()){
                     foreach($users as $user){
                         $link=new GroupToUser;

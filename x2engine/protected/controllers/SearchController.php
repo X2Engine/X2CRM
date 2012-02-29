@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,10 +86,36 @@ class SearchController extends x2base {
 			$sales=Sales::model()->findAllBySql('SELECT * FROM x2_sales WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%"');
 			$accounts=Accounts::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
 					OR tickerSymbol LIKE "%'.$term.'%"');
-
+                        $quotes=Quote::model()->findAllBySql('SELECT * FROM x2_quotes WHERE name LIKE "%'.$term.'%"');
+                        
+                        $other=array();
+                        $disallow=array(
+                            'contacts',
+                            'actions',
+                            'sales',
+                            'accounts',
+                            'dashboard',
+                            'users',
+                            'docs',
+                            'quotes',
+                            'workflow',
+                            'groups',
+                        );
+                        $order=explode(":",Yii::app()->params->admin->menuOrder);
+                        foreach($order as $item){
+                            if(is_null(Docs::model()->findByAttributes(array('title'=>$item)))){
+                                if(array_search($item,$disallow)===false){
+                                    $type=ucfirst($item);
+                                    if($type=='Products')
+                                        $type='Product';
+                                    eval("\$arr=$type::model()->findAllBySql('SELECT * FROM x2_$item WHERE name LIKE \'%$term%\' OR description LIKE \'%$term%\'');");
+                                    $other[]=$arr;
+                                }
+                            }
+                        }
+                        $other[]=$quotes;
 			$names=array();
 			$descriptions=array();
-			$notes=array();
 
 			$records=array();
 
@@ -99,7 +125,7 @@ class SearchController extends x2base {
 					if(preg_match($regEx,$contact->firstName." ".$contact->lastName)>0){
 							$names[]=$contact;
 					}elseif(preg_match($regEx,$contact->firstName)>0 || preg_match($regEx,$contact->lastName)>0){
-							$notes[]=$contact;
+							$descriptions[]=$contact;
 					}elseif(preg_match($regEx,$contact->backgroundInfo)>0){
 							$descriptions[]=$contact;
 					}elseif(preg_match($regEx,$contact->email)>0){
@@ -113,7 +139,7 @@ class SearchController extends x2base {
 
 			foreach($actions as $action){
 					if(preg_match($regEx,$action->actionDescription)>0){
-							$names[]=$action;
+							$descriptions[]=$action;
 					}
 			}
 
@@ -136,15 +162,19 @@ class SearchController extends x2base {
 							$names[]=$account;
 					}
 			}
-
+                        foreach($other as $recordType){
+                            foreach($recordType as $otherRecord){
+                                if(preg_match($regEx,$otherRecord->name)>0){
+                                    $names[]=$otherRecord;
+                                }elseif(preg_match($regEx,$otherRecord->description)>0){
+                                    $descriptions[]=$otherRecord;
+                                }
+                            }
+                        }
 
 			$records=array_merge($names,$descriptions);
 
-			$records=array_merge($records,$notes);
-
-			asort($records);
-
-			$records=Record::convert($records);
+			$records=Record::convert($records, false);
 
 			$dataProvider=new CArrayDataProvider($records,array(
 					'id'=>'id',

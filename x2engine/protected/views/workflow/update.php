@@ -45,15 +45,15 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>Yii::t('workflow','List Workflows'), 'url'=>array('index')),
-	array('label'=>Yii::t('workflow','Create Workflow'), 'url'=>array('create')),
-	array('label'=>Yii::t('workflow','View Workflow'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('workflow','Update Workflow')),
-	array('label'=>Yii::t('workflow','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
+	array('label'=>Yii::t('app','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('app','View'), 'url'=>array('view', 'id'=>$model->id)),
+	array('label'=>Yii::t('app','Update')),
+	array('label'=>Yii::t('app','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 
 );
 ?>
 
 <h2><?php echo Yii::t('workflow','Update Workflow:'); ?> <b><?php echo $model->name; ?></b></h2>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model,'stages'=>$stages)); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

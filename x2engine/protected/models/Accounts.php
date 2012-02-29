@@ -97,36 +97,42 @@ class Accounts extends CActiveRecord
                     'required'=>array(),
                     
                 );
-                $return=array();
+                $rules=array();
                 foreach($fields as $field){
-                    $arr[$field->type][]=$field->fieldName;
-                    if($field->required)
-                        $arr['required'][]=$field->fieldName;
-                }
-                foreach($arr as $key=>$array){
-                    switch($key){
-                        case 'email':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        case 'required':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        case 'int':
-                            $return[]=array(implode(", ",$array),'numerical','integerOnly'=>true);
-                            break;
-                        case 'float':
-                            $return[]=array(implode(", ",$array),'type','type'=>'float');
-                            break;
-                        case 'boolean':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        default:
-                            break;
-                        
-                    }
-                    
-                } 
-                return $return;
+			$arr[$field->type][]=$field->fieldName;
+			if($field->required)
+				$arr['required'][]=$field->fieldName;
+                        if($field->type!='date')
+                            $arr['search'][]=$field->fieldName;
+		}
+                $arr['search'][]='name';
+		foreach($arr as $key=>$array){
+			switch($key){
+				case 'email':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				case 'required':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+                                case 'search':
+                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
+                                        break;
+				case 'int':
+					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
+					break;
+				case 'float':
+					$rules[]=array(implode(',',$array),'type','type'=>'float');
+					break;
+				case 'boolean':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				default:
+					break;
+				
+			}
+			
+		}  
+                return $rules;
                 // NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		/*return array(
@@ -348,28 +354,24 @@ class Accounts extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		// $criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
-		// $criteria->compare('website',$this->website,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('annualRevenue',$this->annualRevenue);
-		$criteria->compare('phone',$this->phone,true);
-		// $criteria->compare('tickerSymbol',$this->tickerSymbol,true);
-		// $criteria->compare('employees',$this->employees);
-		// $criteria->compare('assignedTo',$this->assignedTo,true);
-		// $criteria->compare('createDate',$this->createDate);
-		// $criteria->compare('associatedContacts',$this->associatedContacts,true);
-		// $criteria->compare('description',$this->description,true);
-		// $criteria->compare('lastUpdated',$this->lastUpdated);
-		// $criteria->compare('updatedBy',$this->updatedBy,true);
-
-		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
-		if($dateRange !== false)
-			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
-			
-		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
-		if($dateRange !== false)
-			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
+                foreach($fields as $field){
+                    $fieldName=$field->fieldName;
+                    switch($field->type){
+                        case 'boolean':
+                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+                            break;
+                        case 'link':
+                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+                            break;
+                        case 'assignment':
+                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+                            break;
+                        default:
+                            $criteria->compare($field->fieldName,$this->$fieldName,true);
+                    }
+                    
+                }
 
 		
 		$dataProvider=new SmartDataProvider(get_class($this), array(
@@ -388,4 +390,51 @@ class Accounts extends CActiveRecord
 
 		return $dataProvider;
 	}
+        private function compareLookup($field, $data){
+            if(is_null($data) || $data=="") return null; 
+            $type=ucfirst($field->linkType);
+            if($type=='Contacts'){
+                eval("\$lookupModel=$type::model()->findAllBySql('SELECT * FROM x2_$field->linkType WHERE CONCAT(firstName,\' \', lastName) LIKE \'%$data%\'');");
+            }else{
+                eval("\$lookupModel=$type::model()->findAllBySql('SELECT * FROM x2_$field->linkType WHERE name LIKE \'%$data%\'');");
+            }
+            if(isset($lookupModel) && count($lookupModel)>0){
+                $arr=array();
+                foreach($lookupModel as $model){
+                    $arr[]=$model->id;
+                }
+                return $arr;
+            }else
+                return -1;
+        }
+        
+        private function compareBoolean($data){
+            if(is_null($data) || $data=='') return null;
+            if(is_numeric($data)) return $data;
+            if($data==Yii::t('actions',"Yes"))
+                return 1;
+            elseif($data==Yii::t('actions',"No"))
+                return 0;
+            else
+                return -1;
+        }
+        
+        private function compareAssignment($data){
+            if(is_null($data)) return null;
+            if(is_numeric($data)){
+                $models=Groups::model()->findAllBySql("SELECT * FROM x2_groups WHERE name LIKE '%$data%'");
+                $arr=array();
+                foreach($models as $model){
+                    $arr[]=$model->id;
+                }
+                return count($arr)>0?$arr:-1;
+            }else{
+                $models=UserChild::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
+                $arr=array();
+                foreach($models as $model){
+                    $arr[]=$model->username;
+                }
+                return count($arr)>0?$arr:-1;
+            }
+        }
 }

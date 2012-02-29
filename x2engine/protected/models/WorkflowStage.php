@@ -46,12 +46,15 @@
  * @property integer $workflowId
  * @property integer $stageNumber
  * @property string $name
+ * @property string $description
  * @property float $conversionRate
  * @property float $value
  * @property integer $requirePrevious
  * @property integer $requireComment
  */
 class WorkflowStage extends CActiveRecord {
+
+	public $_roles = array();
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return WorkflowStage the static model class
@@ -74,14 +77,14 @@ class WorkflowStage extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('workflowId, stageNumber', 'numerical', 'integerOnly'=>true),
-			array('requirePrevious, requireComment', 'boolean'),
+			array('workflowId, requirePrevious', 'numerical', 'integerOnly'=>true),
+			array('requireComment', 'boolean'),
 			array('conversionRate, value', 'type', 'type'=>'float'),
 			array('conversionRate', 'numerical', 'max'=>100, 'min'=>0),
 			array('name', 'length', 'max'=>40),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, workflowId, stageNumber, name, conversionRate, value', 'safe', 'on'=>'search'),
+			array('id, workflowId, name, description, conversionRate, value', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -89,12 +92,29 @@ class WorkflowStage extends CActiveRecord {
 	 * @return array relational rules.
 	 */
 	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
+			'workflow'=>array(self::BELONGS_TO, 'Workflow', 'workflowId'),
+			// 'roles'=>array(self::MANY_MANY, 'Roles','x2_role_to_workflow(stageId, roleId)'),
 		);
 	}
-
+	/**
+	 * @return array behaviors.
+	 */
+	// public function behaviors(){
+		// return array('CSaveRelationsBehavior' => array('class' => 'application.components.CSaveRelationsBehavior'));
+	// }
+	
+	public function getRoles() {
+		if(empty($this->_roles) && !empty($this->id))
+			$this->_roles = Yii::app()->db->createCommand()->select('roleId')->from('x2_role_to_workflow')->where('stageId='.$this->id)->queryColumn();
+		return $this->_roles;
+	}
+	
+	public function setRoles($roles) {
+		if(is_array($roles) || !empty($roles))
+			$this->_roles = $roles;
+	}
+	
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
@@ -102,12 +122,14 @@ class WorkflowStage extends CActiveRecord {
 		return array(
 			'id' => 'ID',
 			'workflowId' => Yii::t('workflow','Workflow'),
-			'stageNumber' => Yii::t('workflow','Stage Number'),
+			// 'stageNumber' => Yii::t('workflow','Stage Number'),
 			'name' => Yii::t('workflow','Stage Name'),
+			'description' => Yii::t('workflow','Description'),
 			'conversionRate' => Yii::t('workflow','Conversion Rate'),
 			'value' => Yii::t('workflow','Value'),
-			'requirePrevious' => Yii::t('workflow','Require Previous Stages'),
-			'requireComment' => Yii::t('workflow','Require Comment'),
+			'roles' => Yii::t('workflow','Roles'),
+			'requirePrevious' => Yii::t('workflow','Required Stages'),
+			'requireComment' => Yii::t('workflow','Comment'),
 		);
 	}
 
@@ -122,7 +144,7 @@ class WorkflowStage extends CActiveRecord {
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
+				'pageSize'=>ceil(ProfileChild::getResultsPerPage())
 			),
 		));
 	}

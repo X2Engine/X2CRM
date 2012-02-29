@@ -178,9 +178,9 @@ class X2GridView extends CGridView {
 			
 			$lang = (Yii::app()->language == 'en')? '':Yii::app()->getLanguage();
 			
-			if($isDate)
-				$datePickerJs .= ' $("#'.$columnName.'DatePicker").datepicker('
-					.'$.extend({showMonthAfterYear:false}, {"dateFormat":"'.$this->controller->formatDatePicker().'"})); ';
+			//if($isDate)
+				//$datePickerJs .= ' $("#'.$columnName.'DatePicker").datepicker('
+					//.'$.extend({showMonthAfterYear:false}, {"dateFormat":"'.$this->controller->formatDatePicker().'"})); ';
 					// .'{"showAnim":"fold","dateFormat":"yy-mm-dd","changeMonth":"true","showButtonPanel":"true","changeYear":"true","constrainInput":"false"}));';
 			
 			
@@ -216,9 +216,14 @@ class X2GridView extends CGridView {
                                 }elseif($this->allFields[$columnName]->type=='link'){
                                     $field=$this->allFields[$columnName];
                                     $type=ucfirst($field->linkType);
-                                    $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/\$data->$columnName'),array('target'=>'_blank')):''";
+                                    $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/'.\$data->$columnName),array('target'=>'_blank')):''";
                                     $newColumn['type'] = 'raw';
-                            }
+                                }elseif($this->allFields[$columnName]->type=='boolean'){
+                                    $field=$this->allFields[$columnName];
+                                    $type=ucfirst($field->linkType);
+                                    $newColumn['value']='$data->'.$columnName.'==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
+                                    $newColumn['type'] = 'raw';
+                                }
                             
 
 				if(Yii::app()->language == 'en') {
@@ -230,7 +235,7 @@ class X2GridView extends CGridView {
 		    		$format = str_replace('M','m', $format);
 		    	}
 		    	
-				$newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
+				/*$newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
 					'model'=>$this->filter, //Model object
 					// 'id'=>$columnName.'DatePicker',
 					'attribute'=>$columnName, //attribute name
@@ -240,7 +245,7 @@ class X2GridView extends CGridView {
 						'dateFormat'=>$format,
 					), // jquery plugin options
 					'language'=>$lang,
-				),true) : null;
+				),true) : null;*/
 				
 				$columns[] = $newColumn;
 					

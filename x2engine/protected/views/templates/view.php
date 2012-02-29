@@ -49,7 +49,7 @@ $this->menu = array(
 );
 ?>
 
-<h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?> #<?php echo $model->id; ?></h2>
+<h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php echo $model->name; ?></h2>
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>
 

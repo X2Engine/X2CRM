@@ -217,7 +217,8 @@ class ActionsController extends x2base {
 		if($model->associationName=='None' && $model->associationType!='none'){
 			$model->associationName=ucfirst($model->associationType);
 		}
-		if(isset($_POST['submit']) && ($_POST['submit']=='0' || $_POST['submit']=='2')) {	// if user clicked "New Comment" rather than "New Action"
+//		$this->render('test', array('model'=>$model));
+		if($model->type != 'event' && isset($_POST['submit']) && ($_POST['submit']=='0' || $_POST['submit']=='2')) {	// if user clicked "New Comment" rather than "New Action"
 			$model->createDate = time();
 			$model->dueDate = time();
 			$model->completeDate = time();
@@ -226,6 +227,10 @@ class ActionsController extends x2base {
 			$model->assignedTo=Yii::app()->user->getName();
 			$model->completedBy=Yii::app()->user->getName();
 			$model->type=$_POST['submit']==2?'note':'call';
+		} else if($model->type == 'event') {
+			if($model->completeDate) {
+				$model->completeDate = $this->parseDateTime($model->completeDate);
+			}
 		}
 		if($api==0)
 			parent::create($model,$oldAttributes,$api);
@@ -247,14 +252,24 @@ class ActionsController extends x2base {
 	// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Actions'])) {
+//			$this->render('test', array('model'=>$_POST));
 			$temp=$model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Actions'][$field])){
-                                $model->$field=$_POST['Actions'][$field];
-                            }
-                        }
-                        
-                        $this->create($model,$temp,'0');
+			if(isset($_POST['inCalendar'])) { // create new calendar event
+				foreach(array_keys($model->attributes) as $field){
+					if(isset($_POST['CalendarEvent'][$field])){
+						$model->$field=$_POST['CalendarEvent'][$field];
+					}
+				}
+				$model->actionDescription = $_POST['Actions']['actionDescription'];
+//				$this->render('test', array('model'=>$_POST['CalendarEvent']));
+			} else {
+				foreach(array_keys($model->attributes) as $field){
+					if(isset($_POST['Actions'][$field])){
+						$model->$field=$_POST['Actions'][$field];
+					}
+				}
+			}
+			$this->create($model,$temp,'0');
                         
 		}
 		if(isset($_GET['param'])) {

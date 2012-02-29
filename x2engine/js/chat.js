@@ -57,12 +57,16 @@ function updateChat() {
 			var messages = $.parseJSON(response);
 			var len = (messages != null) ? messages.length-1 : -1;
 
+			
+			var scrollToBottom = $('#chat-box').prop('scrollTop') >= $('#chat-box').prop('scrollHeight') - $('#chat-box').height();
+			
 			for (var i in messages) {
 				latestId = messages[i].id;	// update the latest message ID received
 				$('#chat-box').append(messages[i].message);	// add new messages to chat window
 			}
-			if (messages.length > 0)
-				$('#chat-box').attr('scrollTop',$('#chat-box').attr('scrollHeight')); // scroll to bottom of window
+			
+			if (messages.length > 0 && scrollToBottom)
+				$('#chat-box').prop('scrollTop',$('#chat-box').prop('scrollHeight')); // scroll to bottom of window
 		},
 		complete: function (xhr,status) {
 			pendingUpdate = null;

@@ -15,7 +15,7 @@ $this->beginWidget('zii.widgets.jui.CJuiDialog', array(
 echo Yii::t('workflow','Please summarize how this stage was completed.'); ?><br><?php
 echo CHtml::textArea('workflowComment','',array('style'=>'width:250px;height:80px;'));
 echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'workflowCommentSubmit','class'=>'x2-button highlight left','style'=>'margin-left:0;',
-	'onclick'=>'completeWorkflowStageComment();'));
+	'onclick'=>'completeWorkflowStageComment(); return false;'));
 echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button left',
 	'onclick'=>'$("#workflowDialog").dialog("close");'));
 echo CHtml::hiddenField('workflowCommentWorkflowId','',array('id'=>'workflowCommentWorkflowId'));

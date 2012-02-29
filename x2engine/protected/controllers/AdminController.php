@@ -79,7 +79,7 @@ class AdminController extends Controller {
 		return array(
                         array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('getRoundRobin','updateRoundRobin','getRoutingRules','roundRobin','evenDistro','getRoutingType',
-                                                'getRole','getWorkflowStages','download','cleanUp','sql'),
+                                                'getRole','getWorkflowStages','download','cleanUp','sql','getFieldData'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -93,7 +93,7 @@ class AdminController extends Controller {
 					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
 					'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
 					'customizeFields','manageFields', 'editor','createFormLayout','deleteFormLayout','formVersion','dropDownEditor','manageDropDowns','deleteDropdown','editDropdown',
-					'roleEditor','deleteRole','editRole','manageRoles','appSettings','updater','registerModules','toggleModule', 'viewLogs'),
+					'roleEditor','deleteRole','editRole','manageRoles','roleException','appSettings','updater','registerModules','toggleModule', 'viewLogs'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -301,9 +301,14 @@ class AdminController extends Controller {
             
             if(isset($_POST['Roles'])){
                 $model->attributes=$_POST['Roles'];
+                if(!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
+                    $this->redirect('manageRoles');
                 $viewPermissions=$_POST['viewPermissions'];
                 $editPermissions=$_POST['editPermissions'];
-                $users=$model->users;
+                if(isset($_POST['Roles']['users']))
+                    $users=$model->users;
+                else
+                    $users=array();
                 $model->users="";
                 if($model->save()){
                     foreach($users as $user){
@@ -393,9 +398,14 @@ class AdminController extends Controller {
                 $id=$_POST['Roles']['name'];
                 $model=Roles::model()->findByAttributes(array('name'=>$id));
                 $id=$model->id;
+                if(!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
+                    $this->redirect('manageRoles');
                 $viewPermissions=$_POST['viewPermissions'];
                 $editPermissions=$_POST['editPermissions'];
-                $users=$_POST['users'];
+                if(isset($_POST['users']))
+                    $users=$_POST['users'];
+                else
+                    $users=array();
                 $model->users="";
                 if($model->save()){
                     $userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$model->id));
@@ -574,7 +584,7 @@ class AdminController extends Controller {
                 echo "<div id='users'><label>Users</label>";
                 echo CHtml::dropDownList('users[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
                 echo "</div>";
-                $fields=Fields::model()->findAll();
+                $fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelName ASC");
                 $viewSelected=array();
                 $editSelected=array();
                 $fieldUnselected=array();
@@ -933,9 +943,20 @@ class AdminController extends Controller {
 			$field=$_POST['Fields']['fieldName'];
 			
 			$modelField=Fields::model()->findByAttributes(array('modelName'=>$type,'fieldName'=>$field));
-			if($_POST['Fields']['attributeLabel']!="")
-				$modelField->attributeLabel=$_POST['Fields']['attributeLabel'];
-			// $modelField->visible=$_POST['Fields']['visible'];
+                        $modelField->attributes=$_POST['Fields'];
+                        $modelField->type=$_POST['Fields']['type'];
+			if($modelField->type=='dropdown'){
+                            if(isset($_POST['dropdown'])){
+                                $id=$_POST['dropdown'];
+                                $modelField->linkType=$id;
+                            }
+			}
+                        if($modelField->type=="link"){
+                            if(isset($_POST['dropdown'])){
+                                $linkType=$_POST['dropdown'];
+                                $modelField->linkType=$linkType;
+                            }
+                        }
 			$modelField->modified=1;
                         (isset($_POST['Fields']['required']) && $_POST['Fields']['required']==1)?$modelField->required=1:$modelField->required=0;
 			
@@ -944,6 +965,45 @@ class AdminController extends Controller {
 		}
 		
 	}
+        
+        public function actionGetFieldData(){
+            if(isset($_POST['Fields']['fieldName'])){
+                $field=$_POST['Fields']['fieldName'];
+                $modelField=Fields::model()->findByAttributes(array('fieldName'=>$field));
+                $temparr=$modelField->attributes;
+                if(!empty($modelField->linkType)){
+                    $type=$modelField->type;
+                    if($type=='link'){
+                        $arr=array();
+                            $admin=Admin::model()->findByPk(1);
+                            $order=$admin->menuOrder;
+                            $pieces=explode(":",$order);
+                            $disallow=array(
+                                'actions',
+                                'docs',
+                                'workflow',
+                                'dashboard',
+                            );
+                            foreach($pieces as $piece){
+                                if(array_search($piece, $disallow)===false && is_null(Docs::model()->findByAttributes(array('title'=>$piece)))){
+                                    $arr[$piece]=ucfirst($piece);
+                                }
+                            }
+                            $temparr['dropdown']=CHtml::dropDownList('dropdown','',$arr);
+                        
+                    }elseif($type=='dropdown'){
+                        $dropdowns=Dropdowns::model()->findAll();
+                        $arr=array();
+                        foreach($dropdowns as $dropdown){
+                                $arr[$dropdown->id]=$dropdown->name;
+                        }
+
+                        $temparr['dropdown']=CHtml::dropDownList('dropdown','',$arr);
+                    }
+                }
+                echo CJSON::encode($temparr);
+            }
+        }
 	
 	public function actionManageFields(){
 		$model=new Fields;
@@ -1278,6 +1338,7 @@ class AdminController extends Controller {
 }
 	
 	private function createNewTable($moduleName) {
+                $moduleTitle=ucfirst($moduleName);
 		$sqlList=array("CREATE TABLE x2_".$moduleName."(
                         id INT NOT NULL AUTO_INCREMENT primary key,
                         assignedTo VARCHAR(250),
@@ -1287,13 +1348,13 @@ class AdminController extends Controller {
                         lastUpdated INT,
                         updatedBy VARCHAR(250)
                         )",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleName', 'id', 'ID', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'name', 'Name', '0', 'varchar')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '0', 'assigment')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'description', 'Description', '0', 'text')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'createDate', 'Create Date', '0', 'date')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '0', 'date')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'updatedBy', 'Updated By', '0', 'assignment')");
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
+                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
                 foreach($sqlList as $sql){
                     $command = Yii::app()->db->createCommand($sql);
                     $command->execute();
@@ -1854,12 +1915,17 @@ class AdminController extends Controller {
 			$model->attributes=$_POST['Dropdowns'];
 			$temp=array();
 			foreach($model->options as $option){
+                            if($option!="")
 				$temp[$option]=$option;
 			}
-			$model->options=json_encode($temp);
-			if($model->save()){
-				$this->redirect('manageDropDowns');
-			}
+                        if(count($temp)>0){
+                            $model->options=json_encode($temp);
+                            if($model->save()){
+                                    $this->redirect('manageDropDowns');
+                            }
+                        }else{
+                            $this->redirect('manageDropDowns');
+                        }
 		}
 		
 		$this->render('dropDownEditor',array(
@@ -1945,7 +2011,7 @@ class AdminController extends Controller {
                                 'dashboard',
                             );
                             foreach($pieces as $piece){
-                                if(array_search($piece, $disallow)===false){
+                                if(array_search($piece, $disallow)===false && is_null(Docs::model()->findByAttributes(array('title'=>$piece)))){
                                     $arr[$piece]=ucfirst($piece);
                                 }
                             }
@@ -1976,7 +2042,8 @@ class AdminController extends Controller {
                         $model="quote";
                     if($model=="products")
                         $model="product";
-                    $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
+                    if($model!='dashboard' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
+                        $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
                 }
                 
 		$tempArr['Users']=UserChild::model()->findAll();
@@ -2039,6 +2106,7 @@ class AdminController extends Controller {
                             $temp[$tempMeta[$i]]=$pieces[$i];
                     }
                     foreach($model->attributes as $field=>$value){
+                        if(isset($temp[$field]))
                             $model->$field=$temp[$field];
                     }
                     $lookup = CActiveRecord::model(get_class($model))->findByPk($model->id);
@@ -2076,9 +2144,9 @@ class AdminController extends Controller {
             
             if($updaterCheck!=$updaterVersion){
                 $file="protected/controllers/AdminController.php";
-                $this->ccopy("http://$url.com/updatesTest/x2engine/".$file , $file);
+                $this->ccopy("http://$url.com/updates/x2engine/".$file , $file);
                 $file="protected/views/admin/updater.php";
-                $this->ccopy("http://$url.com/updatesTest/x2engine/".$file , $file);
+                $this->ccopy("http://$url.com/updates/x2engine/".$file , $file);
                 $config="<?php
 \$host='$host';
 \$user='$user';
@@ -2125,7 +2193,7 @@ class AdminController extends Controller {
                 $file=$_GET['file'];
                 if($url=='x2planet' || $url=='x2base'){
                     $i=0;
-                    while(!$this->ccopy("http://$url.com/updatesTest/x2engine/".$file , $file) && $i<5){
+                    while(!$this->ccopy("http://$url.com/updates/x2engine/".$file , $file) && $i<5){
                        $i++; 
                     }
                     if($i==5){ 

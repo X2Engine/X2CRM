@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,28 +38,59 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$isAdmin = (Yii::app()->user->getName()=='admin');
-$this->menu=array(
-	array('label'=>Yii::t('workflow','All Workflows')),
-	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
-);
+return array(
+'Calendar'=>'',
+'Calendars'=>'',
 
-$this->widget('zii.widgets.grid.CGridView', array(
-	'dataProvider'=>$dataProvider,
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'template'=> '<h2>'.Yii::t('workflow','Workflows').'</h2><div class="title-bar">{summary}</div>{items}',
-	'enableSorting'=>false,
-	'columns'=>array(
-		array(
-			'name'=>'name',
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
-			'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:75%;'),
-		),
-		array(
-			'name'=>'Stages',
-			'value'=>'CActiveRecord::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
-			'type'=>'raw',
-		),
-	),
-)); ?>
+// button text
+'today'=>'',
+'month'=>'',
+'week'=>'',
+'day'=>'',
+
+// month names
+'January'=>'',
+'February'=>'',
+'March'=>'',
+'April'=>'',
+'May'=>'',
+'June'=>'',
+'July'=>'',
+'August'=>'',
+'September'=>'',
+'October'=>'',
+'November'=>'',
+'December'=>'',
+
+// short month names
+'Jan'=>'',
+'Feb'=>'',
+'Mar'=>'',
+'Apr'=>'',
+'May'=>'',
+'Jun'=>'',
+'Jul'=>'',
+'Aug'=>'',
+'Sep'=>'',
+'Oct'=>'',
+'Nov'=>'',
+'Dec' =>'',
+
+// day names
+'Sunday'=>'',
+'Monday'=>'',
+'Tuesday'=>'',
+'Wednesday'=>'',
+'Thursday'=>'',
+'Friday'=>'',
+'Saturday'=>'',
+
+// short day names,
+'Sun'=>'',
+'Mon'=>'',
+'Tue'=>'',
+'Wed'=>'',
+'Thu'=>'',
+'Fri'=>'',
+'Sat'=>'',
+);

@@ -60,7 +60,7 @@
                     'groups',
                 );
                 foreach($pieces as $piece){
-                    if(array_search($piece, $disallow)===false){
+                    if(array_search($piece, $disallow)===false && is_null(Docs::model()->findByAttributes(array('title'=>$piece)))){
                         $arr[ucfirst($piece)]=ucfirst($piece);
                     }
                 }
@@ -80,7 +80,15 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'fieldName'); ?>
-		<?php echo $form->dropDownList($model,'fieldName',array(),array('empty'=>'Select a model first','id'=>'dynamicFields')); ?>
+		<?php echo $form->dropDownList($model,'fieldName',array(),array('empty'=>'Select a model first','id'=>'dynamicFields',
+                    'ajax' => array(
+			'type'=>'POST', //request type
+			'url'=>CController::createUrl('admin/getFieldData'), //url to call.
+			//Style: CController::createUrl('currentController/methodToCall')
+			'success'=>'updateFields', //selector to update
+			//'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+			//leave out the data key to pass all form values through
+			))); ?>
 		<?php echo $form->error($model,'fieldName'); ?>
 	</div>
 	<br>
@@ -89,15 +97,43 @@
 		Please enter the new name for your chosen field.<br>
 		Leave blank if you don't want to change it.</div><br>
 		<?php echo $form->labelEx($model,'attributeLabel'); ?>
-		<?php echo $form->textField($model,'attributeLabel'); ?>
+		<?php echo $form->textField($model,'attributeLabel', array('id'=>'attributeLabel')); ?>
 		<?php echo $form->error($model,'attributeLabel'); ?>
 	</div>
 	
 	<div class="row">
-		<?php //echo $form->labelEx($model,'visible'); ?>
-		<?php //echo $form->dropDownList($model,'visible',array('1'=>'Show','0'=>'Hide')); ?>
-		<?php //echo $form->error($model,'visible'); ?>
-	</div>
+            <?php echo $form->labelEx($model,'type'); ?>
+            <?php echo $form->dropDownList($model,'type',
+                    array(
+                        'varchar'=>'Single Line Text',
+                        'text'=>'Multiple Line Text Area',
+                        'date'=>'Date',
+                        'dropdown'=>'Dropdown',
+                        'int'=>'Number',
+                        'email'=>'E-Mail',
+                        'currency'=>'Currency',
+                        'url'=>'URL',
+                        'float'=>'Decimal',
+                        'boolean'=>'Checkbox',
+                        'link'=>'Lookup',
+                        'rating'=>'Rating',
+                    ),
+                array(
+                'id'=>'fieldType',
+                'ajax' => array(
+                'type'=>'POST', //request type
+                'url'=>CController::createUrl('admin/getFieldType'), //url to call.
+                //Style: CController::createUrl('currentController/methodToCall')
+                'update'=>'#edit_dropdown', //selector to update
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                //leave out the data key to pass all form values through
+                ))); ?>
+            <?php echo $form->error($model,'type'); ?> 
+        </div>
+    
+        <div class="row" id="edit_dropdown">
+
+        </div>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'required');?>
@@ -110,3 +146,11 @@
 	</div>
 <?php $this->endWidget(); ?>
 </div>
+<script>
+    function updateFields(data){
+        data=$.parseJSON(data);
+        $('#attributeLabel').val(data.attributeLabel);
+        $('#fieldType').val(data.type);
+        $('#edit_dropdown').html(data.dropdown);
+    }
+</script>

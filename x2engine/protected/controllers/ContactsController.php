@@ -285,7 +285,8 @@ $model->city, $model->state $model->zipcode
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                            if(count($names)>1) 
+                                                $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -355,6 +356,7 @@ $model->city, $model->state $model->zipcode
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
+                                            if(count($names)>1) 
                                             $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
@@ -456,7 +458,7 @@ $model->city, $model->state $model->zipcode
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
 		$accounts=Accounts::getNames(); 
-     /*           $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
                 foreach($fields as $field){
                     if($field->type=='link'){
                         $fieldName=$field->fieldName;
@@ -470,7 +472,7 @@ $model->city, $model->state $model->zipcode
                         $fieldName=$field->fieldName;
                         $model->$fieldName=date("Y-m-d",$model->$fieldName);
                     }
-                } */
+                }
 		
 		 
 
@@ -495,6 +497,7 @@ $model->city, $model->state $model->zipcode
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
+                                            if(count($names)>1) 
                                             $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))

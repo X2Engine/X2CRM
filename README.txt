@@ -4,13 +4,20 @@ INSTRUCTIONS FOR UPDATE PLEASE READ
 
 If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
 
-X2CRM 1.0.1 Changelog
+X2CRM 1.1.0 Changelog
+- New Calendar module
+	- View task due dates and new Event type actions
+	- filter by user
+- Improvements to Workflow
+	- new visual workflow designer
+	- role-based permissions for each stage
+	- more advanced previous stage requirements
+- Enhanced action pulisher
+- Dozens of bug fixes
+- Improved behavior on left actions sidebar
 
-- Various bug fixes and small improvements
 
-
-
-Welcome to X2CRM v1.0.1!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2CRM v1.1!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 
@@ -21,14 +28,20 @@ X2CRM is unique in the crowded Customer Relationship Management (CRM) field with
 To install X2CRM, please extract and upload the X2Engine folder to your web root.  Navigate to the location in your browser and you will be redirected to the installer.  Fill out the form, click install, and that's it!  You are now ready to use X2CRM.
 	
 If you selected to install Dummy Data, you should have about 150 contacts and 120 actions installed, along with around 30 accounts to play around with.
-	
-2)  LANGUAGES
+
+2) Creating the Action Reminder Cronjob
+
+As we don't have access to your server, you'll need to create a cronjob to make the server send out action reminders.  You can either do this on your own server or use a free service on the internet to run it for you.  All you need to do is have the cronjob access the url: http://www.[yourserver].com/[path to x2engine]/actions/sendReminder
+
+Once a day to send out action reminders.
+
+3)  LANGUAGES
 
 Languages are very primitive at this point, we used Google Translate and copy/paste.  If you have any corrections/suggestions/language packs, please feel free to post them on www.x2community.com  
 
 We greatly appreciate any support with internationalization!
 	
-3) TIPS AND TRICKS
+4) TIPS AND TRICKS
 
 X2CRM is designed to be intuitive, but we have included a few tips and tricks to get you started!
 
@@ -53,7 +66,7 @@ This dropbox will add any conversations you have with a contact to the comments 
 
 -It is not recommended to use the Import Data function on the admin tab UNLESS you are importing data that was exported from a prior version.  The template is very finnicky and bug prone, so if you do it without using properly exported data, we take no responsibility for errors.
 	
-4) KNOWN ISSUES
+5) KNOWN ISSUES
 -If you remove #tags from a document, the tag records themselves will not be deleted from the database.  We are working on a fix for this.
 
 -The .htaccess file may cause issues on some servers.  If you get a 500 Internal Server Error when you try to load the installer, delete the .htaccess file, the application will work without it.

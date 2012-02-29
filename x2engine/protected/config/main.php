@@ -156,6 +156,8 @@ return array(
 		'adminEmail'=>$email,
 		'adminModel'=>null,
 		'profile'=>null,
+		'roles'=>array(),
+		'groups'=>array(),
 		'logo'=>"uploads/logos/yourlogohere.png",
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
 		'registeredWidgets'=>array(

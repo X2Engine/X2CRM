@@ -111,49 +111,91 @@ class WorkflowController extends x2base {
 	// Creates 1 or more associated WorkflowStage models
 	// If creation is successful, the browser will be redirected to the 'view' page.
 	public function actionCreate() {
+	
+	
+	
 		$workflowModel=new Workflow;
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
 
 		$stages = array();
 		
-		if(isset($_POST['Workflow'])) {
-
-			$validStages = false;
-			 if(isset($_POST['WorkflowStages'])) {
-				$validStages = true;
-				$i = 0;
-				foreach($_POST['WorkflowStages']['name'] as &$stageName) {
-					
-					$stageModel = new WorkflowStage;
-					$stageModel->name = $stageName;
-					$stageModel->conversionRate = $_POST['WorkflowStages']['conversionRate'][$i];
-					$stageModel->value = $_POST['WorkflowStages']['value'][$i];
-					$stageModel->requirePrevious = $_POST['WorkflowStages']['requirePrevious'][$i];
-					$stageModel->requireComment = $_POST['WorkflowStages']['requireComment'][$i];
-					
-					$i++;
-					$stageModel->stageNumber = $i;
-
-					if(!$stageModel->validate())
-						$validStages = false;
-					$stages[] = $stageModel;
-				}
-			}
+		if(isset($_POST['Workflow'], $_POST['WorkflowStages'])) {
+		
 		
 			$workflowModel->attributes = $_POST['Workflow'];
-			
-			if($validStages && $workflowModel->validate()) {
-				$workflowModel->save();
-				
-				foreach($stages as &$stage) {
-					$stage->workflowId = $workflowModel->id;
-					$stage->save();
+			if($workflowModel->save()) {
+				$validStages = true;
+				for($i=0; $i<count($_POST['WorkflowStages']); $i++) {
+					
+					$stages[$i] = new WorkflowStage;
+					$stages[$i]->workflowId = $workflowModel->id;
+					$stages[$i]->attributes = $_POST['WorkflowStages'][$i+1];
+					$stages[$i]->roles = $_POST['WorkflowStages'][$i+1]['roles'];
+					if(empty($stages[$i]->roles) || in_array('',$stages[$i]->roles))
+						$stages[$i]->roles = array();
+
+					if(!$stages[$i]->validate())
+						$validStages = false;
 				}
-				$this->redirect(array('view','id'=>$workflowModel->id));
+
+				if($validStages) {
+
+					foreach($stages as &$stage) {
+						$stage->save();
+						foreach($stage->roles as $roleId)
+							Yii::app()->db->createCommand()->insert('x2_role_to_workflow',array(
+								'stageId'=>$stage->id,
+								'roleId'=>$roleId,
+								'workflowId'=>$workflowModel->id,
+							));
+					}
+					if($workflowModel->save())
+						$this->redirect(array('view','id'=>$workflowModel->id));
+				}
 			}
 		}
+
+		$this->render('create',array(
+			'model'=>$workflowModel,
+		));
+
+		// $stages = array();
+		
+		// if(isset($_POST['Workflow'])) {
+
+			// $validStages = false;
+			 // if(isset($_POST['WorkflowStages'])) {
+				// $validStages = true;
+				// $i = 0;
+				// foreach($_POST['WorkflowStages']['name'] as &$stageName) {
+					
+					// $stageModel = new WorkflowStage;
+					// $stageModel->name = $stageName;
+					// $stageModel->conversionRate = $_POST['WorkflowStages']['conversionRate'][$i];
+					// $stageModel->value = $_POST['WorkflowStages']['value'][$i];
+					// $stageModel->requirePrevious = $_POST['WorkflowStages']['requirePrevious'][$i];
+					// $stageModel->requireComment = $_POST['WorkflowStages']['requireComment'][$i];
+					
+					// $i++;
+					// $stageModel->stageNumber = $i;
+
+					// if(!$stageModel->validate())
+						// $validStages = false;
+					// $stages[] = $stageModel;
+				// }
+			// }
+		
+			// $workflowModel->attributes = $_POST['Workflow'];
+			
+			// if($validStages && $workflowModel->validate()) {
+				// $workflowModel->save();
+				
+				// foreach($stages as &$stage) {
+					// $stage->workflowId = $workflowModel->id;
+					// $stage->save();
+				// }
+				// $this->redirect(array('view','id'=>$workflowModel->id));
+			// }
+		// }
 
 		$this->render('create',array(
 			'model'=>$workflowModel,
@@ -165,49 +207,43 @@ class WorkflowController extends x2base {
 	// Deletes and recreates all associated WorkflowStage models
 	// If update is successful, the browser will be redirected to the 'view' page.
 	public function actionUpdate($id) {
-		$workflowModel=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
+		$workflowModel = $this->loadModel($id);
 
 		$stages = array();
 		
-		if(isset($_POST['Workflow'])) {
+		if(isset($_POST['Workflow'], $_POST['WorkflowStages'])) {
 
-			$validStages = false;
-			 if(isset($_POST['WorkflowStages'])) {
+			$validStages = true;
+			for($i=0; $i<count($_POST['WorkflowStages']); $i++) {
+				
+				$stages[$i] = new WorkflowStage;
+				$stages[$i]->workflowId = $id;
+				$stages[$i]->attributes = $_POST['WorkflowStages'][$i+1];
+				$stages[$i]->roles = $_POST['WorkflowStages'][$i+1]['roles'];
+				if(empty($stages[$i]->roles) || in_array('',$stages[$i]->roles))
+					$stages[$i]->roles = array();
 
-				$validStages = true;
-				$i = 0;
-				foreach($_POST['WorkflowStages']['name'] as &$stageData) {
-					
-					$stageModel = new WorkflowStage;
-					$stageModel->name = $stageData;
-					$stageModel->conversionRate = $_POST['WorkflowStages']['conversionRate'][$i];
-					$stageModel->value = $_POST['WorkflowStages']['value'][$i];
-					$stageModel->requirePrevious = $_POST['WorkflowStages']['requirePrevious'][$i];
-					$stageModel->requireComment = $_POST['WorkflowStages']['requireComment'][$i];
-					
-					$i++;
-					$stageModel->stageNumber = $i;
-
-					if(!$stageModel->validate())
-						$validStages = false;
-					$stages[] = $stageModel;
-				}
+				if(!$stages[$i]->validate())
+					$validStages = false;
 			}
-		
+
 			$workflowModel->attributes = $_POST['Workflow'];
 			
 			if($validStages && $workflowModel->validate()) {
-				$workflowModel->save();
-				CActiveRecord::model('WorkflowStage')->deleteAllByAttributes(array('workflowId'=>$workflowModel->id));	// delete old stages
-
-				foreach($stages as &$stage) {					// save new stages
-					$stage->workflowId = $workflowModel->id;
+			
+				Yii::app()->db->createCommand()->delete('x2_workflow_stages','workflowId='.$workflowModel->id);	// delete old stages
+				Yii::app()->db->createCommand()->delete('x2_role_to_workflow','workflowId='.$id);	// delete role stuff too
+				foreach($stages as &$stage) {
 					$stage->save();
+					foreach($stage->roles as $roleId)
+						Yii::app()->db->createCommand()->insert('x2_role_to_workflow',array(
+							'stageId'=>$stage->id,
+							'roleId'=>$roleId,
+							'workflowId'=>$id,
+						));
 				}
-				$this->redirect(array('view','id'=>$workflowModel->id));
+				if($workflowModel->save()) {}
+					// $this->redirect(array('view','id'=>$workflowModel->id));
 			}
 		} else
 			$stages = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$id),
@@ -216,7 +252,6 @@ class WorkflowController extends x2base {
 
 		$this->render('update',array(
 			'model'=>$workflowModel,
-			'stages'=>$stages,
 		));
 	}
 
@@ -278,77 +313,80 @@ class WorkflowController extends x2base {
 	}
 	
 	public function actionCompleteStage($workflowId,$stageNumber,$modelId,$type,$comment = '') {
-		if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
+		if(!(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)))
+			return;
 
-			$comment = trim($comment);
+		$comment = trim($comment);
+	
+		$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+		$stageCount = count($workflowStatus)-1;
 		
-			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-			$stageCount = count($workflowStatus)-1;
-			
-			$stage = &$workflowStatus[$stageNumber];
-			
-			if(isset($stage['createDate']) && empty($stage['completeDate'])) {
-			
-				$previousCheck = true;
-				if($stage['requirePrevious']) {
-					for($i=1; $i<$stageNumber; $i++) {
-						if(!$workflowStatus[$i]['complete']) {
-							$previousCheck = false;
-							$workflowStatus[$i]['highlight'] = true;
-						}
+		$stage = &$workflowStatus[$stageNumber];
+		
+		if(isset($stage['createDate']) && empty($stage['completeDate'])) {
+		
+			$previousCheck = true;
+			if($workflowStatus[$stageNumber]['requirePrevious'] == 1) {	// check if all stages before this one are complete
+				for($i=1; $i<$stageNumber; $i++) {
+					if(empty($workflowStatus[$i]['complete'])) {
+						$previousCheck = false;
+						break;
 					}
 				}
-				// is this stage is OK to complete? if a comment is required, then is $comment empty?
-				if($previousCheck && (!$stage['requireComment'] || ($stage['requireComment'] && !empty($comment)))) {
-				
-				
-					// find selected stage (and duplicates)
-					$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
-						array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
-						new CDbCriteria(array('order'=>'createDate DESC'))
-					);
-					
-					if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
-					for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
-						$actionModels[$i]->delete();
-
-					$actionModels[0]->setScenario('workflow');
-					$actionModels[0]->completeDate = time();	// set completeDate and save model
-					$actionModels[0]->complete = 'Yes';
-					$actionModels[0]->completedBy = Yii::app()->user->getName();
-					// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
-					$actionModels[0]->actionDescription = $comment;
-					$actionModels[0]->save();
-					
-					for($i=0; $i<=$stageCount; $i++) {
-						if($i != $stageNumber && empty($workflowStatus[$i]['completeDate']) && !empty($workflowStatus[$i]['createDate']))
-							break;
-					
-					
-						if(empty($workflowStatus[$i]['createDate'])) {
-							$nextAction = new Actions('workflow');					// start the next one (unless there is already one)
-							$nextAction->associationId = $modelId;
-							$nextAction->associationType = $type;
-							$nextAction->assignedTo = Yii::app()->user->getName();
-							$nextAction->type = 'workflow';
-							$nextAction->complete = 'No';
-							$nextAction->visibility = 1;
-							$nextAction->createDate = time();
-							$nextAction->workflowId = $workflowId;
-							$nextAction->stageNumber = $i;
-							// $nextAction->actionDescription = $comment;
-							$nextAction->save();
-							break;
-						}
-					}
-					// if($stageNumber < $stageCount && empty($workflowStatus[$stageNumber+1]['createDate'])) {	// if this isn't the final stage,
-						
-					// }
-					$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
-				}
+			} else if($workflowStatus[$stageNumber]['requirePrevious'] < 0) {		// or just check if the specified stage is complete
+				if(empty($workflowStatus[ -1*$workflowStatus[$stageNumber]['requirePrevious'] ]['complete']))
+					$previousCheck = false;
 			}
-			echo Workflow::renderWorkflow($workflowStatus);
+			// is this stage is OK to complete? if a comment is required, then is $comment empty?
+			if($previousCheck && (!$stage['requireComment'] || ($stage['requireComment'] && !empty($comment)))) {
+			
+			
+				// find selected stage (and duplicates)
+				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
+					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
+					new CDbCriteria(array('order'=>'createDate DESC'))
+				);
+				
+				if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
+				for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
+					$actionModels[$i]->delete();
+
+				$actionModels[0]->setScenario('workflow');
+				$actionModels[0]->completeDate = time();	// set completeDate and save model
+				$actionModels[0]->complete = 'Yes';
+				$actionModels[0]->completedBy = Yii::app()->user->getName();
+				// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
+				$actionModels[0]->actionDescription = $comment;
+				$actionModels[0]->save();
+				
+				for($i=0; $i<=$stageCount; $i++) {
+					if($i != $stageNumber && empty($workflowStatus[$i]['completeDate']) && !empty($workflowStatus[$i]['createDate']))
+						break;
+				
+				
+					if(empty($workflowStatus[$i]['createDate'])) {
+						$nextAction = new Actions('workflow');					// start the next one (unless there is already one)
+						$nextAction->associationId = $modelId;
+						$nextAction->associationType = $type;
+						$nextAction->assignedTo = Yii::app()->user->getName();
+						$nextAction->type = 'workflow';
+						$nextAction->complete = 'No';
+						$nextAction->visibility = 1;
+						$nextAction->createDate = time();
+						$nextAction->workflowId = $workflowId;
+						$nextAction->stageNumber = $i;
+						// $nextAction->actionDescription = $comment;
+						$nextAction->save();
+						break;
+					}
+				}
+				// if($stageNumber < $stageCount && empty($workflowStatus[$stageNumber+1]['createDate'])) {	// if this isn't the final stage,
+					
+				// }
+				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
+			}
 		}
+		echo Workflow::renderWorkflow($workflowStatus);
 	}
 	
 	public function actionRevertStage($workflowId,$stageNumber,$modelId,$type) {
@@ -409,10 +447,10 @@ class WorkflowController extends x2base {
 			->select('x2_contacts.*')
 			->from('x2_contacts')
 			->join('x2_actions','x2_contacts.id = x2_actions.associationId')
-			->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='contacts' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo='".Yii::app()->user->getName()."')")
+			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo='".Yii::app()->user->getName()."')")
 			->getText();
 		
-		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='contacts'")->queryScalar();
+		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0)")->queryScalar();
 
 		$contactsDataProvider = new CSqlDataProvider($contactsSql,array(
 			// 'criteria'=>$criteria,
@@ -432,10 +470,10 @@ class WorkflowController extends x2base {
 			->select('x2_sales.*')
 			->from('x2_sales')
 			->join('x2_actions','x2_sales.id = x2_actions.associationId')
-			->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='sales'")
+			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='sales' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0)")
 			->getText();
 		
-		$salesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=>$workflowId AND x2_actions.stageNumber=$stageNumber AND x2_actions.associationType='sales'")->queryScalar();
+		$salesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='sales' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0)")->queryScalar();
 
 		$salesDataProvider = new CSqlDataProvider($salesSql,array(
 			// 'criteria'=>$criteria,

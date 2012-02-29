@@ -624,7 +624,7 @@ abstract class x2base extends Controller {
 								$notif->user=$piece;
 								$notif->createDate=time();
 								$notif->viewed=0;
-								$notif->record=substr($this->modelClass,0,-5)."s:".$new['id'];
+								$notif->record=$this->modelClass.":".$new['id'];
 								$notif->save();
 							}
 						}else if($criteria->type=='action'){
@@ -646,7 +646,7 @@ abstract class x2base extends Controller {
 								$action->lastUpdated=time();
 								$action->updatedBy='admin';
 								$action->visibility=1;
-								$action->associationType=strtolower($this->modelClass)."s";
+								$action->associationType=strtolower($this->modelClass);
 								$action->associationId=$new['id'];
 								$model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
 								$action->associationName=$model->name;
@@ -818,7 +818,7 @@ abstract class x2base extends Controller {
 	}
 	
 	
-/* 	public function parseEmailTo($string) {
+	public function parseEmailTo($string) {
 	
 		if(empty($string))
 			return false;
@@ -864,7 +864,7 @@ abstract class x2base extends Controller {
 
 		return $mailingList;
 	}
-	
+
 	public function mailingListToString($list,$encodeQuotes = false) {
 		$string = '';
 		if(is_array($list)) {
@@ -876,7 +876,7 @@ abstract class x2base extends Controller {
 			}
 		}
 		return $encodeQuotes? $this->encodeQuotes($string) : $string;
-	} */
+	}
 
 	/**
 	 * Sets widgets on the page on a per user basis.

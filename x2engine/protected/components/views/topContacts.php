@@ -48,6 +48,7 @@ function addTopContact(contactId) {
 		success: function(response) {
 			if(response!='')
 				$('#top-contacts-list').html(response);
+				$('#sidebar-left-box').height($('#sidebar-left').height());
 			}
 	});
 }
@@ -60,6 +61,7 @@ function removeTopContact(contactId) {
 		success: function(response) {
 			if(response!='')
 				$('#top-contacts-list').html(response);
+				$('#sidebar-left-box').height($('#sidebar-left').height());
 			}
 	});
 	//$('#contact'+id).remove();

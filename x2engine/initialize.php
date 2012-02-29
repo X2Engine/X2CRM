@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.0.1';
-$buildDate = 1329863494;
+$x2Version = '1.1.0';
+$buildDate = 1330549135;
 
 $userData = '';
 
@@ -246,11 +246,13 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_sessions,
 	x2_workflows,
 	x2_workflow_stages,
+	x2_role_to_workflow,
 	x2_fields,
 	x2_form_layouts,
 	x2_roles,
 	x2_role_to_user,
 	x2_role_to_permission,
+	x2_role_exceptions,
 	x2_dropdowns,
 	x2_groups,
 	x2_group_to_user,
@@ -268,7 +270,7 @@ mysql_query('DROP TABLE IF EXISTS
 // if(!empty($sqlError)) return $sqlError;
 
 mysql_query('CREATE TABLE x2_users(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstName VARCHAR(20) NOT NULL,
 	lastName VARCHAR(40) NOT NULL,
 	username VARCHAR(20) NOT NULL,
@@ -293,7 +295,7 @@ mysql_query('CREATE TABLE x2_users(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_users.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_contacts(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstName VARCHAR(40) NOT NULL,
 	lastName VARCHAR(40) NOT NULL,
 	title VARCHAR(40),
@@ -338,7 +340,7 @@ mysql_query('CREATE TABLE x2_contacts(
 //mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
 
 mysql_query('CREATE TABLE x2_actions(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	assignedTo VARCHAR(20),
 	actionDescription text NOT NULL,
 	visibility INT NOT NULL,
@@ -358,12 +360,14 @@ mysql_query('CREATE TABLE x2_actions(
 	updatedBy VARCHAR(20),
 	workflowId INT UNSIGNED,
 	stageNumber INT UNSIGNED,
+	allDay TINYINT,
+	color VARCHAR(20),
 	INDEX (assignedTo),
 	INDEX (associationType,associationId)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_actions.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_sales(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(40) NOT NULL,
 	accountName VARCHAR(100),
 	quoteAmount FLOAT,
@@ -380,7 +384,7 @@ mysql_query('CREATE TABLE x2_actions(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_quotes(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(40) NOT NULL,
 	accountName VARCHAR(250),
 	salesStage VARCHAR(20),
@@ -404,7 +408,7 @@ mysql_query("ALTER TABLE x2_quotes AUTO_INCREMENT=301;
 ")or addSqlError('Unable to alter table x2_quotes.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_products(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(100) NOT NULL,
 	type VARCHAR(100),
 	price FLOAT,
@@ -419,7 +423,7 @@ mysql_query("ALTER TABLE x2_quotes AUTO_INCREMENT=301;
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_projects(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(60) NOT NULL,
 	status VARCHAR(20),
 	type VARCHAR(20), 
@@ -435,7 +439,7 @@ mysql_query('CREATE TABLE x2_projects(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_projects.'.mysql_error());
 
 // mysql_query("CREATE TABLE x2_marketing(
-	// id INT NOT NULL AUTO_INCREMENT primary key,
+	// id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	// name VARCHAR(20) NOT NULL,
 	// cost INT,
 	// result TEXT,
@@ -496,7 +500,7 @@ mysql_query('CREATE TABLE x2_list_criteria (
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listCriteria.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_cases(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(60) NOT NULL,
 	status VARCHAR(20) NOT NULL,
 	type VARCHAR(20), 
@@ -513,7 +517,7 @@ mysql_query('CREATE TABLE x2_cases(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_cases.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_profile(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	fullName VARCHAR(60) NOT NULL,
 	username VARCHAR(20) NOT NULL,
 	officePhone VARCHAR(40),
@@ -530,7 +534,7 @@ mysql_query('CREATE TABLE x2_cases(
 	timeZone VARCHAR(100) DEFAULT "'.$timezone.'",
 	resultsPerPage INT DEFAULT 20,
 	widgets VARCHAR(255) DEFAULT "1:1:1:1:1:1:0:1:1",
-	widgetOrder VARCHAR(255) DEFAULT "OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud",
+	widgetOrder VARCHAR(512) DEFAULT "OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud",
 	backgroundColor VARCHAR(6) NULL,
 	menuBgColor VARCHAR(6) NULL,
 	menuTextColor VARCHAR(6) NULL,
@@ -550,7 +554,7 @@ mysql_query('CREATE TABLE x2_cases(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_profile.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_accounts(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(40) NOT NULL,
 	website VARCHAR(40),
 	type VARCHAR(60), 
@@ -568,7 +572,7 @@ mysql_query('CREATE TABLE x2_cases(
 
 
  mysql_query('CREATE TABLE x2_social(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type VARCHAR(40) NOT NULL,
 	data text,
 	user VARCHAR(40),
@@ -579,7 +583,7 @@ mysql_query('CREATE TABLE x2_cases(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_social.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_docs(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	title VARCHAR(100) NOT NULL,
 	type VARCHAR(10) NOT NULL DEFAULT "",
 	text LONGTEXT NOT NULL,
@@ -591,7 +595,7 @@ mysql_query('CREATE TABLE x2_docs(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_docs.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_media(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	associationType VARCHAR(40) NOT NULL,
 	associationId INT,
 	uploadedBy VARCHAR(40),
@@ -600,7 +604,7 @@ mysql_query('CREATE TABLE x2_media(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_media.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_admin(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	accounts INT,
 	sales INT,
 	timeout INT,
@@ -632,7 +636,7 @@ mysql_query('CREATE TABLE x2_admin(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_changelog( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type VARCHAR(50) NOT NULL,
 	itemId INT NOT NULL,
 	changedBy VARCHAR(50) NOT NULL,
@@ -641,7 +645,7 @@ mysql_query('CREATE TABLE x2_changelog(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_changelog.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_tags( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type VARCHAR(50) NOT NULL,
 	itemId INT NOT NULL,
 	taggedBy VARCHAR(50) NOT NULL,
@@ -651,7 +655,7 @@ mysql_query('CREATE TABLE x2_tags(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_tags.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_relationships( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstType VARCHAR(100),
 	firstId INT,
 	secondType VARCHAR(100),
@@ -659,7 +663,7 @@ mysql_query('CREATE TABLE x2_relationships(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_quotes_products( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	quoteId INT,
 	productId INT,
 	quantity INT,
@@ -679,7 +683,7 @@ mysql_query('CREATE TABLE x2_quotes_products(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_notifications( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	text TEXT,
 	record VARCHAR(250), 
 	user VARCHAR(100),
@@ -688,7 +692,7 @@ mysql_query('CREATE TABLE x2_notifications(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_notifications.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_criteria( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	modelType VARCHAR(100),
 	modelField VARCHAR(250),
 	modelValue TEXT,
@@ -698,41 +702,43 @@ mysql_query('CREATE TABLE x2_criteria(
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_criteria.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_lead_routing( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	field VARCHAR(250),
 	value VARCHAR(250),
 	users TEXT,
-	rrId INT DEFAULT 0
+	rrId INT DEFAULT 0,
+        groupType INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_lead_routing.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_sessions(
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	user VARCHAR(250),
 	lastUpdated INT,
 	IP VARCHAR(40) NOT NULL,
 	status TINYINT NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sessions.'.mysql_error());
 
-mysql_query('CREATE TABLE x2_workflows( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+mysql_query('CREATE TABLE x2_workflows(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(250),
 	lastUpdated INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_workflows.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_workflow_stages( 
-	id INT NOT NULL AUTO_INCREMENT primary key,
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	workflowId INT NOT NULL,
 	stageNumber INT,
 	name VARCHAR(40),
+	description TEXT,
 	conversionRate DECIMAL(10,2),
 	value DECIMAL(10,2),
-	requirePrevious TINYINT DEFAULT 0,
+	requirePrevious INT DEFAULT 0,
 	requireComment TINYINT DEFAULT 0,
 	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_workflow_stages.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_fields (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	modelName varchar(250) ,
 	fieldName varchar(250),
 	attributeLabel varchar(250),
@@ -740,7 +746,8 @@ mysql_query('CREATE TABLE x2_fields (
 	custom INT DEFAULT 1,
 	type VARCHAR(250) DEFAULT "varchar",
 	required INT DEFAULT 0,
-	linkType VARCHAR(250)
+	linkType VARCHAR(250),
+	INDEX (modelName)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_fields.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_form_layouts (
@@ -755,38 +762,56 @@ mysql_query('CREATE TABLE x2_form_layouts (
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_form_versions.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_dropdowns (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(250) ,
 	options text
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_dropdowns.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_roles (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(250) ,
 	users text
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_role_to_user (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId int ,
 	userId int,
 	type VARCHAR(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_role_to_permission (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId int ,
 	fieldId int,
 	permission int
-) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_permission.'.mysql_error());
+
+mysql_query('CREATE TABLE x2_role_exceptions (
+	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	workflowId int ,
+	stageId int,
+	roleId int,
+        replacementId int
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_exceptions.'.mysql_error());
+
+mysql_query('CREATE TABLE x2_role_to_workflow( 
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	roleId INT,
+	stageId INT,
+	workflowId INT,
+	FOREIGN KEY (roleId) REFERENCES x2_roles(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (stageId) REFERENCES x2_workflow_stages(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_workflow_stages.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_groups (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_group_to_user (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
+	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	groupId INT,
 	userId INT,
 	username VARCHAR(250)
@@ -836,7 +861,7 @@ mysql_query("create or replace view `x2_bi_leads` as
 
 
 mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
-("Contacts","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_firstName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadscore\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"180\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"198\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_address2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_state\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"200\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"102\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"51\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":79,\"items\":[]},{\"width\":508,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[]}]}]}]}","0","1","'.time().'","'.time().'"),
+("Contacts","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_firstName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadscore\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"180\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"198\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_address2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_state\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"200\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"102\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"100\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":79,\"items\":[]},{\"width\":508,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Contacts","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadscore\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"198\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_address2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_state\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"82\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"51\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":79,\"items\":[]},{\"width\":508,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
 ("Sales","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_salesStage\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Other Info\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expectedCloseDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_quoteAmount\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"184\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"482\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Sales","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_salesStage\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Other Info\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expectedCloseDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_quoteAmount\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"184\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"482\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
@@ -933,6 +958,8 @@ mysql_query('INSERT INTO x2_fields
 ("Actions",		"completeDate",			"Date Completed",		0,	0,	"varchar",		0,	NULL),
 ("Actions",		"lastUpdated",			"Last Updated",			0,	0,	"varchar",		0,	NULL),
 ("Actions",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
+("Actions",		"allDay",				"All Day",				0,	0,	"boolean",		0,	NULL),
+("Actions",		"color",				"Color",				0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"id",					"ID",					0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"name",					"Name",					0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"accountName",			"Account",				0,	0,	"link",		0,	"accounts"),
@@ -998,9 +1025,9 @@ mysql_query('INSERT INTO x2_admin (accounts,sales,timeout,webLeadEmail,menuOrder
 	"1",
 	"3600",
 	"'.$adminEmail.'",
-	"dashboard:actions:contacts:docs:sales:accounts:quotes:products:workflow:groups",
-	"Dashboard:Actions:Contacts:Docs:Sales:Accounts:Quotes:Products:Workflow:Groups",
-	"1:1:1:1:1:1:1:1:1:1",
+	"calendar:actions:contacts:docs:sales:accounts:quotes:products:workflow:groups:dashboard",
+	"Calendar:Actions:Contacts:Docs:Sales:Accounts:Quotes:Products:Workflow:Groups:Dashboard",
+	"1:1:1:1:1:1:1:1:1:1:1",
 	"'.$currency.'",
 	"'.time().'",
 	0,
@@ -1027,10 +1054,10 @@ foreach($backgrounds as $background) {
 if($dummyData){
 
 	mysql_query("INSERT INTO x2_workflows (id, name) VALUES (1,'General Sales')") or addSqlError("Error inserting workflow data.");
-	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (1,1,1,'Lead')") or addSqlError("Error inserting workflow data.");
-	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (2,1,2,'Suspect')") or addSqlError("Error inserting workflow data.");
-	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (3,1,3,'Prospect')") or addSqlError("Error inserting workflow data.");
-	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (4,1,4,'Customer')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (1,1,'Lead')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (4,1,'Customer')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (2,1,'Suspect')") or addSqlError("Error inserting workflow data.");
+	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (3,1,'Prospect')") or addSqlError("Error inserting workflow data.");
 
 	mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Chris','Hames','chames',md5('password'),
 		'831-555-5555','10 Downing St. Santa Cruz, CA 95060', 'chris@hames.com','1')") or addSqlError("Error inserting dummy data");
@@ -1190,6 +1217,7 @@ body {
 	<ul>
 		<li>Log in to app</li>
 		<li>Create new users</li>
+                <li>Set up Cron Job to deal with action reminders (see readme)</li>
 		<li>Set location</li>
 		<li>Explore the app</li>
 	</ul>

@@ -44,6 +44,11 @@ class InlineActionForm extends CWidget {
 	public $assignedTo;
 	public $users;
 	public $startHidden = false;
+	public $inCalendar = false;
+	public $showLogACall = true;
+	public $showNewAction = true;
+	public $showNewComment = true;
+	public $showNewEvent = true;
 
 	public function init() {
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
@@ -72,7 +77,18 @@ class InlineActionForm extends CWidget {
 		$actionModel->associationType = $this->associationType;
 		$actionModel->associationId = $this->associationId;
 		$actionModel->assignedTo = $this->assignedTo;
-		echo $this->render('../../views/actions/_form', array('actionModel'=>$actionModel,'users'=>$this->users,'inlineForm'=>true));
+		echo $this->render('../../views/actions/_form', 
+			array(
+				'actionModel'=>$actionModel,
+				'users'=>$this->users,
+				'inlineForm'=>true,
+				'inCalendar'=>$this->inCalendar,
+				'showLogACall'=>$this->showLogACall,
+				'showNewAction'=>$this->showNewAction,
+				'showNewComment'=>$this->showNewComment,
+				'showNewEvent'=>$this->showNewEvent,
+			)
+		);
 	}
 }
 ?>

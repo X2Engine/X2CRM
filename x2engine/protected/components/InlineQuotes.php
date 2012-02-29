@@ -60,6 +60,12 @@ class InlineQuotes extends CWidget {
 			($this->startHidden? "$(document).ready(function() { $('#quotes-form').hide();
 			 });\n" : '')
 			. "function toggleQuotes() {
+				
+				if($('#quotes-form').is(':hidden')) {
+					$('html,body').animate({
+						scrollTop: ($('#action-form').offset().top - 200)
+					}, 300);
+				}
 				$('#quotes-form').toggle('blind',300,function() {
 					$('#quotes-form').focus();
 				});

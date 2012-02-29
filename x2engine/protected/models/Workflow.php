@@ -88,9 +88,17 @@ class Workflow extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'stages'=>array(self::HAS_MANY, 'WorkflowStage', 'workflowId'),
 		);
 	}
-
+	
+	/**
+	 * @return array behaviors.
+	 */
+	// public function behaviors(){
+		// return array('CSaveRelationsBehavior' => array('class' => 'application.components.CSaveRelationsBehavior'));
+	// }
+	
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
@@ -121,6 +129,7 @@ class Workflow extends CActiveRecord {
 			$workflowStatus[] = array(
 				'name'=>$stage->name,
 				'requirePrevious'=>$stage->requirePrevious,
+				'roles'=>$stage->roles,
 				'requireComment'=>$stage->requireComment
 			);
 		}
@@ -200,9 +209,17 @@ class Workflow extends CActiveRecord {
 		$statusStr = '';
 		// die(var_dump($workflowStatus));
 		
-		$started = false;
+		// $started = false;
 		for($stage=1; $stage<=$stageCount;$stage++) {
-		
+
+			if(!empty($workflowStatus[$stage]['roles']))	// if roles are specified, check if user has any of them
+				$editPermission = count(array_intersect(Yii::app()->params->roles,$workflowStatus[$stage]['roles'])) > 0;
+			else
+				$editPermission = true;	// default is full permission for everybody
+				
+			if(Yii::app()->user->getName() == 'admin')	// admin override
+				$editPermission = true;
+			
 			$color = Workflow::rgb2hex(
 				$startingRgb[0] + ($rgbSteps[0]*$stage),
 				$startingRgb[1] + ($rgbSteps[1]*$stage),
@@ -211,18 +228,24 @@ class Workflow extends CActiveRecord {
 			$width = round($startingWidth + $widthStep*$stage);
 			
 			$funnelStr .= '<div class="workflow-funnel-stage" style="width:'.$width.'px;background:'.$color.';"><b>'.$workflowStatus[$stage]['name'].'</b></div>';;
-			if(isset($workflowStatus[$stage]['createDate'])) {
-			
-				// check if all stages before this one are complete
-				$previousComplete = true;
-				if($workflowStatus[$stage]['requirePrevious']) {
-					for($i=1; $i<$stage; $i++) {
-						if(!isset($workflowStatus[$i]['complete']) || !$workflowStatus[$i]['complete']) {
-							$previousComplete = false;
-							break;
-						}
+			$statusStr .= '<div class="row"><div class="workflow-funnel-box" style="width:'.($startingWidth+10).'px">'
+				.'<div class="workflow-funnel-stage" style="width:'.$width.'px;background:'.$color.';"><b>'.$workflowStatus[$stage]['name'].'</b></div></div>';
+
+			$previousCheck = true;
+			if($workflowStatus[$stage]['requirePrevious'] == 1) {	// check if all stages before this one are complete
+				for($i=1; $i<$stage; $i++) {
+					if(empty($workflowStatus[$i]['complete'])) {
+						$previousCheck = false;
+						break;
 					}
 				}
+			} else if($workflowStatus[$stage]['requirePrevious'] < 0) {		// or just check if the specified stage is complete
+				if(empty($workflowStatus[ -1*$workflowStatus[$stage]['requirePrevious'] ]['complete']))
+					$previousCheck = false;
+			}
+				
+			if(isset($workflowStatus[$stage]['createDate'])) {
+				
 				// check if this is the last stage to be started or completed
 				$latestStage = true;
 				if($stage < $stageCount) {
@@ -234,18 +257,18 @@ class Workflow extends CActiveRecord {
 					}
 				}
 				
-				// $started = true;
-
 				$statusStr .= '<div class="workflow-status">';
 				if($workflowStatus[$stage]['complete']) {
 					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus[$stage]['completeDate']);
-					$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
+					if($editPermission)
+						$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
 				} else {
-					$started = true;
+					// $started = true;
 					$statusStr .= '<b>'.Yii::t('workflow','Started').' '.date("Y-m-d",$workflowStatus[$stage]['createDate']).'</b>';
 					// if(!$latestStage)
+					if($editPermission)
 						$statusStr .= '<a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
-					if($previousComplete) {
+					if($previousCheck && $editPermission) {
 						if($workflowStatus[$stage]['requireComment'])
 							$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowCommentDialog('.$workflowId.','.$stage.');">['.Yii::t('workflow','Complete').']</a> ';
 						else
@@ -254,18 +277,20 @@ class Workflow extends CActiveRecord {
 				}
 				$statusStr .= '</div>';
 			} else {
-				if(!$started) {
-					$started = true;
-					$statusStr .= '<div class="workflow-status"><a href="javascript:void(0)" class="right" onclick="startWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Start').']</a></div>';
-				}
+				// if(!$started) {
+					// $started = true;
+					if($editPermission && $previousCheck)
+						$statusStr .= '<div class="workflow-status"><a href="javascript:void(0)" class="right" onclick="startWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Start').']</a></div>';
+				// }
 			}
-			
+			$statusStr .= '</div>';
 		}
-		$str = '<div class="row">
-					<div class="cell"><div class="workflow-funnel-box" style="width:'.($startingWidth+10).'px">'.$funnelStr.'</div></div>
-					<div class="cell" style="width:250px;">'.$statusStr.'</div>
-				</div>';
-		return $str;
+		return $statusStr;
+		// $str = '<div class="row">
+					// <div class="cell"><div class="workflow-funnel-box" style="width:'.($startingWidth+10).'px">'.$funnelStr.'</div></div>
+					// <div class="cell" style="width:250px;">'.$statusStr.'</div>
+				// </div>';
+		// return $str;
 	}
 	
 	public static function renderWorkflowStats(&$workflowStatus) {
@@ -312,8 +337,8 @@ class Workflow extends CActiveRecord {
 			$width = round($startingWidth + $widthStep*$i);
 
 			$contacts = CActiveRecord::model('Actions')->countByAttributes(
-				array('type'=>'workflow','actionDescription'=>$workflowStatus[0].':'.$i),
-				new CDbCriteria(array('condition'=>"complete != 'Yes' OR completeDate IS NULL OR completeDate = 0"))
+				array('type'=>'workflow','workflowId'=>$workflowStatus[0],'stageNumber'=>$i),
+				new CDbCriteria(array('condition'=>"complete != 'Yes' AND (completeDate IS NULL OR completeDate = 0)"))
 			);
 			
 			// $sales = CActiveRecord::model('Actions')->countByAttributes(

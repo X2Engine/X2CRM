@@ -63,38 +63,58 @@ class ApplicationConfigBehavior extends CBehavior {
 		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
 
 		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
-		$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-
+		$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk($this->owner->user->getId());
+		
 		// die( var_dump($this->owner->request)); //->getRoute();
-		if(!Yii::app()->user->isGuest) {
-			$session = Session::model()->findByAttributes(array('user'=>Yii::app()->user->getName()));
+		if(!$this->owner->user->isGuest) {
+			$session = Session::model()->findByAttributes(array('user'=>$this->owner->user->getName()));
 			if(isset($session)) {
 				if(time()-$session->lastUpdated > $this->owner->params->admin->timeout) {
 					$session->delete();
-					Yii::app()->user->logout();
+					$this->owner->user->logout();
 				} else {
 					$session->lastUpdated = time();
 					$session->save();
 				}
 			} else {
-				Yii::app()->user->logout();
+				$this->owner->user->logout();
 				// $this->redirect(Yii::app()->controller->createUrl('site/logout'));
 			}
+			if(!is_null($this->owner->user->getId())){
+				$this->owner->params->roles = $this->owner->db->createCommand()	// lookup the user's roles
+						->select('roleId')
+						->from('x2_role_to_user')
+						->where('type="user" AND userId='.$this->owner->user->getId())->queryColumn();
+
+				$this->owner->params->groups = $this->owner->db->createCommand()		// lookup the user's groups
+						->select('groupId')
+						->from('x2_group_to_user')
+						->where('userId='.$this->owner->user->getId())->queryColumn();
+				$groupRoles = array();
+				foreach($this->owner->params->groups as $groupId) {		// lookup roles for all the user's groups
+						$groupRoles += $this->owner->db->createCommand()
+						->select('roleId')
+						->from('x2_role_to_user')
+						->where('type="group" AND userId='.$groupId)->queryColumn();
+				}
+				$this->owner->params->roles = array_unique($this->owner->params->roles + $groupRoles);		// combine all the roles, remove duplicates
+			}
 		}
-                $modules=$this->owner->modules;
-                $arr=array();
-                foreach(scandir('protected/modules') as $module){
-                    if(file_exists("protected/modules/$module/register.php")){
-                        $arr[$module]=ucfirst($module);
-                    }
-                }
-                $menuOrder=explode(":",$this->owner->params->admin->menuOrder);
-                foreach($arr as $key=>$module){
-                    if(array_search($key,$menuOrder)!==false){
-                        $modules[]=$key;
-                    }
-                }
-                $this->owner->setModules($modules);
+		
+		$modules=$this->owner->modules;
+		$arr=array();
+		foreach(scandir('protected/modules') as $module){
+			if(file_exists("protected/modules/$module/register.php")){
+				$arr[$module]=ucfirst($module);
+			}
+		}
+		$menuOrder=explode(":",$this->owner->params->admin->menuOrder);
+		foreach($arr as $key=>$module){
+			if(array_search($key,$menuOrder)!==false){
+				$modules[]=$key;
+			}
+		}
+		$this->owner->setModules($modules);
 		$adminProf = ProfileChild::model()->findByPk(1);
 
 		$this->owner->params->currency = $this->owner->params->admin->currency;

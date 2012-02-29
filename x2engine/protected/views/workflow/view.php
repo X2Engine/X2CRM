@@ -54,22 +54,22 @@ function getStageMembers(stage) {
 ",CClientScript::POS_HEAD);
 $isAdmin = (Yii::app()->user->getName()=='admin');
 $this->menu=array(
-	array('label'=>Yii::t('workflow','List Workflows'), 'url'=>array('index')),
-	array('label'=>Yii::t('workflow','Create Workflow'), 'url'=>array('create'), 'visible'=>$isAdmin),
-	array('label'=>Yii::t('workflow','View Workflow')),
-	array('label'=>Yii::t('workflow','Update Workflow'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
-	array('label'=>Yii::t('workflow','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
+	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('app','View')),
+	array('label'=>Yii::t('app','Update'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('app','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
 );
 ?>
 
 <h2><?php echo Yii::t('workflow','Workflow:'); ?> <b><?php echo $model->name; ?></b></h2>
-
+<div style="clear:both;overflow:auto;margin-bottom:10px;">
 <?php
 
 $workflowStatus = Workflow::getWorkflowStatus($model->id);	// true = include dropdowns
 echo Workflow::renderWorkflowStats($workflowStatus);
 ?>
-<br />
+</div>
 <div id="workflow-gridview">
 <?php
 if(isset($viewStage))

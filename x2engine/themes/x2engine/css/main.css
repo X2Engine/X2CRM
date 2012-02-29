@@ -361,7 +361,7 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 #content {padding:0 45px 20px 45px; }	/* create padding for pages without column2.php layout */
 .span-15 #content {padding:0;}			/* remove padding for column2.php layout */
 #sidebar-left-box {position:relative;height:400px;}
-#sidebar-left {width:140px;padding:0 0 10px 10px;}	/* Left sidebar */
+#sidebar-left {width:140px;padding:0 0 10px 10px;position:relative;}	/* Left sidebar */
 #sidebar-left.fixed{position:fixed;top:5px;}
 #sidebar-right {padding:0 10px 10px 0;}			/* Right sidebar */
 
@@ -630,6 +630,9 @@ div.portlet-minimize a {text-decoration:none;}
 	padding:10px 7px;
 	width:auto;
 }
+div#workflow-diagram .row {
+	overflow:visible;
+}
 div#workflow-stages a{text-decoration:none;}
 a.add-workflow-stage {
 	display:block;
@@ -638,46 +641,106 @@ a.add-workflow-stage {
 }
 div#workflow-stages ol {
 	margin:0;
-	padding:0 15px;
-	list-style-position:inside;
-	border:1px solid #ccc;
-	-moz-border-radius:4px;
-	-o-border-radius:4px;
-	-webkit-border-radius:4px;
-	border-radius:4px;
+	padding:0;
 	margin-bottom:5px;
+
 }
-div#workflow-stages li {border-bottom:1px solid #ccc;padding:5px 0;}
-div#workflow-stages li:last-child {border-bottom:none;}
-div#workflow-stages div.cell {float:none;display:inline-block;}
-div#workflow-stages a.up, div#workflow-stages a.down, div#workflow-stages a.del {
-	display:block;
+div#workflow-stages li {
+	padding:0;
+	list-style-type:none;
+	overflow:auto;
+	border:1px solid #333;
+	border-width:1px 1px 0 1px;
+	background:#fff;
+}
+div#workflow-stages li:first-child {
+	-moz-border-radius:		4px 4px 0 0;
+	-o-border-radius:		4px 4px 0 0;
+	-webkit-border-radius:	4px 4px 0 0;
+	border-radius:			4px 4px 0 0;
+}
+div#workflow-stages li:last-child {
+	border-bottom:1px solid #333;
+	-moz-border-radius:		0 0 4px 4px;
+	-o-border-radius:		0 0 4px 4px;
+	-webkit-border-radius:	0 0 4px 4px;
+	border-radius:			0 0 4px 4px;
+}
+div#workflow-stages li:first-child .handle {
+	-moz-box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.3);
+	-webkit-box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.3);
+	box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.3);
+
+}
+div#workflow-stages li .handle {
 	float:left;
+	width:28px;
+	margin-right:-35px;
+	height:85px;
+	padding:5px 0 0 5px;
+	background:#777; /* 00728f */ 
+	background:-webkit-gradient(linear, left top, right top, from(#777), to(#666));
+	background:-moz-linear-gradient(left,  #777,  #666);
+	-moz-box-shadow: inset 1px 0 0 0 rgba(255,255,255,0.3);
+	-webkit-box-shadow: inset 1px 0 0 0 rgba(255,255,255,0.3);
+	box-shadow: inset 1px 0 0 0 rgba(255,255,255,0.3);
+	color:#fff;
+	text-shadow:rgba(0,0,0,0.5) 0 1px 4px;
+	font-size:16px;
+	font-weight:bold;
+	border:1px solid #333;
+	border-width:0 1px 0 0;
+	cursor:n-resize;
+}
+div#workflow-stages li .handle:hover {
+	background:#888; /* 00728f */ 
+	background:-webkit-gradient(linear, left top, right top, from(#808080), to(#707070));
+	background:-moz-linear-gradient(left,#808080,#707070);
+}
+div#workflow-stages li .handle:active {
+	background:#888; /* 00728f */ 
+	background:-webkit-gradient(linear, left top, right top, from(#555), to(#606060));
+	background:-moz-linear-gradient(left,#555,#606060);
+	text-shadow:rgba(0,0,0,0.5) 0 -1px 4px;
+	-moz-box-shadow: inset 1px 0 0 0 rgba(0,0,0,0.3);
+	-webkit-box-shadow: inset 1px 0 0 0 rgba(0,0,0,0.3);
+	box-shadow: inset 1px 0 0 0 rgba(0,0,0,0.3);
+}
+div#workflow-stages li .content {
+	display:block;
+	width:auto;
+	margin-left:35px;
+	padding-left:5px;
+}
+div#workflow-stages li.ui-sortable-helper {border-bottom:1px solid #333;}
+div#workflow-stages a.del {
+	display:block;
+	float:right;
 	height:20px;
 	width:20px;
+	margin-right:2px;
 	cursor:pointer;
+	background:url(../images/list_delete.png) top left no-repeat;
 }
-
-div#workflow-stages a.up {background:url(../images/list_arrow_up.png) 0px 0px no-repeat;}
-div#workflow-stages a.down {background:url(../images/list_arrow_down.png) 0px 1px no-repeat;}
-div#workflow-stages a.del {background:url(../images/list_delete.png) top left no-repeat;}
 div.workflow-funnel-box {
 	display:block;
+	float:left;
 	overflow:auto;
 	text-align:center;
-	padding-top:1px;
 }
-
+div#workflow-diagram .row:first-child .workflow-funnel-stage {
+	border-top-width:1px;
+}
 div.workflow-funnel-stage {
 	display:block;
 	margin-right:auto;
 	margin-left:auto;
 	text-align:center;
 	border:1px solid #999;
-	margin-top:-1px;
+	border-top-width:0;
 	line-height:20px;
 }
-div.workflow-status {display:block;line-height:20px;height:22px;}
+div.workflow-status {display:block;float:left;line-height:20px;height:22px;width:280px;}
 .workflow-funnel-stage span.name {
 /* 	display:inline-block;
 	width:80px;

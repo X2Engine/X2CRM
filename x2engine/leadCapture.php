@@ -40,19 +40,36 @@
 ?>
 
 <?php
-
-$firstName=$_POST['firstName'];
-$lastName=$_POST['lastName'];
-$email=$_POST['email'];
-$phone=$_POST['phone'];
-$info=$_POST['info'];
-$photourl=$_POST['photourl'];
+if(isset($_POST['firstName']))
+    $firstName=$_POST['firstName'];
+else
+    $firstName="";
+if(isset($_POST['lastName']))
+    $lastName=$_POST['lastName'];
+else
+    $lastName="";
+if(isset($_POST['email']))
+    $email=$_POST['email'];
+else
+    $email="";
+if(isset($_POST['phone']))
+    $phone=$_POST['phone'];
+else
+    $phone="";
+if(isset($_POST['info']))
+    $info=$_POST['info'];
+else
+    $info="";
+if(isset($_POST['photourl']))
+    $photourl=$_POST['photourl'];
+else
+    $photourl="";
 
 if($info=="Enter any additional information or questions regarding your interest here."){
     $info="";
 }
 
-$url="x3engine.com/x2dj/x2engine"; // Add your server URL here, including any folders the app may be in.  
+$url=""; // Add your server URL here, including any folders the app may be in.  
          //i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. Installer should do this manually.
 
 if($url==""){

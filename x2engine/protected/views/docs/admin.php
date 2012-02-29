@@ -150,4 +150,35 @@ $('.search-form form').submit(function(){
 	),
 	'enableControls'=>true,
 )); */
-?>
+?><br />
+<?php
+	$this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'attachments-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<h2>'.Yii::t('docs','Uploaded Documents').'</h2><div class="title-bar">'
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$attachments,
+	'columns'=>array(
+		array(
+			'name'=>'fileName',
+			'value'=>'CHtml::link($data->fileName,array("media/view","id"=>$data->id))',
+			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'30%'),
+		),
+		array(
+			'name'=>'uploadedBy',
+			'value'=>'UserChild::getUserLinks($data->uploadedBy)',
+			'type'=>'raw',
+		),
+		array(
+			'name'=>'createDate',
+			'type'=>'raw',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
+		),
+	),
+)); ?>
+
+
+<div id="attachment-form">
+	<?php $this->widget('Attachments',array('type'=>'docs','associationId'=>$model->id)); ?>
+</div>

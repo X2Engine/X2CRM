@@ -61,10 +61,18 @@ class InlineEmailForm extends CWidget {
 		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n") .
 		"function toggleEmailForm() {
 			setupEmailEditor();
+			
+			if($('#inline-email-form').is(':hidden')) {
+				$('html,body').animate({
+					scrollTop: ($('#action-form').offset().top - 200)
+				}, 300);
+			}
 			$('#inline-email-form').animate({
 				opacity: 'toggle',
 				height: 'toggle'
 			}, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
+			
+			
 		}",CClientScript::POS_HEAD);
 		
 		Yii::app()->clientScript->registerScript('inlineEmailForm',

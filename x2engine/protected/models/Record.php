@@ -40,7 +40,7 @@
 
 class Record {
 
-	public static function convert($records) {
+	public static function convert($records, $whatsNew=true) {
 		$arr=array();
 		$id=1;
 		
@@ -86,7 +86,10 @@ class Record {
 				$temp['id']=$id;
 					$id++;
 				$temp['name']=$record->name;
-				$temp['description']=$record->description;
+                                if(!is_null($record->description))
+                                    $temp['description']=$record->description;
+                                else
+                                    $temp['description']="";
 				
 				$temp['lastUpdated']=$record->lastUpdated;
 				$temp['updatedBy']=$name;
@@ -98,15 +101,24 @@ class Record {
 				elseif ($record instanceof Accounts){
 					$temp['link']='/accounts/'.$record->id;
 					$temp['type']='Account';
-				}
+				}else{
+                                    $temp['link']='/'.strtolower(get_class($record)).'/'.$record->id;
+                                }
 
 				while(isset($arr[$temp['lastUpdated']]))
                                     $temp['lastUpdated']++;
-                                $arr[$temp['lastUpdated']]=$temp;
+                                if($whatsNew)
+                                    $arr[$temp['lastUpdated']]=$temp;
+                                else
+                                    $arr[]=$temp;
 			}
 		}
-                ksort($arr);
-		return array_values(array_reverse($arr));
+                if($whatsNew){
+                    ksort($arr);
+                    return array_values(array_reverse($arr));
+                }else{
+                    return $arr;
+                }
 	}
 }
 

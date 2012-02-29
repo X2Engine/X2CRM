@@ -70,6 +70,15 @@ if(isset($_GET['inline']))
     $inlineForm=$_GET['inline'];
 $action = $inlineForm? array('actions/create','inline'=>1) : null;
 
+if(!isset($showLogACall))
+	$showLogACall = true;
+if(!isset($showNewAction))
+	$showNewAction = true;
+if(!isset($showNewComment))
+	$showNewComment = true;
+if(!isset($showNewEvent))
+	$showNewEvent = true;
+
 if($inlineForm){ ?>
 
 <script>
@@ -77,17 +86,35 @@ if($inlineForm){ ?>
             var tabs=$( "#tabs" ).tabs();
             $("#actions-newCreate-form").submit(function(){
                $("#save-button1").val(tabs.tabs('option', 'selected'));
-           }) 
+               if(tabs.tabs('option', 'selected') == 3) // New Event tab
+               		$("#actions-newCreate-form").append('<input type="hidden" name="inCalendar">'); // tell Actions Controller we are creating an event
+               <?php if(isset($inCalendar)) { ?>
+               		<?php if($inCalendar) { ?>
+               			if(tabs.tabs('option', 'selected') == 1)
+               				$("#actions-newCreate-form").append('<input type="hidden" name="inCalendar">'); // tell Actions Controller we are creating an event
+               			else
+               				$("#save-button1").val(1); // fix for creating action while viewing calendar
+               		<?php } ?>
+               <?php } ?>
+           });
     });
-
 </script>
 
 <div id="tabs">
 	<ul>
 		<li class="publisher-label"><?php echo Yii::t('actions','Publisher'); ?></li>
+		<?php if($showLogACall) { ?>
 		<li><a href="#tabs-1"><?php echo Yii::t('actions','Log A Call'); ?></a></li>
+		<?php } ?>
+		<?php if($showNewAction) { ?>
 		<li><a href="#tabs-2"><?php echo Yii::t('actions','New Action'); ?></a></li>
+		<?php } ?>
+		<?php if($showNewComment) { ?>
 		<li><a href="#tabs-3"><?php echo Yii::t('actions','New Comment'); ?></a></li>
+		<?php } ?>
+		<?php if($showNewEvent) { ?>
+		<li><a href="#tabs-4"><?php echo Yii::t('actions','New Event'); ?></a></li>
+		<?php } ?>
 	</ul>
 <?php
 
@@ -198,9 +225,13 @@ echo $form->errorSummary($actionModel);
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
 		));
 		?>
 		<?php echo $form->error($actionModel,'dueDate'); ?>
+		
+		<?php echo $form->label($actionModel, 'allDay'); ?>
+		<?php echo $form->checkBox($actionModel, 'allDay'); ?>
 	</div>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'priority'); ?>
@@ -209,6 +240,9 @@ echo $form->errorSummary($actionModel);
 			'Medium'=>Yii::t('actions','Medium'),
 			'High'=>Yii::t('actions','High')));
 		//echo $form->error($actionModel,'priority'); ?>
+		
+		<?php echo $form->label($actionModel, 'color'); ?>
+		<?php echo $form->dropDownList($actionModel, 'color', Actions::getColors()); ?>
 	</div>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'assignedTo'); ?>
@@ -269,6 +303,128 @@ echo $form->errorSummary($actionModel);
 <div id="tabs-3">
 
 </div>
+
+<?php if($inlineForm) { ?>
+<div id="tabs-4">
+<?php
+$event = new CalendarEvent;
+$event->associationType = $actionModel->associationType;
+$event->associationId = $actionModel->associationId;
+$event->type = 'event';
+$event->assignedTo = $actionModel->assignedTo;
+?>
+
+	<div class="cell">
+		<?php echo $form->hiddenField($event,'associationType'); ?>
+		<?php echo $form->hiddenField($event,'associationId'); ?>
+		<?php echo $form->hiddenField($event, 'type'); ?>
+		<?php echo $form->label($event,'startDate');
+		if(isset($this->controller)) // inline action?
+		    $event->dueDate = $this->controller->formatDateTime(time());	//default to tomorow for new actions
+		else
+		    $event->dueDate = $this->formatDateTime(time());	//default to tomorow for new actions
+
+		Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+		$this->widget('CJuiDateTimePicker',array(
+			'model'=>$event, //Model object
+			'attribute'=>'dueDate', //attribute name
+			'mode'=>'datetime', //use "time","date" or "datetime" (default)
+			'options'=>array(
+				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
+			), // jquery plugin options
+			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
+		));
+		?>
+		<?php echo $form->error($event,'dueDate'); ?>
+		
+		<?php echo $form->label($event,'endDate');
+
+		Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+		$this->widget('CJuiDateTimePicker',array(
+			'model'=>$event, //Model object
+			'attribute'=>'completeDate', //attribute name
+			'mode'=>'datetime', //use "time","date" or "datetime" (default)
+			'options'=>array(
+				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
+			), // jquery plugin options
+			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
+		));
+		?>
+		
+		<?php echo $form->error($event,'completeDate'); ?>
+		
+		<?php echo $form->label($event, 'allDay'); ?>
+		<?php echo $form->checkBox($event, 'allDay'); ?>
+	</div>
+	<div class="cell">
+		<?php echo $form->label($event,'priority'); ?>
+		<?php echo $form->dropDownList($event,'priority',array(
+			'Low'=>Yii::t('actions','Low'),
+			'Medium'=>Yii::t('actions','Medium'),
+			'High'=>Yii::t('actions','High')));
+		//echo $form->error($actionModel,'priority'); ?>
+		
+		<?php echo $form->label($event, 'color'); ?>
+		<?php echo $form->dropDownList($event, 'color', Actions::getColors()); ?>
+	</div>
+	<div class="cell">
+		<?php echo $form->label($event,'assignedTo'); ?>
+		<?php echo $form->dropDownList($event,'assignedTo',$users,array('id'=>'actionsAssignedToDropdown')); ?>
+		<?php //echo $form->error($actionModel,'assignedTo'); ?>
+            <?php /* x2temp */
+                            echo "<br />";
+                            if($this instanceof ActionsController){
+                                $url=$this->createUrl('groups/getGroups');
+                            }else{
+                                $url=$this->controller->createUrl('groups/getGroups');
+                            }
+                            echo "<label>Group?</label>";
+                            echo CHtml::checkBox('group','',array(
+                                'id'=>'eventGroupCheckbox',
+                                'ajax'=>array(
+                                    'type'=>'POST', //request type
+                                        'url'=>$url, //url to call.
+                                        //Style: CController::createUrl('currentController/methodToCall')
+                                        'update'=>'#actionsAssignedToDropdown', //selector to update
+                                        'complete'=>'function(){
+                                            if($("#groupCheckbox").attr("checked")!="checked"){
+                                                $("#groupCheckbox").attr("checked","checked");
+                                                $("#Actions_visibility option[value=\'2\']").remove();
+                                            }else{
+                                                $("#groupCheckbox").removeAttr("checked");
+                                                $("#Actions_visibility").append(
+                                                    $("<option></option>").val("2").html("User\'s Groups")
+                                                );
+                                            }
+                                        }'
+                                )
+                            ));
+                        /* end x2temp */ ?>
+	</div>
+        
+	<div class="cell">
+		<?php echo $form->label($event,'visibility'); ?>
+                <?php
+                    $visibility=array(1=>Yii::t('actions','Public'),0=>Yii::t('actions','Private'));
+                    /* x2temp */
+                    $visibility[2]='User\'s Groups';
+                    /* end x2temp */
+                    ?>
+		<?php echo $form->dropDownList($event,'visibility',$visibility); ?> 
+		<?php //echo $form->error($actionModel,'visibility'); ?>
+	</div>
+	<div class="cell">
+		<?php echo $form->label($event,'reminder'); ?>
+		<?php //echo $form->checkBox($actionModel,'reminder',array('value'=>'Yes','uncheckedValue'=>'No')); ?>
+		<?php echo $form->dropDownList($event,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?> 
+	</div>
+	
+</div>
+
+<?php } ?>
+
 </div>
 </div>
 <?php

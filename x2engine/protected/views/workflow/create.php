@@ -38,17 +38,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->breadcrumbs=array(
-	'Workflows'=>array('index'),
-	'Create',
-);
+// $this->breadcrumbs=array(
+	// 'Workflows'=>array('index'),
+	// 'Create',
+// );
 
 $this->menu=array(
-	array('label'=>Yii::t('workflow','List Workflows'), 'url'=>array('index')),
-	array('label'=>Yii::t('workflow','Create Workflows')),
+	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
+	array('label'=>Yii::t('app','Create')),
 );
 ?>
 
 <h2><?php echo Yii::t('workflow','Create Workflow'); ?></h2>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model,'stages'=>$stages)); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

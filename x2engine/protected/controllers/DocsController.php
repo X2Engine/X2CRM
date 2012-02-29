@@ -300,8 +300,30 @@ class DocsController extends x2base {
 	public function actionAdmin()
 	{
 		$model=new DocChild('search');
-		$name='DocChild';
-		parent::admin($model,$name);
+		$name="Docs";
+                
+                $attachments=new CActiveDataProvider('Media',array(
+                    'criteria'=>array(
+				'order'=>'createDate DESC',
+				'condition'=>'associationType="docs"'
+		)));
+                
+		$pageParam = ucfirst($this->modelClass). '_page';
+		if (isset($_GET[$pageParam])) {
+			$page = $_GET[$pageParam];
+			Yii::app()->user->setState($this->id.'-page',(int)$page);
+		} else {
+			$page=Yii::app()->user->getState($this->id.'-page',1);
+			$_GET[$pageParam] = $page;
+		}
+
+		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
+		}
+			$this->render('admin',array(
+			'model'=>$model,
+                        'attachments'=>$attachments,
+		));
 	}
 
 	/**

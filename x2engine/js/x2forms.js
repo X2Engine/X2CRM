@@ -110,7 +110,13 @@ function submitForm(formName) {
 	document.forms[formName].submit();
 }
 function toggleForm(formName,duration) {
+	if($(formName).is(':hidden')) {
+		$('html,body').animate({
+			scrollTop: ($('#action-form').offset().top-200)
+		}, 300);
+	}
 	$(formName).toggle('blind',{},duration);
+	
 }
 function hide(field) {
 	$(field).hide(); //field.style.display="none";

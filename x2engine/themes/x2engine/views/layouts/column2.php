@@ -41,20 +41,34 @@
 $this->beginContent('/layouts/main');
 $themeURL = Yii::app()->theme->getBaseUrl();
 Yii::app()->clientScript->registerScript('menuScroling',"
-
 if ($.browser != 'msie' || $.browser.version > 6) {
 	var sidebarMenu = $('#sidebar-left');
-	var top = sidebarMenu.offset().top - 5;
+	var sidebarTop = sidebarMenu.parent().offset().top - 5;
+	var pageContainer = $('#page').find('.container:first');
+	var hasScrolled = false;
+	
+	sidebarMenu.parent().height(sidebarMenu.height());
+	
 	$(window).scroll(function(event) {
-		if ($(this).scrollTop() >= top) {
-			sidebarMenu.addClass('fixed');
+		if ($(this).scrollTop() >= sidebarTop) {
+
+			if($(this).scrollTop() + 5 + sidebarMenu.height() > pageContainer.offset().top + pageContainer.height()) {
+				if(!hasScrolled)
+					sidebarMenu.addClass('fixed').css('top','');
+					
+				if(sidebarMenu.hasClass('fixed'))
+					sidebarMenu.css('top',(pageContainer.height()-sidebarMenu.height())+'px').removeClass('fixed');
+					
+			} else {
+				sidebarMenu.addClass('fixed').css('top','');
+			}
 		} else {
 			sidebarMenu.removeClass('fixed');
 		}
+		hasScrolled = true;
 	});
+	// $(window).scroll();
 }
-
-
 ",CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('logos',"
 $(window).load(function(){
@@ -91,10 +105,27 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					$this->widget('zii.widgets.CMenu',array('items'=>$this->actionMenu));
 					$this->endWidget();
 				}
+				if(isset($this->calendarUsers)) {
+					$this->beginWidget('zii.widgets.CPortlet',
+						array(
+							'title'=>Yii::t('calendar', 'Calendars'),
+							'id'=>'calendar-users',
+						)
+					);
+					foreach($this->calendarUsers as $userName=>$user) {
+						// checkbox for each user; current user and Anyone are set to checked
+						echo CHtml::checkBox($userName, (($userName == Yii::app()->user->name || $userName == '')? true: false),
+							array(
+								'onChange'=>"toggleCalendarSource(this.name, this.checked);", // add or remove user's actions to calendar if checked/unchecked
+							)
+						);
+						echo $user . "<br />\n";
+					}
+					$this->endWidget();
+				}
 				$this->widget('TopContacts',array(
 					'id'=>'top-contacts'
 				));
-
 				$this->widget('RecentItems',array(
 					'currentAction'=>$this->getAction()->getId(),
 					'id'=>'recent-items'

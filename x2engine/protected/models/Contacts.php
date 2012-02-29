@@ -75,6 +75,15 @@
  * @property string $newField
  */
 class Contacts extends CActiveRecord {
+
+	private $_fields;
+
+	public function init() {
+		$this->_fields = Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="Contacts"')->queryAll();
+	}
+	
+	
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Contacts the static model class
@@ -94,6 +103,56 @@ class Contacts extends CActiveRecord {
 	 * @return array validation rules for model attributes.
 	 */
 	public function rules() {
+			// varchar	
+			// text
+			// date
+			// dropdown
+			// int	
+			// email
+			// currency
+			// url
+			// float
+			// boolean
+			// required
+		// $validators = array( );
+		
+		// foreach( $this->fields as &$field ) {
+		
+			// switch( $field['type'] ) {
+				// case 'varchar':
+				// case 'text':
+				// case 'url':
+				// case 'currency':
+				// case 'dropdown':
+					// $validators['safe'][] = $field['fieldName'];	// these field types have no rules, but still need to be allowed
+					// break;
+				// case 'date':
+					// $validators['int'][] = $field['fieldName'];		// date is actually an int
+					// break;
+				// default:
+					// $validators[ $field['type'] ][] = $field['fieldName'];		// otherwise use the type as the validator name
+			// }
+			
+			// if( $field['required'] )
+				// $validators['required'][] = $field['fieldName'];
+		// }
+			
+		
+		
+		// $rules =  array(
+			// array( implode( ',', $validators['required']), 'required' ),
+			// array( implode( ',', $validators['email']), 'email' ),
+			// array( implode( ',', array_merge($validators['int'],$validators['date']) ), 'numerical', 'integerOnly'=>true ),
+			// array( implode( ',', $validators['float']), 'numerical' ),
+			// array( implode( ',', $validators['boolean']), 'boolean' ),
+			// array( implode( ',', $validators['safe']), 'safe' ),
+		// );
+
+		// return $rules;
+		
+		
+		
+		// old version
 		$fields = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
 		$arr=array(
 			'varchar'=>array(),
@@ -114,7 +173,10 @@ class Contacts extends CActiveRecord {
 			$arr[$field->type][]=$field->fieldName;
 			if($field->required)
 				$arr['required'][]=$field->fieldName;
+                        if($field->type!='date')
+                            $arr['search'][]=$field->fieldName;
 		}
+                $arr['search'][]='name';
 		foreach($arr as $key=>$array){
 			switch($key){
 				case 'email':
@@ -123,6 +185,9 @@ class Contacts extends CActiveRecord {
 				case 'required':
 					$rules[]=array(implode(',',$array),$key);
 					break;
+                                case 'search':
+                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
+                                        break;
 				case 'int':
 					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
 					break;
@@ -139,34 +204,15 @@ class Contacts extends CActiveRecord {
 			
 		} 
 		return $rules;
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-                /*
-		return array(
-			array('firstName, lastName, visibility', 'required'),
-			array('accountId, visibility, rating, createDate', 'numerical', 'integerOnly'=>true),
-			array('email','email'),
-			array('firstName, lastName, title, phone, phone2, city, state, country, priority, leadSource', 'length', 'max'=>40),
-			array('company, email, website, address, linkedin, googleplus, facebook, otherUrl', 'length', 'max'=>100),
-			array('zipcode, assignedTo, twitter, updatedBy', 'length', 'max'=>20),
-			array('skype', 'length', 'max'=>32),
-			array('lastUpdated', 'length', 'max'=>30),
-			array('backgroundInfo', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, firstName, lastName, title, company, accountId, phone, phone2, email, website, address, city, state, zipcode, country, visibility, assignedTo, backgroundInfo, twitter, linkedin, skype, googleplus, lastUpdated, updatedBy, priority, leadSource, rating, createDate, facebook, otherUrl', 'safe', 'on'=>'search'),
-		);*/
 	}
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-		return array(
-		);
+		return array();
 	}
 
 	/**
@@ -174,14 +220,13 @@ class Contacts extends CActiveRecord {
 	 */
 	
 	public function attributeLabels() {
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('contacts',$field->attributeLabel);
-                }
-                
-                return $arr;
-                
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+		$arr=array();
+		foreach($fields as $field){
+			$arr[$field->fieldName]=Yii::t('contacts',$field->attributeLabel);
+		}
+		
+		return $arr;
 	}
         public static function getNames() {
 		$contactArray = Contacts::model()->findAll($condition='assignedTo=\''.Yii::app()->user->getName().'\' OR assignedTo=\'Anyone\'');
@@ -199,6 +244,12 @@ class Contacts extends CActiveRecord {
 	public function getName() {
 		return $this->firstName.' '.$this->lastName;
 	}
+        
+        public function setName($name){
+            $name=trim($name);
+            $this->name=$name;
+            
+        }
 	
 	public function behaviors() {
 		return array(
@@ -460,41 +511,28 @@ class Contacts extends CActiveRecord {
 	
 	
 	public function searchBase($criteria) {
-		// $criteria->compare('id',$this->id);
-		$criteria->compare('firstName',$this->firstName,true);
-		$criteria->compare('lastName',$this->lastName,true);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('company',$this->company,true);
-		$criteria->compare('phone',$this->phone,true);
-		$criteria->compare('phone2',$this->phone2,true);
-		$criteria->compare('email',$this->email,true);
-		$criteria->compare('website',$this->website,true);
-		$criteria->compare('address',$this->address,true);
-		$criteria->compare('city',$this->city,true);
-		$criteria->compare('state',$this->state,true);
-		$criteria->compare('zipcode',$this->zipcode,true);
-		$criteria->compare('country',$this->country,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		$criteria->compare('backgroundInfo',$this->backgroundInfo,true);
-		$criteria->compare('twitter',$this->twitter,true);
-		$criteria->compare('linkedin',$this->linkedin,true);
-		$criteria->compare('skype',$this->skype,true);
-		$criteria->compare('googleplus',$this->googleplus,true);
-		// $criteria->compare('lastUpdated',$this->lastUpdated,true);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('leadSource',$this->leadSource,true);
-		$criteria->compare('rating',$this->rating);
-		//$criteria->compare('createDate',$this->createDate);
 		
-		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
-		if($dateRange !== false)
-			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
-			
-		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
-		if($dateRange !== false)
-			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+                foreach($fields as $field){
+                    $fieldName=$field->fieldName;
+                    switch($field->type){
+                        case 'boolean':
+                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+                            break;
+                        case 'link':
+                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+                            break;
+                        case 'assignment':
+                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+                            break;
+                        default:
+                            $criteria->compare($field->fieldName,$this->$fieldName,true);
+                    }
+                    
+                }
+                
+                $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
+
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
@@ -506,6 +544,56 @@ class Contacts extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
+        
+        private function compareLookup($field, $data){
+            if(is_null($data) || $data=="") return null; 
+            $type=ucfirst($field->linkType);
+            if($type=='Contacts'){
+                eval("\$lookupModel=$type::model()->findAllBySql('SELECT * FROM x2_$field->linkType WHERE CONCAT(firstName,\' \', lastName) LIKE \'%$data%\'');");
+            }else{
+                eval("\$lookupModel=$type::model()->findAllBySql('SELECT * FROM x2_$field->linkType WHERE name LIKE \'%$data%\'');");
+            }
+            if(isset($lookupModel) && count($lookupModel)>0){
+                $arr=array();
+                foreach($lookupModel as $model){
+                    $arr[]=$model->id;
+                }
+                return $arr;
+            }else
+                return -1;
+        }
+        
+        private function compareBoolean($data){
+            if(is_null($data) || $data=='') return null;
+            if(is_numeric($data)) return $data;
+            if($data==Yii::t('actions',"Yes"))
+                return 1;
+            elseif($data==Yii::t('actions',"No"))
+                return 0;
+            else
+                return -1;
+        }
+        
+        private function compareAssignment($data){
+            if(is_null($data)) return null;
+            if(is_numeric($data)){
+                $models=Groups::model()->findAllBySql("SELECT * FROM x2_groups WHERE name LIKE '%$data%'");
+                $arr=array();
+                foreach($models as $model){
+                    $arr[]=$model->id;
+                }
+                return count($arr)>0?$arr:-1;
+            }else{
+                $models=UserChild::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
+                $arr=array();
+                foreach($models as $model){
+                    $arr[]=$model->username;
+                }
+                return count($arr)>0?$arr:-1;
+            }
+        }
+        
+        
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

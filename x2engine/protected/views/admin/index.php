@@ -55,7 +55,7 @@ if($admin->updateInterval == -1)
 if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time())) {
 	echo '<span style="color:red;">';
 	echo Yii::t('app','A new version is available! Click here to update to version {version}',array(
-		'{version}'=>Yii::app()->session['newVersion'].' '.CHtml::link(Yii::t('app','Update'),Yii::app()->getBaseUrl().'/updater.php',array('class'=>'x2-button'))
+		'{version}'=>Yii::app()->session['newVersion'].' '.CHtml::link(Yii::t('app','Update'),'updater',array('class'=>'x2-button'))
 		));
 	echo "</span>\n";
 }

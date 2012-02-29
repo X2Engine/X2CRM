@@ -100,7 +100,7 @@ if(!empty($model->status)) {
 	echo '</div>';
 }
 ?>
-<div class="wide form">
+<div class="wide form" style="box-shadow:0 0 4px 2px #579100;border-color:#579100;">
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'enableAjaxValidation'=>false,
 		'method'=>'post',

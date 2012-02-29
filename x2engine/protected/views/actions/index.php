@@ -129,7 +129,7 @@ $this->widget('application.components.X2GridView', array(
 	'specialColumns'=>array(
 		'actionDescription'=>array(
 			'name'=>'actionDescription',
-			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : trimText($data->actionDescription),array("view","id"=>$data->id))',
+			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : CHtml::encode(trimText($data->actionDescription)),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		'associationName'=>array(

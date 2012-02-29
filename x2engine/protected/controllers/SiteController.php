@@ -694,7 +694,7 @@ class SiteController extends x2base {
 		if(isset($_POST['LoginForm'])) {
 			$model->attributes = $_POST['LoginForm'];
 			$ip = $this->getRealIp();
-			
+			x2base::cleanUpSessions();
 			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
 			if(isset($session)) {
 				$session->lastUpdated = time();
@@ -755,7 +755,7 @@ class SiteController extends x2base {
 								$newVersion=Yii::app()->params->version;
 						} */
 						
-						if(strcmp($newVersion,Yii::app()->params->version) > 1) {	// if the latest version is newer than our version
+						if(version_compare($newVersion,Yii::app()->params->version) > 1) {	// if the latest version is newer than our version
 							Yii::app()->session['versionCheck']=false;
 							Yii::app()->session['newVersion']=$newVersion;
 						}
@@ -768,6 +768,7 @@ class SiteController extends x2base {
 					Yii::app()->session['versionCheck']=true;
 					
 				Yii::app()->session['loginTime']=time();
+                                $session->status=1;
 				$session->save();
 
 				if(Yii::app()->user->returnUrl=='site/index')

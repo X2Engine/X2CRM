@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -70,41 +70,41 @@ function trimText($text) {
 )); ?>
 </div><!-- search-form -->
 <?php 
-	$this->widget('zii.widgets.grid.CGridView', array(
+
+$this->widget('application.components.X2GridView', array(
 	'id'=>'templates-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.$moduleConfig['title'].'</h2><div class="title-bar">'
+	'template'=> '<h2>Templates</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
+		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
 	'filter'=>$model,
-	'columns'=>array(
-		array(
+	// 'columns'=>$columns,
+	'modelName'=>'Templates',
+	'viewName'=>'templates',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>257,
+		'description'=>132,
+		'assignedTo'=>105,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
 			'name'=>'name',
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
-		array(
+		'description'=>array(
 			'name'=>'description',
 			'header'=>Yii::t('templates','Description'),
 			'value'=>'trimText($data->description)',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
 		),
-		array(
-			'name'=>'assignedTo',
-			'value'=>'$data->assignedTo==""?"Anyone":$data->assignedTo',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'createDate',
-			'value'=>'date("Y-m-d",$data->createDate)',
-			'type'=>'raw',
-		),
-		/*
-		'leadSource',
-		'notes',
-		*/
 	),
-)); ?>
+	'enableControls'=>true,
+));
+ ?>

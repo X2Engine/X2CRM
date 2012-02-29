@@ -73,8 +73,7 @@ function completeWorkflowStage(workflowId,stageNumber) {
 function workflowCommentDialog(workflowId,stageNumber) {
 	$('#workflowCommentWorkflowId').val(workflowId);
 	$('#workflowCommentStageNumber').val(stageNumber);
-	
-	// $('#workflowCommentSubmit').bind('click',function() { completeWorkflowStageComment(); });
+
 	$('#workflowComment').css('border','1px solid black');
 	$('#workflowComment').val('')
 	$('#workflowDialog').dialog('open');
@@ -90,12 +89,11 @@ function completeWorkflowStageComment() {
 			type: 'GET',
 			data: 'workflowId='+$('#workflowCommentWorkflowId').val()+'&stageNumber='+$('#workflowCommentStageNumber').val()+'&modelId=".$model->id."&type=contacts&comment='+encodeURI(comment),
 			success: function(response) {
-				if(response!='')
-					$('#workflow-diagram').html(response);
+				if(response=='') return;
+				$('#workflow-diagram').html(response);
 				updateHistory();
 			}
 		});
-		// $('#workflowCommentSubmit').unbind('click');
 		$('#workflowDialog').dialog('close');
 	}
 }
@@ -152,10 +150,8 @@ foreach($groups as $link) {
 /* end x2temp */
 
 $fields = array();
-$fieldModels = Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName)));
-foreach($fieldModels as &$fieldModel)
+foreach(Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
 	$fields[$fieldModel->fieldName] = $fieldModel;
-unset($fieldModel);
 
 $layoutData = json_decode($layout->layout,true);
 $formSettings = ProfileChild::getFormSettings($modelName);
@@ -200,7 +196,6 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 								
 									if(isset($fields[$fieldName])) {
 										$field = $fields[$fieldName];
-										$field = $fields[$fieldName];
 										$fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
 										$perms=array();
 										foreach($fieldPerms as $permission){
@@ -232,8 +227,8 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
 											
 										$style = 'width:'.$item['width'].'px;';
-										if($field->type == 'text')
-											$style .= 'height:'.$item['height'].'px;';
+										// if($field->type == 'text')
+											// $style .= 'height:'.$item['height'].'px;';
 										echo '<div class="formInputBox" style="'.$style.'">';
 										if($field->type == 'date') {
 											echo $this->formatLongDate($model->$fieldName).'&nbsp;';
@@ -269,22 +264,28 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												$mailtoLabel = isset($model->name)? '"'.$model->name.'" <'.$model->$fieldName.'>' : $model->$fieldName;
 												echo CHtml::mailto($model->$fieldName,$mailtoLabel);
 											}
-										}elseif($field->type=='url'){
-                                                                                    if($field->linkType!="" && $model->$fieldName!=""){
-                                                                                        switch($field->linkType){
-                                                                                            case 'skype':
-                                                                                                $temp="<a href='callto:".$model->$fieldName."'>".$model->$fieldName."</a>";
-                                                                                                break;
-                                                                                            case 'googleplus':
-                                                                                                $temp="plus.google.com/".$model->$fieldName;
-                                                                                                break;
-                                                                                            default:
-                                                                                                $temp="www.$field->linkType.com/".$model->$fieldName;
-                                                                                        }
-                                                                                    }else{
-                                                                                        $temp=$model->$fieldName;
-                                                                                    }
-											$text = trim(preg_replace(
+										}elseif($field->type=='url') {
+											if(empty($model->$fieldName)) {
+												$text = '&nbsp;';
+											} elseif(!empty($field->linkType)) {
+												switch($field->linkType) {
+													case 'skype':
+														$text = '<a href="callto:'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
+														break;
+													case 'googleplus':
+														$text = '<a href="http://plus.google.com/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
+														break;
+													case 'twitter':
+														$text = '<a href="http://www.twitter.com/#!/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
+														break;
+													case 'linkedin':
+														$text = '<a href="http://www.linkedin.com/in/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
+														break;
+													default:
+														$text = '<a href="http://www.'.$field->linkType.'.com/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
+												}
+											} else {
+												$text = trim(preg_replace(
 													array(
 														'/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/iex',
 														'/<a([^>]*)target="?[^"\']+"?/i',
@@ -297,16 +298,16 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 														'<a\\1 target="_blank">',
 														"stripslashes((strlen('\\2')>0?'\\1<a href=\"http://\\2\" target=\"_blank\">".Yii::t($modelName,$field->attributeLabel)."</a>\\3':'\\0'))",
 													),
-													$temp
-											));
-                                                                                    
-											echo empty($text)? '&nbsp;' : $text;
+													$model->$fieldName
+												));
+											}
+											echo $text;
 										}elseif($field->type=='link') {
 											if(!empty($model->$fieldName) && is_numeric($model->$fieldName)){
 												$type=ucfirst($field->linkType);
-                                                                                                eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
-                                                                                                if(isset($lookupModel))
-                                                                                                    eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/".$model->$fieldName."'),array('target'=>'_blank'));");
+												eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
+												if(isset($lookupModel))
+													eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/".$model->$fieldName."'),array('target'=>'_blank'));");
 											}elseif(!empty($model->$fieldName)){
 												echo $model->$fieldName;
 											}else{
@@ -324,7 +325,9 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												echo '&nbsp;';
 										} elseif($field->type == 'dropdown') {
 											echo empty($model->$fieldName)? '&nbsp;' : Yii::t(strtolower(Yii::app()->controller->id),$model->$fieldName);
-										} else {
+										} elseif($field->type=='text'){
+                                                                                        echo empty($model->$fieldName)? '&nbsp;' : $this->convertUrls($model->$fieldName);     
+                                                                                }else{
 											echo empty($model->$fieldName)? '&nbsp;' : $model->$fieldName;
 										}
 									}

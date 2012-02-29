@@ -105,38 +105,44 @@ class Actions extends CActiveRecord
                     'required'=>array(),
                     
                 );
-                $return=array();
+                $rules=array();
                 foreach($fields as $field){
-                    $arr[$field->type][]=$field->fieldName;
-                    if($field->required) {
-						if(!($field->fieldName == 'actionDescription' && $this->scenario == 'workflow'))
-							$arr['required'][]=$field->fieldName;
-					}
-                }
-                foreach($arr as $key=>$array){
-                    switch($key){
-                        case 'email':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        case 'required':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        case 'int':
-                            $return[]=array(implode(", ",$array),'numerical','integerOnly'=>true);
-                            break;
-                        case 'float':
-                            $return[]=array(implode(", ",$array),'type','type'=>'float');
-                            break;
-                        case 'boolean':
-                            $return[]=array(implode(", ",$array),$key);
-                            break;
-                        default:
-                            break;
-                        
-                    }
-                    
-                } 
-                return $return;
+			$arr[$field->type][]=$field->fieldName;
+			if($field->required) {
+                        if(!($field->fieldName == 'actionDescription' && $this->scenario == 'workflow'))
+                                $arr['required'][]=$field->fieldName;
+                        }
+                        if($field->type!='date')
+                            $arr['search'][]=$field->fieldName;
+		}
+                $arr['search'][]='name';
+		foreach($arr as $key=>$array){
+			switch($key){
+				case 'email':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				case 'required':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+                                case 'search':
+                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
+                                        break;
+				case 'int':
+					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
+					break;
+				case 'float':
+					$rules[]=array(implode(',',$array),'type','type'=>'float');
+					break;
+				case 'boolean':
+					$rules[]=array(implode(',',$array),$key);
+					break;
+				default:
+					break;
+				
+			}
+			
+		}  
+                return $rules;
 		/*return array(
 			array('actionDescription, visibility, associationId', 'required', 'on'=>'insert'),
 			array('visibility, associationId', 'required', 'on'=>'workflow'),
@@ -173,6 +179,19 @@ class Actions extends CActiveRecord
 			$arr[$field->fieldName] = Yii::t('actions',$field->attributeLabel);
 		
 		return $arr;
+	}
+	
+	/**
+	 * return an array of possible colors for an action
+	 */
+	public static function getColors() {
+		return array(
+		    '#3366CC'=>Yii::t('actions', 'Blue'),
+		    'Green'=>Yii::t('actions', 'Green'),
+		    'Red'=>Yii::t('actions', 'Red'),
+		    'Orange'=>Yii::t('actions', 'Orange'),
+		    'Black'=>Yii::t('actions', 'Black'),
+		);
 	}
 
 
@@ -326,33 +345,24 @@ class Actions extends CActiveRecord
 	
 	private function searchBase($criteria) {
 		
-		//$criteria->compare('id',$this->id);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		//$criteria->compare('actionDescription',$this->actionDescription,true);
-		//$criteria->compare('visibility',$this->visibility);
-		//$criteria->compare('associationId',$this->associationId);
-		//$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationName',$this->associationName,true);
-		// $criteria->compare('dueDate',$this->dueDate,true);
-		$criteria->compare('priority',$this->priority,true);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('complete',$this->complete,true);
-		// $criteria->compare('reminder',$this->reminder,true);
-		// $criteria->compare('completedBy',$this->completedBy,true);
-		// $criteria->compare('completeDate',$this->completeDate,true);
-
-		$dateRange = Yii::app()->controller->partialDateRange($this->dueDate);
-		if($dateRange !== false)
-			$criteria->addCondition('dueDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
-		
-		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
-		if($dateRange !== false)
-			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
-			
-		$dateRange = Yii::app()->controller->partialDateRange($this->completeDate);
-		if($dateRange !== false)
-			$criteria->addCondition('completeDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
+                foreach($fields as $field){
+                    $fieldName=$field->fieldName;
+                    switch($field->type){
+                        case 'boolean':
+                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+                            break;
+                        case 'link':
+                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+                            break;
+                        case 'assignment':
+                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+                            break;
+                        default:
+                            $criteria->compare($field->fieldName,$this->$fieldName,true);
+                    }
+                    
+                }
 		
 		$criteria->addCondition('type != "workflow" OR type IS NULL');
 		
@@ -369,4 +379,51 @@ class Actions extends CActiveRecord
 	
 		return $dataProvider;
 	}
+        private function compareLookup($field, $data){
+            if(is_null($data) || $data=="") return null; 
+            $type=ucfirst($field->linkType);
+            if($type=='Contacts'){
+                eval("\$lookupModel=$type::model()->findAllBySql('SELECT * FROM x2_$field->linkType WHERE CONCAT(firstName,\' \', lastName) LIKE \'%$data%\'');");
+            }else{
+                eval("\$lookupModel=$type::model()->findAllBySql('SELECT * FROM x2_$field->linkType WHERE name LIKE \'%$data%\'');");
+            }
+            if(isset($lookupModel) && count($lookupModel)>0){
+                $arr=array();
+                foreach($lookupModel as $model){
+                    $arr[]=$model->id;
+                }
+                return $arr;
+            }else
+                return -1;
+        }
+        
+        private function compareBoolean($data){
+            if(is_null($data) || $data=='') return null;
+            if(is_numeric($data)) return $data;
+            if($data==Yii::t('actions',"Yes"))
+                return 1;
+            elseif($data==Yii::t('actions',"No"))
+                return 0;
+            else
+                return -1;
+        }
+        
+        private function compareAssignment($data){
+            if(is_null($data)) return null;
+            if(is_numeric($data)){
+                $models=Groups::model()->findAllBySql("SELECT * FROM x2_groups WHERE name LIKE '%$data%'");
+                $arr=array();
+                foreach($models as $model){
+                    $arr[]=$model->id;
+                }
+                return count($arr)>0?$arr:-1;
+            }else{
+                $models=UserChild::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
+                $arr=array();
+                foreach($models as $model){
+                    $arr[]=$model->username;
+                }
+                return count($arr)>0?$arr:-1;
+            }
+        }
 }

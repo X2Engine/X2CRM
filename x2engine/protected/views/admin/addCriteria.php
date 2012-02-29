@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -51,24 +51,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 			'name'=>'modelValue',
 			'header'=>Yii::t('admin','Condition'),
-			'value'=>'$data->modelType." ".$data->modelField." ".$data->comparisonOperator." ".$data->modelValue',
+			'value'=>'"When a(n) ".substr($data->modelType,0,-1)."\'s ".$data->modelField." is ".
+                            (($data->comparisonOperator=="change")?"changed":$data->comparisonOperator)
+                            ." ".$data->modelValue.", ".
+                            (($data->type==\'notification\')?"notify":($data->type=="action"?"create an action for":($data->type=="assignment"?"assign to":"")))
+                            ." ".UserChild::getUserLinks($data->users)',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'80%'),
-		),
-                array(
-
-			'name'=>'users',
-			'header'=>Yii::t('admin','Users'),
-			'value'=>'UserChild::getUserLinks($data->users)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'80%'),
-		),
-                array(
-
-			'name'=>'type',
-			'header'=>Yii::t('admin','Type'),
-			'value'=>'ucfirst($data->type)',
-			'type'=>'raw',
 		),
                 array(
 
