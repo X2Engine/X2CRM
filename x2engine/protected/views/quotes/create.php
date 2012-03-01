@@ -57,7 +57,6 @@ echo $this->renderPartial('application.components.views._form',
 		'model'=>$model,
 		'form'=>$form,
 		'users'=>$users,
-		'contacts'=>$contacts,
 		'modelName'=>'quotes',
 		'isQuickCreate'=>true, // let us create the CActiveForm in this file
 	)

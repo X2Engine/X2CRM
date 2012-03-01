@@ -971,7 +971,7 @@ mysql_query('INSERT INTO x2_fields
 ("Quotes",		"description",			"Notes",				0,	0,	"text",			0,	NULL),
 ("Quotes",		"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	""),
 ("Quotes",		"createDate",			"Create Date",			0,	0,	"date",			0,	NULL),
-("Quotes",		"associatedContacts",	"Contacts",				0,	0,	"association",	0,	"multiple"),
+("Quotes",		"associatedContacts",	"Contacts",				0,	0,	"link",	0,	"contacts"),
 ("Quotes",		"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	NULL),
 ("Quotes",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"status",				"Status",				0,	0,	"dropdown",		0,	"7"),

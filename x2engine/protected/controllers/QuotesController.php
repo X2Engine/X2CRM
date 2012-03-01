@@ -165,7 +165,7 @@ class QuotesController extends x2base {
 		));
 	}
 	
-	public function createQuote($model, $oldAttributes, $contacts, $products){
+	public function createQuote($model, $oldAttributes, $products){
 		
 		$model->createDate=time();
 		$model->lastUpdated = time();
@@ -194,6 +194,7 @@ class QuotesController extends x2base {
 		    }
 		   	
 		   	// tie contacts to quote
+		   	/*
 		   	foreach($contacts as $contact) {
 		   		$relate = new Relationships;
 		   		$relate->firstId = $model->id;
@@ -201,7 +202,7 @@ class QuotesController extends x2base {
 		   		$relate->secondId = $contact;
 		   		$relate->secondType = "contacts";
 		   		$relate->save();
-		   	}
+		   	} */
 		   	
 		   	// tie products to quote
 		   	foreach($products as $product) {
@@ -229,8 +230,6 @@ class QuotesController extends x2base {
 	public function actionCreate() {
 		$model = new Quote;
 		$users = UserChild::getNames();
-		$contacts = Contacts::getAllNames();
-		unset($contacts['0']);
 		
 		$currency = Yii::app()->params->currency;
 		$productNames = Product::productNames();
@@ -282,12 +281,14 @@ class QuotesController extends x2base {
         	        	
 			$model->expirationDate = $this->parseDate($model->expirationDate);
         	
+        	/*
         	if(isset($model->associatedContacts)) {
         		$contacts = $model->associatedContacts;
         		$model->associatedContacts = Quote::parseContacts($model->associatedContacts);
         	} else {
         		$contacts = array();
         	}
+        	*/
 
 			// get products
                 $products = array();
@@ -318,14 +319,13 @@ class QuotesController extends x2base {
         	$model->currency = $currency;
 
 			
-        	$this->createQuote($model, $temp, $contacts, $products);
+        	$this->createQuote($model, $temp, $products);
 		}
 
 		$products = Product::activeProducts();
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$contacts,
 			'products'=>$products,
 			'productNames'=>$productNames,
 		));
@@ -435,6 +435,7 @@ class QuotesController extends x2base {
 			    $this->updateChangelog($model,$changes);
 			   	
 			   	// tie contacts to quote
+			   	/*
 			   	foreach($contacts as $contactid) {
 			   		$relate = new Relationships;
 			   		$relate->firstId = $model->id;
@@ -442,7 +443,7 @@ class QuotesController extends x2base {
 			   		$relate->secondId = $contactid;
 			   		$relate->secondType = "contacts";
 			   		$relate->save();
-			   	}
+			   	} */
 			   	
 		   		// tie products to quote
 		   		foreach($products as $product) {
@@ -492,7 +493,7 @@ class QuotesController extends x2base {
         }
 	}
         
-	public function updateQuote($model, $oldAttributes, $contacts, $products) {
+	public function updateQuote($model, $oldAttributes, $products) {
 	    
 	    $model->lastUpdated = time();
 	    $model->updatedBy = Yii::app()->user->name;
@@ -507,6 +508,7 @@ class QuotesController extends x2base {
 	    if($model->save()) {
 	    	
 	    	// update contacts
+	    	/*
 	    	$relationships = Relationships::model()->findAllByAttributes(
 	    		array(
 	    			'firstType'=>'quotes', 
@@ -521,6 +523,7 @@ class QuotesController extends x2base {
 	    			$relate->delete();
 	    	
 	   		// tie new contacts to quote
+	   		/*
 	   		foreach($contacts as $contact) {
 	   			$relate = new Relationships;
 	   			$relate->firstId = $model->id;
@@ -529,6 +532,7 @@ class QuotesController extends x2base {
 	   			$relate->secondType = "contacts";
 	   			$relate->save();
 	   		}
+	   		*/
 	   		
 	   		// update products
 	   		$orders = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$model->id));
@@ -578,17 +582,31 @@ class QuotesController extends x2base {
 		$model=$this->loadModel($id);
 		
 		$users=UserChild::getNames();
-		$contacts=Contacts::getAllNames();
-		unset($contacts['0']);
 		
 		// get associated contacts
+		/*
 		$relationships = Relationships::model()->findAllByAttributes(array('firstType'=>'quotes', 'firstId'=>$model->id, 'secondType'=>'contacts'));
 		$selectedContacts = array();
 		foreach($relationships as $relate) {
 			$selectedContacts[] = $relate->secondId;
 		}
-		$model->associatedContacts = $selectedContacts;
+		$model->associatedContacts = $selectedContacts; */
 		$productNames = $model->productNames();
+                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Quotes"));
+                foreach($fields as $field){
+                    if($field->type=='link'){
+                        $fieldName=$field->fieldName;
+                        $type=ucfirst($field->linkType);
+                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
+                            eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
+                            if(isset($lookupModel))
+                                $model->$fieldName=$lookupModel->name;
+                        }
+                    }elseif($field->type=='date'){
+                        $fieldName=$field->fieldName;
+                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
+                    }
+                }
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -634,12 +652,14 @@ class QuotesController extends x2base {
                         }
         	
         	$model->expirationDate = $this->parseDate($model->expirationDate);
+        	
+        	/*
         	if(isset($model->associatedContacts)) {
         		$contacts = $model->associatedContacts;
         		$model->associatedContacts = Quote::parseContacts($model->associatedContacts);
         	} else {
         		$contacts = array();
-        	}
+        	} */
 			
 			// get products
 			if(isset($_POST['ExistingProducts'])) {
@@ -667,7 +687,7 @@ class QuotesController extends x2base {
 				$products = array();
 			}
 			
-        	$this->updateQuote($model, $temp, $contacts, $products);
+        	$this->updateQuote($model, $temp, $products);
 
 		}
 //		if(!empty($model->expirationDate)) // format expiration date
@@ -677,8 +697,6 @@ class QuotesController extends x2base {
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$contacts,
-			'selectedContacts'=>$selectedContacts,
 			'products'=>$products,
 			'productNames'=>$productNames,
 			'orders'=>$orders,

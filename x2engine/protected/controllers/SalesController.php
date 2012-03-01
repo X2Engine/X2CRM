@@ -164,10 +164,8 @@ class SalesController extends x2base {
                 foreach(Groups::model()->findAll() as $group){
                     $users[$group->id]=$group->name;
                 }
-		$contacts = Contacts::getAllNames();
 		unset($users['admin']);
 		unset($users['']);
-		unset($contacts['0']);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -221,7 +219,6 @@ class SalesController extends x2base {
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$contacts,
 		));
 	}
         
