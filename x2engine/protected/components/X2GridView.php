@@ -102,6 +102,8 @@ class X2GridView extends CGridView {
 		// add controls column if specified
 		if($this->enableControls)
 			$this->allFieldNames['gvControls'] = Yii::t('app','Tools');
+		
+		$this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
 
 		// load fields from DB
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
@@ -216,7 +218,7 @@ class X2GridView extends CGridView {
                                 }elseif($this->allFields[$columnName]->type=='link'){
                                     $field=$this->allFields[$columnName];
                                     $type=ucfirst($field->linkType);
-                                    $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/'.\$data->$columnName),array('target'=>'_blank')):''";
+                                    $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/default/view/id/'.\$data->$columnName),array('target'=>'_blank')):\$data->$columnName";
                                     $newColumn['type'] = 'raw';
                                 }elseif($this->allFields[$columnName]->type=='boolean'){
                                     $field=$this->allFields[$columnName];
@@ -269,6 +271,13 @@ class X2GridView extends CGridView {
 				$newColumn['filter'] = CHtml::textField('tagField',isset($_GET['tagField'])? $_GET['tagField'] : '');
 				
 				
+				$columns[] = $newColumn;
+			} else if ($columnName == 'gvCheckbox') {
+				$newColumn['id'] = 'C_'.'gvCheckbox';
+				$newColumn['class'] = 'CCheckBoxColumn';
+				$newColumn['selectableRows'] = 2;
+				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
+					
 				$columns[] = $newColumn;
 			}
 		}

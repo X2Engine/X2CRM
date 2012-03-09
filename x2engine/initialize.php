@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.1.0';
-$buildDate = 1330549135;
+$x2Version = '1.2.0';
+$buildDate = 1331333727;
 
 $userData = '';
 
@@ -198,6 +198,10 @@ outputErrors();
 function outputErrors() {
 	global $errors;
 	global $userData;
+	
+	foreach($errors as &$error)
+		$error = urlencode($error);		// url encode errors
+	
 	if(count($errors)>0) {
 		$errorData = implode('&errors%5B%5D=',$errors);
 		$url = preg_replace('/initialize/','install',$_SERVER['REQUEST_URI']);
@@ -225,7 +229,7 @@ function addSqlError($message) {
 // global $lang;
 
 mysql_query('DROP TABLE IF EXISTS
-	x2_contact_lists,
+	x2_lists,
 	x2_list_items,
 	x2_list_criteria,
 	x2_cases,
@@ -264,7 +268,8 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_products,
 	x2_projects,
 	x2_marketing,
-	x2_campaigns
+	x2_campaigns,
+	x2_calendars
 ') or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // if(!empty($sqlError)) return $sqlError;
@@ -290,6 +295,11 @@ mysql_query('CREATE TABLE x2_users(
 	topContacts VARCHAR(100),
 	lastLogin INT DEFAULT 0,
 	login INT DEFAULT 0,
+	showCalendars TEXT,
+	calendarViewPermission TEXT,
+	calendarEditPermission TEXT,
+	calendarFilter TEXT,
+	setCalendarPermissions TINYINT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_users.'.mysql_error());
@@ -342,6 +352,7 @@ mysql_query('CREATE TABLE x2_contacts(
 mysql_query('CREATE TABLE x2_actions(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	assignedTo VARCHAR(20),
+	calendarId INT,
 	actionDescription text NOT NULL,
 	visibility INT NOT NULL,
 	associationId INT NOT NULL,
@@ -465,13 +476,27 @@ mysql_query('CREATE TABLE x2_campaigns (
 	lastUpdated INT UNSIGNED NOT NULL
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_campaigns.'.mysql_error());
 
-mysql_query('CREATE TABLE x2_contact_lists (
+mysql_query('CREATE TABLE x2_calendars (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	viewPermission TEXT,
+	editPermission TEXT,
+	googleCalendar TINYINT,
+	googleFeed VARCHAR(255),
+	createDate INT,
+	createdBy VARCHAR(40),
+	lastUpdated INT,
+	updatedBy VARCHAR(40)
+) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_calendars.'.mysql_error());
+
+mysql_query('CREATE TABLE x2_lists (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	campaignId INT UNSIGNED NOT NULL DEFAULT 0,
 	assignedTo VARCHAR(20),
 	name VARCHAR(100) NOT NULL,
 	description VARCHAR(250) NULL,
 	type VARCHAR(20) NULL,
+	modelName VARCHAR(100) NOT NULL,
 	visibility INT NOT NULL DEFAULT 1,
 	count INT UNSIGNED NOT NULL DEFAULT 0,
 	createDate INT UNSIGNED NOT NULL,
@@ -484,8 +509,7 @@ mysql_query('CREATE TABLE x2_list_items (
 	code VARCHAR(32) NULL,
 	result TINYINT UNSIGNED NOT NULL DEFAULT 0,
 	INDEX (listId),
-	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY (contactId) REFERENCES x2_contacts(id) ON UPDATE CASCADE ON DELETE CASCADE
+	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listItems.'.mysql_error());
 
 
@@ -496,7 +520,7 @@ mysql_query('CREATE TABLE x2_list_criteria (
 	comparison VARCHAR(10) NULL,
 	value VARCHAR(100) NOT NULL,
 	INDEX (listId),
-	FOREIGN KEY (listId) REFERENCES x2_contact_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
+	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listCriteria.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_cases(
@@ -589,7 +613,7 @@ mysql_query('CREATE TABLE x2_docs(
 	text LONGTEXT NOT NULL,
 	createdBy VARCHAR(60) NOT NULL,
 	createDate INT,
-	editPermissions VARCHAR(100),
+	editPermissions VARCHAR(250), 
 	updatedBy VARCHAR(40),
 	lastUpdated INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_docs.'.mysql_error());
@@ -817,47 +841,47 @@ mysql_query('CREATE TABLE x2_group_to_user (
 	username VARCHAR(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
-mysql_query("create or replace view `x2_bi_leads` as
-            (
-            select
-            `a`.`id` AS `id`,
-            `a`.`dealvalue` AS `dealValue`,
-            `a`.`leadDate` AS `leadDate`,
-            `a`.`leadstatus` AS `leadStatus`,
-            `a`.`leadSource` AS `leadSource`,
-            `a`.`leadtype` AS `leadType`,
-            `a`.`assignedTo` AS `assignedTo`,
-            concat(`b`.`firstName`, ' ',`b`.`lastName`) AS `assignedToName`,
-            `a`.`interest` AS `interest`,
-            `a`.`closedate` AS `closeDate`,
-            `a`.`rating` AS `confidence`,
-            `a`.`visibility` AS `visibility`,
-            `a`.`leadscore` AS `leadScore`,
-            `a`.`dealstatus` AS `dealStatus`
-            from (`x2_contacts` `a` join `x2_users` `b`)
-            where ((`a`.`assignedTo` <= 0) and (`b`.`userName` = `a`.`assignedTo`))
-            )
-            union
-            (
-            select
-            `a`.`id` AS `id`,
-            `a`.`dealvalue` AS `dealValue`,
-            `a`.`leadDate` AS `leadDate`,
-            `a`.`leadstatus` AS `leadStatus`,
-            `a`.`leadSource` AS `leadSource`,
-            `a`.`leadtype` AS `leadType`,
-            `a`.`assignedTo` AS `assignedTo`,
-            `b`.`name` AS `assignedToName`,
-            `a`.`interest` AS `interest`,
-            `a`.`closedate` AS `closeDate`,
-            `a`.`rating` AS `confidence`,
-            `a`.`visibility` AS `visibility`,
-            `a`.`leadscore` AS `leadScore`,
-            `a`.`dealstatus` AS `dealStatus`
-            from (`x2_contacts` `a` join `x2_groups` `b`)
-            where ((`a`.`assignedTo` > 0) and (`b`.`id` = `a`.`assignedTo`))
-            )
-            order by leadDate asc;") or addSqlError("Unable to initialize dashboard ".mysql_error());
+mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
+	(
+	SELECT
+	`a`.`id` AS `id`,
+	`a`.`dealvalue` AS `dealValue`,
+	`a`.`leadDate` AS `leadDate`,
+	`a`.`leadstatus` AS `leadStatus`,
+	`a`.`leadSource` AS `leadSource`,
+	`a`.`leadtype` AS `leadType`,
+	`a`.`assignedTo` AS `assignedTo`,
+	concat(`b`.`firstName`, ' ',`b`.`lastName`) AS `assignedToName`,
+	`a`.`interest` AS `interest`,
+	`a`.`closedate` AS `closeDate`,
+	`a`.`rating` AS `confidence`,
+	`a`.`visibility` AS `visibility`,
+	`a`.`leadscore` AS `leadScore`,
+	`a`.`dealstatus` AS `dealStatus`
+	FROM (`x2_contacts` `a` JOIN `x2_users` `b`)
+	WHERE ((`a`.`assignedTo` <= 0) AND (`b`.`userName` = `a`.`assignedTo`))
+	)
+	UNION
+	(
+	SELECT
+	`a`.`id` AS `id`,
+	`a`.`dealvalue` AS `dealValue`,
+	`a`.`leadDate` AS `leadDate`,
+	`a`.`leadstatus` AS `leadStatus`,
+	`a`.`leadSource` AS `leadSource`,
+	`a`.`leadtype` AS `leadType`,
+	`a`.`assignedTo` AS `assignedTo`,
+	`b`.`name` AS `assignedToName`,
+	`a`.`interest` AS `interest`,
+	`a`.`closedate` AS `closeDate`,
+	`a`.`rating` AS `confidence`,
+	`a`.`visibility` AS `visibility`,
+	`a`.`leadscore` AS `leadScore`,
+	`a`.`dealstatus` AS `dealStatus`
+	FROM (`x2_contacts` `a` JOIN `x2_groups` `b`)
+	WHERE ((`a`.`assignedTo` > 0) AND (`b`.`id` = `a`.`assignedTo`))
+	)
+	ORDER BY leadDate ASC;") or addSqlError("Unable to initialize dashboard ".mysql_error());
 
 
 mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
@@ -870,8 +894,10 @@ mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defau
 ("Accounts","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_tickerSymbol\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Additional Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_employees\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_annualRevenue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"189\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"487\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Accounts","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_tickerSymbol\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Additional Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_employees\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_annualRevenue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"189\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"487\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
 ("Quotes","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"52\",\"width\":\"430\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
-("Quotes","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":true,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_id\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Dates\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_updatedBy\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"57\",\"width\":\"431\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")')
-or addSqlError("Unable to create contacts layout.".mysql_error());
+("Quotes","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":true,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_id\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Dates\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_updatedBy\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"57\",\"width\":\"431\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
+("Calendar","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Google\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_googleCalendar\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"16\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleFeed\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"500\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
+("Calendar","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Google\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_googleCalendar\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"16\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleFeed\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"500\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")'
+) or addSqlError("Unable to create contacts layout.".mysql_error());
 	
 mysql_query('INSERT INTO x2_fields 
 (modelName,		fieldName,				attributeLabel,			modified, custom, type, required, linkType) VALUES 
@@ -884,10 +910,10 @@ mysql_query('INSERT INTO x2_fields
 ("Contacts",	"phone2",				"Phone 2",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"email",				"Email",				0,	0,	"email",		0,	""),
 ("Contacts",	"website",				"Website",				0,	0,	"url",			0,	""),
-("Contacts",	"twitter",				"Twitter",				0,	0,	"url",                  0,	"twitter"),
-("Contacts",	"linkedin",				"Linkedin",				0,	0,	"url",                  0,	"linkedin"),
+("Contacts",	"twitter",				"Twitter",				0,	0,	"url",			0,	"twitter"),
+("Contacts",	"linkedin",				"Linkedin",				0,	0,	"url",			0,	"linkedin"),
 ("Contacts",	"skype",				"Skype",				0,	0,	"url",  		0,	"skype"),
-("Contacts",	"googleplus",			"Googleplus",			0,	0,	"url",		0,	"googleplus"),
+("Contacts",	"googleplus",			"Googleplus",			0,	0,	"url",			0,	"googleplus"),
 ("Contacts",	"address",				"Address",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"address2",				"Address 2",			0,	0,	"varchar",		0,	""),
 ("Contacts",	"city",					"City",					0,	0,	"varchar",		0,	""),
@@ -904,8 +930,8 @@ mysql_query('INSERT INTO x2_fields
 ("Contacts",	"priority",				"Priority",				0,	0,	"varchar",		0,	""),
 ("Contacts",	"rating",				"Confidence",			0,	0,	"rating",		0,	""),
 ("Contacts",	"createDate",			"Create Date",			0,	0,	"date",			0,	""),
-("Contacts",	"facebook",				"Facebook",				0,	0,	"url",		0,	"facebook"),
-("Contacts",	"otherUrl",				"Other",				0,	0,	"url",		0,	""),
+("Contacts",	"facebook",				"Facebook",				0,	0,	"url",			0,	"facebook"),
+("Contacts",	"otherUrl",				"Other",				0,	0,	"url",			0,	""),
 ("Contacts",	"leadtype",				"Lead Type",			0,	0,	"dropdown",		0,	"3"),
 ("Contacts",	"closedate",			"Close Date",			0,	0,	"date",			0,	""),
 ("Contacts",	"interest",				"Interest",				0,	0,	"varchar",		0,	""),
@@ -962,7 +988,7 @@ mysql_query('INSERT INTO x2_fields
 ("Actions",		"color",				"Color",				0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"id",					"ID",					0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-("Quotes",		"accountName",			"Account",				0,	0,	"link",		0,	"accounts"),
+("Quotes",		"accountName",			"Account",				0,	0,	"link",			0,	"accounts"),
 ("Quotes",		"existingProducts",		"Existing Products",	0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"salesStage",			"Sales Stage",			0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"expectedCloseDate",	"Expected Close Date",	0,	0,	"date",			0,	NULL),
@@ -971,11 +997,11 @@ mysql_query('INSERT INTO x2_fields
 ("Quotes",		"description",			"Notes",				0,	0,	"text",			0,	NULL),
 ("Quotes",		"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	""),
 ("Quotes",		"createDate",			"Create Date",			0,	0,	"date",			0,	NULL),
-("Quotes",		"associatedContacts",	"Contacts",				0,	0,	"link",	0,	"contacts"),
+("Quotes",		"associatedContacts",	"Contacts",				0,	0,	"link",			0,	"contacts"),
 ("Quotes",		"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	NULL),
 ("Quotes",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
 ("Quotes",		"status",				"Status",				0,	0,	"dropdown",		0,	"7"),
-("Quotes",		"expirationDate",		"Expiration Date",		0,	0,	"date",		0,	NULL),
+("Quotes",		"expirationDate",		"Expiration Date",		0,	0,	"date",			0,	NULL),
 ("Quotes",		"products",				"Products",				0,	0,	"varchar",		0,	NULL),
 ("Products",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
 ("Products",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
@@ -989,7 +1015,12 @@ mysql_query('INSERT INTO x2_fields
 ("Products",	"adjustment",			"Adjustment",			0,	0,	"varchar",		0,	NULL),
 ("Contacts",	"leadscore",			"Lead Score",			0,	0,	"rating",		0,	NULL),
 ("Contacts",	"dealstatus",			"Deal Status",			0,	0,	"dropdown",		0,	"6"),
-("Quotes",		"locked",				"Locked",				0,	0,	"boolean",		0,	NULL)
+("Quotes",		"locked",				"Locked",				0,	0,	"boolean",		0,	NULL),
+("Calendar",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
+("Calendar",	"viewPermission",		"View Permission",		0,	0,	"assignment",	0,	"multiple"),
+("Calendar",	"editPermission",		"Edit Permission",		0,	0,	"assignment",	0,	"multiple"),
+("Calendar",	"googleCalendar",		"Google Calendar",		0,	0,	"boolean",		0,	NULL),
+("Calendar",	"googleFeed",			"Google Feed",			0,	0,	"varchar",		0,	NULL)
 ;') or addSqlError('Unable to create fields'.mysql_error());
 
 mysql_query("INSERT INTO  x2_dropdowns (name, options) VALUES 

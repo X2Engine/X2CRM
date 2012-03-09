@@ -106,6 +106,7 @@ class ApplicationConfigBehavior extends CBehavior {
 		foreach(scandir('protected/modules') as $module){
 			if(file_exists("protected/modules/$module/register.php")){
 				$arr[$module]=ucfirst($module);
+                                Yii::import("application.modules.$module.models.*");
 			}
 		}
 		$menuOrder=explode(":",$this->owner->params->admin->menuOrder);

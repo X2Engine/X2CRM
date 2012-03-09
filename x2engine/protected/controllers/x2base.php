@@ -101,10 +101,10 @@ abstract class x2base extends Controller {
 	 */
 	public function accessRules() {
 		return array(
-                        array('allow',
-                            'actions'=>array('getItems'),
-                            'users'=>array('*'), 
-                        ),
+			array('allow',
+				'actions'=>array('getItems'),
+				'users'=>array('*'), 
+			),
 			array('allow', // allow authenticated user to perform the following actions
 				'actions'=>array('index','view','create','update','search','delete','inlineEmail'),
 				'users'=>array('@'),
@@ -376,9 +376,9 @@ abstract class x2base extends Controller {
 			if($model instanceof Actions && $api==0) {
 				if(isset($_GET['inline']) || $model->type=='note')
 					if($model->associationType == 'product')
-						$this->redirect(array($model->associationType.'s/view','id'=>$model->associationId));
+						$this->redirect(array("/".$model->associationType.'s/default/view','id'=>$model->associationId));
 					else
-						$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));
+						$this->redirect(array("/".$model->associationType.'/default/view','id'=>$model->associationId));
 				else
 					$this->redirect(array('view','id'=>$model->id));
 			} else if($api==0) {
@@ -485,6 +485,7 @@ abstract class x2base extends Controller {
 	protected function updateChangelog($model, $change) {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
+                $model->createDate=time();
 		$model->save();
 		$type=get_class($model);
 		if(substr($type,-1)!="s"){
@@ -882,23 +883,23 @@ abstract class x2base extends Controller {
 	 * Sets widgets on the page on a per user basis.
 	 */
 	public function filterSetPortlets($filterChain) {
-            $themeURL = Yii::app()->theme->getBaseUrl();
-                Yii::app()->clientScript->registerScript('logos',"
-                $(window).load(function(){
-                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                    var touchlogosrc = $('#x2touch-logo').attr('src');
-                    var logosrc=$('#x2crm-logo').attr('src');
-                    if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                });    
-                ");
+		$themeURL = Yii::app()->theme->getBaseUrl();
+			Yii::app()->clientScript->registerScript('logos',"
+			$(window).load(function(){
+				if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+					$('a').removeAttr('href');
+					alert('Please put the logo back');
+					window.location='http://www.x2engine.com';
+				}
+				var touchlogosrc = $('#x2touch-logo').attr('src');
+				var logosrc=$('#x2crm-logo').attr('src');
+				if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+					$('a').removeAttr('href');
+					alert('Please put the logo back');
+					window.location='http://www.x2engine.com';
+				}
+			});    
+			");
 		$this->portlets = ProfileChild::getWidgets();
 		// foreach($widgets as $key=>$value) {
 			// $options = ProfileChild::parseWidget($value,$key);
@@ -1018,6 +1019,18 @@ abstract class x2base extends Controller {
 		    return strtotime($date);
 		else
 		    return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short') .' hh:mm');
+	}
+	
+	function truncateText($str,$length = 30) {
+		
+		if(strlen($str) > $length - 3) {
+			if($length < 3)
+				$str = '';
+			else
+				$str = substr($str,0,$length-3);
+			$str .= '...';
+		}
+		return $str;
 	}
 }
 ?>

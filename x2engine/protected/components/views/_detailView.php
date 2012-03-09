@@ -307,7 +307,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												$type=ucfirst($field->linkType);
 												eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
 												if(isset($lookupModel))
-													eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/".$model->$fieldName."'),array('target'=>'_blank'));");
+													eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/default/view/id/".$model->$fieldName."'),array('target'=>'_blank'));");
 											}elseif(!empty($model->$fieldName)){
 												echo $model->$fieldName;
 											}else{

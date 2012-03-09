@@ -62,6 +62,8 @@ class InlineQuotes extends CWidget {
 			. "function toggleQuotes() {
 				
 				if($('#quotes-form').is(':hidden')) {
+					$('.focus-mini-module').removeClass('focus-mini-module');
+					$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
 					$('html,body').animate({
 						scrollTop: ($('#action-form').offset().top - 200)
 					}, 300);
@@ -70,6 +72,20 @@ class InlineQuotes extends CWidget {
 					$('#quotes-form').focus();
 				});
 			}
+			
+			$(function() {
+				$('#quotes-form').click(function() {
+					if(sendingQuote) {
+						sendingQuote = false;
+					} else {
+						if(!$('#quotes-form').find('.wide.form').hasClass('focus-mini-module')) {
+							$('.focus-mini-module').removeClass('focus-mini-module');
+							$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
+						}
+					}
+
+				});
+			});
 			",CClientScript::POS_HEAD);
 			
 		Yii::app()->clientScript->registerScript('emailQuote', "
@@ -77,6 +93,8 @@ class InlineQuotes extends CWidget {
 			var email = $('#email-message');
 			email.val(email.val() + line + ".'""'.");
 		}
+		
+		var sendingQuote = false;
 		function sendQuoteEmail(quote) {
 			var notes = ".'"\n"'." + quote['notes']['label'] + ".'"\n"'." + quote['notes']['notes'] + ".'"\n"'.";
 			toggleEmailForm();
@@ -85,6 +103,7 @@ class InlineQuotes extends CWidget {
 			$('#email-template').val(value);
 			$('#InlineEmail_subject').val('Quote');
 			$('#email-template').change();
+		    sendingQuote = true; // stop quote mini-module from stealing focus away from email
 		}
 		", CClientScript::POS_HEAD);
 
@@ -426,9 +445,9 @@ function duplicateQuote(quote) {
 			$productNames[$product->id] = $product->name;
 		}	
 		
-		foreach($relationships as $relate) {
-			$quote = Quote::model()->findByPk($relate->firstId);
-			if($quote != NULL) {
+		$quotes = Quote::model()->findAllByAttributes(array('associatedContacts'=>$this->contactId));
+		
+		foreach($quotes as $quote) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
 			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
 
@@ -475,7 +494,6 @@ function duplicateQuote(quote) {
 				'orders'=>$quoteProducts,
 				'total'=>$total,
 			));
-			}
 		}
 		
 		

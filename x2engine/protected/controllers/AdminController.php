@@ -727,6 +727,7 @@ class AdminController extends Controller {
                     $type=$_POST['Criteria']['modelType'];
                 if(isset($_POST['Fields']['modelName']))
                     $type=$_POST['Fields']['modelName'];
+                if($type=='Quotes')$type="Quote";
                 
                 $arr=CActiveRecord::model($type)->attributeLabels();
                 
@@ -879,7 +880,7 @@ class AdminController extends Controller {
                                 $fieldType="FLOAT";
                                 break;
                             case "int":
-                                $fieldType="INTEGER";
+                                $fieldType="BIGINT";
                                 break;
                             case "text":
                                 $fieldType="TEXT";
@@ -983,13 +984,14 @@ class AdminController extends Controller {
                                 'docs',
                                 'workflow',
                                 'dashboard',
+                                'calendar',
                             );
                             foreach($pieces as $piece){
                                 if(array_search($piece, $disallow)===false && is_null(Docs::model()->findByAttributes(array('title'=>$piece)))){
                                     $arr[$piece]=ucfirst($piece);
                                 }
                             }
-                            $temparr['dropdown']=CHtml::dropDownList('dropdown','',$arr);
+                            $temparr['dropdown']=CHtml::dropDownList('dropdown',$modelField->linkType,$arr);
                         
                     }elseif($type=='dropdown'){
                         $dropdowns=Dropdowns::model()->findAll();
@@ -1000,6 +1002,8 @@ class AdminController extends Controller {
 
                         $temparr['dropdown']=CHtml::dropDownList('dropdown','',$arr);
                     }
+                }else{
+                        $temparr['dropdown']="";
                 }
                 echo CJSON::encode($temparr);
             }
@@ -1312,7 +1316,7 @@ class AdminController extends Controller {
 				}
 				$admin->save();
 				
-				$this->redirect(array($moduleName.'/index'));
+				$this->redirect(array('/'.$moduleName.'/default/index'));
 			}
 		}
 		
@@ -1320,6 +1324,13 @@ class AdminController extends Controller {
 	}
         
         private function writeConfig($title,$moduleName,$recordName) {
+            
+                $templateFolder=Yii::app()->file->set('protected/modules/template/');
+                $templateFolder->copy($moduleName);
+                
+                $module=Yii::app()->file->set('protected/modules/template/TemplatesModule.php');
+                $module->copy('protected/modules/'.$moduleName.'/TemplatesModule.php');
+               
 
 		$configFile = Yii::app()->file->set('protected/config/templatesConfig.php', true);
 		$configFile->copy($moduleName.'Config.php');
@@ -1365,20 +1376,21 @@ class AdminController extends Controller {
 		
 		$errors = array();
 		
-		if(mkdir('protected/views/'.$moduleName)) {
-		
+
 			$fileNames = array(
-				'protected/views/templates/_detailView.php',
-				'protected/views/templates/_form.php',
-				'protected/views/templates/_search.php',
-				'protected/views/templates/_view.php',
-				'protected/views/templates/admin.php',
-				'protected/views/templates/create.php',
-				'protected/views/templates/index.php',
-				'protected/views/templates/update.php',
-				'protected/views/templates/view.php',
-				'protected/models/Templates.php',
-				'protected/controllers/TemplatesController.php',
+				'protected/modules/'.$moduleName.'/views/default/_detailView.php',
+				'protected/modules/'.$moduleName.'/views/default/_form.php',
+				'protected/modules/'.$moduleName.'/views/default/_search.php',
+				'protected/modules/'.$moduleName.'/views/default/_view.php',
+				'protected/modules/'.$moduleName.'/views/default/admin.php',
+				'protected/modules/'.$moduleName.'/views/default/create.php',
+				'protected/modules/'.$moduleName.'/views/default/index.php',
+				'protected/modules/'.$moduleName.'/views/default/update.php',
+				'protected/modules/'.$moduleName.'/views/default/view.php',
+				'protected/modules/'.$moduleName.'/models/Templates.php',
+				'protected/modules/'.$moduleName.'/controllers/DefaultController.php',
+                                'protected/modules/'.$moduleName.'/register.php',
+                                'protected/modules/'.$moduleName.'/TemplatesModule.php',
 			);
 			foreach($fileNames as $fileName) {
 				$templateFile = Yii::app()->file->set($fileName);
@@ -1390,15 +1402,14 @@ class AdminController extends Controller {
 					$contents = preg_replace('/templates/',$moduleName,$contents);			// write moduleName into view files
 					$contents = preg_replace('/Templates/',ucfirst($moduleName),$contents);
 					
-					$newFileName = preg_replace('/templates/',$moduleName,$fileName);				// replace 'template' with
+					$newFileName = preg_replace('/templates/',$moduleName,$templateFile->filename);
+                                        $newFileName = preg_replace('/template/',$moduleName,$templateFile->filename);// replace 'template' with
 					$newFileName = preg_replace('/Templates/',ucfirst($moduleName),$newFileName);	// module name for new files
-					$newFile = Yii::app()->file->set($newFileName);
-					$newFile->create();
-					$newFile->setContents($contents);
+                                        $templateFile->setFileName($newFileName);
+                                        $templateFile->setContents($contents);
 				}
 			}
 
-		}
 	}
 	
 	public function actionDeleteModule() {
@@ -1410,22 +1421,27 @@ class AdminController extends Controller {
 
 			$menuOrder = explode(":",$admin->menuOrder);
 			$menuVis = explode(":",$admin->menuVisibility);
-			$menuNickNames = explode(":",$admin->menuNicknames);
-
+			$menuNicknames = explode(":",$admin->menuNicknames);
+                        
 			$moduleIndex = array_search($moduleName,$menuOrder);
+                        $moduleTitle=$menuNicknames[$moduleIndex];
 			if($moduleIndex!==false) {				// if the module is in menuOrder
 				unset($menuOrder[$moduleIndex]);		// then remove it from menuOrder,
 				unset($menuVis[$moduleIndex]);			// menuVisibility
-				unset($menuNickNames[$moduleIndex]);	// and menuNicknames
+				unset($menuNicknames[$moduleIndex]);	// and menuNicknames
 			}
 			$admin->menuOrder = implode(':',$menuOrder);
 			$admin->menuVisibility = implode(':',$menuVis);
-			$admin->menuNicknames = implode(':',$menuNickNames);
+			$admin->menuNicknames = implode(':',$menuNicknames);
 			
 			if($admin->save()) {
 				//$moduleName=strtolower($moduleName);
-				$file = Yii::app()->file->set('protected/controllers/'.ucfirst($moduleName).'Controller.php');
+				$file = Yii::app()->file->set('protected/modules/'.$moduleName.'/register.php');
 				$this->deleteTable($moduleName);
+                                $fields=Fields::model()->findAllByAttributes(array('modelName'=>$moduleTitle));
+                                foreach($fields as $field){
+                                    $field->delete();
+                                }
 				
 				if($file->exists) {
 					$this->deleteFiles($moduleName);
@@ -1441,7 +1457,7 @@ class AdminController extends Controller {
 		}
 		
 		$arr = array();
-		$standard = array('contacts','actions','docs','accounts','sales','workflow','quotes','products','groups','dashboard');
+		$standard = array('contacts','actions','docs','accounts','sales','workflow','quotes','products','groups','dashboard','calendar');
 
 		$pieces = explode(":",$admin->menuOrder);
 		foreach($pieces as $piece) {
@@ -1470,53 +1486,17 @@ class AdminController extends Controller {
 	
 	private function deleteFiles($moduleName) {
 	
-		$fileNames = array(
-			'protected/views/'.$moduleName.'/',
-			'protected/controllers/'.ucfirst($moduleName).'Controller.php',
-			'protected/models/'.ucfirst($moduleName).'.php',
-			'protected/config/'.$moduleName.'Config.php',
-		);
-		
-		foreach($fileNames as $fileName) {
-			$file=Yii::app()->file->set($fileName);
-			if($file->exists)
-				$file->delete();
-		}
-                $dir=Yii::app()->file->set('protected/views/'.$moduleName.'/');
+                $dir=Yii::app()->file->set('protected/modules/'.$moduleName.'/');
                 $dir->delete();
-		// $dir->delete();
-		
-		// $controller=Yii::app()->file->set();
-		// $controller->delete();
-		
-		// $model=Yii::app()->file->set();
-		// $model->delete();
 	}
 	
 	public function actionExportModule() {
 		
 		if(isset($_POST['name'])) {
 			$moduleName=strtolower($_POST['name']);
-			
-			mkdir($moduleName);
-			mkdir("$moduleName/$moduleName");
 
 			$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($moduleName)));
-			$sql="CREATE TABLE x2_".$moduleName."(
-			id INT NOT NULL AUTO_INCREMENT primary key,
-			assignedTo VARCHAR(40),
-			name VARCHAR(100) NOT NULL,
-			description TEXT,
-			createDate INT,
-			lastUpdated INT,
-			updatedBy VARCHAR(40)
-			);INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleName', 'id', 'ID', '0');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'name', 'Name', '0', 'varchar');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'assignedTo', 'Assigned To', '0', 'assigment');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'description', 'Description', '0', 'text');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'createDate', 'Create Date', '0', 'date');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'lastUpdated', 'Last Updated', '0', 'date');
-                        INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleName', 'updatedBy', 'Updated By', '0', 'assignment');";
+			$sql="";
 					
 			$disallow=array(
 				"id",
@@ -1538,7 +1518,7 @@ class AdminController extends Controller {
                                         $fieldType="FLOAT";
                                         break;
                                     case "int":
-                                        $fieldType="INTEGER";
+                                        $fieldType="BIGINT";
                                         break;
                                     case "text":
                                         $fieldType="TEXT";
@@ -1552,42 +1532,35 @@ class AdminController extends Controller {
                         }
 			
 			$db=Yii::app()->file->set("sqlData.sql");
-			$db->create();
 			$db->setContents($sql);
 			$db->copy($moduleName.'/sqlData.sql');
                         
-			$config=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php');
-			$config->copy("$moduleName/".$moduleName.'Config.php');
-                        
-			$model=Yii::app()->file->set('protected/models/'.ucfirst($moduleName).'.php');
-			$model->copy("$moduleName/".ucfirst($moduleName).".php");
-			
-			$controller=Yii::app()->file->set('protected/controllers/'.ucfirst($moduleName).'Controller.php');
-			$controller->copy("$moduleName/".ucfirst($moduleName)."Controller.php");
-			
-			$views=Yii::app()->file->set('protected/views/'.$moduleName);
-			$contents=$views->contents;
-			
-			foreach($contents as $file) {
-				$pieces=explode('/',$file);
-				$fileName=$pieces[count($pieces)-1];
-				$temp=Yii::app()->file->set('protected/views/'.$moduleName.'/'.$fileName);
-				$temp->copy("$moduleName/$moduleName/".$fileName);
-			}
 			if(file_exists($moduleName.".zip")) {
 				unlink($moduleName.".zip");
 			}
+                        
 			$zip=Yii::app()->zip;
-			$zip->makeZip($moduleName,$moduleName.".zip");
-			$dir=Yii::app()->file->set($moduleName);
-			$dir->delete();
+			$zip->makeZip('protected/modules/'.$moduleName,$moduleName.".zip");
 			$finalFile=Yii::app()->file->set($moduleName.".zip");
+                        if($finalFile->exists)exit;
 			$finalFile->download();
 		}
 		
 		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 		$arr=array();
-		$standard=array('contacts','actions','docs','accounts','sales');
+		$standard=array(
+                    'actions',
+                    'docs',
+                    'workflow',
+                    'dashboard',
+                    'groups',
+                    'calendar',
+                    'contacts',
+                    'sales',
+                    'accounts',
+                    'quotes',
+                    'products',
+                );
 		$list=$admin->menuOrder;
 		$pieces=explode(":",$list);
 		foreach($pieces as $piece) {
@@ -1608,36 +1581,7 @@ class AdminController extends Controller {
 			$moduleName=$module->filename;
 			
 			$zip=Yii::app()->zip;
-			$zip->extractZip("$moduleName.zip",'temp');
-			
-			$sql=$model=Yii::app()->file->set('temp/'.$moduleName.'/sqlData.sql');
-			$sqlContents=$sql->getContents();
-			$pieces=explode(";",$sqlContents);
-			foreach($pieces as $query){
-				if($query!=""){
-					$command = Yii::app()->db->createCommand($query);
-					$command->execute();
-				}
-			}
-
-			$config=Yii::app()->file->set('temp/'.$moduleName.'/'.$moduleName.'Config.php');
-			$config->copy('protected/config/'.$moduleName.'Config.php');
-
-			$model=Yii::app()->file->set('temp/'.$moduleName.'/'.ucfirst($moduleName).'.php');
-			$model->copy('protected/models/'.ucfirst($moduleName).'.php');
-			
-			$controller=Yii::app()->file->set('temp/'.$moduleName.'/'.ucfirst($moduleName).'Controller.php');
-			$controller->copy('protected/controllers/'.ucfirst($moduleName).'Controller.php');
-			
-			$views=Yii::app()->file->set('temp/'.$moduleName.'/'.$moduleName);
-			$contents=$views->contents;
-			mkdir('protected/views/'.$moduleName);
-			foreach($contents as $file) {
-				$pieces=explode('/',$file);
-				$fileName=$pieces[count($pieces)-1];
-				$temp=Yii::app()->file->set("temp/$moduleName/$moduleName/".$fileName);
-				$res=$temp->copy('protected/views/'.$moduleName.'/'.$fileName);
-			}
+			$zip->extractZip("$moduleName.zip",'protected/modules/');
 			
 			$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
 			if(isset($admin)) {
@@ -1654,8 +1598,6 @@ class AdminController extends Controller {
 				$admin->save();
 			}
 			
-			$dir=Yii::app()->file->set('temp');
-			$dir->delete();
 			
 			$this->redirect(array($moduleName.'/index'));
 		}
@@ -1668,52 +1610,47 @@ class AdminController extends Controller {
             $modules=array_combine($modules,$modules);
             $arr=array();
             foreach($modules as $module){
-                if(file_exists("protected/modules/$module/register.php")){
-                    $arr[$module]=ucfirst($module);
+                if(file_exists("protected/modules/$module/register.php") && is_null(Modules::model()->findByAttributes(array('name'=>$module)))){
+                    $arr[]=($module);
                 }
             }
-            $menuOrder=explode(":",Yii::app()->params->admin->menuOrder);
+            $registeredModules=Modules::model()->findAll();
             
             $this->render('registerModules',array(
                 'modules'=>$arr,
-                'menuOrder'=>$menuOrder,
+                'registeredModules'=>$registeredModules,
             ));
         }
         
         public function actionToggleModule($module){
-            $admin=&Yii::app()->params->admin;
-            $menuOrder=explode(":",$admin->menuOrder);
-            $nicknames=explode(":",$admin->menuNicknames);
-            $visibility=explode(":",$admin->menuVisibility);
+
             $config=include("protected/modules/$module/register.php");  
-            
-            if(array_search($module,$menuOrder)!==false){
-                $uninstall=$config['uninstall'];
-                foreach($uninstall as $sql){
-                    $command=Yii::app()->db->createCommand($sql);
-                    $command->execute();
+            $exists=Modules::model()->findByAttributes(array('name'=>$module));
+            if(!isset($exists)){
+                $moduleRecord=new Modules;
+                $moduleRecord->editable=$config['editable']?1:0;
+                $moduleRecord->searchable=$config['searchable']?1:0;
+                $moduleRecord->adminOnly=$config['adminOnly']?1:0;
+                $moduleRecord->custom=$config['custom']?1:0;
+                $moduleRecord->toggleable=$config['toggleable']?1:0;
+                $moduleRecord->name=$module;
+                $moduleRecord->title=$config['name'];
+                $moduleRecord->visible=1;
+                $moduleRecord->menuPosition=Modules::model()->count();
+
+                if($moduleRecord->save()){
+                    $install=$config['install'];
                 }
-                $index=array_search($module,$menuOrder);
-                unset($menuOrder[$index]);
-                unset($visibility[$index]);
-                unset($nicknames[$index]);
-                $admin->menuOrder=implode(":",$menuOrder);
-                $admin->menuNicknames=implode(":",$nicknames);
-                $admin->menuVisibility=implode(":",$visibility);
-                $admin->save();
             }else{
-                $install=$config['install']; 
-                foreach($install as $sql){
-                    $command=Yii::app()->db->createCommand($sql);
-                    $command->execute();
+                $exists->visible=$exists->visible?0:1;
+                
+                if($exists->save()){
+                    if($exists->toggleable){
+                        $uninstall=$config['uninstall'];
+                    }else{
+                        
+                    }
                 }
-                $menuOrder[]=$module;
-                $visibility[]=1;
-                $nicknames[]=$config['name'];
-                $admin->menuOrder=implode(":",$menuOrder);
-                $admin->menuNicknames=implode(":",$nicknames);
-                $admin->menuVisibility=implode(":",$visibility);
-                $admin->save();
             }
             $this->redirect('registerModules');
         }
@@ -1956,6 +1893,7 @@ class AdminController extends Controller {
 			$model->attributes=$_POST['Dropdowns'];
 			$temp=array();
 			foreach($model->options as $option){
+                            if($option!="")
 				$temp[$option]=$option;
 			}
 			$model->options=json_encode($temp);
@@ -2167,11 +2105,11 @@ class AdminController extends Controller {
             if($pieces[0]!="")
                 $fileList=explode(":",$pieces[0]);
             else
-                $fileList=array();
+                $fileList=array('');
             if($sqlList!="")
                 $sqlList=explode(":&",$sqlList);
             else
-                $sqlList=array();
+                $sqlList=array('');
             $this->saveBackup($fileList);
             
             $this->render('updater',array(

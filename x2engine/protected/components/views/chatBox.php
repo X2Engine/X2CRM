@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,7 +44,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.
 $admin = Admin::model()->findByPk(1);
 $updateInterval = $admin->chatPollTime;
 
-$ajaxUrl = $this->controller->createUrl('site/getMessages');
+$ajaxUrl = $this->controller->createUrl('/site/getMessages');
 Yii::app()->clientScript->registerScript('updateChatJs', "
 	updateInterval = " . $updateInterval . ";
 	ajaxUrl = '".$ajaxUrl . "';
@@ -60,7 +60,7 @@ echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
 
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Send'),
-	array('site/newMessage'),
+	array('/site/newMessage'),
 	array(
 		'update'=>'#chat-box',
 		'success'=>"function(response) {

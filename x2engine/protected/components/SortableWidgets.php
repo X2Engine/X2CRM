@@ -87,7 +87,7 @@ class SortableWidgets extends CJuiWidget
 		Yii::app()->clientScript->registerScript('toggleWidgetState',"
 			function toggleWidgetState(widget,state) {
 				$.ajax({
-					url: '" . CHtml::normalizeUrl(array('site/widgetState')) . "',
+					url: '" . CHtml::normalizeUrl(array('/site/widgetState')) . "',
 					type: 'GET',
 					data: 'widget='+widget+'&state='+state,
 					success: function(response) {

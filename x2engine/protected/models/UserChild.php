@@ -43,7 +43,7 @@ class UserChild extends Users {
 	public static function getNames() {
 		$order = 'desc';
 		$userArray = CActiveRecord::model('UserChild')->findAll();
-		$names = array('' => 'Anyone');
+		$names = array('Anyone' => 'Anyone');
 		foreach ($userArray as $user) {
 			$first = $user->firstName;
 			$last = $user->lastName;
@@ -143,7 +143,7 @@ class UserChild extends Users {
                 if(is_numeric($users)){
                     $group=Groups::model()->findByPk($users);
                     if(isset($group))
-                        $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                        $link=CHtml::link($group->name,array('/groups/view','id'=>$group->id));
                     else
                         $link="";
                     return $link;
@@ -160,14 +160,14 @@ class UserChild extends Users {
                                 else if(is_numeric($user)){
                                     $group=Groups::model()->findByPk($users);
                                     if(isset($group))
-                                        $link=CHtml::link($group->name,array('groups/view','id'=>$group->id));
+                                        $link=CHtml::link($group->name,array('/groups/view','id'=>$group->id));
                                     else
                                         $link='';
                                     $links.=$link.", ";
                                 }else {
 					$model = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$user));
 					if(isset($model))
-						$link = CHtml::link($model->name,array('profile/view','id'=>$model->id));
+						$link = CHtml::link($model->name,array('/profile/view','id'=>$model->id));
 					else
 						$link='';
 					$links.=$link.', ';

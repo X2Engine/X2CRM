@@ -51,6 +51,8 @@ class InlineEmailForm extends CWidget {
 	
 		$this->model = new InlineEmail;
 		$this->model->attributes = $this->attributes;
+		$signature = Yii::app()->params->profile->getSignature(true);
+		$this->model->message = '<font face="Arial" size="2">'.(empty($signature)? '' : '<br><br>' . $signature).'</font>';
 		
 		if(isset($_POST['InlineEmail'])) {
 			$this->model->attributes = $_POST['InlineEmail'];
@@ -62,28 +64,49 @@ class InlineEmailForm extends CWidget {
 		"function toggleEmailForm() {
 			setupEmailEditor();
 			
+			if($('#inline-email-form .wide.form').hasClass('hidden')) {
+				$('#inline-email-form .wide.form').removeClass('hidden');
+				$('#inline-email-form .form.email-status').remove();
+				return;
+			}
+			
 			if($('#inline-email-form').is(':hidden')) {
+				$('.focus-mini-module').removeClass('focus-mini-module');
+				$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
 				$('html,body').animate({
 					scrollTop: ($('#action-form').offset().top - 200)
 				}, 300);
 			}
+			
 			$('#inline-email-form').animate({
 				opacity: 'toggle',
 				height: 'toggle'
 			}, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
 			
 			
-		}",CClientScript::POS_HEAD);
+		}
+		
+		$(function() {
+			// give send-email module focus when clicked
+		    $('#inline-email-form').click(function() {
+		    	if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
+		    		$('.focus-mini-module').removeClass('focus-mini-module');
+		    		$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
+		    	}
+		    });
+		    
+		    // give send-email module focus when tinyedit clicked
+		    $('#email-message').click(function() {
+		        if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
+		        	$('.focus-mini-module').removeClass('focus-mini-module');
+		        	$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
+		        }
+		    });
+		});
+		",CClientScript::POS_HEAD);
 		
 		Yii::app()->clientScript->registerScript('inlineEmailForm',
 		"$(document).delegate('#email-template','change',function() {
-			var box = $('#email-message-box');
-			// if(($(this).val() == '0' && box.is(':hidden')) || ($(this).val() != '0' && box.is(':visible'))) {
-				// box.animate({
-					// opacity: 'toggle',
-					// height: 'toggle'
-				// }, 400);
-			// }
 			if($(this).val() != '0') // && $('#email-subject').val() == ''
 				$('#email-subject').val($(this).find(':selected').text());
 			$('#preview-email-button').click();

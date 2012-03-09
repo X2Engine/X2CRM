@@ -87,6 +87,10 @@ return array(
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
+				// '<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
+				// '<module:\w+>/<action:\w+>/<id:\d+>'=>'<module>/default/<action>/<id>',
+				// '<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
+				// '<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>/<id>',
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
@@ -160,6 +164,7 @@ return array(
 		'groups'=>array(),
 		'logo'=>"uploads/logos/yourlogohere.png",
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
+                'trueWebRoot'=>substr(__DIR__,0,-17), 
 		'registeredWidgets'=>array(
 			'MessageBox'=>'Message Board',
 			'QuickContact'=>'Quick Contact',

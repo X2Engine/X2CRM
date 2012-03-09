@@ -1,4 +1,4 @@
-var formEditorVersion = '1.0';
+var formEditorVersion = '1.1';
 
 window.selectedFormItems = $([]);
 window.layoutChanged = false;
@@ -42,6 +42,8 @@ $(function() {
 	});
 	
 	$('#formEditorForm').submit(function() {
+		
+			// console.debug(generateFormJson());
 		if($('#modelList').val() != '' && $('#modelList').val() != '')
 			$('#layoutHiddenField').val(generateFormJson());
 		else
@@ -447,7 +449,8 @@ function generateFormJson() {
 		else
 			sectionJson += '"collapsible":false,'
 		var title = $(section).find('.sectionTitle').html();
-		sectionJson += '"title":"'+((title=='undefined')? '' : title)+'",';
+		
+		sectionJson += '"title":"'+((title=='undefined')? '' : title.replace(/\\/g,'\\\\').replace(/"/g, '\\\"'))+'",';
 		
 		// loop through rows, add columns to cols[]
 		$(section).find('tr').each(function(j,row) {
@@ -490,6 +493,7 @@ function generateFormJson() {
 // parse a JSON layout string and call appropriate functions to recreate the layout
 function loadFormJson(formJson) {
 
+	// console.debug(formJson);
 	var form = $.parseJSON(formJson);
 
 	for(i=0; i<form.sections.length; i++) {

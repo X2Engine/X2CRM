@@ -66,7 +66,8 @@ return array (
 
 'Draft'=>'Borrador',
 'Pending'=>'Pendiente',
-'Issued'=>'Won',
+'Issued'=>'Emitido',
+
 'Won'=>'Ganó',
 
 'Working'=>'En El Progreso',

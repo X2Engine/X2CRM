@@ -100,6 +100,7 @@ class SearchController extends x2base {
                             'quotes',
                             'workflow',
                             'groups',
+                            'calendar',
                         );
                         $order=explode(":",Yii::app()->params->admin->menuOrder);
                         foreach($order as $item){

@@ -43,6 +43,33 @@ class Attachments extends CWidget {
 	public $type='';
 	public $associationId='';
 	public function init() {
+	
+ 		Yii::app()->clientScript->registerScript('toggleAttachmentForm',
+		"function toggleAttachmentForm() {			
+			if($('#attachment-form').is(':hidden')) {
+				$('.focus-mini-module').removeClass('focus-mini-module');
+				$('#attachment-form').find('.form').addClass('focus-mini-module');
+				$('html,body').animate({
+					scrollTop: ($('#action-form').offset().top - 200)
+				}, 300);
+			}
+			$('#attachment-form').animate({
+				opacity: 'toggle',
+				height: 'toggle'
+			}, 300);
+		}
+		
+		$(function() {
+			// give attachment module focus when clicked
+		    $('#attachment-form').click(function() {
+		    	if(!$('#attachment-form').find('.form').hasClass('focus-mini-module')) {
+		    		$('.focus-mini-module').removeClass('focus-mini-module');
+		    		$('#attachment-form').find('.form').addClass('focus-mini-module');
+		    	}
+		    });
+		});
+		",CClientScript::POS_HEAD);
+	
 		parent::init();
 	}
 

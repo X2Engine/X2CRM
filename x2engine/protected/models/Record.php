@@ -60,7 +60,7 @@ class Record {
 					$id++;
 				$temp['name']=$record->firstName.' '.$record->lastName;
 				$temp['description']=$record->backgroundInfo;
-				$temp['link']='/contacts/'.$record->id;
+				$temp['link']='/contacts/default/view/id/'.$record->id;
 				$temp['type']='Contact';
 				$temp['lastUpdated']=$record->lastUpdated;
 				$temp['updatedBy']=CHtml::link($name,array('profile/'.$userId));
@@ -74,7 +74,7 @@ class Record {
 					$id++;
 				$temp['name']=empty($record->type)? Yii::t('actions','Action') : Yii::t('actions','Action: ').ucfirst($record->type);
 				$temp['description']=$record->actionDescription;
-				$temp['link']='/actions/'.$record->id;
+				$temp['link']='/actions/default/view/id/'.$record->id;
 				$temp['type']='Action';
 				$temp['lastUpdated']=$record->lastUpdated;
 				$temp['updatedBy']=$name;
@@ -95,14 +95,14 @@ class Record {
 				$temp['updatedBy']=$name;
 				
 				if($record instanceof Sales){
-					$temp['link']='/sales/'.$record->id;
+					$temp['link']='/sales/default/view/id/'.$record->id;
 					$temp['type']='Sale';
 				}
 				elseif ($record instanceof Accounts){
-					$temp['link']='/accounts/'.$record->id;
+					$temp['link']='/accounts/default/view/id/'.$record->id;
 					$temp['type']='Account';
 				}else{
-                                    $temp['link']='/'.strtolower(get_class($record)).'/'.$record->id;
+                                    $temp['link']='/'.strtolower(get_class($record)).'/default/view/id/'.$record->id;
                                 }
 
 				while(isset($arr[$temp['lastUpdated']]))

@@ -234,7 +234,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											echo CHtml::hiddenField($fieldName."_id",'',array('id'=>$fieldName."_id"));
 											$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 													'name'=>'autoselect_'.$fieldName,
-													'source' => $this->createUrl($field->linkType.'/getItems'),
+													'source' => $this->createUrl("/".$field->linkType.'/default/getItems'),
 													'value'=>$model->$fieldName,
 													'options'=>array(
 														'minLength'=>'2',
@@ -272,21 +272,21 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'title'=>$field->attributeLabel,
 											)).'</div>';
 									}elseif($field->type=='assignment'){
-                                                                            if($field->linkType!='multiple')
-										echo $form->dropDownList($model, $fieldName, $users, array(
+										if($field->linkType!='multiple')
+											echo $form->dropDownList($model, $fieldName, $users, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
 												'id'=>$field->modelName.'_assignedToDropdown',
-										));
-                                                                            else
-                                                                                echo $form->dropDownList($model, $fieldName, $users, array(
+											));
+										else
+											echo $form->dropDownList($model, $fieldName, $users, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
 												'id'=>$field->modelName.'_assignedToDropdown',
-                                                                                                'multiple'=>'multiple',
-										));
+												'multiple'=>'multiple',
+											));
                                                                                 
 								   /* x2temp */
                                                                                 echo '<div class="checkboxWrapper">';

@@ -67,6 +67,7 @@ return array (
 'Draft'=>'ébauche',
 'Pending'=>'en attendant',
 'Issued'=>'Publié',
+
 'Won'=>'Won',
 
 'Working'=>'de travail',

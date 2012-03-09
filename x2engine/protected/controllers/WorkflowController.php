@@ -129,6 +129,7 @@ class WorkflowController extends x2base {
 					$stages[$i] = new WorkflowStage;
 					$stages[$i]->workflowId = $workflowModel->id;
 					$stages[$i]->attributes = $_POST['WorkflowStages'][$i+1];
+					$stages[$i]->stageNumber = $i+1;
 					$stages[$i]->roles = $_POST['WorkflowStages'][$i+1]['roles'];
 					if(empty($stages[$i]->roles) || in_array('',$stages[$i]->roles))
 						$stages[$i]->roles = array();
@@ -197,10 +198,10 @@ class WorkflowController extends x2base {
 			// }
 		// }
 
-		$this->render('create',array(
-			'model'=>$workflowModel,
-			'stages'=>$stages,
-		));
+		// $this->render('create',array(
+			// 'model'=>$workflowModel,
+			// 'stages'=>$stages,
+		// ));
 	}
 
 	// Updates a particular model
@@ -210,7 +211,9 @@ class WorkflowController extends x2base {
 		$workflowModel = $this->loadModel($id);
 
 		$stages = array();
-		
+		// echo '<html><body>'.var_dump($_POST['WorkflowStages']).'</body></html>';
+
+		// die(var_dump($_POST['WorkflowStages']));
 		if(isset($_POST['Workflow'], $_POST['WorkflowStages'])) {
 
 			$validStages = true;
@@ -219,6 +222,7 @@ class WorkflowController extends x2base {
 				$stages[$i] = new WorkflowStage;
 				$stages[$i]->workflowId = $id;
 				$stages[$i]->attributes = $_POST['WorkflowStages'][$i+1];
+				$stages[$i]->stageNumber = $i+1;
 				$stages[$i]->roles = $_POST['WorkflowStages'][$i+1]['roles'];
 				if(empty($stages[$i]->roles) || in_array('',$stages[$i]->roles))
 					$stages[$i]->roles = array();
@@ -242,14 +246,10 @@ class WorkflowController extends x2base {
 							'workflowId'=>$id,
 						));
 				}
-				if($workflowModel->save()) {}
-					// $this->redirect(array('view','id'=>$workflowModel->id));
-			}
-		} else
-			$stages = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$id),
-				new CDbCriteria(array('order'=>'id ASC'))
-			);
+				$workflowModel->save();
 
+			}
+		}
 		$this->render('update',array(
 			'model'=>$workflowModel,
 		));

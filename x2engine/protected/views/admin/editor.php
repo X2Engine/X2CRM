@@ -47,7 +47,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colRe
 
 if(isset($layoutModel) && !empty($layoutModel->layout)) {
 	Yii::app()->clientScript->registerScript('loadForm','
-	loadFormJson(\''.$layoutModel->layout.'\');
+	loadFormJson(\''.preg_replace('/\\"/u','\\\\"',addcslashes($layoutModel->layout,"'\\")).'\');
 	',CClientScript::POS_READY);
 }
 

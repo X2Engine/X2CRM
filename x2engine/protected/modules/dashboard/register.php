@@ -86,5 +86,10 @@ return array(
         'uninstall'=>array(
             "drop view if exists `x2_bi_leads`;",
         ),
+        'editable'=>false,
+        'searchable'=>false,
+        'adminOnly'=>false,
+        'custom'=>false,
+        'toggleable'=>false,
     );
 ?>

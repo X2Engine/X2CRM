@@ -358,8 +358,9 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 .x2-button:hover, .search-button:hover {	background:#fff;}
 .x2-button:active, .search-button:active {background:black;border-color:#666;color:white;}
 
-#content {padding:0 45px 20px 45px; }	/* create padding for pages without column2.php layout */
-.span-15 #content {padding:0;}			/* remove padding for column2.php layout */
+#content {padding:0 45px 20px 45px; }	 /* create padding for pages without column2.php layout  */
+.span-15 #content, .span-20 #content {padding:0;}
+.span-20#content-box {width:780px;}			/* blueprint doesn't create any margin for the last span */
 #sidebar-left-box {position:relative;height:400px;}
 #sidebar-left {width:140px;padding:0 0 10px 10px;position:relative;}	/* Left sidebar */
 #sidebar-left.fixed{position:fixed;top:5px;}
@@ -963,3 +964,9 @@ div#code-snippet {
 /* .yiiLog td:nth-child(1), .yiiLog td:nth-child(2), .yiiLog th:nth-child(1), .yiiLog th:nth-child(2) {
 	display:none;
 } */
+
+/* give mini-modules with focus a green border */
+.focus-mini-module {
+	box-shadow: 0 0 4px 2px #579100;
+	border-color: #579100;
+}

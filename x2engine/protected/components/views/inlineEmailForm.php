@@ -41,8 +41,6 @@
 Yii::app()->clientScript->registerScript('inlineEmailEditor',"
 function setupEmailEditor() {
 	if($('#email-message').data('editorSetup') != true) {
-
-		$('#email-message').data('editorSetup',true);
 		new TINY.editor.edit('teditor',{
 			id:'email-message',
 			width:560,
@@ -64,6 +62,16 @@ function setupEmailEditor() {
 			toggle:{text:'source',activetext:'wysiwyg',cssclass:'tetoggle'},
 			resize:{cssclass:'teresize'}
 		});
+		
+		$('#email-message').data('editorSetup',true);
+		
+		// give send-email module focus when tinyedit clicked		
+		$('#email-message-box').find('iframe').contents().find('body').click(function() {
+		    if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
+		    	$('.focus-mini-module').removeClass('focus-mini-module');
+		    	$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
+		    }
+		});
 	}
 }
 ",CClientScript::POS_HEAD);
@@ -78,29 +86,33 @@ else
 ?>
 <div id="inline-email-form">
 <?php
-if(isset($preview) && !empty($preview)) { ?>
+/* if(isset($preview) && !empty($preview)) { ?>
 <div class="form">
 	<?php echo $preview; ?>
 </div>
 <?php
-}
+} */
 
 
 echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'email-sending-icon'));
+$emailSent = false;
 
 if(!empty($model->status)) {
 	$index = array_search('200',$model->status);
 	if($index !== false) {
 		unset($model->status[$index]);
 		$model->message = '';
+		$signature = Yii::app()->params->profile->getSignature(true);
+		$model->message = '<font face="Arial" size="2">'.(empty($signature)? '' : '<br><br>' . $signature).'</font>';
 		$model->subject = '';
+		$emailSent = true;
 	}
-	echo '<div class="form">';
+	echo '<div class="form email-status">';
 	foreach($model->status as &$status_msg) echo $status_msg." \n";
 	echo '</div>';
 }
 ?>
-<div class="wide form" style="box-shadow:0 0 4px 2px #579100;border-color:#579100;">
+<div class="wide form<?php if($emailSent) echo ' hidden'; ?>">
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'enableAjaxValidation'=>false,
 		'method'=>'post',
@@ -146,7 +158,7 @@ if(!empty($model->status)) {
 		Yii::t('app','Send'),
 		array('inlineEmail','ajax'=>1),
 		array(
-			'beforeSend'=>"function(a,b) { $('#email-sending-icon').show(); }",
+			'beforeSend'=>"function(a,b) { teditor.post(); $('#email-sending-icon').show(); }",
 			'replace'=>'#inline-email-form',
 			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); updateHistory(); }",
 		),
@@ -162,7 +174,7 @@ if(!empty($model->status)) {
 		Yii::t('app','Preview'),
 		array('inlineEmail','ajax'=>1,'preview'=>1),
 		array(
-			'beforeSend'=>"function(a,b) { $('#email-sending-icon').show(); }",
+			'beforeSend'=>"function(a,b) { teditor.post(); $('#email-sending-icon').show(); }",
 			'replace'=>'#inline-email-form',
 			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); }",
 		),
@@ -173,7 +185,7 @@ if(!empty($model->status)) {
 			'onclick'=>'teditor.post();',
 		)
 	);
-	echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button','onclick'=>"$('#inline-email-form').toggle('blind',300);"));
+	echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button','onclick'=>"toggleEmailForm();return false;"));
 	// echo CHtml::htmlButton(Yii::t('app','Send'),array('type'=>'submit','class'=>'x2-button','id'=>'send-button','style'=>'margin-left:90px;')); ?>
 	</div>
 	<?php $this->endWidget(); ?>

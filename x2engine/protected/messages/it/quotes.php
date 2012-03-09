@@ -67,6 +67,7 @@ return array (
 'Draft'=>'Bozza',
 'Pending'=>'In Attesa di',
 'Issued'=>'Rilasciato',
+
 'Won'=>'Ha vinto',
 
 'Working'=>'Lavoro',

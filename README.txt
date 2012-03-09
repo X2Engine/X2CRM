@@ -1,23 +1,17 @@
 README
 
-INSTRUCTIONS FOR UPDATE PLEASE READ
+--WARNING--
 
-If you have any custom code please save it before updating and modify the new files.  We will be working on a more concrete system for preserving your code in the future.
+This release contains major structural changes.  We have attempted to remove what bugs we found, but it is likely some have eluded us.  If you get an error 404 or a PHP error please let us know immediately so we can fix it.
 
-X2CRM 1.1.0 Changelog
-- New Calendar module
-	- View task due dates and new Event type actions
-	- filter by user
-- Improvements to Workflow
-	- new visual workflow designer
-	- role-based permissions for each stage
-	- more advanced previous stage requirements
-- Enhanced action pulisher
-- Dozens of bug fixes
-- Improved behavior on left actions sidebar
+X2CRM 1.2.0 Changelog
+- Major Structural Changes
+	-Modularization of code
+- Improvements to Calendar
+- Numerous bug fixes
+- Code optimizations
 
-
-Welcome to X2CRM v1.1!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2CRM v1.2!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

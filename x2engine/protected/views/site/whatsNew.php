@@ -57,7 +57,7 @@
 		array(
 			'name' => Yii::t('sales','Description'),
 			'type' => 'raw',
-			'value' => 'CHtml::encode($data["description"])'
+			'value' => 'Yii::app()->controller->truncateText(CHtml::encode($data["description"]),20)'
 		),
 		array(
 			'name' => Yii::t('actions','Last Updated'),

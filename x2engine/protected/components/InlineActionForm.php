@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -77,7 +77,7 @@ class InlineActionForm extends CWidget {
 		$actionModel->associationType = $this->associationType;
 		$actionModel->associationId = $this->associationId;
 		$actionModel->assignedTo = $this->assignedTo;
-		echo $this->render('../../views/actions/_form', 
+		echo $this->render('actions.views.default._form', 
 			array(
 				'actionModel'=>$actionModel,
 				'users'=>$this->users,

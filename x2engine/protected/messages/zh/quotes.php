@@ -67,6 +67,7 @@ return array (
 'Draft'=>'草案',
 'Pending'=>'有待',
 'Issued'=>'分',
+
 'Won'=>'赢得了',
 
 'Working'=>'工作',

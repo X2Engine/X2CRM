@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,7 +41,7 @@
 Yii::app()->clientScript->registerScript('topContacts',"
 function addTopContact(contactId) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('users/addTopContact')) . "',
+		url: '" . CHtml::normalizeUrl(array('/users/addTopContact')) . "',
 		type: 'GET',
 		data: 'contactId='+contactId,
 		//data: 'contactId='+contactId+'&viewId='+viewId,
@@ -54,7 +54,7 @@ function addTopContact(contactId) {
 }
 function removeTopContact(contactId) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('users/removeTopContact')) . "',
+		url: '" . CHtml::normalizeUrl(array('/users/removeTopContact')) . "',
 		type: 'GET',
 		data: 'contactId='+contactId,
 		// data: 'contactId='+contactId+'&viewId='+viewId,
@@ -79,7 +79,7 @@ foreach($topContacts as $contact) {
 	$contactIdList[] = $contact->id;
 	echo '<li id="contact' . $contact->id . '">';
 	$link = '<strong>'.$contact->firstName.' '.$contact->lastName.'</strong><br />'.$contact->phone;
-	echo CHtml::link($link,array('contacts/view','id'=>$contact->id));
+	echo CHtml::link($link,array('/contacts/default/view','id'=>$contact->id));
 	
 	echo CHtml::link('[x]','#',array(
 		'class'=>'delete-link',
@@ -88,7 +88,7 @@ foreach($topContacts as $contact) {
 	echo "</li>\n";
 }
 
-if(Yii::app()->controller->id=='contacts'			// must be a contact
+if(Yii::app()->controller->id=='contacts' || (!is_null(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts')			// must be a contact
 	&& Yii::app()->controller->action->id=='view'	// must be viewing it
 	&& $viewId != null							// must have an actual ID value
 	&& !in_array($viewId,$contactIdList)) {		// must not already be in Top Contacts

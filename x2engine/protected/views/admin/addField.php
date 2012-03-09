@@ -64,6 +64,7 @@ This form allows you to add custom fields to models.
                 'workflow',
                 'dashboard',
                 'groups',
+                'calendar',
             );
             foreach($pieces as $piece){
                 if(array_search($piece, $disallow)===false){
@@ -107,6 +108,7 @@ This form allows you to add custom fields to models.
                         'boolean'=>'Checkbox',
                         'link'=>'Lookup',
                         'rating'=>'Rating',
+                        'assignment'=>'Assignment'
                     ),
                 array(
                 'ajax' => array(

@@ -118,6 +118,9 @@ div.form.no-border {
 	border:none;
 	padding:0;
 }
+div.form.hidden {
+	display:none;
+}
 div.form.details a {
 	text-decoration:none;
 }

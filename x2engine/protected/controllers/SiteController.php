@@ -755,7 +755,7 @@ class SiteController extends x2base {
 								$newVersion=Yii::app()->params->version;
 						} */
 						
-						if(version_compare($newVersion,Yii::app()->params->version) > 1) {	// if the latest version is newer than our version
+						if(version_compare($newVersion,Yii::app()->params->version) > 0) {	// if the latest version is newer than our version
 							Yii::app()->session['versionCheck']=false;
 							Yii::app()->session['newVersion']=$newVersion;
 						}

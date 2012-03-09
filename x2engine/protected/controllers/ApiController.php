@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -309,6 +309,14 @@ class ApiController extends x2base {
                     sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>',
                     $_GET['model']) );
                     exit;
+        }
+    }
+    
+    public function actionVoip(){
+        if(isset($_POST) && count($_POST)>0){
+            echo "TRUE";
+        }else{
+            echo "FALSE";
         }
     }
     

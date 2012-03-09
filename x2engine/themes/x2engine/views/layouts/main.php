@@ -96,9 +96,9 @@ $(function() {
 		return;
 
 	if(fullscreen) {
-		$('#sidebar-left-box').removeClass().addClass('span-0');
-		$('#content-box').removeClass().addClass('span-22');
-		$('#sidebar-right-box').removeClass().addClass('span-0');
+		// $('#sidebar-left-box').removeClass().addClass('span-0');
+		$('#content-box').removeClass().addClass('span-20 last');
+		$('#sidebar-right-box').removeClass().addClass('span-0 hidden');
 	}
 });
 
@@ -117,13 +117,13 @@ function fullscreenToggle() {
 	});
 		
 	if (fullscreen) {
-		$('#sidebar-left-box').removeClass().addClass('span-4');
+		// $('#sidebar-left-box').removeClass().addClass('span-4');
 		$('#content-box').removeClass().addClass('span-15');
 		$('#sidebar-right-box').removeClass().addClass('span-5 last');
 	} else {
-		$('#sidebar-left-box').removeClass().addClass('span-0');
-		$('#content-box').removeClass().addClass('span-22');
-		$('#sidebar-right-box').removeClass().addClass('span-0');
+		// $('#sidebar-left-box').removeClass().addClass('span-0');
+		$('#content-box').removeClass().addClass('span-20 last');
+		$('#sidebar-right-box').removeClass().addClass('span-0 hidden');
 	}
 	fullscreen = !fullscreen;
 	
@@ -149,10 +149,10 @@ $(document).ready(function() {
 ",CClientScript::POS_END);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/notifications.js');
-if($this->getModule()==null){
-$notifUrl = $this->createUrl('site/checkNotifications');
+if($this->getModule()!='mobile'){
+$notifUrl = $this->createUrl('/site/checkNotifications');
 Yii::app()->clientScript->registerScript('updateNotificationJs', "
-        notifUrl='".$this->createUrl('site/checkNotifications')."'
+        notifUrl='".$this->createUrl('/site/checkNotifications')."'
 	$(document).ready(updateNotifications());	//update on page load
 ",CClientScript::POS_HEAD); 
 }
@@ -277,7 +277,7 @@ if($isGuest) {
 		elseif(is_dir('protected/modules/'.$key)){
                         if(!is_null($this->getModule()))
                             $module=$this->getModule()->id;
-                        $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
+                        $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/default/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
                 }else{
 			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$key))));
 			if(isset($page)){
@@ -315,6 +315,7 @@ $userMenu = array(
 			array('label' => Yii::t('app','Profile'),'url' => array('/profile/view','id' => Yii::app()->user->getId()), 'visible'=>$isUser),
                         array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications'), 'visible'=>$isUser),
 			array('label' => Yii::t('app','Settings'),'url' => array('/profile/settings'), 'visible'=>$isUser),
+                        array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'visible'=>$isUser, 'linkOptions'=>array('target'=>'_blank')),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
@@ -339,7 +340,7 @@ $userMenu = array(
 	<div id="main-menu-bar">
 		<?php
 			$notifications = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0));
-			echo CHtml::link($notifications,array('site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
+			echo CHtml::link($notifications,array('/site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
 			echo CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
 		<?php
 		//render main menu items
@@ -368,7 +369,7 @@ $userMenu = array(
 			</div>
 	<?php } ?>
 	<div id="search-bar">
-		<form name="search" action="<?php echo $this->createUrl('search/search');?>" method="get">
+		<form name="search" action="<?php echo $this->createUrl('/search/search');?>" method="get">
 			<span id="search-bar-title"><?php echo '<a href="'.Yii::app()->request->baseUrl.'/index.php/site/whatsNew"><img height="30" width="200" src='.Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo.'></a>'; ?></span>
 			<input type="text" class="text" id="search-bar-box" name="term" value="<?php echo Yii::t('app','Search for contact, action, deal...'); ?>" onFocus="toggleText(this);" onBlur="toggleText(this);" />
 			<a class="x2-button" href="#" onClick="submitForm('search');"><span><?php echo Yii::t('app','Go'); ?></span></a>
@@ -396,8 +397,8 @@ $userMenu = array(
 		));?></div><?php
 		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button'))." \n";
 		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'transparency-button'))." \n";
-		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('contacts/create'),array('class'=>'x2-button'))." \n";
-		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('actions/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
+		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/default/create'),array('class'=>'x2-button'))." \n";
+		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('/actions/default/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
 		// echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact + Action').'</span>',array('actions/quickCreate'),array('class'=>'x2-button'))." \n";
 		?>
 	</div>

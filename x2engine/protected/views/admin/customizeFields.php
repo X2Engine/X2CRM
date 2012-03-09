@@ -58,6 +58,7 @@
                     'workflow',
                     'dashboard',
                     'groups',
+                    'calendar',
                 );
                 foreach($pieces as $piece){
                     if(array_search($piece, $disallow)===false && is_null(Docs::model()->findByAttributes(array('title'=>$piece)))){
@@ -117,6 +118,7 @@
                         'boolean'=>'Checkbox',
                         'link'=>'Lookup',
                         'rating'=>'Rating',
+                        'assignment'=>'Assignment'
                     ),
                 array(
                 'id'=>'fieldType',

@@ -84,7 +84,9 @@ class InlineEmailAction extends CAction {
 					$this->model->message = $emailBody;
 				}
 			} elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
-				$emailBody = $this->model->message.'<br><br>'.Yii::app()->params->profile->getSignature(true);
+				$emailBody = $this->model->message;
+			// } elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
+				// $emailBody = $this->model->message.'<br><br>'.Yii::app()->params->profile->getSignature(true);
 			}
 			
 

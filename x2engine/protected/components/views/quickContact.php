@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -52,10 +52,10 @@ $form = $this->beginWidget('CActiveForm', array(
 	'method'=>'POST',
 ));
 
-$model->firstName = $attributeLabels['firstName'];
-$model->lastName = $attributeLabels['lastName'];
-$model->phone = $attributeLabels['phone'];
-$model->email = $attributeLabels['email'];
+$model->firstName = Contacts::model()->getAttributeLabel('firstName');
+$model->lastName = Contacts::model()->getAttributeLabel('lastName');
+$model->phone = Contacts::model()->getAttributeLabel('phone');
+$model->email = Contacts::model()->getAttributeLabel('email');
 
 ?>
 <div class="form thin">

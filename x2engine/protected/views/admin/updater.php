@@ -42,7 +42,7 @@ function sql(sqlList, j){
           data: {'sql':sqlList[j]},
           context: document.body,
           success: function(){
-              if(sqlCount==sqlList.length){
+              if(sqlCount>=sqlList.length){
                   $('#update-text').html('Update complete.');
                   alert("SQL Exectution Complete.");
                   cleanUp('success');
@@ -95,8 +95,8 @@ Yii::app()->clientScript->registerScript("updater","$('#update-button').click(fu
 
 <h2>X2CRM Automatic Update</h2>
 <?php
-echo "Number of files to download: <b>".count($fileList)."</b><br />";
-echo "Number of changes to database schema: <b>".count($sqlList)."</b><br /><br />";
+echo "Number of files to download: <b>".($fileList[0]!=""?count($fileList):"0")."</b><br />";
+echo "Number of changes to database schema: <b>".($sqlList[0]!=""?count($sqlList):"0")."</b><br /><br />";
 echo "Your updater version: <b>".$updaterVersion."</b><br />";
 echo "Current updater version: <b>".$updaterCheck."</b><br /><br />";
 echo "Your X2CRM version: <b>".$version."</b><br />";

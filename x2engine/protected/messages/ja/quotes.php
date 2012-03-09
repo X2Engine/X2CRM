@@ -67,6 +67,7 @@ return array (
 'Draft'=>'ドラフト',
 'Pending'=>'ペンディング',
 'Issued'=>'発行',
+
 'Won'=>'勝ち',
 
 'Working'=>'ワーキング',

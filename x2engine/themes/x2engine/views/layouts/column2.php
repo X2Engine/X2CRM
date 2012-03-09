@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->beginContent('/layouts/main');
+$this->beginContent('//layouts/main');
 $themeURL = Yii::app()->theme->getBaseUrl();
 Yii::app()->clientScript->registerScript('menuScroling',"
 if ($.browser != 'msie' || $.browser.version > 6) {
@@ -105,22 +105,112 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					$this->widget('zii.widgets.CMenu',array('items'=>$this->actionMenu));
 					$this->endWidget();
 				}
-				if(isset($this->calendarUsers)) {
+				$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+				$showCalendars = json_decode($user->showCalendars, true);
+				$editableCalendars = Calendar::getEditableCalendarNames(); // list of calendars current user can edit
+				$editableUserCalendars = Calendar::getEditableUserCalendarNames(); // list of user calendars current user can edit
+				if(isset($this->sharedCalendars) && $this->sharedCalendars !== null) {
 					$this->beginWidget('zii.widgets.CPortlet',
 						array(
 							'title'=>Yii::t('calendar', 'Calendars'),
-							'id'=>'calendar-users',
+							'id'=>'shared-calendar',
 						)
 					);
-					foreach($this->calendarUsers as $userName=>$user) {
+					$showSharedCalendars = $showCalendars['sharedCalendars'];
+					echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+					foreach($this->sharedCalendars as $calendarId=>$calendarName) {
+						if(isset($editableCalendars[$calendarId])) // check if current user has permission to edit calendar
+							$editable = 'true';
+						else
+							$editable = 'false';
+						echo "<li>\n";
 						// checkbox for each user; current user and Anyone are set to checked
-						echo CHtml::checkBox($userName, (($userName == Yii::app()->user->name || $userName == '')? true: false),
+						echo CHtml::checkBox($calendarId, in_array($calendarId, $showSharedCalendars),
+						    array(
+						    	'onChange'=>"toggleCalendarSourceShared(this.name, this.checked, $editable);", // add or remove shared calendar actions to calendar if checked/unchecked
+						    )
+						);
+						echo "<label for=\"$calendarId\">$calendarName</label>\n";
+						echo "</li>";
+					}
+					echo "</ul>\n";
+					$this->endWidget();
+				}
+				if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
+					$this->beginWidget('zii.widgets.CPortlet',
+						array(
+							'title'=>Yii::t('calendar', 'User Calendars'),
+							'id'=>'user-calendars',
+						)
+					);
+					$showUserCalendars = $showCalendars['userCalendars'];
+					echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+					foreach($this->calendarUsers as $userName=>$user) {
+						if(isset($editableUserCalendars[$userName])) // check if current user has permission to edit calendar
+							$editable = 'true';
+						else
+							$editable = 'false';
+						echo "<li>\n";
+						// checkbox for each user calendar the current user is alowed to view
+						echo CHtml::checkBox($userName, in_array($userName, $showUserCalendars),
 							array(
-								'onChange'=>"toggleCalendarSource(this.name, this.checked);", // add or remove user's actions to calendar if checked/unchecked
+								'onChange'=>"toggleCalendarSource(this.name, this.checked, $editable);", // add or remove user's actions to calendar if checked/unchecked
 							)
 						);
-						echo $user . "<br />\n";
+						echo "<label for=\"$userName\">$user</label>\n";
+						echo "</li>";
 					}
+					echo "</ul>\n";
+					$this->endWidget();
+				}
+				if(isset($this->googleCalendars) && $this->googleCalendars !== null) {
+					$this->beginWidget('zii.widgets.CPortlet',
+						array(
+							'title'=>Yii::t('calendar', 'Google Calendars'),
+							'id'=>'google-calendars',
+						)
+					);
+					$showGoogleCalendars = $showCalendars['googleCalendars'];
+					echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+					foreach($this->googleCalendars as $calendarId=>$calendarName) {
+						echo "<li>\n";
+						$calendar = Calendar::model()->findByPk($calendarId);
+						// checkbox for each user; current user and Anyone are set to checked
+						echo CHtml::checkBox($calendarId, in_array($calendarId, $showGoogleCalendars),
+							array(
+								'onChange'=>"toggleCalendarSourceGoogle($calendarId, this.checked, '{$calendar->googleFeed}');", // add or remove user's actions to calendar if checked/unchecked
+							)
+						);
+						echo "<label for=\"$calendarId\">$calendarName</label>\n";
+						echo "</li>";
+					}
+					echo "</ul>\n";
+					$this->endWidget();
+				}
+				if(isset($this->calendarFilter) && $this->calendarFilter !== null) {
+					$this->beginWidget('zii.widgets.CPortlet',
+						array(
+							'title'=>Yii::t('calendar', 'Filter'),
+							'id'=>'calendar-filter',
+						)
+					);
+					echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
+					foreach($this->calendarFilter as $filterName=>$filter) { 
+						echo "<li>\n";
+						if($filter)
+							$checked = 'true';
+						else
+							$checked = 'false';
+						echo CHtml::checkBox($filterName, $filter,
+							array(
+								'onChange'=>"toggleCalendarFilter('$filterName', $checked);", // add/remove filter if checked/unchecked
+							)
+						);
+						$filterDisplayName = ucwords($filterName); // capitalize filter name for label
+						echo "<label for=\"$filterName\">$filterDisplayName</label>";
+						echo "</li>\n";
+					} 
+					echo "</ul>\n"; 
 					$this->endWidget();
 				}
 				$this->widget('TopContacts',array(
@@ -156,7 +246,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				'update'=>"js:function(){
 					$.ajax({
 							type: 'POST',
-							url: '{$this->createUrl('site/widgetOrder')}',
+							url: '{$this->createUrl('/site/widgetOrder')}',
 							data: $(this).sortable('serialize'),
 					});
 				}"
