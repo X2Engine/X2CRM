@@ -277,7 +277,7 @@ class DefaultController extends x2base {
 				    if($action->color)
 				    	$events[$last]['color'] = $action->color;
 				    if($action->associationType == 'contacts') {
-				    	$events[$last]['associationUrl'] = $this->createUrl('contacts/'. $action->associationId);
+				    	$events[$last]['associationUrl'] = $this->createUrl('/contacts/default/view/id/'. $action->associationId);
 				    	$events[$last]['associationName'] = $action->associationName;
 				    }
 				    	
@@ -289,7 +289,7 @@ class DefaultController extends x2base {
 				    	'id'=>$action->id,
 				    	'complete'=>$action->complete,
 				    	'associationType'=>'contacts',
-				    	'associationUrl'=>$this->createUrl('contacts/'. $action->associationId),
+				    	'associationUrl'=>$this->createUrl('/contacts/default/view/id/'. $action->associationId),
 				    	'associationName'=>$action->associationName,
 				    	'allDay'=>false,
 				    );

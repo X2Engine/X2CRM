@@ -76,7 +76,7 @@ $currentUserFeed = $this->createUrl('jsonFeed', array('user'=>Yii::app()->user->
 $anyoneUserFeed = $this->createUrl('jsonFeed', array('user'=>'Anyone')); // add Anyone actions to calendar
 $moveAction = $this->createUrl('moveAction');
 $resizeAction = $this->createUrl('resizeAction');
-$saveAction = $this->createUrl('actions/quickUpdate');
+$saveAction = $this->createUrl('/actions/default/quickUpdate');
 $completeAction = $this->createUrl('completeAction');
 $uncompleteAction = $this->createUrl('uncompleteAction');
 $deleteAction = $this->createUrl('deleteAction');
@@ -424,7 +424,7 @@ function toggleCalendarSource(user, on, isEditable) {
 	if(on) {
 		$('#calendar').fullCalendar('addEventSource', 
 			{
-				url: '<?php echo $jsonFeed; ?>' + '?user=' + user,
+				url: '<?php echo $jsonFeed; ?>' + '/user/' + user,
 				type: 'POST',
 				editable: isEditable,
 			}
@@ -432,7 +432,7 @@ function toggleCalendarSource(user, on, isEditable) {
 	} else {
 		$('#calendar').fullCalendar('removeEventSource', 
 			{
-				url: '<?php echo $jsonFeed; ?>' + '?user=' + user,
+				url: '<?php echo $jsonFeed; ?>' + '/user/' + user,
 				type: 'POST',
 				editable: isEditable,
 			}
@@ -446,7 +446,7 @@ function toggleCalendarSourceShared(calendarId, on, isEditable) {
 	if(on) {
 		$('#calendar').fullCalendar('addEventSource', 
 			{
-				url: '<?php echo $jsonFeedShared; ?>' + '?calendarId=' + calendarId,
+				url: '<?php echo $jsonFeedShared; ?>' + '/calendarId/' + calendarId,
 				type: 'POST',
 				editable: isEditable,
 			}
@@ -454,7 +454,7 @@ function toggleCalendarSourceShared(calendarId, on, isEditable) {
 	} else {
 		$('#calendar').fullCalendar('removeEventSource', 
 			{
-				url: '<?php echo $jsonFeedShared; ?>' + '?calendarId=' + calendarId,
+				url: '<?php echo $jsonFeedShared; ?>' + '/calendarId/' + calendarId,
 				type: 'POST',
 				editable: isEditable,
 			}
