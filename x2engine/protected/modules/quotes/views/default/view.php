@@ -38,18 +38,85 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::app()->clientScript->registerScript('LockedQuoteDialog', "
+function dialogStrictLock() {
+var denyBox = $('<div></div>')
+    .html('This quote is locked.')
+    .dialog({
+    	title: 'Locked', 
+    	autoOpen: false,
+    	resizable: false,
+    	buttons: {
+    		'OK': function() {
+    			$(this).dialog('close');
+    		},
+    	},
+    });
+        
+denyBox.dialog('open');
+}
+
+function dialogLock() {
+var confirmBox = $('<div></div>')
+    .html('This quote is locked. Are you sure you want to update this quote?')
+    .dialog({
+    	title: 'Locked', 
+    	autoOpen: false,
+    	resizable: false,
+    	buttons: {
+    		'Yes': function() {
+    			window.location = '". Yii::app()->createUrl('quotes/default/update/', array('id'=>$model->id)) ."';
+    			$(this).dialog('close');
+    		},
+    		'No': function() {
+    			$(this).dialog('close');
+    		}
+    	},
+    });
+confirmBox.dialog('open');
+}
+
+",CClientScript::POS_HEAD);
+
+
 $this->menu=array(
 	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
 	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('quotes','View')),
-	array('label'=>Yii::t('quotes','Update'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+);
+
+$strict = Yii::app()->params['admin']['quoteStrictLock'];
+if($model->locked)
+	if($strict && Yii::app()->user->name != 'admin')
+		$this->menu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogStrictLock();'));
+	else
+		$this->menu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogLock();'));
+else
+	$this->menu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>array('update', 'id'=>$model->id));
+
+$this->menu[] = array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
+
+$this->actionMenu = array(
+	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
+	array('label'=>Yii::t('quotes','Print Quote'), 'url'=>'#', 'linkOptions'=>array('onClick'=>"window.open('". Yii::app()->createUrl('quotes/default/print', array('id'=>$model->id)) ."')"))
 );
 
 ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('quotes','Quote:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
+<h2><?php echo Yii::t('quotes','Quote:'); ?> <b><?php echo $model->name; ?></b>
+
+<?php if($model->locked) { ?>
+	<?php if($strict && Yii::app()->user->name != 'admin') { ?>
+		<a class="x2-button" href="#" onClick="dialogStrictLock();">Edit</a>
+	<?php } else { ?>
+		<a class="x2-button" href="#" onClick="dialogLock();">Edit</a>
+	<?php } ?>
+<?php } else { ?>
+	<a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a>
+<?php } ?>
+
+</h2>
 
 <?php
 $form = $this->beginWidget('CActiveForm', array(
@@ -131,9 +198,6 @@ $this->endWidget();
 
 ?>
 
-<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
-<a class="x2-button" href="shareQuote/<?php echo $model->id;?>"><span><?php echo Yii::t('quotes','Share Quote'); ?></span></a>
-<a class="x2-button" href="#" onClick="window.open('<?php echo Yii::app()->createUrl('quotes/print', array('id'=>$model->id)); ?>')"><span><?php echo Yii::t('quotes','Print Quote'); ?></span></a>
 <br /><br />
 
 <div id="attachment-form" style="display:none;">
@@ -158,7 +222,7 @@ else
 
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$actionHistory,
-	'itemView'=>'../actions/_view',
+	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> 
             ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),"?history=all")).

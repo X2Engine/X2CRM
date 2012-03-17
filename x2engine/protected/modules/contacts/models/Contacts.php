@@ -315,6 +315,7 @@ class Contacts extends X2Model {
 		$list = CActiveRecord::model('X2List')->findByPk($id);
 
 		if(isset($list)) {
+			
 			// $contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
 			// die(var_dump($contactIds));
 			// $search = CActiveRecord::model('Contacts')->findAllByPk($contactIds);
@@ -331,53 +332,91 @@ class Contacts extends X2Model {
 
 			if($list->type == 'dynamic') {
 				
-				$criteria = new CDbCriteria(array());
+				$search = new CDbCriteria(array());
+				$listCriteria = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id,'type'=>'attribute'));
+				foreach($listCriteria as $listCriterion) {
 				
-				
+					if($listCriterion->attribute == 'tags') {
+						$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($listCriterion->value)));	//remove any spaces around commas, then explode to array
+						for($i=0; $i<count($tags); $i++) {
+							if(empty($tags[$i])) {
+								unset($tags[$i]);
+								$i--;
+								continue;
+							} else {
+								if($tags[$i][0] != '#')
+									$tags[$i] = '#'.$tags[$i];
+								$tags[$i] = 'x2_tags.tag = "'.$tags[$i].'"';
+							}
+						}
+						$tagConditions = implode(' OR ',$tags);
+						
+						$search->distinct = true;
+						$search->join = 'RIGHT JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+					} else {
+						switch($listCriterion->comparison) {
+							case '=':
+								$search->compare($listCriterion->attribute,$listCriterion->value,false);
+							case '>':
+								$search->compare($listCriterion->attribute,'>='.$listCriterion->value,true); break;
+							case '<':
+								$search->compare($listCriterion->attribute,'<='.$listCriterion->value,true); break;
+							case 'empty':
+								$search->addCondition($listCriterion->attribute.'=""'); break;
+							case 'contains':
+							default:
+								$search->compare($listCriterion->attribute,$listCriterion->value,true);
+						}
+					}
+				}
+
 			} else {
-			
-				$criteria = new CDbCriteria(array(
+				$search = new CDbCriteria(array(
 					'join'=>'LEFT JOIN x2_list_items ON t.id = x2_list_items.contactId',
 					'condition'=>'x2_list_items.listId='.$id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")',
-				
 				));
+				
 			}
 				
-			$criteria->compare('firstName',$this->firstName,true);
-			$criteria->compare('lastName',$this->lastName,true);
-			$criteria->compare('title',$this->title,true);
-			$criteria->compare('company',$this->company,true);
-			$criteria->compare('phone',$this->phone,true);
-			$criteria->compare('phone2',$this->phone2,true);
-			$criteria->compare('email',$this->email,true);
-			$criteria->compare('website',$this->website,true);
-			$criteria->compare('address',$this->address,true);
-			$criteria->compare('city',$this->city,true);
-			$criteria->compare('state',$this->state,true);
-			$criteria->compare('zipcode',$this->zipcode,true);
-			$criteria->compare('country',$this->country,true);
-			$criteria->compare('visibility',$this->visibility);
-			$criteria->compare('assignedTo',$this->assignedTo,true);
-			$criteria->compare('backgroundInfo',$this->backgroundInfo,true);
-			$criteria->compare('twitter',$this->twitter,true);
-			$criteria->compare('linkedin',$this->linkedin,true);
-			$criteria->compare('skype',$this->skype,true);
-			$criteria->compare('googleplus',$this->googleplus,true);
-			// $criteria->compare('lastUpdated',$this->lastUpdated,true);
-			$criteria->compare('updatedBy',$this->updatedBy,true);
-			$criteria->compare('priority',$this->priority,true);
-			$criteria->compare('leadSource',$this->leadSource,true);
-			$criteria->compare('rating',$this->rating);
+			$search->compare('firstName',$this->firstName,true);
+			$search->compare('lastName',$this->lastName,true);
+			$search->compare('title',$this->title,true);
+			$search->compare('company',$this->company,true);
+			$search->compare('phone',$this->phone,true);
+			$search->compare('phone2',$this->phone2,true);
+			$search->compare('email',$this->email,true);
+			$search->compare('website',$this->website,true);
+			$search->compare('address',$this->address,true);
+			$search->compare('city',$this->city,true);
+			$search->compare('state',$this->state,true);
+			$search->compare('zipcode',$this->zipcode,true);
+			$search->compare('country',$this->country,true);
+			$search->compare('visibility',$this->visibility);
+			$search->compare('assignedTo',$this->assignedTo,true);
+			$search->compare('backgroundInfo',$this->backgroundInfo,true);
+			$search->compare('twitter',$this->twitter,true);
+			$search->compare('linkedin',$this->linkedin,true);
+			$search->compare('skype',$this->skype,true);
+			$search->compare('googleplus',$this->googleplus,true);
+			// $search->compare('lastUpdated',$this->lastUpdated,true);
+			$search->compare('updatedBy',$this->updatedBy,true);
+			$search->compare('priority',$this->priority,true);
+			$search->compare('leadSource',$this->leadSource,true);
+			$search->compare('rating',$this->rating);
 			
-			return $this->searchBase($criteria);
+			$count = Contacts::count($search);
+			
+			// return $this->searchBase($search);
 			// echo  var_dump($this->attributes);
 			return new CActiveDataProvider('Contacts',array(
-				'criteria'=>$criteria,
+				'criteria'=>$search,
 				// 'data'=>$results,
 				// 'modelClass'=>'Contacts',
 				// 'totalItemCount'=>$count,
 				'sort'=>array(
-					'defaultOrder'=>'lastUpdated DESC',
+					'defaultOrder'=>array(
+						'lastUpdated'=>true	// true = ASC
+					)
 				),
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),

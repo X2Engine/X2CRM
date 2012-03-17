@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/242/trunk/test/general/testdata
+END
+test_public_key.pem
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/242/trunk/test/general/testdata/test_public_key.pem
+END

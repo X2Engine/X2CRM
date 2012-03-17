@@ -37,40 +37,54 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-var ajaxUrl = '';
-var updateInterval = 2000;
-var latestId = 0;
-var pendingUpdate = null;
+var chatAjaxUrl = '';
+var chatUpdateInterval = 2000;
+var chatLastId = 0;
+var chatPendingUpdate = null;
+var chatTimeout = null;
 
 function updateChat() {
 
-	if (pendingUpdate !=  null) {
-		setTimeout(updateChat,updateInterval);
+	
+	if (chatPendingUpdate !=  null) {
+		clearTimeout(chatTimeout);
+		chatTimeout = setTimeout(updateChat,chatUpdateInterval);
 		return;
 	}
 
-	pendingUpdate = $.ajax({
+	chatPendingUpdate = $.ajax({
 		type: 'POST',
-		url: ajaxUrl,
-		data: {'latestId': latestId},
+		url: chatAjaxUrl,
+		data: {'latestId': chatLastId},
 		success: function (response){
 			var messages = $.parseJSON(response);
-			var len = (messages != null) ? messages.length-1 : -1;
+			if(messages == null)
+				messages = [];
 
 			
 			var scrollToBottom = $('#chat-box').prop('scrollTop') >= $('#chat-box').prop('scrollHeight') - $('#chat-box').height();
 			
 			for (var i in messages) {
-				latestId = messages[i].id;	// update the latest message ID received
-				$('#chat-box').append(messages[i].message);	// add new messages to chat window
+				if(messages[i].length != 4)
+					continue;
+			
+				chatLastId = messages[i][0];	// update the latest message ID received
+				var msgHtml = '<div class="message">';
+				msgHtml += messages[i][2];
+				msgHtml += '<span class="chat-timestamp"> ('+messages[i][1]+')</span>';
+				msgHtml += ': '+messages[i][3]+'</div>';
+				
+				
+				$('#chat-box').append(msgHtml);	// add new messages to chat window
 			}
 			
 			if (messages.length > 0 && scrollToBottom)
 				$('#chat-box').prop('scrollTop',$('#chat-box').prop('scrollHeight')); // scroll to bottom of window
 		},
 		complete: function (xhr,status) {
-			pendingUpdate = null;
-			setTimeout(updateChat,updateInterval);
+			chatPendingUpdate = null;
+			clearTimeout(chatTimeout);
+			chatTimeout = setTimeout(updateChat,chatUpdateInterval);
 		}
     });
 }

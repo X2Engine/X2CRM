@@ -45,7 +45,7 @@
 	</div>
 	<div class="cell">
 		<?php echo $form->labelEx($model,'comparison'); ?>
-		<?php echo $form->dropDownList($model,'comparison',$comparisonList); ?>
+		<?php echo $form->dropDownList($model,'comparison',$comparisonList,array('encode'=>false)); ?>
 		<?php echo $form->error($model,'comparison'); ?>
 	</div>
 	<div class="cell">

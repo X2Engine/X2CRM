@@ -101,7 +101,7 @@ class DefaultController extends x2base {
 ".Yii::t('accounts','Phone').": $model->phone
 ".Yii::t('accounts','Website').": $model->website
 ".Yii::t('accounts','Type').": $model->type
-".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('accounts/view/'.$model->id);
+".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/accounts/'.$model->id);
 		$body = trim($body);
 
 		$errors = array();

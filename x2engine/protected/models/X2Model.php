@@ -42,9 +42,9 @@ abstract class X2Model extends CActiveRecord {
 
 	protected static $_fields = null;	// one copy of fields for all instances of this model
 	
-	public function init() {
+	protected function queryFields() {
 		if(!isset(self::$_fields))	// only look up fields if they haven't already been looked up
-			self::$_fields = Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
+			self::$_fields = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
 	}
 	
 	/**
@@ -52,6 +52,9 @@ abstract class X2Model extends CActiveRecord {
 	 * @return array validation rules for model attributes.
 	 */
 	public function rules() {
+	
+		$this->queryFields();
+			
 		$fields = array(
 			'required'=>array(),
 			'email'=>array(),
@@ -62,25 +65,25 @@ abstract class X2Model extends CActiveRecord {
 			'safe'=>array(),
 		);
 		
-		foreach( self::$_fields as &$_field ) {
+		foreach(self::$_fields as &$_field) {
 		
-			switch( $_field['type'] ) {
+			switch($_field->type) {
 				case 'varchar':
 				case 'text':
 				case 'url':
 				case 'currency':
 				case 'dropdown':
-					$fields['safe'][] = $_field['fieldName'];	// these field types have no rules, but still need to be allowed
+					$fields['safe'][] = $_field->fieldName;	// these field types have no rules, but still need to be allowed
 					break;
 				case 'date':
-					$fields['int'][] = $_field['fieldName'];		// date is actually an int
+					$fields['int'][] = $_field->fieldName;		// date is actually an int
 					break;
 				default:
-					$fields[ $_field['type'] ][] = $_field['fieldName'];		// otherwise use the type as the validator name
+					$fields[ $_field->type ][] = $_field->fieldName;		// otherwise use the type as the validator name
 			}
 			
-			if( $_field['required'] )
-				$fields['required'][] = $_field['fieldName'];
+			if($_field->required)
+				$fields['required'][] = $_field->fieldName;
 		}
 
 		return array(
@@ -99,9 +102,13 @@ abstract class X2Model extends CActiveRecord {
 	 * @see generateAttributeLabel
 	 */
 	public function attributeLabels() {
+	
+		$this->queryFields();
+		
 		$labels = array();
-		foreach( self::$_fields as &$_field )
-			$labels[ $_field['fieldName'] ] = Yii::t('contacts',$_field['attributeLabel']);
+			
+		foreach(self::$_fields as &$_field)
+			$labels[ $_field->fieldName ] = Yii::t('contacts',$_field->attributeLabel);
 
 		return $labels;
 	}
@@ -118,10 +125,13 @@ abstract class X2Model extends CActiveRecord {
 	 * @since 1.1.4
 	 */
 	public function getAttributeLabel($attribute) {
+	
+		$this->queryFields();
+		
 		// don't call attributeLabels(), just look in self::$_fields
-		foreach( self::$_fields as &$_field ) {
-			if($_field['fieldName'] == $attribute)
-				return $_field['attributeLabel'];
+		foreach(self::$_fields as &$_field) {
+			if($_field->fieldName == $attribute)
+				return $_field->attributeLabel;
 		}
 		// original Yii code
 		if(strpos($attribute,'.')!==false) {
@@ -136,13 +146,12 @@ abstract class X2Model extends CActiveRecord {
 					break;
 			}
 			return $model->getAttributeLabel($name);
-		}
-		else
+		} else
 			return $this->generateAttributeLabel($attribute);
 	}
 	
 	public function getFields() {
-		return self::$_fields;
+		return isset(self::$_fields)? self::$_fields : array();
 	}
 
 	/**
@@ -152,6 +161,8 @@ abstract class X2Model extends CActiveRecord {
 	 */
 	public function searchBase($criteria) {
 
+		$this->queryFields();
+		
 		foreach(self::$_fields as &$field) {
 			$fieldName = $field['fieldName'];
 			switch($field['type']) {
@@ -170,7 +181,8 @@ abstract class X2Model extends CActiveRecord {
 			}
 		}
 		
-		$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
+		if(get_class($this) == 'Contacts')
+			$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
 
 
 		return new SmartDataProvider(get_class($this), array(

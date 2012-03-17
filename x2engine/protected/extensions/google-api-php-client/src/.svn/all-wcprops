@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 27
+/svn/!svn/ver/381/trunk/src
+END
+config.php
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/297/trunk/src/config.php
+END
+apiClient.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/363/trunk/src/apiClient.php
+END

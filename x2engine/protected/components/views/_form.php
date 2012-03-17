@@ -63,18 +63,18 @@ if(isset($layout)) {
 
 echo '<div class="x2-layout form-view">';
 
-$temp=RoleToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId(),'type'=>'user'));
-$roles=array();
-foreach($temp as $link){
-    $roles[]=$link->roleId;
-}
-/* x2temp */
-$groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
-foreach($groups as $link){
-    $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
-    if(isset($tempRole))
-        $roles[]=$tempRole->roleId; 
-}
+// $temp=RoleToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId(),'type'=>'user'));
+// $roles=array();
+// foreach($temp as $link){
+    // $roles[]=$link->roleId;
+// }
+// /* x2temp */
+// $groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+// foreach($groups as $link){
+    // $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
+    // if(isset($tempRole))
+        // $roles[]=$tempRole->roleId; 
+// }
 /* end x2temp */
 
 
@@ -90,6 +90,21 @@ $layoutData = json_decode($layout->layout,true);
 $formSettings = ProfileChild::getFormSettings($modelName);
 
 if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
+
+	$fieldPermissions = array();
+	if(!empty(Yii::app()->params->roles)) {
+		$rolePermissions = Yii::app()->db->createCommand()
+			->select('fieldId, permission')
+			->from('x2_role_to_permission')
+			->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
+			->queryAll();
+
+		foreach($rolePermissions as &$permission) {
+			if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
+				$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
+		}
+	}
+
 	$i = 0;
 	foreach($layoutData['sections'] as &$section) {
 			// set defaults
@@ -129,26 +144,29 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 									$fieldName = preg_replace('/^formItem_/u','',$item['name']);
 								
 									if(isset($fields[$fieldName])) {
-										$field = $fields[$fieldName];
-										$fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
-										$perms=array();
-										foreach($fieldPerms as $permission){
-											$perms[$permission->roleId]=$permission->permission;
-										}
-										$tempPerm=2;
-										foreach($roles as $role){
-											if(array_search($role,array_keys($perms))!==false){
-												if($perms[$role]<$tempPerm)
-													$tempPerm=$perms[$role];
+										$field = &$fields[$fieldName];
+										// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+										// $perms=array();
+										// foreach($fieldPerms as $permission){
+											// $perms[$permission->roleId]=$permission->permission;
+										// }
+										// $tempPerm=2;
+										// foreach($roles as $role){
+											// if(array_search($role,array_keys($perms))!==false){
+												// if($perms[$role]<$tempPerm)
+													// $tempPerm=$perms[$role];
+											// }
+										// }
+										// if($tempPerm==0){
+										if(isset($fieldPermissions[$field->id])) {
+											if($fieldPermissions[$field->id] == 0) {
+												unset($item);
+												echo '</div></div>';
+												continue;
 											}
+											elseif($fieldPermissions[$field->id] == 1)
+												$item['readOnly']=true;
 										}
-										if($tempPerm==0){
-											unset($item);
-											echo '</div></div>';
-											continue;
-										}
-										if($tempPerm==1)
-											$item['readOnly']=true;
 										
 										$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
 										switch($labelType) {
@@ -196,7 +214,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'onblur'=>$default? 'toggleText(this);' : null,
 											'style'=>$default?'color:#aaa;':null,
 										));
-									}elseif($field->type=='date'){
+									} elseif($field->type=='date') {
 										$model->$fieldName = $this->formatDate($model->$fieldName);
 										Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 										$this->widget('CJuiDateTimePicker',array(
@@ -214,7 +232,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												),
 												'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 											)); 
-										}elseif($field->type=='dropdown'){
+										} elseif($field->type=='dropdown') {
 											$dropdown=Dropdowns::model()->findByPk($field->linkType);
 											
 											$dropdowns = json_decode($dropdown->options,true);
@@ -227,14 +245,14 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 													'title'=>$field->attributeLabel,
 											));
 											
-										}elseif($field->type=='link'){
+										} elseif($field->type=='link') {
 											$default = empty($model->$fieldName);
 											if($default) 
 												$model->$fieldName = "";
 											echo CHtml::hiddenField($fieldName."_id",'',array('id'=>$fieldName."_id"));
 											$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 													'name'=>'autoselect_'.$fieldName,
-													'source' => $this->createUrl("/".$field->linkType.'/default/getItems'),
+													'source' => $this->createUrl("/".$field->linkType.'/getItems'),
 													'value'=>$model->$fieldName,
 													'options'=>array(
 														'minLength'=>'2',
@@ -253,7 +271,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 													),
 											));
 
-									}elseif($field->type=='rating'){
+									} elseif($field->type=='rating') {
 										$this->widget('CStarRating',array(
 												'model'=>$model,
 												'attribute'=>$field->fieldName,
@@ -263,7 +281,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												'starCount'=>5, //number of stars
 												'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 										)); 
-									}elseif($field->type=='boolean'){
+									} elseif($field->type=='boolean') {
 											echo '<div class="checkboxWrapper">';
 										echo $form->checkBox($model,$field->fieldName,array(
 											'unchecked'=>0,
@@ -271,20 +289,20 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'disabled'=>$item['readOnly']? 'disabled' : null,
 											'title'=>$field->attributeLabel,
 											)).'</div>';
-									}elseif($field->type=='assignment'){
+									} elseif($field->type=='assignment') {
 										if($field->linkType!='multiple')
 											echo $form->dropDownList($model, $fieldName, $users, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName.'_assignedToDropdown',
+												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
 											));
 										else
 											echo $form->dropDownList($model, $fieldName, $users, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName.'_assignedToDropdown',
+												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
 												'multiple'=>'multiple',
 											));
                                                                                 
@@ -294,19 +312,19 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName.'_groupCheckbox',
+												'id'=>$field->modelName .'_'. $fieldName .'_groupCheckbox',
 												'ajax'=>array(
 													'type'=>'POST', //request type
-														'url'=>CController::createUrl('groups/getGroups'), //url to call.
+														'url'=>CController::createUrl('/groups/getGroups'), //url to call.
 														//Style: CController::createUrl('currentController/methodToCall')
-														'update'=>'#'.$field->modelName.'_assignedToDropdown', //selector to update
+														'update'=>'#'.$field->modelName .'_'. $fieldName .'_assignedToDropdown', //selector to update
 														'complete'=>'function(){
-															if($("#'.$field->modelName.'_groupCheckbox").attr("checked")!="checked"){
-																$("#'.$field->modelName.'_groupCheckbox").attr("checked","checked");
-																$("#'.$field->modelName.'_visibility option[value=\'2\']").remove();
+															if($("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked")!="checked"){
+																$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked","checked");
+																$("#'.$field->modelName .'_'. $fieldName .'_visibility option[value=\'2\']").remove();
 															}else{
-																$("#'.$field->modelName.'_groupCheckbox").removeAttr("checked");
-																$("#'.$field->modelName.'_visibility").append(
+																$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").removeAttr("checked");
+																$("#'.$field->modelName .'_'. $fieldName .'_visibility").append(
 																	$("<option></option>").val("2").html("User\'s Groups")
 																);
 															}
@@ -314,28 +332,28 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												)
 											)).'</div><label for="group" class="groupLabel">'.Yii::t('app','Group?').'</label>';
 										/* end x2temp */  
-                                                                                }elseif($field->type=='association'){
-                                                                                    if($field->linkType!='multiple')
-                                                                                        echo $form->dropDownList($model, $fieldName, $contacts, array(
-                                                                                                        'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-                                                                                                        'disabled'=>$item['readOnly']? 'disabled' : null,
-                                                                                                        'title'=>$field->attributeLabel,
-                                                                                        ));
-                                                                                    else
-                                                                                        echo $form->listBox($model, $fieldName, $contacts, array(
-                                                                                                        'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-                                                                                                        'disabled'=>$item['readOnly']? 'disabled' : null,
-                                                                                                        'title'=>$field->attributeLabel,
-                                                                                                        'multiple'=>'multiple',
-                                                                                        ));
-                                                                                }elseif($field->type=='visibility'){
-                                                                                        echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
-                                                                                                        'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-                                                                                                        'disabled'=>$item['readOnly']? 'disabled' : null,
-                                                                                                        'title'=>$field->attributeLabel,
-                                                                                                        'id'=>$field->modelName."_visibility",
-                                                                                        ));
-                                                                                }
+										} elseif($field->type=='association') {
+											if($field->linkType!='multiple')
+												echo $form->dropDownList($model, $fieldName, $contacts, array(
+																'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+																'disabled'=>$item['readOnly']? 'disabled' : null,
+																'title'=>$field->attributeLabel,
+												));
+											else
+												echo $form->listBox($model, $fieldName, $contacts, array(
+																'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+																'disabled'=>$item['readOnly']? 'disabled' : null,
+																'title'=>$field->attributeLabel,
+																'multiple'=>'multiple',
+												));
+										} elseif($field->type=='visibility') {
+												echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
+																'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+																'disabled'=>$item['readOnly']? 'disabled' : null,
+																'title'=>$field->attributeLabel,
+																'id'=>$field->modelName."_visibility",
+												));
+										}
 									}
 								}
 								unset($item);

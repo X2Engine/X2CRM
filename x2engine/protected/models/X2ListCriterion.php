@@ -42,6 +42,7 @@
  * This is the model class for table "x2_list_criteria".
  *
  * The followings are the available columns in table 'x2_list_criteria':
+ * @property integer $id
  * @property integer $listId
  * @property string $type
  * @property string $attribute
@@ -72,14 +73,14 @@ class X2ListCriterion extends CActiveRecord {
 		// will receive user inputs.
 		return array(
 			array('listId, value', 'required'),
-			array('listId', 'numerical', 'integerOnly'=>true),
+			array('id, listId', 'numerical', 'integerOnly'=>true),
 			array('comparison', 'length', 'max'=>10),
 			array('type', 'length', 'max'=>20),
 			array('attribute', 'length', 'max'=>40),
 			array('value', 'length', 'max'=>100),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('listId, type, attribute, comparison, value', 'safe', 'on'=>'search'),
+			array('id, listId, type, attribute, comparison, value', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -98,8 +99,9 @@ class X2ListCriterion extends CActiveRecord {
 	 */
 	public function attributeLabels() {
 		return array(
-			'listId' => 'List',
-			'type' => 'Type',
+			'id' => Yii::t('app','ID'),
+			'listId' => Yii::t('contacts','List'),
+			'type' => Yii::t('contacts','Type'),
 			'attribute' => Yii::t('contacts','Attribute'),
 			'comparison' => Yii::t('contacts','Comparison'),
 			'value' => Yii::t('contacts','Value'),
@@ -116,6 +118,7 @@ class X2ListCriterion extends CActiveRecord {
 
 		$criteria=new CDbCriteria;
 
+		$criteria->compare('id',$this->id,true);
 		$criteria->compare('listId',$this->listId,true);
 		$criteria->compare('type',$this->type,true);
 		$criteria->compare('attribute',$this->attribute,true);

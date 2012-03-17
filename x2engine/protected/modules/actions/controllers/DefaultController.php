@@ -54,7 +54,7 @@ class DefaultController extends x2base {
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','createSplash','createInline','viewGroup','complete',	//quickCreate
-					'completeRedirect','update', 'quickUpdate', 'updateSelected', 'viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail'),
+					'completeRedirect','update', 'quickUpdate', 'completeSelected', 'uncompleteSelected', 'updateSelected', 'viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -113,7 +113,7 @@ class DefaultController extends x2base {
 ".Yii::t('actions','Description').": $model->actionDescription
 ".Yii::t('actions','Type').": $model->type
 ".Yii::t('actions','Associations').": ".Yii::t('actions',$model->associationName)."
-".Yii::t('actions','Link to the action').": ".'http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl.'/index.php/actions/'.$model->id;
+".Yii::t('actions','Link to the action').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/actions/'.$model->id);
 		$body = trim($body);
 
 		$errors = array();
@@ -272,7 +272,16 @@ class DefaultController extends x2base {
 			if(is_numeric($model->assignedTo)) { // assigned to calendar instead of user?
 				$model->calendarId = $model->assignedTo;
 				$model->assignedTo = null;
+
+				$calendar = X2Calendar::model()->findByPk($model->calendarId);
+				if($calendar->googleCalendar && $calendar->googleCalendarId) {
+					$model->dueDate = $this->parseDateTime($model->dueDate);
+					if($model->completeDate)
+						$model->completeDate = $this->parseDateTime($model->completeDate);
+					$calendar->createGoogleEvent($model); // action/event assigned to Google Calendar, no need to create Action since it's saved to google
+				}
 			}
+			
 			$this->create($model,$temp,'0');
                         
 		}
@@ -456,6 +465,40 @@ class DefaultController extends x2base {
 		}
 	}
 	
+	/**
+	 * complete a list of selected actions from a gridview
+	 */
+	public function actionCompleteSelected() {
+		if(isset($_POST['Actions'])) {
+			$ids = $_POST['Actions'];
+			foreach($ids as $id) {
+				$action = Actions::model()->findByPk($id);
+				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
+					$action->complete = 'Yes';
+					$action->completedBy = Yii::app()->user->getName();
+					$action->completeDate = time();
+					$action->update();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * uncomplete a list of selected actions from a gridview
+	 */
+	public function actionUncompleteSelected() {
+		if(isset($_POST['Actions'])) {
+			$ids = $_POST['Actions'];
+			foreach($ids as $id) {
+				$action = Actions::model()->findByPk($id);
+				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
+					$action->complete = 'No';
+					$action->completeDate = null;
+					$action->update();
+				}
+			}
+		}
+	}
 	
 	/**
 	 * complete/uncomplete a list of selected actions from a gridview

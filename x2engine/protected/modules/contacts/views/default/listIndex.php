@@ -44,7 +44,8 @@ $heading = Yii::t('contacts','Contacts Lists');
 $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists')),
-	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
+	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
+	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -83,12 +84,28 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'name'=>'name',
 			'type'=>'raw',
 			'value'=>'CHtml::link($data->name,X2List::getRoute($data->id))',
+			'headerHtmlOptions'=>array('style'=>'width:40%;'),
+		),
+		array(
+			'name'=>'type',
+			'type'=>'raw',
+			'value'=>'$data->type=="static"? Yii::t("app","Static") : Yii::t("app","Dynamic")',
+			'headerHtmlOptions'=>array('style'=>'width:15%;'),
+		),
+		array(
+			'name'=>'assignedTo',
+			'type'=>'raw',
+			'value'=>'UserChild::getUserLinks($data->assignedTo)',
 		),
 		array(
 			'name'=>'count',
 			'headerHtmlOptions'=>array('class'=>'contact-count'),
 			'htmlOptions'=>array('class'=>'contact-count'),
-			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data->count)',
+			'value'=>'$data->type=="static"? Yii::app()->locale->numberFormatter->formatDecimal($data->count) : "---"',
+			'headerHtmlOptions'=>array('style'=>'width:20%;'),
 		),
 	),
-));
+)); ?>
+<br>
+<?php
+echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/createList'),array('class'=>'x2-button'));

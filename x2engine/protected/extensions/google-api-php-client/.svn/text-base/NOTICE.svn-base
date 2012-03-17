@@ -1,0 +1,8 @@
+This product contains the following libraries:
+
+OAuth PHP library (http://oauth.googlecode.com)
+Copyright (c) 2007 Andy Smith, released under an MIT License
+http://oauth.googlecode.com/svn/code/php/LICENSE.txt
+
+XRDS-Simple library from http://code.google.com/p/diso/
+Apache License 2.0

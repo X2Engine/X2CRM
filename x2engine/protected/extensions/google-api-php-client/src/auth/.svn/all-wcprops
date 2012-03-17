@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 32
+/svn/!svn/ver/361/trunk/src/auth
+END
+apiOAuth.php
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/308/trunk/src/auth/apiOAuth.php
+END
+apiAuthNone.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/308/trunk/src/auth/apiAuthNone.php
+END
+apiAuth.php
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/308/trunk/src/auth/apiAuth.php
+END
+apiOAuth2.php
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/361/trunk/src/auth/apiOAuth2.php
+END
+apiSigner.php
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/242/trunk/src/auth/apiSigner.php
+END
+apiP12Signer.php
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/242/trunk/src/auth/apiP12Signer.php
+END
+apiVerifier.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/242/trunk/src/auth/apiVerifier.php
+END
+apiLoginTicket.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/242/trunk/src/auth/apiLoginTicket.php
+END
+apiPemVerifier.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/242/trunk/src/auth/apiPemVerifier.php
+END

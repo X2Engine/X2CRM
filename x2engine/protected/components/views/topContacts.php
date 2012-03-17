@@ -79,7 +79,7 @@ foreach($topContacts as $contact) {
 	$contactIdList[] = $contact->id;
 	echo '<li id="contact' . $contact->id . '">';
 	$link = '<strong>'.$contact->firstName.' '.$contact->lastName.'</strong><br />'.$contact->phone;
-	echo CHtml::link($link,array('/contacts/default/view','id'=>$contact->id));
+	echo CHtml::link($link,array('/contacts/'.$contact->id));
 	
 	echo CHtml::link('[x]','#',array(
 		'class'=>'delete-link',

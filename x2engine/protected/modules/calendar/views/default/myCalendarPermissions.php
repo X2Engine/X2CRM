@@ -41,7 +41,7 @@
 $this->menu=array(
 	array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
 	array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
-	array('label'=>Yii::t('calendar','List'), 'url'=>array('index')),
+	array('label'=>Yii::t('calendar','List'), 'url'=>array('list')),
 	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
 );
 ?>

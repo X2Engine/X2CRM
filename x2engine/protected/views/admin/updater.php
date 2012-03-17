@@ -5,8 +5,10 @@ var fileList=<?php echo json_encode($fileList);?>;
 var i=0;
 var sqlList=<?php echo json_encode($sqlList);?>;
 var j=0;
+var k=0;
 var sqlCount=1;
-
+var deleteCount=1;
+var deleteList=<?php echo json_encode($deletionList);?>;
 function downloadFile(fileList, i){
     $.ajax({
           url: "download",
@@ -17,7 +19,7 @@ function downloadFile(fileList, i){
               if(count==fileList.length){
                   $('#update-text').html('Download complete.');
                   alert('Download complete.');
-                  sql(sqlList, j);
+                  deleteFile(deleteList, k);
               }else{
                   count++;
                   var width=count/fileList.length*100;
@@ -26,6 +28,34 @@ function downloadFile(fileList, i){
                   $('#progress-text').html(width+"%");
                   $('#update-text').html('Downloading file: '+fileList[count-1]);
                   downloadFile(fileList, i+1);
+              }
+              
+          },
+          error: function(){
+              cleanUp('error');
+          }
+        });
+}
+
+function deleteFile(deleteList, k){
+    $.ajax({
+          url: "delete",
+          type: "POST",
+          data: {'delete':deleteList[k]},
+          context: document.body,
+          success: function(){
+              if(deleteCount==deleteList.length){
+                  $('#update-text').html('Deletions complete.');
+                  alert('Deletions complete.');
+                  sql(sqlList, j);
+              }else{
+                  deleteCount++;
+                  var width=deleteCount/deleteList.length*100;
+                  width=Math.round(width);
+                  $('#progress').css({'width':width+'%'});
+                  $('#progress-text').html(width+"%");
+                  $('#update-text').html('Deleting file: '+deleteList[deleteCount-1]);
+                  deleteFile(deleteList, k+1);
               }
               
           },

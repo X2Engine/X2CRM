@@ -101,7 +101,7 @@ class DefaultController extends x2base {
 ".Yii::t('sales','Sales Stage').": $model->salesStage
 ".Yii::t('sales','Lead Source').": $model->leadSource
 ".Yii::t('sales','Probability').": $model->probability
-".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('sales/view/'.$model->id);
+".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/sales/'.$model->id);
 		
 		$body = trim($body);
 

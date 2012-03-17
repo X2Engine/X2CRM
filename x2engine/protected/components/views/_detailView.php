@@ -47,7 +47,7 @@ if($modelName=='contacts' || $modelName=='sales'){
 Yii::app()->clientScript->registerScript('updateWorkflow',"
 function startWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/startStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/startStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
 		success: function(response) {
@@ -60,7 +60,7 @@ function startWorkflowStage(workflowId,stageNumber) {
 
 function completeWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/completeStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/completeStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
 		success: function(response) {
@@ -85,7 +85,7 @@ function completeWorkflowStageComment() {
 		$('#workflowComment').css('border','1px solid red');
 	} else {
 		$.ajax({
-			url: '" . CHtml::normalizeUrl(array('workflow/completeStage')) . "',
+			url: '" . CHtml::normalizeUrl(array('/workflow/completeStage')) . "',
 			type: 'GET',
 			data: 'workflowId='+$('#workflowCommentWorkflowId').val()+'&stageNumber='+$('#workflowCommentStageNumber').val()+'&modelId=".$model->id."&type=contacts&comment='+encodeURI(comment),
 			success: function(response) {
@@ -135,28 +135,36 @@ if(isset($layout)) {
 
 echo '<div class="x2-layout">';
 
-$temp=RoleToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId(),'type'=>'user'));
-$roles=array();
-foreach($temp as $link) {
-    $roles[]=$link->roleId;
-}
-/* x2temp */
-$groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
-foreach($groups as $link) {
-    $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
-    if(isset($tempRole))
-        $roles[]=$tempRole->roleId; 
-}
-/* end x2temp */
-
 $fields = array();
-foreach(Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
-	$fields[$fieldModel->fieldName] = $fieldModel;
+
+// remove this later, once all models extend X2Models
+if(method_exists($model,'getFields')) {
+	foreach($model->fields as $fieldModel)
+		$fields[$fieldModel->fieldName] = $fieldModel;
+} else {
+	foreach(Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
+		$fields[$fieldModel->fieldName] = $fieldModel;
+}
 
 $layoutData = json_decode($layout->layout,true);
 $formSettings = ProfileChild::getFormSettings($modelName);
 
 if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
+
+	$fieldPermissions = array();
+	if(!empty(Yii::app()->params->roles)) {
+		$rolePermissions = Yii::app()->db->createCommand()
+			->select('fieldId, permission')
+			->from('x2_role_to_permission')
+			->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
+			->queryAll();
+
+		foreach($rolePermissions as &$permission) {
+			if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
+				$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
+		}
+	}
+
 	$i = 0;
 	foreach($layoutData['sections'] as &$section) {
 		// set defaults
@@ -196,23 +204,29 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 								
 									if(isset($fields[$fieldName])) {
 										$field = $fields[$fieldName];
-										$fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
-										$perms=array();
-										foreach($fieldPerms as $permission){
-											$perms[$permission->roleId]=$permission->permission;
-										}
-										$tempPerm=2;
-										foreach($roles as $role){
-											if(array_search($role,array_keys($perms))!==false){
-												if($perms[$role]<$tempPerm)
-													$tempPerm=$perms[$role];
+										
+											if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
+												unset($item);
+												echo '</div></div>';
+												continue;
 											}
-										}
-										if($tempPerm==0){
-											unset($item);
-											echo '</div></div>';
-											continue;
-										}
+										// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+										// $perms=array();
+										// foreach($fieldPerms as $permission){
+											// $perms[$permission->roleId]=$permission->permission;
+										// }
+										// $tempPerm=2;
+										// foreach(Yii::app()->params->roles as $role){
+											// if(array_search($role,array_keys($perms))!==false){
+												// if($perms[$role]<$tempPerm)
+													// $tempPerm=$perms[$role];
+											// }
+										// }
+										// if($tempPerm==0){
+											// unset($item);
+											// echo '</div></div>';
+											// continue;
+										// }
 										
 										$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
 										switch($labelType) {
@@ -302,15 +316,17 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												));
 											}
 											echo $text;
-										}elseif($field->type=='link') {
-											if(!empty($model->$fieldName) && is_numeric($model->$fieldName)){
-												$type=ucfirst($field->linkType);
-												eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
-												if(isset($lookupModel))
-													eval("echo CHtml::link($type::model()->findByPk(".$model->$fieldName.")->name,array('/".$field->linkType."/default/view/id/".$model->$fieldName."'),array('target'=>'_blank'));");
-											}elseif(!empty($model->$fieldName)){
+										} elseif($field->type=='link') {
+											if(!empty($model->$fieldName) && is_numeric($model->$fieldName)) {
+												$className = ucfirst($field->linkType);
+												if(class_exists($className)) {
+													$lookupModel = CActiveRecord::model($className)->findByPk($model->$fieldName);
+													if(isset($lookupModel))
+														echo CHtml::link($lookupModel->name,array('/'.$field->linkType.'/'.$model->$fieldName),array('target'=>'_blank'));
+												}
+											} elseif(!empty($model->$fieldName)) {
 												echo $model->$fieldName;
-											}else{
+											} else {
 												echo '&nbsp;';
 											}
 										} elseif($field->type=='boolean') {
@@ -326,8 +342,8 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										} elseif($field->type == 'dropdown') {
 											echo empty($model->$fieldName)? '&nbsp;' : Yii::t(strtolower(Yii::app()->controller->id),$model->$fieldName);
 										} elseif($field->type=='text'){
-                                                                                        echo empty($model->$fieldName)? '&nbsp;' : $this->convertUrls($model->$fieldName);     
-                                                                                }else{
+											echo empty($model->$fieldName)? '&nbsp;' : $this->convertUrls($model->$fieldName);     
+										} else {
 											echo empty($model->$fieldName)? '&nbsp;' : $model->$fieldName;
 										}
 									}

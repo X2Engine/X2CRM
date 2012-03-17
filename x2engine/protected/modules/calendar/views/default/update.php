@@ -57,11 +57,42 @@ $users = UserChild::getNames();
 unset($users['Anyone']);
 unset($users['admin']);
 
+$form=$this->beginWidget('CActiveForm', array(
+   'id'=>'calendar-form',
+   'enableAjaxValidation'=>false,
+));
+
 echo $this->renderPartial('application.components.views._form', 
 	array(
 		'model'=>$model,
+		'form'=>$form,
 		'modelName'=>'calendar',
 		'users'=>$users,
+		'isQuickCreate'=>true, // let us create the CActiveForm in this file
 	)
 );
- ?>
+?>
+
+<?php if(!$googleIntegration) { ?>
+
+<div class="x2-layout form-view" style="margin-bottom: 0;">
+	<div class="formSection">
+		<div class="formSectionHeader">
+			<span class="sectionTitle"><?php echo Yii::t('calendar', 'Google'); ?></span>
+		</div>
+	</div>
+</div>
+
+<div class="form" style="border:1px solid #ccc; border-top: 0; padding: 0; margin-top:-1px; border-radius:0;-webkit-border-radius:0; background:#eee;">
+	<table frame="border">
+		<td>
+			<?php echo $form->labelEx($model, 'googleCalendar'); ?>
+			<?php echo $form->checkbox($model, 'googleCalendar'); ?>
+			<?php echo $form->labelEx($model, 'googleFeed'); ?>
+			<?php echo $form->textField($model, 'googleFeed', array('size'=>75)); ?>
+		</td>
+	</table>
+</div>
+
+<?php } ?>
+<?php $this->endWidget(); ?>

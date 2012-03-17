@@ -66,6 +66,7 @@ foreach($fields as $field){
 }
 $users=UserChild::getNames();
 unset($users['']);
+unset($users['Anyone']);
 unset($users['admin']);
 /* x2temp */
 $groups=Groups::model()->findAll();

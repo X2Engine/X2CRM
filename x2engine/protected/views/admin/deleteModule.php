@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,7 +45,7 @@
 <form name="deleteModule" action="deleteModule" method="POST">
 	<br />
 	<select name="name">
-		<?php foreach($modules as $module) echo "<option value='$module'>$module</option>"; ?>
+		<?php foreach($modules as $name=>$module) echo "<option value='$name'>$module</option>"; ?>
 	</select>
 	<br /><br />
 	<input class="x2-button" type="submit" value="<?php echo Yii::t('admin','Delete');?>" />

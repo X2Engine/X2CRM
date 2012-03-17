@@ -59,6 +59,18 @@ Extra fields should be added from the "Manage Fields" page.<br /><br />
 	<div class="row">
 		<div class="cell"><label for="moduleName"><?php echo Yii::t('module','DB Table Name'); ?></label><?php echo Yii::t('module','Optional (alphanumeric only, must start with a letter)'); ?><br /><input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="moduleName" id="moduleName" /><br /></div>
 	</div>
-	
+    
+        <div class="row">
+		<div class="cell"><label for="searchable">Is this module searchable?</label><select name="searchable" type="dropdown"><option value="1">Yes</option><option value="0">No</option></select></div>
+        </div>
+    
+        <div class="row">
+            <div class="cell"><label for="editable">Can this module have forms/fields edited?</label><select name="editable" type="dropdown"><option value="1">Yes</option><option value="0">No</option></select></div>
+        </div>
+
+        <div class="row">
+            <div class="cell"><label for="adminOnly">Is this module only visible to admin?</label><select name="adminOnly" type="dropdown"><option value="1">Yes</option><option value="0" selected="selected">No</option></select></div>
+        </div>
+
 	<br /><br /><input type="Submit" name="Submit" value="<?php echo Yii::t('app','Submit'); ?>" class="x2-button" /> 
 </div>

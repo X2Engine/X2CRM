@@ -159,6 +159,7 @@ function addProduct() {
 	var adjustments = $('<input>', {
 		type: 'text',
 		size: 10,
+		title: '-5, -4.50, -25%',
 		'onFocus': 'toggleText(this);',
 		'onBlur': 'toggleText(this);',
 		'style': 'color:#aaa;',
@@ -248,6 +249,7 @@ function addFilledProduct(fillId, fillPrice, fillQuantity, fillAdjustment) {
 	var adjustments = $('<input>', {
 		type: 'text',
 		size: 10,
+		title: '-5, -4.50, -25%',
 		'onFocus': 'toggleText(this);',
 		'onBlur': 'toggleText(this);',
 		name: 'ExistingProducts[adjustment][]',

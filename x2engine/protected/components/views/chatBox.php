@@ -44,10 +44,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.
 $admin = Admin::model()->findByPk(1);
 $updateInterval = $admin->chatPollTime;
 
-$ajaxUrl = $this->controller->createUrl('/site/getMessages');
+$ajaxUrl = $this->controller->createUrl('/notifications/getMessages');
 Yii::app()->clientScript->registerScript('updateChatJs', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
+	chatUpdateInterval = " . $updateInterval . ";
+	chatAjaxUrl = '".$ajaxUrl . "';
 	$(document).ready(updateChat());	//update on page load
 ",CClientScript::POS_HEAD); 
 

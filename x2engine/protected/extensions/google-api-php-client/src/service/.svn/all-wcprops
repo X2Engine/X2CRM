@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/379/trunk/src/service
+END
+apiService.php
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/304/trunk/src/service/apiService.php
+END
+apiUtils.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/331/trunk/src/service/apiUtils.php
+END
+apiModel.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/266/trunk/src/service/apiModel.php
+END
+apiBatch.php
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/18/trunk/src/service/apiBatch.php
+END
+apiMediaFileUpload.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/379/trunk/src/service/apiMediaFileUpload.php
+END
+apiServiceResource.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/379/trunk/src/service/apiServiceResource.php
+END
+apiServiceRequest.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/353/trunk/src/service/apiServiceRequest.php
+END

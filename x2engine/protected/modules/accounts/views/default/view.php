@@ -105,13 +105,15 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->name,array("contacts/".$data->id))',
+			'value'=>'CHtml::link($data->name,array("/contacts/".$data->id))',
 			'type'=>'raw',
 		),
 	),
 	'enableControls'=>true,
 ));
-echo "<br />";
+?>
+<br>
+<?php
 $this->widget('InlineActionForm',
 	array(
 		'associationType'=>'accounts',
@@ -128,7 +130,7 @@ else
     $history="all";
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$actionHistory,
-	'itemView'=>'../actions/_view',
+	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> 
             ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),"?history=all")).

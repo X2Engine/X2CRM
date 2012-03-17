@@ -69,12 +69,12 @@ foreach($recentItems as $item) {
 		
 		$link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).'</strong><br />'.MediaChild::attachmentActionText($description);
 		//$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
-		echo CHtml::link($link,array('/actions/default/view','id'=>$item['model']->id));
+		echo CHtml::link($link,array('/actions/'.$item['model']->id));
 
 	} else if ($item['type']=='c') {	//item is a contact
 
 		$link = '<strong>'.$item['model']->firstName.' '.$item['model']->lastName.'</strong><br />'.$item['model']->phone;
-		echo CHtml::link($link,array('/contacts/default/view','id'=>$item['model']->id));
+		echo CHtml::link($link,array('/contacts/'.$item['model']->id));
 
 	}
 	echo "</li>\n";

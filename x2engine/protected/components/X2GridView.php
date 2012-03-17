@@ -42,6 +42,8 @@ Yii::import('zii.widgets.grid.CGridView');
 
 class X2GridView extends CGridView {
 	
+	public $selectableRows = 2;
+	
 	public $modelName;
 	public $viewName;
 	public $enableGvSettings = true;
@@ -61,6 +63,8 @@ class X2GridView extends CGridView {
 	
 	public function init() {
 		
+		
+		// $this->selectionChanged = 'js:function() { console.debug($.fn.yiiGridView.getSelection("'.$this->id.'")); }';
 		
 		// if(empty($this->modelName))
 			// $this->modelName = $this->getId();
@@ -104,6 +108,7 @@ class X2GridView extends CGridView {
 			$this->allFieldNames['gvControls'] = Yii::t('app','Tools');
 		
 		$this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
+		$this->allFieldNames['gvCheckbox_Two'] = Yii::t('app', 'Checkbox');
 
 		// load fields from DB
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
@@ -252,7 +257,7 @@ class X2GridView extends CGridView {
 				$columns[] = $newColumn;
 					
 			} else if($columnName == 'gvControls') {
-				$newColumn['id'] = 'C_'.'gvControls';
+				$newColumn['id'] = 'C_gvControls';
 				$newColumn['class'] = 'CButtonColumn';
 				$newColumn['header'] = Yii::t('app','Tools');
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
@@ -273,7 +278,14 @@ class X2GridView extends CGridView {
 				
 				$columns[] = $newColumn;
 			} else if ($columnName == 'gvCheckbox') {
-				$newColumn['id'] = 'C_'.'gvCheckbox';
+				$newColumn['id'] = 'C_gvCheckbox';
+				$newColumn['class'] = 'CCheckBoxColumn';
+				// $newColumn['selectableRows'] = 2;
+				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
+					
+				$columns[] = $newColumn;
+			} else if ($columnName == 'gvCheckbox_Two') {
+				$newColumn['id'] = 'C_'.'gvCheckbox_Two';
 				$newColumn['class'] = 'CCheckBoxColumn';
 				$newColumn['selectableRows'] = 2;
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
@@ -319,27 +331,24 @@ class X2GridView extends CGridView {
 		// "$('#".$this->getId()." table').after('".addcslashes($columnHtml,"'")."');
 		
 		// ",CClientScript::POS_READY);
-                $themeURL = Yii::app()->theme->getBaseUrl();
-                Yii::app()->clientScript->registerScript('logos',"
-                $(window).load(function(){
-                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                    var touchlogosrc = $('#x2touch-logo').attr('src');
-                    var logosrc=$('#x2crm-logo').attr('src');
-                    if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                });    
-                ");
-			
-		
-		
-		
+		$themeURL = Yii::app()->theme->getBaseUrl();
+		Yii::app()->clientScript->registerScript('logos',"
+		$(window).load(function(){
+			if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+				$('a').removeAttr('href');
+				alert('Please put the logo back');
+				window.location='http://www.x2engine.com';
+			}
+			var touchlogosrc = $('#x2touch-logo').attr('src');
+			var logosrc=$('#x2crm-logo').attr('src');
+			if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+				$('a').removeAttr('href');
+				alert('Please put the logo back');
+				window.location='http://www.x2engine.com';
+			}
+		});    
+		");
+
 		parent::init();
 	}
 
@@ -359,36 +368,8 @@ class X2GridView extends CGridView {
 		} else {
 			$this->renderEmptyText();
 		}
-		// echo "</div><div>\n";
-		/* if($this->enableGvSettings) {
-			// if(isset($_GET['columns'])) {
-				// $showColumnSelector = '';
-			// } else
-				// $showColumnSelector = 'style="display:none;"';
-				
-			echo CHtml::beginForm(array('site/saveGvSettings'),'get'); ?>
-			<ul class="column-selector" <?php //echo $showColumnSelector; ?> id="<?php echo $this->columnSelectorId; ?>">
-			<?php foreach($this->allFieldNames as $fieldName=>&$attributeLabel) {
-
-				$selected = array_key_exists($fieldName,$this->gvSettings);
-				echo "<li>";
-				echo CHtml::checkbox('columns[]',$selected,array('id'=>$fieldName.'_checkbox','value'=>$fieldName));
-				echo CHtml::label($attributeLabel,$fieldName.'_checkbox');
-				echo "</li>\n";
-
-			} ?></ul>
-			<?php echo CHtml::endForm();
-		} */
 	}
 
-	
-	
-	
-	public function run() {
-		parent::run();
-	}
-
-	
 	public function registerClientScript() {
 		parent::registerClientScript();
 		
@@ -404,8 +385,6 @@ class X2GridView extends CGridView {
 				columnSelectorHtml:'".addcslashes($this->columnSelectorHtml,"'")."'
 			});",CClientScript::POS_READY);
 		}
-		
-		
 	}
 	
 	public function renderTableHeader() {

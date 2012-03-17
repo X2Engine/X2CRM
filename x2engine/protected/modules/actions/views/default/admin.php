@@ -59,6 +59,17 @@ $('.search-form form').submit(function(){
 });
 ");
 
+Yii::app()->clientScript->registerScript('completeUncompleteSelected', "
+function completeSelected() {
+	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
+	$.post('completeSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+}
+function uncompleteSelected() {
+	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
+	$.post('uncompleteSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+}
+",CClientScript::POS_HEAD);
+
 function trimText($text) {
 	if(strlen($text)>150)
 		return substr($text,0,147).'...';
@@ -77,11 +88,11 @@ function trimText($text) {
 )); ?>
 </div><!-- search-form -->
 
-<?php 
+<?php /*
 $form=$this->beginWidget('CActiveForm', array(
 	'action'=>array('updateSelected'),
     'enableAjaxValidation'=>false,
-));
+)); */
 $this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -120,9 +131,9 @@ $this->widget('application.components.X2GridView', array(
 ?>
 <br />
 <div class="row buttons">
-<?php echo CHtml::submitButton(Yii::t('actions','Complete Selected'),array('class'=>'x2-button', 'style'=>'display:inline;', 'name'=>'complete-selected-button'))."\n"; ?>
-<?php echo CHtml::submitButton(Yii::t('actions','Uncomplete Selected'),array('class'=>'x2-button', 'style'=>'display:inline;', 'name'=>'uncomplete-selected-button'))."\n"; ?>
+	<a class="x2-button" href="#" onClick="completeSelected();"><?php echo Yii::t('actions','Complete Selected'); ?></a>
+	<a class="x2-button" href="#" onClick="uncompleteSelected()"><?php echo Yii::t('actions','Uncomplete Selected'); ?></a>
 </div>
-<?php $this->endWidget(); ?>
+<?php //$this->endWidget(); ?>
 
 

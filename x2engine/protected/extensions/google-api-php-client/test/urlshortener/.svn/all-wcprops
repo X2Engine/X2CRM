@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/313/trunk/test/urlshortener
+END
+UrlShortenerTests.php
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/313/trunk/test/urlshortener/UrlShortenerTests.php
+END
+AllUrlShortenerTests.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/143/trunk/test/urlshortener/AllUrlShortenerTests.php
+END

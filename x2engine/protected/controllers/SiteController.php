@@ -160,6 +160,7 @@ class SiteController extends x2base {
 	}
 
 	public function actionGroupChat() {
+		$this->portlets = array();
 		$this->layout='//layouts/column2';
 		//$portlets = $this->portlets;
 		// display full screen group chat

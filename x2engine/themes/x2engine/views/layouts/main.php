@@ -43,7 +43,7 @@ $isAdmin = !$isGuest && Yii::app()->user->getName()=='admin';
 $isUser = !($isGuest || $isAdmin);
 if(Yii::app()->session['alertUpdate']){
 ?><script>
-	alert(<?php echo addslashes(Yii::t('admin','A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.')); ?>');
+	alert(<?php echo addslashes(Yii::t('admin','A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.')); ?>);
 </script>
 
 <?php
@@ -254,17 +254,14 @@ if($isGuest) {
 	);
 } else {
 	// $admin=Admin::model()->findByPk(1);
+
+        $modules=Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
+        $standardMenuItems = array();	
+        foreach($modules as $moduleItem){
+            if($isAdmin || $moduleItem->adminOnly==0)
+                $standardMenuItems[$moduleItem->name]=$moduleItem->title;
+        }
 	
-	$nicknames = explode(":",Yii::app()->params->admin->menuNicknames);
-	$menuOrder = explode(":",Yii::app()->params->admin->menuOrder);
-	$menuVis = explode(":",Yii::app()->params->admin->menuVisibility);
-	
-	$standardMenuItems = array();		// hash array with correct order, containing realName => nickName
-	
-	for($i=0;$i<count($menuOrder);$i++) {
-		if($menuVis[$i] == 1)
-			$standardMenuItems[$menuOrder[$i]] = mb_ereg_replace('&#58;',':',$nicknames[$i]);	// only include visible items
-	}
 
 	$menuItems = array();
 	
@@ -277,18 +274,16 @@ if($isGuest) {
 		elseif(is_dir('protected/modules/'.$key)){
                         if(!is_null($this->getModule()))
                             $module=$this->getModule()->id;
-                        $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/default/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
+                        $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
                 }else{
-			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$key))));
+			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
 			if(isset($page)){
 				$id=$page->id;
 				$menuItems[$key] = array('label' =>ucfirst($value),		'url' => array('/admin/viewPage/'.$id),		'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/admin/viewPage/'.$id?true:null);
 			}
 		}
 	}
-	if($isAdmin) {
-		$menuItems['users'] = array('label'=>Yii::t('app','Users'), 'url'=>array('/users/admin'), 'active'=>($module=='users')? true : null);
-	}
+	
 }
 
 $maxMenuItems = 4;
@@ -341,7 +336,7 @@ $userMenu = array(
 		<?php
 			$notifications = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0));
 			echo CHtml::link($notifications,array('/site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
-			echo CHtml::link('',array('site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
+			echo CHtml::link('',array('/site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
 		<?php
 		//render main menu items
 		$this->widget('zii.widgets.CMenu', array(
@@ -397,7 +392,7 @@ $userMenu = array(
 		));?></div><?php
 		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button'))." \n";
 		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'transparency-button'))." \n";
-		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/default/create'),array('class'=>'x2-button'))." \n";
+		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/create'),array('class'=>'x2-button'))." \n";
 		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('/actions/default/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
 		// echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact + Action').'</span>',array('actions/quickCreate'),array('class'=>'x2-button'))." \n";
 		?>
@@ -421,7 +416,7 @@ $userMenu = array(
 			'{BSD}'=>CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),
 			'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
 		));?><br>
-		<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(Yii::getLogger()->getExecutionTime(),3)));
+		<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>number_format(Yii::getLogger()->getExecutionTime(),3)));
 		?><br>
 		<?php
 		Yii::app()->clientScript->registerScript('logos',"

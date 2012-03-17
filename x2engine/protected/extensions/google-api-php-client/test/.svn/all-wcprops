@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/!svn/ver/383/trunk/test
+END
+BaseTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/313/trunk/test/BaseTest.php
+END
+AllTests.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/383/trunk/test/AllTests.php
+END
+phpunit.xml
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/377/trunk/test/phpunit.xml
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/212/trunk/test/README
+END

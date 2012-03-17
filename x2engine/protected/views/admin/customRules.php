@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h2>Manage Lead Routing</h2>
-Manage routing criteria. This setting is only required if lead distribution is set to "Custom Round Robin"
+?><h2><?php echo Yii::t('admin','Manage Lead Routing'); ?></h2>
+<?php echo Yii::t('admin','Manage routing criteria. This setting is only required if lead distribution is set to "Custom Round Robin"'); ?>
 
 <?php
 
@@ -75,10 +75,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	),
 ));
 ?>
-<br />
+<br>
 
-<h2>Add Criteria for Lead Routing</h2>
-To add a condition which will affect how leads are distributed, please fill out the form below.<br /><br />
+<h2><?php echo Yii::t('admin','Add Criteria for Lead Routing'); ?></h2>
+<?php echo Yii::t('admin','To add a condition which will affect how leads are distributed, please fill out the form below.'); ?><br><br>
 
 
 <div class="form">
@@ -88,11 +88,15 @@ To add a condition which will affect how leads are distributed, please fill out 
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
+	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
         
         <div class="row">
             <?php echo $form->labelEx($model,'field'); ?>
-            <?php echo $form->dropDownList($model,'field',CActiveRecord::model('Contacts')->attributeLabels()); ?>
+            <?php
+			// die(var_dump(X2Model::model('Contacts')));
+			// $contact = new Contacts;
+			// echo $form->dropDownList($model,'field',$contact->attributeLabels());
+			echo $form->dropDownList($model,'field',CActiveRecord::model('Contacts')->attributeLabels()); ?>
             <?php echo $form->error($model,'field'); ?>
         </div>
         
@@ -107,7 +111,7 @@ To add a condition which will affect how leads are distributed, please fill out 
             <?php echo $form->dropDownList($model,'users',$users,array('multiple'=>'multiple','size'=>7,'id'=>'assignedToDropdown')); ?>
             <?php echo $form->error($model,'users'); ?>
             <?php /* x2temp */
-                            echo "<br />";
+                            echo "<br>";
                             $url=$this->createUrl('groups/getGroups');
                             echo "<label>Group?</label>";
                             echo CHtml::checkBox('group','',array(
@@ -130,7 +134,7 @@ To add a condition which will affect how leads are distributed, please fill out 
                                         }'
                                 )
                             ));
-                            echo "<br />";
+                            echo "<br>";
                             echo CHtml::dropDownList('groupType', '', array('0'=>'Within Group(s)','1'=>'Between Group(s)'),array('id'=>'groupType','style'=>'display:none'))
                         /* end x2temp */ ?>
         </div>

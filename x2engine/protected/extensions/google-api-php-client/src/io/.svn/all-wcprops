@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 30
+/svn/!svn/ver/379/trunk/src/io
+END
+apiCacheParser.php
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/347/trunk/src/io/apiCacheParser.php
+END
+cacerts.pem
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/367/trunk/src/io/cacerts.pem
+END
+apiRPC.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/347/trunk/src/io/apiRPC.php
+END
+apiIO.php
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/283/trunk/src/io/apiIO.php
+END
+apiHttpRequest.php
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/378/trunk/src/io/apiHttpRequest.php
+END
+apiREST.php
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/379/trunk/src/io/apiREST.php
+END
+apiCurlIO.php
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/369/trunk/src/io/apiCurlIO.php
+END

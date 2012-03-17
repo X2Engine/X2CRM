@@ -78,7 +78,10 @@ class DefaultController extends x2base {
 					'shareContact',
 					'viewSales',
 					'createList',
+					'createListFromSelection',
 					'updateList',
+					'addToList',
+					'removeFromList',
 					'deleteList',
 					'inlineEmail',
 					'quickUpdateHistory',
@@ -458,22 +461,22 @@ $model->city, $model->state $model->zipcode
 		$model = $this->loadModel($id);
 		$users=UserChild::getNames();
 		$accounts=Accounts::getNames(); 
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
-                foreach($fields as $field){
-                    if($field->type=='link'){
-                        $fieldName=$field->fieldName;
-                        $type=ucfirst($field->linkType);
-                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
-                            eval("\$newLookupModel=$type::model()->findByPk(".$model->$fieldName.");");
-                            if(isset($newLookupModel))
-                                $model->$fieldName=$newLookupModel->name;
-                        }
-                    }elseif($field->type=='date'){
-                        $fieldName=$field->fieldName;
-                        if(is_numeric($model->$fieldName))
-                            $model->$fieldName=date("Y-m-d",$model->$fieldName);
-                    }
-                }
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>"Contacts"));
+		foreach($fields as $field){
+			if($field->type=='link'){
+				$fieldName=$field->fieldName;
+				$type=ucfirst($field->linkType);
+				if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
+					eval("\$newLookupModel=$type::model()->findByPk(".$model->$fieldName.");");
+					if(isset($newLookupModel))
+						$model->$fieldName=$newLookupModel->name;
+				}
+			}elseif($field->type=='date'){
+				$fieldName=$field->fieldName;
+				if(is_numeric($model->$fieldName))
+					$model->$fieldName=date("Y-m-d",$model->$fieldName);
+			}
+		}
 		
 		foreach($model->fields as $field) {
 			$value = $model->$field['fieldName'];
@@ -524,7 +527,7 @@ $model->city, $model->state $model->zipcode
                                     if(isset($field)){
                                         $type=ucfirst($field->linkType);
                                         if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+                                            $lookupModel=$type::model()->findByAttributes(array('name'=>$arr));
                                         }else{
                                             $names=explode(" ",$arr);
                                             if(count($names)>1) 
@@ -541,19 +544,21 @@ $model->city, $model->state $model->zipcode
                                     }
                                 }
                                 $model->$newKey=$val;
+                                unset($lookupModel);
                             }
+                            
                         }
 			foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Contacts'][$field])){
-                                $model->$field=$_POST['Contacts'][$field];
-                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                            }
-                        }
+				if(isset($_POST['Contacts'][$field])){
+					$model->$field=$_POST['Contacts'][$field];
+					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$field));
+					if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+						$model->$field=Accounts::parseUsers($model->$field);
+					}elseif($fieldData->type=='date'){
+						$model->$field=strtotime($model->$field);
+					}
+				}
+			}
 			
 			$this->update($model,$oldAttributes,false);
 		}
@@ -567,9 +572,17 @@ $model->city, $model->state $model->zipcode
 
 	// Default action - displays all visible Contact Lists
 	public function actionLists() {
-		$model = new Contacts('search');
+	
+		// Yii:app()->params->groups
+	
+		$criteria = new CDbCriteria(array());
 		
-		// $contactLists = ContactList::model()->findAll();
+		if(Yii::app()->user->getName() != 'admin') {
+			$criteria->addCondition('assignedTo="' . Yii::app()->user->getName() . '"');
+			$criteria->addCondition('visibility = 1','OR');
+			if(count(Yii::app()->params->groups))
+				$criteria->addCondition('assignedTo IN ('.implode(',',Yii::app()->params->groups).')','OR');
+		}
 	
 		$contactLists = new CActiveDataProvider('X2List', array(
 			'sort'=>array(
@@ -578,32 +591,46 @@ $model->city, $model->state $model->zipcode
 			// 'pagination'=>array(
 				// 'pageSize'=>ProfileChild::getResultsPerPage(),
 			// ),
-			//'criteria'=>array('condition' => 'assignedTo="' . Yii::app()->user->getName() . '" OR visibility = 1'),
+			'criteria'=>$criteria
 		));
-		$tempArr=array();
-		foreach($contactLists->getData() as $contact){
-			$flag=false;
-			if($contact->assignedTo || $contact->visibility=='1'){
-				$tempArr[]=$contact;
-				$flag=true;
-			}
+	
+		// $model = new Contacts('search');
+		
+		// $contactLists = ContactList::model()->findAll();
+	
+		/* $contactLists = new CActiveDataProvider('X2List', array(
+			'sort'=>array(
+				'defaultOrder'=>'createDate DESC',
+			),
+			// 'pagination'=>array(
+				// 'pageSize'=>ProfileChild::getResultsPerPage(),
+			// ),
+			//'criteria'=>array('condition' => 'assignedTo="' . Yii::app()->user->getName() . '" OR visibility = 1'),
+		)); */
+		// $tempArr=array();
+		// foreach($contactLists->getData() as $contact){
+			// $flag=false;
+			// if($contact->assignedTo || $contact->visibility=='1'){
+				// $tempArr[]=$contact;
+				// $flag=true;
+			// }
 			/* x2temp */
-			if(!$flag){
-				$groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
-				$temp=array();
-				foreach($groups as $group){
-					$temp[]=$group->groupId;
-				}
-				if(array_search($contact->assignedTo,$temp)!==false){
-					$tempArr[]=$contact;
-				}
-				if(is_numeric($contact->assignedTo)){
-					$contact->assignedTo=Groups::model()->findByPk($contact->assignedTo)->name;
-				}
-			}
+			// if(!$flag){
+				// $groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
+				// $temp=array();
+				// foreach($groups as $group){
+					// $temp[]=$group->groupId;
+				// }
+				// if(array_search($contact->assignedTo,$temp)!==false){
+					// $tempArr[]=$contact;
+				// }
+				// if(is_numeric($contact->assignedTo)){
+					// $contact->assignedTo=Groups::model()->findByPk($contact->assignedTo)->name;
+				// }
+			// }
 			/* end x2temp */
-		}
-		$contactLists->setData($tempArr);
+		// }
+		// $contactLists->setData($tempArr);
 
 		$totalContacts = CActiveRecord::model('Contacts')->count();
 		$str='assignedTo="'.Yii::app()->user->getName().'"';
@@ -684,8 +711,9 @@ $model->city, $model->state $model->zipcode
 			$dataProvider = $model->searchList($id);
 			
 			$this->render('list',array(
-				'listName'=>$list->name,
-				'listId'=>$id,
+				'listModel'=>$list,
+				// 'listName'=>$list->name,
+				// 'listId'=>$id,
 				'dataProvider'=>$dataProvider,
 				'model'=>$model,
 			));
@@ -707,10 +735,10 @@ $model->city, $model->state $model->zipcode
 			// }
 			// die($id);
 			if($id = 'all')
-				$this->redirect(array('contacts/index'));
+				$this->redirect(array('/contacts/index'));
 				// $dataProvider = CActiveRecord::model('Contacts')->searchAll();
 			else
-				$this->redirect(array('contacts/viewMy'));
+				$this->redirect(array('/contacts/viewMy'));
 				// $dataProvider = CActiveRecord::model('Contacts')->search();
 
 			// $this->render('index',array(
@@ -720,83 +748,351 @@ $model->city, $model->state $model->zipcode
 		}
 	}
 
-	public function actionCreateList() {
-		// return;
 	
-		$model = new X2List;
-		$model->modelName = 'Contacts';
-		$test = new X2ListCriterion;
-		$test->value = 'sausages';
-		$test->attribute = 'leadSource';
-		$test->comparison = '=';
-		$criteriaModels = array($test);
-		
-		// $name='ContactList';
-		// $users=UserChild::getNames();
-		// $accounts=Accounts::getNames();
+	public function actionCreateListFromSelection() {
+		if(isset($_POST['gvSelection'], $_POST['listName'], $_POST['modelName']) 
+			&& !empty($_POST['gvSelection']) && is_array($_POST['gvSelection']) && $_POST['listName'] != '' && class_exists($_POST['modelName'])) {
 
-		if(isset($_POST['X2List'])) {
-			// clear values that haven't been changed from the default
-			// foreach($_POST['Contacts'] as $name => &$value) {
-				// if($value == $model->getAttributeLabel($name))
-					// $value = '';
-			// }
-			$model->attributes = $_POST['X2List'];
-			$model->modelName = 'Contacts';
+			foreach($_POST['gvSelection'] as &$contactId) {
+				if(!ctype_digit($contactId))
+					throw new CHttpException(400,Yii::t('app','Invalid selection.'));
+			}
+			
+			$list = new X2List;
+			$list->name = $_POST['listName'];
+			$list->modelName = $_POST['modelName'];
+			$list->type = 'static';
+			$list->assignedTo = Yii::app()->user->getName();
+			$list->visibility = 1;
+			$list->createDate=time();
+			$list->lastUpdated=time();
 
-			$model->createDate=time();
-			$model->lastUpdated=time();
+			$itemModel = CActiveRecord::model($_POST['modelName']);
 			
-			
-			
-			$model->save();
-			
+			if($list->save()) {	// if the list is valid save it so we can get the ID
+				$count = 0;
+				foreach($_POST['gvSelection'] as &$itemId) {
+				
+					if($itemModel->exists('id="'.$itemId.'"')) {	// check if contact exists
+						$item = new X2ListItem;
+						$item->contactId = $itemId;
+						$item->listId = $list->id;
+						if($item->save())	// add all the things!
+							$count++;
+					}
+				}
+				$list->count = $count;
+				if($list->save())
+					echo $this->createUrl('/contacts/list/'.$list->id);
+			}
 		}
-		// $contact = new Contacts;
-		// $attributeList = $contact->attributeLabels();
-		$users = UserChild::getNames();
+	}
 		
+		
+	public function actionCreateList() {
+		// $list = new X2List;
+		// $list->modelName = 'Contacts';
+		// $list->type = 'dynamic';
+		// $list->assignedTo = '';
+		// $list->visibility = 1;
+		
+		// $contactModel = new Contacts;
+		
+		// $comparisonList = array(
+			// '='=>'=',
+			// '>'=>'>',
+			// '<'=>'<',
+			// 'empty'=>Yii::t('empty','empty'),
+			// 'contains'=>Yii::t('contacts','contains'),
+		// );
+		
+		// $criteriaModels = array(); 
+
+		// if(isset($_POST['X2List'])) {
+		
+			// $list->attributes = $_POST['X2List'];
+			// $list->modelName = 'Contacts';
+			// $list->createDate=time();
+			// $list->lastUpdated=time();
+
+			// if($list->type == 'dynamic' && isset($_POST['X2List']['attribute'],$_POST['X2List']['comparison'],$_POST['X2List']['value'])) {
+		
+				// $attributes = &$_POST['X2List']['attribute'];
+				// $comparisons = &$_POST['X2List']['comparison'];
+				// $values = &$_POST['X2List']['value'];
+
+				// if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
+
+					// for($i=0; $i<count($attributes); $i++) {
+					
+						// if((array_key_exists($attributes[$i],$contactModel->attributeLabels()) || $attributes[$i] == 'tags')
+							// && $values[$i] != '' && array_key_exists($comparisons[$i],$comparisonList)) {
+							
+							// $criteriaModels[$i] = new X2ListCriterion;
+							// $criteriaModels[$i]->listId = $list->id;
+							// $criteriaModels[$i]->type = 'attribute';
+							// $criteriaModels[$i]->attribute = $attributes[$i];
+							// $criteriaModels[$i]->comparison = $comparisons[$i];
+							// $criteriaModels[$i]->value = $values[$i];
+							// $criteriaModels[$i]->validate();
+						// }
+					
+					// }
+					// if($list->save()) {
+						// foreach($criteriaModels as &$criterion)
+							// $criterion->save();
+						// unset($criterion);
+						
+						// $this->redirect(array('/contacts/list/'.$list->id));
+					// }
+	
+				// }
+			// } elseif($list->save()) {
+				// $this->redirect(array('/contacts/list/'.$list->id));
+			// }
+		// }
+		
+		// if(empty($criteriaModels)) {
+			// $default = new X2ListCriterion;
+			// $default->value = '';
+			// $default->attribute = '';
+			// $default->comparison = '=';
+			// $criteriaModels[] = $default;
+		// }
+		
+		
+		
+		
+		
+		
+		$list = new X2List;
+		$list->modelName = 'Contacts';
+		$list->type = 'dynamic';
+		$list->assignedTo = '';
+		$list->visibility = 1;
+
+		$contactModel = new Contacts;
+		$comparisonList = array(
+			'='=>'=',
+			'>'=>'>',
+			'<'=>'<',
+			'empty'=>Yii::t('empty','empty'),
+			'contains'=>Yii::t('contacts','contains'),
+		);
+		
+		if(isset($_POST['X2List'])) {
+		
+			$list->attributes = $_POST['X2List'];
+			$list->modelName = 'Contacts';
+			$list->createDate=time();
+			$list->lastUpdated=time();
+		
+		if($list->type == 'dynamic')
+			$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id),new CDbCriteria(array('order'=>'id ASC')));
+
+			if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
+			
+				$attributes = &$_POST['X2List']['attribute'];
+				$comparisons = &$_POST['X2List']['comparison'];
+				$values = &$_POST['X2List']['value'];
+
+				if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
+
+					$list->attributes = $_POST['X2List'];
+					$list->modelName = 'Contacts';
+					
+					$list->lastUpdated = time();
+
+					if($list->save()) {
+					
+						X2ListCriterion::model()->deleteAllByAttributes(array('listId'=>$list->id));	// delete old criteria
+						
+						for($i=0; $i<count($attributes); $i++) {	// create new criteria
+						
+							if((array_key_exists($attributes[$i],$contactModel->attributeLabels()) || $attributes[$i] == 'tags')
+								&& $values[$i] != '' && array_key_exists($comparisons[$i],$comparisonList)) {
+								
+								$criterion = new X2ListCriterion;
+								$criterion->listId = $list->id;
+								$criterion->type = 'attribute';
+								$criterion->attribute = $attributes[$i];
+								$criterion->comparison = $comparisons[$i];
+								$criterion->value = $values[$i];
+								$criterion->save();
+							}
+						}
+						$this->redirect(array('/contacts/list/'.$list->id));
+					}
+				}
+			}
+		}
+		
+		if(empty($criteriaModels)) {
+			$default = new X2ListCriterion;
+			$default->value = '';
+			$default->attribute = '';
+			$default->comparison = 'contains';
+			$criteriaModels[] = $default;
+		}
 		
 		$this->render('createList',array(
-			'model'=>$model,
+			'model'=>$list,
 			'criteriaModels'=>$criteriaModels,
-			'users'=>$users,
+			'users'=>UserChild::getNames(),
 			// 'attributeList'=>$attributeList,
-			'comparisonList'=>array(
-				'='=>'=',
-				'>'=>'<',
-				'<'=>'<',
-				'empty'=>Yii::t('empty','empty'),
-				'contains'=>Yii::t('contacts','contains'),
-			),
+			'comparisonList'=>$comparisonList,
 			'listTypes'=>array(
 				'dynamic'=>Yii::t('contacts','Dynamic'),
 				'static'=>Yii::t('contacts','Static')
 			),
 		));
-	
 	}
 
-	
-	
-	
-	public function actionUpdateList() {
-	
+	public function actionUpdateList($id) {
+		$list = X2List::model()->findByPk($id);
+		
+		if(!isset($list))
+			throw new CHttpException(400,Yii::t('app','This list cannot be found.'));
+			
+		if(!$this->editPermissions($list))
+			throw new CHttpException(403,Yii::t('app','You do not have permission to modify this list.'));
 
+		$contactModel = new Contacts;
+		$comparisonList = array(
+			'='=>'=',
+			'>'=>'>',
+			'<'=>'<',
+			'empty'=>Yii::t('empty','empty'),
+			'contains'=>Yii::t('contacts','contains'),
+		);
+		
+		if($list->type == 'dynamic')
+			$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id),new CDbCriteria(array('order'=>'id ASC')));
+
+		if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
+		
+			$attributes = &$_POST['X2List']['attribute'];
+			$comparisons = &$_POST['X2List']['comparison'];
+			$values = &$_POST['X2List']['value'];
+
+			if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
+
+				$list->attributes = $_POST['X2List'];
+				$list->modelName = 'Contacts';
+				
+				$list->lastUpdated = time();
+
+				if($list->save()) {
+				
+					X2ListCriterion::model()->deleteAllByAttributes(array('listId'=>$list->id));	// delete old criteria
+					
+					for($i=0; $i<count($attributes); $i++) {	// create new criteria
+					
+						if((array_key_exists($attributes[$i],$contactModel->attributeLabels()) || $attributes[$i] == 'tags')
+							&& $values[$i] != '' && array_key_exists($comparisons[$i],$comparisonList)) {
+							
+							$criterion = new X2ListCriterion;
+							$criterion->listId = $list->id;
+							$criterion->type = 'attribute';
+							$criterion->attribute = $attributes[$i];
+							$criterion->comparison = $comparisons[$i];
+							$criterion->value = $values[$i];
+							$criterion->save();
+						}
+					}
+					$this->redirect(array('/contacts/list/'.$list->id));
+				}
+			}
+		}
+		
+		if(empty($criteriaModels)) {
+			$default = new X2ListCriterion;
+			$default->value = '';
+			$default->attribute = '';
+			$default->comparison = 'contains';
+			$criteriaModels[] = $default;
+		}
+		
+		$this->render('updateList',array(
+			'model'=>$list,
+			'criteriaModels'=>$criteriaModels,
+			'users'=>UserChild::getNames(),
+			// 'attributeList'=>$attributeList,
+			'comparisonList'=>$comparisonList,
+			'listTypes'=>array(
+				'dynamic'=>Yii::t('contacts','Dynamic'),
+				'static'=>Yii::t('contacts','Static')
+			),
+		));
+	}
+	public function actionAddToList() {
+	
+		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
+
+			foreach($_POST['gvSelection'] as &$contactId)
+				if(!ctype_digit($contactId)) throw new CHttpException(400,Yii::t('app','Invalid selection.'));
+
+			$list = X2List::model()->findByPk($_POST['listId']);
+			
+			// check permissions
+			if(isset($list) && $list->type == 'static' && $this->editPermissions($list)) {
+				
+				$count = 0;
+				foreach($_POST['gvSelection'] as &$contactId) {
+					$listItem = new X2ListItem();
+					$listItem->listId = $list->id;
+					$listItem->contactId = $contactId;
+					if($listItem->save())
+						$count++;
+				}
+				$list->count = X2ListItem::model()->countByAttributes(array('listId'=>$list->id));
+				$list->save();
+				echo 'success';
+			} else
+				throw new CHttpException(403,Yii::t('app','You do not have permission to modify this list.'));
+		}
 	}
 	
 	
+	// Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like','name',"%$value%"))->queryColumn();
+	public function actionRemoveFromList() {
 	
-	
+		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
+
+			foreach($_POST['gvSelection'] as $contactId)
+				if(!ctype_digit($contactId)) throw new CHttpException(400,Yii::t('app','Invalid selection.'));
+
+			$list = X2List::model()->findByPk($_POST['listId']);
+			
+			// check permissions
+			if(isset($list) && $list->type == 'static'	&& $this->editPermissions($list)) {
+				X2ListItem::model()->deleteAllByAttributes(array('listId'=>$list->id),'contactId IN ('.implode(',',$_POST['gvSelection']).')'); // delete all the things!
+			
+				$list->count = X2ListItem::model()->countByAttributes(array('listId'=>$list->id));
+				$list->save();
+			}
+			
+			echo 'success';
+		}
+	}
 	
 	public function actionDeleteList() {
 	
-	}
-	
-	
-	
+		$id = isset($_GET['id'])? $_GET['id'] : 'all';
 
-	
+		if(is_numeric($id))
+			$list = CActiveRecord::model('X2List')->findByPk($id);
+		if(isset($list)) {
+		
+			// check permissions
+			if($this->editPermissions($list)) {
+				X2ListItem::model()->deleteAllByAttributes(array('listId'=>$list->id)); // delete all the things!
+				$list->delete();
+			} else
+				throw new CHttpException(403,Yii::t('app','You do not have permission to modify this list.'));
+		}
+		$this->redirect(array('/contacts/lists'));
+	}
 	
 	public function actionImportContacts() {
 		if (isset($_FILES['contacts'])) {

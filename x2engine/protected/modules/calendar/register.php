@@ -1,7 +1,7 @@
 <?php
 
 return array(
-    'name'=>"Template",
+    'name'=>"Calendar",
     'install'=>array(
         "CREATE TABLE x2_templates(
                         id INT NOT NULL AUTO_INCREMENT primary key,
@@ -24,11 +24,11 @@ return array(
         'DELETE FROM x2_fields WHERE modelName="Templates"',
         'DROP TABLE x2_templates',
     ),
-    'editable'=>true,
-    'searchable'=>true,
+    'editable'=>false,
+    'searchable'=>false,
     'adminOnly'=>false,
-    'custom'=>true,
-    'toggleable'=>true,
+    'custom'=>false,
+    'toggleable'=>false,
     
 );
 ?>

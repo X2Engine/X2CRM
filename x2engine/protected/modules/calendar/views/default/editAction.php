@@ -141,7 +141,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		}
 		?>
 		<?php echo $form->label($model,'assignedTo', array('class'=>'dialog-label')); ?>
-		<?php echo $form->dropDownList($model,'assignedTo',$users + Calendar::getEditableCalendarNames(),array('id'=>'dialog_actionsAssignedToDropdown', 'onChange'=>'giveSaveButtonFocus();')); ?>
+		<?php echo $form->dropDownList($model,'assignedTo',$users + X2Calendar::getEditableCalendarNames(),array('id'=>'dialog_actionsAssignedToDropdown', 'onChange'=>'giveSaveButtonFocus();')); ?>
 		<?php /* x2temp */
 		echo "<br />";
 		$url=$this->createUrl('groups/getGroups');

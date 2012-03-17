@@ -125,7 +125,7 @@ class DefaultController extends x2base {
 ".Yii::t('quotes','Quotes Stage').": $model->salesStage
 ".Yii::t('quotes','Lead Source').": $model->leadSource
 ".Yii::t('quotes','Probability').": $model->probability
-".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('quotes/view/'.$model->id);
+".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/quotes/'.$model->id);
 		
 		$body = trim($body);
 
@@ -461,7 +461,7 @@ class DefaultController extends x2base {
 				// generate history
 				$action = new Actions;
 				$action->associationType = 'contacts';
-				$action->type = 'quote';
+				$action->type = 'quotes';
 				$action->associationId = $contact->id;
 				$action->associationName = $contact->name;
 				$action->assignedTo = Yii::app()->user->getName();
@@ -796,7 +796,7 @@ class DefaultController extends x2base {
 		// generate history
 		$action = new Actions;
 		$action->associationType = 'contacts';
-		$action->type = 'quote';
+		$action->type = 'quotes';
 		$action->associationId = $contact->id;
 		$action->associationName = $contact->name;
 		$action->assignedTo = Yii::app()->user->getName();
@@ -1110,7 +1110,7 @@ class DefaultController extends x2base {
 
 			$action = new Actions;
 			$action->associationType = 'contacts';
-			$action->type = 'quote';
+			$action->type = 'quotes';
 			$action->associationId = $contact->id;
 			$action->associationName = $contact->name;
 			$action->assignedTo = Yii::app()->user->getName();

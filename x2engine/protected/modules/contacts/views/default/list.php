@@ -37,41 +37,22 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-// if($this->route=='contacts/viewAll') {
-	$heading = $listName; //Yii::t('contacts','All Contacts');
-	
-	// $dataProvider = $model->searchAll();
-	
-	$this->menu=array(
+
+$heading = $listModel->name; //Yii::t('contacts','All Contacts');
+
+$this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Import from Outlook'),'url'=>array('importContacts')),
-	array('label'=>Yii::t('contacts','Import from Template'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
-	);
-// } else {
-	// $heading = Yii::t('contacts','My Contacts'); 
-	// $dataProvider = $model->search();
-	
-	// $this->menu=array(
-		// array('label'=>Yii::t('contacts','My Contacts')),
-		// array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('viewAll')),
-		// array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-		// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-		// array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-		// array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-		// array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
-	// );
-// }
-// $this->menu=array(
-	// array('label'=>Yii::t('contacts','Contact List')),
-	// array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	// array('label'=>Yii::t('contacts','Create Lead'),'url'=>array('actions/quickCreate')),
-	// array('label'=>Yii::t('contacts','Import Contacts from Outlook'),'url'=>array('importContacts')),
-	// array('label'=>Yii::t('contacts','Import Contacts from Template'),'url'=>array('importExcel')),
-	// array('label'=>Yii::t('contacts','Export Contacts'),'url'=>array('export')),
-// );
+	array('label'=>Yii::t('contacts','View List')),
+);
+
+$editPermissions = $this->editPermissions($listModel);
+if($editPermissions) {
+	$this->menu[] = array('label'=>Yii::t('contacts','Edit List'),'url'=>array('updateList/'.$listModel->id));
+	$this->menu[] = array('label'=>Yii::t('contacts','Delete List'),'url'=>'#', 'linkOptions'=>array('submit'=>array('deleteList/'.$listModel->id),'confirm'=>'Are you sure you want to delete this item?'));
+}
+$this->menu[] = array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList'));
+
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -84,6 +65,56 @@ $('.search-form form').submit(function(){
 	});
 	return false;
 });
+
+$('#createList').click(function() {
+	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	if(selectedItems.length > 0) {
+		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
+
+		if(listName != '' && listName != null) {
+			$.ajax({
+				url:'".$this->createUrl('/contacts/createListFromSelection')."',
+				type:'post',
+				data:{listName:listName,modelName:'Contacts',gvSelection:selectedItems},
+				success:function(response) { if(response != '') window.location.href=response; }
+			});
+		}
+	}
+	return false;
+});
+$('#addToList').click(function() {
+	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	
+	var targetList = $('#addToListTarget').val();
+
+	if(selectedItems.length > 0) {
+		$.ajax({
+			url:'".$this->createUrl('/contacts/addToList')."',
+			type:'post',
+			data:{listId:targetList,gvSelection:selectedItems},
+			success:function(response) { if(response=='success') alert('".addslashes(Yii::t('app','Added items to list.'))."'); else alert(response); }
+		});
+	}
+	return false;
+});
+$('#removeFromList').click(function() {
+	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	if(selectedItems.length > 0) {
+		var confirmRemove = confirm('".addslashes(Yii::t('app','Are you sure you want to remove these items from the list?'))."');
+
+		if(confirmRemove) {
+			$.ajax({
+				url:'".$this->createUrl('/contacts/removeFromList')."',
+				type:'post',
+				data:{listId:".$listModel->id.",gvSelection:selectedItems},
+				success:function(response) { if(response=='success') $.fn.yiiGridView.update('contacts-grid'); else alert(response); }
+			});
+		}
+	}
+	return false;
+});
+
+
 ");
 ?>
 
@@ -98,25 +129,27 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
-	'filter'=>$model,
+	// 'filter'=>$model,
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
-	'viewName'=>'contacts',
+	'viewName'=>'contacts_list'.$listModel->id,
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>185,
-		'phone'=>95,
-		'lastUpdated'=>106,
-		'leadSource'=>133,
-		'gvControls'=>66,
+		'gvCheckbox'=>35,
+		'name'=>180,
+		'phone'=>101,
+		'lastUpdated'=>94,
+		'leadSource'=>101,
+		'gvControls'=>74
 	),
+	'selectableRows'=>2,
 	'specialColumns'=>array(
 		'name'=>array(
 			'name'=>'lastName',
@@ -128,49 +161,27 @@ $this->widget('application.components.X2GridView', array(
 	'enableControls'=>true,
 	'enableTags'=>true,
 ));
-
-/* 
-$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'contacts-grid',
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
-		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		// .CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listId,'clearFilters'=>1))
-		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$dataProvider, //CActiveRecord::model('Contacts')->searchList($listId),
-	'filter'=>$model,
-	'columns'=>array(
-		//'id',
-		array(
-			'name'=>'lastName',
-			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data["firstName"]." ".$data["lastName"],array("view","id"=>$data["id"]))',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'30%')
-		),
-		array(
-			'name'=>'phone',
-			'header'=>Yii::t('contacts','Work Phone'),
-		),
-		array(
-			'name'=>'createDate',
-			'header'=>Yii::t('contacts','Create Date'),
-			'value'=>'date("Y-m-d",$data["createDate"])',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'15%')
-		),
-                array(
-			'name'=>'lastUpdated',
-			'header'=>Yii::t('contacts','Last Updated'),
-			'value'=>'date("Y-m-d",$data["lastUpdated"])',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'15%')
-		),
-		array(
-			'name'=>'leadSource',
-			'header'=>Yii::t('contacts','Lead Source'),
-		),
-		
-	),
-)); */
 ?>
+<span class="list-actions">
+<?php
+echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
+
+$listNames = array();
+$lists = X2List::model()->findAll();
+foreach($lists as &$list) {
+	if($editPermissions)	// check permissions
+		$listNames[$list->id] = $list->name;
+}
+unset($list);
+unset($listNames[$listModel->id]);
+
+if($editPermissions && $listModel->type == 'static')
+	echo ' | '.CHtml::link(Yii::t('contacts','Remove From List'),'#',array('id'=>'removeFromList','class'=>'list-action'));
+
+if(!empty($listNames)) {
+	echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
+	echo CHtml::dropDownList('addToListTarget',null,$listNames, array());
+}
+// echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'createList','class'=>'list-action')).' ';
+?>
+</span>

@@ -58,6 +58,16 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Load configuration that cannot be put in config/main
 	 */
 	public function beginRequest() {
+	
+		
+		if($this->owner->request->getPathInfo() == 'notifications/getMessages')	// skip all the loading if this is a chat/notification update
+			return;
+		Yii::import('application.controllers.x2base');
+		Yii::import('application.models.*');
+		Yii::import('application.components.*');
+		Yii::import('application.components.ERememberFiltersBehavior');
+		Yii::import('application.components.EButtonColumnWithClearFilters');
+
 
 		// $this->owner->messages->forceTranslation = true;
 		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
@@ -65,7 +75,7 @@ class ApplicationConfigBehavior extends CBehavior {
 		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
 		$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk($this->owner->user->getId());
 		
-		// die( var_dump($this->owner->request)); //->getRoute();
+		// die( var_dump($this->owner->request->getPathInfo())); //->getRoute();
 		if(!$this->owner->user->isGuest) {
 			$session = Session::model()->findByAttributes(array('user'=>$this->owner->user->getName()));
 			if(isset($session)) {
@@ -90,13 +100,18 @@ class ApplicationConfigBehavior extends CBehavior {
 						->select('groupId')
 						->from('x2_group_to_user')
 						->where('userId='.$this->owner->user->getId())->queryColumn();
-				$groupRoles = array();
-				foreach($this->owner->params->groups as $groupId) {		// lookup roles for all the user's groups
-						$groupRoles += $this->owner->db->createCommand()
-						->select('roleId')
-						->from('x2_role_to_user')
-						->where('type="group" AND userId='.$groupId)->queryColumn();
-				}
+						
+				$groupRoles = Yii::app()->db->createCommand()
+					->select('x2_role_to_user.roleId')
+					->from('x2_group_to_user')
+					->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId="'.Yii::app()->user->getId().'" AND type="group"')
+					->queryColumn();
+				// foreach($this->owner->params->groups as $groupId) {		// lookup roles for all the user's groups
+						// $groupRoles += $this->owner->db->createCommand()
+						// ->select('roleId')
+						// ->from('x2_role_to_user')
+						// ->where('type="group" AND userId='.$groupId)->queryColumn();
+				// }
 				$this->owner->params->roles = array_unique($this->owner->params->roles + $groupRoles);		// combine all the roles, remove duplicates
 			}
 		}
@@ -106,14 +121,13 @@ class ApplicationConfigBehavior extends CBehavior {
 		foreach(scandir('protected/modules') as $module){
 			if(file_exists("protected/modules/$module/register.php")){
 				$arr[$module]=ucfirst($module);
-                                Yii::import("application.modules.$module.models.*");
+				Yii::import("application.modules.$module.models.*");
 			}
 		}
-		$menuOrder=explode(":",$this->owner->params->admin->menuOrder);
 		foreach($arr as $key=>$module){
-			if(array_search($key,$menuOrder)!==false){
-				$modules[]=$key;
-			}
+			$record=Modules::model()->findByAttributes(array('name'=>$key));
+                        if(isset($record) && $record->visible)
+                            $modules[]=$key;
 		}
 		$this->owner->setModules($modules);
 		$adminProf = ProfileChild::model()->findByPk(1);

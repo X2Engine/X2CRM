@@ -107,8 +107,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				}
 				$user = UserChild::model()->findByPk(Yii::app()->user->getId());
 				$showCalendars = json_decode($user->showCalendars, true);
-				$editableCalendars = Calendar::getEditableCalendarNames(); // list of calendars current user can edit
-				$editableUserCalendars = Calendar::getEditableUserCalendarNames(); // list of user calendars current user can edit
+				$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
+				$editableUserCalendars = X2Calendar::getEditableUserCalendarNames(); // list of user calendars current user can edit
 				if(isset($this->sharedCalendars) && $this->sharedCalendars !== null) {
 					$this->beginWidget('zii.widgets.CPortlet',
 						array(
@@ -173,14 +173,25 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					$showGoogleCalendars = $showCalendars['googleCalendars'];
 					echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
 					foreach($this->googleCalendars as $calendarId=>$calendarName) {
+						if(isset($editableCalendars[$calendarId])) // check if current user has permission to edit calendar
+							$editable = 'true';
+						else
+							$editable = 'false';
 						echo "<li>\n";
-						$calendar = Calendar::model()->findByPk($calendarId);
+						$calendar = X2Calendar::model()->findByPk($calendarId);
 						// checkbox for each user; current user and Anyone are set to checked
-						echo CHtml::checkBox($calendarId, in_array($calendarId, $showGoogleCalendars),
-							array(
-								'onChange'=>"toggleCalendarSourceGoogle($calendarId, this.checked, '{$calendar->googleFeed}');", // add or remove user's actions to calendar if checked/unchecked
-							)
-						);
+						if($calendar->googleCalendarId) // read/write google calendar
+							echo CHtml::checkBox($calendarId, in_array($calendarId, $showGoogleCalendars),
+								array(
+									'onChange'=>"toggleCalendarSourceGoogle($calendarId, this.checked, $editable);", // add or remove user's actions to calendar if checked/unchecked
+								)
+							);
+						else // read only google calendar feed
+							echo CHtml::checkBox($calendarId, in_array($calendarId, $showGoogleCalendars),
+								array(
+									'onChange'=>"toggleCalendarSourceGoogleFeed($calendarId, this.checked, '{$calendar->googleFeed}');", // add or remove user's actions to calendar if checked/unchecked
+								)
+							);
 						echo "<label for=\"$calendarId\">$calendarName</label>\n";
 						echo "</li>";
 					}

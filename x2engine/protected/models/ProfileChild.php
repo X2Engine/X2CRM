@@ -213,7 +213,7 @@ class ProfileChild extends Profile {
 		if(Yii::app()->user->isGuest)	// no widgets if the user isn't logged in
 			return array();
 		// $model = ProfileChild::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-		$model = &Yii::app()->params->profile;
+		$model = Yii::app()->params->profile;
 		
 		$registeredWidgets = array_keys(Yii::app()->params->registeredWidgets);
 		

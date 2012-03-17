@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -111,7 +111,7 @@ class Product extends CActiveRecord
 	 */
 	public function attributeLabels()
 	{
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Product'));
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Products'));
                 $arr=array();
                 foreach($fields as $field){
                     $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);

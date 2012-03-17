@@ -42,7 +42,9 @@ $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','View List')),
-	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
+	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
+	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+
 );
  
 if($this->route=='contacts/default/index') {
@@ -57,19 +59,49 @@ if($this->route=='contacts/default/index') {
 
 
 Yii::app()->clientScript->registerScript('search', "
-$(function() {
-	$('.search-button').click(function(){
-		$('.search-form').toggle();
-		return false;
-	});
-	$('.search-form form').submit(function(){
-		$.fn.yiiGridView.update('contacts-grid', {
-			data: $(this).serialize()
-		});
-		return false;
-	});
+$('.search-button').click(function(){
+	$('.search-form').toggle();
+	return false;
 });
-",CClientScript::POS_HEAD);
+$('.search-form form').submit(function(){
+	$.fn.yiiGridView.update('contacts-grid', {
+		data: $(this).serialize()
+	});
+	return false;
+});
+
+$('#createList').click(function() {
+	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	if(selectedItems.length > 0) {
+		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
+
+		if(listName != '' && listName != null) {
+			$.ajax({
+				url:'".$this->createUrl('/contacts/createListFromSelection')."',
+				type:'post',
+				data:{listName:listName,modelName:'Contacts',gvSelection:selectedItems},
+				success:function(response) { if(response != '') window.location.href=response; }
+			});
+		}
+	}
+	return false;
+});
+$('#addToList').click(function() {
+	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	
+	var targetList = $('#addToListTarget').val();
+
+	if(selectedItems.length > 0) {
+		$.ajax({
+			url:'".$this->createUrl('/contacts/addToList')."',
+			type:'post',
+			data:{listId:targetList,gvSelection:selectedItems},
+			success:function(response) { if(response=='success') alert('".addslashes(Yii::t('app','Added items to list.'))."'); else alert(response); }
+		});
+	}
+	return false;
+});
+",CClientScript::POS_READY);
 
 ?>
 
@@ -80,8 +112,8 @@ $(function() {
 	'users'=>UserChild::getNames(),
 )); ?>
 </div><!-- search-form -->
+<form>
 <?php
-
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
@@ -100,11 +132,12 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'contacts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>185,
-		'phone'=>95,
-		'lastUpdated'=>106,
-		'leadSource'=>133,
-		'gvControls'=>66,
+		'gvCheckbox'=>30,
+		'name'=>210,
+		'phone'=>100,
+		'lastUpdated'=>100,
+		'leadSource'=>145,
+		// 'gvControls'=>66,
 	),
 	'specialColumns'=>array(
 		'name'=>array(
@@ -117,4 +150,22 @@ $this->widget('application.components.X2GridView', array(
 	'enableControls'=>true,
 	'enableTags'=>true,
 ));
+echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
+
+$listNames = array();
+$lists = X2List::model()->findAll();
+foreach($lists as &$list) {
+	if($list->type == 'static' && $this->editPermissions($list))	// check permissions
+		$listNames[$list->id] = $list->name;
+}
+unset($list);
+
+if(!empty($listNames)) {
+	echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
+	echo CHtml::dropDownList('addToListTarget',null,$listNames, array('id'=>'addToListTarget'));
+}
+// echo var_dump(Yii::app()->user->getState('myvariable'));
+
 ?>
+
+</form>

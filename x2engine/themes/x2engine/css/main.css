@@ -631,22 +631,26 @@ div.portlet-minimize a {text-decoration:none;}
 	padding:10px 7px;
 	width:auto;
 }
-div#workflow-diagram .row {
+
+a.list-action {text-decoration:none;}
+a.list-action:hover {text-decoration:underline;}
+
+div.x2-sortlist .row {
 	overflow:visible;
 }
-div#workflow-stages a{text-decoration:none;}
-a.add-workflow-stage {
+div.x2-sortlist a{text-decoration:none;}
+a.x2-sortlist-add {
 	display:block;
 	text-decoration:none;
 	margin-bottom:5px;
 }
-div#workflow-stages ol {
+div.x2-sortlist ol {
 	margin:0;
 	padding:0;
 	margin-bottom:5px;
 
 }
-div#workflow-stages li {
+div.x2-sortlist li {
 	padding:0;
 	list-style-type:none;
 	overflow:auto;
@@ -654,30 +658,36 @@ div#workflow-stages li {
 	border-width:1px 1px 0 1px;
 	background:#fff;
 }
-div#workflow-stages li:first-child {
+div.x2-sortlist li:first-child {
 	-moz-border-radius:		4px 4px 0 0;
 	-o-border-radius:		4px 4px 0 0;
 	-webkit-border-radius:	4px 4px 0 0;
 	border-radius:			4px 4px 0 0;
 }
-div#workflow-stages li:last-child {
+div.x2-sortlist li:last-child {
 	border-bottom:1px solid #333;
 	-moz-border-radius:		0 0 4px 4px;
 	-o-border-radius:		0 0 4px 4px;
 	-webkit-border-radius:	0 0 4px 4px;
 	border-radius:			0 0 4px 4px;
 }
-div#workflow-stages li:first-child .handle {
+div.x2-sortlist li:only-child {
+	border-bottom:1px solid #333;
+	-moz-border-radius:		4px;
+	-o-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	border-radius:			4px;
+}
+div.x2-sortlist li:first-child .handle {
 	-moz-box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.3);
 	-webkit-box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.3);
 	box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.3);
-
 }
-div#workflow-stages li .handle {
+div.x2-sortlist li .handle {
 	float:left;
 	width:28px;
 	margin-right:-35px;
-	height:85px;
+	height:42px;
 	padding:5px 0 0 5px;
 	background:#777; /* 00728f */ 
 	background:-webkit-gradient(linear, left top, right top, from(#777), to(#666));
@@ -693,12 +703,13 @@ div#workflow-stages li .handle {
 	border-width:0 1px 0 0;
 	cursor:n-resize;
 }
-div#workflow-stages li .handle:hover {
+div.x2-sortlist#workflow-stages li .handle {height:85px;}
+div.x2-sortlist li .handle:hover {
 	background:#888; /* 00728f */ 
 	background:-webkit-gradient(linear, left top, right top, from(#808080), to(#707070));
 	background:-moz-linear-gradient(left,#808080,#707070);
 }
-div#workflow-stages li .handle:active {
+div.x2-sortlist li .handle:active {
 	background:#888; /* 00728f */ 
 	background:-webkit-gradient(linear, left top, right top, from(#555), to(#606060));
 	background:-moz-linear-gradient(left,#555,#606060);
@@ -707,14 +718,14 @@ div#workflow-stages li .handle:active {
 	-webkit-box-shadow: inset 1px 0 0 0 rgba(0,0,0,0.3);
 	box-shadow: inset 1px 0 0 0 rgba(0,0,0,0.3);
 }
-div#workflow-stages li .content {
+div.x2-sortlist li .content {
 	display:block;
 	width:auto;
 	margin-left:35px;
 	padding-left:5px;
 }
-div#workflow-stages li.ui-sortable-helper {border-bottom:1px solid #333;}
-div#workflow-stages a.del {
+div.x2-sortlist li.ui-sortable-helper {border-bottom:1px solid #333;}
+div.x2-sortlist a.del {
 	display:block;
 	float:right;
 	height:20px;
@@ -866,6 +877,11 @@ div.workflow-status {display:block;float:left;line-height:20px;height:22px;width
 .action.list-view .icon.workflow {	background-image:url(../images/action_workflow.png); }
 .action.list-view .icon.email {		background-image:url(../images/action_email.png); }
 .action.list-view .icon.note {		background-image:url(../images/action_comment.png); }
+
+span.list-actions {
+	display:block;
+	margin-top:5px;
+}
 
 img.attachment-img {
 	margin:5px;

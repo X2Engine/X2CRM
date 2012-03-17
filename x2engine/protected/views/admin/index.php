@@ -80,6 +80,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),'roundRobinRules'); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Email Configuration'),'emailSetup'); ?><br><?php echo Yii::t('admin','Configure X2Engine\'s email settings');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Set Lead Distribution'),'setLeadRouting'); ?><br><?php echo Yii::t('admin','Change how new web leads are distributed.');?><br><br>
+		<?php echo CHtml::link(Yii::t('admin','Google Integration'),'googleIntegration'); ?><br><?php echo Yii::t('admin','Enter your google app settings.');?><br><br>
 	</div>
 </div>
 <div class="span-7">

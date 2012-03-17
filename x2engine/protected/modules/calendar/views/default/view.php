@@ -41,7 +41,7 @@
 $this->menu=array(
 	array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
 	array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-	array('label'=>Yii::t('calendar','List'), 'url'=>array('index')),
+	array('label'=>Yii::t('calendar','List'), 'url'=>array('list')),
 	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('calendar','View')),
 	array('label'=>Yii::t('calendar','Update'), 'url'=>array('update', 'id'=>$model->id)),
@@ -49,7 +49,7 @@ $this->menu=array(
 );
 ?>
 
-<h2><?php echo Yii::t('calendar','Shared Calendar:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
+<h2><?php echo Yii::t('calendar','Shared Calendar:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="<?php echo $this->createUrl('update', array('id'=>$model->id));?>">Edit</a></h2>
 
 <?php
 $form = $this->beginWidget('CActiveForm', array(

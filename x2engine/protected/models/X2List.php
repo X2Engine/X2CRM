@@ -166,10 +166,10 @@ class X2List extends CActiveRecord {
 	
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('contacts/index');
+			return array('/contacts/index');
 		else if (empty($id) || $id=='my')
-			return array('contacts/viewMy');
+			return array('/contacts/viewMy');
 		else
-			return array('contacts/list','id'=>$id);
+			return array('/contacts/list/'.$id);
 	}
 }

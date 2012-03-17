@@ -59,16 +59,19 @@ return array(
 
 	// autoloading model and component classes
 	'import'=>array(
-		'application.controllers.x2base',
-		'application.models.*',
-		'application.components.*',
+		'application.components.ApplicationConfigBehavior',
+		// 'application.controllers.x2base',
+		// 'application.models.*',
+		// 'application.components.*',
 		// 'application.components.ERememberFiltersBehavior',
 		// 'application.components.EButtonColumnWithClearFilters',
+		
+		
 	),
 
 	'modules'=>array(
 		'gii'=>$gii,
-                'mobile',
+		'mobile',
 	),
 
 	'behaviors' => array('ApplicationConfigBehavior'),
@@ -87,18 +90,31 @@ return array(
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
-				// '<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
-				// '<module:\w+>/<action:\w+>/<id:\d+>'=>'<module>/default/<action>/<id>',
-				// '<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
-				// '<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>/<id>',
-				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+				// special HTTP methods for API
 				array('api/list', 'pattern'=>'api/<model:\w+>', 'verb'=>'GET'),
 				array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
 				array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'POST'),
 				array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
 				array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
+			
+				'<controller:(site|admin|profile|media|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
+				'<controller:(site|admin|profile|media|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+				'<controller:(site|admin|profile|media|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
+	
+				// module/action -> assume DefaultController (module/default/action) unless there are 3 tokens (module/controller/action)
+				'<module:\w+>/<id:\d+>'=>'<module>/default/view',
+				'<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
+				'<module:\w+>/<action:\w+>/<id:\d+>'=>'<module>/default/<action>',
+				'<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
+				'<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
+
+				// old type
+				// '<controller:\w+>/<id:\d+>'=>'<controller>/view',
+				// '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+				// '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+				
+				
+
 				'x2touch'=>'mobile/site/home', 
 			),
 		),

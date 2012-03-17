@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/383/trunk/examples/adsense/examples
+END
+GenerateColumnChart.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GenerateColumnChart.php
+END
+GetAllAdUnitsForCustomChannel.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAllAdUnitsForCustomChannel.php
+END
+GetAllCustomChannelsForAdUnit.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/383/trunk/examples/adsense/examples/GetAllCustomChannelsForAdUnit.php
+END
+GetAllAdClients.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAllAdClients.php
+END
+GetAllAdUnits.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAllAdUnits.php
+END
+GenerateGeoChart.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GenerateGeoChart.php
+END
+GetAllUrlChannels.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAllUrlChannels.php
+END
+GenerateReportWithPaging.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GenerateReportWithPaging.php
+END
+GetAllAccounts.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAllAccounts.php
+END
+GeneratePieChart.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GeneratePieChart.php
+END
+GetAccountTree.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAccountTree.php
+END
+GetAllCustomChannels.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/383/trunk/examples/adsense/examples/GetAllCustomChannels.php
+END
+GetAllAdClientsForAccount.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GetAllAdClientsForAccount.php
+END
+GenerateLineChart.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GenerateLineChart.php
+END
+GenerateTableChart.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GenerateTableChart.php
+END
+GenerateReport.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/345/trunk/examples/adsense/examples/GenerateReport.php
+END

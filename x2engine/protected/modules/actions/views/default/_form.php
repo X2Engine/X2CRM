@@ -131,6 +131,15 @@ if (!$quickCreate) {
 	//echo '<em>'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 }
 echo $form->errorSummary($actionModel);
+if($inlineForm){
+    Yii::app()->clientScript->registerScript('inline-actions-validate',"
+        $('#actions-newCreate-form').submit(function(){
+            if($('#Actions_actionDescription').val()==''){
+                alert('Please enter a description');return false;
+            }
+        });
+");
+}
 ?>
     <div class="row">
 	<b><?php echo $form->labelEx($actionModel,'actionDescription'); ?></b>
@@ -246,7 +255,7 @@ echo $form->errorSummary($actionModel);
 	</div>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'assignedTo'); ?>
-		<?php echo $form->dropDownList($actionModel,'assignedTo',$users + Calendar::getEditableCalendarNames(),array('id'=>'actionsAssignedToDropdown')); ?>
+		<?php echo $form->dropDownList($actionModel,'assignedTo',$users + X2Calendar::getEditableCalendarNames(),array('id'=>'actionsAssignedToDropdown')); ?>
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
             <?php /* x2temp */
                             echo "<br />";
@@ -371,11 +380,11 @@ $event->assignedTo = $actionModel->assignedTo;
 	</div>
 	<div class="cell">
 		<?php echo $form->label($event,'assignedTo'); ?>
-		<?php echo $form->dropDownList($event,'assignedTo',$users + Calendar::getEditableCalendarNames(),array('id'=>'actionsAssignedToDropdown')); ?>
+		<?php echo $form->dropDownList($event,'assignedTo',$users + X2Calendar::getEditableCalendarNames(),array('id'=>'actionsAssignedToDropdown')); ?>
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
             <?php /* x2temp */
                             echo "<br />";
-                            if($this instanceof ActionsController){
+                            if($this instanceof Controller){
                                 $url=$this->createUrl('groups/getGroups');
                             }else{
                                 $url=$this->controller->createUrl('groups/getGroups');

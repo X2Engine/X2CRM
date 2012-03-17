@@ -145,6 +145,10 @@ class Admin extends CActiveRecord
 			'installDate' => Yii::t('admin','Installed'),
 			'updateDate' => Yii::t('admin','Last Update'),
 			'updateInterval' => Yii::t('admin','Update Interval'),
+			'googleClientId' => Yii::t('admin', 'Google Client ID'),
+			'googleClientSecret' => Yii::t('admin', 'Google Client Secret'),
+			'googleAPIKey' => Yii::t('admin', 'Google API Key'),
+			'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
 		);
 	}
 

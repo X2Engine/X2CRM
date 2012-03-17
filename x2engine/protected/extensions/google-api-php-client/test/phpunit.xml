@@ -1,0 +1,11 @@
+<phpunit colors="true">
+    <filter>
+        <blacklist>
+           <directory suffix=".php">../src/contrib/</directory>
+           <directory suffix=".php">../src/external/</directory>
+           <file>../src/auth/apiOAuth.php</file>
+           <file>../src/cache/apiApcCache.php</file>
+           <file>../src/cache/apiMemcacheCache.php</file>
+        </blacklist>
+    </filter>
+</phpunit>

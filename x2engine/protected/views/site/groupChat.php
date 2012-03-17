@@ -45,10 +45,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.
 $admin = Admin::model()->findByPk(1);
 $updateInterval = $admin->chatPollTime;
 
-$ajaxUrl = $this->createUrl('site/getMessages');
+$ajaxUrl = $this->createUrl('notifications/getMessages');
 Yii::app()->clientScript->registerScript('groupChat', "
-	updateInterval = " . $updateInterval . ";
-	ajaxUrl = '".$ajaxUrl . "';
+	var apples = 1;
+	chatUpdateInterval = " . $updateInterval . ";
+	chatAjaxUrl = '".$ajaxUrl . "';
 	$(document).ready(function() {
 		updateChat();							//update on page load
 		$('#widget_ChatBox').hide();		// hide chat widget

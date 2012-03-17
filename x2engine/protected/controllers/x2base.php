@@ -49,11 +49,10 @@ abstract class x2base extends Controller {
 	 * 
 	 * 
 	*/
-	
-	// Let locale and character encoding.
+
+	// Set locale and character encoding.
 	public function onBeginRequest() {
 		setlocale(LC_ALL, 'en_US.UTF-8');
-                
 	}
 	
 	public $portlets=array(); // This is the array of widgets on the sidebar.
@@ -127,6 +126,15 @@ abstract class x2base extends Controller {
 		);
 	}
 
+	// determines if we have permission to edit something based on the assignedTo field
+	public function editPermissions(&$model) {
+		if(Yii::app()->user->getName() == 'admin' || !$model->hasAttribute('assignedTo'))
+			return true;
+		else
+			return $model->assignedTo == Yii::app()->user->getName() || in_array($model->assignedTo,Yii::app()->params->groups);
+	}
+
+	
 	/**
 	 * Displays a particular model.  This method is called in child controllers
 	 * which pass it a model to display and what type of model it is (i.e. Contact,

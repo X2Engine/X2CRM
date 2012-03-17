@@ -83,35 +83,25 @@ class SearchController extends x2base {
 			$contacts=Contacts::model()->findAllBySql($sql);
 
 			$actions=Actions::model()->findAllBySql('SELECT * FROM x2_actions WHERE actionDescription LIKE "%'.$term.'%" LIMIT 10000');
-			$sales=Sales::model()->findAllBySql('SELECT * FROM x2_sales WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%"');
 			$accounts=Accounts::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
 					OR tickerSymbol LIKE "%'.$term.'%"');
                         $quotes=Quote::model()->findAllBySql('SELECT * FROM x2_quotes WHERE name LIKE "%'.$term.'%"');
                         
-                        $other=array();
                         $disallow=array(
                             'contacts',
                             'actions',
-                            'sales',
                             'accounts',
-                            'dashboard',
-                            'users',
-                            'docs',
                             'quotes',
-                            'workflow',
-                            'groups',
-                            'calendar',
                         );
-                        $order=explode(":",Yii::app()->params->admin->menuOrder);
-                        foreach($order as $item){
-                            if(is_null(Docs::model()->findByAttributes(array('title'=>$item)))){
-                                if(array_search($item,$disallow)===false){
-                                    $type=ucfirst($item);
-                                    if($type=='Products')
-                                        $type='Product';
-                                    eval("\$arr=$type::model()->findAllBySql('SELECT * FROM x2_$item WHERE name LIKE \'%$term%\' OR description LIKE \'%$term%\'');");
-                                    $other[]=$arr;
-                                }
+     
+                        $modules=Modules::model()->findAllByAttributes(array('searchable'=>1));
+                        foreach($modules as $module){
+                            if(!in_array($module->name,$disallow)){
+                                $module->name=='products'?$type=ucfirst('Product'):$type=ucfirst($module->name);
+                                $module->name=='quotes'?$type=ucfirst('Quote'):$type=$type;
+                                $table=CActiveRecord::model($type)->tableName();
+                                eval("\$arr=$type::model()->findAllBySql('SELECT * FROM $table WHERE name LIKE \'%$term%\' OR description LIKE \'%$term%\'');");
+                                $other[]=$arr;
                             }
                         }
                         $other[]=$quotes;
@@ -141,14 +131,6 @@ class SearchController extends x2base {
 			foreach($actions as $action){
 					if(preg_match($regEx,$action->actionDescription)>0){
 							$descriptions[]=$action;
-					}
-			}
-
-			foreach($sales as $sale){
-					if(preg_match($regEx,$sale->name)>0){
-							$names[]=$sale;
-					}elseif(preg_match($regEx,$sale->description)>0){
-							$descriptions[]=$sale;
 					}
 			}
 

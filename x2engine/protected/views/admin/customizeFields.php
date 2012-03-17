@@ -49,20 +49,10 @@
 	<div class="row">
 		<?php echo $form->labelEx($model,'modelName'); ?>
 		<?php 
-                $admin=Admin::model()->findByPk(1);
-                $order=$admin->menuOrder;
-                $pieces=explode(":",$order);
-                $disallow=array(
-                    'actions',
-                    'docs',
-                    'workflow',
-                    'dashboard',
-                    'groups',
-                    'calendar',
-                );
-                foreach($pieces as $piece){
-                    if(array_search($piece, $disallow)===false && is_null(Docs::model()->findByAttributes(array('title'=>$piece)))){
-                        $arr[ucfirst($piece)]=ucfirst($piece);
+                $modules=Modules::model()->findAll();
+                foreach($modules as $module){
+                    if($module->editable){
+                        $arr[$module->name]=$module->title;
                     }
                 }
                 echo $form->dropDownList($model,'modelName',$arr,

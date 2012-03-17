@@ -89,6 +89,18 @@ $('.search-form form').submit(function(){
 });
 ");
 
+// functions for completeing/uncompleting multiple selected actions
+Yii::app()->clientScript->registerScript('completeUncompleteSelected', "
+function completeSelected() {
+	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
+	$.post('completeSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+}
+function uncompleteSelected() {
+	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
+	$.post('uncompleteSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+}
+",CClientScript::POS_HEAD);
+
 function trimText($text) {
 	if(strlen($text)>150)
 		return substr($text,0,147).'...';
@@ -103,10 +115,6 @@ function trimText($text) {
 )); ?>
 </div><!-- search-form -->
 <?php
-$form=$this->beginWidget('CActiveForm', array(
-	'action'=>array('updateSelected'),
-    'enableAjaxValidation'=>false,
-));
 $this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -124,7 +132,6 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'actions',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'gvCheckbox'=>25,
 		'actionDescription'=>257,
 		'associationName'=>132,
 		'dueDate'=>91,
@@ -147,18 +154,9 @@ $this->widget('application.components.X2GridView', array(
 ));
 ?>
 <br />
-<div class="row buttons">
-<?php echo CHtml::submitButton(Yii::t('actions','Complete Selected'),array('class'=>'x2-button', 'style'=>'display:inline;', 'name'=>'complete-selected-button'))."\n"; ?>
-</div>
-<?php $this->endWidget(); ?>
-
 
 <?php
 echo "<br />\n";
-$form=$this->beginWidget('CActiveForm', array(
-	'action'=>array('updateSelected'),
-    'enableAjaxValidation'=>false,
-));
 $this->widget('application.components.X2GridView', array(
 	'id'=>'actionsComplete-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -177,7 +175,6 @@ $this->widget('application.components.X2GridView', array(
 	'enableGvSettings'=>false,
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'gvCheckbox'=>25,
 		'actionDescription'=>257,
 		'associationName'=>113,
 		'completeDate'=>110,
@@ -200,14 +197,11 @@ $this->widget('application.components.X2GridView', array(
 			'header'=>Yii::t('actions','Completed By'),
 			'value'=>'UserChild::getUserLinks($data->completedBy)',
 			'type'=>'raw',
-		)
+		),
 	),
 	'enableControls'=>true,
 ));
 ?>
 <br />
-<div class="row buttons">
-<?php echo CHtml::submitButton(Yii::t('actions','Uncomplete Selected'),array('class'=>'x2-button', 'style'=>'display:inline;', 'name'=>'uncomplete-selected-button'))."\n"; ?>
-</div>
-<?php $this->endWidget(); ?>
+
 

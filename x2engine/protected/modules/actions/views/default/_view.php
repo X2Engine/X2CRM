@@ -43,7 +43,7 @@ function deleteAction(actionId) {
 
 	if(confirm('".Yii::t('app','Are you sure you want to delete this item?')."')) {
 		$.ajax({
-			url: '" . CHtml::normalizeUrl(array('/actions/default/delete')) . "/'+actionId+'?ajax=1',
+			url: '" . CHtml::normalizeUrl(array('/actions/default/delete')) . "/id/'+actionId+'?ajax=1',
 			type: 'POST',
 			//data: 'id='+actionId,
 			success: function(response) {

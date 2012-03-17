@@ -48,27 +48,19 @@ This form allows you to add custom fields to models.
 	'id'=>'field-form',
 	'enableAjaxValidation'=>false,
         'action'=>'addField',
-)); ?>
+));
+echo $form->errorSummary($model);
+?>
 
 
 
 	<div class="row">
             <?php echo $form->labelEx($model,'modelName'); ?>
             <?php 
-            $admin=Admin::model()->findByPk(1);
-            $order=$admin->menuOrder;
-            $pieces=explode(":",$order);
-            $disallow=array(
-                'actions',
-                'docs',
-                'workflow',
-                'dashboard',
-                'groups',
-                'calendar',
-            );
-            foreach($pieces as $piece){
-                if(array_search($piece, $disallow)===false){
-                    $arr[ucfirst($piece)]=ucfirst($piece);
+            $modules=Modules::model()->findAll();
+            foreach($modules as $module){
+                if($module->editable){
+                    $arr[$module->name]=$module->title;
                 }
             }
             echo $form->dropDownList($model,'modelName',$arr); ?>
@@ -138,3 +130,12 @@ This form allows you to add custom fields to models.
 	</div>
 <?php $this->endWidget(); ?>
 </div>
+<script>
+    $('#field-form').submit(function(){
+         if($('#Fields_fieldName').val()=="" || $('#Fields_attributeLabel').val()==""){
+           alert("You must enter a field name and attribute label.");
+           return false; 
+       }
+    });
+
+</script>
