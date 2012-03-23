@@ -299,7 +299,7 @@ class Actions extends CActiveRecord
 	
 	public function search() {
 		$criteria=new CDbCriteria;
-		$parameters=array('condition'=>"(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo='' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND complete!='Yes' AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+		$parameters=array('condition'=>"(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo='' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 		
 		return $this->searchBase($criteria);
@@ -315,7 +315,7 @@ class Actions extends CActiveRecord
 
 	public function searchAll() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND complete!='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+		$parameters=array("condition"=>"(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."'))",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria);
@@ -324,6 +324,14 @@ class Actions extends CActiveRecord
 	public function searchGroup() {
 		$criteria=new CDbCriteria;
 		$parameters=array("condition"=>"visibility='1' AND complete!='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+		$criteria->scopes=array('findAll'=>array($parameters));
+
+		return $this->searchBase($criteria);
+	}
+	
+	public function searchAllGroup() {
+		$criteria=new CDbCriteria;
+		$parameters=array("condition"=>"visibility='1'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria);
@@ -372,7 +380,7 @@ class Actions extends CActiveRecord
 				'defaultOrder'=>'completeDate DESC, dueDate DESC',
 			),
 			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage()/2)
+				'pageSize'=>ceil(ProfileChild::getResultsPerPage())
 			),
 			'criteria'=>$criteria
 		));

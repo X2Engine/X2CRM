@@ -41,6 +41,7 @@
 class DefaultController extends x2base {
 
 	public $modelClass = 'Actions';
+	public $showActions = null;
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -54,7 +55,7 @@ class DefaultController extends x2base {
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','createSplash','createInline','viewGroup','complete',	//quickCreate
-					'completeRedirect','update', 'quickUpdate', 'completeSelected', 'uncompleteSelected', 'updateSelected', 'viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail'),
+					'completeRedirect','update', 'quickUpdate', 'completeSelected', 'uncompleteSelected', 'saveShowActions', 'updateSelected', 'viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -497,6 +498,14 @@ class DefaultController extends x2base {
 					$action->update();
 				}
 			}
+		}
+	}
+	
+	public function actionSaveShowActions() {
+		if(isset($_POST['ShowActions'])) {
+			$profile = ProfileChild::model()->findByPk(Yii::app()->user->id);
+			$profile->showActions = $_POST['ShowActions'];
+			$profile->update();
 		}
 	}
 	

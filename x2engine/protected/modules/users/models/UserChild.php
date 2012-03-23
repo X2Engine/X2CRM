@@ -143,7 +143,7 @@ class UserChild extends Users {
 			if(is_numeric($users)){
 				$group=Groups::model()->findByPk($users);
 				if(isset($group))
-					$link=CHtml::link($group->name,array('/groups/view','id'=>$group->id));
+					$link=CHtml::link($group->name,array('/groups/default/view','id'=>$group->id));
 				else
 					$link="";
 				return $link;
@@ -160,7 +160,7 @@ class UserChild extends Users {
                                 else if(is_numeric($user)){
                                     $group=Groups::model()->findByPk($users);
                                     if(isset($group))
-                                        $link=CHtml::link($group->name,array('/groups/view','id'=>$group->id));
+                                        $link=CHtml::link($group->name,array('/groups/default/view','id'=>$group->id));
                                     else
                                         $link='';
                                     $links.=$link.", ";

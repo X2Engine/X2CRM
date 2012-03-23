@@ -185,12 +185,14 @@ class ProfileChild extends Profile {
 	// lookup user's settings for a gridview (visible columns, column widths)
 	public static function getFormSettings($formName = null) {
 		$formSettings = json_decode(Yii::app()->params->profile->formSettings,true);	// converts JSON string to assoc. array
+		if($formSettings == null)
+			$formSettings = array();
 		if(isset($formName)) {
 			$formName = strtolower($formName);
 			if(isset($formSettings[$formName]))
 				return $formSettings[$formName];
 			else
-				return null;
+				return array();
 		} else {
 			return $formSettings;
 		}

@@ -74,7 +74,7 @@ Yii::app()->clientScript->registerScript("productTableQuote{$quote->id}", $produ
 <?php
 $viewButton = CHtml::link(
 	'['. Yii::t('products', 'View') .']',
-	Yii::app()->createUrl('quotes/view', array('id'=>$quote->id)),
+	Yii::app()->createUrl('/quotes/default/view', array('id'=>$quote->id)),
 	array('title'=>'View Quote')
 );
 $strict = Yii::app()->params['admin']['quoteStrictLock'];
@@ -85,7 +85,7 @@ $updateButton = ' '. CHtml::link(
 );
 $deleteButton = ' '. CHtml::ajaxLink(
 	'['. Yii::t('quotes', 'Delete') .']', 
-	Yii::app()->createUrl('quotes/quickDelete', array('id'=>$quote->id, 'contactId'=>$contactId)),
+	Yii::app()->createUrl('/quotes/default/quickDelete', array('id'=>$quote->id, 'contactId'=>$contactId)),
 	array(
 		'success' => "function(html) { jQuery('#quote-form-wrapper').html(html); }",
 		'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }"
@@ -129,7 +129,7 @@ $emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:voi
 
 <?php /*** Print Quote ***/
 
-$printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('quotes/print', array('id'=>$quote->id))."')"));
+$printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('/quotes/default/print', array('id'=>$quote->id))."')"));
 /*** End Print Quote ***/
 ?>
 
@@ -153,6 +153,9 @@ $jsDuplicateQuote = '{ ';
 $jsDuplicateQuote .= "'status': '{$quote->status}', ";
 $jsDuplicateQuote .= "'expirationDate': '". date("F d, Y",$quote->expirationDate) ."', ";
 $jsDuplicateQuote .= "'products': $jsProductArray, ";
+$jsDuplicateQuote .= "'currency': '{$quote->currency}',";
+$jsDuplicateQuote .= "'productNames': $productNames,";
+$jsDuplicateQuote .= "'prices': $prices,";
 $jsDuplicateQuote .= ' }';
 
 $duplicateButton = CHtml::link('['. Yii::t('products', 'Duplicate') .']', 'javascript:void(0);', array('onClick'=>"duplicateQuote($jsDuplicateQuote)"));
@@ -374,7 +377,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	</table>
     <?php echo CHtml::ajaxSubmitButton(
     	Yii::t('app','Save'),
-    	array('quotes/quickUpdate', 'id'=>$quote->id),
+    	array('/quotes/default/quickUpdate', 'id'=>$quote->id),
     	array(
     		'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
 			'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }",

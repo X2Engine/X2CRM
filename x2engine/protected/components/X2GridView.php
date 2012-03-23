@@ -108,7 +108,6 @@ class X2GridView extends CGridView {
 			$this->allFieldNames['gvControls'] = Yii::t('app','Tools');
 		
 		$this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
-		$this->allFieldNames['gvCheckbox_Two'] = Yii::t('app', 'Checkbox');
 
 		// load fields from DB
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
@@ -281,13 +280,6 @@ class X2GridView extends CGridView {
 				$newColumn['id'] = 'C_gvCheckbox';
 				$newColumn['class'] = 'CCheckBoxColumn';
 				// $newColumn['selectableRows'] = 2;
-				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
-					
-				$columns[] = $newColumn;
-			} else if ($columnName == 'gvCheckbox_Two') {
-				$newColumn['id'] = 'C_'.'gvCheckbox_Two';
-				$newColumn['class'] = 'CCheckBoxColumn';
-				$newColumn['selectableRows'] = 2;
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
 					
 				$columns[] = $newColumn;

@@ -227,7 +227,7 @@ class Contacts extends X2Model {
 		foreach($contacts as &$id){
 			if($id !=0 ) {
 				$model = CActiveRecord::model('Contacts')->findByPk($id);
-				$links[] = CHtml::link($model->name,array('contacts/view','id'=>$id));
+				$links[] = CHtml::link($model->name,array('/contacts/default/view','id'=>$id));
 				//$links.=$link.', ';
 				
 			}

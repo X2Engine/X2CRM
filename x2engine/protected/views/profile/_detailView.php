@@ -84,10 +84,28 @@ $attributeLabels = $model->attributeLabels();
 		<td><b><?php echo CHtml::encode($model->fullName); ?></b></td>
 		<td rowspan="6" width="25%">
 			<?php
-			if(isset($model->avatar) && $model->avatar!='')
-				echo '<img height="180" width="180" src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />'; 
-			else
-				echo '<img height="180" width="180" src='.Yii::app()->request->baseUrl."/uploads/default.jpg".'>';
+			// getimagesize()
+			
+			if(isset($model->avatar) && $model->avatar!='') {
+
+				$imgSize = @getimagesize($model->avatar);
+				// die( var_dump($imgSize));
+				if(!$imgSize)
+					$imgSize = array(180,180);
+				
+				$maxDimension = max($imgSize[0],$imgSize[1]);
+				
+				$scaleFactor = 1;
+				if($maxDimension > 180)
+					$scaleFactor = 180 / $maxDimension;
+					
+				$imgSize[0] = round($imgSize[0] * $scaleFactor);
+				$imgSize[1] = round($imgSize[1] * $scaleFactor);
+				// echo var_dump($imgSize);
+				
+				echo '<img width="'.$imgSize[0].'" height="'.$imgSize[1].'" src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
+			} else
+				echo '<img width="180" height="180" src='.Yii::app()->request->baseUrl."/uploads/default.jpg".'>';
 			?>
 		</td>
 	</tr>

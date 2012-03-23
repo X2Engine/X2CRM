@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -105,16 +105,13 @@ class ProfileController extends x2base {
 
 	public function actionSettings(){
 		$model=$this->loadModel(Yii::app()->user->getId());
-		
-		// get admin model
-		$admin = Admin::model()->findByPk(1);
 
-		list($menuItems,$selectedItems) = Admin::getMenuItems(true);
-		
-		foreach($menuItems as $key=>$value) {
-			if(!in_array($key,$selectedItems))
-				unset($menuItems[$key]);
-		}
+
+		$modules=Modules::model()->findAllByAttributes(array('visible'=>1));
+                $menuItems=array();
+                foreach($modules as $module){
+                    $menuItems[$module->name]=$module->title;
+                }
 		$menuItems = array(''=>Yii::t('app',"What's New")) + $menuItems;
 		
 		if(isset($_POST['ProfileChild'])) {

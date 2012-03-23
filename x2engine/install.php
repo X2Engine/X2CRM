@@ -142,6 +142,8 @@ function checkTimezone($timezone) {
 		return ' selected="selected"';
 }
 
+date_default_timezone_set(isset($_GET['timezone'])? $_GET['timezone'] : 'UTC');
+
 $timezones = array(
 	'Pacific/Midway'    => "(GMT-11:00) Midway Island",
 	'US/Samoa'          => "(GMT-11:00) Samoa",
@@ -271,6 +273,7 @@ $timezones = array(
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
 
 <script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/backgroundImage.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript">
 
@@ -308,7 +311,7 @@ function testDB() {
 		data: data,
 		beforeSend: function() {
 		
-			$('#response-box').html('<img src="images/loading.gif">');
+			$('#response-box').html('<img src="<?php echo $themeURL; ?>/images/loading.gif">');
 		
 		
 		},
@@ -340,7 +343,7 @@ function testDB() {
 </script>
 </head>
 <body>
-	
+<img id="bg" src="uploads/santacruznight_blur.jpg" alt="">
 <div id="installer-box">
 <h2><?php echo installer_t('Installation Page'); ?></h2>
 <?php echo installer_t('Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
@@ -362,7 +365,7 @@ function testDB() {
 	foreach ($languageDirs as $code) {	// generate language dropdown
 		$languageName = getLanguageName($code);	// lookup language name
 		if($languageName!==false) {
-			$selected = ($code == $_GET['lang'])? ' selected' : '';	// mark option selected if user has chosen this language
+			$selected = ($code == $lang)? ' selected' : '';	// mark option selected if user has chosen this language
 			echo "		<option value=\"$code\"$selected>$languageName</option>\n";	// list all available languages
 		}
 	} 

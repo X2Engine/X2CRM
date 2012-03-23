@@ -55,55 +55,25 @@ if (Yii::app()->user->getName() == $model->assignedTo || Yii::app()->user->getNa
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'sales-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('sales','Sales for Contact: '.$model->name).'</h2><div class="title-bar">'
+	'template'=> '<h2>'.Yii::t('sales','Relationships for Contact: '.$model->name).'</h2><div class="title-bar">'
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>new CArrayDataProvider($sales),
+	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		array(
-			'name'=>'name',
-                        'header'=>Yii::t("sales",'Name'),
-			'value'=>'CHtml::link($data->name,array("sales/view","id"=>$data->id))',
+			'name'=>'secondType',
+                        'header'=>Yii::t("contacts",'Type'),
+			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?$data->secondType:$data->firstType',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
-		//'description',
-		array(
-			'name'=>'quoteAmount',
-                        'header'=>Yii::t("sales",'Quote Amount'),
-			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data->quoteAmount,Yii::app()->params->currency)',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'salesStage',
-                        'header'=>Yii::t("sales",'Sales Stage'),
-			'value'=>'Yii::t("sales",$data->salesStage)',
-			'type'=>'raw',
-		),
-		
-		array(
-			'name'=>'expectedCloseDate',
-                        'header'=>Yii::t("sales",'Expected Close Date'),
-			'value'=>'empty($data->expectedCloseDate)?"":date("Y-m-d",$data->expectedCloseDate)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'13%'),
-		),
                 array(
-                    'name'=>'probability',
-                    'header'=>Yii::t("sales",'Probability'),
-                    'value'=>'$data->probability',
-                    'type'=>'raw',
-                ),
-		array(
-			'name'=>'assignedTo',
-                        'header'=>Yii::t("sales",'Assigned To'),
-			'value'=>'empty($data->assignedTo)?Yii::t("app","Anyone"):$data->assignedTo',
+			'name'=>'name',
+                        'header'=>Yii::t("contacts",'Record'),
+			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
+                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".strtolower($data->secondType)."/default/view/id/".$data->secondId)):"Record not found."):
+                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".strtolower($data->firstType)."/default/view/id/".$data->firstId)):"Record not found.")',
 			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'40%'),
 		),
-		/*
-		'leadSource',
-		
-		'createDate',
-		'notes',
-		*/
 	),
 ));

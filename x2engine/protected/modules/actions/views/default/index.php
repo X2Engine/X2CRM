@@ -38,6 +38,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+$profile = ProfileChild::model()->findByPk(Yii::app()->user->id);
+$this->showActions = $profile->showActions;
+if(!$this->showActions) // if user hasn't saved a type of action to show, show uncomple actions by default
+    $this->showActions = 'uncomplete';
+
+if($this->showActions == 'uncomplete')
+	$model->complete = 'No';
+else if ($this->showActions == 'complete')
+	$model->complete = 'Yes';
+else
+	$model->complete = '';
+
 if($this->route=='actions/index') {
 	$heading = Yii::t('actions','Today\'s Actions');
 	$dataProvider=$model->search();
@@ -64,7 +76,8 @@ if($this->route=='actions/index') {
 	);
 }else{
 	$heading = Yii::t('actions','Everyone\'s Actions'); 
-	$dataProvider=$model->searchGroup();
+	$dataProvider=$model->searchAllGroup();
+	//$dataProvider=$model->searchGroup();
 	$dataProvider2=$model->searchAllComplete();
 	
 	$this->menu=array(
@@ -99,6 +112,13 @@ function uncompleteSelected() {
 	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
 	$.post('uncompleteSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
 }
+
+function toggleShowActions() {
+	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
+	$.post('saveShowActions', {ShowActions: show}, function() {
+		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
+	});
+}
 ",CClientScript::POS_HEAD);
 
 function trimText($text) {
@@ -132,6 +152,7 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'actions',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
+		'gvCheckbox'=>28,
 		'actionDescription'=>257,
 		'associationName'=>132,
 		'dueDate'=>91,
@@ -154,8 +175,12 @@ $this->widget('application.components.X2GridView', array(
 ));
 ?>
 <br />
+<div class="row buttons">
+	<a class="x2-button" href="#" onClick="completeSelected();"><?php echo Yii::t('actions','Complete Selected'); ?></a>
+	<a class="x2-button" href="#" onClick="uncompleteSelected()"><?php echo Yii::t('actions','Uncomplete Selected'); ?></a>
+</div>
 
-<?php
+<?php /*
 echo "<br />\n";
 $this->widget('application.components.X2GridView', array(
 	'id'=>'actionsComplete-grid',
@@ -200,7 +225,7 @@ $this->widget('application.components.X2GridView', array(
 		),
 	),
 	'enableControls'=>true,
-));
+)); */
 ?>
 <br />
 

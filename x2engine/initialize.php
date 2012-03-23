@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.2.1';
-$buildDate = 1331942527;
+$x2Version = '1.2.2';
+$buildDate = 1332539853;
 
 $userData = '';
 
@@ -96,7 +96,7 @@ if($silent) {
 $webLeadUrl=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 $webLeadUrl=substr($webLeadUrl,0,-15);
 
-$contents=file_get_contents('leadCapture.php');
+$contents=file_get_contents('webLeadConfig.php');
 $contents=preg_replace('/\$url=\"\";/',"\$url='$webLeadUrl'",$contents);
 file_put_contents('leadCapture.php',$contents);
 
@@ -106,6 +106,7 @@ if(empty($lang))
 if(empty($timezone))
 	$timezone='UTC';
 
+date_default_timezone_set($timezone);
 //$gii=$_POST['gii'];
 
 $errors = array();
@@ -578,6 +579,7 @@ mysql_query('CREATE TABLE x2_cases(
 	emailUseSignature VARCHAR(5) DEFAULT "user",
 	emailSignature VARCHAR(512),
 	enableBgFade TINYINT DEFAULT 0,
+	showActions VARCHAR(20),
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_profile.'.mysql_error());
@@ -657,7 +659,7 @@ mysql_query('CREATE TABLE x2_admin(
 	emailSecurity VARCHAR(10),
 	installDate INT UNSIGNED NOT NULL,
 	updateDate INT UNSIGNED NOT NULL,
-	updateInterval INT NOT NULL,
+	updateInterval INT NOT NULL DEFAULT 0,
 	quoteStrictLock TINYINT,
 	googleIntegration TINYINT,
 	googleClientId VARCHAR(255),
@@ -733,9 +735,9 @@ mysql_query('CREATE TABLE x2_criteria(
 
 mysql_query('CREATE TABLE x2_lead_routing( 
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	field VARCHAR(250),
-	value VARCHAR(250),
+	criteria TEXT,
 	users TEXT,
+        priority INT, 
 	rrId INT DEFAULT 0,
         groupType INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_lead_routing.'.mysql_error());
@@ -1264,30 +1266,30 @@ body {
 </style>
 </head>
 <body>
+<img id="bg" src="uploads/santacruznight_blur.jpg" alt="">
 <div id="installer-box">
  	<h1><?php echo installer_t('Installation Complete!'); ?></h1>
 	<ul>
-		<li>Able to connect to database</li>
-		<li>Dropped old X2Engine tables (if any)</li>
-		<li>Created new tables for X2Engine</li>
-		<li>Created login for admin account</li>
-		<li>Created config file</li>
+		<li><?php echo installer_t('Able to connect to database'); ?></li>
+		<li><?php echo installer_t('Dropped old X2Engine tables (if any)'); ?></li>
+		<li><?php echo installer_t('Created new tables for X2Engine'); ?></li>
+		<li><?php echo installer_t('Created login for admin account'); ?></li>
+		<li><?php echo installer_t('Created config file'); ?></li>
 	</ul>
-	<h2>Next Steps</h2>
+	<h2><?php echo installer_t('Next Steps'); ?></h2>
 	<ul>
-		<li>Log in to app</li>
-		<li>Create new users</li>
-                <li>Set up Cron Job to deal with action reminders (see readme)</li>
-		<li>Set location</li>
-		<li>Explore the app</li>
+		<li><?php echo installer_t('Log in to app'); ?></li>
+		<li><?php echo installer_t('Create new users'); ?></li>
+		<li><?php echo installer_t('Set up Cron Job to deal with action reminders (see readme)'); ?></li>
+		<li><?php echo installer_t('Set location'); ?></li>
+		<li><?php echo installer_t('Explore the app'); ?></li>
 	</ul>
  	<h3><a class="x2-button" href="index.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
 	<?php echo installer_t('X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'); ?><br /><br />
 	
 <a href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a><br /><br />
-
-<hr />
 <div id="footer">
+	<div class="hr"></div>
 	<!--<img src="images/x2engine_big.png">-->
 	Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 	<?php echo installer_t('All Rights Reserved.'); ?>

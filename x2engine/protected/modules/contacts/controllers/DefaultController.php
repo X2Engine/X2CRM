@@ -76,7 +76,7 @@ class DefaultController extends x2base {
 					'getContacts',
 					'delete',
 					'shareContact',
-					'viewSales',
+					'viewRelationships',
 					'createList',
 					'createListFromSelection',
 					'updateList',
@@ -152,18 +152,17 @@ class DefaultController extends x2base {
 			$this->redirect('index');
 	}
 	
-	public function actionViewSales($id){
+	public function actionViewRelationships($id){
 		
-		$sales=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','firstId'=>$id,'secondType'=>'Sales'));
-		$temp=array();
-		foreach($sales as $sale){
-			$temp[]=Sales::model()->findByPk($sale->secondId);
-		}
-		$sales=$temp;
+
 		$model=$this->loadModel($id);
-		
+		$dataProvider=new CActiveDataProvider('Relationships', array(
+				'criteria'=>array(
+					'condition'=>'(firstType="Contacts" AND firstId="'.$id.'") OR (secondType="Contacts" AND secondId="'.$id.'")',
+				)
+			));
 		$this->render('viewSales',array(
-			'sales'=>$sales,
+			'dataProvider'=>$dataProvider,
 			'model'=>$model,
 		));
 	}

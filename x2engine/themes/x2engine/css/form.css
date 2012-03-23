@@ -77,10 +77,10 @@
 #form-box {
 	background:#f8f8f8;
 	border:1px solid #ccc;
-	-moz-border-radius:4px;
-	-o-border-radius:4px;
-	-webkit-border-radius:4px;
-	border-radius:4px;
+	-moz-border-radius:		4px;
+	-o-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	border-radius:			4px;
 }
 #form-box div.draggable {
 	/* background:white; */
@@ -103,10 +103,10 @@
 	font-weight:bold;
 }
 div.form, div.wide.form {
-	-moz-border-radius:4px;
-	-o-border-radius:4px;
-	-webkit-border-radius:4px;
-	border-radius:4px;
+	-moz-border-radius:		4px;
+	-o-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	border-radius:			4px;
 	border:1px solid #ddd;
 	clear:both;
 	margin:0 0 5px 0;
@@ -144,10 +144,10 @@ div.form.thin input, div.form.thin textarea, div.form.thin select {
 div.form input,div.form textarea,div.form select {
 	margin: 3px 0 5px 0;
 	border:1px solid #aaa;
-	-moz-border-radius:2px;
-	-o-border-radius:2px;
-	-webkit-border-radius:2px;
-	border-radius:2px;
+	-moz-border-radius:		3px;
+	-o-border-radius:		3px;
+	-webkit-border-radius:	3px;
+	border-radius:			3px;
 }
 /*div.form input, div.form textarea {
 	-webkit-appearance:none;
@@ -214,10 +214,10 @@ div.form div.error input,div.form div.error textarea,div.form div.error select,d
 	background: #FEE;
 	border-color: #C00;
 }
-div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
+/* div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
 	background: #E6EFC2;
 	border-color: #C6D880;
-}
+} */
 div.form .errorSummary {
 	background: #FEE;
 	border: 2px solid #C00;
@@ -275,30 +275,82 @@ div#install-form  #button {
 	width:125px;
 	margin:10px 0 5px 170px;
 }
-div#install-form #lang {
-	width:120px;
+div#install-form #lang {width:120px;}
+
+
+#login-box{
+	width:auto;
+	padding-bottom:50px;
+	background:url(../images/x2engine.png) center bottom no-repeat;
+}
+#login-box h2 {
+	font-size:16px;
+	font-family:Georgia;
+	margin-bottom:10px;
+	/* margin-left:-20px; */
 }
 #login-form {
-	background:url(../images/x2engine_big.png) 172px 8px no-repeat;
+	background:#fff;
+	background:rgba(255,255,255,0.25);
+	/* margin-bottom:20px; */
+	padding:10px 20px;
+
+	overflow:hidden;
+	border:none;
+	-moz-border-radius:		4px;
+	-o-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	border-radius:			4px;
+	-moz-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.4);
+	-webkit-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.4);
+	box-shadow:			inset 0 1px 2px rgba(0,0,0,0.4);
+	/* border-color:rgba(0,0,0,0.2); */
 }
-#login-box{
-	margin-top:20px;
-	width:480px;
-	overflow:auto;
+#login-form .cell.right {
+	float:right;
+	margin-right:0;
+	width:auto;
 }
-#login-box .form {
-	padding:20px;
-	overflow:auto;
+#login-form label {font-weight:normal;font-size:12px;color:rgba(0,0,0,0.6);}
+#login-form input:focus {
+	border-color:#aaa;
 }
+#LoginForm_username, #LoginForm_password {
+	width:200px;
+	color: #444;
+	font-size:16px;
+	line-height:24px;
+	vertical-align:center;
+	font-weight: bold;
+	-moz-box-shadow:	inset 0 1px 3px rgba(0,0,0,0.25);
+	-webkit-box-shadow:	inset 0 1px 3px rgba(0,0,0,0.25);
+	box-shadow:			inset 0 1px 3px rgba(0,0,0,0.25);
+}
+#LoginForm_rememberMe {
+	/*margin-left:10px; 
+	margin-top:10px; */
+	border:none !important;
+	width: 13px;
+	height: 13px;
+	padding: 0;
+	margin:0;
+	vertical-align: bottom;
+	position: relative;
+	*overflow: hidden;
+}
+#login-form input.x2-button {
+	padding: 10px 25px;	/* extra big! */
+	float:left;
+}
+#login-form a.x2touch-link {display:inline-block;margin-top:5px;font-size:10px;}
 #login-logo {
-	width:120px;
-	height:70px;
-	margin:18px 0 0 10px;
-	background:url(../images/x2-logo-square.png) center center no-repeat;
+	height:60px;
+	width:250px;
+	background:url(../images/x2engine.png) center top no-repeat;
+	margin-right:auto;
+	margin-left:auto;
 }
-#login-box input.x2-button {
-	padding: 10px 30px;	/* extra big! */
-}
+
 
 #inline-email-form label {
 	width:80px;
@@ -330,10 +382,10 @@ div.text-area-wrapper {
 	margin:0 0 5px 0;
 	padding:2px 4px;
 	border:1px solid #aaa;
-	-moz-border-radius:2px;
-	-o-border-radius:2px;
-	-webkit-border-radius:2px;
-	border-radius:2px;
+	-moz-border-radius:		2px;
+	-o-border-radius:		2px;
+	-webkit-border-radius:	2px;
+	border-radius:			2px;
 	background:#fff;
 }
 div.text-area-wrapper textarea {width:100%;margin:0;padding:0 !important;border:none;}

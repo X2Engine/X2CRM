@@ -39,19 +39,56 @@
  ********************************************************************************/
 ?><h2><?php echo Yii::t('admin','Manage Lead Routing'); ?></h2>
 <?php echo Yii::t('admin','Manage routing criteria. This setting is only required if lead distribution is set to "Custom Round Robin"'); ?>
-
+ 
 <?php
+$str="<select name=\"Values[field][]\">";
+foreach(CActiveRecord::model('Contacts')->attributeLabels() as $field=>$label){
+    $str.="<option value=\"$field\">$label</option>";
+}
+$str.="</select>"; 
+Yii::app()->clientScript->registerScript('leadRules', "
+function deleteStage(object) {
+	$(object).closest('li').remove();
+}
+
+function addStage() {
+	$('#criteria ul').append(' \
+	<li>\
+                AND ".$str."\
+                <select name=\"Values[comparison][]\">\
+                    <option value=\"<\">Less Than</option>\
+                    <option value=\">\">Greater Than</option>\
+                    <option value=\"=\">Equal To</option>\
+                    <option value=\"!=\">Not Equal To</option>\
+                    <option value=\"contains\">Contains</option>\
+                </select>\
+                <input type=\"text\" size=\"30\" name=\"Values[value][]\" /><br />\
+        <div class=\"cell\">\
+            <a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow','Del')."]</a>\
+        </div><br />\
+	</li>');
+}
+
+",CClientScript::POS_HEAD);
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'routing-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
+                array(
+
+			'name'=>'priority',
+			'header'=>Yii::t('admin','Priority'),
+			'value'=>'$data->priority',
+			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'80%'),
+		),
 		array(
 
 			'name'=>'value',
 			'header'=>Yii::t('admin','Criteria'),
-			'value'=>'$data->field."=".$data->value',
+			'value'=>'LeadRouting::humanizeText($data->criteria)',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'80%'),
 		),
@@ -90,21 +127,28 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
         
-        <div class="row">
-            <?php echo $form->labelEx($model,'field'); ?>
-            <?php
-			// die(var_dump(X2Model::model('Contacts')));
-			// $contact = new Contacts;
-			// echo $form->dropDownList($model,'field',$contact->attributeLabels());
-			echo $form->dropDownList($model,'field',CActiveRecord::model('Contacts')->attributeLabels()); ?>
-            <?php echo $form->error($model,'field'); ?>
-        </div>
-        
-        <div class="row">
-            <?php echo $form->labelEx($model,'value'); ?>
-            <?php echo $form->textField($model,'value'); ?>
-            <?php echo $form->error($model,'value'); ?>
-        </div>
+        <div id="criteria">
+        <label>Criteria</label>
+        <ul>
+        <li>
+            <?php echo CHtml::dropDownList('Values[field][]','',CActiveRecord::model('Contacts')->attributeLabels()); ?>
+            <select name="Values[comparison][]">
+                    <option value="<">Less Than</option>
+                    <option value=">">Greater Than</option>
+                    <option value="=">Equal To</option>
+                    <option value="!=">Not Equal To</option>
+                    <option value="contains">Contains</option>
+                </select>
+                <input type="text" size="30" name="Values[value][]" />
+                <br />
+            <div class="cell">
+                <a href="javascript:void(0)" onclick="deleteStage(this);">[<?php echo Yii::t('workflow','Del'); ?>]</a>
+            </div>
+            <br />
+        </li>
+        </ul>
+        <a href="javascript:void(0)" onclick="addStage();" class="add-workflow-stage">[<?php echo Yii::t('workflow','Add'); ?>]</a>
+    </div>
         
         <div class="row">
             <?php echo $form->labelEx($model,'users'); ?>
@@ -137,6 +181,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
                             echo "<br>";
                             echo CHtml::dropDownList('groupType', '', array('0'=>'Within Group(s)','1'=>'Between Group(s)'),array('id'=>'groupType','style'=>'display:none'))
                         /* end x2temp */ ?>
+        </div>
+        
+        <div class="row">
+            <?php echo $form->labelEx($model,'priority');?>
+            <?php echo $form->dropDownList($model,'priority',$priorityArray,array('selected'=>LeadRouting::model()->count()));?>
         </div>
         
 	<div class="row buttons">

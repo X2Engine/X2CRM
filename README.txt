@@ -2,15 +2,12 @@ README
 
 --WARNING--
 
-X2CRM 1.2.1 Changelog
-- Added Contact Lists
-	- Users can now create custom static or dynamic lists
-- Tons of bug fixes, particularly related to broken links
-- Users, Workflow and Groups are now standard modules (structural change)
-- Calendar can now integrate with Google calendar
+X2CRM 1.2.2 Changelog
+- Added View Relationships: you can now see everything linked to a given record
+- Numerous bug fixes
+- Enhanced custom lead routing rules
 
-
-Welcome to X2CRM v1.2.1!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+Welcome to X2CRM v1.2.2!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

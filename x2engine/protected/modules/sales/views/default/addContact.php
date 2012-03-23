@@ -64,7 +64,7 @@ echo ($action=='Remove')? Yii::t('sales','Please select the contacts you wish to
 <div class="row">
 	<?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 				'name'=>'auto_select',
-				'source' => $this->createUrl('contacts/getContacts'),
+				'source' => $this->createUrl('/contacts/getContacts'),
 				'htmlOptions'=>array('size'=>25,'maxlength'=>100,'tabindex'=>3),
 				'options'=>array(
 					'minLength'=>'2',

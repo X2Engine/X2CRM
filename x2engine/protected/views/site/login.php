@@ -40,78 +40,72 @@
 
 $this->pageTitle=Yii::app()->name . ' - Login';
 
+
+
+
 Yii::app()->clientScript->registerCss('fixMenuShadow',"
 #page .container {
 	position:relative;
 	z-index:2;
 }
 ",'screen',CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScript('loginFocus',"
+$('#LoginForm_username').focus();
+",CClientScript::POS_READY);
 ?>
+
 
 <div id="login-box">
-<?php echo Yii::t('app','Please log in to continue:'); ?>
-<div class="form">
-<!--<div id="login-logo"></div>-->
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'login-form',
-	'enableClientValidation'=>true,
-	'clientOptions'=>array(
-		'validateOnSubmit'=>true,
-	),
-));
-// CHtml::$errorCss = '';
-// CHtml::$errorSummaryCss = '';
+	<?php $form=$this->beginWidget('CActiveForm', array(
+		// 'id'=>'login-form',
+		'enableClientValidation'=>true,
+		'clientOptions'=>array(
+			'validateOnSubmit'=>true,
+		),
+	));
+	?><!--<h2><?php echo Yii::t('app','Welcome to {appName}.',array('{appName}'=>Yii::app()->name)); ?></h2>-->
+<div class="form" id="login-form">
+	
+	<?php echo $form->label($model,'username'); ?>
+	<?php echo $form->textField($model,'username'); ?>
+	<?php //echo $form->error($model,'username'); ?>
 
-?>
-<div class="row">
-	<div class="cell">
-		<div class="row">
-			<?php echo $form->label($model,'username'); ?>
-			<?php echo $form->textField($model,'username',array('id'=>'username')); ?>
-			<?php //echo $form->error($model,'username'); ?>
+	<?php echo $form->label($model,'password'); ?>
+	<?php echo $form->passwordField($model,'password'); ?>
+	<?php echo $form->error($model,'password'); ?>
+
+	<?php if($model->useCaptcha && CCaptcha::checkRequirements()) { ?>
+	<div class="row">
+	<?php
+	// CHtml::$errorCss = 'error';
+	// CHtml::$errorSummaryCss = 'error';
+
+	echo '<div>';
+	$this->widget('CCaptcha',array(
+		'clickableImage'=>true,
+		'showRefreshButton'=>false,
+		'imageOptions'=>array(
+			'style'=>'display:block;cursor:pointer;',
+			'title'=>Yii::t('app','Click to get a new image')
+		)
+	)); echo '</div>';
+	echo '<p class="hint">'.Yii::t('app','Please enter the letters in the image above.').'</p>';
+	echo $form->textField($model,'verifyCode');
+	?>
+	</div><?php } ?>
+	<div class="row checkbox">
+		<div class="cell">
+			<?php echo CHtml::submitButton(Yii::t('app','Login'),array('class'=>'x2-button')); ?>
 		</div>
-		<div class="row">
-			<?php echo $form->label($model,'password'); ?>
-			<?php echo $form->passwordField($model,'password'); ?>
-			<?php echo $form->error($model,'password'); ?>
-		</div>
-		<div class="row checkbox">
+
+		<div class="cell right" style="padding-top:2px;padding-left:5px;">
 			<?php echo $form->checkBox($model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); ?>
-			<?php echo $form->label($model,'rememberMe'); ?>
-			<?php echo $form->error($model,'rememberMe'); ?>
-		</div><?php if($model->useCaptcha && CCaptcha::checkRequirements()) { ?>
-		<br>
-		<div class="row">
-			<?php
-			// CHtml::$errorCss = 'error';
-			// CHtml::$errorSummaryCss = 'error';
-
-			echo '<div>';
-			$this->widget('CCaptcha',array(
-				'clickableImage'=>true,
-				'showRefreshButton'=>false,
-				'imageOptions'=>array(
-					'style'=>'display:block;cursor:pointer;',
-					'title'=>Yii::t('app','Click to get a new image')
-				)
-			)); echo '</div>';
-			echo '<p class="hint">'.Yii::t('app','Please enter the letters in the image above.').'</p>';
-			echo $form->textField($model,'verifyCode');
-		?>
-		</div><?php } ?>
+			<?php echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); ?>
+			<?php echo $form->error($model,'rememberMe'); ?><br>
+			<?php echo CHtml::link(Yii::t('app','Login to X2Touch'),Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
+		</div>
 	</div>
-	<!--<div class="cell" id="login-logo"></div>-->
 </div>
-<div class="row">
-	<?php echo CHtml::submitButton(Yii::t('app','Login'),array('class'=>'x2-button')); ?>
-</div><br />
-<?php echo CHtml::link(Yii::t('app','Login to X2Touch'),Yii::app()->getBaseUrl() . '/index.php/x2touch'); ?>
+<!--<div id="login-logo"></div>-->
 <?php $this->endWidget(); ?>
 </div>
-</div>
-
-<script>
-    $(function(){
-            $('#username').focus();
-    });
-</script>

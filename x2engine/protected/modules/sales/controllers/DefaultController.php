@@ -235,7 +235,8 @@ class DefaultController extends x2base {
                     $rel->firstId=$contact;
                     $rel->secondType='Sales';
                     $rel->secondId=$model->id;
-                    $rel->save();
+                    if($rel->firstId!="" && $rel->secondId!="")
+                        $rel->save();
                 }
                     $model->associatedContacts=Sales::parseContacts($arr);
             }

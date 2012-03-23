@@ -159,16 +159,13 @@ class AdminController extends Controller {
 			echo $this->roundRobin();
 		}elseif($type=="customRoundRobin"){
 			$arr=$_POST;
-			foreach($arr as $key=>$value){
-				$users=$this->getRoutingRules($key,$value);
-				if($users!=""){
-					$rrId=$users[count($users)-1];
-					unset($users[count($users)-1]);
-					$i=$rrId%count($users);
-					echo $users[$i];
-					break;
-				}
-			}
+                        $users=$this->getRoutingRules($arr);
+                        if($users!=""){
+                            $rrId=$users[count($users)-1];
+                            unset($users[count($users)-1]);
+                            $i=$rrId%count($users);
+                            echo $users[$i];
+                        }
 		}
 	}
 	
@@ -226,54 +223,102 @@ class AdminController extends Controller {
 		return key($numbers);
 	}
 	
-	public function getRoutingRules($field, $value){
+	public function getRoutingRules($data){
             $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
             $online = $admin->onlineOnly;
             x2base::cleanUpSessions();
             $sessions = Session::getOnlineUsers();
 
-            $rule=CActiveRecord::model('LeadRouting')->findByAttributes(array('field'=>$field,'value'=>$value));
-            if(isset($rule)){
-                if(is_null($rule->groupType)){
-                    $users=$rule->users;
-                    $users=explode(", ",$users);
-                    if($online==1)
-                            $users=array_intersect($users,$sessions);
-                }else{
-                    $groups=$rule->users;
-                    $groups=explode(", ",$groups);
-                    $users=array();
-                    foreach($groups as $group){
-                        if($rule->groupType==0){
-                            $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$group));
-                            foreach($links as $link){
-                                if(array_search(UserChild::model()->findByPk($link->userId)->username,$users)===false)
-                                    $users[]=UserChild::model()->findByPk($link->userId)->username;
+            $rules=CActiveRecord::model('LeadRouting')->findAll("",array('order'=>'priority'));
+            foreach($rules as $rule){
+                $arr=LeadRouting::parseCriteria($rule->criteria);
+                $flagArr=array();
+                foreach($arr as $criteria){
+                    if(isset($data[$criteria['field']])){
+                        $val=$data[$criteria['field']];
+                        $operator=$criteria['comparison'];
+                        $target=$criteria['value'];
+                        if($operator!='contains'){
+                            switch($operator){
+                                case '>':
+                                    $flag=($val>=$target);
+                                    break;
+                                case '<':
+                                    $flag=($val<=$target);
+                                    break;
+                                case '=':
+                                    $flag=($val==$target);
+                                    break;
+                                case '!=':
+                                    $flag=($val!=$target);
+                                    break;
+                                default:
+                                    $flag=false;
                             }
                         }else{
-                            $users[]=$group;
+                            $flag=preg_match("/$target/i",$val)!=0;
+                            
                         }
+                        
                     }
-                    if($online==1 && $rule->groupType==0)
-                        $users=array_intersect($users,$sessions);
+                    $flagArr[]=$flag;
                 }
-                $users[]=$rule->rrId;
-                $rule->rrId++;
-                $rule->save();
-                return $users;
-            }else{
-                return "";
+                if(!in_array(false,$flagArr)){
+                    $users=$rule->users;
+                    $users=explode(", ",$users);
+                            if(is_null($rule->groupType)){
+                                if($online==1)
+                                    $users=array_intersect($users,$sessions);
+                            }else{
+                                $groups=$rule->users;
+                                $groups=explode(", ",$groups);
+                                $users=array();
+                                foreach($groups as $group){
+                                    if($rule->groupType==0){
+                                        $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$group));
+                                        foreach($links as $link){
+                                            if(array_search(UserChild::model()->findByPk($link->userId)->username,$users)===false)
+                                                $users[]=UserChild::model()->findByPk($link->userId)->username;
+                                        }
+                                    }else{
+                                        $users[]=$group;
+                                    }
+                                }
+                                if($online==1 && $rule->groupType==0)
+                                    $users=array_intersect($users,$sessions);
+                            }
+                            $users[]=$rule->rrId;
+                            $rule->rrId++;
+                            $rule->save();
+                            return $users;
+                }
             }
 	}
 	
 	public function actionRoundRobinRules(){
 		$model=new LeadRouting;
 		$users=UserChild::getNames();
-		unset($users['']);
+		unset($users['Anyone']);
 		unset($users['admin']);
-		$dataProvider=new CActiveDataProvider('LeadRouting');
+                $priorityArray=array();
+                for($i=1;$i<=LeadRouting::model()->count()+1;$i++){
+                    $priorityArray[$i]=$i;
+                }
+		$dataProvider=new CActiveDataProvider('LeadRouting', array(
+				'criteria'=>array(
+					'order'=>'priority ASC',
+				)
+			));
 		if(isset($_POST['LeadRouting'])) {
+                        $values=$_POST['Values'];
+                        $criteria=array();
+                        for($i=0;$i<count($values['field']);$i++){
+                            $tempArr=array($values['field'][$i],$values['comparison'][$i],$values['value'][$i]);
+                            $criteria[]=implode(',',$tempArr);
+                        }
+                        $model->criteria=json_encode($criteria);
 			$model->attributes=$_POST['LeadRouting'];
+                        $model->priority=$_POST['LeadRouting']['priority'];
                         if(isset($_POST['group'])){
                             $group=true;
                             $model->groupType=$_POST['groupType'];
@@ -282,9 +327,14 @@ class AdminController extends Controller {
                         }
 			
 			$model->users=Accounts::parseUsers($model->users);
-			
+                        $check=LeadRouting::model()->findByAttributes(array('priority'=>$model->priority));
+                        if(isset($check)){
+                            $query="UPDATE x2_lead_routing SET priority=priority+1 WHERE priority>='$model->priority'";
+                            $command=Yii::app()->db->createCommand($query);
+                            $command->execute();
+                        }
 			if($model->save()) {
-				$this->redirect('roundRobinRules');
+                            $this->redirect('roundRobinRules');
 			}
 		}
 		
@@ -292,6 +342,7 @@ class AdminController extends Controller {
 			'model'=>$model,
 			'users'=>$users,
 			'dataProvider'=>$dataProvider,
+                        'priorityArray'=>$priorityArray,
 		));
             
         }
@@ -1873,21 +1924,22 @@ class AdminController extends Controller {
 		$file='data.csv';
 		$fp = fopen($file, 'w+');
                 
-                $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
-                $order=$admin->menuOrder; 
+                $modules=Modules::model()->findAll();
+                $pieces=array();
+                foreach($modules as $module){
+                    $pieces[]=$module->name;
+                }
 		
-                $pieces=explode(":",$order);
                 $tempArr=array();
                 foreach($pieces as $model){
                     if($model=="quotes")
                         $model="quote";
                     if($model=="products")
                         $model="product";
-                    if($model!='dashboard' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
+                    if($model!='dashboard' && $model!='calendar' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
                         $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
                 }
                 
-		$tempArr['Users']=UserChild::model()->findAll();
                 $tempArr['Profile']=ProfileChild::model()->findAll();
                 $labels=array();
                 foreach($tempArr as $model=>$data){

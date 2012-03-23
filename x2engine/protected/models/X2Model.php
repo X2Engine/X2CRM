@@ -108,7 +108,7 @@ abstract class X2Model extends CActiveRecord {
 		$labels = array();
 			
 		foreach(self::$_fields as &$_field)
-			$labels[ $_field->fieldName ] = Yii::t('contacts',$_field->attributeLabel);
+			$labels[ $_field->fieldName ] = Yii::t(strtolower(get_class($this)),$_field->attributeLabel);
 
 		return $labels;
 	}
@@ -151,7 +151,8 @@ abstract class X2Model extends CActiveRecord {
 	}
 	
 	public function getFields() {
-		return isset(self::$_fields)? self::$_fields : array();
+		$this->queryFields();
+		return self::$_fields;
 	}
 
 	/**

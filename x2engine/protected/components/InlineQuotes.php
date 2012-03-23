@@ -411,7 +411,7 @@ function duplicateQuote(quote) {
 	
 	$('#product-table-create tbody tr').remove();
 	for(var i in quote['products']) {
-		addFilledProduct('create', quote['products'][i]['id'], quote['products'][i]['price'], quote['products'][i]['quantity'], '' + quote['products'][i]['adjustment']);
+		addFilledProduct('create', quote['products'][i]['id'], quote['products'][i]['price'], quote['products'][i]['quantity'], '' + quote['products'][i]['adjustment'], quote['currency'], quote['productNames'], quote['prices']);
 	}
 	
 	$('#new-quote').show('slow');
@@ -450,7 +450,6 @@ function duplicateQuote(quote) {
 		foreach($quotes as $quote) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
 			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
-
 			
 			// find associated products and their quantities
 			$quotesProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));

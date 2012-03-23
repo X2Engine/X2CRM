@@ -50,10 +50,6 @@ abstract class x2base extends Controller {
 	 * 
 	*/
 
-	// Set locale and character encoding.
-	public function onBeginRequest() {
-		setlocale(LC_ALL, 'en_US.UTF-8');
-	}
 	
 	public $portlets=array(); // This is the array of widgets on the sidebar.
         public $modelClass = 'Admin';
@@ -362,6 +358,31 @@ abstract class x2base extends Controller {
 	public function create($model, $oldAttributes, $api) {
 		$name=$this->modelClass;
 		if($model->save()) {
+                    if(!($model instanceof Actions)){
+                        $fields=Fields::model()->findAllByAttributes(array('modelName'=>$name,'type'=>'link'));
+                        foreach($fields as $field){
+                            $fieldName=$field->fieldName;
+                            if(isset($model->$fieldName)){
+                                if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+                                        (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
+                                        OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))){
+                                    $rel=new Relationships;
+                                    $rel->firstType=$name;
+                                    $rel->secondType=ucfirst($field->linkType);
+                                    $rel->firstId=$model->id;
+                                    $rel->secondId=$model->$fieldName;
+                                    if($rel->save()){
+                                        $lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+                                        (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
+                                        OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
+                                        if(isset($lookup)){
+                                            $lookup->delete();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 			$changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 			$this->updateChangelog($model,$changes);
 			if(($model instanceof Product) == false) // products are not assigned to anyone
@@ -405,10 +426,61 @@ abstract class x2base extends Controller {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function update($model, $oldAttributes, $api) {
+            $name=$this->modelClass;
 		$temp = $oldAttributes;
 		$changes = $this->calculateChanges($temp, $model->attributes, $model);
 		$model = $this->updateChangelog($model,$changes);
 		if($model->save()) {
+                    if(!($model instanceof Actions)){
+                        $fields=Fields::model()->findAllByAttributes(array('modelName'=>$name,'type'=>'link'));
+                        foreach($fields as $field){
+                            $fieldName=$field->fieldName;
+                            if(isset($model->$fieldName) && $model->$fieldName!=""){
+                                if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+                                        (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
+                                        OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))){
+                                    $rel=new Relationships;
+                                    $rel->firstType=$name;
+                                    $rel->secondType=ucfirst($field->linkType);
+                                    $rel->firstId=$model->id;
+                                    $rel->secondId=$model->$fieldName;
+                                    if($rel->save()){
+                                        if($field->linkType!='contacts')
+                                            $oldRel=CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name'=>$oldAttributes[$fieldName]));
+                                        else{
+                                            $pieces=explode(" ",$oldAttributes[$fieldName]);
+                                            if(count($pieces)>1)
+                                                $oldRel=CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('firstName'=>$pieces[0],'lastName'=>$pieces[1]));
+                                        }
+                                        if(isset($oldRel)){
+                                            $lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+                                            (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldRel->id."') 
+                                            OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldRel->id."')");
+                                            if(isset($lookup)){
+                                                $lookup->delete();
+                                            }
+                                        }
+                                    }
+                                }
+                            }elseif($model->$fieldName==""){
+                                if($field->linkType!='contacts')
+                                            $oldRel=CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name'=>$oldAttributes[$fieldName]));
+                                        else{
+                                            $pieces=explode(" ",$oldAttributes[$fieldName]);
+                                            if(count($pieces)>1)
+                                                $oldRel=CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('firstName'=>$pieces[0],'lastName'=>$pieces[1]));
+                                        }
+                                        if(isset($oldRel)){
+                                            $lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+                                            (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldRel->id."') 
+                                            OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldRel->id."')");
+                                            if(isset($lookup)){
+                                                $lookup->delete();
+                                            }
+                                        }
+                            }
+                        }
+                    }
 			if($model instanceof Actions && $api == 0) {
 				if(isset($_GET['redirect']) && $model->associationType != 'none')	// if the action has an association
 					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
@@ -804,9 +876,9 @@ abstract class x2base extends Controller {
 			}
 			
 			// $dropbox = Yii::app()->params->admin->dropboxEmail;
-			$dropbox = 'dropbox@'.preg_replace('/^www\./','',$_SERVER['HTTP_HOST']);	// determine the dropbox email
-			if(PHPMailer::ValidateAddress($dropbox))
-				$phpMail->AddCC($dropbox);
+			// $dropbox = 'dropbox@'.preg_replace('/^www\./','',$_SERVER['HTTP_HOST']);	// determine the dropbox email
+			// if(PHPMailer::ValidateAddress($dropbox))
+				// $phpMail->AddCC($dropbox);
 			
 			$phpMail->Subject = $subject;
 //			$phpMail->AltBody = $message;

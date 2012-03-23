@@ -101,18 +101,14 @@ class ApiController extends x2base {
             // Does the model have this attribute? If not raise an error
             if($model->hasAttribute($var))
                 $model->$var = $value;
-            else
-                $this->_sendResponse(500, 
-                    sprintf('Parameter <b>%s</b> is not allowed for model <b>%s</b>', $var,
-                    $_GET['model']) );
         }
         
         switch($_GET['model'])
         {
             // Get an instance of the respective model
             case 'Contacts':
-                Yii::import("application.controllers.ContactsController");
-                $controller=new ContactsController('ContactsController');
+                Yii::import("application.modules.contacts.controllers.DefaultController");
+                $controller=new DefaultController('DefaultController');
                 if($controller->create($model,$temp,'1')){
                     $this->_sendResponse(200, 
                         sprintf('Model <b>%s</b> was created with name <b>%s</b>',
@@ -134,8 +130,8 @@ class ApiController extends x2base {
                 }
                 break;
             case 'Accounts':
-                Yii::import("application.controllers.AccountsController");
-                $controller=new AccountsController('AccountsController');
+                Yii::import("application.modules.accounts.controllers.DefaultController");
+                $controller=new DefaultController('DefaultController');
                 if($controller->create($model,$temp,'1')){
                     $this->_sendResponse(200, 
                         sprintf('Model <b>%s</b> was created with name <b>%s</b>',
@@ -157,8 +153,8 @@ class ApiController extends x2base {
                 }
                 break;
             case 'Actions':
-                Yii::import("application.controllers.ActionsController");
-                $controller=new ActionsController('ActionsController');
+                Yii::import("application.modules.actions.controllers.DefaultController");
+                $controller=new DefaultController('DefaultController');
                 if($controller->create($model,$temp,'1')){
                     $this->_sendResponse(200, 
                         sprintf('Model <b>%s</b> was created with description <b>%s</b>',
@@ -236,8 +232,8 @@ class ApiController extends x2base {
         {
             // Get an instance of the respective model
             case 'Contacts':
-                Yii::import("application.controllers.ContactsController");
-                $controller=new ContactsController('ContactsController');
+                Yii::import("application.modules.contacts.controllers.DefaultController");
+                $controller=new DefaultController('DefaultController');
                 if($controller->create($model,$temp,'1')){
                     $this->_sendResponse(200, 
                         sprintf('Model <b>%s</b> was updated with name <b>%s</b>',
@@ -259,8 +255,8 @@ class ApiController extends x2base {
                 }
                 break;
             case 'Accounts':
-                Yii::import("application.controllers.AccountsController");
-                $controller=new AccountsController('AccountsController');
+                Yii::import("application.modules.accounts.controllers.DefaultController");
+                $controller=new DefaultController('DefaultController');
                 if($controller->update($model,$temp,'1')){
                     $this->_sendResponse(200, 
                         sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.',
@@ -282,8 +278,8 @@ class ApiController extends x2base {
                 }
                 break;
             case 'Actions':
-                Yii::import("application.controllers.ActionsController");
-                $controller=new ActionsController('ActionsController');
+                Yii::import("application.modules.actions.controllers.DefaultController");
+                $controller=new DefaultController('DefaultController');
                 if($controller->update($model,$temp,'1')){
                     $this->_sendResponse(200, 
                         sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.',

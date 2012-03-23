@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -163,28 +163,9 @@ $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
 
-// convert HEX color to RGB values
-function hex2rgb($color) {
-	if ($color[0] == '#')
-		$color = substr($color, 1);
-
-	if (strlen($color) == 6)
-		list($r, $g, $b) = array($color[0].$color[1],
-								 $color[2].$color[3],
-								 $color[4].$color[5]);
-	else if (strlen($color) == 3)
-		list($r, $g, $b) = array($color[0].$color[0], $color[1].$color[1], $color[2].$color[2]);
-	else
-		return false;
-
-	$r = hexdec($r); $g = hexdec($g); $b = hexdec($b);
-
-	return array($r, $g, $b);
-}
-
 $checkResult = false;
 $checkFiles = array(
-	'themes/x2engine/images/x2footer.png'=>'aead54903d73a6e5f182a680cac0b68b',
+	'themes/x2engine/images/x2footer.png'=>'1393e4af54ababdcf76fac7f075b555b',
 	'themes/x2engine/images/x2-mini-icon.png'=>'153d66b514bf9fb0d82a7521a3c64f36',
 );
 foreach($checkFiles as $key=>$value) {
@@ -217,7 +198,7 @@ if($checkResult)
 		if(!empty($backgroundImg)) {
 			$shadowRgb = 'rgb(0,0,0,0.5)';	// use a black shadow if there is an image
 		} else {
-			$shadowColor = hex2rgb(Yii::app()->params->profile->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
+			$shadowColor = X2Color::hex2rgb(Yii::app()->params->profile->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
 			
 			foreach($shadowColor as &$value) {
 				$value = floor(0.5*$value);

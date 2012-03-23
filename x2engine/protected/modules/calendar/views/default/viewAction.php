@@ -113,7 +113,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		?>
 		<?php echo $form->label($model,'assignedTo', array('class'=>'dialog-label')); ?>
 		<?php
-		$assignedToArray = $users + Calendar::getViewableCalendarNames();
+		$assignedToArray = $users + X2Calendar::getViewableCalendarNames();
 		echo $assignedToArray[$model->assignedTo];
 		?>
 </div>

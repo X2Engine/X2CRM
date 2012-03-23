@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -74,11 +74,10 @@ class LeadRouting extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('field, value', 'length', 'max'=>250),
 			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, field, value, users', 'safe', 'on'=>'search'),
+			array('id,  users', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -100,11 +99,55 @@ class LeadRouting extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'field' => 'Field',
-			'value' => 'Value',
+			'criteria'=>'Criteria',
 			'users' => 'Users',
 		);
 	}
+         
+        public static function parseCriteria($str){
+            $array=json_decode($str);
+            $arr=array();
+            foreach($array as $criteria){
+                $pieces=explode(',',$criteria);
+                $arr[]=array('field'=>$pieces[0], 'comparison'=>$pieces[1], 'value'=>$pieces[2]);
+            }
+            return $arr;
+        }
+        
+        public static function humanizeText($str){
+            $array=json_decode($str);
+            $arr=array();
+            $return="If ";
+            $tempArr=array();
+            foreach($array as $criteria){
+                $tempStr="";
+                $pieces=explode(',',$criteria);
+                $arr[]=array('field'=>$pieces[0], 'comparison'=>$pieces[1], 'value'=>$pieces[2]);
+                $field=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$pieces[0]))->attributeLabel;
+                $tempStr.=$field;
+                switch($pieces[1]){
+                    case '<':
+                        $tempStr.=" is less than or equal to $pieces[2]";
+                        break;
+                    case '>':
+                        $tempStr.=" is greater than or equal to $pieces[2]";
+                        break;
+                    case '=':
+                        $tempStr.=" is equal to $pieces[2]";
+                        break;
+                    case '!=':
+                        $tempStr.=" is not equal to $pieces[2]";
+                        break;
+                    case 'contains':
+                        $tempStr.=" contains the the text '$pieces[2]'";
+                        break;
+                }
+                $tempArr[]=$tempStr;
+                
+            }
+            $return.=implode(' and ',$tempArr);
+            return $return;
+        }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

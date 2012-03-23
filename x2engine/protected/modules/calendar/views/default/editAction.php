@@ -65,7 +65,7 @@ $form=$this->beginWidget('CActiveForm', array(
 
 <div class="row">
 	<div class="text-area-wrapper">
-		<?php echo $form->textArea($model,'actionDescription',array('rows'=>3, 'cols'=>40)); ?>
+		<?php echo $form->textArea($model,'actionDescription',array('rows'=>3, 'cols'=>40, 'onChange'=>'giveSaveButtonFocus();')); ?>
 	</div>
 </div>
 

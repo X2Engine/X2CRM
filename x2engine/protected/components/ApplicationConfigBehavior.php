@@ -60,8 +60,13 @@ class ApplicationConfigBehavior extends CBehavior {
 	public function beginRequest() {
 	
 		
-		if($this->owner->request->getPathInfo() == 'notifications/getMessages')	// skip all the loading if this is a chat/notification update
+		if($this->owner->request->getPathInfo() == 'notifications/getMessages') {	// skip all the loading if this is a chat/notification update
+			$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar();	// set the timezone to the admin's
+			if(!isset($timezone))
+				$timezone = 'UTC';
+			date_default_timezone_set($timezone);
 			return;
+		}
 		Yii::import('application.controllers.x2base');
 		Yii::import('application.models.*');
 		Yii::import('application.components.*');
@@ -77,6 +82,10 @@ class ApplicationConfigBehavior extends CBehavior {
 		
 		// die( var_dump($this->owner->request->getPathInfo())); //->getRoute();
 		if(!$this->owner->user->isGuest) {
+			
+			// use the admin's profile as default
+			$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk($this->owner->user->getId());
+		
 			$session = Session::model()->findByAttributes(array('user'=>$this->owner->user->getName()));
 			if(isset($session)) {
 				if(time()-$session->lastUpdated > $this->owner->params->admin->timeout) {
@@ -126,14 +135,16 @@ class ApplicationConfigBehavior extends CBehavior {
 		}
 		foreach($arr as $key=>$module){
 			$record=Modules::model()->findByAttributes(array('name'=>$key));
-                        if(isset($record) && $record->visible)
-                            $modules[]=$key;
+			if(isset($record) && $record->visible)
+				$modules[]=$key;
 		}
 		$this->owner->setModules($modules);
 		$adminProf = ProfileChild::model()->findByPk(1);
 
+		// set currency
 		$this->owner->params->currency = $this->owner->params->admin->currency;
 		
+		// set language
 		if (!empty($this->owner->params->profile->language))
 			$this->owner->language = $this->owner->params->profile->language;
 		else if(isset($adminProf))
@@ -141,12 +152,18 @@ class ApplicationConfigBehavior extends CBehavior {
 		else
 			$this->owner->language = '';
 
+		// set timezone
 		if(!empty($this->owner->params->profile->timeZone))
 			date_default_timezone_set($this->owner->params->profile->timeZone);
-		
+		elseif(!empty($adminProf->timeZone))
+			date_default_timezone_set($adminProf->timeZone);
+		else
+			date_default_timezone_set('UTC');
+			
+			
 		$logo = Media::model()->findByAttributes(array('associationId'=>1,'associationType'=>'logo'));
 		if(isset($logo))
 			$this->owner->params->logo = $logo->fileName;
-		
+		setlocale(LC_ALL, 'en_US.UTF-8');
 	}
 }

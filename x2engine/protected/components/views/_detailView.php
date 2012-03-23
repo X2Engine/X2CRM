@@ -199,16 +199,16 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 						if(isset($col['items'])) {
 							foreach($col['items'] as &$item) {
 								
+								
 								if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
 									$fieldName = preg_replace('/^formItem_/u','',$item['name']);
-								
 									if(isset($fields[$fieldName])) {
 										$field = $fields[$fieldName];
 										
 											if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
-												unset($item);
-												echo '</div></div>';
-												continue;
+												// unset($item);
+												// echo '</div></div>';
+												// continue;
 											}
 										// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
 										// $perms=array();

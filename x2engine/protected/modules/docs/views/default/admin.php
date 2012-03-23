@@ -161,7 +161,7 @@ $('.search-form form').submit(function(){
 	'columns'=>array(
 		array(
 			'name'=>'fileName',
-			'value'=>'CHtml::link($data->fileName,array("media/view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->fileName,array("/media/view","id"=>$data->id))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'30%'),
 		),

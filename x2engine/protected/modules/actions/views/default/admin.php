@@ -46,6 +46,18 @@ $this->menu=array(
 		array('label'=>Yii::t('actions','Create'),'url'=>array('create')), 
 	);
 
+$profile = ProfileChild::model()->findByPk(Yii::app()->user->id);
+$this->showActions = $profile->showActions;
+if(!$this->showActions) // if user hasn't saved a type of action to show, show uncomple actions by default
+    $this->showActions = 'uncomplete';
+
+if($this->showActions == 'uncomplete')
+	$model->complete = 'No';
+else if ($this->showActions == 'complete')
+	$model->complete = 'Yes';
+else
+	$model->complete = '';
+
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();
@@ -67,6 +79,13 @@ function completeSelected() {
 function uncompleteSelected() {
 	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
 	$.post('uncompleteSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+}
+
+function toggleShowActions() {
+	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
+	$.post('saveShowActions', {ShowActions: show}, function() {
+		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
+	});
 }
 ",CClientScript::POS_HEAD);
 
@@ -110,11 +129,11 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'actionsadmin',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'gvCheckbox'=>25,
+		'gvCheckbox'=>28,
 		'actionDescription'=>220,
 		// 'associationType'=>93,
 		'dueDate'=>93,
-		'complete'=>89,
+//		'complete'=>89,
 		'assignedTo'=>112,
 		'gvControls'=>72,
 

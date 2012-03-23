@@ -40,37 +40,7 @@
 ?>
 
 <?php
-if(isset($_POST['firstName']))
-    $firstName=$_POST['firstName'];
-else
-    $firstName="";
-if(isset($_POST['lastName']))
-    $lastName=$_POST['lastName'];
-else
-    $lastName="";
-if(isset($_POST['email']))
-    $email=$_POST['email'];
-else
-    $email="";
-if(isset($_POST['phone']))
-    $phone=$_POST['phone'];
-else
-    $phone="";
-if(isset($_POST['info']))
-    $info=$_POST['info'];
-else
-    $info="";
-if(isset($_POST['photourl']))
-    $photourl=$_POST['photourl'];
-else
-    $photourl="";
-
-if($info=="Enter any additional information or questions regarding your interest here."){
-    $info="";
-}
-
-$url=""; // Add your server URL here, including any folders the app may be in.  
-         //i.e.  www.x2engine.com or www.x2engine.com/x2engine etc. Installer should do this manually.
+include('webLeadConfig.php');
 
 if($url==""){
     $url='http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl;
@@ -82,7 +52,7 @@ if($count==0){
     die("Invalid e-mail address!");
 }
 
-$ccUrl = 'http://'.$url.'/index.php/api/lookUp?model=Contacts&email='.$email; 
+$ccUrl = 'http://'.$url.'/index.php/api/lookUp/model/Contacts/email/'.$email; 
 $ccSession = curl_init($ccUrl);
 curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
@@ -97,7 +67,7 @@ if($ccResult!="No Item found with specified attributes."){
 		$id=substr($pieces[1],1,-1);
 		$newInfo=$oldInfo."\n\n".$info;
 		 
-		$ccUrl = 'http://'.$url.'/index.php/api/update?model=Contacts&id='.$id;
+		$ccUrl = 'http://'.$url.'/index.php/api/update/model/Contacts/id/'.$id;
 		$ccSession = curl_init($ccUrl);
 		$data=array('backgroundInfo'=>$newInfo); 
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
@@ -107,21 +77,17 @@ if($ccResult!="No Item found with specified attributes."){
 		$ccResult = curl_exec($ccSession);
 		curl_close($ccSession);
 }else{
-        $time=time();
-			
-		
+                $time=time();
 		$data=array(
-			'firstName'=>$firstName,
-			'lastName'=>$lastName,
 			'assignedTo'=>'Anyone',
 			'visibility'=>'1',
-			'phone'=>$phone,
-			'email'=>$email,
 			'createDate'=>$time,
 			'lastUpdated'=>$time,
 			'updatedBy'=>'admin',
-			'backgroundInfo'=>$info,
 		);
+                foreach($_POST as $field=>$value){
+                    $data[$field]=$value;
+                }
                 
                 $actionData=array(
 			'type'=>'',
@@ -131,7 +97,7 @@ if($ccResult!="No Item found with specified attributes."){
 			'dueDate'=>$date,
 			'associationType'=>'contacts',
 			'associationId'=>'',
-			'associationName'=>$firstName." ".$lastName,
+			'associationName'=>$data['firstName']." ".$data['lastName'],
 			'priority'=>'High',
 			'createDate'=>$time,
 			'lastUpdated'=>$time,
@@ -145,10 +111,11 @@ if($ccResult!="No Item found with specified attributes."){
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 		$ccResult = curl_exec($ccSession);
 		curl_close($ccSession);
+                echo $ccResult;exit;
                 $data['assignedTo']=$ccResult;
                 $actionData['assignedTo']=$ccResult;
                 
-                $ccUrl = 'http://'.$url.'/index.php/api/create?model=Contacts';
+                $ccUrl = 'http://'.$url.'/index.php/api/create/model/Contacts';
 		$ccSession = curl_init($ccUrl);
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ccSession,CURLOPT_POST,1);
@@ -157,7 +124,7 @@ if($ccResult!="No Item found with specified attributes."){
 		$ccResult = curl_exec($ccSession);
 		curl_close($ccSession);
 		
-		$ccUrl = 'http://'.$url.'/index.php/api/lookUp?model=Contacts&email='.$email; 
+		$ccUrl = 'http://'.$url.'/index.php/api/lookUp/model/Contacts/email/'.$email; 
 		$ccSession = curl_init($ccUrl);
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
@@ -171,7 +138,7 @@ if($ccResult!="No Item found with specified attributes."){
                 
 		curl_close($ccSession);
 		
-		$ccUrl = 'http://'.$url.'/index.php/api/create?model=Actions';
+		$ccUrl = 'http://'.$url.'/index.php/api/create/model/Actions';
 		$ccSession = curl_init($ccUrl);
 		
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);

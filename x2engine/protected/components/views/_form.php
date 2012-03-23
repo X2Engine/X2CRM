@@ -164,8 +164,9 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												echo '</div></div>';
 												continue;
 											}
-											elseif($fieldPermissions[$field->id] == 1)
+											elseif($fieldPermissions[$field->id] == 1){
 												$item['readOnly']=true;
+                                                                                        }
 										}
 										
 										$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
@@ -215,6 +216,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'style'=>$default?'color:#aaa;':null,
 										));
 									} elseif($field->type=='date') {
+                                                                                
 										$model->$fieldName = $this->formatDate($model->$fieldName);
 										Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 										$this->widget('CJuiDateTimePicker',array(
@@ -227,7 +229,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												), // jquery plugin options
 												'htmlOptions'=>array(
 													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>$item['readOnly']? 'disabled' : null,
+													'disabled'=>(defined($item['readOnly']) && $item['readOnly'])? 'disabled' : null,
 													'title'=>$field->attributeLabel,
 												),
 												'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),

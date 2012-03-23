@@ -69,7 +69,7 @@ $this->widget('InlineActionForm',
 <?php
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$actionHistory,
-	'itemView'=>'../actions/_view',
+	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> '<h3>'.Yii::t('app','History').'</h3>{summary}{sorter}{items}{pager}',
 ));

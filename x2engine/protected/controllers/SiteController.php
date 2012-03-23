@@ -682,6 +682,8 @@ class SiteController extends x2base {
 	// Displays the login page
 	public function actionLogin() {
 	
+		$this->layout = '//layouts/loginForm';
+	
 		// echo var_dump(Session::getOnlineUsers());
 		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
 			$this->redirect(Yii::app()->homeUrl);

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -101,9 +101,8 @@ class Admin extends CActiveRecord
 			array('currency', 'length', 'max'=>3),
 			array('emailUseAuth, emailUseSignature', 'length', 'max'=>10),
 			array('emailType, emailSecurity', 'length', 'max'=>20),
-			array('webLeadEmail, menuOrder, menuNicknames, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max'=>255),
+			array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max'=>255),
 			// array('emailSignature', 'length', 'max'=>512),
-			array('menuVisibility', 'length', 'max'=>100),
 			array('emailSignature', 'length', 'max'=>512),
 			array('quoteStrictLock', 'boolean'),
 			// The following rule is used by search().
@@ -123,9 +122,6 @@ class Admin extends CActiveRecord
 			'timeout' => Yii::t('admin','Session Timeout'),
 			'webLeadEmail' => Yii::t('admin','Web Lead Email'),
 			'currency' => Yii::t('admin','Currency'),
-			'menuOrder' => Yii::t('admin','Menu Order'),
-			'menuVisibility' => Yii::t('admin','Menu Visibility'),
-			'menuNicknames' => Yii::t('admin','Menu Nicknames'),
 			'chatPollTime' => Yii::t('admin','Chat Poll Time'),
 			'ignoreUpdates' => Yii::t('admin','Ignore Updates'),
 			'rrId' => Yii::t('admin','Rr'),
@@ -152,23 +148,4 @@ class Admin extends CActiveRecord
 		);
 	}
 
-	public static function getMenuItems($returnSelected = false) {
-		// get admin model
-		$admin=Admin::model()->findByPk(1);
-
-		$nicknames = explode(":",$admin->menuNicknames);
-		$menuOrder = explode(":",$admin->menuOrder);
-		$menuVis = explode(":",$admin->menuVisibility);
-		
-		$menuItems = array();		// assoc. array with correct order, containing realName => nickName
-		$selectedItems = array();
-		
-		for($i=0;$i<count($menuOrder);$i++) {				// load items from menuOrder into $menuItems keys
-			$menuItems[$menuOrder[$i]] = Yii::t('app',$nicknames[$i]);	// set values to their (translated) nicknames
-			
-			if($menuVis[$i] == 1 && $returnSelected)
-				$selectedItems[] = $menuOrder[$i];			// but only include them if they are visible (or we need the full list)
-		}
-		return $returnSelected? array($menuItems,$selectedItems) : $menuItems;
-	}
 }

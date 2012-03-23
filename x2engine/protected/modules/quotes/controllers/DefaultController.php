@@ -370,13 +370,11 @@ class DefaultController extends x2base {
                                 if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
                                 }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
+                                    $model->$field=$this->parseDate($model->$field);
                                 }
                                 
                             }
                         }
-        	
-			$model->expirationDate = $this->parseDate($model->expirationDate);
 				    	
 			$contacts = $_POST['associatedContacts']; // get contacts
 			$contact = Contacts::model()->findByPk($contacts[0]);
@@ -715,14 +713,12 @@ class DefaultController extends x2base {
                                 if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
                                 }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
+                                    $model->$field=$this->parseDate($model->$field);
                                 }
                                 
                             }
                         }
-        
-		$model->expirationDate = $this->parseDate($model->expirationDate);
-    	
+            	
         $model->save();
         
 		$allProducts = Product::model()->findAll(array('select'=>'id, name, price'));
