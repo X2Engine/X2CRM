@@ -565,7 +565,7 @@ abstract class x2base extends Controller {
 	protected function updateChangelog($model, $change) {
 		$model->lastUpdated=time();
 		$model->updatedBy=Yii::app()->user->getName();
-                $model->createDate=time();
+                //$model->createDate=time();  //this should not be here - the create date should remain the same
 		$model->save();
 		$type=get_class($model);
 		if(substr($type,-1)!="s"){
