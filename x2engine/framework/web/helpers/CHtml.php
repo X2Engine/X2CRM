@@ -1158,7 +1158,7 @@ EOD;
 			unset($htmlOptions['label']);
 		}
 		else
-			$label=$model->getAttributeLabel($attribute);
+			$label=Yii::t(strtolower(get_class($model)),$model->getAttributeLabel($attribute));
 		if($model->hasErrors($attribute))
 			self::addErrorCss($htmlOptions);
 		return self::label($label,$for,$htmlOptions);

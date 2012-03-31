@@ -69,6 +69,10 @@ Extra fields should be added from the "Manage Fields" page.<br /><br />
         </div>
 
         <div class="row">
+            <div class="cell"><label for="hasWorkflow">Do you want to use workflows in this module?</label><select name="hasWorkflow" type="dropdown"><option value="1">Yes</option><option value="0" selected="selected">No</option></select></div>
+        </div>
+
+        <div class="row">
             <div class="cell"><label for="adminOnly">Is this module only visible to admin?</label><select name="adminOnly" type="dropdown"><option value="1">Yes</option><option value="0" selected="selected">No</option></select></div>
         </div>
 

@@ -54,7 +54,16 @@ $this->menu = array(
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>
 
 <?php
+$m = new Modules();
+$hasWorkflow = false;
+$hasWorkflow = (int)$m->findByAttributes(array('name'=>strtolower($this->modelClass)))->hasWorkflow;
+if ($hasWorkflow) {
+// render workflow box
+$this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>strtolower($this->modelClass),'currentWorkflow'=>$currentWorkflow));
+}
+?>
 
+<?php
 $this->widget('InlineActionForm',
 		array(
 			'associationType'=>'templates',
