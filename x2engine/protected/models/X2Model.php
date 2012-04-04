@@ -131,7 +131,7 @@ abstract class X2Model extends CActiveRecord {
 		// don't call attributeLabels(), just look in self::$_fields
 		foreach(self::$_fields as &$_field) {
 			if($_field->fieldName == $attribute)
-				return $_field->attributeLabel;
+				return Yii::t(strtolower(get_class($this)),$_field->attributeLabel);
 		}
 		// original Yii code
 		if(strpos($attribute,'.')!==false) {
