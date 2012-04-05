@@ -40,10 +40,15 @@
 
 $attributeLabels = $model->attributeLabels();
 
+$m = new Modules();
+$hasWorkflow = false;
+$hasWorkflow = (int)$m->findByAttributes(array('name'=>$modelName))->hasWorkflow;
+
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 $showWorkflow = Yii::app()->params->profile->showWorkflow;
-if($modelName=='contacts' || $modelName=='sales'){
+//if($modelName=='contacts' || $modelName=='sales' || $modelName=='property'){
+if($hasWorkflow){
 Yii::app()->clientScript->registerScript('updateWorkflow',"
 function startWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
@@ -100,7 +105,7 @@ function completeWorkflowStageComment() {
 
 function revertWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/revertStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/revertStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
 		success: function(response) {
@@ -178,7 +183,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 		if($section['collapsible'] || !empty($section['title'])) {
 			echo '<div class="formSectionHeader">';
 			if(!empty($section['title']))
-				echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
+				echo '<span class="sectionTitle">'.Yii::t(strtolower($modelName),$section['title']).'</span>';
 			if($section['collapsible']) {
 				echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
 				echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
@@ -238,7 +243,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										}
 										
 										echo '<div class="formItem '.$labelClass.'">';
-										echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
+										echo CHtml::label(Yii::t($modelName,$model->getAttributeLabel($field->fieldName)),false);
 											
 										$style = 'width:'.$item['width'].'px;';
 										// if($field->type == 'text')

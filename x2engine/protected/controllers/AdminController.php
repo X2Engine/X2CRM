@@ -1337,6 +1337,7 @@ class AdminController extends Controller {
                                 $moduleRecord->editable=$_POST['editable'];
                                 $moduleRecord->adminOnly=$_POST['adminOnly'];
                                 $moduleRecord->searchable=$_POST['searchable'];
+                                $moduleRecord->hasWorkflow=$_POST['hasWorkflow'];
                                 $moduleRecord->toggleable=1;
                                 $moduleRecord->menuPosition=Modules::model()->count();
                                 $moduleRecord->save();
@@ -1605,6 +1606,7 @@ class AdminController extends Controller {
                 $moduleRecord->editable=$config['editable']?1:0;
                 $moduleRecord->searchable=$config['searchable']?1:0;
                 $moduleRecord->adminOnly=$config['adminOnly']?1:0;
+                $moduleRecord->hasWorkflow=$config['hasWorkflow']?1:0;
                 $moduleRecord->custom=$config['custom']?1:0;
                 $moduleRecord->toggleable=$config['toggleable']?1:0;
                 $moduleRecord->name=$module;

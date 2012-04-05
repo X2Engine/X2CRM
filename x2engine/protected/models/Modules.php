@@ -14,6 +14,7 @@
  * @property integer $adminOnly
  * @property integer $custom
  * @property integer $toggleable
+ * @property integer $hasWorkflow
  */
 class Modules extends CActiveRecord
 {
@@ -43,7 +44,7 @@ class Modules extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('visible, menuPosition, searchable, editable, adminOnly, custom, toggleable', 'numerical', 'integerOnly'=>true),
+			array('visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, hasWorkflow', 'numerical', 'integerOnly'=>true),
 			array('name, title', 'length', 'max'=>250),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -78,6 +79,7 @@ class Modules extends CActiveRecord
 			'adminOnly' => 'Admin Only',
 			'custom' => 'Custom',
 			'toggleable' => 'Toggleable',
+			'hasWorkflow' => 'Has Workflow',
 		);
 	}
 
@@ -102,6 +104,7 @@ class Modules extends CActiveRecord
 		$criteria->compare('adminOnly',$this->adminOnly);
 		$criteria->compare('custom',$this->custom);
 		$criteria->compare('toggleable',$this->toggleable);
+		$criteria->compare('hasWorkflow',$this->hasWorkflow);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
