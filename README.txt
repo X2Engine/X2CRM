@@ -2,7 +2,8 @@ README
 
 --WARNING--
 
-X2CRM 1.3 Changelog
+X2CRM 1.3.1 Changelog
+- Installation bug fixed from v1.3
 - New dynamic layout (flexible width, support for screens as small as 800x600)
 - Added new widgets:
 	- Contact Time Zone

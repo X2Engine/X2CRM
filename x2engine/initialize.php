@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.3';
-$buildDate = 1336431694;
+$x2Version = '1.3.1';
+$buildDate = 1336501093;
 
 $userData = '';
 
@@ -606,7 +606,7 @@ mysql_query('CREATE TABLE x2_campaigns(
 	updatedBy				VARCHAR(20),
 	
 	PRIMARY KEY (id),
-	FOREIGN KEY (masterId) REFERENCES x2_marketing(id) ON UPDATE CASCADE ON DELETE CASCADE
+	FOREIGN KEY (masterId) REFERENCES x2_campaigns(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_campaigns.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_calendars (
