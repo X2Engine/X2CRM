@@ -47,7 +47,7 @@
 	
 	<b><?php echo CHtml::encode("Created By"); ?>:</b>
 	<?php 
-        $user=Users::model()->findByAttributes(array('username'=>$data->createdBy));
+        $user=User::model()->findByAttributes(array('username'=>$data->createdBy));
         echo CHtml::encode($user->firstName." ".$user->lastName); ?>
 	<br />
 

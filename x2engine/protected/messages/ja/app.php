@@ -49,6 +49,7 @@ return array (
 'Login'=>'ログイン',
 
 // Main Menu
+'Calendar'=>'カレンダ',
 'Actions'=>'アクション',
 'Contacts'=>'コンタクト',
 'Sales'=>'セールス',
@@ -96,6 +97,7 @@ return array (
 'Tag Cloud'=>'タグクラウド',
 'Just Me'=>'ジャスト·ミー',
 'All Users'=>'すべてのユーザー',
+'Doc Viewer'=>'ドキュメントビューア',
 
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
@@ -112,6 +114,7 @@ return array (
 'Top Contacts'=>'最高のコンタクト',
 'Add {name}'=>'{name}を追加する。',
 
+'Enter Title'=>'タイトルを入力します。',
 
 // Chat
 'Message Body'=>'メッセージ本文',

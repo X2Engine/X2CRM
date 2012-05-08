@@ -91,11 +91,11 @@ return array(
 			'urlFormat'=>'path',
 			'rules'=>array(
 				// special HTTP methods for API
-				array('api/list', 'pattern'=>'api/<model:\w+>', 'verb'=>'GET'),
 				array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
 				array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'POST'),
 				array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
 				array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
+                                array('api/voip', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
 			
 				'<controller:(site|admin|profile|media|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
 				'<controller:(site|admin|profile|media|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
@@ -190,7 +190,10 @@ return array(
 			'NoteBox'=>'Note Pad',
 			'ActionMenu'=>'My Actions',
 			'TagCloud'=>'Tag Cloud',
-                        'OnlineUsers'=>'Active Users',
+			'OnlineUsers'=>'Active Users',
+			'DocViewer' => 'Doc Viewer',
+			'TimeZone' => 'Time Zone',
+			// 'TopSites' => 'Top Sites',
 		),
 		'currency'=>'',
 		'version'=>$version,

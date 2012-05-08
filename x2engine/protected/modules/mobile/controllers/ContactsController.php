@@ -64,7 +64,7 @@ class ContactsController extends MobileController{
 	
 	public function actionIndex(){
 		
-		$user=UserChild::model()->findByPk(Yii::app()->user->getId());
+		$user=User::model()->findByPk(Yii::app()->user->getId());
 		$topList=$user->topContacts;
 		$pieces=explode(',',$topList);
 		$contacts=array();

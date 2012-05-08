@@ -44,10 +44,10 @@ class DefaultController extends x2base {
 		
 	public function accessRules() {
 		return array(
-                        array('allow',
-                            'actions'=>array('getItems'),
-                            'users'=>array('*'), 
-                        ),
+			array('allow',
+				'actions'=>array('getItems'),
+				'users'=>array('*'), 
+			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact',
                                     'saveChanges','delete','shareSale','inlineEmail'),
@@ -69,14 +69,15 @@ class DefaultController extends x2base {
 			),
 		);
 	}
-        
-        public function actionGetItems(){
+
+	public function actionGetItems(){
 		$sql = 'SELECT id, name as value FROM x2_sales WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
 		$result = $command->queryAll();
-		echo CJSON::encode($result); exit;
+		echo CJSON::encode($result);
+		Yii::app()->end();
 	}
 		
 	/**
@@ -147,10 +148,10 @@ class DefaultController extends x2base {
 //		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 		
 		if(isset($model->associatedContacts))
-				$model->associatedContacts = Sales::parseContacts($model->associatedContacts);
-		$model->createDate=time();
-                $model->lastUpdated=time();
-		$model->expectedCloseDate = $this->parseDate($model->expectedCloseDate);
+			$model->associatedContacts = Sales::parseContacts($model->associatedContacts);
+		$model->createDate = time();
+		$model->lastUpdated = time();
+		// $model->expectedCloseDate = $this->parseDate($model->expectedCloseDate);
 		parent::create($model,$oldAttributes,'0');
 	}
 
@@ -160,10 +161,10 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
 		$model = new Sales;
-		$users = UserChild::getNames();
-                foreach(Groups::model()->findAll() as $group){
-                    $users[$group->id]=$group->name;
-                }
+		$users = User::getNames();
+		foreach(Groups::model()->findAll() as $group){
+			$users[$group->id]=$group->name;
+		}
 		unset($users['admin']);
 		unset($users['']);
 
@@ -171,49 +172,52 @@ class DefaultController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Sales'])) {
-                    $temp=$model->attributes;
-                    foreach($_POST['Sales'] as $name => &$value) {
+			$temp=$model->attributes;
+			
+			$model->setX2Fields($_POST['Sales']);
+			// die(var_dump($model));
+			/* foreach($_POST['Sales'] as $name => &$value) {
 				if($value == $model->getAttributeLabel($name))
-                                    $value = '';
-                    }
-                    foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-                    foreach(array_keys($model->attributes) as $field){
-                        if(isset($_POST['Sales'][$field])){
-                            $model->$field=$_POST['Sales'][$field];
-                            $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Sales','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                        }
-                    }
-                    
-                    $this->create($model,$temp);
+					$value = '';
+			}
+			foreach($_POST as $key=>$arr){
+				$pieces=explode("_",$key);
+				if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+					$newKey=$pieces[1];
+					if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+						$val=$_POST[$newKey."_id"];
+					}else{
+						$field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+						if(isset($field)){
+							$type=ucfirst($field->linkType);
+							if($type!="Contacts"){
+								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+							}else{
+								$names=explode(" ",$arr);
+								$lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+							}
+							if(isset($lookupModel))
+								$val=$lookupModel->id;
+							else
+								$val=$arr;
+						}
+					}
+					$model->$newKey=$val;
+				}
+			}
+			foreach(array_keys($model->attributes) as $field){
+				if(isset($_POST['Sales'][$field])){
+					$model->$field=$_POST['Sales'][$field];
+					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Sales','fieldName'=>$field));
+						if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+							$model->$field=Accounts::parseUsers($model->$field);
+						}elseif($fieldData->type=='date'){
+							$model->$field=strtotime($model->$field);
+						}
+				}
+			} */
+				
+			$this->create($model,$temp);
 		}
 
 		$this->render('create',array(
@@ -228,8 +232,8 @@ class DefaultController extends x2base {
 //            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 
             $arr=$model->associatedContacts;
-            if(isset($model->associatedContacts)){
-                foreach($model->associatedContacts as $contact){
+            if(isset($model->associatedContacts)) {
+                foreach($model->associatedContacts as $contact) {
                     $rel=new Relationships;
                     $rel->firstType='Contacts';
                     $rel->firstId=$contact;
@@ -240,10 +244,10 @@ class DefaultController extends x2base {
                 }
                     $model->associatedContacts=Sales::parseContacts($arr);
             }
-            $model->createDate=time();
-            if($model->expectedCloseDate!=""){
-                    $model->expectedCloseDate=strtotime($model->expectedCloseDate);
-            }
+            $model->lastUpdated = time();
+            // if($model->expectedCloseDate!=""){
+				// $model->expectedCloseDate=strtotime($model->expectedCloseDate);
+            // }
             
             parent::update($model,$oldAttributes,'0');
         }
@@ -254,7 +258,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
                 foreach(Groups::model()->findAll() as $group){
@@ -263,13 +267,17 @@ class DefaultController extends x2base {
 		$contacts=Contacts::getAllNames();
 		unset($contacts['0']);
 		
-		$curUsers=$model->assignedTo;
-		$userPieces=explode(', ',$curUsers);
-		$arr=array();
-		foreach($userPieces as $piece){
-			$arr[]=$piece;
-		}
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>"Sales"));
+		// $curUsers=$model->assignedTo;
+		// $userPieces=explode(', ',$curUsers);
+		// $arr=array();
+		// foreach($userPieces as $piece){
+			// $arr[]=$piece;
+		// }
+		// $model->assignedTo=$arr;
+		
+		$model->assignedTo = explode(' ',$model->assignedTo);
+		
+/* 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>"Sales"));
                 foreach($fields as $field){
                     if($field->type=='link'){
                         $fieldName=$field->fieldName;
@@ -283,65 +291,68 @@ class DefaultController extends x2base {
  //                       $fieldName=$field->fieldName;
  //                       $model->$fieldName=date("Y-m-d",$model->$fieldName);
                     }
-                }
-		$model->assignedTo=$arr;
+                } */
 		
-		$curContacts=$model->associatedContacts;
-		$contactPieces=explode(" ",$curContacts);
-		$arr=array();
-		foreach($contactPieces as $piece){
-			$arr[]=$piece;
-		}
+		// $curContacts=$model->associatedContacts;
+		// $contactPieces=explode(" ",$curContacts);
+		// $arr=array();
+		// foreach($contactPieces as $piece){
+			// $arr[]=$piece;
+		// }
+		// $model->associatedContacts=$arr;
 		
-		$model->associatedContacts=$arr;
+		$model->associatedContacts = explode(' ',$model->associatedContacts);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Sales'])) {
-                    $temp=$model->attributes;
-                    foreach($_POST['Sales'] as $name => &$value) {
+			$temp=$model->attributes;
+			$model->setX2Fields($_POST['Sales']);
+			
+			
+/* 			foreach($_POST['Sales'] as $name => &$value) {
 				if($value == $model->getAttributeLabel($name))
-                                    $value = '';
-                    }
-                    foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-                    foreach(array_keys($model->attributes) as $field){
-                        if(isset($_POST['Sales'][$field])){
-                            $model->$field=$_POST['Sales'][$field];
-                            $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Sales','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                        }
-                    }
+					$value = '';
+			}
+			foreach($_POST as $key=>$arr){
+				$pieces=explode("_",$key);
+				if(isset($pieces[0]) && $pieces[0]=='autoselect'){
+					$newKey=$pieces[1];
+					if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
+						$val=$_POST[$newKey."_id"];
+					}else{
+						$field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
+						if(isset($field)){
+							$type=ucfirst($field->linkType);
+							if($type!="Contacts"){
+								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
+							}else{
+								$names=explode(" ",$arr);
+								$lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+							}
+							if(isset($lookupModel))
+								$val=$lookupModel->id;
+							else
+								$val=$arr;
+						}
+					}
+					$model->$newKey=$val;
+				}
+			}
+			foreach(array_keys($model->attributes) as $field){
+				if(isset($_POST['Sales'][$field])){
+					$model->$field=$_POST['Sales'][$field];
+					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Sales','fieldName'=>$field));
+						if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
+							$model->$field=Accounts::parseUsers($model->$field);
+						}elseif($fieldData->type=='date'){
+							$model->$field=strtotime($model->$field);
+						}
+				}
+			} */
 
-                    $this->update($model,$temp);
+			$this->update($model,$temp);
 		}
 
 		$this->render('update',array(
@@ -376,7 +387,7 @@ class DefaultController extends x2base {
 	}
         */
 	public function actionAddUser($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
                 foreach(Groups::model()->findAll() as $group){
@@ -418,7 +429,7 @@ class DefaultController extends x2base {
 	}
 
 	public function actionAddContact($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
                 foreach(Groups::model()->findAll() as $group){

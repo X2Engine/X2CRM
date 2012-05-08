@@ -45,7 +45,7 @@ class DefaultController extends x2base {
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-	public $layout='//layouts/column2';
+	// public $layout='//layouts/column2';
 
 	/**
 	 * @return array action filters
@@ -59,6 +59,10 @@ class DefaultController extends x2base {
 	public function accessRules()
 	{
 		return array(
+                        array('allow',
+                            'actions'=>array('getItems', 'getItem'),
+                            'users'=>array('*'), 
+                        ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete'),
 				'users'=>array('@'),
@@ -73,6 +77,20 @@ class DefaultController extends x2base {
 		);
 	}
 
+        public function actionGetItems(){
+		$sql = 'SELECT id, title as value FROM x2_docs WHERE title LIKE :qterm ORDER BY title ASC';
+		$command = Yii::app()->db->createCommand($sql);
+		$qterm = $_GET['term'].'%';
+		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+		$result = $command->queryAll();
+		echo CJSON::encode($result); exit;
+	}
+
+	public function actionGetItem($id) {
+		$model = $this->loadModel($id);
+		echo $model->text;
+	}
+		
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -87,7 +105,7 @@ class DefaultController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
-			$users=UserChild::getNames();
+			$users=User::getNames();
 			unset($users['Anyone']);
 			unset($users['admin']);
 			unset($users[Yii::app()->user->getName()]);
@@ -123,7 +141,7 @@ class DefaultController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreateEmail() {
-			$users = UserChild::getNames();
+			$users = User::getNames();
 			unset($users['Anyone']);
 			unset($users['admin']);
 			unset($users[Yii::app()->user->getName()]);
@@ -159,7 +177,7 @@ class DefaultController extends x2base {
 	public function actionChangePermissions($id){
 		$model=$this->loadModel($id);
 		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy){
-			$users=UserChild::getNames();
+			$users=User::getNames();
 			unset($users['admin']);
 			unset($users['Anyone']);
 			$str=$model->editPermissions;

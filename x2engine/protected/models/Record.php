@@ -45,7 +45,7 @@ class Record {
 		$id=1;
 		
 		foreach ($records as $record) {
-			$user=UserChild::model()->findByAttributes(array('username'=>$record->updatedBy));
+			$user=User::model()->findByAttributes(array('username'=>$record->updatedBy));
                         if(isset($user)){
                             $name=$user->firstName." ".$user->lastName;
                             $userId=$user->id;

@@ -48,7 +48,23 @@ $(function(){
 	);
 }
 );");
+
+
+
+$itemFields = array();
+$itemFieldLinks = array();
+foreach($itemModel->getFields() as $field) {
+	$itemFields[$field->fieldName] = $field->type;
+	if(!empty($field->linkType))
+		$itemFields[$field->fieldName] = $field->linkType;
+	
+}
+
 Yii::app()->clientScript->registerScript('listCriteriaJs', "
+
+var fieldTypes = ".json_encode($itemFields,false).";
+var fieldLinkTypes = ".json_encode($itemFieldLinks,false).";
+
 function deleteCriterion(object) {
 	$(object).closest('li').animate({
 		opacity: 0,
@@ -138,7 +154,15 @@ echo $form->errorSummary($model);
 				0=>Yii::t('contacts','Private')
 			),array('tabindex'=>null));
 		?>
-		<?php echo $form->error($model,'visibility'); ?>
+	</div>
+	<div class="cell">
+		<?php echo $form->labelEx($model,'logicType'); ?>
+		<?php
+			echo $form->dropDownList($model,'logicType',array(
+				'AND'=>Yii::t('contacts','AND'),
+				'OR'=>Yii::t('contacts','OR')
+			),array('tabindex'=>null));
+		?>
 	</div>
 </div>
 
@@ -150,7 +174,9 @@ echo $form->errorSummary($model);
 <?php
 if($model->type == 'dynamic') {
 	$attributeLabels = $model->itemAttributeLabels;
-	$attributeLabels = array('tags'=>Yii::t('contacts','Tags')) + $attributeLabels;
+	$attributeLabels['tags'] = Yii::t('contacts','Tags');
+	natcasesort($attributeLabels);
+	
 	?>
 	<div class="x2-sortlist" id="list-criteria">
 	<ol>

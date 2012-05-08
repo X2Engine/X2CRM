@@ -40,9 +40,12 @@
 ?>
 <?php
 $this->menu = array(
+	array('label' => Yii::t('dashboard', 'Lead Volume'), 'url' => array('leadVolume')),
+	// array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
+	// array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
 	array('label' => Yii::t('dashboard', 'Marketing')),
-	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
-	array('label' => Yii::t('dashboard', 'Sales'), 'url' => array('sales'))
+	// array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
+	// array('label' => Yii::t('dashboard', 'Sales'), 'url' => array('sales'))
 );
 ?>
 

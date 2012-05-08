@@ -65,13 +65,13 @@ $('.search-form form').submit(function(){
 <div class="search-form" style="display:none">
 <?php /* $this->renderPartial('_search',array(
 	'model'=>$model, 
-        'users'=>UserChild::getNames(),
+        'users'=>User::getNames(),
 )); */ ?> 
 </div><!-- search-form -->
 <h2><?php echo $heading; ?></h2>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'contacts-grid',
+	'id'=>'lists-grid',
 	'enableSorting'=>false,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'htmlOptions'=>array('class'=>'grid-view contact-lists'),
@@ -95,13 +95,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'assignedTo',
 			'type'=>'raw',
-			'value'=>'UserChild::getUserLinks($data->assignedTo)',
+			'value'=>'User::getUserLinks($data->assignedTo)',
 		),
 		array(
 			'name'=>'count',
 			'headerHtmlOptions'=>array('class'=>'contact-count'),
 			'htmlOptions'=>array('class'=>'contact-count'),
-			'value'=>'$data->type=="static"? Yii::app()->locale->numberFormatter->formatDecimal($data->count) : "---"',
+			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data->count)',
 			'headerHtmlOptions'=>array('style'=>'width:20%;'),
 		),
 	),

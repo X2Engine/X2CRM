@@ -45,30 +45,32 @@
  * @property integer $id
  * @property string $name
  */
-class Groups extends CActiveRecord
-{
+class Groups extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Groups the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
-		return 'x2_groups';
-	}
+	public function tableName() { return 'x2_groups'; }
 
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/groups'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/groups/getItems'; }
+	
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -79,21 +81,27 @@ class Groups extends CActiveRecord
 			array('id, name', 'safe', 'on'=>'search'),
 		);
 	}
-        
-        public static function getNames() {
-		$groupArray = CActiveRecord::model('Groups')->findAll();
-		$names = array();
-		foreach ($groupArray as $group) {
-			$names[$group->id] = $group->name;
-		}
-		return $names;
+	
+	public static function getNames() {
+
+		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_users')->order('name ASC')->queryAll(false);
+		foreach($data as $row)
+			$groupNames[$row[0]] = $row[1];
+		
+		return $groupNames;
+		
+		// $groupArray = CActiveRecord::model('Groups')->findAll();
+		// $names = array();
+		// foreach ($groupArray as $group) {
+			// $names[$group->id] = $group->name;
+		// }
+		// return $names;
 	}
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -103,8 +111,7 @@ class Groups extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'name' => 'Name',
@@ -124,8 +131,7 @@ class Groups extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 

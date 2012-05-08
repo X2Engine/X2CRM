@@ -50,7 +50,7 @@ else if ($this->showActions == 'complete')
 else
 	$model->complete = '';
 
-if($this->route=='actions/index') {
+if($this->route=='actions/default/index') {
 	$heading = Yii::t('actions','Today\'s Actions');
 	$dataProvider=$model->search();
 	$dataProvider2=$model->searchComplete();
@@ -62,7 +62,7 @@ if($this->route=='actions/index') {
 		// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
 		array('label'=>Yii::t('actions','Create'),'url'=>array('create')), 
 	);
-} else if($this->route=='actions/viewAll') {
+} else if($this->route=='actions/default/viewAll') {
 	$heading = Yii::t('actions','All My Actions'); 
 	$dataProvider=$model->searchAll();
 	$dataProvider2=$model->searchComplete();
@@ -220,7 +220,7 @@ $this->widget('application.components.X2GridView', array(
 		'completedBy'=>array(
 			'name'=>'completedBy',
 			'header'=>Yii::t('actions','Completed By'),
-			'value'=>'UserChild::getUserLinks($data->completedBy)',
+			'value'=>'User::getUserLinks($data->completedBy)',
 			'type'=>'raw',
 		),
 	),

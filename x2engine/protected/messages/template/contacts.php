@@ -139,4 +139,9 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'',
 'Upload File'=>'',
 'Contact Record Details'=>'',
+
+// Subscribe
+'Subscribe'=>'',
+'The information for {name} has changed.'=>'',
+'Receive email updates every time information for {name} changes'=>'',
 );

@@ -40,7 +40,7 @@
  ?>
 
 <?php
-$users = UserChild::getNames();
+$users = User::getNames();
 $form=$this->beginWidget('CActiveForm', array(
     'enableAjaxValidation'=>false,
 ));
@@ -72,6 +72,7 @@ $form=$this->beginWidget('CActiveForm', array(
 <div class="row">
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,($isEvent?'startDate':'dueDate'), array('class'=>'dialog-label'));
+		$defaultDate = $this->formatDate($model->dueDate, 'medium');
 		$model->dueDate = $this->formatDateTime($model->dueDate);	//format date from DATETIME
 
 		Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
@@ -81,19 +82,22 @@ $form=$this->beginWidget('CActiveForm', array(
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
 				'dateFormat'=> $this->formatDatePicker('medium'),
-				'defaultDate'=>substr($model->dueDate, 0, strlen($model->dueDate) - 6),
+				'timeFormat'=>$this->formatTimePicker(),
+				'defaultDate'=>$defaultDate,
+				'ampm'=>$this->formatAMPM(),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array(
-				'onClick'=>"$('#ui-datepicker-div').css('z-index', '10020');",
+				'onClick'=>"$('#ui-datepicker-div').css('z-index', '10020');", // fix datepicker so it's always on top
 				'id'=>'dialog-Actions_dueDate',
 				'readonly'=>'readonly',
 				'onChange'=>'giveSaveButtonFocus();',
-			), // fix datepicker so it's always on top
+			),
 		));
 		
 		if($isEvent) {
 			echo $form->label($model, 'endDate', array('class'=>'dialog-label'));
+			$defaultDate = $this->formatDate($model->dueDate, 'medium');
 			$model->completeDate = $this->formatDateTime($model->completeDate);	//format date from DATETIME
 			$this->widget('CJuiDateTimePicker',array(
 				'model'=>$model, //Model object
@@ -101,15 +105,17 @@ $form=$this->beginWidget('CActiveForm', array(
 				'mode'=>'datetime', //use "time","date" or "datetime" (default)
 				'options'=>array(
 					'dateFormat'=> $this->formatDatePicker('medium'),
+					'timeFormat'=>$this->formatTimePicker(),
 					'defaultDate'=>($model->completeDate? substr($model->completeDate, 0, strlen($model->completeDate) - 6) : ''),
+					'ampm'=>$this->formatAMPM(),
 				), // jquery plugin options
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 				'htmlOptions'=>array(
-					'onClick'=>"$('#ui-datepicker-div').css('z-index', '10020');",
+					'onClick'=>"$('#ui-datepicker-div').css('z-index', '10020');", // fix datepicker so it's always on top
 					'id'=>'dialog-Actions_startDate',
 					'readonly'=>'readonly',
 					'onChange'=>'giveSaveButtonFocus();',
-				), // fix datepicker so it's always on top
+				),
 			));
 		}
 

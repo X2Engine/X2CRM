@@ -72,7 +72,7 @@ class X2ListCriterion extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('listId, value', 'required'),
+			array('listId', 'required'),
 			array('id, listId', 'numerical', 'integerOnly'=>true),
 			array('comparison', 'length', 'max'=>10),
 			array('type', 'length', 'max'=>20),
@@ -105,6 +105,22 @@ class X2ListCriterion extends CActiveRecord {
 			'attribute' => Yii::t('contacts','Attribute'),
 			'comparison' => Yii::t('contacts','Comparison'),
 			'value' => Yii::t('contacts','Value'),
+		);
+	}
+	
+	/**
+	 * @return array available comparison types (value=>label)
+	 */
+	public function getComparisonList() {
+		return array(
+			'='=>'=',
+			'>'=>'>',
+			'<'=>'<',
+			'<>'=>'<>',
+			'contains'=>Yii::t('contacts','contains'),
+			'empty'=>Yii::t('empty','empty'),
+			'notEmpty'=>Yii::t('contacts','not empty'),
+			'list'=>Yii::t('contacts','in list'),
 		);
 	}
 

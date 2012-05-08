@@ -172,13 +172,7 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 
 		echo '<div class="formItem topLabel" id="formItem_'.$field->fieldName.'"><div class="formTabOrder"></div><label class="'.$type.'">'.$field->attributeLabel.'</label>';
 		echo '<div class="formInputBox">';
-		if($field->type == 'varchar' || $field->type=='email' || $field->type=='url' ||
-			$field->type=='int' || $field->type=='float'|| $field->type=='currency' ||
-				$field->type=='rating' || $field->type=='link' || $field->type=='date') {
-			echo CHtml::textField($modelName.'_'.$field->fieldName,'', array( 
-					'title'=>$field->attributeLabel,
-			));
-		} else if($field->type == 'text') {
+		if($field->type == 'text') {
 			echo CHtml::textArea($modelName.'_'.$field->fieldName,'', array(
 					'title'=>$field->attributeLabel,
 			));
@@ -201,6 +195,10 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 		/* end x2temp */  
 		}elseif($field->type=='visibility'){
 			echo CHtml::dropDownList($field->fieldName,'',array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
+					'title'=>$field->attributeLabel,
+			));
+		} else {
+			echo CHtml::textField($modelName.'_'.$field->fieldName,'', array( 
 					'title'=>$field->attributeLabel,
 			));
 		}

@@ -45,7 +45,6 @@
 //defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL', 3);
 
 class DashboardModule extends CWebModule {
-
 	public $packages = array();
 	private $_assetsUrl;
 
@@ -149,7 +148,7 @@ class DashboardModule extends CWebModule {
 		Yii::app()->clientScript->packages = $this->packages;
 
 		// set module layout
-		$this->layout = 'main';
+		// $this->layout = 'main';
 	}
 
 	public function beforeControllerAction($controller, $action) {

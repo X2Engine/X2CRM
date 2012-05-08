@@ -69,7 +69,7 @@ class ProjectsController extends x2base {
 	 */
 	public function actionView($id) {
 		$model=$this->loadModel($id);
-		$model->assignedTo=UserChild::getUserLinks($model->assignedTo);
+		$model->assignedTo=User::getUserLinks($model->assignedTo);
 		$type='project';
 		
 		parent::view($model,$type);
@@ -80,7 +80,7 @@ class ProjectsController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 		$model=new ProjectChild;
 
@@ -114,7 +114,7 @@ class ProjectsController extends x2base {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 		$model=$this->updateChangelog($model);
@@ -155,7 +155,7 @@ class ProjectsController extends x2base {
 
 
 	public function actionAddUser($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 		$users=Accounts::editUserArray($users, $model);

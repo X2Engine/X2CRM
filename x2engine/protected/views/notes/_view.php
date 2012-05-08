@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$authorRecord = Users::model()->findByPk($data->createdBy);
+$authorRecord = User::model()->findByPk($data->createdBy);
 $author = $authorRecord->firstName.' '.$authorRecord->lastName;
 ?>
 <div class="view">

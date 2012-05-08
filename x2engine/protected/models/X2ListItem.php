@@ -71,11 +71,12 @@ class X2ListItem extends CActiveRecord {
 		// will receive user inputs.
 		return array(
 			array('contactId, listId', 'required'),
-			array('contactId, listId, result', 'numerical', 'integerOnly'=>true),
-			array('code', 'length', 'max'=>32),
+			array('contactId, listId, unqueId', 'numerical', 'integerOnly'=>true),
+			array('uniqueId', 'length', 'max'=>32),
+			array('error, sent, opened, clicked, unsubscribed', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('contactId, listId, code, result', 'safe', 'on'=>'search'),
+			array('contactId, listId, uniqueId, result', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -98,8 +99,12 @@ class X2ListItem extends CActiveRecord {
 		return array(
 			'contactId' => 'Contact',
 			'listId' => 'List',
-			'code' => 'Code',
-			'result' => 'Result',
+			'uniqueId' => 'Code',
+			'error' => 'Error',
+			'sent' => 'Email Sent',
+			'opened' => 'Opened Emal',
+			'clicked' => 'Clicked Link',
+			'unsubscribed' => 'Unsubscribed',
 		);
 	}
 
@@ -114,8 +119,12 @@ class X2ListItem extends CActiveRecord {
 
 		$criteria->compare('contactId',$this->contactId,true);
 		$criteria->compare('listId',$this->listId,true);
-		$criteria->compare('code',$this->code,true);
-		$criteria->compare('result',$this->result);
+		$criteria->compare('uniqueId',$this->uniqueId,true);
+		$criteria->compare('error',$this->error,true);
+		$criteria->compare('sent',$this->sent,true);
+		$criteria->compare('opened',$this->opened,true);
+		$criteria->compare('clicked',$this->clicked,true);
+		$criteria->compare('unsubscribed',$this->unsubscribed,true);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

@@ -38,6 +38,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
+$this->layout = '//layouts/column1';
 $this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','About');
 
 Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion').html($().jquery);",CClientScript::POS_READY);
@@ -46,15 +48,14 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 <a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+210+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png','',array('style'=>'float:right;margin-top:0px;margin-right:-20px;')); ?>
 </a>
-<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2engine_small.png','',array('style'=>'display:block;margin:5px 0;')); ?>
 <b>Version <?php echo Yii::app()->params->version;?></b> <?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.
+	<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?>
 
 <div>
-    <br />
 	<b>Headquarters</b><br>
 	University Town Center<br>
 	1101 Pacific Avenue<br>
-	Suite 210<br>
+	Suite 309<br>
 	Santa Cruz, California 95060<br>
 	USA
 </div>
@@ -81,7 +82,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 <div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a><br><br></div>
 <div id="about-legal">
 	Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty. Licensed under the <?php echo CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'); ?>.
-	<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;clear:both;')); ?>
 </div>
 <br>
 <div class="form" id="about-credits">
@@ -131,7 +131,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<a href="http://www.yiiframework.com/extension/remember-filters-gridview/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
 	<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
 </div>
-
+<br>
 
 
 

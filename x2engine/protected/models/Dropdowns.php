@@ -46,30 +46,26 @@
  * @property string $name
  * @property string $options
  */
-class Dropdowns extends CActiveRecord
-{
+class Dropdowns extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Dropdowns the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_dropdowns';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -84,8 +80,7 @@ class Dropdowns extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -95,8 +90,7 @@ class Dropdowns extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'name' => 'Name',
@@ -108,8 +102,7 @@ class Dropdowns extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -122,5 +115,24 @@ class Dropdowns extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public static function getItems($id) {
+		$dropdowns = array();
+		$data = Yii::app()->db->createCommand()
+			->select('options')
+			->from('x2_dropdowns')
+			->where('id=:id')
+			->queryScalar(array(':id'=>$id));
+		if(isset($data)) {
+			$dropdowns = CJSON::decode($data);
+			if(!isset($dropdowns))
+				$dropdowns = array();
+
+			natcasesort($dropdowns);
+			foreach($dropdowns as $key => &$value)
+				$value = Yii::t(strtolower(Yii::app()->controller->id),$value);
+		}
+		return $dropdowns;
 	}
 }

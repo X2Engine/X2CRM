@@ -237,7 +237,7 @@ class Templates extends CActiveRecord
                 }
                 return count($arr)>0?$arr:-1;
             }else{
-                $models=UserChild::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
+                $models=User::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
                 $arr=array();
                 foreach($models as $model){
                     $arr[]=$model->username;

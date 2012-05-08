@@ -50,7 +50,7 @@ class RecentItems extends CPortlet {
 	}
 
 	protected function renderContent() {
-		$recentItems = UserChild::getRecentItems(Yii::app()->user->getId());
+		$recentItems = User::getRecentItems(Yii::app()->user->getId());
 		$this->render('recentItems',array('recentItems'=>$recentItems));
 	}
 }

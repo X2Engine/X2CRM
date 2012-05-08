@@ -96,7 +96,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 			'name'=>'users',
 			'header'=>Yii::t('admin','Users'),
-			'value'=>'UserChild::getUserLinks($data->users)',
+			'value'=>'User::getUserLinks($data->users)',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'80%'),
 		),

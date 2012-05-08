@@ -126,13 +126,13 @@ $('.search-form form').submit(function(){
 		array(
 			'header'=>Yii::t('docs','Created By'),
 			'name'=>'createdBy',
-			'value'=>'UserChild::getUserLinks($data->createdBy)',
+			'value'=>'User::getUserLinks($data->createdBy)',
 			'type'=>'raw',
 		),
 		array(
 			'header'=>Yii::t('docs','Updated By'),
 			'name'=>'updatedBy',
-			'value'=>'UserChild::getUserLinks($data->updatedBy)',
+			'value'=>'User::getUserLinks($data->updatedBy)',
 			'type'=>'raw',
 		),
 		array(
@@ -167,7 +167,7 @@ $('.search-form form').submit(function(){
 		),
 		array(
 			'name'=>'uploadedBy',
-			'value'=>'UserChild::getUserLinks($data->uploadedBy)',
+			'value'=>'User::getUserLinks($data->uploadedBy)',
 			'type'=>'raw',
 		),
 		array(

@@ -49,6 +49,7 @@ return array (
 'Login'=>'Login',
 
 // Main Menu
+'Calendar'=>'calendário',
 'Actions'=>'Ações',
 'Contacts'=>'Contactos',
 'Sales'=>'Vendas',
@@ -96,6 +97,7 @@ return array (
 'Tag Cloud'=>'Tag Cloud',
 'Just Me'=>'Só Eu',
 'All Users'=>'Todos os Usuários',
+'Doc Viewer'=>'Visualizador Doc',
 
 'Total Action|Total Actions'=>'Ação Total | Total de Ações',
 'Unfinished Action|Unfinished Actions'=>'Ação inacabada | Ações inacabada',
@@ -112,6 +114,7 @@ return array (
 'Top Contacts'=>'Contactos Topo',
 'Add {name}'=>'Adicionar {name}',
 
+'Enter Title'=>'Digite Título',
 
 // Chat
 'Message Body'=>'Corpo da Mensagem',

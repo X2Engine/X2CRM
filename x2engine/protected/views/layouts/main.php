@@ -243,9 +243,6 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 
 // $admin=Admin::model()->findByPk(1);
 
-mb_internal_encoding('UTF-8');
-mb_regex_encoding('UTF-8');
-
 $module = Yii::app()->controller->id;
 
 if($isGuest) {

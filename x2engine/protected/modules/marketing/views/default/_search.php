@@ -77,11 +77,6 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->textField($model,'lastUpdated'); ?>
 	</div>
 
-	<div class="row">
-		<?php echo $form->label($model,'updatedBy'); ?>
-		<?php echo $form->textField($model,'updatedBy',array('size'=>40,'maxlength'=>40)); ?>
-	</div>
-
 	<div class="row buttons">
 		<?php echo CHtml::submitButton('Search'); ?>
 	</div>

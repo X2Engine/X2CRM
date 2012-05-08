@@ -56,4 +56,5 @@ $this->menu=array(
 'comparisonList'=>$comparisonList,
 'users'=>$users,
 'listTypes'=>$listTypes,
+'itemModel'=>$itemModel,
 )); ?> 

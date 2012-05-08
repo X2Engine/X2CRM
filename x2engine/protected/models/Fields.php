@@ -74,10 +74,10 @@ class Fields extends CActiveRecord {
 		return array(
 			array('modelName, fieldName, attributeLabel', 'length', 'max'=>250),
 			array('modelName, fieldName, attributeLabel','required'),
-			array('custom, modified', 'boolean'),
+			array('custom, modified, readOnly', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, modelName, fieldName, attributeLabel, custom, modified', 'safe', 'on'=>'search'),
+			array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -99,6 +99,7 @@ class Fields extends CActiveRecord {
 			'attributeLabel' => 'Attribute Label',
 			'custom' => 'Custom',
 			'modified' => 'Modified',
+			'readOnly' => 'Read Only',
 		);
 	}
 
@@ -118,9 +119,23 @@ class Fields extends CActiveRecord {
 		$criteria->compare('attributeLabel',$this->attributeLabel,true);
 		$criteria->compare('custom',$this->custom);
 		$criteria->compare('modified',$this->modified);
+		$criteria->compare('readOnly',$this->readOnly);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public static function getLinkId($type,$name) {
+		// die($name);
+		if(strtolower($type) == 'contacts')
+			$model = CActiveRecord::model('Contacts')->find('CONCAT(firstName," ",lastName)=:name',array(':name'=>$name));
+		else
+			$model = CActiveRecord::model(ucfirst($type))->findByAttributes(array('name'=>$name));
+		// die(var_dump($model));
+		if(isset($model))
+			return $model->name;
+		else
+			return null;
 	}
 }

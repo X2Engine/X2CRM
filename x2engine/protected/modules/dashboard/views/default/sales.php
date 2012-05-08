@@ -40,6 +40,9 @@
 ?>
 <?php
 $this->menu = array(
+	array('label' => Yii::t('dashboard', 'Lead Volume'), 'url' => array('leadVolume')),
+	// array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
+	// array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
 	array('label' => Yii::t('dashboard', 'Marketing'), 'url' => array('marketing')),
 	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
 	array('label' => Yii::t('dashboard', 'Sales'))
@@ -112,7 +115,7 @@ $this->menu = array(
 			<div class="row">
 				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('dashboard', 'Select deals assigned to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
-				echo $form->dropDownList($model, 'assignedTo', array_merge(array('0' => 'All'), Groups::getNames(), UserChild::getNames()));
+				echo $form->dropDownList($model, 'assignedTo', array_merge(array('0' => 'All'), Groups::getNames(), User::getNames()));
 				?>
 				<a onclick="submitForm('chart');" href="#" class="x2-button"><span>Go</span></a>
 			</div>

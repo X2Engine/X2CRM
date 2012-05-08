@@ -71,7 +71,7 @@ $('.search-form form').submit(function(){
 <?php
 $this->renderPartial('_search',array(
 	'model'=>$model, 
-        'users'=>UserChild::getNames(),
+        'users'=>User::getNames(),
 )); ?>
 </div><!-- search-form -->
 <?php 
@@ -100,7 +100,7 @@ $this->widget('application.components.X2GridView', array(
 	),
 	'specialColumns'=>array(
 		'name'=>array(
-			'name'=>'lastName',
+			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
 			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
 			'type'=>'raw',

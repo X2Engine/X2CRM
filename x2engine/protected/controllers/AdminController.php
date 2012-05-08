@@ -39,7 +39,9 @@
  ********************************************************************************/
 class AdminController extends Controller {
 	
-	public $portlets=array();
+	public $portlets = array();
+	
+	public $layout = '//layouts/main';
 
 	public function actionIndex() {
 		$this->render('index');
@@ -79,7 +81,7 @@ class AdminController extends Controller {
 		return array(
                         array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('getRoundRobin','updateRoundRobin','getRoutingRules','roundRobin','evenDistro','getRoutingType',
-                                                'getRole','getWorkflowStages','download','cleanUp','sql','getFieldData'),
+                                                'getRole','getWorkflowStages','download','cleanUp','sql','getFieldData','installUpdate'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -93,7 +95,7 @@ class AdminController extends Controller {
 					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
 					'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
 					'customizeFields','manageFields', 'editor','createFormLayout','deleteFormLayout','formVersion','dropDownEditor','manageDropDowns','deleteDropdown','editDropdown',
-					'roleEditor','deleteRole','editRole','manageRoles','roleException','appSettings','updater','registerModules','toggleModule', 'viewLogs','delete',),
+					'roleEditor','deleteRole','editRole','manageRoles','roleException','appSettings','updater','registerModules','toggleModule', 'viewLogs','delete','tempImportWorkflow'),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -175,7 +177,7 @@ class AdminController extends Controller {
 		x2base::cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users=CActiveRecord::model('UserChild')->findAll();
+		$users=CActiveRecord::model('User')->findAll();
 		unset($users['admin']);
 		foreach($users as $user){
 			$usernames[]=$user->username;
@@ -197,7 +199,7 @@ class AdminController extends Controller {
 		x2base::cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users = CActiveRecord::model('UserChild')->findAll();
+		$users = CActiveRecord::model('User')->findAll();
 		foreach($users as $user){
 			$usernames[]=$user->username;
 		}
@@ -222,6 +224,75 @@ class AdminController extends Controller {
 		reset($numbers);
 		return key($numbers);
 	}
+        
+        public function actionTempImportWorkflow(){
+            $file="workflowData.csv";
+            $fp=fopen($file,'r+');
+            $meta=fgetcsv($fp);
+            $workflowList=array(
+                '1'=>'Contacted',
+                '2'=>'Appointment Set',
+                '3'=>'Interview Conducted',
+                '4'=>'Essay/Assessment Completed',
+                '5'=>'Transcript Request Form',
+                '6'=>'Unofficial Transcript',
+                '7'=>'Application Completed',
+                '8'=>'Recommendation',
+                '9'=>'Notify FA/Prelim',
+                '10'=>'FAFSA Completed',
+                '11'=>'Transcribe Application',
+                '12'=>'Enrolled',
+                '13'=>'FA Complete',
+                '14'=>'Official Transcript',
+                '15'=>'Started',
+                '16'=>'3 2 1 Checklist',
+                '17'=>'Services Lead Card',
+                '18'=>'Q Drive',
+            );
+            while($arr=fgetcsv($fp)){
+                $attributes=array_combine($meta,$arr);
+                $record=Contacts::model()->findByPk($attributes['id']);
+                if(isset($record)){
+                    $modelId=$record->id;
+                    $type="contacts";
+                    $workflowId=1;
+                    foreach($workflowList as $stageNumber=>$stage){
+                        if(isset($attributes[$stage]) && $attributes[$stage]!=""){
+                            if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
+
+                                $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+
+                            if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
+                                    && (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
+
+                                    $action = new Actions('workflow');
+                                    $action->associationId = $modelId;
+                                    $action->associationType = $type;
+                                    $action->assignedTo = 'Anyone';
+                                    $action->updatedBy = 'admin';
+                                    $action->complete = 'Yes';
+                                    $action->completeDate = strtotime($attributes[$stage]);
+                                    $action->completedBy='admin';
+                                    $action->type = 'workflow';
+                                    $action->visibility = 1;
+                                    $action->createDate = strtotime($attributes[$stage]);
+                                    $action->lastUpdated = time();
+                                    $action->workflowId = (int)$workflowId;
+                                    $action->stageNumber = (int)$stageNumber;
+                                    // $action->actionDescription = '';
+                                    $action->save();
+                                    // echo var_dump($action->getErrors());
+                                    // echo var_dump($action->attributes);
+                                    // echo var_dump($action->save());
+                                    // echo'derp';
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        }
 	
 	public function getRoutingRules($data){
             $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
@@ -259,11 +330,11 @@ class AdminController extends Controller {
                             $flag=preg_match("/$target/i",$val)!=0;
                             
                         }
-                        
+                        $flagArr[]=$flag;
                     }
-                    $flagArr[]=$flag;
+                    
                 }
-                if(!in_array(false,$flagArr)){
+                if(!in_array(false,$flagArr) && count($flagArr)>0){
                     $users=$rule->users;
                     $users=explode(", ",$users);
                             if(is_null($rule->groupType)){
@@ -277,8 +348,8 @@ class AdminController extends Controller {
                                     if($rule->groupType==0){
                                         $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$group));
                                         foreach($links as $link){
-                                            if(array_search(UserChild::model()->findByPk($link->userId)->username,$users)===false)
-                                                $users[]=UserChild::model()->findByPk($link->userId)->username;
+                                            if(array_search(User::model()->findByPk($link->userId)->username,$users)===false)
+                                                $users[]=User::model()->findByPk($link->userId)->username;
                                         }
                                     }else{
                                         $users[]=$group;
@@ -297,7 +368,7 @@ class AdminController extends Controller {
 	
 	public function actionRoundRobinRules(){
 		$model=new LeadRouting;
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['Anyone']);
 		unset($users['admin']);
                 $priorityArray=array();
@@ -366,7 +437,7 @@ class AdminController extends Controller {
                         $role=new RoleToUser;
                         $role->roleId=$model->id;
                         if(!is_numeric($user)){
-                            $userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+                            $userRecord=User::model()->findByAttributes(array('username'=>$user));
                             $role->userId=$userRecord->id;
                             $role->type='user';
                         }/* x2temp */else{
@@ -468,11 +539,11 @@ class AdminController extends Controller {
                         $permission->delete();
                     }
                     foreach($users as $user){
-                        $userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+                        $userRecord=User::model()->findByAttributes(array('username'=>$user));
                         $role=new RoleToUser;
                         $role->roleId=$model->id;
                         if(!is_numeric($user)){
-                            $userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+                            $userRecord=User::model()->findByAttributes(array('username'=>$user));
                             $role->userId=$userRecord->id;
                             $role->type='user';
                         }/* x2temp */else{
@@ -610,13 +681,13 @@ class AdminController extends Controller {
                 $users=array();
                 foreach($roles as $link){
                     if($link->type=='user')
-                        $users[]=UserChild::model()->findByPk($link->userId)->username;
+                        $users[]=User::model()->findByPk($link->userId)->username;
                     /* x2temp */
                     else
                         $users[]=Groups::model()->findByPk($link->userId)->id;
                     /* end x2temp */
                 }
-                $allUsers=UserChild::model()->findAll();
+                $allUsers=User::model()->findAll();
                 $selected=array();
                 $unselected=array();
                 foreach($users as $user){
@@ -726,7 +797,7 @@ class AdminController extends Controller {
         
         public function actionAddCriteria(){
             $criteria=new Criteria;
-            $users=UserChild::getNames();
+            $users=User::getNames();
             $dataProvider=new CActiveDataProvider('Criteria');
             unset($users['']);
             if(isset($_POST['Criteria'])){
@@ -1095,7 +1166,7 @@ class AdminController extends Controller {
 	public function actionCreatePage() {
 
 		$model=new DocChild;
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		if(isset($_POST['DocChild'])) {
 			
 			$model->attributes=$_POST['DocChild'];
@@ -1197,16 +1268,16 @@ class AdminController extends Controller {
 				unset($menuItems[$item]);					// and remove them from $menuItems
 			}
 			
-			foreach($newMenuItems as $item){
-                            $moduleRecord=Modules::model()->findByAttributes(array('name'=>$item));
+			foreach($newMenuItems as $key=>$item){
+                            $moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
                             $moduleRecord->visible=1;
-                            $moduleRecord->menuPosition=array_search($item,$newMenuItems);
+                            $moduleRecord->menuPosition=array_search($key,array_keys($newMenuItems));
                             if($moduleRecord->save()){
-                                
+                                 
                             }
                         }
-			foreach($menuItems as $item){
-                            $moduleRecord=Modules::model()->findByAttributes(array('name'=>$item));
+			foreach($menuItems as $key=>$item){
+                            $moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
                             $moduleRecord->visible=0;
                             $moduleRecord->menuPosition=-1;
                             if($moduleRecord->save()){
@@ -1683,7 +1754,11 @@ class AdminController extends Controller {
 
 		$modelList = array(''=>'---');
 			foreach($modules as $module) {
-                            $modelList[ucfirst($module->name)] = $module->title;
+				if($module->name == 'marketing')
+					$modelList['Campaign'] = 'Campaign';
+				else
+					$modelList[ucfirst($module->name)] = $module->title;
+				
 			}
 				
 		$versionList = array(''=>'---');
@@ -1936,6 +2011,8 @@ class AdminController extends Controller {
                         $model="quote";
                     if($model=="products")
                         $model="product";
+                    if($model=='marketing')
+                        $model="campaign";
                     if($model!='dashboard' && $model!='calendar' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
                         $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
                 }
@@ -2088,8 +2165,10 @@ class AdminController extends Controller {
                 $file=$_GET['file'];
                 if($url=='x2planet' || $url=='x2base'){
                     $i=0;
-                    while(!$this->ccopy("http://$url.com/updates/x2engine/".$file , $file) && $i<5){
-                       $i++; 
+                    if($file!=""){
+                        while(!$this->ccopy("http://$url.com/updates/x2engine/".$file , "temp/".$file) && $i<5){
+                           $i++; 
+                        }
                     }
                     if($i==5){ 
                         $this->_sendResponse('500','Error copying file');
@@ -2122,6 +2201,39 @@ class AdminController extends Controller {
                 $command = Yii::app()->db->createCommand($sql);
                 $result=$command->execute();
                 $this->_sendResponse('200','SQL Executed Successfully');
+            }
+        }
+        
+        public function actionInstallUpdate(){
+            
+            $this->copyFile("temp"); 
+            if(isset($_POST['sqlList'])){
+                $sql=$_POST['sqlList'];
+                foreach($sql as $query){
+                    if($query!=""){
+                        $command = Yii::app()->db->createCommand($query);
+                        $result=$command->execute();
+                    }
+                }
+            }else{
+                $this->_sendResponse('500','Failure.');
+            }
+            $this->rrmdir("temp");
+            $this->_sendResponse('200','SQL Executed Successfully');
+        }
+        
+        protected function copyFile($file){
+            if(file_exists($file)){
+                if(is_dir($file)){
+                     $objects = scandir($file);
+                    foreach($objects as $object){ 
+                        if($object!="." && $object!=".."){ 
+                            $this->copyFile($file."/".$object);
+                        } 
+                    } 
+                }else{
+                    $this->ccopy("$file",substr($file,5));
+                }
             }
         }
         

@@ -55,7 +55,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
                             (($data->comparisonOperator=="change")?"changed":$data->comparisonOperator)
                             ." ".$data->modelValue.", ".
                             (($data->type==\'notification\')?"notify":($data->type=="action"?"create an action for":($data->type=="assignment"?"assign to":"")))
-                            ." ".UserChild::getUserLinks($data->users)',
+                            ." ".User::getUserLinks($data->users)',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'80%'),
 		),

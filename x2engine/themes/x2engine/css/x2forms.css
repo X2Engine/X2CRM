@@ -113,7 +113,7 @@ div.x2-layout.form-view .formItem {border-width:0 0 0;}
 div.x2-layout .formItem label {
 	display:block;
 	font-size:10px;
-	color:#000;
+	color:#666;
 	background:#eee;
 }
 div.x2-layout .formItem.noLabel label, div.x2-layout .formItem.inlineLabel label {display:none;}
@@ -145,6 +145,7 @@ div.x2-layout .formInputBox {
 	padding:3px;
 	padding-bottom:503px;	/* equal height columns hack */
 	margin-bottom:-500px;
+	font-weight:bold;
 	/* border-left:1px solid #ccc; */
 }
 div.x2-layout .formInputBox .checkboxWrapper {display:inline-block;vertical-align:middle;height:18px;padding:4px 0 0 4px;}

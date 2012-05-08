@@ -64,7 +64,7 @@ $fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelNam
 foreach($fields as $field){
         $unselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
 }
-$users=UserChild::getNames();
+$users=User::getNames();
 unset($users['']);
 unset($users['Anyone']);
 unset($users['admin']);

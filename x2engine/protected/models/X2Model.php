@@ -46,6 +46,20 @@ abstract class X2Model extends CActiveRecord {
 		if(!isset(self::$_fields))	// only look up fields if they haven't already been looked up
 			self::$_fields = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
 	}
+
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() {
+		return '/'.strtolower(get_class($this));	// assume the model name is the same as the controller
+	}
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() {
+		return '/'.strtolower(get_class($this)).'/getItems';	// assume the model name is the same as the controller
+	}
 	
 	/**
 	 * Generates validation rules for custom fields
@@ -55,7 +69,7 @@ abstract class X2Model extends CActiveRecord {
 	
 		$this->queryFields();
 			
-		$fields = array(
+		$fieldRules = array(
 			'required'=>array(),
 			'email'=>array(),
 			'int'=>array(),
@@ -73,26 +87,26 @@ abstract class X2Model extends CActiveRecord {
 				case 'url':
 				case 'currency':
 				case 'dropdown':
-					$fields['safe'][] = $_field->fieldName;	// these field types have no rules, but still need to be allowed
+					$fieldRules['safe'][] = $_field->fieldName;	// these field types have no rules, but still need to be allowed
 					break;
 				case 'date':
-					$fields['int'][] = $_field->fieldName;		// date is actually an int
+					$fieldRules['int'][] = $_field->fieldName;		// date is actually an int
 					break;
 				default:
-					$fields[ $_field->type ][] = $_field->fieldName;		// otherwise use the type as the validator name
+					$fieldRules[ $_field->type ][] = $_field->fieldName;		// otherwise use the type as the validator name
 			}
 			
 			if($_field->required)
-				$fields['required'][] = $_field->fieldName;
+				$fieldRules['required'][] = $_field->fieldName;
 		}
 
 		return array(
-			array( implode( ',', $fields['required']), 'required' ),
-			array( implode( ',', $fields['email']), 'email' ),
-			array( implode( ',', $fields['int']+$fields['date'] ), 'numerical', 'integerOnly'=>true ),
-			array( implode( ',', $fields['float']), 'numerical' ),
-			array( implode( ',', $fields['boolean']), 'boolean' ),
-			array( implode( ',', $fields['safe']), 'safe' ),
+			array( implode( ',', $fieldRules['required']), 'required' ),
+			array( implode( ',', $fieldRules['email']), 'email' ),
+			array( implode( ',', $fieldRules['int'] + $fieldRules['date'] ), 'numerical', 'integerOnly'=>true ),
+			array( implode( ',', $fieldRules['float']), 'numerical' ),
+			array( implode( ',', $fieldRules['boolean']), 'boolean' ),
+			array( implode( ',', $fieldRules['safe']), 'safe' ),
 		);
 	}
 	
@@ -131,7 +145,7 @@ abstract class X2Model extends CActiveRecord {
 		// don't call attributeLabels(), just look in self::$_fields
 		foreach(self::$_fields as &$_field) {
 			if($_field->fieldName == $attribute)
-				return $_field->attributeLabel;
+				return Yii::t(strtolower(get_class($this)),$_field->attributeLabel);
 		}
 		// original Yii code
 		if(strpos($attribute,'.')!==false) {
@@ -154,7 +168,52 @@ abstract class X2Model extends CActiveRecord {
 		$this->queryFields();
 		return self::$_fields;
 	}
+	
+	// sql to convert x2_fields.linkType: "UPDATE x2_fields SET linkType=CONCAT(UCASE(SUBSTRING(linkType, 1,1)),SUBSTRING(linkType, 2)) WHERE type='link'"
+	// sql to generate x2_contacts.name: "UPDATE x2_contacts SET name=CONCAT(firstName,' ',lastName)"
 
+	/**
+	 * Sets attributes using X2Fields
+	 * @param array &$data array of attributes to be set (eg. $_POST['Contacts'])
+	 */
+	public function setX2Fields(&$data) {
+		$this->queryFields();
+
+		foreach(self::$_fields as &$_field) {	// now loop through fields to deal with special types
+			$fieldName = $_field->fieldName;
+		
+			if(!$_field->readOnly && isset($data[$fieldName])) {	// skip fields that are read-only or haven't been set
+			
+				$value = $data[$fieldName];
+
+				if($value == $this->getAttributeLabel($fieldName))	// eliminate placeholder values
+					$value = '';
+			
+				if($_field->type == 'assignment' && $_field->linkType == 'multiple') {
+					$value = Accounts::parseUsers($value);
+				} elseif($_field->type == 'date') {
+					$value = Yii::app()->controller->parseDate($value);
+					if($value === false)
+						$value = null;
+				} elseif($_field->type == 'link' && !empty($_field->linkType)) {
+
+					if(!empty($value) && isset($data[$fieldName.'_id'])) {	// check the ID, if provided
+						$linkId = $data[$fieldName.'_id'];
+						if(!empty($linkId) && CActiveRecord::model($_field->linkType)->countByAttributes(array('id'=>$linkId)))	// if the link model actually exists,
+							$value = $linkId;																	// then use the ID as the field value
+					}
+					if(!empty($value) && !ctype_digit($value)) {	// if the field is sitll text, try to find the ID based on the name
+					
+						$linkModel = CActiveRecord::model($_field->linkType)->findByAttributes(array('name'=>$value));
+						if(isset($linkModel))
+							$value = $linkModel->id;
+					}
+				}
+				$this->$fieldName = $value;
+			}
+		}
+	}
+	
 	/**
 	 * Base search function, includes Retrieves a list of models based on the current search/filter conditions.
 	 * @param CDbCriteria $criteria the attribute name
@@ -164,6 +223,24 @@ abstract class X2Model extends CActiveRecord {
 
 		$this->queryFields();
 		
+		$this->compareAttributes($criteria);
+		// if(get_class($this) == 'Contacts')
+			// $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
+
+		return new SmartDataProvider(get_class($this), array(
+			'sort'=>array(
+				'defaultOrder'=>'lastUpdated DESC',
+			),
+			'pagination'=>array(
+				'pageSize'=>ProfileChild::getResultsPerPage(),
+			),
+			'criteria'=>$criteria,
+		));
+	}
+	
+	public function compareAttributes(&$criteria) {
+		$this->queryFields();
+		
 		foreach(self::$_fields as &$field) {
 			$fieldName = $field['fieldName'];
 			switch($field['type']) {
@@ -171,7 +248,7 @@ abstract class X2Model extends CActiveRecord {
 					$criteria->compare($fieldName,$this->compareBoolean($this->$fieldName), true);
 					break;
 				case 'link':
-					$criteria->compare($fieldName,$this->compareLookup($field['linkType'], $this->$fieldName), true);
+					$criteria->compare($fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
 					$criteria->compare($fieldName,$this->$fieldName, true, 'OR');
 					break;
 				case 'assignment':
@@ -188,7 +265,7 @@ abstract class X2Model extends CActiveRecord {
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
-				'defaultOrder'=>'lastUpdated DESC',
+				'defaultOrder'=>'createDate DESC',
 			),
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
@@ -209,7 +286,7 @@ abstract class X2Model extends CActiveRecord {
 			if($linkType == 'Contacts')
 				$linkIds = Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like','CONCAT(firstName," ",lastName)',"%$value%"))->queryColumn();
 			else
-				$linkIds = Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like','name',"%$value%"))->queryColumn();
+			$linkIds = Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like','name',"%$value%"))->queryColumn();
 				
 			return empty($linkIds)? -1 : $linkIds;
 		}
@@ -217,6 +294,9 @@ abstract class X2Model extends CActiveRecord {
 	}
 
 	protected function compareBoolean($data) {
+            if(is_null($data)){
+                return null;
+            }
 		return in_array(mb_strtolower(trim($data)),array( 0, 'f', 'false', Yii::t('actions',"No") ))? 0 : 1;		// default to true unless recognized as false
 	}
 	
@@ -227,5 +307,12 @@ abstract class X2Model extends CActiveRecord {
 		$groupIds = Yii::app()->db->createCommand()->select('id')->from('x2_groups')->where(array('like','name',"%$data%"))->queryColumn();
 		
 		return (count($groupIds) + count($userNames) == 0)? -1 : $userNames + $groupIds;
+	}
+
+	public function createLink() {
+		if(isset($this->id))
+			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
+		else
+			return $this->name;
 	}
 }

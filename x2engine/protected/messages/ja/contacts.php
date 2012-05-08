@@ -139,4 +139,9 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Outlookからコンタクトをインポートするには、Outlookを開き、連絡先をエクスポートしてCSVファイル（DOS形式）を作成するには、まずしてください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
 'Upload File'=>'ファイルのアップロード',
 'Contact Record Details'=>'コンタクトのレコードの詳細',
+
+// Subscribe
+'Subscribe'=>'購読する',
+'The information for {name} has changed.'=>'{name}のための情報が変更されました。',
+'Receive email updates every time information for {name} changes'=>'たびに情報交換{name}の電子メールの更新を受信',
 );

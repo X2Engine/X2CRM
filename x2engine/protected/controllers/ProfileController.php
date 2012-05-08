@@ -155,9 +155,9 @@ class ProfileController extends x2base {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-		if ($id==Yii::app()->user->getId()) {
+		if ($id==Yii::app()->user->getId() || Yii::app()->user->getName()=='admin') {
                     $model = $this->loadModel($id);
-                    $users=UserChild::getNames();
+                    $users=User::getNames();
                     $accounts=Accounts::getNames();  
                     
                     if(isset($_POST['ProfileChild'])) {
@@ -180,7 +180,7 @@ class ProfileController extends x2base {
                             'accounts'=>$accounts,
                     ));
 		} else {
-			$this->redirect('view/'.$model->id);
+			$this->redirect('view/'.$id);
 		}
 	}
 
@@ -342,7 +342,7 @@ class ProfileController extends x2base {
 				'order'=>'lastUpdated DESC'
 			),
 		));
-		$users=UserChild::getProfiles();
+		$users=User::getProfiles();
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 			'users'=>$users,

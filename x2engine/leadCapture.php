@@ -163,7 +163,6 @@ if($ccResult!="No Item found with specified attributes."){
 			$ccResult = curl_exec($ccSession);
 			curl_close($ccSession);
 		}
-		
 }
     
 ?>

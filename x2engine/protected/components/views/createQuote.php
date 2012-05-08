@@ -74,7 +74,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 
 <div id="new-quote">
 <b><?php echo Yii::t('quotes', 'New Quote'); ?></b>
-<br /><br />
+<br><br>
 
 <input name="associatedContacts[]" type="hidden" value="<?php echo $contactId; ?>">
 <input name="redirect" type="hidden" value="<?php echo Yii::app()->request->url; ?>">
@@ -167,7 +167,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 	),
 	array('id'=>"create-quote-button", 'class'=>'x2-button', 'live'=>false)
 ); ?>
+</div>
 
 <?php $this->endWidget(); ?>
 
-</div>

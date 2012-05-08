@@ -40,7 +40,7 @@
 
 class DefaultController extends x2base {
 
-	public $modelClass = 'UserChild';
+	public $modelClass = 'User';
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -67,7 +67,7 @@ class DefaultController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$user=UserChild::model()->findByPk($id);
+		$user=User::model()->findByPk($id);
 		$dataProvider=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
 				'order'=>'complete DESC',
@@ -85,7 +85,7 @@ class DefaultController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
-		$model=new UserChild;
+		$model=new User;
                 $groups=array();
                 foreach(Groups::model()->findAll() as $group){
                     $groups[$group->id]=$group->name;
@@ -98,8 +98,8 @@ class DefaultController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['UserChild'])) {
-			$model->attributes=$_POST['UserChild'];
+		if(isset($_POST['User'])) {
+			$model->attributes=$_POST['User'];
 			//$this->updateChangelog($model);
 			$model->password = md5($model->password);
 
@@ -122,7 +122,7 @@ class DefaultController extends x2base {
                                 }
                                 if(isset($_POST['groups'])){
                                     $groups=$_POST['groups'];
-                                    foreach($group as $group){
+                                    foreach($groups as $group){
                                         $link=new GroupToUser;
                                         $link->groupId=$group;
                                         $link->userId=$model->id;
@@ -170,9 +170,9 @@ class DefaultController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Users'])) {
+		if(isset($_POST['User'])) {
                     $temp=$model->password;
-                    $model->attributes=$_POST['Users'];
+                    $model->attributes=$_POST['User'];
                     if($model->password!="")
                         $model->password = md5($model->password);
                     else
@@ -196,7 +196,7 @@ class DefaultController extends x2base {
                         }
                         if(isset($_POST['groups'])){
                             $groups=$_POST['groups'];
-                            foreach($group as $group){
+                            foreach($groups as $group){
                                 $link=new GroupToUser;
                                 $link->groupId=$group;
                                 $link->userId=$model->id;
@@ -224,8 +224,8 @@ class DefaultController extends x2base {
 	 * Manages all models.
 	 */
 	public function actionAdmin() {
-		$model=new UserChild('search');
-		$name='UserChild';
+		$model=new User('search');
+		$name='User';
 		parent::admin($model, $name);
 	}
 
@@ -235,7 +235,7 @@ class DefaultController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model=UserChild::model()->findByPk((int)$id);
+		$model=User::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
 		return $model;
@@ -328,7 +328,7 @@ class DefaultController extends x2base {
 	
 	private function renderTopContacts() {
 		$this->renderPartial('application.components.views.topContacts',array(
-			'topContacts'=>UserChild::getTopContacts(),
+			'topContacts'=>User::getTopContacts(),
 			//'viewId'=>$viewId
 		));
 	}

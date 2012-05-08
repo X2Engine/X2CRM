@@ -62,7 +62,7 @@ class OnlineUsers extends CWidget {
 			// $str=substr($str,0,-2);
 		// }
 
-		$onlineUsers = UserChild::getUserLinks(Session::getOnlineUsers());
+		$onlineUsers = User::getUserLinks(Session::getOnlineUsers());
 		
 		$this->render('onlineUsers',array(
 			'users'=>$onlineUsers,

@@ -40,11 +40,6 @@
 
 class DefaultController extends x2base {
 	public $modelClass = 'Product';
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
 
 	public function accessRules() {
 		return array(
@@ -87,7 +82,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
             $model=new Product;
-            $users=UserChild::getNames();
+            $users=User::getNames();
             if(isset($_POST['Product'])) {
                 $temp=$model->attributes;
                 foreach($_POST['Product'] as $name => &$value) {
@@ -152,7 +147,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
-		$users=UserChild::getNames(); 
+		$users=User::getNames(); 
                 $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Products"));
                 foreach($fields as $field){
                     if($field->type=='link'){

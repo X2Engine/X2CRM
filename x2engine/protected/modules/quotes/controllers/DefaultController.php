@@ -229,7 +229,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
 		$model = new Quote;
-		$users = UserChild::getNames();
+		$users = User::getNames();
 		
 		$currency = Yii::app()->params->currency;
 		$productNames = Product::productNames();
@@ -581,7 +581,7 @@ class DefaultController extends x2base {
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
 		
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		
 		// get associated contacts
 		/*
@@ -860,7 +860,7 @@ class DefaultController extends x2base {
 	}
 
 	public function actionAddUser($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 		$users=Quote::editUserArray($users,$model);
@@ -896,7 +896,7 @@ class DefaultController extends x2base {
 	}
 
 	public function actionAddContact($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 		$model=$this->loadModel($id);
 

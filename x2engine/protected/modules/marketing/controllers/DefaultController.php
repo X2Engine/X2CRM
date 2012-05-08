@@ -45,9 +45,30 @@ class DefaultController extends x2base {
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
 	public $layout='//layouts/column2';
-        
-        
-        public function actionGetItems(){
+	
+	public function accessRules() {
+		return array(
+			array('allow',  // deny all users
+				'actions'=>array('mailTracker'),
+				'users'=>array('*'),
+			),
+			array('allow', // allow authenticated user to perform the following actions
+				'actions'=>array('index','view','create','update','search','delete','launchCampaign','getItems'),
+				'users'=>array('@'),
+			),
+			array('allow', // allow admin user to perform 'admin' action
+				'actions'=>array('admin'),
+				'users'=>array('admin'),
+			),
+			array('deny',  // deny all users
+				'users'=>array('*'),
+			),
+		);
+	}
+	
+		
+		
+	public function actionGetItems() {
 		$sql = 'SELECT id, name as value FROM x2_marketing WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';
@@ -60,9 +81,27 @@ class DefaultController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$type='Campaign';
+
 		$model=$this->loadModel($id);
-		parent::view($model, $type);
+		if(!isset($model))
+			return;
+
+		$actionHistory = $this->getHistory($model);
+			
+		$contactList = null;
+		if(!empty($model->listId))
+			$contactList = CActiveRecord::model('X2List')->findByPk($model->listId);
+		
+		
+
+		$users=User::getNames();
+		$showActionForm = isset($_GET['showActionForm']);
+		$this->render('view',array(
+			'model'=>$model,
+			'contactList'=>$contactList,
+			'actionHistory'=>$actionHistory,
+			'users'=>$users,
+		));
 	}
 
 	/**
@@ -71,56 +110,11 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new Campaign;
-                $users=UserChild::getNames();
-                if(isset($_POST['Campaign'])) {
-			$temp=$model->attributes;
-			foreach($_POST['Campaign'] as $name => &$value) {;
-				if($value == $model->getAttributeLabel($name)){
-					$value = '';
-                                }
-			}
-                        
-			 foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            if(count($names)>1) 
-                                                $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-                        
-			$temp=$model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Campaign'][$field])){
-                                $model->$field=$_POST['Campaign'][$field];
-                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Campaign','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                                
-                            }
-                        }
-			parent::create($model, $temp, 0);
+		$users=User::getNames();
+		if(isset($_POST['Campaign'])) {
+			$oldAttributes = $model->attributes;
+			$model->setX2Fields($_POST['Campaign']);
+			parent::create($model, $oldAttributes,0);
 			
 		}
 		$this->render('create',array(
@@ -137,72 +131,12 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
-		$users=UserChild::getNames(); 
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Campaign"));
-                foreach($fields as $field){
-                    if($field->type=='link'){
-                        $fieldName=$field->fieldName;
-                        $type=ucfirst($field->linkType);
-                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
-                            eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
-                            if(isset($lookupModel))
-                                $model->$fieldName=$lookupModel->name;
-                        }
-                    }elseif($field->type=='date'){
-                        $fieldName=$field->fieldName;
-                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
-                    }
-                }
-
+		$users = User::getNames(); 
+		
 		if(isset($_POST['Campaign'])) {
-			$temp=$model->attributes;
-			foreach($_POST['Campaign'] as $name => $value) {
-				if($value == $model->getAttributeLabel($name)){
-					$_POST['Campaign'][$name] = '';
-				}
-			}
-			foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            if(count($names)>1) 
-                                                $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-                        
-			$temp=$model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Campaign'][$field])){
-                                $model->$field=$_POST['Campaign'][$field];
-                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Campaign','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                                
-                            }
-                        }
-			
-			parent::update($model,$temp,'0');
+			$oldAttributes = $model->attributes;
+			$model->setX2Fields($_POST['Campaign']);
+			parent::update($model,$oldAttributes,0);
 		}
 
 		$this->render('update',array(
@@ -215,8 +149,7 @@ class DefaultController extends x2base {
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete($id)
-	{
+	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest)
 		{
 			// we only allow deletion via POST request
@@ -255,8 +188,7 @@ class DefaultController extends x2base {
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer the ID of the model to be loaded
 	 */
-	public function loadModel($id)
-	{
+	public function loadModel($id) {
 		$model=Campaign::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
@@ -267,12 +199,145 @@ class DefaultController extends x2base {
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated
 	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='marketing-form')
-		{
+	protected function performAjaxValidation($model) {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='marketing-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
+		}
+	}
+	
+	
+	public function actionLaunchCampaign($id) {
+	
+		$testEmail = isset($_GET['test']) && $_GET['test'];
+	
+		$campaign = CActiveRecord::model('Campaign')->findByPk($id);
+		
+		$messages = '';
+		$dataProvider = null;
+		
+		if(isset($campaign)) {
+		
+			$status ='';
+			$errors = array();
+			
+			if(!ctype_digit($campaign->listId))
+				$errors[] = Yii::t('app','This campaign has no target contact list.');
+		
+			$page = 0;
+			if(isset($_GET['page']) && ctype_digit($_GET['page']))
+				$page = $_GET['page'];
+		
+			$dataProvider = Contacts::model()->searchList($campaign->listId);
+			$dataProvider->pagination = array('pageSize'=>10,'currentPage'=>$page);
+			
+			//totalItemCount
+			// die(var_dump($dataProvider->getData()));
+			
+			$contacts = $dataProvider->getData();
+			
+			// list has to have at least one person up in there
+			if(count($contacts) < 1) {
+				$errors[] = Yii::t('app','The contacts list is empty.');
+				// $messages .= $status;
+				return;
+			}
+			
+			
+			if(empty($campaign->subject)) {
+				$errors[] = Yii::t('app','The subject is empty.');
+				// $messages .= $status;
+				return;
+			}
+
+			$phpMail = $this->getPhpMailer();
+			
+			$user = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
+
+			
+			try {
+				if(empty(Yii::app()->params->profile->emailAddress))
+					throw new Exception('<b>'.Yii::t('app','Your profile doesn\'t have a valid email address.').'</b>');
+				
+				$phpMail->AddReplyTo(Yii::app()->params->admin->emailFromAddr,$user->name);
+				$phpMail->SetFrom(Yii::app()->params->admin->emailFromAddr,$user->name);
+				$phpMail->Subject = $campaign->subject;
+				
+				if($testEmail)
+					$phpMail->Subject = Yii::t('marketing','Test Email: ').$phpMail->Subject;
+			
+			} catch (phpmailerException $e) {
+				$errors[] = $e->errorMessage();
+			} catch (Exception $e) {
+				$errors[] = $e->getMessage();
+			}
+			
+			
+			foreach($contacts as &$contact) {
+				$phpMail->ClearAllRecipients();
+			
+				$emailBody = $campaign->content;
+				// $templateDoc = CActiveRecord::model('Docs')->findByPk($model->template);
+				// if(isset($templateDoc)) {
+				$emailBody = str_replace('\\\\', '\\\\\\', $emailBody);
+				$emailBody = str_replace('$', '\\$', $emailBody);
+
+
+				$attributeNames = array_keys($contact->getAttributes());
+				$attributes = array_values($contact->getAttributes());
+				// $attributeNames[] = 'content';
+				// $attributes[] = $model->message;
+				foreach($attributeNames as &$name)
+					$name = '/{'.$name.'}/';
+				unset($name);
+
+				$emailBody = preg_replace($attributeNames,$attributes,$emailBody);
+
+
+				try {
+					
+					$phpMail->AddAddress(Yii::app()->params->profile->emailAddress,$user->name);
+
+					// $phpMail->AltBody = $message;
+					$phpMail->MsgHTML($emailBody);
+					// $phpMail->Body = $message;
+					//$phpMail->Send();
+					
+					
+					
+
+					$messages .= 'Dispatched spam to '.$contact->name.'<br>';
+					$status = Yii::t('app','Email Sent!');
+
+				} catch (phpmailerException $e) {
+					$errors[] = $e->errorMessage(); //Pretty error messages from PHPMailer
+				} catch (Exception $e) {
+					$errors[] = $e->getMessage(); //Boring error messages from anything else!
+				}
+				
+				
+				
+				// '<span class="error"></span>';
+			}
+			// echo var_dump($status);
+			$messages .= $status;
+			
+			$this->render('launch',array(
+				'model'=>$campaign,
+				'errors'=>$errors,
+				'status'=>$errors,
+				'contacts'=>$dataProvider
+			));
+		}
+	}
+	
+	public function actionMailTracker() {
+	
+		if(isset($_GET['c']) && ctype_digit($_GET['c'])) {
+		
+			
+		
+		
 		}
 	}
 }

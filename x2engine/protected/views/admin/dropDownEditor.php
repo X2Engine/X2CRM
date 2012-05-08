@@ -64,7 +64,7 @@ function addStage() {
 	$('#workflow-stages ol').append(' \
 	<li>\
                 <input type=\"text\" size=\"30\" name=\"Dropdowns[options][]\" />\
-        <div class=\"cell\">\
+        <div class=\"\">\
             <a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow','Up')."]</a>\
             <a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow','Down')."]</a>\
             <a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow','Del')."]</a>\
@@ -97,7 +97,7 @@ function addStage() {
         <li>
             <input type="text" size="30" name="Dropdowns[options][]" />
             
-            <div class="cell">
+            <div class="">
                 <a href="javascript:void(0)" onclick="moveStageUp(this);">[<?php echo Yii::t('workflow','Up'); ?>]</a>
                 <a href="javascript:void(0)" onclick="moveStageDown(this);">[<?php echo Yii::t('workflow','Down'); ?>]</a>
                 <a href="javascript:void(0)" onclick="deleteStage(this);">[<?php echo Yii::t('workflow','Del'); ?>]</a>

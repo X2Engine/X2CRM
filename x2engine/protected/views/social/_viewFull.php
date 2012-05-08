@@ -46,7 +46,7 @@ $(document).ready(function() {
 });
 ",CClientScript::POS_HEAD);
 
-$authorRecord = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$data->user));
+$authorRecord = CActiveRecord::model('User')->findByAttributes(array('username'=>$data->user));
 $author = $authorRecord->name; //firstName.' '.$authorRecord->lastName;
 $commentDataProvider=new CActiveDataProvider('Social', array(
 	'criteria'=>array(

@@ -71,7 +71,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new Templates;
-                $users=UserChild::getNames();
+                $users=User::getNames();
                 if(isset($_POST['Templates'])) {
 			$temp=$model->attributes;
 			foreach($_POST['Templates'] as $name => &$value) {;
@@ -137,7 +137,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
-		$users=UserChild::getNames(); 
+		$users=User::getNames(); 
                 $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Templates"));
                 foreach($fields as $field){
                     if($field->type=='link'){

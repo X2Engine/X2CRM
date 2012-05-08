@@ -40,42 +40,6 @@
 
 class ProfileChild extends Profile {
 
-	public function attributeLabels() {
-		return array(
-			'id'=>Yii::t('profile','ID'),
-			'fullName'=>Yii::t('profile','Full Name'),
-			'username'=>Yii::t('profile','Username'),
-			'officePhone'=>Yii::t('profile','Office Phone'),
-			'cellPhone'=>Yii::t('profile','Cell Phone'),
-			'emailAddress'=>Yii::t('profile','Email Address'),
-			'notes'=>Yii::t('profile','Notes'),
-			'status'=>Yii::t('profile','Status'),
-			'tagLine'=>Yii::t('profile','Tag Line'),
-			'lastUpdated'=>Yii::t('profile','Last Updated'),
-			'updatedBy'=>Yii::t('profile','Updated By'),
-			'avatar'=>Yii::t('profile','Avatar'),
-			'allowPost'=>Yii::t('profile','Allow users to post on your profile?'),
-			'language'=>Yii::t('profile','Language'),
-			'timeZone'=>Yii::t('profile','Time Zone'),
-			'widgets'=>Yii::t('profile','Enable group chat?'),
-			'menuBgColor'=>Yii::t('profile','Menu Color'),
-			'resultsPerPage'=>Yii::t('profile','Results Per Page'),
-			'menuTextColor'=>Yii::t('profile','Menu Text Color'),
-			'backgroundColor'=>Yii::t('profile','Background Color'),
-			'pageOpacity'=>Yii::t('profile','Page Opacity'),
-			'startPage'=>Yii::t('profile','Start Page'),
-			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
-			'showDetailView'=>Yii::t('profile','Show Detail View'),
-			'showDetailView'=>Yii::t('profile','Show Detail View'),
-			'showWorkflow'=>Yii::t('profile','Show Workflow'),
-			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
-			'formSettings'=>Yii::t('profile','Form Settings'),
-			'emailUseSignature' => Yii::t('admin','Email Signature'),
-			'emailSignature' => Yii::t('admin','My Signature'),
-			'enableBgFade'=>Yii::t('profile','Enable Background Fading'),
-		);
-	}
-	
 	public function behaviors() {
 		return array(
 			'ERememberFiltersBehavior' => array(
@@ -107,7 +71,7 @@ class ProfileChild extends Profile {
 		$adminRule = Yii::app()->params->admin->emailUseSignature;
 		$userRule = $this->emailUseSignature;
 		
-		$userModel = CActiveRecord::model('UserChild')->findByPk($this->id);
+		$userModel = CActiveRecord::model('User')->findByPk($this->id);
 		$signature = '';
 		
 		switch($adminRule) {
@@ -143,7 +107,8 @@ class ProfileChild extends Profile {
 			$signature
 		);
 		if($html)
-			$signature = '<span style="color:grey;">' . x2base::convertLineBreaks($signature) . '</span>';
+			$signature = x2base::convertLineBreaks($signature);
+			// $signature = '<span style="color:grey;">' . x2base::convertLineBreaks($signature) . '</span>';
 			
 		return $signature;
 	}
@@ -255,6 +220,36 @@ class ProfileChild extends Profile {
 		}
 		
 		return $widgetList;
+	}
+	
+	public static function getWidgetSettings() {
+		if(Yii::app()->user->isGuest)	// no widgets if the user isn't logged in
+			return array();
+				
+		if(Yii::app()->params->profile->widgetSettings == null) { // if widget settings haven't been set, give them default values
+			$widgetSettings = array(
+				'ChatBox'=>array(
+					'chatboxHeight'=>200,
+					'chatmessageHeight'=>50,
+				),
+				'NoteBox'=>array(
+					'noteboxHeight'=>200,
+					'notemessageHeight'=>50,
+				),
+				'DocViewer'=>array(
+					'docboxHeight'=>200,
+				),
+				'TopSites'=>array(
+					'topsitesHeight'=>200,
+					'urltitleHeight'=>10,
+				),
+			);
+			
+			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+			Yii::app()->params->profile->update();
+		}
+		
+		return json_decode(Yii::app()->params->profile->widgetSettings);
 	}
 }
 

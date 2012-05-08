@@ -113,7 +113,7 @@ class SiteController extends MobileController {
 				foreach ($records as $chat) {
 					if ($latest != '' && $chat->timestamp < $latest)
 						continue;
-					$user = UserChild::model()->findByAttributes(array('username' => $chat->user));
+					$user = User::model()->findByAttributes(array('username' => $chat->user));
 					if ($user != null)
 						$content[] = array('username' => $chat->user,
 							'userid' => $user->id,
@@ -145,7 +145,7 @@ class SiteController extends MobileController {
 			$usernames[] = $session->user;
 		}
 		foreach($usernames as $username){
-			$user = Users::model()->findByAttributes(array('username'=>$username));
+			$user = User::model()->findByAttributes(array('username'=>$username));
 			$users[] = $user->firstName." ".$user->lastName;
 		}
 		
@@ -261,7 +261,7 @@ class SiteController extends MobileController {
             // validate user input and redirect to the previous page if valid
 			if($model->validate() && $model->login()) {
 
-				$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+				$user = User::model()->findByPk(Yii::app()->user->getId());
 				$user->login = time();
 				$user->save();
 				} else

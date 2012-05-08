@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -46,6 +46,8 @@ class InlineEmailAction extends CAction {
 
 		$preview = false;
 		$emailBody = '';
+		$signature = '';
+		$template = null;
 	
 		if(!isset($this->model))
 			$this->model = new InlineEmail;
@@ -60,11 +62,30 @@ class InlineEmailAction extends CAction {
 			
 			// if the user specified a template, look it up and use it for the message
 			if($this->model->template != 0) {
-				$templateDoc = CActiveRecord::model('Docs')->findByPk($this->model->template);
-				if(isset($templateDoc)) {
+				$matches = array();
+				if(preg_match('/<!--BeginSig-->(.*)<!--EndSig-->/u',$this->model->message,$matches) && count($matches) > 1)	// extract signature
+					$signature = $matches[1];
+					
+				$this->model->message = preg_replace('/<!--BeginSig-->(.*)<!--EndSig-->/u','',$this->model->message);	// remove signatures
+					
+				$matches = array();
+				if(preg_match('/<!--BeginMsg-->(.*)<!--EndMsg-->/u',$this->model->message,$matches) && count($matches) > 1)
+					$this->model->message = $matches[1];
+			
+				if(empty($signature))
+					$signature = Yii::app()->params->profile->getSignature(true);	// load default signature if empty
+			
+				$template = CActiveRecord::model('Docs')->findByPk($this->model->template);
+				if(isset($template)) {
 					$this->model->message = str_replace('\\\\', '\\\\\\', $this->model->message);
 					$this->model->message = str_replace('$', '\\$', $this->model->message);
-					$emailBody = preg_replace('/{content}/u','<!--BeginMsg-->'.$this->model->message.'<!--EndMsg-->',$templateDoc->text);
+					$emailBody = preg_replace('/{content}/u','<!--BeginMsg-->'.$this->model->message.'<!--EndMsg-->',$template->text);
+					$emailBody = preg_replace('/{signature}/u','<!--BeginSig-->'.$signature.'<!--EndSig-->',$emailBody);
+					
+					// check if subject is empty, or is from another template
+					if(empty($this->model->subject) || CActiveRecord::model('Docs')->countByAttributes(array('type'=>'email','title'=>$this->model->subject)))
+						$this->model->subject = $template->title;
+					
 					if(isset($this->model->modelName, $this->model->modelId)) {		// if there is a model name/id available, look it up and use its attributes
 						$targetModel = CActiveRecord::model($this->model->modelName)->findByPk($this->model->modelId);
 						if(isset($targetModel)) {
@@ -80,7 +101,7 @@ class InlineEmailAction extends CAction {
 							$emailBody = preg_replace($attributeNames,$attributes,$emailBody);
 						}
 					}
-					$this->model->template = 0;
+					// $this->model->template = 0;
 					$this->model->message = $emailBody;
 				}
 			} elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
@@ -93,8 +114,7 @@ class InlineEmailAction extends CAction {
 			
 			if($this->model->template == 0)
 				$this->model->setScenario('custom');
-			
-			
+				
 			if($this->model->validate() && !$preview) {
 				
 				$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody);
@@ -102,7 +122,6 @@ class InlineEmailAction extends CAction {
 				if(in_array('200',$this->model->status)) {
 					
 					foreach($this->model->mailingList['to'] as &$target) {
-					
 						$contact = Contacts::model()->findByAttributes(array('email'=>$target[1]));
 						if(isset($contact)) {
 
@@ -118,9 +137,14 @@ class InlineEmailAction extends CAction {
 							$action->createDate = time();
 							$action->dueDate = time();
 							$action->completeDate = time();
-							$action->actionDescription = '<b>'.$this->model->subject."</b>\n\n".$this->model->message;
+							if($template == null)
+								$action->actionDescription = '<b>'.$this->model->subject."</b>\n\n".$this->model->message;
+							else
+								$action->actionDescription = CHtml::link($template->title,array('/docs/'.$template->id));
 							
-							$action->save();
+							if($action->save()){
+                                                            
+                                                        }
 							// $message="2";
 							// $email=$toEmail;
 							// $id=$contact['id'];

@@ -208,7 +208,7 @@ function humanUrl($url) {
 		if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
 			//$assignedUser = $users[$model->assignedTo];
 			
-			$assignedUser = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$model->assignedTo));
+			$assignedUser = CActiveRecord::model('User')->findByAttributes(array('username'=>$model->assignedTo));
 			$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
 		} else
 			//echo $form->label($model,'assignedTo');
@@ -262,7 +262,7 @@ function humanUrl($url) {
 			if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
 				//$assignedUser = $users[$model->assignedTo];
 				
-				$assignedUser = CActiveRecord::model('UserChild')->findByAttributes(array('username'=>$model->assignedTo));
+				$assignedUser = CActiveRecord::model('User')->findByAttributes(array('username'=>$model->assignedTo));
 				$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
 			} else
 				//echo $form->label($model,'assignedTo');

@@ -67,7 +67,7 @@ if($model->type=='note' || $model->type=='attachment') {
 	</tr>
 	<tr>
 		<td class="label" width="20%"><?php echo $attributeLabels['completedBy']; ?></td>
-		<td width="25%"><?php echo ($model->completedBy=="Email") ? "Email" : UserChild::getUserLinks($model->completedBy) ?></td>
+		<td width="25%"><?php echo ($model->completedBy=="Email") ? "Email" : User::getUserLinks($model->completedBy) ?></td>
 		<td class="label" width="15%"><?php echo $attributeLabels['createDate']; ?></td>
 		<td><b><?php echo $this->formatLongDateTime($model->createDate); ?></b></td>
 	</tr>
@@ -93,13 +93,13 @@ if ($model->associationType!="none") {
 			<?php echo $attributeLabels['associationName']; ?>
 		</td>
 		<td colspan="3">
-			<?php echo CHtml::link($model->associationName,array("./".$model->associationType."/view","id"=>$model->associationId)); ?>
+			<?php echo CHtml::link($model->associationName,array("/".$model->associationType."/default/view","id"=>$model->associationId)); ?>
 		</td>
 	</tr>
 	<tr>
 <?php } ?>
 		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
-		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : UserChild::getUserLinks($model->assignedTo); ?></td>
+		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : User::getUserLinks($model->assignedTo); ?></td>
 		<td class="label" width="20%"><?php echo $attributeLabels['dueDate']; ?>
 		<td><b><?php echo $this->formatLongDateTime($model->dueDate);?></b></td>
 	</tr>

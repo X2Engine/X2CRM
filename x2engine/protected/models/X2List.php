@@ -72,6 +72,11 @@ class X2List extends CActiveRecord {
 	}
 
 	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/contacts/list/'; }
+
+	/**
 	 * @return array validation rules for model attributes.
 	 */
 	public function rules() {
@@ -82,10 +87,10 @@ class X2List extends CActiveRecord {
 			array('id, campaignId, count, visibility, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('name, modelName', 'length', 'max'=>100),
 			array('description', 'length', 'max'=>250),
-			array('type', 'length', 'max'=>20),
+			array('assignedTo, type, logicType', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, campaignId, name, modelName, count, visibility, description, type, createDate, lastUpdated', 'safe', 'on'=>'search'),
+			array('id, assignedTo, campaignId, name, modelName, count, visibility, description, type, createDate, lastUpdated', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -106,10 +111,11 @@ class X2List extends CActiveRecord {
 		return array(
 			'id' => 'ID',
 			'campaignId' => 'Campaign',
-			'assignedTo' => Yii::t('contacts','Assigned To'),
+			'assignedTo' => Yii::t('contacts','List Owner'),
 			'name' => Yii::t('contacts','List Name'),
 			'description' => Yii::t('contacts','Description'),
 			'type' => Yii::t('contacts','List Type'),
+			'logicType' => Yii::t('contacts','Logic Type'),
 			'modelName' => Yii::t('contacts','Record Type'),
 			'visibility' => Yii::t('contacts','Visibility'),
 			'count' => Yii::t('contacts','Members'),
@@ -133,6 +139,7 @@ class X2List extends CActiveRecord {
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('description',$this->description,true);
 		$criteria->compare('type',$this->type,true);
+		$criteria->compare('logicType',$this->logicType,true);
 		$criteria->compare('modelName',$this->modelName,true);
 		$criteria->compare('createDate',$this->createDate,true);
 		$criteria->compare('lastUpdated',$this->lastUpdated,true);
@@ -162,13 +169,13 @@ class X2List extends CActiveRecord {
 		return $this->_itemAttributeLabels;
 	}
 	
-	
-	
 	public static function getRoute($id) {
 		if($id=='all')
 			return array('/contacts/index');
+		else if ($id=='new')
+			return array('/contacts/newContacts');
 		else if (empty($id) || $id=='my')
-			return array('/contacts/viewMy');
+			return array('/contacts/myContacts');
 		else
 			return array('/contacts/list/'.$id);
 	}

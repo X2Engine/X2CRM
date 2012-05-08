@@ -45,33 +45,89 @@ $admin = Admin::model()->findByPk(1);
 $updateInterval = $admin->chatPollTime;
 
 $ajaxUrl = $this->controller->createUrl('/notifications/getMessages');
+$saveWidgetHeight = $this->controller->createUrl('/site/saveWidgetHeight');
 Yii::app()->clientScript->registerScript('updateChatJs', "
 	chatUpdateInterval = " . $updateInterval . ";
 	chatAjaxUrl = '".$ajaxUrl . "';
 	$(document).ready(updateChat());	//update on page load
+	
+$(function() {
+	$('#chat-container').resizable({
+		handles: 's',
+		minHeight: 75,
+		alsoResize: '#chat-container-fix, #chat-box, #chat-box-container',
+		start: function(event, ui) {
+			// when resizing starts, calculate min size of widget based on height of two resizables inside the widget
+			$('#chat-container').resizable('option', 'minHeight', parseInt($('#chat-message-container').css('height'), 10) + 67);
+		},
+		stop: function(event, ui) {
+			// done resizing, save height to user profile for next time user visits page
+			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
+		}
+	});
+	$('#chat-message-container').resizable({
+		handles: 's',
+		minHeight: 30,
+		alsoResize: '#chat-message, #chat-container, #chat-container-fix',
+		stop: function(event, ui) {
+			// done resizing, save height to user profile for next time user visits page
+			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
+		},
+	});
+	$('#chat-box-container').resizable({
+		handles: 's',
+		minHeight: 30,
+		alsoResize: '#chat-box, #chat-container, #chat-container-fix',
+		stop: function(event, ui) {
+			// done resizing, save height to user profile for next time user visits page
+			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
+		},
+	});
+});
 ",CClientScript::POS_HEAD); 
 
+// find height of chat box, chat message, and use these to find height of widget
+$widgetSettings = ProfileChild::getWidgetSettings();
+$chatSettings = $widgetSettings->ChatBox;
 
-echo "<div id=\"chat-box\"></div>";
+$chatboxHeight = $chatSettings->chatboxHeight;
+$chatmessageHeight = $chatSettings->chatmessageHeight;
 
-echo CHtml::beginForm();
-// echo CHtml::textArea('chat-message',Yii::t('app','Enter text here...'),array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;'));
-echo CHtml::textArea('chat-message',''); //,array('style'=>'color:#aaa;'));
+$chatboxContainerHeight = $chatboxHeight + 2;
+$chatmessageContainerHeight = $chatmessageHeight + 6;
 
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Send'),
-	array('/site/newMessage'),
-	array(
-		'update'=>'#chat-box',
-		'success'=>"function(response) {
-			updateChat();
-			$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-			// $('#chat-message').css('color','#aaa');
-			// toggleText($('#chat-message').get());
-		}",
-	),
-	array('class'=>'x2-button')
-);
-echo CHtml::endForm(); 
+$chatContainerHeight = $chatboxHeight + $chatmessageHeight + 45;
+$chatContainerFixHeight = $chatContainerHeight + 5;
 
 ?>
+
+<div id="chat-container-fix" style="height:<?php echo $chatContainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->
+	<div id="chat-container" style="height:<?php echo $chatContainerHeight; ?>px;">									<!--this is the resizable for this widget-->
+		<div id="chat-box-container" style="height:<?php echo $chatboxContainerHeight; ?>px; margin-bottom: 5px;">	<!--resizable for chatbox-->
+			<div id="chat-box" style="height:<?php echo $chatboxHeight; ?>px;"></div>
+		</div>
+		<?php echo CHtml::beginForm(); ?>
+		<div class="textarea-container">
+			<div id="chat-message-container" style="height:<?php echo $chatmessageContainerHeight; ?>px;">	<!--resizable for chat messages-->
+				<?php echo CHtml::textArea('chat-message','', array('style'=>'height:'.$chatmessageHeight.'px;')); ?>
+			</div>
+			<?php
+			echo CHtml::ajaxSubmitButton(
+				Yii::t('app','Send'),
+				array('/site/newMessage'),
+				array(
+					'update'=>'#chat-box',
+					'success'=>"function(response) {
+						updateChat();
+						$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
+						// $('#chat-message').css('color','#aaa');
+						// toggleText($('#chat-message').get());
+					}",
+				),
+				array('class'=>'x2-button')
+			);
+			?>
+			<?php echo CHtml::endForm(); ?>
+		</div>
+	</div>
+</div>

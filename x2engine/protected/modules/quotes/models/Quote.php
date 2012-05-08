@@ -19,30 +19,26 @@
  * @property integer $lastUpdated
  * @property string $updatedBy
  */
-class Quote extends CActiveRecord
-{
+class Quote extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Quotes the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_quotes';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -62,8 +58,7 @@ class Quote extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -71,15 +66,15 @@ class Quote extends CActiveRecord
 		);
 	}
 	
-	public function attributeLabels() {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Quotes'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('quotes',$field->attributeLabel);
-                }
-                
-                return $arr;
-	}
+	// public function attributeLabels() {
+		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Quotes'));
+		// $arr=array();
+		// foreach($fields as $field){
+			// $arr[$field->fieldName]=Yii::t('quotes',$field->attributeLabel);
+		// }
+		
+		// return $arr;
+	// }
 	
 	public static function statusList() {
 		$field = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'status'));
@@ -171,11 +166,12 @@ class Quote extends CActiveRecord
 	}
 
 	public static function getNames() {
-		$arr=Quote::model()->findAll();
-		$names=array(0=>"None");
-		foreach($arr as $quote){
-			$names[$quote->id]=$quote->name;
-		}
+	
+		$names = array(0=>"None");
+		
+		foreach(Yii::app()->db->createCommand()->select('id,name')->from('x2_quotes')->queryAll(false) as $row)
+			$names[$row[0]] = $row[1];
+
 		return $names;
 	}
 
@@ -250,7 +246,7 @@ class Quote extends CActiveRecord
 		
 		foreach($arr as $username){
 			if($username!='')
-				$data[]=UserChild::model()->findByAttributes(array('username'=>$username));
+				$data[]=User::model()->findByAttributes(array('username'=>$username));
 		}
 		
 		$temp=array();
@@ -302,7 +298,7 @@ class Quote extends CActiveRecord
 		return $this->searchBase($criteria);
 	}
 	
-	private function searchBase($criteria) {
+	public function searchBase($criteria) {
 		// $criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('accountName',$this->accountName,true);

@@ -55,14 +55,12 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 Yii::app()->clientScript->registerCoreScript('jquery.ui');
 
 // custom scripts
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/mainmenu.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/layout.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/LGPL/jquery.formatCurrency-1.4.0.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/LGPL/jquery.formatCurrency.all.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
-if(isset(Yii::app()->params->profile) && Yii::app()->params->profile->enableBgFade == 1)
-	Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundFade.js');
 
 Yii::app()->clientScript->registerScript('setYiiBaseUrl',"var yiiBaseUrl='".Yii::app()->getBaseUrl()."';", CClientScript::POS_HEAD);
 
@@ -72,73 +70,15 @@ Yii::app()->clientScript->registerCssFile($themeURL.'/css/screen.css','screen, p
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/dragtable.css','screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css','print');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css','screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/layout3.css','screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/details.css','screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/x2forms.css','screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css','screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/tinyeditor.css','screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/jquery-ui.css','screen, projection');
 Yii::app()->clientScript->registerScript('fullscreenToggle',"
 
-var fullscreen = " . (Yii::app()->session['fullscreen']? 'true':'false') . ";
-
-$(function() {
-	// Yii CWebLogRoute display
-	$('.yiiLog').draggable({handle:'td,th'}).height(400).offset({top:200,left:80}).find('tr:first').dblclick(function() {
-		var x = $(this).closest('.yiiLog');
-		if(x.height() < 50)
-			x.height(400);
-		else
-			x.height(23);
-	});
-	
-	$('#fullscreen-button').bind('click',function() { fullscreenToggle(); });
-	
-	if($('#content-box').hasClass('span-19'))
-		return;
-
-	if(fullscreen) {
-		// $('#sidebar-left-box').removeClass().addClass('span-0');
-		$('#content-box').removeClass().addClass('span-20 last');
-		$('#sidebar-right-box').removeClass().addClass('span-0 hidden');
-	}
-});
-
-function fullscreenToggle() {
-	if($('#content-box').hasClass('span-19'))
-		return;
-
-	$.ajax({
-		url: yiiBaseUrl+'/site/fullscreen',
-		type: 'GET',
-		data: 'fs='+(fullscreen?'0':'1'),
-		// success: function(response) {
-			// if(response=='Success')
-				// $('#history-'+actionId).fadeOut(200,function() { $('#history-'+actionId).remove(); });
-			// }
-	});
-		
-	if (fullscreen) {
-		// $('#sidebar-left-box').removeClass().addClass('span-4');
-		$('#content-box').removeClass().addClass('span-15');
-		$('#sidebar-right-box').removeClass().addClass('span-5 last');
-	} else {
-		// $('#sidebar-left-box').removeClass().addClass('span-0');
-		$('#content-box').removeClass().addClass('span-20 last');
-		$('#sidebar-right-box').removeClass().addClass('span-0 hidden');
-	}
-	fullscreen = !fullscreen;
-	
-	$(window).trigger('resize');
-}
-",CClientScript::POS_HEAD);
-
-Yii::app()->clientScript->registerScript('savePageOpacity',"
-function saveOpacity(e,ui) {
-	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('site/pageOpacity')) . "',
-		type: 'GET',
-		data: 'opacity='+ui.value
-	});
-}
+window.fullscreen = " . (Yii::app()->session['fullscreen']? 'true':'false') . ";
 ",CClientScript::POS_HEAD);
 
 Yii::app()->clientScript->registerScript('checkImages',"
@@ -175,50 +115,29 @@ foreach($checkFiles as $key=>$value) {
 $theme2Css = '';
 if($checkResult)
 	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
-	
-	if (!empty(Yii::app()->params->profile->pageOpacity)) {
-		$defaultOpacity = Yii::app()->params->profile->pageOpacity / 100;
-		Yii::app()->clientScript->registerScript('loadPageOpacity',"
-			$(document).ready(function() {
-				$('#page').fadeTo(0,".$defaultOpacity.");
-			});
-		",CClientScript::POS_HEAD);
-	}
-	
-	// check for background image, use it if one is set
-	if(empty(Yii::app()->params->profile->backgroundImg))
-		$backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
-	else
-		$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
 
-	// check for background image
-	if(!empty(Yii::app()->params->profile->backgroundColor)) {
-		$themeCss .= 'body {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
-		
-		if(!empty($backgroundImg)) {
-			$shadowRgb = 'rgb(0,0,0,0.5)';	// use a black shadow if there is an image
-		} else {
-			$shadowColor = X2Color::hex2rgb(Yii::app()->params->profile->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
-			
-			foreach($shadowColor as &$value) {
-				$value = floor(0.5*$value);
-			}
-			$shadowRgb = 'rgb('.implode(',',$shadowColor).')';
-		}
-		$themeCss .= "#page {
--moz-box-shadow: 0 0 30px $shadowRgb;
--webkit-box-shadow: 0 0 30px $shadowRgb;
-box-shadow: 0 0 30px $shadowRgb;
-}\n";
-	}
-	if(!empty(Yii::app()->params->profile->menuBgColor)){
-		$themeCss .= '#main-menu-bar {background:#'.Yii::app()->params->profile->menuBgColor.";}\n";
-        }
-	if(!empty(Yii::app()->params->profile->menuTextColor)){
-		$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.Yii::app()->params->profile->menuTextColor.";}\n";
-        }
+
+// if(!empty(Yii::app()->params->profile->backgroundColor))
+	// $themeCss .= 'body {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
 	
-	Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
+if(!empty(Yii::app()->params->profile->backgroundImg))
+	$themeCss .= '#header {background-size:cover; background:url('.Yii::app()->getBaseUrl().'/uploads/'.Yii::app()->params->profile->backgroundImg.");}\n";
+
+	
+// check for background image, use it if one is set
+if(empty(Yii::app()->params->profile->backgroundImg))
+	$backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
+else
+	$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
+
+if(!empty(Yii::app()->params->profile->menuBgColor))
+	$themeCss .= '#main-menu-bar {background:#'.Yii::app()->params->profile->menuBgColor.";}\n";
+
+if(!empty(Yii::app()->params->profile->menuTextColor))
+	$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.Yii::app()->params->profile->menuTextColor.";}\n";
+
+
+Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
 
 Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
@@ -236,12 +155,12 @@ if($isGuest) {
 } else {
 	// $admin=Admin::model()->findByPk(1);
 
-        $modules=Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
-        $standardMenuItems = array();	
-        foreach($modules as $moduleItem){
-            if($isAdmin || $moduleItem->adminOnly==0)
-                $standardMenuItems[$moduleItem->name]=$moduleItem->title;
-        }
+	$modules = Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
+	$standardMenuItems = array();	
+	foreach($modules as $moduleItem){
+		if($isAdmin || $moduleItem->adminOnly==0)
+			$standardMenuItems[$moduleItem->name]=$moduleItem->title;
+	}
 	
 
 	$menuItems = array();
@@ -252,11 +171,11 @@ if($isGuest) {
 		$file=Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
 		if($file->exists)
 			$menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
-		elseif(is_dir('protected/modules/'.$key)){
-                        if(!is_null($this->getModule()))
-                            $module=$this->getModule()->id;
-                        $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
-                }else{
+		elseif(is_dir('protected/modules/'.$key)) {
+			if(!is_null($this->getModule()))
+				$module=$this->getModule()->id;
+			$menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
+		} else {
 			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
 			if(isset($page)){
 				$id=$page->id;
@@ -277,7 +196,7 @@ if ($menuItemCount > $maxMenuItems) {
 		array_unshift($moreMenuItems, array_pop($menuItems));
 	}
 	//add "More" to main menu
-	$menuItems[] = array('label'=>Yii::t('app','More'),'items'=>$moreMenuItems);
+	$menuItems[] = array('label'=>Yii::t('app','More'),'items'=>$moreMenuItems,'itemOptions'=>array('id'=>'more-menu'));
 }
 
 $userMenu = array(
@@ -300,124 +219,121 @@ $userMenu = array(
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" lang="<?php echo Yii::app()->language; ?>">
 <head>
-<meta charset="UTF-8" />
-<meta name="language" content="<?php echo Yii::app()->language; ?>" />
-<link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
-<link rel="shortcut-icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
+<meta charset="UTF-8">
+<link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon">
+<link rel="shortcut-icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon">
 <!--[if lt IE 8]>
-<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/ie.css" media="screen, projection" />
+<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/ie.css" media="screen, projection">
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
-<body id="body-tag">
-<?php echo $backgroundImg; ?>
-<!--<div class="ie-shadow" style="display:none;"></div>-->
-<div class="container" id="page">
-	<div id="main-menu-bar">
-		<?php
-			$notifications = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0));
-			echo CHtml::link($notifications,array('/site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
-			echo CHtml::link('',array('/site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
-		<?php
-		//render main menu items
-		$this->widget('zii.widgets.CMenu', array(
-			'id'=>'main-menu',
-			'htmlOptions'=>array('class'=>'main-menu'),
-			'items'=>$menuItems
-		));
-		//render user menu items if logged in
-		if (!$isGuest) {
-			// echo CHtml::button(Yii::app()->user->getName(),array('id'=>'user-menu-toggle','onclick'=>'','class'=>'x2-button float'));
-			$this->widget('zii.widgets.CMenu', array(
-				'id' => 'user-menu',
-				'items' => $userMenu,
-				'encodeLabel' => false
-			));
-		}
-		
-	?>
-	</div>
-	<?php if (!$isGuest) {	//only render searchbar if logged in
-		if(!empty($this->menu)) {
-	?>
-			<div id="submenu-bar">
-			<?php $this->widget('zii.widgets.CMenu',array('items'=>$this->menu)); ?>
-			</div>
-	<?php } ?>
+<body>
+<?php //echo $backgroundImg; ?>
+<div id="header">
 	<div id="search-bar">
-		<form name="search" action="<?php echo $this->createUrl('/search/search');?>" method="get">
-			<span id="search-bar-title"><?php echo '<a href="'.Yii::app()->request->baseUrl.'/index.php/site/whatsNew"><img height="30" width="200" src='.Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo.'></a>'; ?></span>
-			<input type="text" class="text" id="search-bar-box" name="term" value="<?php echo Yii::t('app','Search for contact, action, deal...'); ?>" onFocus="toggleText(this);" onBlur="toggleText(this);" />
-			<a class="x2-button" href="#" onClick="submitForm('search');"><span><?php echo Yii::t('app','Go'); ?></span></a>
-		</form>
-		<div id="transparency-slider-box" style="position:absolute;height:90px;padding:20px 10px;background:white;display:none;">
-		<?php
-		$this->widget('zii.widgets.jui.CJuiSlider', array(
-			'value'=>$defaultOpacity,
-			// additional javascript options for the slider plugin
-			'options'=>array(
-				'orientation'=>'vertical',
-				'min'=>0.2,
-				'max'=>1.0,
-				'step'=>0.05,
-				'slide'=>"js:function(event,ui) {
-					$('#page').fadeTo(0,ui.value);
-					resetSliderTimeout();
-				}",
-				'change'=>"js:function(event,ui) {saveOpacity(event,ui);}"
-			),
-			'htmlOptions'=>array(
-				'id'=>'transparency-slider',
-				//'style'=>'position:absolute;height:90px;display:none;'
-			),
-		));?></div><?php
-		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button'))." \n";
-		echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'transparency-button'))." \n";
-		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/create'),array('class'=>'x2-button'))." \n";
-		echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('/actions/default/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
-		// echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact + Action').'</span>',array('actions/quickCreate'),array('class'=>'x2-button'))." \n";
+		<div class="width-constraint">
+			<?php echo CHtml::beginForm(array('/search/search'),'get'); ?>
+				<?php echo CHtml::submitButton(Yii::t('app','Go'),array('class'=>'x2-button')); ?>
+				<?php echo CHtml::textField('term',Yii::t('app','Search for contact, action, deal...'),array(
+					'id'=>'search-bar-box',
+					'onfocus'=>'toggleText(this);',
+					'onblur'=>'toggleText(this);',
+					'autocomplete'=>'off'
+				)); ?>
+			<?php echo CHtml::endForm(); ?>
+			<span id="search-bar-title">
+				<?php echo CHtml::link(CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,'',array('height'=>30,'width'=>200)),array('/site/whatsNew')); ?>
+			</span>
+		</div>
+	</div>
+	<div id="main-menu-bar">
+		<div class="width-constraint">
+			<?php
+				$notifications = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0));
+				echo CHtml::link($notifications,array('/site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
+				echo CHtml::link('',array('/site/page','view'=>'about'),array('id'=>'main-menu-icon')) ?>
+			<?php
+			//render main menu items
+			$this->widget('zii.widgets.CMenu', array(
+				'id'=>'main-menu',
+				'htmlOptions'=>array('class'=>'main-menu'),
+				'items'=>$menuItems
+			));
+			//render user menu items if logged in
+			if (!$isGuest) {
+				// echo CHtml::button(Yii::app()->user->getName(),array('id'=>'user-menu-toggle','onclick'=>'','class'=>'x2-button float'));
+				$this->widget('zii.widgets.CMenu', array(
+					'id' => 'user-menu',
+					'items' => $userMenu,
+					'encodeLabel' => false
+				));
+			}
+			
 		?>
+		</div>
 	</div>
 	<?php
-	}
-	echo $content;
+	if (!$isGuest) {	//only render searchbar if logged in
+		// if(!empty($this->menu)) {
 	?>
-	<div id="footer">
-		<hr><div id="footer-logos">
-			<a href="<?php echo Yii::app()->getBaseUrl().'/index.php/x2touch'; ?>">
-				<?php echo CHtml::image($themeURL.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
-			<a href="<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>">
-				<?php echo CHtml::image($themeURL.'/images/x2footer.png','', array('id'=>'x2crm-logo')); ?></a>
+	<div id="submenu-bar">
+		<div class="width-constraint">
+			<div style="overflow:auto;">
+			<?php $this->widget('zii.widgets.CMenu',array('items'=>$this->menu)); ?>
+			<?php
+			echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button'))." \n";
+			echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/create'),array('class'=>'x2-button'))." \n";
+			echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('/actions/default/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
+			// echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact + Action').'</span>',array('actions/quickCreate'),array('class'=>'x2-button'))." \n";
+			?>
+			</div>
 		</div>
-		Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
-		<?php echo Yii::t('app','Rights reserved.'); ?>
-		<?php
-		echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.',
-		array(
-			'{BSD}'=>CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),
-			'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
-		));?><br>
-		<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>number_format(Yii::getLogger()->getExecutionTime(),3)));
-		?><br>
-		<?php
-		Yii::app()->clientScript->registerScript('logos',"
-		$(window).load(function(){
-			if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-				$('a').removeAttr('href');
-				alert('Please put the logo back');
-				window.location='http://www.x2engine.com';
-			}
-			var touchlogosrc = $('#x2touch-logo').attr('src');
-			var logosrc=$('#x2crm-logo').attr('src');
-			if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-				$('a').removeAttr('href');
-				alert('Please put the logo back');
-				window.location='http://www.x2engine.com';
+	</div>
+	<?php //} ?>
+	
+	<?php } ?>
+</div>
+<div class="width-constraint" id="page-body">
+<?php echo $content; ?>
+</div>
+<div id="footer">
+<div class="width-constraint">
+	<div id="footer-logos">
+		<a href="<?php echo Yii::app()->getBaseUrl().'/index.php/x2touch'; ?>">
+			<?php echo CHtml::image($themeURL.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
+		<a href="<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>">
+			<?php echo CHtml::image($themeURL.'/images/x2footer.png','', array('id'=>'x2crm-logo')); ?></a>
+	</div>
+	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
+	<?php echo Yii::t('app','Rights reserved.'); ?>
+	<?php
+	echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.',
+	array(
+		'{BSD}'=>CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),
+		'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
+	));?><br>
+	<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>number_format(Yii::getLogger()->getExecutionTime(),3)));
+	?><br>
+	<?php
+	Yii::app()->clientScript->registerScript('logos',"
+	$(window).load(function(){
+		if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+			$('a').removeAttr('href');
+			alert('Please put the logo back');
+			window.location='http://www.x2engine.com';
 		}
-		});
-		");
-		?><br>
+		var touchlogosrc = $('#x2touch-logo').attr('src');
+		var logosrc=$('#x2crm-logo').attr('src');
+		if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+			$('a').removeAttr('href');
+			alert('Please put the logo back');
+			window.location='http://www.x2engine.com';
+	}
+	});
+	");
+	 ?><br>
 	</div>
 </div>
+
 </body>
 </html>

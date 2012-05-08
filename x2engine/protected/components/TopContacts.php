@@ -49,7 +49,7 @@ class TopContacts extends CPortlet {
 
 	protected function renderContent() {
 		$this->render('topContacts',array(
-			'topContacts'=>UserChild::getTopContacts()
+			'topContacts'=>User::getTopContacts()
 		));
 	}
 }

@@ -46,12 +46,30 @@ class TagCloud extends CWidget {
 	}
 
 	public function run() {
-                $myTags=Tags::model()->findAllBySql("SELECT *, COUNT(*) as num FROM x2_tags WHERE taggedBy='".Yii::app()->user->getName()."' GROUP BY tag ORDER BY num DESC LIMIT 20");
-                $allTags=Tags::model()->findAllBySql("SELECT *, COUNT(*) as num FROM x2_tags GROUP BY tag ORDER BY num DESC LIMIT 20");
+
+		$myTags = Yii::app()->db->createCommand()
+			->select('COUNT(*) AS count, tag')
+			->from('x2_tags')
+			->where('taggedBy=:user',array(':user'=>Yii::app()->user->getName()))
+			->group('tag')
+			->order('count DESC')
+			->limit(20)
+			->queryAll();
+		
+		$allTags = Yii::app()->db->createCommand()
+			->select('COUNT(*) AS count, tag')
+			->from('x2_tags')
+			->group('tag')
+			->order('count DESC')
+			->limit(20)
+			->queryAll();
+	
+		// $myTags=Tags::model()->findAllBySql("SELECT *, COUNT(*) as num FROM x2_tags WHERE taggedBy='".Yii::app()->user->getName()."' GROUP BY tag ORDER BY num DESC LIMIT 20");
+		// $allTags=Tags::model()->findAllBySql("SELECT *, COUNT(*) as num FROM x2_tags GROUP BY tag ORDER BY num DESC LIMIT 20");
 		$this->render('tagCloud',array(
-                    'myTags'=>$myTags,
-                    'allTags'=>$allTags,
-                ));
+			'myTags'=>$myTags,
+			'allTags'=>$allTags,
+		));
 	}
 }
 ?>

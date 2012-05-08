@@ -47,7 +47,7 @@ function deleteFile(deleteList, k){
               if(deleteCount==deleteList.length){
                   $('#update-text').html('Deletions complete.');
                   alert('Deletions complete.');
-                  sql(sqlList, j);
+                  copyInstall(sqlList);
               }else{
                   deleteCount++;
                   var width=deleteCount/deleteList.length*100;
@@ -65,27 +65,16 @@ function deleteFile(deleteList, k){
         });
 }
 
-function sql(sqlList, j){
+function copyInstall(sqlList){
     $.ajax({
-          url: "sql",
+          url: "installUpdate",
           type: "POST",
-          data: {'sql':sqlList[j]},
+          data: {'sqlList':sqlList},
           context: document.body,
           success: function(){
-              if(sqlCount>=sqlList.length){
-                  $('#update-text').html('Update complete.');
-                  alert("SQL Exectution Complete.");
-                  cleanUp('success');
-              }else{
-                  sqlCount++;
-                  var width=sqlCount/sqlList.length*100;
-                  width=Math.round(width);
-                  $('#progress').css({'width':width+'%'});
-                  $('#progress-text').html(width+"%");
-                  $('#update-text').html('Executing SQL: '+sqlList[sqlCount-1]);
-                  sql(sqlList, j+1);
-              }
-              
+              $('#update-text').html('Update complete.');
+              alert("Install Complete.");
+              cleanUp('success');
           },
           error: function(){
               cleanUp('error');

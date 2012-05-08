@@ -39,46 +39,26 @@
  ********************************************************************************/
 
 echo CHtml::link(Yii::t('app','Just Me'),'#',array('onclick'=>'$("#myTags").show();$("#allTags").hide();return false;'))." | ".CHtml::link(Yii::t('app','All Users'),'#',array('onclick'=>'$("#allTags").show();$("#myTags").hide();return false;'))."<br />";
-$template="<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'."> #\\2</a>";
-?> <br />
+// $template='<a href="'.Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.'"> #\\2</a>';
+?> <br>
 <div id="myTags">
 <?php
-foreach($myTags as $tag){
-    $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
-    $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
-    echo "<span class='tag'>".$tag->tag."</span> ";
+foreach($myTags as &$tag) {
+	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1))).'</span>';
+    // $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
+    // $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
+    // echo "<span class='tag'>".$tag->tag."</span> ";
 }
 ?>
 </div>
 
 <div id="allTags" style="display:none;">
 <?php
-foreach($allTags as $tag){
-    $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
-    $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
-    echo "<span class='tag'>".$tag->tag."</span> ";
+foreach($allTags as &$tag) {
+	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1))).'</span>';
+    // $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
+    // $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
+    // echo "<span class='tag'>".$tag->tag."</span> ";
 }
 ?>
 </div>
-
-<style>
-    .tag{
-        -moz-border-radius:4px;
-	-o-border-radius:4px;
-	-webkit-border-radius:4px;
-	border-radius:4px;
-        border-style:solid;
-        border-width:1px;
-        border-color:gray;
-        margin:2px 2px;
-        display:block;
-        float:left;
-        padding:2px;
-        background-color:#CCCCCC;
-    }
-    .tag a{
-        text-decoration:none;
-        color:black;
-    }
-    
-</style>

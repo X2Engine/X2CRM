@@ -42,9 +42,9 @@ include("protected/config/marketingConfig.php");
 
 $this->menu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName']))),
+	array('label'=>Yii::t('module','Create')),
 );
 ?>
 <h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2>
 
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'Campaign')); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users,'modelName'=>'Campaign')); ?>

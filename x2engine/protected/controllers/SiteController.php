@@ -60,7 +60,7 @@ class SiteController extends x2base {
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
 					'getNotes','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
-					'inlineEmail','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
+					'saveWidgetHeight', 'inlineEmail','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
 				'users'=>array('@'),
 			),
 			// array('allow',
@@ -111,7 +111,7 @@ class SiteController extends x2base {
 		
 		if(!Yii::app()->user->isGuest){
 		
-			$user=UserChild::model()->findByPk(Yii::app()->user->getId());
+			$user=User::model()->findByPk(Yii::app()->user->getId());
 			$lastLogin=$user->lastLogin;
 
 			$contacts=Contacts::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
@@ -161,7 +161,7 @@ class SiteController extends x2base {
 
 	public function actionGroupChat() {
 		$this->portlets = array();
-		$this->layout='//layouts/column2';
+		$this->layout='//layouts/column1';
 		//$portlets = $this->portlets;
 		// display full screen group chat
 		$this->render('groupChat');
@@ -205,7 +205,7 @@ class SiteController extends x2base {
 
 		foreach($records as $model) {
 			if(isset($model)){
-				$user=UserChild::model()->findByAttributes(array('username'=>$model->user));
+				$user=User::model()->findByAttributes(array('username'=>$model->user));
 				if(isset($user)){
 					$html = '<div class="message">';
 					if($user->id == Yii::app()->user->getId())	// if it's me, then make it grey and not a link
@@ -398,6 +398,21 @@ class SiteController extends x2base {
 			echo 'success';
 		else
 			throw new CHttpException(400,'Invalid request. Probabaly something wrong with the JSON string.');
+	}
+	
+	public function actionSaveWidgetHeight() {
+		if( isset($_POST['Widget']) && isset($_POST['Height']) ) {
+			$heights = $_POST['Height'];
+			$widget = $_POST['Widget'];
+			$widgetSettings = ProfileChild::getWidgetSettings();
+			
+			foreach($heights as $key=>$height) {
+				$widgetSettings->$widget->$key = intval($height);
+			}
+			
+			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+			Yii::app()->params->profile->update();
+		}
 	}
 
 	public function actionUpload() {
@@ -682,7 +697,7 @@ class SiteController extends x2base {
 	// Displays the login page
 	public function actionLogin() {
 	
-		$this->layout = '//layouts/loginForm';
+		$this->layout = '//layouts/login';
 	
 		// echo var_dump(Session::getOnlineUsers());
 		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
@@ -721,7 +736,7 @@ class SiteController extends x2base {
 			}
 
 			if($model->validate() && $model->login()) {
-				$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+				$user = User::model()->findByPk(Yii::app()->user->getId());
 				$user->login = time();
 				$user->save();
 				if($user->username=='admin'){
@@ -792,7 +807,7 @@ class SiteController extends x2base {
 
 	// Logs out the current user and redirect to homepage.
 	public function actionLogout() {
-		$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+		$user = User::model()->findByPk(Yii::app()->user->getId());
 		if(isset($user)) {
 			$user->lastLogin=time();
 			$session = Session::model()->findByAttributes(array('user'=>$user->username));

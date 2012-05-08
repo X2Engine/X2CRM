@@ -49,14 +49,19 @@ $('.x2-layout.form-view :input').change(function() {
 Yii::app()->clientScript->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
+
+$renderFormTags = !isset($form);
+
 if((isset($isQuickCreate) && !$isQuickCreate) || !isset($isQuickCreate)){
-$form=$this->beginWidget('CActiveForm', array(
-	'id'=>$modelName.'-form',
-	'enableAjaxValidation'=>false,
-));
+
+	if($renderFormTags) {
+		$form=$this->beginWidget('CActiveForm', array(
+			'id'=>$modelName.'-form',
+			'enableAjaxValidation'=>false,
+		));
+	}
 }
 echo '<em style="display:block;margin:5px;">'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
-
 
 $layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultForm'=>1));
 if(isset($layout)) {
@@ -216,75 +221,94 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'style'=>$default?'color:#aaa;':null,
 										));
 									} elseif($field->type=='date') {
-                                                                                
 										$model->$fieldName = $this->formatDate($model->$fieldName);
 										Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 										$this->widget('CJuiDateTimePicker',array(
 											'model'=>$model, //Model object
 											'attribute'=>$field->fieldName, //attribute name
 											'mode'=>'date', //use "time","date" or "datetime" (default)
-												'options'=>array(
-													'dateFormat'=>$this->formatDatePicker(),
+											'options'=>array(
+												'dateFormat'=>$this->formatDatePicker(),
 
-												), // jquery plugin options
-												'htmlOptions'=>array(
-													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>(defined($item['readOnly']) && $item['readOnly'])? 'disabled' : null,
-													'title'=>$field->attributeLabel,
+											), // jquery plugin options
+											'htmlOptions'=>array(
+												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+												'disabled'=>(defined($item['readOnly']) && $item['readOnly'])? 'disabled' : null,
+												'title'=>$field->attributeLabel,
+											),
+											'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+										)); 
+									} elseif($field->type=='dropdown') {
+										$dropdowns = Dropdowns::getItems($field->linkType);
+
+										echo $form->dropDownList($model,$field->fieldName,$dropdowns, array(
+											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+											'disabled'=>$item['readOnly']? 'disabled' : null,
+											'title'=>$field->attributeLabel,
+										));
+										
+									} elseif($field->type=='link') {
+										// if(empty($model->$fieldName)) 
+											// $model->$fieldName = '';
+										
+										$linkSource = null;
+										$linkId = '';
+										
+										if(class_exists($field->linkType)) {
+											// if the field is an ID, look up the actual name
+											if(isset($model->$fieldName) && ctype_digit($model->$fieldName)) {
+												$linkModel = CActiveRecord::model($field->linkType)->findByPk($model->$fieldName);
+												if(isset($linkModel)) {
+													$model->$fieldName = $linkModel->name;
+													$linkId = $linkModel->id;
+												} else {
+													$model->$fieldName = '';
+												}
+											}
+											$linkSource = $this->createUrl(CActiveRecord::model($field->linkType)->getAutoCompleteSource());
+											// die($linkSource);
+										}
+										echo CHtml::hiddenField($field->modelName.'['.$fieldName.'_id]',$linkId,array('id'=>$field->modelName.'_'.$fieldName."_id"));
+
+										// if(!isset($linkSource) && $field->linkType == 'ContactList')
+											// die('herp');
+											// $linkSource = $this->createUrl('/contacts/getLists');
+										
+										
+										$form->widget('zii.widgets.jui.CJuiAutoComplete', array(
+												'model'=>$model,
+												'attribute'=>$fieldName,
+												// 'name'=>'autoselect_'.$fieldName,
+												'source' => $linkSource,
+												'value'=>$model->$fieldName,
+												'options'=>array(
+													'minLength'=>'1',
+													'select'=>'js:function( event, ui ) {
+														$("#'.$field->modelName.'_'.$fieldName.'_id").val(ui.item.id);
+														$(this).val(ui.item.value);
+														return false;
+													}',
+
 												),
-												'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-											)); 
-										} elseif($field->type=='dropdown') {
-											$dropdown=Dropdowns::model()->findByPk($field->linkType);
-											
-											$dropdowns = json_decode($dropdown->options,true);
-											foreach(array_keys($dropdowns) as $key)
-												$dropdowns[$key] = Yii::t(strtolower(Yii::app()->controller->id),$dropdowns[$key]);
-											
-											echo $form->dropDownList($model,$field->fieldName,$dropdowns, array(
+												'htmlOptions'=>array(
 													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 													'disabled'=>$item['readOnly']? 'disabled' : null,
 													'title'=>$field->attributeLabel,
-											));
-											
-										} elseif($field->type=='link') {
-											$default = empty($model->$fieldName);
-											if($default) 
-												$model->$fieldName = "";
-											echo CHtml::hiddenField($fieldName."_id",'',array('id'=>$fieldName."_id"));
-											$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-													'name'=>'autoselect_'.$fieldName,
-													'source' => $this->createUrl("/".$field->linkType.'/getItems'),
-													'value'=>$model->$fieldName,
-													'options'=>array(
-														'minLength'=>'2',
-														
-														'select'=>'js:function( event, ui ) {
-															$("#'.$fieldName.'_id").val(ui.item.id);
-															$(this).val(ui.item.value);
-															return false;
-														}',
-
-													),
-													'htmlOptions'=>array(
-														'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-														'disabled'=>$item['readOnly']? 'disabled' : null,
-														'title'=>$field->attributeLabel,
-													),
-											));
+												),
+										));
 
 									} elseif($field->type=='rating') {
 										$this->widget('CStarRating',array(
-												'model'=>$model,
-												'attribute'=>$field->fieldName,
-												//'callback'=>'highlightSave',
-												'minRating'=>1, //minimal valuez
-												'maxRating'=>5,//max value
-												'starCount'=>5, //number of stars
-												'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+											'model'=>$model,
+											'attribute'=>$field->fieldName,
+											//'callback'=>'highlightSave',
+											'minRating'=>1, //minimal valuez
+											'maxRating'=>5,//max value
+											'starCount'=>5, //number of stars
+											'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 										)); 
 									} elseif($field->type=='boolean') {
-											echo '<div class="checkboxWrapper">';
+										echo '<div class="checkboxWrapper">';
 										echo $form->checkBox($model,$field->fieldName,array(
 											'unchecked'=>0,
 											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
@@ -292,14 +316,14 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'title'=>$field->attributeLabel,
 											)).'</div>';
 									} elseif($field->type=='assignment') {
-										if($field->linkType!='multiple')
+										if($field->linkType!='multiple') {
 											echo $form->dropDownList($model, $fieldName, $users, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
 												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
 											));
-										else
+										} else {
 											echo $form->dropDownList($model, $fieldName, $users, array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
@@ -307,54 +331,55 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
 												'multiple'=>'multiple',
 											));
-                                                                                
-								   /* x2temp */
-                                                                                echo '<div class="checkboxWrapper">';
+										}
+										/* x2temp */
+										echo '<div class="checkboxWrapper">';
 										echo CHtml::checkBox('group','',array(
+											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+											'disabled'=>$item['readOnly']? 'disabled' : null,
+											'title'=>$field->attributeLabel,
+											'id'=>$field->modelName .'_'. $fieldName .'_groupCheckbox',
+											'ajax'=>array(
+												'type'=>'POST', //request type
+												'url'=>CController::createUrl('/groups/getGroups'), //url to call.
+												//Style: CController::createUrl('currentController/methodToCall')
+												'update'=>'#'.$field->modelName .'_'. $fieldName .'_assignedToDropdown', //selector to update
+												'complete'=>'function(){
+													if($("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked")!="checked"){
+														$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked","checked");
+														$("#'.$field->modelName .'_'. $fieldName .'_visibility option[value=\'2\']").remove();
+													}else{
+														$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").removeAttr("checked");
+														$("#'.$field->modelName .'_'. $fieldName .'_visibility").append(
+															$("<option></option>").val("2").html("User\'s Groups")
+														);
+													}
+												}'
+											)
+										)).'</div><label for="group" class="groupLabel">'.Yii::t('app','Group?').'</label>';
+										/* end x2temp */  
+										} elseif($field->type=='association') {
+											if($field->linkType!='multiple') {
+												echo $form->dropDownList($model, $fieldName, $contacts, array(
+													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+													'disabled'=>$item['readOnly']? 'disabled' : null,
+													'title'=>$field->attributeLabel,
+												));
+											} else {
+												echo $form->listBox($model, $fieldName, $contacts, array(
+													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+													'disabled'=>$item['readOnly']? 'disabled' : null,
+													'title'=>$field->attributeLabel,
+													'multiple'=>'multiple',
+												));
+											}
+										} elseif($field->type=='visibility') {
+											echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
 												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 												'disabled'=>$item['readOnly']? 'disabled' : null,
 												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName .'_'. $fieldName .'_groupCheckbox',
-												'ajax'=>array(
-													'type'=>'POST', //request type
-														'url'=>CController::createUrl('/groups/getGroups'), //url to call.
-														//Style: CController::createUrl('currentController/methodToCall')
-														'update'=>'#'.$field->modelName .'_'. $fieldName .'_assignedToDropdown', //selector to update
-														'complete'=>'function(){
-															if($("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked")!="checked"){
-																$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked","checked");
-																$("#'.$field->modelName .'_'. $fieldName .'_visibility option[value=\'2\']").remove();
-															}else{
-																$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").removeAttr("checked");
-																$("#'.$field->modelName .'_'. $fieldName .'_visibility").append(
-																	$("<option></option>").val("2").html("User\'s Groups")
-																);
-															}
-														}'
-												)
-											)).'</div><label for="group" class="groupLabel">'.Yii::t('app','Group?').'</label>';
-										/* end x2temp */  
-										} elseif($field->type=='association') {
-											if($field->linkType!='multiple')
-												echo $form->dropDownList($model, $fieldName, $contacts, array(
-																'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-																'disabled'=>$item['readOnly']? 'disabled' : null,
-																'title'=>$field->attributeLabel,
-												));
-											else
-												echo $form->listBox($model, $fieldName, $contacts, array(
-																'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-																'disabled'=>$item['readOnly']? 'disabled' : null,
-																'title'=>$field->attributeLabel,
-																'multiple'=>'multiple',
-												));
-										} elseif($field->type=='visibility') {
-												echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
-																'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-																'disabled'=>$item['readOnly']? 'disabled' : null,
-																'title'=>$field->attributeLabel,
-																'id'=>$field->modelName."_visibility",
-												));
+												'id'=>$field->modelName."_visibility",
+											));
 										}
 									}
 								}
@@ -380,10 +405,12 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 <?php
 }
 if((isset($isQuickCreate) && !$isQuickCreate) || !isset($isQuickCreate)){
-echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
-echo "	</div>\n";
+	if($renderFormTags) {
+		echo '	<div class="row buttons">'."\n";
+		echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+		echo "	</div>\n";
 
-$this->endWidget();
+		$this->endWidget();
+	}
 }
 ?>

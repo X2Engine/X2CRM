@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -79,10 +79,15 @@ foreach($actionHistory as $action) {
 				'label'=>'Action Description',
 				'type'=>'raw',
 				'value'=>CHtml::link(CHtml::encode($action->actionDescription),
-							 array('actions/view','id'=>$action->id)),
+							 array('/actions/default/view','id'=>$action->id)),
 			),
 			'assignedTo',
-			'dueDate',
+                        array(  
+                                'name'=>'dueDate',
+				'label'=>'Due Date',
+				'type'=>'raw',
+				'value'=>date("F j, Y",$action->dueDate),
+			),
 			array(
 				'label'=>'Complete',
 				'type'=>'raw',
@@ -90,7 +95,12 @@ foreach($actionHistory as $action) {
 			),
 			'priority',
 			'type',
-			'createDate',
+                        array(  
+                                'name'=>'createDate',
+				'label'=>'Create Date',
+				'type'=>'raw',
+				'value'=>date("F j, Y",$action->createDate),
+			),
 		),
 	));
 }

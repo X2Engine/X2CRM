@@ -49,6 +49,7 @@ return array (
 'Login'=>'',
 
 // Main Menu
+'Calendar'=>'',
 'Actions'=>'',
 'Contacts'=>'',
 'Sales'=>'',
@@ -96,6 +97,7 @@ return array (
 'Tag Cloud'=>'',
 'Just Me'=>'',
 'All Users'=>'',
+'Doc Viewer'=>'',
 
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
@@ -112,6 +114,7 @@ return array (
 'Top Contacts'=>'',
 'Add {name}'=>'',
 
+'Enter Title'=>'',
 
 // Chat
 'Message Body'=>'',

@@ -42,7 +42,7 @@ Yii::import('zii.widgets.grid.CGridView');
 
 class X2GridView extends CGridView {
 	
-	public $selectableRows = 2;
+	public $selectableRows = 0;
 	
 	public $modelName;
 	public $viewName;
@@ -110,7 +110,8 @@ class X2GridView extends CGridView {
 		$this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
 
 		// load fields from DB
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
+		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
+		$fields = CActiveRecord::model($this->modelName)->getFields();
 		foreach($fields as $field){
 			$this->allFields[$field->fieldName] = $field;
 		}
@@ -178,7 +179,7 @@ class X2GridView extends CGridView {
 			// $width = (!empty($width) && is_numeric($width))? 'width:'.$width.'px;' : null;	// make sure width is reasonable, then convert it to CSS
 			$width = (!empty($width) && is_numeric($width))? $width : null;	// make sure width is reasonable
 			
-			$isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate', 'expectedCloseDate', 'expirationDate', 'timestamp'));
+			$isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate', 'expectedCloseDate', 'expirationDate', 'timestamp','lastactivity'));
 			
 			$isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
 			
@@ -279,7 +280,7 @@ class X2GridView extends CGridView {
 			} else if ($columnName == 'gvCheckbox') {
 				$newColumn['id'] = 'C_gvCheckbox';
 				$newColumn['class'] = 'CCheckBoxColumn';
-				// $newColumn['selectableRows'] = 2;
+				$newColumn['selectableRows'] = 2;
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
 					
 				$columns[] = $newColumn;
@@ -302,14 +303,14 @@ class X2GridView extends CGridView {
 			});";
 		}
 		$this->afterAjaxUpdate .= " } ";
-		
-		
 
 		$this->columns = $columns;
 		
+		natcasesort($this->allFieldNames); // sort column names
+		
+		// generate column selector HTML
 		$this->columnSelectorHtml = CHtml::beginForm(array('site/saveGvSettings'),'get')
 			.'<ul class="column-selector" id="'.$this->columnSelectorId.'">';
-			
 		foreach($this->allFieldNames as $fieldName=>&$attributeLabel) {
 			$selected = array_key_exists($fieldName,$this->gvSettings);
 			$this->columnSelectorHtml .= "<li>"

@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.2.2';
-$buildDate = 1332539853;
+$x2Version = '1.3';
+$buildDate = 1336431694;
 
 $userData = '';
 
@@ -229,6 +229,9 @@ function addSqlError($message) {
 // global $sqlError;
 // global $lang;
 
+
+//mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
+
 mysql_query('DROP TABLE IF EXISTS
 	x2_lists,
 	x2_list_items,
@@ -263,6 +266,7 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_group_to_user,
 	x2_users,
 	x2_contacts,
+	x2_subscribe_contacts,
 	x2_actions,
 	x2_sales,
 	x2_quotes,
@@ -271,596 +275,727 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_marketing,
 	x2_campaigns,
 	x2_calendars,
-        x2_modules
+	x2_modules
 ') or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
-// if(!empty($sqlError)) return $sqlError;
+// visibility check MySQL procedure
+// example: "... select * from x2_contacts where x2_checkViewPermission(visibility,assignedTo,'jvaleria') > 0 ..."
+// DROP function IF EXISTS `x2_func_strSplit`;
+// CREATE FUNCTION `x2_func_strSplit`(x varchar(255), delim varchar(12), pos int) RETURNS varchar(255)
+// begin
+  // return replace(substring(substring_index(x, delim, pos), length(substring_index(x, delim, pos - 1)) + 1), delim, '');
+// end;
+mysql_query('DROP FUNCTION IF EXISTS `x2_checkViewPermission`;') or addSqlError('Unable to drop function x2_checkViewPermission.'.mysql_error());
+mysql_query('CREATE FUNCTION `x2_checkViewPermission` (mode INT,assignedTo VARCHAR(20),user VARCHAR(20)) RETURNS TINYINT DETERMINISTIC 
+BEGIN
+	DECLARE retv INT DEFAULT 0;
+
+	-- record is public
+	IF mode = 1 THEN
+		RETURN 1;
+	END IF;
+
+	-- admin override
+	IF STRCMP(user, "admin") = 0 THEN
+		RETURN 1;
+	END IF;
+
+	IF CAST(assignedTo AS UNSIGNED) > 0 THEN	-- assigned is numeric (a group)
+	
+		IF mode = 0 THEN -- private, user must be in group
+			SELECT COUNT(*) INTO retv FROM x2_group_to_user WHERE groupId = CAST(assignedTo AS UNSIGNED) AND username = user; 
+			RETURN retv;
+		ELSE
+			RETURN 0;	-- mode should never be 2 for a group...if it is, its stupid
+		END IF;
+
+	ELSE	-- assigned is text (a user)
+		IF mode = 0 AND STRCMP(assignedTo, user) = 0 THEN	-- private, must be assigned to user
+			RETURN 1;
+		ELSE
+			SELECT COUNT(*) INTO retv FROM x2_group_to_user a, x2_group_to_user b WHERE a.username = assignedTo AND b.username = user AND b.groupId = a.groupId;
+				RETURN retv;
+		END IF;
+	END IF;
+	
+	RETURN 0;	-- default is false
+END;') or addSqlError('Unable to create function x2_checkViewPermission.'.mysql_error());
+
+mysql_query('DROP FUNCTION IF EXISTS `x2_checkOwnership`;') or addSqlError('Unable to drop function x2_checkOwnership.'.mysql_error());
+mysql_query('CREATE FUNCTION `x2_checkOwnership` (assignedTo VARCHAR(20),user VARCHAR(20)) RETURNS TINYINT DETERMINISTIC 
+BEGIN
+	DECLARE retv INT DEFAULT 0;
+	
+	IF assignedTo=user THEN
+		RETURN 1;
+	END IF;
+
+	IF CAST(assignedTo AS UNSIGNED) > 0 THEN	-- assigned is numeric (a group)
+		SELECT COUNT(*) INTO retv FROM x2_group_to_user WHERE groupId = CAST(assignedTo AS UNSIGNED) AND username = user;
+		RETURN retv;
+	END IF;
+	RETURN 0;	-- default is false
+END;') or addSqlError('Unable to create function x2_checkOwnership.'.mysql_error());
+
+/* CREATE FUNCTION `x2_checkViewPermission`(mode int, user varchar(255), acl varchar(255)) RETURNS int(11)
+begin
+	declare pos int default 1;
+	declare retv int default 0;
+	declare memb varchar(255);
+
+	-- clean up 2 char sep token in acl
+	set acl = replace(acl,', ',',');
+
+	-- check for public
+	if mode = 1 then
+		return 1;
+	end if;
+
+	-- check for admin
+	if strcmp(user, 'admin') = 0 then
+		return 1;
+	end if;
+
+	-- check for private and single assigment to user
+	if mode = 0 and strcmp(acl, user) = 0 then
+		return 1;
+	end if;
+
+  -- check for private 
+	if mode = 0 then
+		if instr(acl,',') = 0 and (0 + acl) > 0 then -- single assigment to group
+			select count(*) into retv from x2_group_to_user where groupId = (0 + acl) and username = user; 
+			return retv;
+		else -- multiple assignment, fetch acl tokens
+			set memb = x2_func_strSplit(acl,',',pos);
+			while length(memb) > 0 do
+				if (0 + memb) > 0 then -- group
+					select count(*) into retv from x2_group_to_user where groupId = (0 + memb) and username = user; 
+					if retv > 0 then
+						return 1;
+					end if;
+				else -- user
+					if strcmp(acl, user) = 0 then
+						return 1;
+					end if;
+				end if;
+
+				set pos = pos + 1;
+				set memb = x2_func_strSplit(acl,',',pos);
+			end while;
+		end if;
+	end if;
+
+	-- check for shared and single assigment to user
+	if mode = 2 and instr(acl,',') = 0 then
+		if (0 + acl) <= 0 then
+			select count(*) into retv from x2_group_to_user a, x2_group_to_user b where a.username = acl and b.username = user and b.groupId = a.groupId; 
+			return retv;
+		else  -- if user then not defined
+			return 0;  
+		end if;
+	else  -- if multiple assignment then not defined
+		return 0;
+	end if;
+
+	-- default is false
+	return 0;
+end; */
+
 
 mysql_query('CREATE TABLE x2_users(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	firstName VARCHAR(20) NOT NULL,
-	lastName VARCHAR(40) NOT NULL,
-	username VARCHAR(20) NOT NULL,
-	password VARCHAR(100) NOT NULL,
-	title VARCHAR(20),
-	department VARCHAR(40),
-	officePhone VARCHAR(40),
-	cellPhone VARCHAR(40),
-	homePhone VARCHAR(40),
-	address VARCHAR(100),
-	backgroundInfo TEXT,
-	emailAddress VARCHAR(100) NOT NULL,
-	status TINYINT NOT NULL,
-	lastUpdated VARCHAR(30),
-	updatedBy VARCHAR(20),
-	recentItems VARCHAR(100),
-	topContacts VARCHAR(100),
-	lastLogin INT DEFAULT 0,
-	login INT DEFAULT 0,
-	showCalendars TEXT,
-	calendarViewPermission TEXT,
-	calendarEditPermission TEXT,
-	calendarFilter TEXT,
-	setCalendarPermissions TINYINT,
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	firstName				VARCHAR(20)		NOT NULL,
+	lastName				VARCHAR(40)		NOT NULL,
+	username				VARCHAR(20)		NOT NULL,
+	password				VARCHAR(100)	NOT NULL,
+	title					VARCHAR(20),
+	department				VARCHAR(40),
+	officePhone				VARCHAR(40),
+	cellPhone				VARCHAR(40),
+	homePhone				VARCHAR(40),
+	address					VARCHAR(100),
+	backgroundInfo			TEXT,
+	emailAddress			VARCHAR(100)	NOT NULL,
+	status					TINYINT			NOT NULL,
+	lastUpdated				VARCHAR(30),
+	updatedBy				VARCHAR(20),
+	recentItems				VARCHAR(100),
+	topContacts				VARCHAR(100),
+	lastLogin				INT				DEFAULT 0,
+	login					INT				DEFAULT 0,
+	showCalendars			TEXT,
+	calendarViewPermission	TEXT,
+	calendarEditPermission	TEXT,
+	calendarFilter			TEXT,
+	setCalendarPermissions	TINYINT,
+	
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_users.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_contacts(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	firstName VARCHAR(40) NOT NULL,
-	lastName VARCHAR(40) NOT NULL,
-	title VARCHAR(40),
-	company VARCHAR(250),
-	phone VARCHAR(40),
-	email VARCHAR(250),
-	website VARCHAR(250),
-	address VARCHAR(250),
-	address2 VARCHAR(250),
-	city VARCHAR(40),
-	state VARCHAR(40),
-	zipcode VARCHAR(20),
-	country VARCHAR(40),
-	visibility INT NOT NULL,
-	assignedTo VARCHAR(20),
-	backgroundInfo TEXT,
-	twitter VARCHAR(20) NULL,
-	linkedin VARCHAR(100) NULL,
-	skype VARCHAR(32) NULL,
-	googleplus VARCHAR(100) NULL,
-	lastUpdated VARCHAR(30),
-	updatedBy VARCHAR(20),
-	priority VARCHAR(40),
-	leadSource VARCHAR(40),
-	leadDate INT UNSIGNED,
-	rating TINYINT,
-	createDate INT UNSIGNED,
-	facebook VARCHAR(100) NULL,
-	otherUrl VARCHAR(100) NULL,
-	phone2 VARCHAR(40),
-	leadtype VARCHAR(250),
-	closedate VARCHAR(250),
-	interest VARCHAR(250),
-	leadstatus VARCHAR(250),
-	dealvalue VARCHAR(250),
-	leadscore INT,
-	dealstatus VARCHAR(250),
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(200),
+	firstName				VARCHAR(80)		NOT NULL,
+	lastName				VARCHAR(80)		NOT NULL,
+	title					VARCHAR(40),
+	company					VARCHAR(250),
+	phone					VARCHAR(40),
+	email					VARCHAR(250),
+	website					VARCHAR(250),
+	address					VARCHAR(250),
+	address2				VARCHAR(250),
+	city					VARCHAR(40),
+	state					VARCHAR(40),
+	zipcode					VARCHAR(20),
+	country					VARCHAR(40),
+	visibility				INT NOT NULL,
+	assignedTo				VARCHAR(20),
+	backgroundInfo			TEXT,
+	twitter					VARCHAR(20)		NULL,
+	linkedin				VARCHAR(100)	NULL,
+	skype					VARCHAR(32)		NULL,
+	googleplus				VARCHAR(100)	NULL,
+	lastUpdated				VARCHAR(30),
+	updatedBy				VARCHAR(20),
+	priority				VARCHAR(40),
+	leadSource				VARCHAR(40),
+	leadDate				INT UNSIGNED,
+	rating					TINYINT,
+	createDate				INT UNSIGNED,
+	facebook				VARCHAR(100)	NULL,
+	otherUrl				VARCHAR(100)	NULL,
+	phone2					VARCHAR(40),
+	leadtype				VARCHAR(250),
+	closedate				VARCHAR(250),
+	interest				VARCHAR(250),
+	leadstatus				VARCHAR(250),
+	dealvalue				VARCHAR(250),
+	leadscore				INT,
+	dealstatus				VARCHAR(250),
+	
 	INDEX (email),
 	INDEX (assignedTo)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_contacts.'.mysql_error());
 
-//mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
+mysql_query('CREATE TABLE x2_subscribe_contacts(
+	contact_id				INT				UNSIGNED,
+	user_id					INT				UNSIGNED
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_subscribe_contacts.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_actions(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	assignedTo VARCHAR(20),
-	calendarId INT,
-	actionDescription text NOT NULL,
-	visibility INT NOT NULL,
-	associationId INT NOT NULL,
-	associationType VARCHAR(20),
-	associationName VARCHAR(100),
-	dueDate INT,
-	showTime TINYINT NOT NULL DEFAULT 0,
-	priority VARCHAR(10),
-	type VARCHAR(20),
-	createDate INT,
-	complete VARCHAR(5) default "No",
-	reminder VARCHAR(5),
-	completedBy VARCHAR(20),
-	completeDate INT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	workflowId INT UNSIGNED,
-	stageNumber INT UNSIGNED,
-	allDay TINYINT,
-	color VARCHAR(20),
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	assignedTo				VARCHAR(20),
+	calendarId				INT,
+	actionDescription		text NOT NULL,
+	visibility				INT				NOT NULL,
+	associationId			INT				NOT NULL,
+	associationType			VARCHAR(20),
+	associationName			VARCHAR(100),
+	dueDate					INT,
+	showTime				TINYINT			NOT NULL DEFAULT 0,
+	priority				VARCHAR(10),
+	type					VARCHAR(20),
+	createDate				INT,
+	complete				VARCHAR(5)		DEFAULT "No",
+	reminder				VARCHAR(5),
+	completedBy				VARCHAR(20),
+	completeDate			INT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20),
+	workflowId				INT				UNSIGNED,
+	stageNumber				INT				UNSIGNED,
+	allDay					TINYINT,
+	color					VARCHAR(20),
+	
 	INDEX (assignedTo),
 	INDEX (associationType,associationId)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_actions.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_sales(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(40) NOT NULL,
-	accountName VARCHAR(100),
-	quoteAmount FLOAT,
-	salesStage VARCHAR(20),
-	expectedCloseDate VARCHAR(20),
-	probability INT,
-	leadSource VARCHAR(100),
-	description TEXT,
-	assignedTo TEXT,
-	createDate INT,
-	associatedContacts TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20)
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(40)		NOT NULL,
+	accountName				VARCHAR(100),
+	quoteAmount				FLOAT,
+	salesStage				VARCHAR(20),
+	expectedCloseDate		VARCHAR(20),
+	probability				INT,
+	leadSource				VARCHAR(100),
+	description				TEXT,
+	assignedTo				TEXT,
+	createDate				INT,
+	associatedContacts		TEXT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_quotes(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(40) NOT NULL,
-	accountName VARCHAR(250),
-	salesStage VARCHAR(20),
-	expectedCloseDate VARCHAR(20),
-	probability INT,
-	leadSource VARCHAR(10),
-	description TEXT,
-	assignedTo TEXT,
-	createDate INT,
-	createdBy VARCHAR(20),
-	associatedContacts TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	expirationDate INT,
-	status VARCHAR(20),
-	currency VARCHAR(40),
-	locked TINYINT
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(40)		NOT NULL,
+	accountName				VARCHAR(250),
+	salesStage				VARCHAR(20),
+	expectedCloseDate		VARCHAR(20),
+	probability				INT,
+	leadSource				VARCHAR(10),
+	description				TEXT,
+	assignedTo				TEXT,
+	createDate				INT,
+	createdBy				VARCHAR(20),
+	associatedContacts		TEXT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20),
+	expirationDate			INT,
+	status					VARCHAR(20),
+	currency				VARCHAR(40),
+	locked					TINYINT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_quotes.'.mysql_error());
 
 mysql_query("ALTER TABLE x2_quotes AUTO_INCREMENT=301;
 ")or addSqlError('Unable to alter table x2_quotes.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_products(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(100) NOT NULL,
-	type VARCHAR(100),
-	price FLOAT,
-	inventory INT,
-	description TEXT,
-	createDate INT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	status VARCHAR(20),
-	currency VARCHAR(40),
-	adjustment FLOAT
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(100)	NOT NULL,
+	type					VARCHAR(100),
+	price					FLOAT,
+	inventory				INT,
+	description				TEXT,
+	createDate				INT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20),
+	status					VARCHAR(20),
+	currency				VARCHAR(40),
+	adjustment				FLOAT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_projects(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(60) NOT NULL,
-	status VARCHAR(20),
-	type VARCHAR(20), 
-	priority VARCHAR(20),
-	assignedTo TEXT,
-	endDate DATETIME,
-	timeframe VARCHAR(40),
-	createDate INT,
-	associatedContacts TEXT,
-	description TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20)
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(60)		NOT NULL,
+	status					VARCHAR(20),
+	type					VARCHAR(20), 
+	priority				VARCHAR(20),
+	assignedTo				TEXT,
+	endDate					DATETIME,
+	timeframe				VARCHAR(40),
+	createDate				INT,
+	associatedContacts		TEXT,
+	description				TEXT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_projects.'.mysql_error());
 
-// mysql_query("CREATE TABLE x2_marketing(
-	// id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	// name VARCHAR(20) NOT NULL,
-	// cost INT,
-	// result TEXT,
-	// createDate INT,
-	// description TEXT,
-	// lastUpdated INT,
-	// updatedBy VARCHAR(20))
-	// COLLATE = utf8_general_ci
-// ") or die('Unable to create table x2_marketing.'.mysql_error());
-
-mysql_query('CREATE TABLE x2_campaigns (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	masterId INT UNSIGNED NOT NULL,
-	name VARCHAR(100) NOT NULL,
-	description TEXT NULL,
-	type VARCHAR(20) NULL,
-	cost VARCHAR(100) NULL,
-	result TEXT NULL,
-	content TEXT NULL,
-	createdBy VARCHAR(20) NOT NULL,
-	createDate INT UNSIGNED NOT NULL,
-	launchDate INT UNSIGNED NOT NULL,
-	lastUpdated INT UNSIGNED NOT NULL
-) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_campaigns.'.mysql_error());
+mysql_query('CREATE TABLE x2_campaigns(
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT,
+	masterId				INT				UNSIGNED NULL,
+	name					VARCHAR(250)	NOT NULL,
+	assignedTo				VARCHAR(20),
+	listId					VARCHAR(100),
+	active					TINYINT			DEFAULT 1,
+	launched				TINYINT			DEFAULT 0,
+	description				TEXT,
+	type					VARCHAR(100)	DEFAULT NULL,
+	cost					VARCHAR(100)	DEFAULT NULL,
+	subject					VARCHAR(250),
+	content					TEXT,
+	createdBy				VARCHAR(20)		NOT NULL,
+	complete				TINYINT 		DEFAULT 0,
+	createDate				INT	 			UNSIGNED NOT NULL,
+	launchDate				INT	 			UNSIGNED NOT NULL,
+	lastUpdated				INT	 			UNSIGNED NOT NULL,
+	updatedBy				VARCHAR(20),
+	
+	PRIMARY KEY (id),
+	FOREIGN KEY (masterId) REFERENCES x2_marketing(id) ON UPDATE CASCADE ON DELETE CASCADE
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_campaigns.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_calendars (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(100) NOT NULL,
-	viewPermission TEXT,
-	editPermission TEXT,
-	googleCalendar TINYINT,
-	googleFeed VARCHAR(255),
-	createDate INT,
-	createdBy VARCHAR(40),
-	lastUpdated INT,
-	updatedBy VARCHAR(40),
-	googleCalendarId VARCHAR(255),
-	googleAccessToken VARCHAR(512),
-	googleRefreshToken VARCHAR(255)
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(100)	NOT NULL,
+	viewPermission			TEXT,
+	editPermission			TEXT,
+	googleCalendar			TINYINT,
+	googleFeed				VARCHAR(255),
+	createDate				INT,
+	createdBy				VARCHAR(40),
+	lastUpdated				INT,
+	updatedBy				VARCHAR(40),
+	googleCalendarId		VARCHAR(255),
+	googleAccessToken		VARCHAR(512),
+	googleRefreshToken		VARCHAR(255)
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_calendars.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_lists (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	campaignId INT UNSIGNED NOT NULL DEFAULT 0,
-	assignedTo VARCHAR(20),
-	name VARCHAR(100) NOT NULL,
-	description VARCHAR(250) NULL,
-	type VARCHAR(20) NULL,
-	modelName VARCHAR(100) NOT NULL,
-	visibility INT NOT NULL DEFAULT 1,
-	count INT UNSIGNED NOT NULL DEFAULT 0,
-	createDate INT UNSIGNED NOT NULL,
-	lastUpdated INT UNSIGNED NOT NULL
+	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	campaignId				INT UNSIGNED	NOT NULL DEFAULT 0,
+	assignedTo				VARCHAR(20),
+	name					VARCHAR(100)	NOT NULL,
+	description				VARCHAR(250)	NULL,
+	type					VARCHAR(20)		NULL,
+	logicType				VARCHAR(20)		DEFAULT "AND",
+	modelName				VARCHAR(100)	NOT NULL,
+	visibility				INT NOT NULL	DEFAULT 1,
+	count					INT UNSIGNED	NOT NULL DEFAULT 0,
+	createDate				INT UNSIGNED	NOT NULL,
+	lastUpdated				INT UNSIGNED	NOT NULL
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_lists.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_list_items (
-	contactId INT UNSIGNED NOT NULL,
-	listId INT UNSIGNED NOT NULL,
-	code VARCHAR(32) NULL,
-	result TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	contactId				INT				UNSIGNED NOT NULL,
+	listId					INT				UNSIGNED NOT NULL,
+	uniqueId				VARCHAR(32)		NULL,
+	sent					TINYINT			UNSIGNED NOT NULL DEFAULT 0,
+	opened					TINYINT			UNSIGNED NOT NULL DEFAULT 0,
+	clicked					TINYINT			UNSIGNED NOT NULL DEFAULT 0,
+	unsubscribed			TINYINT			UNSIGNED NOT NULL DEFAULT 0,
+	
 	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listItems.'.mysql_error());
 
 
 mysql_query('CREATE TABLE x2_list_criteria (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	listId INT UNSIGNED NOT NULL,
-	type VARCHAR(20) NULL,
-	attribute VARCHAR(40) NULL,
-	comparison VARCHAR(10) NULL,
-	value VARCHAR(100) NOT NULL,
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	listId					INT				UNSIGNED NOT NULL,
+	type					VARCHAR(20)		NULL,
+	attribute				VARCHAR(40)		NULL,
+	comparison				VARCHAR(10)		NULL,
+	value					VARCHAR(100)	NOT NULL,
+	
 	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci') or addSqlError('Unable to create table x2_listCriteria.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_cases(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(60) NOT NULL,
-	status VARCHAR(20) NOT NULL,
-	type VARCHAR(20), 
-	priority VARCHAR(20),
-	assignedTo TEXT,
-	endDate DATETIME,
-	timeframe VARCHAR(40),
-	createDate INT,
-	associatedContacts TEXT,
-	description TEXT,
-	resolution TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20)
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(60)		NOT NULL,
+	status					VARCHAR(20)		NOT NULL,
+	type					VARCHAR(20), 
+	priority				VARCHAR(20),
+	assignedTo				TEXT,
+	endDate					DATETIME,
+	timeframe				VARCHAR(40),
+	createDate				INT,
+	associatedContacts		TEXT,
+	description				TEXT,
+	resolution				TEXT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_cases.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_profile(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	fullName VARCHAR(60) NOT NULL,
-	username VARCHAR(20) NOT NULL,
-	officePhone VARCHAR(40),
-	cellPhone VARCHAR(40),
-	emailAddress VARCHAR(40) NOT NULL,
-	notes TEXT,
-	status TINYINT(1) NOT NULL,
-	tagLine VARCHAR(250),
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	avatar TEXT,
-	allowPost TINYINT(1) DEFAULT 1,
-	language VARCHAR(40) DEFAULT "'.$lang.'",
-	timeZone VARCHAR(100) DEFAULT "'.$timezone.'",
-	resultsPerPage INT DEFAULT 20,
-	widgets VARCHAR(255) DEFAULT "1:1:1:1:1:1:0:1:1",
-	widgetOrder VARCHAR(512) DEFAULT "OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud",
-	backgroundColor VARCHAR(6) NULL,
-	menuBgColor VARCHAR(6) NULL,
-	menuTextColor VARCHAR(6) NULL,
-	backgroundImg VARCHAR(100) NULL DEFAULT "santacruznight_blur.jpg",
-	pageOpacity INT NULL,
-	startPage VARCHAR(30) NULL,
-	showSocialMedia TINYINT(1) NOT NULL DEFAULT 0,
-	showDetailView TINYINT(1) NOT NULL DEFAULT 1,
-	showWorkflow TINYINT(1) NOT NULL DEFAULT 1,
-	gridviewSettings TEXT,
-	formSettings TEXT,
-	emailUseSignature VARCHAR(5) DEFAULT "user",
-	emailSignature VARCHAR(512),
-	enableBgFade TINYINT DEFAULT 0,
-	showActions VARCHAR(20),
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	fullName				VARCHAR(60)		NOT NULL,
+	username				VARCHAR(20)		NOT NULL,
+	officePhone				VARCHAR(40),
+	cellPhone				VARCHAR(40),
+	emailAddress			VARCHAR(255)	NOT NULL,
+	notes					TEXT,
+	status					TINYINT			NOT NULL,
+	tagLine					VARCHAR(255),
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20),
+	avatar					TEXT,
+	allowPost				TINYINT			DEFAULT 1,
+	language				VARCHAR(40)		DEFAULT "'.$lang.'",
+	timeZone				VARCHAR(100)	DEFAULT "'.$timezone.'",
+	resultsPerPage			INT DEFAULT		20,
+	widgets					VARCHAR(255)	DEFAULT "1:1:1:1:1:1:0:1:1",
+	widgetOrder				VARCHAR(512)	DEFAULT "OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud",
+	widgetSettings			TEXT,
+	backgroundColor			VARCHAR(6)		NULL,
+	menuBgColor				VARCHAR(6)		NULL,
+	menuTextColor			VARCHAR(6)		NULL,
+	backgroundImg			VARCHAR(100)	NULL DEFAULT "santacruznight_blur.jpg",
+	pageOpacity				INT				NULL,
+	startPage				VARCHAR(30)		NULL,
+	showSocialMedia			TINYINT			NOT NULL DEFAULT 0,
+	showDetailView			TINYINT			NOT NULL DEFAULT 1,
+	showWorkflow			TINYINT			NOT NULL DEFAULT 1,
+	gridviewSettings		TEXT,
+	formSettings			TEXT,
+	emailUseSignature		VARCHAR(5)		DEFAULT "user",
+	emailSignature			VARCHAR(512),
+	enableBgFade			TINYINT			DEFAULT 0,
+	showActions				VARCHAR(20),
+	
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_profile.'.mysql_error());
 
  mysql_query('CREATE TABLE x2_accounts(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(40) NOT NULL,
-	website VARCHAR(40),
-	type VARCHAR(60), 
-	annualRevenue FLOAT,
-	phone VARCHAR(40),
-	tickerSymbol VARCHAR(10),
-	employees INT,
-	assignedTo TEXT,
-	createDate INT,
-	associatedContacts TEXT,
-	description TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20)
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(40)		NOT NULL,
+	website					VARCHAR(40),
+	type					VARCHAR(60), 
+	annualRevenue			FLOAT,
+	phone					VARCHAR(40),
+	tickerSymbol			VARCHAR(10),
+	employees				INT,
+	assignedTo				TEXT,
+	createDate				INT,
+	associatedContacts		TEXT,
+	description				TEXT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_accounts.'.mysql_error());
 
 
  mysql_query('CREATE TABLE x2_social(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	type VARCHAR(40) NOT NULL,
-	data text,
-	user VARCHAR(40),
-	associationId INT,
-	private TINYINT(1) DEFAULT 0,
-	timestamp INT,
-	lastUpdated INT
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	type					VARCHAR(40)		NOT NULL,
+	data					TEXT,
+	user					VARCHAR(40),
+	associationId			INT,
+	private					TINYINT			DEFAULT 0,
+	timestamp				INT,
+	lastUpdated				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_social.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_docs(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	title VARCHAR(100) NOT NULL,
-	type VARCHAR(10) NOT NULL DEFAULT "",
-	text LONGTEXT NOT NULL,
-	createdBy VARCHAR(60) NOT NULL,
-	createDate INT,
-	editPermissions VARCHAR(250), 
-	updatedBy VARCHAR(40),
-	lastUpdated INT
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	title					VARCHAR(100)	NOT NULL,
+	type					VARCHAR(10)		NOT NULL DEFAULT "",
+	text					LONGTEXT		NOT NULL,
+	createdBy				VARCHAR(60)		NOT NULL,
+	createDate				INT,
+	editPermissions			VARCHAR(250), 
+	updatedBy				VARCHAR(40),
+	lastUpdated				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_docs.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_media(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	associationType VARCHAR(40) NOT NULL,
-	associationId INT,
-	uploadedBy VARCHAR(40),
-	fileName VARCHAR(100),
-	createDate INT
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	associationType			VARCHAR(40)		NOT NULL,
+	associationId			INT,
+	uploadedBy				VARCHAR(40),
+	fileName				VARCHAR(100),
+	createDate				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_media.'.mysql_error());
-
+// mysql_query('CREATE TABLE x2_urls(
+	// id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	// title					VARCHAR(20)				NOT NULL,
+	// url					VARCHAR(256),
+	// userid					INT,
+	// timestamp				INT
+// ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_urls.'.mysql_error());
 mysql_query('CREATE TABLE x2_admin(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	accounts INT,
-	sales INT,
-	timeout INT,
-	webLeadEmail VARCHAR(255),
-	currency VARCHAR(3) NULL,
-	chatPollTime INT DEFAULT 2000,
-	ignoreUpdates TINYINT DEFAULT 0,
-	rrId INT DEFAULT 0, 
-	leadDistribution VARCHAR(255),
-	onlineOnly TINYINT,
-	emailFromName VARCHAR(255) NOT NULL DEFAULT "X2CRM",
-	emailFromAddr VARCHAR(255) NOT NULL DEFAULT "'.$bulkEmail.'",
-	emailUseSignature VARCHAR(5) DEFAULT "user",
-	emailSignature VARCHAR(512),
-	emailType VARCHAR(20) DEFAULT "mail",
-	emailHost VARCHAR(255),
-	emailPort INT DEFAULT 25,
-	emailUseAuth VARCHAR(5) DEFAULT "user",
-	emailUser VARCHAR(255),
-	emailPass VARCHAR(255),
-	emailSecurity VARCHAR(10),
-	installDate INT UNSIGNED NOT NULL,
-	updateDate INT UNSIGNED NOT NULL,
-	updateInterval INT NOT NULL DEFAULT 0,
-	quoteStrictLock TINYINT,
-	googleIntegration TINYINT,
-	googleClientId VARCHAR(255),
-	googleClientSecret VARCHAR(255),
-	googleAPIKey VARCHAR(255)
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	accounts				INT,
+	sales					INT,
+	timeout					INT,
+	webLeadEmail			VARCHAR(255),
+	currency				VARCHAR(3)		NULL,
+	chatPollTime			INT				DEFAULT 2000,
+	ignoreUpdates			TINYINT			DEFAULT 0,
+	rrId					INT				DEFAULT 0, 
+	leadDistribution		VARCHAR(255),
+	onlineOnly				TINYINT,
+	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2CRM",
+	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT "'.$bulkEmail.'",
+	emailUseSignature		VARCHAR(5)		DEFAULT "user",
+	emailSignature			VARCHAR(512),
+	emailType				VARCHAR(20)		DEFAULT "mail",
+	emailHost				VARCHAR(255),
+	emailPort				INT				DEFAULT 25,
+	emailUseAuth			VARCHAR(5)		DEFAULT "user",
+	emailUser				VARCHAR(255),
+	emailPass				VARCHAR(255),
+	emailSecurity			VARCHAR(10),
+	installDate				INT				UNSIGNED NOT NULL,
+	updateDate				INT				UNSIGNED NOT NULL,
+	updateInterval			INT				NOT NULL DEFAULT 0,
+	quoteStrictLock			TINYINT,
+	googleIntegration		TINYINT,
+	googleClientId			VARCHAR(255),
+	googleClientSecret		VARCHAR(255),
+	googleAPIKey			VARCHAR(255)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
-mysql_query('CREATE TABLE x2_changelog( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	type VARCHAR(50) NOT NULL,
-	itemId INT NOT NULL,
-	changedBy VARCHAR(50) NOT NULL,
-	changed TEXT NOT NULL,
-	timestamp INT NOT NULL DEFAULT 0
+mysql_query('CREATE TABLE x2_changelog(
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	type					VARCHAR(50)		NOT NULL,
+	itemId					INT				NOT NULL,
+	changedBy				VARCHAR(50)		NOT NULL,
+	changed					TEXT			NOT NULL,
+	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_changelog.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_tags( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	type VARCHAR(50) NOT NULL,
-	itemId INT NOT NULL,
-	taggedBy VARCHAR(50) NOT NULL,
-	tag VARCHAR(250) NOT NULL,
-	itemName VARCHAR(250),
-	timestamp INT NOT NULL DEFAULT 0
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	type					VARCHAR(50)		NOT NULL,
+	itemId					INT				NOT NULL,
+	taggedBy				VARCHAR(50)		NOT NULL,
+	tag						VARCHAR(250)	NOT NULL,
+	itemName				VARCHAR(250),
+	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_tags.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_relationships( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	firstType VARCHAR(100),
-	firstId INT,
-	secondType VARCHAR(100),
-	secondId INT
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	firstType				VARCHAR(100),
+	firstId					INT,
+	secondType				VARCHAR(100),
+	secondId				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_quotes_products( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	quoteId INT,
-	productId INT,
-	quantity INT,
-	name VARCHAR(100) NOT NULL,
-	type VARCHAR(100),
-	price FLOAT,
-	inventory INT,
-	description TEXT,
-	assignedTo TEXT,
-	createDate INT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	active TINYINT,
-	currency VARCHAR(40),
-	adjustment FLOAT,
-	adjustmentType VARCHAR(20)
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	quoteId					INT,
+	productId				INT,
+	quantity				INT,
+	name					VARCHAR(100)	NOT NULL,
+	type					VARCHAR(100),
+	price					FLOAT,
+	inventory				INT,
+	description				TEXT,
+	assignedTo				TEXT,
+	createDate				INT,
+	lastUpdated				INT,
+	updatedBy				VARCHAR(20),
+	active					TINYINT,
+	currency				VARCHAR(40),
+	adjustment				FLOAT,
+	adjustmentType			VARCHAR(20)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_relationshps.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_notifications( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	text TEXT,
-	record VARCHAR(250), 
-	user VARCHAR(100),
-	viewed INT,
-	createDate INT
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	text					TEXT,
+	record					VARCHAR(250), 
+	user					VARCHAR(100),
+	viewed					INT,
+	createDate				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_notifications.'.mysql_error());
 
-mysql_query('CREATE TABLE x2_criteria( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	modelType VARCHAR(100),
-	modelField VARCHAR(250),
-	modelValue TEXT,
-	comparisonOperator VARCHAR(10),
-	users TEXT,
-	type VARCHAR(250)
+mysql_query('CREATE TABLE x2_criteria(
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	modelType				VARCHAR(100),
+	modelField				VARCHAR(250),
+	modelValue				TEXT,
+	comparisonOperator		VARCHAR(10),
+	users					TEXT,
+	type					VARCHAR(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_criteria.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_lead_routing( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	criteria TEXT,
-	users TEXT,
-        priority INT, 
-	rrId INT DEFAULT 0,
-        groupType INT
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	criteria				TEXT,
+	users					TEXT,
+	priority				INT, 
+	rrId					INT				DEFAULT 0,
+	groupType				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_lead_routing.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_sessions(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	user VARCHAR(250),
-	lastUpdated INT,
-	IP VARCHAR(40) NOT NULL,
-	status TINYINT NOT NULL DEFAULT 0
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	user					VARCHAR(250),
+	lastUpdated				INT,
+	IP						VARCHAR(40)		NOT NULL,
+	status					TINYINT			NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sessions.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_workflows(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(250),
-	lastUpdated INT
+	id						INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(250),
+	lastUpdated				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_workflows.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_workflow_stages( 
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	workflowId INT NOT NULL,
-	stageNumber INT,
-	name VARCHAR(40),
-	description TEXT,
-	conversionRate DECIMAL(10,2),
-	value DECIMAL(10,2),
-	requirePrevious INT DEFAULT 0,
-	requireComment TINYINT DEFAULT 0,
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	workflowId				INT				NOT NULL,
+	stageNumber				INT,
+	name					VARCHAR(40),
+	description				TEXT,
+	conversionRate			DECIMAL(10,2),
+	value					DECIMAL(10,2),
+	requirePrevious			INT				DEFAULT 0,
+	requireComment			TINYINT			DEFAULT 0,
+	
 	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_workflow_stages.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_fields (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	modelName varchar(250) ,
-	fieldName varchar(250),
-	attributeLabel varchar(250),
-	modified INT DEFAULT 0,
-	custom INT DEFAULT 1,
-	type VARCHAR(250) DEFAULT "varchar",
-	required INT DEFAULT 0,
-	linkType VARCHAR(250),
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	modelName				VARCHAR(250),
+	fieldName				VARCHAR(250),
+	attributeLabel			VARCHAR(250),
+	modified				INT				DEFAULT 0,
+	custom					INT				DEFAULT 1,
+	type					VARCHAR(20)		DEFAULT "varchar",
+	required				TINYINT			DEFAULT 0,
+	readOnly				TINYINT			DEFAULT 0,
+	linkType				VARCHAR(250),
 	INDEX (modelName)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_fields.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_form_layouts (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	model VARCHAR(250) NOT NULL,
-	version VARCHAR(250) NOT NULL,
-	layout TEXT,
-	defaultView TINYINT NOT NULL DEFAULT 0,
-	defaultForm TINYINT NOT NULL DEFAULT 0,
-	createDate INT UNSIGNED,
-	lastUpdated INT UNSIGNED
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	model					VARCHAR(250)	NOT NULL,
+	version					VARCHAR(250)	NOT NULL,
+	layout					TEXT,
+	defaultView				TINYINT			NOT NULL DEFAULT 0,
+	defaultForm				TINYINT			NOT NULL DEFAULT 0,
+	createDate				INT				UNSIGNED,
+	lastUpdated				INT				UNSIGNED
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_form_versions.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_dropdowns (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name varchar(250) ,
-	options text
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(250),
+	options					TEXT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_dropdowns.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_roles (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name varchar(250) ,
-	users text
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(250),
+	users					TEXT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_role_to_user (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	roleId int ,
-	userId int,
-	type VARCHAR(250)
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	roleId					INT,
+	userId					INT,
+	type					VARCHAR(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_user.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_role_to_permission (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	roleId int ,
-	fieldId int,
-	permission int
-) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_permission.'.mysql_error());
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	roleId					INT,
+	fieldId					INT,
+	permission				INT
+) COLLATE = utf8_general_ci')or addSqlError('Unable to create table x2_role_to_permission.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_role_exceptions (
-	id int(11) NOT NULL AUTO_INCREMENT primary key,
-	workflowId int ,
-	stageId int,
-	roleId int,
-        replacementId int
+	id						INT				NOT NULL AUTO_INCREMENT primary key,
+	workflowId				INT,
+	stageId					INT,
+	roleId					INT,
+	replacementId int
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_role_to_exceptions.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_role_to_workflow( 
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	roleId INT,
-	stageId INT,
-	workflowId INT,
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	roleId					INT,
+	stageId					INT,
+	workflowId				INT,
+	
 	FOREIGN KEY (roleId) REFERENCES x2_roles(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (stageId) REFERENCES x2_workflow_stages(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_workflow_stages.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_groups (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name varchar(250)
-) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(250)
+)COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_group_to_user (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	groupId INT,
-	userId INT,
-	username VARCHAR(250)
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	groupId					INT,
+	userId					INT,
+	username				VARCHAR(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
-
-mysql_query('CREATE TABLE x2_modules (
-	id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(250),
-        title VARCHAR(250),
-        visible INT,
-        menuPosition INT,
-        searchable INT,
-        toggleable INT,
-        adminOnly INT,
-        editable INT,
-        custom INT
-) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_modules.'.mysql_error());
 
 mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	(
@@ -868,6 +1003,7 @@ mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	`a`.`id` AS `id`,
 	`a`.`dealvalue` AS `dealValue`,
 	`a`.`leadDate` AS `leadDate`,
+	`a`.`createDate` AS `createDate`,
 	`a`.`leadstatus` AS `leadStatus`,
 	`a`.`leadSource` AS `leadSource`,
 	`a`.`leadtype` AS `leadType`,
@@ -888,6 +1024,7 @@ mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	`a`.`id` AS `id`,
 	`a`.`dealvalue` AS `dealValue`,
 	`a`.`leadDate` AS `leadDate`,
+	`a`.`createDate` AS `createDate`,
 	`a`.`leadstatus` AS `leadStatus`,
 	`a`.`leadSource` AS `leadSource`,
 	`a`.`leadtype` AS `leadType`,
@@ -904,21 +1041,35 @@ mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	)
 	ORDER BY leadDate ASC;") or addSqlError("Unable to initialize dashboard ".mysql_error());
 
-mysql_query('INSERT INTO x2_modules (name, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable) VALUES 
-("sales","Sales","1","3","1","1","0","0","0"),
-("quotes","Quotes","1","8","1","1","0","0","0"),
-("products","Products","1","7","1","1","0","0","0"),
-("docs","Docs","1","5","0","0","0","0","0"),
-("dashboard","Dashboard","1","6","0","0","0","0","0"),
-("contacts","Contacts","1","1","1","1","0","0","0"),
-("actions","Actions","1","2","1","0","0","0","0"),
-("accounts","Accounts","1","4","1","1","0","0","0"),
-("calendar","Calendar","1","0","0","0","0","0","0"),
-("groups","Groups","1","9","0","0","0","0","0"),
-("users","Users","1","10","0","0","1","0","0"),
-("workflow","Workflow","1","11","0","0","0","0","0")
-') or addSqlError("Unable to initialize modules ".mysql_error());
+mysql_query('CREATE TABLE x2_modules (
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(250),
+	title					VARCHAR(250),
+	visible					INT,
+	menuPosition			INT,
+	searchable				INT,
+	toggleable				INT,
+	adminOnly				INT,
+	editable				INT,
+	custom					INT
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_modules.'.mysql_error());
 
+mysql_query('INSERT INTO x2_modules 
+(name,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) VALUES 
+("sales",		"Sales",		1,			3,				1,			1,			0,			0,		0),
+("quotes",		"Quotes",		1,			8,				1,			1,			0,			0,		0),
+("products",	"Products",		1,			7,				1,			1,			0,			0,		0),
+("docs",		"Docs",			1,			5,				0,			0,			0,			0,		0),
+("dashboard",	"Dashboard",	1,			6,				0,			0,			0,			0,		0),
+("contacts",	"Contacts",		1,			1,				1,			1,			0,			0,		0),
+("actions",		"Actions",		1,			2,				1,			0,			0,			0,		0),
+("accounts",	"Accounts",		1,			4,				1,			1,			0,			0,		0),
+("calendar",	"Calendar",		1,			0,				0,			0,			0,			0,		0),
+("groups",		"Groups",		1,			9,				0,			0,			0,			0,		0),
+("users",		"Users",		1,			10,				0,			0,			1,			0,		0),
+("workflow",	"Workflow",		1,			11,				0,			0,			0,			0,		0)'
+// ("marketing",	"Marketing",	1,			11,				0,			1,			0,			0,		0)
+) or addSqlError("Unable to initialize modules ".mysql_error());
 
 mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
 ("Contacts","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_firstName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadscore\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"180\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"198\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_address2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_state\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"200\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"102\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"100\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":79,\"items\":[]},{\"width\":508,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[]}]}]}]}","0","1","'.time().'","'.time().'"),
@@ -932,140 +1083,160 @@ mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defau
 ("Quotes","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"52\",\"width\":\"430\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Quotes","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":true,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_id\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Dates\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_updatedBy\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"57\",\"width\":\"431\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
 ("Calendar","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
-("Calendar","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")'
+("Calendar","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
+("Campaign","Form","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"},{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_cost\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"none\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_launchDate\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]}]}",1,1,'.time().','.time().')'
 ) or addSqlError("Unable to create contacts layout.".mysql_error());
 	
 mysql_query('INSERT INTO x2_fields 
-(modelName,		fieldName,				attributeLabel,			modified, custom, type, required, linkType) VALUES 
-("Contacts",	"id",					"ID",					0,	0,	"varchar",		0,	""),
-("Contacts",	"firstName",			"First Name",			0,	0,	"varchar",		1,	""),
-("Contacts",	"lastName",				"Last Name",			0,	0,	"varchar",		1,	""),
-("Contacts",	"title",				"Title",				0,	0,	"varchar",		0,	""),
-("Contacts",	"company",				"Account",				0,	0,	"link",			0,	"accounts"),
-("Contacts",	"phone",				"Phone",				0,	0,	"varchar",		0,	""),
-("Contacts",	"phone2",				"Phone 2",				0,	0,	"varchar",		0,	""),
-("Contacts",	"email",				"Email",				0,	0,	"email",		0,	""),
-("Contacts",	"website",				"Website",				0,	0,	"url",			0,	""),
-("Contacts",	"twitter",				"Twitter",				0,	0,	"url",			0,	"twitter"),
-("Contacts",	"linkedin",				"Linkedin",				0,	0,	"url",			0,	"linkedin"),
-("Contacts",	"skype",				"Skype",				0,	0,	"url",  		0,	"skype"),
-("Contacts",	"googleplus",			"Googleplus",			0,	0,	"url",			0,	"googleplus"),
-("Contacts",	"address",				"Address",				0,	0,	"varchar",		0,	""),
-("Contacts",	"address2",				"Address 2",			0,	0,	"varchar",		0,	""),
-("Contacts",	"city",					"City",					0,	0,	"varchar",		0,	""),
-("Contacts",	"state",				"State",				0,	0,	"varchar",		0,	""),
-("Contacts",	"zipcode",				"Postal Code",			0,	0,	"varchar",		0,	""),
-("Contacts",	"country",				"Country",				0,	0,	"varchar",		0,	""),
-("Contacts",	"visibility",			"Visibility",			0,	0,	"visibility",	1,	""),
-("Contacts",	"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	""),
-("Contacts",	"backgroundInfo",		"Background Info",		0,	0,	"text",			0,	""),
-("Contacts",	"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	""),
-("Contacts",	"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	""),
-("Contacts",	"leadSource",			"Lead Source",			0,	0,	"dropdown",		0,	"4"),
-("Contacts",	"leadDate",				"Lead Date",			0,	0,	"date",			0,	""),
-("Contacts",	"priority",				"Priority",				0,	0,	"varchar",		0,	""),
-("Contacts",	"rating",				"Confidence",			0,	0,	"rating",		0,	""),
-("Contacts",	"createDate",			"Create Date",			0,	0,	"date",			0,	""),
-("Contacts",	"facebook",				"Facebook",				0,	0,	"url",			0,	"facebook"),
-("Contacts",	"otherUrl",				"Other",				0,	0,	"url",			0,	""),
-("Contacts",	"leadtype",				"Lead Type",			0,	0,	"dropdown",		0,	"3"),
-("Contacts",	"closedate",			"Close Date",			0,	0,	"date",			0,	""),
-("Contacts",	"interest",				"Interest",				0,	0,	"varchar",		0,	""),
-("Contacts",	"dealvalue",			"Deal Value",			0,	0,	"currency",		0,	NULL),
-("Contacts",	"leadstatus",			"Lead Status",			0,	0,	"dropdown",		0,	"5"),
-("Products",	"currency",				"Currency",				0,	0,	"dropdown",		0,	"2"),
-("Products",	"status",				"Status",				0,	0,	"dropdown",		0,	"1"),
-("Sales",		"id",					"ID",					0,	0,	"varchar",		0,	""),
-("Sales",		"name",					"Name",					0,	0,	"varchar",		0,	""),
-("Sales",		"accountName",			"Account",				0,	0,	"link",			0,	"accounts"),
-("Sales",		"quoteAmount",			"Quote Amount",			0,	0,	"currency",		0,	""),
-("Sales",		"salesStage",			"Sales Stage",			0,	0,	"dropdown",		0,	"6"),
-("Sales",		"expectedCloseDate",	"Expected Close Date",	0,	0,	"date",			0,	""),
-("Sales",		"probability",			"Probability",			0,	0,	"int",			0,	""),
-("Sales",		"leadSource",			"Lead Source",			0,	0,	"dropdown",		0,	"4"),
-("Sales",		"description",			"Description",			0,	0,	"text",			0,	""),
-("Sales",		"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	"multiple"),
-("Sales",		"createDate",			"Create Date",			0,	0,	"date",			0,	""),
-("Sales",		"associatedContacts",	"Contacts",				0,	0,	"varchar",		0,	""),
-("Sales",		"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	""),
-("Sales",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	""),
-("Accounts",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-("Accounts",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-("Accounts",	"website",				"Website",				0,	0,	"url",			0,	NULL),
-("Accounts",	"type",					"Type",					0,	0,	"varchar",		0,	NULL),
-("Accounts",	"annualRevenue",		"Revenue",				0,	0,	"currency",		0,	NULL),
-("Accounts",	"phone",				"Phone",				0,	0,	"varchar",		0,	NULL),
-("Accounts",	"tickerSymbol",			"Symbol",				0,	0,	"varchar",		0,	NULL),
-("Accounts",	"employees",			"Employees",			0,	0,	"int",			0,	NULL),
-("Accounts",	"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	"multiple"),
-("Accounts",	"createDate",			"Create Date",			0,	0,	"date",			0,	NULL),
-("Accounts",	"associatedContacts",	"Contacts",				0,	0,	"varchar",		0,	NULL),
-("Accounts",	"description",			"Description",			0,	0,	"text",			0,	NULL),
-("Accounts",	"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	NULL),
-("Accounts",	"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-("Actions",		"assignedTo",			"Assigned To",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"actionDescription",	"Description",			0,	0,	"varchar",		1,	NULL),
-("Actions",		"visibility",			"Visibility",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"associationId",		"Contact",				0,	0,	"varchar",		0,	NULL),
-("Actions",		"associationType",		"Association Type",		0,	0,	"varchar",		0,	NULL),
-("Actions",		"associationName",		"Association",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"dueDate",				"Due Date",				0,	0,	"varchar",		0,	NULL),
-("Actions",		"priority",				"Priority",				0,	0,	"varchar",		0,	NULL),
-("Actions",		"type",					"Action Type",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"createDate",			"Create Date",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"complete",				"Complete",				0,	0,	"varchar",		0,	NULL),
-("Actions",		"reminder",				"Reminder",				0,	0,	"varchar",		0,	NULL),
-("Actions",		"completedBy",			"Completed By",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"completeDate",			"Date Completed",		0,	0,	"varchar",		0,	NULL),
-("Actions",		"lastUpdated",			"Last Updated",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
-("Actions",		"allDay",				"All Day",				0,	0,	"boolean",		0,	NULL),
-("Actions",		"color",				"Color",				0,	0,	"varchar",		0,	NULL),
-("Quotes",		"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-("Quotes",		"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-("Quotes",		"accountName",			"Account",				0,	0,	"link",			0,	"accounts"),
-("Quotes",		"existingProducts",		"Existing Products",	0,	0,	"varchar",		0,	NULL),
-("Quotes",		"salesStage",			"Sales Stage",			0,	0,	"varchar",		0,	NULL),
-("Quotes",		"expectedCloseDate",	"Expected Close Date",	0,	0,	"date",			0,	NULL),
-("Quotes",		"probability",			"Probability",			0,	0,	"varchar",		0,	NULL),
-("Quotes",		"leadSource",			"Lead Source",			0,	0,	"varchar",		0,	NULL),
-("Quotes",		"description",			"Notes",				0,	0,	"text",			0,	NULL),
-("Quotes",		"assignedTo",			"Assigned To",			0,	0,	"assignment",	0,	""),
-("Quotes",		"createDate",			"Create Date",			0,	0,	"date",			0,	NULL),
-("Quotes",		"associatedContacts",	"Contacts",				0,	0,	"link",			0,	"contacts"),
-("Quotes",		"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	NULL),
-("Quotes",		"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
-("Quotes",		"status",				"Status",				0,	0,	"dropdown",		0,	"7"),
-("Quotes",		"expirationDate",		"Expiration Date",		0,	0,	"date",			0,	NULL),
-("Quotes",		"products",				"Products",				0,	0,	"varchar",		0,	NULL),
-("Products",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-("Products",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-("Products",	"type",					"Type",					0,	0,	"varchar",		0,	NULL),
-("Products",	"price",				"Price",				0,	0,	"currency",		0,	NULL),
-("Products",	"inventory",			"Inventory",			0,	0,	"varchar",		0,	NULL),
-("Products",	"description",			"Description",			0,	0,	"text",			0,	NULL),
-("Products",	"createDate",			"Create Date",			0,	0,	"date",			0,	NULL),
-("Products",	"lastUpdated",			"Last Updated",			0,	0,	"date",			0,	NULL),
-("Products",	"updatedBy",			"Updated By",			0,	0,	"varchar",		0,	NULL),
-("Products",	"adjustment",			"Adjustment",			0,	0,	"varchar",		0,	NULL),
-("Contacts",	"leadscore",			"Lead Score",			0,	0,	"rating",		0,	NULL),
-("Contacts",	"dealstatus",			"Deal Status",			0,	0,	"dropdown",		0,	"6"),
-("Quotes",		"locked",				"Locked",				0,	0,	"boolean",		0,	NULL),
-("Calendar",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-("Calendar",	"viewPermission",		"View Permission",		0,	0,	"assignment",	0,	"multiple"),
-("Calendar",	"editPermission",		"Edit Permission",		0,	0,	"assignment",	0,	"multiple")
+(modelName,		fieldName,			attributeLabel,		modified,	custom,	type,		required,	readOnly,	linkType) VALUES 
+("Contacts",	"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"name",					"Full Name",			0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"firstName",			"First Name",			0,		0,	"varchar",		1,			0,		NULL),
+("Contacts",	"lastName",				"Last Name",			0,		0,	"varchar",		1,			0,		NULL),
+("Contacts",	"title",				"Title",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"company",				"Account",				0,		0,	"link",			0,			0,		"Accounts"),
+("Contacts",	"phone",				"Phone",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"phone2",				"Phone 2",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"email",				"Email",				0,		0,	"email",		0,			0,		NULL),
+("Contacts",	"website",				"Website",				0,		0,	"url",			0,			0,		NULL),
+("Contacts",	"twitter",				"Twitter",				0,		0,	"url",			0,			0,		"twitter"),
+("Contacts",	"linkedin",				"Linkedin",				0,		0,	"url",			0,			0,		"linkedin"),
+("Contacts",	"skype",				"Skype",				0,		0,	"url",  		0,			0,		"skype"),
+("Contacts",	"googleplus",			"Googleplus",			0,		0,	"url",			0,			0,		"googleplus"),
+("Contacts",	"address",				"Address",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"address2",				"Address 2",			0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"city",					"City",					0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"state",				"State",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"zipcode",				"Postal Code",			0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"country",				"Country",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"visibility",			"Visibility",			0,		0,	"visibility",	1,			0,		NULL),
+("Contacts",	"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		NULL),
+("Contacts",	"backgroundInfo",		"Background Info",		0,		0,	"text",			0,			0,		NULL),
+("Contacts",	"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL),
+("Contacts",	"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL),
+("Contacts",	"leadSource",			"Lead Source",			0,		0,	"dropdown",		0,			0,		"4"),
+("Contacts",	"leadDate",				"Lead Date",			0,		0,	"date",			0,			0,		NULL),
+("Contacts",	"priority",				"Priority",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"rating",				"Confidence",			0,		0,	"rating",		0,			0,		NULL),
+("Contacts",	"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL),
+("Contacts",	"facebook",				"Facebook",				0,		0,	"url",			0,			0,		"facebook"),
+("Contacts",	"otherUrl",				"Other",				0,		0,	"url",			0,			0,		NULL),
+("Contacts",	"leadtype",				"Lead Type",			0,		0,	"dropdown",		0,			0,		"3"),
+("Contacts",	"closedate",			"Close Date",			0,		0,	"date",			0,			0,		NULL),
+("Contacts",	"interest",				"Interest",				0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"dealvalue",			"Deal Value",			0,		0,	"currency",		0,			0,		NULL),
+("Contacts",	"leadstatus",			"Lead Status",			0,		0,	"dropdown",		0,			0,		"5"),
+("Products",	"currency",				"Currency",				0,		0,	"dropdown",		0,			0,		"2"),
+("Products",	"status",				"Status",				0,		0,	"dropdown",		0,			0,		"1"),
+("Sales",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL),
+("Sales",		"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL),
+("Sales",		"accountName",			"Account",				0,		0,	"link",			0,			0,		"Accounts"),
+("Sales",		"quoteAmount",			"Quote Amount",			0,		0,	"currency",		0,			0,		NULL),
+("Sales",		"salesStage",			"Sales Stage",			0,		0,	"dropdown",		0,			0,		"6"),
+("Sales",		"expectedCloseDate",	"Expected Close Date",	0,		0,	"date",			0,			0,		NULL),
+("Sales",		"probability",			"Probability",			0,		0,	"int",			0,			0,		NULL),
+("Sales",		"leadSource",			"Lead Source",			0,		0,	"dropdown",		0,			0,		"4"),
+("Sales",		"description",			"Description",			0,		0,	"text",			0,			0,		NULL),
+("Sales",		"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		"multiple"),
+("Sales",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL),
+("Sales",		"associatedContacts",	"Contacts",				0,		0,	"varchar",		0,			0,		NULL),
+("Sales",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL),
+("Sales",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL),
+("Accounts",	"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL),
+("Accounts",	"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL),
+("Accounts",	"website",				"Website",				0,		0,	"url",			0,			0,		NULL),
+("Accounts",	"type",					"Type",					0,		0,	"varchar",		0,			0,		NULL),
+("Accounts",	"annualRevenue",		"Revenue",				0,		0,	"currency",		0,			0,		NULL),
+("Accounts",	"phone",				"Phone",				0,		0,	"varchar",		0,			0,		NULL),
+("Accounts",	"tickerSymbol",			"Symbol",				0,		0,	"varchar",		0,			0,		NULL),
+("Accounts",	"employees",			"Employees",			0,		0,	"int",			0,			0,		NULL),
+("Accounts",	"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		"multiple"),
+("Accounts",	"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL),
+("Accounts",	"associatedContacts",	"Contacts",				0,		0,	"varchar",		0,			0,		NULL),
+("Accounts",	"description",			"Description",			0,		0,	"text",			0,			0,		NULL),
+("Accounts",	"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL),
+("Accounts",	"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL),
+("Actions",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"assignedTo",			"Assigned To",			0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"actionDescription",	"Description",			0,		0,	"varchar",		1,			0,		NULL),
+("Actions",		"visibility",			"Visibility",			0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"associationId",		"Contact",				0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"associationType",		"Association Type",		0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"associationName",		"Association",			0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"dueDate",				"Due Date",				0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"priority",				"Priority",				0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"type",					"Action Type",			0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"createDate",			"Create Date",			0,		0,	"varchar",		0,			1,		NULL),
+("Actions",		"complete",				"Complete",				0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"reminder",				"Reminder",				0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"completedBy",			"Completed By",			0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"completeDate",			"Date Completed",		0,		0,	"varchar",		0,			0,		NULL),
+("Actions",		"lastUpdated",			"Last Updated",			0,		0,	"varchar",		0,			1,		NULL),
+("Actions",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL),
+("Actions",		"allDay",				"All Day",				0,		0,	"boolean",		0,			0,		NULL),
+("Actions",		"color",				"Color",				0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"accountName",			"Account",				0,		0,	"link",			0,			0,		"Accounts"),
+("Quotes",		"existingProducts",		"Existing Products",	0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"salesStage",			"Sales Stage",			0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"expectedCloseDate",	"Expected Close Date",	0,		0,	"date",			0,			0,		NULL),
+("Quotes",		"probability",			"Probability",			0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"leadSource",			"Lead Source",			0,		0,	"varchar",		0,			0,		NULL),
+("Quotes",		"description",			"Notes",				0,		0,	"text",			0,			0,		NULL),
+("Quotes",		"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		""),
+("Quotes",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL),
+("Quotes",		"associatedContacts",	"Contacts",				0,		0,	"link",			0,			0,		"Contacts"),
+("Quotes",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL),
+("Quotes",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL),
+("Quotes",		"status",				"Status",				0,		0,	"dropdown",		0,			0,		"7"),
+("Quotes",		"expirationDate",		"Expiration Date",		0,		0,	"date",			0,			0,		NULL),
+("Quotes",		"products",				"Products",				0,		0,	"varchar",		0,			0,		NULL),
+("Products",	"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL),
+("Products",	"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL),
+("Products",	"type",					"Type",					0,		0,	"varchar",		0,			0,		NULL),
+("Products",	"price",				"Price",				0,		0,	"currency",		0,			0,		NULL),
+("Products",	"inventory",			"Inventory",			0,		0,	"varchar",		0,			0,		NULL),
+("Products",	"description",			"Description",			0,		0,	"text",			0,			0,		NULL),
+("Products",	"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL),
+("Products",	"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL),
+("Products",	"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL),
+("Products",	"adjustment",			"Adjustment",			0,		0,	"varchar",		0,			0,		NULL),
+("Contacts",	"leadscore",			"Lead Score",			0,		0,	"rating",		0,			0,		NULL),
+("Contacts",	"dealstatus",			"Deal Status",			0,		0,	"dropdown",		0,			0,		"6"),
+("Quotes",		"locked",				"Locked",				0,		0,	"boolean",		0,			0,		NULL),
+("Calendar",	"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL),
+("Calendar",	"viewPermission",		"View Permission",		0,		0,	"assignment",	0,			0,		"multiple"),
+("Calendar",	"editPermission",		"Edit Permission",		0,		0,	"assignment",	0,			0,		"multiple"),
+("Campaign",	"id",					"ID",					0,		0,	"int",			0,			0,		NULL),
+("Campaign",	"masterId",				"Master Campaign ID",	0,		0,	"int",			0,			0,		NULL),
+("Campaign",	"name",					"Name",					0,		0,	"varchar",		1,			0,		NULL),
+("Campaign",	"assignedTo",			"Assigned To",			0,		0,	"assignment",	1,			0,		NULL),
+("Campaign",	"listId",				"Contact List",			0,		0,	"link",			0,			0,		"ContactList"),
+("Campaign",	"active",				"Active",				0,		0,	"boolean",		0,			0,		NULL),
+("Campaign",	"launched",				"Launched",				0,		0,	"boolean",		0,			1,		NULL),
+("Campaign",	"description",			"Description",			0,		0,	"text",			0,			0,		NULL),
+("Campaign",	"type",					"Type",					0,		0,	"dropdown",		0,			0,		8),
+("Campaign",	"cost",					"Cost",					0,		0,	"varchar",		0,			0,		NULL),
+("Campaign",	"subject",				"Subject",				0,		0,	"varchar",		0,			0,		NULL),
+("Campaign",	"content",				"Content",				0,		0,	"text",			0,			0,		NULL),
+("Campaign",	"complete",				"Complete",				0,		0,	"boolean",		0,			1,		NULL),
+("Campaign",	"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL),
+("Campaign",	"launchDate",			"Launch Date",			0,		0,	"date",			0,			0,		NULL),
+("Campaign",	"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL),
+("Campaign",	"updatedBy",			"Updated By",			0,		0,	"assignment",	0,			1,		NULL)
 ;') or addSqlError('Unable to create fields'.mysql_error());
 
-mysql_query("INSERT INTO  x2_dropdowns (name, options) VALUES 
-	('Product Status','". json_encode(array("Active"=>"Active", "Inactive"=>"Inactive")) ."'),
-	('Currency List','". json_encode(array("USD"=>"USD", "EUR"=>"EUR", "GBP"=>"GBP", "CAD"=>"CAD", "JPY"=>"JPY", "CNY"=>"CNY", "CHF"=>"CHF", "INR"=>"INR", "BRL"=>"BRL")) ."'),
-	('Lead Type','". json_encode(array("None"=>"None", "Web"=>"Web", "In Person"=>"In Person", "Phone"=>"Phone", "E-Mail"=>"E-Mail")) ."'),
-	('Lead Source','". json_encode(array("None"=>"None", "Google"=>"Google","Facebook"=>"Facebook","Walk In"=>"Walk In")) ."'),
-	('Lead Status', '{\"Unassigned\":\"Unassigned\",\"Assigned\":\"Assigned\",\"Accepted\":\"Accepted\",\"Working\":\"Working\",\"Dead\":\"Dead\",\"Rejected\":\"Rejected\"}'),
-	('Sales Stage', '{\"Working\":\"Working\",\"Won\":\"Won\",\"Lost\":\"Lost\"}')
-;")
-or addSqlError("Unable to create dropdown fields.".mysql_error());
+mysql_query('INSERT INTO x2_dropdowns (id, name, options) VALUES 
+	(1,	"Product Status",	"{\"Active\":\"Active\",\"Inactive\":\"Inactive\"}"),
+	(2,	"Currency List",	"{\"USD\":\"USD\",\"EUR\":\"EUR\",\"GBP\":\"GBP\",\"CAD\":\"CAD\",\"JPY\":\"JPY\",\"CNY\":\"CNY\",\"CHF\":\"CHF\",\"INR\":\"INR\",\"BRL\":\"BRL\"}"),
+	(3,	"Lead Type",		"{\"None\":\"None\",\"Web\":\"Web\",\"In Person\":\"In Person\",\"Phone\":\"Phone\",\"E-Mail\":\"E-Mail\"}"),
+	(4,	"Lead Source",		"{\"None\":\"None\",\"Google\":\"Google\",\"Facebook\":\"Facebook\",\"Walk In\":\"Walk In\"}"),
+	(5,	"Lead Status",		"{\"Unassigned\":\"Unassigned\",\"Assigned\":\"Assigned\",\"Accepted\":\"Accepted\",\"Working\":\"Working\",\"Dead\":\"Dead\",\"Rejected\":\"Rejected\"}"),
+	(6,	"Sales Stage",		"{\"Working\":\"Working\",\"Won\":\"Won\",\"Lost\":\"Lost\"}"),
+	(7,	"Quote Status",		"{\"Draft\":\"Draft\",\"Presented\":\"Presented\",\"Issued\":\"Issued\",\"Won\":\"Won\"}"),
+	(8,	"Campaign Type",	"{\"Email\":\"Email\",\"Call List\":\"Call List\",\"Physical Mail\":\"Physical Mail\"}")
+;') or addSqlError("Unable to create dropdown fields.".mysql_error());
 
 mysql_query("INSERT INTO  x2_dropdowns (name, options) VALUES 
 	('Quote Status', 	'". json_encode(array("Draft"=>"Draft", "Presented"=>"Presented", "Issued"=>"Issued", "Won"=>"Won"))."')
@@ -1100,6 +1271,8 @@ $backgrounds = array(
 	'santacruznight_blur.jpg',
 	'santa_cruz.jpg',
 	'santa_cruz_blur.jpg',
+	'devilsgolfb.jpg',
+	'eastroad6b.jpg',
 	'pigeon_point.jpg',
 	'pigeon_point_blur.jpg',
 	'redwoods.jpg',
@@ -1212,11 +1385,8 @@ mysql_close($con);
 
 // }
 
-if(!empty($sqlError)) {
+if(!empty($sqlError))
 	$errors[] = 'MySQL Error: '.$sqlError;
-	outputErrors();
-	// die();
-}
 outputErrors();
 
 

@@ -139,4 +139,9 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Para importar los contactos desde Outlook, primero favor de crear un archivo CSV (formato DOS) abriendo Outlook y exportando los contactos. Después, cargue el archivo aquí usando el siguiente formulario.',
 'Upload File'=>'Cargue el Archivo',
 'Contact Record Details'=>'Detalles de Contacto Registro',
+
+// Subscribe
+'Subscribe'=>'suscribir',
+'The information for {name} has changed.'=>'La información de {name} ha cambiado.',
+'Receive email updates every time information for {name} changes'=>'Recibe alertas de cada cambio en la información de tiempo para {name}',
 );

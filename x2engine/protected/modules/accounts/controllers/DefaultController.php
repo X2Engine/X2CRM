@@ -156,7 +156,7 @@ class DefaultController extends x2base {
         
 	public function actionCreate() {
 		$model=new Accounts;
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
                 foreach(Groups::model()->findAll() as $group){
@@ -231,7 +231,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
                 foreach(Groups::model()->findAll() as $group){
@@ -333,7 +333,7 @@ class DefaultController extends x2base {
 	}
         */
 	public function actionAddUser($id) {
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
                 foreach(Groups::model()->findAll() as $group){

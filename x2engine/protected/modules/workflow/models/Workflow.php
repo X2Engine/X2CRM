@@ -51,24 +51,27 @@ class Workflow extends CActiveRecord {
 	 * Returns the static model of the specified AR class.
 	 * @return Workflow the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
-		return 'x2_workflows';
-	}
+	public function tableName() { return 'x2_workflows'; }
+
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/workflow'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/workflow/getItems'; }
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(

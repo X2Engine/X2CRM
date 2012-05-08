@@ -300,12 +300,10 @@ class DefaultController extends x2base {
 				$action->lastUpdated = time();
 				$action->workflowId = (int)$workflowId;
 				$action->stageNumber = (int)$stageNumber;
-				// $action->actionDescription = '';
+				
 				$action->save();
-				// echo var_dump($action->getErrors());
-				// echo var_dump($action->attributes);
-				// echo var_dump($action->save());
-				// echo'derp';
+				
+				$this->updateWorkflowChangelog($action,'start');
 			}
 		}
 		$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
@@ -359,6 +357,8 @@ class DefaultController extends x2base {
 				$actionModels[0]->actionDescription = $comment;
 				$actionModels[0]->save();
 				
+				$this->updateWorkflowChangelog($actionModels[0],'complete');
+				
 				for($i=0; $i<=$stageCount; $i++) {
 					if($i != $stageNumber && empty($workflowStatus[$i]['completeDate']) && !empty($workflowStatus[$i]['createDate']))
 						break;
@@ -377,6 +377,11 @@ class DefaultController extends x2base {
 						$nextAction->stageNumber = $i;
 						// $nextAction->actionDescription = $comment;
 						$nextAction->save();
+						
+						$this->updateWorkflowChangelog($nextAction,'start');
+						
+						// $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
+						// $this->updateChangelog($model,$changes);
 						break;
 					}
 				}
@@ -398,21 +403,23 @@ class DefaultController extends x2base {
 			if(isset($workflowStatus[$stageNumber]['createDate'])) {
 
 				// find selected stage (and duplicates)
-				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
+				$actions = CActiveRecord::model('Actions')->findAllByAttributes(
 					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
 
-				if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
-				for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
-					$actionModels[$i]->delete();
+				if(count($actions) > 1)				// if there is more than 1 action for this stage,
+				for($i=1;$i<count($actions);$i++)		// delete all but the most recent one
+					$actions[$i]->delete();
 
-				if($workflowStatus[$stageNumber]['complete']) {
-					$actionModels[0]->setScenario('workflow');
-					$actionModels[0]->complete = 'No';
-					$actionModels[0]->completeDate = null;
-					$actionModels[0]->completedBy = '';
-					$actionModels[0]->save();
+				if($workflowStatus[$stageNumber]['complete']) {		// the stage is complete, so just set it to 'started'
+					$actions[0]->setScenario('workflow');
+					$actions[0]->complete = 'No';
+					$actions[0]->completeDate = null;
+					$actions[0]->completedBy = '';
+					$actions[0]->save();
+					
+					$this->updateWorkflowChangelog($actions[0],'revert');
 					
 					// delete all incomplete stages after this one
 					// CActiveRecord::model('Actions')->deleteAll(new CDbCriteria(
@@ -420,10 +427,14 @@ class DefaultController extends x2base {
 					// ));
 					
 					
-				} else {
-					CActiveRecord::model('Actions')->deleteAll(new CDbCriteria(
+				} else {	// the stage is already incomplete, so delete it and all subsequent stages
+					$subsequentActions = CActiveRecord::model('Actions')->findAll(new CDbCriteria(
 						array('condition'=>"associationId=$modelId AND associationType='$type' AND type='workflow' AND workflowId=$workflowId AND stageNumber >= $stageNumber")
 					));
+					foreach($subsequentActions as &$action) {
+						$this->updateWorkflowChangelog($action,'revert');
+						$action->delete();
+					}
 				}
 				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 			}
@@ -592,6 +603,34 @@ class DefaultController extends x2base {
 		
 		}
 	}
+	
+	private function updateWorkflowChangelog(&$action,$changeType) {
+	
+		// die(var_dump($action));
+		$changelog = new Changelog;
+		$changelog->type = ucfirst($action->associationType);
+		$changelog->itemId = $action->associationId;
+
+		$changelog->changedBy = Yii::app()->user->getName();
+		$changelog->timestamp = time();
+		
+		$workflowName = Yii::app()->db->createCommand()->select('name')->from('x2_workflows')->where('id=:id',array(':id'=>$action->workflowId))->queryScalar();
+		$stageName = Yii::app()->db->createCommand()->select('name')->from('x2_workflow_stages')->where('workflowId=:id AND stageNumber=:sn',array(':sn'=>$action->stageNumber,':id'=>$action->workflowId))->queryScalar();
+		
+		$stageText = Yii::t('workflow','<b>Stage {n}: {stageName}</b> in <b>{workflowName}</b>',array('{n}'=>$action->stageNumber,'{stageName}'=>$stageName,'{workflowName}'=>$workflowName));
+		
+		if($changeType == 'start')
+			$changelog->changed = Yii::t('workflow','<u>STARTED</u> {stage}',array('{stage}'=>$stageText));
+		elseif($changeType == 'complete')
+			$changelog->changed = Yii::t('workflow','<u>COMPLETED</u> {stage}',array('{stage}'=>$stageText));
+		elseif($changeType == 'revert')
+			$changelog->changed = Yii::t('workflow','<u>REVERTED</u> {stage}',array('{stage}'=>$stageText));
+		else
+			return;
+
+		$changelog->save();
+	}
+	
 	/**
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated

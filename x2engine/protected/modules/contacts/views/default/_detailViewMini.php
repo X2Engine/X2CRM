@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,7 +42,7 @@
 
 if($actionModel->associationId!=0)
 	$link = CHtml::link(CHtml::encode($model->name),
-		array('contacts/view','id'=>$model->id));
+		array('/contacts/default/view','id'=>$model->id));
 else
 	$link = Yii::t('actions','No one');
 ?>
@@ -66,7 +66,7 @@ else
 	<tr>
 		<td class="label"><?php echo $model->getAttributeLabel('assignedTo'); ?></td>
 		<td>
-			<?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : UserChild::getUserLinks($model->assignedTo); ?>
+			<?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : User::getUserLinks($model->assignedTo); ?>
 		</td>
 		<td class="label"><?php echo $model->getAttributeLabel('phone'); ?></td>
 		<td>

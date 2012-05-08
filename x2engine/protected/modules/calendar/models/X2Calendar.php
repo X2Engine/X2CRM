@@ -38,10 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-// Google Calendar Libraries
-require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
-
 class X2Calendar extends CActiveRecord
 {
 
@@ -83,7 +79,7 @@ class X2Calendar extends CActiveRecord
 	
 	public static function getViewableUserCalendarNames() {
 		$order = 'desc';
-		$userArray = CActiveRecord::model('UserChild')->findAll();
+		$userArray = CActiveRecord::model('User')->findAll();
 		$names = array('Anyone' => 'Anyone');
 		foreach ($userArray as $user) {
 			if(in_array(Yii::app()->user->name, explode(',', $user->calendarViewPermission)) || 
@@ -102,7 +98,7 @@ class X2Calendar extends CActiveRecord
 	
 	public static function getEditableUserCalendarNames() {
 		$order = 'desc';
-		$userArray = CActiveRecord::model('UserChild')->findAll();
+		$userArray = CActiveRecord::model('User')->findAll();
 		$names = array('Anyone' => 'Anyone');
 		foreach ($userArray as $user) {
 			if(in_array(Yii::app()->user->name, explode(',', $user->calendarEditPermission)) || 
@@ -213,7 +209,7 @@ class X2Calendar extends CActiveRecord
 	
 	
 	public static function getCalendarFilters() {
-		$user = UserChild::model()->findByPk(Yii::app()->user->id);
+		$user = User::model()->findByPk(Yii::app()->user->id);
 		$calendarFilters = explode(',', $user->calendarFilter);
 		$filters = X2Calendar::getCalendarFilterNames();
 		
@@ -235,6 +231,12 @@ class X2Calendar extends CActiveRecord
 	// get a google calendar service instance using an access token and,
 	// if necesary, refresh the access token
 	public function getGoogleCalendar() {
+		// Google Calendar Libraries
+		$timezone = date_default_timezone_get();
+		require_once "protected/extensions/google-api-php-client/src/apiClient.php";
+		require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+		date_default_timezone_set($timezone);
+
 		$admin = Yii::app()->params->admin;
 		if($admin->googleIntegration) {
 			$client = new apiClient();
@@ -261,6 +263,13 @@ class X2Calendar extends CActiveRecord
 	}
 	
 	public function createGoogleEvent($action) {
+	
+		// Google Calendar Libraries
+		$timezone = date_default_timezone_get();
+		require_once "protected/extensions/google-api-php-client/src/apiClient.php";
+		require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+		date_default_timezone_set($timezone);
+		
 		$googleCalendar = $this->getGoogleCalendar();
 	
 		$event = new Event();
@@ -300,8 +309,6 @@ class X2Calendar extends CActiveRecord
 		}
 		
 		$googleCalendar->events->insert($this->googleCalendarId, $event);
-		
-		$this->redirect(array('/calendar'));
 	}
 
 	public function search() {

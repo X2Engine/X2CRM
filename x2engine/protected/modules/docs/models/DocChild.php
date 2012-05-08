@@ -77,6 +77,7 @@ class DocChild extends Docs {
 		$templates = CActiveRecord::model('Docs')->findAllByAttributes(array('type'=>'email'),new CDbCriteria(array('order'=>'lastUpdated DESC')));
 		foreach($templates as &$template)
 			$templateLinks[$template->id] = $template->title;
+		natcasesort($templateLinks);
 		return $templateLinks;
 	}
 	

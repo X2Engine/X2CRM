@@ -66,7 +66,7 @@ $this->renderPartial('_detailView',array('model'=>$model));
 
 if (empty($model->type) || $model->type=='Web Lead') {
 	if ($model->complete=='Yes')
-		echo CHtml::link(Yii::t('actions','Uncomplete'),array('actions/uncomplete','id'=>$model->id),array('class'=>'x2-button'));
+		echo CHtml::link(Yii::t('actions','Uncomplete'),array('/actions/default/uncomplete','id'=>$model->id),array('class'=>'x2-button'));
 	else {
 ?>
 <?php

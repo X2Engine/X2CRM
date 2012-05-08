@@ -37,151 +37,53 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?>
-<div class="form no-border" style="float:left;width:590px;">
 
-<?php  
-include("protected/config/marketingConfig.php");
-$form=$this->beginWidget('CActiveForm', array(
-	'id'=>'marketing-form',
+
+// editor CSS file	
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/tinyeditor/style.css');
+
+// editor javascript files
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor/tinyeditor.js');
+
+
+Yii::app()->clientScript->registerScript('editorSetup',"
+
+editor=new TINY.editor.edit('editor',{
+	id:'Campaign_content', // (required) ID of the textarea
+	width:580, // (optional) width of the editor
+	height:250, // (optional) heightof the editor
+	cssclass:'te', // (optional) CSS class of the editor
+	controlclass:'tecontrol', // (optional) CSS class of the buttons
+	rowclass:'teheader', // (optional) CSS class of the button rows
+	dividerclass:'tedivider', // (optional) CSS class of the button diviers
+	controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|', 'orderedlist', 'unorderedlist', '|' ,'outdent' ,'indent', '|', 'leftalign', 'centeralign', 'rightalign', 'blockjustify', '|', 'unformat', '|', 'undo', 'redo','n',  'font', 'size', 'style','|', 'image', 'hr', 'link', 'unlink', '|', 'cut', 'copy', 'paste'], // (required) options you want available, a '|' represents a divider and an 'n' represents a new row
+	footer:true, // (optional) show the footer
+	fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
+	xhtml:true, // (optional) generate XHTML vs HTML
+	cssfile:'style.css', // (optional) attach an external CSS file to the editor
+	css:'', // (optional) attach CSS to the editor
+	bodyid:'editor', // (optional) attach an ID to the editor body
+	footerclass:'tefooter', // (optional) CSS class of the footer
+	toggle:{text:'source',activetext:'wysiwyg',cssclass:'toggle'}, // (optional) toggle to markup view options
+	resize:{cssclass:'resize'} // (optional) display options for the editor resize
+});
+
+
+
+",CClientScript::POS_END);
+
+
+$form = $this->beginWidget('CActiveForm', array(
+	'id'=>'campaign-form',
 	'enableAjaxValidation'=>false,
-)); 
-$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Campaign'));
-$nonCustom=array();
-$custom=array();
-foreach($fields as $field){
-    if($field->custom==0){
-        $nonCustom[$field->fieldName]=$field;
-    }else{
-        $custom[$field->fieldName]=$field;
-    }
-}
+	'htmlOptions'=>array('onsubmit'=>'editor.post();')
+));
 
-?>
-<div class="span-15" id="form-box" style="position:relative;overflow:hidden;height:700px;">
-<?php
-foreach($fields as $field){ ?>
-    <?php if($field->fieldName!="id"){ 
-        $size=$field->size;
-        $pieces=explode(":",$size);
-        $width=$pieces[0];
-        $height=$pieces[1];
-        $position=$field->coordinates;
-        $pieces=explode(":",$position);
-        $left=$pieces[0];
-        $top=$pieces[1];
-        
-        ?> 
-    <div class="draggable" style="padding:10px;border:solid;border-width:1px;position:absolute;left:<?php echo $left;?>px;top:<?php echo $top;?>px;" id="<?php echo $field->fieldName ?>">
-    <div class="label"><label for="Contacts_<?php echo $field->fieldName;?>"><?php echo Yii::t('contacts',$field->attributeLabel); ?><span class="required">*</span></label></div>
-                <?php
-                    $fieldName=$field->fieldName;(isset($editor) && $editor)?$disabled='disabled':$disabled="";
-                    if($field->type=='varchar'){
-			$default = empty($model->$fieldName);
-			if($default) 
-				$model->$fieldName = Yii::t('contacts',$field->attributeLabel);
-			echo $form->textField($model, $fieldName, array(
-				'maxlength'=>40,
-                                'class'=>'resizable',
-				'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'tabindex'=>$field->tabOrder,
-                                'disabled'=>$disabled,
-			));
-                        
-                        }elseif($field->type=='text'){
-                           $default = empty($model->$fieldName);
-			if($default) 
-				$model->$fieldName = Yii::t('contacts',$field->attributeLabel);
-			echo $form->textArea($model, $fieldName, array(
-				'maxlength'=>40,
-                                'class'=>'resizable',
-				'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
-				'onfocus'=>$default? 'toggleText(this);' : null,
-				'onblur'=>$default? 'toggleText(this);' : null,
-				'tabindex'=>$field->tabOrder,
-                                'disabled'=>$disabled,
-			)); 
-                        }elseif($field->type=='date'){
-                            $default = empty($model->$fieldName);
-                            if($default) 
-                                    $model->$fieldName = date("Y-m-d H:i:s");
-                            Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-                            $this->widget('CJuiDateTimePicker',array(
-                                'model'=>$model, //Model object
-                                'attribute'=>$field->fieldName, //attribute name
-                                'mode'=>'datetime', //use "time","date" or "datetime" (default)
-                                'options'=>array(
-                                    'dateFormat'=>'yy-mm-dd',
-                                    
-                                ), // jquery plugin options
-                                'htmlOptions'=>array(
-                                    'class'=>'resizable',
-                                    'disabled'=>$disabled,
-                                    'style'=>"height:".$height.";width:".$width.";",
-                                    'tabindex'=>$field->tabOrder,
-                                ),
-                                'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-                            )); 
-                        }elseif(preg_match('/dropdown/',$field->type)){
-                            $pieces=explode(":",$field->type);
-                            $id=$pieces[1];
-                            $dropdown=Dropdowns::model()->findByPk($id);
-                            $default = empty($model->$fieldName);
-                            if($default) 
-                                    $model->$fieldName = Yii::t('contacts',$field->attributeLabel);
-                            echo $form->dropDownList($model, $fieldName,json_decode($dropdown->options), array(
-                                    'maxlength'=>40,
-                                    'class'=>'resizable',
-                                    'style'=>"height:".$height.";width:".$width.";",
-                                    'onfocus'=>$default? 'toggleText(this);' : null,
-                                    'onblur'=>$default? 'toggleText(this);' : null,
-                                    'tabindex'=>$field->tabOrder,
-                                    'disabled'=>$disabled,
-                            ));
-                        }
-                        
-                        
-                        ?>
-    </div>
-                        <?php 
-                        if($field->visible==0){
-                            Yii::app()->clientScript->registerScript($field->fieldName,'
-                                $("#'.$field->fieldName.'").css({"visibility":"hidden"});
-                            ');
-                        }
-                        
-                        }
-}
+$this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'form'=>$form, 'modelName'=>'Campaign'));
 
 
+echo '	<div class="row buttons">'."\n";
+echo '		'.CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo "	</div>\n";
 
-?>
-</div>
-
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
-	</div>
-<?php $this->endWidget(); ?>
-</div><!-- form -->
-<?php
-if(isset($editor)){
-    if($editor){
-        ?>
-        <script>
-            $(function(){
-                $('.draggable').draggable({ grid: [10, 10], containment:'parent' });
-                $('.resizable').resizable({ grid: [5, 5] });
-            });
-        </script>
-        <?php
-    }
-}else{
-    ?>
-    <script>
-        $(".draggable").css({border: 'none'});
-    </script>
-    <?php
-}
-?>
+$this->endWidget();

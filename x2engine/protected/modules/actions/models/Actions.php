@@ -63,105 +63,32 @@
  * @property integer $workflowId
  * @property integer $stageNumber
  */
-class Actions extends CActiveRecord
-{
+class Actions extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Actions the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
-		return 'x2_actions';
-	}
-
+	public function tableName() { return 'x2_actions'; }
+	
 	/**
-	 * @return array validation rules for model attributes.
+	 * @return string the route to view this model
 	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-            
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-                $arr=array(
-                    'varchar'=>array(),
-                    'text'=>array(),
-                    'date'=>array(),
-                    'dropdown'=>array(),
-                    'int'=>array(),
-                    'email'=>array(),
-                    'currency'=>array(),
-                    'url'=>array(),
-                    'float'=>array(),
-                    'boolean'=>array(),
-                    'required'=>array(),
-                    
-                );
-                $rules=array();
-                foreach($fields as $field){
-			$arr[$field->type][]=$field->fieldName;
-			if($field->required) {
-                        if(!($field->fieldName == 'actionDescription' && $this->scenario == 'workflow'))
-                                $arr['required'][]=$field->fieldName;
-                        }
-                        if($field->type!='date')
-                            $arr['search'][]=$field->fieldName;
-		}
-                $arr['search'][]='name';
-		foreach($arr as $key=>$array){
-			switch($key){
-				case 'email':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				case 'required':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-                                case 'search':
-                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
-                                        break;
-				case 'int':
-					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
-					break;
-				case 'float':
-					$rules[]=array(implode(',',$array),'type','type'=>'float');
-					break;
-				case 'boolean':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				default:
-					break;
-				
-			}
-			
-		}  
-                return $rules;
-		/*return array(
-			array('actionDescription, visibility, associationId', 'required', 'on'=>'insert'),
-			array('visibility, associationId', 'required', 'on'=>'workflow'),
-			array('visibility, associationId, dueDate, showTime, createDate, completeDate, lastUpdated, workflowId, stageNumber', 'numerical', 'integerOnly'=>true),
-			array('assignedTo, associationType, type, completedBy, updatedBy', 'length', 'max'=>20),
-			array('associationName', 'length', 'max'=>100),
-			array('priority', 'length', 'max'=>10),
-			array('complete, reminder', 'length', 'max'=>5),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, assignedTo, actionDescription, visibility, associationId, associationType, associationName, dueDate, showTime, priority, type, createDate, complete, reminder, completedBy, completeDate, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
-		);*/
-	}
+	public function getDefaultRoute() { return '/actions'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/actions/getItems'; }
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -351,7 +278,7 @@ class Actions extends CActiveRecord
 		return $this->searchBase($criteria);
 	}
 	
-	private function searchBase($criteria) {
+	public function searchBase($criteria) {
 		
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
                 foreach($fields as $field){
@@ -372,7 +299,7 @@ class Actions extends CActiveRecord
                     
                 }
 		
-		$criteria->addCondition('type != "workflow" OR type IS NULL');
+		$criteria->addCondition('(type != "workflow" AND type!="email") OR type IS NULL');
 		
 		
 		$dataProvider=new SmartDataProvider('Actions', array(
@@ -387,7 +314,7 @@ class Actions extends CActiveRecord
 	
 		return $dataProvider;
 	}
-        private function compareLookup($field, $data){
+        protected function compareLookup($field, $data){
             if(is_null($data) || $data=="") return null; 
             $type=ucfirst($field->linkType);
             if($type=='Contacts'){
@@ -405,7 +332,7 @@ class Actions extends CActiveRecord
                 return -1;
         }
         
-        private function compareBoolean($data){
+        protected function compareBoolean($data){
             if(is_null($data) || $data=='') return null;
             if(is_numeric($data)) return $data;
             if($data==Yii::t('actions',"Yes"))
@@ -416,7 +343,7 @@ class Actions extends CActiveRecord
                 return -1;
         }
         
-        private function compareAssignment($data){
+        protected function compareAssignment($data){
             if(is_null($data)) return null;
             if(is_numeric($data)){
                 $models=Groups::model()->findAllBySql("SELECT * FROM x2_groups WHERE name LIKE '%$data%'");
@@ -426,7 +353,7 @@ class Actions extends CActiveRecord
                 }
                 return count($arr)>0?$arr:-1;
             }else{
-                $models=UserChild::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
+                $models=User::model()->findAllBySql("SELECT * FROM x2_users WHERE CONCAT(firstName,' ',lastName) LIKE '%$data%'");
                 $arr=array();
                 foreach($models as $model){
                     $arr[]=$model->username;

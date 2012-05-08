@@ -55,30 +55,32 @@
  * @property integer $lastUpdated
  * @property string $updatedBy
  */
-class Templates extends X2Model
-{
+class Templates extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Template the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
-		return 'x2_templates';
-	}
+	public function tableName() { return 'x2_templates'; }
+
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/templates'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/templates/getItems'; }
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));

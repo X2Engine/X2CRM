@@ -37,13 +37,34 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+
+// find height of note box, note message, and use these to find height of widget
+$widgetSettings = ProfileChild::getWidgetSettings();
+$noteSettings = $widgetSettings->NoteBox;
+
+$noteboxHeight = $noteSettings->noteboxHeight;
+$notemessageHeight = $noteSettings->notemessageHeight;
+
+$noteboxContainerHeight = $noteboxHeight + 2;
+$notemessageContainerHeight = $notemessageHeight + 6;
+
+$noteContainerHeight = $noteboxHeight + $notemessageHeight + 45;
+$noteContainerFixHeight = $noteContainerHeight + 5;
+
 ?>
-<div id="note-box"><?php if(isset($data) && count($data)>0){
-foreach($data as $item)
-	echo $item->data.'<br /><br />';
-}
-?></div>
+<div id="note-container-fix" style="height: <?php echo $noteContainerFixHeight; ?>px">
+<div id="note-container" style="height: <?php echo $noteContainerHeight; ?>px">
+
+<div id="note-box-container" style="height: <?php echo $noteboxHeight; ?>px; margin-bottom: 5px">
+	<div id="note-box" style="height: <?php echo $noteboxHeight; ?>px"><?php if(isset($data) && count($data)>0){
+	foreach($data as $item)
+		echo $item->data.'<br /><br />';
+	}
+	?></div>
+</div>
+
 <?php
+$saveWidgetHeight = $this->controller->createUrl('/site/saveWidgetHeight');
 Yii::app()->clientScript->registerScript('updateNote', "
 	$(document).ready(updateNotes());	//update on page load
 	function updateNotes(){
@@ -61,12 +82,50 @@ Yii::app()->clientScript->registerScript('updateNote', "
 			}
 		});
 	}
+	
+$(function() {
+	$('#note-container').resizable({
+		handles: 's',
+		minHeight: 75,
+		alsoResize: '#note-container-fix, #note-box, #note-box-container',
+		start: function(event, ui) {
+			$('#note-container').resizable('option', 'minHeight', parseInt($('#note-message-container').css('height'), 10) + 67);
+		},
+		stop: function(event, ui) {
+			// done resizing, save height to user profile for next time user visits page
+			$.post('$saveWidgetHeight', {Widget: 'NoteBox', Height: {noteboxHeight: parseInt($('#note-box').css('height')), notemessageHeight: parseInt($('#note-message').css('height'))}});
+		},
+	});
+	$('#note-message-container').resizable({
+		handles: 's',
+		minHeight: 30,
+		alsoResize: '#note-message, #note-container, #note-container-fix',
+		stop: function(event, ui) {
+			// done resizing, save height to user profile for next time user visits page
+			$.post('$saveWidgetHeight', {Widget: 'NoteBox', Height: {noteboxHeight: parseInt($('#note-box').css('height')), notemessageHeight: parseInt($('#note-message').css('height'))}});
+		},
+	});
+	$('#note-box-container').resizable({
+		handles: 's',
+		minHeight: 30,
+		alsoResize: '#note-box, #note-container, #note-container-fix',
+		stop: function(event, ui) {
+			// done resizing, save height to user profile for next time user visits page
+			$.post('$saveWidgetHeight', {Widget: 'NoteBox', Height: {noteboxHeight: parseInt($('#note-box').css('height')), notemessageHeight: parseInt($('#note-message').css('height'))}});
+		},
+	});
+});	
+
 ",CClientScript::POS_HEAD);
 ?>
-<?php
-echo CHtml::beginForm();
 
-echo CHtml::textArea('note-message');
+<?php echo CHtml::beginForm(); ?>
+
+<div id="note-message-container" style="height: <?php echo $notemessageContainerHeight; ?>px">
+	<?php echo CHtml::textArea('note-message', '', array('style'=>"height: ". $notemessageHeight . "px;")); ?>
+</div>
+
+<?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Add Note'),
 	array('/site/addPersonalNote'),
@@ -81,4 +140,8 @@ echo CHtml::ajaxSubmitButton(
 );
 
 echo CHtml::endForm();
+
+echo "</div>";
+echo "</div>";
+
 ?>

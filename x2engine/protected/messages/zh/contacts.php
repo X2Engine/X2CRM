@@ -139,4 +139,9 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'若要从Outlook中输入您的联系人，请首先创建一个CSV文件（DOS格式）打开Outlook和输出联系人。然后使用下面的表格以上传文件。',
 'Upload File'=>'上传文件',
 'Contact Record Details'=>'联系人的详细档案',
+
+// Subscribe
+'Subscribe'=>'订阅',
+'The information for {name} has changed.'=>'{name}的信息已更改。',
+'Receive email updates every time information for {name} changes'=>'收到电子邮件更新，每一次信息交换{name}',
 );

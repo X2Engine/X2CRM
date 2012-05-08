@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$authorRecord = Users::model()->findByAttributes(array('username'=>$data->user));
+$authorRecord = User::model()->findByAttributes(array('username'=>$data->user));
 $author = $authorRecord->firstName.' '.$authorRecord->lastName;
 if($authorRecord->id != $data->associationId && $data->associationId != 0) {
 		$temp=Profile::model()->findByPk($data->associationId);

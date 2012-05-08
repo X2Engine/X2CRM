@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -103,17 +103,16 @@ class Profile extends CActiveRecord
 		return array(
 			array('fullName, username, status', 'required'),
 			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView, showWorkflow, enableBgFade', 'numerical', 'integerOnly'=>true),
+			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
 			array('emailUseSignature', 'length', 'max'=>10),
+			array('startPage', 'length', 'max'=>30),
 			array('fullName', 'length', 'max'=>60),
 			array('username, updatedBy', 'length', 'max'=>20),
 			array('officePhone, cellPhone, language', 'length', 'max'=>40),
-			array('tagLine, emailAddress', 'length', 'max'=>250),
 			array('timeZone, backgroundImg', 'length', 'max'=>100),
-			array('widgets, widgetOrder', 'length', 'max'=>255),
-			array('emailSignature', 'length', 'max'=>512),
-			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
-			array('startPage', 'length', 'max'=>30),
-			array('notes, avatar, gridviewSettings, formSettings', 'safe'),
+			array('widgets, tagLine, emailAddress', 'length', 'max'=>255),
+			array('widgetOrder, emailSignature', 'length', 'max'=>512),
+			array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on'=>'search'),
@@ -151,7 +150,12 @@ class Profile extends CActiveRecord
 			'allowPost'=>Yii::t('profile','Allow users to post on your profile?'),
 			'language'=>Yii::t('profile','Language'),
 			'timeZone'=>Yii::t('profile','Time Zone'),
-			'widgets'=>Yii::t('profile','Enable group chat?'),
+			'widgets'=>Yii::t('profile','Widgets'),
+			// 'groupChat'=>Yii::t('profile','Enable group chat?'),
+			'widgetOrder'=>Yii::t('profile','Widget Order'),
+			'widgetSettings'=>Yii::t('profile','Widget Settings'),
+			'resultsPerPage'=>Yii::t('profile','Results Per Page'),
+			'menuTextColor'=>Yii::t('profile','Menu Text Color'),
 			'menuBgColor'=>Yii::t('profile','Menu Color'),
 			'menuTextColor'=>Yii::t('profile','Menu Text Color'),
 			'backgroundColor'=>Yii::t('profile','Background Color'),
@@ -162,6 +166,8 @@ class Profile extends CActiveRecord
 			'showWorkflow'=>Yii::t('profile','Show Workflow'),
 			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
 			'formSettings'=>Yii::t('profile','Form Settings'),
+			'emailUseSignature' => Yii::t('admin','Email Signature'),
+			'emailSignature' => Yii::t('admin','My Signature'),
 			'enableBgFade'=>Yii::t('profile','Enable Background Fading'),
 		);
 	}
@@ -183,27 +189,28 @@ class Profile extends CActiveRecord
 		$criteria->compare('officePhone',$this->officePhone,true);
 		$criteria->compare('cellPhone',$this->cellPhone,true);
 		$criteria->compare('emailAddress',$this->emailAddress,true);
-		$criteria->compare('notes',$this->notes,true);
+		// $criteria->compare('notes',$this->notes,true);
 		$criteria->compare('status',$this->status);
-		$criteria->compare('tagLine',$this->tagLine,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
-		$criteria->compare('avatar',$this->avatar,true);
-		$criteria->compare('allowPost',$this->allowPost);
-		$criteria->compare('language',$this->language,true);
-		$criteria->compare('timeZone',$this->timeZone,true);
-		$criteria->compare('resultsPerPage',$this->resultsPerPage);
-		$criteria->compare('widgets',$this->widgets,true);
-		$criteria->compare('widgetOrder',$this->widgetOrder,true);
-		$criteria->compare('backgroundColor',$this->backgroundColor,true);
-		$criteria->compare('menuBgColor',$this->menuBgColor,true);
-		$criteria->compare('menuTextColor',$this->menuTextColor,true);
-		$criteria->compare('backgroundImg',$this->backgroundImg,true);
-		$criteria->compare('pageOpacity',$this->pageOpacity);
-		$criteria->compare('startPage',$this->startPage,true);
-		$criteria->compare('showSocialMedia',$this->showSocialMedia);
-		$criteria->compare('showDetailView',$this->showDetailView);
-		$criteria->compare('showWorkflow',$this->showWorkflow);
+		// $criteria->compare('tagLine',$this->tagLine,true);
+		// $criteria->compare('lastUpdated',$this->lastUpdated);
+		// $criteria->compare('updatedBy',$this->updatedBy,true);
+		// $criteria->compare('avatar',$this->avatar,true);
+		// $criteria->compare('allowPost',$this->allowPost);
+		// $criteria->compare('language',$this->language,true);
+		// $criteria->compare('timeZone',$this->timeZone,true);
+		// $criteria->compare('resultsPerPage',$this->resultsPerPage);
+		// $criteria->compare('widgets',$this->widgets,true);
+		// $criteria->compare('widgetOrder',$this->widgetOrder,true);
+		// $criteria->compare('widgetSettings',$this->widgetSettings,true);
+		// $criteria->compare('backgroundColor',$this->backgroundColor,true);
+		// $criteria->compare('menuBgColor',$this->menuBgColor,true);
+		// $criteria->compare('menuTextColor',$this->menuTextColor,true);
+		// $criteria->compare('backgroundImg',$this->backgroundImg,true);
+		// $criteria->compare('pageOpacity',$this->pageOpacity);
+		// $criteria->compare('startPage',$this->startPage,true);
+		// $criteria->compare('showSocialMedia',$this->showSocialMedia);
+		// $criteria->compare('showDetailView',$this->showDetailView);
+		// $criteria->compare('showWorkflow',$this->showWorkflow);
 		
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

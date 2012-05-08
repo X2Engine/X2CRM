@@ -48,7 +48,7 @@ Yii::app()->clientScript->registerScript('backgroundUploader',"function showAtta
 	else
 		e.style.display='none';
 }
-var ar_ext = ['png', 'jpg'];        // array with allowed extensions
+var ar_ext = ['png', 'jpg','jpe','jpeg','gif','svg'];        // array with allowed extensions
 
 function checkName() {
 // - www.coursesweb.net
@@ -59,7 +59,7 @@ function checkName() {
 	// check the file extension
 	var re = 0;
 	for(var i=0; i<ar_ext.length; i++) {
-		if(ar_ext[i] == ar_name[1]) {
+		if(ar_ext[i] == ar_name[1].toLowerCase()) {
 			re = 1;
 			break;
 		}
@@ -67,9 +67,8 @@ function checkName() {
 	// if re is 1, the extension is in the allowed list
 	if(re==1) {
 		// enable submit
-		$('#upload-button').attr('disabled','');
-	}
-	else {
+		$('#upload-button').removeAttr('disabled');
+	} else {
 		// delete the file name, disable Submit, Alert message
 		$('#backgroundImg').val('');
 		$('#upload-button').attr('disabled','disabled');

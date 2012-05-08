@@ -94,7 +94,7 @@ if(empty($data->type)) {
 				echo Yii::t('actions','Email Message:').' '.Actions::formatDate($data->completeDate);
 			else
 				echo Yii::t('actions','Attachment:').' '.Actions::formatDate($data->completeDate);
-				//UserChild::getUserLinks($data->completedBy);
+				//User::getUserLinks($data->completedBy);
 				
 			echo ' ';
 			
@@ -149,25 +149,25 @@ if(empty($data->type)) {
 			
 			
 		} else
-			echo $this->convertUrls($data->actionDescription);	// convert LF and CRLF to <br />
+			echo $this->convertUrls(($data->actionDescription));	// convert LF and CRLF to <br />
 		?>
 	</div>
 	<div class="footer">
 	<?php if(empty($data->type) || $data->type=='workflow') {
 		if($data->complete == 'Yes') {
-			echo Yii::t('actions','Completed by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
+			echo Yii::t('actions','Completed by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
 		} else {
-			$userLink = UserChild::getUserLinks($data->assignedTo);
+			$userLink = User::getUserLinks($data->assignedTo);
 			$userLink = empty($userLink)? Yii::t('actions','Anyone') : $userLink;
 			echo Yii::t('actions','Assigned to {name}',array('{name}'=>$userLink));
 		}
 	} else if($data->type == 'note' || $data->type == 'call') {
-		echo UserChild::getUserLinks($data->completedBy);
+		echo User::getUserLinks($data->completedBy);
 		// echo ' '.Actions::formatDate($data->completeDate);
 	} else if($data->type == 'attachment' && $data->completedBy!='Email') {
-		echo Yii::t('media','Uploaded by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
+		echo Yii::t('media','Uploaded by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
 	} else if($data->type == 'email' && $data->completedBy!='Email') {
-		echo Yii::t('media','Sent by {name}',array('{name}'=>UserChild::getUserLinks($data->completedBy)));
+		echo Yii::t('media','Sent by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
 	}
 	?>
 	</div>

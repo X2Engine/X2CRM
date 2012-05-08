@@ -94,11 +94,11 @@ if(isset($_GET['model'])){
 if($formUrl==""){
     
 }elseif($model instanceof Contacts){
-    $this->renderPartial($formUrl,array('contactModel'=>$model,'users'=>UserChild::getNames(),'editor'=>true));
+    $this->renderPartial($formUrl,array('contactModel'=>$model,'users'=>User::getNames(),'editor'=>true));
 }elseif($model instanceof Actions){
-    $this->renderPartial($formUrl,array('actionModel'=>$model,'users'=>UserChild::getNames(),'editor'=>true));
+    $this->renderPartial($formUrl,array('actionModel'=>$model,'users'=>User::getNames(),'editor'=>true));
 }else{
-    $this->renderPartial($formUrl,array('model'=>$model,'users'=>UserChild::getNames(),'contacts'=>Contacts::getAllNames(),'editor'=>true));
+    $this->renderPartial($formUrl,array('model'=>$model,'users'=>User::getNames(),'contacts'=>Contacts::getAllNames(),'editor'=>true));
 }
 
 $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($model)), array('order'=>'tabOrder'));

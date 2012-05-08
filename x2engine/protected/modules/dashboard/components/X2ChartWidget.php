@@ -98,7 +98,8 @@ abstract class X2ChartWidget extends CWidget {
 		$this->options = CMap::mergeArray($this->defaultOptions, $this->options);
 		$this->htmlOptions = CMap::mergeArray($this->defaultHtmlOptions, $this->htmlOptions);
 
-		$this->htmlOptions['id'] = 'x2Chart_' . $this->getId();
+		if(!isset($this->htmlOptions['id']))
+			$this->htmlOptions['id'] = 'x2Chart_' . $this->getId();
 	}
 
 	/**

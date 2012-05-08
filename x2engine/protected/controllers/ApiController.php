@@ -309,6 +309,9 @@ class ApiController extends x2base {
     }
     
     public function actionVoip(){
+        $file="calls.log";
+        $fp=fopen($file,"a+");
+        fwrite($fp,"A call was logged at ".date("m/d/Y @ g:i:s A")." with this data ".print_r($_POST));
         if(isset($_POST) && count($_POST)>0){
             echo "TRUE";
         }else{

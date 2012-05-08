@@ -38,59 +38,33 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = $model->attributeLabels();
-include("protected/config/marketingConfig.php");
-Yii::app()->clientScript->registerScript('stopEdit','
-	$(document).ready(function(){
-		$("td#description a").click(function(e){
-			e.stopPropagation();
-		});
-	});
-');
+class TopSites extends CWidget {
 
-$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Campaign'));
-$nonCustom=array();
-$custom=array();
-foreach($fields as $field){
-    if($field->custom==0){
-        $nonCustom[$field->fieldName]=$field;
-    }else{
-        $custom[$field->fieldName]=$field;
-    }
-}
-?>
-<table class="details">
-        <?php if($nonCustom['name']->visible==1) { ?>
-	<tr>
-		<td class="label" width="25%"><?php echo $attributeLabels['name']; ?></td>
-		<td><?php echo $model->name; ?></td>
-	</tr>
-        <?php } ?>
-        <?php if($nonCustom['description']->visible==1) { ?>
-	<tr>
-		<td class="label">
-			<?php echo $attributeLabels['description']; ?>
-		</td>
-		<td class="text-field"><div class="spacer"></div>
-			<?php echo $this->convertUrls($model->description); ?>
-		</td>
-	</tr>
-        <?php } ?>
-        <?php if($nonCustom['assignedTo']->visible==1) { ?>
-	<tr>
-		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
-		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : UserChild::getUserLinks($model->assignedTo); ?></td>
-	</tr>
-        <?php } ?>
-        <?php 
-            foreach($custom as $fieldName=>$field){
-                if($field->visible==1){ 
-                    echo "<tr>
-                    <td class=\"label\"><b>".$attributeLabels[$fieldName]."</b></td>
-                    <td colspan='5'>".Yii::t('actions',$model->$fieldName)."</td>
-                    </tr>";
-                }
+	
+	public $visibility;
+	public function init() {
+		parent::init();
+	}
+
+	public function run() {
+		$content=URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
+			'order'=>'timestamp DESC',
+        ));
+        $data = array();
+        if(count($content)>0){
+            foreach($content as $entry){
+                $dt['title'] = $entry->title;
+                $dt['url'] = $entry->url;
+                $data[] = $dt;
             }
-        
-        ?>
-</table>
+        }else{
+            $dt['title'] = "Example";
+            $dt['url'] = ".";
+            $data[] = $dt;
+        }
+		$this->render('topSites', array(
+			'data'=>$data,
+		));
+	}
+}
+

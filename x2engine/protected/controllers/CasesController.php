@@ -73,7 +73,7 @@ class CasesController extends x2base {
 	public function actionView($id) {
 		$model=$this->loadModel($id);
 		
-		$model->assignedTo=UserChild::getUserLinks($model->assignedTo);
+		$model->assignedTo=User::getUserLinks($model->assignedTo);
 		$model->associatedContacts=Contacts::getContactLinks($model->associatedContacts);
 		
 		$type='case';
@@ -87,7 +87,7 @@ class CasesController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new CaseChild;
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 
 		// Uncomment the following line if AJAX validation is needed
@@ -119,7 +119,7 @@ class CasesController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$users=UserChild::getNames();
+		$users=User::getNames();
 		$contacts=Contacts::getAllNames();
 
 		// Uncomment the following line if AJAX validation is needed

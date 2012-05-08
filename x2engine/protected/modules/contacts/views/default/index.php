@@ -46,15 +46,19 @@ $this->menu=array(
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 
 );
- 
+$heading = '';
+
 if($this->route=='contacts/default/index') {
 	$heading = Yii::t('contacts','All Contacts'); 
 	$dataProvider = $model->searchAll();
 	unset($this->menu[0]['url']);
 	unset($this->menu[2]);
-} else {
+} elseif($this->route=='contacts/default/myContacts') {
 	$heading = Yii::t('contacts','My Contacts'); 
-	$dataProvider = $model->search();
+	$dataProvider = $model->searchMyContacts();
+} elseif($this->route=='contacts/default/newContacts') {
+	$heading = Yii::t('contacts','Today\'s Contacts'); 
+	$dataProvider = $model->searchNewContacts();
 }
 
 
@@ -71,7 +75,7 @@ $('.search-form form').submit(function(){
 });
 
 $('#createList').click(function() {
-	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
 		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
 
@@ -87,7 +91,7 @@ $('#createList').click(function() {
 	return false;
 });
 $('#addToList').click(function() {
-	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	
 	var targetList = $('#addToListTarget').val();
 
@@ -109,7 +113,7 @@ $('#addToList').click(function() {
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
 	'model'=>$model, 
-	'users'=>UserChild::getNames(),
+	'users'=>User::getNames(),
 )); ?>
 </div><!-- search-form -->
 <form>
@@ -143,7 +147,7 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 	),
@@ -155,7 +159,7 @@ echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'create
 $listNames = array();
 $lists = X2List::model()->findAll();
 foreach($lists as &$list) {
-	if($list->type == 'static' && $this->editPermissions($list))	// check permissions
+	if($list->type == 'static' && $this->checkPermissions($list,'edit'))	// check permissions
 		$listNames[$list->id] = $list->name;
 }
 unset($list);

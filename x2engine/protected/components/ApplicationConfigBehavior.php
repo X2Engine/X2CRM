@@ -99,7 +99,7 @@ class ApplicationConfigBehavior extends CBehavior {
 				$this->owner->user->logout();
 				// $this->redirect(Yii::app()->controller->createUrl('site/logout'));
 			}
-			if(!is_null($this->owner->user->getId())){
+			if(!is_null($this->owner->user->getId()) && $this->owner->user->getName()!='admin'){
 				$this->owner->params->roles = $this->owner->db->createCommand()	// lookup the user's roles
 						->select('roleId')
 						->from('x2_role_to_user')

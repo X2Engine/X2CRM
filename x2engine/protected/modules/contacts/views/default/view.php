@@ -83,7 +83,24 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> <a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a></h2>
+<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> <a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+
+<?php 
+$result = Yii::app()->db->createCommand()
+    		->select()
+    		->from('x2_subscribe_contacts')
+    		->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id'=>$model->id, 'user_id'=>Yii::app()->user->id))
+    		->queryAll();
+$subscribed = !empty($result); // if we got any results then user is subscribed
+?>
+<?php echo CHtml::checkbox('checkbox-subscribe', $subscribed,
+	array(
+		'style'=>'margin-left:10px;',
+		'onChange'=>'$.post("subscribe", {ContactId: '. $model->id .', Checked:this.checked});',
+	)
+); ?>
+<?php echo CHtml::label(Yii::t('contacts', 'Subscribe'), 'checkbox-subscribe', array('title'=>Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}'=>$model->firstName.' '.$model->lastName)),)); ?>
+</h2>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget();

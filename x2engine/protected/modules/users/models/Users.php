@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -175,8 +175,8 @@ class Users extends CActiveRecord
 		$criteria->compare('lastLogin',$this->lastLogin);
 		$criteria->compare('login',$this->login);
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new SmartDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
-		));
+		)); 
 	}
 }

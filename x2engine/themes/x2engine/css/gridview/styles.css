@@ -64,7 +64,7 @@ ul.column-selector {
 }
 ul.column-selector li {
 	padding:2px 5px;
-	width:120px;
+	/* width:120px; */
 }
 ul.column-selector li:last-child {
 	padding-bottom:5px;

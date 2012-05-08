@@ -38,55 +38,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class MarketingChild extends Marketing {
-
-	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('cost',$this->cost);
-		$criteria->compare('result',$this->result,true);
-		$criteria->compare('createDate',$this->createDate);
-		$criteria->compare('description',$this->description,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
-
-		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'createDate ASC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
-	}
-
-	public function behaviors() {
-		return array(
-			'ERememberFiltersBehavior' => array(
-				'class' => 'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),			/* optional line */
-				'defaultStickOnClear'=>false	/* optional line */
-			),
-		);
-	}
-
-	public function attributeLabels() {
-		return array(
-			'id'=>Yii::t('marketing','ID'),
-			'name'=>Yii::t('marketing','Name'),
-			'cost'=>Yii::t('marketing','Cost'),
-			'result'=>Yii::t('marketing','Result'),
-			'dateCreated'=>Yii::t('marketing','Date Created'),
-			'description'=>Yii::t('marketing','Description'),
-			'lastUpdated'=>Yii::t('marketing','Last Updated'),
-			'updatedBy'=>Yii::t('marketing','Updated By'),
-		);
-	}
-}
-?>
+return array (
+// Text
+'Logout ({username})'=>'({username}) התנתקות',
+'New Record'=>'שיא חדש',
+'Find Contacts'=>'מצא אנשי קשר',
+'Top Contacts'=>'אנשי הקשר הפופולריים ביותר',
+'No top contacts for this user!'=>'אין קשר הדף עבור משתמש זה!',
+'Create Message'=>'יצירת הודעה',
+'Message List'=>'הודעה רשימת',
+'Clear'=>'נקה',
+'Search for a Contact'=>'לחפש איש קשר',
+'Go to Full Site'=>'עבור אל האתר המלא',
+);

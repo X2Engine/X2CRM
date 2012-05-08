@@ -60,140 +60,61 @@ class Campaign extends X2Model {
 	 * Returns the static model of the specified AR class.
 	 * @return Campaign the static model class
 	 */
-	public static function model($className=__CLASS__) {
-		return parent::model($className);
-	}
-
+	public static function model($className=__CLASS__) { return parent::model($className); }
+	
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/marketing'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/marketing/getItems'; }
+	
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()	{
-		return 'x2_campaigns';
-	}
-
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-                $arr=array(
-                    'varchar'=>array(),
-                    'text'=>array(),
-                    'date'=>array(),
-                    'dropdown'=>array(),
-                    'int'=>array(),
-                    'email'=>array(),
-                    'currency'=>array(),
-                    'url'=>array(),
-                    'float'=>array(),
-                    'boolean'=>array(),
-                    'required'=>array(),
-                    
-                );
-                $rules=array();
-                foreach($fields as $field){
-			$arr[$field->type][]=$field->fieldName;
-			if($field->required)
-				$arr['required'][]=$field->fieldName;
-                        if($field->type!='date')
-                            $arr['search'][]=$field->fieldName;
-		}
-                $arr['search'][]='name';
-		foreach($arr as $key=>$array){
-			switch($key){
-				case 'email':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				case 'required':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-                                case 'search':
-                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
-                                        break;
-				case 'int':
-					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
-					break;
-				case 'float':
-					$rules[]=array(implode(',',$array),'type','type'=>'float');
-					break;
-				case 'boolean':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				default:
-					break;
-				
-			}
-			
-		}  
-                return $rules;
-	}
+	public function tableName()	{ return 'x2_campaigns'; }
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-		return array(
-		);
+		return array();
 	}
 
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Campaign'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
-                }
-                
-                return $arr;
+		$arr=array();
+		foreach($fields as $field){
+			$arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
+		}
+		
+		return $arr;
 
 	}
-
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
+	
+	public function search() {
+		// $this->active = '';
 		$criteria=new CDbCriteria;
-
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Campaign'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-                    
-                }
-
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-		));
+		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
+			// $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+			// /* x2temp */
+			// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			// if(!empty($groupLinks))
+				// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+			// /* end x2temp */
+		// $parameters['condition']=$condition;
+		// $criteria->scopes=array('findAll'=>array($parameters));
+		
+		// $criteria->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
+		
+		return $this->searchBase($criteria);
 	}
-        
-       
 }

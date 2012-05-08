@@ -49,7 +49,7 @@ class UserIdentity extends CUserIdentity {
 	private $_name;
 
 	public function authenticate() {
-		$user = CActiveRecord::model('Users')->findByAttributes(array('username' => $this->username));
+		$user = CActiveRecord::model('User')->findByAttributes(array('username' => $this->username));
 		if ($user === null || $user->status < 1) {				// username not found, or is disabled
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
 		} else {

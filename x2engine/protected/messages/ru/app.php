@@ -49,6 +49,7 @@ return array (
 'Login'=>'Войти',
 
 // Main Menu
+'Calendar'=>'календарь',
 'Actions'=>'Действия',
 'Contacts'=>'связи',
 'Sales'=>'реализация',
@@ -96,6 +97,7 @@ return array (
 'Tag Cloud'=>'Облако тегов',
 'Just Me'=>'Только Я',
 'All Users'=>'Все Пользователи',
+'Doc Viewer'=>'Просмотр документов',
 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
@@ -112,6 +114,7 @@ return array (
 'Top Contacts'=>'Топ Контакты',
 'Add {name}'=>'Добавьте {name}',
 
+'Enter Title'=>'Введите название',
 
 // Chat
 'Message Body'=>'Тело сообщения',

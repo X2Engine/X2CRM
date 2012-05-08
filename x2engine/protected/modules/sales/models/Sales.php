@@ -58,118 +58,37 @@
  * @property integer $lastUpdated
  * @property string $updatedBy
  */
-class Sales extends X2Model
-{
+class Sales extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Sales the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
-		return 'x2_sales';
-	}
+	public function tableName() { return 'x2_sales'; }
 
 	/**
-	 * @return array validation rules for model attributes.
+	 * @return string the route to view this model
 	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-            
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-                $arr=array(
-                    'varchar'=>array(),
-                    'text'=>array(),
-                    'date'=>array(),
-                    'dropdown'=>array(),
-                    'int'=>array(),
-                    'email'=>array(),
-                    'currency'=>array(),
-                    'url'=>array(),
-                    'float'=>array(),
-                    'boolean'=>array(),
-                    'required'=>array(),
-                    
-                );
-                $rules=array();
-                foreach($fields as $field){
-			$arr[$field->type][]=$field->fieldName;
-			if($field->required)
-				$arr['required'][]=$field->fieldName;
-                        if($field->type!='date')
-                            $arr['search'][]=$field->fieldName;
-		}
-                $arr['search'][]='name';
-		foreach($arr as $key=>$array){
-			switch($key){
-				case 'email':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				case 'required':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-                                case 'search':
-                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
-                                        break;
-				case 'int':
-					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
-					break;
-				case 'float':
-					$rules[]=array(implode(',',$array),'type','type'=>'float');
-					break;
-				case 'boolean':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				default:
-					break;
-				
-			}
-			
-		}  
-                return $rules;
-		/*return array(
-			array('name', 'required'),
-			array('accountId, quoteAmount, probability, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('name', 'length', 'max'=>40),
-			array('accountName', 'length', 'max'=>100),
-			array('salesStage, expectedCloseDate, updatedBy', 'length', 'max'=>20),
-			array('leadSource', 'length', 'max'=>100),
-			array('description, assignedTo, associatedContacts', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, accountName, accountId, quoteAmount, salesStage, expectedCloseDate, probability, leadSource, description, assignedTo, createDate, associatedContacts, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
-		);*/
-	}
-
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
+	public function getDefaultRoute() { return '/sales'; }
 	
-	public function attributeLabels() {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('actions',$field->attributeLabel);
-                }
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/sales/getItems'; }
+	
+	// public function attributeLabels() {
+		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
+                // $arr=array();
+                // foreach($fields as $field){
+                    // $arr[$field->fieldName]=Yii::t('actions',$field->attributeLabel);
+                // }
                 
-                return $arr;
-	}
+                // return $arr;
+	// }
 
 	public static function getNames() {
 		$arr=Sales::model()->findAll();
@@ -251,20 +170,20 @@ class Sales extends X2Model
 		
 		foreach($arr as $username){
 			if($username!='' && !is_numeric($username))
-				$data[]=UserChild::model()->findByAttributes(array('username'=>$username));
-                        elseif(is_numeric($username))
-                            $data[]=Groups::model()->findByPK($username);
+				$data[]=User::model()->findByAttributes(array('username'=>$username));
+			elseif(is_numeric($username))
+				$data[]=Groups::model()->findByPK($username);
 		}
 		
 		$temp=array();
 		if(isset($data)){
 			foreach($data as $item){
 				if(isset($item)){
-                                    if($item instanceof Users)
-					$temp[$item->username]=$item->firstName.' '.$item->lastName;
-                                    else
-                                        $temp[$item->id]=$item->name;
-                                }
+					if($item instanceof Users)
+						$temp[$item->username]=$item->firstName.' '.$item->lastName;
+					else
+						$temp[$item->id]=$item->name;
+				}
 			}
 		}
 		return $temp;
@@ -310,25 +229,25 @@ class Sales extends X2Model
 	}
 	
 	public function searchBase($criteria) {
-		
-            $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-                    
-                }
+
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
+			foreach($fields as $field){
+				$fieldName=$field->fieldName;
+				switch($field->type){
+					case 'boolean':
+						$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+						break;
+					case 'link':
+						$criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+						break;
+					case 'assignment':
+						$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+						break;
+					default:
+						$criteria->compare($field->fieldName,$this->$fieldName,true);
+				}
+				
+			}
 		
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(

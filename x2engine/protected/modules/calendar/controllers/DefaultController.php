@@ -127,22 +127,22 @@ class DefaultController extends x2base {
 	 * Set who can view/edit current user's calendar
 	 */ 
 	public function actionMyCalendarPermissions() {
-		$model = UserChild::model()->findByPk(Yii::app()->user->id);
-		$users = UserChild::getNames();
+		$model = User::model()->findByPk(Yii::app()->user->id);
+		$users = User::getNames();
 		unset($users['Anyone']);
 		unset($users['admin']);
 		unset($users[Yii::app()->user->name]);
 
 		if(isset($_POST['save-button'])) {
-			if(isset($_POST['Users']['calendarViewPermission'])) {
-				$model->calendarViewPermission = $_POST['Users']['calendarViewPermission'];
+			if(isset($_POST['User']['calendarViewPermission'])) {
+				$model->calendarViewPermission = $_POST['User']['calendarViewPermission'];
 				$model->calendarViewPermission = Accounts::parseUsers($model->calendarViewPermission);
 			} else {
 				$model->calendarViewPermission = '';
 			}
 			
-			if(isset($_POST['Users']['calendarEditPermission'])) {
-				$model->calendarEditPermission = $_POST['Users']['calendarEditPermission'];
+			if(isset($_POST['User']['calendarEditPermission'])) {
+				$model->calendarEditPermission = $_POST['User']['calendarEditPermission'];
 				$model->calendarEditPermission = Accounts::parseUsers($model->calendarEditPermission);
 			} else {
 				$model->calendarEditPermission = '';
@@ -310,7 +310,7 @@ class DefaultController extends x2base {
 	public function actionJsonFeed($user) {
 		$actions = Actions::model()->findAllByAttributes(array('assignedTo'=>$user));
 		$events = array();
-		$user = UserChild::model()->findByPk(Yii::app()->user->id); // get user profile
+		$user = User::model()->findByPk(Yii::app()->user->id); // get user profile
 		$filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
 		$possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
 		foreach($actions as $action) {
@@ -395,7 +395,7 @@ class DefaultController extends x2base {
 	public function actionJsonFeedShared($calendarId) {
 		$actions = Actions::model()->findAllByAttributes(array('calendarId'=>$calendarId));
 		$events = array();
-		$user = UserChild::model()->findByPk(Yii::app()->user->id); // get user profile
+		$user = User::model()->findByPk(Yii::app()->user->id); // get user profile
 		$filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
 		$possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
 		foreach($actions as $action) {
@@ -481,14 +481,15 @@ class DefaultController extends x2base {
 				$description = $googleEvent['summary'];
 				if(isset($googleEvent['start']['dateTime'])) {
 					$allDay = false;
-					$start = strtotime($googleEvent['start']['dateTime']);
+					$start = $googleEvent['start']['dateTime'];
 					if(isset($googleEvent['end']['dateTime']))
-						$end = strtotime($googleEvent['end']['dateTime']);
+						$end = $googleEvent['end']['dateTime'];
 				} else {
 					$allDay = true;
-					$start = strtotime($googleEvent['start']['date']);
-					if(isset($googleEvent['end']['date']))
-						$end = strtotime($googleEvent['end']['date']) - 86400; // subtract a day because google saves all day events with one extra day
+					$start = $googleEvent['start']['date'];
+					if(isset($googleEvent['end']['date'])) {
+						$end = date("Y-m-d", strtotime($googleEvent['end']['date']) - 86400); // subtract a day because google saves all day events with one extra day
+					}
 				}
 				$title = substr($description, 0, 30);
 				if(isset($googleEvent['colorId'])) {
@@ -596,6 +597,7 @@ class DefaultController extends x2base {
 			$eventId = $_POST['EventId'];
 			$calendarId = $_POST['CalendarId'];
 			$calendar = X2Calendar::model()->findByPk($calendarId);
+
 			$googleCalendar = $calendar->getGoogleCalendar();
 			$googleEvent = $googleCalendar->events->get($calendar->googleCalendarId, $eventId);
 			$model = new Actions;
@@ -610,7 +612,7 @@ class DefaultController extends x2base {
 			if(isset($googleEvent['end']['dateTime']))
 			    $model->completeDate = strtotime($googleEvent['end']['dateTime']);
 			else
-			    $model->completeDate = strtotime($googleEvent['end']['date']);
+			    $model->completeDate = strtotime($googleEvent['end']['date']) - 86400;
 			
 			if(isset($googleEvent['colorId'])) {
 				$colorTable = array(
@@ -652,31 +654,55 @@ class DefaultController extends x2base {
 			$eventId = $_POST['EventId'];
 			$dayDelta = $_POST['dayChange']; // +/-
 			$minuteDelta = $_POST['minuteChange']; // +/-
+			$allDay = json_decode($_POST['isAllDay']);
 			$calendar = X2Calendar::model()->findByPk($calendarId);
 			$googleCalendar = $calendar->getGoogleCalendar();
 			$googleEvent = $googleCalendar->events->get($calendar->googleCalendarId, $eventId);
 
-			if(isset($googleEvent['start']['dateTime'])) { // not all day
+			if(isset($googleEvent['start']['dateTime'])) { // event was not all day
 			    $start = strtotime($googleEvent['start']['dateTime']);
-			    $start += ($dayDelta * 86400) + ($minuteDelta * 60);
-			    $googleEvent['start']['dateTime'] = date('c', $start);
-			} else { // all day
+			    if($allDay) { // move event to all day
+					unset($googleEvent['start']['dateTime']);
+					$googleEvent['start']['date'] = date('Y-m-d', $start);
+			    } else { // keep event as not all day
+			    	$start += ($dayDelta * 86400) + ($minuteDelta * 60);
+			    	$googleEvent['start']['dateTime'] = date('c', $start);
+			    }
+			} else { // event was all day
 			    $start = strtotime($googleEvent['start']['date']);
-			    $start += ($dayDelta * 86400) + ($minuteDelta * 60);
-			    $googleEvent['start']['date'] = date('Y-m-d', $start);
+			    if($allDay) { // keep event as all day
+			    	$start += ($dayDelta * 86400) + ($minuteDelta * 60);
+			    	$googleEvent['start']['date'] = date('Y-m-d', $start);
+			    } else { // move event to not all day
+			    	unset($googleEvent['start']['date']);
+			    	$start += ($dayDelta * 86400) + ($minuteDelta * 60);
+			    	$googleEvent['start']['dateTime'] = date('c', $start);
+			    }
 			}
-			if(isset($googleEvent['end']['dateTime'])) {
+			if(isset($googleEvent['end']['dateTime'])) { // event was not all day
 			    $end = strtotime($googleEvent['end']['dateTime']);
-			    $end += ($dayDelta * 86400) + ($minuteDelta * 60);
-			    $googleEvent['end']['dateTime'] = date('c', $end);
-			} else if(isset($googleEvent['end']['date'])) { // all day
+			    if($allDay) { // move event to all day
+			    	unset($googleEvent['end']['dateTime']);
+			    	$end = strtotime($googleEvent['start']['date']) + 86400;
+			    	$googleEvent['end']['date'] = date('Y-m-d', $end);
+			    } else { // keep event as not all day
+			    	$end += ($dayDelta * 86400) + ($minuteDelta * 60);
+			    	$googleEvent['end']['dateTime'] = date('c', $end);
+			    }
+			} else if(isset($googleEvent['end']['date'])) { // event was all day
 			    $end = strtotime($googleEvent['end']['date']);
-			    $end += ($dayDelta * 86400) + ($minuteDelta * 60);
-			    $googleEvent['end']['date'] = date('Y-m-d', $end);
+			    if($allDay) { // keep event as all day
+			    	$end += ($dayDelta * 86400) + ($minuteDelta * 60); // end = start + 1 day
+			    	$googleEvent['end']['date'] = date('Y-m-d', $end);
+			    } else { // move event to not all day
+			    	unset($googleEvent['end']['date']);
+			    	$end = strtotime($googleEvent['start']['dateTime']) + 7200; // end = start + 2 hours
+			    	$googleEvent['end']['dateTime'] = date('c', $end);
+			    }
 			}
 			
 			$googleEvent = new Event($googleEvent);
-			$googleCalendar->events->update($calendar->googleCalendarId, $eventId, $googleEvent);
+			$googleCalendar->events->update($calendar->googleCalendarId, $eventId, $googleEvent); 
 		}
 	}
 	
@@ -740,7 +766,7 @@ class DefaultController extends x2base {
 			if($model->allDay) {
 				$googleEvent['start']['date'] = date('Y-m-d', $this->parseDateTime($model->dueDate));
 				if($model->completeDate)
-					$googleEvent['end']['date'] = date('Y-m-d', $this->parseDateTime($model->completeDate));
+					$googleEvent['end']['date'] = date('Y-m-d', $this->parseDateTime($model->completeDate) + 86400);
 				if(isset($googleEvent['start']['dateTime']))
 					unset($googleEvent['start']['dateTime']);
 				if(isset($googleEvent['end']['dateTime']))
@@ -825,7 +851,7 @@ class DefaultController extends x2base {
 	// check if user profile has a list to remember which calendars the user has checked
 	// if not, create the list
 	public function initCheckedCalendars() {
-		$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+		$user = User::model()->findByPk(Yii::app()->user->getId());
 		if($user->showCalendars == null) { // calendar list not initialized?
 			$showCalendars = array(
 				'userCalendars'=>array('Anyone', $user->username), 
@@ -847,7 +873,7 @@ class DefaultController extends x2base {
 			$calendarType = $type . 'Calendars';
 			
 			// get user list of checked calendars
-			$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+			$user = User::model()->findByPk(Yii::app()->user->getId());
 			$showCalendars = json_decode($user->showCalendars, true);
 			
 			if($checked)  // remember to show calendar
@@ -868,7 +894,7 @@ class DefaultController extends x2base {
 		if(isset($_POST['Filter'])) {
 			$filterName = $_POST['Filter'];
 			$checked = $_POST['Checked'];
-			$user = UserChild::model()->findByPk(Yii::app()->user->id);
+			$user = User::model()->findByPk(Yii::app()->user->id);
 			$calendarFilter = explode(',', $user->calendarFilter);
 			
 			if($checked)

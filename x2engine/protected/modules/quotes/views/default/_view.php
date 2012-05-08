@@ -49,7 +49,7 @@
 	if($data->assignedTo=='Anyone')
 		echo CHtml::encode($data->assignedTo);
 	else {
-		$user=Users::model()->findByAttributes(array('username'=>$data->assignedTo));
+		$user=User::model()->findByAttributes(array('username'=>$data->assignedTo));
 		echo CHtml::link(CHtml::encode($user->firstName." ".$user->lastName),array('users/view','id'=>$user->id));
 	}
 	?>

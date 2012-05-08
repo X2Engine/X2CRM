@@ -43,119 +43,78 @@
  */
 class Contacts extends X2Model {
 
+	public $name;
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Contacts the static model class
 	 */
-	public static function model($className=__CLASS__) {
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName() {
-		return 'x2_contacts';
-	}
+	public function tableName() { return 'x2_contacts'; }
+
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/contacts'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/contacts/getItems'; }
 
 	/**
 	 * Generates validation rules for custom fields
 	 * @return array validation rules for model attributes.
-	 */
+	 */	
 	public function rules() {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-		$arr=array(
-			'varchar'=>array(),
-			'text'=>array(),
-			'date'=>array(),
-			'dropdown'=>array(),
-			'int'=>array(),
+
+		$this->queryFields();
+			
+		$fieldRules = array(
+			'required'=>array(),
 			'email'=>array(),
-			'currency'=>array(),
-			'url'=>array(),
+			'int'=>array(),
+			'date'=>array(),
 			'float'=>array(),
 			'boolean'=>array(),
-			'required'=>array(),
-			
+			'safe'=>array(),
 		);
-		$rules=array();
-		foreach($fields as $field){
-			$arr[$field->type][]=$field->fieldName;
-			if($field->required)
-				$arr['required'][]=$field->fieldName;
-				if($field->type!='date')
-					$arr['search'][]=$field->fieldName;
-		}
-		$arr['search'][]='name';
-		foreach($arr as $key=>$array){
-			switch($key){
-				case 'email':
-					$rules[]=array(implode(',',$array),$key);
+		
+		foreach(self::$_fields as &$_field) {
+		
+			switch($_field->type) {
+				case 'varchar':
+				case 'text':
+				case 'url':
+				case 'currency':
+				case 'dropdown':
+					$fieldRules['safe'][] = $_field->fieldName;	// these field types have no rules, but still need to be allowed
 					break;
-				case 'required':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-                                case 'search':
-                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
-                                        break;
-				case 'int':
-					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
-					break;
-				case 'float':
-					$rules[]=array(implode(',',$array),'type','type'=>'float');
-					break;
-				case 'boolean':
-					$rules[]=array(implode(',',$array),$key);
+				case 'date':
+					$fieldRules['int'][] = $_field->fieldName;		// date is actually an int
 					break;
 				default:
-					break;
-				
+					$fieldRules[ $_field->type ][] = $_field->fieldName;		// otherwise use the type as the validator name
 			}
 			
-		}  
-		// new version
-		// $fields = array(
-			// 'required'=>array(),
-			// 'email'=>array(),
-			// 'int'=>array(),
-			// 'date'=>array(),
-			// 'float'=>array(),
-			// 'boolean'=>array(),
-			// 'safe'=>array(),
-		// );
-		
-		// foreach( $this->_fields as &$_field ) {
-		
-			// switch( $_field['type'] ) {
-				// case 'varchar':
-				// case 'text':
-				// case 'url':
-				// case 'currency':
-				// case 'dropdown':
-					// $fields['safe'][] = $_field['fieldName'];	// these field types have no rules, but still need to be allowed
-					// break;
-				// case 'date':
-					// $fields['int'][] = $_field['fieldName'];		// date is actually an int
-					// break;
-				// default:
-					// $fields[ $_field['type'] ][] = $_field['fieldName'];		// otherwise use the type as the validator name
-			// }
-			
-			// if( $_field['required'] )
-				// $fields['required'][] = $_field['fieldName'];
-		// }
+			if($_field->required)
+				$fieldRules['required'][] = $_field->fieldName;
+		}
 
-		// $rules =  array(
-			// array( implode( ',', $fields['required']), 'required' ),
-			// array( implode( ',', $fields['email']), 'email' ),
-			// array( implode( ',', $fields['int']+$fields['date'] ), 'numerical', 'integerOnly'=>true ),
-			// array( implode( ',', $fields['float']), 'numerical' ),
-			// array( implode( ',', $fields['boolean']), 'boolean' ),
-			// array( implode( ',', $fields['safe']), 'safe' ),
-		// );
-
-		return $rules;
+		return array(
+			array( implode( ',', $fieldRules['required']), 'required' ),
+			array( implode( ',', $fieldRules['email']), 'email' ),
+			array( implode( ',', $fieldRules['int'] + $fieldRules['date'] ), 'numerical', 'integerOnly'=>true ),
+			array( implode( ',', $fieldRules['float']), 'numerical' ),
+			array( implode( ',', $fieldRules['boolean']), 'boolean' ),
+			array( implode( ',', $fieldRules['safe']), 'safe' ),
+		);
 	}
+
 	
 	/**
 	 * @return array relational rules.
@@ -166,6 +125,19 @@ class Contacts extends X2Model {
 		return array();
 	}
 
+	public function afterFind() {
+		$this->name = $this->firstName.' '.$this->lastName;
+	}
+	
+	
+	/**
+	 * Sets the name field (full name)
+	 */
+	public function beforeSave() {
+		$this->name = $this->firstName.' '.$this->lastName;
+		return true;
+	}
+	
 	public static function getNames() {
 		$contactArray = Contacts::model()->findAll($condition='assignedTo=\''.Yii::app()->user->getName().'\' OR assignedTo=\'Anyone\'');
 		$names=array(0=>'None');
@@ -177,21 +149,21 @@ class Contacts extends X2Model {
 		}
 		return $names;
 	}
-	
+
 	/**
 	 *	Returns virtual 'name' attribute
 	 *	@return string Concatenated first and last name
 	 */
-	public function getName() {
-		return $this->firstName.' '.$this->lastName;
-	}
+	// public function getName() {
+		// return $this->firstName.' '.$this->lastName;
+	// }
 	/**
 	 *	Sets virtual 'name' attribute (does not change firstName or lastName fields)
 	 *	@param string $name
 	 */
-	public function setName($name) {
-		$this->name = trim($name);
-	}
+	// public function setName($name) {
+		// $this->name = trim($name);
+	// }
 	
 	public function behaviors() {
 		return array(
@@ -289,6 +261,33 @@ class Contacts extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
+	public function searchMyContacts() {
+		$criteria=new CDbCriteria;
+		$condition = 'assignedTo="'.Yii::app()->user->getName().'"';
+		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+
+		$parameters['condition']=$condition;
+		$criteria->scopes=array('findAll'=>array($parameters));
+		
+		return $this->searchBase($criteria);
+	
+	
+	}
+	public function searchNewContacts() {
+		$criteria=new CDbCriteria;
+		$condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
+		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+
+		$parameters['condition']=$condition;
+		$criteria->scopes=array('findAll'=>array($parameters));
+		
+		return $this->searchBase($criteria);
+	}
+	
+	
+	
+	
+	
 	public function search() {
 		$criteria=new CDbCriteria;
 		$condition = 'assignedTo="'.Yii::app()->user->getName().'"';
@@ -309,32 +308,42 @@ class Contacts extends X2Model {
 
 		return $this->searchBase($criteria);
 	}
+        
+        public function searchAccount($id){
+                $criteria=new CDbCriteria;
+		$condition = "company='$id'";
+                $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$parameters['condition']=$condition;
+		$criteria->scopes=array('findAll'=>array($parameters));
+		return $this->searchBase($criteria);
+        }
 
-	public function searchList($id) {
+	public function searchList($id,$pageSize = null) {
 	
 		$list = CActiveRecord::model('X2List')->findByPk($id);
 
 		if(isset($list)) {
-			
-			// $contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
-			// die(var_dump($contactIds));
-			// $search = CActiveRecord::model('Contacts')->findAllByPk($contactIds);
-			// return $search;
-			
-			// $sql = Yii::app()->db->createCommand()
-				// ->select('x2_contacts.*')
-				// ->from('x2_contacts')
-				// ->join('x2_list_items','x2_contacts.id = x2_list_items.contactId')
-				// ->where('x2_list_items.listId='.$id.' AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo="'.Yii::app()->user->getName().'")')
-				// ->getText();
-			
-			// $count = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryScalar();
 
 			if($list->type == 'dynamic') {
+				
+				$logicMode = 'AND';
+				// if(isset($_GET['test']))
+					// $logicMode = 'OR';
+				
 				
 				$search = new CDbCriteria(array());
 				$listCriteria = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id,'type'=>'attribute'));
 				foreach($listCriteria as $listCriterion) {
+					foreach($this->fields as $field) {
+						if($field->fieldName == $listCriterion->attribute) {
+							switch($field->type) {
+								case 'date': if(!ctype_digit($listCriterion->value)) $listCriterion->value = strtotime($listCriterion->value); break;
+								case 'link': if(!ctype_digit($listCriterion->value)) $listCriterion->value = Fields::getLinkId($field->linkType,$listCriterion->value); break;
+								case 'boolean': $listCriterion->value = in_array(strtolower($listCriterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
+							}
+							break;
+						}
+					}
 				
 					if($listCriterion->attribute == 'tags') {
 						$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($listCriterion->value)));	//remove any spaces around commas, then explode to array
@@ -356,16 +365,24 @@ class Contacts extends X2Model {
 					} else {
 						switch($listCriterion->comparison) {
 							case '=':
-								$search->compare($listCriterion->attribute,$listCriterion->value,false);
+								$search->compare($listCriterion->attribute,$listCriterion->value,false,$logicMode); break;
 							case '>':
-								$search->compare($listCriterion->attribute,'>='.$listCriterion->value,true); break;
+								$search->compare($listCriterion->attribute,'>='.$listCriterion->value,true,$logicMode); break;
 							case '<':
-								$search->compare($listCriterion->attribute,'<='.$listCriterion->value,true); break;
+								$search->compare($listCriterion->attribute,'<='.$listCriterion->value,true,$logicMode); break;
+							case '<>':	// must test for != OR is null, because both mysql and yii are stupid
+								$search->addCondition('('.$listCriterion->attribute.' IS NULL OR '.$listCriterion->attribute.'!='.CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount.')',$logicMode);
+								$search->params[CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount++] = $listCriterion->value;
+								break;
+							case 'notEmpty':
+								$search->addCondition($listCriterion->attribute.' IS NOT NULL AND '.$listCriterion->attribute.'!=""',$logicMode); break;
 							case 'empty':
-								$search->addCondition($listCriterion->attribute.'=""'); break;
+								$search->addCondition('('.$listCriterion->attribute.'="" OR '.$listCriterion->attribute.' IS NULL)',$logicMode); break;
+							case 'list':
+								$search->addInCondition($listCriterion->attribute,explode(',',$listCriterion->value),$logicMode); break;
 							case 'contains':
 							default:
-								$search->compare($listCriterion->attribute,$listCriterion->value,true);
+								$search->compare($listCriterion->attribute,$listCriterion->value,true,$logicMode);
 						}
 					}
 				}
@@ -378,6 +395,7 @@ class Contacts extends X2Model {
 				
 			}
 				
+			$search->compare('name',$this->name,true);
 			$search->compare('firstName',$this->firstName,true);
 			$search->compare('lastName',$this->lastName,true);
 			$search->compare('title',$this->title,true);
@@ -414,12 +432,11 @@ class Contacts extends X2Model {
 				// 'modelClass'=>'Contacts',
 				// 'totalItemCount'=>$count,
 				'sort'=>array(
-					'defaultOrder'=>array(
-						'lastUpdated'=>true	// true = ASC
-					)
+					'defaultOrder'=>'lastupdated DESC'	// true = ASC
+					
 				),
 				'pagination'=>array(
-					'pageSize'=>ProfileChild::getResultsPerPage(),
+					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 				),
 			));
 			
@@ -447,7 +464,7 @@ class Contacts extends X2Model {
 				// 'modelClass'=>'Contacts',
 				// 'totalItemCount'=>$count,
 				'sort'=>array(
-					'defaultOrder'=>'lastUpdated DESC',
+					'defaultOrder'=>'createDate DESC',
 				),
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),
@@ -478,7 +495,7 @@ class Contacts extends X2Model {
                             $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
                             break;
                         case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+                            $criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
                             $criteria->compare($field->fieldName,$this->$fieldName, true, 'OR');
                             break;
                         case 'assignment':
@@ -489,13 +506,13 @@ class Contacts extends X2Model {
                     }
                     
                 }
-                
-                $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
+                 
+                $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true, 'OR');
 
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
-				'defaultOrder'=>'lastUpdated DESC',
+				'defaultOrder'=>'createDate DESC',
 			),
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),

@@ -72,22 +72,18 @@ $this->endWidget();
 	<?php $this->widget('Attachments',array('type'=>'accounts','associationId'=>$model->id)); ?>
 </div>
 <?php
-$contactModel=new Contacts();
-$contactDataProvider=new CActiveDataProvider('Contacts',array(
-    'criteria'=>array(
-            'order'=>'lastName DESC, firstName DESC',
-            'condition'=>'company='.$model->id
-    )
-));
+$contactModel=new Contacts('search');
+if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+			EButtonColumnWithClearFilters::clearFilters($this,$contactModel);//where $this is the controller
+		}
 $this->widget('application.components.X2GridView', array(
-	'id'=>'contacts-grid',
+	'id'=>'associated-contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.Yii::t('contacts','Associated Contacts').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array($model->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$contactDataProvider,
+	'dataProvider'=>$contactModel->searchAccount($model->id),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$contactModel,

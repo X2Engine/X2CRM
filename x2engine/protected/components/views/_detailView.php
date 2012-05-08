@@ -100,7 +100,7 @@ function completeWorkflowStageComment() {
 
 function revertWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/revertStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/revertStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
 		success: function(response) {
@@ -238,6 +238,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										}
 										
 										echo '<div class="formItem '.$labelClass.'">';
+										//echo '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
 										echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
 											
 										$style = 'width:'.$item['width'].'px;';
@@ -245,7 +246,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											// $style .= 'height:'.$item['height'].'px;';
 										echo '<div class="formInputBox" style="'.$style.'">';
 										if($field->type == 'date') {
-											echo $this->formatLongDate($model->$fieldName).'&nbsp;';
+											echo !empty($model->$fieldName)?$this->formatLongDate($model->$fieldName).' ':" ";
 										}elseif($field->type=='rating'){
 											$this->widget('CStarRating',array(
 													'model'=>$model,
@@ -258,7 +259,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											));
 											echo '&nbsp;';
 										}elseif($field->type=='assignment'){
-											echo empty($model->$fieldName)?"&nbsp;":UserChild::getUserLinks($model->$fieldName);
+											echo empty($model->$fieldName)?"&nbsp;":User::getUserLinks($model->$fieldName);
 										}elseif($field->type=='visibility'){
 											switch($model->$fieldName){
 												case '1':
@@ -322,7 +323,11 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												if(class_exists($className)) {
 													$lookupModel = CActiveRecord::model($className)->findByPk($model->$fieldName);
 													if(isset($lookupModel))
-														echo CHtml::link($lookupModel->name,array('/'.$field->linkType.'/'.$model->$fieldName),array('target'=>'_blank'));
+														echo $lookupModel->createLink(); //CHtml::link($lookupModel->name,array('/'.$field->linkType.'/'.$model->$fieldName),array('target'=>'_blank'));
+												// } elseif($className == 'ContactList') {
+													// $lookupModel = CActiveRecord::model('X2List')->findByPk($model->$fieldName);
+													// if(isset($lookupModel))
+														// echo CHtml::link($lookupModel->name,array('/contacts/list/'.$lookupModel->id),array('target'=>'_blank'));
 												}
 											} elseif(!empty($model->$fieldName)) {
 												echo $model->$fieldName;

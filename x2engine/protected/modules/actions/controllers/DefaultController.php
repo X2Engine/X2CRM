@@ -85,7 +85,7 @@ class DefaultController extends x2base {
 
 		if($action != null) {
 		
-			$users = UserChild::getNames();
+			$users = User::getNames();
 			$association = $this->getAssociation($action->associationType,$action->associationId);
 			
 			// if($association != null)
@@ -95,7 +95,7 @@ class DefaultController extends x2base {
 			
 			
 			if ($action->assignedTo==Yii::app()->user->getName() || $action->visibility==1 || $action->assignedTo=='Anyone') {
-				UserChild::addRecentItem('t',$id,Yii::app()->user->getId());	//add action to user's recent item list
+				User::addRecentItem('t',$id,Yii::app()->user->getId());	//add action to user's recent item list
 				$this->render('view',array(
 					'model'=>$this->loadModel($id),
 					'associationModel'=>$association,
@@ -159,7 +159,7 @@ class DefaultController extends x2base {
 				'condition'=>'(dueDate<"'.mktime(23,59,59).'" AND dueDate>"'.mktime(0,0,0).'" AND complete="No")',
 		)));
 
-		$emails= UserChild::getEmails();
+		$emails= User::getEmails();
 
 		$actionArray=$dataProvider->getData();
 
@@ -247,7 +247,7 @@ class DefaultController extends x2base {
 	public function actionCreate() {
 
 		$model = new Actions;
-		$users = UserChild::getNames();
+		$users = User::getNames();
 
 	// Uncomment the following line if AJAX validation is needed
 	// $this->performAjaxValidation($model);
@@ -271,16 +271,20 @@ class DefaultController extends x2base {
 				}
 			}
 			if(is_numeric($model->assignedTo)) { // assigned to calendar instead of user?
+                            $calendar = X2Calendar::model()->findByPk($model->assignedTo);
+                            if(isset($calendar)){
 				$model->calendarId = $model->assignedTo;
 				$model->assignedTo = null;
 
-				$calendar = X2Calendar::model()->findByPk($model->calendarId);
+				
 				if($calendar->googleCalendar && $calendar->googleCalendarId) {
 					$model->dueDate = $this->parseDateTime($model->dueDate);
 					if($model->completeDate)
 						$model->completeDate = $this->parseDateTime($model->completeDate);
 					$calendar->createGoogleEvent($model); // action/event assigned to Google Calendar, no need to create Action since it's saved to google
+					$this->redirect(array('/calendar'));
 				}
+                            }
 			}
 			
 			$this->create($model,$temp,'0');
@@ -310,7 +314,7 @@ class DefaultController extends x2base {
 	}
 
 /* 	public function actionQuickCreate() {
-		$users = UserChild::getNames();
+		$users = User::getNames();
 		$actionModel=new Actions;
 		$contactModel=new Contacts;
 
@@ -415,7 +419,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$users=UserChild::getNames();
+		$users=User::getNames();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -535,9 +539,9 @@ class DefaultController extends x2base {
 			}
 		}
 		if(Yii::app()->user->name == 'admin')
-			$this->redirect(array('actions/admin'));
+			$this->redirect(array('/actions/admin'));
 		else
-			$this->redirect(array('actions/'));
+			$this->redirect(array('/actions/index'));
 	}
 	
 	// Postpones due date (and sets action to incomplete)
@@ -604,15 +608,15 @@ class DefaultController extends x2base {
 					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
 				} else {	// no association
 					if($createNew)
-						$this->redirect(array('actions/create'));		// go to blank 'create action' page
+						$this->redirect(array('/actions/create'));		// go to blank 'create action' page
 					else
-						$this->redirect(array('actions/view','id'=>$model->id));	// view the action
+						$this->redirect(array('/actions/default/view','id'=>$model->id));	// view the action
 				}
 			} else {
-				$this->redirect(array('actions/view','id'=>$model->id)); 
+				$this->redirect(array('/actions/default/view','id'=>$model->id)); 
 			}
 		} else {
-			$this->redirect(array('actions/invalid'));
+			$this->redirect(array('/actions/invalid'));
 		}
 	}
 	
@@ -627,9 +631,9 @@ class DefaultController extends x2base {
 			if($model->associationType!='none')
 				$this->redirect(array($model->associationType.'/'.$model->associationId));
 			else
-				$this->redirect(array('view','id'=>$id));
+				$this->redirect(array('/actions/default/view','id'=>$id));
 		} else {
-			$this->redirect(array('actions/view','id'=>$id));
+			$this->redirect(array('/actions/default/view','id'=>$id));
 		}
 		}else{
 			print_r($model->getErrors());

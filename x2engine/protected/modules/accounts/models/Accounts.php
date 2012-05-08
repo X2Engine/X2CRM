@@ -57,30 +57,32 @@
  * @property integer $lastUpdated
  * @property string $updatedBy
  */
-class Accounts extends X2Model
-{
+class Accounts extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Accounts the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+	public static function model($className=__CLASS__) { return parent::model($className); }
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
-		return 'x2_accounts';
-	}
+	public function tableName() { return 'x2_accounts'; }
+
+	/**
+	 * @return string the route to view this model
+	 */
+	public function getDefaultRoute() { return '/accounts'; }
+	
+	/**
+	 * @return string the route to this model's AutoComplete data source
+	 */
+	public function getAutoCompleteSource() { return '/accounts/getItems'; }
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		
                 $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
                 $arr=array(
@@ -255,7 +257,7 @@ class Accounts extends X2Model
 		$data=array();
 		
 		foreach($arr as $username){
-			$data[]=UserChild::model()->findByAttributes(array('username'=>$username));
+			$data[]=User::model()->findByAttributes(array('username'=>$username));
 		}
 		
 		$temp=array();
@@ -383,7 +385,7 @@ class Accounts extends X2Model
 		));
 		$arr=$dataProvider->getData();
 		foreach($arr as $account){
-			$account->assignedTo=UserChild::getUserLinks($account->assignedTo);
+			$account->assignedTo=User::getUserLinks($account->assignedTo);
 			$account->associatedContacts=Contacts::getContactLinks($account->associatedContacts);
 		}
 		$dataProvider->setData($arr);

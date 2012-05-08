@@ -40,7 +40,7 @@
  ?>
 
 <?php
-$users = UserChild::getNames();
+$users = User::getNames();
 $form=$this->beginWidget('CActiveForm', array(
     'enableAjaxValidation'=>false,
 ));

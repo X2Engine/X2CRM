@@ -87,10 +87,10 @@ class DefaultController extends x2base
             $userLinks=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
             $str="";
             foreach($userLinks as $userLink){
-                $str.=UserChild::model()->findByPk($userLink->userId)->username.", ";
+                $str.=User::model()->findByPk($userLink->userId)->username.", ";
             }
             $str=substr($str,0,-2);
-            $users=UserChild::getUserLinks($str);
+            $users=User::getUserLinks($str);
             $this->render('view',array(
                     'model'=>$this->loadModel($id),
                     'users'=>$users,
@@ -104,7 +104,7 @@ class DefaultController extends x2base
 	public function actionCreate()
 	{
             $model=new Groups;
-            $users=UserChild::getNames();
+            $users=User::getNames();
             unset($users['admin']);
             unset($users['']);
 
@@ -119,7 +119,7 @@ class DefaultController extends x2base
                     foreach($users as $user){
                         $link=new GroupToUser;
                         $link->groupId=$model->id;
-                        $userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+                        $userRecord=User::model()->findByAttributes(array('username'=>$user));
 						if(isset($userRecord)) {
 							$link->userId=$userRecord->id;
 							$link->username=$userRecord->username;
@@ -144,11 +144,11 @@ class DefaultController extends x2base
 	public function actionUpdate($id)
 	{
             $model=$this->loadModel($id);
-            $users=UserChild::getNames();
+            $users=User::getNames();
             $selected=array();
             $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
             foreach($links as $link){
-                $user=UserChild::model()->findByPk($link->userId);
+                $user=User::model()->findByPk($link->userId);
                 if(isset($user)){
                     $selected[]=$user->username;
                 }
@@ -174,7 +174,7 @@ class DefaultController extends x2base
                     foreach($users as $user){
                         $link=new GroupToUser;
                         $link->groupId=$model->id;
-                        $userRecord=UserChild::model()->findByAttributes(array('username'=>$user));
+                        $userRecord=User::model()->findByAttributes(array('username'=>$user));
                         $link->userId=$userRecord->id;
                         $link->username=$userRecord->username;
                         $test=GroupToUser::model()->findByAttributes(array('groupId'=>$model->id,'userId'=>$userRecord->id));
@@ -205,6 +205,11 @@ class DefaultController extends x2base
                 $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
                 foreach($links as $link){
                     $link->delete();
+                }
+                $contacts=Contacts::model()->findAllByAttributes(array('assignedTo'=>$id));
+                foreach($contacts as $contact){
+                    $contact->assignedTo='Anyone';
+                    $contact->save();
                 }
                 $this->loadModel($id)->delete();
 
@@ -243,7 +248,7 @@ class DefaultController extends x2base
                     echo CHtml::tag('option', array('value'=>$group->id),CHtml::encode($group->name),true);
                 }
             }else{
-                $users=UserChild::getNames();
+                $users=User::getNames();
                 foreach($users as $key=>$value){
                     echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
                 }

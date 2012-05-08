@@ -53,7 +53,7 @@ $this->menu=array(
 
 <?php
 
-$users = UserChild::getNames();
+$users = User::getNames();
 unset($users['Anyone']);
 unset($users['admin']);
 

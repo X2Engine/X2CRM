@@ -49,6 +49,7 @@ return array (
 'Login'=>'登录',
 
 // Main Menu
+'Calendar'=>'日历',
 'Actions'=>'任务',
 'Contacts'=>'联系人',
 'Sales'=>'销售',
@@ -96,6 +97,7 @@ return array (
 'Tag Cloud'=>'标签云',
 'Just Me'=>'只是我',
 'All Users'=>'所有用户',
+'Doc Viewer'=>'文档阅读器',
 
 'Total Action|Total Actions'=>'所有任务|所有的任务',
 'Unfinished Action|Unfinished Actions'=>'未完成的任务|未完成的任务',
@@ -112,6 +114,7 @@ return array (
 'Top Contacts'=>'最常关注的联系人',
 'Add {name}'=>'添加{name}',
 
+'Enter Title'=>'输入标题',
 
 // Chat
 'Message Body'=>'消息正文',

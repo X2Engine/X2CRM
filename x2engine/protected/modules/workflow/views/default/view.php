@@ -107,13 +107,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			'name'=>'conversionRate',
-			// 'value'=>'UserChild::getUserLinks($data->createdBy)',
+			// 'value'=>'User::getUserLinks($data->createdBy)',
 			// 'type'=>'raw',
 			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),
 		array(
 			'name'=>'value',
-			// 'value'=>'UserChild::getUserLinks($data->createdBy)',
+			// 'value'=>'User::getUserLinks($data->createdBy)',
 			// 'type'=>'raw',
 			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),

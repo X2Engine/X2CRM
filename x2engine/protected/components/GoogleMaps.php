@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -46,14 +46,14 @@ class GoogleMaps extends CWidget {
 	}
 
 	public function run() {
-	
+		
 		$actionParams = Yii::app()->controller->getActionParams();
 
 		$address = '';
-		if(Yii::app()->controller->id=='contacts'			// must be a contact
+		if(Yii::app()->controller->module != null && Yii::app()->controller->module->id=='contacts'			// must be a contact
 			&& Yii::app()->controller->action->id=='view'	// must be viewing it
 			&& isset($actionParams['id'])) {				// must have an actual ID value
-
+			
 			$currentRecord = Contacts::model()->findByPk($actionParams['id']);
 			
 

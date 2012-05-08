@@ -88,7 +88,7 @@ $deleteAction = $this->createUrl('deleteAction');
 $saveCheckedCalendar = $this->createUrl('saveCheckedCalendar');
 $saveCheckedCalendarFilter = $this->createUrl('saveCheckedCalendarFilter');
 
-$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+$user = User::model()->findByPk(Yii::app()->user->getId());
 $showCalendars = json_decode($user->showCalendars, true);
 $userCalendars = $showCalendars['userCalendars'];
 $sharedCalendars = $showCalendars['sharedCalendars'];
@@ -237,7 +237,7 @@ $(function() {
 						$(viewAction).dialog('open');
 					});
 					boxButtons.unshift({
-					    text: '<?php echo Yii::t('app', 'Save'); ?>', // delete event
+					    text: '<?php echo Yii::t('app', 'Save'); ?>', // update event
 					    click: function() {
 					        $.post('<?php echo $saveGoogleEvent; ?>?calendarId=' + event.source.calendarId, $(viewAction).find('form').serializeArray(), function() {$('#calendar').fullCalendar('refetchEvents');}); // delete event from database
 					        $(this).dialog('close');
@@ -617,7 +617,7 @@ $this->widget('InlineActionForm',
 		'associationType'=>'calendar',
 		'associationId'=>'',
 		'assignedTo'=>Yii::app()->user->getName(),
-		'users'=>UserChild::getNames(),
+		'users'=>User::getNames(),
 		'inCalendar'=>true,
 		'startHidden'=>false,
 		'showLogACall'=>false,

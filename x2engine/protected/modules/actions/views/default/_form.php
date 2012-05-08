@@ -61,8 +61,7 @@ $(function(){
 }
 );");
 
-$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
-
+// $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
 
 $inlineForm = (isset($inlineForm)); // true if this is in the InlineActionForm
 $quickCreate = $inlineForm? false : ($this->getAction()->getId() == 'quickCreate');	// true if we're inside the quickCreate view
@@ -232,6 +231,8 @@ if($inlineForm){
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
+				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formattimePicker() ),
+				'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
@@ -260,9 +261,9 @@ if($inlineForm){
             <?php /* x2temp */
                             echo "<br />";
                             if(isset($this->module) && $this->module instanceof ActionsModule){
-                                $url=$this->createUrl('groups/getGroups');
+                                $url=$this->createUrl('/groups/getGroups');
                             }else{
-                                $url=$this->controller->createUrl('groups/getGroups');
+                                $url=$this->controller->createUrl('/groups/getGroups');
                             }
                             echo "<label>Group?</label>";
                             echo CHtml::checkBox('group','',array(
@@ -340,6 +341,8 @@ $event->assignedTo = $actionModel->assignedTo;
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
+				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formatTimePicker() ),
+				'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
@@ -356,6 +359,8 @@ $event->assignedTo = $actionModel->assignedTo;
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
+				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formatTimePicker() ),
+				'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top

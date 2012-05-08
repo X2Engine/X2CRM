@@ -54,7 +54,7 @@ $form=$this->beginWidget('CActiveForm', array(
    'enableAjaxValidation'=>false,
 ));
 
-$users = UserChild::getNames();
+$users = User::getNames();
 unset($users['Anyone']);
 unset($users['admin']);
 	

@@ -65,20 +65,37 @@ class SearchController extends x2base {
 	}
 	
 	public function actionSearch(){
-		
+		ini_set('memory_limit',-1);
 		$term=$_GET['term'];
 			
 		if(substr($term,0,1)!="#"){
-
-			$sql = 'SELECT * FROM x2_contacts WHERE (visibility=1 OR assignedTo="'.Yii::app()->user->getName()
-				.'") AND (CONCAT(firstName," ",lastName) LIKE "%'.$term
-				.'%" OR backgroundInfo LIKE "%'.$term
-				.'%" OR email LIKE "%'.$term
-				.'%" OR firstName LIKE "%'.$term
-				.'%" OR lastName LIKE "%'.$term
-				.'%" OR phone LIKE "%'.$term
-				.'%" OR address LIKE "%'
-				.$term.'%")';
+                        $term=CHtml::encode($term);
+                        $phoneFlag=false;
+                        if(is_numeric($term)){
+                            $temp=$term;
+                            $first=substr($term,0,3);
+                            $second=substr($term,3,3);
+                            $third=substr($term,6,4);
+                            $phone1="OR phone LIKE '%($first) $second-$third%' OR phone LIKE '%$first-$second-$third%' OR phone LIKE '%$first $second $third%'";
+                            $phone2="OR phone2 LIKE '%($first) $second-$third%' OR phone2 LIKE '%$first-$second-$third%' OR phone2 LIKE '%$first $second $third%'";
+                            $phoneFlag=true;
+                        }
+                        if(!$phoneFlag){
+                            $sql = 'SELECT * FROM x2_contacts WHERE (visibility=1 OR assignedTo="'.Yii::app()->user->getName().'")
+                            AND (CONCAT(firstName," ",lastName) LIKE "%'.$term.'%" 
+                                    OR backgroundInfo LIKE "%'.$term.'%" 
+                                    OR email LIKE "%'.$term.'%" 
+                                    OR firstName LIKE "%'.$term.'%" 
+                                    OR lastName LIKE "%'.$term.'%")';
+                        }else{
+                            $sql = 'SELECT * FROM x2_contacts WHERE (visibility=1 OR assignedTo="'.Yii::app()->user->getName().'")
+                            AND (CONCAT(firstName," ",lastName) LIKE "%'.$term.'%" 
+                                    OR backgroundInfo LIKE "%'.$term.'%" 
+                                    OR email LIKE "%'.$term.'%" 
+                                    OR firstName LIKE "%'.$term.'%" 
+                                    OR lastName LIKE "%'.$term.'%"
+                                    '.$phone1." ".$phone2.' OR phone LIKE "%'.$term.'%")';
+                        }
 
 			$contacts=Contacts::model()->findAllBySql($sql);
 
@@ -125,7 +142,9 @@ class SearchController extends x2base {
 							$names[]=$contact;
 					}elseif(preg_match($regEx,$contact->address)>0){
 							$names[]=$contact;
-					}
+					}else{
+                                            $names[]=$contact;
+                                        }
 			}
 
 			foreach($actions as $action){

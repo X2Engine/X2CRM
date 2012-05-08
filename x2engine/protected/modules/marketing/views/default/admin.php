@@ -42,7 +42,7 @@ include("protected/config/marketingConfig.php");
 
 $this->menu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+	array('label'=>Yii::t('module','Create'), 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

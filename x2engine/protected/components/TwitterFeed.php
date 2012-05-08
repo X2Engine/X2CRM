@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,7 +50,8 @@ class TwitterFeed extends CWidget {
 		$actionParams = Yii::app()->controller->getActionParams();
 
 		$twitter = null;
-		if(Yii::app()->controller->id=='contacts'			// must be a contact
+		if(isset(Yii::app()->controller->module) 
+                        && Yii::app()->controller->module instanceof ContactsModule			// must be a contact
 			&& Yii::app()->controller->action->id=='view'	// must be viewing it
 			&& isset($actionParams['id'])) {				// must have an actual ID value
 

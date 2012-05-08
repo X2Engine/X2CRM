@@ -49,6 +49,7 @@ return array (
 'Login'=>'Login',
 
 // Main Menu
+'Calendar'=>'Kalender',
 'Actions'=>'Aktionen',
 'Contacts'=>'Kontakt',
 'Sales'=>'Vertrieb',
@@ -96,6 +97,7 @@ return array (
 'Tag Cloud'=>'Tag Cloud',
 'Just Me'=>'Nur Ich',
 'All Users'=>'Alle Benutzer',
+'Doc Viewer'=>'Doc Betrachter',
 
 'Total Action|Total Actions'=>'Jede Aktion | Alle Aktionen',
 'Unfinished Action|Unfinished Actions'=>'Unfertige aktion | Unfertige Aktionen',
@@ -112,6 +114,7 @@ return array (
 'Top Contacts'=>'Top Kontakte',
 'Add {name}'=>'Füge hinzu {name}',
 
+'Enter Title'=>'Geben Sie Titel',
 
 // Chat
 'Message Body'=>'Nachrichtentext',
