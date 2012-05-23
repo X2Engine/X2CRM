@@ -50,5 +50,5 @@ $this->menu = array(
 ?>
 <h2><?php echo Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])); ?> <b>#<?php echo $model->id; ?></b></h2>
 
-<?php $this->renderPartial('_form', array('model'=>$model,'users'=>$users, 'modelName'=>'Campaign')); ?>
+<?php $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign')); ?>
 

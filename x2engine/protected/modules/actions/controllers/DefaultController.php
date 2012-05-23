@@ -233,6 +233,12 @@ class DefaultController extends x2base {
 				$model->completeDate = $this->parseDateTime($model->completeDate);
 			}
 		}
+		
+ 		if(!is_numeric($model->assignedTo)) { // assigned to user
+			$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+			$profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
+		}
+		
 		if($api==0)
 			parent::create($model,$oldAttributes,$api);
 		else
@@ -282,9 +288,9 @@ class DefaultController extends x2base {
 					if($model->completeDate)
 						$model->completeDate = $this->parseDateTime($model->completeDate);
 					$calendar->createGoogleEvent($model); // action/event assigned to Google Calendar, no need to create Action since it's saved to google
-					$this->redirect(array('/calendar'));
+					$this->redirect(array('/calendar/index'));
 				}
-                            }
+              }
 			}
 			
 			$this->create($model,$temp,'0');
@@ -406,6 +412,12 @@ class DefaultController extends x2base {
                     $model->associationName = 'None';
                     $model->associationId = 0;
             }
+            
+ 			if(!is_numeric($model->assignedTo)) { // assigned to user
+				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+				$profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+			}
+            
             if($api==0)
                 parent::update($model,$oldAttributes,$api);
             else
@@ -465,6 +477,11 @@ class DefaultController extends x2base {
 
 			$changes = $this->calculateChanges($temp, $model->attributes, $model);
 			$model = $this->updateChangelog($model,$changes);
+			
+ 			if(!is_numeric($model->assignedTo)) { // assigned to user
+				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+				$profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+			}
 			
 			$model->update();
 		}
@@ -568,9 +585,15 @@ class DefaultController extends x2base {
 
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest){
-                        $this->cleanUpTags($model);
+			$this->cleanUpTags($model);
+            
+ 			if(!is_numeric($model->assignedTo)) { // assigned to user
+				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+				$profile->deleteGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+			}
+			
 			$model->delete();
-                }
+		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser

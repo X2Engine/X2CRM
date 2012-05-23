@@ -37,12 +37,11 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
 include("protected/config/marketingConfig.php");
 
 $this->menu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -92,9 +91,12 @@ function trimText($text) {
 	'viewName'=>'campaign',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>257,
+		'name'=>126,
 		'description'=>132,
-		'assignedTo'=>105,
+		'listId'=>45,
+		'subject'=>127,
+		'launchDate'=>105,
+		'launched'=>50,
 	),
 	'specialColumns'=>array(
 		'name'=>array(

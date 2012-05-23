@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,74 +44,6 @@ $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 $showWorkflow = Yii::app()->params->profile->showWorkflow;
 if($modelName=='contacts' || $modelName=='sales'){
-Yii::app()->clientScript->registerScript('updateWorkflow',"
-function startWorkflowStage(workflowId,stageNumber) {
-	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/workflow/startStage')) . "',
-		type: 'GET',
-		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
-		success: function(response) {
-			if(response!='')
-				$('#workflow-diagram').html(response);
-			updateHistory();
-		}
-	});
-}
-
-function completeWorkflowStage(workflowId,stageNumber) {
-	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/workflow/completeStage')) . "',
-		type: 'GET',
-		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
-		success: function(response) {
-			if(response!='')
-				$('#workflow-diagram').html(response);
-			updateHistory();
-		}
-	});
-}
-function workflowCommentDialog(workflowId,stageNumber) {
-	$('#workflowCommentWorkflowId').val(workflowId);
-	$('#workflowCommentStageNumber').val(stageNumber);
-
-	$('#workflowComment').css('border','1px solid black');
-	$('#workflowComment').val('')
-	$('#workflowDialog').dialog('open');
-}
-
-function completeWorkflowStageComment() {
-	var comment = $.trim($('#workflowComment').val());
-	if(comment.length < 1) {
-		$('#workflowComment').css('border','1px solid red');
-	} else {
-		$.ajax({
-			url: '" . CHtml::normalizeUrl(array('/workflow/completeStage')) . "',
-			type: 'GET',
-			data: 'workflowId='+$('#workflowCommentWorkflowId').val()+'&stageNumber='+$('#workflowCommentStageNumber').val()+'&modelId=".$model->id."&type=contacts&comment='+encodeURI(comment),
-			success: function(response) {
-				if(response=='') return;
-				$('#workflow-diagram').html(response);
-				updateHistory();
-			}
-		});
-		$('#workflowDialog').dialog('close');
-	}
-}
-
-function revertWorkflowStage(workflowId,stageNumber) {
-	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/workflow/revertStage')) . "',
-		type: 'GET',
-		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=".$modelName."',
-		success: function(response) {
-			if(response!='')
-				$('#workflow-diagram').html(response);
-			updateHistory();
-		}
-	});
-}
-",CClientScript::POS_HEAD);
-
 
 Yii::app()->clientScript->registerScript('toggleWorkflow', "
 function showWorkflow() {
@@ -242,20 +174,20 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
 											
 										$style = 'width:'.$item['width'].'px;';
-										// if($field->type == 'text')
-											// $style .= 'height:'.$item['height'].'px;';
+										if($field->type == 'text')
+											$style .= 'min-height:'.$item['height'].'px;';
 										echo '<div class="formInputBox" style="'.$style.'">';
 										if($field->type == 'date') {
 											echo !empty($model->$fieldName)?$this->formatLongDate($model->$fieldName).' ':" ";
 										}elseif($field->type=='rating'){
 											$this->widget('CStarRating',array(
-													'model'=>$model,
-													'attribute'=>$field->fieldName,
-													'readOnly'=>true,
-													'minRating'=>1, //minimal valuez
-													'maxRating'=>5,//max value
-													'starCount'=>5, //number of stars
-													'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+												'model'=>$model,
+												'attribute'=>$field->fieldName,
+												'readOnly'=>true,
+												'minRating'=>1, //minimal valuez
+												'maxRating'=>5,//max value
+												'starCount'=>5, //number of stars
+												'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 											));
 											echo '&nbsp;';
 										}elseif($field->type=='assignment'){

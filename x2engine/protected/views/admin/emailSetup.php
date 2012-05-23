@@ -154,6 +154,16 @@ $form=$this->beginWidget('CActiveForm', array(
 			<?php echo $form->textField($model,'emailFromAddr',array('size'=>40)); ?>
 		</div>
 	</div>
+	<div class="row">
+		<div class="cell">
+			<?php echo $form->labelEx($model,'emailBatchSize'); ?>
+			<?php echo $form->textField($model,'emailBatchSize',array('size'=>10)); ?>
+		</div>
+		<div class="cell">
+			<?php echo $form->labelEx($model,'emailInterval'); ?>
+			<?php echo $form->textField($model,'emailInterval',array('size'=>10)); ?>
+		</div>
+	</div>
 	<br>
 	<div class="row">
 		<?php echo $form->labelEx($model,'emailUseSignature'); ?>

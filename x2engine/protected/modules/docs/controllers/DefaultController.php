@@ -60,11 +60,10 @@ class DefaultController extends x2base {
 	{
 		return array(
                         array('allow',
-                            'actions'=>array('getItems', 'getItem'),
                             'users'=>array('*'), 
                         ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete'),
+				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -80,7 +79,7 @@ class DefaultController extends x2base {
         public function actionGetItems(){
 		$sql = 'SELECT id, title as value FROM x2_docs WHERE title LIKE :qterm ORDER BY title ASC';
 		$command = Yii::app()->db->createCommand($sql);
-		$qterm = $_GET['term'].'%';
+		$qterm = '%'.$_GET['term'].'%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
 		$result = $command->queryAll();
 		echo CJSON::encode($result); exit;

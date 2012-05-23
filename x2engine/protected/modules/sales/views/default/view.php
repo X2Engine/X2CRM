@@ -69,7 +69,8 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 $this->endWidget();
 
 // render workflow box
-$this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'sales','currentWorkflow'=>$currentWorkflow));
+// $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'sales','currentWorkflow'=>$currentWorkflow));
+$this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'sales','currentWorkflow'=>$currentWorkflow));
 ?>
 
 <div id="attachment-form" style="display:none;">

@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -78,6 +78,7 @@ a.x2-button, input.x2-button, button.x2-button { /* , a.search-button */
 	-webkit-border-radius:	3px;
 	-o-border-radius:		3px;
 }
+
 a.x2-button:hover, input.x2-button:hover, button.x2-button:hover {
 	color:black;
 	background-color:#fff;
@@ -115,7 +116,7 @@ a.x2-button.highlight:hover, input.x2-button.highlight:hover, button.x2-button.h
 	background-color:#87b800;
 	background:-webkit-gradient(linear, left top, left bottom, from(#87b800), to(#6aad00));
 	background:-moz-linear-gradient(top,  #87b800,  #6aad00);
-	border-color:#416d00 !important;
+	border-color:#416d00;
 }
 
 input.x2-button, button.x2-button {
@@ -124,7 +125,7 @@ input.x2-button, button.x2-button {
 	padding:5px 20px;
 	line-height:15px;
 }
-button.x2-button {border:1px solid #999 !important;}
+button.x2-button {border:1px solid #999;}
 input.x2-button.float, a.x2-button.float {float:right;}
 
 a.x2-button span {display:block;padding:0;}
@@ -145,13 +146,58 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 .x2-button:hover, .search-button:hover {	background:#fff;}
 .x2-button:active, .search-button:active {background:black;border-color:#666;color:white;}
 
+.x2-button.black {
+	border-color:#000;
+	-moz-box-shadow:	inset 0 1px 0 0 #777;
+	-webkit-box-shadow:	inset 0 1px 0 0 #777;
+	box-shadow:			inset 0 1px 0 0 #777;
+	/* background: #555; */
+	background: #555555;
+	background: -moz-linear-gradient(top, #555555 0%, #333333 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#555555), color-stop(100%,#333333));
+	background: -webkit-linear-gradient(top, #555555 0%,#333333 100%);
+	background: -o-linear-gradient(top, #555555 0%,#333333 100%);
+	background: -ms-linear-gradient(top, #555555 0%,#333333 100%);
+	background: linear-gradient(top, #555555 0%,#333333 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#555555', endColorstr='#333333',GradientType=0 );
+}
+
+.x2-button.black:hover {
+	border-color:#000;
+ 	-moz-box-shadow:	inset 0 1px 0 0 #888;
+	-webkit-box-shadow:	inset 0 1px 0 0 #888;
+	box-shadow:			inset 0 1px 0 0 #888;
+	background: #666666;
+	background: -moz-linear-gradient(top, #666666 0%, #404040 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#666666), color-stop(100%,#404040));
+	background: -webkit-linear-gradient(top, #666666 0%,#404040 100%);
+	background: -o-linear-gradient(top, #666666 0%,#404040 100%);
+	background: -ms-linear-gradient(top, #666666 0%,#404040 100%);
+	background: linear-gradient(top, #666666 0%,#404040 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', endColorstr='#404040',GradientType=0 );
+}
+.x2-button.black:active {
+	border-color:#000;
+	-moz-box-shadow: inset 0 1px 1px 0 #000;
+	-webkit-box-shadow: inset 0 1px 1px 0 #000;
+	box-shadow: inset 0 1px 1px 0 #000;
+	background: #222222;
+	background: -moz-linear-gradient(top, #222222 0%, #444444 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#222222), color-stop(100%,#444444));
+	background: -webkit-linear-gradient(top, #222222 0%,#444444 100%);
+	background: -o-linear-gradient(top, #222222 0%,#444444 100%);
+	background: -ms-linear-gradient(top, #222222 0%,#444444 100%);
+	background: linear-gradient(top, #222222 0%,#444444 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#444444',GradientType=0 );
+}
+
+
+
 #content {padding:0 45px 20px 45px; }	 /* create padding for pages without column2.php layout  */
 .span-15 #content, .span-20 #content {padding:0;}
 .span-20#content-box {width:780px;}			/* blueprint doesn't create any margin for the last span */
 #sidebar-left-box {position:relative;height:400px;}
-#sidebar-left {width:140px;padding:0 0 10px 10px;position:relative;}	/* Left sidebar */
-#sidebar-left.fixed{position:fixed;top:5px;}
-#sidebar-right {padding:0 10px 10px 0;}			/* Right sidebar */
+
 
 .portlet {
 	background:transparent;
@@ -213,12 +259,12 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 }
 #actions a:hover, #recent-items a:hover, #top-contacts a:hover{
 	border-top-color:#88cc88;/*#74d6ee;*/
-	background:#333;
+	background:#444;
 	color:white;
 }
 #actions span, #recent-items span, #top-contacts span {
 	border-top-color:#88cc88;/*#74d6ee;*/
-	background:#333;
+	background:#444;
 	color:white;
 	font-weight:bold;
 }
@@ -338,7 +384,25 @@ div.portlet-minimize a {text-decoration:none;}
 	color:black;
 }
 
+#widget_OnlineUsers .user a{
+    text-decoration:none;
+    color:black;
+}
 
+#widget_OnlineUsers .user{
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border-style:solid;
+	border-width:1px;
+	border-color:gray;
+	margin:2px 2px;
+	display:block;
+	float:left;
+	padding:2px;
+	background-color:#f0f0f0;
+}
 #note-box{
 	height:200px;
 	width:auto;
@@ -397,6 +461,40 @@ div.portlet-minimize a {text-decoration:none;}
 
 #docview-input {
 	padding: 5px;
+}
+
+#widget_TopSites .portlet-content{padding:0;}
+#widget_TopSites input {width:120px;padding:5px;margin-top:10px;}
+#sites-box{
+    height:200px;
+    width:auto;
+    margin:5px;
+    padding: 0 4px;
+    overflow-y:auto;
+    word-wrap:break-word;
+    line-height:1.1em;
+    font-size:9pt;
+    color:#555;
+    background:#fcfcfc;
+    border: 1px solid #ddd;
+}
+#site-url-container{height:100px;}
+div.shown{
+    margin-left:10px;
+    border:1px solid black;
+    width:130px;
+    padding-top:3px;
+    padding-left:5px;
+    padding-right:5px;
+    text-align:center;
+    background:#fff;
+
+}
+p.descrip{
+    font-weight:bold;
+}
+#actionLS{
+    padding:5px 15px 5px 15px;
 }
 
 /* #action-form textarea {width:558px;font-family:Arial, Helvetica, sans-serif;font-size:12px;} */
@@ -534,9 +632,9 @@ div.x2-sortlist li .handle {
 	background:#777; /* 00728f */ 
 	background:-webkit-gradient(linear, left top, right top, from(#777), to(#666));
 	background:-moz-linear-gradient(left,  #777,  #666);
-	-moz-box-shadow: inset 1px 0 0 0 rgba(255,255,255,0.3);
-	-webkit-box-shadow: inset 1px 0 0 0 rgba(255,255,255,0.3);
-	box-shadow: inset 1px 0 0 0 rgba(255,255,255,0.3);
+	-moz-box-shadow:	inset 1px 0 0 0 rgba(255,255,255,0.3);
+	-webkit-box-shadow:	inset 1px 0 0 0 rgba(255,255,255,0.3);
+	box-shadow:			inset 1px 0 0 0 rgba(255,255,255,0.3);
 	color:#fff;
 	text-shadow:rgba(0,0,0,0.5) 0 1px 4px;
 	font-size:16px;
@@ -592,9 +690,9 @@ div.workflow-funnel-stage {
 	text-align:center;
 	border:1px solid #999;
 	border-top-width:0;
-	line-height:20px;
+	line-height:24px;
 }
-div.workflow-status {display:block;float:left;line-height:20px;height:22px;width:280px;}
+div.workflow-status {display:block;float:left;line-height:20px;height:24px;width:340px;}
 .workflow-funnel-stage span.name {
 /* 	display:inline-block;
 	width:80px;
@@ -611,6 +709,16 @@ div.workflow-status {display:block;float:left;line-height:20px;height:22px;width
 	background:url(../images/sales-icon.png) 5px center no-repeat;
 	padding-left:24px;
 }
+
+#workflowStageDetails label {display:inline;}
+#workflowStageDetails input, #workflowStageDetails textarea, #workflowStageDetails select {display:none;}
+#workflowStageDetails span {display:inline;}
+#workflowStageDetails.editMode input, #workflowStageDetails.editMode textarea, #workflowStageDetails.editMode select {display:block;}
+#workflowStageDetails.editMode span {display:none;}
+/* #workflowStageDetails.editMode td.text-field {padding:0;} */
+#workflowStageDetails {text-align:center;}
+#workflowStageDetails img.loading {margin:40px 0;}
+
 
 .rating-cancel {	display:none !important;}	/* get rid of horrid "cancel rating" on star ratings widget */
 	
@@ -730,13 +838,6 @@ img.attachment-img {
 	display:block;
 	max-width:250px;
 }
-
-#footer {
-	color:#999;
-	font-size:10px;
-	text-align:center;
-	padding:0 10px 10px 10px;
-}
 #footer a {color:#175CA3;}
 #footer a:hover {color:#8dbff2;}
 #footer-logos {
@@ -762,6 +863,26 @@ img.attachment-img {
 	padding:10px 20px;
 	font-size:200%;
 }
+
+div.date-box {
+	display:inline-block;
+	height:22px;
+	width:22px;
+	margin:0 5px;
+	border:1px solid #000;
+	background:#fff;
+	border-radius:			2px;
+	-moz-border-radius:		2px;
+	-webkit-border-radius:	2px;
+	-o-border-radius:		2px;
+	text-align:center;
+	vertical-align:middle;
+}
+div.date-box span {display:block;font-weight:bold;}
+div.date-box span.month {background:#444;color:#fff;font-size:8px;line-height:10px;text-transform:uppercase;}
+
+div.date-box span.day {display:block;font-size:12px;line-height:12px;}
+
 
 div.flash-error, div.flash-notice, div.flash-success {
 	padding:.8em;
@@ -810,10 +931,10 @@ div#code-snippet {
 	background: #f8f8f8;
 	border:1px solid #ddd;
 	padding:5px;
-	border-radius:4px;
-	-moz-border-radius:4px;
-	-webkit-border-radius:4px;
-	-o-border-radius:4px;
+	border-radius:			4px;
+	-moz-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	-o-border-radius:		4px;
 }
 
 .yiiLog {

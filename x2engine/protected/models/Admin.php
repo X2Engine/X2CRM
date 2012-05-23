@@ -96,7 +96,7 @@ class Admin extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('emailFromName, emailFromAddr', 'required'),
-			array('accounts, sales, timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailPort, installDate, updateDate, updateInterval', 'numerical', 'integerOnly'=>true),
+			array('accounts, sales, timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval', 'numerical', 'integerOnly'=>true),
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),
 			array('currency', 'length', 'max'=>3),
 			array('emailUseAuth, emailUseSignature', 'length', 'max'=>10),
@@ -129,6 +129,8 @@ class Admin extends CActiveRecord
 			'onlineOnly' => Yii::t('admin','Online Only'),
 			'emailFromName' => Yii::t('admin','Sender Name'),
 			'emailFromAddr' => Yii::t('admin','Sender Email Address'),
+			'emailBatchSize' => Yii::t('admin','Batch Size'),
+			'emailInterval' => Yii::t('admin','Interval (Minutes)'),
 			'emailUseSignature' => Yii::t('admin','Email Signatures'),
 			'emailSignature' => Yii::t('admin','Default Signature'),
 			'emailType' => Yii::t('admin','Method'),

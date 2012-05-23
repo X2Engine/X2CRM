@@ -174,7 +174,7 @@ if($inlineForm){
 		array(
 			'ajax' => array(
 				'type'=>'POST', //request type
-				'url'=>CController::createUrl('actions/parseType'), //url to call.
+				'url'=>CController::createUrl('/actions/parseType'), //url to call.
 				//Style: CController::createUrl('currentController/methodToCall')
 				'update'=>'#', //selector to update
 				'success'=>'function(data){
@@ -187,11 +187,12 @@ if($inlineForm){
 	</div>
 	<div class="cell" id="auto_complete">
 		<?php
+                $linkSource = $this->createUrl(CActiveRecord::model(ucfirst($actionModel->associationType))->getAutoCompleteSource());
 		echo $form->label($actionModel,'associationName');
 		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 			'name'=>'auto_select',
 			'value'=>$actionModel->associationName,
-			'source' => $this->createUrl('actions/getTerms',array('type'=>$actionModel->associationType)),
+			'source' => $linkSource,
 			'options'=>array(
 				'minLength'=>'2',
 				'select'=>'js:function( event, ui ) {

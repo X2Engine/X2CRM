@@ -67,121 +67,121 @@ class SearchController extends x2base {
 	public function actionSearch(){
 		ini_set('memory_limit',-1);
 		$term=$_GET['term'];
-			
-		if(substr($term,0,1)!="#"){
-                        $term=CHtml::encode($term);
-                        $phoneFlag=false;
+                
+                if(substr($term,0,1)!="#"){
+                    
+                        /*$contactsCriteria = new CDbCriteria();
+
+                        $contactsCriteria->compare('firstName', $term, true, 'OR');
+                        $contactsCriteria->compare('lastName', $term, true, 'OR');
+                        $contactsCriteria->compare('name', $term, true, 'OR');
+                        $contactsCriteria->compare('backgroundInfo', $term, true, 'OR');
+                        $contactsCriteria->compare('email', $term, true, 'OR');
+                        $contactsCriteria->compare('phone', $term, true, 'OR');
                         if(is_numeric($term)){
                             $temp=$term;
-                            $first=substr($term,0,3);
-                            $second=substr($term,3,3);
-                            $third=substr($term,6,4);
-                            $phone1="OR phone LIKE '%($first) $second-$third%' OR phone LIKE '%$first-$second-$third%' OR phone LIKE '%$first $second $third%'";
-                            $phone2="OR phone2 LIKE '%($first) $second-$third%' OR phone2 LIKE '%$first-$second-$third%' OR phone2 LIKE '%$first $second $third%'";
-                            $phoneFlag=true;
-                        }
-                        if(!$phoneFlag){
-                            $sql = 'SELECT * FROM x2_contacts WHERE (visibility=1 OR assignedTo="'.Yii::app()->user->getName().'")
-                            AND (CONCAT(firstName," ",lastName) LIKE "%'.$term.'%" 
-                                    OR backgroundInfo LIKE "%'.$term.'%" 
-                                    OR email LIKE "%'.$term.'%" 
-                                    OR firstName LIKE "%'.$term.'%" 
-                                    OR lastName LIKE "%'.$term.'%")';
-                        }else{
-                            $sql = 'SELECT * FROM x2_contacts WHERE (visibility=1 OR assignedTo="'.Yii::app()->user->getName().'")
-                            AND (CONCAT(firstName," ",lastName) LIKE "%'.$term.'%" 
-                                    OR backgroundInfo LIKE "%'.$term.'%" 
-                                    OR email LIKE "%'.$term.'%" 
-                                    OR firstName LIKE "%'.$term.'%" 
-                                    OR lastName LIKE "%'.$term.'%"
-                                    '.$phone1." ".$phone2.' OR phone LIKE "%'.$term.'%")';
-                        }
+                            $first=substr($temp,0,3);
+                            $second=substr($temp,3,3);
+                            $third=substr($temp,6,4);
 
-			$contacts=Contacts::model()->findAllBySql($sql);
+                            $contactsCriteria->compare('phone', "($first) $second-$third", true, 'OR');
+                            $contactsCriteria->compare('phone', "$first-$second-$third", true, 'OR');
+                            $contactsCriteria->compare('phone', "$first $second $third", true, 'OR');
 
-			$actions=Actions::model()->findAllBySql('SELECT * FROM x2_actions WHERE actionDescription LIKE "%'.$term.'%" LIMIT 10000');
-			$accounts=Accounts::model()->findAllBySql('SELECT * FROM x2_accounts WHERE name LIKE "%'.$term.'%" OR description LIKE "%'.$term.'%" 
-					OR tickerSymbol LIKE "%'.$term.'%"');
-                        $quotes=Quote::model()->findAllBySql('SELECT * FROM x2_quotes WHERE name LIKE "%'.$term.'%"');
+                            $contactsCriteria->compare('phone2', "($first) $second-$third", true, 'OR');
+                            $contactsCriteria->compare('phone2', "$first-$second-$third", true, 'OR');
+                            $contactsCriteria->compare('phone2', "$first $second $third", true, 'OR');
+
+                        }
+						
+                        $contacts=Contacts::model()->findAll($contactsCriteria);
+
+                        
+                        $actionsCriteria=new CDbCriteria();
+                        $actionsCriteria->compare('actionDescription',$term,true,'OR');
+                        $actions=Actions::model()->findAll($actionsCriteria);
+                        
+                        $accountsCriteria=new CDbCriteria();
+                        $accountsCriteria->compare("name",$term,true,"OR");
+                        $accountsCriteria->compare("description",$term,true,"OR");
+                        $accountsCriteria->compare('tickerSymbol',$term,true,'OR');
+                        $accounts=Accounts::model()->findAll($accountsCriteria);
+                        
+                        $quotesCriteria=new CDbCriteria();
+                        $quotesCriteria->compare("name",$term,TRUE,"OR");
+                        $quotes=Quote::model()->findAll($quotesCriteria);
                         
                         $disallow=array(
                             'contacts',
                             'actions',
                             'accounts',
                             'quotes',
-                        );
-     
+                        );*/
+                        
                         $modules=Modules::model()->findAllByAttributes(array('searchable'=>1));
+                        $comparisons=array();
                         foreach($modules as $module){
-                            if(!in_array($module->name,$disallow)){
                                 $module->name=='products'?$type=ucfirst('Product'):$type=ucfirst($module->name);
                                 $module->name=='quotes'?$type=ucfirst('Quote'):$type=$type;
-                                $table=CActiveRecord::model($type)->tableName();
-                                eval("\$arr=$type::model()->findAllBySql('SELECT * FROM $table WHERE name LIKE \'%$term%\' OR description LIKE \'%$term%\'');");
-                                $other[]=$arr;
-                            }
+                                $criteria=new CDbCriteria();
+                                $fields=Fields::model()->findAllByAttributes(array('modelName'=>$type,'searchable'=>1));
+                                $temp=array();
+                                foreach($fields as $field){
+                                    $temp[]=$field->id;
+                                    $criteria->compare($field->fieldName,$term,true,"OR");
+                                }
+                                $arr=CActiveRecord::model($type)->findAll($criteria);
+                                $comparisons[$type]=$temp;
+                                $other[$type]=$arr;
+                            
+                            
                         }
-                        $other[]=$quotes;
-			$names=array();
-			$descriptions=array();
+			$high=array();
+			$medium=array();
+                        $low=array();
 
 			$records=array();
 
 			$regEx="/$term/i";
 
-			foreach($contacts as $contact){
-					if(preg_match($regEx,$contact->firstName." ".$contact->lastName)>0){
-							$names[]=$contact;
-					}elseif(preg_match($regEx,$contact->firstName)>0 || preg_match($regEx,$contact->lastName)>0){
-							$descriptions[]=$contact;
-					}elseif(preg_match($regEx,$contact->backgroundInfo)>0){
-							$descriptions[]=$contact;
-					}elseif(preg_match($regEx,$contact->email)>0){
-							$names[]=$contact;
-					}elseif(preg_match($regEx,$contact->phone)>0){
-							$names[]=$contact;
-					}elseif(preg_match($regEx,$contact->address)>0){
-							$names[]=$contact;
-					}else{
-                                            $names[]=$contact;
-                                        }
-			}
-
-			foreach($actions as $action){
-					if(preg_match($regEx,$action->actionDescription)>0){
-							$descriptions[]=$action;
-					}
-			}
-
-			foreach($accounts as $account){
-					if(preg_match($regEx,$account->name)>0){
-							$names[]=$account;
-					}elseif(preg_match($regEx,$account->tickerSymbol)>0){
-							$names[]=$account;
-					}elseif(preg_match($regEx,$account->description)>0){
-							$descriptions[]=$account;
-					}elseif(preg_match($regEx,$account->website)>0){
-							$names[]=$account;
-					}
-			}
-                        foreach($other as $recordType){
+                        foreach($other as $key=>$recordType){
+                            $fieldList=$comparisons[$key];
                             foreach($recordType as $otherRecord){
-                                if(preg_match($regEx,$otherRecord->name)>0){
-                                    $names[]=$otherRecord;
-                                }elseif(preg_match($regEx,$otherRecord->description)>0){
-                                    $descriptions[]=$otherRecord;
+                                foreach($fieldList as $field){
+                                    $fieldRecord=Fields::model()->findByPk($field);
+                                    $fieldName=$fieldRecord->fieldName;
+                                    if(preg_match($regEx,$otherRecord->$fieldName)>0){
+                                        switch($fieldRecord->relevance){
+                                            case "High":
+                                                if(!in_array($otherRecord,$high) && !in_array($otherRecord,$medium) && !in_array($otherRecord,$low))
+                                                    $high[]=$otherRecord;
+                                                break;
+                                            case "Medium":
+                                                if(!in_array($otherRecord,$high) && !in_array($otherRecord,$medium) && !in_array($otherRecord,$low))
+                                                    $medium[]=$otherRecord;
+                                                break;
+                                            case "Low":
+                                                if(!in_array($otherRecord,$high) && !in_array($otherRecord,$medium) && !in_array($otherRecord,$low))
+                                                    $low[]=$otherRecord;
+                                                break;
+                                            default:
+                                                $low[]=$otherRecord;
+                                        }
+                                        
+                                    }
                                 }
                             }
                         }
 
-			$records=array_merge($names,$descriptions);
+			$records=array_merge($high,$medium);
+                        $records=array_merge($records,$low);
 
 			$records=Record::convert($records, false);
 
 			$dataProvider=new CArrayDataProvider($records,array(
 					'id'=>'id',
 					'pagination'=>array(
-							'pageSize'=>10,
+							'pageSize'=>ProfileChild::getResultsPerPage(),
 					),
 			));
 

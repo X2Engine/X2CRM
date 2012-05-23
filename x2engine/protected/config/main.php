@@ -193,7 +193,7 @@ return array(
 			'OnlineUsers'=>'Active Users',
 			'DocViewer' => 'Doc Viewer',
 			'TimeZone' => 'Time Zone',
-			// 'TopSites' => 'Top Sites',
+			 'TopSites' => 'Top Sites',
 		),
 		'currency'=>'',
 		'version'=>$version,

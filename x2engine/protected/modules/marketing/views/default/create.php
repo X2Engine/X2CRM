@@ -47,4 +47,4 @@ $this->menu = array(
 ?>
 <h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users,'modelName'=>'Campaign')); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign')); ?>

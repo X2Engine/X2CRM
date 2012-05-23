@@ -74,7 +74,6 @@ class X2GridView extends CGridView {
 			$this->modelName='Quote';
 		
 		
-		
 		$this->columnSelectorId = $this->getId() . '-column-selector';
 
 		if(isset($_GET['gvSettings']) && isset($_GET['viewName']) && $_GET['viewName'] == $this->viewName) {
@@ -179,7 +178,7 @@ class X2GridView extends CGridView {
 			// $width = (!empty($width) && is_numeric($width))? 'width:'.$width.'px;' : null;	// make sure width is reasonable, then convert it to CSS
 			$width = (!empty($width) && is_numeric($width))? $width : null;	// make sure width is reasonable
 			
-			$isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate', 'expectedCloseDate', 'expirationDate', 'timestamp','lastactivity'));
+			// $isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate', 'expectedCloseDate', 'expirationDate', 'timestamp','lastactivity'));
 			
 			$isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
 			
@@ -212,26 +211,29 @@ class X2GridView extends CGridView {
 				$newColumn['header'] = CActiveRecord::model($this->modelName)->getAttributeLabel($columnName);
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
 				
-				if($isDate)
-					$newColumn['value'] = 'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["'.$columnName.'"])';
-				else if($isCurrency) {
+				if($isCurrency) {
 					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
-				} else if($columnName == 'assignedTo'){
+				} else if($columnName == 'assignedTo') {
 					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):UserChild::getUserLinks($data->assignedTo)';
-                                        $newColumn['type'] = 'raw';
-                                }elseif($this->allFields[$columnName]->type=='link'){
-                                    $field=$this->allFields[$columnName];
-                                    $type=ucfirst($field->linkType);
-                                    $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/default/view/id/'.\$data->$columnName),array('target'=>'_blank')):\$data->$columnName";
-                                    $newColumn['type'] = 'raw';
-                                }elseif($this->allFields[$columnName]->type=='boolean'){
-                                    $field=$this->allFields[$columnName];
-                                    $type=ucfirst($field->linkType);
-                                    $newColumn['value']='$data->'.$columnName.'==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
-                                    $newColumn['type'] = 'raw';
-                                }
-                            
+						$newColumn['type'] = 'raw';
+				} elseif($this->allFields[$columnName]->type=='date') {
+					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["'.$columnName.'"])';
+				} elseif($this->allFields[$columnName]->type=='link') {
+
+					$newColumn['value'] = 'X2Model::getModelLink($data->'.$columnName.',"'.$this->allFields[$columnName]->linkType.'")';
+					
+					
+					// $type=ucfirst($field->linkType);
+					// $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/default/view/id/'.\$data->$columnName),array('target'=>'_blank')):\$data->$columnName";
+					$newColumn['type'] = 'raw';
+				} elseif($this->allFields[$columnName]->type=='boolean') {
+					$field=$this->allFields[$columnName];
+					$type=ucfirst($field->linkType);
+					$newColumn['value']='$data->'.$columnName.'==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
+					$newColumn['type'] = 'raw';
+				}
+			
 
 				if(Yii::app()->language == 'en') {
 					$format =  "M d, yy";

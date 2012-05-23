@@ -38,19 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class DefaultController extends x2base
-{
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
-
+class DefaultController extends x2base {
 	/**
 	 * @return array action filters
 	 */
-	public function filters()
-	{
+	public function filters() {
 		return array(
 			'accessControl', // perform access control for CRUD operations
 		);
@@ -62,78 +54,75 @@ class DefaultController extends x2base
 	 * @return array access control rules
 	 */
 	public function accessRules(){
-            
-            return array(
-                array('allow', 
-                    'actions'=>array('index','view','getGroups'),
-                    'users'=>array('*'),
-                ),
-                array('allow', 
-                    'actions'=>array('create','update','admin','delete'),
-                    'users'=>array('admin'),
-                ),
-                array('deny',  // deny all users
-                    'users'=>array('*'),
-                ),
-            );
+		return array(
+			array('allow', 
+				'actions'=>array('index','view','getGroups'),
+				'users'=>array('*'),
+			),
+			array('allow', 
+				'actions'=>array('create','update','admin','delete'),
+				'users'=>array('admin'),
+			),
+			array('deny',  // deny all users
+				'users'=>array('*'),
+			),
+		);
 	}
 
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionView($id)
-	{
-            $userLinks=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
-            $str="";
-            foreach($userLinks as $userLink){
-                $str.=User::model()->findByPk($userLink->userId)->username.", ";
-            }
-            $str=substr($str,0,-2);
-            $users=User::getUserLinks($str);
-            $this->render('view',array(
-                    'model'=>$this->loadModel($id),
-                    'users'=>$users,
-            ));
+	public function actionView($id) {
+		$userLinks=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
+		$str="";
+		foreach($userLinks as $userLink){
+			$str.=User::model()->findByPk($userLink->userId)->username.", ";
+		}
+		$str=substr($str,0,-2);
+		$users=User::getUserLinks($str);
+		$this->render('view',array(
+			'model'=>$this->loadModel($id),
+			'users'=>$users,
+		));
 	}
 
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
-	{
-            $model=new Groups;
-            $users=User::getNames();
-            unset($users['admin']);
-            unset($users['']);
+	public function actionCreate() {
+		$model=new Groups;
+		$users=User::getNames();
+		unset($users['admin']);
+		unset($users['']);
 
-            if(isset($_POST['Groups'])){
+		if(isset($_POST['Groups'])){
 
-                $model->attributes=$_POST['Groups'];
-                if(isset($_POST['users']))
-                    $users=$_POST['users'];
-                else
-                    $users=array();
-                if($model->save()){
-                    foreach($users as $user){
-                        $link=new GroupToUser;
-                        $link->groupId=$model->id;
-                        $userRecord=User::model()->findByAttributes(array('username'=>$user));
-						if(isset($userRecord)) {
-							$link->userId=$userRecord->id;
-							$link->username=$userRecord->username;
-							$link->save();
-						}
-                    }
-                    $this->redirect(array('view','id'=>$model->id));
-                }
-            }
+			$model->attributes=$_POST['Groups'];
+			if(isset($_POST['users']))
+				$users=$_POST['users'];
+			else
+				$users=array();
+			if($model->save()){
+				foreach($users as $user){
+					$link=new GroupToUser;
+					$link->groupId=$model->id;
+					$userRecord=User::model()->findByAttributes(array('username'=>$user));
+					if(isset($userRecord)) {
+						$link->userId=$userRecord->id;
+						$link->username=$userRecord->username;
+						$link->save();
+					}
+				}
+				$this->redirect(array('view','id'=>$model->id));
+			}
+		}
 
-            $this->render('create',array(
-                    'model'=>$model,
-                    'users'=>$users,
-            ));
+		$this->render('create',array(
+				'model'=>$model,
+				'users'=>$users,
+		));
 	}
 
 	/**
@@ -141,55 +130,54 @@ class DefaultController extends x2base
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
-	{
-            $model=$this->loadModel($id);
-            $users=User::getNames();
-            $selected=array();
-            $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
-            foreach($links as $link){
-                $user=User::model()->findByPk($link->userId);
-                if(isset($user)){
-                    $selected[]=$user->username;
-                }
-            }
-            unset($users['admin']);
-            unset($users['']);
+	public function actionUpdate($id) {
+		$model=$this->loadModel($id);
+		$users=User::getNames();
+		$selected=array();
+		$links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
+		foreach($links as $link){
+			$user=User::model()->findByPk($link->userId);
+			if(isset($user)){
+				$selected[]=$user->username;
+			}
+		}
+		unset($users['admin']);
+		unset($users['']);
 
-            // Uncomment the following line if AJAX validation is needed
-            // $this->performAjaxValidation($model);
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
 
-            if(isset($_POST['Groups']))
-            {
-                $userLinks=GroupToUser::model()->findAllByAttributes(array('groupId'=>$model->id));
-                foreach($userLinks as $userLink){
-                    $userLink->delete();
-                }
-                $model->attributes=$_POST['Groups'];
-                if(isset($_POST['users']))
-                    $users=$_POST['users'];
-                else
-                    $users=array();
-                if($model->save()){
-                    foreach($users as $user){
-                        $link=new GroupToUser;
-                        $link->groupId=$model->id;
-                        $userRecord=User::model()->findByAttributes(array('username'=>$user));
-                        $link->userId=$userRecord->id;
-                        $link->username=$userRecord->username;
-                        $test=GroupToUser::model()->findByAttributes(array('groupId'=>$model->id,'userId'=>$userRecord->id));
-                        if(!isset($test))
-                            $link->save();
-                    }
-                    $this->redirect(array('view','id'=>$model->id));
-                }
-            }
+		if(isset($_POST['Groups']))
+		{
+			$userLinks=GroupToUser::model()->findAllByAttributes(array('groupId'=>$model->id));
+			foreach($userLinks as $userLink){
+				$userLink->delete();
+			}
+			$model->attributes=$_POST['Groups'];
+			if(isset($_POST['users']))
+				$users=$_POST['users'];
+			else
+				$users=array();
+			if($model->save()){
+				foreach($users as $user){
+					$link=new GroupToUser;
+					$link->groupId=$model->id;
+					$userRecord=User::model()->findByAttributes(array('username'=>$user));
+					$link->userId=$userRecord->id;
+					$link->username=$userRecord->username;
+					$test=GroupToUser::model()->findByAttributes(array('groupId'=>$model->id,'userId'=>$userRecord->id));
+					if(!isset($test))
+						$link->save();
+				}
+				$this->redirect(array('view','id'=>$model->id));
+			}
+		}
 
-            $this->render('update',array(
-                    'model'=>$model,
-                    'users'=>$users,
-                    'selected'=>$selected,
-            ));
+		$this->render('update',array(
+				'model'=>$model,
+				'users'=>$users,
+				'selected'=>$selected,
+		));
 	}
 
 	/**
@@ -197,87 +185,80 @@ class DefaultController extends x2base
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete($id)
-	{
-            if(Yii::app()->request->isPostRequest)
-            {
-                // we only allow deletion via POST request
-                $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
-                foreach($links as $link){
-                    $link->delete();
-                }
-                $contacts=Contacts::model()->findAllByAttributes(array('assignedTo'=>$id));
-                foreach($contacts as $contact){
-                    $contact->assignedTo='Anyone';
-                    $contact->save();
-                }
-                $this->loadModel($id)->delete();
+	public function actionDelete($id) {
+		if(Yii::app()->request->isPostRequest) {
+			// we only allow deletion via POST request
+			$links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$id));
+			foreach($links as $link) {
+				$link->delete();
+			}
+			$contacts=Contacts::model()->findAllByAttributes(array('assignedTo'=>$id));
+			foreach($contacts as $contact) {
+				$contact->assignedTo='Anyone';
+				$contact->save();
+			}
+			$this->loadModel($id)->delete();
 
-                // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-                if(!isset($_GET['ajax']))
-                        $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-            }
-            else
-                throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+			if(!isset($_GET['ajax']))
+					$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+		}
+		else
+			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
 
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
-	{
-            $dataProvider=new CActiveDataProvider('Groups');
-            $this->render('index',array(
-                    'dataProvider'=>$dataProvider,
-            ));
+	public function actionIndex() {
+		$dataProvider=new CActiveDataProvider('Groups');
+		$this->render('index',array(
+				'dataProvider'=>$dataProvider,
+		));
 	}
 
 	/**
 	 * Manages all models.
 	 */
-	public function actionAdmin()
-	{
-            $this->redirect('index');
+	public function actionAdmin() {
+		$this->redirect('index');
 	}
         
-        public function actionGetGroups(){
-            print_r($_POST);
-            if(isset($_POST['group'])){
-                $groups=Groups::model()->findAll();
-                foreach($groups as $group){
-                    echo CHtml::tag('option', array('value'=>$group->id),CHtml::encode($group->name),true);
-                }
-            }else{
-                $users=User::getNames();
-                foreach($users as $key=>$value){
-                    echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
-                }
-            }
-        }
+	public function actionGetGroups() {
+		print_r($_POST);
+		if(isset($_POST['group'])){
+			$groups=Groups::model()->findAll();
+			foreach($groups as $group){
+				echo CHtml::tag('option', array('value'=>$group->id),CHtml::encode($group->name),true);
+			}
+		}else{
+			$users=User::getNames();
+			foreach($users as $key=>$value){
+				echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
+			}
+		}
+	}
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer the ID of the model to be loaded
 	 */
-	public function loadModel($id)
-	{
-            $model=Groups::model()->findByPk((int)$id);
-            if($model===null)
-                    throw new CHttpException(404,'The requested page does not exist.');
-            return $model;
+	public function loadModel($id) {
+		$model=Groups::model()->findByPk((int)$id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
 	}
 
 	/**
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated
 	 */
-	protected function performAjaxValidation($model)
-	{
-            if(isset($_POST['ajax']) && $_POST['ajax']==='groups-form')
-            {
-                    echo CActiveForm::validate($model);
-                    Yii::app()->end();
-            }
+	protected function performAjaxValidation($model) {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='groups-form') {
+			echo CActiveForm::validate($model);
+			Yii::app()->end();
+		}
 	}
 }

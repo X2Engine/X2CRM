@@ -49,7 +49,7 @@ class DefaultController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','getWorkflow','startStage','completeStage','revertStage','getStageMembers'),
+				'actions'=>array('index','view','getWorkflow','getStageDetails','updateStageDetails','startStage','completeStage','revertStage','getStageMembers'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -158,50 +158,6 @@ class DefaultController extends x2base {
 		$this->render('create',array(
 			'model'=>$workflowModel,
 		));
-
-		// $stages = array();
-		
-		// if(isset($_POST['Workflow'])) {
-
-			// $validStages = false;
-			 // if(isset($_POST['WorkflowStages'])) {
-				// $validStages = true;
-				// $i = 0;
-				// foreach($_POST['WorkflowStages']['name'] as &$stageName) {
-					
-					// $stageModel = new WorkflowStage;
-					// $stageModel->name = $stageName;
-					// $stageModel->conversionRate = $_POST['WorkflowStages']['conversionRate'][$i];
-					// $stageModel->value = $_POST['WorkflowStages']['value'][$i];
-					// $stageModel->requirePrevious = $_POST['WorkflowStages']['requirePrevious'][$i];
-					// $stageModel->requireComment = $_POST['WorkflowStages']['requireComment'][$i];
-					
-					// $i++;
-					// $stageModel->stageNumber = $i;
-
-					// if(!$stageModel->validate())
-						// $validStages = false;
-					// $stages[] = $stageModel;
-				// }
-			// }
-		
-			// $workflowModel->attributes = $_POST['Workflow'];
-			
-			// if($validStages && $workflowModel->validate()) {
-				// $workflowModel->save();
-				
-				// foreach($stages as &$stage) {
-					// $stage->workflowId = $workflowModel->id;
-					// $stage->save();
-				// }
-				// $this->redirect(array('view','id'=>$workflowModel->id));
-			// }
-		// }
-
-		// $this->render('create',array(
-			// 'model'=>$workflowModel,
-			// 'stages'=>$stages,
-		// ));
 	}
 
 	// Updates a particular model
@@ -279,12 +235,49 @@ class DefaultController extends x2base {
 			echo Workflow::renderWorkflow($workflowStatus);
 		}
 	}
+	
+	public function actionGetStageDetails($workflowId,$stage,$modelId,$type) {
+		if(is_numeric($workflowId) && is_numeric($stage) && is_numeric($modelId) && ctype_alpha($type)) {
+			
+			$model = Workflow::getWorkflowDetails($workflowId,$stage,$modelId,$type);
+			
+			$this->renderPartialAjax('_workflowDetail',array('model'=>$model),false);
+			
+		}
+	}
+	
+	public function actionUpdateStageDetails($id) {
+	
+		$model = CActiveRecord::model('Actions')->findByPk($id);
+		$model->setScenario('workflow');
+		
+		if(isset($model, $_POST['Actions'])) {
+		
+			$model->createDate = $this->parseDate($_POST['Actions']['createDate']);
+			$model->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
+			$model->completedBy = $_POST['Actions']['completedBy'];
+			$model->actionDescription = $_POST['Actions']['actionDescription'];
+			
+			// don't save if createDate isn't valid
+			if($model->createDate === false)
+				return;
+			if($model->completeDate === false) {
+				$model->complete = 'No';
+				$model->completedBy = null;
+			} else {
+				if($model->completeDate < $model->createDate)
+					$model->completeDate = $model->createDate;	// we can't have the completeDate before the createDate now can we
+				$model->complete = 'Yes';
+			}
+			$model->save();
+		}
+	}
 
 	public function actionStartStage($workflowId,$stageNumber,$modelId,$type) {
 		if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
 
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-			
+			// die(var_dump($workflowStatus));
 			if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
 				&& (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
 				
@@ -300,8 +293,9 @@ class DefaultController extends x2base {
 				$action->lastUpdated = time();
 				$action->workflowId = (int)$workflowId;
 				$action->stageNumber = (int)$stageNumber;
-				
 				$action->save();
+				// die(var_dump($action->getErrors()));
+				// die(var_dump($action->rules()));
 				
 				$this->updateWorkflowChangelog($action,'start');
 			}
@@ -417,6 +411,7 @@ class DefaultController extends x2base {
 					$actions[0]->complete = 'No';
 					$actions[0]->completeDate = null;
 					$actions[0]->completedBy = '';
+					$actions[0]->actionDescription = '';	// original completion note no longer applies
 					$actions[0]->save();
 					
 					$this->updateWorkflowChangelog($actions[0],'revert');

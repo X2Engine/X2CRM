@@ -1007,6 +1007,7 @@ class AdminController extends Controller {
 		if(isset($_POST['Fields'])){
 			$model->attributes=$_POST['Fields'];
                         (isset($_POST['Fields']['required']) && $_POST['Fields']['required']==1)?$model->required=1:$model->required=0;
+                        (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable']==1)?$model->searchable=1:$model->searchable=0;
 			$model->type=$_POST['Fields']['type'];
 			// $model->visible=1;
 			$model->custom=1;
@@ -1041,7 +1042,7 @@ class AdminController extends Controller {
                         if($model->type=="link"){
                             if(isset($_POST['dropdown'])){
                                 $linkType=$_POST['dropdown'];
-                                $model->linkType=$linkType;
+                                $model->linkType=ucfirst($linkType); 
                             }
                         }
 			$type=strtolower($model->modelName);
@@ -1103,7 +1104,7 @@ class AdminController extends Controller {
                         }
 			$modelField->modified=1;
                         (isset($_POST['Fields']['required']) && $_POST['Fields']['required']==1)?$modelField->required=1:$modelField->required=0;
-			
+			(isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable']==1)?$modelField->searchable=1:$modelField->searchable=0;
 			if($modelField->save())
 				$this->redirect('manageFields');
 		}
@@ -1264,24 +1265,27 @@ class AdminController extends Controller {
 			
 			// build $newMenuItems array
 			foreach($selectedItems as $item) {
-				$newMenuItems[] = $menuItems[$item];	// copy each selected item into $newMenuItems
+				$newMenuItems[$item] = $menuItems[$item];	// copy each selected item into $newMenuItems
 				unset($menuItems[$item]);					// and remove them from $menuItems
 			}
-			
 			foreach($newMenuItems as $key=>$item){
                             $moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
-                            $moduleRecord->visible=1;
-                            $moduleRecord->menuPosition=array_search($key,array_keys($newMenuItems));
-                            if($moduleRecord->save()){
-                                 
+                            if(isset($moduleRecord)){
+                                $moduleRecord->visible=1;
+                                $moduleRecord->menuPosition=array_search($key,array_keys($newMenuItems));
+                                if($moduleRecord->save()){
+
+                                }
                             }
                         }
 			foreach($menuItems as $key=>$item){
                             $moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
-                            $moduleRecord->visible=0;
-                            $moduleRecord->menuPosition=-1;
-                            if($moduleRecord->save()){
-                                
+                            if(isset($moduleRecord)){
+                                $moduleRecord->visible=0;
+                                $moduleRecord->menuPosition=-1;
+                                if($moduleRecord->save()){
+
+                                }
                             }
                         }
 			
@@ -1474,7 +1478,6 @@ class AdminController extends Controller {
 		
 
 			$fileNames = array(
-				'protected/modules/'.$moduleName.'/views/default/_detailView.php',
 				'protected/modules/'.$moduleName.'/views/default/_form.php',
 				'protected/modules/'.$moduleName.'/views/default/_search.php',
 				'protected/modules/'.$moduleName.'/views/default/_view.php',
@@ -1979,7 +1982,10 @@ class AdminController extends Controller {
                             $modules=Modules::model()->findAll();
                             foreach($modules as $module){
                                 if($module->searchable){
-                                    $arr[$module->name]=$module->title;
+                                    if($module->name!="products")
+                                        $arr[$module->name]=$module->title;
+                                    else
+                                        $arr['product']="Products";
                                 }
                             }
                             echo CHtml::dropDownList('dropdown','',$arr);

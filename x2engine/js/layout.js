@@ -50,7 +50,7 @@ $(function() {
 	var $pageBodyDiv = $('#page-body');
 	var $pageWidthDivs = $('div.width-constraint');
 	
-	var pageMode = 1;		// 0 compact (no widgets)
+	var pageMode = -1;		// 0 compact (no widgets)
 	var newPageMode = 0;	// 1 fixed width (960px)
 							// 2 fill screen (5% margins)
 
@@ -76,7 +76,7 @@ $(function() {
 		if(windowWidth <= 960) {
 			newPageMode = 0;
 		} else {
-			if(windowWidth >= 1040) {
+			if(windowWidth >= 1040 && window.enableFullWidth) {
 				newPageMode = 2;
 			} else {
 				newPageMode = 1;
@@ -96,7 +96,7 @@ $(function() {
 				if(!window.fullscreen)
 					$pageBodyDiv.removeClass('no-widgets');
 				if(pageMode == 1)
-					$pageWidthDivs.css({'width':'960px','margin':'0 auto'});
+					$pageWidthDivs.css({'width':'940px','margin':'0 auto'});
 				else if(pageMode == 2)
 					$pageWidthDivs.css({'width':'auto','margin':'0 40px'});
 			}
@@ -139,23 +139,31 @@ $(function() {
 	
 	// toggle menu when user clicks on "More" or whatever, and close the other menu
 	$("#more-menu span").click(function() {
-		$subMenu.toggleClass('visible');
-		$userSubMenu.removeClass('visible');
+		$subMenu.toggleClass('open');
+		$subMenu.parent().toggleClass('open');
+		$userSubMenu.removeClass('open');
+		$userSubMenu.parent().removeClass('open');
 		return false;
 	});
 	// same for user menu
 	$("#user-menu li span").click(function() {
-		$userSubMenu.toggleClass('visible');
-		$subMenu.removeClass('visible');
+		$userSubMenu.toggleClass('open');
+		$userSubMenu.parent().toggleClass('open');
+		$subMenu.removeClass('open');
+		$subMenu.parent().removeClass('open');
 		return false;
 	});
 	// close menu if they click anywhere else on the page
 	$(document).bind('click', function(e) {
 		var $clicked = $(e.target);
-		if (!$clicked.parents().is("#main-menu ul"))
-			$subMenu.removeClass('visible');
-		if(!$clicked.parents().is("#user-menu ul"))
-			$userSubMenu.removeClass('visible');
+		if (!$clicked.parents().is("#main-menu ul")) {
+			$subMenu.removeClass('open');
+			$subMenu.parent().removeClass('open');
+		}
+		if(!$clicked.parents().is("#user-menu ul")) {
+			$userSubMenu.removeClass('open');
+			$userSubMenu.parent().removeClass('open');
+		}
 	});
 	
 	// Yii CWebLogRoute display
@@ -168,7 +176,7 @@ $(function() {
 	});
 	
 	// show/hide widget button
-	$('#fullscreen-button').bind('click',function() { 
+	$('#fullscreen-button').click(function() { 
 		// save preference
 		$.ajax({
 			url: yiiBaseUrl+'/site/fullscreen',
@@ -182,4 +190,35 @@ $(function() {
 		else if(pageMode != 0)	// don't bring them back if the page is in compact mode
 			$pageBodyDiv.removeClass('no-widgets');
 	});
+	
+	// deal with the left sidebar scrolling
+	
+	var sidebarMenu = $('#sidebar-left');
+	if (sidebarMenu.length && ($.browser != 'msie' || $.browser.version > 6)) {
+
+		var sidebarTop = sidebarMenu.parent().offset().top - 5;
+		var pageContainer = $('#flexible-content'); //.find('.container:first');
+		var hasScrolled = false;
+		
+		sidebarMenu.parent().height(sidebarMenu.height());
+		
+		$(window).scroll(function(event) {
+			if ($(this).scrollTop() >= sidebarTop) {
+
+				if($(this).scrollTop() + sidebarMenu.height() > pageContainer.offset().top + pageContainer.height() + 10) {
+					if(!hasScrolled)
+						sidebarMenu.addClass('fixed').css('top','');
+						
+					if(sidebarMenu.hasClass('fixed'))
+						sidebarMenu.css('top',(pageContainer.height() - sidebarMenu.height() + 10)+'px').removeClass('fixed');
+						
+				} else {
+					sidebarMenu.addClass('fixed').css('top','');
+				}
+			} else {
+				sidebarMenu.removeClass('fixed');
+			}
+			hasScrolled = true;
+		});
+	}
 });

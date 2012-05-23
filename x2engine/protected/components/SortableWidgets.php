@@ -67,23 +67,23 @@ class SortableWidgets extends CJuiWidget
 	 * This method registers necessary javascript and renders the needed HTML code.
 	*/
 	public function run() {
-                $themeURL = Yii::app()->theme->getBaseUrl();
-                Yii::app()->clientScript->registerScript('logos',"
-                $(window).load(function(){
-                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                    var touchlogosrc = $('#x2touch-logo').attr('src');
-                    var logosrc=$('#x2crm-logo').attr('src');
-                    if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                });    
-                ");
+		$themeURL = Yii::app()->theme->getBaseUrl();
+		Yii::app()->clientScript->registerScript('logos',"
+		$(window).load(function(){
+			if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+				$('a').removeAttr('href');
+				alert('Please put the logo back');
+				window.location='http://www.x2engine.com';
+			}
+			var touchlogosrc = $('#x2touch-logo').attr('src');
+			var logosrc=$('#x2crm-logo').attr('src');
+			if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
+				$('a').removeAttr('href');
+				alert('Please put the logo back');
+				window.location='http://www.x2engine.com';
+			}
+		});    
+		");
 		Yii::app()->clientScript->registerScript('toggleWidgetState',"
 			function toggleWidgetState(widget,state) {
 				$.ajax({
@@ -101,8 +101,7 @@ class SortableWidgets extends CJuiWidget
 				});
 			}
 		",CClientScript::POS_HEAD);
-		
-		
+
 		$id=$this->getId();	//get generated id
 		if (isset($this->htmlOptions['id']))
 			$id = $this->htmlOptions['id'];
@@ -123,13 +122,14 @@ class SortableWidgets extends CJuiWidget
 				$hideWidgetJs .= "$('#widget_" . $class . " .portlet-content').hide();\n";
 			
 			$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;"));
-
+			// $t0 = microtime(true);
 			$this->beginWidget('zii.widgets.CPortlet',array(
 				'title'=>Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
 				'id'=>$properties['id']
 			));
 			$this->widget($class);
 			$this->endWidget();
+			// echo (round(microtime(true)-$t0,3)*1000).'ms';
 		}
 		Yii::app()->clientScript->registerScript('setWidgetState', "
 			$(document).ready(function() {

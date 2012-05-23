@@ -129,9 +129,21 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'required');?>
-		<?php echo $form->checkBox($model,'required');?>
+		<?php echo $form->checkBox($model,'required',array('id'=>'required'));?>
 		<?php echo $form->error($model,'required');?>
 	</div>
+        
+        <div class="row">
+            <?php echo $form->labelEx($model,'searchable');?>
+            <?php echo $form->checkBox($model,'searchable',array('id'=>'searchable','onclick'=>'$("#relevance_box").toggle();'));?>
+            <?php echo $form->error($model,'searchable');?>
+        </div>
+        
+        <div class="row" id ="relevance_box" style="display:none">
+            <?php echo $form->labelEx($model,'relevance'); ?>
+            <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array("id"=>"relevance",'options'=>array('Medium'=>array('selected'=>true)))); ?>
+            <?php echo $form->error($model,'relevance'); ?> 
+        </div>
 	
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Save'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
@@ -144,5 +156,18 @@
         $('#attributeLabel').val(data.attributeLabel);
         $('#fieldType').val(data.type);
         $('#edit_dropdown').html(data.dropdown);
+        if(data.required==1){
+            $('#required').attr("checked",true);
+        }else{
+            $('#required').attr("checked",false);
+        }
+        if(data.searchable==1){
+            $('#relevance_box').show();
+            $('#searchable').attr("checked",true);
+        }else{
+            $('#relevance_box').hide();
+            $('#searchable').attr("checked",false);
+        }
+        $('#relevance').val(data.relevance)
     }
 </script>

@@ -37,16 +37,28 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
- ?>
+?>
 
 <?php
-$this->menu=array(
-	array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
-	array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-	array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
-	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-);
+if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
+	$this->menu=array(
+		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
+		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+		array('label'=>Yii::t('calendar', 'List')),
+		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
+	);
+} else {
+	$this->menu=array(
+		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
+		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+		array('label'=>Yii::t('calendar', 'List')),
+		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+	);
+}
+?>
 
+<?php
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();

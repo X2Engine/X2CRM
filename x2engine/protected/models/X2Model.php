@@ -43,8 +43,11 @@ abstract class X2Model extends CActiveRecord {
 	protected static $_fields = null;	// one copy of fields for all instances of this model
 	
 	protected function queryFields() {
-		if(!isset(self::$_fields))	// only look up fields if they haven't already been looked up
-			self::$_fields = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
+		if(!isset(self::$_fields[$this->tableName()]))	// only look up fields if they haven't already been looked up
+			if(get_class($this) === 'Product' || get_class($this) === 'Quote')
+				self::$_fields[$this->tableName()] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this) . 's'));
+			else
+				self::$_fields[$this->tableName()] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
 	}
 
 	/**
@@ -59,6 +62,22 @@ abstract class X2Model extends CActiveRecord {
 	 */
 	public function getAutoCompleteSource() {
 		return '/'.strtolower(get_class($this)).'/getItems';	// assume the model name is the same as the controller
+	}
+	
+	/**
+	 * @param int $id the route to this model's AutoComplete data source
+	 * @param string $class the model class
+	 * @return string a link to the model, or $id if the model is invalid
+	 */
+	public static function getModelLink($id,$class) {
+		
+		$model = CActiveRecord::model($class)->findByPk($id);
+		if(isset($model))
+			return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
+		elseif(is_numeric($id))
+			return '';
+		else
+			return $id;
 	}
 	
 	/**
@@ -79,7 +98,7 @@ abstract class X2Model extends CActiveRecord {
 			'safe'=>array(),
 		);
 		
-		foreach(self::$_fields as &$_field) {
+		foreach(self::$_fields[$this->tableName()] as &$_field) {
 		
 			switch($_field->type) {
 				case 'varchar':
@@ -121,7 +140,7 @@ abstract class X2Model extends CActiveRecord {
 		
 		$labels = array();
 			
-		foreach(self::$_fields as &$_field)
+		foreach(self::$_fields[$this->tableName()] as &$_field)
 			$labels[ $_field->fieldName ] = Yii::t(strtolower(get_class($this)),$_field->attributeLabel);
 
 		return $labels;
@@ -143,7 +162,7 @@ abstract class X2Model extends CActiveRecord {
 		$this->queryFields();
 		
 		// don't call attributeLabels(), just look in self::$_fields
-		foreach(self::$_fields as &$_field) {
+		foreach(self::$_fields[$this->tableName()] as &$_field) {
 			if($_field->fieldName == $attribute)
 				return Yii::t(strtolower(get_class($this)),$_field->attributeLabel);
 		}
@@ -164,9 +183,17 @@ abstract class X2Model extends CActiveRecord {
 			return $this->generateAttributeLabel($attribute);
 	}
 	
-	public function getFields() {
+	public function getFields($assoc = false) {
 		$this->queryFields();
-		return self::$_fields;
+		if($assoc) {
+			$fields = array();
+			foreach(self::$_fields[$this->tableName()] as &$field)
+				$fields[$field->fieldName] = $field->attributes;
+				
+			return $fields;
+		} else {
+			return self::$_fields[$this->tableName()];
+		}
 	}
 	
 	// sql to convert x2_fields.linkType: "UPDATE x2_fields SET linkType=CONCAT(UCASE(SUBSTRING(linkType, 1,1)),SUBSTRING(linkType, 2)) WHERE type='link'"
@@ -179,7 +206,7 @@ abstract class X2Model extends CActiveRecord {
 	public function setX2Fields(&$data) {
 		$this->queryFields();
 
-		foreach(self::$_fields as &$_field) {	// now loop through fields to deal with special types
+		foreach(self::$_fields[$this->tableName()] as &$_field) {	// now loop through fields to deal with special types
 			$fieldName = $_field->fieldName;
 		
 			if(!$_field->readOnly && isset($data[$fieldName])) {	// skip fields that are read-only or haven't been set
@@ -204,7 +231,14 @@ abstract class X2Model extends CActiveRecord {
 					}
 					if(!empty($value) && !ctype_digit($value)) {	// if the field is sitll text, try to find the ID based on the name
 					
-						$linkModel = CActiveRecord::model($_field->linkType)->findByAttributes(array('name'=>$value));
+						if($_field->linkType == 'Contacts') {
+							$fullname = explode(' ', $value);
+							$firstName = $fullname[0];
+							$lastName = $fullname[1];
+							$linkModel = CActiveRecord::model($_field->linkType)->findByAttributes(array('firstName'=>$firstName, 'lastName'=>$lastName));
+						} else {
+							$linkModel = CActiveRecord::model($_field->linkType)->findByAttributes(array('name'=>$value));
+						}
 						if(isset($linkModel))
 							$value = $linkModel->id;
 					}
@@ -241,7 +275,7 @@ abstract class X2Model extends CActiveRecord {
 	public function compareAttributes(&$criteria) {
 		$this->queryFields();
 		
-		foreach(self::$_fields as &$field) {
+		foreach(self::$_fields[$this->tableName()] as &$field) {
 			$fieldName = $field['fieldName'];
 			switch($field['type']) {
 				case 'boolean':

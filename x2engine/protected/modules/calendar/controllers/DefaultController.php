@@ -83,6 +83,7 @@ class DefaultController extends x2base {
 					'deleteAction',
 					'saveCheckedCalendar',
 					'saveCheckedCalendarFilter',
+					'syncActionsToGoogleCalendar',
 				),
 				'users'=>array('@'),
 			),
@@ -228,7 +229,6 @@ class DefaultController extends x2base {
 			if (isset($_SESSION['token'])) {
 				$client->setAccessToken($_SESSION['token']);
 				$calList = $googleCalendar->calendarList->listCalendarList();
-				$events = $googleCalendar->events->listEvents('aubsmpmiimp6s0gb3tee7kermc@group.calendar.google.com');
 				$googleCalendarList = array();
 				foreach($calList['items'] as $cal)
 					$googleCalendarList[$cal['id']] = $cal['summary'];
@@ -644,6 +644,10 @@ class DefaultController extends x2base {
 			$action->dueDate += ($dayDelta * 86400) + ($minuteDelta * 60);
 			if($action->completeDate)
 				$action->completeDate += ($dayDelta * 86400) + ($minuteDelta * 60);
+
+			$profile = ProfileChild::model()->findByAttributes(array('username'=>$action->assignedTo));
+			$profile->updateGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar
+			
 			$action->save();
 		}
 	}
@@ -719,6 +723,10 @@ class DefaultController extends x2base {
 				$action->completeDate += ($dayDelta * 86400) + ($minuteDelta * 60);
 			else if($action->type == 'event') // event without end date? give it one
 				$action->completeDate = $action->dueDate + ($dayDelta * 86400) + ($minuteDelta * 60);
+
+			$profile = ProfileChild::model()->findByAttributes(array('username'=>$action->assignedTo));
+			$profile->updateGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar	
+			
 			$action->save();
 		}
 	}
@@ -844,6 +852,10 @@ class DefaultController extends x2base {
 			$id = $_POST['id'];
 			
 			$action = Actions::model()->findByPk($id);
+			
+			$profile = ProfileChild::model()->findByAttributes(array('username'=>$action->assignedTo));
+			$profile->deleteGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar	
+			
 			$action->delete();
 		}
 	}
@@ -907,6 +919,140 @@ class DefaultController extends x2base {
 			$user->calendarFilter = implode(',', $calendarFilter);
 			$user->update();
 		}
+	}
+	
+	public function actionSyncActionsToGoogleCalendar() {
+		$model = Yii::app()->params->profile;
+		
+		if(isset($_POST['ProfileChild'])) {			
+			foreach(array_keys($model->attributes) as $field){
+				if(isset($_POST['ProfileChild'][$field])) {
+					$model->$field = $_POST['ProfileChild'][$field];
+				}
+			}
+			
+			if($model->syncGoogleCalendarId && isset($_SESSION['token'])) {
+				$token = json_decode($_SESSION['token'], true);
+				$model->syncGoogleCalendarRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
+				$model->syncGoogleCalendarAccessToken = $_SESSION['token'];
+			}
+			
+			$model->update();
+		}
+		
+		$admin = Yii::app()->params->admin;
+		$googleIntegration = $admin->googleIntegration;	
+
+		// if google integration is activated let user choose if they want to link this calendar to a google calendar
+		if($googleIntegration) {
+			$timezone = date_default_timezone_get();
+			require_once "protected/extensions/google-api-php-client/src/apiClient.php";
+			require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+			date_default_timezone_set($timezone);
+			
+			$client = new apiClient();
+			$syncGoogleCalendarName = null; // name of the Google Calendar that current user's actions are being synced to if it has been set
+			
+			if (isset($_GET['unlinkGoogleCalendar'])) { // user changed thier mind about linking their google calendar
+				unset($_SESSION['token']);
+				$model->syncGoogleCalendarId = null;
+				$model->syncGoogleCalendarRefreshToken = null; // used for accessing this google calendar at a later time
+				$model->syncGoogleCalendarAccessToken = null;
+				$model->update();
+				$googleCalendarList = null;
+				
+				$client->setApplicationName("Google Calendar Integration");
+			
+				// Visit https://code.google.com/apis/console?api=calendar to generate your
+				// client id, client secret, and to register your redirect uri.
+				$client->setClientId($admin->googleClientId);
+				$client->setClientSecret($admin->googleClientSecret);
+				$client->setRedirectUri( (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl(''));
+				$client->setDeveloperKey($admin->googleAPIKey);
+				$client->setAccessType('offline');
+				$googleCalendar = new apiCalendarService($client);
+			
+				if (isset($_GET['code'])) { // returning from google with access token
+				  $client->authenticate();
+				  $_SESSION['token'] = $client->getAccessToken();
+				  header('Location: ' . (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
+				}
+
+				if (isset($_SESSION['token'])) {
+					$client->setAccessToken($_SESSION['token']);
+					$calList = $googleCalendar->calendarList->listCalendarList();
+					$googleCalendarList = array();
+					foreach($calList['items'] as $cal)
+						$googleCalendarList[$cal['id']] = $cal['summary'];
+				} else {
+					$googleCalendarList = null;
+				}
+			} else if($model->syncGoogleCalendarRefreshToken) {
+				$client->setClientId($admin->googleClientId);
+				$client->setClientSecret($admin->googleClientSecret);
+				$client->setDeveloperKey($admin->googleAPIKey);
+				$client->setAccessToken($model->syncGoogleCalendarAccessToken);
+				$googleCalendar = new apiCalendarService($client);
+				
+				// check if the access token needs to be refreshed
+				// note that the google library automatically refreshes the access token if we need a new one, 
+				// we just need to check if this happend by calling a google api function that requires authorization, 
+				// and, if the access token has changed, save this new access token
+				$testCal = $googleCalendar->calendars->get($model->syncGoogleCalendarId);			
+				if($model->syncGoogleCalendarAccessToken != $client->getAccessToken()) {
+					$model->syncGoogleCalendarAccessToken = $client->getAccessToken();
+					$model->update();
+				}
+				
+				$calendar = $googleCalendar->calendars->get($model->syncGoogleCalendarId);
+				
+				$syncGoogleCalendarName = $calendar['summary'];
+				$calList = $googleCalendar->calendarList->listCalendarList();
+				$googleCalendarList = array();
+				foreach($calList['items'] as $cal)
+					$googleCalendarList[$cal['id']] = $cal['summary'];
+			} else {
+				$client->setApplicationName("Google Calendar Integration");
+			
+				// Visit https://code.google.com/apis/console?api=calendar to generate your
+				// client id, client secret, and to register your redirect uri.
+				$client->setClientId($admin->googleClientId);
+				$client->setClientSecret($admin->googleClientSecret);
+				$client->setRedirectUri( (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl(''));
+				$client->setDeveloperKey($admin->googleAPIKey);
+				$client->setAccessType('offline');
+				$googleCalendar = new apiCalendarService($client);
+			
+				if (isset($_GET['code'])) { // returning from google with access token
+				  $client->authenticate();
+				  $_SESSION['token'] = $client->getAccessToken();
+				  header('Location: ' . (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
+				}
+
+				if (isset($_SESSION['token'])) {
+					$client->setAccessToken($_SESSION['token']);
+					$calList = $googleCalendar->calendarList->listCalendarList();
+					$googleCalendarList = array();
+					foreach($calList['items'] as $cal)
+						$googleCalendarList[$cal['id']] = $cal['summary'];
+				} else {
+					$googleCalendarList = null;
+				}
+			}
+		} else {
+			$client = null;
+			$googleCalendarList = null;
+		}
+	
+		$this->render('syncActionsToGoogleCalendar',
+			array(
+				'model'=>$model,
+				'googleIntegration'=>$googleIntegration,
+				'client'=>$client,
+				'googleCalendarList'=>$googleCalendarList,
+				'syncGoogleCalendarName'=>$syncGoogleCalendarName,
+			)
+		);
 	}
 		
 	/**

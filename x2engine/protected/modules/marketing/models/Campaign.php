@@ -78,6 +78,21 @@ class Campaign extends X2Model {
 	public function tableName()	{ return 'x2_campaigns'; }
 
 	/**
+	 * @return array validation rules for model attributes.
+	 */
+	public function rules() {
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
+		return array(
+			array('name, subject', 'required'),
+			array('id, listId, active, launched, complete', 'numerical', 'integerOnly'=>true),
+			// The following rule is used by search().
+			// Please remove those attributes that should not be searched.
+			array('id, name, listId, description, type, subject, content, active, complete, launched', 'safe', 'on'=>'search'),
+		);
+	}
+
+	/**
 	 * @return array relational rules.
 	 */
 	public function relations() {

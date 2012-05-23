@@ -40,35 +40,7 @@
 
 $this->beginContent('//layouts/main');
 $themeURL = Yii::app()->theme->getBaseUrl();
-Yii::app()->clientScript->registerScript('menuScroling',"
-if ($.browser != 'msie' || $.browser.version > 6) {
-	var sidebarMenu = $('#sidebar-left');
-	var sidebarTop = sidebarMenu.parent().offset().top - 5;
-	var pageContainer = $('#flexible-content'); //.find('.container:first');
-	var hasScrolled = false;
-	
-	sidebarMenu.parent().height(sidebarMenu.height());
-	
-	$(window).scroll(function(event) {
-		if ($(this).scrollTop() >= sidebarTop) {
 
-			if($(this).scrollTop() + sidebarMenu.height() > pageContainer.offset().top + pageContainer.height() + 10) {
-				if(!hasScrolled)
-					sidebarMenu.addClass('fixed').css('top','');
-					
-				if(sidebarMenu.hasClass('fixed'))
-					sidebarMenu.css('top',(pageContainer.height() - sidebarMenu.height() + 10)+'px').removeClass('fixed');
-					
-			} else {
-				sidebarMenu.addClass('fixed').css('top','');
-			}
-		} else {
-			sidebarMenu.removeClass('fixed');
-		}
-		hasScrolled = true;
-	});
-}
-",CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('logos',"
 $(window).load(function(){
 	if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
@@ -92,7 +64,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 
 
 
-<div id="sidebar-left-container" class="span-4">
+<div id="sidebar-left-container">
 
 	<div id="sidebar-left">
 	<!-- sidebar -->

@@ -50,7 +50,7 @@ $urlTitleHeight = $sitesSettings->urltitleHeight;
 
 //Set variables to implement HTML divs
 $topsitesContainerHeight = $topsitesHeight + 2;
-$urlTitleContainerHeight = $urlTitleHeight + 6;
+$urlTitleContainerHeight = $urlTitleHeight + 30;
 $siteContainerHeight = $topsitesHeight + $urlTitleHeight + 45;
 $siteContainerFixHeight = 250;
 ?>
@@ -76,34 +76,36 @@ Yii::app()->clientScript->registerScript('updateURLs', "
             url: '".$this->controller->createUrl('/site/getURLs?url='.Yii::app()->request->requestUri)."',
             success:
             function(data){
-                $('#sites-box).html(data);
+                $('#sites-box').html(data);
             }
         });
     }
-);");
+;
+",CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript("topSitesResize","
 $('#sites-container').resizable({
     handles: 's',
     minHeight: 75,
-    alsoResize: #sites-container, #sites-box',
+    alsoResize: '#sites-container, #sites-box',
     stop: function(event, ui){
         $.post('".Yii::app()->createUrl("/site/saveWidgetHeight")."',           {Widget: 'TopSites',
-            Height: {topsitesHeight: parseInt($('topsites-box').css('height'))}a
+            Height: {topsitesHeight: parseInt($('topsites-box').css('height'))}
             });
     },
-}););
+});
 ",CClientScript::POS_HEAD);
 ?>
 </div>
 <?php echo CHtml::beginForm();?>
-<div id='site-url-container' style="height: <?php echo $urlTitleHeight;?>px; margin-bottom:35px;">
+<div id='site-url-container' style="height: <?php echo $urlTitleContainerHeight;?>px; margin-bottom:35px;">
     Title: <?php echo CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
+    <br/>
     Link: <?php echo CHtml::textField('url-url', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
 </div>
 <?php
 echo CHtml::ajaxSubmitButton(
     'Add Site',
-    array('/site/addTopSite'),
+    array('/site/addSite'),
     array(
         'update'=>'site-box',
         'success'=>"function(response){
@@ -112,7 +114,7 @@ echo CHtml::ajaxSubmitButton(
             $('#url-url').val('');
         }",
     ),
-    array('class'=>'x2-button')
+    array('class'=>'x2-button','id'=>'submit-button')
 );
 echo CHtml::endForm();?>
 </div></div></div>

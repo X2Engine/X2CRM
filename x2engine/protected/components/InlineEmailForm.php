@@ -52,7 +52,11 @@ class InlineEmailForm extends CWidget {
 		$this->model = new InlineEmail;
 		$this->model->attributes = $this->attributes;
 		$signature = Yii::app()->params->profile->getSignature(true);
-		$this->model->message = empty($signature)? '' : '<br><br><!--BeginSig--><font face="Arial" size="2">'.$signature.'</font><!--EndSig-->';
+		
+		//if message comes prepopulated, don't overwrite with signature
+		if (empty($this->model->message)) {
+			$this->model->message = empty($signature)? '' : '<br><br><!--BeginSig--><font face="Arial" size="2">'.$signature.'</font><!--EndSig-->';
+		}
 		
 		if(isset($_POST['InlineEmail'])) {
 			$this->model->attributes = $_POST['InlineEmail'];

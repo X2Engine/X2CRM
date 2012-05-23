@@ -51,13 +51,14 @@ $(document).ready(function() {
 		background_color : '#f0f0f0',
 		backlight : false,
 		callback_on_ok : function() {
-			var text = $('#backgroundColor').val();
-			$('#backgroundColor').val(text.substring(1,7));
-			$('body').css('background',text);
-			highlightSave();
+			$('#backgroundColor').change();
+			// var text = $('#backgroundColor').val();
+			// $('#backgroundColor').val(text.substring(1,7));
+			// $('body, #header').css('background-color',text);
+			// highlightSave();
 		}
 	});
-	$('#menuBgColor').modcoder_excolor({
+/* 	$('#menuBgColor').modcoder_excolor({
 		hue_bar : 3,
 		hue_slider : 5,
 		border_color : '#aaa',
@@ -69,10 +70,10 @@ $(document).ready(function() {
 		callback_on_ok : function() {
 			var text = $('#menuBgColor').val();
 			$('#menuBgColor').val(text.substring(1,7));
-			$('#main-menu-bar').css('background',text);
+			$('#header').css('background-color',text);
 			highlightSave();
 		}
-	});
+	}); */
 	$('#menuTextColor').modcoder_excolor({
 		hue_bar : 3,
 		hue_slider : 5,
@@ -83,10 +84,82 @@ $(document).ready(function() {
 		background_color : '#f0f0f0',
 		backlight : false,
 		callback_on_ok : function() {
-			var text = $('#menuTextColor').val();
-			$('#menuTextColor').val(text.substring(1,7));
-			$('#main-menu-bar a, #main-menu-bar span').css('color',text);
-			highlightSave();
+			$('#menuTextColor').change();
+			// var text = $('#menuTextColor').val();
+			// $('#menuTextColor').val(text.substring(1,7));
+			// $('#main-menu-bar a, #main-menu-bar span').css('color',text);
+			// highlightSave();
 		}
 	});
+	
+	$('#backgroundColor').change(function() {
+		var text = $('#backgroundColor').val();
+		if(text == '')
+			$('#header').css('background-color','#000');
+		else {
+			$('#backgroundColor').val(text.substring(1,7));
+			$('#header').css('background-color',text);
+		}
+		highlightSave();
+		
+	});
+	$('#menuTextColor').change(function() {
+		var text = $('#menuTextColor').val();
+		if(text == '')
+			$('#main-menu-bar a, #main-menu-bar span').css('color','#fff');
+		else {
+			$('#menuTextColor').val(text.substring(1,7));
+			$('#main-menu-bar a, #main-menu-bar span').css('color',text);
+		}
+		highlightSave();
+	});
+	
+	
+	
+	$('#ProfileChild_enableFullWidth').change(function() {
+		window.enableFullWidth = $(this).is(':checked');
+		$(window).resize();
+		highlightSave();
+	});
+	
+	
+	
 });
+
+
+
+// background uploader
+function showAttach() {
+	e=document.getElementById('attachments');
+	if(e.style.display=='none')
+		e.style.display='block';
+	else
+		e.style.display='none';
+}
+var ar_ext = ['png', 'jpg','jpe','jpeg','gif','svg'];        // array with allowed extensions
+
+function checkName() {
+// - www.coursesweb.net
+	// get the file name and split it to separe the extension
+	var name = $('#backgroundImg').val();
+	var ar_name = name.split('.');
+
+	// check the file extension
+	var re = 0;
+	for(var i=0; i<ar_ext.length; i++) {
+		if(ar_ext[i] == ar_name[1].toLowerCase()) {
+			re = 1;
+			break;
+		}
+	}
+	// if re is 1, the extension is in the allowed list
+	if(re==1) {
+		// enable submit
+		$('#upload-button').removeAttr('disabled');
+	} else {
+		// delete the file name, disable Submit, Alert message
+		$('#backgroundImg').val('');
+		$('#upload-button').attr('disabled','disabled');
+		alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
+	}
+}

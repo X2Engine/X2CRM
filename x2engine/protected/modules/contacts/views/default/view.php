@@ -55,35 +55,29 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('quotes','Quotes'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
 );
 
-
-$editPermissions = ($model->assignedTo == Yii::app()->user->getName() || Yii::app()->user->getName() == 'admin' || $model->assignedTo == 'Anyone');
-/* x2temp */
-$groups = GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
-$temp = array();
-foreach($groups as $group) {
-    $temp[]=Groups::model()->findByPk($group->groupId)->name;
-}
-if(array_search($model->assignedTo,$temp)!==false){
-    $editPermissions=true;
-}
-/* end x2temp */
-if ($editPermissions) {
+$editPermissions = $this->checkPermissions($model, 'edit');
+$deletePermissions = $this->checkPermissions($model, 'delete');
+if ($editPermissions)
 	$this->menu[] = array('label'=>Yii::t('contacts','Update'), 'url'=>array('update', 'id'=>$model->id));
+if ($deletePermissions)
 	$this->menu[] = array('label'=>Yii::t('contacts','Delete'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
-}
-
 ?>
-<?php
 
+<?php
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'contacts-form',
 	'enableAjaxValidation'=>false,
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 ?>
+
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> <a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b> 
+
+<?php if ($editPermissions) { ?>
+	<a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+<?php } ?>
 
 <?php 
 $result = Yii::app()->db->createCommand()
@@ -102,11 +96,13 @@ $subscribed = !empty($result); // if we got any results then user is subscribed
 <?php echo CHtml::label(Yii::t('contacts', 'Subscribe'), 'checkbox-subscribe', array('title'=>Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}'=>$model->firstName.' '.$model->lastName)),)); ?>
 </h2>
 <?php
+
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget();
 
+$this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
 // render workflow box
-$this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
+// $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
 ?>
 <div id="attachment-form" style="display:none;">
 	<?php $this->widget('Attachments',array('type'=>'contacts','associationId'=>$model->id)); ?>
@@ -128,12 +124,12 @@ $this->widget('InlineEmailForm',
 ?>
 <div id="quote-form-wrapper">
 <?php
-$this->widget('InlineQuotes',
-	array(
-		'startHidden'=>true,
-		'contactId'=>$model->id,
-	)
-);
+ $this->widget('InlineQuotes',
+	 array(
+		 'startHidden'=>true,
+		 'contactId'=>$model->id,
+	 )
+ );
 ?>
 </div>
 <?php

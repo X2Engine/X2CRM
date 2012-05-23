@@ -37,16 +37,32 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+?>
 
-$this->menu=array(
-	array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
-	array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-	array('label'=>Yii::t('calendar','List'), 'url'=>array('list')),
-	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-	array('label'=>Yii::t('calendar','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('calendar','Update')),
-	array('label'=>Yii::t('calendar','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
+<?php
+if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
+	$this->menu=array(
+		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
+		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+		array('label'=>Yii::t('calendar','View'), 'url'=>array('view', 'id'=>$model->id)),
+		array('label'=>Yii::t('calendar','Update')),
+		array('label'=>Yii::t('calendar','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
+	);
+} else {
+	$this->menu=array(
+		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
+		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+		array('label'=>Yii::t('calendar','View'), 'url'=>array('view', 'id'=>$model->id)),
+		array('label'=>Yii::t('calendar','Update')),
+		array('label'=>Yii::t('calendar','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+
+	);
+}
 ?>
 
 <h2 style="margin-bottom:0;"><?php echo Yii::t('quotes','Update Quote: {name}',array('{name}'=>$model->name)); ?> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>

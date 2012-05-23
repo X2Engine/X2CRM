@@ -316,22 +316,13 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'title'=>$field->attributeLabel,
 											)).'</div>';
 									} elseif($field->type=='assignment') {
-										if($field->linkType!='multiple') {
-											echo $form->dropDownList($model, $fieldName, $users, array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
-											));
-										} else {
-											echo $form->dropDownList($model, $fieldName, $users, array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
-												'multiple'=>'multiple',
-											));
-										}
+										echo $form->dropDownList($model, $fieldName, $users, array(
+											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+											'disabled'=>$item['readOnly']? 'disabled' : null,
+											'title'=>$field->attributeLabel,
+											'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
+											'multiple'=>($field->linkType=='multiple'? 'multiple' : null),
+										));
 										/* x2temp */
 										echo '<div class="checkboxWrapper">';
 										echo CHtml::checkBox('group','',array(

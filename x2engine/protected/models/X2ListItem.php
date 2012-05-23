@@ -71,9 +71,8 @@ class X2ListItem extends CActiveRecord {
 		// will receive user inputs.
 		return array(
 			array('contactId, listId', 'required'),
-			array('contactId, listId, unqueId', 'numerical', 'integerOnly'=>true),
+			array('contactId, listId, sent, opened, clicked, unsubscribed', 'numerical', 'integerOnly'=>true),
 			array('uniqueId', 'length', 'max'=>32),
-			array('error, sent, opened, clicked, unsubscribed', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('contactId, listId, uniqueId, result', 'safe', 'on'=>'search'),

@@ -37,14 +37,9 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-if($contact != null) {
-    echo "<center><h6>Local Time</h6>
-        <p>".$contact["localtime"]."</p>
-        <h6>ISO Time</h6>
-        <p>".$contact["isotime"]."</p>
-        <h6>UTC Time</h6>
-        <p>".$contact["utctime"]."</p>";
+if(!empty($contact)) {
+	echo "<center><h6>Contact Time Zone</h6><p>".$contact."</p>";
 } else {
-        Yii::app()->getClientScript()->registerCss('hideTimeZone',"#widget_TimeZone{display:none;}",'all');
+	Yii::app()->getClientScript()->registerCss('hideTimeZone',"#widget_TimeZone{display:none;}",'all');
 }
 ?>

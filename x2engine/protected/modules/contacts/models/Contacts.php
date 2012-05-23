@@ -65,56 +65,6 @@ class Contacts extends X2Model {
 	 * @return string the route to this model's AutoComplete data source
 	 */
 	public function getAutoCompleteSource() { return '/contacts/getItems'; }
-
-	/**
-	 * Generates validation rules for custom fields
-	 * @return array validation rules for model attributes.
-	 */	
-	public function rules() {
-
-		$this->queryFields();
-			
-		$fieldRules = array(
-			'required'=>array(),
-			'email'=>array(),
-			'int'=>array(),
-			'date'=>array(),
-			'float'=>array(),
-			'boolean'=>array(),
-			'safe'=>array(),
-		);
-		
-		foreach(self::$_fields as &$_field) {
-		
-			switch($_field->type) {
-				case 'varchar':
-				case 'text':
-				case 'url':
-				case 'currency':
-				case 'dropdown':
-					$fieldRules['safe'][] = $_field->fieldName;	// these field types have no rules, but still need to be allowed
-					break;
-				case 'date':
-					$fieldRules['int'][] = $_field->fieldName;		// date is actually an int
-					break;
-				default:
-					$fieldRules[ $_field->type ][] = $_field->fieldName;		// otherwise use the type as the validator name
-			}
-			
-			if($_field->required)
-				$fieldRules['required'][] = $_field->fieldName;
-		}
-
-		return array(
-			array( implode( ',', $fieldRules['required']), 'required' ),
-			array( implode( ',', $fieldRules['email']), 'email' ),
-			array( implode( ',', $fieldRules['int'] + $fieldRules['date'] ), 'numerical', 'integerOnly'=>true ),
-			array( implode( ',', $fieldRules['float']), 'numerical' ),
-			array( implode( ',', $fieldRules['boolean']), 'boolean' ),
-			array( implode( ',', $fieldRules['safe']), 'safe' ),
-		);
-	}
-
 	
 	/**
 	 * @return array relational rules.
@@ -273,6 +223,7 @@ class Contacts extends X2Model {
 	
 	
 	}
+
 	public function searchNewContacts() {
 		$criteria=new CDbCriteria;
 		$condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
@@ -283,9 +234,6 @@ class Contacts extends X2Model {
 		
 		return $this->searchBase($criteria);
 	}
-	
-	
-	
 	
 	
 	public function search() {
@@ -305,95 +253,27 @@ class Contacts extends X2Model {
 	
 	public function searchAdmin() {
 		$criteria=new CDbCriteria;
-
 		return $this->searchBase($criteria);
 	}
-        
-        public function searchAccount($id){
-                $criteria=new CDbCriteria;
+
+	public function searchAccount($id) {
+		$criteria=new CDbCriteria;
 		$condition = "company='$id'";
-                $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$parameters['condition']=$condition;
 		$criteria->scopes=array('findAll'=>array($parameters));
 		return $this->searchBase($criteria);
-        }
+	}
 
-	public function searchList($id,$pageSize = null) {
-	
-		$list = CActiveRecord::model('X2List')->findByPk($id);
+	/**
+	 * Returns a DataProvider for all the contacts in the specified list,
+	 * using this Contact model's attributes as a search filter
+	 */
+	public function searchList($id, $pageSize=null) {
+		$list = X2List::model()->findByPk($id);
 
 		if(isset($list)) {
-
-			if($list->type == 'dynamic') {
-				
-				$logicMode = 'AND';
-				// if(isset($_GET['test']))
-					// $logicMode = 'OR';
-				
-				
-				$search = new CDbCriteria(array());
-				$listCriteria = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id,'type'=>'attribute'));
-				foreach($listCriteria as $listCriterion) {
-					foreach($this->fields as $field) {
-						if($field->fieldName == $listCriterion->attribute) {
-							switch($field->type) {
-								case 'date': if(!ctype_digit($listCriterion->value)) $listCriterion->value = strtotime($listCriterion->value); break;
-								case 'link': if(!ctype_digit($listCriterion->value)) $listCriterion->value = Fields::getLinkId($field->linkType,$listCriterion->value); break;
-								case 'boolean': $listCriterion->value = in_array(strtolower($listCriterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
-							}
-							break;
-						}
-					}
-				
-					if($listCriterion->attribute == 'tags') {
-						$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($listCriterion->value)));	//remove any spaces around commas, then explode to array
-						for($i=0; $i<count($tags); $i++) {
-							if(empty($tags[$i])) {
-								unset($tags[$i]);
-								$i--;
-								continue;
-							} else {
-								if($tags[$i][0] != '#')
-									$tags[$i] = '#'.$tags[$i];
-								$tags[$i] = 'x2_tags.tag = "'.$tags[$i].'"';
-							}
-						}
-						$tagConditions = implode(' OR ',$tags);
-						
-						$search->distinct = true;
-						$search->join = 'RIGHT JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
-					} else {
-						switch($listCriterion->comparison) {
-							case '=':
-								$search->compare($listCriterion->attribute,$listCriterion->value,false,$logicMode); break;
-							case '>':
-								$search->compare($listCriterion->attribute,'>='.$listCriterion->value,true,$logicMode); break;
-							case '<':
-								$search->compare($listCriterion->attribute,'<='.$listCriterion->value,true,$logicMode); break;
-							case '<>':	// must test for != OR is null, because both mysql and yii are stupid
-								$search->addCondition('('.$listCriterion->attribute.' IS NULL OR '.$listCriterion->attribute.'!='.CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount.')',$logicMode);
-								$search->params[CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount++] = $listCriterion->value;
-								break;
-							case 'notEmpty':
-								$search->addCondition($listCriterion->attribute.' IS NOT NULL AND '.$listCriterion->attribute.'!=""',$logicMode); break;
-							case 'empty':
-								$search->addCondition('('.$listCriterion->attribute.'="" OR '.$listCriterion->attribute.' IS NULL)',$logicMode); break;
-							case 'list':
-								$search->addInCondition($listCriterion->attribute,explode(',',$listCriterion->value),$logicMode); break;
-							case 'contains':
-							default:
-								$search->compare($listCriterion->attribute,$listCriterion->value,true,$logicMode);
-						}
-					}
-				}
-
-			} else {
-				$search = new CDbCriteria(array(
-					'join'=>'LEFT JOIN x2_list_items ON t.id = x2_list_items.contactId',
-					'condition'=>'x2_list_items.listId='.$id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")',
-				));
-				
-			}
+			$search = $list->dbCriteria();
 				
 			$search->compare('name',$this->name,true);
 			$search->compare('firstName',$this->firstName,true);
@@ -421,48 +301,20 @@ class Contacts extends X2Model {
 			$search->compare('priority',$this->priority,true);
 			$search->compare('leadSource',$this->leadSource,true);
 			$search->compare('rating',$this->rating);
-			
-			$count = Contacts::count($search);
-			
-			// return $this->searchBase($search);
-			// echo  var_dump($this->attributes);
+
 			return new CActiveDataProvider('Contacts',array(
 				'criteria'=>$search,
-				// 'data'=>$results,
-				// 'modelClass'=>'Contacts',
-				// 'totalItemCount'=>$count,
 				'sort'=>array(
 					'defaultOrder'=>'lastupdated DESC'	// true = ASC
-					
 				),
 				'pagination'=>array(
 					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 				),
 			));
 			
-			
-			
-			
-			
-		/* 	return new CSqlDataProvider($sql,array(
-				// 'criteria'=>$criteria,
-				// 'data'=>$results,
-				// 'modelClass'=>'Contacts',
-				'totalItemCount'=>$count,
-				'sort'=>array(
-					'attributes'=>array('firstName','lastName','phone','phone2','createDate','lastUpdated','leadSource'),
-					'defaultOrder'=>'lastUpdated DESC',
-				),
-				'pagination'=>array(
-					'pageSize'=>ProfileChild::getResultsPerPage(),
-				),
-			)); */
 		} else {
+			//if list is not working, return all contacts
 			return new CActiveDataProvider('Contacts',array(
-				// 'criteria'=>$criteria,
-				// 'data'=>$results,
-				// 'modelClass'=>'Contacts',
-				// 'totalItemCount'=>$count,
 				'sort'=>array(
 					'defaultOrder'=>'createDate DESC',
 				),
@@ -470,18 +322,7 @@ class Contacts extends X2Model {
 					'pageSize'=>ProfileChild::getResultsPerPage(),
 				),
 			));
-			// Yii::app()->controller->redirect(array('contacts/listAll'));
 		}
-		
-
-		// $criteria=new CDbCriteria;
-		// $parameters=array(
-			
-			// 'condition'=>"(SELECT count(*) FROM x2_list_items WHERE listId=".$id." AND contactId = t.id) > 0 AND visibility='1' || assignedTo='Anyone' || assignedTo='".Yii::app()->user->getName()."'",
-			// 'limit'=>ProfileChild::getResultsPerPage()
-		// );
-		// $criteria->scopes=array('findAll'=>array($parameters));
-		// return $this->searchBase($criteria);
 	}
 	
 	

@@ -2,7 +2,7 @@
 
 class DefaultController extends x2base {
 
-	public $layout = '//layouts/main3';
+	// public $layout = '//layouts/';
 
 	public function accessRules() {
 		return array(

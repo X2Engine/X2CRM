@@ -149,10 +149,10 @@ class Workflow extends CActiveRecord {
 		foreach($workflowActions as &$action) {
 
 			// decode workflowActions into a funnel list
-			$workflowStatus[$action->stageNumber]['createDate'] = $action->createDate;				// or the stage is beyond the possible range somehow
-			$workflowStatus[$action->stageNumber]['completeDate'] = $action->completeDate;		// Note: multiple actions with the same stage will overwrite each other
+			$workflowStatus[$action->stageNumber]['createDate'] = $action->createDate;		// Note: multiple actions with the same stage will overwrite each other
+			$workflowStatus[$action->stageNumber]['completeDate'] = $action->completeDate;
 			$workflowStatus[$action->stageNumber]['complete'] = ($action->complete == 'Yes') || (!empty($action->completeDate) && $action->completeDate < time());	// determine whether stage is complete			
-			$workflowStatus[$action->stageNumber]['description'] = $action->actionDescription;
+			$workflowStatus[$action->stageNumber]['description'] = $action->actionDescription;																		// or the stage is beyond the possible range somehow
 			
 			/* $actionData = explode(':',$action->actionDescription);
 			// decode workflowActions into a funnel list
@@ -166,14 +166,25 @@ class Workflow extends CActiveRecord {
 	}
 	
 	public static function getStages($id){
-		$stages=WorkflowStage::model()->findAllByAttributes(array('workflowId'=>$id));
-		$arr=array();
-		foreach($stages as $stage){
-			$arr[$stage->stageNumber]=$stage->name;
-		}
-		
-		return $arr;
+		return Yii::app()->db->createCommand()
+			->select('name')
+			->from('x2_workflow_stages')
+			->where('workflowId=:id',array(':id'=>$id))
+			->order('stageNumber ASC')
+			->queryColumn();
 	}
+	
+	public static function getWorkflowDetails($workflowId,$stageId,$modelId,$modelType) {
+		return CActiveRecord::model('Actions')->findByAttributes(array(
+			'associationId'=>$modelId,
+			'associationType'=>$modelType,
+			'type'=>'workflow',
+			'workflowId'=>$workflowId,
+			'stageNumber'=>$stageId
+		));
+	
+	}
+
 	
 	public static function renderWorkflow(&$workflowStatus) {
 	
@@ -259,10 +270,14 @@ class Workflow extends CActiveRecord {
 						}
 					}
 				}
-				
 				$statusStr .= '<div class="workflow-status">';
+				if($editPermission)
+					$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowStageDetails('.$workflowId.','.$stage.');">['.Yii::t('workflow','Details').']</a> ';
+				
+				
 				if($workflowStatus[$stage]['complete']) {
 					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus[$stage]['completeDate']);
+					// X2Date::dateBox($workflowStatus[$stage]['completeDate']);
 					if($editPermission)
 						$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
 				} else {
@@ -286,7 +301,7 @@ class Workflow extends CActiveRecord {
 						$statusStr .= '<div class="workflow-status"><a href="javascript:void(0)" class="right" onclick="startWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Start').']</a></div>';
 				// }
 			}
-			$statusStr .= '</div>';
+			$statusStr .= "</div>\n";
 		}
 		return $statusStr;
 		// $str = '<div class="row">

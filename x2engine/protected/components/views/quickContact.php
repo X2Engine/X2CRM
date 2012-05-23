@@ -76,7 +76,7 @@ $model->email = Contacts::model()->getAttributeLabel('email');
 <?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Create'),
-	array('contacts/quickContact'),
+	array('/contacts/quickContact'),
 	array('success'=>"function(response) {
 			if(response!='') {
 				alert('".Yii::t('app','Contact Saved')."');

@@ -66,7 +66,7 @@ $this->widget('application.components.X2GridView', array(
 		// .CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
 		// .CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		// .'{summary}</div>{items}{pager}',
-	'dataProvider'=>$contacts,
+	'dataProvider'=>Contacts::model()->searchList($contactList->id, 10),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	// 'filter'=>$contactModel,

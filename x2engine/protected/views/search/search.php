@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,10 +48,15 @@
 			'type' => 'raw',
 			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"])', 
 		),
+                array(
+                            'name' => Yii::t('app','Type'),
+                            'type' => 'raw',
+                            'value' => '$data["type"]', 
+                    ),
 		array(
-			'name' => Yii::t('app','Description'),
+			'name' => Yii::t('app','Description'), 
 			'type' => 'raw',
-			'value' => 'CHtml::encode($data["description"])'
+			'value' => 'Yii::app()->controller->truncateText(CHtml::encode($data["description"]),140)'
 		),
 	),
 ));

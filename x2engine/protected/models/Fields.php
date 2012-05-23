@@ -100,6 +100,9 @@ class Fields extends CActiveRecord {
 			'custom' => 'Custom',
 			'modified' => 'Modified',
 			'readOnly' => 'Read Only',
+                        'required' => "Required",
+                        'searchable' => "Searchable",
+                        'relevance' => 'Search Relevance',
 		);
 	}
 

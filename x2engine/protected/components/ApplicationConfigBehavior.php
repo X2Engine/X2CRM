@@ -59,6 +59,8 @@ class ApplicationConfigBehavior extends CBehavior {
 	 */
 	public function beginRequest() {
 	
+		$t0 = microtime(true);
+	
 		
 		if($this->owner->request->getPathInfo() == 'notifications/getMessages') {	// skip all the loading if this is a chat/notification update
 			$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar();	// set the timezone to the admin's
@@ -70,8 +72,8 @@ class ApplicationConfigBehavior extends CBehavior {
 		Yii::import('application.controllers.x2base');
 		Yii::import('application.models.*');
 		Yii::import('application.components.*');
-		Yii::import('application.components.ERememberFiltersBehavior');
-		Yii::import('application.components.EButtonColumnWithClearFilters');
+		// Yii::import('application.components.ERememberFiltersBehavior');
+		// Yii::import('application.components.EButtonColumnWithClearFilters');
 
 
 		// $this->owner->messages->forceTranslation = true;
@@ -165,5 +167,8 @@ class ApplicationConfigBehavior extends CBehavior {
 		if(isset($logo))
 			$this->owner->params->logo = $logo->fileName;
 		setlocale(LC_ALL, 'en_US.UTF-8');
+		
+		// die(microtime(true)-$t0);
+		
 	}
 }

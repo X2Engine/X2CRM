@@ -43,7 +43,7 @@ function setupEmailEditor() {
 	if($('#email-message').data('editorSetup') != true) {
 		new TINY.editor.edit('teditor',{
 			id:'email-message',
-			width:560,
+			// width:560,
 			height:200,
 			cssclass:'tinyeditor',
 			controlclass:'tecontrol',

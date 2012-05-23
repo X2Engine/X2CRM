@@ -131,6 +131,7 @@ $this->widget('application.components.X2GridView', array(
 	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
 		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportList/'.$listModel->id)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,

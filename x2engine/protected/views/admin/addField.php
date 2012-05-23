@@ -123,6 +123,18 @@ echo $form->errorSummary($model);
             <?php echo $form->checkBox($model,'required');?>
             <?php echo $form->error($model,'required');?>
         </div>
+    
+        <div class="row">
+            <?php echo $form->labelEx($model,'searchable');?>
+            <?php echo $form->checkBox($model,'searchable');?>
+            <?php echo $form->error($model,'searchable');?>
+        </div>
+    
+        <div class="row">
+            <?php echo $form->labelEx($model,'relevance'); ?>
+            <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array('options'=>array('Medium'=>array('selected'=>true)))); ?>
+            <?php echo $form->error($model,'relevance'); ?> 
+        </div>
 
         
 	<div class="row buttons">

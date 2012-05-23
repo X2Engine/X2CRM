@@ -50,7 +50,7 @@ $('.search-button').click(function(){
 	return false;
 });
 $('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('sales-grid', {
+	$.fn.yiiGridView.update('marketing-grid', {
 		data: $(this).serialize()
 	});
 	return false;
@@ -88,9 +88,12 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'campaigns',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>257,
+		'name'=>126,
 		'description'=>132,
-		'assignedTo'=>105,
+		'listId'=>45,
+		'subject'=>127,
+		'launchDate'=>105,
+		'launched'=>50,
 	),
 	'specialColumns'=>array(
 		'name'=>array(

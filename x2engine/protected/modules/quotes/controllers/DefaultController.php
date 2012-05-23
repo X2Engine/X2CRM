@@ -239,6 +239,7 @@ class DefaultController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Quote'])) {
+		/*
                     foreach($_POST as $key=>$arr){
                             $pieces=explode("_",$key);
                             if(isset($pieces[0]) && $pieces[0]=='autoselect'){
@@ -280,6 +281,7 @@ class DefaultController extends x2base {
                         }
         	        	
 			$model->expirationDate = $this->parseDate($model->expirationDate);
+        	*/
         	
         	/*
         	if(isset($model->associatedContacts)) {
@@ -289,6 +291,9 @@ class DefaultController extends x2base {
         		$contacts = array();
         	}
         	*/
+            $temp=$model->attributes;
+			$model->setX2Fields($_POST['Quote']);
+
 
 			// get products
                 $products = array();

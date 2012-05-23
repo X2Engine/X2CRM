@@ -42,10 +42,9 @@ class Record {
 
 	public static function convert($records, $whatsNew=true) {
 		$arr=array();
-		$id=1;
 		
 		foreach ($records as $record) {
-			$user=User::model()->findByAttributes(array('username'=>$record->updatedBy));
+			$user=UserChild::model()->findByAttributes(array('username'=>$record->updatedBy));
                         if(isset($user)){
                             $name=$user->firstName." ".$user->lastName;
                             $userId=$user->id;
@@ -56,8 +55,7 @@ class Record {
                         }
 			if ($record instanceof Contacts) {
 				$temp=array();
-				$temp['id']=$id;
-					$id++;
+				$temp['id']=$record->id;
 				$temp['name']=$record->firstName.' '.$record->lastName;
 				$temp['description']=$record->backgroundInfo;
 				$temp['link']='/contacts/default/view/id/'.$record->id;
@@ -70,8 +68,7 @@ class Record {
                                 
 			} elseif ($record instanceof Actions) {
 				$temp=array();
-				$temp['id']=$id;
-					$id++;
+				$temp['id']=$record->id;
 				$temp['name']=empty($record->type)? Yii::t('actions','Action') : Yii::t('actions','Action: ').ucfirst($record->type);
 				$temp['description']=$record->actionDescription;
 				$temp['link']='/actions/default/view/id/'.$record->id;
@@ -83,8 +80,7 @@ class Record {
                                 $arr[$temp['lastUpdated']]=$temp;
 			} else {
 				$temp=array();
-				$temp['id']=$id;
-					$id++;
+				$temp['id']=$record->id;
 				$temp['name']=$record->name;
                                 if(!is_null($record->description))
                                     $temp['description']=$record->description;
@@ -117,7 +113,7 @@ class Record {
                     ksort($arr);
                     return array_values(array_reverse($arr));
                 }else{
-                    return $arr;
+                    return array_values($arr);
                 }
 	}
 }

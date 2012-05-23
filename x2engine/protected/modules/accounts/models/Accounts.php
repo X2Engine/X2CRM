@@ -83,31 +83,29 @@ class Accounts extends X2Model {
 	 * @return array validation rules for model attributes.
 	 */
 	public function rules() {
-		
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-                $arr=array(
-                    'varchar'=>array(),
-                    'text'=>array(),
-                    'date'=>array(),
-                    'dropdown'=>array(),
-                    'int'=>array(),
-                    'email'=>array(),
-                    'currency'=>array(),
-                    'url'=>array(),
-                    'float'=>array(),
-                    'boolean'=>array(),
-                    'required'=>array(),
-                    
-                );
-                $rules=array();
-                foreach($fields as $field){
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
+		$arr=array(
+			'varchar'=>array(),
+			'text'=>array(),
+			'date'=>array(),
+			'dropdown'=>array(),
+			'int'=>array(),
+			'email'=>array(),
+			'currency'=>array(),
+			'url'=>array(),
+			'float'=>array(),
+			'boolean'=>array(),
+			'required'=>array(),
+		);
+		$rules=array();
+		foreach($fields as $field){
 			$arr[$field->type][]=$field->fieldName;
 			if($field->required)
 				$arr['required'][]=$field->fieldName;
-                        if($field->type!='date')
-                            $arr['search'][]=$field->fieldName;
+			if($field->type!='date')
+				$arr['search'][]=$field->fieldName;
 		}
-                $arr['search'][]='name';
+		$arr['search'][]='name';
 		foreach($arr as $key=>$array){
 			switch($key){
 				case 'email':
@@ -116,9 +114,9 @@ class Accounts extends X2Model {
 				case 'required':
 					$rules[]=array(implode(',',$array),$key);
 					break;
-                                case 'search':
-                                        $rules[]=array(implode(",",$array),'safe','on'=>'search');
-                                        break;
+				case 'search':
+					$rules[]=array(implode(",",$array),'safe','on'=>'search');
+					break;
 				case 'int':
 					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
 					break;
@@ -130,11 +128,9 @@ class Accounts extends X2Model {
 					break;
 				default:
 					break;
-				
 			}
-			
 		}  
-                return $rules;
+		return $rules;
                 // NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		/*return array(

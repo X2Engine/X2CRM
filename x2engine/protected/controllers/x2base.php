@@ -46,8 +46,6 @@ abstract class x2base extends CController {
 	 * Basic user permissions (access rules)
 	 * Update method -> Similar to create
 	 * View method -> Similar to index
-	 * 
-	 * 
 	*/
 
 	/**
@@ -68,30 +66,6 @@ abstract class x2base extends CController {
 	
 	public $portlets = array(); // This is the array of widgets on the sidebar.
 	public $modelClass = 'Admin';
-        
-
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	// public $layout = '//layouts/column3';
-        
-        public $varString="\$themeURL = Yii::app()->theme->getBaseUrl();
-                Yii::app()->clientScript->registerScript('logos',\"
-                $(window).load(function(){
-                    if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                    var touchlogosrc = $('#x2touch-logo').attr('src');
-                    var logosrc=$('#x2crm-logo').attr('src');
-                    if(logosrc!='\$themeURL/images/x2footer.png'|| touchlogosrc!='\$themeURL/images/x2touch.png'){
-                        $('a').removeAttr('href');
-                        alert('Please put the logo back');
-                        window.location='http://www.x2engine.com';
-                    }
-                });";
 	public $actionMenu = array();
 
 	/**
@@ -135,6 +109,53 @@ abstract class x2base extends CController {
 				'class'=>'InlineEmailAction',
 			),
 		);
+	}
+
+	/**
+	 * Renders a view with any attached scripts, WITHOUT the core scripts.
+	 * This method fixes the problem with {@link renderPartial()} where an AJAX request with 
+	 * $processOutput=true includes the core scripts, breaking everything on the page
+	 * in rendering a partial view, or an AJAX response.
+	 *
+	 * @param string $view name of the view to be rendered. See {@link getViewFile} for details
+	 * about how the view script is resolved.
+	 * @param array $data data to be extracted into PHP variables and made available to the view script
+	 * @param boolean $return whether the rendering result should be returned instead of being displayed to end users
+	 * @return string the rendering result. Null if the rendering result is not required.
+	 * @throws CException if the view does not exist
+	 */
+
+	public function renderPartialAjax($view,$data=null,$return=false,$includeScriptFiles=false) {
+
+		if(($viewFile=$this->getViewFile($view))!==false) {
+
+			// if(class_exists('ReflectionClass')) {
+			
+				// $counter = abs(crc32($this->route));
+				// $reflection = new ReflectionClass('CWidget');
+				// $property = $reflection->getProperty('_counter');
+				// $property->setAccessible(true);
+				
+				// $property->setValue($counter);
+			// }
+		
+			$output=$this->renderFile($viewFile,$data,true);
+
+			$cs = Yii::app()->clientScript;
+			Yii::app()->setComponent('clientScript', new X2ClientScript);
+			$output = $this->renderPartial($view,$data,true);
+			$output .= Yii::app()->clientScript->renderOnRequest($includeScriptFiles);
+			Yii::app()->setComponent('clientScript', $cs);
+			
+			if($return)
+				return $output;
+			else
+				echo $output;
+				
+		} else {
+			throw new CException(Yii::t('yii','{controller} cannot find the requested view "{view}".',
+				array('{controller}'=>get_class($this), '{view}'=>$view)));
+		}
 	}
 
 	// determines if we have permission to edit something based on the assignedTo field
@@ -464,10 +485,11 @@ abstract class x2base extends CController {
 		$all_text_chunks = array_merge($text_to_add_links, $text_to_leave);
 		
 		
-
-		usort($all_text_chunks, function ($a, $b) {
+		function compareChunks($a,$b) {
 			return $a[1] - $b[1];
-		});
+		}
+
+		usort($all_text_chunks,'compareChunks');
 
 		$new_text = "";
 		foreach ($all_text_chunks as $chunk) {
@@ -512,33 +534,33 @@ abstract class x2base extends CController {
 	 */
 	public function create($model, $oldAttributes, $api) {
 		$name=$this->modelClass;
-                $model->createDate=time();
+		$model->createDate=time();
 		if($model->save()) {
-                    if(!($model instanceof Actions)){
-                        $fields=Fields::model()->findAllByAttributes(array('modelName'=>$name,'type'=>'link'));
-                        foreach($fields as $field){
-                            $fieldName=$field->fieldName;
-                            if(isset($model->$fieldName) && is_numeric($model->$fieldName)){
-                                if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-                                        (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
-                                        OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))){
-                                    $rel=new Relationships;
-                                    $rel->firstType=$name;
-                                    $rel->secondType=ucfirst($field->linkType);
-                                    $rel->firstId=$model->id; 
-                                    $rel->secondId=$model->$fieldName;
-                                    if($rel->save()){
-                                        $lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-                                        (firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
-                                        OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
-                                        if(isset($lookup)){
-                                            $lookup->delete();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+			if(!($model instanceof Actions)) {
+				$fields=Fields::model()->findAllByAttributes(array('modelName'=>$name,'type'=>'link'));
+				foreach($fields as $field) {
+					$fieldName=$field->fieldName;
+					if(isset($model->$fieldName) && is_numeric($model->$fieldName)) {
+						if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+									(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
+									OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))) {
+							$rel=new Relationships;
+							$rel->firstType=$name;
+							$rel->secondType=ucfirst($field->linkType);
+							$rel->firstId=$model->id; 
+							$rel->secondId=$model->$fieldName;
+							if($rel->save()) {
+								$lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+										(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
+										OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
+								if(isset($lookup)) {
+									$lookup->delete();
+								}
+							}
+						}
+					}
+				}
+			}
 			$changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 			$this->updateChangelog($model,$changes);
 			if(($model instanceof Product) == false) // products are not assigned to anyone
@@ -852,13 +874,13 @@ abstract class x2base extends CController {
 								$notif=new Notifications;
 								$profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
 								if($criteria->comparisonOperator=="="){
-									$notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator==">"){
-									$notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator=="<"){
-									$notif->text="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator=="change"){
-									$notif->text="A(n) ".$this->modelClass." has had field $criteria->modelField changed";
+									$notif->text="A record of type ".$this->modelClass." has had its $criteria->modelField field changed from ".$old[$keys[$i]]." to ".$new[$keys[$i]]." by ".Yii::app()->user->getName();
 								}
 								$notif->user=$piece;
 								$notif->createDate=time();
@@ -872,13 +894,13 @@ abstract class x2base extends CController {
 								$action=new Actions;
 								$action->assignedTo=$piece;
 								if($criteria->comparisonOperator=="="){
-									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$action->actionDescription="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator==">"){
-									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$action->actionDescription="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator=="<"){
-									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$action->actionDescription="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator=="change"){
-									$action->actionDescription="A(n) ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue";
+									$action->actionDescription="A record of type ".$this->modelClass." has had its $criteria->modelField field changed from ".$old[$keys[$i]]." to ".$new[$keys[$i]]." by ".Yii::app()->user->getName();
 								}
 								$action->dueDate=mktime('23','59','59');
 								$action->createDate=time();
@@ -895,7 +917,7 @@ abstract class x2base extends CController {
 							$model->assignedTo=$criteria->users;
 							$model->save();
 							$notif=new Notifications;  
-							$notif->text="A(n)".$this->modelClass." has been re-assigned to you.";
+							$notif->text="A record of type ".$this->modelClass." has been re-assigned to you.";
 							$notif->user=$model->assignedTo;
 							$notif->createDate=time();
 							$notif->viewed=0;

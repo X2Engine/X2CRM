@@ -72,7 +72,7 @@
  * @property string $formSettings
  * @property string emailUseSignature
  * @property string emailSignature
- * @property integer enableBgFade
+ * @property integer enableFullWidth
  */
 class Profile extends CActiveRecord
 {
@@ -102,7 +102,8 @@ class Profile extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('fullName, username, status', 'required'),
-			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity, showSocialMedia, showDetailView, showWorkflow, enableBgFade', 'numerical', 'integerOnly'=>true),
+			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity', 'numerical', 'integerOnly'=>true),
+			array('enableFullWidth,showWorkflow,showSocialMedia,showDetailView','boolean'),
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
 			array('emailUseSignature', 'length', 'max'=>10),
 			array('startPage', 'length', 'max'=>30),
@@ -168,7 +169,7 @@ class Profile extends CActiveRecord
 			'formSettings'=>Yii::t('profile','Form Settings'),
 			'emailUseSignature' => Yii::t('admin','Email Signature'),
 			'emailSignature' => Yii::t('admin','My Signature'),
-			'enableBgFade'=>Yii::t('profile','Enable Background Fading'),
+			'enableFullWidth'=>Yii::t('profile','Enable Full Width Layout'),
 		);
 	}
 
@@ -215,5 +216,187 @@ class Profile extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public function syncActionToGoogleCalendar($action) {
+		try { // catch google exceptions so the whole app doesn't crash if google has a problem syncing
+			$admin = Yii::app()->params->admin;		
+			if($admin->googleIntegration) {
+				if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId) {
+					// Google Calendar Libraries
+					$timezone = date_default_timezone_get();
+					require_once "protected/extensions/google-api-php-client/src/apiClient.php";
+					require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+					date_default_timezone_set($timezone);
+					
+					$client = new apiClient();
+					$client->setClientId($admin->googleClientId);
+					$client->setClientSecret($admin->googleClientSecret);
+					$client->setDeveloperKey($admin->googleAPIKey);
+					$client->setAccessToken($this->syncGoogleCalendarAccessToken);
+					$googleCalendar = new apiCalendarService($client);
+					
+					// check if the access token needs to be refreshed
+					// note that the google library automatically refreshes the access token if we need a new one, 
+					// we just need to check if this happend by calling a google api function that requires authorization, 
+					// and, if the access token has changed, save this new access token
+					$testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);			
+					if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()) {
+						$this->syncGoogleCalendarAccessToken = $client->getAccessToken();
+						$this->update();
+					}
+					
+					$summary = $action->actionDescription;
+					if($action->associationType == 'contacts' || $action->associationType == 'contact')
+						$summary = $action->associationName . ' - ' . $action->actionDescription;
+					
+					$event = new Event();
+					$event->setSummary($summary);
+					
+					if($action->allDay) {
+						$start = new EventDateTime();
+						$start->setDate(date('Y-m-d', $action->dueDate));
+						$event->setStart($start);
+						
+						if(!$action->completeDate)
+							$action->completeDate = $action->dueDate;
+						$end = new EventDateTime();
+						$end->setDate(date('Y-m-d', $action->completeDate + 86400));
+						$event->setEnd($end);
+					} else {
+						$start = new EventDateTime();
+						$start->setDateTime(date('c', $action->dueDate));
+						$event->setStart($start);
+						
+						if(!$action->completeDate)
+							$action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
+						$end = new EventDateTime();
+						$end->setDateTime(date('c', $action->completeDate));
+						$event->setEnd($end);
+					}
+					
+					if($action->color && $action->color != '#3366CC') {
+					    $colorTable = array(
+					    	10=>'Green',
+					    	11=>'Red',
+					    	6=>'Orange',
+					    	8=>'Black',
+					    );
+					    if(($key = array_search($action->color, $colorTable)) != false)
+					    	$event->setColorId($key);
+					}
+					
+					$newEvent = $googleCalendar->events->insert($this->syncGoogleCalendarId, $event);
+					$action->syncGoogleCalendarEventId = $newEvent['id'];
+				}
+			}
+		} catch (Exception $e) {
+
+		}
+	}
+	
+	public function updateGoogleCalendarEvent($action) {
+		try { // catch google exceptions so the whole app doesn't crash if google has a problem syncing
+			$admin = Yii::app()->params->admin;		
+			if($admin->googleIntegration) {
+				if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId) {
+					// Google Calendar Libraries
+					$timezone = date_default_timezone_get();
+					require_once "protected/extensions/google-api-php-client/src/apiClient.php";
+					require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+					date_default_timezone_set($timezone);
+					
+					$client = new apiClient();
+					$client->setClientId($admin->googleClientId);
+					$client->setClientSecret($admin->googleClientSecret);
+					$client->setDeveloperKey($admin->googleAPIKey);
+					$client->setAccessToken($this->syncGoogleCalendarAccessToken);
+					$client->setUseObjects(true); // return objects instead of arrays
+					$googleCalendar = new apiCalendarService($client);
+					
+					// check if the access token needs to be refreshed
+					// note that the google library automatically refreshes the access token if we need a new one, 
+					// we just need to check if this happend by calling a google api function that requires authorization, 
+					// and, if the access token has changed, save this new access token
+					$testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);			
+					if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()) {
+						$this->syncGoogleCalendarAccessToken = $client->getAccessToken();
+						$this->update();
+					}
+					
+					$summary = $action->actionDescription;
+					if($action->associationType == 'contacts' || $action->associationType == 'contact')
+						$summary = $action->associationName . ' - ' . $action->actionDescription;
+					
+					$event = $googleCalendar->events->get($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
+					$event->setSummary($summary);
+					
+					if($action->allDay) {
+						$start = new EventDateTime();
+						$start->setDate(date('Y-m-d', $action->dueDate));
+						$event->setStart($start);
+						
+						if(!$action->completeDate)
+							$action->completeDate = $action->dueDate;
+						$end = new EventDateTime();
+						$end->setDate(date('Y-m-d', $action->completeDate + 86400));
+						$event->setEnd($end);
+					} else {
+						$start = new EventDateTime();
+						$start->setDateTime(date('c', $action->dueDate));
+						$event->setStart($start);
+						
+						if(!$action->completeDate)
+							$action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
+						$end = new EventDateTime();
+						$end->setDateTime(date('c', $action->completeDate));
+						$event->setEnd($end);
+					}
+					
+					if($action->color && $action->color != '#3366CC') {
+					    $colorTable = array(
+					    	10=>'Green',
+					    	11=>'Red',
+					    	6=>'Orange',
+					    	8=>'Black',
+					    );
+					    if(($key = array_search($action->color, $colorTable)) != false)
+					    	$event->setColorId($key);
+					}
+					
+					$newEvent = $googleCalendar->events->update($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId, $event);
+				}
+			}
+		} catch (Exception $e) {
+
+		}
+	}
+	
+	public function deleteGoogleCalendarEvent($action) {
+		try { // catch google exceptions so the whole app doesn't crash if google has a problem syncing
+			$admin = Yii::app()->params->admin;		
+			if($admin->googleIntegration) {
+				if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId) {
+					// Google Calendar Libraries
+					$timezone = date_default_timezone_get();
+					require_once "protected/extensions/google-api-php-client/src/apiClient.php";
+					require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+					date_default_timezone_set($timezone);
+					
+					$client = new apiClient();
+					$client->setClientId($admin->googleClientId);
+					$client->setClientSecret($admin->googleClientSecret);
+					$client->setDeveloperKey($admin->googleAPIKey);
+					$client->setAccessToken($this->syncGoogleCalendarAccessToken);
+					$client->setUseObjects(true); // return objects instead of arrays
+					$googleCalendar = new apiCalendarService($client);
+					
+					$googleCalendar->events->delete($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
+				}
+			}
+			
+		} catch (Exception $e) {
+		
+		}
 	}
 }

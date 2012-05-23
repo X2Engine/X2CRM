@@ -86,6 +86,7 @@ class DefaultController extends x2base {
 					'addToList',
 					'removeFromList',
 					'deleteList',
+					'exportList',
 					'inlineEmail',
 					'quickUpdateHistory',
 					'subscribe',
@@ -181,7 +182,7 @@ class DefaultController extends x2base {
 	}
 	
 	public function actionGetContacts() {
-		$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm ORDER BY firstName ASC';
+		$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -190,7 +191,7 @@ class DefaultController extends x2base {
 	}
 
 	public function actionGetItems() {
-		$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm ORDER BY firstName ASC';
+		$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -199,7 +200,7 @@ class DefaultController extends x2base {
 	}
 	
 	public function actionGetLists(){
-		$sql = 'SELECT id, name as value FROM x2_lists WHERE modelName="Contacts" AND name LIKE :qterm ORDER BY name ASC';
+		$sql = 'SELECT id, name as value FROM x2_lists WHERE modelName="Contacts" AND type!="campaign" AND name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -527,7 +528,6 @@ $model->city, $model->state $model->zipcode
 		$allContacts = new X2List;
 		$allContacts->attributes = array(
 			'id' => 'all',
-			// 'campaignId' => 0,
 			'name' => Yii::t('contacts','All Contacts'),
 			'description' => '',
 			'type' => 'dynamic',
@@ -540,7 +540,6 @@ $model->city, $model->state $model->zipcode
 		$newContacts->attributes = array(
 			'id' => 'new',
 			'assignedTo' => Yii::app()->user->getName(),
-			// 'campaignId' => 0,
 			'name' => Yii::t('contacts','New Contacts'),
 			'description' => '',
 			'type' => 'dynamic',
@@ -553,7 +552,6 @@ $model->city, $model->state $model->zipcode
 		$myContacts->attributes = array(
 			'id' => 'my',
 			'assignedTo' => Yii::app()->user->getName(),
-			// 'campaignId' => 0,
 			'name' => Yii::t('contacts','My Contacts'),
 			'description' => '',
 			'type' => 'dynamic',
@@ -774,8 +772,11 @@ $model->city, $model->state $model->zipcode
 			'='=>'=',
 			'>'=>'>',
 			'<'=>'<',
-			'empty'=>Yii::t('empty','empty'),
+			'<>'=>'<>',
 			'contains'=>Yii::t('contacts','contains'),
+			'empty'=>Yii::t('empty','empty'),
+			'notEmpty'=>Yii::t('contacts','not empty'),
+			'list'=>Yii::t('contacts','in list'),
 		);
 		
 		if($list->type == 'dynamic')
@@ -837,6 +838,7 @@ $model->city, $model->state $model->zipcode
 			'itemModel'=>$contactModel,
 		));
 	}
+
 	public function actionAddToList() {
 	
 		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
@@ -905,6 +907,138 @@ $model->city, $model->state $model->zipcode
 		}
 		$this->redirect(array('/contacts/lists'));
 	}
+	
+	public function actionExportList($id) {
+	
+		$list = CActiveRecord::model('X2List')->findByPk($id);
+		if(isset($list)) {
+			if(!$this->checkPermissions($list,'view'))	// check permissions
+				throw new CHttpException(403,Yii::t('app','You do not have permission to modify this list.'));
+		} else
+			throw new CHttpException(404, Yii::t('app','The requested list does not exist.'));
+	
+	
+	
+		$dataProvider = CActiveRecord::model('Contacts')->searchList($id);	// get the list
+
+		$totalItemCount = $dataProvider->getTotalItemCount();
+		$dataProvider->pagination->itemCount = $totalItemCount;
+		$dataProvider->pagination->pageSize = 1000;		// process list in blocks of 1000
+
+		$allFields = CActiveRecord::model('Contacts')->getFields(true);	// get associative array of fields
+	
+		$gvSettings = ProfileChild::getGridviewSettings('contacts_list'.$id);
+
+		$selectedColumns = array();
+		$columns = array();
+
+		if($gvSettings === null) {
+			$selectedColumns = array(	// default columns
+				'firstName',
+				'lastName',
+				'phone',
+				'email',
+				'leadSource',
+				'createDate',
+				'lastUpdated',
+			);
+		} else {
+			$selectedColumns = array_keys($gvSettings);
+		}
+		
+		foreach($selectedColumns as &$colName) {
+		
+			if($colName == 'tags') {
+				$columns[$colName]['label'] = Yii::t('app','Tags');
+				$columns[$colName]['type'] = 'tags';
+				
+			} elseif($colName == 'name') {
+				$columns[$colName]['label'] = Yii::t('contacts','Name');
+				$columns[$colName]['type'] = 'name';
+			} else {
+				if(array_key_exists($colName,$allFields)) {
+				
+					$columns[$colName]['label'] = $allFields[$colName]['attributeLabel'];
+					
+					if(in_array($colName,array('annualRevenue','quoteAmount')))
+						$columns[$colName]['type'] = 'currency';
+					else
+						$columns[$colName]['type'] = $allFields[$colName]['type'];
+						
+					$columns[$colName]['linkType'] = $allFields[$colName]['linkType'];
+				}
+			}
+		}
+		unset($colName);
+
+		$fileName = 'list'.$id.'.csv';
+		$fp = fopen($fileName, 'w+');
+
+		// output column labels for the first line
+		$columnLabels = array();
+		foreach($columns as $colName => &$field)
+			$columnLabels[] = $field['label'];
+		unset($field);
+		
+		fputcsv($fp, $columnLabels);
+
+		for($i=0; $i<$dataProvider->pagination->pageCount; ++$i) {
+			$dataProvider->pagination->currentPage = $i;
+			
+			$dataSet = $dataProvider->getData(true);
+			foreach($dataSet as &$model) {
+				
+				$row = array();
+
+				foreach($columns as $fieldName=>&$field) {
+
+					if($field['type'] == 'tags') {
+						$row[] = Tags::getTags('Contacts',$model->id,10);
+					} elseif($field['type'] == 'date') {
+						$row[] = date('Y-m-d H:i:s',$model->$fieldName);
+					} elseif($field['type']=='visibility') {
+						switch($model->$fieldName){
+							case '1':
+								$row[] = Yii::t('app','Public'); break;
+							case '0': 
+								$row[] = Yii::t('app','Private'); break;
+							case '2':
+								$row[] = Yii::t('app','User\'s Groups'); break;
+						}
+					} elseif($field['type']=='link') {
+						if(is_numeric($model->$fieldName)) {
+							$className = ucfirst($field['linkType']);
+							if(class_exists($className)) {
+								$lookupModel = CActiveRecord::model($className)->findByPk($model->$fieldName);
+								if(isset($lookupModel))
+									$row[] = $lookupModel->name;
+							}
+						} else {
+							$row[] = $model->$fieldName;
+						}
+					} elseif($field['type'] == 'currency') {
+						if($model instanceof Product) // products have their own currency
+							$row[] = Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, $model->currency);
+						elseif(!empty($model->$fieldName))
+							$row[] = Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, Yii::app()->params['currency']);
+						else
+							$row[] = '';
+					} elseif($field['type'] == 'dropdown') {
+						$row[] = Yii::t(strtolower(Yii::app()->controller->id),$model->$fieldName); 
+					} else {
+						$row[] = $model->$fieldName;
+					}
+				}
+				fputcsv($fp, $row);
+			}
+			unset($model);
+		}
+		fclose($fp);
+		
+		$file = Yii::app()->file->set($fileName);
+		$file->download();
+	}
+	
 	
 	public function actionImportContacts() {
 		if (isset($_FILES['contacts'])) {

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -54,7 +54,7 @@
  * @property integer $lastUpdated
  * @property string $updatedBy
  */
-class Product extends CActiveRecord
+class Product extends X2Model
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -71,6 +71,14 @@ class Product extends CActiveRecord
 	public function tableName()
 	{
 		return 'x2_products';
+	}
+        
+        public function getAutoCompleteSource() {
+		return '/products/getItems';	// assume the model name is the same as the controller
+	}
+        
+        public function getDefaultRoute() {
+		return '/products';	// assume the model name is the same as the controller
 	}
 
 	/**
@@ -139,6 +147,7 @@ class Product extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
+		/*
 		$criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('description',$this->description,true);
@@ -151,7 +160,8 @@ class Product extends CActiveRecord
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),
-		));
+		));*/
+		return $this->searchBase($criteria);
 	}
 	
 	/**

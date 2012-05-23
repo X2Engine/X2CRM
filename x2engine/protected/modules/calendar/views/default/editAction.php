@@ -97,7 +97,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		
 		if($isEvent) {
 			echo $form->label($model, 'endDate', array('class'=>'dialog-label'));
-			$defaultDate = $this->formatDate($model->dueDate, 'medium');
+			$defaultDate = $this->formatDate($model->completeDate, 'medium');
 			$model->completeDate = $this->formatDateTime($model->completeDate);	//format date from DATETIME
 			$this->widget('CJuiDateTimePicker',array(
 				'model'=>$model, //Model object
@@ -106,7 +106,7 @@ $form=$this->beginWidget('CActiveForm', array(
 				'options'=>array(
 					'dateFormat'=> $this->formatDatePicker('medium'),
 					'timeFormat'=>$this->formatTimePicker(),
-					'defaultDate'=>($model->completeDate? substr($model->completeDate, 0, strlen($model->completeDate) - 6) : ''),
+					'defaultDate'=>$defaultDate,
 					'ampm'=>$this->formatAMPM(),
 				), // jquery plugin options
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),

@@ -37,15 +37,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-div.record div, div.record .cell#social-media-toggle a {
-	border:1px solid #ddd;
-	border-width:0;
-}
+div.record div, div.record .cell#social-media-toggle a {border:1px solid #ddd;border-width:0;}
 div.record {
-	-moz-border-radius:4px;
-	-o-border-radius:4px;
-	-webkit-border-radius:4px;
-	border-radius:4px;
+	border-radius:			4px;
+	-moz-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	-o-border-radius:		4px;
 	border-width:1px;
 	clear:both;
 	margin:0 0 5px 0;
@@ -58,9 +55,7 @@ div.record.no-border {
 	padding:0;
 	margin:0;
 }
-div.record a{
-	text-decoration:none;
-}
+div.record a {text-decoration:none;}
 div.record .row {
 	width:auto;
 	clear:both;
@@ -71,15 +66,9 @@ div.record .cell {
 	float:left;
 	margin:0 10px 5px 10px;
 }
-div.record hr {
-	margin:5px 0;
-	width:100%;
-}
+div.record hr {margin:5px 0;width:100%;}
 
-div.record .cell#social-media-toggle {
-/* 	margin:0 0 -1px 0; */
-	float:right;
-}
+div.record .cell#social-media-toggle {float:right;}
 div.record .cell#social-media-toggle a {
 	display:block;
 	margin:0 10px 0 0;
@@ -91,10 +80,10 @@ div.record .cell#social-media-toggle a {
 	border-width:1px;
 	border-bottom:none;
 	
-	border-radius:4px 4px 0 0;
-	-moz-border-radius:4px 4px 0 0;
-	-webkit-border-radius:4px 4px 0 0;
-	-o-border-radius:4px 4px 0 0;
+	border-radius:			4px 4px 0 0;
+	-moz-border-radius:		4px 4px 0 0;
+	-webkit-border-radius:	4px 4px 0 0;
+	-o-border-radius:		4px 4px 0 0;
 }
 div.record .row.social-media  {
 	background:#fff;
@@ -102,9 +91,7 @@ div.record .row.social-media  {
 	padding:0 10px 5px 10px;
 	overflow:hidden;
 }
-div.record .row.social-media div{
-	margin-top:5px;
-}
+div.record .row.social-media div{margin-top:5px;}
 div.social-media img {
 	vertical-align:text-bottom;
 	height:16px;
@@ -114,18 +101,14 @@ div.social-media img {
 
 
 div.details div.header {
-	border-radius:4px 4px 0 0;
-	-moz-border-radius:4px 4px 0 0;
-	-webkit-border-radius:4px 4px 0 0;
-	-o-border-radius:4px 4px 0 0;
+	border-radius:			4px 4px 0 0;
+	-moz-border-radius:		4px 4px 0 0;
+	-webkit-border-radius:	4px 4px 0 0;
+	-o-border-radius:		4px 4px 0 0;
 }
-span.required {
-	color: red;
-}
+span.required {color: red;}
 
-table.details td#address input {
-	margin:0 0 5px 0;
-}
+table.details td#address input {margin:0 0 5px 0;}
 table.details td#social-media img {
 	vertical-align:middle;
 	margin-bottom:3px;
@@ -140,119 +123,89 @@ table.details input, table.details textarea {
 table.details {
 	margin:5px 0 10px 0;
 	clear:both;
-	border:none;
-	border-collapse:separate; /* no border collapse to make rounded corners work */
+	border:1px solid #aaa;
 	width:100%;
 	table-layout:auto;
+	border-radius:			4px;
+	-moz-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	-o-border-radius:		4px;
 }
-/* rounded corner on top left TD cell */
+/* no top or left borders on the TD cells */
+table.details tr:first-child td {border-top:none;}
+table.details tr td:first-child {border-left:none;}
+/* make all the TD cell corner round too because browsers are stupid */
 table.details tr:first-child td:first-child {
-	border-radius:4px 0 0 0;
-	-moz-border-radius:4px 0 0 0;
-	-webkit-border-radius:4px 0 0 0;
-	-o-border-radius:4px 0 0 0;
-	border-left-width:1px;
+	border-radius:			4px 0 0 0;
+	-moz-border-radius:		4px 0 0 0;
+	-webkit-border-radius:	4px 0 0 0;
+	-o-border-radius:		4px 0 0 0;
 }
-/* rounded corner on top right TD cell */
 table.details tr:first-child td:last-child {
-	border-radius:0 4px 0 0;
-	-moz-border-radius:0 4px 0 0;
-	-webkit-border-radius:0 4px 0 0;
-	-o-border-radius:0 4px 0 0;
-	border-right-width:1px;
+	border-radius:			0 4px 0 0;
+	-moz-border-radius:		0 4px 0 0;
+	-webkit-border-radius:	0 4px 0 0;
+	-o-border-radius:		0 4px 0 0;
 }
-/* rounded corner on top full-width TD cell */
 table.details tr:first-child td:only-child {
-	border-radius:4px 4px 0 0;
-	-moz-border-radius:4px 4px 0 0;
-	-webkit-border-radius:4px 4px 0 0;
-	-o-border-radius:4px 4px 0 0;
+	border-radius:			4px 4px 0 0;
+	-moz-border-radius:		4px 4px 0 0;
+	-webkit-border-radius:	4px 4px 0 0;
+	-o-border-radius:		4px 4px 0 0;
 }
-
-
-/* left border on all left TD cells */
-table.details tr td:first-child {
-	border-left-width:1px;
-}
-/* bottom border on all bottom TD cells in TBODY */
-table.details tr:last-child td {
-	border-bottom-width:1px;
-}
-/* rounded corner on bottom left TD cells in TBODY */
 table.details tr:last-child td:first-child {
-	border-radius:0 0 0 4px;
-	-moz-border-radius:0 0 0 4px;
-	-webkit-border-radius:0 0 0 4px;
-	-o-border-radius:0 0 0 4px;
+	border-radius:			0 0 0 4px;
+	-moz-border-radius:		0 0 0 4px;
+	-webkit-border-radius:	0 0 0 4px;
+	-o-border-radius:		0 0 0 4px;
 }
-/* rounded corner on bottom right TD cells in TBODY */
 table.details tr:last-child td:last-child {
-	border-radius:0 0 4px 0;
-	-moz-border-radius:0 0 4px 0;
-	-webkit-border-radius:0 0 4px 0;
-	-o-border-radius:0 0 4px 0;
+	border-radius:			0 0 4px 0;
+	-moz-border-radius:		0 0 4px 0;
+	-webkit-border-radius:	0 0 4px 0;
+	-o-border-radius:		0 0 4px 0;
 }
-/* rounded corner on bottom full-width TD cells in TBODY */
 table.details tr:last-child td:only-child {
-	border-radius:0 0 4px 4px;
-	-moz-border-radius:0 0 4px 4px;
-	-webkit-border-radius:0 0 4px 4px;
-	-o-border-radius:0 0 4px 4px;
+	border-radius:			0 0 4px 4px;
+	-moz-border-radius:		0 0 4px 4px;
+	-webkit-border-radius:	0 0 4px 4px;
+	-o-border-radius:		0 0 4px 4px;
 }
 
 table.details th, table.details td {
 	padding:5px;
 	background:#f8f8f8;
-	border:solid #ddd;
-	border-width:1px 1px 0 0; /* top and right borders for all TD and TH cells */
+	border-top:1px solid #d0d0d0;
+	border-left:1px solid #d0d0d0;
 	vertical-align:top;
 	font-family:sans-serif;
 	font-size:12px;
 	font-style:normal;
 	font-weight:normal;
 }
-table.details td.label {
-	background:#eee;
-	text-align:right;
-}
-table.details a {
-	text-decoration:none;
-}
+table.details td.label {background:#eee;text-align:right;}
+table.details a {text-decoration:none;}
 
 /* rounded corners on description cell */
 table.details tr:first-child td.description {
-	border-radius:4px 4px 0 0;
-	-moz-border-radius:4px 4px 0 0;
-	-webkit-border-radius:4px 4px 0 0;
-	-o-border-radius:4px 4px 0 0;
+	border-radius:			4px 4px 0 0;
+	-moz-border-radius:		4px 4px 0 0;
+	-webkit-border-radius:	4px 4px 0 0;
+	-o-border-radius:		4px 4px 0 0;
 	border-left-width:1px;
 }
-table.details td.text-field {
-	height:auto;
-}
+table.details td.text-field {height:auto;}
 table.details td.text-field div.spacer {
 	height:40px;
 	width:0px;
 	float:left;
 }
-table.details input, table,.details textarea {
-	margin:0;
-}
+table.details input, table,.details textarea {margin:0;}
 
-table.details.hint {
-	color: #999;
-	margin: 0;
-	padding: 0;
-}
-table.details.note {
-	font-style: italic;
-}
-table.detailsspan.required {
-	color: red;
-}
-table.detailsdiv.error label,table.detailslabel.error,table.detailsspan.error {
-	color: #C00;
-}
+table.details.hint {color:#999;margin:0;padding:0;}
+table.details.note {font-style:italic;}
+table.detailsspan.required {color:red;}
+table.detailsdiv.error label,table.detailslabel.error,table.detailsspan.error {color: #C00;}
 table.detailsdiv.error input,table.detailsdiv.error textarea,table.detailsdiv.error select,table.detailsinput.error,table.detailstextarea.error,table.detailsselect.error {
 	background: #FEE;
 	border-color: #C00;

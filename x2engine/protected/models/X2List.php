@@ -43,7 +43,6 @@
  *
  * The followings are the available columns in table 'x2_contact_lists':
  * @property integer $id
- * @property integer $campaignId
  * @property string $name
  * @property string $description
  * @property string $type
@@ -84,13 +83,13 @@ class X2List extends CActiveRecord {
 		// will receive user inputs.
 		return array(
 			array('name, createDate, lastUpdated, modelName', 'required'),
-			array('id, campaignId, count, visibility, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
+			array('id, count, visibility, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('name, modelName', 'length', 'max'=>100),
 			array('description', 'length', 'max'=>250),
 			array('assignedTo, type, logicType', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, assignedTo, campaignId, name, modelName, count, visibility, description, type, createDate, lastUpdated', 'safe', 'on'=>'search'),
+			array('id, assignedTo, name, modelName, count, visibility, description, type, createDate, lastUpdated', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -110,7 +109,6 @@ class X2List extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'campaignId' => 'Campaign',
 			'assignedTo' => Yii::t('contacts','List Owner'),
 			'name' => Yii::t('contacts','List Name'),
 			'description' => Yii::t('contacts','Description'),
@@ -135,7 +133,6 @@ class X2List extends CActiveRecord {
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('campaignId',$this->campaignId,true);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('description',$this->description,true);
 		$criteria->compare('type',$this->type,true);
@@ -167,6 +164,114 @@ class X2List extends CActiveRecord {
 			$this->_itemAttributeLabels = $this->_itemModel->attributeLabels();
 		}
 		return $this->_itemAttributeLabels;
+	}
+	/**
+	 * Returns a CDbCommand to retrieve all models in the list
+	 */
+	public function dbCommand() {
+		$tableSchema = CActiveRecord::model($this->modelName)->getTableSchema();
+		return $this->getCommandBuilder()->createFindCommand($tableSchema, $this->dbCriteria());
+	}
+
+	/**
+	 * Returns a CDbCriteria to retrieve all models in the list
+	 */
+	public function dbCriteria() {
+		if($this->type == 'dynamic') {
+			$logicMode = $this->logicType;
+			$search = new CDbCriteria(array());
+			$criteria = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
+			foreach ($criteria as $criterion) {
+				//for each field in a model, make sure the criterion is in the same format
+				foreach (CActiveRecord::model($this->modelName)->fields as $field) {
+					if ($field->fieldName == $criterion->attribute) {
+						switch($field->type) {
+							case 'date': if(!ctype_digit($criterion->value)) $criterion->value = strtotime($criterion->value); break;
+							case 'link': if(!ctype_digit($criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
+							case 'boolean': $criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
+						}
+						break;
+					}
+				}
+			
+				if($criterion->attribute == 'tags') {
+					$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($criterion->value)));	//remove any spaces around commas, then explode to array
+					for($i=0; $i<count($tags); $i++) {
+						if(empty($tags[$i])) {
+							unset($tags[$i]);
+							$i--;
+							continue;
+						} else {
+							if($tags[$i][0] != '#')
+								$tags[$i] = '#'.$tags[$i];
+							$tags[$i] = 'x2_tags.tag = "'.$tags[$i].'"';
+						}
+					}
+					$tagConditions = implode(' OR ',$tags);
+					
+					$search->distinct = true;
+					$search->join = 'JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="' . $this->modelName . '" AND ('.$tagConditions.'))';
+				} else {
+					switch($criterion->comparison) {
+						case '=':
+							$search->compare($criterion->attribute,$criterion->value,false,$logicMode); break;
+						case '>':
+							$search->compare($criterion->attribute,'>='.$criterion->value,true,$logicMode); break;
+						case '<':
+							$search->compare($criterion->attribute,'<='.$criterion->value,true,$logicMode); break;
+						case '<>':	// must test for != OR is null, because both mysql and yii are stupid
+							$search->addCondition('('.$criterion->attribute.' IS NULL OR '.$criterion->attribute.'!='.CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount.')',$logicMode);
+							$search->params[CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount++] = $criterion->value;
+							break;
+						case 'notEmpty':
+							$search->addCondition($criterion->attribute.' IS NOT NULL AND '.$criterion->attribute.'!=""',$logicMode); break;
+						case 'empty':
+							$search->addCondition('('.$criterion->attribute.'="" OR '.$criterion->attribute.' IS NULL)',$logicMode); break;
+						case 'list':
+							$search->addInCondition($criterion->attribute,explode(',',$criterion->value),$logicMode); break;
+						case 'contains':
+						default:
+							$search->compare($criterion->attribute,$criterion->value,true,$logicMode);
+					}
+				}
+			}
+
+		} else {
+			$search = new CDbCriteria(array(
+				'join'=>'JOIN x2_list_items ON t.id = x2_list_items.contactId',
+				'condition'=>'x2_list_items.listId='.$this->id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")',
+			));
+		}
+		return $search;
+	}
+
+	/**
+	 * Creates, saves, and returns a duplicate static list containing the same items.
+	 */
+	public function staticDuplicate() {
+		$dup = new X2List();
+		$dup->attributes = $this->attributes;
+		$dup->id = null;
+		$dup->type = 'static';
+		$dup->createDate = $dup->lastUpdated = time();
+		$dup->isNewRecord = true;
+		if (!$dup->save()) return;
+
+		$count=0;
+		$itemIds = $this->dbCommand()->select('id')->queryColumn();
+		//generate some sql, because I can't find a yii way to insert many records in one query
+		$values = '';
+		foreach($itemIds as $id) {
+			if ($count !== 0) $values .= ',';
+			$values .= '(' . $id . ',' . $dup->id . ')';
+			$count++;
+		}
+		$sql = 'INSERT into x2_list_items (contactId, listId) VALUES ' . $values . ';';
+		Yii::app()->db->createCommand($sql)->execute();
+		
+		$dup->count = $count;
+		$dup->save();
+		return $dup;
 	}
 	
 	public static function getRoute($id) {

@@ -79,7 +79,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'htmlOptions'=>array('onsubmit'=>'editor.post();')
 ));
 
-$this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'form'=>$form, 'modelName'=>'Campaign'));
+$this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>User::getNames(),'form'=>$form, 'modelName'=>'Campaign'));
 
 
 echo '	<div class="row buttons">'."\n";

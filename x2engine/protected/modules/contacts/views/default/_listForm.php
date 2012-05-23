@@ -121,11 +121,6 @@ $(function() {
 echo $form->errorSummary($model);
 ?>
 <div class="row">
-	<?php //echo $form->labelEx($model,'campaignId'); ?>
-	<?php //echo $form->textField($model,'campaignId',array('size'=>10,'maxlength'=>10)); ?>
-	<?php //echo $form->error($model,'campaignId'); ?>
-</div>
-<div class="row">
 	<div class="cell">
 		<?php echo $form->labelEx($model,'name'); ?>
 		<?php echo $form->textField($model,'name',array('size'=>30,'maxlength'=>100)); ?>

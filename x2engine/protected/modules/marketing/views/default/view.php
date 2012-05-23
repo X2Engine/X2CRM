@@ -41,60 +41,82 @@
 include("protected/config/marketingConfig.php");
 Yii::app()->clientScript->registerCss('campaignContentCss',"#Campaign_content_inputBox {min-height:300px;}");
 
+$this->pageTitle = $model->name; 
+
 $this->menu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
 	array('label'=>Yii::t('module','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('module','View')),
-	array('label'=>Yii::t('module','Update'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('module','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
+
+$editPermissions = $this->checkPermissions($model, 'edit');
+$deletePermissions = $this->checkPermissions($model, 'delete');
+if ($editPermissions)
+	$this->menu[] = array('label'=>Yii::t('module','Update'), 'url'=>array('update', 'id'=>$model->id));
+if ($deletePermissions)
+	$this->menu[] = array('label'=>Yii::t('module','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')));		
 ?>
 
-<h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php echo $model->name; ?></h2>
+<h2><?php echo Yii::t('module', '{X}', array('{X}'=>$moduleConfig['recordName'])); ?>: <b><?php echo $model->name; ?></b>
+
+<?php if ($editPermissions) { ?>
+	<a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+<?php } ?>
+
+</h2>
+
+<?php if (isset($errors) && count($errors) > 0) { ?>
+	<div class="flash-error">
+		<ul>
+			<?php foreach ($errors as $error) { ?>
+			<li><?php echo $error; ?></li>
+			<?php } ?>
+		</ul>
+	</div>
+<?php } ?>
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'Campaign')); ?>
-<div style="overflow:auto;margin-bottom:5px;">
-<?php
-echo CHtml::submitButton(Yii::t('app','Launch Now'),array('class'=>'x2-button highlight left','id'=>'save-button','style'=>'margin-left:0;'));
 
-echo CHtml::ajaxButton(
-	Yii::t('marketing','Launch Now'),
-	array('launchCampaign','id'=>$model->id),
+<div style="overflow: auto;">
+<?php
+echo CHtml::beginForm('launch');
+echo CHtml::hiddenField('id', $model->id);
+echo CHtml::submitButton(
+	Yii::t('app','Launch Now'),
+	array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+echo CHtml::endForm();
+
+echo CHtml::Button(
+	Yii::t('app', 'Send Test Email'),
 	array(
-		'beforeSend'=>"function(a,b) { $('#email-sending-icon').show(); }",
-		'update'=>'#test-email-result',
-		'complete'=>"function(response) { $('#email-sending-icon').hide(); $('#test-email-result').slideDown(); }",
-	),
-	array(
-		'id'=>'preview-email-button',
+		'id'=>'test-email-button',
 		'class'=>'x2-button left',
-		'style'=>'cursor:pointer;'
+		'onclick'=>'toggleEmailForm(); return false;'
+	)
+);?>
+</div>
+
+<div>
+<?php
+$this->widget('InlineEmailForm',
+	array(
+		'attributes'=>array(
+			//'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
+			'subject'=>$model->subject,
+			'message'=>$model->content,
+			// 'redirect'=>'contacts/'.$model->id,
+			'modelName'=>'Campaign',
+			'modelId'=>$model->id,
+		),
+		'startHidden'=>true,
 	)
 );
-echo CHtml::ajaxButton(
-	Yii::t('app','Send Test Email'),
-	array('launchCampaign','id'=>$model->id,'test'=>1),
-	array(
-		'beforeSend'=>"function(a,b) { $('#email-sending-icon').show(); }",
-		'update'=>'#test-email-result',
-		'complete'=>"function(response) { $('#email-sending-icon').hide(); $('#test-email-result').slideDown(); }",
-	),
-	array(
-		'id'=>'preview-email-button',
-		'class'=>'x2-button left',
-		'style'=>'cursor:pointer;'
-	)
-);
-?><?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'email-sending-icon','style'=>'display:none;')); ?></div>
-<div class="form no-border">
-<div id="test-email-result" class="form" style="display:none;">
+?>
+</div>
 
-</div>
-</div>
+<div style="margin-top: 23px;">
 <?php
-
 if(isset($contactList)) {
-
 	$this->widget('application.components.X2GridView', array(
 		'id'=>'contacts-grid',
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -131,23 +153,25 @@ if(isset($contactList)) {
 		'enableTags'=>true,
 	));
 }
+?>
+</div>
 
+<div>
+<?php
 $this->widget('InlineActionForm',
 	array(
 		'associationType'=>'Campaign',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'users'=>$users,
+		'users'=>User::getNames(),
 		'startHidden'=>false
 	)
 );
-?>
-
-<?php
 $this->widget('zii.widgets.CListView', array(
-	'dataProvider'=>$actionHistory,
+	'dataProvider'=>$this->getHistory($model),
 	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> '<h3>'.Yii::t('app','History').'</h3>{summary}{sorter}{items}{pager}',
 ));
 ?>
+</div>

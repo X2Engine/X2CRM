@@ -113,7 +113,28 @@ class Tags extends CActiveRecord
 			'itemName' => 'Item Name',
 		);
 	}
-
+	
+	public static function getTags($model,$id,$limit = 0) {
+	
+		if(!is_numeric($limit) || empty($limit))
+			$limit = null;
+	
+	
+		$tags = Yii::app()->db->createCommand()
+			->select('tag')
+			->from('x2_tags')
+			->where('type="Contacts" AND itemId=:id',array(':id'=>$id))
+			->order('id DESC')
+			->queryColumn();
+		
+		if($limit !== null && sizeof($tags) > $limit) {
+			$tags = array_slice($tags,0,$limit);
+			$tags[] = '...';
+		}
+			
+		return implode(' ',$tags);
+	}
+	
 	public static function getTagLinks($model,$id,$limit = 0) {
 	
 		if(!is_numeric($limit) || empty($limit))

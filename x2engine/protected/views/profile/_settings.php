@@ -41,42 +41,8 @@
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/profileSettings.js');
 
-Yii::app()->clientScript->registerScript('backgroundUploader',"function showAttach() {
-	e=document.getElementById('attachments');
-	if(e.style.display=='none')
-		e.style.display='block';
-	else
-		e.style.display='none';
-}
-var ar_ext = ['png', 'jpg','jpe','jpeg','gif','svg'];        // array with allowed extensions
-
-function checkName() {
-// - www.coursesweb.net
-	// get the file name and split it to separe the extension
-	var name = $('#backgroundImg').val();
-	var ar_name = name.split('.');
-
-	// check the file extension
-	var re = 0;
-	for(var i=0; i<ar_ext.length; i++) {
-		if(ar_ext[i] == ar_name[1].toLowerCase()) {
-			re = 1;
-			break;
-		}
-	}
-	// if re is 1, the extension is in the allowed list
-	if(re==1) {
-		// enable submit
-		$('#upload-button').removeAttr('disabled');
-	} else {
-		// delete the file name, disable Submit, Alert message
-		$('#backgroundImg').val('');
-		$('#upload-button').attr('disabled','disabled');
-		alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
-	}
-}",CClientScript::POS_HEAD);
-
 Yii::app()->clientScript->registerScript('backgroundSetDelete',"
+
 function setBackground(filename){
 	$.ajax({
 		url: '".CHtml::normalizeUrl(array('profile/setBackground'))."',
@@ -85,11 +51,10 @@ function setBackground(filename){
 		success: function(response) {
 			if(response=='success') {
 				if(filename=='') {
-					$('#bg').hide();
+					$('#header').css('background-image','none');
 				} else {
-					$('#bg').attr('src','".Yii::app()->getBaseUrl().'/uploads/'."'+filename);
-					$('#bg').show();
-					$(window).trigger('resize');
+					$('#header').css('background-image','url(".Yii::app()->getBaseUrl().'/uploads/'."'+filename+')');
+					// $(window).trigger('resize');
 				}
 			}
 		}
@@ -103,8 +68,8 @@ function deleteBackground(id,filename) {
 		success: function(response) {
 			if(response=='success') {
 				$('#background_'+id).hide();
-				if($('#bg').attr('src')=='".Yii::app()->getBaseUrl().'/uploads/'."'+filename)
-					$('#bg').hide();
+				if($('#header').css('background-image').indexOf(filename) > -1)		// if this is the current background,
+					$('#header').css('background-image','none');						// remove it from the page
 			}
 		}
 	});
@@ -163,11 +128,11 @@ $form=$this->beginWidget('CActiveForm', array(
 		<div class="row">
 			<?php echo $form->labelEx($model,'backgroundColor'); ?>
 			<?php echo $form->textField($model,'backgroundColor',array('id'=>'backgroundColor')); ?>
-		</div>
+		</div><?php /*
 		<div class="row">
 			<?php echo $form->labelEx($model,'menuBgColor'); ?>
 			<?php echo $form->textField($model,'menuBgColor',array('id'=>'menuBgColor')); ?>
-		</div>
+		</div>*/ ?>
 		<div class="row">
 			<?php echo $form->labelEx($model,'menuTextColor'); ?>
 			<?php echo $form->textField($model,'menuTextColor',array('id'=>'menuTextColor')); ?>
@@ -195,8 +160,8 @@ $form=$this->beginWidget('CActiveForm', array(
 		)); ?>
 	</div>
 	<div class="row">
-		<?php echo $form->checkBox($model,'enableBgFade',array('onchange'=>'js:highlightSave();')); ?> 
-		<?php echo $form->labelEx($model,'enableBgFade',array('style'=>'display:inline;')); ?>
+		<?php echo $form->checkBox($model,'enableFullWidth'); ?> 
+		<?php echo $form->labelEx($model,'enableFullWidth',array('style'=>'display:inline;')); ?>
 	</div>
 	<br>
 	<div class="row buttons">

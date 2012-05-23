@@ -59,7 +59,7 @@ class SiteController extends x2base {
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
-					'getNotes','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
+				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
 					'saveWidgetHeight', 'inlineEmail','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
 				'users'=>array('@'),
 			),
@@ -260,8 +260,20 @@ class SiteController extends x2base {
 				echo "1";
 			}
 		}
-	}
-	
+    }
+    public function actionAddSite(){
+        if((isset($_POST['url-title'])&&isset($_POST['url-url']))
+            &&($_POST['url-title']!=''&&$_POST['url-url']!='')){
+                $site = new URL;
+                $site->title = $_POST['url-title'];
+                $site->url = $_POST['url-url'];
+                $site->userid = Yii::app()->user->getId();
+                $site->timestamp = time();
+                if ($site->save()){
+                    echo "1";
+                }
+            }
+    }
 	public function actionGetNotes($url) {
 		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()),array(
 			'order'=>'timestamp DESC',
@@ -274,7 +286,21 @@ class SiteController extends x2base {
 			$res=Yii::t('app',"Feel free to enter some notes!");
 		}
 		echo $res;
-	}
+    }
+    public function actionGetURLs($url){
+        $content = URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
+            'order'=>'timestamp DESC',
+        ));
+        $res ="<table><tr><th>Title</th><th>Link</th></tr>";
+        if($content){
+            foreach($content as $entry){
+                $res .= "<tr><td>".$entry->title."</td><td><a href='".$entry->url."'>LINK</a></td></tr>";
+            }
+        }else {
+            $res .= "<tr><td>Example</td><td>LINK</td></tr>";
+        }
+        echo $res;
+    }
 	
 	public function actionDeleteMessage($id,$url){
 		$note=Social::model()->findByPk($id);
@@ -574,13 +600,18 @@ class SiteController extends x2base {
 			}else{
 				Yii::app()->session['alertUpdate']=false;
 			}
+			
 			if(empty($profile->startPage)) {
 				$this->redirect(array('site/whatsNew'));
 			} else {
 				$file = Yii::app()->file->set('protected/controllers/'.ucfirst($profile->startPage).'Controller.php');
-				if($file->exists)
-					$this->redirect(array(ucfirst($profile->startPage).'/index'));
-				else {
+				$module = Yii::app()->file->set('protected/modules/'.$profile->startPage.'/controllers/DefaultController.php');
+				if($file->exists || $module->exists){
+					if($file->exists)
+						$this->redirect(array($profile->startPage.'/index'));
+					if($module->exists)
+						$this->redirect(array($profile->startPage.'/default/index'));
+				} else {
 					$page=DocChild::model()->findByAttributes(array('title'=>ucfirst($profile->startPage)));
 					if(isset($page)) {
 						$id=$page->id;
