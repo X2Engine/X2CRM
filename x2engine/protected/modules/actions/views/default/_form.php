@@ -187,21 +187,23 @@ if($inlineForm){
 	</div>
 	<div class="cell" id="auto_complete">
 		<?php
-                $linkSource = $this->createUrl(CActiveRecord::model(ucfirst($actionModel->associationType))->getAutoCompleteSource());
-		echo $form->label($actionModel,'associationName');
-		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-			'name'=>'auto_select',
-			'value'=>$actionModel->associationName,
-			'source' => $linkSource,
-			'options'=>array(
-				'minLength'=>'2',
-				'select'=>'js:function( event, ui ) {
-					$("#'.CHtml::activeId($actionModel,'associationId').'").val(ui.item.id);
-					$(this).val(ui.item.value);
-					return false;
-				}',
-			),
-		));
+		if($actionModel->associationType!="none"){
+			$linkSource = $this->createUrl(CActiveRecord::model(ucfirst($actionModel->associationType))->getAutoCompleteSource());
+			echo $form->label($actionModel,'associationName');
+			$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+				'name'=>'auto_select',
+				'value'=>$actionModel->associationName,
+				'source' => $linkSource,
+				'options'=>array(
+					'minLength'=>'2',
+					'select'=>'js:function( event, ui ) {
+						$("#'.CHtml::activeId($actionModel,'associationId').'").val(ui.item.id);
+						$(this).val(ui.item.value);
+						return false;
+					}',
+				),
+			));
+		}
 		//echo $form->error($actionModel,'associationName');
 		?>
 	</div>

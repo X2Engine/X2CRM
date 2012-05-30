@@ -429,6 +429,11 @@ abstract class x2base extends CController {
 		return $text;
 	}
 
+		
+	protected static function compareChunks($a,$b) {
+		return $a[1] - $b[1];
+	}
+
 	// Replaces any URL in text with an html link (supports mailto links)
 	public static function convertUrls($text, $convertLineBreaks = true) {
 		/*$text = preg_replace(
@@ -484,12 +489,7 @@ abstract class x2base extends CController {
 		// Merge the arrays and sort to be in the original order
 		$all_text_chunks = array_merge($text_to_add_links, $text_to_leave);
 		
-		
-		function compareChunks($a,$b) {
-			return $a[1] - $b[1];
-		}
-
-		usort($all_text_chunks,'compareChunks');
+		usort($all_text_chunks,'x2base::compareChunks');
 
 		$new_text = "";
 		foreach ($all_text_chunks as $chunk) {
