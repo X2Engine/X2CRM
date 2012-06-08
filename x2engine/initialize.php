@@ -449,6 +449,21 @@ mysql_query('CREATE TABLE x2_widgets(
 
 	INDEX(id)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_widgets.'.mysql_error());
+mysql_query("INSERT INTO x2_widgets
+(   name,	posPROFILE,	posDASH, 	dispNAME)
+('MessageBox', 	  1,		1,		'Message Box').
+('QuickContact',  2,		2,		'QuickContact'),
+('GoogleMaps', 	  3,		3,		'Google Maps'),
+('TwitterFeed',	  4,		4,		'Twtter Feed'),
+('ChatBox',	  5,		5,		'Chat Box'),
+('NoteBox',	  6,		6,		'Note Box'),
+('ActionMenu',	  7,		7,		'Action Menu'),
+('TagCloud',	  8,		8,		'Tag Cloud'),
+('OnlineUsers',	  9,		9,		'Online Users'),
+('DocViewer'	  10,		10,		'Doc Viewer'),
+('TimeZone',	  11,		11,		'Time Zone'),
+('TopSites',	  12,		12,		'Top Sites'),
+)" or addSqlError("Unable to initialize modules ".mysql_error());
 mysql_query('CREATE TABLE x2_contacts(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(200),
