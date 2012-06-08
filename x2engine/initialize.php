@@ -276,7 +276,8 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_marketing,
 	x2_campaigns,
 	x2_calendars,
-	x2_modules
+	x2_modules,
+	x2_widgets
 ') or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // visibility check MySQL procedure
@@ -434,7 +435,20 @@ mysql_query('CREATE TABLE x2_users(
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_users.'.mysql_error());
+mysql_query('CREATE TABLE x2_widgets(
+	id					INT					UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(200)				NOT NULL,
+	showPROFILE				INT					DEFAULT 1,
+	adminALLOWS				INT					DEFAULT 1,
+	userID					INT,
+	posPROFILE				INT,
+	widgetSETTINGS				TEXT,
+	showDASH				INT					DEFAULT 1,
+	posDASH					INT,
+	dispNAME				VARCHAR(250)				DEFAULT NULL,
 
+	INDEX(id)
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_widgets.'.mysql_error());
 mysql_query('CREATE TABLE x2_contacts(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(200),
