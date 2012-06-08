@@ -44,13 +44,13 @@ $userData = '';
 
 if(isset($_POST['testDb'])) {
 	$con = @mysql_connect($_POST['dbHost'],$_POST['dbUser'],$_POST['dbPass']);
-	
+
 	if($con !== false) {
 		if($selectDb = @mysql_select_db($_POST['dbName'],$con))
 			echo 'DB_OK';
 		else
 			echo 'DB_COULD_NOT_SELECT';
-			
+
 		@mysql_close($con);
 	} else
 		echo 'DB_CONNECTION_FAILED';
@@ -71,8 +71,8 @@ if($silent) {
 	$user = $_POST['dbUser'];
 	$pass = $_POST['dbPass'];
 	$app = $_POST['app'];
-	
-	
+
+
 	$currency = $_POST['currency'];
 	$currency2 = strtoupper($_POST['currency2']);
 	if($currency == 'other')
@@ -80,17 +80,17 @@ if($silent) {
 	if(empty($currency))
 		$currency = 'USD';
 	$userData .= "";
-	
+
 	$lang = $_POST['lang'];
 	$timezone = $_POST['timezone'];
-	
+
 	$adminEmail = $_POST['adminEmail'];
 	$adminPassword = $_POST['adminPass'];
 	$adminPassword2 = $_POST['adminPass2'];
 	$dummyData = (isset($_POST['data']) && $_POST['data']==1)? 1 : 0;
-	
+
 	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&lang=$lang&adminEmail=$adminEmail&data=$dummyData&timezone=".urlencode($timezone);
-	
+
 }
 
 $webLeadUrl=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
@@ -102,7 +102,7 @@ file_put_contents('leadCapture.php',$contents);
 
 if(empty($lang))
 	$lang='en';
-	
+
 if(empty($timezone))
 	$timezone='UTC';
 
@@ -122,7 +122,7 @@ $errors = array();
 $app = mysql_escape_string($app);
 if(!empty($adminEmail) && !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i',$adminEmail))
 	addError('Please enter a valid email address.');
-	
+
 if($adminPassword == '')
 	addError('Admin password cannot be blank.');
 
@@ -149,7 +149,7 @@ if($gii=='1'){
 		// If removed, Gii defaults to localhost only. Edit carefully to taste.
 		'ipFilters'=>false,
 	)";
-		
+
 }else{
 	$gii=
 "array(
@@ -199,10 +199,10 @@ outputErrors();
 function outputErrors() {
 	global $errors;
 	global $userData;
-	
+
 	foreach($errors as &$error)
 		$error = urlencode($error);		// url encode errors
-	
+
 	if(count($errors)>0) {
 		$errorData = implode('&errors%5B%5D=',$errors);
 		$url = preg_replace('/initialize/','install',$_SERVER['REQUEST_URI']);
@@ -276,8 +276,7 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_marketing,
 	x2_campaigns,
 	x2_calendars,
-	x2_modules,
-	x2_widgets
+	x2_modules
 ') or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // visibility check MySQL procedure
@@ -435,35 +434,7 @@ mysql_query('CREATE TABLE x2_users(
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_users.'.mysql_error());
-mysql_query('CREATE TABLE x2_widgets(
-	id					INT					UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name					VARCHAR(200)				NOT NULL,
-	showPROFILE				INT					DEFAULT 1,
-	adminALLOWS				INT					DEFAULT 1,
-	userID					INT,
-	posPROFILE				INT,
-	widgetSETTINGS				TEXT,
-	showDASH				INT					DEFAULT 1,
-	posDASH					INT,
-	dispNAME				VARCHAR(250)				DEFAULT NULL,
 
-	INDEX(id)
-) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_widgets.'.mysql_error());
-mysql_query("INSERT INTO x2_widgets
-(   name,	posPROFILE,	posDASH, 	dispNAME)
-('MessageBox', 	  1,		1,		'Message Box').
-('QuickContact',  2,		2,		'QuickContact'),
-('GoogleMaps', 	  3,		3,		'Google Maps'),
-('TwitterFeed',	  4,		4,		'Twtter Feed'),
-('ChatBox',	  5,		5,		'Chat Box'),
-('NoteBox',	  6,		6,		'Note Box'),
-('ActionMenu',	  7,		7,		'Action Menu'),
-('TagCloud',	  8,		8,		'Tag Cloud'),
-('OnlineUsers',	  9,		9,		'Online Users'),
-('DocViewer'	  10,		10,		'Doc Viewer'),
-('TimeZone',	  11,		11,		'Time Zone'),
-('TopSites',	  12,		12,		'Top Sites'),
-)" or addSqlError("Unable to initialize modules ".mysql_error());
 mysql_query('CREATE TABLE x2_contacts(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(200),
@@ -1125,7 +1096,7 @@ mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defau
 ("Campaign","Form","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"359\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Campaign","View","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Status\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_launched\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_complete\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")'
 ) or addSqlError("Unable to create contacts layout.".mysql_error());
-	
+
 mysql_query('INSERT INTO x2_fields 
 (modelName,	fieldName,                              attributeLabel,                         modified,	custom,	type,                   required,               readOnly,	linkType,       searchable,     relevance) VALUES 
 ("Contacts",	"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,           0,              ""),
