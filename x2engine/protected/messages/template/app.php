@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,6 +86,7 @@ return array (
 
 // Footer
 'All Rights Reserved.'=>'',
+'Generated in {time} seconds.'=>'',
 
 // Widgets
 'My Actions'=>'',
@@ -98,6 +99,8 @@ return array (
 'Just Me'=>'',
 'All Users'=>'',
 'Doc Viewer'=>'',
+'Time Zone'=>'',
+'Top Sites'=>'',
 
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
@@ -115,6 +118,12 @@ return array (
 'Add {name}'=>'',
 
 'Enter Title'=>'',
+'Title'=>'',
+'Title:'=>'',
+'Link'=>'',
+'Link:'=>'',
+'Add Site'=>'',
+'Example'=>'',
 
 // Chat
 'Message Body'=>'',
@@ -168,6 +177,15 @@ return array (
 '"{X}" is not an allowed filetype.'=>'',
 'Loading'=>'',
 'Edit'=>'',
+'Due'=>'',
+'Help'=>'',
+'---'=>'',
+'You don\'t have any notifications.'=>'',
+'View all'=>'',
+'Close'=>'',
+'Delete'=>'',
+'Group?'=>'',
+'Checkbox'=>'',
 
 // Misc Actions
 'Submit'=>'',

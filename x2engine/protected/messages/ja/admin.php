@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'ユーティリティ',
-'Χ2Studio'=>'Χ2Studio',
+'X2Studio'=>'X2スタジオ',
 'Support & Documentation'=>'サポートとドキュメント',
 'Contact Us'=>'私達に連絡する',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'検索バーの横に表示するためにあなたのロゴをアップロードするには、下記のフォームを使用して、ここにファイルをアップロードしてください。',
 'Create Page'=>'ページを作成する',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'高性能な連絡先管理Webアプリケーション - X2Engine株式会社はX2Contacts後ろの会社です。 X2Engineは、組織のプロフェッショナルサポートとX2Contactsの訓練に提供することができます。私達に連絡するために下記のフォームに記入してください。',
+
+// Email Config
+'Email Server Configuration'=>'メールサーバの設定',
+'Ready to send email? We need some information about your mail server.'=>'メールを送る準備はできましたか？私達はあなたのメールサーバーに関するいくつかの情報を必要としています。',
+'Outbound Email Server'=>'アウトバウンド電子メールサーバー',
+'Hostname'=>'ホスト名',
+'Port'=>'ポート',
+'Security'=>'セキュリティー',
+'Authentication'=>'認証',
+'Username'=>'ユーザ名',
+'Password'=>'パスワード',
+'Sender Name'=>'送信者名',
+'Sender Email Address'=>'送信者の電子メールアドレス',
+'Batch Size'=>'バッチサイズ',
+'Interval (Minutes)'=>'間隔（分）',
+'Email Signatures'=>'電子メールの署名',
+'None'=>'なし',
+'User\'s Choice'=>'ユーザーの選択',
+'Default Signature'=>'デフォルトの署名',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'このテンプレートには、次の変数を使用することができます。 {first}, {last}, {phone}, {email}.',
 );

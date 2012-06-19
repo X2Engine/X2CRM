@@ -38,22 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_template".
- *
- * The followings are the available columns in table 'x2_template':
- * @property integer $id
- * @property string $assignedTo
- * @property string $name
- * @property string $description
- * @property string $fieldOne
- * @property string $fieldTwo
- * @property string $fieldThree
- * @property string $fieldFour
- * @property string $fieldFive
- * @property integer $createDate
- * @property integer $lastUpdated
- * @property string $updatedBy
  */
 class Templates extends X2Model {
 	/**
@@ -67,15 +55,14 @@ class Templates extends X2Model {
 	 */
 	public function tableName() { return 'x2_templates'; }
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/templates'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/templates/getItems'; }
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/templates'
+			)
+		);
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
@@ -133,14 +120,13 @@ class Templates extends X2Model {
 			}
 			
 		}  
-                return $rules;
+		return $rules;
 	}
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -150,15 +136,14 @@ class Templates extends X2Model {
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Templates'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
-                }
-                
-                return $arr;
+		$arr=array();
+		foreach($fields as $field){
+			$arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
+		}
+		
+		return $arr;
 
 	}
 
@@ -166,31 +151,30 @@ class Templates extends X2Model {
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
 
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Templates'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-                    
-                }
+		foreach($fields as $field){
+			$fieldName=$field->fieldName;
+			switch($field->type){
+				case 'boolean':
+					$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+					break;
+				case 'link':
+					$criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+					break;
+				case 'assignment':
+					$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+					break;
+				default:
+					$criteria->compare($field->fieldName,$this->$fieldName,true);
+			}
+			
+		}
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

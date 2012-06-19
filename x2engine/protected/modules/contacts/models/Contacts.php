@@ -38,6 +38,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_contacts".
  */
@@ -56,15 +58,19 @@ class Contacts extends X2Model {
 	 */
 	public function tableName() { return 'x2_contacts'; }
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/contacts'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/contacts/getItems'; }
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/contacts'
+			),
+			'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
+		);
+	}
 	
 	/**
 	 * @return array relational rules.
@@ -89,7 +95,7 @@ class Contacts extends X2Model {
 	}
 	
 	public static function getNames() {
-		$contactArray = Contacts::model()->findAll($condition='assignedTo=\''.Yii::app()->user->getName().'\' OR assignedTo=\'Anyone\'');
+		$contactArray = CActiveRecord::model('Contacts')->findAll($condition='assignedTo=\''.Yii::app()->user->getName().'\' OR assignedTo=\'Anyone\'');
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
 			$first = $user->firstName;
@@ -101,36 +107,11 @@ class Contacts extends X2Model {
 	}
 
 	/**
-	 *	Returns virtual 'name' attribute
-	 *	@return string Concatenated first and last name
-	 */
-	// public function getName() {
-		// return $this->firstName.' '.$this->lastName;
-	// }
-	/**
-	 *	Sets virtual 'name' attribute (does not change firstName or lastName fields)
-	 *	@param string $name
-	 */
-	// public function setName($name) {
-		// $this->name = trim($name);
-	// }
-	
-	public function behaviors() {
-		return array(
-			'ERememberFiltersBehavior' => array(
-				'class' => 'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),		/* optional line */
-				'defaultStickOnClear'=>false	/* optional line */
-			),
-		);
-	}
-
-	/**
 	 *	Returns all public contacts.
 	 *	@return $names An array of strings containing the names of contacts.
 	 */
 	public static function getAllNames() {
-		$contactArray = Contacts::model()->findAll($condition='visibility=1');
+		$contactArray = CActiveRecord::model('Contacts')->findAll($condition='visibility=1');
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
 			$first = $user->firstName;
@@ -162,7 +143,7 @@ class Contacts extends X2Model {
 		
 		$mailingList=array();
 		
-		$arr=Contacts::model()->findAll();
+		$arr=CActiveRecord::model('Contacts')->findAll();
 		foreach($arr as $contact){
 			$i=preg_match("/$criteria/i",$contact->backgroundInfo);
 			if($i>=1){
@@ -220,8 +201,6 @@ class Contacts extends X2Model {
 		$criteria->scopes=array('findAll'=>array($parameters));
 		
 		return $this->searchBase($criteria);
-	
-	
 	}
 
 	public function searchNewContacts() {
@@ -301,8 +280,10 @@ class Contacts extends X2Model {
 			$search->compare('priority',$this->priority,true);
 			$search->compare('leadSource',$this->leadSource,true);
 			$search->compare('rating',$this->rating);
+			$search->compare('doNotCall',$this->doNotCall);
+			$search->compare('doNotEmail',$this->doNotEmail);
 
-			return new CActiveDataProvider('Contacts',array(
+			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,
 				'sort'=>array(
 					'defaultOrder'=>'lastupdated DESC'	// true = ASC
@@ -314,7 +295,7 @@ class Contacts extends X2Model {
 			
 		} else {
 			//if list is not working, return all contacts
-			return new CActiveDataProvider('Contacts',array(
+			return new SmartDataProvider('Contacts',array(
 				'sort'=>array(
 					'defaultOrder'=>'createDate DESC',
 				),
@@ -327,29 +308,27 @@ class Contacts extends X2Model {
 	
 	
 	public function searchBase($criteria) {
-		
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
-                            $criteria->compare($field->fieldName,$this->$fieldName, true, 'OR');
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-                    
-                }
-                 
-                $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true, 'OR');
-
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+		foreach($fields as $field){
+			$fieldName=$field->fieldName;
+			switch($field->type){
+				case 'boolean':
+					$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+					break;
+				case 'link':
+					$criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
+					$criteria->compare($field->fieldName,$this->$fieldName, true, 'OR');
+					break;
+				case 'assignment':
+					$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+					break;
+				default:
+					$criteria->compare($field->fieldName,$this->$fieldName,true);
+			}
+			
+		}
+		 
+		$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true, 'OR');
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
@@ -361,13 +340,4 @@ class Contacts extends X2Model {
 			'criteria'=>$criteria,
 		));
 	}
-        
-       
-        
-        
-
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
 }

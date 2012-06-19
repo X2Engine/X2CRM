@@ -37,67 +37,47 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+
+Yii::import('application.components.X2LinkableBehavior');
+
 /**
  * This is the model class for table "x2_profile".
- *
- * The followings are the available columns in table 'x2_profile':
- * @property integer $id
- * @property string $fullName
- * @property string $username
- * @property string $officePhone
- * @property string $cellPhone
- * @property string $emailAddress
- * @property string $notes
- * @property integer $status
- * @property string $tagLine
- * @property integer $lastUpdated
- * @property string $updatedBy
- * @property string $avatar
- * @property integer $allowPost
- * @property string $language
- * @property string $timeZone
- * @property integer $resultsPerPage
- * @property string $widgets
- * @property string $widgetOrder
- * @property string $backgroundColor
- * @property string $menuBgColor
- * @property string $menuTextColor
- * @property string $backgroundImg
- * @property integer $pageOpacity
- * @property string $startPage
- * @property integer $showSocialMedia
- * @property integer $showDetailView
- * @property integer $showWorkflow
- * @property string $gridviewSettings
- * @property string $formSettings
- * @property string emailUseSignature
- * @property string emailSignature
- * @property integer enableFullWidth
  */
-class Profile extends CActiveRecord
-{
+class Profile extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Profile the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_profile';
+	}
+
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/profile',
+				'autoCompleteSource'=>null
+			),
+			'ERememberFiltersBehavior' => array(
+				'class' => 'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
+		);
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -123,12 +103,8 @@ class Profile extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
+	public function relations() {
+		return array();
 	}
 
 	/**
@@ -170,6 +146,7 @@ class Profile extends CActiveRecord
 			'emailUseSignature' => Yii::t('admin','Email Signature'),
 			'emailSignature' => Yii::t('admin','My Signature'),
 			'enableFullWidth'=>Yii::t('profile','Enable Full Width Layout'),
+			'googleId'=>Yii::t('profile','Google ID'),
 		);
 	}
 
@@ -177,8 +154,7 @@ class Profile extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -190,34 +166,223 @@ class Profile extends CActiveRecord
 		$criteria->compare('officePhone',$this->officePhone,true);
 		$criteria->compare('cellPhone',$this->cellPhone,true);
 		$criteria->compare('emailAddress',$this->emailAddress,true);
-		// $criteria->compare('notes',$this->notes,true);
 		$criteria->compare('status',$this->status);
-		// $criteria->compare('tagLine',$this->tagLine,true);
-		// $criteria->compare('lastUpdated',$this->lastUpdated);
-		// $criteria->compare('updatedBy',$this->updatedBy,true);
-		// $criteria->compare('avatar',$this->avatar,true);
-		// $criteria->compare('allowPost',$this->allowPost);
-		// $criteria->compare('language',$this->language,true);
-		// $criteria->compare('timeZone',$this->timeZone,true);
-		// $criteria->compare('resultsPerPage',$this->resultsPerPage);
-		// $criteria->compare('widgets',$this->widgets,true);
-		// $criteria->compare('widgetOrder',$this->widgetOrder,true);
-		// $criteria->compare('widgetSettings',$this->widgetSettings,true);
-		// $criteria->compare('backgroundColor',$this->backgroundColor,true);
-		// $criteria->compare('menuBgColor',$this->menuBgColor,true);
-		// $criteria->compare('menuTextColor',$this->menuTextColor,true);
-		// $criteria->compare('backgroundImg',$this->backgroundImg,true);
-		// $criteria->compare('pageOpacity',$this->pageOpacity);
-		// $criteria->compare('startPage',$this->startPage,true);
-		// $criteria->compare('showSocialMedia',$this->showSocialMedia);
-		// $criteria->compare('showDetailView',$this->showDetailView);
-		// $criteria->compare('showWorkflow',$this->showWorkflow);
 		
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
 	}
+
+	public static function setDetailView($value) {
+		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// set user's preference for contact detail view
+		$model->showDetailView = ($value == 1)? 1 : 0;
+		$model->save();
+	}
 	
+	public static function getDetailView() {
+		$model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact detail view
+		return $model->showDetailView;
+	}
+
+	// public static function getSocialMedia() {
+		// $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact social media info
+		// return $model->showSocialMedia;
+	// }
+	
+	public function getSignature($html = false) {
+		
+		$adminRule = Yii::app()->params->admin->emailUseSignature;
+		$userRule = $this->emailUseSignature;
+		
+		$userModel = CActiveRecord::model('User')->findByPk($this->id);
+		$signature = '';
+		
+		switch($adminRule) {
+			case 'admin': $signature = Yii::app()->params->admin->emailSignature; break;
+			case 'user':
+				switch($userRule) {
+					case 'user': $signature = $signature = $this->emailSignature; break;
+					case 'admin': Yii::app()->params->admin->emailSignature; break;
+					case 'group': $signature == ''; break;
+					default: $signature == '';
+				}
+				break;
+			case 'group': $signature == ''; break;
+			default: $signature == '';
+		}
+		
+		
+		$signature = preg_replace(
+			array(
+				'/\{first\}/',
+				'/\{last\}/',
+				'/\{phone\}/',
+				'/\{group\}/',
+				'/\{email\}/',
+			),
+			array(
+				$userModel->firstName,
+				$userModel->lastName,
+				$this->officePhone,
+				'',
+				$html? CHtml::mailto($this->emailAddress) : $this->emailAddress,
+			),
+			$signature
+		);
+		if($html)
+			$signature = x2base::convertLineBreaks($signature);
+			// $signature = '<span style="color:grey;">' . x2base::convertLineBreaks($signature) . '</span>';
+			
+		return $signature;
+	}
+	
+	public static function getResultsPerPage() {
+	
+		$resultsPerPage = Yii::app()->params->profile->resultsPerPage;
+		// $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preferred results per page
+		// $resultsPerPage = $model->resultsPerPage;
+		
+		return empty($resultsPerPage)? 15 : $resultsPerPage;
+	}
+	
+	// lookup user's settings for a gridview (visible columns, column widths)
+	public static function getGridviewSettings($viewName = null) {
+		$gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings,true);	// converts JSON string to assoc. array
+		if(isset($viewName)) {
+			$viewName = strtolower($viewName);
+			if(isset($gvSettings[$viewName]))
+				return $gvSettings[$viewName];
+			else
+				return null;
+		} else {
+			return $gvSettings;
+		}
+	}
+	// add/update settings for a specific gridview, or save all at once
+	public static function setGridviewSettings($gvSettings,$viewName = null) {
+		if(isset($viewName)) {
+			$fullGvSettings = ProfileChild::getGridviewSettings();
+			$fullGvSettings[strtolower($viewName)] = $gvSettings;
+			Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings);	// encode array in JSON
+		} else {
+			Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings);	// encode array in JSON
+		}
+		return Yii::app()->params->profile->save();
+	}
+	
+	// lookup user's settings for a gridview (visible columns, column widths)
+	public static function getFormSettings($formName = null) {
+		$formSettings = json_decode(Yii::app()->params->profile->formSettings,true);	// converts JSON string to assoc. array
+		if($formSettings == null)
+			$formSettings = array();
+		if(isset($formName)) {
+			$formName = strtolower($formName);
+			if(isset($formSettings[$formName]))
+				return $formSettings[$formName];
+			else
+				return array();
+		} else {
+			return $formSettings;
+		}
+	}
+	// add/update settings for a specific form, or save all at once
+	public static function setFormSettings($formSettings,$formName = null) {
+		if(isset($formName)) {
+			$fullFormSettings = ProfileChild::getFormSettings();
+			$fullFormSettings[strtolower($formName)] = $formSettings;
+			Yii::app()->params->profile->formSettings = json_encode($fullFormSettings);	// encode array in JSON
+		} else {
+			Yii::app()->params->profile->formSettings = json_encode($formSettings);	// encode array in JSON
+		}
+		return Yii::app()->params->profile->save();
+	}
+
+	
+	public static function getWidgets() {
+		
+		if(Yii::app()->user->isGuest)	// no widgets if the user isn't logged in
+			return array();
+		// $model = ProfileChild::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+		$model = Yii::app()->params->profile;
+		
+		$registeredWidgets = array_keys(Yii::app()->params->registeredWidgets);
+		
+		$widgetNames = ($model->widgetOrder=='')? array() : explode(":",$model->widgetOrder);
+		$visibility = ($model->widgets=='')? array() : explode(":",$model->widgets);
+		
+		$widgetList = array();
+		
+		$updateRecord = false;
+		
+		for($i=0;$i<count($widgetNames);$i++) {
+		
+			if(!in_array($widgetNames[$i],$registeredWidgets)) {	// check the main cfg file
+				unset($widgetNames[$i]);							// if widget isn't listed,
+				unset($visibility[$i]);								// remove it from database fields
+				$updateRecord = true;
+			} else {
+				$widgetList[$widgetNames[$i]] = array('id'=>'widget_'.$widgetNames[$i],'visibility'=>$visibility[$i]);
+			}
+		}
+
+		foreach($registeredWidgets as $class) {			// check list of widgets in main cfg file
+			if(!in_array($class,array_keys($widgetList))) {								// if they aren't in the list,
+				$widgetList[$class] = array('id'=>'widget_'.$class,'visibility'=>1);	// add them at the bottom
+				
+				$widgetNames[] = $class;	// add new widgets to widgetOrder array
+				$visibility[] = 1;			// and visibility array
+				
+				$updateRecord = true;
+			}
+		}
+
+		if($updateRecord) {
+			$model->widgetOrder = implode(':',$widgetNames);	// update database fields
+			$model->widgets = implode(':',$visibility);			// if there are new widgets
+			$model->save();
+		}
+		
+		return $widgetList;
+	}
+	
+	public static function getWidgetSettings() {
+		if(Yii::app()->user->isGuest)	// no widgets if the user isn't logged in
+			return array();
+				
+		if(Yii::app()->params->profile->widgetSettings == null) { // if widget settings haven't been set, give them default values
+			$widgetSettings = array(
+				'ChatBox'=>array(
+					'chatboxHeight'=>200,
+					'chatmessageHeight'=>50,
+				),
+				'NoteBox'=>array(
+					'noteboxHeight'=>200,
+					'notemessageHeight'=>50,
+				),
+				'DocViewer'=>array(
+					'docboxHeight'=>200,
+				),
+				'TopSites'=>array(
+					'topsitesHeight'=>200,
+					'urltitleHeight'=>10,
+				),
+			);
+			
+			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+			Yii::app()->params->profile->update();
+		}
+		
+		return json_decode(Yii::app()->params->profile->widgetSettings);
+	}
+	
+	public function getLink() {
+	
+		if($this->id == Yii::app()->user->id)
+			return CHtml::link(Yii::t('app','your feed'),array($this->baseRoute.'/'.$this->id));
+		else
+			return CHtml::link(Yii::t('app','{name}\'s feed',array('{name}'=>$this->fullName)),array($this->baseRoute.'/'.$this->id));
+	}
+
 	public function syncActionToGoogleCalendar($action) {
 		try { // catch google exceptions so the whole app doesn't crash if google has a problem syncing
 			$admin = Yii::app()->params->admin;		

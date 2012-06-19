@@ -41,7 +41,7 @@
 <div id="motd-box"><?php echo Yii::t('app',$content);?></div>
 <?php
 if(Yii::app()->user->getName()=='admin')
-	echo CHtml::link(Yii::t('app','Edit Message'),'#',array('onclick'=>"$('#motd-form').show(); $('#motd-link').hide();",'id'=>'motdLink'));
+	echo CHtml::link(Yii::t('app','Edit Message'),'#',array('onclick'=>"$('#motd-form').show(); $('#motd-link').hide(); return false;",'id'=>'motdLink'));
 ?>
 <div id="motd-form" style="display:none;">
 <?php
@@ -49,7 +49,7 @@ echo CHtml::beginForm();
 
 echo CHtml::textArea('message','',array('cols'=>16,'onclick'=>'clearText(this)'));
 echo CHtml::ajaxSubmitButton('Submit',
-	array('site/motd'),
+	array('/site/motd'),
 	array('update'=>'#motd-box'),
 	array('onclick'=>"$('#motd-form').hide(); $('#motd-link').show();", 'class'=>'x2-button')
 	);

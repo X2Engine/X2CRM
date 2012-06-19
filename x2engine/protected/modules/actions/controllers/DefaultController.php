@@ -167,7 +167,7 @@ class DefaultController extends x2base {
 			if($action->reminder=='Yes') {
 
 				if($action->associationId!=0) {
-					$contact=Contacts::model()->findByPk($action->associationId);
+					$contact=CActiveRecord::model('Contacts')->findByPk($action->associationId);
 					$name=$contact->firstName.' '.$contact->lastName;
 				} else
 					$name=Yii::t('actions','No one');
@@ -219,7 +219,7 @@ class DefaultController extends x2base {
 			$model->associationName=ucfirst($model->associationType);
 		}
 //		$this->render('test', array('model'=>$model));
-		if($model->type != 'event' && isset($_POST['submit']) && ($_POST['submit']=='0' || $_POST['submit']=='2')) {	// if user clicked "New Comment" rather than "New Action"
+		if($model->type != 'event' && isset($_POST['submit']) && ($_POST['submit']=='0' || $_POST['submit']=='2') && $model->calendarId == null) {	// if user clicked "New Comment" rather than "New Action"
 			$model->createDate = time();
 			$model->dueDate = time();
 			$model->completeDate = time();
@@ -237,6 +237,12 @@ class DefaultController extends x2base {
  		if(!is_numeric($model->assignedTo)) { // assigned to user
 			$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
 			$profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
+		} else { // Assigned to group
+			$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
+			foreach($groups as $group) {
+				$profile = ProfileChild::model()->findByPk($group['userId']);
+				$profile->syncActionToGoogleCalendar($model);
+			}
 		}
 		
 		if($api==0)
@@ -260,6 +266,7 @@ class DefaultController extends x2base {
 
 		if(isset($_POST['Actions'])) {
 //			$this->render('test', array('model'=>$_POST));
+
 			$temp=$model->attributes;
 			if(isset($_POST['inCalendar'])) { // create new calendar event
 				foreach(array_keys($model->attributes) as $field){
@@ -276,25 +283,8 @@ class DefaultController extends x2base {
 					}
 				}
 			}
-			if(is_numeric($model->assignedTo)) { // assigned to calendar instead of user?
-                            $calendar = X2Calendar::model()->findByPk($model->assignedTo);
-                            if(isset($calendar)){
-				$model->calendarId = $model->assignedTo;
-				$model->assignedTo = null;
-
-				
-				if($calendar->googleCalendar && $calendar->googleCalendarId) {
-					$model->dueDate = $this->parseDateTime($model->dueDate);
-					if($model->completeDate)
-						$model->completeDate = $this->parseDateTime($model->completeDate);
-					$calendar->createGoogleEvent($model); // action/event assigned to Google Calendar, no need to create Action since it's saved to google
-					$this->redirect(array('/calendar/index'));
-				}
-              }
-			}
 			
 			$this->create($model,$temp,'0');
-                        
 		}
 		if(isset($_GET['param'])) {
 			$pieces=explode(';',$_GET['param']);
@@ -319,110 +309,36 @@ class DefaultController extends x2base {
 		
 	}
 
-/* 	public function actionQuickCreate() {
-		$users = User::getNames();
-		$actionModel=new Actions;
-		$contactModel=new Contacts;
+	public function update($model, $oldAttributes, $api){
+		
+		$dueDate = strtotime($model->dueDate);
+		$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($actionModel);
+		$association = $this->getAssociation($model->associationType,$model->associationId);
 
-		if(isset($_POST['Actions']) && isset($_POST['Contacts'])) {
-                        $actionTemp=$actionModel->attributes;
-			foreach($actionModel->attributes as $field=>$value){
-                            if(isset($_POST['Actions'][$field])){
-                                $actionModel->$field=$_POST['Actions'][$field];
-                            }
-                        }
-			
-                        $contactTemp=$contactModel->attributes;
-                        // reset to blank if it's the default value
-			foreach($_POST['Contacts'] as $name => &$value) {
-				if($value == $contactModel->getAttributeLabel($name))
-					$value = '';
-			}
-			foreach($contactModel->attributes as $field=>$value){
-                            if(isset($_POST['Contacts'][$field])){
-                                $contactModel->$field=$_POST['Contacts'][$field];
-                            }
-                        }
-			
-			$actionModel->createDate=time();
-			$contactModel->createDate=time();
-			
-			$actionModel->visibility = $contactModel->visibility;
-			$actionModel->assignedTo = $contactModel->assignedTo;
-			$actionModel->priority = $contactModel->priority;
-			
-			
-                        
-                        $account = Accounts::model()->findByAttributes(array('name'=>$contactModel->company));
-                        if(isset($account))
-                                $contact->accountId = $account->id;
-                        else
-                                $contactModel->accountId = 0;
-			
-			$dueDate = strtotime($actionModel->dueDate);
-			$actionModel->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
-
-			if($_POST['submit']=='comment') {	// if user clicked "New Comment" rather than "New Action"
-				$actionModel->createDate = time();
-				$actionModel->dueDate = time();
-				$actionModel->completeDate = time();
-				$actionModel->complete='Yes';
-				$actionModel->visibility='1';
-				$actionModel->assignedTo=Yii::app()->user->getName();
-				$actionModel->completedBy=Yii::app()->user->getName();
-				$actionModel->type='note';
-			}
-                        $changes=$this->calculateChanges($contactTemp,$contactModel->attributes);
-			$contactModel=$this->updateChangelog($contactModel,'Create');
-			if($contactModel->save()) {
-
-				// $actionModel->dueDate=$actionModel->dueDate;
-				$actionModel->associationId = $contactModel->id;
-				$actionModel->associationType = 'contacts';
-				$actionModel->associationName = $contactModel->firstName.' '.$contactModel->lastName;
-                                $changes=$this->calculateChanges($actionTemp,$actionModel->attributes);
-				$actionModel=$this->updateChangelog($actionModel,'Create');
-				if($actionModel->save())
-					$this->redirect(array('contacts/view','id'=>$contactModel->id));
-				else
-					$contactModel->delete();
+		if($association != null) {
+				$model->associationName = $association->name;
+		} else {
+				$model->associationName = 'None';
+				$model->associationId = 0;
+		}
+		
+		if(!is_numeric($model->assignedTo)) { // assigned to user
+			$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+			$profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+		} else { // Assigned to group
+			$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
+			foreach($groups as $group) {
+				$profile = ProfileChild::model()->findByPk($group['userId']);
+				$profile->updateGoogleCalendarEvent($model);
 			}
 		}
-
-		$this->render('quickCreate',array(
-			'actionModel'=>$actionModel,
-			'contactModel'=>$contactModel,
-			'users'=>$users,
-		));
-	} */
-        
-        public function update($model, $oldAttributes, $api){
-            
-            $dueDate = strtotime($model->dueDate);
-            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
-
-            $association = $this->getAssociation($model->associationType,$model->associationId);
-
-            if($association != null) {
-                    $model->associationName = $association->name;
-            } else {
-                    $model->associationName = 'None';
-                    $model->associationId = 0;
-            }
-            
- 			if(!is_numeric($model->assignedTo)) { // assigned to user
-				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
-				$profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
-			}
-            
-            if($api==0)
-                parent::update($model,$oldAttributes,$api);
-            else
-                return parent::update($model,$oldAttributes,$api);
-        }
+		
+		if($api==0)
+			parent::update($model,$oldAttributes,$api);
+		else
+			return parent::update($model,$oldAttributes,$api);
+	}
 
 	/**
 	 * Updates a particular model.
@@ -439,10 +355,10 @@ class DefaultController extends x2base {
 		if(isset($_POST['Actions'])) {
 			$temp=$model->attributes;
 			foreach($model->attributes as $field=>$value){
-                            if(isset($_POST['Actions'][$field])){
-                                $model->$field=$_POST['Actions'][$field];
-                            }
-                        }
+				if(isset($_POST['Actions'][$field])){
+					$model->$field=$_POST['Actions'][$field];
+				}
+			}
 
 			
 			$this->update($model,$temp,'0');
@@ -467,13 +383,6 @@ class DefaultController extends x2base {
             $model->dueDate = $this->parseDateTime($model->dueDate);
 			if($model->completeDate)
 				$model->completeDate = $this->parseDateTime($model->completeDate);
-				
-			if(is_numeric($model->assignedTo)) { // assigned to calendar instead of user?
-				$model->calendarId = $model->assignedTo;
-				$model->assignedTo = null;
-			} else {
-				$model->calendarId = null;
-			}
 
 			$changes = $this->calculateChanges($temp, $model->attributes, $model);
 			$model = $this->updateChangelog($model,$changes);
@@ -481,6 +390,12 @@ class DefaultController extends x2base {
  			if(!is_numeric($model->assignedTo)) { // assigned to user
 				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
 				$profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+			} else { // Assigned to group
+				$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
+				foreach($groups as $group) {
+					$profile = ProfileChild::model()->findByPk($group['userId']);
+					$profile->updateGoogleCalendarEvent($model);
+				}
 			}
 			
 			$model->update();
@@ -493,13 +408,18 @@ class DefaultController extends x2base {
 	public function actionCompleteSelected() {
 		if(isset($_POST['Actions'])) {
 			$ids = $_POST['Actions'];
-			foreach($ids as $id) {
+			foreach($ids as &$id) {
 				$action = Actions::model()->findByPk($id);
-				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
+				$inGroup = false;
+				if(is_numeric($action->assignedTo)) { // we have an action assigned to a group? Then check if we are in the group
+					$inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
+				}
+				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || $inGroup || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
 					$action->complete = 'Yes';
 					$action->completedBy = Yii::app()->user->getName();
 					$action->completeDate = time();
-					$action->update();
+					if($action->update())
+						$this->completeNotification('admin',$action->id);
 				}
 			}
 		}
@@ -513,7 +433,11 @@ class DefaultController extends x2base {
 			$ids = $_POST['Actions'];
 			foreach($ids as $id) {
 				$action = Actions::model()->findByPk($id);
-				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
+				$inGroup = false;
+				if(is_numeric($action->assignedTo)) { // we have an action assigned to a group? Then check if we are in the group
+					$inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
+				}
+				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || $inGroup || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
 					$action->complete = 'No';
 					$action->completeDate = null;
 					$action->update();
@@ -542,16 +466,17 @@ class DefaultController extends x2base {
 			
 			$actionIds = $_POST['C_gvCheckbox'];
 			foreach($actionIds as $actionId) {
-			    $action = Actions::model()->findByPk($actionId);
-			    if(Yii::app()->user->getName()==$action->assignedTo || // make sure current user can edit this action
-			       $action->assignedTo=='Anyone' || 
-			       $action->assignedTo=="" || 
-			       Yii::app()->user->getName()=='admin') {
-			       
-			       $action->complete = $complete;
-			       $action->completedBy = Yii::app()->user->getName();
-			       $action->completeDate = time();
-			       $action->update();
+				$action = Actions::model()->findByPk($actionId);
+				if(Yii::app()->user->getName()==$action->assignedTo || // make sure current user can edit this action
+					$action->assignedTo=='Anyone' || 
+					$action->assignedTo=="" || 
+					Yii::app()->user->getName()=='admin') {
+				   
+					$action->complete = $complete;
+					$action->completedBy = Yii::app()->user->getName();
+					$action->completeDate = time();
+					if($action->update() && $action->complete == 'Yes')
+						$this->completeNotification('admin',$action->id);		// let the admin know
 			    }
 			}
 		}
@@ -573,12 +498,12 @@ class DefaultController extends x2base {
 				$this->redirect(array('view','id'=>$id));
 		}
 	}
-        
-        public function delete($id){
-            $model=$this->loadModel($id);
-            $this->cleanUpTags($model);
-            $model->delete();
-        }
+
+	public function delete($id){
+		$model=$this->loadModel($id);
+		$this->cleanUpTags($model);
+		$model->delete();
+	}
 
 	// Deletes a particular model
 	public function actionDelete($id) {
@@ -590,7 +515,13 @@ class DefaultController extends x2base {
  			if(!is_numeric($model->assignedTo)) { // assigned to user
 				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
 				$profile->deleteGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+			} else { // Assigned to group
+			$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
+			foreach($groups as $group) {
+				$profile = ProfileChild::model()->findByPk($group['userId']);
+				$profile->deleteGoogleCalendarEvent($model);
 			}
+		}
 			
 			$model->delete();
 		}
@@ -605,7 +536,13 @@ class DefaultController extends x2base {
 	
 	public function actionComplete($id) {
 		$model=$this->loadModel($id);
-		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || Yii::app()->user->getName()=='admin') {
+		
+		$inGroup = false;
+		if(is_numeric($model->assignedTo)) { // we have an action assigned to a group, check if we are in the group
+			$inGroup = Groups::inGroup(Yii::app()->user->id, $model->assignedTo);
+		}
+		
+		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || $inGroup || Yii::app()->user->getName()=='admin') {
 			
 			if(isset($_POST['note']))
 				$model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
@@ -613,22 +550,34 @@ class DefaultController extends x2base {
 			$model=$this->updateChangelog($model,'Completed');
 			$model->save();
 			Actions::completeAction($id);
-                        
-                        $notif=new Notifications;
-                        $notif->record="Actions:$model->id";
-                        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-                        $notif->text=$profile->fullName." completed an action.";
-                        $notif->user='admin';
-                        $notif->createDate=time();
-                        $notif->viewed=0;
-                        $notif->save();
+
+			// if(Yii::app()->user->getName() != $model->assignedTo && $model->assignedTo!='Anyone' && !empty($model->assignedTo) ) {
+				// $notif = new Notification;
+				// $notif->type = 'action_complete';
+				// $notif->modelType = 'Actions';
+				// $notif->modelId = $model->id;
+				// $notif->user = $model->assignedTo;
+				// $notif->createDate = time();
+				// $notif->save();
+			// }
+			if($model->assignedTo != 'admin')		// don't want to make 2 notifications now
+				$this->completeNotification('admin',$model->id);
+
+			// $notif = new Notifications;
+			// $notif->record="Actions:$model->id";
+			// $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+			// $notif->text=$profile->fullName." completed an action.";
+			// $notif->user='admin';
+			// $notif->createDate=time();
+			// $notif->viewed=0;
+			// $notif->save();
 
 			$createNew = isset($_GET['createNew']) || ((isset($_POST['submit']) && ($_POST['submit']=='completeNew')));
 			$redirect = isset($_GET['redirect']) || $createNew;
 			
 			if($redirect) {
 				if($model->associationType!='none' && !$createNew) {	// if the action has an association
-					$this->redirect(array($model->associationType.'/view','id'=>$model->associationId));	// go back to the association
+					$this->redirect(array("/".$model->associationType.'/view','id'=>$model->associationId));	// go back to the association
 				} else {	// no association
 					if($createNew)
 						$this->redirect(array('/actions/create'));		// go to blank 'create action' page
@@ -650,14 +599,14 @@ class DefaultController extends x2base {
 		$model->completeDate = null;
 		//$model->dueDate = date("Y-m-d",time()+(86400));
 		if($model->save()){
-		if(isset($_GET['redirect'])) {
-			if($model->associationType!='none')
-				$this->redirect(array($model->associationType.'/'.$model->associationId));
-			else
+			if(isset($_GET['redirect'])) {
+				if($model->associationType!='none')
+					$this->redirect(array($model->associationType.'/'.$model->associationId));
+				else
+					$this->redirect(array('/actions/default/view','id'=>$id));
+			} else {
 				$this->redirect(array('/actions/default/view','id'=>$id));
-		} else {
-			$this->redirect(array('/actions/default/view','id'=>$id));
-		}
+			}
 		}else{
 			print_r($model->getErrors());
 		}
@@ -795,6 +744,19 @@ class DefaultController extends x2base {
 		if(isset($_POST['ajax']) && $_POST['ajax']==='actions-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
+		}
+	}
+	
+	protected function completeNotification($user,$id) {
+		if($user != Yii::app()->user->getName() && $user != 'Anyone' && !empty($user)) {
+			$notif = new Notification;
+			$notif->type = 'action_complete';
+			$notif->modelType = 'Actions';
+			$notif->modelId = $id;
+			$notif->user = $user;
+			$notif->createdBy = Yii::app()->user->getName();
+			$notif->createDate = time();
+			$notif->save();
 		}
 	}
 }

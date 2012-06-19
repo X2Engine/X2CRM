@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'Utilità',
-'Χ2Studio'=>'Χ2Studio',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Supporto e Documentazione',
 'Contact Us'=>'Contattaci',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Per caricare il logo per la visualizzazione accanto alla barra di ricerca, si prega di caricare il file qui utilizzando il modulo sottostante.',
 'Create Page'=>'Crea pagina',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. è la società dietro X2Contacts - una potente applicazione per la gestione contatti web. X2Engine in grado di offrire al vostro sostegno organizzazione professionale e di formazione su X2Contacts. Si prega di compilare il modulo sottostante per contattarci.',
+
+// Email Config
+'Email Server Configuration'=>'Configurazione del server e-mail',
+'Ready to send email? We need some information about your mail server.'=>'Pronta per inviare e-mail? Abbiamo bisogno di alcune informazioni sul vostro server di posta.',
+'Outbound Email Server'=>'Email Server in uscita',
+'Hostname'=>'Hostname',
+'Port'=>'Porta',
+'Security'=>'Sicurezza',
+'Authentication'=>'Autenticazione',
+'Username'=>'Nome utente',
+'Password'=>'Password',
+'Sender Name'=>'Nome mittente',
+'Sender Email Address'=>'Indirizzo Email Sender',
+'Batch Size'=>'Batch Size',
+'Interval (Minutes)'=>'Intervallo (in minuti)',
+'Email Signatures'=>'Firme e-mail',
+'None'=>'Nessuno',
+'User\'s Choice'=>'La scelta per l\'utente',
+'Default Signature'=>'Firma di default',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'È possibile utilizzare le seguenti variabili in questo modello: {first}, {last}, {phone}, {email}.',
 );

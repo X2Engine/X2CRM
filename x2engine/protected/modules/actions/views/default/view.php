@@ -91,8 +91,8 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 		<b><?php echo Yii::t('actions','Completion Notes'); ?></b>
 		<textarea name="note" rows="4" ></textarea>
 <?php
-		//echo CHtml::link(Yii::t('actions','Complete'),array('actions/complete','id'=>$model->id),array('class'=>'x2-button'));
-		//echo CHtml::link(,array('actions/complete','id'=>$model->id,'createNew'=>1,'redirect'=>1),array('class'=>'x2-button'));
+		//echo CHtml::link(Yii::t('actions','Complete'),array('/actions/complete','id'=>$model->id),array('class'=>'x2-button'));
+		//echo CHtml::link(,array('/actions/complete','id'=>$model->id,'createNew'=>1,'redirect'=>1),array('class'=>'x2-button'));
 ?>	<div class="row buttons">
 		<button type="submit" name="submit" class="x2-button" value="complete"><?php echo Yii::t('actions','Complete'); ?></button>
 		<button type="submit" name="submit" class="x2-button" value="completeNew"><?php echo Yii::t('actions','Complete + New Action'); ?></button>

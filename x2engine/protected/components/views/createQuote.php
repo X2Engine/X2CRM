@@ -52,7 +52,7 @@ $(function() {
 	$('#new-quote').hide();
    	/*
 	$('#create-quote-button').click(function() {
-		". CHtml::ajax(array('update'=>'#history-list-wrapper', 'url'=>Yii::app()->createUrl('contacts/quickUpdateHistory', array('id'=>$contactId)))) ."
+		". CHtml::ajax(array('update'=>'#history-list-wrapper', 'url'=>Yii::app()->createUrl('/contacts/quickUpdateHistory', array('id'=>$contactId)))) ."
 	}); */
 });
 ", CClientScript::POS_END);
@@ -108,6 +108,8 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 					'mode'=>'date', //use "time","date" or "datetime" (default)
 					'options'=>array(
 						'dateFormat'=>$this->controller->formatDatePicker(),
+						'changeMonth'=>true,
+						'changeYear'=>true
 					), // jquery plugin options
 					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 					'htmlOptions' => array('id'=>'create-quote-expires'),

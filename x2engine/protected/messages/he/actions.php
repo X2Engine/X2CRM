@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,7 +43,7 @@ return array (
 'ID'=>'זהות',
 'Assigned To'=>'משויך אל',
 'Action Description'=>'תיאור של פעולה',
-'Description'=>'',
+'Description'=>'תאור',
 'Visibility'=>'הוא גלוי',
 'Association'=>'עמותה',
 'Association Type'=>'האגודה סוג',
@@ -66,6 +66,17 @@ return array (
 'No'=>'לא',
 'Yes'=>'כן',
 'Date Completed'=>'הושלמה ביום',
+'All Day'=>'כל היום',
+'Color'=>'צבע',
+'Start Date'=>'תאריך התחלה',
+'End Date'=>'תאריך סיום',
+
+// Colors
+'Blue'=>'כחול',
+'Green'=>'ירוק',
+'Red'=>'אדום',
+'Orange'=>'תפוז',
+'Black'=>'שחור',
 
 // Actions Nav
 'All Actions'=>'כל הפעולות',
@@ -75,6 +86,7 @@ return array (
 'Update Action'=>'עדכון פעילות',
 'Complete Action'=>'השלם פעולה',
 'Complete + New Action'=>'השלם ומוסיפים פעולה חדשה',
+'Complete and View Contact'=>'מלאו צפה קשר',
 'Uncomplete'=>'לעבד לא גמור',
 'Log A Call'=>'הקלטת שיחה',
 'New Action'=>'ליצירת פעולה חדשה',
@@ -89,7 +101,7 @@ return array (
 'View Action'=>'הצג את הפעולה',
 'Update Action:'=>'עדכן את הפעולה:',
 'Action'=>'פעולה',
-'Action:'=>'פעולה:',
+'Action: '=>'פעולה:',
 'Today\'s Actions'=>'היום של פעולות',
 'My Actions'=>'פעולות שלי',
 'All My Actions'=>'כל הפעולות שלי',
@@ -97,6 +109,7 @@ return array (
 'Delete Action'=>'מחק פעולה',
 'Share Action'=>'שיתוף פעולה',
 'Create'=>'ליצור',
+'New Event'=>'אירוע',
 
 
 // Misc
@@ -136,4 +149,5 @@ return array (
 'Associations'=>'עמותות',
 'Link to the action'=>'קישור לפעולה',
 'Link to the'=>'קישור',
-'Powered by'=>'מוגש על ידי:');
+'Powered by '=>'מוגש על ידי:',
+);

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,6 +45,7 @@ return array (
 'ID'=>'ID',
 'First Name'=>'名前',
 'Name'=>'名前',
+'Full Name'=>'フルネーム',
 'Last Name'=>'姓',
 'Title'=>'肩書',
 'Account'=>'アカウント',
@@ -93,6 +94,8 @@ return array (
 'Lead Status'=>'機会のステータス',
 'Lead Score'=>'機会スコア',
 'Deal Status'=>'取引の状況',
+'Do Not Call'=>'コールはありません',
+'Do Not Email'=>'メールしないでください',
 
 // Misc
 'Assigned to {name}'=>'{name} に割り当て',

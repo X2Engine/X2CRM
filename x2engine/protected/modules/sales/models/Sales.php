@@ -38,25 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_sales".
- *
- * The followings are the available columns in table 'x2_sales':
- * @property integer $id
- * @property string $name
- * @property string $accountName
- * @property integer $accountId
- * @property integer $quoteAmount
- * @property string $salesStage
- * @property string $expectedCloseDate
- * @property integer $probability
- * @property string $leadSource
- * @property string $description
- * @property string $assignedTo
- * @property integer $createDate
- * @property string $associatedContacts
- * @property integer $lastUpdated
- * @property string $updatedBy
  */
 class Sales extends X2Model {
 	/**
@@ -70,15 +55,19 @@ class Sales extends X2Model {
 	 */
 	public function tableName() { return 'x2_sales'; }
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/sales'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/sales/getItems'; }
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/sales'
+			),
+			'ERememberFiltersBehavior' => array(
+				'class' => 'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
+		);
+	}
 	
 	// public function attributeLabels() {
 		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Sales'));
@@ -194,7 +183,7 @@ class Sales extends X2Model {
 		
 		foreach($arr as $id){
 			if($id!='')
-				$data[]=Contacts::model()->findByPk($id);
+				$data[]=CActiveRecord::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
 		
@@ -202,16 +191,6 @@ class Sales extends X2Model {
 			$temp[$item->id]=$item->firstName.' '.$item->lastName;
 		}
 		return $temp;
-	}
-
-	public function behaviors() {
-		return array(
-			'ERememberFiltersBehavior' => array(
-				'class' => 'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),           /* optional line */
-				'defaultStickOnClear'=>false   /* optional line */
-			),
-		);
 	}
 
 	public function search() {

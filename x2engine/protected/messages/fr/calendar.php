@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,9 +43,17 @@ return array (
 'Calendars'=>'Calendriers',
 
 'User Calendars'=>'Calendriers des utilisateurs',
+'Group Calendars'=>'Calendriers de groupe',
 'Google Calendars'=>'Google Calendars',
 'Filter'=>'Filtrer',
 'My Calendar Permissions'=>'Mes permissions Calendrier',
+'User Calendar Permissions'=>'Autorisations calendrier de l\'utilisateur',
+'Google Event'=>'Google événement',
+
+'Completed'=>'Terminé',
+'Quotes'=>'Citations',
+'Email'=>'Email',
+'Attachment'=>'Attachement',
 
 'List'=>'Liste',
 'Delete'=>'Efacer',

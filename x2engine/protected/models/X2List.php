@@ -69,11 +69,16 @@ class X2List extends CActiveRecord {
 	public function tableName() {
 		return 'x2_lists';
 	}
-
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/contacts/list/'; }
+	
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/contacts/list',
+				'autoCompleteSource'=>'/contacts/getLists',
+			)
+		);
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
@@ -100,6 +105,7 @@ class X2List extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'listItems'=>array(self::HAS_MANY, 'X2ListItem', 'listId')
 		);
 	}
 
@@ -120,6 +126,17 @@ class X2List extends CActiveRecord {
 			'createDate' => Yii::t('contacts','Create Date'),
 			'lastUpdated' => Yii::t('contacts','Last Updated'),
 		);
+	}
+	
+	public function getDefaultRoute() {
+		return '/contacts/list';
+	}
+
+	public function createLink() {
+		if(isset($this->id))
+			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
+		else
+			return $this->name;
 	}
 
 	/**
@@ -165,13 +182,6 @@ class X2List extends CActiveRecord {
 		}
 		return $this->_itemAttributeLabels;
 	}
-	/**
-	 * Returns a CDbCommand to retrieve all models in the list
-	 */
-	public function dbCommand() {
-		$tableSchema = CActiveRecord::model($this->modelName)->getTableSchema();
-		return $this->getCommandBuilder()->createFindCommand($tableSchema, $this->dbCriteria());
-	}
 
 	/**
 	 * Returns a CDbCriteria to retrieve all models in the list
@@ -180,7 +190,7 @@ class X2List extends CActiveRecord {
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
 			$search = new CDbCriteria(array());
-			$criteria = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
+			$criteria = CActiveRecord::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
 			foreach ($criteria as $criterion) {
 				//for each field in a model, make sure the criterion is in the same format
 				foreach (CActiveRecord::model($this->modelName)->fields as $field) {
@@ -243,6 +253,72 @@ class X2List extends CActiveRecord {
 			));
 		}
 		return $search;
+	}
+
+	/**
+	 * Returns a CDbCommand to retrieve all models in the list
+	 */
+	public function dbCommand() {
+		$tableSchema = CActiveRecord::model($this->modelName)->getTableSchema();
+		return $this->getCommandBuilder()->createFindCommand($tableSchema, $this->dbCriteria());
+	}
+
+	/**
+	 * Returns a data provider for all the models in the list
+	 */
+	public function dataProvider($pageSize=null, $sort=null) {
+		if (!isset($sort)) $sort = array();
+		return new CActiveDataProvider($this->modelName, array(
+			'criteria' => $this->dbCriteria(),
+			'pagination'=>array(
+				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+			),
+			'sort' => $sort
+		));
+	}
+
+	/**
+	 * Returns an array data provider for all models in the list,
+	 * including the list_item columns
+	 */
+	public function statusDataProvider($pageSize=null, $sort=null) {
+		$tbl = CActiveRecord::model($this->modelName)->tableName();
+		$lstTbl = X2ListItem::model()->tableName();
+		if ($this->type == 'static' || $this->type == 'campaign') {
+			$count = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $lstTbl .' WHERE listId = ' . $this->id)->queryScalar();
+			$sql = 'SELECT * FROM ' . $tbl . ' as m, '. $lstTbl .' as l WHERE m.id = l.contactId AND l.listId = ' . $this->id;
+			return new CSqlDataProvider($sql, array(
+				'totalItemCount'=>$count,
+				'pagination'=>array(
+					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+				),
+				'sort' => isset($sort) ? $sort : array()
+			));
+		} else if ($this->type == 'dynamic') {
+			$data = $this->dbCommand()->queryAll();
+			return new CArrayDataProvider($data, array(
+				'pagination'=>array(
+					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+				),
+				'sort' => isset($sort) ? $sort : array()
+			));
+		}
+	}
+
+	/**
+	 * Returns the count of items in the list that have the specified status
+	 * (i.e. sent, opened, clicked, unsubscribed)
+	 */
+	public function statusCount($type) {
+		$whitelist = array('sent', 'opened', 'clicked', 'unsubscribed');
+		if (!in_array($type, $whitelist)) {
+			return 0;
+		}
+		
+		$lstTbl = X2ListItem::model()->tableName();
+		$count = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $lstTbl .' WHERE listId = :listid AND '. $type .' > 0')
+				->queryScalar(array('listid'=>$this->id));
+		return $count;
 	}
 
 	/**

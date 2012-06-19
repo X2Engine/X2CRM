@@ -167,6 +167,7 @@ ul.column-selector input {
 	font-size:11px;
 	font-weight:bold;
 	text-decoration:none;
+	cursor:default;
 	-moz-box-shadow: inset 0 1px 0 0 #fff;
 	-webkit-box-shadow: inset 0 1px 0 0 #fff;
 	box-shadow: inset 0 1px 0 0 #fff;
@@ -202,6 +203,11 @@ ul.column-selector input {
 }
 
 .grid-view table.items tr.odd {
+}
+
+.grid-view table.items tr.unviewed td {
+	background:#eef0ff;
+	font-weight:bold;
 }
 
 .grid-view table.items tr.selected {

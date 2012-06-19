@@ -48,7 +48,7 @@ class ProfileController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground'),
+				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -161,14 +161,14 @@ class ProfileController extends x2base {
                     $accounts=Accounts::getNames();  
                     
                     if(isset($_POST['ProfileChild'])) {
+							
                             $temp=$model->attributes;
                             foreach($_POST['ProfileChild'] as $name => $value) {
                                     if($value == $model->getAttributeLabel($name)){
                                             $_POST['ProfileChild'][$name] = '';
                                     }
+									$model->$name=$value;
                             }
-                            $model->attributes=$_POST['ProfileChild'];
-
                             if($model->save()){
                                 $this->redirect(array('view','id'=>$model->id));
                             }
@@ -181,6 +181,32 @@ class ProfileController extends x2base {
                     ));
 		} else {
 			$this->redirect('view/'.$id);
+		}
+	}
+	
+	public function actionChangePassword($id){
+		if($id==Yii::app()->user->getId()){
+			$user=UserChild::model()->findByPk($id);
+			if(isset($_POST['oldPassword']) && isset($_POST['newPassword']) && isset($_POST['newPassword2'])){
+			
+				$oldPass=$_POST['oldPassword'];
+				$newPass=$_POST['newPassword'];
+				$newPass2=$_POST['newPassword2'];
+				if((crypt($oldPass,'$5$rounds=32678$'.$user->password) == '$5$rounds=32678$'.$user->password) || md5($oldPass)==$user->password){
+					if($newPass==$newPass2){
+						$user->password=md5($newPass);
+						$user->save();
+						
+						$this->redirect($this->createUrl('profile/'.$id));
+					}
+				}else{
+					Yii::app()->clientScript->registerScript('alertPassWrong',"alert('Old password is incorrect.');");
+				}
+			}
+			
+			$this->render('changePassword',array(
+				'model'=>$user,
+			));
 		}
 	}
 
@@ -252,33 +278,46 @@ class ProfileController extends x2base {
 		return $name;
 	}
 	
-	public function actionAddPost($id,$redirect){
-		$soc = new Social;
-		$user = $this->loadModel($id);
+	public function actionAddPost($id,$redirect) {
+		$post = new Social;
+		// $user = $this->loadModel($id);
 		if(isset($_POST['Social']) && $_POST['Social']['data']!=Yii::t('app','Enter text here...')){
-			$soc->data = $_POST['Social']['data'];
+			$post->data = $_POST['Social']['data'];
 			if(isset($_POST['Social']['associationId']))
-				$soc->associationId = $_POST['Social']['associationId'];
+				$post->associationId = $_POST['Social']['associationId'];
 			//$soc->attributes = $_POST['Social'];
 			//die(var_dump($_POST['Social']));
-			$soc->user = Yii::app()->user->getName();
-			$soc->type = 'feed';
-			$soc->lastUpdated = time();
-			$soc->timestamp = time();
-			if(!isset($soc->associationId) || $soc->associationId==0)
-				$soc->associationId=$id;
-			if($soc->save()){
-                            if($soc->associationId!=Yii::app()->user->getId()){
-                                $notif=new Notifications;
-                                $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$soc->user));
-                                $notif->text="$prof->fullName posted on your profile.";
-                                $notif->record="profile:$prof->id";
-                                $notif->viewed=0;
-                                $notif->createDate=time();
-                                $subject=CActiveRecord::model('ProfileChild')->findByPk($id);
-                                $notif->user=$subject->username;
-                                $notif->save();
-                            }
+			$post->user = Yii::app()->user->getName();
+			$post->type = 'feed';
+			$post->lastUpdated = time();
+			$post->timestamp = time();
+			if(!isset($post->associationId) || $post->associationId==0)
+				$post->associationId=$id;
+			if($post->save()){
+				if($post->associationId != Yii::app()->user->getId()) {
+				
+					$notif = new Notification;
+					
+					$notif->type = 'social_post';
+					$notif->createdBy = $post->user;
+					$notif->modelType = 'Profile';
+					$notif->modelId = $post->associationId;
+
+					$notif->user = Yii::app()->db->createCommand()
+						->select('username')
+						->from('x2_users')
+						->where('id=:id',array(':id'=>$post->associationId))
+						->queryScalar();
+					
+					// $prof = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
+					// $notif->text = "$prof->fullName posted on your profile.";
+					// $notif->record = "profile:$prof->id";
+					// $notif->viewed = 0;
+					$notif->createDate = time();
+					// $subject=CActiveRecord::model('ProfileChild')->findByPk($id);
+					// $notif->user = $subject->username;
+					$notif->save();
+				}
 			}
 			
 		}
@@ -288,48 +327,97 @@ class ProfileController extends x2base {
 			$this->redirect(array('index'));
 	}
 	
-	public function actionAddComment(){
-		$soc=new Social;
-			if(isset($_GET['comment'])){
-				$soc->data=$_GET['comment'];
-				$id=$_GET['id'];
-				$model=Social::model()->findByPk($id);
-				$soc->user=Yii::app()->user->getName();
-				$soc->type='comment';
-				$soc->timestamp=time();
-				$soc->associationId=$id;
-				$model->lastUpdated=time();
-				if($soc->save() && $model->save()){
-                                    $notif=new Notifications;
-                                    $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$soc->user));
-                                    $notif->text="$prof->fullName added a comment to a post.";
-                                    $notif->record="profile:$model->associationId";
-                                    $notif->viewed=0;
-                                    $notif->createDate=time();
-                                    $subject=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->user));
-                                    $notif->user=$subject->username;
-                                    if($notif->user!=Yii::app()->user->getName())
-                                        $notif->save();
-                                    
-                                    $notif=new Notifications;
-                                    $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$soc->user));
-                                    $subject=CActiveRecord::model('ProfileChild')->findByPk($model->associationId);
-                                    $notif->text="$prof->fullName added a comment to a post.";
-                                    $notif->record="profile:$model->associationId";
-                                    $notif->viewed=0;
-                                    $notif->createDate=time();
-                                    $notif->user=$subject->username;
-                                    if($notif->user!=Yii::app()->user->getName())
-                                        $notif->save();
-				}
+	/** 
+	 * Posts a comment on some post
+	 * @param $comment string the text you're posting
+	 * @param $id integer the id of the post you're commenting on
+	 */
+	public function actionAddComment($comment,$id){
+		
+		// if(isset($_GET['comment'],$_GET['id'])) {
+
+		$postModel = Social::model()->findByPk($id);
+		
+		if($postModel === null)
+			throw new CHttpException(404,Yii::t('app','The requested post does not exist.'));
+
+		$commentModel = new Social;
+		$commentModel->data = $comment;
+		$commentModel->user = Yii::app()->user->name;
+		$commentModel->type = 'comment';
+		$commentModel->associationId = $postModel->id;
+		$commentModel->timestamp = time();
+		
+		if($commentModel->save()) {
+		
+			$postModel->lastUpdated = time();
+			$postModel->save();
+			
+			$profileUser = Yii::app()->db->createCommand()
+					->select('username')
+					->from('x2_users')
+					->where('id=:id',array(':id'=>$postModel->associationId))
+					->queryScalar();
+			
+			
+			// notify the owner of the feed containing the post you commented on (unless that person is you)
+			if($postModel->associationId != Yii::app()->user->getId()) {
+				$postNotif = new Notification;
+				$postNotif->type = 'social_comment';
+				$postNotif->createdBy = $commentModel->user;
+				$postNotif->modelType = 'Profile';
+				$postNotif->modelId = $postModel->associationId;
+
+				// look up the username of the owner of the feed
+				$postNotif->user = $profileUser;
+
+				$postNotif->createDate = time();
+				$postNotif->save();
 			}
-			if(isset($_GET['redirect'])) {
-				if($_GET['redirect']=="view")
-					$this->redirect(array('view','id'=>$model->associationId));
-				if($_GET['redirect']=="index")
-					$this->redirect(array('index'));
-			} else
+			// now notify the person whose post you commented on (unless they're the same person as the first notification)
+			if($profileUser != $postModel->user && $postModel->user != Yii::app()->user->name) {
+				$commentNotif = new Notification;
+				$commentNotif->type = 'social_comment';
+				$commentNotif->createdBy = $commentModel->user;
+				$commentNotif->modelType = 'Profile';
+				$commentNotif->modelId = $postModel->associationId;
+
+				$commentNotif->user = $postModel->user;
+
+				$commentNotif->createDate = time();
+				$commentNotif->save();
+			}
+
+			// $notif=new Notifications;
+			// $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
+			// $notif->text="$prof->fullName added a comment to a post.";
+			// $notif->record="profile:$model->associationId";
+			// $notif->viewed=0;
+			// $notif->createDate=time();
+			// $subject=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
+			// $notif->user=$subject->username;
+			// if($notif->user!=Yii::app()->user->getName())
+				// $notif->save();
+			
+			// $notif=new Notifications;
+			// $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
+			// $subject=CActiveRecord::model('ProfileChild')->findByPk($post->associationId);
+			// $notif->text="$prof->fullName added a comment to a post.";
+			// $notif->record="profile:$model->associationId";
+			// $notif->viewed=0;
+			// $notif->createDate=time();
+			// $notif->user=$subject->username;
+			// if($notif->user!=Yii::app()->user->getName())
+				// $notif->save();
+		}
+		// }
+		if(isset($_GET['redirect'])) {
+			if($_GET['redirect']=="view")
+				$this->redirect(array('view','id'=>$postModel->associationId));
+			if($_GET['redirect']=="index")
 				$this->redirect(array('index'));
+		} else
+			$this->redirect(array('index'));
 	}
 
 	/**

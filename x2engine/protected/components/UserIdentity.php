@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,10 +48,14 @@ class UserIdentity extends CUserIdentity {
 	private $_id;
 	private $_name;
 
-	public function authenticate() {
+	public function authenticate($google=false) {
 		$user = CActiveRecord::model('User')->findByAttributes(array('username' => $this->username));
 		if ($user === null || $user->status < 1) {				// username not found, or is disabled
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
+		} elseif($google){
+			$this->errorCode = self::ERROR_NONE;
+			$this->_id = $user->id;
+			return !$this->errorCode;
 		} else {
 			$isMD5 = (strlen($user->password) == 32);
 			if($isMD5)

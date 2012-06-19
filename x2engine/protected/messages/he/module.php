@@ -64,6 +64,10 @@ return array (
 'Create {X}'=>'צור {X}',
 'Update {X}'=>'עדכן {X}',
 'Delete {X}'=>'מחק {X}',
+'View'=>'צפה',
+'Create'=>'צור',
+'Update'=>'עדכן',
+'Delete'=>'מחק',
 
 // Page Titles
 'Create New Module'=>'יצירת מודול חדש',
@@ -77,5 +81,6 @@ return array (
 // Misc
 'Please fill out the fields below to create a new module.'=>'נא למלא את השדות שלהלן כדי ליצור מודול חדש.',
 'Enter field name here'=>'הזן את שם השדה כאן',
+
 
 );

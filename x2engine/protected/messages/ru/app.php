@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,6 +86,7 @@ return array (
 
 // Footer
 'All Rights Reserved.'=>'Все права защищены.',
+'Generated in {time} seconds.'=>'Сгенерировано за {time} секунд',
 
 // Widgets
 'My Actions'=>'Мои действия',
@@ -98,6 +99,8 @@ return array (
 'Just Me'=>'Только Я',
 'All Users'=>'Все Пользователи',
 'Doc Viewer'=>'Просмотр документов',
+'Time Zone'=>'часовой пояс',
+'Top Sites'=>'Лучшие сайты',
 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
@@ -115,6 +118,12 @@ return array (
 'Add {name}'=>'Добавьте {name}',
 
 'Enter Title'=>'Введите название',
+'Title'=>'название',
+'Title:'=>'Название:',
+'Link'=>'ссылка',
+'Link:'=>'Ссылка:',
+'Add Site'=>'Добавить сайт',
+'Example'=>'пример',
 
 // Chat
 'Message Body'=>'Тело сообщения',
@@ -168,6 +177,15 @@ return array (
 '"{X}" is not an allowed filetype.'=>'"{X}" не позволил типов файлов.',
 'Loading'=>'загрузка',
 'Edit'=>'редактировать',
+'Due'=>'Благодаря',
+'Help'=>'Помогите',
+'---'=>'---',
+'You don\'t have any notifications.'=>'У вас нет уведомлений.',
+'View all'=>'Просмотреть все',
+'Close'=>'закрывать',
+'Delete'=>'удалять',
+'Group?'=>'Группа?',
+'Checkbox'=>'флажок',
 
 // Misc Actions
 'Submit'=>'представлять',

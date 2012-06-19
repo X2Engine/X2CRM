@@ -38,12 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_groups".
- *
- * The followings are the available columns in table 'x2_groups':
- * @property integer $id
- * @property string $name
  */
 class Groups extends X2Model {
 	/**
@@ -57,15 +55,14 @@ class Groups extends X2Model {
 	 */
 	public function tableName() { return 'x2_groups'; }
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/groups'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/groups/getItems'; }
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/groups'
+			)
+		);
+	}
 	
 	/**
 	 * @return array validation rules for model attributes.
@@ -84,7 +81,7 @@ class Groups extends X2Model {
 	
 	public static function getNames() {
 
-		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_users')->order('name ASC')->queryAll(false);
+		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_groups')->order('name ASC')->queryAll(false);
 		foreach($data as $row)
 			$groupNames[$row[0]] = $row[1];
 		
@@ -143,5 +140,13 @@ class Groups extends X2Model {
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	/* inGroup
+	 *
+	 * Find out if a user belongs to a group
+	 */
+	public static function inGroup($user_id, $group_id) {
+		return GroupToUser::model()->exists("userId=$user_id AND groupId=$group_id");
 	}
 }

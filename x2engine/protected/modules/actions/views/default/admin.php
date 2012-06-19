@@ -144,6 +144,12 @@ $this->widget('application.components.X2GridView', array(
 			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : CHtml::encode(trimText($data->actionDescription)),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
+		'associationId'=>array(
+			'name'=>'associationId',
+			'header'=>Yii::t('actions','Association Name'),
+			'value'=>'empty($data->associationId) ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/default/view","id"=>$data->associationId))',
+			'type'=>'raw',
+		),
 	),
 	'enableControls'=>true,
 ));

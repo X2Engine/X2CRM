@@ -58,6 +58,8 @@ class InlineEmailForm extends CWidget {
 			$this->model->message = empty($signature)? '' : '<br><br><!--BeginSig--><font face="Arial" size="2">'.$signature.'</font><!--EndSig-->';
 		}
 		
+		// die(var_dump($this->model->attributes));
+		
 		if(isset($_POST['InlineEmail'])) {
 			$this->model->attributes = $_POST['InlineEmail'];
 			$this->startHidden = false;

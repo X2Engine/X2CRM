@@ -93,7 +93,7 @@ if(Yii::app()->controller->id=='contacts' || (!is_null(Yii::app()->controller->m
 	&& $viewId != null							// must have an actual ID value
 	&& !in_array($viewId,$contactIdList)) {		// must not already be in Top Contacts
 
-	$currentRecord = Contacts::model()->findByPk($viewId);
+	$currentRecord = CActiveRecord::model('Contacts')->findByPk($viewId);
 
 	echo '<li>';
 	echo CHtml::link(

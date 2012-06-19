@@ -99,10 +99,10 @@ class LoginForm extends CFormModel {
 	 * Logs in the user using the given username and password in the model.
 	 * @return boolean whether login is successful
 	 */
-	public function login() {
+	public function login($google=false) {
 		if($this->_identity === null) {
 			$this->_identity = new UserIdentity($this->username,$this->password);
-			$this->_identity->authenticate();
+			$this->_identity->authenticate($google);
 		}
 		if($this->_identity->errorCode === UserIdentity::ERROR_NONE) {
 			$duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days

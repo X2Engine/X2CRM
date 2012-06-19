@@ -94,7 +94,7 @@ class DefaultController extends x2base {
                                         }else{
                                             $names=explode(" ",$arr);
                                             if(count($names)>1) 
-                                                $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                                $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -175,7 +175,7 @@ class DefaultController extends x2base {
                                         }else{
                                             $names=explode(" ",$arr);
                                             if(count($names)>1) 
-                                                $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                                $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;

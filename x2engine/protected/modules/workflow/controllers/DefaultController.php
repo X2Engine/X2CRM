@@ -114,7 +114,8 @@ class DefaultController extends x2base {
 	
 	
 	
-		$workflowModel=new Workflow;
+		$workflowModel = new Workflow;
+		$workflowModel->lastUpdated = time();
 
 		$stages = array();
 		
@@ -188,6 +189,7 @@ class DefaultController extends x2base {
 			}
 
 			$workflowModel->attributes = $_POST['Workflow'];
+			$workflowModel->lastUpdated = time();
 			
 			if($validStages && $workflowModel->validate()) {
 			

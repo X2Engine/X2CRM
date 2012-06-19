@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,17 @@ return array (
 'No'=>'No',
 'Yes'=>'SÃ¬',
 'Date Completed'=>'Data Completamento',
+'All Day'=>'Tutto il giorno',
+'Color'=>'Colore',
+'Start Date'=>'Data di inizio',
+'End Date'=>'Data di fine',
+
+// Colors
+'Blue'=>'Blu',
+'Green'=>'Verde',
+'Red'=>'Rosso',
+'Orange'=>'Arancione',
+'Black'=>'Nero',
 
 // Actions Nav
 'All Actions'=>'Tutte le azioni',
@@ -75,6 +86,7 @@ return array (
 'Update Action'=>'Aggiornamento azione',
 'Complete Action'=>'Azione completa',
 'Complete + New Action'=>'Completa + Nuova azione',
+'Complete and View Contact'=>'Completare e Vista Contact',
 'Uncomplete'=>'Fai incompleta',
 'Log A Call'=>'A Call Log',
 'New Action'=>'Nuova Azione',
@@ -89,7 +101,7 @@ return array (
 'View Action'=>'Visualizza azione',
 'Update Action:'=>'Aggiornamento Azione:',
 'Action'=>'Azione',
-'Action:'=>'Azione:',
+'Action: '=>'Azione:',
 'Today\'s Actions'=>'Le azioni di oggi',
 'My Actions'=>'Le mie azioni',
 'All My Actions'=>'Tutte le mie azioni',
@@ -97,6 +109,7 @@ return array (
 'Delete Action'=>'Elimina azione',
 'Share Action'=>'Condividi azione',
 'Create'=>'Creare',
+'New Event'=>'Un nuovo evento',
 
 
 // Misc

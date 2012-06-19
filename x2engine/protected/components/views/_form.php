@@ -229,6 +229,8 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'mode'=>'date', //use "time","date" or "datetime" (default)
 											'options'=>array(
 												'dateFormat'=>$this->formatDatePicker(),
+												'changeMonth'=>true,
+												'changeYear'=>true,
 
 											), // jquery plugin options
 											'htmlOptions'=>array(
@@ -243,6 +245,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 
 										echo $form->dropDownList($model,$field->fieldName,$dropdowns, array(
 											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+											'empty'=>Yii::t('app',"Select an option"),
 											'disabled'=>$item['readOnly']? 'disabled' : null,
 											'title'=>$field->attributeLabel,
 										));
@@ -265,7 +268,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 													$model->$fieldName = '';
 												}
 											}
-											$linkSource = $this->createUrl(CActiveRecord::model($field->linkType)->getAutoCompleteSource());
+											$linkSource = $this->createUrl(CActiveRecord::model($field->linkType)->autoCompleteSource);
 											// die($linkSource);
 										}
 										echo CHtml::hiddenField($field->modelName.'['.$fieldName.'_id]',$linkId,array('id'=>$field->modelName.'_'.$fieldName."_id"));
@@ -316,7 +319,14 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											'title'=>$field->attributeLabel,
 											)).'</div>';
 									} elseif($field->type=='assignment') {
-										echo $form->dropDownList($model, $fieldName, $users, array(
+										if(is_numeric($model->assignedTo)){
+											$group=true;
+											$groups=Groups::getNames();
+										}else{
+											$group=false;
+										}
+										$model->$fieldName=Yii::app()->user->getName();
+										echo $form->dropDownList($model, $fieldName, $group?$groups:$users, array(
 											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 											'disabled'=>$item['readOnly']? 'disabled' : null,
 											'title'=>$field->attributeLabel,
@@ -325,7 +335,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										));
 										/* x2temp */
 										echo '<div class="checkboxWrapper">';
-										echo CHtml::checkBox('group','',array(
+										echo CHtml::checkBox('group',$group,array(
 											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 											'disabled'=>$item['readOnly']? 'disabled' : null,
 											'title'=>$field->attributeLabel,
@@ -335,6 +345,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 												'url'=>CController::createUrl('/groups/getGroups'), //url to call.
 												//Style: CController::createUrl('currentController/methodToCall')
 												'update'=>'#'.$field->modelName .'_'. $fieldName .'_assignedToDropdown', //selector to update
+						                        'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
 												'complete'=>'function(){
 													if($("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked")!="checked"){
 														$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked","checked");

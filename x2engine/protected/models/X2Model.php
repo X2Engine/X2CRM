@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
+Yii::import('application.components.X2LinkableBehavior');
+
 abstract class X2Model extends CActiveRecord {
 
 	protected static $_fields = null;	// one copy of fields for all instances of this model
@@ -49,20 +52,6 @@ abstract class X2Model extends CActiveRecord {
 			else
 				self::$_fields[$this->tableName()] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
 	}
-
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() {
-		return '/'.strtolower(get_class($this));	// assume the model name is the same as the controller
-	}
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() {
-		return '/'.strtolower(get_class($this)).'/getItems';	// assume the model name is the same as the controller
-	}
 	
 	/**
 	 * @param int $id the route to this model's AutoComplete data source
@@ -73,11 +62,24 @@ abstract class X2Model extends CActiveRecord {
 		
 		$model = CActiveRecord::model($class)->findByPk($id);
 		if(isset($model))
-			return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
+			return $model->getLink();
+			// return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
 		elseif(is_numeric($id))
 			return '';
 		else
 			return $id;
+	}
+	
+	/**
+	 * Returns a list of behaviors that this model should behave as.
+	 * @return array the behavior configurations (behavior name=>behavior configuration)
+	 */
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+			)
+		);
 	}
 	
 	/**
@@ -96,9 +98,12 @@ abstract class X2Model extends CActiveRecord {
 			'float'=>array(),
 			'boolean'=>array(),
 			'safe'=>array(),
+			'search'=>array()
 		);
 		
 		foreach(self::$_fields[$this->tableName()] as &$_field) {
+		
+			$fieldRules['search'][] = $_field->fieldName;
 		
 			switch($_field->type) {
 				case 'varchar':
@@ -120,12 +125,13 @@ abstract class X2Model extends CActiveRecord {
 		}
 
 		return array(
-			array( implode( ',', $fieldRules['required']), 'required' ),
-			array( implode( ',', $fieldRules['email']), 'email' ),
-			array( implode( ',', $fieldRules['int'] + $fieldRules['date'] ), 'numerical', 'integerOnly'=>true ),
-			array( implode( ',', $fieldRules['float']), 'numerical' ),
-			array( implode( ',', $fieldRules['boolean']), 'boolean' ),
-			array( implode( ',', $fieldRules['safe']), 'safe' ),
+			array(implode(',', $fieldRules['required']), 'required'),
+			array(implode(',', $fieldRules['email']), 'email'),
+			array(implode(',', $fieldRules['int'] + $fieldRules['date']), 'numerical', 'integerOnly'=>true ),
+			array(implode(',', $fieldRules['float']), 'numerical'),
+			array(implode(',', $fieldRules['boolean']), 'boolean'),
+			array(implode(',', $fieldRules['safe']), 'safe'),
+			array(implode(',', $fieldRules['search']),'safe','on'=>'search')
 		);
 	}
 	
@@ -196,8 +202,142 @@ abstract class X2Model extends CActiveRecord {
 		}
 	}
 	
-	// sql to convert x2_fields.linkType: "UPDATE x2_fields SET linkType=CONCAT(UCASE(SUBSTRING(linkType, 1,1)),SUBSTRING(linkType, 2)) WHERE type='link'"
-	// sql to generate x2_contacts.name: "UPDATE x2_contacts SET name=CONCAT(firstName,' ',lastName)"
+	public function getField($fieldName) {
+		$this->queryFields();
+		$field = null;
+		foreach(self::$_fields[$this->tableName()] as &$_field) {
+			if($_field->fieldName == $fieldName)
+				return $_field;
+		}
+		if(!isset($field))
+			return null;
+	}
+	
+	public function renderAttribute($fieldName,$makeLinks = true,$textOnly = true) {
+		
+		$field = $this->getField($fieldName);
+		if(!isset($field))
+			return null;
+
+		switch($field->type) {
+		
+		
+			case 'date':
+				return empty($this->$fieldName)? ' ' : Yii::app()->controller->formatLongDate($this->$fieldName);
+				
+			case 'rating':
+			
+				if($textOnly) {
+					return $this->$fieldName;
+				} else {
+					return Yii::app()->controller->widget('CStarRating',array(
+						'model'=>$this,
+						'attribute'=>$field->fieldName,
+						'readOnly'=>true,
+						'minRating'=>1, //minimal valuez
+						'maxRating'=>5,//max value
+						'starCount'=>5, //number of stars
+						'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+					),true);
+				}
+				
+			case 'assignment':
+				return User::getUserLinks($this->$fieldName);
+				
+			case 'visibility':
+				switch($this->$fieldName) {
+					case '1':
+						return Yii::t('app','Public'); break;
+					case '0': 
+						return Yii::t('app','Private'); break;
+					case '2':
+						return Yii::t('app','User\'s Groups'); break;
+					default:
+						return '';
+				}
+			
+			case 'email':
+				if(empty($this->$fieldName)) {
+					return '';
+				} else {
+					$mailtoLabel = isset($this->name)? '"'.$this->name.'" <'.$this->$fieldName.'>' : $this->$fieldName;
+					return $makeLinks? CHtml::mailto($this->$fieldName,$mailtoLabel) : $this->fieldName;
+				}
+			case 'url':
+			
+				if(!$makeLinks)
+					return $this->$fieldName;
+					
+				if(empty($this->$fieldName)) {
+					$text = '';
+				} elseif(!empty($field->linkType)) {
+					switch($field->linkType) {
+						case 'skype':
+							$text = '<a href="callto:'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+							break;
+						case 'googleplus':
+							$text = '<a href="http://plus.google.com/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+							break;
+						case 'twitter':
+							$text = '<a href="http://www.twitter.com/#!/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+							break;
+						case 'linkedin':
+							$text = '<a href="http://www.linkedin.com/in/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+							break;
+						default:
+							$text = '<a href="http://www.'.$field->linkType.'.com/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+					}
+				} else {
+					$text = trim(preg_replace(
+						array(
+							'/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/iex',
+							'/<a([^>]*)target="?[^"\']+"?/i',
+							'/<a([^>]+)>/i',
+							'/(^|\s|>)(www.[^<> \n\r]+)/iex',
+						),
+						array(
+							"stripslashes((strlen('\\2')>0?'\\1<a href=\"\\2\" target=\"_blank\">".$this->getAttributeLabel($fieldName)."</a>\\3':'\\0'))",
+							'<a\\1 target="_blank"',
+							'<a\\1 target="_blank">',
+							"stripslashes((strlen('\\2')>0?'\\1<a href=\"http://\\2\" target=\"_blank\">".$this->getAttributeLabel($fieldName)."</a>\\3':'\\0'))",
+						),
+						$this->$fieldName
+					));
+				}
+				return $text;
+				
+			case 'link':
+				if(!empty($this->$fieldName) && is_numeric($this->$fieldName)) {
+					$className = ucfirst($field->linkType);
+					if(class_exists($className))
+						$linkModel = CActiveRecord::model($className)->findByPk($this->$fieldName);
+					if(isset($linkModel))
+						return $makeLinks? $linkModel->createLink() : $linkModel->name;
+					else
+						return '';
+				} else {
+					return $this->$fieldName;
+				}
+				
+			case 'boolean':
+				return $textOnly? $this->fieldName : CHtml::checkbox('',$this->$fieldName,array('onclick'=>'return false;', 'onkeydown'=>'return false;'));
+				
+			case 'currency':
+				if($this instanceof Product) // products have their own currency
+					return Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, $this->currency);
+				else
+					return empty($this->$fieldName)?"&nbsp;":Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, Yii::app()->params['currency']);
+					
+			case 'dropdown':
+				return Yii::t(strtolower(Yii::app()->controller->id),$this->$fieldName);
+				
+			case 'text':
+				return Yii::app()->controller->convertUrls($this->$fieldName);     
+				
+			default:
+				return $this->$fieldName;
+		}
+	}
 
 	/**
 	 * Sets attributes using X2Fields
@@ -226,7 +366,7 @@ abstract class X2Model extends CActiveRecord {
 
 					if(!empty($value) && isset($data[$fieldName.'_id'])) {	// check the ID, if provided
 						$linkId = $data[$fieldName.'_id'];
-						if(!empty($linkId) && CActiveRecord::model($_field->linkType)->countByAttributes(array('id'=>$linkId)))	// if the link model actually exists,
+						if(!empty($linkId) && CActiveRecord::model(ucfirst($_field->linkType))->countByAttributes(array('id'=>$linkId)))	// if the link model actually exists,
 							$value = $linkId;																	// then use the ID as the field value
 					}
 					if(!empty($value) && !ctype_digit($value)) {	// if the field is sitll text, try to find the ID based on the name
@@ -235,15 +375,15 @@ abstract class X2Model extends CActiveRecord {
 							$fullname = explode(' ', $value);
 							$firstName = $fullname[0];
 							$lastName = $fullname[1];
-							$linkModel = CActiveRecord::model($_field->linkType)->findByAttributes(array('firstName'=>$firstName, 'lastName'=>$lastName));
+							$linkModel = CActiveRecord::model(ucfirst($_field->linkType))->findByAttributes(array('firstName'=>$firstName, 'lastName'=>$lastName));
 						} else {
-							$linkModel = CActiveRecord::model($_field->linkType)->findByAttributes(array('name'=>$value));
+							$linkModel = CActiveRecord::model(ucfirst($_field->linkType))->findByAttributes(array('name'=>$value));
 						}
 						if(isset($linkModel))
 							$value = $linkModel->id;
 					}
 				}
-				$this->$fieldName = $value;
+				$this->$fieldName = trim($value);
 			}
 		}
 	}
@@ -254,12 +394,8 @@ abstract class X2Model extends CActiveRecord {
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public function searchBase($criteria) {
-
 		$this->queryFields();
-		
 		$this->compareAttributes($criteria);
-		// if(get_class($this) == 'Contacts')
-			// $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
@@ -345,7 +481,8 @@ abstract class X2Model extends CActiveRecord {
 
 	public function createLink() {
 		if(isset($this->id))
-			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
+			return $this->getLink();
+			// return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
 		else
 			return $this->name;
 	}

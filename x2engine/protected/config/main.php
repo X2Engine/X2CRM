@@ -95,7 +95,9 @@ return array(
 				array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'POST'),
 				array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
 				array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
-                                array('api/voip', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
+				array('api/voip', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
+				
+				'gii/<controller>'=>'gii/<controller>',
 			
 				'<controller:(site|admin|profile|media|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
 				'<controller:(site|admin|profile|media|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
@@ -140,9 +142,9 @@ return array(
 			'charset' => 'utf8',
 		),*/
 		// 'messages'=>array(
-			// 'forceTranslation'=>true,
-            // 'onMissingTranslation'=>create_function('$event', 'Yii::log($event->message,"trace","translations");'),
-        // ),
+		//	 'forceTranslation'=>true,
+        //     'onMissingTranslation'=>create_function('$event', 'Yii::log($event->message,"trace","translations");'),
+       //  ),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
 			'errorAction'=>'site/error',
@@ -150,7 +152,10 @@ return array(
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
-				
+				// array(
+					// 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
+					// 'ipFilters'=>array('127.0.0.1'),
+				// ),
 				// array(
 					// 'class'=>'CFileLogRoute',
 					// 'levels'=>'info',
@@ -161,12 +166,19 @@ return array(
 				// ),
 				// uncomment the following to show log messages on web pages
 				
-				 // array(
-					 // 'class'=>'CWebLogRoute',
-					 // 'categories' => 'translations',
+				//  array(
+				//	  'class'=>'CWebLogRoute',
+				//	  'categories' => 'translations',
 				 // ),
 			),
 		),
+		// 'cache'=>array(
+			// 'class'=>'system.caching.CFileCache',
+			// 'servers'=>array(
+				// array('host'=>'server1', 'port'=>11211, 'weight'=>60),
+				// array('host'=>'server2', 'port'=>11211, 'weight'=>40),
+			// ),
+		// ),
 	),
 
 	// application-level parameters that can be accessed
@@ -193,7 +205,7 @@ return array(
 			'OnlineUsers'=>'Active Users',
 			'DocViewer' => 'Doc Viewer',
 			'TimeZone' => 'Time Zone',
-			 'TopSites' => 'Top Sites',
+			'TopSites' => 'Top Sites',
 		),
 		'currency'=>'',
 		'version'=>$version,

@@ -58,19 +58,25 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Load configuration that cannot be put in config/main
 	 */
 	public function beginRequest() {
-	
-		$t0 = microtime(true);
+		// $t0 = microtime(true);
 	
 		
-		if($this->owner->request->getPathInfo() == 'notifications/getMessages') {	// skip all the loading if this is a chat/notification update
+		if($this->owner->request->getPathInfo() == 'notifications/get') {	// skip all the loading if this is a chat/notification update
 			$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar();	// set the timezone to the admin's
 			if(!isset($timezone))
 				$timezone = 'UTC';
 			date_default_timezone_set($timezone);
+			
+			// Yii::import('application.models.*');
+			// foreach(scandir('protected/modules') as $module){
+				// if(file_exists('protected/modules/'.$module.'/register.php'))
+					// Yii::import('application.modules.'.$module.'.models.*');
+			// }
+			
 			return;
 		}
-		Yii::import('application.controllers.x2base');
 		Yii::import('application.models.*');
+		Yii::import('application.controllers.x2base');
 		Yii::import('application.components.*');
 		// Yii::import('application.components.ERememberFiltersBehavior');
 		// Yii::import('application.components.EButtonColumnWithClearFilters');
@@ -90,10 +96,10 @@ class ApplicationConfigBehavior extends CBehavior {
 		
 			$session = Session::model()->findByAttributes(array('user'=>$this->owner->user->getName()));
 			if(isset($session)) {
-				if(time()-$session->lastUpdated > $this->owner->params->admin->timeout) {
+				if($session->lastUpdated + $this->owner->params->admin->timeout < time() ) {
 					$session->delete();
 					$this->owner->user->logout();
-				} else {
+				} else if($this->owner->request->getPathInfo() != 'site/checkNotifications') {
 					$session->lastUpdated = time();
 					$session->save();
 				}
@@ -167,8 +173,16 @@ class ApplicationConfigBehavior extends CBehavior {
 		if(isset($logo))
 			$this->owner->params->logo = $logo->fileName;
 		setlocale(LC_ALL, 'en_US.UTF-8');
-		
-		// die(microtime(true)-$t0);
-		
+
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/notifications.js');
+
+		// set base path and theme path globals for JS
+		Yii::app()->clientScript->registerScript('setParams','
+		var	yii = {
+			baseUrl: "'.Yii::app()->baseUrl.'/index.php",
+			themeBaseUrl: "'.Yii::app()->theme->baseUrl.'"
+		},
+		notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+		', CClientScript::POS_HEAD);
 	}
 }

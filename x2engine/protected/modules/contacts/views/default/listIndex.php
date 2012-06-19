@@ -75,7 +75,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'enableSorting'=>false,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'htmlOptions'=>array('class'=>'grid-view contact-lists'),
-	'template'=> '{items}',
+	'template'=> '{summary}{items}{pager}',
 	'dataProvider'=>$contactLists,
 	// 'filter'=>$model,
 	'columns'=>array(

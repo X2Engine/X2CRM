@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'Utilidades',
-'Χ2Studio'=>'X2 Estudio',
+'X2Studio'=>'X2Estudio',
 'Support & Documentation'=>'Soporte y Documentación',
 'Contact Us'=>'Contacte con Nosotros',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Para cargar su logotipo para mostrar junto a la barra de búsqueda, por favor, subir el archivo aquí usando el siguiente formulario.',
 'Create Page'=>'Crear Página',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. es la compañía detrás de X2Contacts - un alto rendimiento de la gestión de contactos de aplicaciones web. X2Engine puede ofrecer a su organización de apoyo y formación profesional en X2Contacts. Por favor, rellene el siguiente formulario para contactar con nosotros. ',
+
+// Email Config
+'Email Server Configuration'=>'Configuración del servidor de correo electrónico',
+'Ready to send email? We need some information about your mail server.'=>'Listo para enviar correo electrónico? Necesitamos un poco de información acerca de su servidor de correo.',
+'Outbound Email Server'=>'Servidor de correo saliente',
+'Hostname'=>'Nombre de la máquina',
+'Port'=>'Puerto',
+'Security'=>'Seguridad',
+'Authentication'=>'Autenticación',
+'Username'=>'Nombre de usuario',
+'Password'=>'Contraseña',
+'Sender Name'=>'Nombre del remitente',
+'Sender Email Address'=>'Dirección de correo electrónico del remitente',
+'Batch Size'=>'Tamaño de lote',
+'Interval (Minutes)'=>'Intervalo (Minutos)',
+'Email Signatures'=>'Firmas de correo electrónico',
+'None'=>'Ninguno',
+'User\'s Choice'=>'Elección del usuario',
+'Default Signature'=>'Firma por defecto',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Puede utilizar las siguientes variables en esta plantilla: {first}, {last}, {phone}, {email}.',
 );

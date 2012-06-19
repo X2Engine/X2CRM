@@ -38,44 +38,40 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+// Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_docs".
- *
- * The followings are the available columns in table 'x2_docs':
- * @property integer $id
- * @property string $title
- * @property string $type
- * @property string $text
- * @property string $createdBy
- * @property integer $createDate
- * @property string $updatedBy
- * @property integer $lastUpdated
- * @property string $editPermissions
  */
-class Docs extends CActiveRecord
-{
+class Docs extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Docs the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_docs';
+	}
+	
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/docs',
+			),
+		);
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -94,8 +90,7 @@ class Docs extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -105,8 +100,7 @@ class Docs extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => Yii::t('docs','ID'),
 			'type' => Yii::t('docs','Doc Type'),
@@ -120,12 +114,15 @@ class Docs extends CActiveRecord
 		);
 	}
 
+	public function getName() {
+		return $this->title;
+	}
+	
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 

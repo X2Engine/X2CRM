@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,7 +82,7 @@ $attributeLabels = $model->attributeLabels();
 	<tr>
 		<td class="label" width="20%"><?php echo $attributeLabels['fullName']; ?></td>
 		<td><b><?php echo CHtml::encode($model->fullName); ?></b></td>
-		<td rowspan="6" width="25%">
+		<td rowspan="7" width="25%">
 			<?php
 			// getimagesize()
 			
@@ -128,6 +128,10 @@ $attributeLabels = $model->attributeLabels();
 	<tr>
 		<td class="label"><?php echo $attributeLabels['emailAddress']; ?></td>
 		<td><b><?php echo CHtml::mailto($model->emailAddress); ?></b></td>
+	</tr>
+	<tr>
+		<td class="label"><?php echo $attributeLabels['googleId']; ?></td>
+		<td><b><?php echo CHtml::mailto($model->googleId); ?></b></td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo Yii::t('profile','Signature'); ?></td>

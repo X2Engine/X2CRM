@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,17 @@ return array (
 'No'=>'',
 'Yes'=>'',
 'Date Completed'=>'',
+'All Day'=>'',
+'Color'=>'',
+'Start Date'=>'',
+'End Date'=>'',
+
+// Colors
+'Blue'=>'',
+'Green'=>'',
+'Red'=>'',
+'Orange'=>'',
+'Black'=>'',
 
 // Actions Nav
 'All Actions'=>'',
@@ -75,6 +86,7 @@ return array (
 'Update Action'=>'',
 'Complete Action'=>'',
 'Complete + New Action'=>'',
+'Complete and View Contact'=>'',
 'Uncomplete'=>'',
 'Log A Call'=>'',
 'New Action'=>'',
@@ -89,7 +101,7 @@ return array (
 'View Action'=>'',
 'Update Action:'=>'',
 'Action'=>'',
-'Action:'=>'',
+'Action: '=>'',
 'Today\'s Actions'=>'',
 'My Actions'=>'',
 'All My Actions'=>'',
@@ -97,6 +109,7 @@ return array (
 'Delete Action'=>'',
 'Share Action'=>'',
 'Create'=>'',
+'New Event'=>'',
 
 
 // Misc

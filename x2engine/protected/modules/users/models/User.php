@@ -38,32 +38,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+// Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_users".
- *
- * The followings are the available columns in table 'x2_users':
- * @property integer $id
- * @property string $firstName
- * @property string $lastName
- * @property string $username
- * @property string $password
- * @property string $title
- * @property string $department
- * @property string $officePhone
- * @property string $cellPhone
- * @property string $homePhone
- * @property string $address
- * @property string $backgroundInfo
- * @property string $emailAddress
- * @property integer $status
- * @property string $lastUpdated
- * @property string $updatedBy
- * @property string $recentItems
- * @property string $topContacts
- * @property integer $lastLogin
- * @property integer $login
  */
-class User extends X2Model {
+class User extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return User the static model class
@@ -75,15 +55,20 @@ class User extends X2Model {
 	 */
 	public function tableName() { return 'x2_users'; }
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/profile/'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/users/getItems'; }
+		public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/users',
+				'viewRoute'=>'/profile',
+			),
+			'ERememberFiltersBehavior' => array(
+				'class' => 'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
+		);
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
@@ -99,6 +84,8 @@ class User extends X2Model {
 			array('password, address, emailAddress, recentItems, topContacts', 'length', 'max'=>100),
 			array('lastUpdated', 'length', 'max'=>30),
 			array('backgroundInfo', 'safe'),
+			array('username','unique','allowEmpty'=>false),
+			array('username','match','pattern'=>'/^\d+$/','not'=>true), // No numeric usernames. That will break association with groups.
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on'=>'search'),
@@ -144,16 +131,6 @@ class User extends X2Model {
 			$names[$user->id]=$user->firstName." ".$user->lastName;
 		}
 		return $names;
-	}
-
-	public function behaviors() {
-		return array(
-			'ERememberFiltersBehavior' => array(
-				'class' => 'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),			/* optional line */
-				'defaultStickOnClear'=>false	/* optional line */
-			),
-		);
 	}
 
 	public static function getTopContacts() {
@@ -216,49 +193,44 @@ class User extends X2Model {
 		}
 	}
 
-	public static function getUserLinks($users) {
+	public static function getUserLinks($users, $makeLinks = true) {
 		if(!is_array($users)) {
 			 /* x2temp */
-			if(is_numeric($users)){
-				$group=Groups::model()->findByPk($users);
+			if(is_numeric($users)) {
+				$group = Groups::model()->findByPk($users);
 				if(isset($group))
-					$link=CHtml::link($group->name,array('/groups/default/view','id'=>$group->id));
+					$link = $makeLinks? CHtml::link($group->name,array('/groups/default/view','id'=>$group->id)) : $group->name;
 				else
-					$link="";
+					$link = '';
 				return $link;
 			}
 			/* end x2temp */
-				if($users=='' || $users=="Anyone")
-						return Yii::t('app','Anyone');
-				$users = explode(', ',$users);
+			if($users=='' || $users=='Anyone')
+				return Yii::t('app','Anyone');
+				
+			$users = explode(', ',$users);
 		}
-		$links='';
-			foreach($users as $user) {
-				if($user=='Anyone' || $user=='Email')
-					$link='';
-				else if(is_numeric($user)){
-					$group=Groups::model()->findByPk($users);
-					if(isset($group))
-						$link=CHtml::link($group->name,array('/groups/default/view','id'=>$group->id));
-					else
-						$link='';
-					$links.=$link.", ";
-				}else {
-					$model = CActiveRecord::model('User')->findByAttributes(array('username'=>$user));
-					if(isset($model))
-						$link = CHtml::link($model->name,array('/profile/view','id'=>$model->id));
-					else
-						$link='';
-					$links.=$link.', ';
-				}
+		$links = array();
+		foreach($users as $user) {
+			if($user == 'Anyone' || $user == 'Email') {		// skip these, they aren't users
+				continue;
+			} else if(is_numeric($user)) {		// this is a group
+				$group = Groups::model()->findByPk($user);
+				// $group = Groups::model()->findByPk($users);
+				if(isset($group))
+					$links[] = $makeLinks? CHtml::link($group->name,array('/groups/default/view','id'=>$group->id)) : $group->name;
+			} else {
+				$model = CActiveRecord::model('User')->findByAttributes(array('username'=>$user));
+				if(isset($model))
+					$links[] = $makeLinks? CHtml::link($model->name,array('/profile/view','id'=>$model->id)) : $model->name;
 			}
-			$links=substr($links,0,strlen($links)-2);
-		return $links;
+		}
+		return implode(', ',$links);
 	}
 
 	public static function getEmails(){
-		$userArray=User::model()->findAll();
-		$emails=array('Anyone'=>Yii::app()->params['adminEmail']);
+		$userArray = User::model()->findAll();
+		$emails = array('Anyone'=>Yii::app()->params['adminEmail']);
 		foreach($userArray as $user){
 			$emails[$user->username]=$user->emailAddress;
 		}

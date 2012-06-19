@@ -109,7 +109,7 @@ $this->widget('application.components.X2GridView', array(
 	'filter'=>$contactModel,
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
-	'viewName'=>'contacts',
+	'viewName'=>'salecontacts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
 		'name'=>234,

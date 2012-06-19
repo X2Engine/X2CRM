@@ -188,7 +188,7 @@ if($inlineForm){
 	<div class="cell" id="auto_complete">
 		<?php
 		if($actionModel->associationType!="none"){
-			$linkSource = $this->createUrl(CActiveRecord::model(ucfirst($actionModel->associationType))->getAutoCompleteSource());
+			$linkSource = $this->createUrl(CActiveRecord::model(ucfirst($actionModel->associationType))->autoCompleteSource);
 			echo $form->label($actionModel,'associationName');
 			$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 				'name'=>'auto_select',
@@ -236,6 +236,8 @@ if($inlineForm){
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
 				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formattimePicker() ),
 				'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
+				'changeMonth'=>true,
+				'changeYear'=>true
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
@@ -259,7 +261,7 @@ if($inlineForm){
 	</div>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'assignedTo'); ?>
-		<?php echo $form->dropDownList($actionModel,'assignedTo',$users + X2Calendar::getEditableCalendarNames(),array('id'=>'actionsAssignedToDropdown')); ?>
+		<?php echo $form->dropDownList($actionModel,'assignedTo',$users,array('id'=>'actionsAssignedToDropdown')); ?>
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
             <?php /* x2temp */
                             echo "<br />";
@@ -268,7 +270,7 @@ if($inlineForm){
                             }else{
                                 $url=$this->controller->createUrl('/groups/getGroups');
                             }
-                            echo "<label>Group?</label>";
+                            echo "<label>".Yii::t('app','Group?')."</label>";
                             echo CHtml::checkBox('group','',array(
                                 'id'=>'groupCheckbox',
                                 'ajax'=>array(
@@ -276,6 +278,7 @@ if($inlineForm){
                                         'url'=>$url, //url to call.
                                         //Style: CController::createUrl('currentController/methodToCall')
                                         'update'=>'#actionsAssignedToDropdown', //selector to update
+                                        'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
                                         'complete'=>'function(){
                                             if($("#groupCheckbox").attr("checked")!="checked"){
                                                 $("#groupCheckbox").attr("checked","checked");
@@ -364,6 +367,8 @@ $event->assignedTo = $actionModel->assignedTo;
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
 				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formatTimePicker() ),
 				'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
+				'changeMonth'=>true,
+				'changeYear'=>true,
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
@@ -374,7 +379,11 @@ $event->assignedTo = $actionModel->assignedTo;
 		
 		<?php echo $form->label($event, 'allDay'); ?>
 		<?php echo $form->checkBox($event, 'allDay'); ?>
+		
+
+		
 	</div>
+	
 	<div class="cell">
 		<?php echo $form->label($event,'priority'); ?>
 		<?php echo $form->dropDownList($event,'priority',array(
@@ -388,29 +397,30 @@ $event->assignedTo = $actionModel->assignedTo;
 	</div>
 	<div class="cell">
 		<?php echo $form->label($event,'assignedTo'); ?>
-		<?php echo $form->dropDownList($event,'assignedTo',$users + X2Calendar::getEditableCalendarNames(),array('id'=>'actionsAssignedToDropdown')); ?>
+		<?php echo $form->dropDownList($event,'assignedTo',$users,array('id'=>'eventsAssignedToDropdown')); ?>
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
             <?php /* x2temp */
                             echo "<br />";
                             if($this instanceof Controller){
-                                $url=$this->createUrl('groups/getGroups');
+                                $url=$this->createUrl('/groups/getGroups');
                             }else{
-                                $url=$this->controller->createUrl('groups/getGroups');
+                                $url=$this->controller->createUrl('/groups/getGroups');
                             }
-                            echo "<label>Group?</label>";
+                            echo "<label>".Yii::t('app','Group?')."</label>";
                             echo CHtml::checkBox('group','',array(
                                 'id'=>'eventGroupCheckbox',
                                 'ajax'=>array(
                                     'type'=>'POST', //request type
                                         'url'=>$url, //url to call.
                                         //Style: CController::createUrl('currentController/methodToCall')
-                                        'update'=>'#actionsAssignedToDropdown', //selector to update
+                                        'update'=>'#eventsAssignedToDropdown', //selector to update
+                                        'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
                                         'complete'=>'function(){
-                                            if($("#groupCheckbox").attr("checked")!="checked"){
-                                                $("#groupCheckbox").attr("checked","checked");
+                                            if($("#eventGroupCheckbox").attr("checked")!="checked"){
+                                                $("#eventGroupCheckbox").attr("checked","checked");
                                                 $("#Actions_visibility option[value=\'2\']").remove();
                                             }else{
-                                                $("#groupCheckbox").removeAttr("checked");
+                                                $("#eventGroupCheckbox").removeAttr("checked");
                                                 $("#Actions_visibility").append(
                                                     $("<option></option>").val("2").html("User\'s Groups")
                                                 );

@@ -65,35 +65,64 @@ if ($deletePermissions)
 
 </h2>
 
-<?php if (isset($errors) && count($errors) > 0) { ?>
-	<div class="flash-error">
-		<ul>
-			<?php foreach ($errors as $error) { ?>
-			<li><?php echo $error; ?></li>
-			<?php } ?>
-		</ul>
-	</div>
-<?php } ?>
+<?php
+foreach(Yii::app()->user->getFlashes() as $key => $message) {
+	echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
+}
+?>
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'Campaign')); ?>
 
 <div style="overflow: auto;">
 <?php
-echo CHtml::beginForm('launch');
-echo CHtml::hiddenField('id', $model->id);
-echo CHtml::submitButton(
-	Yii::t('app','Launch Now'),
-	array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
-echo CHtml::endForm();
+if ($model->complete != 1 && $model->type=='Email') {
+	if ($model->launchDate == 0) {
+		echo CHtml::beginForm(array('launch', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('marketing','Launch Now'),
+			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::Button(
+			Yii::t('marketing', 'Send Test Email'),
+			array(
+				'id'=>'test-email-button',
+				'class'=>'x2-button left',
+				'onclick'=>'toggleEmailForm(); return false;'
+			)
+		);
+	} else if ($model->active == 1) {
+		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('app','Stop'),
+			array('class'=>'x2-button left urgent','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::beginForm(array('complete', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('marketing','Complete'),
+			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+	} else {  //active == 0
+		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('app','Resume'),
+			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::beginForm(array('complete', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('marketing','Complete'),
+			array('class'=>'x2-button left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::Button(
+			Yii::t('marketing', 'Send Test Email'),
+			array(
+				'id'=>'test-email-button',
+				'class'=>'x2-button left',
+				'onclick'=>'toggleEmailForm(); return false;'
+			)
+		);
+	}
 
-echo CHtml::Button(
-	Yii::t('app', 'Send Test Email'),
-	array(
-		'id'=>'test-email-button',
-		'class'=>'x2-button left',
-		'onclick'=>'toggleEmailForm(); return false;'
-	)
-);?>
+}?>
 </div>
 
 <div>
@@ -114,8 +143,102 @@ $this->widget('InlineEmailForm',
 ?>
 </div>
 
+<?php if ($model->launchDate && $model->active && !$model->complete && $model->type == 'Email') { ?>
+<div id="mailer-status" class="wide form" style="max-height: 150px; margin-top:13px;">
+</div>
+<?php 
+	Yii::app()->clientScript->registerScript('mailer-status-update','
+	function tryMail() { 
+		newEl = $("<div id=\"mailer-status-active\">'. Yii::t('marketing','Attempting to send email') .'...</div>");
+		newEl.prependTo($("#mailer-status")).slideDown(232);
+		$.ajax("'. $this->createUrl('mail', array('id'=>$model->id)) .'").done(function(data) {
+			var dataObj = JSON.parse(data);
+			var htmlStr = "";
+			for (var i=0; i < dataObj.messages.length; i++) {
+				htmlStr = dataObj.messages[i] + "<br/>" + htmlStr;
+			}
+			newEl.html(htmlStr);
+			$("#mailer-status-active").removeAttr("id");
+			$.fn.yiiGridView.update("contacts-grid");
+			window.setTimeout(tryMail, dataObj.wait * 1000);
+		});
+	}
+	tryMail();
+	');
+} ?>
+
 <div style="margin-top: 23px;">
 <?php
+if(isset($contactList)) {
+	//these columns will be passed to gridview, depending on the campaign type
+	$displayColumns = array(
+		array(
+			'name'=>'Name',
+			'headerHtmlOptions'=>array('style'=>'width: 15%;'),
+			'value'=>'CHtml::link($data["firstName"] . " " . $data["lastName"],array("/contacts/view/".$data["id"]))',
+			'type'=>'raw'
+		),
+		array(
+			'name'=>'email',
+			'header'=>'Email',
+			'headerHtmlOptions'=>array('style'=>'width: 20%;'),
+		),	
+		array(
+			'name'=>'phone',
+			'header'=>'Phone',
+			'headerHtmlOptions'=>array('style'=>'width: 10%;'),
+		),	
+		array(
+			'header'=>'Address',
+			'headerHtmlOptions'=>array('style'=>'width: 25%;'),
+			'value'=>'$data["address"]." ".$data["address2"]." ".$data["city"].", ".$data["state"]." ".$data["zipcode"]." ".$data["country"]'
+		)
+	);
+	if ($model->type == 'Email' && ($contactList->type == 'static' || $contactList->type == 'campaign')) {
+		$displayColumns = array_merge($displayColumns, array(
+			array(
+				'header'=>'Sent: ' . $contactList->statusCount('sent'),
+				'class'=>'CCheckBoxColumn',
+				'checked'=>'$data["sent"] != 0',
+				'selectableRows'=>0,
+				'htmlOptions'=>array('style'=>'text-align: center;'),
+				'headerHtmlOptions'=>array('style'=>'width: 7%;')
+			),
+			array(
+				'header'=>'Opened: ' . $contactList->statusCount('opened'),
+				'class'=>'CCheckBoxColumn',
+				'checked'=>'$data["opened"] != 0',
+				'selectableRows'=>0,
+				'htmlOptions'=>array('style'=>'text-align: center;'),
+				'headerHtmlOptions'=>array('style'=>'width: 7%;')
+			),
+			array(
+				'header'=>'Clicked: ' . $contactList->statusCount('clicked'),
+				'class'=>'CCheckBoxColumn',
+				'checked'=>'$data["clicked"] != 0',
+				'selectableRows'=>0,
+				'htmlOptions'=>array('style'=>'text-align: center;'),
+				'headerHtmlOptions'=>array('style'=>'width: 7%;')
+			),
+			array(
+				'header'=>'Unsubscribed: ' . $contactList->statusCount('unsubscribed'),
+				'class'=>'CCheckBoxColumn',
+				'checked'=>'$data["unsubscribed"] != 0',
+				'selectableRows'=>0,
+				'htmlOptions'=>array('style'=>'text-align: center;'),
+				'headerHtmlOptions'=>array('style'=>'width: 9%;')
+			),
+		));
+	}
+	$this->widget('zii.widgets.grid.CGridView', array(
+		'id'=>'contacts-grid',
+		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+		'dataProvider'=>$contactList->statusDataProvider(20),
+		// 'enableSorting'=>false,
+		'columns'=>$displayColumns,
+	));
+}
+/*
 if(isset($contactList)) {
 	$this->widget('application.components.X2GridView', array(
 		'id'=>'contacts-grid',
@@ -125,7 +248,7 @@ if(isset($contactList)) {
 			.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 			.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
 			.'{summary}</div>{items}{pager}',
-		'dataProvider'=>Contacts::model()->searchList($contactList->id,10),
+		'dataProvider'=>CActiveRecord::model('Contacts')->searchList($contactList->id,10),
 		// 'enableSorting'=>false,
 		// 'model'=>$model,
 		// 'filter'=>$model,
@@ -152,11 +275,11 @@ if(isset($contactList)) {
 		'enableControls'=>true,
 		'enableTags'=>true,
 	));
-}
+}*/
 ?>
 </div>
 
-<div>
+<div style="margin-top: 23px;">
 <?php
 $this->widget('InlineActionForm',
 	array(

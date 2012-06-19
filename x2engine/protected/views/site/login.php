@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -103,7 +103,11 @@ $('#LoginForm_username').focus();
 			<?php echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); ?>
 			<?php echo $form->error($model,'rememberMe'); ?><br>
 			<?php echo CHtml::link(Yii::t('app','Login to X2Touch'),Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
-		</div>
+		</div>		
+	</div>
+	
+	<div class="row">
+			<?php echo CHtml::link("<img src='".Yii::app()->getBaseUrl()."/uploads/logos/google-icon.png' width='18' height='18' /> ".Yii::t('app','Login with Google'),Yii::app()->getBaseUrl() . '/index.php/site/googleLogin',array('class'=>'x2touch-link', 'style'=>"text-decoration:none")); ?>
 	</div>
 </div>
 <!--<div id="login-logo"></div>-->

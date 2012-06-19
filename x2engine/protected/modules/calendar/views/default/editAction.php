@@ -147,12 +147,17 @@ $form=$this->beginWidget('CActiveForm', array(
 		}
 		?>
 		<?php echo $form->label($model,'assignedTo', array('class'=>'dialog-label')); ?>
-		<?php echo $form->dropDownList($model,'assignedTo',$users + X2Calendar::getEditableCalendarNames(),array('id'=>'dialog_actionsAssignedToDropdown', 'onChange'=>'giveSaveButtonFocus();')); ?>
+		<?php if(is_numeric($model->assignedTo)) { // action assigned to group ?>
+		<?php 	$assignedToValues = Groups::getNames(); ?>
+		<?php } else { ?>
+		<?php 	$assignedToValues = $users; ?>
+		<?php } ?>
+		<?php echo $form->dropDownList($model,'assignedTo',$assignedToValues,array('id'=>'dialog_actionsAssignedToDropdown', 'onChange'=>'giveSaveButtonFocus();')); ?>
 		<?php /* x2temp */
 		echo "<br />";
-		$url=$this->createUrl('groups/getGroups');
+		$url=$this->createUrl('/groups/getGroups');
 		echo "<label class=\"dialog-label\">Group?</label>";
-		echo CHtml::checkBox('group','',array(
+		echo CHtml::checkBox('group', is_numeric($model->assignedTo),array(
 		    'id'=>'dialog_groupCheckbox',
 		    'onChange'=>'giveSaveButtonFocus();',
 		    'ajax'=>array(
@@ -160,6 +165,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		            'url'=>$url, //url to call.
 		            //Style: CController::createUrl('currentController/methodToCall')
 		            'update'=>'#dialog_actionsAssignedToDropdown', //selector to update
+		            'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
 		            'complete'=>'function(){
 		                if($("#dialog_groupCheckbox").attr("checked")!="checked"){
 		                    $("#dialog_groupCheckbox").attr("checked","checked");

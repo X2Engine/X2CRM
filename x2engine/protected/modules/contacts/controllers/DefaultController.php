@@ -51,7 +51,7 @@ class DefaultController extends x2base {
 
 		return array(
 			array('allow',
-				'actions'=>array('getItems','getLists'),
+				'actions'=>array('getItems','getLists','ignoreDuplicates','discardNew'),
 				'users'=>array('*'), 
 			),
 			array('allow',	// allow authenticated user to perform 'create' and 'update' actions
@@ -146,13 +146,30 @@ class DefaultController extends x2base {
 				$viewPermissions=true;
 			}
 		}
-		if(is_numeric($contact->assignedTo)){
-			$contact->assignedTo=Groups::model()->findByPk($contact->assignedTo)->name;
-		}
 		/* end x2temp */
 		if ($viewPermissions) {
-			User::addRecentItem('c',$id,Yii::app()->user->getId());	////add contact to user's recent item list
-			parent::view($contact, 'contacts');
+			if($contact->dupeCheck!='1'){
+				$criteria=new CDbCriteria();
+				$criteria->compare('CONCAT(firstName," ",lastName)',$contact->firstName." ".$contact->lastName,false,"OR");
+				$criteria->compare('email',$contact->email,false,"OR");
+				$criteria->compare('phone',$contact->phone,false,"OR");
+				$criteria->compare('phone2',$contact->phone2,false,"OR");
+				$criteria->compare('id',"<>".$contact->id,false,"AND");
+				$duplicates=Contacts::model()->findAll($criteria);
+				if(count($duplicates)>0){
+					$this->render('duplicateCheck',array(
+						'newRecord'=>$contact,
+						'duplicates'=>$duplicates,
+						'ref'=>'view'
+					));
+				}else{
+					User::addRecentItem('c',$id,Yii::app()->user->getId());	////add contact to user's recent item list
+					parent::view($contact, 'contacts');
+				}
+			}else{
+				User::addRecentItem('c',$id,Yii::app()->user->getId());	////add contact to user's recent item list
+				parent::view($contact, 'contacts');
+			}
 		} else
 			$this->redirect('index');
 	}
@@ -279,6 +296,54 @@ $model->city, $model->state $model->zipcode
 			return parent::create($model,$oldAttributes,$api);       
                 }
 	}
+	
+	public function actionIgnoreDuplicates(){
+		if(isset($_POST['data'])){
+			
+			$arr=json_decode($_POST['data'],true);
+			if($_POST['ref']!='view'){
+				if($_POST['ref']=='create')
+					$model=new Contacts;
+				else{
+					$id=$arr['id'];
+					$model=Contacts::model()->findByPk($id);
+				}
+				foreach($arr as $key=>$value){
+					$model->$key=$value;
+				}
+			}else{
+				$id=$arr['id'];
+				$model=CActiveRecord::model('Contacts')->findByPk($id);
+			}
+			$model->dupeCheck=1;
+			if($_POST['ref']=='create'){
+				$this->create($model,array(),0);
+			}elseif($_POST['ref']=='update'){
+				$this->update($model,array(),0);
+			}
+			echo $model->id;
+		}
+	}
+	
+	public function actionDiscardNew(){
+		if(isset($_POST['id']) && isset($_POST['newId'])){
+			$id=$_POST['id'];
+			$newId=$_POST['newId'];
+			
+			$oldRecord=Contacts::model()->findByPk($id);
+			$oldRecord->dupeCheck=1;
+			$oldRecord->save();
+			
+			$notif=new NotificationChild;
+			$notif->user='admin';
+			$notif->createDate=time();
+			$notif->record="Contacts:$id";
+			$notif->text="A user has marked a record as a duplicate.  This record has been hidden to everyone but the admin.";
+			$notif->save();
+			
+			echo $newId;
+		}
+	}
 
 	// Controller/action wrapper for create()
 	public function actionCreate() {
@@ -294,54 +359,22 @@ $model->city, $model->state $model->zipcode
 		
 			$model->setX2Fields($_POST['Contacts']);
 		
-			/*// clear values that haven't been changed from the default
-			 foreach($_POST['Contacts'] as $name => &$value) {
-				if($value == $model->getAttributeLabel($name))
-					$value = '';
-			}
-			foreach($_POST as $key=>$arr){
-				$pieces=explode("_",$key);
-				if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-					$newKey=$pieces[1];
-					if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-						$val=$_POST[$newKey."_id"];
-					}else{
-						$field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-						if(isset($field)){
-							$type=ucfirst($field->linkType);
-							if($type!="Contacts"){
-								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-							}else{
-								$names=explode(" ",$arr);
-								if(count($names)>1) 
-									$lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-							}
-							if(isset($lookupModel))
-								$val=$lookupModel->id;
-							else
-								$val=$arr;
-						}
-					}
-					$model->$newKey=$val;
-				}
-			}
+			$criteria=new CDbCriteria();
+			$criteria->compare('CONCAT(firstName," ",lastName)',$model->firstName." ".$model->lastName,false,"OR");
+			$criteria->compare('email',$model->email,false,"OR");
+			$criteria->compare('phone',$model->phone,false,"OR");
+			$criteria->compare('phone2',$model->phone2,false,"OR");
 			
-			$temp=$model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-				if(isset($_POST['Contacts'][$field])){
-					$model->$field=$_POST['Contacts'][$field];
-					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$field));
-					if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-						$model->$field=Accounts::parseUsers($model->$field);
-					}elseif($fieldData->type=='date'){
-						$model->$field=strtotime($model->$field);
-					}
-					
-				}
+			$duplicates=CActiveRecord::model('Contacts')->findAll($criteria);
+			if(count($duplicates)>0){
+				$this->render('duplicateCheck',array(
+					'newRecord'=>$model,
+					'duplicates'=>$duplicates,
+					'ref'=>'create'
+				));
+			}else{
+				$this->create($model,$model->attributes,'0'); 
 			}
-			if(!isset($model->visibility))
-				$model->visibility=1; */
-			$this->create($model,$model->attributes,'0'); 
 			
 		}
 		$this->render('create',array(
@@ -385,7 +418,7 @@ $model->city, $model->state $model->zipcode
                                         }else{
                                             $names=explode(" ",$arr);
                                             if(count($names)>1) 
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                            $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -443,7 +476,7 @@ $model->city, $model->state $model->zipcode
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                            $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -491,8 +524,26 @@ $model->city, $model->state $model->zipcode
 			$oldAttributes = $model->attributes;
 
 			$model->setX2Fields($_POST['Contacts']);
-			
-			$this->update($model,$oldAttributes,false);
+			if($model->dupeCheck!='1'){
+				$criteria=new CDbCriteria();
+				$criteria->compare('CONCAT(firstName," ",lastName)',$model->firstName." ".$model->lastName,false,"OR");
+				$criteria->compare('email',$model->email,false,"OR");
+				$criteria->compare('phone',$model->phone,false,"OR");
+				$criteria->compare('phone2',$model->phone2,false,"OR");
+				$criteria->compare('id',"<>".$model->id,false,"AND");
+				$duplicates=CActiveRecord::model('Contacts')->findAll($criteria);
+				if(count($duplicates)>0){
+					$this->render('duplicateCheck',array(
+						'newRecord'=>$model,
+						'duplicates'=>$duplicates,
+						'ref'=>'update'
+					));
+				}else{
+					$this->update($model,$oldAttributes,false);
+				}
+			}else{
+				$this->update($model,$oldAttributes,false);
+			}
 		}
 
 		$this->render('update',array(
@@ -515,9 +566,9 @@ $model->city, $model->state $model->zipcode
 			'sort'=>array(
 				'defaultOrder'=>'createDate DESC',
 			),
-			 'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			 ),
+			 // 'pagination'=>array(
+				// 'pageSize'=>ProfileChild::getResultsPerPage(),
+			 // ),
 			'criteria'=>$criteria
 		));
 
@@ -590,20 +641,20 @@ $model->city, $model->state $model->zipcode
 	// Lists all visible contacts
 	public function actionIndex() {
 		$model = new Contacts('search');
+		$model->setRememberScenario('contacts-index');
 		$name = 'Contacts';
 		parent::index($model,$name);
 	}
 
 	// Shows contacts in the specified list
 	public function actionList() {
-	
 		$id = isset($_GET['id'])? $_GET['id'] : 'all';
 
-		if(is_numeric($id))
+		if(is_numeric($id)){
 			$list = CActiveRecord::model('X2List')->findByPk($id);
-		if(isset($list)) {
 
-			$model = new Contacts('searchList');
+			$model = new Contacts('search');
+			$model->setRememberScenario('contacts-list-'.$id);
 			$dataProvider = $model->searchList($id);
 			$list->count = $dataProvider->totalItemCount;
 			$list->save();
@@ -779,41 +830,50 @@ $model->city, $model->state $model->zipcode
 			'list'=>Yii::t('contacts','in list'),
 		);
 		
-		if($list->type == 'dynamic')
+		if($list->type == 'dynamic') {
 			$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id),new CDbCriteria(array('order'=>'id ASC')));
 
-		if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
-		
-			$attributes = &$_POST['X2List']['attribute'];
-			$comparisons = &$_POST['X2List']['comparison'];
-			$values = &$_POST['X2List']['value'];
+			if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
+			
+				$attributes = &$_POST['X2List']['attribute'];
+				$comparisons = &$_POST['X2List']['comparison'];
+				$values = &$_POST['X2List']['value'];
 
-			if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
+				if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
 
+					$list->attributes = $_POST['X2List'];
+					$list->modelName = 'Contacts';
+					$list->lastUpdated = time();
+
+					if($list->save()) {
+					
+						X2ListCriterion::model()->deleteAllByAttributes(array('listId'=>$list->id));	// delete old criteria
+						
+						for($i=0; $i<count($attributes); $i++) {	// create new criteria
+						
+							if((array_key_exists($attributes[$i],$contactModel->attributeLabels()) || $attributes[$i] == 'tags')
+								&& array_key_exists($comparisons[$i],$comparisonList)) {		//&& $values[$i] != '' 
+								
+								$criterion = new X2ListCriterion;
+								$criterion->listId = $list->id;
+								$criterion->type = 'attribute';
+								$criterion->attribute = $attributes[$i];
+								$criterion->comparison = $comparisons[$i];
+								$criterion->value = $values[$i];
+								$criterion->save();
+							}
+						}
+						$this->redirect(array('/contacts/list/'.$list->id));
+					}
+				}
+			}
+		} else { //static or campaign lists
+			if (isset($_POST['X2List'])) {
 				$list->attributes = $_POST['X2List'];
 				$list->modelName = 'Contacts';
 				$list->lastUpdated = time();
-
-				if($list->save()) {
-				
-					X2ListCriterion::model()->deleteAllByAttributes(array('listId'=>$list->id));	// delete old criteria
-					
-					for($i=0; $i<count($attributes); $i++) {	// create new criteria
-					
-						if((array_key_exists($attributes[$i],$contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-							&& array_key_exists($comparisons[$i],$comparisonList)) {		//&& $values[$i] != '' 
-							
-							$criterion = new X2ListCriterion;
-							$criterion->listId = $list->id;
-							$criterion->type = 'attribute';
-							$criterion->attribute = $attributes[$i];
-							$criterion->comparison = $comparisons[$i];
-							$criterion->value = $values[$i];
-							$criterion->save();
-						}
-					}
-					$this->redirect(array('/contacts/list/'.$list->id));
-				}
+				$list->save();	
+				$this->redirect(array('/contacts/list/'.$list->id));
 			}
 		}
 		
@@ -1126,7 +1186,7 @@ $model->city, $model->state $model->zipcode
 	
 	private function exportToTemplate(){
                 ini_set('memory_limit',-1);
-		$contacts=Contacts::model()->findAll();
+		$contacts=CActiveRecord::model('Contacts')->findAll();
 		$list=array(array_keys($contacts[0]->attributes));
 		foreach($contacts as $contact){
 			$list[]=$contact->attributes;
@@ -1155,6 +1215,7 @@ $model->city, $model->state $model->zipcode
 	 */
 	public function actionAdmin() {
 		$model = new Contacts('search');
+		$model->setRememberScenario('contacts-admin');
 		$name = 'Contacts';
 		parent::admin($model, $name);
 	}

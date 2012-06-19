@@ -69,7 +69,7 @@ class ContactsController extends MobileController{
 		$pieces=explode(',',$topList);
 		$contacts=array();
 		foreach($pieces as $piece){
-			$contact=Contacts::model()->findByPk($piece); 
+			$contact=CActiveRecord::model('Contacts')->findByPk($piece); 
 			if(isset($contact))
 				$contacts[]=$contact;
 		}
@@ -175,7 +175,7 @@ class ContactsController extends MobileController{
 	
 	
 	public function loadModel($id) {
-		$model = Contacts::model()->findByPk((int) $id);
+		$model = CActiveRecord::model('Contacts')->findByPk((int) $id);
 		if ($model === null)
 			throw new CHttpException(404, 'The requested page does not exist.');
 		return $model;

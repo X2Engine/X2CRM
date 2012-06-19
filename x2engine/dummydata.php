@@ -1,4 +1,7 @@
 <?php
+$timeDiff = time() - 1329420240;	// time that original dummy data was generated
+
+
 mysql_query("INSERT INTO x2_contacts (id, firstName, lastName, title, company, phone, email, website, address, city, state, zipcode, country, visibility, assignedTo, backgroundInfo, twitter, linkedin, skype, googleplus, lastUpdated, updatedBy, priority, leadSource, rating, createDate, facebook, otherUrl) VALUES 
 (1,'Steve','McQueen','',0,'605-636-5634','nfuchs@pierreofficesupplies.com','','931 Sunset Blvd','Pierre','SD','57501','USA',1,'chames','President','','','','','1315755215','chames','Medium','Web search',2,1315755215,NULL,NULL),
 (2,'A.B.','Stratton','',25,'605-634-3452','abstratton@pierreofficesupplies.com','','931 Sunset Blvd','Pierre','SD','57501','USA',1,'chames','','','','','','1315755348','chames','Low','Fargo trade show',1,1315755309,NULL,NULL),
@@ -147,6 +150,38 @@ mysql_query("INSERT INTO x2_contacts (id, firstName, lastName, title, company, p
 (145,'Edward','Root IV','',NULL,'478-467-4731','eroot@savehopkinshouse.com','','277 Ranch Road','Tulsa','OK','74133','USA',1,'chames','','','','','','1316107596','admin','High','Web lead',5,1315869297,NULL,NULL),
 (146,'Tom','Smith','',0,'39393 39393','tom@ju.com','','','','','','',1,'','','','','','','1316126796','chames','','',NULL,1316126796,NULL,NULL);
 ") or addSqlError('Unable to create contacts dummy data.'.mysql_error());
+
+/* mysql_query(' INSERT INTO `x2_notifications` (`modelType`,`modelId`,`type`,`fieldName`,`createDate`,`updatedBy`,`leadscore`,`dealstatus`) VALUES 
+("Contacts",	78,		"change"
+("Contacts",	79,		"change"
+("Contacts",	80,		"change"
+("Contacts",	81,		"change"
+("Contacts",	82,		"change"
+("Contacts",	83,		"change"
+("Contacts",	84,		"change"
+("Contacts",	85,		"change"
+("Contacts",	86,		"change"
+("Contacts",	87,		"change"
+("Contacts",	88,		"change"
+("Contacts",	89,		"change"
+("Contacts",	90,		"change"
+("Contacts",	91,		"change"
+("Contacts",	92,		"change"
+("Contacts",	93,		"change"
+("Contacts",	94,		"change"
+("Contacts",	95,		"change"
+("Contacts",	96,		"change"
+("Contacts",	97,		"change"
+("Contacts",	98,		"change"
+("Contacts",	99,		"change"
+'); */
+
+// 1335109745
+
+// update, create, delete, assignment, 
+
+
+
 
 mysql_query(" INSERT INTO `x2_contacts` (`firstName`,`lastName`,`address`,`city`,`state`,`zipcode`,`id`,`leadSource`,`leadtype`,`leadstatus`,`createDate`,`lastUpdated`,`phone`,`assignedTo`,`leadDate`,`visibility`,`closedate`,`dealvalue`,`interest`,`rating`,`priority`,`updatedBy`,`leadscore`,`dealstatus`) VALUES 
  ('Liberty','Hayden','9062 Blandit Av.','Fayetteville','AK','19341','910900','Facebook','In Person','Rejected','1270645883','1283334492','421-751-6770','4','1314489002','1','1337645450','4814','Rack','4','High','3','4','Lost'),
@@ -1155,6 +1190,9 @@ mysql_query(" INSERT INTO `x2_contacts` (`firstName`,`lastName`,`address`,`city`
 mysql_query("update x2_contacts a set assignedTo = (select b.userName from x2_users b where b.id = a.assignedTo and a.assignedTo > 0) where id > 910900;");
 mysql_query("update x2_contacts a set updatedBy = (select b.userName from x2_users b where b.id = a.updatedBy and a.updatedBy > 0) where id > 910900;");
 
+mysql_query("UPDATE x2_contacts SET leadDate=leadDate+$timeDiff, closedate=closedate+$timeDiff, createDate=createDate+$timeDiff, lastUpdated=lastUpdated+$timeDiff");
+
+
 mysql_query("INSERT INTO x2_actions (id,assignedTo,actionDescription,visibility,associationId,associationType,associationName,dueDate,showTime,priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy) VALUES
 (1,'chames','Test',1,1,'sales','Trade-in 2006 R1200G',1315551540,0,'Low','',1315508569,'No','No','',NULL,1315508569,'chames'),
 (2,'chames','Comment test',1,1,'sales','Trade-in 2006 R1200G',1315508573,0,'Low','note',1315508573,'Yes','No','chames',1315508573,1315508573,'chames'),
@@ -1281,10 +1319,13 @@ mysql_query("INSERT INTO x2_actions (id,assignedTo,actionDescription,visibility,
 (123,'chames','Interested in RR ',1,145,'contact','Edward Root IV',1316125711,0,'Low','note',1316125711,'Yes','No','chames',1316125711,1316125711,'chames');
 ") or addSqlError('Unable to create actions dummy data.'.mysql_error());
 
+mysql_query("UPDATE x2_actions SET dueDate=dueDate+$timeDiff, completeDate=completeDate+$timeDiff, createDate=createDate+$timeDiff, lastUpdated=lastUpdated+$timeDiff");
+
+
 mysql_query("INSERT INTO x2_accounts (id,name,website,type,annualRevenue,phone,tickerSymbol,employees,assignedTo,createDate,associatedContacts,description,lastUpdated,updatedBy) VALUES 
-(1,'Black Mesa','www.blackmesa.com','Manufacturing',0,'831-555-5555','MESA',30,'jvalerian',NULL,'','Specializes in Resonance Cascades.',1315524105,'chames'),
-(2,'X2 Engine Inc.','www.x2engine.com','Web Service',500000,'831-555-5555','XENG',5,'mreynolds',NULL,'','Designs CRM applications, like this one!',NULL,''),
-(3,'Aperture Science','www.aperture.com','Science',9000000,'831-555-5555','PRTL',1,'chames',NULL,'','Currently working on transportation technologies.',NULL,''),
+(1,'Black Mesa','www.blackmesa.com','Manufacturing',0,'831-555-5555','MESA',30,'jvalerian',1315524105,'','Specializes in Resonance Cascades.',1315524105,'chames'),
+(2,'X2 Engine Inc.','www.x2engine.com','Web Service',500000,'831-555-5555','XENG',5,'mreynolds',1315524105,'','Designs CRM applications, like this one!',1315524105,''),
+(3,'Aperture Science','www.aperture.com','Science',9000000,'831-555-5555','PRTL',1,'chames',1315524105,'','Currently working on transportation technologies.',1315524105,''),
 (4,'Darla\'s Dairy Cooperative','','Dairy',210000,'559-221-3981','',12,'chames',1315515220,'','Family-run cooperative',1315515220,'chames'),
 (5,'Maloney & Sons','www.maloneyandsons.com','Auto repair',NULL,'904-334-2779','',9,'chames',1315517049,'','Rapidly expanding collection of auto repair shops located throughout N. Florida',1315517049,'chames'),
 (6,'Hana Heavy Industries','www.hanaheavy.com','Construction equip.',2300000,'808-622-0878','',26,'chames',1315519569,'','',1315519569,'chames'),
@@ -1315,4 +1356,11 @@ mysql_query("INSERT INTO x2_accounts (id,name,website,type,annualRevenue,phone,t
 (31,'Wonderful Workout World','www.wonderfulworkoutworld.com','Fitness',18456000,'901-636-3673','',46,'chames',1315867611,'','',1315867611,'chames'),
 (32,'Save Hopkins House','www.savehopkinshouse.com','Non-profit',NULL,'478-636-7436','',58,'chames',1315868597,'','',1315868597,'chames');
 ") or addSqlError('Unable to create accounts dummy data.'.mysql_error());
+
+mysql_query("UPDATE x2_accounts SET createDate=createDate+$timeDiff, lastUpdated=lastUpdated+$timeDiff");
+
+
+
+
+
 ?>

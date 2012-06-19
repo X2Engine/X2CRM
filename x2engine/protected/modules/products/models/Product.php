@@ -38,54 +38,39 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_template".
- *
- * The followings are the available columns in table 'x2_template':
- * @property integer $id
- * @property string $name
- * @property string $description
- * @property string $fieldOne
- * @property string $fieldTwo
- * @property string $fieldThree
- * @property string $fieldFour
- * @property string $fieldFive
- * @property integer $createDate
- * @property integer $lastUpdated
- * @property string $updatedBy
  */
-class Product extends X2Model
-{
+class Product extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Template the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_products';
 	}
-        
-        public function getAutoCompleteSource() {
-		return '/products/getItems';	// assume the model name is the same as the controller
-	}
-        
-        public function getDefaultRoute() {
-		return '/products';	// assume the model name is the same as the controller
-	}
 
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/products'
+			)
+		);
+	}
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -105,8 +90,7 @@ class Product extends X2Model
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -117,31 +101,29 @@ class Product extends X2Model
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Products'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
-                }
-                
-                return $arr;
-		return array(
-			'id' => Yii::t('module','ID'),
-			'name' => Yii::t('module','Name'),
-			'description' => Yii::t('module','Description'),
-			'createDate' => Yii::t('module','Create Date'),
-			'lastUpdated' => Yii::t('module','Last Updated'),
-			'updatedBy' => Yii::t('module','Updated By'),
-		);
-	}
+	// public function attributeLabels() {
+		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Products'));
+		// $arr=array();
+		// foreach($fields as $field){
+			// $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
+		// }
+		
+		// return $arr;
+		// return array(
+			// 'id' => Yii::t('module','ID'),
+			// 'name' => Yii::t('module','Name'),
+			// 'description' => Yii::t('module','Description'),
+			// 'createDate' => Yii::t('module','Create Date'),
+			// 'lastUpdated' => Yii::t('module','Last Updated'),
+			// 'updatedBy' => Yii::t('module','Updated By'),
+		// );
+	// }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 

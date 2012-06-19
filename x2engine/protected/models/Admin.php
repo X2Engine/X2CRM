@@ -134,7 +134,7 @@ class Admin extends CActiveRecord
 			'emailUseSignature' => Yii::t('admin','Email Signatures'),
 			'emailSignature' => Yii::t('admin','Default Signature'),
 			'emailType' => Yii::t('admin','Method'),
-			'emailHost' => Yii::t('admin','Host'),
+			'emailHost' => Yii::t('admin','Hostname'),
 			'emailPort' => Yii::t('admin','Port'),
 			'emailUseAuth' => Yii::t('admin','Authentication'),
 			'emailUser' => Yii::t('admin','Username'),

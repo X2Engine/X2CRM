@@ -38,13 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+// Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_workflows".
- *
- * The followings are the available columns in table 'x2_workflows':
- * @property integer $id
- * @property string $name
- * @property integer $lastUpdated
  */
 class Workflow extends CActiveRecord {
 	/**
@@ -58,15 +55,14 @@ class Workflow extends CActiveRecord {
 	 */
 	public function tableName() { return 'x2_workflows'; }
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/workflow'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/workflow/getItems'; }
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/workflow'
+			)
+		);
+	}
 
 	/**
 	 * @return array validation rules for model attributes.

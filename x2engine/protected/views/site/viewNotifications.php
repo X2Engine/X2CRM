@@ -38,6 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
+
+// $this->widget('')
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -45,33 +49,42 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 
-			'name'=>'text',
+			// 'name'=>'text',
 			'header'=>Yii::t('actions','Notification'),
-			'value'=>'$data->viewed==0?"<b>".$data->text."</b>" : $data->text',
+			'value'=>'$data->getMessage()',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'80%'),
+			'headerHtmlOptions'=>array('style'=>'width:70%'),
+		),
+		// array(
+			// 'name'=>'record',
+			// 'header'=>Yii::t('actions','Link To Record'),
+			// 'value'=>'NotificationChild::parseLink($data->record)',
+			// 'type'=>'raw',
+		// ),
+		array(
+			'name'=>'createDate',
+			'header'=>Yii::t('actions','Time'),
+			'value'=>'date("Y-m-d",$data->createDate)." ".date("g:i A",$data->createDate)',
+			'type'=>'raw',
 		),
 		array(
-			'name'=>'record',
-			'header'=>Yii::t('actions','Link To Record'),
-			'value'=>'NotificationChild::parseLink($data->record)',
-			'type'=>'raw',
-		),
-                array(
-			'name'=>'createDate',
-			'header'=>Yii::t('actions','Timestamp'),
-			'value'=>'date("Y-m-d",$data->createDate)." at ".date("g:i:s A",$data->createDate)',
-			'type'=>'raw',
-		)
-			//'type'
+			'class'=>'CButtonColumn',
+			'template'=>'{delete}',
+			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete/".$data->id)',
+			'afterDelete'=>'function(link,success,data){ removeNotification(data); }',
+			'deleteConfirmation'=>false,
+			'headerHtmlOptions'=>array('style'=>'width:40px'),
+		 ),
 	),
+	'rowCssClassExpression'=>'$data->viewed? "" : "unviewed"'
 ));
 
-$arr=$dataProvider->getData();
-foreach($arr as $notif){
-    if($notif->viewed==0){
-        $notif->viewed=1;
-        $notif->save();
-    }
+foreach($dataProvider->getData() as $notif) {
+	if(!$notif->viewed) {
+		$notif->viewed = true;
+		$notif->update();
+	}
 }
+unset($notif);
+
 ?>

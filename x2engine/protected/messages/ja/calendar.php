@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,9 +43,17 @@ return array (
 'Calendars'=>'カレンダ',
 
 'User Calendars'=>'ユーザーのカレンダー',
+'Group Calendars'=>'グループカレンダー',
 'Google Calendars'=>'Googleカレンダー',
 'Filter'=>'フィルタリング',
 'My Calendar Permissions'=>'マイカレンダーの権限',
+'User Calendar Permissions'=>'ユーザーカレンダのアクセス権',
+'Google Event'=>'Googleのイベント',
+
+'Completed'=>'完了する',
+'Quotes'=>'引用',
+'Email'=>'メール',
+'Attachment'=>'添付ファイル',
 
 'List'=>'リスト',
 'Delete'=>'削除する',

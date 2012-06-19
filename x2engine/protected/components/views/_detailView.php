@@ -177,7 +177,14 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 										if($field->type == 'text')
 											$style .= 'min-height:'.$item['height'].'px;';
 										echo '<div class="formInputBox" style="'.$style.'">';
-										if($field->type == 'date') {
+										
+										$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
+										if(empty($fieldHtml))
+											echo '&nbsp;';
+										else
+											echo $fieldHtml;
+										
+										/* if($field->type == 'date') {
 											echo !empty($model->$fieldName)?$this->formatLongDate($model->$fieldName).' ':" ";
 										}elseif($field->type=='rating'){
 											$this->widget('CStarRating',array(
@@ -191,7 +198,11 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											));
 											echo '&nbsp;';
 										}elseif($field->type=='assignment'){
-											echo empty($model->$fieldName)?"&nbsp;":User::getUserLinks($model->$fieldName);
+											if(is_numeric($model->$fieldName)){
+												echo Groups::getLink($model->$fieldName);
+											}else{
+												echo empty($model->$fieldName)?"&nbsp;":User::getUserLinks($model->$fieldName);
+											}
 										}elseif($field->type=='visibility'){
 											switch($model->$fieldName){
 												case '1':
@@ -282,7 +293,7 @@ if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 											echo empty($model->$fieldName)? '&nbsp;' : $this->convertUrls($model->$fieldName);     
 										} else {
 											echo empty($model->$fieldName)? '&nbsp;' : $model->$fieldName;
-										}
+										} */
 									}
 								}
 								unset($item);

@@ -310,7 +310,7 @@ Yii::app()->clientScript->registerScript('productTable', $productTableScript ,CC
 		echo $form->hiddenField($model,'accountName');
 		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 			'name'=>'accountAutoComplete',
-			'source' => $this->createUrl('contacts/getTerms'),
+			'source' => $this->createUrl('/contacts/getTerms'),
 			'htmlOptions'=>array('size'=>25,'maxlength'=>100,'tabindex'=>3),
 			'options'=>array(
 				'minLength'=>'2',
@@ -343,6 +343,8 @@ Yii::app()->clientScript->registerScript('productTable', $productTableScript ,CC
 		    'mode'=>'date', //use "time","date" or "datetime" (default)
 		    'options'=>array(
 		    	'dateFormat'=>$this->formatDatePicker(),
+				'changeMonth'=>true,
+				'changeYear'=>true,
 		    ), // jquery plugin options
 		    'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 		));?>

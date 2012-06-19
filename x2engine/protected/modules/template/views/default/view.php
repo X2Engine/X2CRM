@@ -54,7 +54,56 @@ $this->menu = array(
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>
 
 <?php
-
+$contactModel=new Contacts();
+$links=Relationships::model()->findAllByAttributes(array('secondType'=>'Templates','secondId'=>$model->id));
+$str="(";
+foreach($links as $link){
+    $str.=$link->firstId.", ";
+}
+if($str!="("){
+    $flag=true;
+    $str=substr($str,0,-2).")";
+}else
+    $flag=false;
+$contactDataProvider=new CActiveDataProvider('Contacts',array(
+    'criteria'=>array(
+            'order'=>'lastName DESC, firstName DESC',
+            'condition'=>$flag?'id IN '.$str:'id=null',
+    )
+));
+$this->widget('application.components.X2GridView', array(
+	'id'=>'contacts-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<h2>'.Yii::t('contacts','Associated Contacts').'</h2><div class="title-bar">'
+		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.'{summary}</div>{items}{pager}',
+	'dataProvider'=>$contactDataProvider,
+	// 'enableSorting'=>false,
+	// 'model'=>$model,
+	'filter'=>$contactModel,
+	// 'columns'=>$columns,
+	'modelName'=>'Contacts',
+	'viewName'=>'salecontacts',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+		'name'=>234,
+		'email'=>108,
+		'leadsource'=>128,
+		'assignedTo'=>115,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
+			'name'=>'name',
+			'header'=>Yii::t('contacts','Name'),
+			'value'=>'CHtml::link($data->name,array("/contacts/".$data->id))',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>true,
+));
+echo "<br />";
 $this->widget('InlineActionForm',
 		array(
 			'associationType'=>'templates',

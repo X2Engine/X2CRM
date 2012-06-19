@@ -89,7 +89,7 @@ function trimText($text) {
 	'filter'=>$model,
 	// 'columns'=>$columns,
 	'modelName'=>'Templates',
-	'viewName'=>'templates',
+	'viewName'=>'templatesadmin',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
 		'name'=>257,

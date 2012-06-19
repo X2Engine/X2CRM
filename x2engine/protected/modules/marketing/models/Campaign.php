@@ -38,22 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_campaigns".
- *
- * The followings are the available columns in table 'x2_campaigns':
- * @property integer $id
- * @property string $assignedTo
- * @property string $name
- * @property string $description
- * @property string $fieldOne
- * @property string $fieldTwo
- * @property string $fieldThree
- * @property string $fieldFour
- * @property string $fieldFive
- * @property integer $createDate
- * @property integer $lastUpdated
- * @property string $updatedBy
  */
 class Campaign extends X2Model {
 	/**
@@ -61,34 +49,23 @@ class Campaign extends X2Model {
 	 * @return Campaign the static model class
 	 */
 	public static function model($className=__CLASS__) { return parent::model($className); }
-	
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/marketing'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/marketing/getItems'; }
-	
+
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()	{ return 'x2_campaigns'; }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
+	public function behaviors() {
 		return array(
-			array('name, subject', 'required'),
-			array('id, listId, active, launched, complete', 'numerical', 'integerOnly'=>true),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, listId, description, type, subject, content, active, complete, launched', 'safe', 'on'=>'search'),
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/marketing'
+			),
+			'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
 		);
 	}
 
@@ -96,40 +73,13 @@ class Campaign extends X2Model {
 	 * @return array relational rules.
 	 */
 	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array();
+		return array(
+			'list'=>array(self::BELONGS_TO, 'X2List', 'listId')
+		);
 	}
-
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Campaign'));
-		$arr=array();
-		foreach($fields as $field){
-			$arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
-		}
 		
-		return $arr;
-
-	}
-	
 	public function search() {
-		// $this->active = '';
 		$criteria=new CDbCriteria;
-		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
-			// $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
-			// /* x2temp */
-			// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-			// if(!empty($groupLinks))
-				// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-			// /* end x2temp */
-		// $parameters['condition']=$condition;
-		// $criteria->scopes=array('findAll'=>array($parameters));
-		
-		// $criteria->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
-		
 		return $this->searchBase($criteria);
 	}
 }

@@ -137,7 +137,7 @@ $this->widget('application.components.X2GridView', array(
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
-	// 'filter'=>$model,
+	'filter'=>$model,
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts_list'.$listModel->id,
@@ -153,7 +153,7 @@ $this->widget('application.components.X2GridView', array(
 	'selectableRows'=>2,
 	'specialColumns'=>array(
 		'name'=>array(
-			'name'=>'lastName',
+			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
 			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
 			'type'=>'raw',

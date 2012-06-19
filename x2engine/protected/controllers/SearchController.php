@@ -94,7 +94,7 @@ class SearchController extends x2base {
 
                         }
 						
-                        $contacts=Contacts::model()->findAll($contactsCriteria);
+                        $contacts=CActiveRecord::model('Contacts')->findAll($contactsCriteria);
 
                         
                         $actionsCriteria=new CDbCriteria();

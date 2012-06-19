@@ -71,7 +71,7 @@ class InlineEmail extends CFormModel {
 			array('cc', 'parseMailingList'),
 			array('bcc', 'parseMailingList'),
 
-			array('to, cc, bcc, message, template', 'safe'),
+			array('to, cc, bcc, message, template, modelId, modelName', 'safe'),
 		);
 	}
 
@@ -87,8 +87,8 @@ class InlineEmail extends CFormModel {
 			'message'=>Yii::t('app','Message:'),
 			'template'=>Yii::t('app','Template'),
 			// 'redirect'=>Yii::t('app','Redirect'),
-			// 'modelName'=>Yii::t('app','Model Name'),
-			// 'modelId'=>Yii::t('app','Model ID'),
+			'modelName'=>Yii::t('app','Model Name'),
+			'modelId'=>Yii::t('app','Model ID'),
 			// 'status'=>Yii::t('app','Status'),
 		);
 	}

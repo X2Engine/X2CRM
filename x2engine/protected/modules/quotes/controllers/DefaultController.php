@@ -181,16 +181,25 @@ class DefaultController extends x2base {
 		    $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 		    $this->updateChangelog($model,$changes);
 		    if($model->assignedTo!=Yii::app()->user->getName()){
-		        $notif=new Notifications;
-		        $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
-		        if(isset($profile))
-		        	$notif->text="$profile->fullName has created a(n) ".$name." for you";
-		        $notif->user=$model->assignedTo;
-		        $notif->createDate=time();
-		        $notif->viewed=0;
-		        $notif->record="$name:$model->id";
-		        $notif->save();
-		
+			
+				$notif = new Notification;
+				$notif->user = $model->assignedTo;
+				$notif->createdBy = Yii::app()->user->getName();
+				$notif->createDate = time();
+				$notif->type = 'create';
+				$notif->modelType = $name;
+				$notif->modelId = $model->id;
+				$notif->save();
+				
+		        // $notif=new Notifications;
+		        // $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
+		        // if(isset($profile))
+		        	// $notif->text="$profile->fullName has created a(n) ".$name." for you";
+		        // $notif->user=$model->assignedTo;
+		        // $notif->createDate=time();
+		        // $notif->viewed=0;
+		        // $notif->record="$name:$model->id";
+		        // $notif->save();
 		    }
 		   	
 		   	// tie contacts to quote
@@ -254,7 +263,7 @@ class DefaultController extends x2base {
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                            $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -354,7 +363,7 @@ class DefaultController extends x2base {
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                            $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -382,7 +391,7 @@ class DefaultController extends x2base {
                         }
 				    	
 			$contacts = $_POST['associatedContacts']; // get contacts
-			$contact = Contacts::model()->findByPk($contacts[0]);
+			$contact = CActiveRecord::model('Contacts')->findByPk($contacts[0]);
 			$model->associatedContacts = $contact->id;
 			
 			$redirect = $_POST['redirect'];
@@ -492,7 +501,7 @@ class DefaultController extends x2base {
 			}
 			
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
-			$contact = Contacts::model()->findByPk($contacts[0]);
+			$contact = CActiveRecord::model('Contacts')->findByPk($contacts[0]);
 			$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 		    
         }
@@ -631,7 +640,7 @@ class DefaultController extends x2base {
                                             eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
                                         }else{
                                             $names=explode(" ",$arr);
-                                            $lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+                                            $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
                                         }
                                         if(isset($lookupModel))
                                             $val=$lookupModel->id;
@@ -792,7 +801,7 @@ class DefaultController extends x2base {
 	   	    }
 	   	}
 	   	
-	   	$contact = Contacts::model()->findByPk($_POST['contactId']);
+	   	$contact = CActiveRecord::model('Contacts')->findByPk($_POST['contactId']);
 	   	
 		// generate history
 		$action = new Actions;
@@ -825,7 +834,7 @@ class DefaultController extends x2base {
 		
 		if(isset($_POST['contactId'])) {
 		    Yii::app()->clientScript->scriptMap['*.js'] = false;
-		    $contact = Contacts::model()->findByPk($_POST['contactId']);
+		    $contact = CActiveRecord::model('Contacts')->findByPk($_POST['contactId']);
 		    $this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 		}
 	}
@@ -1107,7 +1116,7 @@ class DefaultController extends x2base {
 
 			// generate history
 			
-			$contact = Contacts::model()->findByPk($_GET['contactId']);
+			$contact = CActiveRecord::model('Contacts')->findByPk($_GET['contactId']);
 
 			$action = new Actions;
 			$action->associationType = 'contacts';
@@ -1132,7 +1141,7 @@ class DefaultController extends x2base {
 		
 		if($_GET['contactId']) {
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
-			$contact = Contacts::model()->findByPk($_GET['contactId']);
+			$contact = CActiveRecord::model('Contacts')->findByPk($_GET['contactId']);
 			$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 		}
 	}
@@ -1163,7 +1172,7 @@ class DefaultController extends x2base {
 			
 			if(isset($_POST['contactId'])) {
 				Yii::app()->clientScript->scriptMap['*.js'] = false;
-				$contact = Contacts::model()->findByPk($_POST['contactId']);
+				$contact = CActiveRecord::model('Contacts')->findByPk($_POST['contactId']);
 				$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 			}
 		}
@@ -1178,7 +1187,7 @@ class DefaultController extends x2base {
 		
 		if($_GET['contactId']) {
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
-			$contact = Contacts::model()->findByPk($_GET['contactId']);
+			$contact = CActiveRecord::model('Contacts')->findByPk($_GET['contactId']);
 			$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 		}
 	}

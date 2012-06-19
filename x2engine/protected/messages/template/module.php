@@ -64,6 +64,10 @@ return array (
 'Create {X}'=>'',
 'Update {X}'=>'',
 'Delete {X}'=>'',
+'View'=>'',
+'Create'=>'',
+'Update'=>'',
+'Delete'=>'',
 
 // Page Titles
 'Create New Module'=>'',

@@ -114,7 +114,24 @@ class X2Calendar extends CActiveRecord
 		return $names;
 	}
 	
-	// get a list of calendar names that the current user has permission to view
+	public static function getViewableGroupCalendarNames() {
+		
+		$names = array();
+
+		if(Yii::app()->user->name == 'admin') { // admin sees all
+			$groups = Yii::app()->db->createCommand()->select()->from('x2_groups')->queryAll();			
+		} else {
+			$groups = Yii::app()->db->createCommand()->select('x2_groups.id, x2_groups.name')->from('x2_group_to_user')->join('x2_groups', 'groupId = x2_groups.id')->where('userId='.Yii::app()->user->id)->queryAll();
+		}
+		
+		foreach($groups as $group) {
+			$names[$group['id']] = $group['name'];
+		}
+		
+		return $names;
+	}
+	
+/*	// get a list of calendar names that the current user has permission to view
 	public static function getViewableCalendarNames() {
 		$calendars = X2Calendar::model()->findAllByAttributes(array('googleCalendar'=>false));
 		
@@ -206,7 +223,7 @@ class X2Calendar extends CActiveRecord
 		
 		return $names;
 	}
-	
+	*/
 	
 	public static function getCalendarFilters() {
 		$user = User::model()->findByPk(Yii::app()->user->id);

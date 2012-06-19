@@ -89,7 +89,7 @@ $model->email = $attributeLabels['email'];
 <?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Create'),
-	array('contacts/new'),
+	array('/contacts/new'),
 	array('success'=>"function(response) {
 			if(response!='') {
 				alert('".Yii::t('app','Contact Saved')."');

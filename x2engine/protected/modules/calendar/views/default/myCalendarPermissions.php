@@ -44,62 +44,77 @@ if(Yii::app()->params->admin->googleIntegration) { // menu if google integration
 	$this->menu=array(
 		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
 		array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
-		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+//		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
 		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
 	);
 } else {
 	$this->menu=array(
 		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
 		array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
-		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+//		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
 	);
 }
 ?>
 
-<div class="x2-layout form-view" style="margin-bottom: 0;">
-	<div class="formSection">
-		<div class="formSectionHeader">
-			<span class="sectionTitle"><?php echo Yii::t('calendar', 'My Calendar Permissions'); ?></span>
-		</div>
-	</div>
-</div>
+
 
 <?php
-$form=$this->beginWidget('CActiveForm', array(
-   'id'=>'permissions-form',
-   'enableAjaxValidation'=>false,
+
+$users = User::model()->findAll(array('select'=>'id, username, firstName, lastName', 'index'=>'id'));
+
+$this->beginWidget('CActiveForm', array(
+    'id'=>'user-permission-form',
+    'enableAjaxValidation'=>false,
 ));
-?>
 
-<div class="form" style="border:1px solid #ccc; border-top: 0; padding: 0; margin-top:-1px; border-radius:0;-webkit-border-radius:0; background:#eee;">
-	<table frame="border">
-		<td>
-			<label for="viewPermission"><?php echo Yii::t('calendar', 'View Permission'); ?></label>
-			<?php echo $form->dropDownList($model, 'calendarViewPermission', $users, array(
-				'tabindex'=>1,
-			    'title'=>Yii::t('calendar', 'View Permission'),
-			    'id'=>'viewPermission',
-			    'multiple'=>'multiple',
-			)); ?>
-		</td>
-		<td>
-			<label for="editPermission"><?php echo Yii::t('calendar', 'Edit Permission'); ?></label>
-			<?php echo $form->dropDownList($model, 'calendarEditPermission', $users, array(
-				'tabindex'=>2,
-			    'title'=>Yii::t('calendar', 'Edit Permission'),
-			    'id'=>'editPermission',
-			    'multiple'=>'multiple',
-			)); ?>
-		</td>
-	</table>
-</div>
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
+Yii::app()->clientScript->registerCss('userPermissionCss',"
+.user-permission {
+    width: 460px;
+    height: 200px;
+}
+#switcher {
+    margin-top: 20px;
+}
+",'screen, projection');
+Yii::app()->clientScript->registerScript('userCalendarPermission', "
+$(function() {
+    $('.user-permission').multiselect();
+});
+",CClientScript::POS_HEAD);
 
-<?php
+$names = array();
+foreach($users as $user)
+    if($user->username != 'admin' && $user->id != Yii::app()->user->id)
+    	$names[$user->id] = $user->firstName . ' ' . $user->lastName;
+    	
+$viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission(Yii::app()->user->id);
+$editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()->user->id);
+
+echo "<h2>" . Yii::t('calendar', 'View Permission') . "</h2>";
+echo Yii::t('calendar', "These users can view your calendar.");
+echo CHtml::listBox('view-permission', $viewPermission, $names, array(
+    'class'=>'user-permission',
+    'multiple'=>'multiple',
+    'onChange'=>'giveSaveButtonFocus();',
+));
+echo "<br>\n";
+
+echo "<h2>" . Yii::t('calendar', 'Edit Permission') . "</h2>";
+echo Yii::t('calendar', "These users can edit your calendar.");
+echo CHtml::listBox('edit-permission', $editPermission, $names, array(
+    'class'=>'user-permission',
+    'multiple'=>'multiple',
+    'onChange'=>'giveSaveButtonFocus();',
+));
+
 echo '	<div class="row buttons">'."\n";
 echo '		'.CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button', 'name'=>'save-button', 'tabindex'=>24))."\n";
 echo "	</div>\n";
 
 $this->endWidget();
+
 ?>

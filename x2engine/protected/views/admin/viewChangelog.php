@@ -52,7 +52,11 @@
 
 			'name'=>'type',
 			'header'=>Yii::t('admin','Type'),
-			'value'=>'CHtml::link($data->type,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))',
+			'value'=>'
+				!is_null(CActiveRecord::model($data->type)->findByPk($data->itemId))?
+				($data->type!="Actions"?CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId)):
+					CHtml::link("Action",Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
+				"RECORD DELETED"',
 			'type'=>'raw',
 		),
 		array(

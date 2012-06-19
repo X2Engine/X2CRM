@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,17 @@ return array (
 'No'=>'нет',
 'Yes'=>'да',
 'Date Completed'=>'Дата завершения',
+'All Day'=>'Весь день',
+'Color'=>'цвет',
+'Start Date'=>'Дата начала',
+'End Date'=>'Дата окончания',
+
+// Colors
+'Blue'=>'синий',
+'Green'=>'зеленый',
+'Red'=>'красный',
+'Orange'=>'оранжевый',
+'Black'=>'черный',
 
 // Actions Nav
 'All Actions'=>'Все действия',
@@ -75,6 +86,7 @@ return array (
 'Update Action'=>'Обновление Действие',
 'Complete Action'=>'Полное Действие',
 'Complete + New Action'=>'Полный комплект + Новая акция',
+'Complete and View Contact'=>'Заполните и просмотр Контакт',
 'Uncomplete'=>'Сделайте неполное ',
 'Log A Call'=>'Вход вызова',
 'New Action'=>'Новая акция',
@@ -89,7 +101,7 @@ return array (
 'View Action'=>'Посмотреть Действие',
 'Update Action:'=>'Обновление действий:',
 'Action'=>'действие',
-'Action:'=>'Действие:',
+'Action: '=>'Действие:',
 'Today\'s Actions'=>'Сегодняшние действия',
 'My Actions'=>'Мои действия',
 'All My Actions'=>'Все мои действия',
@@ -97,6 +109,7 @@ return array (
 'Delete Action'=>'Действие Удалить',
 'Share Action'=>'Доля Действие',
 'Create'=>'создавать',
+'New Event'=>'Дни рождения',
 
 
 // Misc

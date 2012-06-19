@@ -43,7 +43,7 @@ $isAdmin = !$isGuest && Yii::app()->user->getName()=='admin';
 $isUser = !($isGuest || $isAdmin);
 if(Yii::app()->session['alertUpdate']){
 ?><script>
-	alert(<?php echo addslashes(Yii::t('admin','A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.')); ?>);
+	alert('<?php echo addslashes(Yii::t('admin','A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.')); ?>');
 </script>
 <?php
 Yii::app()->session['alertUpdate']=false;
@@ -53,9 +53,6 @@ $baseUrl = Yii::app()->getBaseUrl();
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $cs = Yii::app()->clientScript;
-
-// set base path and theme path globals for JS
-$cs->registerScript('setYiiBaseUrl','var yiiBaseUrl="'.$baseUrl.'", themeBaseUrl="'.$themeUrl.'";', CClientScript::POS_HEAD);
 
 // jQuery and jQuery UI libraries
 $cs->registerCoreScript('jquery');
@@ -95,13 +92,13 @@ $(document).ready(function() {
 ",CClientScript::POS_END);
 
 $cs->registerScriptFile($baseUrl.'/js/notifications.js');
-if($this->getModule()!='mobile'){
+/* if($this->getModule()!='mobile'){
 $notifUrl = $this->createUrl('/site/checkNotifications');
-$cs->registerScript('updateNotificationJs', "
-        notifUrl='".$this->createUrl('/site/checkNotifications')."'
-	$(document).ready(updateNotifications());	//update on page load
-",CClientScript::POS_HEAD); 
-}
+// $cs->registerScript('updateNotificationJs', "
+        // notifUrl='".$this->createUrl('/site/checkNotifications')."'
+	// $(document).ready(updateNotifications());	//update on page load
+// ",CClientScript::POS_HEAD); 
+} */
 
 $backgroundImg = '';
 $defaultOpacity = 1;
@@ -240,8 +237,8 @@ $userMenu = array(
 		<div class="width-constraint">
 			<?php echo CHtml::beginForm(array('/search/search'),'get'); ?>
 				<?php
-					$notifications = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>0));
-					echo CHtml::link($notifications,array('/site/viewNotifications'),array('id'=>'main-menu-notif','style'=>'z-index:999;display:none;'));
+					$notifCount = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName()));
+					echo CHtml::link('<span>'.$notifCount.'</span>','#',array('id'=>'main-menu-notif','style'=>'z-index:999;'));
 					echo CHtml::link('',array('/site/page','view'=>'about'),array('id'=>'main-menu-icon'));
 				?>
 				<button class="x2-button black" type="submit"><span></span></button>
@@ -252,6 +249,11 @@ $userMenu = array(
 					'onblur'=>'toggleText(this);',
 					'autocomplete'=>'off'
 				)); ?>
+				<div id="notif-box">
+					<div id="no-notifications" <?php if($notifCount > 0) echo 'style="display:none;"'; ?>><?php echo Yii::t('app','You don\'t have any notifications.'); ?></div>
+					<div id="notifications"></div>
+					<div id="notif-view-all" <?php if($notifCount < 1) echo 'style="display:none;"'; ?>><?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?></div>
+				</div>
 				<span id="search-bar-title">
 					<?php echo CHtml::link(CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,'',array('height'=>30,'width'=>200)),array('/site/whatsNew')); ?>
 				</span>

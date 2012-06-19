@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,6 +45,7 @@ return array (
 'ID'=>'ID',
 'First Name'=>'Prénom',
 'Name'=>'Nom',
+'Full Name'=>'Nom Complet',
 'Last Name'=>'Nom',
 'Title'=>'Titre',
 'Account'=>'Compte',
@@ -93,6 +94,8 @@ return array (
 'Lead Status'=>'Statut des Chances',
 'Lead Score'=>'Score des Chances',
 'Deal Status'=>'Statut de l\'offre',
+'Do Not Call'=>'Ne Pas Appeler',
+'Do Not Email'=>'Ne pas envoyer de courriel',
 
 // Misc
 'Assigned to {name}'=>'Assigné à {name}',

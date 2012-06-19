@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,6 +86,7 @@ return array (
 
 // Footer
 'All Rights Reserved.'=>'すべての内容は著作権を有します。',
+'Generated in {time} seconds.'=>'{time}秒で生成',
 
 // Widgets
 'My Actions'=>'私のアクション',
@@ -98,6 +99,8 @@ return array (
 'Just Me'=>'ジャスト·ミー',
 'All Users'=>'すべてのユーザー',
 'Doc Viewer'=>'ドキュメントビューア',
+'Time Zone'=>'時間帯',
+'Top Sites'=>'トップサイト',
 
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
@@ -115,6 +118,12 @@ return array (
 'Add {name}'=>'{name}を追加する。',
 
 'Enter Title'=>'タイトルを入力します。',
+'Title'=>'タイトル',
+'Title:'=>'タイトル：',
+'Link'=>'リンク',
+'Link:'=>'リンク：',
+'Add Site'=>'サイトを追加',
+'Example'=>'例',
 
 // Chat
 'Message Body'=>'メッセージ本文',
@@ -168,6 +177,15 @@ return array (
 '"{X}" is not an allowed filetype.'=>'"{X}"許可されてファイル形式ではありません。',
 'Loading'=>'負荷',
 'Edit'=>'編集',
+'Due'=>'原因',
+'Help'=>'助け',
+'---'=>'---',
+'You don\'t have any notifications.'=>'任意の通知を持っていません。',
+'View all'=>'すべてを見る',
+'Close'=>'閉じる',
+'Delete'=>'削除する',
+'Group?'=>'グループ？',
+'Checkbox'=>'チェックボックス',
 
 // Misc Actions
 'Submit'=>'提出す',

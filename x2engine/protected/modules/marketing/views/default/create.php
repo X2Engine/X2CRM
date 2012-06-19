@@ -46,5 +46,5 @@ $this->menu = array(
 );
 ?>
 <h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2>
-
+<?php $model->type = 'Email'; ?>
 <?php echo $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign')); ?>

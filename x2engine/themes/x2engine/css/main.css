@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -78,7 +78,6 @@ a.x2-button, input.x2-button, button.x2-button { /* , a.search-button */
 	-webkit-border-radius:	3px;
 	-o-border-radius:		3px;
 }
-
 a.x2-button:hover, input.x2-button:hover, button.x2-button:hover {
 	color:black;
 	background-color:#fff;
@@ -112,6 +111,18 @@ a.x2-button.highlight, input.x2-button.highlight, button.x2-button.highlight { /
 	text-shadow:rgba(0,0,0,0.5) 0 1px 3px;
 	color:#fff;
 }
+a.x2-button.urgent, input.x2-button.urgent, button.x2-button.urgent { /* , a.search-button */
+	background-color:#910000;
+	background:-webkit-gradient(linear, left top, left bottom, from(#9C0000), to(#910000));
+	background:-moz-linear-gradient(top,  #9C0000,  #910000);
+	border-color:#520000 !important;
+	
+	-moz-box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+	-webkit-box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+	box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+	text-shadow:rgba(0,0,0,0.5) 0 1px 3px;
+	color:#fff;
+}
 a.x2-button.highlight:hover, input.x2-button.highlight:hover, button.x2-button.highlight:hover { /* , a.search-button */
 	background-color:#87b800;
 	background:-webkit-gradient(linear, left top, left bottom, from(#87b800), to(#6aad00));
@@ -138,7 +149,7 @@ a.x2-button#transparency-button span, a.x2-button#fullscreen-button span{
 	background-image:url(../images/contrast-icon.png);
 	background-position:center center;
 	background-repeat:no-repeat;
-	width:26px;
+	width:28px;
 }
 a.x2-button#fullscreen-button span{background-image:url(../images/fullscreen-icon.png);}
 
@@ -197,6 +208,7 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 .span-15 #content, .span-20 #content {padding:0;}
 .span-20#content-box {width:780px;}			/* blueprint doesn't create any margin for the last span */
 #sidebar-left-box {position:relative;height:400px;}
+#dashSIDE{position:relative;height:400px;margin-left:-80px;}
 
 
 .portlet {
@@ -286,7 +298,13 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 #recent-items .portlet-content{word-wrap:break-word;}
 
 /* Widgets */
-
+div.blah {height:780px;}
+#dashboard-grid{
+    width:780px;
+    height:600px;
+    margin-top:40px;
+}
+.itemsColumn{float:left;width:30em;}
 div.portlet-minimize {
 	float:right;
 	font-size:14px;
@@ -730,6 +748,7 @@ div.workflow-status {display:block;float:left;line-height:20px;height:24px;width
 	display:inline;
 	float:right;
 }
+
 .list-view .view {
 	clear:both;
 	margin:0 0 5px 0;
@@ -783,6 +802,7 @@ div.workflow-status {display:block;float:left;line-height:20px;height:24px;width
 	-o-border-radius:4px;
 	-webkit-border-radius:4px;
 }
+.dashSubmit{float:right;}
 .action.list-view .header a {font-weight:normal;}
 .action.list-view .header {
 	display:block;

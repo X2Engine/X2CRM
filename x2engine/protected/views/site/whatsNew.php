@@ -39,8 +39,8 @@
  ********************************************************************************/
 ?>
 <h1><?php echo Yii::t('app','What\'s New'); ?></h1>
-<?php echo Yii::t('app','Records that have been modified since your last login.');?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
+	'template'=>Yii::t('app','Records that have been modified since your last login.').'{summary}{items}{pager}',
 	'dataProvider' => $dataProvider,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'columns' => array(

@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'Dienstprogramme',
-'Χ2Studio'=>'Χ2Studio',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Support und Dokumentation',
 'Contact Us'=>'Kontaktieren Sie uns',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'So laden Sie Ihr Logo für die Anzeige neben der Suchleiste. Downloaden Sie bitte die Datei hier mit dem Formular.',
 'Create Page'=>'Seite Erstellen',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. ist das Unternehmen hinter X2Contacts - eine hochleistungs Kontaktmanagement Webanwendung. X2Engine bietet für Ihre Organisation professionelle Unterstützung und Ausbildung auf X2Contacts. Bitte füllen Sie das untenstehende Formular aus, um uns zu kontaktieren.',
+
+// Email Config
+'Email Server Configuration'=>'E-Mail-Server-Konfiguration',
+'Ready to send email? We need some information about your mail server.'=>'Bereit zum E-Mail schicken? Wir brauchen einige Informationen über Ihr Mail-Server.',
+'Outbound Email Server'=>'Ausgehende E-Mail-Server',
+'Hostname'=>'Hostname',
+'Port'=>'Port',
+'Security'=>'Sicherheit',
+'Authentication'=>'Authentifizierung',
+'Username'=>'Benutzername',
+'Password'=>'Kennwort',
+'Sender Name'=>'Absender Name',
+'Sender Email Address'=>'Absender E-Mail Adresse',
+'Batch Size'=>'Losgröße',
+'Interval (Minutes)'=>'Intervall (Minuten)',
+'Email Signatures'=>'E-Mail Signaturen',
+'None'=>'Keiner',
+'User\'s Choice'=>'Ganz nach Wahl',
+'Default Signature'=>'Standard-Signatur',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Sie können die folgenden Variablen in dieser Vorlage: {first}, {last}, {phone}, {email}.',
 );

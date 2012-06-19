@@ -38,21 +38,24 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2LinkableBehavior');
+
 class ContactList extends X2List {
 
 	public static $modelName = 'Contacts';
 	public static $linkRoute = '/contacts/list';
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/contacts/list'; }	// assume the model name is the same as the controller
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/contacts/getLists'; }	// assume the model name is the same as the controller
-	
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/contacts',
+				'viewRoute'=>'/contacts/list',
+				'autoCompleteSource'=>'/contacts/getLists'
+			)
+		);
+	}
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return ContactList the static model class

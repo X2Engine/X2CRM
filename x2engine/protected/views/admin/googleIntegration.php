@@ -75,7 +75,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		
 		<br /><br />
 		
-		<?php echo Yii::t('admin','Google integration allows users to link their calendars on x2crm with Google Calendars.'); ?>
+		<?php echo Yii::t('admin','Google integration allows users to link their calendars on x2crm with Google Calendars as well as log in with their Google IDs.'); ?>
 		<br /><br />
 
 		<?php echo Yii::t('admin', 'You will need to create a google app in order to use google integration.'); ?>
@@ -84,6 +84,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo Yii::t('admin', 'Also, the following link needs to be added to your app\'s Redirect URIs:'); ?>
 		<br /><br />
 		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/default/create'); ?>
+		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/site/googleLogin'); ?>
 	</div>
 	
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button'))."\n";?>

@@ -43,7 +43,7 @@ $this->menu=array(
 	array('label'=>Yii::t('actions','All Actions'),'url'=>array('viewAll')),
 	// array('label'=>Yii::t('actions','Create Lead'),'url'=>array('quickCreate')),
 	array('label'=>Yii::t('actions','Create'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
-	array('label'=>Yii::t('actions','View'),'url'=>array('actions/view','id'=>$model->id)),
+	array('label'=>Yii::t('actions','View'),'url'=>array('view','id'=>$model->id)),
 	array('label'=>Yii::t('actions','Update')),
 );
 ?>

@@ -38,30 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_actions".
- *
- * The followings are the available columns in table 'x2_actions':
- * @property integer $id
- * @property string $assignedTo
- * @property string $actionDescription
- * @property integer $visibility
- * @property integer $associationId
- * @property string $associationType
- * @property string $associationName
- * @property integer $dueDate
- * @property integer $showTime
- * @property string $priority
- * @property string $type
- * @property integer $createDate
- * @property string $complete
- * @property string $reminder
- * @property string $completedBy
- * @property integer $completeDate
- * @property integer $lastUpdated
- * @property string $updatedBy
- * @property integer $workflowId
- * @property integer $stageNumber
  */
 class Actions extends X2Model {
 	/**
@@ -73,19 +53,24 @@ class Actions extends X2Model {
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName() { return 'x2_actions'; }
+	public function tableName() {
+		return 'x2_actions';
+	}
 	
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/actions'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/actions/getItems'; }
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/actions'
+			),
+			'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
+		);
+	}
 
-	
 	/**
 	 * @return array validation rules for model attributes.
 	 */
@@ -145,16 +130,19 @@ class Actions extends X2Model {
 		$action->update();
 	}
 
-	public function behaviors() {
-		return array(
-			'ERememberFiltersBehavior' => array(
-				'class' => 'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),				/* optional line */
-				'defaultStickOnClear'=>false		/* optional line */
-			),
-		);
+	public function getName() {
+		return $this->actionDescription;
 	}
-
+	
+	public function getLink($length = 0) {
+	
+		$text = $this->owner->name;
+		if($length && strlen($text) > $length)
+			$text = substr($text,0,$length).'...';
+		return CHtml::link($text,array($this->viewRoute.'/'.$this->owner->id));
+	}
+	
+	
 	public static function parseStatus($dueDate) {
 
 		if (empty($dueDate))	// there is no due date

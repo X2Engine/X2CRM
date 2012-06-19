@@ -101,8 +101,32 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 		if(isset($this->modelClass) && $this->modelClass == 'Calendar') {
 			$user = UserChild::model()->findByPk(Yii::app()->user->getId());
 			$showCalendars = json_decode($user->showCalendars, true);
-			$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
-			$editableUserCalendars = X2Calendar::getEditableUserCalendarNames(); // list of user calendars current user can edit
+//			$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
+			$editableUserCalendars = X2CalendarPermissions::getEditableUserCalendarNames(); // list of user calendars current user can edit
+			if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
+			$this->beginWidget('zii.widgets.CPortlet',
+					array(
+						'title'=>Yii::t('calendar', 'Group Calendars'),
+						'id'=>'group-calendar',
+					)
+				);
+				$showGroupCalendars = $showCalendars['groupCalendars'];
+				echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+				foreach($this->groupCalendars as $groupId=>$groupName) {
+					echo "<li>\n";
+					// checkbox for each user; current user and Anyone are set to checked
+					echo CHtml::checkBox($groupId, in_array($groupId, $showGroupCalendars),
+						array(
+							'onChange'=>"toggleGroupCalendarSource(this.name, this.checked);", // add or remove group calendar actions to calendar if checked/unchecked
+						)
+					);
+					echo "<label for=\"$groupId\">$groupName</label>\n";
+					echo "</li>";
+				}
+				echo "</ul>\n";
+				$this->endWidget();
+			}
+			/*
 			if(isset($this->sharedCalendars) && $this->sharedCalendars !== null) {
 				$this->beginWidget('zii.widgets.CPortlet',
 					array(
@@ -130,6 +154,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				echo "</ul>\n";
 				$this->endWidget();
 			}
+			*/
 			if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
 				$this->beginWidget('zii.widgets.CPortlet',
 					array(
@@ -140,6 +165,9 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				$showUserCalendars = $showCalendars['userCalendars'];
 				echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
 				foreach($this->calendarUsers as $userName=>$user) {
+					if($user=='Anyone'){
+						$user=Yii::t('app',$user);
+					}
 					if(isset($editableUserCalendars[$userName])) // check if current user has permission to edit calendar
 						$editable = 'true';
 					else
@@ -148,7 +176,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					// checkbox for each user calendar the current user is alowed to view
 					echo CHtml::checkBox($userName, in_array($userName, $showUserCalendars),
 						array(
-							'onChange'=>"toggleCalendarSource(this.name, this.checked, $editable);", // add or remove user's actions to calendar if checked/unchecked
+							'onChange'=>"toggleUserCalendarSource(this.name, this.checked, $editable);", // add or remove user's actions to calendar if checked/unchecked
 						)
 					);
 					echo "<label for=\"$userName\">$user</label>\n";
@@ -157,6 +185,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				echo "</ul>\n";
 				$this->endWidget();
 			}
+			/*
 			if(isset($this->googleCalendars) && $this->googleCalendars !== null) {
 				$this->beginWidget('zii.widgets.CPortlet',
 					array(
@@ -192,6 +221,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				echo "</ul>\n";
 				$this->endWidget();
 			}
+			*/
 			if(isset($this->calendarFilter) && $this->calendarFilter !== null) {
 				$this->beginWidget('zii.widgets.CPortlet',
 					array(
@@ -212,7 +242,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 						)
 					);
 					$filterDisplayName = ucwords($filterName); // capitalize filter name for label
-					echo "<label for=\"$filterName\">$filterDisplayName</label>";
+					echo "<label for=\"$filterName\">".Yii::t('calendar',$filterDisplayName)."</label>";
 					echo "</li>\n";
 				} 
 				echo "</ul>\n"; 

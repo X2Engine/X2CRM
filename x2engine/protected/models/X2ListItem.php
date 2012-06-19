@@ -86,9 +86,17 @@ class X2ListItem extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'listId'=>array(self::BELONGS_TO, 'ContactList', 'id'),
-			'contactId'=>array(self::HAS_ONE, 'Contacts', 'id'),
+			'list'=>array(self::BELONGS_TO, 'X2List', 'listId'),
+			'contact'=>array(self::BELONGS_TO, 'Contacts', 'contactId'),
 		);
+	}
+
+	/**
+	 * Yii needs this since this model does not have a primary key column in db
+	 * If this isn't here, referring to this as a relation in other models will fail
+	 */
+	public function primaryKey() {
+		return array('contactId','listId');
 	}
 
 	/**

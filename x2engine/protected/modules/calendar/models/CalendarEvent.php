@@ -78,6 +78,8 @@ class CalendarEvent extends CFormModel
 	public $visibility;
 	public $reminder;
 	public $type;
+	public $recurrence;
+	public $endRecurrence;
 	public $allDay;
 	public $color;
 	
@@ -136,5 +138,29 @@ class CalendarEvent extends CFormModel
                     
                 } 
                 return $return;
+	}
+	
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	
+	public function attributeLabels() {
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
+		$arr=array();
+		foreach($fields as &$field)
+			$arr[$field->fieldName] = Yii::t('actions',$field->attributeLabel);
+		$arr['startDate']=Yii::t('actions','Start Date');
+		$arr['endDate']=Yii::t('actions','End Date');
+		return $arr;
+	}
+	
+	public function getRecurrence() {
+		return array(
+			1=>Yii::t('calendar', 'Once'),
+			2=>Yii::t('calendar', 'Daily'),
+			3=>Yii::t('calendar', 'Weekly'),
+			4=>Yii::t('calendar', 'Monthly'),
+			5=>Yii::t('calendar', 'Yearly'),
+		);
 	}
 }

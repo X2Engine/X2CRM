@@ -43,8 +43,8 @@
 $this->menu=array(
 	array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
 	array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-	array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
-	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+//	array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
+//	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar')),
 );
 ?>

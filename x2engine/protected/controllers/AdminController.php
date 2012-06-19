@@ -251,7 +251,7 @@ class AdminController extends Controller {
             );
             while($arr=fgetcsv($fp)){
                 $attributes=array_combine($meta,$arr);
-                $record=Contacts::model()->findByPk($attributes['id']);
+                $record=CActiveRecord::model('Contacts')->findByPk($attributes['id']);
                 if(isset($record)){
                     $modelId=$record->id;
                     $type="contacts";
@@ -1028,6 +1028,9 @@ class AdminController extends Controller {
                             case "text":
                                 $fieldType="TEXT";
                                 break;
+							case "date":
+								$fieldType="BIGINT";
+								break;
                             default:
                                 $fieldType='VARCHAR(250)';
                                 break;
@@ -1396,7 +1399,7 @@ class AdminController extends Controller {
 
 			
 			if(!is_null(Modules::model()->findByAttributes(array('title'=>$title))) || !is_null(Modules::model()->findByAttributes(array('name'=>$moduleName))))
-				$errors[] = Yii::t('module','A module with that title already exists');
+				$errors[] = Yii::t('module','A module with that name already exists');
 			if(empty($errors)) {
                             
                                 $this->writeConfig($title,$moduleName,$recordName);

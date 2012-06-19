@@ -1,412 +1,350 @@
 <?php
+/*********************************************************************************
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
+ * 
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
+ * 
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
 
 class DefaultController extends x2base {
-
-	// public $layout = '//layouts/';
-
+    public $modelClass = 'Dashboard';
+    public $layout = '//layouts/col2Dash';
 	public function accessRules() {
 		return array(
+            array('allow',
+                 'actions'=>array('getItems'),
+                 'users'=>array('*'), 
+            ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions' => array('index','sales', 'marketing', 'pipeline', 'leadVolume','leadActivity','leadPerformance'),
-				'users' => array('@'),
+				'actions'=>array('index','view','getItems','moveWidget','setAUTH','update','changeColumns'),
+				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions' => array('admin'),
-				'users' => array('admin'),
+				'actions'=>array('admin','testScalability'),
+				'users'=>array('admin'),
 			),
-			array('deny', // deny all users
-				'users' => array('*'),
+			array('deny',  // deny all users
+				'users'=>array('*'),
 			),
 		);
 	}
+	
+	public function actions() {
+		return array(
+		);
+	}
 
+    public function actionChangeColumns(){
+        $aasd = $_POST['dropdown'];
+        $model = new Dashboard('search');
+        if($item = $_POST['dropdown']){
+            $this->render('admin',array(
+                'model'=>$model,
+                'item'=>$item,
+            ));
+        }
+    }
+
+
+    public function actionGetItems(){
+        $uid = Yii::app()->user->getId();
+		$sql = 'SELECT * FROM x2_widgets WHERE showDASH = 1 AND userid = '.$uid;
+		$command = Yii::app()->db->createCommand($sql);
+		$result = $command->queryAll();
+        echo CJSON::encode($result); 
+        exit;
+	}
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionView($id) {
+		$model=$this->loadModel($id);	 
+		$type='dashboard';
+		parent::view($model, $type);
+    }
 
 	/**
-	 * @return array action filters
+	 * Creates a new model.
+	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function filters() {
-		return array(
-			'accessControl', // perform access control for CRUD operations
-		);
-	}
-
-	private function getDateRange() {
-	
-		$dateRange = array();
-
-		$dateRange['range'] = 'custom';
-		if(isset($_GET['range']))
-			$dateRange['range'] = $_GET['range'];
-
-		switch($dateRange['range']) {
-
-			case 'thisWeek':
-				$dateRange['start'] = strtotime('mon this week');	// first of this month
-				$dateRange['end'] = time();	// now
-				break;
-			case 'thisMonth':
-				$dateRange['start'] = mktime(0,0,0,date('n'),1);	// first of this month
-				$dateRange['end'] = time();	// now
-				break;
-			case 'lastWeek':
-				$dateRange['start'] = strtotime('mon last week');	// first of last month
-				$dateRange['end'] = strtotime('mon this week')-1;		// first of this month
-				break;
-			case 'lastMonth':
-				$dateRange['start'] = mktime(0,0,0,date('n')-1,1);	// first of last month
-				$dateRange['end'] = mktime(0,0,0,date('n'),1)-1;		// first of this month
-				break;
-			case 'thisYear':
-				$dateRange['start'] = mktime(0,0,0,1,1);		// first of the year
-				$dateRange['end'] = time();	// now
-				break;
-			case 'lastYear':
-				$dateRange['start'] = mktime(0,0,0,1,1,date('Y')-1);		// first of last year
-				$dateRange['end'] = mktime(0,0,0,1,1,date('Y'))-1;			// first of this year
-				break;
-				
-			case 'custom':
-			default:
-				$dateRange['end'] = time();
-				if(isset($_GET['end'])) {
-					$dateRange['end'] = $this->parseDate($_GET['end']);
-					if($dateRange['end'] == false)
-						$dateRange['end'] = time();
-					else
-						$dateRange['end'] = strtotime('23:59:59',$dateRange['end']);
-				}
-				
-				$dateRange['start'] = strtotime('1 month ago',$dateRange['end']);
-				if(isset($_GET['start'])) {
-					$dateRange['start'] = $this->parseDate($_GET['start']);
-					if($dateRange['start'] == false)
-						$dateRange['start'] = strtotime('-30 days 0:00',$dateRange['end']);
-					else
-						$dateRange['start'] = strtotime('0:00',$dateRange['start']);
-				}
-		}
-		return $dateRange;
-	}
-	
-	
-	public function actionLeadVolume() {
-		
-		$dateRange = $this->getDateRange();
-
-		$this->render('leadVolume', array(
-			'dateRange'=>$dateRange
-		));
-	}
-
-	public function actionLeadActivity() {
-
-		$dateRange = $this->getDateRange();
-		$model = new Contacts('search');
-		if(isset($_GET['Contacts']))
-			$model->attributes = $_GET['Contacts'];
-
-		if(isset($_GET['Contacts']['company_id'],$_GET['Contacts']['company']) && !empty($_GET['Contacts']['company'])) {	// check the ID, if provided
-			$linkId = $_GET['Contacts']['company_id'];
-			if(!empty($linkId) && CActiveRecord::model('Accounts')->countByAttributes(array('id'=>$linkId)))	// if the link model actually exists,
-				$model->company = $linkId;																	// then use the ID as the field value
-		}
-		if(!empty($_GET['Contacts']['company']) && !ctype_digit($_GET['Contacts']['company'])) {	// if the field is sitll text, try to find the ID based on the name
-			$linkModel = CActiveRecord::model('Accounts')->findByAttributes(array('name'=>$_GET['Contacts']['company']));
-			if(isset($linkModel))
-				$model->company = $linkModel->id;
-		}
-		
-		
-		$attributeConditions = '';
-		
-		$attributeParams = array();
-		// $attributeConditions = array();
-		//$model->attributes
-		foreach($model->attributes as $key=>$value) {
-			if(!empty($value)) {
-				$attributeConditions .= ' AND '.$key.'=:'.$key;
-				$attributeParams[':'.$key] = $value;
-				
-			}
-			
-		}
-		$workflow = 1;
-		
-		if(isset($_GET['workflow'])) {
-
-			if(ctype_digit($_GET['workflow']))
-				$workflow = $_GET['workflow'];
-
-			if($workflow != 1 && $workflow != 2)	// only these 2 workflows are allowed
-				$workflow = 1;
-				
-			$stageIds = array(
-				1 => array('i'=>3,'e'=>12,'s'=>16),	// "traditional"
-				2 => array('i'=>3,'e'=>7,'s'=>10),	// "career"
-			);
-
-			$users = UserChild::getNames();
-			// $groups = Groups::getNames();
-			
-			// $assignedTo = array_keys($groups) + array_keys($users);
-			$assignedTo = array_keys($users);
-			
-			$data = array();
-			$totals = array(
-				'id'=>'',
-				'name'=>Yii::t('dashboard','Total'),
-				'leads'=>0,
-				'interviewed'=>0,
-				'enrolled'=>0,
-				// 'started'=>0
-			);
-			
-			for($i=0, $size=sizeof($assignedTo); $i<$size; $i++) {
-			
-				$data[$i]['id'] = $assignedTo[$i];
-				$data[$i]['name'] = $users[$assignedTo[$i]];
-				
-				
-				if($data[$i]['id']=='Anyone') {
-					$assignmentCheck = '(x2_contacts.assignedTo IS NULL OR x2_contacts.assignedTo="" OR x2_contacts.assignedTo="Anyone")';
-					$data[$i]['id'] = '';
-				} else
-					$assignmentCheck = 'x2_contacts.assignedTo="'.$data[$i]['id'].'"';
-
-
-				$data[$i]['leads'] = Yii::app()->db->createCommand()
-					->select('COUNT(*)')->from('x2_contacts')
-					->where('assignedTo="'.$assignedTo[$i].'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].$attributeConditions, $attributeParams)
-					->queryScalar();
-					
-				$totals['leads'] += $data[$i]['leads'];
-
-				$row = Yii::app()->db->createCommand()
-				->select('SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['i'].',1,0)) AS interviewed, 
-					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['e'].',1,0)) AS enrolled,'
-					// SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['s'].',1,0)) AS started,
-					.'x2_contacts.assignedTo AS assignedTo')
-				->from('x2_contacts')
-				->join('x2_actions','x2_actions.associationId=x2_contacts.id AND x2_actions.associationType="contacts"')
-				->where('x2_actions.type="workflow" AND x2_actions.workflowId='.$workflow.' AND x2_actions.completeDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].' AND '.$assignmentCheck
-					.' AND (SELECT COUNT(*) FROM x2_contacts WHERE x2_contacts.id=x2_actions.associationId '.$attributeConditions.') > 0',$attributeParams)
-				->queryRow();
-				
-				$data[$i]['interviewed'] = isset($row['interviewed'])? $row['interviewed'] : 0;
-				$data[$i]['enrolled'] = isset($row['enrolled'])? $row['enrolled'] : 0;
-				// $data[$i]['started'] = isset($row['started'])? $row['started'] : 0;
-				
-				$totals['interviewed'] += $data[$i]['interviewed'];
-				$totals['enrolled'] += $data[$i]['enrolled'];
-				// $totals['started'] += $data[$i]['started'];
-				
-				if(array_sum($data[$i]) == 0)
-					unset($data[$i]);
-			}
-
-			$data[] = $totals;
-
-			$dataProvider = new CArrayDataProvider($data,array(
-				// 'totalItemCount'=>$count,
-				// 'sort'=>'assignedTo ASC',
-				'sort'=>array(
-					// 'defaultOrder'=>'completedBy ASC',
-					// 'attributes'=>array(
-						 // 'id', 'username', 'email',
-					// ),
-				),
-				'pagination'=>array(
-					'pageSize'=>Yii::app()->params->profile->resultsPerPage,
-				),
-			));
-
-		} else {
-			$dataProvider = null;
-		}
-		$this->render('leadActivity', array(
+        
+        public function create($model,$oldAttributes, $api){
+            if($api==0)
+                parent::create($model,$oldAttributes,$api);
+            else
+                return parent::create($model,$oldAttributes,$api);
+        }
+        
+	public function actionCreate() {
+		$model=new Dashboard;
+		$users=User::getNames();
+		unset($users['admin']);
+        unset($users['']);
+        if(isset($_POST['Dashboard'])){
+            $temp = $model->attributes;
+            foreach($_POST['Dashboard'] as $name => $value){
+                if ($value = $model->getAttributeLabel($name))
+                    $value = '';
+            }
+            foreach(array_keys($model->attributes) as $field){
+                if(isset($_POST['Dashboard'][$field])){
+                    $model->field = $_POST['Dashboard'][$field];
+                    $fieldData = Fields::model()->findByAttributes(array('modelName'=>'Dashboard','fieldName'=>$field));
+                }
+            }
+            $this->create($model,$temp,'0');
+        }
+		$this->render('create',array(
 			'model'=>$model,
-			'workflow'=>$workflow,
-			'dataProvider'=>$dataProvider,
-			'dateRange'=>$dateRange
+			'users'=>$users,
 		));
 	}
-	
-	public function actionLeadPerformance() {
-
-		$dateRange = $this->getDateRange();
-		$model = new Contacts('search');
-		if(isset($_GET['Contacts']))
-			$model->attributes = $_GET['Contacts'];
-
-		if(isset($_GET['Contacts']['company_id'],$_GET['Contacts']['company']) && !empty($_GET['Contacts']['company'])) {	// check the ID, if provided
-			$linkId = $_GET['Contacts']['company_id'];
-			if(!empty($linkId) && CActiveRecord::model('Accounts')->countByAttributes(array('id'=>$linkId)))	// if the link model actually exists,
-				$model->company = $linkId;																	// then use the ID as the field value
-		}
-		if(!empty($_GET['Contacts']['company']) && !ctype_digit($_GET['Contacts']['company'])) {	// if the field is sitll text, try to find the ID based on the name
-			$linkModel = CActiveRecord::model('Accounts')->findByAttributes(array('name'=>$_GET['Contacts']['company']));
-			if(isset($linkModel))
-				$model->company = $linkModel->id;
-		}
-		
-		
-		$attributeConditions = '';
-		
-		$attributeParams = array();
-		// $attributeConditions = array();
-		//$model->attributes
-		foreach($model->attributes as $key=>$value) {
-			if(!empty($value)) {
-				$attributeConditions .= ' AND x2_contacts.'.$key.'=:'.$key;
-				$attributeParams[':'.$key] = $value;
-				
-			}
-			
-		}
-		$workflow = 1;
-		
-		if(isset($_GET['workflow'])) {
-		
-			if(ctype_digit($_GET['workflow']))
-				$workflow = $_GET['workflow'];
-			
-			if($workflow != 1 && $workflow != 2)	// only these 2 workflows are allowed
-				$workflow = 1;
-				
-			$stageIds = array(
-				1 => array('i'=>3,'e'=>12,'s'=>16),	// "traditional"
-				2 => array('i'=>3,'e'=>7,'s'=>10),	// "career"
-			);
-			
-			
-			// SELECT COUNT(`a`.*) as `count1`, COUNT(`b`.*) as `count2`, assignedTo, stageNumber FROM `x2_actions` `a`, `x2_actions` `b` WHERE a.type="workflow" AND b.type="workflow" AND a.workflowId=1 AND b.workflowId=1 AND `a`.stageNumber=1 AND `b`.stageNumber=2 GROUP BY a.assignedTo, a.stageNumber, b.stageNumber
-
-			
-			$users = UserChild::getNames();
-			// $groups = Groups::getNames();
-			
-			// $assignedTo = array_keys($groups) + array_keys($users);
-			$assignedTo = array_keys($users);
-			
-			$data = array();
-			$totals = array(
-				'id'=>'',
-				'name'=>Yii::t('dashboard','Total'),
-				'leads'=>0,
-				'interviewed'=>0,
-				'enrolled'=>0,
-				'started'=>0
-			);
-			
-			for($i=0, $size=sizeof($assignedTo); $i<$size; $i++) {
-				
-				$data[$i]['id'] = $assignedTo[$i];
-				$data[$i]['name'] = $users[$assignedTo[$i]];
-				
-				
-				if($data[$i]['id']=='Anyone') {
-					$assignmentCheck = '(x2_contacts.assignedTo IS NULL OR x2_contacts.assignedTo="" OR x2_contacts.assignedTo="Anyone")';
-					$data[$i]['id'] = '';
-				} else
-					$assignmentCheck = 'x2_contacts.assignedTo="'.$data[$i]['id'].'"';
-
-
-				$data[$i]['leads'] = Yii::app()->db->createCommand()
-					->select('COUNT(*)')->from('x2_contacts')
-					->where('assignedTo="'.$assignedTo[$i].'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].$attributeConditions, $attributeParams)
-					->queryScalar();
-					
-				$totals['leads'] += $data[$i]['leads'];
-
-				$row = Yii::app()->db->createCommand()
-				->select('SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['i'].',1,0)) AS interviewed, 
-					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['e'].',1,0)) AS enrolled,
-					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['s'].',1,0)) AS started,
-					x2_contacts.assignedTo AS assignedTo')
-				->from('x2_contacts')
-				->join('x2_actions','x2_actions.associationId=x2_contacts.id AND x2_actions.associationType="contacts"')
-				->where('x2_actions.type="workflow" AND x2_actions.workflowId='.$workflow.' AND x2_actions.completeDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].' AND '.$assignmentCheck
-					.' AND (SELECT COUNT(*) FROM x2_contacts WHERE x2_contacts.id=x2_actions.associationId '.$attributeConditions.') > 0',$attributeParams)
-				->queryRow();
-				
-				$data[$i]['interviewed'] = isset($row['interviewed'])? $row['interviewed'] : 0;
-				$data[$i]['enrolled'] = isset($row['enrolled'])? $row['enrolled'] : 0;
-				$data[$i]['started'] = isset($row['started'])? $row['started'] : 0;
-				
-				$totals['interviewed'] += $data[$i]['interviewed'];
-				$totals['enrolled'] += $data[$i]['enrolled'];
-				$totals['started'] += $data[$i]['started'];
-				
-				if(array_sum($data[$i]) == 0)
-					unset($data[$i]);
-			}
-
-			$data[] = $totals;
-
-			// die(var_dump($data));
-
-			// $sql = 'SELECT COUNT(*) as `count`,assignedTo, stageNumber FROM `x2_actions` WHERE type="workflow" AND workflowId=1 GROUP BY assignedTo, stageNumber';
-			$dataProvider = new CArrayDataProvider($data,array(
-				// 'totalItemCount'=>$count,
-				// 'sort'=>'assignedTo ASC',
-				'sort'=>array(
-					// 'defaultOrder'=>'name ASC',
-					// 'attributes'=>array(
-						 // 'id', 'username', 'email',
-					// ),
-				),
-				'pagination'=>array(
-					'pageSize'=>Yii::app()->params->profile->resultsPerPage,
-				),
-			));
-		} else {
-			$dataProvider = null;
-		}
-
-		$this->render('leadPerformance', array(
+    public function update($model, $oldAttributes,$api){
+            // process currency into an INT
+            if($api==0)
+                parent::update($model,$oldAttributes,$api);
+            else
+                return parent::update($model,$oldAttributes,$api);
+    }
+	/**
+	 * Updates a particular model.
+	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * @param integer $id the ID of the model to be updated
+	 */
+	public function actionUpdate($id) {
+		$model=$this->loadModel($id);
+		$users=User::getNames();
+        $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Dashboard"));
+        if(isset($_POST['Dashboard'])){
+            $temp=$model->attributes;
+            foreach($_POST['Dashboard'] as $name => $value){
+                if ($value == $model->getAttributeLabel($name)) 
+                    $value = null;
+            }
+           $this->update($model,$temp,'0');
+        }
+        foreach(array_keys($model->attributes) as $field){
+            if(isset($_POST['Dashboard'][$field])){
+                $model->field = $_POST['Dashboard'][$field];
+                $fieldData = Fields::model()->findByAttributes(array('modelName'=>'Dashboard', 'fieldName'=>$field));
+            }
+        }
+		$this->render('update',array(
 			'model'=>$model,
-			'workflow'=>$workflow,
-			'dataProvider'=>$dataProvider,
-			'dateRange'=>$dateRange
+			'users'=>$users,
+		));
+    }
+	/*
+	public function actionSaveChanges($id) {
+		$account=$this->loadModel($id);
+		if(isset($_POST['Accounts'])) {
+			$temp=$account->attributes;
+			foreach($account->attributes as $field=>$value){
+                            if(isset($_POST['Accounts'][$field])){
+                                $account->$field=$_POST['Accounts'][$field];
+                            }
+                        }
+
+			// process currency into an INT
+			$account->annualRevenue = $this->parseCurrency($account->annualRevenue,false);
+			$changes=$this->calculateChanges($temp,$account->attributes, $account);
+			$account=$this->updateChangelog($account,$changes);
+			$account->update();
+			$this->redirect(array('view','id'=>$account->id));
+		}
+	}
+        */
+	public function actionAddUser($id) {
+		$users=User::getNames();
+	unset($users['admin']);
+		unset($users['']);
+                foreach(Groups::model()->findAll() as $group){
+                    $users[$group->id]=$group->name;
+                }
+		$contacts=Contacts::getAllNames();
+		$model=$this->loadModel($id);
+		$users=Accounts::editUserArray($users,$model);
+
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['Accounts'])) {
+                    
+			$temp=$model->assignedTo; 
+			$tempArr=$model->attributes;
+			$model->attributes=$_POST['Accounts'];  
+			$arr=$_POST['Accounts']['assignedTo'];
+			$model->assignedTo=Accounts::parseUsers($arr);
+			if($temp!="")
+				$temp.=", ".$model->assignedTo;
+			else
+				$temp=$model->assignedTo;
+			$model->assignedTo=$temp;
+			$changes=$this->calculateChanges($tempArr,$model->attributes);
+			$model=$this->updateChangelog($model,$changes);
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->id));
+		}
+
+		$this->render('addUser',array(
+			'model'=>$model,
+			'users'=>$users,
+			'contacts'=>$contacts,
+			'action'=>'Add'
+		));
+	} 
+
+	public function actionRemoveUser($id) {
+
+		$model=$this->loadModel($id);
+
+		$pieces=explode(', ',$model->assignedTo); 
+		$pieces=Sales::editUsersInverse($pieces);
+
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['Accounts'])) {
+			$temp=$model->attributes;
+			$model->attributes=$_POST['Accounts'];  
+			$arr=$_POST['Accounts']['assignedTo'];
+
+			
+			foreach($arr as $id=>$user){
+				unset($pieces[$user]);
+			}
+			
+			$temp=Accounts::parseUsersTwo($pieces);
+
+			$model->assignedTo=$temp;
+			$changes=$this->calculateChanges($temp,$model->attributes);
+			$model=$this->updateChangelog($model,$changes);
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->id));
+		}
+
+		$this->render('addUser',array(
+			'model'=>$model,
+			'users'=>$pieces,
+			'action'=>'Remove'
 		));
 	}
-	
-	public function actionAdmin() {
-		$this->redirect($this->createUrl('default/index'));
+        
+        public function delete($id){
+            
+            $model=$this->loadModel($id);
+            $dataProvider=new CActiveDataProvider('Actions', array(
+                'criteria'=>array(
+                    'condition'=>'associationId='.$id.' AND associationType=\'account\'',
+            )));
+
+            $actions=$dataProvider->getData();
+            foreach($actions as $action){
+                    $action->delete();
+            }
+            $this->cleanUpTags($model);
+            $model->delete();
+        }
+
+	/**
+	 * Deletes a particular model.
+	 * If deletion is successful, the browser will be redirected to the 'admin' page.
+	 * @param integer $id the ID of the model to be deleted
+	 */
+	public function actionDelete($id) {
+		$model=$this->loadModel($id);
+		if(Yii::app()->request->isPostRequest) {
+			$dataProvider=new CActiveDataProvider('Actions', array(
+				'criteria'=>array(
+					'condition'=>'associationId='.$id.' AND associationType=\'account\'',
+			)));
+
+			$actions=$dataProvider->getData();
+			foreach($actions as $action){
+				$action->delete();
+			}
+                        $this->cleanUpTags($model);
+			$model->delete();
+		} else
+			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+		if(!isset($_GET['ajax']))
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
+	/**
+	 * Lists all models.
+	 */
 	public function actionIndex() {
-		$this->redirect($this->createUrl('default/leadVolume'));
+		
+		$model=new Dashboard('search');
+		$name='Dashboard';
+		parent::index($model,$name);
 	}
 
-	public function actionMarketing() {
-		$model = new X2MarketingChartModel();
-		if (isset($_POST['X2MarketingChartModel']))
-			$model->attributes = $_POST['X2MarketingChartModel'];
-
-		$this->render('marketing', array('model' => $model));
+	/**
+	 * Manages all models.
+	 */
+    public function actionAdmin() {
+        $pageParam = ucfirst('Dashboard'). '_page';
+        $downParam = 'down';
+        if (isset($_GET[$pageParam])) {
+            $page = $_GET[$pageParam];
+            Yii::app()->user->setState($this->id.'_page',(int)$page);
+        } else {
+            $URL = Yii::app()->request->requestUri.'?Dashboard_page=1';
+            $this->redirect($URL,true,302);
+        }
+		$model=new Dashboard('search');
+        $name='Dashboard';
+        $this->render('admin',array(
+            'model'=>$model,
+            'item'=>0,
+        ));
 	}
 
-	public function actionSales() {
-		$model = new X2SalesChartModel();
-		if (isset($_POST['X2SalesChartModel']))
-			$model->attributes = $_POST['X2SalesChartModel'];
-
-		$this->render('sales', array('model' => $model));
-	}
-
-	public function actionPipeline() {
-		$model = new X2PipelineChartModel();
-		if (isset($_POST['X2PipelineChartModel']))
-			$model->attributes = $_POST['X2PipelineChartModel'];
-
-		$this->render('pipeline', array('model' => $model));
-	}
-	
-	public function formatLeadRatio($a,$b) {
-		if($b==0)
-			return '0%';
-		else
-			return round(100*$a/$b).'%';
+	/**
+	 * Returns the data model based on the primary key given in the GET variable.
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded
+	 */
+	public function loadModel($id) {
+		$model=Dashboard::model()->findByPk((int)$id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
 	}
 }

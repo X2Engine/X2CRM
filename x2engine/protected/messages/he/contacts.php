@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,6 +45,7 @@ return array (
 'ID'=>'זהות',
 'First Name'=>'שם פרטי',
 'Name'=>'שם',
+'Full Name'=>'שם מלא',
 'Last Name'=>'שם משפחה',
 'Title'=>'כותרת',
 'Account'=>'חשבון',
@@ -93,6 +94,8 @@ return array (
 'Lead Status'=>'להוביל מצב',
 'Lead Score'=>'להוביל ציון',
 'Deal Status'=>'העסקה מצב',
+'Do Not Call'=>'לא להתקשר',
+'Do Not Email'=>'אין מייל',
 
 // Misc
 'Assigned to {name}'=>'{name} שהוקצתה',

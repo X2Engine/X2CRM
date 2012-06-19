@@ -51,7 +51,7 @@ $inlineForm = (isset($inlineForm)); // true if this is in the InlineActionForm
 $quickCreate = $inlineForm? false : ($this->getAction()->getId() == 'quickCreate');	// true if we're inside the quickCreate view
 if(isset($_GET['inline']))
     $inlineForm=$_GET['inline'];
-$action = $inlineForm? array('actions/create','inline'=>1) : null;
+$action = $inlineForm? array('/actions/create','inline'=>1) : null;
 
 ?>
 <script>
@@ -64,24 +64,21 @@ $action = $inlineForm? array('actions/create','inline'=>1) : null;
 
 </script>
 <div id="tabs">
-	<ul>
-		<li><a href="#tabs-1"><?php echo Yii::t('actions','Log A Call'); ?></a></li>
-		<li><a href="#tabs-2"><?php echo Yii::t('actions','New Action'); ?></a></li>
-		<li><a href="#tabs-3"><?php echo Yii::t('actions','New Comment'); ?></a></li>
-	</ul>
+<ul>
+	<li><a href="#tabs-1"><?php echo Yii::t('actions','Log A Call'); ?></a></li>
+	<li><a href="#tabs-2"><?php echo Yii::t('actions','New Action'); ?></a></li>
+	<li><a href="#tabs-3"><?php echo Yii::t('actions','New Comment'); ?></a></li>
+</ul>
+
+<div class="form" id="action-form">
 <?php
+$form = $this->beginWidget('CActiveForm', array(
+	'action'=>$action,
+	'id'=>'actions-newCreate-form',
+	'enableAjaxValidation'=>false,
+));
+//echo '<em>'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 
-
-// check if this form is being recycled in the quickCreate view
-if (!$quickCreate) {
-	echo '<div class="form" id="action-form">';
-	$form=$this->beginWidget('CActiveForm', array(
-		'action'=>$action,
-		'id'=>'actions-newCreate-form',
-		'enableAjaxValidation'=>false,
-	));
-	//echo '<em>'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
-}
 echo $form->errorSummary($actionModel);
 ?>
 <div class="row">
@@ -96,60 +93,56 @@ echo $form->errorSummary($actionModel);
 
 <div class="row">
 	<?php
-	if (!$quickCreate) {
-		if ($inlineForm) {
-			echo $form->hiddenField($actionModel,'associationType');
-		} else {
+	if ($inlineForm) {
+		echo $form->hiddenField($actionModel,'associationType');
+	} else {
 	?>
-<div class="row">
-	<div class="cell">
-	<?php echo $form->label($actionModel,'associationType'); ?>
-	<?php echo $form->dropDownList($actionModel,'associationType',
-		array(
-			'none'=>Yii::t('actions','None'),
-			'contacts'=>Yii::t('actions','Contact'),
-			'sales'=>Yii::t('actions','Sale'),
-			'accounts'=>Yii::t('actions','Account'),
-		),
-		array(
-			'ajax' => array(
-				'type'=>'POST', //request type
-				'url'=>CController::createUrl('actions/parseType'), //url to call.
-				//Style: CController::createUrl('currentController/methodToCall')
-				'update'=>'#', //selector to update
-				'success'=>'function(data){
-						window.location="?param='.Yii::app()->user->getName().';"+data+":0";
-					}'
-				)
-			)
-		);
-		echo $form->error($actionModel,'associationType'); ?>
-	</div>
-	<div class="cell" id="auto_complete">
-		<?php
-		echo $form->label($actionModel,'associationName');
-		$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-			'name'=>'auto_select',
-			'value'=>$actionModel->associationName,
-			'source' => $this->createUrl('actions/getTerms',array('type'=>$actionModel->associationType)),
-			'options'=>array(
-				'minLength'=>'2',
-				'select'=>'js:function( event, ui ) {
-					$("#'.CHtml::activeId($actionModel,'associationId').'").val(ui.item.id);
-					$(this).val(ui.item.value);
-					return false;
-				}',
+	<div class="row">
+		<div class="cell">
+		<?php echo $form->label($actionModel,'associationType'); ?>
+		<?php echo $form->dropDownList($actionModel,'associationType',
+			array(
+				'none'=>Yii::t('actions','None'),
+				'contacts'=>Yii::t('actions','Contact'),
+				'sales'=>Yii::t('actions','Sale'),
+				'accounts'=>Yii::t('actions','Account'),
 			),
-		));
-		//echo $form->error($actionModel,'associationName');
-		?>
+			array(
+				'ajax' => array(
+					'type'=>'POST', //request type
+					'url'=>CController::createUrl('/actions/parseType'), //url to call.
+					//Style: CController::createUrl('currentController/methodToCall')
+					'update'=>'#', //selector to update
+					'success'=>'function(data){
+							window.location="?param='.Yii::app()->user->getName().';"+data+":0";
+						}'
+					)
+				)
+			);
+			echo $form->error($actionModel,'associationType'); ?>
+		</div>
+		<div class="cell" id="auto_complete">
+			<?php
+			echo $form->label($actionModel,'associationName');
+			$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+				'name'=>'auto_select',
+				'value'=>$actionModel->associationName,
+				'source' => $this->createUrl('/actions/getTerms',array('type'=>$actionModel->associationType)),
+				'options'=>array(
+					'minLength'=>'2',
+					'select'=>'js:function( event, ui ) {
+						$("#'.CHtml::activeId($actionModel,'associationId').'").val(ui.item.id);
+						$(this).val(ui.item.value);
+						return false;
+					}',
+				),
+			));
+			//echo $form->error($actionModel,'associationName');
+			?>
+		</div>
 	</div>
-</div>
-	<?php
-		}
-	}
-	?>
-        
+	<?php } ?>
+
 	<div class="cell">
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
 		<?php echo $form->label($actionModel,'dueDate');

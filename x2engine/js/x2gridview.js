@@ -69,10 +69,7 @@ $.widget("x2.gvSettings", {
 	
 		var self = this;
 		o = self.options;
-		
-		
-		
-		
+
 		if(o.ajaxUpdate) {
 			$(self.element).parent().find('.search-button').click(function() {
 				$('.search-form').toggle();
@@ -154,7 +151,7 @@ $.widget("x2.gvSettings", {
 			clearTimeout(this.saveGridviewSettingsTimeout);
 			this.saveGridviewSettingsTimeout = setTimeout(function() {
 				$.ajax({
-					url: yiiBaseUrl+'/site/saveGridviewSettings',
+					url: yii.baseUrl+'/site/saveGridviewSettings',
 					type: 'GET',
 					data: 'viewName='+self.options.viewName+'&gvSettings='+encodedGvSettings
 				});

@@ -37,33 +37,274 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
+var hasFocus = true;
+
+var pageTitle = '';
 var notifUrl;
 var newNotif = null;
 var notifTimeout;
+notifUpdateInterval = 1500;
+var notifViewTimeout;
+var lastNotifId = 0;
 
-function updateNotifications() {
+/* function updateNotifications() {
     
 	newNotif = $.ajax({
 		type: 'POST',
 		url: notifUrl,
 		success: function (response){
-                    if(response>0){
-                       $('#main-menu-notif').show();
-                       $('#main-menu-icon').hide();
-                       $('#main-menu-notif').html(response); 
-                    }else{
-                       $('#main-menu-notif').hide();
-                       $('#main-menu-icon').show();
-                    }
+			if(response>0){
+			   $('#main-menu-notif').show();
+			   $('#main-menu-icon').hide();
+			   $('#main-menu-notif').html(response); 
+			}else{
+			   $('#main-menu-notif').hide();
+			   $('#main-menu-icon').show();
+			}
 		},
 		complete: function (xhr,status) {
-			notifTimeout=setTimeout(updateNotifications,30000);
+			notifTimeout = setTimeout(updateNotifications,30000);
 		}
     });
-}
+} */
 
 function updateHistory() {
 	$('.action.list-view').each(function(i) {
 		$.fn.yiiListView.update($(this).attr('id'));
 	});
 }
+
+// title marquee jquery plugin
+$(function() {
+	var opts = {
+		titleTimeout:null,
+		message:'',
+		titleOffset:0,
+		speed:200,
+		softStop:false
+	};
+
+	var methods = {
+		set: function(msg) {
+			if(typeof msg != 'undefined')
+				opts.message = msg;
+		},
+		start: function(msg) {
+			if(typeof msg != 'undefined') {
+				opts.softStop = false;
+				opts.message = msg;
+				clearInterval(opts.titleTimeout);
+				opts.titleTimeout = setInterval(function() { methods['tick'](); }, opts.speed);
+			}
+		},
+		tick: function() {
+			++opts.titleOffset;
+			if(opts.titleOffset >= opts.message.length ) {
+				opts.titleOffset = 0;
+				if(opts.softStop) {
+					methods['stop']();
+				}
+			}
+			var newTitle = opts.message.substring(opts.titleOffset)+' '+opts.message.substring(0,opts.titleOffset);
+
+			document.title = newTitle;
+		},
+		pause: function() {
+			clearInterval(opts.titleTimeout);
+		},
+		stop: function() {
+			clearInterval(opts.titleTimeout);
+			opts.titleOffset = 0;
+			opts.softStop = false;
+			document.title = pageTitle;
+		},
+		softStop: function() {
+			opts.softStop = true;
+		}
+	};
+
+	$.fn.titleMarquee = function(method) {
+		if (methods[method])
+			return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+		else
+			$.error( 'Method ' +  method + ' does not exist on titleMarquee' );
+	};
+});
+
+
+function updateNotifications() {
+
+	$.ajax({
+		type: 'POST',
+		url: yii.baseUrl+'/notifications/get',
+		data: 'lastId='+lastNotifId,
+		success: function (response) {
+			if(response != '') {	// if there's no new data, we're done
+				try {
+					var data = $.parseJSON(response);
+					
+					if(data.notifCount)
+						$('#main-menu-notif span').html(data.notifCount);
+					if(data.notifData) {
+					
+						var newNotif = false;
+
+						for (var i=0,len=data.notifData.length;i<len;i++) {
+							// console.debug(data.notifData[i]);
+							// if(typeof item['text'] != 'undefined')
+								var notif = $(document.createElement('div'))
+									.addClass('notif')
+									.html('<div class="msg">'+data.notifData[i].text+'</div><div class="close">x</div>')
+									.data('id',data.notifData[i].id)
+									.appendTo('#notifications');
+								
+							if(data.notifData[i].viewed == 0) {
+								notif.addClass('unviewed');
+								newNotif = true;
+							}
+							
+								// .append('<div class="notif">'+</div>\n'); 
+							lastNotifId = data.notifData[i].id;
+						}
+						if(data.notifData.length)
+							$('#no-notifications').hide();
+						else
+							$('#no-notifications').show();
+							
+						if(newNotif)
+							$(document).trigger('x2.newNotifications');
+					}
+					// console.debug(data);
+					
+					
+				} catch(e) {
+					
+				}
+			}
+			notifTimeout = setTimeout(updateNotifications,notifUpdateInterval);
+		},
+		error: function() {
+			clearTimeout(notifTimeout);
+		}
+    });
+
+}
+
+
+$(function() {
+
+	updateNotifications();
+	
+	pageTitle = document.title;
+	
+	// return;
+	$('#notif-box .close').click(function() {
+		$('#notif-box').fadeOut(300);
+		// $('#main-menu-notif').hide();
+		// $('#main-menu-icon').show();
+		$.fn.titleMarquee('softStop');
+	
+	
+	});
+	
+	// listen for window focus/blur for stupid browsers that can't handle document.hasFocus()
+	$(window).bind('blur focusout', function(){ hasFocus = false; });
+	$(window).bind('focus focusin', function(){ hasFocus = true; });
+	
+	$(document).bind('x2.newNotifications',function(e) {
+	
+		if($('#notif-box').not(':visible') && document.hasFocus() || hasFocus) {
+			 // $('#main-menu-notif').show(); //.find('span').html('31415');
+			// $('#notif-box').fadeIn(300);
+			openNotifications();
+		
+		}
+	});
+	
+	$('#main-menu-notif').click(function() {
+		if($('#notif-box').is(':visible'))
+			closeNotifications();
+		else
+			openNotifications();
+		return false;
+	});
+	
+	$(document).click(function(e) {
+		if(!$(e.target).is('#notif-box, #notif-box *'))
+			closeNotifications();
+	});
+	
+	// delete a notification
+	$('#notif-box').delegate('.notif .close','click',function(e) {
+	
+		e.stopPropagation();
+		var notifId = $(this).parent().data('id');
+
+		$.ajax({
+			type: 'GET',
+			url: yii.baseUrl+'/notifications/delete',
+			data: 'id='+notifId
+			// complete: function (response) {
+				
+			// }
+		});
+	
+		removeNotification(notifId);
+		
+	
+	});
+	
+	
+});
+
+function openNotifications() {
+
+	notifViewTimeout = setTimeout(function() {
+	
+		var notifIds = [];
+		
+		$('#notifications .notif').each(function() { notifIds.push('id[]='+$(this).data('id')); });
+		
+		$.ajax({
+			type: 'GET',
+			url: yii.baseUrl+'/notifications/markViewed',
+			data: encodeURI(notifIds.join('&'))
+			// complete: function (response) {
+				
+			// }
+		});
+		
+		
+	},2000);
+	
+	$('#notif-box').fadeIn(300);
+}
+
+function closeNotifications() {
+	clearTimeout(notifViewTimeout);
+	$('#notif-box').fadeOut(300);
+	$.fn.titleMarquee('softStop');
+}
+
+function removeNotification(id) {
+
+	$('#notifications .notif').each(function() {
+		if($(this).data('id') == id) {
+		
+			$(this).remove();
+			$('#main-menu-notif span').html(parseInt($('#main-menu-notif span').html())-1);
+			if($('#notif-box .notif').length == 0)
+				$('#no-notifications').show();
+
+			return false;
+		}
+	});
+
+
+}
+
+
+
+
+

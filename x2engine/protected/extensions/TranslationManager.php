@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -126,7 +126,7 @@ if(isset($_POST['data']) && isset($_POST['file'])) {
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -243,7 +243,7 @@ function showLang(newLang,object) {
 function googleTranslate(object) {
 	var message = $(object).closest('tr').find('.source input').val();
 	var lang = $(object).html();
-	if(lang == 'zh')
+	if(lang == 'zh_cn')
 		lang = 'zh-CN'; 	
 	var url = 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message);
 	// $('#googleTranslate').attr('src',url);
@@ -499,10 +499,11 @@ function removeLine(object) {
 	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
 	<?php echo Yii::t('app','Rights reservered.'); ?>
 	<?php
-	echo Yii::t('app','The Program is provided AS IS, without warranty.<br />Licensed under {GPLv3}. This program is free software; you can redistribute it and/or modify it<br />under the terms of the {GPLv3long} as published by the Free Software Foundation<br />including the additional permission set forth in the source code header.',
+	$baseUrl = Yii::app()->getBaseUrl();
+	echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.',
 	array(
-		'{GPLv3}'=>CHtml::link('GPLv3',Yii::app()->getBaseUrl().'/GPL-3.0 License.txt'),
-		'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
+		'{BSD}'=>CHtml::link('BSD License',$baseUrl.'/LICENSE.txt'),
+		'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),$baseUrl.'/GPL-3.0 License.txt')
 	));?>
 	<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(Yii::getLogger()->getExecutionTime(),3))); ?>
 </div>

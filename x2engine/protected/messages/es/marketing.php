@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,26 +39,51 @@
  ********************************************************************************/
 
 return array (
-//	Marketing Attributes
+// Campaign model
 'ID'=>'ID',
+'Master Campaign ID'=>'Maestro ID de campaña',
 'Name'=>'Nombre',
-'Cost'=>'Costo',
-'Result'=>'Resultado',
-'Date Created'=>'Fecha de Creación',
+'Assigned To'=>'Asignado a',
+'Contact List'=>'Lista de contactos',
+'Active'=>'Activo',
 'Description'=>'Descripción',
+'Type'=>'Tipo',
+'Cost'=>'Costo',
+'Subject'=>'Tema',
+'Content'=>'Contenido',
+'Complete'=>'Completo',
+'Create Date'=>'Fecha de Creación',
+'Launch Date'=>'Fecha de lanzamiento',
 'Last Updated'=>'Última actualización',
 'Updated By'=>'Actualizado por',
+'None'=>'Ninguno',
 
-//	Marketing Actions
-'Marketing Action List'=>'Lista de Tareas de Marketing',
-'View Marketing Action'=>'Ver Tarea de Marketing',
-'Create Marketing Action'=>'Crear una Tarea de Marketing',
-'Update Marketing Action'=>'Actualizar Tarea de Marketing',
-'Update Result'=>'Actualizar Resultado',
+// Launching
+'The campaign has already been launched.'=>'La campaña ha sido lanzada ya.',
+'Contact List cannot be blank.'=>'Lista de contactos no puede estar en blanco.',
+'Subject cannot be blank.'=>'El sujeto no puede estar en blanco.',
+'The contact list is empty.'=>'La lista de contactos está vacía.',
+'Launch Now'=>'Iniciar ahora',
+'Stop'=>'Detener',
+'Resume'=>'Continuar',
+'Send Test Email'=>'Enviar un mensaje de prueba',
+'Campaign launched'=>'Campaña ha puesto en marcha',
+'Campaign paused'=>'Campaña se ha detenido',
+'Campaign resumed'=>'Campaña ha continuado',
 
-//	Marketing Titles
-'Marketing Actions'=>'Tareas de Marketing',
-'Manage Marketing Actions'=>'Administrar Tareas de Marketing',
-'Marketing Action: {name}'=>'Tarea de Marketing: {name}',
-'Update Marketing Action: {name}'=>'Actualizar Tarea de Marketing: {name}',
+// Mailing
+'The email sending limit has been reached.'=>'El límite de envío de correo electrónico se ha alcanzado.',
+'There is no campaign email to send.'=>'No hay ninguna campaña de envío de correo electrónico.',
+'Successful email sent'=>'El correo electrónico enviado',
+'No email sent.'=>'Ningún correo electrónico enviado.',
+'Campaign complete.'=>'Campaña se ha completado.',
+'unsubscribe'=>'darse de baja',
+'Error for contact'=>'Error de contacto',
+'Attempting to send email'=>'El intento de enviar un correo electrónico',
+'Unsendable email'=>'El correo electrónico no enviable',
+'Blank email addresses'=>'Las direcciones de correo electrónico en blanco',
+'\'Do Not Email\' contacts'=>'Contactos \'No envíe\'',
+'Data errors'=>'Datos de los errores',
+'Batch completed, sending again in'=>'Lote completado, el envío de nuevo en',
+'minute'=>'minutos',
 );

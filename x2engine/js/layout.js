@@ -179,7 +179,7 @@ $(function() {
 	$('#fullscreen-button').click(function() { 
 		// save preference
 		$.ajax({
-			url: yiiBaseUrl+'/site/fullscreen',
+			url: yii.baseUrl+'/site/fullscreen',
 			type: 'GET',
 			data: 'fs='+(window.fullscreen?'0':'1')
 		});

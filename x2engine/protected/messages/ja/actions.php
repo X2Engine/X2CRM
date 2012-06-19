@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,17 @@ return array (
 'No'=>'いいえ',
 'Yes'=>'はい',
 'Date Completed'=>'日付が完了しました',
+'All Day'=>'終日',
+'Color'=>'カラー',
+'Start Date'=>'開始日',
+'End Date'=>'終了日',
+
+// Colors
+'Blue'=>'ブルー',
+'Green'=>'グリーン',
+'Red'=>'レッド',
+'Orange'=>'オレンジ',
+'Black'=>'ブラック',
 
 // Actions Nav
 'All Actions'=>'すべてのアクション',
@@ -75,6 +86,7 @@ return array (
 'Update Action'=>'アクションを更新します。',
 'Complete Action'=>'アクションを完了する',
 'Complete + New Action'=>'完了する+新規アクション',
+'Complete and View Contact'=>'完了すると連絡先を見る',
 'Uncomplete'=>'不完全にする',
 'Log A Call'=>'コールログ',
 'New Action'=>'新しいアクション',
@@ -89,7 +101,7 @@ return array (
 'View Action'=>'アクションを見る',
 'Update Action:'=>'アクションを更新します:',
 'Action'=>'アクション',
-'Action:'=>'アクション:',
+'Action: '=>'アクション:',
 'Today\'s Actions'=>'今日のアクション',
 'My Actions'=>'私のアクション',
 'All My Actions'=>'すべて私のアクション',
@@ -97,6 +109,7 @@ return array (
 'Delete Action'=>'アクションを削除',
 'Share Action'=>'アクションを共有する',
 'Create'=>'作る',
+'New Event'=>'新しいイベント',
 
 
 // Misc

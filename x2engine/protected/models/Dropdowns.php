@@ -130,8 +130,15 @@ class Dropdowns extends CActiveRecord {
 				$dropdowns = array();
 
 			natcasesort($dropdowns);
+			
+			// figure out the module name for translations
+			if(isset(Yii::app()->controller->module))
+				$module = strtolower(Yii::app()->controller->module->id);
+			else
+				$module = strtolower(Yii::app()->controller->id);
+			
 			foreach($dropdowns as $key => &$value)
-				$value = Yii::t(strtolower(Yii::app()->controller->id),$value);
+				$value = Yii::t($module,$value);
 		}
 		return $dropdowns;
 	}

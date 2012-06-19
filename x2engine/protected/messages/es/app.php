@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,7 +55,7 @@ return array (
 'Sales'=>'Ventas',
 'Projects'=>'Proyectos',
 'Group Chat'=>'Chat de Groupo',
-'Marketing'=>'Marketing',
+'Marketing'=>'Mercadeo',
 'Cases'=>'Casos',
 'Accounts'=>'Cuentas',
 'Users'=>'Usuarios',
@@ -86,6 +86,7 @@ return array (
 
 // Footer
 'All Rights Reserved.'=>'Todos los derechos reservados.',
+'Generated in {time} seconds.'=>'Generada en {time} segundos',
 
 // Widgets
 'My Actions'=>'Mis Acciones',
@@ -98,6 +99,8 @@ return array (
 'Just Me'=>'Sólo Me',
 'All Users'=>'Todos los Usuarios',
 'Doc Viewer'=>'Visor Doc',
+'Time Zone'=>'Huso horario',
+'Top Sites'=>'Las mejores webs',
 
 'Total Action|Total Actions'=>'Total de Acciones',
 'Unfinished Action|Unfinished Actions'=>'Accion Pendiente|Acciones Pendientes',
@@ -115,6 +118,12 @@ return array (
 'Add {name}'=>'Añadir {name}',
 
 'Enter Title'=>'Introduzca el título',
+'Title'=>'Título',
+'Title:'=>'Título:',
+'Link'=>'Enlace',
+'Link:'=>'Link:',
+'Add Site'=>'Agregar Sitio',
+'Example'=>'Ejemplo',
 
 // Chat
 'Message Body'=>'Cuerpo del Mensaje',
@@ -168,6 +177,15 @@ return array (
 '"{X}" is not an allowed filetype.'=>'"{X}" no es un tipo de archivo permitido.',
 'Loading'=>'Cargando',
 'Edit'=>'Editar',
+'Due'=>'Debido',
+'Help'=>'Ayuda',
+'---'=>'---',
+'You don\'t have any notifications.'=>'Usted no tiene ninguna notificación.',
+'View all'=>'Ver todo',
+'Close'=>'Cerrar',
+'Delete'=>'Borrar',
+'Group?'=>'Grupo?',
+'Checkbox'=>'Casilla de verificación',
 
 // Misc Actions
 'Submit'=>'Someter',

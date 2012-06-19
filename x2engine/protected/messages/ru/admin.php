@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'коммунальные услуги',
-'Χ2Studio'=>'X2Studio',
+'X2Studio'=>'X2студия',
 'Support & Documentation'=>'Поддержка и Документация',
 'Contact Us'=>'Связаться с Нами',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Чтобы загрузить логотип, чтобы отображать рядом с панелью поиска, пожалуйста, загрузите файл здесь, используя форму ниже.',
 'Create Page'=>'Создать страницу',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Инк является компания, которая за X2Contacts - высокопроизводительное управление контактами веб-приложения. X2Engine может предложить ваша организация профессиональной поддержки и обучения по X2Contacts. Пожалуйста, заполните форму ниже, чтобы связаться с нами.',
+
+// Email Config
+'Email Server Configuration'=>'Конфигурация сервера электронной почты',
+'Ready to send email? We need some information about your mail server.'=>'Готовы отправить электронную почту? Нам нужна информация о вашем почтовом сервере.',
+'Outbound Email Server'=>'Исходящий сервер электронной почты',
+'Hostname'=>'Hostname',
+'Port'=>'порт',
+'Security'=>'безопасность',
+'Authentication'=>'идентификация',
+'Username'=>'Имя пользователя',
+'Password'=>'пароль',
+'Sender Name'=>'Имя отправителя',
+'Sender Email Address'=>'Адрес отправителя',
+'Batch Size'=>'размер пакета',
+'Interval (Minutes)'=>'Интервал (мин.)',
+'Email Signatures'=>'Подписи',
+'None'=>'никто',
+'User\'s Choice'=>'Выбор пользователя',
+'Default Signature'=>'По умолчанию подпись',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Вы можете использовать следующие переменные в шаблоне: {first}, {last}, {phone}, {email}.',
 );

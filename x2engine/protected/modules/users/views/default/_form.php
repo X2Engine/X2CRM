@@ -82,7 +82,9 @@ $(document).ready(function() {
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'username'); ?>
-		<?php echo $form->textField($model,'username',array('size'=>20,'maxlength'=>20)); ?>
+		<?php echo $model->username=='admin'?
+				$form->textField($model,'username',array('size'=>20,'maxlength'=>20,'disabled'=>'disabled')):
+				$form->textField($model,'username',array('size'=>20,'maxlength'=>20)); ?>
 		<?php echo $form->error($model,'username'); ?>
 	</div>
 

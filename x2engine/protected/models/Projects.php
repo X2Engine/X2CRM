@@ -71,6 +71,16 @@ class Projects extends CActiveRecord {
 	public function tableName() {
 		return 'x2_projects';
 	}
+	
+	public function behaviors() {
+		return array(
+			'ERememberFiltersBehavior' => array(
+			'class' => 'application.components.ERememberFiltersBehavior',
+			'defaults'=>array(),
+			'defaultStickOnClear'=>false
+		   ),
+		);
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
@@ -131,6 +141,8 @@ class Projects extends CActiveRecord {
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
+		$parameters=array('condition'=>"status!='Complete'");
+		$criteria->scopes=array('findAll'=>array($parameters));
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
@@ -143,11 +155,67 @@ class Projects extends CActiveRecord {
 		$criteria->compare('createDate',$this->createDate,true);
 		$criteria->compare('associatedContacts',$this->associatedContacts,true);
 		$criteria->compare('description',$this->description,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated,true);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new SmartDataProvider(get_class($this), array(
+			'sort'=>array(
+				'defaultOrder'=>'createDate ASC',
+			),
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public function searchAdmin() {
+		// Warning: Please modify the following code to remove attributes that
+		// should not be searched.
+
+		$criteria=new CDbCriteria;
+
+		$criteria->compare('id',$this->id);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('status',$this->status,true);
+		$criteria->compare('type',$this->type,true);
+		$criteria->compare('priority',$this->priority,true);
+		$criteria->compare('assignedTo',$this->assignedTo,true);
+		$criteria->compare('endDate',$this->endDate,true);
+		$criteria->compare('timeframe',$this->timeframe,true);
+		$criteria->compare('createDate',$this->createDate,true);
+		$criteria->compare('associatedContacts',$this->associatedContacts,true);
+		$criteria->compare('description',$this->description,true);
+
+		return new SmartDataProvider(get_class($this), array(
+			'sort'=>array(
+				'defaultOrder'=>'createDate ASC',
+			),
+			'criteria'=>$criteria,
+		));
+	}
+
+	public static function getNames() {
+		$arr=ProjectChild::model()->findAll();
+		$names=array(0=>'None');
+		foreach($arr as $project){
+			$names[$project->id]=$project->name;
+		}
+		return $names;
+	}
+
+	public static function parseUsers($arr) {
+		$str='';
+		foreach($arr as $user){
+			$str.=$user.', ';
+		}
+		$str=substr($str,0,strlen($str)-2);
+		
+		return $str;
+	}
+
+	public static function parseContacts($arr) {
+		$str='';
+		foreach($arr as $contact) {
+			 $str.=' '.$contact;
+		}
+		$str=substr($str,1);
+	
+		return $str;
 	}
 }

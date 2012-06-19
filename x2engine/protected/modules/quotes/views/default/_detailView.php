@@ -107,8 +107,8 @@ $relationships = Relationships::model()->findAllByAttributes(
 );
 $associatedContacts = array();
 foreach($relationships as $relationship) {
-	$contact = Contacts::model()->findByPk($relationship->secondId);
-	$associatedContacts[] = CHtml::link($contact->name, array('contacts/view', 'id'=>$contact->id));
+	$contact = CActiveRecord::model('Contacts')->findByPk($relationship->secondId);
+	$associatedContacts[] = CHtml::link($contact->name, array('/contacts/view', 'id'=>$contact->id));
 }
 $associatedContacts = implode(', ', $associatedContacts);
 
@@ -157,7 +157,7 @@ $associatedContacts = implode(', ', $associatedContacts);
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 				'name'=>'companyAutoComplete',
 				'value'=>$model->accountName,
-				'source' => $this->createUrl('contacts/getTerms'),
+				'source' => $this->createUrl('/contacts/getTerms'),
 				'htmlOptions'=>array('size'=>35,'maxlength'=>100,'tabindex'=>3),
 				'options'=>array(
 					'minLength'=>'2',
@@ -234,6 +234,8 @@ $associatedContacts = implode(', ', $associatedContacts);
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
 					'dateFormat'=>$this->formatDatePicker(),
+					'changeMonth'=>true,
+					'changeYear'=>true,
 				), // jquery plugin options
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			));?> </div>

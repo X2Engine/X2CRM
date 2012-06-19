@@ -114,10 +114,10 @@ class SiteController extends x2base {
 			$user=User::model()->findByPk(Yii::app()->user->getId());
 			$lastLogin=$user->lastLogin;
 
-			$contacts=Contacts::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$actions=Actions::model()->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
-			$sales=Sales::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$accounts=Accounts::model()->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$contacts=CActiveRecord::model('Contacts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$actions=CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
+			$sales=CActiveRecord::model('Sales')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$accounts=CActiveRecord::model('Accounts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 
 			$arr=array_merge($contacts,$actions,$sales,$accounts);
 
@@ -226,17 +226,17 @@ class SiteController extends x2base {
 		}
 		echo json_encode($messages);
 	}
-        
 
-	public function actionCheckNotifications(){
+
+	// public function actionCheckNotifications(){
 		
-		$list=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
-		if(count($list)>0){
-			echo json_encode(count($list));
-		}else{
-			echo null;
-		}
-	}
+		// $list=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
+		// if(count($list)>0){
+			// echo json_encode(count($list));
+		// }else{
+			// echo null;
+		// }
+	// }
 
 	public function actionUpdateNotes(){
 		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()), 'order timestamp DESC');
@@ -297,7 +297,7 @@ class SiteController extends x2base {
                 $res .= "<tr><td>".$entry->title."</td><td><a href='".$entry->url."'>LINK</a></td></tr>";
             }
         }else {
-            $res .= "<tr><td>Example</td><td>LINK</td></tr>";
+            $res .= "<tr><td>Example</td><td><a href='.'>LINK</a></td></tr>";
         }
         echo $res;
     }
@@ -669,21 +669,19 @@ class SiteController extends x2base {
 		else
 			return null;
 	}
-        
-        public function actionViewNotifications(){
-            
-            $dataProvider=new CActiveDataProvider('Notifications',array(
-                'criteria'=>array(
-				'order'=>'createDate DESC',
-				'condition'=>'user="'.Yii::app()->user->getName().'"'
-		
-            )));
-            $this->render('viewNotifications',array(
-                'dataProvider'=>$dataProvider,
-            ));
-        }
-        
-        
+
+	public function actionViewNotifications(){
+		$dataProvider=new CActiveDataProvider('Notification',array(
+			'criteria'=>array(
+			'order'=>'viewed ASC',
+			'condition'=>'user="'.Yii::app()->user->name.'"'
+		)));
+		$this->render('viewNotifications',array(
+			'dataProvider'=>$dataProvider,
+		));
+	}
+	
+	
 	
 /* 	protected function parseName($arr) {
 		$type=$arr[0]; 
@@ -742,6 +740,11 @@ class SiteController extends x2base {
 		// collect user input data
 		if(isset($_POST['LoginForm'])) {
 			$model->attributes = $_POST['LoginForm'];
+			$activeCheck=User::model()->findByAttributes(array('username'=>$model->username));
+			if(isset($activeCheck) && $activeCheck->status=='1')
+				$activeCheck=true;
+			else
+				$activeCheck=false;
 			$ip = $this->getRealIp();
 			x2base::cleanUpSessions();
 			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
@@ -758,7 +761,7 @@ class SiteController extends x2base {
 					$model->useCaptcha = true;
 				if($session->status < -2)
 					$model->setScenario('loginWithCaptcha');
-			} else {
+			} else if($activeCheck) {
 				$session = new Session;
 				$session->user = $model->username;
 				$session->lastUpdated = time();
@@ -824,7 +827,7 @@ class SiteController extends x2base {
 					$this->redirect('index');
 				else
 					$this->redirect(Yii::app()->user->returnUrl);
-			} else {
+			} else if($activeCheck) {
 				$session->save();
 				$model->verifyCode = '';
 				if($model->hasErrors())
@@ -832,8 +835,87 @@ class SiteController extends x2base {
 					$model->addError('password',Yii::t('app','Incorrect username or password.'));
 			}
 		}
+		
 		// display the login form
 		$this->render('login',array('model'=>$model));
+	}
+	
+	public function actionGoogleLogin(){
+		$this->layout = '//layouts/login';
+		$model = new LoginForm;
+		$model->useCaptcha = false;
+	
+		// echo var_dump(Session::getOnlineUsers());
+		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
+			$this->redirect(Yii::app()->homeUrl);
+			return;
+		}
+		if(isset($_SESSION['access_token'])){
+			require_once 'protected/extensions/google-api-php-client/src/apiClient.php';
+			require_once 'protected/extensions/google-api-php-client/src/contrib/apiOauth2Service.php';
+
+			$client = new apiClient();
+			$client->setApplicationName("X2Engine CRM");
+			// Visit https://code.google.com/apis/console to generate your
+			// oauth2_client_id, oauth2_client_secret, and to register your oauth2_redirect_uri.
+			$client->setClientId('1005280624260-464cek3q55cvf8uie7t71l1em9u5k97k.apps.googleusercontent.com');
+			$client->setClientSecret('O1t5yVCXsjP4T_9GDmom_Um_');
+			$client->setRedirectUri('http://www.x2developer.com/x2jake/site/googleLogin');
+			//$client->setDeveloperKey('insert_your_developer_key');
+			$oauth2 = new apiOauth2Service($client);
+			
+			$client->setAccessToken($_SESSION['access_token']);
+			
+			$user = $oauth2->userinfo->get();
+			$email = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
+			
+			$userRecord=User::model()->findByAttributes(array('emailAddress'=>$email));
+			$profileRecord=Profile::model()->findByAttributes(array(), "emailAddress='$email' OR googleId='$email'");
+			if(isset($userRecord) || isset($profileRecord)){
+				if(!isset($userRecord)){
+					$userRecord=User::model()->findByPk($profileRecord->id);
+				}
+				$username=$userRecord->username;
+				$password=$userRecord->password;
+				$model->username=$username;
+				$model->password=$password;
+				if($model->login(true)){
+					$ip = $this->getRealIp();
+					x2base::cleanUpSessions();
+					$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
+					if(isset($session)) {
+						$session->lastUpdated = time();
+					} else {
+						$session = new Session;
+						$session->user = $model->username;
+						$session->lastUpdated = time();
+						$session->status = 1;
+						$session->IP = $ip;
+					}
+					$session->save();
+					$userRecord->login = time();
+					$userRecord->save();
+					Yii::app()->session['versionCheck']=true;
+					
+					Yii::app()->session['loginTime']=time();
+						$session->status=1;
+
+					if(Yii::app()->user->returnUrl=='site/index')
+						$this->redirect('index');
+					else
+						$this->redirect(Yii::app()->user->returnUrl);
+				}else{
+					print_r($model->getErrors());
+				}
+			}else{
+				$this->render('googleLogin',array(
+					'failure'=>'email',
+					'email'=>$email,
+				));
+			}
+		}else{
+			$this->render('googleLogin');
+		}
 	}
 
 	// Logs out the current user and redirect to homepage.
@@ -841,10 +923,14 @@ class SiteController extends x2base {
 		$user = User::model()->findByPk(Yii::app()->user->getId());
 		if(isset($user)) {
 			$user->lastLogin=time();
-			$session = Session::model()->findByAttributes(array('user'=>$user->username));
-			if(isset($session))
-				$session->delete();
+			// $session = Session::model()->findByAttributes(array('user'=>$user->username));
+			$session = Session::model()->deleteAllByAttributes(array('user'=>$user->username));
+			// if(isset($session))
+				// $session->delete();
 			$user->save();
+		}
+		if(isset($_SESSION['access_token'])){
+			unset($_SESSION['access_token']);
 		}
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);

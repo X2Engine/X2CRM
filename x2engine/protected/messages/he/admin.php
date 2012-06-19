@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'כלי עזר',
-'Χ2Studio'=>'Χ2Studio',
+'X2Studio'=>'סטודיוX2',
 'Support & Documentation'=>'תמיכה תיעוד',
 'Contact Us'=>'צור קשר',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'כדי להעלות את הלוגו שלך להצגה לצד שורת החיפוש, בבקשה להעלות את הקובץ כאן על ידי שימוש בטופס הבא.',
 'Create Page'=>'יצירת דף',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine בע"מ היא החברה מאחורי X2Contacts - ביצועים גבוהים לניהול אנשי קשר יישום אינטרנט. X2Engine יכול להציע תמיכה בארגון המקצועי וההכשרה על X2Contacts. נא למלא את הטופס הבא לפנות אלינו.',
+
+// Email Config
+'Email Server Configuration'=>'שרת הדוא"ל תצורת',
+'Ready to send email? We need some information about your mail server.'=>'מוכן לשלוח דוא"ל? אנחנו צריכים קצת מידע על שרת הדואר שלך.',
+'Outbound Email Server'=>'שרת דוא"ל יוצא',
+'Hostname'=>'שם מארח',
+'Port'=>'נמל',
+'Security'=>'בטחון',
+'Authentication'=>'אימות',
+'Username'=>'שם משתמש',
+'Password'=>'סיסמה',
+'Sender Name'=>'שם השולח',
+'Sender Email Address'=>'אימייל השולח',
+'Batch Size'=>'אצווה גודל',
+'Interval (Minutes)'=>'מרווח (דקות)',
+'Email Signatures'=>'דוא"ל חתימות',
+'None'=>'אף אחד',
+'User\'s Choice'=>'המשתמש של בחירה',
+'Default Signature'=>'ברירת מחדל חתימה',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'ניתן להשתמש במשתנים הבאים בתבנית זו: {first}, {last}, {phone}, {email}.',
 );

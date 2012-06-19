@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'',
-'Χ2Studio'=>'',
+'X2Studio'=>'',
 'Support & Documentation'=>'',
 'Contact Us'=>'',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'',
 'Create Page'=>'',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'',
+
+// Email Config
+'Email Server Configuration'=>'',
+'Ready to send email? We need some information about your mail server.'=>'',
+'Outbound Email Server'=>'',
+'Hostname'=>'',
+'Port'=>'',
+'Security'=>'',
+'Authentication'=>'',
+'Username'=>'',
+'Password'=>'',
+'Sender Name'=>'',
+'Sender Email Address'=>'',
+'Batch Size'=>'',
+'Interval (Minutes)'=>'',
+'Email Signatures'=>'',
+'None'=>'',
+'User\'s Choice'=>'',
+'Default Signature'=>'',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'',
 );

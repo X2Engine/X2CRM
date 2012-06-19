@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -54,14 +54,14 @@ $urlTitleContainerHeight = $urlTitleHeight + 30;
 $siteContainerHeight = $topsitesHeight + $urlTitleHeight + 45;
 $siteContainerFixHeight = 250;
 ?>
-<div id="sites-container-fix" style="height:".<?php echo $siteContainerFixHeight; ?>."px">
-<div id="sites-container" style="height:".<?php echo $siteContainerHeight; ?>."px">
-<div id="top-sites-container" style="height: ".<?php echo $topsitesHeight;?>."px; margin-bottom: 20px;">
-<div id="sites-box" style="height: ".<?php echo $topsitesHeight;?>."px">
+<div id="sites-container-fix" style="height:<?php echo $siteContainerFixHeight; ?>px">
+<div id="sites-container" style="height:<?php echo $siteContainerHeight; ?>px">
+<div id="top-sites-container" style="height:<?php echo $topsitesHeight;?>px; margin-bottom: 20px;">
+<div id="sites-box" style="height:<?php echo $topsitesHeight;?>px">
 <?php
-$echoSTR = "<table><tr><th>Title</th><th>Link</th></tr>";
+$echoSTR = "<table><tr><th>".Yii::t('app',"Title")."</th><th>".Yii::t('app',"Link")."</th></tr>";
 foreach($data as $entry){
-        $echoSTR .=  "<tr><td>".$entry['title']."</td><td><a href='".$entry['url']."'>Link</a></td></tr>";
+        $echoSTR .=  "<tr><td>".$entry['title']."</td><td><a href='".$entry['url']."'>".Yii::t('app',"Link")."</a></td></tr>";
     }
 $echoSTR .= "</table>";
 echo $echoSTR;
@@ -98,13 +98,13 @@ $('#sites-container').resizable({
 </div>
 <?php echo CHtml::beginForm();?>
 <div id='site-url-container' style="height: <?php echo $urlTitleContainerHeight;?>px; margin-bottom:35px;">
-    Title: <?php echo CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
+    <?php echo Yii::t('app','Title:').CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
     <br/>
-    Link: <?php echo CHtml::textField('url-url', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
+    <?php echo Yii::t('app','Link:').CHtml::textField('url-url', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
 </div>
 <?php
 echo CHtml::ajaxSubmitButton(
-    'Add Site',
+    Yii::t('app','Add Site'),
     array('/site/addSite'),
     array(
         'update'=>'site-box',

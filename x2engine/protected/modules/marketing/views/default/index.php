@@ -93,7 +93,7 @@ $this->widget('application.components.X2GridView', array(
 		'listId'=>45,
 		'subject'=>127,
 		'launchDate'=>105,
-		'launched'=>50,
+		'active'=>50,
 	),
 	'specialColumns'=>array(
 		'name'=>array(

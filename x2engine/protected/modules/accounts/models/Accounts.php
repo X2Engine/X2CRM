@@ -38,124 +38,46 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+Yii::import('application.models.X2Model');
+
 /**
  * This is the model class for table "x2_accounts".
- *
- * The followings are the available columns in table 'x2_accounts':
- * @property integer $id
- * @property string $name
- * @property string $website
- * @property string $type
- * @property integer $annualRevenue
- * @property string $phone
- * @property string $tickerSymbol
- * @property integer $employees
- * @property string $assignedTo
- * @property integer $createDate
- * @property string $associatedContacts
- * @property string $description
- * @property integer $lastUpdated
- * @property string $updatedBy
  */
 class Accounts extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Accounts the static model class
 	 */
-	public static function model($className=__CLASS__) { return parent::model($className); }
+	public static function model($className=__CLASS__) {
+		return parent::model($className);
+	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName() { return 'x2_accounts'; }
+	public function tableName() {
+		return 'x2_accounts';
+	}
 
-	/**
-	 * @return string the route to view this model
-	 */
-	public function getDefaultRoute() { return '/accounts'; }
-	
-	/**
-	 * @return string the route to this model's AutoComplete data source
-	 */
-	public function getAutoCompleteSource() { return '/accounts/getItems'; }
-
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>get_class($this)));
-		$arr=array(
-			'varchar'=>array(),
-			'text'=>array(),
-			'date'=>array(),
-			'dropdown'=>array(),
-			'int'=>array(),
-			'email'=>array(),
-			'currency'=>array(),
-			'url'=>array(),
-			'float'=>array(),
-			'boolean'=>array(),
-			'required'=>array(),
+	public function behaviors() {
+		return array(
+			'X2LinkableBehavior'=>array(
+				'class'=>'X2LinkableBehavior',
+				'baseRoute'=>'/accounts'
+			),
+			'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
 		);
-		$rules=array();
-		foreach($fields as $field){
-			$arr[$field->type][]=$field->fieldName;
-			if($field->required)
-				$arr['required'][]=$field->fieldName;
-			if($field->type!='date')
-				$arr['search'][]=$field->fieldName;
-		}
-		$arr['search'][]='name';
-		foreach($arr as $key=>$array){
-			switch($key){
-				case 'email':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				case 'required':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				case 'search':
-					$rules[]=array(implode(",",$array),'safe','on'=>'search');
-					break;
-				case 'int':
-					$rules[]=array(implode(',',$array),'numerical','integerOnly'=>true);
-					break;
-				case 'float':
-					$rules[]=array(implode(',',$array),'type','type'=>'float');
-					break;
-				case 'boolean':
-					$rules[]=array(implode(',',$array),$key);
-					break;
-				default:
-					break;
-			}
-		}  
-		return $rules;
-                // NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		/*return array(
-			array('name', 'required'),
-			array('annualRevenue, employees, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('name, website, phone', 'length', 'max'=>40),
-			array('type', 'length', 'max'=>60),
-			array('tickerSymbol', 'length', 'max'=>10),
-			array('updatedBy', 'length', 'max'=>20),
-			array('assignedTo, associatedContacts, description', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, website, type, annualRevenue, phone, tickerSymbol, employees, assignedTo, createDate, associatedContacts, description, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
-		);*/
 	}
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
+	public function relations() {
+		return array();
 	}
 
 	/**
@@ -163,13 +85,13 @@ class Accounts extends X2Model {
 	 */
 	public function attributeLabels() {
             
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
-                $arr=array();
-                foreach($fields as $field){
-                    $arr[$field->fieldName]=Yii::t('accounts',$field->attributeLabel);
-                }
-                
-                return $arr;
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
+		$arr=array();
+		foreach($fields as $field){
+			$arr[$field->fieldName]=Yii::t('accounts',$field->attributeLabel);
+		}
+		
+		return $arr;
                 
 	}
 
@@ -269,7 +191,7 @@ class Accounts extends X2Model {
 		
 		foreach($arr as $id){
 			if($id!='')
-				$data[]=Contacts::model()->findByPk($id);
+				$data[]=CActiveRecord::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
 		
@@ -333,17 +255,6 @@ class Accounts extends X2Model {
 			$contactRecord->save();
 		}
 		return true;
-	}
-	
-	
-	public function behaviors() {
-		return array(
-			'ERememberFiltersBehavior' => array(
-				'class' => 'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),           /* optional line */
-				'defaultStickOnClear'=>false   /* optional line */
-			),
-		);
 	}
 
 	public function search() {

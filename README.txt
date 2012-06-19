@@ -1,21 +1,24 @@
 README
 
---WARNING--
-
-X2CRM 1.4 Changelog
+X2CRM 1.5 Changelog
+- New full-featured Marketing module
+	- Built on dynamic or static contact lists
+	- Templates with contact info insertion
+	- Batch mailing system with real-time status info
+	- Email open/click tracking
+	- Unsubscribe links
+- Major enhancements to notifications
+	- Real-time notification popups
+	- Customizable notification events
+	- VOIP API allows automatic record lookup when a contact calls your phone
+- De-duplication tool
+- Google apps OAuth login
+- Improvements to Google calendar integration
+- New widget dashbaord (previous dashboard module is now called Charts)
 - Numerous bug fixes
-- Fine tuned the layout (background selecting works better, users can now toggle the full-width layout)
-- Major improvements to global search
-- Full Google Calendar integration
-	- allow users to sync all there actions and events to there google calendar
-- Improved Workflow widget
-	- detail view for each workflow stage
-	- users can now edit and backdate previous workflow stages
-- User-created lists now have an export tool, using the current visible columns
-- Improved performance of Contact Timezone widget
-- New "Top Sites' widget allows you to save bookmarks within X2Engine
 
-Welcome to X2CRM v1.4!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
+
+Welcome to X2CRM v1.5!  X2CRM is a next-generation, open source social sales application for small and medium sized businesses. 
 
 X2CRM was designed to streamline contact and sales actions into one compact blog-style user interface. Add to this contact and colleague social feeds and sales representatives become smarter and more effective resulting in increased sales and higher customer satisfaction.
 

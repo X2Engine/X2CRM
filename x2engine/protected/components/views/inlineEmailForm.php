@@ -116,7 +116,10 @@ if(!empty($model->status)) {
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'enableAjaxValidation'=>false,
 		'method'=>'post',
-	));	?>
+	));
+	echo $form->hiddenField($model,'modelId');
+	echo $form->hiddenField($model,'modelName');
+	?>
 	<div class="row">
 		<?php //echo $form->error($model,'to'); ?>
 		<?php echo $form->label($model,'to'); ?>

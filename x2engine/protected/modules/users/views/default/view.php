@@ -63,7 +63,11 @@ $this->menu=array(
 		'address',
 		'backgroundInfo',
 		'emailAddress',
-		'status',
+		array(
+			'name'=>'status',
+			'type'=>'raw',
+			'value'=>$model->status==1?"Active":"Inactive",
+		),
 	),
 )); ?>
 

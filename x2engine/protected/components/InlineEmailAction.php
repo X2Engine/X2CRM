@@ -58,8 +58,7 @@ class InlineEmailAction extends CAction {
 				$preview = true;
 
 			$this->model->attributes = $_POST['InlineEmail'];
-			
-			
+
 			// if the user specified a template, look it up and use it for the message
 			if($this->model->template != 0) {
 				$matches = array();
@@ -86,22 +85,27 @@ class InlineEmailAction extends CAction {
 					if(empty($this->model->subject) || CActiveRecord::model('Docs')->countByAttributes(array('type'=>'email','title'=>$this->model->subject)))
 						$this->model->subject = $template->title;
 					
-					if(isset($this->model->modelName, $this->model->modelId)) {		// if there is a model name/id available, look it up and use its attributes
+					// if there is a model name/id available, look it up and use its attributes
+					if(isset($this->model->modelName, $this->model->modelId)) {
 						$targetModel = CActiveRecord::model($this->model->modelName)->findByPk($this->model->modelId);
 						if(isset($targetModel)) {
-							$attributes = $targetModel->getAttributes();
-							$attributeNames = array_keys($attributes);
-							$attributeNames[] = 'content';
-							$attributes = array_values($attributes);
-							$attributes[] = $this->model->message;
-							foreach($attributeNames as &$name)
-								$name = '/{'.$name.'}/';
-							unset($name);
-
-							$emailBody = preg_replace($attributeNames,$attributes,$emailBody);
+						
+							$matches = array();
+							preg_match_all('/{\w+}/',$emailBody,$matches);	// find all the things
+							
+							if(isset($matches[0])) {					// loop through the things
+								foreach($matches[0] as $match) {
+									$match = substr($match,1,-1);	// remove { and }
+									
+									if($targetModel->hasAttribute($match)) {
+										$value = $targetModel->renderAttribute($match,false,true);	// get the correctly formatted attribute
+										$emailBody = preg_replace('/{'.$match.'}/',$value,$emailBody);
+									}
+								}
+							}
 						}
 					}
-					// $this->model->template = 0;
+					$this->model->template = 0;				// set to custom so the person can edit the whole message
 					$this->model->message = $emailBody;
 				}
 			} elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
@@ -122,7 +126,7 @@ class InlineEmailAction extends CAction {
 				if(in_array('200',$this->model->status)) {
 					
 					foreach($this->model->mailingList['to'] as &$target) {
-						$contact = Contacts::model()->findByAttributes(array('email'=>$target[1]));
+						$contact = CActiveRecord::model('Contacts')->findByAttributes(array('email'=>$target[1]));
 						if(isset($contact)) {
 
 							$action = new Actions;

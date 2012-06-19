@@ -192,7 +192,7 @@ class DefaultController extends x2base {
 			foreach($links as $link) {
 				$link->delete();
 			}
-			$contacts=Contacts::model()->findAllByAttributes(array('assignedTo'=>$id));
+			$contacts=CActiveRecord::model('Contacts')->findAllByAttributes(array('assignedTo'=>$id));
 			foreach($contacts as $contact) {
 				$contact->assignedTo='Anyone';
 				$contact->save();
@@ -224,14 +224,21 @@ class DefaultController extends x2base {
 		$this->redirect('index');
 	}
         
-	public function actionGetGroups() {
-		print_r($_POST);
-		if(isset($_POST['group'])){
+	public function actionGetGroups() {				
+		if(isset($_POST['checked'])) { // coming from a group checkbox?
+			$checked = json_decode($_POST['checked']);
+		} else if(isset($_POST['group'])){
+			$checked = true;
+		}else{
+			$checked = false;
+		}
+		
+		if($checked) { // group checkbox checked, return list of groups
 			$groups=Groups::model()->findAll();
 			foreach($groups as $group){
 				echo CHtml::tag('option', array('value'=>$group->id),CHtml::encode($group->name),true);
 			}
-		}else{
+		} else { // group checkbox unchecked, return list of user names
 			$users=User::getNames();
 			foreach($users as $key=>$value){
 				echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);

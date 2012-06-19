@@ -91,7 +91,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'name'=>'actionDescription',
 			'type'=>'raw',
 			'value'=>'CHtml::link(CHtml::encode($data->actionDescription),
-			 array(\'actions/view\',\'id\'=>$data->id))',
+			 array(\'/actions/view\',\'id\'=>$data->id))',
 		),
 		'assignedTo',
 		'dueDate',

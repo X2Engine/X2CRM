@@ -66,6 +66,8 @@ $form = $this->beginWidget('CActiveForm', array(
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
 					'dateFormat'=>$this->formatDatePicker(),
+					'changeMonth'=>true,
+					'changeYear'=>true,
 					'maxDate'=>'0'
 
 				), // jquery plugin options
@@ -92,6 +94,8 @@ $form = $this->beginWidget('CActiveForm', array(
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
 					'dateFormat'=>$this->formatDatePicker(),
+					'changeMonth'=>true,
+					'changeYear'=>true,
 					'maxDate'=>'0'
 
 				), // jquery plugin options

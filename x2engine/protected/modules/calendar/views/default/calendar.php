@@ -41,20 +41,41 @@
 
 <?php
 if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
-	$this->menu=array(
-		array('label'=>Yii::t('calendar','Calendar')),
-		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
-	);
+	if(Yii::app()->user->name == 'admin') {
+		$this->menu=array(
+			array('label'=>Yii::t('calendar', 'Calendar')),
+			array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+			array('label'=>Yii::t('calendar', 'User Calendar Permissions'), 'url'=>array('userCalendarPermissions')),
+	//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+	//		array('label'=>Yii::t('calendar', 'Create'), 'url'=>array('create')),
+			array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
+		);
+	} else {
+		$this->menu=array(
+			array('label'=>Yii::t('calendar','Calendar')),
+			array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+	//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+	//		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+			array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
+		);
+	}
 } else {
-	$this->menu=array(
-		array('label'=>Yii::t('calendar','Calendar')),
-		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-	);
+	if(Yii::app()->user->name == 'admin') {
+		$this->menu=array(
+			array('label'=>Yii::t('calendar', 'Calendar')),
+			array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+			array('label'=>Yii::t('calendar', 'User Calendar Permissions'), 'url'=>array('userCalendarPermissions')),
+	//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+	//		array('label'=>Yii::t('calendar', 'Create'), 'url'=>array('create')),
+		);
+	} else {
+		$this->menu=array(
+			array('label'=>Yii::t('calendar','Calendar')),
+			array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
+	//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
+	//		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
+		);
+	}
 }
 ?>
 <div id="calendar">
@@ -73,14 +94,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullc
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
 
 
+$this->calendarUsers = X2CalendarPermissions::getViewableUserCalendarNames();
+$this->groupCalendars = X2Calendar::getViewableGroupCalendarNames();
 
-$this->calendarUsers = X2Calendar::getViewableUserCalendarNames();
-$this->sharedCalendars = X2Calendar::getViewableCalendarNames();
-$this->googleCalendars = X2Calendar::getViewableGoogleCalendarNames();
+//$this->sharedCalendars = X2Calendar::getViewableCalendarNames();
+//$this->googleCalendars = X2Calendar::getViewableGoogleCalendarNames();
 $this->calendarFilter = X2Calendar::getCalendarFilters();
 
 // urls for ajax (and other javascript) calls
 $jsonFeed = $this->createUrl('jsonFeed'); // feed to get actions from users
+$jsonFeedGroup = $this->createUrl('jsonFeedGroup'); // feed to get actions from group Calendar
 $jsonFeedShared = $this->createUrl('jsonFeedShared'); // feed to get actions from shared calendars
 $jsonFeedGoogle = $this->createUrl('jsonFeedGoogle'); // feed to get events from a google calendar
 $currentUserFeed = $this->createUrl('jsonFeed', array('user'=>Yii::app()->user->name)); // add current user actions to calendar
@@ -101,10 +124,11 @@ $saveCheckedCalendarFilter = $this->createUrl('saveCheckedCalendarFilter');
 $user = User::model()->findByPk(Yii::app()->user->getId());
 $showCalendars = json_decode($user->showCalendars, true);
 $userCalendars = $showCalendars['userCalendars'];
+$groupCalendars = $showCalendars['groupCalendars'];
 $sharedCalendars = $showCalendars['sharedCalendars'];
 $googleCalendars = $showCalendars['googleCalendars'];
 
-$editableUserCalendars = X2Calendar::getEditableUserCalendarNames();
+$editableUserCalendars = X2CalendarPermissions::getEditableUserCalendarNames();
 $checkedUserCalendars = '';
 foreach($userCalendars as $user) {
 	if(isset($this->calendarUsers[$user])) {
@@ -117,7 +141,6 @@ foreach($userCalendars as $user) {
 	$('#calendar').fullCalendar('addEventSource', 
 		{
 			url: '$userCalendarFeed',
-			type: 'POST',
 			editable: $editable,
 		}
 	);
@@ -125,6 +148,21 @@ foreach($userCalendars as $user) {
 	}
 }
 
+$checkedGroupCalendars = '';
+foreach($groupCalendars as $groupId) {
+	if(isset($this->groupCalendars[$groupId])) {
+		$checkedGroupCalendars .= "
+		$('#calendar').fullCalendar('addEventSource',
+			{
+				url: '$jsonFeedGroup?groupId=$groupId',
+				editable: true,
+			}
+		);
+";
+	}
+}
+
+/*
 $editableCalendars = X2Calendar::getEditableCalendarNames();
 $checkedSharedCalendars = '';
 foreach($sharedCalendars as $calendarId) {
@@ -180,7 +218,7 @@ foreach($googleCalendars as $calendarId) {
 		}
 	}
 }
-
+*/
 
 // Yii::app()->clientScript->registerScript('initCalendar', "
 ?>
@@ -201,10 +239,39 @@ $(function() {
 				element.attr('title', event.associationName);
 		},
 		dayClick: function(date, allDay, jsEvent, view) {
-			if(view.name == 'month') {
-				$('#calendar').fullCalendar('changeView', 'agendaDay');
-				$('#calendar').fullCalendar('gotoDate', date);
+
+			var scrollPublisher = $('#tabs').offset().top + $('#tabs').height() + 5 - $(window).height(); // value of window's scrollbar to make publisher visible
+			if($(window).scrollTop() < scrollPublisher) {
+			    $('html,body').animate({ scrollTop: scrollPublisher });
 			}
+
+			$('#Actions_actionDescription').focus();
+			
+			var actionDate = new Date(date.getTime());
+			var eventDate = new Date(date.getTime());
+			if(view.name == 'month' || view.name == 'basicWeek') {
+				var oldActionDate = $('#Actions_dueDate').datetimepicker('getDate');
+				actionDate.setHours(oldActionDate.getHours());
+				actionDate.setMinutes(oldActionDate.getMinutes());
+				
+				var oldEventDate = $('#CalendarEvent_dueDate').datetimepicker('getDate');
+				eventDate.setHours(oldEventDate.getHours());
+				eventDate.setMinutes(oldEventDate.getMinutes());
+			}
+			
+			$('#Actions_dueDate').datetimepicker("destroy");
+			$('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': actionDate}));
+			$('#Actions_dueDate').datetimepicker('setDate', actionDate);
+			
+			$('#CalendarEvent_dueDate').datetimepicker("destroy");
+			$('#CalendarEvent_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
+			$('#CalendarEvent_dueDate').datetimepicker('setDate', eventDate);
+			
+			if(allDay) {
+				$('#CalendarEvent_allDay').attr('checked', true);
+				$('#Actions_allDay').attr('checked', true);
+			}
+
 		},
 		eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
 			if(event.source.source == 'google') // moving event from Google Calendar
@@ -486,20 +553,20 @@ $(function() {
 
 	});
 <?php echo $checkedUserCalendars; ?>
-<?php echo $checkedSharedCalendars; ?>
-<?php echo $checkedGoogleCalendars; ?>
+<?php echo $checkedGroupCalendars; ?>
+<?php //echo $checkedSharedCalendars; ?>
+<?php //echo $checkedGoogleCalendars; ?>
 
 });
 
 // view/hide actions associated with a user
-function toggleCalendarSource(user, on, isEditable) {
+function toggleUserCalendarSource(user, on, isEditable) {
 	if(user == '')
 		user = 'Anyone';
 	if(on) {
 		$('#calendar').fullCalendar('addEventSource', 
 			{
 				url: '<?php echo $jsonFeed; ?>?user=' + user,
-				type: 'POST',
 				editable: isEditable,
 			}
 		);
@@ -507,7 +574,6 @@ function toggleCalendarSource(user, on, isEditable) {
 		$('#calendar').fullCalendar('removeEventSource', 
 			{
 				url: '<?php echo $jsonFeed; ?>?user=' + user,
-				type: 'POST',
 				editable: isEditable,
 			}
 		);
@@ -515,7 +581,27 @@ function toggleCalendarSource(user, on, isEditable) {
 	$.post('<?php echo $saveCheckedCalendar; ?>', {Calendar: user, Checked: on, Type: 'user'});
 }
 
+function toggleGroupCalendarSource(groupId, on) {
+	if(on) {
+		$('#calendar').fullCalendar('addEventSource',
+			{
+				url: '<?php echo $jsonFeedGroup; ?>?groupId=' + groupId,
+				editable: true,
+			}
+		);
+	} else {
+		$('#calendar').fullCalendar('removeEventSource',
+			{
+				url: '<?php echo $jsonFeedGroup; ?>?groupId=' + groupId,
+				editable: true,
+			}
+		);
+	}
+	$.post('<?php echo $saveCheckedCalendar; ?>', {Calendar: groupId, Checked: on, Type: 'group'});
+}
+
 // view/hide actions from a shared calendar
+/*
 function toggleCalendarSourceShared(calendarId, on, isEditable) {
 	if(on) {
 		$('#calendar').fullCalendar('addEventSource', 
@@ -564,6 +650,7 @@ function toggleCalendarSourceGoogle(id, on, isEditable) {
 	$.post('<?php echo $saveCheckedCalendar; ?>', {Calendar: id, Checked: on, Type: 'google'});
 }
 
+
 // view/hide actions from a read only google calendar feed
 function toggleCalendarSourceGoogleFeed(calendarId, on, googleFeed) {
 	if(on) {
@@ -587,6 +674,7 @@ function toggleCalendarSourceGoogleFeed(calendarId, on, googleFeed) {
 	}
 	$.post('<?php echo $saveCheckedCalendar; ?>', {Calendar: calendarId, Checked: on, Type: 'google'});
 }
+*/
 
 // filter calendar actions
 function toggleCalendarFilter(filterName, on) {
@@ -600,6 +688,7 @@ function cleanUpDialog() {
 	$('#dialog-Actions_startDate').remove();
 	$('#dialog_actionsAssignedToDropdown').remove();
 	$('#dialog_groupCheckbox').remove();
+	$('body').off('click','#dialog_groupCheckbox');
 	$('#dialog_Actions_visibility').remove();
 }
 
@@ -635,4 +724,3 @@ $this->widget('InlineActionForm',
 	)
 );
 ?>
-

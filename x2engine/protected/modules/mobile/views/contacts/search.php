@@ -73,7 +73,7 @@ $model->lastName = $attributeLabels['lastName'];
 <?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Search'),
-	array('contacts/viewAll'),
+	array('/contacts/viewAll'),
 	array('success'=>"function(response) {
 			if(response!='') {
 				alert('".Yii::t('app','Contact Saved')."');

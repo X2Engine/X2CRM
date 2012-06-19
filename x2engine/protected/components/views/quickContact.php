@@ -52,10 +52,10 @@ $form = $this->beginWidget('CActiveForm', array(
 	'method'=>'POST',
 ));
 
-$model->firstName = Contacts::model()->getAttributeLabel('firstName');
-$model->lastName = Contacts::model()->getAttributeLabel('lastName');
-$model->phone = Contacts::model()->getAttributeLabel('phone');
-$model->email = Contacts::model()->getAttributeLabel('email');
+$model->firstName = CActiveRecord::model('Contacts')->getAttributeLabel('firstName');
+$model->lastName = CActiveRecord::model('Contacts')->getAttributeLabel('lastName');
+$model->phone = CActiveRecord::model('Contacts')->getAttributeLabel('phone');
+$model->email = CActiveRecord::model('Contacts')->getAttributeLabel('email');
 
 ?>
 <div class="form thin">

@@ -59,7 +59,7 @@ editor=new TINY.editor.edit('editor',{
 	controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|', 'orderedlist', 'unorderedlist', '|' ,'outdent' ,'indent', '|', 'leftalign', 'centeralign', 'rightalign', 'blockjustify', '|', 'unformat', '|', 'undo', 'redo','n',  'font', 'size', 'style','|', 'image', 'hr', 'link', 'unlink', '|', 'cut', 'copy', 'paste'], // (required) options you want available, a '|' represents a divider and an 'n' represents a new row
 	footer:true, // (optional) show the footer
 	fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
-	xhtml:true, // (optional) generate XHTML vs HTML
+	xhtml:false, // (optional) generate XHTML vs HTML
 	cssfile:'style.css', // (optional) attach an external CSS file to the editor
 	css:'', // (optional) attach CSS to the editor
 	bodyid:'editor', // (optional) attach an ID to the editor body

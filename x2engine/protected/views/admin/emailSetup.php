@@ -79,7 +79,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo',"
 ?>
 <div class="span-14">
 <h2><?php echo Yii::t('admin','Email Server Configuration'); ?></h2>
-<?php echo Yii::t('admin','Ready to start using X2Engine\'s inbound and outbound email capabilities? First, we\'ll need some information about your mail server.'); ?>
+<?php echo Yii::t('admin','Ready to send email? We need some information about your mail server.'); ?>
 <br><br>
 <div class="form">
 <?php
@@ -169,16 +169,16 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->labelEx($model,'emailUseSignature'); ?>
 		<?php echo $form->dropDownList($model,'emailUseSignature',array(
 				''=>Yii::t('admin','None'),
-				'user'=>Yii::t('admin','User choice'),
+				'user'=>Yii::t('admin','User\'s Choice'),
 				// 'group'=>Yii::t('admin','Group signature'),
-				'admin'=>Yii::t('admin','Default signature'),
+				'admin'=>Yii::t('admin','Default Signature'),
 			)); ?>
 	</div>
 	<div class="row" id="signature-box"<?php if($model->emailUseSignature != 'admin') echo ' style="display:none;"'; ?>>
 		<?php echo $form->labelEx($model,'emailSignature'); ?>
 		<?php echo $form->textArea($model,'emailSignature',array('style'=>'width:490px;height:80px;')); ?>
 		<br>
-		<?php echo Yii::t('admin','You can use the following varibles in this template: {first}, {last}, {phone} and {email}.'); ?>
+		<?php echo Yii::t('admin','You can use the following variables in this template: {first}, {last}, {phone} and {email}.'); ?>
 	</div>
 
 <?php //echo $form->labelEx($admin,'chatPollTime'); ?>

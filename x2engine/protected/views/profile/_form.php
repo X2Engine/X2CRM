@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -88,6 +88,14 @@
 				'admin'=>Yii::t('admin','Use default'),
 			),array('disabled'=>($userChoice? null : 'disabled'))); ?>
 			<?php echo $form->error($model,'emailUseSignature'); ?>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="cell">
+			<?php echo $form->labelEx($model,'googleId'); ?>
+			<?php echo $form->textField($model,'googleId',array('size'=>40,'maxlength'=>250)); ?>
+			<?php echo $form->error($model,'googleId'); ?>
 		</div>
 	</div>
 	

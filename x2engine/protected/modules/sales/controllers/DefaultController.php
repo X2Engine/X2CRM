@@ -194,7 +194,7 @@ class DefaultController extends x2base {
 								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
 							}else{
 								$names=explode(" ",$arr);
-								$lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+								$lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
 							}
 							if(isset($lookupModel))
 								$val=$lookupModel->id;
@@ -329,7 +329,7 @@ class DefaultController extends x2base {
 								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
 							}else{
 								$names=explode(" ",$arr);
-								$lookupModel=Contacts::model()->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+								$lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
 							}
 							if(isset($lookupModel))
 								$val=$lookupModel->id;

@@ -110,13 +110,16 @@ class DefaultController extends x2base {
 			$profile->emailAddress=$model->emailAddress;
 			$profile->status=$model->status;
 
-			if($model->save() && $profile->save()){
+			if($model->save()){
+								$profile->id=$model->id;
+								$profile->save();
                                 if(isset($_POST['roles'])){
                                     $roles=$_POST['roles'];
                                     foreach($roles as $role){
                                         $link=new RoleToUser;
                                         $link->roleId=$role;
                                         $link->userId=$model->id;
+										$link->type="user";
                                         $link->save();
                                     }
                                 }
@@ -190,6 +193,7 @@ class DefaultController extends x2base {
                             foreach($roles as $role){
                                 $link=new RoleToUser;
                                 $link->roleId=$role;
+								$link->type="user";
                                 $link->userId=$model->id;
                                 $link->save();
                             }

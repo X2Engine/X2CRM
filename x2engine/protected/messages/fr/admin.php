@@ -43,7 +43,7 @@ return array (
 // Index
 // Titles
 'Utilities'=>'Utilitaires',
-'Χ2Studio'=>'Χ2Studio',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Support & Documentation',
 'Contact Us'=>'Contactez-nous',
 
@@ -134,4 +134,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Pour télécharger votre logo à afficher à côté de la barre de recherche, s\'il vous plaît télécharger le fichier ici en utilisant le formulaire ci-dessous.',
 'Create Page'=>'Créer une page',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc est l\'entreprise derrière X2Contacts - une application de haute performance de gestion des contacts Internet. X2Engine peut offrir à votre organisation de soutien professionnel et de formation sur X2Contacts. S\'il vous plaît remplir le formulaire ci-dessous pour nous contacter.',
+
+// Email Config
+'Email Server Configuration'=>'Configuration du serveur e-mail',
+'Ready to send email? We need some information about your mail server.'=>'Prêt à envoyer des courriels? Nous avons besoin de quelques informations sur votre serveur de messagerie.',
+'Outbound Email Server'=>'Serveur de messagerie sortant',
+'Hostname'=>'Nom d\'hôte',
+'Port'=>'Port',
+'Security'=>'Sécurité',
+'Authentication'=>'Authentification',
+'Username'=>'Nom d\'utilisateur',
+'Password'=>'Mot de passe',
+'Sender Name'=>'Nom de l\'expéditeur',
+'Sender Email Address'=>'Adresse Email Sender',
+'Batch Size'=>'Taille du lot',
+'Interval (Minutes)'=>'Intervalle (minutes)',
+'Email Signatures'=>'Signatures Email',
+'None'=>'Aucun',
+'User\'s Choice'=>'Choix de l\'utilisateur',
+'Default Signature'=>'Signature par défaut',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Vous pouvez utiliser les variables suivantes dans ce modèle: {first}, {last}, {phone}, {email}.',
 );

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,6 +86,7 @@ return array (
 
 // Footer
 'All Rights Reserved.'=>'כל הזכויות שמורות.',
+'Generated in {time} seconds.'=>'שנוצר בתוך שניות {זמן ההמתנה',
 
 // Widgets
 'My Actions'=>'פעולות שלי',
@@ -98,6 +99,8 @@ return array (
 'Just Me'=>'רק אני',
 'All Users'=>'כל המשתמשים',
 'Doc Viewer'=>'דוק חלון',
+'Time Zone'=>'אזור זמן',
+'Top Sites'=>'למעלה אתרים',
 
 'Total Action|Total Actions'=>'סה"כ פעולה | פעולות סך הכל',
 'Unfinished Action|Unfinished Actions'=>'פעולה לא גמור | פעולות שלא נשלמו',
@@ -115,6 +118,12 @@ return array (
 'Add {name}'=>'{name} הוסף',
 
 'Enter Title'=>'הזן כותרת',
+'Title'=>'כותרת',
+'Title:'=>'כותרת:',
+'Link'=>'קשר',
+'Link:'=>'קישור:',
+'Add Site'=>'הוסף אתר',
+'Example'=>'דוגמה',
 
 // Chat
 'Message Body'=>'הודעה גוף',
@@ -168,6 +177,15 @@ return array (
 '"{X}" is not an allowed filetype.'=>'"{X}" הוא לא סוג קובץ מותר.',
 'Loading'=>'טעינה',
 'Edit'=>'לערוך',
+'Due'=>'בשל',
+'Help'=>'לעזור',
+'---'=>'---',
+'You don\'t have any notifications.'=>'אין לך שום הודעות.',
+'View all'=>'הצג את כל',
+'Close'=>'לסגור',
+'Delete'=>'למחוק',
+'Group?'=>'קבוצה?',
+'Checkbox'=>'תיבת סימון',
 
 // Misc Actions
 'Submit'=>'להגיש',
