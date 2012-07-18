@@ -60,7 +60,7 @@ class SiteController extends x2base {
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
-					'saveWidgetHeight', 'inlineEmail','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
+					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
 				'users'=>array('@'),
 			),
 			// array('allow',
@@ -111,28 +111,28 @@ class SiteController extends x2base {
 		
 		if(!Yii::app()->user->isGuest){
 		
-			$user=User::model()->findByPk(Yii::app()->user->getId());
-			$lastLogin=$user->lastLogin;
+			$user = User::model()->findByPk(Yii::app()->user->getId());
+			$lastLogin = $user->lastLogin;
 
-			$contacts=CActiveRecord::model('Contacts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$actions=CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
-			$sales=CActiveRecord::model('Sales')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$accounts=CActiveRecord::model('Accounts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$contacts = CActiveRecord::model('Contacts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$actions = CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
+			$sales = CActiveRecord::model('Sales')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$accounts = CActiveRecord::model('Accounts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 
-			$arr=array_merge($contacts,$actions,$sales,$accounts);
+			$arr = array_merge($contacts,$actions,$sales,$accounts);
 
-			$records=Record::convert($arr);
+			$records = Record::convert($arr);
 
 			$dataProvider=new CArrayDataProvider($records,array(
 				'id'=>'id',
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),
 				),
-                                'sort'=>array(
-                                    'attributes'=>array(
-                                         'lastUpdated', 'name',
-                                    ),
-                                ),
+				'sort'=>array(
+					'attributes'=>array(
+						 'lastUpdated', 'name',
+					),
+				),
 			));
 
 			$this->render('whatsNew',array(
@@ -245,7 +245,7 @@ class SiteController extends x2base {
 			$res.=$item->data."<br /><br />";
 		}
 	}
-	
+
 	public function actionAddPersonalNote() {
 		if (isset($_POST['note-message']) && $_POST['note-message']!='') {
 			$user=Yii::app()->user->getName();
@@ -260,47 +260,49 @@ class SiteController extends x2base {
 				echo "1";
 			}
 		}
-    }
-    public function actionAddSite(){
-        if((isset($_POST['url-title'])&&isset($_POST['url-url']))
-            &&($_POST['url-title']!=''&&$_POST['url-url']!='')){
-                $site = new URL;
-                $site->title = $_POST['url-title'];
-                $site->url = $_POST['url-url'];
-                $site->userid = Yii::app()->user->getId();
-                $site->timestamp = time();
-                if ($site->save()){
-                    echo "1";
-                }
-            }
-    }
+	}
+
+	public function actionAddSite(){
+		if((isset($_POST['url-title'])&&isset($_POST['url-url'])) &&($_POST['url-title']!=''&&$_POST['url-url']!='')) {
+			$site = new URL;
+			$site->title = $_POST['url-title'];
+			$site->url = $_POST['url-url'];
+			$site->userid = Yii::app()->user->getId();
+			$site->timestamp = time();
+			if ($site->save()){
+				echo '1';
+			}
+		}
+	}
+
 	public function actionGetNotes($url) {
 		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()),array(
 			'order'=>'timestamp DESC',
 		));
 		$res="";
 		foreach($content as $item){
-			$res .= $this->convertUrls($item->data)." ".CHtml::link('[x]',array('site/deleteMessage','id'=>$item->id,'url'=>$url))."<br /><br />";
+			$res .= $this->convertUrls($item->data)." ".CHtml::link('[x]',array('site/deleteMessage','id'=>$item->id,'url'=>$url)).'<br /><br />';
 		}
 		if($res==""){
 			$res=Yii::t('app',"Feel free to enter some notes!");
 		}
 		echo $res;
-    }
-    public function actionGetURLs($url){
-        $content = URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
-            'order'=>'timestamp DESC',
-        ));
-        $res ="<table><tr><th>Title</th><th>Link</th></tr>";
-        if($content){
-            foreach($content as $entry){
-                $res .= "<tr><td>".$entry->title."</td><td><a href='".$entry->url."'>LINK</a></td></tr>";
-            }
-        }else {
-            $res .= "<tr><td>Example</td><td><a href='.'>LINK</a></td></tr>";
-        }
-        echo $res;
-    }
+	}
+
+	public function actionGetURLs($url) {
+		$content = URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
+			'order'=>'timestamp DESC',
+		));
+		$res ='<table><tr><th>Title</th><th>Link</th></tr>';
+		if($content){
+			foreach($content as $entry){
+				$res .= '<tr><td>'.$entry->title."</td><td><a href='".$entry->url."'>LINK</a></td></tr>";
+			}
+		}else {
+			$res .= "<tr><td>Example</td><td><a href='.'>LINK</a></td></tr>";
+		}
+		echo $res;
+	}
 	
 	public function actionDeleteMessage($id,$url){
 		$note=Social::model()->findByPk($id);
@@ -438,6 +440,48 @@ class SiteController extends x2base {
 			
 			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
 			Yii::app()->params->profile->update();
+		}
+	}
+
+	/*
+	 * Upload a file to a temp folder, which will presumably be deleted shortly thereafter
+	 * Temp files are stored in a temp folder with a randomly generated name. They are stored
+	 * in 'uploads/media/temp'
+	 */
+	public function actionTmpUpload() {
+		if(isset($_FILES['upload'])) {
+			$upload = CUploadedFile::getInstanceByName('upload');
+			
+			$name=$upload->getName();
+			$name=str_replace(' ','_',$name);
+
+			$temp = TempFile::createTempFile($name);
+
+			if($temp && $upload->saveAs($temp->fullpath())) // temp file saved
+				echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
+			else
+				echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+		} else {
+			echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+		}
+	}
+	
+	/*
+	 * Remove a temp file and the temp folder that is in
+	 */
+	public function actionRemoveTmpUpload() {
+		if(isset($_POST['id'])) {
+			$id = $_POST['id'];
+			if(is_numeric($id)) {
+				$tempFile = TempFile::model()->findByPk($id);
+				$folder = $tempFile->folder;
+				$name = $tempFile->name;
+				if(file_exists('uploads/media/temp/'. $folder .'/'. $name))
+					unlink('uploads/media/temp/'. $folder .'/'. $name); // delete file
+				if(file_exists('uploads/media/temp/'. $folder))
+					rmdir('uploads/media/temp/'. $folder); // delete folder
+				$tempFile->delete(); // delete database entry tracking temp file
+			}
 		}
 	}
 
@@ -671,18 +715,20 @@ class SiteController extends x2base {
 	}
 
 	public function actionViewNotifications(){
-		$dataProvider=new CActiveDataProvider('Notification',array(
+		$dataProvider = new CActiveDataProvider('Notification',array(
 			'criteria'=>array(
-			'order'=>'viewed ASC',
-			'condition'=>'user="'.Yii::app()->user->name.'"'
-		)));
+			// 'order'=>'viewed ASC',
+				'condition'=>'user="'.Yii::app()->user->name.'"'
+			),
+			'sort'=>array(
+				'defaultOrder'=>'createDate DESC'
+			),
+		));
 		$this->render('viewNotifications',array(
 			'dataProvider'=>$dataProvider,
 		));
 	}
-	
-	
-	
+
 /* 	protected function parseName($arr) {
 		$type=$arr[0]; 
 		$id=$arr[1];
@@ -741,6 +787,9 @@ class SiteController extends x2base {
 		if(isset($_POST['LoginForm'])) {
 			$model->attributes = $_POST['LoginForm'];
 			$activeCheck=User::model()->findByAttributes(array('username'=>$model->username));
+                        if(isset($activeCheck)){
+                            $model->username=$activeCheck->username;
+                        }
 			if(isset($activeCheck) && $activeCheck->status=='1')
 				$activeCheck=true;
 			else

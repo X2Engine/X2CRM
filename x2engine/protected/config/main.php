@@ -172,13 +172,13 @@ return array(
 				 // ),
 			),
 		),
-		// 'cache'=>array(
-			// 'class'=>'system.caching.CFileCache',
+		'cache'=>array(
+			'class'=>'system.caching.CFileCache',
 			// 'servers'=>array(
 				// array('host'=>'server1', 'port'=>11211, 'weight'=>60),
 				// array('host'=>'server2', 'port'=>11211, 'weight'=>40),
 			// ),
-		// ),
+		),
 	),
 
 	// application-level parameters that can be accessed

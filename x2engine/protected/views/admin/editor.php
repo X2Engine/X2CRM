@@ -154,6 +154,9 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			case 'email':
 				$type = 'emailIcon';
 				break;
+			case 'phone':
+				$type = 'phoneIcon';
+				break;
 			case 'boolean':
 				$type = 'booleanIcon';
 				break;

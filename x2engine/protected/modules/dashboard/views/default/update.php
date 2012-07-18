@@ -1,5 +1,4 @@
-<?php
-/*********************************************************************************
+<?php /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -39,12 +38,12 @@
  ********************************************************************************/
 
 $this->menu=array(
-	array('label'=>Yii::t('admin','Dashboard'), 'url'=>array('admin', 'id'=>$model->id)),
-	array('label'=>Yii::t('index','Widget Settings'), 'url'=>array('index', 'id'=>$model->id)),
+	array('label'=>'Dashboard','url'=>array('admin')),
+	array('label'=>'Sidebar Settings','url'=>array('settings'))
 );
 ?>
-<?php echo $this->renderPartial('application.components.views._form',array('model'=>$model,'modelName'=>'dashboard'));?>
-<?php 
-/*echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-    <h2 style="margin-bottom:0;"><?php echo Yii::t('accounts','Update Account:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>*/?>
+<h2 style='margin-bottom=0;'><center><?php echo $displayName; ?></center></h2>
+<p><center>Below you see a listing of the settings for all of the widgets that are accessible to you. Please feel free to edit them.</center></p>
+<h2 style="margin-bottom:0;">Update Widget: <b><?php echo $displayName;?></b>
+<a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>
+<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'modelName'=>'dashboard'));?>

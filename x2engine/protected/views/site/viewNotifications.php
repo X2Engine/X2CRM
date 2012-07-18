@@ -76,7 +76,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'headerHtmlOptions'=>array('style'=>'width:40px'),
 		 ),
 	),
-	'rowCssClassExpression'=>'$data->viewed? "" : "unviewed"'
+	'rowCssClassExpression'=>'$data->viewed? "" : "unviewed"',
 ));
 
 foreach($dataProvider->getData() as $notif) {

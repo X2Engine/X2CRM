@@ -62,256 +62,153 @@ window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
 }
 
-$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultView'=>1));
-if(isset($layout)) {
+$layoutData = Yii::app()->cache->get('form_'.$modelName);	// check the app cache for the data
+// echo var_dump($layoutData['sections']);
+if(true || $layoutData === false) {
+
+	$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultView'=>1));
+	
+	if(isset($layout)) {
+		$fields = array();
+
+		// remove this later, once all models extend X2Models
+		if(method_exists($model,'getFields')) {
+			foreach($model->fields as $fieldModel)
+				$fields[$fieldModel->fieldName] = $fieldModel;
+		} else {
+			foreach(Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
+				$fields[$fieldModel->fieldName] = $fieldModel;
+		}
+
+		$layoutData = json_decode($layout->layout,true);
+
+		Yii::app()->cache->set('form_'.$modelName,$layoutData,0);	// cache the data
+	}
+}
+	
+if($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 
 echo '<div class="x2-layout">';
 
-$fields = array();
-
-// remove this later, once all models extend X2Models
-if(method_exists($model,'getFields')) {
-	foreach($model->fields as $fieldModel)
-		$fields[$fieldModel->fieldName] = $fieldModel;
-} else {
-	foreach(Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
-		$fields[$fieldModel->fieldName] = $fieldModel;
-}
-
-$layoutData = json_decode($layout->layout,true);
 $formSettings = ProfileChild::getFormSettings($modelName);
 
-if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
+$fieldPermissions = array();
+if(!empty(Yii::app()->params->roles)) {
+	$rolePermissions = Yii::app()->db->createCommand()
+		->select('fieldId, permission')
+		->from('x2_role_to_permission')
+		->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
+		->queryAll();
 
-	$fieldPermissions = array();
-	if(!empty(Yii::app()->params->roles)) {
-		$rolePermissions = Yii::app()->db->createCommand()
-			->select('fieldId, permission')
-			->from('x2_role_to_permission')
-			->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
-			->queryAll();
-
-		foreach($rolePermissions as &$permission) {
-			if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
-				$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
-		}
+	foreach($rolePermissions as &$permission) {
+		if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
+			$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
 	}
+}
 
-	$i = 0;
-	foreach($layoutData['sections'] as &$section) {
-		// set defaults
-		if(!isset($section['title'])) $section['title'] = '';
-		if(!isset($section['collapsible'])) $section['collapsible'] = false;
-		if(!isset($section['rows'])) $section['rows'] = array();
-		if(!isset($formSettings[$i])) $formSettings[$i] = 1;
-		
-		echo '<div class="formSection'.((!$formSettings[$i] && $section['collapsible'])? ' hideSection' : '').'">';
-		
-		if($section['collapsible'] || !empty($section['title'])) {
-			echo '<div class="formSectionHeader">';
-			if(!empty($section['title']))
-				echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
-			if($section['collapsible']) {
-				echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
-				echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
-			}
-			echo '</div>';
-		} else
-			echo '<hr>';
-		if(!empty($section['rows'])) {
-			echo '<div class="tableWrapper"><table>';
-		
-			foreach($section['rows'] as &$row) {
-				echo '<tr class="formSectionRow">';
-				if(isset($row['cols'])) {
-					foreach($row['cols'] as &$col) {
-					
-						$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
-						echo "<td$width>";
-						if(isset($col['items'])) {
-							foreach($col['items'] as &$item) {
-								
-								
-								if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
-									$fieldName = preg_replace('/^formItem_/u','',$item['name']);
-									if(isset($fields[$fieldName])) {
-										$field = $fields[$fieldName];
-										
-											if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
-												// unset($item);
-												// echo '</div></div>';
-												// continue;
-											}
-										// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
-										// $perms=array();
-										// foreach($fieldPerms as $permission){
-											// $perms[$permission->roleId]=$permission->permission;
-										// }
-										// $tempPerm=2;
-										// foreach(Yii::app()->params->roles as $role){
-											// if(array_search($role,array_keys($perms))!==false){
-												// if($perms[$role]<$tempPerm)
-													// $tempPerm=$perms[$role];
-											// }
-										// }
-										// if($tempPerm==0){
+$i = 0;
+foreach($layoutData['sections'] as &$section) {
+	// set defaults
+	if(!isset($section['title'])) $section['title'] = '';
+	if(!isset($section['collapsible'])) $section['collapsible'] = false;
+	if(!isset($section['rows'])) $section['rows'] = array();
+	if(!isset($formSettings[$i])) $formSettings[$i] = 1;
+	
+	echo '<div class="formSection'.((!$formSettings[$i] && $section['collapsible'])? ' hideSection' : '').'">';
+	
+	if($section['collapsible'] || !empty($section['title'])) {
+		echo '<div class="formSectionHeader">';
+		if(!empty($section['title']))
+			echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
+		if($section['collapsible']) {
+			echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
+			echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
+		}
+		echo '</div>';
+	} else
+		echo '<hr>';
+	if(!empty($section['rows'])) {
+		echo '<div class="tableWrapper"><table>';
+	
+		foreach($section['rows'] as &$row) {
+			echo '<tr class="formSectionRow">';
+			if(isset($row['cols'])) {
+				foreach($row['cols'] as &$col) {
+				
+					$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
+					echo "<td$width>";
+					if(isset($col['items'])) {
+						foreach($col['items'] as &$item) {
+							
+							
+							if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
+								$fieldName = preg_replace('/^formItem_/u','',$item['name']);
+								if(isset($fields[$fieldName])) {
+									$field = $fields[$fieldName];
+									
+										if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
 											// unset($item);
 											// echo '</div></div>';
 											// continue;
-										// }
-										
-										$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
-										switch($labelType) {
-											case 'inline':	$labelClass = 'inlineLabel'; break;
-											case 'none':	$labelClass = 'noLabel'; break;
-											case 'left':	$labelClass = 'leftLabel'; break;
-											case 'top': 
-											default:		$labelClass = 'topLabel';
 										}
-										
-										echo '<div class="formItem '.$labelClass.'">';
-										//echo '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
-										echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
-											
-										$style = 'width:'.$item['width'].'px;';
-										if($field->type == 'text')
-											$style .= 'min-height:'.$item['height'].'px;';
-										echo '<div class="formInputBox" style="'.$style.'">';
-										
-										$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
-										if(empty($fieldHtml))
-											echo '&nbsp;';
-										else
-											echo $fieldHtml;
-										
-										/* if($field->type == 'date') {
-											echo !empty($model->$fieldName)?$this->formatLongDate($model->$fieldName).' ':" ";
-										}elseif($field->type=='rating'){
-											$this->widget('CStarRating',array(
-												'model'=>$model,
-												'attribute'=>$field->fieldName,
-												'readOnly'=>true,
-												'minRating'=>1, //minimal valuez
-												'maxRating'=>5,//max value
-												'starCount'=>5, //number of stars
-												'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
-											));
-											echo '&nbsp;';
-										}elseif($field->type=='assignment'){
-											if(is_numeric($model->$fieldName)){
-												echo Groups::getLink($model->$fieldName);
-											}else{
-												echo empty($model->$fieldName)?"&nbsp;":User::getUserLinks($model->$fieldName);
-											}
-										}elseif($field->type=='visibility'){
-											switch($model->$fieldName){
-												case '1':
-													echo Yii::t('app','Public'); break;
-												case '0': 
-													echo Yii::t('app','Private'); break;
-												case '2':
-													echo Yii::t('app','User\'s Groups'); break;
-												default:
-													echo '&nbsp;';
-											}
-										}elseif($field->type=='email'){
-										
-											if(empty($model->$fieldName))
-												echo '&nbsp;';
-											else {
-												$mailtoLabel = isset($model->name)? '"'.$model->name.'" <'.$model->$fieldName.'>' : $model->$fieldName;
-												echo CHtml::mailto($model->$fieldName,$mailtoLabel);
-											}
-										}elseif($field->type=='url') {
-											if(empty($model->$fieldName)) {
-												$text = '&nbsp;';
-											} elseif(!empty($field->linkType)) {
-												switch($field->linkType) {
-													case 'skype':
-														$text = '<a href="callto:'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
-														break;
-													case 'googleplus':
-														$text = '<a href="http://plus.google.com/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
-														break;
-													case 'twitter':
-														$text = '<a href="http://www.twitter.com/#!/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
-														break;
-													case 'linkedin':
-														$text = '<a href="http://www.linkedin.com/in/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
-														break;
-													default:
-														$text = '<a href="http://www.'.$field->linkType.'.com/'.$model->$fieldName.'">'.$model->$fieldName.'</a>';
-												}
-											} else {
-												$text = trim(preg_replace(
-													array(
-														'/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/iex',
-														'/<a([^>]*)target="?[^"\']+"?/i',
-														'/<a([^>]+)>/i',
-														'/(^|\s|>)(www.[^<> \n\r]+)/iex',
-													),
-													array(
-														"stripslashes((strlen('\\2')>0?'\\1<a href=\"\\2\" target=\"_blank\">".Yii::t($modelName,$field->attributeLabel)."</a>\\3':'\\0'))",
-														'<a\\1 target="_blank"',
-														'<a\\1 target="_blank">',
-														"stripslashes((strlen('\\2')>0?'\\1<a href=\"http://\\2\" target=\"_blank\">".Yii::t($modelName,$field->attributeLabel)."</a>\\3':'\\0'))",
-													),
-													$model->$fieldName
-												));
-											}
-											echo $text;
-										} elseif($field->type=='link') {
-											if(!empty($model->$fieldName) && is_numeric($model->$fieldName)) {
-												$className = ucfirst($field->linkType);
-												if(class_exists($className)) {
-													$lookupModel = CActiveRecord::model($className)->findByPk($model->$fieldName);
-													if(isset($lookupModel))
-														echo $lookupModel->createLink(); //CHtml::link($lookupModel->name,array('/'.$field->linkType.'/'.$model->$fieldName),array('target'=>'_blank'));
-												// } elseif($className == 'ContactList') {
-													// $lookupModel = CActiveRecord::model('X2List')->findByPk($model->$fieldName);
-													// if(isset($lookupModel))
-														// echo CHtml::link($lookupModel->name,array('/contacts/list/'.$lookupModel->id),array('target'=>'_blank'));
-												}
-											} elseif(!empty($model->$fieldName)) {
-												echo $model->$fieldName;
-											} else {
-												echo '&nbsp;';
-											}
-										} elseif($field->type=='boolean') {
-											echo CHtml::checkbox('',$model->$fieldName,array('onclick'=>'return false;', 'onkeydown'=>'return false;'));
-											
-										} elseif($field->type == 'currency') {
-											if($model instanceof Product) // products have their own currency
-												echo Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, $model->currency);
-											elseif(!empty($model->$fieldName))
-												echo Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, Yii::app()->params['currency']);
-											else
-												echo '&nbsp;';
-										} elseif($field->type == 'dropdown') {
-											echo empty($model->$fieldName)? '&nbsp;' : Yii::t(strtolower(Yii::app()->controller->id),$model->$fieldName);
-										} elseif($field->type=='text'){
-											echo empty($model->$fieldName)? '&nbsp;' : $this->convertUrls($model->$fieldName);     
-										} else {
-											echo empty($model->$fieldName)? '&nbsp;' : $model->$fieldName;
-										} */
+									// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+									// $perms=array();
+									// foreach($fieldPerms as $permission){
+										// $perms[$permission->roleId]=$permission->permission;
+									// }
+									// $tempPerm=2;
+									// foreach(Yii::app()->params->roles as $role){
+										// if(array_search($role,array_keys($perms))!==false){
+											// if($perms[$role]<$tempPerm)
+												// $tempPerm=$perms[$role];
+										// }
+									// }
+									// if($tempPerm==0){
+										// unset($item);
+										// echo '</div></div>';
+										// continue;
+									// }
+									
+									$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
+									switch($labelType) {
+										case 'inline':	$labelClass = 'inlineLabel'; break;
+										case 'none':	$labelClass = 'noLabel'; break;
+										case 'left':	$labelClass = 'leftLabel'; break;
+										case 'top': 
+										default:		$labelClass = 'topLabel';
 									}
+									
+									echo '<div class="formItem '.$labelClass.'">';
+									//echo '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
+									echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
+										
+									$style = 'width:'.$item['width'].'px;';
+									if($field->type == 'text')
+										$style .= 'min-height:'.$item['height'].'px;';
+									echo '<div class="formInputBox" style="'.$style.'">';
+									
+									$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
+									if(empty($fieldHtml))
+										echo '&nbsp;';
+									else
+										echo $fieldHtml;
 								}
-								unset($item);
-								echo '</div></div>';
 							}
+							unset($item);
+							echo '</div></div>';
 						}
-						echo '</td>';
 					}
+					echo '</td>';
 				}
-				unset($col);
-				echo '</tr>';
 			}
-			echo '</table></div>';
+			unset($col);
+			echo '</tr>';
 		}
-		unset($row);
-		echo '</div>';
-		$i++;
+		echo '</table></div>';
 	}
+	unset($row);
+	echo '</div>';
+	$i++;
 }
 echo '</div>';
 }

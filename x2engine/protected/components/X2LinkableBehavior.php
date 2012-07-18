@@ -52,13 +52,14 @@ class X2LinkableBehavior extends CModelBehavior {
 	public $baseRoute;
 	public $viewRoute;
 	public $autoCompleteSource;
+	public $icon;
 	
 	public function attach($owner) {
 	
 		parent::attach($owner);
 		
 		if(!isset($this->baseRoute))
-			$this->baseRoute = '/'.strtolower(get_called_class($this->owner)); 	// assume the model name is the same as the controller
+			$this->baseRoute = '/'.strtolower(get_class($this->owner)); 	// assume the model name is the same as the controller
 			
 		if(!isset($this->viewRoute))
 			$this->viewRoute = $this->baseRoute;
@@ -71,6 +72,13 @@ class X2LinkableBehavior extends CModelBehavior {
 	 * @return string a link to the model
 	 */
 	public function getLink() {
-		return CHtml::link($this->owner->name,array($this->viewRoute.'/'.$this->owner->id));
+	
+		$tag = '<span>';
+		// if(!empty($this->icon))
+			// $tag = '<span style="background-image:url('.Yii::app()->theme->baseUrl.'/images/'.$this->icon.');">';
+
+		return CHtml::link($tag.$this->owner->name.'</span>',
+			// array($this->viewRoute.'/'.$this->owner->id),array('class'=>'x2-link'));
+			array($this->viewRoute.'/'.$this->owner->id));
 	}
 }

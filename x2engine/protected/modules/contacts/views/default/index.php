@@ -107,6 +107,32 @@ $('#addToList').click(function() {
 });
 ",CClientScript::POS_READY);
 
+// init qtip for contact names
+$qtipUrl = $this->createUrl('qtip');
+Yii::app()->clientScript->registerScript('contact-qtip', "
+function refreshQtip() {
+	$('.contact-name').each(function (i) {
+		var contactId = $(this).next().val();
+		$(this).qtip({
+			content: {
+				text: 'loading...',
+				ajax: {
+					url: '$qtipUrl',
+					data: { id: contactId },
+					method: 'get',
+				}
+			},
+			style: {
+			}
+		});
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+");
+
 ?>
 
 
@@ -147,7 +173,7 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id), array("class" => "contact-name")) . CHtml::hiddenField("contact-id", $data->id, array("id" => false))',
 			'type'=>'raw',
 		),
 	),

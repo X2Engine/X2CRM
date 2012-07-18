@@ -1,0 +1,13 @@
+diff --git x2engine/framework/i18n/CDateFormatter.php x2engine/framework/i18n/CDateFormatter.php
+index 68ef8ca..bd33ae4 100644
+--- x2engine/framework/i18n/CDateFormatter.php
++++ x2engine/framework/i18n/CDateFormatter.php
+@@ -88,7 +88,7 @@ class CDateFormatter extends CComponent
+ 	{
+ 		if(is_string($time))
+ 		{
+-			if(ctype_digit($time))
++			if(ctype_digit($time) || (substr($time, 0, 1)=='-' && ctype_digit(substr($time, 1))))
+ 				$time=(int)$time;
+ 			else
+ 				$time=strtotime($time);

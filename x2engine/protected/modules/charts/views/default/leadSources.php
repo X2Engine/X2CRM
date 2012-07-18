@@ -84,7 +84,7 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 	// $_GET = array();
 	
 	$form = $this->beginWidget('CActiveForm', array(
-		'action'=>$this->createUrl('leadSources'),
+		'action'=>'leadSources',
 		'id'=>'dateRangeForm',
 		'enableAjaxValidation'=>false,
 		'method'=>'get'
@@ -161,6 +161,12 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 				'lastYear'=>Yii::t('dashboard','Last Year'),
 				
 			),array('id'=>'dateRange'));
+			?>
+		</div>
+		<div class="cell">
+			<?php echo CHtml::label(Yii::t('dashboard', 'Strict Mode'),'strict'); ?>
+			<?php
+			echo CHtml::checkbox('strict',$dateRange['strict'],array('id'=>'strict'));
 			?>
 		</div>
 	</div>

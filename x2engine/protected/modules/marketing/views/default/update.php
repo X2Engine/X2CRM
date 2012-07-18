@@ -48,7 +48,7 @@ $this->menu = array(
 	array('label'=>Yii::t('module','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
 ?>
-<h2><?php echo Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])); ?> <b>#<?php echo $model->id; ?></b></h2>
+<h2><?php echo Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <b><?php echo $model->name; ?></b></h2>
 
 <?php $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign')); ?>
 

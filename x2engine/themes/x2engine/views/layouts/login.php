@@ -93,7 +93,7 @@ if (!empty(Yii::app()->params->profile->pageOpacity)) {
 	
 // check for background image, use it if one is set
 if(empty(Yii::app()->params->profile->backgroundImg))
-	$backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
+	$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/defaultBg.jpg','',array('id'=>'bg'));
 else
 	$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
 	
@@ -140,7 +140,7 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
-<body id="body-tag" style="background-size:cover;">
+<body id="body-tag"<?php if(empty($backgroundImg)) echo 'class="defaultBg"';?> style="position:absolute;height:100%;width:100%">
 <?php echo $backgroundImg; ?>
 <!--<div class="ie-shadow" style="display:none;"></div>-->
 <div class="container" id="login-page">

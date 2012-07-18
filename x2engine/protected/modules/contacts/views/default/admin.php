@@ -60,6 +60,36 @@ $('.search-form form').submit(function(){
 });
 ");
 
+// init qtip for contact names
+$qtipUrl = $this->createUrl('qtip');
+Yii::app()->clientScript->registerScript('contact-qtip', "
+function refreshQtip() {
+	$('.contact-name').each(function (i) {
+		var contactId = $(this).next().val();
+		$(this).qtip({
+			content: {
+				text: 'loading...',
+				ajax: {
+					url: '$qtipUrl',
+					data: { id: contactId },
+					method: 'get',
+				}
+			},
+			style: {
+			},
+			api: {
+			onContentUpdate: function() { this.updateWidth(); },
+			onContentLoad: function() { this.updateWidth(); }
+			}
+		});
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+");
+
 // $cs=Yii::app()->getClientScript();
 // $cs->registerScriptFile(Yii::app()->request->baseUrl.'/assets/js/test.js');
 ?>
@@ -102,7 +132,7 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id), array("class" => "contact-name")) . CHtml::hiddenField("contact-id", $data->id, array("id" => false))',
 			'type'=>'raw',
 		),
 	),

@@ -38,16 +38,59 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
+
+<?php
+
+// init qtip for contact names
+$qtipUrl = $this->createUrl('/contacts/qtip');
+Yii::app()->clientScript->registerScript('contact-qtip', "
+function refreshQtip() {
+	$('.contact-name').each(function (i) {
+		var contactId = $(this).next().val();
+		$(this).qtip({
+			content: {
+				text: 'loading...',
+				ajax: {
+					url: '$qtipUrl',
+					data: { id: contactId },
+					method: 'get',
+				}
+			},
+			style: {
+			}
+		});
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+");
+?>
+
 <h1><?php echo Yii::t('app','What\'s New'); ?></h1>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id' => 'whatsNew-grid',
 	'template'=>Yii::t('app','Records that have been modified since your last login.').'{summary}{items}{pager}',
 	'dataProvider' => $dataProvider,
+	'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).') . '<br />'
+		. '<div class="form" style="border:none; margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+		    	'ajax' => array(
+		    		'url' => $this->createUrl('/profile/setResultsPerPage'),
+		    		'complete' => "function(response) { $.fn.yiiGridView.update('whatsNew-grid', {data: {'id_page': 1}}) }",
+		    		'data' => "js: {results: $(this).val()}",
+		    	),
+		    	'style' => 'margin: 0;',
+		    ))
+		. ' </div>'
+		. Yii::t('app', 'results per page.'),
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'columns' => array(
 		array(
 			'name' => Yii::t('app','Name'),
 			'type' => 'raw',
-			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"])', 
+			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"], array("class" => "contact-name")) . ($data["type"] == "Contact" ? CHtml::hiddenField("contact-id", $data["id"], array("id" => false)) : "")', 
 		),
 		array(
 			'name' => Yii::t('actions','Type'),

@@ -192,19 +192,30 @@ class X2List extends CActiveRecord {
 			$search = new CDbCriteria(array());
 			$criteria = CActiveRecord::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
 			foreach ($criteria as $criterion) {
+				//if this criterion is for a date field, we perform its comparisons differently
+				$dateType = false;
 				//for each field in a model, make sure the criterion is in the same format
 				foreach (CActiveRecord::model($this->modelName)->fields as $field) {
 					if ($field->fieldName == $criterion->attribute) {
 						switch($field->type) {
-							case 'date': if(!ctype_digit($criterion->value)) $criterion->value = strtotime($criterion->value); break;
-							case 'link': if(!ctype_digit($criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
-							case 'boolean': $criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
+							case 'date': 
+								if (ctype_digit($criterion->value) || (substr($criterion->value, 0, 1)=='-' && ctype_digit(substr($criterion->value, 1))))
+									$criterion->value = (int)$criterion->value;
+								else
+									$criterion->value = strtotime($criterion->value);
+								$dateType = true; 
+								break;
+							case 'link': 
+								if (!ctype_digit($criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
+							case 'boolean': 
+							case 'visibility':
+								$criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true','True'))? 1 : 0; break;
 						}
 						break;
 					}
 				}
 			
-				if($criterion->attribute == 'tags') {
+				if($criterion->attribute == 'tags' && $criterion->value) {
 					$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($criterion->value)));	//remove any spaces around commas, then explode to array
 					for($i=0; $i<count($tags); $i++) {
 						if(empty($tags[$i])) {
@@ -221,6 +232,37 @@ class X2List extends CActiveRecord {
 					
 					$search->distinct = true;
 					$search->join = 'JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="' . $this->modelName . '" AND ('.$tagConditions.'))';
+				} else if ($dateType) {
+					//assume for now that any dates in a criterion are at midnight of that day
+					$thisDay = $criterion->value;
+					$nextDay = $criterion->value + 86400;
+					switch($criterion->comparison) {
+						case '=':
+							$subSearch = new CDbCriteria();
+							$subSearch->compare($criterion->attribute, '>='.$thisDay, false, 'AND');
+							$subSearch->compare($criterion->attribute, '<'.$nextDay, false, 'AND');
+							$search->mergeWith($subSearch, $logicMode);
+							break;
+						case '<>':
+							$subSearch = new CDbCriteria();
+							$subSearch->compare($criterion->attribute, '<'.$thisDay, false, 'OR');
+							$subSearch->compare($criterion->attribute, '>='.$nextDay, false, 'OR');
+							$search->mergeWith($subSearch, $logicMode);
+							break;
+						case '>':
+							$search->compare($criterion->attribute, '>='.$nextDay, true, $logicMode); break;
+						case '<':
+							$search->compare($criterion->attribute, '<'.$thisDay, true, $logicMode); break;
+						case 'notEmpty':
+							$search->addCondition($criterion->attribute.' IS NOT NULL AND '.$criterion->attribute.'!=""',$logicMode); break;
+						case 'empty':
+							$search->addCondition('('.$criterion->attribute.'="" OR '.$criterion->attribute.' IS NULL)',$logicMode); break;
+						//the following comparitors are not supported for dates
+						//case 'list':
+						//case 'notList':
+						//case 'noContains':
+						//case 'contains':
+					}
 				} else {
 					switch($criterion->comparison) {
 						case '=':
@@ -239,13 +281,16 @@ class X2List extends CActiveRecord {
 							$search->addCondition('('.$criterion->attribute.'="" OR '.$criterion->attribute.' IS NULL)',$logicMode); break;
 						case 'list':
 							$search->addInCondition($criterion->attribute,explode(',',$criterion->value),$logicMode); break;
+						case 'notList':
+							$search->addNotInCondition($criterion->attribute,explode(',',$criterion->value),$logicMode); break;
+						case 'noContains':
+							$search->compare($criterion->attribute,'<>'.$criterion->value,true,$logicMode); break;
 						case 'contains':
 						default:
 							$search->compare($criterion->attribute,$criterion->value,true,$logicMode);
 					}
 				}
 			}
-
 		} else {
 			$search = new CDbCriteria(array(
 				'join'=>'JOIN x2_list_items ON t.id = x2_list_items.contactId',

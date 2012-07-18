@@ -179,7 +179,7 @@ class ApplicationConfigBehavior extends CBehavior {
 		// set base path and theme path globals for JS
 		Yii::app()->clientScript->registerScript('setParams','
 		var	yii = {
-			baseUrl: "'.Yii::app()->baseUrl.'/index.php",
+			baseUrl: "'.Yii::app()->baseUrl.'",
 			themeBaseUrl: "'.Yii::app()->theme->baseUrl.'"
 		},
 		notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';

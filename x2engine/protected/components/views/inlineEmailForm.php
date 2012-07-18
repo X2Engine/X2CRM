@@ -82,8 +82,8 @@ if(window.hideInlineEmail)
 else
 	setupEmailEditor();
 ",CClientScript::POS_READY);
-
 ?>
+
 <div id="inline-email-form">
 <?php
 /* if(isset($preview) && !empty($preview)) { ?>
@@ -155,6 +155,19 @@ if(!empty($model->status)) {
 	<div class="row" id="email-message-box"<?php //if($model->template != 0) echo ' style="display:none;"'; ?>>
 		<?php echo $form->textArea($model,'message',array('id'=>'email-message','style'=>'margin:0;padding:0;')); ?>
 	</div>
+	
+	<div class="row" id="email-attachments">
+		<div class="form" style="text-align:left;">
+		<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
+		<div>
+		<?php echo CHtml::fileField('upload','',array('onchange'=>'checkName(this, "#submitAttach"); if($("#submitAttach").attr("disabled") != "disabled") {fileUpload(this.form, $(this), "'. Yii::app()->createUrl('site/tmpUpload') .'", "'. Yii::app()->createUrl('site/removeTmpUpload') .'"); }')); ?>
+		<span class="filename"></span>
+		<span class="remove"></span>
+		<span class="error"></span>
+		</div>
+		</div>
+	</div>
+	
 	<div class="row buttons">
 	<?php
 	echo CHtml::ajaxSubmitButton(
@@ -193,5 +206,17 @@ if(!empty($model->status)) {
 	</div>
 	<?php $this->endWidget(); ?>
 	<?php //echo CHtml::endForm(); ?>
+	<?php
+		/*echo CHtml::form(Yii::app()->request->baseUrl.'/index.php/site/tmpUpload','post',array(
+			'id'=>'email-attachment-form',
+			'enctype'=>'multipart/form-data',
+			'target'=>'upload_target',
+		));
+		 
+		echo CHtml::fileField('upload','',array('id'=>'upload','onchange'=>"checkName(this, '#submitAttach')"));
+		echo CHtml::submitButton('Submit', array(
+			'id'=>'submitAttach','class'=>'x2-button','style'=>'display:inline',));
+		echo CHtml::endForm();*/
+	?>
 </div>
 </div>

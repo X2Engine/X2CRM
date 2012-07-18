@@ -49,12 +49,14 @@ $this->menu=array(
 ?>
 <h2><?php echo Yii::t('contacts','Update List'); ?></h2>
 
-<?php echo $this->renderPartial('_listForm', array(
-'model'=>$model,
-'criteriaModels'=>$criteriaModels,
-// 'attributeList'=>$attributeList,
-'comparisonList'=>$comparisonList,
-'users'=>$users,
-'listTypes'=>$listTypes,
-'itemModel'=>$itemModel,
-)); ?> 
+<?php 
+echo $this->renderPartial('_listForm', array(
+	'model'=>$model,
+	'criteriaModels'=>$criteriaModels,
+	// 'attributeList'=>$attributeList,
+	'comparisonList'=>$comparisonList,
+	'users'=>$users,
+	'listTypes'=>$listTypes,
+	'itemModel'=>$itemModel,
+)); 
+?> 

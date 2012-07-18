@@ -138,15 +138,19 @@ class Notification extends CActiveRecord {
 	
 	
 	public function getMessage() {
-	
-		if(empty($this->modelId)) {	// skip if there is no association
-			return null;
-		} else {
+
+		if(empty($this->modelId) || empty($this->modelType))	// skip if there is no association
+			$record = null;
+		else {
 			if(class_exists($this->modelType))
 				$record = CActiveRecord::model($this->modelType)->findByPk($this->modelId);
-			if(!isset($record))
-				$record = null;		// model is missing
+			else
+				return $this->modelType;
 		}
+		
+		if(!isset($record))
+			// return var_dump($this->attributes);
+			return null;
 
 		$passive = $this->createdBy == 'API' || empty($this->createdBy);
 		

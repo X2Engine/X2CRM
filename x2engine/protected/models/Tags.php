@@ -114,6 +114,23 @@ class Tags extends CActiveRecord
 		);
 	}
 	
+	/*
+	 * Returns a list of all existing tags, without the # at the beginning
+	 */
+	public static function getAllTags() {
+		$tags = Yii::app()->db->createCommand()
+			->selectDistinct('tag')
+			->from('x2_tags')
+			->order('tag DESC')
+			->queryColumn();
+
+		foreach ($tags as &$tag) {
+			$tag = substr($tag, 1);
+		}
+
+		return $tags;
+	}
+
 	public static function getTags($model,$id,$limit = 0) {
 	
 		if(!is_numeric($limit) || empty($limit))

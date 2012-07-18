@@ -90,6 +90,7 @@ class DefaultController extends x2base {
 					'inlineEmail',
 					'quickUpdateHistory',
 					'subscribe',
+					'qtip',
 				),
 				'users'=>array('@'),
 			),
@@ -236,7 +237,7 @@ class DefaultController extends x2base {
 ".Yii::t('contacts','Address').": $model->address 
 $model->city, $model->state $model->zipcode 
 ".Yii::t('contacts','Background Info').": $model->backgroundInfo 
-".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/contacts/view/'.$model->id);
+".Yii::t('app','Link').": ".CHtml::link($model->name,'http://'.Yii::app()->request->getServerName().$this->createUrl('/contacts/view/'.$model->id));
 
 		$body = trim($body);
 
@@ -650,9 +651,10 @@ $model->city, $model->state $model->zipcode
 	public function actionList() {
 		$id = isset($_GET['id'])? $_GET['id'] : 'all';
 
-		if(is_numeric($id)){
+		if(is_numeric($id))
 			$list = CActiveRecord::model('X2List')->findByPk($id);
-
+			
+		if(isset($list)) {
 			$model = new Contacts('search');
 			$model->setRememberScenario('contacts-list-'.$id);
 			$dataProvider = $model->searchList($id);
@@ -721,7 +723,6 @@ $model->city, $model->state $model->zipcode
 		
 		
 	public function actionCreateList() {
-
 		$list = new X2List;
 		$list->modelName = 'Contacts';
 		$list->type = 'dynamic';
@@ -735,9 +736,11 @@ $model->city, $model->state $model->zipcode
 			'<'=>'<',
 			'<>'=>'<>',
 			'contains'=>Yii::t('contacts','contains'),
+			'noContains'=>Yii::t('contacts','does not contain'),
 			'empty'=>Yii::t('empty','empty'),
 			'notEmpty'=>Yii::t('contacts','not empty'),
 			'list'=>Yii::t('contacts','in list'),
+			'notList'=>Yii::t('contacts','not in list'),
 		);
 		
 		if(isset($_POST['X2List'])) {
@@ -747,8 +750,8 @@ $model->city, $model->state $model->zipcode
 			$list->createDate=time();
 			$list->lastUpdated=time();
 		
-		if($list->type == 'dynamic')
-			$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id),new CDbCriteria(array('order'=>'id ASC')));
+			if($list->type == 'dynamic')
+				$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId'=>$list->id),new CDbCriteria(array('order'=>'id ASC')));
 
 			if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
 			
@@ -825,9 +828,11 @@ $model->city, $model->state $model->zipcode
 			'<'=>'<',
 			'<>'=>'<>',
 			'contains'=>Yii::t('contacts','contains'),
+			'noContains'=>Yii::t('contacts','does not contain'),
 			'empty'=>Yii::t('empty','empty'),
 			'notEmpty'=>Yii::t('contacts','not empty'),
 			'list'=>Yii::t('contacts','in list'),
+			'notList'=>Yii::t('contacts','not in list'),
 		);
 		
 		if($list->type == 'dynamic') {
@@ -1278,5 +1283,11 @@ $model->city, $model->state $model->zipcode
 				}
 			}
 		}
+	}
+	
+	public function actionQtip($id) {
+		$contact = $this->loadModel($id);
+		
+		$this->renderPartial('qtip', array('contact'=>$contact));
 	}
 }

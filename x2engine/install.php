@@ -343,9 +343,13 @@ function testDB() {
 </script>
 </head>
 <body>
-<img id="bg" src="uploads/santacruznight_blur.jpg" alt="">
+<img id="bg" src="uploads/defaultBg.jpg" alt="">
 <div id="installer-box">
+<img src="themes/x2engine/images/x2engine_crm_white.png" alt="X2Engine" id="installer-logo">
 <h2><?php echo installer_t('Installation Page'); ?></h2>
+
+
+
 <?php echo installer_t('Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
 <?php if(!empty($errorMessages)) { ?>
 <div class="form" id="error-box">

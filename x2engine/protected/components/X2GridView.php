@@ -54,6 +54,8 @@ class X2GridView extends CGridView {
 	public $enableControls = false;
 	public $enableTags = false;
 	
+	public $summaryText;
+	
 	private $allFields = array();
 	private $allFieldNames = array();
 	private $specialColumnNames = array();
@@ -216,16 +218,11 @@ class X2GridView extends CGridView {
 					$newColumn['type'] = 'raw';
 				} else if($columnName == 'assignedTo') {
 					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):UserChild::getUserLinks($data->assignedTo)';
-						$newColumn['type'] = 'raw';
+					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["'.$columnName.'"])';
 				} elseif($this->allFields[$columnName]->type=='link') {
-
 					$newColumn['value'] = 'X2Model::getModelLink($data->'.$columnName.',"'.ucfirst($this->allFields[$columnName]->linkType).'")';
-					
-					
-					// $type=ucfirst($field->linkType);
-					// $newColumn['value']="!is_null($type::model()->findByPk(\$data->$columnName))?CHtml::link($type::model()->findByPk(\$data->$columnName)->name,array('/".$field->linkType."/default/view/id/'.\$data->$columnName),array('target'=>'_blank')):\$data->$columnName";
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='boolean') {
 					$field=$this->allFields[$columnName];
@@ -244,7 +241,7 @@ class X2GridView extends CGridView {
 		    		$format = str_replace('M','m', $format);
 		    	}
 		    	
-				/*$newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
+				/* $newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
 					'model'=>$this->filter, //Model object
 					// 'id'=>$columnName.'DatePicker',
 					'attribute'=>$columnName, //attribute name
@@ -254,7 +251,7 @@ class X2GridView extends CGridView {
 						'dateFormat'=>$format,
 					), // jquery plugin options
 					'language'=>$lang,
-				),true) : null;*/
+				),true) : null; */
 				
 				$columns[] = $newColumn;
 					
@@ -343,6 +340,30 @@ class X2GridView extends CGridView {
 			}
 		});    
 		");
+		
+		// add a dropdown to the summary text that let's user set how many rows to show on each page
+		$this->summaryText = Yii::t('app','Displaying {start}-{end} of {count} result(s).') . '<br />'
+			. '<div class="form" style="border:none; margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+					'ajax' => array(
+						'url' => $this->controller->createUrl('/profile/setResultsPerPage'),
+						'complete' => "function(response) { 
+							\$.fn.yiiGridView.update('{$this->id}', {" . 
+								(isset($this->modelName)? "data: {'{$this->modelName}_page': 1}," : "") . "
+								complete: function(jqXHR, status) {
+									refreshQtip();
+								}
+							})
+						}",
+						'data' => "js: {results: $(this).val()}",
+					),
+					'style' => 'margin: 0;',
+				))
+			. ' </div>'
+			. Yii::t('app', 'results per page.');
+		
+		// after user moves to a different page, make sure the tool tips get added to the newly showing rows
+		$this->afterAjaxUpdate = "js: function(id, data) { refreshQtip(); }";
 
 		parent::init();
 	}

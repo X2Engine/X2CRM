@@ -151,7 +151,7 @@ $.widget("x2.gvSettings", {
 			clearTimeout(this.saveGridviewSettingsTimeout);
 			this.saveGridviewSettingsTimeout = setTimeout(function() {
 				$.ajax({
-					url: yii.baseUrl+'/site/saveGridviewSettings',
+					url: yii.baseUrl+'/index.php/site/saveGridviewSettings',
 					type: 'GET',
 					data: 'viewName='+self.options.viewName+'&gvSettings='+encodedGvSettings
 				});

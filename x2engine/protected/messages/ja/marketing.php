@@ -86,4 +86,9 @@ return array (
 'Data errors'=>'データエラー',
 'Batch completed, sending again in'=>'バッチはに再度送信して、完了',
 'minute'=>'精緻',
+'Email These Contacts'=>'これらの連絡先を電子メールで送信',
+'Invalid tag value'=>'無効なタグ値',
+'Contacts for tag'=>'タグのコンタクト',
+'Mailing for tag'=>'タグのメーリングリスト',
+'Could not create mailing'=>'メーリングリストを作成できませんでした',
 );

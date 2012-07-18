@@ -48,11 +48,11 @@
 			'type' => 'raw',
 			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"])', 
 		),
-                array(
-                            'name' => Yii::t('app','Type'),
-                            'type' => 'raw',
-                            'value' => '$data["type"]', 
-                    ),
+		array(
+			'name' => Yii::t('app','Type'),
+			'type' => 'raw',
+			'value' => '$data["type"]', 
+		),
 		array(
 			'name' => Yii::t('app','Description'), 
 			'type' => 'raw',

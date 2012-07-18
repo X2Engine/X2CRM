@@ -50,6 +50,8 @@ class UserIdentity extends CUserIdentity {
 
 	public function authenticate($google=false) {
 		$user = CActiveRecord::model('User')->findByAttributes(array('username' => $this->username));
+
+		$this->username = $user->username;
 		if ($user === null || $user->status < 1) {				// username not found, or is disabled
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
 		} elseif($google){

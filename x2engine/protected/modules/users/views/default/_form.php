@@ -94,17 +94,21 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'password'); ?>
 	</div>
 
+	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'title'); ?>
 		<?php echo $form->textField($model,'title',array('size'=>20,'maxlength'=>20)); ?>
 		<?php echo $form->error($model,'title'); ?>
 	</div>
+	<?php } ?>
 
+	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'department'); ?>
 		<?php echo $form->textField($model,'department',array('size'=>40,'maxlength'=>40)); ?>
 		<?php echo $form->error($model,'department'); ?>
 	</div>
+	<?php } ?>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'officePhone'); ?>
@@ -130,12 +134,14 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'address'); ?>
 	</div>
 
+	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'backgroundInfo'); ?>
 		<?php echo $form->textArea($model,'backgroundInfo',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'backgroundInfo'); ?>
 	</div>
-
+	<?php } ?>
+	
 	<div class="row">
 		<?php echo $form->labelEx($model,'emailAddress'); ?>
 		<?php echo $form->textField($model,'emailAddress',array('size'=>40,'maxlength'=>40)); ?>
@@ -147,7 +153,7 @@ $(document).ready(function() {
 		<?php echo $form->dropDownList($model,'status', array(1=>'Active', 0=>'Inactive')); ?>
 		<?php echo $form->error($model,'status'); ?>
 	</div>
-        
+       <?php if((isset($flag) && !$flag) || !isset($flag)){?>
             <label>Roles</label>
             <br />
             <?php
@@ -160,6 +166,7 @@ $(document).ready(function() {
             echo CHtml::dropDownList('groups[]',$selectedGroups,$groups,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));
             ?>
             <br />
+			<?php } ?>
         
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>

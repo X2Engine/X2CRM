@@ -49,11 +49,15 @@ class DefaultController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow',
-				'actions'=>array('view','addTopContact','removeTopContact'),
+				'actions'=>array('createAccount'),
+				'users'=>array('*')
+			),
+			array('allow',
+				'actions'=>array('addTopContact','removeTopContact'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('index','create','update','admin','delete','search'),
+				'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers'),
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
@@ -145,6 +149,40 @@ class DefaultController extends x2base {
                         'selectedRoles'=>array(),
 		));
 	}
+	
+	public function actionCreateAccount(){
+		$this->layout='//layouts/main';
+		if(isset($_GET['key'])){
+			$key=$_GET['key'];
+			$admin=Admin::model()->findByPk(1);
+			if($key==$admin->inviteKey){
+				if(isset($_POST['User'])) {
+					$model=new User;
+					$model->attributes=$_POST['User'];
+					//$this->updateChangelog($model);
+					$model->password = md5($model->password);
+
+					$profile=new ProfileChild;
+					$profile->fullName=$model->firstName." ".$model->lastName;
+					$profile->username=$model->username;
+								$profile->allowPost=1;
+					$profile->emailAddress=$model->emailAddress;
+					$profile->status=$model->status;
+
+					if($model->save()){
+						$profile->id=$model->id;
+						$profile->save();
+						$this->redirect(array('/site/login'));
+					}
+				}
+				$this->render('createAccount');
+			}else{
+				$this->redirect($this->createUrl('/site/login'));
+			}
+		}else{
+			$this->redirect($this->createUrl('/site/login'));
+		}
+	}
 
 	/**
 	 * Updates a particular model.
@@ -174,14 +212,56 @@ class DefaultController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['User'])) {
+                    $old=$model->attributes;
                     $temp=$model->password;
                     $model->attributes=$_POST['User'];
+                    
                     if($model->password!="")
                         $model->password = md5($model->password);
                     else
                         $model->password=$temp;
                     
                     if($model->save()){
+                        if($old['username']!=$model->username){
+                            $fieldRecords=Fields::model()->findAllByAttributes(array('fieldName'=>'assignedTo'));
+                            $modelList=array();
+                            foreach($fieldRecords as $record){
+                                $modelList[$record->modelName]=$record->linkType;
+                            }
+                            foreach($modelList as $modelName=>$type){
+                                if($modelName=='Quotes')
+                                    $modelName="Quote";
+                                if($modelName=='Products')
+                                    $modelName='Product';
+                                if(empty($type)){
+                                    $list=CActiveRecord::model($modelName)->findAllByAttributes(array('assignedTo'=>$old['username']));
+                                    foreach($list as $item){
+                                        $item->assignedTo=$model->username;
+                                        $item->save();
+                                    }
+                                }else{
+                                    $list=CActiveRecord::model($modelName)->findAllBySql(
+                                            "SELECT * FROM ".CActiveRecord::model($modelName)->tableName()
+                                            ." WHERE assignedTo LIKE '%".$old['username']."%'");
+                                    foreach($list as $item){
+                                        $assignedTo=explode(", ",$item->assignedTo);
+                                        $key=array_search($old['username'],$assignedTo);
+                                        if($key>=0){
+                                            $assignedTo[$key]=$model->username;
+                                        }
+                                        $item->assignedTo=implode(", ",$assignedTo);
+                                        $item->save();
+                                    }
+                                }
+                            }
+                            
+                            $profile=ProfileChild::model()->findByAttributes(array('username'=>$old['username']));
+                            if(isset($profile)){
+                                $profile->username=$model->username;
+                                $profile->save();
+                            }
+                            
+                        }
                         foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
                             $link->delete();
                         }
@@ -218,6 +298,34 @@ class DefaultController extends x2base {
                         'selectedGroups'=>$selectedGroups,
                         'selectedRoles'=>$selectedRoles,
 		));
+	}
+	
+	public function actionInviteUsers(){
+		$admin=Admin::model()->findByPk(1);
+		if(empty($admin->inviteKey)){
+			$admin->inviteKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0,16);
+			$admin->save();
+		}
+		if(isset($_POST['emails'])){
+			$list=$_POST['emails'];
+			$link=(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/createAccount?key='.$admin->inviteKey);
+			$body="Hello,
+
+You are receiving this email because your X2CRM admin has invited you to create an account.
+Please click on the link below to create an account at X2CRM!
+
+".$link;
+			
+			$subject="Create Your X2CRM User Account";
+			$list=trim($list);
+			$emails=explode(',',$list);
+			foreach($emails as &$email){
+				$email=trim($email);
+				mail($email,$subject,$body);
+			}
+		}
+		
+		$this->render('inviteUsers');
 	}
 
 	/**
@@ -270,8 +378,8 @@ class DefaultController extends x2base {
                         foreach($contacts as $contact){
                                 if($contact->updatedBy==$model->username)
                                     $contact->updatedBy='admin';
-                                if($contact->completedBy==$model->username)
-                                    $contact->completedBy='admin';
+                                // if($contact->completedBy==$model->username)
+                                    // $contact->completedBy='admin';
 				$contact->assignedTo="Anyone";
                                 $contact->save();
 			}

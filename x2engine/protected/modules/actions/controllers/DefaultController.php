@@ -236,7 +236,8 @@ class DefaultController extends x2base {
 		
  		if(!is_numeric($model->assignedTo)) { // assigned to user
 			$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
-			$profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
+			if(isset($profile))
+				$profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
 		} else { // Assigned to group
 			$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
 			foreach($groups as $group) {
@@ -513,8 +514,9 @@ class DefaultController extends x2base {
 			$this->cleanUpTags($model);
             
  			if(!is_numeric($model->assignedTo)) { // assigned to user
-				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
-				$profile->deleteGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
+				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo)); 
+				if(isset($profile))
+					$profile->deleteGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
 			} else { // Assigned to group
 			$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
 			foreach($groups as $group) {

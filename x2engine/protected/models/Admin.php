@@ -147,6 +147,7 @@ class Admin extends CActiveRecord
 			'googleClientSecret' => Yii::t('admin', 'Google Client Secret'),
 			'googleAPIKey' => Yii::t('admin', 'Google API Key'),
 			'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
+			'inviteKey' => Yii::t('admin','Invite Key'),
 		);
 	}
 

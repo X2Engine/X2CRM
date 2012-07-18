@@ -86,4 +86,9 @@ return array (
 'Data errors'=>'טעויות',
 'Batch completed, sending again in'=>'אצווה הושלמה, שולח שוב',
 'minute'=>'דקות',
+'Email These Contacts'=>'שלח מגעים אלה',
+'Invalid tag value'=>'ערך תג לא חוקי',
+'Contacts for tag'=>'אנשי קשר עבור תגית',
+'Mailing for tag'=>'תפוצה עבור תגית',
+'Could not create mailing'=>'אין אפשרות ליצור דיוור',
 );

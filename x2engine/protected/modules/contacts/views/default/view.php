@@ -37,8 +37,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
-$this->pageTitle = $model->name; 
+$this->setPageTitle(empty($model->name)?$model->firstName." ".$model->lastName:$model->name);
 
 $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
@@ -63,13 +62,6 @@ if ($deletePermissions)
 	$this->menu[] = array('label'=>Yii::t('contacts','Delete'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
 ?>
 
-<?php
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
-));
-?>
 
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -80,6 +72,7 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php } ?>
 
 <?php 
+
 $result = Yii::app()->db->createCommand()
     		->select()
     		->from('x2_subscribe_contacts')
@@ -98,7 +91,7 @@ $subscribed = !empty($result); // if we got any results then user is subscribed
 <?php
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
-$this->endWidget();
+
 
 $this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
 // render workflow box

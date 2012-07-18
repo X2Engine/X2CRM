@@ -43,14 +43,25 @@ Yii::import('application.components.X2LinkableBehavior');
 
 abstract class X2Model extends CActiveRecord {
 
-	protected static $_fields = null;	// one copy of fields for all instances of this model
+	protected static $_fields;	// one copy of fields for all instances of this model
 	
 	protected function queryFields() {
-		if(!isset(self::$_fields[$this->tableName()]))	// only look up fields if they haven't already been looked up
-			if(get_class($this) === 'Product' || get_class($this) === 'Quote')
-				self::$_fields[$this->tableName()] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this) . 's'));
-			else
-				self::$_fields[$this->tableName()] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
+		// $t0 = microtime(true);
+		$key = $this->tableName();
+	
+		if(!isset(self::$_fields[$key])) {	// only look up fields if they haven't already been looked up
+
+			self::$_fields[$key] = Yii::app()->cache->get('fields_'.$key);	// check the app cache for the data
+			if(self::$_fields[$key] === false) {	// if the cache is empty, look up the fields
+
+				if(get_class($this) === 'Product' || get_class($this) === 'Quote')
+					self::$_fields[$key] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this) . 's'));
+				else
+					self::$_fields[$key] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
+
+				Yii::app()->cache->set('fields_'.$key,self::$_fields[$key],0);	// cache the data
+			}
+		}
 	}
 	
 	/**
@@ -81,6 +92,36 @@ abstract class X2Model extends CActiveRecord {
 			)
 		);
 	}
+	
+	
+	public function afterSave() {
+	
+		$numbers = array();
+		
+		$this->queryFields();
+		foreach(self::$_fields[$this->tableName()] as &$_field) {	// loop through $_fields and find any phone type ones
+			$fieldName = $_field->fieldName;
+			if($_field->type=='phone')
+				$numbers[] = $this->$fieldName;					// add those numbers to the list
+		}
+
+		if(count($numbers))	// if there are any phone fields, clear out any pre-existing entries in x2_phone_numbers
+			CActiveRecord::model('PhoneNumber')->deleteAllByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this)));
+		
+		foreach($numbers as $number) {	// create new entries in x2_phone_numbers
+			if($number !== '') {
+				$num = new PhoneNumber;
+				$num->number = preg_replace('/\D/','',$number);		// eliminate everything other than digits
+				$num->modelId = $this->id;
+				$num->modelType = get_class($this);
+				$num->save();
+			}
+		}
+
+		if($this->hasEventHandler('onAfterSave'))
+			$this->onAfterSave(new CEvent($this));
+	}
+	
 	
 	/**
 	 * Generates validation rules for custom fields
@@ -212,7 +253,15 @@ abstract class X2Model extends CActiveRecord {
 		if(!isset($field))
 			return null;
 	}
+
 	
+	/**
+	 * Renders an attribute of the model based on its field type
+	 * @param string $fieldName the name of the attribute to be rendered
+	 * @param boolean $makeLinks whether to create HTML links for certain field types
+	 * @param boolean $textOnly whether to generate HTML or plain text
+	 * @return string the HTML or text for the formatted attribute
+	 */
 	public function renderAttribute($fieldName,$makeLinks = true,$textOnly = true) {
 		
 		$field = $this->getField($fieldName);
@@ -338,6 +387,194 @@ abstract class X2Model extends CActiveRecord {
 				return $this->$fieldName;
 		}
 	}
+	
+	
+	/**
+	 * Renders an attribute of the model based on its field type
+	 * @param string $fieldName the name of the attribute to be rendered
+	 * @param array $htmlOptions htmlOptions to be used on the input
+	 * @return string the HTML or text for the formatted attribute
+	 */
+	public function renderInput($fieldName,$htmlOptions = array()) {
+	
+	
+		$field = $this->getField($fieldName);
+		if(!isset($field))
+			return null;
+
+		switch($field->type) {
+			case 'text':
+				return CHtml::activeTextArea($this,$field->fieldName,array_merge(array(
+					'title'=>$field->attributeLabel,
+				),$htmlOptions));
+				// array(
+					// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+					// 'disabled'=>$item['readOnly']? 'disabled' : null,
+					// 'title'=>$field->attributeLabel,
+					// 'style'=>$default?'color:#aaa;':null,
+				// ));
+
+			case 'date':
+				$this->$fieldName = Yii::app()->controller->formatDate($this->$fieldName);
+				Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+				return Yii::app()->controller->widget('CJuiDateTimePicker',array(
+					'model'=>$this, //Model object
+					'attribute'=>$field->fieldName, //attribute name
+					'mode'=>'date', //use "time","date" or "datetime" (default)
+					'options'=>array(	// jquery options
+						'dateFormat'=>Yii::app()->controller->formatDatePicker(),
+						'changeMonth'=>true,
+						'changeYear'=>true,
+
+					),
+					'htmlOptions'=>array_merge(array(
+						'title'=>$field->attributeLabel,
+					),$htmlOptions),
+					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+				),true); 
+			case 'dropdown':
+				$dropdowns = Dropdowns::getItems($field->linkType);
+				return CHtml::activeDropDownList($this,$field->fieldName,$dropdowns,array_merge(array(
+					'title'=>$field->attributeLabel,
+					'empty'=>Yii::t('app',"Select an option"),
+				),$htmlOptions));
+				
+			case 'link':
+				$linkSource = null;
+				$linkId = '';
+				
+				if(class_exists($field->linkType)) {
+					// if the field is an ID, look up the actual name
+					if(isset($this->$fieldName) && ctype_digit($this->$fieldName)) {
+						$linkModel = CActiveRecord::model($field->linkType)->findByPk($this->$fieldName);
+						if(isset($linkModel)) {
+							$this->$fieldName = $linkModel->name;
+							$linkId = $linkModel->id;
+						} else {
+							$this->$fieldName = '';
+						}
+					}
+					$linkSource = Yii::app()->controller->createUrl(CActiveRecord::model($field->linkType)->autoCompleteSource);
+				}
+				return CHtml::hiddenField($field->modelName.'['.$fieldName.'_id]',$linkId,array('id'=>$field->modelName.'_'.$fieldName."_id"))
+				.Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
+					'model'=>$this,
+					'attribute'=>$fieldName,
+					// 'name'=>'autoselect_'.$fieldName,
+					'source' => $linkSource,
+					'value'=>$this->$fieldName,
+					'options'=>array(
+						'minLength'=>'1',
+						'select'=>'js:function( event, ui ) {
+							$("#'.$field->modelName.'_'.$fieldName.'_id").val(ui.item.id);
+							$(this).val(ui.item.value);
+							return false;
+						}',
+
+					),
+					'htmlOptions'=>array_merge(array(
+						'title'=>$field->attributeLabel,
+					),$htmlOptions)
+				),true);
+
+			case $field->type=='rating':
+				return Yii::app()->controller->widget('CStarRating',array(
+					'model'=>$this,
+					'attribute'=>$field->fieldName,
+					'minRating'=>1, //minimal valuez
+					'maxRating'=>5,//max value
+					'starCount'=>5, //number of stars
+					'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
+					'htmlOptions'=>$htmlOptions
+				),true); 
+
+			case 'boolean':
+				return '<div class="checkboxWrapper">'
+				.CHtml::activeCheckBox($this,$field->fieldName,array_merge(array(
+					'unchecked'=>0,
+					'title'=>$field->attributeLabel,
+				),$htmlOptions)).'</div>';
+
+			case 'assignment':
+			
+				$group = is_numeric($this->$fieldName);
+				// if(is_numeric($this->assignedTo)){
+					// $group=true;
+					// $groups=Groups::getNames();
+				// }else{
+					// $group=false;
+				// }
+                                if(empty($this->$fieldName))
+                                    $this->$fieldName=Yii::app()->user->getName();
+				return CHtml::activeDropDownList($this, $fieldName, $group? Groups::getNames() : User::getNames(),array_merge(array(
+					// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+					// 'disabled'=>$item['readOnly']? 'disabled' : null,
+					'title'=>$field->attributeLabel,
+					'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
+					'multiple'=>($field->linkType=='multiple'? 'multiple' : null),
+				),$htmlOptions))
+				/* x2temp */
+				. '<div class="checkboxWrapper">'
+				. CHtml::checkBox('group',$group,array_merge(array(
+				
+				// array(
+					// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+					// 'disabled'=>$item['readOnly']? 'disabled' : null,
+					'title'=>$field->attributeLabel,
+					'id'=>$field->modelName .'_'. $fieldName .'_groupCheckbox',
+					'ajax'=>array(
+						'type'=>'POST', //request type
+						'url'=>Yii::app()->controller->createUrl('/groups/getGroups'), //url to call.
+						'update'=>'#'.$field->modelName .'_'. $fieldName .'_assignedToDropdown', //selector to update
+						'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
+						'complete'=>'function(){
+							if($("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked")!="checked"){
+								$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked","checked");
+								$("#'.$field->modelName .'_'. $fieldName .'_visibility option[value=\'2\']").remove();
+							}else{
+								$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").removeAttr("checked");
+								$("#'.$field->modelName .'_'. $fieldName .'_visibility").append(
+									$("<option></option>").val("2").html("User\'s Groups")
+								);
+							}
+						}'
+					)),$htmlOptions))
+				.'</div><label for="group" class="groupLabel">'.Yii::t('app','Group?').'</label>';
+			/* end x2temp */  
+
+			// case 'association':
+				// if($field->linkType!='multiple') {
+					// return CHtml::activeDropDownList($this, $fieldName, $contacts,array_merge(array(
+						// 'title'=>$field->attributeLabel,
+					// ),$htmlOptions));
+				// } else {
+					// return CHtml::activeListBox($this, $fieldName, $contacts,array_merge(array(
+						// 'title'=>$field->attributeLabel,
+						// 'multiple'=>'multiple',
+					// ),$htmlOptions));
+				// }
+
+			case 'visibility':
+				return CHtml::activeDropDownList($this,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'),array_merge(array(
+					'title'=>$field->attributeLabel,
+					'id'=>$field->modelName."_visibility",
+				),$htmlOptions));
+
+			// 'varchar', 'email', 'url', 'int', 'float', 'currency', 'phone'
+			default:
+				return CHtml::activeTextField($this,$field->fieldName,array_merge(array(
+					'title'=>$field->attributeLabel,
+				),$htmlOptions));
+				
+				// array(
+					// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+					// 'disabled'=>$item['readOnly']? 'disabled' : null,
+					// 'title'=>$field->attributeLabel,
+					// 'style'=>$default?'color:#aaa;':null,
+				// ));
+		}
+	}
+	
 
 	/**
 	 * Sets attributes using X2Fields
@@ -383,6 +620,8 @@ abstract class X2Model extends CActiveRecord {
 							$value = $linkModel->id;
 					}
 				}
+				 if(is_array($value))
+					die($fieldName);
 				$this->$fieldName = trim($value);
 			}
 		}
@@ -424,6 +663,10 @@ abstract class X2Model extends CActiveRecord {
 				case 'assignment':
 					$criteria->compare($fieldName,$this->compareAssignment($this->$fieldName), true);
 					break;
+				case 'phone':
+					// $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+				
+				
 				default:
 					$criteria->compare($fieldName,$this->$fieldName,true);
 			}

@@ -48,7 +48,7 @@ class InlineEmailAction extends CAction {
 		$emailBody = '';
 		$signature = '';
 		$template = null;
-	
+			
 		if(!isset($this->model))
 			$this->model = new InlineEmail;
 
@@ -120,8 +120,21 @@ class InlineEmailAction extends CAction {
 				$this->model->setScenario('custom');
 				
 			if($this->model->validate() && !$preview) {
+								
+				if(isset($_POST['AttachmentFiles']) && isset($_POST['AttachmentFiles']['id']) && isset($_POST['AttachmentFiles']['temp']))  {
+					$ids = $_POST['AttachmentFiles']['id'];
+					$temps = $_POST['AttachmentFiles']['temp'];
+					$attachments = array();
+					for($i = 0; $i < count($ids); $i++) {
+						$tempFile = TempFile::model()->findByPk($ids[$i]);
+						$attachments[] = array('filename' => $tempFile->name, 'folder' => $tempFile->folder, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
+					}
+				}
 				
-				$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody);
+				if(isset($attachments))
+					$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody, $attachments);
+				else
+					$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody);
 				
 				if(in_array('200',$this->model->status)) {
 					
@@ -155,13 +168,16 @@ class InlineEmailAction extends CAction {
 							// $note.="\n\nSent to Contact";
 						}
 					}
+					
 				}
+				
 			}
 		}
 		echo $this->controller->renderPartial('application.components.views.inlineEmailForm',array(
 			'model'=>$this->model,
 			'preview'=>$preview? $emailBody : null,
 		));
+		
 		// }
 	}
 }

@@ -48,7 +48,7 @@ class DefaultController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform the following actions
-				'actions'=>array('index','view','create','update','search','delete','launch','toggle','complete','getItems','inlineEmail','mail'),
+				'actions'=>array('index','view','create','createFromTag','update','search','delete','launch','toggle','complete','getItems','inlineEmail','mail'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' action
@@ -111,6 +111,74 @@ class DefaultController extends x2base {
 		$this->render('create',array(
 			'model'=>$model,
 		));
+	}
+
+	public function actionCreateFromTag($tag) {
+		//enusre tag sanity
+		if (!isset($tag) || strlen($tag) == 0) {
+			Yii::app()->user->setFlash('error', Yii::t('marketing','Invalid tag value'));
+			$this->redirect(Yii::app()->request->getUrlReferrer());
+		}
+
+		//ensure sacred hash
+		if (substr($tag, 0, 1) != '#') {
+			$tag = '#' . $tag;
+		}
+	
+		//only works for contacts
+		$modelType = 'Contacts';
+		$now = time();
+
+		//get all contact ids from tags
+		$ids = Yii::app()->db->createCommand()
+			->select('itemId')
+			->from('x2_tags')
+			->where('type=:type AND tag=:tag')
+			->order('itemId ASC')
+			->bindValues(array(':type'=>$modelType, ':tag'=>$tag))
+			->queryColumn();
+
+		//create static list
+		$list = new X2List;
+		$list->name = Yii::t('marketing', 'Contacts for tag') .' '. $tag;
+		$list->modelName = $modelType;
+		$list->type = 'campaign';
+		$list->count = count($ids);
+		$list->assignedTo = Yii::app()->user->getName();
+		$list->visibility = 1;
+		$list->createDate = $now; 
+		$list->lastUpdated = $now;
+
+		//create campaign
+		$campaign = new Campaign;
+		$campaign->name = Yii::t('marketing', 'Mailing for tag') .' '. $tag;
+		$campaign->type = 'Email';
+		$campaign->assignedTo = Yii::app()->user->getName();
+		$campaign->createdBy = Yii::app()->user->getName();
+		$campaign->updatedBy = Yii::app()->user->getName();
+		$campaign->createDate = $now;
+		$campaign->lastUpdated = $now;
+
+		$transaction = Yii::app()->db->beginTransaction();
+		try {
+			if (!$list->save()) throw new Exception(array_shift(array_shift($list->getErrors())));
+			$campaign->listId = $list->id;
+			if (!$campaign->save()) throw new Exception(array_shift(array_shift($campaign->getErrors())));
+
+			foreach ($ids as $id) {
+				$listItem = new X2ListItem;	
+				$listItem->listId = $list->id;
+				$listItem->contactId = $id;
+				if (!$listItem->save()) throw new Exception(array_shift(array_shift($listItem->getErrors())));
+			}
+
+			$transaction->commit();
+			$this->redirect($this->createUrl('update', array('id'=>$campaign->id)));
+		} catch (Exception $e) {
+			$transaction->rollBack();
+			Yii::app()->user->setFlash('error', Yii::t('marketing','Could not create mailing') .': '. $e->getMessage());
+			$this->redirect(Yii::app()->request->getUrlReferrer());
+		}
 	}
 
 	/**

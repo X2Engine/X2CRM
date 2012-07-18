@@ -63,7 +63,8 @@ class Accounts extends X2Model {
 		return array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/accounts'
+				'baseRoute'=>'/accounts',
+				'icon'=>'accounts_icon.png',
 			),
 			'ERememberFiltersBehavior' => array(
 				'class'=>'application.components.ERememberFiltersBehavior',
@@ -84,15 +85,19 @@ class Accounts extends X2Model {
 	 * @return array customized attribute labels (name=>label)
 	 */
 	public function attributeLabels() {
-            
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
+		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_accounts')->order('name ASC')->queryAll(false);
+		foreach($data as $row)
+			$acctNames[$row[0]] = $row[1];
+		
+		return $acctNames;
+
+		/*$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
 		$arr=array();
 		foreach($fields as $field){
 			$arr[$field->fieldName]=Yii::t('accounts',$field->attributeLabel);
 		}
 		
-		return $arr;
-                
+		return $arr;*/
 	}
 
 	/**

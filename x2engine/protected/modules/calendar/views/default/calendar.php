@@ -123,6 +123,14 @@ $saveCheckedCalendarFilter = $this->createUrl('saveCheckedCalendarFilter');
 
 $user = User::model()->findByPk(Yii::app()->user->getId());
 $showCalendars = json_decode($user->showCalendars, true);
+
+// fix showCalendars['groupCalendars']
+if(!isset($showCalendars['groupCalendars'])) {
+	$showCalendars['groupCalendars'] = array();
+	$user->showCalendars = json_encode($showCalendars);
+	$user->update();
+}
+
 $userCalendars = $showCalendars['userCalendars'];
 $groupCalendars = $showCalendars['groupCalendars'];
 $sharedCalendars = $showCalendars['sharedCalendars'];

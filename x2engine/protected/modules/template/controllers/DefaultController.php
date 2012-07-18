@@ -70,58 +70,14 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new Templates;
-                $users=User::getNames();
-                if(isset($_POST['Templates'])) {
-			$temp=$model->attributes;
-			foreach($_POST['Templates'] as $name => &$value) {;
-				if($value == $model->getAttributeLabel($name)){
-					$value = '';
-                                }
-			}
-                        
-			 foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            if(count($names)>1) 
-                                                $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-                        
-			$temp=$model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Templates'][$field])){
-                                $model->$field=$_POST['Templates'][$field];
-                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Templates','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                                
-                            }
-                        }
+		$users=User::getNames();
+		
+		if(isset($_POST['Templates'])) {
+			$temp = $model->attributes;
+			$model->setX2Fields($_POST['Templates']);
 			parent::create($model, $temp, 0);
-			
 		}
+		
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
@@ -136,71 +92,11 @@ class DefaultController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
-		$users=User::getNames(); 
-                $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Templates"));
-                foreach($fields as $field){
-                    if($field->type=='link'){
-                        $fieldName=$field->fieldName;
-                        $type=ucfirst($field->linkType);
-                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
-                            eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
-                            if(isset($lookupModel))
-                                $model->$fieldName=$lookupModel->name;
-                        }
-                    }elseif($field->type=='date'){
-                        $fieldName=$field->fieldName;
-                        $model->$fieldName=date("Y-m-d",$model->$fieldName);
-                    }
-                }
-
+		$users = User::getNames();
+		
 		if(isset($_POST['Templates'])) {
-			$temp=$model->attributes;
-			foreach($_POST['Templates'] as $name => $value) {
-				if($value == $model->getAttributeLabel($name)){
-					$_POST['Templates'][$name] = '';
-				}
-			}
-			foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            if(count($names)>1) 
-                                                $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-                        
-			$temp=$model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Templates'][$field])){
-                                $model->$field=$_POST['Templates'][$field];
-                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Templates','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=strtotime($model->$field);
-                                }
-                                
-                            }
-                        }
-			
+			$temp = $model->attributes;
+			$model->setX2Fields($_POST['Templates']);
 			parent::update($model,$temp,'0');
 		}
 

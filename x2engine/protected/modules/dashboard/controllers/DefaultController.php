@@ -1,4 +1,4 @@
-<?php
+ <?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -37,7 +37,6 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
 class DefaultController extends x2base {
     public $modelClass = 'Dashboard';
     public $layout = '//layouts/col2Dash';
@@ -48,7 +47,7 @@ class DefaultController extends x2base {
                  'users'=>array('*'), 
             ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','getItems','moveWidget','setAUTH','update','changeColumns'),
+				'actions'=>array('index','view','getItems','moveWidget','setAUTH','update','changeColumns','getGRID','widgetState','widgetOrder','settings','hideIntro','dashSettings'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -64,20 +63,63 @@ class DefaultController extends x2base {
 	public function actions() {
 		return array(
 		);
-	}
-
+    }
+    public function actionDashSettings(){
+        var_dump($_POST);
+        $item = $_POST["item"];
+        $this->render('dashSettings',array('item'=>$item));
+        return "success";
+    }
+    public function actionHideIntro(){
+        $uid = Yii::app()->user->getId();
+        $sql = "UPDATE x2_dashboard_settings SET hideINTRO = 1 WHERE userID = $uid";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->execute();
+        return "success";
+    }
+    public function actionSettings(){
+        $model = new Dashboard;
+        $model = $model->search('prof');
+        $this->render('settings', array('dataProvider'=>$model));
+    }
+    public function actionWidgetOrder(){
+        $widgets = array();
+        if (isset($_POST['widget'])){
+            $widgets = $_POST['widget'];
+        }
+        $ind = 1;
+        foreach ($widgets as $widget){
+            $sql = "UPDATE x2_widgets SET posDASH = $ind WHERE name = '$widget'";
+            $command = Yii::app()->db->createCommand($sql);
+            $command->execute();
+            $ind++;
+        }
+        echo 'success';
+    }
     public function actionChangeColumns(){
-        $aasd = $_POST['dropdown'];
-        $model = new Dashboard('search');
-        if($item = $_POST['dropdown']){
-            $this->render('admin',array(
-                'model'=>$model,
-                'item'=>$item,
-            ));
+        $uid = Yii::app()->user->getId();
+        $model = new Dashboard;
+        if(isset($_POST['menu1'])){
+            $item = $_POST["menu1"];
+            if ($item != 1) $item = intval($item);
+            $sql = "UPDATE x2_dashboard_settings SET numCOLS = $item WHERE userID = $uid";
+            $command = Yii::app()->db->createCommand($sql);
+            $command->execute();
+        }
+        $this->renderPartial('list');
+    }
+    public function actionWidgetState(){
+        if(isset($_GET['widget']) && isset($_GET['state'])){
+            $widgetName = $_GET['widget'];
+            $state = $_GET['state'];
+            if ($state == 0) $change = 0;
+            else $change = 1;
+            $sql = "UPDATE x2_widgets SET showDASH = $change WHERE name = '$widgetName'";
+            $command = Yii::app()->db->createCommand($sql);
+            $command->execute();
+            echo 'success';
         }
     }
-
-
     public function actionGetItems(){
         $uid = Yii::app()->user->getId();
 		$sql = 'SELECT * FROM x2_widgets WHERE showDASH = 1 AND userid = '.$uid;
@@ -90,12 +132,21 @@ class DefaultController extends x2base {
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionView($id) {
-		$model=$this->loadModel($id);	 
-		$type='dashboard';
-		parent::view($model, $type);
+    public function actionUpdate($id) {
+        $model = $this->loadModel($id);
+        $id = $_GET['id'];
+        $sql = "SELECT * FROM x2_widgets WHERE id=$id";
+        $command = Yii::app()->db->createCommand($sql);
+        $row = $command->queryRow();
+        $this->render("update", array(
+            'displayName'=>$row['dispNAME'],
+            'name'=>$row['name'],
+            'showPROFILE'=>$row['showPROFILE'],
+            'posPROFILE'=>$row['posPROF'],
+            'userALLOWS'=>$row['userALLOWS'],
+            'model'=>$model
+        ));
     }
-
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -131,41 +182,6 @@ class DefaultController extends x2base {
 			'model'=>$model,
 			'users'=>$users,
 		));
-	}
-    public function update($model, $oldAttributes,$api){
-            // process currency into an INT
-            if($api==0)
-                parent::update($model,$oldAttributes,$api);
-            else
-                return parent::update($model,$oldAttributes,$api);
-    }
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionUpdate($id) {
-		$model=$this->loadModel($id);
-		$users=User::getNames();
-        $fields=Fields::model()->findAllByAttributes(array('modelName'=>"Dashboard"));
-        if(isset($_POST['Dashboard'])){
-            $temp=$model->attributes;
-            foreach($_POST['Dashboard'] as $name => $value){
-                if ($value == $model->getAttributeLabel($name)) 
-                    $value = null;
-            }
-           $this->update($model,$temp,'0');
-        }
-        foreach(array_keys($model->attributes) as $field){
-            if(isset($_POST['Dashboard'][$field])){
-                $model->field = $_POST['Dashboard'][$field];
-                $fieldData = Fields::model()->findByAttributes(array('modelName'=>'Dashboard', 'fieldName'=>$field));
-            }
-        }
-		$this->render('update',array(
-			'model'=>$model,
-			'users'=>$users,
-		));
     }
 	/*
 	public function actionSaveChanges($id) {
@@ -185,47 +201,7 @@ class DefaultController extends x2base {
 			$account->update();
 			$this->redirect(array('view','id'=>$account->id));
 		}
-	}
-        */
-	public function actionAddUser($id) {
-		$users=User::getNames();
-	unset($users['admin']);
-		unset($users['']);
-                foreach(Groups::model()->findAll() as $group){
-                    $users[$group->id]=$group->name;
-                }
-		$contacts=Contacts::getAllNames();
-		$model=$this->loadModel($id);
-		$users=Accounts::editUserArray($users,$model);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['Accounts'])) {
-                    
-			$temp=$model->assignedTo; 
-			$tempArr=$model->attributes;
-			$model->attributes=$_POST['Accounts'];  
-			$arr=$_POST['Accounts']['assignedTo'];
-			$model->assignedTo=Accounts::parseUsers($arr);
-			if($temp!="")
-				$temp.=", ".$model->assignedTo;
-			else
-				$temp=$model->assignedTo;
-			$model->assignedTo=$temp;
-			$changes=$this->calculateChanges($tempArr,$model->attributes);
-			$model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
-
-		$this->render('addUser',array(
-			'model'=>$model,
-			'users'=>$users,
-			'contacts'=>$contacts,
-			'action'=>'Add'
-		));
-	} 
+    }*/
 
 	public function actionRemoveUser($id) {
 
@@ -313,26 +289,21 @@ class DefaultController extends x2base {
 		$model=new Dashboard('search');
 		$name='Dashboard';
 		parent::index($model,$name);
-	}
-
+    }
 	/**
 	 * Manages all models.
 	 */
     public function actionAdmin() {
-        $pageParam = ucfirst('Dashboard'). '_page';
-        $downParam = 'down';
-        if (isset($_GET[$pageParam])) {
-            $page = $_GET[$pageParam];
-            Yii::app()->user->setState($this->id.'_page',(int)$page);
-        } else {
-            $URL = Yii::app()->request->requestUri.'?Dashboard_page=1';
-            $this->redirect($URL,true,302);
-        }
-		$model=new Dashboard('search');
-        $name='Dashboard';
+        $uid = Yii::app()->user->getId();
+        $sql = "SELECT * FROM x2_dashboard_settings WHERE userID = $uid";
+        $command = Yii::app()->db->createCommand($sql);
+        $query = $command->queryRow();
+        $model=new Dashboard;
+        $model = $model->search('dash');
         $this->render('admin',array(
             'model'=>$model,
-            'item'=>0,
+            'item'=>$query['numCOLS'],
+            'hINT'=>$query['hideINTRO']
         ));
 	}
 

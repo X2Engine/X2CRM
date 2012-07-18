@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -87,8 +87,8 @@ if(in_array($file_ext,$legal_extensions))
 </table>
 </div>
 <?php echo CHtml::link('Download file',array('download','id'=>$model->id),array('class'=>'x2-button')); ?>
-<?php if($file_ext == 'pdf') { ?>
+<?php /* if($file_ext == 'pdf') { ?>
 <div class="form">
 	<iframe width="565" height="550" src="<?php echo Yii::app()->request->baseUrl.'/uploads/'.urlencode($model->fileName); ?>">
 </div>
-<?php } ?>
+<?php }  */ ?>

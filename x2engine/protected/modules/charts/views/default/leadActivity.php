@@ -84,7 +84,7 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 	$_GET = array();
 	
 	$form = $this->beginWidget('CActiveForm', array(
-		// 'action'=>$this->createUrl('leadActivity'),
+		'action'=>'leadActivity',
 		'id'=>'dateRangeForm',
 		'enableAjaxValidation'=>false,
 		'method'=>'get'
@@ -165,6 +165,12 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 				'lastYear'=>Yii::t('dashboard','Last Year'),
 				
 			),array('id'=>'dateRange'));
+			?>
+		</div>
+		<div class="cell">
+			<?php echo CHtml::label(Yii::t('dashboard', 'Strict Mode'),'strict'); ?>
+			<?php
+			echo CHtml::checkbox('strict',$dateRange['strict'],array('id'=>'strict'));
 			?>
 		</div>
 	</div>
@@ -256,6 +262,12 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 					'value'=>'empty($data["id"])? $data["name"] : CHtml::link($data["name"],array("/users/".$data["id"]))',
 					'type'=>'raw',
 					'headerHtmlOptions'=>array('style'=>'width:20%')
+				),
+				'leads'=>array(
+					'name'=>'leads',
+					'header'=>Yii::t('contacts','Leads'),
+					'value'=>'$data["leads"]',
+					'type'=>'raw',
 				),
 				'interviewed'=>array(
 					'name'=>'interviewed',

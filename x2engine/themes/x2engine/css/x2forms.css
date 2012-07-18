@@ -165,6 +165,8 @@ div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea {
 	border-radius:			3px;
 	background:#fff;
 }
+div.x2-layout .formItem .placeholder {color:#aaa;}
+
 div.x2-layout .formInputBox input {margin:0;padding:2px;}
 div.x2-layout .formInputBox input[type="text"] {width:100%;}
 div.x2-layout .formInputBox textarea {height:100%;resize:none;padding:2px;}
@@ -349,6 +351,7 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 	font-weight:normal;
 }
 #editorFieldList label.emailIcon		{background:url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;}
+#editorFieldList label.phoneIcon	{background:url(../images/formEditor/phone_icon.gif) 2px 0px no-repeat transparent;}
 #editorFieldList label.booleanIcon	{background:url(../images/formEditor/boolean_icon.gif) 2px 0px no-repeat transparent;}
 #editorFieldList label.dropdownIcon	{background:url(../images/formEditor/dropdown_icon.gif) 2px 0px no-repeat transparent;}
 #editorFieldList label.dateIcon		{background:url(../images/formEditor/date_icon.gif) 2px 0px no-repeat transparent;}

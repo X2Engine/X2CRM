@@ -39,13 +39,15 @@
 
 $(function() {
 
+	$('a.x2-link').draggable({revert:true,helper:'clone',revertDuration:200,appendTo:'body'});
+
 	if(window.fullscreen)
 		$('#page-body').addClass('no-widgets');
 
 	// jquery collections to eliminate repeated lookups in window.resize()
 	var $header = $('#header .width-constraint').first();
-	var $subMenuLi = $('#main-menu ul').parent();
-	var $subMenu = $('#main-menu ul');
+	var $moreMenuLi = $('#main-menu ul').parent();
+	var $moreMenu = $('#main-menu ul');
 	var $userSubMenu = $('#user-menu ul');
 	var $pageBodyDiv = $('#page-body');
 	var $pageWidthDivs = $('div.width-constraint');
@@ -54,8 +56,8 @@ $(function() {
 	var newPageMode = 0;	// 1 fixed width (960px)
 							// 2 fill screen (5% margins)
 
-	// move all submenu items into the main menu so we can get the correct display widths
-	$subMenu.children().insertBefore($subMenuLi);
+	// move all moreMenu items into the main menu so we can get the correct display widths
+	$moreMenu.children().insertBefore($moreMenuLi);
 
 	var $menuItems = $('#main-menu > li').not('#more-menu');
 	var currentVisibleItems = $menuItems.length;
@@ -111,14 +113,14 @@ $(function() {
 				break;
 		}
 
-		// there is room for more items, bring some out of the submenu
+		// there is room for more items, bring some out of the moreMenu
 		if(visibleItems > currentVisibleItems) {
 			for(i=0; i<visibleItems - currentVisibleItems; i++) {
-				$subMenu.children().first().insertBefore($subMenuLi);
+				$moreMenu.children().first().insertBefore($moreMenuLi);
 			}
 			currentVisibleItems = $('#main-menu > li').not('#more-menu').length;
 			
-		// the number of items is too damn high! move some into the submenu
+		// the number of items is too damn high! move some into the moreMenu
 		} else if(visibleItems < currentVisibleItems) {
 			for(i=$menuItems.length-1; i>=visibleItems; i--) {
 			
@@ -127,43 +129,28 @@ $(function() {
 			currentVisibleItems = $('#main-menu > li').not('#more-menu').length;
 		}
 		// show More dropdown only if it's needed
-		if($subMenu.children().length == 0)
-			$subMenuLi.hide();
+		if($moreMenu.children().length == 0)
+			$moreMenuLi.hide();
 		else
-			$subMenuLi.show();
+			$moreMenuLi.show();
 	});
 
 	// force layout calculations on pageload
 	$(window).resize();
-	
-	
-	// toggle menu when user clicks on "More" or whatever, and close the other menu
-	$("#more-menu span").click(function() {
-		$subMenu.toggleClass('open');
-		$subMenu.parent().toggleClass('open');
-		$userSubMenu.removeClass('open');
-		$userSubMenu.parent().removeClass('open');
+
+	// toggle dropdown menus
+	$(".dropdown span").click(function() {
+		var $dropdown = $(this).siblings('ul');	// the menu to be opened
+		$dropdown.toggleClass('open');
+		$('.dropdown ul').not($dropdown).removeClass('open');	// close all other menus
 		return false;
 	});
-	// same for user menu
-	$("#user-menu li span").click(function() {
-		$userSubMenu.toggleClass('open');
-		$userSubMenu.parent().toggleClass('open');
-		$subMenu.removeClass('open');
-		$subMenu.parent().removeClass('open');
-		return false;
-	});
+
 	// close menu if they click anywhere else on the page
 	$(document).bind('click', function(e) {
 		var $clicked = $(e.target);
-		if (!$clicked.parents().is("#main-menu ul")) {
-			$subMenu.removeClass('open');
-			$subMenu.parent().removeClass('open');
-		}
-		if(!$clicked.parents().is("#user-menu ul")) {
-			$userSubMenu.removeClass('open');
-			$userSubMenu.parent().removeClass('open');
-		}
+		if(!$clicked.parents().is('.dropdown'))
+			$('.dropdown ul').removeClass('open');
 	});
 	
 	// Yii CWebLogRoute display
@@ -179,7 +166,7 @@ $(function() {
 	$('#fullscreen-button').click(function() { 
 		// save preference
 		$.ajax({
-			url: yii.baseUrl+'/site/fullscreen',
+			url: yii.baseUrl+'/index.php/site/fullscreen',
 			type: 'GET',
 			data: 'fs='+(window.fullscreen?'0':'1')
 		});

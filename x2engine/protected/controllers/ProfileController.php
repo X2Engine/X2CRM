@@ -48,7 +48,7 @@ class ProfileController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword'),
+				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword', 'setResultsPerPage'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -604,5 +604,10 @@ class ProfileController extends x2base {
 			'Pacific/Fiji'      => "(GMT+12:00) Fiji",
 			'Asia/Kamchatka'    => "(GMT+12:00) Kamchatka",
 		);
+	}
+	
+	public function actionSetResultsPerPage($results) {
+		Yii::app()->params->profile->resultsPerPage = $results;
+		Yii::app()->params->profile->save();
 	}
 }

@@ -196,6 +196,7 @@ class SearchController extends x2base {
 			));
 			$this->render('searchTags',array(
 				'tags'=>$results,
+				'term'=>$term,
 			));
 		}
 	}

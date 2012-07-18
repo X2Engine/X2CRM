@@ -317,11 +317,21 @@ class ApiController extends x2base {
 					$notif->value = $matches[0];
 					$notif->createDate = time();
 					$notif->save();
-					echo 'ding';
+					echo 'Ding!';
 					
 					
+				} else {
+					echo 'No contact found :(';
+					// $notif = new Notification;
+					// $notif->type = 'voip_call';
+					// $notif->user = ?;
+					// $notif->modelType = 'Contacts';
+					// $notif->value = $matches[0];
+					// $notif->createDate = time();
+					// $notif->save();
 				}
-			}
+			} else
+				echo 'That\'s no phone number, it\'s a space station!';
 		}
 		
 		// Phone: >P100 HANSEDER ANTHON           9408836387 

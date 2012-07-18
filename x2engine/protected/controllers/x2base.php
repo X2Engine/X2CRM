@@ -172,7 +172,7 @@ abstract class x2base extends CController {
 		$view = false;
 		$edit = false;
 		// if we're the admin, visibility is public, there is no visibility/assignedTo, or it's directly assigned to the user, then we're done
-		if(Yii::app()->user->getName() == 'admin' || !$model->hasAttribute('assignedTo') || $model->assignedTo='Anyone' || $model->assignedTo == Yii::app()->user->getName()) {
+		if(Yii::app()->user->getName() == 'admin' || !$model->hasAttribute('assignedTo') || $model->assignedTo=='Anyone' || $model->assignedTo == Yii::app()->user->getName()) {
 		
 			$edit = true;
 			
@@ -543,8 +543,8 @@ abstract class x2base extends CController {
 					$fieldName=$field->fieldName;
 					if(isset($model->$fieldName) && is_numeric($model->$fieldName)) {
 						if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-									(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
-									OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))) {
+							(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
+							OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))) {
 							$rel=new Relationships;
 							$rel->firstType=$name;
 							$rel->secondType=ucfirst($field->linkType);
@@ -552,11 +552,10 @@ abstract class x2base extends CController {
 							$rel->secondId=$model->$fieldName;
 							if($rel->save()) {
 								$lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-										(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
-										OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
-								if(isset($lookup)) {
+									(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
+									OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
+								if(isset($lookup))
 									$lookup->delete();
-								}
 							}
 						}
 					}
@@ -575,21 +574,6 @@ abstract class x2base extends CController {
 					$notif->modelType = $name;
 					$notif->modelId = $model->id;
 					$notif->save();
-					
-					// $notif=new Notifications;
-					// if($api == 0) {
-						// $profile = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
-						// if(isset($profile))
-							// $notif->text="$profile->fullName has created a(n) ".$name." for you";
-					// } else {
-						// $notif->text="An API request has created a(n) ".$name." for you";
-					// }
-					// $notif->user=$model->assignedTo;
-					// $notif->createDate=time();
-					// $notif->viewed=0;
-					// $notif->record="$name:$model->id";
-					// $notif->save();
-				
 				}
 			}
 			if($model instanceof Actions && $api==0) {
@@ -900,28 +884,10 @@ abstract class x2base extends CController {
 								$notif->user = $user;
 								$notif->createdBy = Yii::app()->user->name;
 								$notif->createDate = time();
-								// $notif->viewed=0;
-								// $notif->record=$this->modelClass.":".$new['id'];
+								
 								$notif->save();
-
-						/* 		$notif=new Notifications;
-								$profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-								if($criteria->comparisonOperator=="="){
-									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator==">"){
-									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator=="<"){
-									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator=="change"){
-									$notif->text="A record of type ".$this->modelClass." has had its $criteria->modelField field changed from ".$old[$keys[$i]]." to ".$new[$keys[$i]]." by ".Yii::app()->user->getName();
-								}
-								$notif->user=$user;
-								$notif->createDate=time();
-								$notif->viewed=0;
-								$notif->record=$this->modelClass.":".$new['id'];
-								$notif->save(); */
 							}
-						} else if($criteria->type=='action') {
+						} elseif($criteria->type=='action') {
 							$users=explode(", ",$criteria->users);
 							foreach($users as $user){
 								$action=new Actions;
@@ -946,25 +912,18 @@ abstract class x2base extends CController {
 								$action->associationName=$model->name;
 								$action->save();
 							}
-						} else if($criteria->type=='assignment') {
+						} elseif($criteria->type=='assignment') {
 							$model->assignedTo = $criteria->users;
-							$model->save();
 							
-							$notif = new Notification;
-							$notif->user = $model->assignedTo;
-							$notif->createDate = time();
-							$notif->type = 'assignment';
-							$notif->modelType = $this->modelClass;
-							$notif->modelId = $new['id'];
-							$notif->save();
-
-							// $notif=new Notifications;  
-							// $notif->text="A record of type ".$this->modelClass." has been re-assigned to you.";
-							// $notif->user=$model->assignedTo;
-							// $notif->createDate=time();
-							// $notif->viewed=0;
-							// $notif->record=$this->modelClass.":".$new['id'];
-							// $notif->save();
+							if($model->save()) {
+								$notif = new Notification;
+								$notif->user = $model->assignedTo;
+								$notif->createDate = time();
+								$notif->type = 'assignment';
+								$notif->modelType = $this->modelClass;
+								$notif->modelId = $new['id'];
+								$notif->save();
+							}
 						} 
 					}
 				}
@@ -1095,8 +1054,12 @@ abstract class x2base extends CController {
 		
 	}
 	
+	function throwException($message) {
+		throw new Exception($message);
+	}
 	
-	public function sendUserEmail($addresses,$subject,$message) {
+	
+	public function sendUserEmail($addresses,$subject,$message,$attachments=null) {
 
 		$user = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
 
@@ -1112,10 +1075,40 @@ abstract class x2base extends CController {
 			$this->addEmailAddresses($phpMail,$addresses);
 			
 			$phpMail->Subject = $subject;
-//			$phpMail->AltBody = $message;
+			// $phpMail->AltBody = $message;
 			$phpMail->MsgHTML($message);
 			// $phpMail->Body = $message;
+			
+			// add attachments, if any
+			if ($attachments) {
+				foreach($attachments as $attachment) {
+					if($attachment['temp']) { // stored as a temp file?
+						$file = 'uploads/media/temp/' . $attachment['folder'] . '/' . $attachment['filename'];
+						if(file_exists($file)) // check file exists
+							if(filesize($file) <= (10 * 1024 * 1024)) // 10mb file size limit
+								$phpMail->AddAttachment($file);
+							else
+								$this->throwException("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
+					}
+				}
+			}
+
 			$phpMail->Send();
+			
+			// delete temp attachment files, if they exist
+			if($attachments) {
+				foreach($attachments as $attachment) {
+					if($attachment['temp']) {
+						$file = 'uploads/media/temp/' . $attachment['folder'] . '/' . $attachment['filename'];
+						$folder = 'uploads/media/temp/' . $attachment['folder'];
+						if(file_exists($file))
+							unlink($file); // delete temp file
+						if(file_exists($folder))
+							rmdir($folder); // delete temp folder
+						TempFile::model()->deleteByPk($attachment['id']);
+					}
+				}
+			}
 			
 			$status[] = '200';
 			$status[] = Yii::t('app','Email Sent!');

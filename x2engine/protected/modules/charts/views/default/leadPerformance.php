@@ -84,7 +84,7 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 	$_GET = array();
 	
 	$form = $this->beginWidget('CActiveForm', array(
-		// 'action'=>$this->createUrl('leadActivity'),
+		'action'=>'leadPerformance',
 		'id'=>'dateRangeForm',
 		'enableAjaxValidation'=>false,
 		'method'=>'get'
@@ -170,6 +170,12 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 			),array('id'=>'dateRange'));
 			?>
 		</div>
+		<div class="cell">
+			<?php echo CHtml::label(Yii::t('dashboard', 'Strict Mode'),'strict'); ?>
+			<?php
+			echo CHtml::checkbox('strict',$dateRange['strict'],array('id'=>'strict'));
+			?>
+		</div>
 	</div>
 	<div class="row">
 		<div class="cell">
@@ -227,6 +233,31 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 		</div>
 	</div>
 		<?php
+                $columns=array(
+                    'user'=>array(
+                            'name'=>'user',
+                            'header'=>Yii::t('contacts','User'),
+                            'value'=>'empty($data["id"])? $data["name"] : CHtml::link($data["name"],array("/users/".$data["id"]))',
+                            'type'=>'raw',
+                            'headerHtmlOptions'=>array('style'=>'width:20%')
+                    ),
+                    'leads'=>array(
+                            'name'=>'leads',
+                            'header'=>Yii::t('contacts','Contacts'),
+                            'value'=>'$data["leads"]',
+                            'type'=>'raw',
+                    ),
+                );
+                if(count($stageIds)>0){
+                    foreach($stageIds as $name=>$id){
+                        $columns[$name]=array(
+                                            'name'=>$name,
+                                            'header'=>Yii::t('contacts',$name),
+                                            'value'=>'$data["'.$name.'"]',
+                                            'type'=>'raw',
+                                        );
+                    }
+                }
 		if(isset($dataProvider)) {
 		$this->widget('zii.widgets.grid.CGridView', array(
 			'id'=>'lead-activity-grid',
@@ -245,63 +276,7 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 			// 'columns'=>$columns,
 			//'modelName'=>'Contacts',
 			// 'viewName'=>'leadpercontacts',
-			'columns'=>array(
-				'user'=>array(
-					'name'=>'user',
-					'header'=>Yii::t('contacts','User'),
-					'value'=>'empty($data["id"])? $data["name"] : CHtml::link($data["name"],array("/users/".$data["id"]))',
-					'type'=>'raw',
-					'headerHtmlOptions'=>array('style'=>'width:20%')
-				),
-				'leads'=>array(
-					'name'=>'leads',
-					'header'=>Yii::t('contacts','Leads'),
-					'value'=>'$data["leads"]',
-					'type'=>'raw',
-				),
-				'interviewed'=>array(
-					'name'=>'interviewed',
-					'header'=>Yii::t('contacts','Interviewed'),
-					'value'=>'$data["interviewed"]',
-					'type'=>'raw',
-				),
-				'enrolled'=>array(
-					'name'=>'enrolled',
-					'header'=>Yii::t('contacts','Enrolled'),
-					'value'=>'$data["enrolled"]',
-					'type'=>'raw',
-				),
-				'started'=>array(
-					'name'=>'started',
-					'header'=>Yii::t('contacts','Started'),
-					'value'=>'$data["started"]',
-					'type'=>'raw',
-				),
-				'L_I_ratio'=>array(
-					'name'=>'L_I_ratio',
-					'header'=>Yii::t('contacts','L-I'),
-					'value'=>'Yii::app()->controller->formatLeadRatio($data["interviewed"],$data["leads"])',
-					'type'=>'raw',
-				),
-				'I_E_ratio'=>array(
-					'name'=>'I_E_ratio',
-					'header'=>Yii::t('contacts','I-E'),
-					'value'=>'Yii::app()->controller->formatLeadRatio($data["enrolled"],$data["interviewed"])',
-					'type'=>'raw',
-				),
-				'L_E_ratio'=>array(
-					'name'=>'L_E_ratio',
-					'header'=>Yii::t('contacts','L-E'),
-					'value'=>'Yii::app()->controller->formatLeadRatio($data["enrolled"],$data["leads"])',
-					'type'=>'raw',
-				),
-				'L_S_ratio'=>array(
-					'name'=>'L_S_ratio',
-					'header'=>Yii::t('contacts','L-S'),
-					'value'=>'Yii::app()->controller->formatLeadRatio($data["started"],$data["leads"])',
-					'type'=>'raw',
-				),
-			),
+			'columns'=>$columns,
 		));
 	}
 	?><br>

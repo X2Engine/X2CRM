@@ -41,41 +41,6 @@
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/profileSettings.js');
 
-Yii::app()->clientScript->registerScript('backgroundSetDelete',"
-
-function setBackground(filename){
-	$.ajax({
-		url: '".CHtml::normalizeUrl(array('profile/setBackground'))."',
-		type: 'post',
-		data: 'name='+filename,
-		success: function(response) {
-			if(response=='success') {
-				if(filename=='') {
-					$('#header').css('background-image','none');
-				} else {
-					$('#header').css('background-image','url(".Yii::app()->getBaseUrl().'/uploads/'."'+filename+')');
-					// $(window).trigger('resize');
-				}
-			}
-		}
-	});
-}
-function deleteBackground(id,filename) {
-	$.ajax({
-		url: '".CHtml::normalizeUrl(array('profile/deleteBackground'))."',
-		type: 'get',
-		data: 'id='+id,
-		success: function(response) {
-			if(response=='success') {
-				$('#background_'+id).hide();
-				if($('#header').css('background-image').indexOf(filename) > -1)		// if this is the current background,
-					$('#header').css('background-image','none');						// remove it from the page
-			}
-		}
-	});
-}
-",CClientScript::POS_HEAD);
-
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'settings-form',
 	'enableAjaxValidation'=>false,
@@ -105,7 +70,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		</div>
 		<div class="cell">
 			<?php echo $form->labelEx($model,'resultsPerPage'); ?>
-			<?php echo $form->dropDownList($model,'resultsPerPage',array(10=>'10',15=>'15',20=>'20',30=>'30',50=>'50'),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
+			<?php echo $form->dropDownList($model,'resultsPerPage',Profile::getPossibleResultsPerPage(),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
 		</div>
 
 	</div>

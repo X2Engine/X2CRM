@@ -85,15 +85,6 @@ class NotificationsController extends CController {
 			if(file_exists('protected/modules/'.$module.'/register.php'))
 				Yii::import('application.modules.'.$module.'.models.*');
 		}
-
-		// Yii::import('application.modules.actions.models.*');
-		// Yii::import('application.models.Social');
-		
-		// $test = new Social;
-		// $test->id = 4909;
-		// $test->name = 'bob';
-		// echo $test->getLink();
-		// die();
 	
 		$lastId = 0;
 		if(isset($_POST['lastId']))		// if the client specifies the last message ID received,
@@ -103,14 +94,14 @@ class NotificationsController extends CController {
 		$total = 0;
 		
 		$notifModels = CActiveRecord::model('Notification')->findAll(new CDbCriteria(array(
-			'condition'=>'user=:user AND id>:lastId',
+			'condition'=>'id>:lastId AND user=:user',
 			'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),
 			'order'=>'createDate ASC',
 			'limit'=>10
 		)));
 
 		if(count($notifModels)) {
-			$total = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name)); 
+			$total = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
 		}
 		
 		foreach($notifModels as &$model) {
@@ -141,14 +132,16 @@ class NotificationsController extends CController {
 	}
 
 	public function actionMarkViewed() {
-		if(!is_array($_GET['id']))
-			$_GET['id'] = array($_GET['id']);
-			
-		foreach($_GET['id'] as &$id) {
-			$notif = CActiveRecord::model('Notification')->findByPk($id);
-			if(isset($notif) && $notif->user == Yii::app()->user->name) {
-				$notif->viewed = 1;
-				$notif->update();
+		if(isset($_GET['id'])) {
+			if(!is_array($_GET['id']))
+				$_GET['id'] = array($_GET['id']);
+				
+			foreach($_GET['id'] as &$id) {
+				$notif = CActiveRecord::model('Notification')->findByPk($id);
+				if(isset($notif) && $notif->user == Yii::app()->user->name) {
+					$notif->viewed = 1;
+					$notif->update();
+				}
 			}
 		}
 	}
@@ -157,8 +150,9 @@ class NotificationsController extends CController {
 		$model = CActiveRecord::model('Notification')->findByPk($id);
 		if(isset($model) && $model->user = Yii::app()->user->name) {
 			$model->delete();
-			echo $id;
 		}
+		
+		
 	}
 
 	public function actionGetMessages() {

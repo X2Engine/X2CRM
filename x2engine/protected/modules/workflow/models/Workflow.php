@@ -119,11 +119,11 @@ class Workflow extends CActiveRecord {
 	
 	public static function getWorkflowStatus($workflowId,$modelId = 0,$modelType = '') {
 	
-		$workflowStatus = array();
+		$workflowStatus = array($workflowId);
 		
 		$workflowStages = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$workflowId),new CDbCriteria(array('order'=>'id ASC')));
 		
-		$workflowStatus[] = $workflowId;
+		// $workflowStatus[] = $workflowId;
 		foreach($workflowStages as &$stage) {	// load all WorkflowStage names into workflowStatus
 			$workflowStatus[] = array(
 				'name'=>$stage->name,

@@ -67,6 +67,7 @@ function checkPictureExt(el, sbm) {
 	if(re==1) {
 		// enable submit
 		$(sbm).removeAttr('disabled');
+		$('#photo-form').submit();
 	}
 	else {
 		// delete the file name, disable Submit, Alert message
@@ -74,7 +75,17 @@ function checkPictureExt(el, sbm) {
 		$(sbm).attr('disabled','disabled');
 		alert('\".'+ ar_ext+ '\" is not an file type allowed for upload');
 	}
-}",CClientScript::POS_HEAD);
+	
+
+}
+
+$(function() {
+	$('.file-wrapper').qtip({
+		content: 'Choose Profile picture.'
+	});
+});
+
+",CClientScript::POS_HEAD);
 
 $attributeLabels = $model->attributeLabels();
 ?>
@@ -82,7 +93,8 @@ $attributeLabels = $model->attributeLabels();
 	<tr>
 		<td class="label" width="20%"><?php echo $attributeLabels['fullName']; ?></td>
 		<td><b><?php echo CHtml::encode($model->fullName); ?></b></td>
-		<td rowspan="7" width="25%">
+		<td rowspan="8" width="15%" style="text-align:center;">
+			<span class="file-wrapper">
 			<?php
 			// getimagesize()
 			
@@ -91,13 +103,13 @@ $attributeLabels = $model->attributeLabels();
 				$imgSize = @getimagesize($model->avatar);
 				// die( var_dump($imgSize));
 				if(!$imgSize)
-					$imgSize = array(180,180);
+					$imgSize = array(125,125);
 				
 				$maxDimension = max($imgSize[0],$imgSize[1]);
 				
 				$scaleFactor = 1;
-				if($maxDimension > 180)
-					$scaleFactor = 180 / $maxDimension;
+				if($maxDimension > 125)
+					$scaleFactor = 125 / $maxDimension;
 					
 				$imgSize[0] = round($imgSize[0] * $scaleFactor);
 				$imgSize[1] = round($imgSize[1] * $scaleFactor);
@@ -105,8 +117,16 @@ $attributeLabels = $model->attributeLabels();
 				
 				echo '<img width="'.$imgSize[0].'" height="'.$imgSize[1].'" src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
 			} else
-				echo '<img width="180" height="180" src='.Yii::app()->request->baseUrl."/uploads/default.jpg".'>';
+				echo '<img width="125" height="125" src='.Yii::app()->request->baseUrl."/uploads/default.jpg".'>';
 			?>
+			<?php if($model->username == Yii::app()->user->getName()) {
+				echo CHtml::form('uploadPhoto/'.$model->id,'post',array('enctype'=>'multipart/form-data', 'id'=>'photo-form'));
+				echo CHtml::fileField('photo','',array('id'=>'photo','onchange'=>"checkPictureExt(this, '#avatarSubmit')")).'<br />';
+				echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'avatarSubmit','disabled'=>'disabled'),array('class'=>'x2-button'));
+				echo CHtml::endForm();
+			} ?>
+			<?php /*<button type="submit" class="x2-button" name="photo-submit"><?php echo Yii::t('profile', 'Choose Picture'); ?></button> */ ?>
+			</span>
 		</td>
 	</tr>
 	<tr>
@@ -136,13 +156,6 @@ $attributeLabels = $model->attributeLabels();
 	<tr>
 		<td class="label"><?php echo Yii::t('profile','Signature'); ?></td>
 		<td><div style="height:50px;width:0px;float:left;"></div><?php echo $model->getSignature(true); ?></td>
-		<td><?php if($model->username == Yii::app()->user->getName()) {
-				echo CHtml::form('uploadPhoto/'.$model->id,'post',array('enctype'=>'multipart/form-data'));
-				echo CHtml::fileField('photo','',array('id'=>'photo','onchange'=>"checkPictureExt(this, '#avatarSubmit')")).'<br />';
-				echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'avatarSubmit','disabled'=>'disabled'),array('class'=>'x2-button'));
-				echo CHtml::endForm();
-			} ?>
-		</td>
 	</tr>
 </table>
 

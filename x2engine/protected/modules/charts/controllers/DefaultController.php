@@ -6,6 +6,10 @@ class DefaultController extends x2base {
 
 	public function accessRules() {
 		return array(
+                        array('allow',
+                            'actions'=>array('getFieldData'),
+                            'users'=>array('*'),
+                        ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions' => array('index','sales', 'marketing', 'pipeline', 'leadVolume','leadActivity','leadPerformance','leadSources'),
 				'users' => array('@'),
@@ -33,7 +37,10 @@ class DefaultController extends x2base {
 	private function getDateRange() {
 	
 		$dateRange = array();
-
+		$dateRange['strict'] = false;
+		if(isset($_GET['strict']) && $_GET['strict'])
+			$dateRange['strict'] = true;
+			
 		$dateRange['range'] = 'custom';
 		if(isset($_GET['range']))
 			$dateRange['range'] = $_GET['range'];
@@ -130,6 +137,10 @@ class DefaultController extends x2base {
 			}
 			
 		}
+		
+		if($dateRange['strict'])
+			$attributeConditions .= ' AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'];
+
 		$workflow = 1;
 		
 		if(isset($_GET['workflow'])) {
@@ -176,7 +187,8 @@ class DefaultController extends x2base {
 
 				$data[$i]['leads'] = Yii::app()->db->createCommand()
 					->select('COUNT(*)')->from('x2_contacts')
-					->where('assignedTo="'.$assignedTo[$i].'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].$attributeConditions, $attributeParams)
+					->where('assignedTo="'.$assignedTo[$i].($dateRange['strict']? '"':'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end']).$attributeConditions, $attributeParams)
+					// ->where('assignedTo="'.$assignedTo[$i].'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].$attributeConditions, $attributeParams)
 					->queryScalar();
 					
 				$totals['leads'] += $data[$i]['leads'];
@@ -264,6 +276,10 @@ class DefaultController extends x2base {
 			}
 			
 		}
+		
+		if($dateRange['strict'])
+			$attributeConditions .= ' AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'];
+		
 		$workflow = 1;
 		
 		if(isset($_GET['workflow'])) {
@@ -271,13 +287,14 @@ class DefaultController extends x2base {
 			if(ctype_digit($_GET['workflow']))
 				$workflow = $_GET['workflow'];
 			
-			if($workflow != 1 && $workflow != 2)	// only these 2 workflows are allowed
-				$workflow = 1;
+			
+                        $workflowStages=WorkflowStage::model()->findAllByAttributes(array('workflowId'=>$workflow),array('order'=>'stageNumber ASC'));
+                        
+                        $stageIds=array();
+                        foreach($workflowStages as $stage){
+                            $stageIds[$stage->name]=$stage->stageNumber;
+                        }
 				
-			$stageIds = array(
-				1 => array('i'=>3,'e'=>13,'s'=>17),	// "traditional"
-				2 => array('i'=>3,'e'=>7,'s'=>10),	// "career"
-			);
 			
 			
 			// SELECT COUNT(`a`.*) as `count1`, COUNT(`b`.*) as `count2`, assignedTo, stageNumber FROM `x2_actions` `a`, `x2_actions` `b` WHERE a.type="workflow" AND b.type="workflow" AND a.workflowId=1 AND b.workflowId=1 AND `a`.stageNumber=1 AND `b`.stageNumber=2 GROUP BY a.assignedTo, a.stageNumber, b.stageNumber
@@ -292,9 +309,6 @@ class DefaultController extends x2base {
 				'id'=>'',
 				'name'=>Yii::t('dashboard','Total'),
 				'leads'=>0,
-				'interviewed'=>0,
-				'enrolled'=>0,
-				'started'=>0
 			);
 			
 			for($i=0, $size=sizeof($assignedTo); $i<$size; $i++) {
@@ -312,29 +326,26 @@ class DefaultController extends x2base {
 
 				$data[$i]['leads'] = Yii::app()->db->createCommand()
 					->select('COUNT(*)')->from('x2_contacts')
-					->where('assignedTo="'.$assignedTo[$i].'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].$attributeConditions, $attributeParams)
+					->where('assignedTo="'.$assignedTo[$i].($dateRange['strict']? '"':'" AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end']).$attributeConditions, $attributeParams)
 					->queryScalar();
 					
 				$totals['leads'] += $data[$i]['leads'];
-
+                                $str="";
+                                foreach($stageIds as $name=>$id){
+                                    $str.=" SUM(IF(x2_actions.stageNumber='$id',1,0)) AS $name, ";
+                                }
 				$row = Yii::app()->db->createCommand()
-				->select('SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['i'].',1,0)) AS interviewed, 
-					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['e'].',1,0)) AS enrolled,
-					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['s'].',1,0)) AS started,
-					x2_contacts.assignedTo AS assignedTo')
+				->select($str.' x2_contacts.assignedTo AS assignedTo')
 				->from('x2_contacts')
 				->join('x2_actions','x2_actions.associationId=x2_contacts.id AND x2_actions.associationType="contacts"')
 				->where('x2_actions.type="workflow" AND x2_actions.workflowId='.$workflow.' AND x2_actions.completeDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].' AND '.$assignmentCheck
 					.' AND (SELECT COUNT(*) FROM x2_contacts WHERE x2_contacts.id=x2_actions.associationId '.$attributeConditions.') > 0',$attributeParams)
 				->queryRow();
+				foreach($stageIds as $name=>$id){
+                                    $data[$i][$name]=isset($row[$name])? $row[$name] : 0;
+                                    $totals[$name]=isset($totals[$name])?$totals[$name]+$data[$i][$name]:$data[$i][$name];
+                                }
 				
-				$data[$i]['interviewed'] = isset($row['interviewed'])? $row['interviewed'] : 0;
-				$data[$i]['enrolled'] = isset($row['enrolled'])? $row['enrolled'] : 0;
-				$data[$i]['started'] = isset($row['started'])? $row['started'] : 0;
-				
-				$totals['interviewed'] += $data[$i]['interviewed'];
-				$totals['enrolled'] += $data[$i]['enrolled'];
-				$totals['started'] += $data[$i]['started'];
 				
 				if(array_sum($data[$i]) == 0)
 					unset($data[$i]);
@@ -360,15 +371,37 @@ class DefaultController extends x2base {
 			));
 		} else {
 			$dataProvider = null;
+                        $stageIds=array();
 		}
 		$model->unsetFilters();
 		$this->render('leadPerformance', array(
 			'model'=>$model,
 			'workflow'=>$workflow,
 			'dataProvider'=>$dataProvider,
-			'dateRange'=>$dateRange
+			'dateRange'=>$dateRange,
+                        'stageIds'=>$stageIds,
 		));
-	}	
+	}
+        
+        public function actionGetFieldData(){
+            if(isset($_GET['field'])){
+                $field=$_GET['field'];
+                $options = Yii::app()->db->createCommand()
+                        ->select($field)
+                        ->from('x2_contacts')
+                        ->group($field)
+                        ->queryAll();
+                $data=array();
+                foreach($options as $row){
+                    if(!empty($row[$field]))
+                        $data[$row[$field]]=$row[$field];
+                }
+                print_r($data);
+            }else{
+               
+            }
+        }
+        
 	public function actionLeadSources() {
 
 		$dateRange = $this->getDateRange();
@@ -408,6 +441,9 @@ class DefaultController extends x2base {
 			}
 			
 		}
+		if($dateRange['strict'])
+			$attributeConditions .= ' AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'];
+		
 		$workflow = 1;
 		
 		if(isset($_GET['workflow'])) {
@@ -425,7 +461,6 @@ class DefaultController extends x2base {
 
 			$leadSourceList = Dropdowns::getItems(4);	// get lead source dropdown list
 			$leadSources = array_keys($leadSourceList);
-			// die(var_dump($leadSources));
 			
 			$data = array();
 			$totals = array(
@@ -437,28 +472,63 @@ class DefaultController extends x2base {
 				'started'=>0
 			);
 			
-			for($i=0, $size=sizeof($leadSources); $i<$size; $i++) {
-
-				$data[$i]['leadSource'] = $leadSources[$i];
-				$data[$i]['id'] = $i+1;
-
-				$data[$i]['leads'] = Yii::app()->db->createCommand()
-					->select('COUNT(*)')->from('x2_contacts')
-					->where('leadSource=:leadSource AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'].$attributeConditions, array_merge(array(':leadSource'=>$leadSources[$i]),$attributeParams))
-					->queryScalar();
-					
-				$totals['leads'] += $data[$i]['leads'];
-
-				$row = Yii::app()->db->createCommand()
-				->select('SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['i'].',1,0)) AS interviewed, 
+			$allRows = Yii::app()->db->createCommand()
+				->select('COUNT(x2_contacts.leadSource) as count, x2_contacts.leadSource as leadSource, 
+					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['i'].',1,0)) AS interviewed, 
 					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['e'].',1,0)) AS enrolled,
 					SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['s'].',1,0)) AS started,
 					x2_contacts.assignedTo AS assignedTo')
 				->from('x2_contacts')
 				->join('x2_actions','x2_actions.associationId=x2_contacts.id AND x2_actions.associationType="contacts"')
 				->where('x2_actions.type="workflow" AND x2_actions.workflowId='.$workflow.' AND x2_actions.completeDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end']
-					.' AND (SELECT COUNT(*) FROM x2_contacts WHERE x2_contacts.id=x2_actions.associationId AND x2_contacts.leadSource=:leadSource '.$attributeConditions.') > 0',array_merge($attributeParams,array(':leadSource'=>$leadSources[$i])))
-				->queryRow();
+					.' AND (SELECT COUNT(*) FROM x2_contacts WHERE x2_contacts.id=x2_actions.associationId AND x2_contacts.leadSource!="" '.$attributeConditions.') > 0',$attributeParams)
+				->group('x2_contacts.leadSource')
+				->queryAll();
+			
+			
+			// loop through all lead sources
+			for($i=0, $size=sizeof($leadSources); $i<$size; $i++) {
+			// for($i=0, $size=sizeof($allRows); $i<$size; $i++) {
+				// $row = $allRows[$i];
+				// $data[$i]['leadSource'] = $leadSources[$i];
+				
+				// default if lead source has no entries
+				$row = array(
+					'leadSource'=>$leadSources[$i],
+					'count'=>0
+				);
+				
+				// try to find this lead source in the workflow data
+				for($j=0, $size2=sizeof($allRows); $j<$size2; $j++) {
+					if($allRows[$j]['leadSource'] == $leadSources[$i]) {
+						$row = $allRows[$j];
+						break;
+					}
+				}
+				
+				
+				$data[$i]['leadSource'] = $row['leadSource'];
+				$data[$i]['id'] = $i+1;
+
+				$data[$i]['leads'] = $row['count'];
+				// $data[$i]['leads'] = Yii::app()->db->createCommand()
+					// ->select('COUNT(*)')->from('x2_contacts')
+					// ->where('leadSource=:leadSource '.($dateRange['strict']? '':' AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end']).$attributeConditions, array_merge(array(':leadSource'=>$leadSources[$i]),$attributeParams))
+					// ->queryScalar();
+					
+				$totals['leads'] += $data[$i]['leads'];
+
+				
+				// $row = Yii::app()->db->createCommand()
+				// ->select('SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['i'].',1,0)) AS interviewed, 
+					// SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['e'].',1,0)) AS enrolled,
+					// SUM(IF(x2_actions.stageNumber='.$stageIds[$workflow]['s'].',1,0)) AS started,
+					// x2_contacts.assignedTo AS assignedTo')
+				// ->from('x2_contacts')
+				// ->join('x2_actions','x2_actions.associationId=x2_contacts.id AND x2_actions.associationType="contacts"')
+				// ->where('x2_actions.type="workflow" AND x2_actions.workflowId='.$workflow.' AND x2_actions.completeDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end']
+					// .' AND (SELECT COUNT(*) FROM x2_contacts WHERE x2_contacts.id=x2_actions.associationId AND x2_contacts.leadSource=:leadSource '.$attributeConditions.') > 0',array_merge($attributeParams,array(':leadSource'=>$leadSources[$i])))
+				// ->queryRow();
 				
 				$data[$i]['interviewed'] = isset($row['interviewed'])? $row['interviewed'] : 0;
 				$data[$i]['enrolled'] = isset($row['enrolled'])? $row['enrolled'] : 0;
@@ -501,6 +571,71 @@ class DefaultController extends x2base {
 			'dateRange'=>$dateRange
 		));
 	}
+	
+	public function actionViewLeads() {
+	
+		$dateRange = $this->getDateRange();
+		$model = new Contacts('search');
+		if(isset($_GET['Contacts']))
+			$model->attributes = $_GET['Contacts'];
+
+		if(isset($_GET['Contacts']['company_id'],$_GET['Contacts']['company']) && !empty($_GET['Contacts']['company'])) {	// check the ID, if provided
+			$linkId = $_GET['Contacts']['company_id'];
+			if(!empty($linkId) && CActiveRecord::model('Accounts')->countByAttributes(array('id'=>$linkId)))	// if the link model actually exists,
+				$model->company = $linkId;																	// then use the ID as the field value
+		}
+		if(!empty($_GET['Contacts']['company']) && !ctype_digit($_GET['Contacts']['company'])) {	// if the field is sitll text, try to find the ID based on the name
+			$linkModel = CActiveRecord::model('Accounts')->findByAttributes(array('name'=>$_GET['Contacts']['company']));
+			if(isset($linkModel))
+				$model->company = $linkModel->id;
+		}
+		$stage = isset($_GET['stage'])? $_GET['stage'] : 0;
+		
+		
+		$attributeConditions = '';
+		
+		$attributeParams = array();
+		// $attributeConditions = array();
+		//$model->attributes
+		foreach($model->attributes as $key=>$value) {
+			if(!empty($value)) {
+				$attributeConditions .= ' AND x2_contacts.'.$key.'=:'.$key;
+				$attributeParams[':'.$key] = $value;
+			}
+		}
+		$attributeParams[':stage'] = $stageNumber;
+		
+		
+		if($dateRange['strict'])
+			$attributeConditions .= ' AND createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'];
+	
+	
+	
+		$allRows = Yii::app()->db->createCommand()
+				->select('x2_contacts.*')
+				->from('x2_contacts')
+				->join('x2_actions','x2_actions.associationId=x2_contacts.id')
+				->where('x2_actions.associationType="contacts" AND x2_actions.type="workflow" AND x2_actions.workflowId='.$workflow.' AND x2_actions.stageNumber=:stage 
+					AND x2_actions.completeDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'],$attributeParams)
+				->queryAll();
+				
+				
+		// $dataProvider = 
+	
+	
+	
+		$model->unsetFilters();
+		$this->render('viewLeads', array(
+			'model'=>$model,
+			'users'=>$users,
+			'workflow'=>$workflow,
+			'dataProvider'=>$dataProvider,
+			'dateRange'=>$dateRange
+		));
+	}
+	
+	
+	
 	
 	public function actionAdmin() {
 		$this->redirect($this->createUrl('default/index'));

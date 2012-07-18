@@ -86,4 +86,9 @@ return array (
 'Data errors'=>'Данные ошибки',
 'Batch completed, sending again in'=>'Пакетная завершен, отправив снова в',
 'minute'=>'минута',
+'Email These Contacts'=>'Отправить эти контакты',
+'Invalid tag value'=>'Неправильное значение тега',
+'Contacts for tag'=>'Контакты для тега',
+'Mailing for tag'=>'Рассылка для тега',
+'Could not create mailing'=>'Невозможно создать почтовый',
 );

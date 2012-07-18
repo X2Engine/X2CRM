@@ -45,12 +45,12 @@ body {
 }
 #installer-box {
 	width:600px;
-	background:url(../images/x2engine_big.png) center 10px no-repeat #eee;
-	background-color:#eee;
+	/* background:url(../images/installer_stripes.png) left center no-repeat #87a155; */
+	background-color:#87a155;
 	background-color:rgba(255,255,255,0.25);
 	min-height:0;
 	margin:25px auto 25px auto;
-	padding:70px 40px 0 40px;
+	padding:20px 40px 0 40px;
 	position:relative;
 	color:black;
 	/* border:1px solid rgba(0,0,0,0.25); */
@@ -62,24 +62,46 @@ body {
 	-webkit-box-shadow:	0 3px 10px rgba(0,0,0,0.5);
 	box-shadow:			0 3px 10px rgba(0,0,0,0.5);
 }
+#installer-logo {
+	display:block;
+	margin:0 10px 10px 0;
+	float:left;
+}
 #installer-box h1, #installer-box h3 {
 	text-align:center;
 }
-#install-form, #db-test-box #response-box {
+#install-form, #db-test-box #response-box, #error-box {
 	border:none;
-	background:#fff;
+	background:#cbd9af;
 	background:rgba(255,255,255,0.25);
 	-moz-border-radius:		4px;
 	-o-border-radius:		4px;
 	-webkit-border-radius:	4px;
 	border-radius:			4px;
-	-moz-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.4);
-	-webkit-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.4);
-	box-shadow:			inset 0 1px 2px rgba(0,0,0,0.4);
-	
+	-moz-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.6);
+	-webkit-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.6);
+	box-shadow:			inset 0 1px 2px rgba(0,0,0,0.6);
 
 }
-
+#install-form, #error-box {
+	background:#a6ba80;
+	background:rgba(255,255,255,0.25);
+	margin-top:10px;
+}
+#install-form.wide.form label {
+	display:inline;
+	float:left;
+	margin-right:10px;
+	position:relative;
+	text-align:right;
+	width:160px;
+}
+#install-form  #button {
+	display:block;
+	width:125px;
+	margin:10px 0 5px 170px;
+}
+#install-form #lang {width:120px;}
 
 #db-test-box {
 	float:right;
@@ -104,6 +126,7 @@ body {
 	/* clear:none; */
 }
 #error-box {
+	margin-top:5px;
 	font-weight:bold;
 	color:#990000;
 }
@@ -112,6 +135,8 @@ body {
 #footer {
 	padding:0 0 10px 0;
 	color:black;
+	text-align:center;
+	font-size:10px;
 }
 
 

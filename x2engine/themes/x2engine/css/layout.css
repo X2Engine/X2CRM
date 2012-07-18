@@ -1,7 +1,63 @@
+/*********************************************************************************
+ * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
+ * the following BSD License.
+ * http://www.opensource.org/licenses/BSD-3-Clause
+ * 
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95066 USA
+ * 
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
+ * 
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ * - Redistributions of source code must retain the above copyright notice, this 
+ *   list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, this 
+ *   list of conditions and the following disclaimer in the documentation and/or 
+ *   other materials provided with the distribution.
+ * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without 
+ *   specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ ********************************************************************************/
+
 html, body {height:100%;margin:0;padding:0;}
 body {background:#fff;}
 div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 10px;}
-#header-body-container {min-height:100%;height:auto !important;height:100%;margin:0 0 -110px 0;}
+
+#header.defaultBg #header-inner {
+	/* background-size:cover; */
+	background-image: url(../images/stripes.png);
+	background-repeat: no-repeat;
+	/* background-color: #62851f; */
+	background-size:auto;
+}
+
+#header {background-size:cover;}
+#header.defaultBg {
+	background-image: url(../../../uploads/defaultBg.jpg);
+	background-repeat: no-repeat;
+	background-position:center center;
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../../uploads/defaultBg.jpg', sizingMethod='scale');
+	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../../uploads/defaultBg.jpg', sizingMethod='scale')";
+}
+#header-body-container {min-height:100%;height:auto !important;background:#fff;height:100%;margin:0 0 -110px 0;}
 /* Search Bar */
 #search-bar {
 	/* position:relative; */
@@ -92,12 +148,10 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 10p
 }
 .main-menu > li a:hover, .main-menu > li span:hover {text-decoration:underline;}
 .main-menu > li.active a {
-	margin-bottom:-1px;
 	background:#fff;
 	background:rgba(255,255,255,0.5);
 	background:#333;
 	text-shadow:none;
-	border-top:1px solid #555;
 	border-bottom:none;
 	border-radius:			3px 3px 0 0;
 	-moz-border-radius:		3px 3px 0 0;
@@ -174,7 +228,7 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 10p
 .dropdown ul li a, .dropdown ul li span {display:block;padding:0 20px;}
 .dropdown ul li a {
 	font-weight:normal;
-	color:black;
+	color:black !important;
 	font-size:15px;
 	line-height:24px;
 	text-shadow:none;
@@ -368,8 +422,7 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 10p
 }
 #content-container {overflow:auto; zoom:1;}
 #content {
-	margin:0 10px 0 0;
-	padding:0 0 10px 0;
+	margin:0 10px 10px 0;
 	background:#fff;
 	overflow:hidden;
 }

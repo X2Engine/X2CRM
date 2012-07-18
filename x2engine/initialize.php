@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.5';
-$buildDate = 1340147805;
+$x2Version = '1.6';
+$buildDate = 1342634569;
 
 $userData = '';
 
@@ -233,6 +233,7 @@ function addSqlError($message) {
 //mysql_query("SOURCE /x2engine/install.sql; ") or die(mysql_error();
 
 mysql_query('DROP TABLE IF EXISTS
+	x2_dashboard_settings,
 	x2_widgets,
 	x2_lists,
 	x2_list_items,
@@ -247,6 +248,7 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_admin,
 	x2_changelog,
 	x2_tags,
+	x2_phone_numbers,
 	x2_relationships,
 	x2_notifications,
 	x2_quotes_products,
@@ -278,7 +280,8 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_campaigns,
 	x2_calendars,
     x2_modules,
-    x2_calendar_permissions
+    x2_calendar_permissions,
+    x2_temp_files
 ') or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // visibility check MySQL procedure
@@ -288,6 +291,7 @@ mysql_query('DROP TABLE IF EXISTS
 // begin
   // return replace(substring(substring_index(x, delim, pos), length(substring_index(x, delim, pos - 1)) + 1), delim, '');
 // end;
+
 mysql_query('DROP FUNCTION IF EXISTS `x2_checkViewPermission`;') or addSqlError('Unable to drop function x2_checkViewPermission.'.mysql_error());
 mysql_query('CREATE FUNCTION `x2_checkViewPermission` (mode INT,assignedTo VARCHAR(20),user VARCHAR(20)) RETURNS TINYINT DETERMINISTIC 
 BEGIN
@@ -404,7 +408,12 @@ begin
 	-- default is false
 	return 0;
 end; */
-
+mysql_query('CREATE TABLE x2_dashboard_settings(
+	userID					INT,
+	numCOLS					INT				DEFAULT 2,
+	hideINTRO				INT				DEFAULT 0,
+	unique(userID)
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_dashboard_settings. '.mysql_error());
 mysql_query('CREATE TABLE x2_widgets(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(255),
@@ -417,6 +426,7 @@ mysql_query('CREATE TABLE x2_widgets(
 	widgetSettings				TEXT,
 	dispNAME				VARCHAR(255),
 	needUSER				INT				DEFAULT 0,
+	userALLOWS				INT				DEFAULT 1,
 	UNIQUE(name),
 	INDEX(name)	
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_widgets. '.mysql_error());
@@ -460,6 +470,7 @@ mysql_query('CREATE TABLE x2_contacts(
 	title					VARCHAR(40),
 	company					VARCHAR(250),
 	phone					VARCHAR(40),
+	phone2					VARCHAR(40),
 	email					VARCHAR(250),
 	website					VARCHAR(250),
 	address					VARCHAR(250),
@@ -484,12 +495,11 @@ mysql_query('CREATE TABLE x2_contacts(
 	createDate				BIGINT,
 	facebook				VARCHAR(100)	NULL,
 	otherUrl				VARCHAR(100)	NULL,
-	phone2					VARCHAR(40),
 	leadtype				VARCHAR(250),
 	closedate				BIGINT,
 	interest				VARCHAR(250),
 	leadstatus				VARCHAR(250),
-	dealvalue				VARCHAR(250),
+	dealvalue				FLOAT,
 	leadscore				INT,
 	dealstatus				VARCHAR(250),
 	timezone				VARCHAR(250)	NULL,
@@ -735,7 +745,7 @@ mysql_query('CREATE TABLE x2_list_criteria (
 	backgroundColor			VARCHAR(6)		NULL,
 	menuBgColor				VARCHAR(6)		NULL,
 	menuTextColor			VARCHAR(6)		NULL,
-	backgroundImg			VARCHAR(100)	NULL DEFAULT "santacruznight_blur.jpg",
+	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
 	pageOpacity				INT				NULL,
 	startPage				VARCHAR(30)		NULL,
 	showSocialMedia			TINYINT			NOT NULL DEFAULT 0,
@@ -844,7 +854,8 @@ mysql_query('CREATE TABLE x2_admin(
 	googleIntegration		TINYINT,
 	googleClientId			VARCHAR(255),
 	googleClientSecret		VARCHAR(255),
-	googleAPIKey			VARCHAR(255)
+	googleAPIKey			VARCHAR(255),
+	inviteKey				VARCHAR(255)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_changelog(
@@ -864,6 +875,15 @@ mysql_query('CREATE TABLE x2_tags(
 	tag						VARCHAR(250)	NOT NULL,
 	itemName				VARCHAR(250),
 	timestamp				INT				NOT NULL DEFAULT 0
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_tags.'.mysql_error());
+
+mysql_query('CREATE TABLE x2_phone_numbers(
+	modelId					INT				UNSIGNED NOT NULL,
+	modelType				VARCHAR(100)	NOT NULL,
+	number					VARCHAR(40)		NOT NULL,
+	
+	INDEX (modelType,modelId),
+	INDEX (number)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_tags.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_relationships( 
@@ -904,7 +924,6 @@ mysql_query('CREATE TABLE x2_notifications(
 	fieldName				VARCHAR(250),
 	user					VARCHAR(20),
 	createdBy				VARCHAR(20),
-	updatedBy				VARCHAR(20),
 	viewed					TINYINT			DEFAULT 0,
 	createDate				BIGINT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_notifications.'.mysql_error());
@@ -1041,6 +1060,13 @@ mysql_query('CREATE TABLE x2_group_to_user (
 	username				VARCHAR(250)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_roles.'.mysql_error());
 
+mysql_query('CREATE TABLE x2_temp_files (
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	folder					VARCHAR(10),
+	name					TEXT,
+	createDate				INT
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_temp_files.'.mysql_error());
+
 mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	(
 	SELECT
@@ -1112,7 +1138,8 @@ mysql_query('INSERT INTO x2_modules
 ("charts",		"Charts",		1,			9,				0,			0,			0,			0,		0),
 ("groups",		"Groups",		1,			10,				0,			0,			0,			0,		0),
 ("users",		"Users",		1,			11,				0,			0,			1,			0,		0),
-("marketing",	"Marketing",	1,			12,				0,			1,			0,			0,		0)'
+("marketing",	"Marketing",	1,			12,				0,			1,			0,			0,		0),
+("dashboard",   "Widget Dashboard",	1,       13,             0,          1,          0,          0,      0)'
 ) or addSqlError("Unable to initialize modules ".mysql_error());
 mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
 ("Contacts","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_firstName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_doNotCall\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_doNotEmail\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadscore\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"180\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"198\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_address2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_state\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"200\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"102\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"100\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":79,\"items\":[]},{\"width\":508,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[]}]}]}]}","0","1","'.time().'","'.time().'"),
@@ -1130,7 +1157,9 @@ mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defau
 ("Campaign","Form","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"359\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Campaign","View","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Status\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_complete\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")'
 ) or addSqlError("Unable to create contacts layout.".mysql_error());
-	
+
+// 'UPDATE x2_fields SET type="phone" WHERE fieldName IN("phone", "phone2")'
+
 mysql_query('INSERT INTO x2_fields 
 (modelName,		fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,	linkType,	searchable,	 relevance) VALUES 
 ("Contacts",	"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,			0,		""),
@@ -1139,8 +1168,8 @@ mysql_query('INSERT INTO x2_fields
 ("Contacts",	"lastName",				"Last Name",			0,		0,	"varchar",		1,			0,		NULL,			1,		"High"),
 ("Contacts",	"title",				"Title",				0,		0,	"varchar",		0,			0,		NULL,			0,		""),
 ("Contacts",	"company",				"Account",				0,		0,	"link",			0,			0,		"Accounts",		0,		""),
-("Contacts",	"phone",				"Phone",				0,		0,	"varchar",		0,			0,		NULL,			1,		"Medium"),
-("Contacts",	"phone2",				"Phone 2",				0,		0,	"varchar",		0,			0,		NULL,			1,		"Medium"),
+("Contacts",	"phone",				"Phone",				0,		0,	"phone",		0,			0,		NULL,			1,		"Medium"),
+("Contacts",	"phone2",				"Phone 2",				0,		0,	"phone",		0,			0,		NULL,			1,		"Medium"),
 ("Contacts",	"email",				"Email",				0,		0,	"email",		0,			0,		NULL,			1,		"Medium"),
 ("Contacts",	"website",				"Website",				0,		0,	"url",			0,			0,		NULL,			0,		""),
 ("Contacts",	"twitter",				"Twitter",				0,		0,	"url",			0,			0,		"twitter",		0,		""),
@@ -1213,7 +1242,7 @@ mysql_query('INSERT INTO x2_fields
 ("Accounts",	"website",				"Website",				0,		0,	"url",			0,			0,		NULL,			0,		""),
 ("Accounts",	"type",					"Type",					0,		0,	"varchar",		0,			0,		NULL,			0,		""),
 ("Accounts",	"annualRevenue",		"Revenue",				0,		0,	"currency",		0,			0,		NULL,			0,		""),
-("Accounts",	"phone",				"Phone",				0,		0,	"varchar",		0,			0,		NULL,			0,		""),
+("Accounts",	"phone",				"Phone",				0,		0,	"phone",		0,			0,		NULL,			0,		""),
 ("Accounts",	"tickerSymbol",			"Symbol",				0,		0,	"varchar",		0,			0,		NULL,			1,		"High"),
 ("Accounts",	"employees",			"Employees",			0,		0,	"int",			0,			0,		NULL,			0,		""),
 ("Accounts",	"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		"multiple",	 	0,		""),
@@ -1353,6 +1382,7 @@ mysql_query("INSERT INTO  x2_dropdowns (name, options) VALUES
 ;")
 or addSqlError('Unable to create dropdown fields.'.mysql_error());
 
+mysql_query("INSERT INTO x2_dashboard_settings(userID) VALUES (1);") or addSqlError('Unable to initialize dashboard settings. '.mysql_error());
 // if(!empty($sqlError)) return $sqlError;
 //UNSIGNED
 
@@ -1548,27 +1578,28 @@ body {
 <script type="text/javascript" src="js/backgroundImage.js"></script>
 </head>
 <body>
-<img id="bg" src="uploads/santacruznight_blur.jpg" alt="">
-<div id="installer-box">
- 	<h1><?php echo installer_t('Installation Complete!'); ?></h1>
-	<ul>
-		<li><?php echo installer_t('Able to connect to database'); ?></li>
-		<li><?php echo installer_t('Dropped old X2Engine tables (if any)'); ?></li>
-		<li><?php echo installer_t('Created new tables for X2Engine'); ?></li>
-		<li><?php echo installer_t('Created login for admin account'); ?></li>
-		<li><?php echo installer_t('Created config file'); ?></li>
-	</ul>
-	<h2><?php echo installer_t('Next Steps'); ?></h2>
-	<ul>
-		<li><?php echo installer_t('Log in to app'); ?></li>
-		<li><?php echo installer_t('Create new users'); ?></li>
-		<li><?php echo installer_t('Set up Cron Job to deal with action reminders (see readme)'); ?></li>
-		<li><?php echo installer_t('Set location'); ?></li>
-		<li><?php echo installer_t('Explore the app'); ?></li>
-	</ul>
- 	<h3><a class="x2-button" href="index.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
-	<?php echo installer_t('X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'); ?><br /><br />
-	
+<img id="bg" src="uploads/defaultBg.jpg" alt="">
+<div id="installer-box" style="padding-top:20px;">
+	<h1><?php echo installer_t('Installation Complete!'); ?></h1>
+	<div id="install-form" class="wide form">
+		<ul>
+			<li><?php echo installer_t('Able to connect to database'); ?></li>
+			<li><?php echo installer_t('Dropped old X2Engine tables (if any)'); ?></li>
+			<li><?php echo installer_t('Created new tables for X2Engine'); ?></li>
+			<li><?php echo installer_t('Created login for admin account'); ?></li>
+			<li><?php echo installer_t('Created config file'); ?></li>
+		</ul>
+		<h2><?php echo installer_t('Next Steps'); ?></h2>
+		<ul>
+			<li><?php echo installer_t('Log in to app'); ?></li>
+			<li><?php echo installer_t('Create new users'); ?></li>
+			<li><?php echo installer_t('Set up Cron Job to deal with action reminders (see readme)'); ?></li>
+			<li><?php echo installer_t('Set location'); ?></li>
+			<li><?php echo installer_t('Explore the app'); ?></li>
+		</ul>
+		<h3><a class="x2-button" href="index.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
+		<?php echo installer_t('X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'); ?><br /><br />
+	</div>
 <a href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a><br /><br />
 <div id="footer">
 	<div class="hr"></div>

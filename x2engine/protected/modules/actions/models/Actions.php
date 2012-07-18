@@ -302,7 +302,7 @@ class Actions extends X2Model {
 			
 		}
 		
-		$criteria->addCondition('(type != "workflow" AND type!="email") OR type IS NULL');
+		$criteria->addCondition('(type != "workflow" AND type!="email" AND type!="event") OR type IS NULL');
 		
 		
 		$dataProvider=new SmartDataProvider('Actions', array(

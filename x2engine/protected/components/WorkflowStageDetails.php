@@ -52,7 +52,7 @@ class WorkflowStageDetails extends CWidget {
 		
 		
 		$.fn.extend({loading:function(){
-			$(this).html("<img src=\""+themeBaseUrl+"/images/loading.gif\" class=\"loading\">");
+			$(this).html("<img src=\""+yii.themeBaseUrl+"/images/loading.gif\" class=\"loading\">");
 		}});
 
 		$(function() {

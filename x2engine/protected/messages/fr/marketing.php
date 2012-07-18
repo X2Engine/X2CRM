@@ -86,4 +86,9 @@ return array (
 'Data errors'=>'Les erreurs de données',
 'Batch completed, sending again in'=>'Lot complété, l\'envoi à nouveau dans',
 'minute'=>'procès-verbal',
+'Email These Contacts'=>'Envoyer Ces contacts',
+'Invalid tag value'=>'Valeur de la balise invalide',
+'Contacts for tag'=>'Contacts pour la balise',
+'Mailing for tag'=>'Postale pour la balise',
+'Could not create mailing'=>'Impossible de créer le poste',
 );

@@ -95,7 +95,7 @@ class Contacts extends X2Model {
 	}
 	
 	public static function getNames() {
-		$contactArray = CActiveRecord::model('Contacts')->findAll($condition='assignedTo=\''.Yii::app()->user->getName().'\' OR assignedTo=\'Anyone\'');
+		$contactArray = CActiveRecord::model('Contacts')->findAll($condition='x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
 			$first = $user->firstName;
@@ -187,7 +187,7 @@ class Contacts extends X2Model {
 			$tagConditions = implode(' OR ',$tags);
 			
 			$criteria->distinct = true;
-			$criteria->join = 'RIGHT JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+			$criteria->join .= ' RIGHT JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
 		}
 		return $this->searchBase($criteria);
 	}

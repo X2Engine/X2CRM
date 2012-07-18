@@ -137,7 +137,7 @@ function updateNotifications() {
 
 	$.ajax({
 		type: 'POST',
-		url: yii.baseUrl+'/notifications/get',
+		url: yii.baseUrl+'/index.php/notifications/get',
 		data: 'lastId='+lastNotifId,
 		success: function (response) {
 			if(response != '') {	// if there's no new data, we're done
@@ -150,14 +150,14 @@ function updateNotifications() {
 					
 						var newNotif = false;
 
-						for (var i=0,len=data.notifData.length;i<len;i++) {
+						for (var i=data.notifData.length-1;i>=0;--i) {
 							// console.debug(data.notifData[i]);
 							// if(typeof item['text'] != 'undefined')
 								var notif = $(document.createElement('div'))
 									.addClass('notif')
 									.html('<div class="msg">'+data.notifData[i].text+'</div><div class="close">x</div>')
 									.data('id',data.notifData[i].id)
-									.appendTo('#notifications');
+									.prependTo('#notifications');
 								
 							if(data.notifData[i].viewed == 0) {
 								notif.addClass('unviewed');
@@ -165,11 +165,14 @@ function updateNotifications() {
 							}
 							
 								// .append('<div class="notif">'+</div>\n'); 
-							lastNotifId = data.notifData[i].id;
+							
 						}
-						if(data.notifData.length)
+						
+						if(data.notifData.length) {
 							$('#no-notifications').hide();
-						else
+							lastNotifId = data.notifData[data.notifData.length - 1].id;
+							
+						} else
 							$('#no-notifications').show();
 							
 						if(newNotif)
@@ -243,7 +246,7 @@ $(function() {
 
 		$.ajax({
 			type: 'GET',
-			url: yii.baseUrl+'/notifications/delete',
+			url: yii.baseUrl+'/index.php/notifications/delete',
 			data: 'id='+notifId
 			// complete: function (response) {
 				
@@ -268,7 +271,7 @@ function openNotifications() {
 		
 		$.ajax({
 			type: 'GET',
-			url: yii.baseUrl+'/notifications/markViewed',
+			url: yii.baseUrl+'/index.php/notifications/markViewed',
 			data: encodeURI(notifIds.join('&'))
 			// complete: function (response) {
 				

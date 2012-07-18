@@ -37,33 +37,80 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+$this->menu=array(
+    array('label'=>'Sidebar Settings', 'url'=>array('settings?where=side'))
+);
+$model = new Dashboard;
+$model = $model->search('dash');
+$hideWidgetJs = '';
+$ind = 1;
+foreach ($model as $row){
+    $class = $row['name'];
+    $rowPLUS = $model[$ind+1];
+    $classPLUS = $rowPLUS['name'];
+    if ($row['showDASH'] == 0){
+        $hideWidgetJs .= "$('#widget_" . $class . " .portlet-content').hide();\n";
+        $hideWidgetJs .= "$('#widget_" . $classPLUS . " .portlet-content').css('float','right');\n";
+    }
+}
+Yii::app()->clientScript->registerScript('blarg',"
+    function blarg(){
+        $.ajax({
+            url:'" . CHtml::normalizeUrl(array('changeColumns')) . "',
+            type: 'POST',
+            data: $('#menu1').serialize(),
+            update: '.blah',
+            success: function(response){
+                " . $hideWidgetJs . "
+            }
+        });
+    }", CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScript('hideIntro', "
+    function hideIntro(){
+        $.ajax({
+            url: '" . CHtml::normalizeUrl(array('hideIntro')) . "',
+            update: '.intro',
+            success: function(response){
+                $('div.intro').hide();
+            }
+        });
+    }", CClientScript::POS_HEAD);
+$hINT = intval($hINT);
+$hideIntro = CHtml::link('Hide Intro', '#', array('onclick'=>"hideIntro();","class"=>"hideIntro"));
+if (!($hINT)){
 ?>
+<div class="intro"><?php echo $hideIntro; ?>
 <h2><center><?php echo Yii::t('dashboard','Widget Dashboard'); ?></center></h2>
-<?php echo Yii::t('app','<center><p>Below you see a physical listing of your widgets. Please re-order and re-size them until you are satisfied.</br>The alterations you make to this page <b>DO NOT</b> change the default listing on the right side of your screen.</p></center>');
-/*
-$form = $this->beginWidget('CActiveForm',array(
-    'id'=>'dashboard-form',
-    'enableAjaxValidation'=>false,
-    'action'=>array('changeColumns','id'=>Yii::app()->user->getId()),
-));
-echo $form->dropDownList($model,'',array('0'=>'Number of Rows','1'=>'2 ROWS(DEFAULT)','2'=>'3 ROWS','3'=>'4 ROWS'),array());
-echo CHtml::ajaxSubmitButton('Change Columns',array('class'=>'x2-button dashSubmit', 'id'=>'submitting'));
-$this->endWidget();
- */
+<?php echo Yii::t('app','<center><p>Below you see a physical listing of your widgets. Please re-order and re-size them until you are satisfied.</br>The alterations you make to this page <b>DO NOT</b> change the default listing on the right side of your screen.</p></center>');?>
+</div>
+<?php 
+}
+echo CHtml::ajaxButton(
+    "Dashboard Settings",
+    $this->createUrl('dashSettings'),
+    array('type'=>'POST','data'=>"item=$item"),
+    array('class'=>'x2-button alterDASH')
+);
 ?>
-</form>
-<div class="blah">
+<div class="blah" id='large'>
 <?php
-$dataProvider = $model->search('dash');
-$itemCount = $dataProvider->getItemCount();
-$this->widget('zii.widgets.CListView',array(
-    'id'=>'dashboard-grid',
-    'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css',
-    'dataProvider'=>$dataProvider,
-    'itemView'=>'_view',
-    'viewData'=>array(
-        'itemCount' => $dataProvider->getItemCount(),
+$this->widget('SortWidg',array(
+    'portlets'=>$model,
+    'items'=>$item,
+    'jQueryOptions'=>array(
+        'opacity'=>0.6,
+        'handle'=>'.portlet-decoration',
+        'distance'=>20,
+        'delay'=>150,
+        'revert'=>50,
+        'update'=>"js:function(){
+            $.ajax({
+                type: 'POST',
+                url: 'widgetOrder',
+                data: $('#yw0').sortable('serialize'),
+            });
+        }"
     ),
 ));
+echo "</div>";
 ?>
-</div>

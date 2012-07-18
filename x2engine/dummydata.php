@@ -1187,8 +1187,8 @@ mysql_query(" INSERT INTO `x2_contacts` (`firstName`,`lastName`,`address`,`city`
 
 ") or addSqlError("Unable to create contacts dummy data.".mysql_error());
 
-mysql_query("update x2_contacts a set assignedTo = (select b.userName from x2_users b where b.id = a.assignedTo and a.assignedTo > 0) where id > 910900;");
-mysql_query("update x2_contacts a set updatedBy = (select b.userName from x2_users b where b.id = a.updatedBy and a.updatedBy > 0) where id > 910900;");
+mysql_query("update x2_contacts a set assignedTo = (select b.userName from x2_users b where b.id = a.assignedTo and a.assignedTo > 0) where id >= 910900;");
+mysql_query("update x2_contacts a set updatedBy = (select b.userName from x2_users b where b.id = a.updatedBy and a.updatedBy > 0) where id >= 910900;");
 
 mysql_query("UPDATE x2_contacts SET leadDate=leadDate+$timeDiff, closedate=closedate+$timeDiff, createDate=createDate+$timeDiff, lastUpdated=lastUpdated+$timeDiff");
 

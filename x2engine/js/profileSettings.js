@@ -94,11 +94,11 @@ $(document).ready(function() {
 	
 	$('#backgroundColor').change(function() {
 		var text = $('#backgroundColor').val();
-		if(text == '')
-			$('#header').css('background-color','#000');
-		else {
+		if(text == '') {
+			$('#header').css('background-color','').addClass('defaultBg').css('background-image','');
+		} else {
 			$('#backgroundColor').val(text.substring(1,7));
-			$('#header').css('background-color',text);
+			$('#header').removeClass('defaultBg').css('background-color',text);
 		}
 		highlightSave();
 		
@@ -126,7 +126,46 @@ $(document).ready(function() {
 	
 });
 
-
+// js to change background image
+function setBackground(filename){
+	$.ajax({
+		url: yii.baseUrl+'/index.php/profile/setBackground',
+		type: 'post',
+		data: 'name='+filename,
+		success: function(response) {
+			if(response=='success') {
+				if(filename=='') {
+					if($('#backgroundColor').val() == '')
+						$('#header').addClass('defaultBg').css('background-image','');
+					else
+						$('#header').css('background-image','none');
+				} else {
+					$('#header').removeClass('defaultBg').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')');
+					// $(window).trigger('resize');
+				}
+			}
+		}
+	});
+}
+function deleteBackground(id,filename) {
+	$.ajax({
+		url: yii.baseUrl+'/index.php/profile/deleteBackground',
+		type: 'get',
+		data: 'id='+id,
+		success: function(response) {
+			if(response=='success') {
+				$('#background_'+id).hide();
+				if($('#header').css('background-image').indexOf(filename) > -1) {		// if this is the current background,
+					if($('#backgroundColor').val() == '')							// remove it from the page
+						$('#header').addClass('defaultBg').css('background-image','');
+					else
+						$('#header').removeClass('defaultBg').css('background-image','');
+					
+				}
+			}
+		}
+	});
+}
 
 // background uploader
 function showAttach() {

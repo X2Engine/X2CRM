@@ -245,6 +245,20 @@ class Profile extends CActiveRecord {
 		return empty($resultsPerPage)? 15 : $resultsPerPage;
 	}
 	
+	public static function getPossibleResultsPerPage() {
+		return array(
+			5=>'5',
+			10=>'10',
+			15=>'15',
+			20=>'20',
+			25=>'25',
+			50=>'50',
+			100=>'100',
+			500=>'500',
+			1000=>'1000',
+		);
+	}
+	
 	// lookup user's settings for a gridview (visible columns, column widths)
 	public static function getGridviewSettings($viewName = null) {
 		$gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings,true);	// converts JSON string to assoc. array
@@ -536,7 +550,7 @@ class Profile extends CActiveRecord {
 
 		}
 	}
-	
+		
 	public function deleteGoogleCalendarEvent($action) {
 		try { // catch google exceptions so the whole app doesn't crash if google has a problem syncing
 			$admin = Yii::app()->params->admin;		

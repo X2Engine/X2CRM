@@ -65,6 +65,8 @@ $cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js');
 $cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js');
 $cs->registerScriptFile($baseUrl.'/js/tinyeditor.js');
 $cs->registerScriptFile($baseUrl.'/js/backgroundImage.js');
+$cs->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js');
+$cs->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css','screen, projection');
 
 // blueprint CSS framework
 $cs->registerCssFile($themeUrl.'/css/screen.css','screen, projection');
@@ -80,7 +82,7 @@ $cs->registerCssFile($themeUrl.'/css/tinyeditor.css','screen, projection');
 $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'); 
 
 $cs->registerScript('fullscreenToggle','
-window.enableFullWidth = ' . (Yii::app()->params->profile->enableFullWidth? 'true':'false') . ';
+window.enableFullWidth = ' . (!Yii::app()->user->isGuest?(Yii::app()->params->profile->enableFullWidth? 'true':'false'):'true') . ';
 window.fullscreen = ' . (Yii::app()->session['fullscreen']? 'true':'false') . ';
 ',CClientScript::POS_HEAD);
 
@@ -120,9 +122,13 @@ if($checkResult)
 
 // if(!empty(Yii::app()->params->profile->backgroundColor))
 	// $themeCss .= 'body {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
-	
-if(!empty(Yii::app()->params->profile->backgroundImg))
-	$themeCss .= '#header {background-size:cover; background-image:url('.$baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg.");}\n";
+
+$headerBgClass = '';
+
+if(empty(Yii::app()->params->profile->backgroundImg) && empty(Yii::app()->params->profile->backgroundColor))
+	$headerBgClass = 'defaultBg';
+else
+	$themeCss .= '#header {background-image:url('.$baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg.");}\n";
 
 	
 // check for background image, use it if one is set
@@ -159,11 +165,9 @@ if($isGuest) {
 	$modules = Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
 	$standardMenuItems = array();	
 	foreach($modules as $moduleItem){
-		if($isAdmin || $moduleItem->adminOnly==0)
+		if(($isAdmin || $moduleItem->adminOnly==0) && $moduleItem->name != 'users')
 			$standardMenuItems[$moduleItem->name]=$moduleItem->title;
 	}
-	
-
 	$menuItems = array();
 	
 	$defaultAction = $isAdmin? 'admin' : 'index';
@@ -201,18 +205,28 @@ if ($menuItemCount > $maxMenuItems) {
 }
 
 $userMenu = array(
-	array('label' => Yii::t('app','Chat'), 'url' => array('/site/groupChat')),
-	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
+	// array('label' => Yii::t('app','Chat'), 'url' => array('/site/groupChat')),
+	// array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin'&&Yii::app()->controller->action->id!='viewPage')?true:null, 'visible'=>$isAdmin),
-	array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'), 'visible'=>$isAdmin),
+	// array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'), 'visible'=>$isAdmin),
 	// array('label' => CHtml::button(Yii::app()->user->getName(),array('id'=>'user-menu-toggle','onclick'=>'','class'=>'x2-button')), 'visible'=>$isUser,
-	array('label' => Yii::t('app','Profile').' ('.Yii::app()->user->getName().')', 'visible'=>$isUser,'itemOptions'=>array('class'=>'dropdown'),
+
+	array('label' => Yii::t('app','Users'),'itemOptions'=>array('id'=>'social-dropdown','class'=>'dropdown'),
 		'items' => array(
-			array('label' => Yii::t('app','Profile'),'url' => array('/profile/view','id' => Yii::app()->user->getId()), 'visible'=>$isUser),
-			array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications'), 'visible'=>$isUser),
-			array('label' => Yii::t('app','Settings'),'url' => array('/profile/settings'), 'visible'=>$isUser),
-			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'visible'=>$isUser, 'linkOptions'=>array('target'=>'_blank')),
-			array('label' => Yii::t('app','---'),'visible'=>$isUser, 'itemOptions'=>array('class'=>'divider')),
+			array('label' => Yii::t('app','Users'),'url' => array('/profile/profiles'),'visible'=>$isUser),
+			array('label' => Yii::t('app','Manage Users'),'url' => array('/users/admin'),'visible'=>$isAdmin),
+			array('label' => Yii::t('app','Social Feed'),'url' => array('/profile/index')),
+			array('label' => Yii::t('app','Group Chat'),'url' => array('/site/groupChat')),
+		)
+	),
+	
+	array('label' => Yii::t('app','Profile').' ('.Yii::app()->user->getName().')','itemOptions'=>array('id'=>'profile-dropdown','class'=>'dropdown'),
+		'items' => array(
+			array('label' => Yii::t('app','Profile'),'url' => array('/profile/view','id' => Yii::app()->user->getId())),
+			array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications')),
+			array('label' => Yii::t('app','Settings'),'url' => array('/profile/settings')),
+			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
+			array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
@@ -229,10 +243,11 @@ $userMenu = array(
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
-<body>
+<body class="<?php echo $headerBgClass; ?>">
 <?php //echo $backgroundImg; ?>
 <div id="header-body-container">
-<div id="header">
+<div id="header" class="<?php echo $headerBgClass; ?>">
+<div id="header-inner">
 	<div id="search-bar">
 		<div class="width-constraint">
 			<?php echo CHtml::beginForm(array('/search/search'),'get'); ?>
@@ -255,7 +270,7 @@ $userMenu = array(
 					<div id="notif-view-all" <?php if($notifCount < 1) echo 'style="display:none;"'; ?>><?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?></div>
 				</div>
 				<span id="search-bar-title">
-					<?php echo CHtml::link(CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,'',array('height'=>30,'width'=>200)),array('/site/whatsNew')); ?>
+					<?php echo CHtml::link(CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,'',array('height'=>30,'width'=>200,'style'=>'margin:2px 0 -2px 0')),array('/site/whatsNew')); ?>
 				</span>
 			<?php echo CHtml::endForm(); ?>
 		</div>
@@ -304,6 +319,7 @@ $userMenu = array(
 	
 	<?php } ?>
 </div>
+</div>
 <div class="width-constraint" id="page-body">
 <?php echo $content; ?>
 </div>
@@ -346,11 +362,15 @@ $userMenu = array(
 	");
 	 ?>
 	 <?php
-	function convert($size) {
-	   $unit=array('b','kb','mb','gb','tb','pb');
-	   return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-	}
-	echo 'Memory Usage: '.convert(memory_get_peak_usage(true));
+	// function convert($size) {
+	   // $unit=array('b','kb','mb','gb','tb','pb');
+	   // return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+	// }
+	// echo 'Memory Usage: '.convert(memory_get_peak_usage(true));
+	
+	$peak_memory = memory_get_peak_usage(true);
+	$memory_units = array('b','kb','mb','gb','tb','pb');
+	echo round($peak_memory/pow(1024,($memory_log=floor(log($peak_memory,1024)))),2).' '.$memory_units[$memory_log];
 	?>
 	<br>
 	</div>

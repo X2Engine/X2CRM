@@ -62,6 +62,7 @@ class AdminController extends Controller {
 		// return the filter configuration for this controller, e.g.:
 		return array(
 			'accessControl',
+			'clearCache'
 		);
 	}
 	/*
@@ -79,9 +80,9 @@ class AdminController extends Controller {
 	*/
 	public function accessRules() {
 		return array(
-                        array('allow', // allow authenticated user to perform 'create' and 'update' actions
+			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('getRoundRobin','updateRoundRobin','getRoutingRules','roundRobin','evenDistro','getRoutingType',
-                                                'getRole','getWorkflowStages','download','cleanUp','sql','getFieldData','installUpdate'),
+									'getRole','getWorkflowStages','download','cleanUp','sql','getFieldData','installUpdate'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -103,6 +104,14 @@ class AdminController extends Controller {
 			)
 		);
 	}
+	
+	public function filterClearCache($filterChain) {
+		Yii::app()->cache->flush();
+		// die('herp');
+		$filterChain->run();
+	}
+	
+	
 	
 	public function actionSearchContact() {
 		$this->render('searchContactInfo');
@@ -151,6 +160,7 @@ class AdminController extends Controller {
 	}
 	
 	public function actionGetRoutingType(){
+                
 		$admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
 		$type=$admin->leadDistribution;
 		if($type==""){
@@ -177,13 +187,17 @@ class AdminController extends Controller {
 		x2base::cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users=CActiveRecord::model('User')->findAll();
+		$users=CActiveRecordo::model('User')->findAll();
 		unset($users['admin']);
 		foreach($users as $user){
 			$usernames[]=$user->username;
 		}
 		if($online==1){
-			$users=array_intersect($usernames,$sessions);
+                    $user=array();
+                    foreach($usernames as $user){
+                        if(in_array($user,$sessions))
+                           $users[]=$user;
+                    }
 		}else{
 			$users=$usernames;
 		}
@@ -205,7 +219,10 @@ class AdminController extends Controller {
 		}
 		
 		if($online==1){
-			$users=array_intersect($usernames,$sessions);
+			foreach($usernames as $user){
+                        if(in_array($user,$sessions))
+                           $users[]=$user;
+                    }
 		}else{
 			$users=$usernames;
 		}
@@ -348,15 +365,18 @@ class AdminController extends Controller {
                                     if($rule->groupType==0){
                                         $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$group));
                                         foreach($links as $link){
-                                            if(array_search(User::model()->findByPk($link->userId)->username,$users)===false)
                                                 $users[]=User::model()->findByPk($link->userId)->username;
                                         }
                                     }else{
                                         $users[]=$group;
                                     }
                                 }
-                                if($online==1 && $rule->groupType==0)
-                                    $users=array_intersect($users,$sessions);
+                                if($online==1 && $rule->groupType==0){
+                                    foreach($usernames as $user){
+                                        if(in_array($user,$sessions))
+                                        $users[]=$user;
+                                    }
+                                }
                             }
                             $users[]=$rule->rrId;
                             $rule->rrId++;
@@ -365,6 +385,8 @@ class AdminController extends Controller {
                 }
             }
 	}
+        
+        
 	
 	public function actionRoundRobinRules(){
 		$model=new LeadRouting;
@@ -1030,6 +1052,9 @@ class AdminController extends Controller {
                                 break;
 							case "date":
 								$fieldType="BIGINT";
+								break;
+							case "currency":
+								$fieldType="FLOAT";
 								break;
                             default:
                                 $fieldType='VARCHAR(250)';
@@ -2022,7 +2047,9 @@ class AdminController extends Controller {
                         $model="product";
                     if($model=='marketing')
                         $model="campaign";
-                    if($model!='dashboard' && $model!='calendar' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
+					if($model=='users')
+						$model='user';
+                    if($model!='dashboard' && $model!='charts' && $model!='calendar' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
                         $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
                 }
                 

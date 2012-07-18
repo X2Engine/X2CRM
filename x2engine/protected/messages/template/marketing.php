@@ -86,4 +86,9 @@ return array (
 'Data errors'=>'',
 'Batch completed, sending again in'=>'',
 'minute'=>'',
+'Email These Contacts'=>'',
+'Invalid tag value'=>'',
+'Contacts for tag'=>'',
+'Mailing for tag'=>'',
+'Could not create mailing'=>'',
 );

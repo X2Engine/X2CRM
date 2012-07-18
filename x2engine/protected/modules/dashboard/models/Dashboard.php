@@ -101,12 +101,15 @@ class Dashboard extends CActiveRecord{
 	 */
 	public function attributeLabels()
     {
-        $fields = Fields::model()->findAllByAttributes(array('modelName'=>'Dashboard'));
-        $arr=array();
-        foreach($fields as $field){
-            $arr[$field->fieldName]=Yii::t('app',$field->attributeLabel);
-        }
-        return $arr;
+        return array(
+            "showProfile"=>"Shown in Profile",
+            "adminALLOWS"=>"Admin Allows Display",
+            "userID"=>"User ID",
+            "posPROF"=>"Position in Profile",
+            "posDASH"=>"Position in Dashboard",
+            "dispNAME"=>"Display Name",
+            "userALLOWS"=>"User Allows Display"
+        );
     }
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
@@ -114,31 +117,34 @@ class Dashboard extends CActiveRecord{
 	 */
 	public function search($id){
 		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
-        $criteria=new CDbCriteria;
+        // should not be searched.
         $uid = Yii::app()->user->getId();
-        if ($uid != 1) $criteria->compare('adminALLOWS',1,true);
-        $criteria->compare('userID',$uid);
         if ($id == 'dash'){
-            $criteria->compare('showDASH',1,true);
-            $criteria->compare('needUSER',0,true);
-           return new CActiveDataProvider(get_class($this), array(
-                'sort'=>array('defaultOrder'=>'posDASH ASC'),
-                'pagination'=>array(
-                    'pageSize'=>4
+            if ($uid != 1){
+                $sql = "SELECT * FROM x2_widgets WHERE adminALLOWS = 1 AND userID = $uid AND userALLOWS = 1 AND needUSER = 0";
+                $command = Yii::app()->db->createCommand($sql);
+                $rows = $command->queryAll();
+            }else {
+                $query = "SELECT * FROM x2_widgets WHERE userID = $uid AND userALLOWS = 1 AND needUSER = 0";
+                $command = Yii::app()->db->createCommand($query);
+                $rows = $command->queryAll();
+            }
+            return $rows;
+        }else{ 
+           $criteria = new CDbCriteria;
+           if ($uid != 1) $criteria->compare('adminALLOWS',1,true);
+           $criteria->compare('userID',$uid,true);
+           $criteria->compare('showPROFILE',1,true);
+           if ($id != "prof") $criteria->compare('id',$id,true);
+           $data =  new CActiveDataProvider(get_class($this),array(
+               'sort'=>array('defaultOrder'=>'posPROF ASC'),
+               'pagination'=>array(
+                   'pageSize'=>12,
                ),
-	    		'criteria'=>$criteria,
-            ));
-        }else {
-            $criteria->compare('showPROFILE',1,true);
-            return new CActiveDataProvider(get_class($this),array(
-                'sort'=>array('defaultOrder'=>'posPROFILE ASC'),
-                'pagination'=>array(
-                    'pageSize'=>12,
-                ),
-                'criteria'=>$criteria,
+               'criteria'=>$criteria
            ));
+           return $data;
         }
     }
+
 }

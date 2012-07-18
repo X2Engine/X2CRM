@@ -251,9 +251,9 @@ class DefaultController extends x2base {
 	public function actionUpdateStageDetails($id) {
 	
 		$model = CActiveRecord::model('Actions')->findByPk($id);
-		$model->setScenario('workflow');
 		
 		if(isset($model, $_POST['Actions'])) {
+			$model->setScenario('workflow');
 		
 			$model->createDate = $this->parseDate($_POST['Actions']['createDate']);
 			$model->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
