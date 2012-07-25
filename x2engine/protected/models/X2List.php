@@ -186,7 +186,7 @@ class X2List extends CActiveRecord {
 	/**
 	 * Returns a CDbCriteria to retrieve all models in the list
 	 */
-	public function dbCriteria() {
+	public function queryCriteria() {
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
 			$search = new CDbCriteria(array());
@@ -303,9 +303,9 @@ class X2List extends CActiveRecord {
 	/**
 	 * Returns a CDbCommand to retrieve all models in the list
 	 */
-	public function dbCommand() {
+	public function queryCommand() {
 		$tableSchema = CActiveRecord::model($this->modelName)->getTableSchema();
-		return $this->getCommandBuilder()->createFindCommand($tableSchema, $this->dbCriteria());
+		return $this->getCommandBuilder()->createFindCommand($tableSchema, $this->queryCriteria());
 	}
 
 	/**
@@ -314,7 +314,7 @@ class X2List extends CActiveRecord {
 	public function dataProvider($pageSize=null, $sort=null) {
 		if (!isset($sort)) $sort = array();
 		return new CActiveDataProvider($this->modelName, array(
-			'criteria' => $this->dbCriteria(),
+			'criteria' => $this->queryCriteria(),
 			'pagination'=>array(
 				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 			),
@@ -324,30 +324,25 @@ class X2List extends CActiveRecord {
 
 	/**
 	 * Returns an array data provider for all models in the list,
-	 * including the list_item columns
+	 * including the list_item status columns
 	 */
-	public function statusDataProvider($pageSize=null, $sort=null) {
+	public function statusDataProvider($pageSize=null) {
 		$tbl = CActiveRecord::model($this->modelName)->tableName();
 		$lstTbl = X2ListItem::model()->tableName();
+		$criteria = $this->queryCriteria();
 		if ($this->type == 'static' || $this->type == 'campaign') {
-			$count = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $lstTbl .' WHERE listId = ' . $this->id)->queryScalar();
-			$sql = 'SELECT * FROM ' . $tbl . ' as m, '. $lstTbl .' as l WHERE m.id = l.contactId AND l.listId = ' . $this->id;
-			return new CSqlDataProvider($sql, array(
-				'totalItemCount'=>$count,
-				'pagination'=>array(
-					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
-				),
-				'sort' => isset($sort) ? $sort : array()
-			));
-		} else if ($this->type == 'dynamic') {
-			$data = $this->dbCommand()->queryAll();
-			return new CArrayDataProvider($data, array(
-				'pagination'=>array(
-					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
-				),
-				'sort' => isset($sort) ? $sort : array()
-			));
+			$criteria->select = "t.*, {$lstTbl}.*";
+			$criteria->join = "JOIN {$lstTbl} ON t.id = {$lstTbl}.contactId";
 		}
+		$count = CActiveRecord::model($this->modelName)->count($criteria);
+		$sql = $this->getCommandBuilder()->createFindCommand($tbl, $criteria)->getText();
+		return new CSqlDataProvider($sql, array(
+			'totalItemCount'=>$count,
+			'params'=>$criteria->params,
+			'pagination'=>array(
+				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+			),
+		));
 	}
 
 	/**
@@ -379,7 +374,7 @@ class X2List extends CActiveRecord {
 		if (!$dup->save()) return;
 
 		$count=0;
-		$itemIds = $this->dbCommand()->select('id')->queryColumn();
+		$itemIds = $this->queryCommand()->select('id')->queryColumn();
 		//generate some sql, because I can't find a yii way to insert many records in one query
 		$values = '';
 		foreach($itemIds as $id) {

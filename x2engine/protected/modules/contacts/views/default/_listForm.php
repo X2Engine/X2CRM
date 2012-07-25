@@ -95,7 +95,7 @@ foreach ($criteriaModels as $criterion) {
 	$attr = $criterion->getAttributes();
 	//for any link types, look up the name belonging to the id
 	if (isset($fieldTypes[$attr['attribute']]) && $fieldTypes[$attr['attribute']] == 'link') {
-		$record = CActiveRecord::model($fieldLinkTypes[$attr['attribute']])->findByPk($attr['value']);
+		$record = CActiveRecord::model(ucfirst($fieldLinkTypes[$attr['attribute']]))->findByPk($attr['value']);
 		if (isset($record) && isset($record->name)) $attr['name'] = $record->name;
 	}
 	$criteriaAttr[] = $attr;

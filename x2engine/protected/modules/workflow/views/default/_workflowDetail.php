@@ -42,11 +42,12 @@
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 
 $users = User::getNames();
-
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'workflowDetailsForm',
-	'action'=>array('/workflow/updateStageDetails/'.$model->id),
-));
+if($editable) {
+	$form = $this->beginWidget('CActiveForm', array(
+		'id'=>'workflowDetailsForm',
+		'action'=>array('/workflow/updateStageDetails/'.$model->id),
+	));
+}
 ?>
 <table class="details" style="margin-bottom:0">
 	<tr>
@@ -57,26 +58,28 @@ $form = $this->beginWidget('CActiveForm', array(
 			<?php
 			$model->createDate = $this->formatDate($model->createDate);
 			echo CHtml::tag('span',array(),$model->createDate);
-			
-			$this->widget('CJuiDateTimePicker',array(
-				// 'name'=>'startDate',
-				// 'value'=>0,
-				'model'=>$model, //Model object
-				'attribute'=>'createDate', //attribute name
-				'mode'=>'date', //use "time","date" or "datetime" (default)
-				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
-					'changeMonth'=>true,
-					'changeYear'=>true,
-					'maxDate'=>'0'
+			if($editable) {
+				$this->widget('CJuiDateTimePicker',array(
+					// 'name'=>'startDate',
+					// 'value'=>0,
+					'model'=>$model, //Model object
+					'attribute'=>'createDate', //attribute name
+					'mode'=>'date', //use "time","date" or "datetime" (default)
+					'options'=>array(
+						'dateFormat'=>$this->formatDatePicker(),
+						'changeMonth'=>true,
+						'changeYear'=>true,
+						'minDate'=>$minDate,
+						'maxDate'=>'0'
 
-				), // jquery plugin options
-				'htmlOptions'=>array(
-					// 'id'=>'workflowDetails_createDate',
-					'title'=>Yii::t('actions','Complete Date'),
-				),
-				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-			));
+					), // jquery plugin options
+					'htmlOptions'=>array(
+						// 'id'=>'workflowDetails_createDate',
+						'title'=>Yii::t('actions','Complete Date'),
+					),
+					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+				));
+			}
 			?>
 		</td>
 	</tr>
@@ -86,33 +89,36 @@ $form = $this->beginWidget('CActiveForm', array(
 			<span><?php echo $model->completeDate; ?></span>
 			<?php
 			$model->completeDate = $this->formatDate($model->completeDate);
-			$this->widget('CJuiDateTimePicker',array(
-				// 'name'=>'completeDate',
-				// 'value'=>0,
-				'model'=>$model, //Model object
-				'attribute'=>'completeDate', //attribute name
-				'mode'=>'date', //use "time","date" or "datetime" (default)
-				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
-					'changeMonth'=>true,
-					'changeYear'=>true,
-					'maxDate'=>'0'
+			if($editable) {
+				$this->widget('CJuiDateTimePicker',array(
+					// 'name'=>'completeDate',
+					// 'value'=>0,
+					'model'=>$model, //Model object
+					'attribute'=>'completeDate', //attribute name
+					'mode'=>'date', //use "time","date" or "datetime" (default)
+					'options'=>array(
+						'dateFormat'=>$this->formatDatePicker(),
+						'changeMonth'=>true,
+						'changeYear'=>true,
+						'minDate'=>$minDate,
+						'maxDate'=>'0'
 
-				), // jquery plugin options
-				'htmlOptions'=>array(
-					'title'=>Yii::t('actions','Complete Date'),
-					// 'id'=>'workflowDetails_completeDate',
-				),
-				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-			));
+					), // jquery plugin options
+					'htmlOptions'=>array(
+						'title'=>Yii::t('actions','Complete Date'),
+						// 'id'=>'workflowDetails_completeDate',
+					),
+					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+				));
+			}
 			?>
 		</td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo CHtml::label(Yii::t('workflow','Completed By'),'completedBy'); ?></td>
 		<td class="text-field">
-			<span><?php if(!empty($model->completedBy) && isset($users[$model->completedBy])) echo $users[$model->completedBy]; ?></span>
-			<?php echo $form->dropDownList($model, 'completedBy', User::getNames()); ?>
+			<span><?php if(!empty($model->completedBy) && $model->complete=='Yes' && isset($users[$model->completedBy])) echo $users[$model->completedBy]; ?></span>
+			<?php if($editable) echo $form->dropDownList($model, 'completedBy', User::getNames(),array('disabled'=>$allowReassignment?null:'disabled')); ?>
 		</td>
 	</tr>
 	<tr>
@@ -120,18 +126,11 @@ $form = $this->beginWidget('CActiveForm', array(
 		<td class="text-field" style="height:100px;overflow-y:auto;">
 			<span><?php echo $model->actionDescription; ?></span>
 			<div style="margin:0 2px;">
-			<?php echo $form->textArea($model,'actionDescription',array('style'=>'width:100%;margin:0 -2px;height:85px;')) ?>
+			<?php if($editable) echo $form->textArea($model,'actionDescription',array('style'=>'width:100%;margin:0 -2px;height:85px;')) ?>
 			</div>
 		</td>
 	</tr>
 </table>
 <?php
-// echo CHtml::htmlButton(Yii::t('app','Edit'),array('class'=>'x2-button right editButton','onclick'=>'$("#workflowStageDetails").dialog("editMode");'));
-
-// echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button right','onclick'=>'$("#workflowStageDetails").dialog("editMode");'));
-// echo CHtml::ajaxSubmitButton(Yii::t('app','Save'),$form->action,array(),array('class'=>'x2-button highlight right'));
-?>
-<?php
+if($editable)
 $this->endWidget();
-
-?>

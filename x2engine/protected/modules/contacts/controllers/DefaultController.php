@@ -119,7 +119,6 @@ class DefaultController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		// $this->layout = '//layouts/column3';
 		$contact = $this->loadModel($id);
 		$viewPermissions=($contact->assignedTo == Yii::app()->user->getName() || $contact->visibility == 1 || Yii::app()->user->getName() == 'admin');
 		/* x2temp */
@@ -279,26 +278,26 @@ $model->city, $model->state $model->zipcode
 	}
 	
 	// Creates contact record
-	public function create($model, $oldAttributes, $api){
+	public function create($model, $oldAttributes, $api) {
 		$model->createDate=time();
 		$model->lastUpdated=time();
-		if($api==0){
+		if($api==0) {
 			parent::create($model,$oldAttributes,$api);
-                }else{
-                        $lookupFields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts','type'=>'link'));
-                        foreach($lookupFields as $field){
-                            $fieldName=$field->fieldName;
-                            if(isset($model->$fieldName)){
-                                $lookup=CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name'=>$model->$fieldName));
-                                if(isset($lookup))
-                                    $model->$fieldName=$lookup->id;
-                            }
-                        } 
+		} else {
+			$lookupFields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts','type'=>'link'));
+			foreach($lookupFields as $field){
+				$fieldName=$field->fieldName;
+				if(isset($model->$fieldName)){
+					$lookup=CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name'=>$model->$fieldName));
+					if(isset($lookup))
+						$model->$fieldName=$lookup->id;
+				}
+			} 
 			return parent::create($model,$oldAttributes,$api);       
-                }
+		}
 	}
 	
-	public function actionIgnoreDuplicates(){
+	public function actionIgnoreDuplicates() {
 		if(isset($_POST['data'])){
 			
 			$arr=json_decode($_POST['data'],true);
@@ -309,6 +308,7 @@ $model->city, $model->state $model->zipcode
 					$id=$arr['id'];
 					$model=Contacts::model()->findByPk($id);
 				}
+                                $temp=$model->attributes;
 				foreach($arr as $key=>$value){
 					$model->$key=$value;
 				}
@@ -318,9 +318,9 @@ $model->city, $model->state $model->zipcode
 			}
 			$model->dupeCheck=1;
 			if($_POST['ref']=='create'){
-				$this->create($model,array(),0);
+				$this->create($model,$temp,1);
 			}elseif($_POST['ref']=='update'){
-				$this->update($model,array(),0);
+				$this->update($model,$temp,1);
 			}
 			echo $model->id;
 		}
@@ -350,6 +350,7 @@ $model->city, $model->state $model->zipcode
 	public function actionCreate() {
 		$model = new Contacts;
 		$name='Contacts';
+                $renderFlag=true;
 		$users=User::getNames();
 		$accounts=Accounts::getNames();
 
@@ -373,16 +374,19 @@ $model->city, $model->state $model->zipcode
 					'duplicates'=>$duplicates,
 					'ref'=>'create'
 				));
+                                $renderFlag=false;
 			}else{
 				$this->create($model,$model->attributes,'0'); 
 			}
 			
 		}
-		$this->render('create',array(
-			'model'=>$model,
-			'users'=>$users,
-			'accounts'=>$accounts,
-		));
+                if($renderFlag){
+                    $this->render('create',array(
+                            'model'=>$model,
+                            'users'=>$users,
+                            'accounts'=>$accounts,
+                    ));
+                }
 	}
 	
 	public function actionQuickContact() {
@@ -644,6 +648,8 @@ $model->city, $model->state $model->zipcode
 		$model = new Contacts('search');
 		$model->setRememberScenario('contacts-index');
 		$name = 'Contacts';
+		//we are no longer viewing a specific list
+		Yii::app()->session->remove('contacts-list');
 		parent::index($model,$name);
 	}
 
@@ -655,6 +661,8 @@ $model->city, $model->state $model->zipcode
 			$list = CActiveRecord::model('X2List')->findByPk($id);
 			
 		if(isset($list)) {
+			//set this as the list we are viewing, for use by vcr controls
+			Yii::app()->session['contacts-list'] = $id;
 			$model = new Contacts('search');
 			$model->setRememberScenario('contacts-list-'.$id);
 			$dataProvider = $model->searchList($id);
@@ -1222,6 +1230,8 @@ $model->city, $model->state $model->zipcode
 		$model = new Contacts('search');
 		$model->setRememberScenario('contacts-admin');
 		$name = 'Contacts';
+		//we are no longer viewing a specific list
+		Yii::app()->session->remove('contacts-list');
 		parent::admin($model, $name);
 	}
 

@@ -60,7 +60,10 @@ echo $form->errorSummary($model);
             $modules=Modules::model()->findAll();
             foreach($modules as $module){
                 if($module->editable){
-                    $arr[$module->name]=$module->title;
+                    if($module->title!="Marketing")
+                        $arr[$module->name]=$module->title;
+                    else
+                        $arr["Campaign"]=$module->title;
                 }
             }
             echo $form->dropDownList($model,'modelName',$arr); ?>

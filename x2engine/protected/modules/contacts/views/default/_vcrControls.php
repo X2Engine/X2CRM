@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,29 +38,45 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$justMeUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'justMe'));
-$allUsersUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'allUsers'));
-echo CHtml::ajaxLink(Yii::t('app','Just Me'), $justMeUrl,array('success'=>'function(response) { $("#myTags").show(); $("#allTags").hide(); } '))." | ".CHtml::ajaxLink(Yii::t('app','All Users'), $allUsersUrl,array('success'=>'function() { $("#allTags").show(); $("#myTags").hide(); }'))."<br />";
-// $template='<a href="'.Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.'"> #\\2</a>';
-?> <br>
-<div id="myTags" <?php echo ($showAllUsers? 'style="display:none;"' : ''); ?>>
-<?php
-foreach($myTags as &$tag) {
-	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1))).'</span>';
-    // $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
-    // $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
-    // echo "<span class='tag'>".$tag->tag."</span> ";
-}
-?>
-</div>
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/vcrPager.css');
 
-<div id="allTags" <?php echo ($showAllUsers? '' : 'style="display:none;"'); ?>>
-<?php
-foreach($allTags as &$tag) {
-	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1))).'</span>';
-    // $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
-    // $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
-    // echo "<span class='tag'>".$tag->tag."</span> ";
+$listId = Yii::app()->session['contacts-list'];
+$vcrControls = array();
+$searchModel = new Contacts('search');
+
+//look up all ids of the list we are currently viewing
+//find position of model in the list
+if (isset($listId) && is_numeric($listId)){
+	$list = CActiveRecord::model('X2List')->findByPk($listId);
+	$criteria = $searchModel->searchList($listId)->criteria;
+	$tableSchema = Contacts::model()->getTableSchema();
+	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
+	$thisIndex = current(array_keys($ids, $model->id));
+} else $listId = null;
+ 
+//if no list, or model is not in specified list
+//use default all contacts list
+if (!isset($listId) || $thisIndex === false) {
+	$criteria = $searchModel->searchAll()->criteria;
+	$tableSchema = Contacts::model()->getTableSchema();
+	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
+	$thisIndex = current(array_keys($ids, $model->id));
+}
+
+if ($thisIndex !== false) {
+	if ($thisIndex > 0) {
+		$vcrControls['first'] = '<li class="first">'.CHtml::link(CHtml::button('◄◄', array('class'=>'x2-button')), array("view","id"=>$ids[0])).'</li>';
+		$vcrControls['prev'] = '<li class="prev">'.CHtml::link(CHtml::button('◄', array('class'=>'x2-button')), array("view","id"=>$ids[$thisIndex-1])).'</li>';
+	}
+	if ($thisIndex < count($ids)-1) {
+		$vcrControls['next'] = '<li class="next">'.CHtml::link(CHtml::button('►', array('class'=>'x2-button')), array("view","id"=>$ids[$thisIndex+1])).'</li>';
+		$vcrControls['last'] = '<li class="last">'.CHtml::link(CHtml::button('►►', array('class'=>'x2-button')), array("view","id"=>$ids[count($ids)-1])).'</li>';
+	}
 }
 ?>
-</div>
+
+<?php if (count($vcrControls) > 0) { ?>
+	<div class="vcrPager">
+		<?php echo CHtml::tag('ul',array('class'=>'vcrPager'),implode("\n",$vcrControls)); ?>
+	</div>
+<?php } ?>

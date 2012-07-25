@@ -2,7 +2,7 @@
 <script>
 var count=1;
 var fileList=<?php echo json_encode($fileList);?>;
-var i=0;
+var fileCount=0;
 var sqlList=<?php echo json_encode($sqlList);?>;
 var j=0;
 var k=0;
@@ -107,7 +107,7 @@ function cleanUp(status){
 </header>
 <?php
 Yii::app()->clientScript->registerScript("updater","$('#update-button').click(function(){
-    downloadFile(fileList, i);
+    downloadFile(fileList, fileCount);
     $('#update-status').show();
 });",CClientScript::POS_READY);
 ?>

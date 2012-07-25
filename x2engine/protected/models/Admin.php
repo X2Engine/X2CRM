@@ -40,36 +40,6 @@
 
 /**
  * This is the model class for table "x2_admin".
- *
- * The followings are the available columns in table 'x2_admin':
- * @property integer $id
- * @property integer $accounts
- * @property integer $sales
- * @property integer $timeout
- * @property string $webLeadEmail
- * @property string $currency
- * @property string $menuOrder
- * @property string $menuVisibility
- * @property string $menuNicknames
- * @property integer $chatPollTime
- * @property integer $ignoreUpdates
- * @property integer $rrId
- * @property string $leadDistribution
- * @property integer $onlineOnly
- * @property string emailFromName
- * @property string emailFromAddr
- * @property string emailUseSignature
- * @property string emailSignature
- * @property string emailType
- * @property string emailHost
- * @property integer emailPort
- * @property string emailUseAuth
- * @property string emailUser
- * @property string emailPass
- * @property string emailSecurity
- * @property integer installDate
- * @property integer updateDate
- * @property integer updateInterval
  */
 class Admin extends CActiveRecord
 {
@@ -96,7 +66,7 @@ class Admin extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('emailFromName, emailFromAddr', 'required'),
-			array('accounts, sales, timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval', 'numerical', 'integerOnly'=>true),
+			array('accounts, sales, timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),
 			array('currency', 'length', 'max'=>3),
 			array('emailUseAuth, emailUseSignature', 'length', 'max'=>10),
@@ -104,7 +74,7 @@ class Admin extends CActiveRecord
 			array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max'=>255),
 			// array('emailSignature', 'length', 'max'=>512),
 			array('emailSignature', 'length', 'max'=>512),
-			array('quoteStrictLock', 'boolean'),
+			array('quoteStrictLock, workflowBackdateReassignment', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			// array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -148,6 +118,9 @@ class Admin extends CActiveRecord
 			'googleAPIKey' => Yii::t('admin', 'Google API Key'),
 			'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
 			'inviteKey' => Yii::t('admin','Invite Key'),
+			'workflowBackdateWindow' => Yii::t('admin','Workflow Backdate Window'),
+			'workflowBackdateRange' => Yii::t('admin','Workflow Backdate Range'),
+			'workflowBackdateReassignment' => Yii::t('admin','Workflow Backdate Reassignment'),
 		);
 	}
 

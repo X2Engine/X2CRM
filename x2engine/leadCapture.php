@@ -43,9 +43,10 @@
 include('webLeadConfig.php');
 
 if($url==""){
-    $url='http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl;
+    $url=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+    $url=substr($url,0,-15);
 }
-
+$email=$_POST['email'];
 $date=mktime(0,0,0,date('m'),date('d'),date('Y'));
 $count=preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email);
 if($count==0){

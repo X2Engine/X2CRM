@@ -192,7 +192,7 @@ return array(
 		'groups'=>array(),
 		'logo'=>"uploads/logos/yourlogohere.png",
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
-                'trueWebRoot'=>substr(__DIR__,0,-17), 
+		'trueWebRoot'=>substr(__DIR__,0,-17), 
 		'registeredWidgets'=>array(
 			'MessageBox'=>'Message Board',
 			'QuickContact'=>'Quick Contact',
@@ -204,7 +204,7 @@ return array(
 			'TagCloud'=>'Tag Cloud',
 			'OnlineUsers'=>'Active Users',
 			'DocViewer' => 'Doc Viewer',
-			'TimeZone' => 'Time Zone',
+			// 'TimeZone' => 'Time Zone',
 			'TopSites' => 'Top Sites',
 		),
 		'currency'=>'',

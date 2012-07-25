@@ -387,11 +387,38 @@ class DefaultController extends x2base {
 	 * return a json string of actions associated with the specified user
 	 */
 	public function actionJsonFeed($user, $start, $end) {
+		$loggedInUser = User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
+		$filter = explode(',', $loggedInUser->calendarFilter); // action types user doesn't want filtered
+		$possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered		
+		
+		// SQL where clause
+		$where = "(assignedTo=\"$user\") "; // must be assigned to $user
+		if(!in_array('contacts', $filter))
+			$where .= "AND (associationType != \"contacts\") "; // filter contact actions
+		if(!in_array('accounts', $filter))
+			$where .= "AND (associationType != \"accounts\") "; // filter account actions
+		if(!in_array('sales', $filter))
+			$where .= "AND (associationType != \"sales\") "; // filter sales actions
+		if(!in_array('quotes', $filter))
+			$where .= "AND (associationType != \"quotes\") "; // filter quote actions
+		if(!in_array('products', $filter))
+			$where .= "AND (associationType != \"product\") "; // filter product actions
+		if(!in_array('completed', $filter))
+			$where .= "AND (complete != \"Yes\") "; // filter completed actions
+		if(!in_array('email', $filter))
+			$where .= "AND (type IS NULL OR type != \"email\") "; // filter emails
+		if(!in_array('attachment', $filter))
+			$where .= "AND (type IS NULL OR type != \"attachment\") "; // filter attachments
+		$where .= "AND (type IS NULL OR type != \"quotes\") ";
+		$where .= "AND (";
+		$where .= 	"(dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)"; // actions that happen between $start and $end
+		$where .= ")";
+	
 		// get actions assigned to user
 		$actions = Yii::app()->db->createCommand()
 			->select('id, visibility, assignedTo, complete, type, actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
 			->from('x2_actions')
-			->where("(assignedTo=\"$user\") AND ((dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)) ")
+			->where($where)
 			->queryAll();
 		
 		$events = array();
@@ -474,11 +501,39 @@ class DefaultController extends x2base {
 	}
 	
 	public function actionJsonFeedGroup($groupId, $start, $end) {
+	
+		$user = User::model()->findByPk(Yii::app()->user->id); // get user profile
+		$filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
+		$possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
+	
+		// SQL where clause
+		$where = "(assignedTo=\"$groupId\") "; // must be assigned to $user
+		if(!in_array('contacts', $filter))
+			$where .= "AND (associationType != \"contacts\") "; // filter contact actions
+		if(!in_array('accounts', $filter))
+			$where .= "AND (associationType != \"accounts\") "; // filter account actions
+		if(!in_array('sales', $filter))
+			$where .= "AND (associationType != \"sales\") "; // filter sales actions
+		if(!in_array('quotes', $filter))
+			$where .= "AND (associationType != \"quotes\") "; // filter quotes
+		if(!in_array('products', $filter))
+			$where .= "AND (associationType != \"product\") "; // filter product actions
+		if(!in_array('completed', $filter))
+			$where .= "AND (complete != \"Yes\") "; // filter completed actions
+		if(!in_array('email', $filter))
+			$where .= "AND (type IS NULL OR type != \"email\") "; // filter emails
+		if(!in_array('attachment', $filter))
+			$where .= "AND (type IS NULL OR type != \"attachment\") "; // filter attachments
+		$where .= "AND (type IS NULL OR type != \"quotes\") ";
+		$where .= "AND (";
+		$where .= 	"(dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)"; // actions that happen between $start and $end
+		$where .= ")";
+		
 		// get actions assigned to user
 		$actions = Yii::app()->db->createCommand()
 			->select('id, visibility, assignedTo, complete, type, actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
 			->from('x2_actions')
-			->where("(assignedTo=\"$groupId\") AND ((dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)) ")
+			->where($where)
 			->queryAll();
 		
 		$events = array();

@@ -580,6 +580,9 @@ abstract class x2base extends CController {
 				if(isset($_GET['inline']) || $model->type=='note')
 					if($model->associationType == 'product')
 						$this->redirect(array("/".$model->associationType.'s/default/view','id'=>$model->associationId));
+					//TODO: avoid such hackery
+					else if ($model->associationType == 'Campaign')
+						$this->redirect(array('/marketing/default/view','id'=>$model->associationId));
 					else
 						$this->redirect(array("/".$model->associationType.'/default/view','id'=>$model->associationId));
 				else

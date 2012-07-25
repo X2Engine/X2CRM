@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -128,9 +128,6 @@ class Dropdowns extends CActiveRecord {
 			$dropdowns = CJSON::decode($data);
 			if(!isset($dropdowns))
 				$dropdowns = array();
-
-			//natcasesort($dropdowns);
-
 			
 			// figure out the module name for translations
 			if(isset(Yii::app()->controller->module))

@@ -61,26 +61,22 @@ class WorkflowStageDetails extends CWidget {
 				closeOnEscape:true,
 				width:400,
 				buttons:{
-					"'.Yii::t('app','Save').'": function() { saveWorkflowStageDetails(); },
-					"'.Yii::t('app','Edit').'": function() {
+					"'.addslashes(Yii::t('app','Save')).'": function() { saveWorkflowStageDetails(); },
+					"'.addslashes(Yii::t('app','Edit')).'": function() {
 						$(this).addClass("editMode");
 						$(this).parent().find(".ui-dialog-buttonpane button:nth-child(1)").show();	// save
 						$(this).parent().find(".ui-dialog-buttonpane button:nth-child(2)").hide();	// edit
 						$(this).parent().find(".ui-dialog-buttonpane button:nth-child(3)").show();	// cancel
 					},
-					"'.Yii::t('app','Cancel').'": function() {
+					"'.addslashes(Yii::t('app','Cancel')).'": function() {
 						$(this).removeClass("editMode");
 						$(this).parent().find(".ui-dialog-buttonpane button:nth-child(1)").hide(); 	// save
 						$(this).parent().find(".ui-dialog-buttonpane button:nth-child(2)").show();	// edit
 						$(this).parent().find(".ui-dialog-buttonpane button:nth-child(3)").hide(); 	// cancel
 					},
-					"'.Yii::t('app','Close').'": function() { $(this).dialog("close"); }
+					"'.addslashes(Yii::t('app','Close')).'": function() { $(this).dialog("close"); }
 					
 					
-				},
-				create:function() {
-					$(this).parent().find(".ui-dialog-buttonpane").find("button:nth-child(1),button:nth-child(3)").hide();
-				
 				}
 			});
 		});
@@ -156,7 +152,7 @@ class WorkflowStageDetails extends CWidget {
 
 			$("#workflowDetails_createDate, #workflowDetails_startDate").datepicker("destroy");
 			dialogBox.parent().find(".ui-dialog-buttonpane button:nth-child(1)").hide(); 	// save
-			dialogBox.parent().find(".ui-dialog-buttonpane button:nth-child(2)").show();	// edit
+			dialogBox.parent().find(".ui-dialog-buttonpane button:nth-child(2)").hide();	// edit
 			dialogBox.parent().find(".ui-dialog-buttonpane button:nth-child(3)").hide(); 	// cancel
 			
 			dialogBox.dialog("open");
@@ -170,6 +166,12 @@ class WorkflowStageDetails extends CWidget {
 				success: function(response) {
 					if(response=="") return;
 					$("#workflowStageDetails").html(response);
+					
+					if($("#workflowStageDetails #workflowDetailsForm").length)	// remove the edit button if theres no form
+						dialogBox.parent().find(".ui-dialog-buttonpane button:nth-child(2)").show();
+					else
+						dialogBox.parent().find(".ui-dialog-buttonpane button:nth-child(2)").hide();
+					
 				}
 			});
 		}

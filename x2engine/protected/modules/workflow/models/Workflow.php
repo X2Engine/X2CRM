@@ -170,18 +170,6 @@ class Workflow extends CActiveRecord {
 			->queryColumn();
 	}
 	
-	public static function getWorkflowDetails($workflowId,$stageId,$modelId,$modelType) {
-		return CActiveRecord::model('Actions')->findByAttributes(array(
-			'associationId'=>$modelId,
-			'associationType'=>$modelType,
-			'type'=>'workflow',
-			'workflowId'=>$workflowId,
-			'stageNumber'=>$stageId
-		));
-	
-	}
-
-	
 	public static function renderWorkflow(&$workflowStatus) {
 	
 		$workflowId = &$workflowStatus[0];
@@ -267,19 +255,24 @@ class Workflow extends CActiveRecord {
 					}
 				}
 				$statusStr .= '<div class="workflow-status">';
-				if($editPermission)
-					$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowStageDetails('.$workflowId.','.$stage.');">['.Yii::t('workflow','Details').']</a> ';
+				// if($editPermission)
+				$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowStageDetails('.$workflowId.','.$stage.');">['.Yii::t('workflow','Details').']</a> ';
 				
 				
 				if($workflowStatus[$stage]['complete']) {
 					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus[$stage]['completeDate']);
 					// X2Date::dateBox($workflowStatus[$stage]['completeDate']);
-					if($editPermission)
+
+					// can only undo if there is no restriction on backdating, or we're still within the edit time window
+					$allowUndo = Yii::app()->params->admin->workflowBackdateWindow < 0 || (time() - $workflowStatus[$stage]['completeDate']) < Yii::app()->params->admin->workflowBackdateWindow;
+					
+					if($editPermission && ($allowUndo || Yii::app()->user->getName() == 'admin'))
 						$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
 				} else {
 					// $started = true;
 					$statusStr .= '<b>'.Yii::t('workflow','Started').' '.date("Y-m-d",$workflowStatus[$stage]['createDate']).'</b>';
 					// if(!$latestStage)
+					
 					if($editPermission)
 						$statusStr .= '<a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
 					if($previousCheck && $editPermission) {

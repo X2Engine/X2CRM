@@ -90,13 +90,18 @@ class AdminController extends Controller {
 				'users'=>array('@'),
 			),
 			array('allow',
-				'actions'=>array('index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
+				'actions'=>array(
+					'index','howTo','searchContact','sendEmail','mail','search','toggleAccounts',
 					'export','import','uploadLogo','toggleDefaultLogo','createModule','deleteModule','exportModule',
-					'importModule','toggleSales','setTimeout','emailSetup', 'googleIntegration', 'setChatPoll','renameModules','manageModules',
-					'createPage','contactUs','viewChangelog','toggleUpdater','translationManager','addCriteria',
-					'deleteCriteria','setLeadRouting','roundRobinRules','deleteRouting','addField','removeField',
-					'customizeFields','manageFields', 'editor','createFormLayout','deleteFormLayout','formVersion','dropDownEditor','manageDropDowns','deleteDropdown','editDropdown',
-					'roleEditor','deleteRole','editRole','manageRoles','roleException','appSettings','updater','registerModules','toggleModule', 'viewLogs','delete','tempImportWorkflow'),
+					'importModule','toggleSales','setTimeout','emailSetup', 'googleIntegration', 'setChatPoll',
+					'renameModules','manageModules','createPage','contactUs','viewChangelog','toggleUpdater',
+					'translationManager','addCriteria','deleteCriteria','setLeadRouting','roundRobinRules',
+					'deleteRouting','addField','removeField','customizeFields','manageFields', 'editor',
+					'createFormLayout','deleteFormLayout','formVersion','dropDownEditor','manageDropDowns',
+					'deleteDropdown','editDropdown','roleEditor','deleteRole','editRole','manageRoles',
+					'roleException','appSettings','updater','registerModules','toggleModule', 'viewLogs','delete',
+					'tempImportWorkflow','workflowSettings'
+				),
 				'users'=>array('admin'),
 			),
 			array('deny', 
@@ -171,13 +176,13 @@ class AdminController extends Controller {
 			echo $this->roundRobin();
 		}elseif($type=="customRoundRobin"){
 			$arr=$_POST;
-                        $users=$this->getRoutingRules($arr);
-                        if($users!=""){
-                            $rrId=$users[count($users)-1];
-                            unset($users[count($users)-1]);
-                            $i=$rrId%count($users);
-                            echo $users[$i];
-                        }
+			$users=$this->getRoutingRules($arr);
+			if($users!=""){
+				$rrId=$users[count($users)-1];
+				unset($users[count($users)-1]);
+				$i=$rrId%count($users);
+				echo $users[$i];
+			}
 		}
 	}
 	
@@ -193,11 +198,11 @@ class AdminController extends Controller {
 			$usernames[]=$user->username;
 		}
 		if($online==1){
-                    $user=array();
-                    foreach($usernames as $user){
-                        if(in_array($user,$sessions))
-                           $users[]=$user;
-                    }
+			$user=array();
+			foreach($usernames as $user){
+				if(in_array($user,$sessions))
+				   $users[]=$user;
+			}
 		}else{
 			$users=$usernames;
 		}
@@ -220,9 +225,9 @@ class AdminController extends Controller {
 		
 		if($online==1){
 			foreach($usernames as $user){
-                        if(in_array($user,$sessions))
-                           $users[]=$user;
-                    }
+				if(in_array($user,$sessions))
+				   $users[]=$user;
+			}
 		}else{
 			$users=$usernames;
 		}
@@ -241,193 +246,191 @@ class AdminController extends Controller {
 		reset($numbers);
 		return key($numbers);
 	}
-        
-        public function actionTempImportWorkflow(){
-            $file="workflowData.csv";
-            $fp=fopen($file,'r+');
-            $meta=fgetcsv($fp);
-            $workflowList=array(
-                '1'=>'Contacted',
-                '2'=>'Appointment Set',
-                '3'=>'Interview Conducted',
-                '4'=>'Essay/Assessment Completed',
-                '5'=>'Transcript Request Form',
-                '6'=>'Unofficial Transcript',
-                '7'=>'Application Completed',
-                '8'=>'Recommendation',
-                '9'=>'Notify FA/Prelim',
-                '10'=>'FAFSA Completed',
-                '11'=>'Transcribe Application',
-                '12'=>'Enrolled',
-                '13'=>'FA Complete',
-                '14'=>'Official Transcript',
-                '15'=>'Started',
-                '16'=>'3 2 1 Checklist',
-                '17'=>'Services Lead Card',
-                '18'=>'Q Drive',
-            );
-            while($arr=fgetcsv($fp)){
-                $attributes=array_combine($meta,$arr);
-                $record=CActiveRecord::model('Contacts')->findByPk($attributes['id']);
-                if(isset($record)){
-                    $modelId=$record->id;
-                    $type="contacts";
-                    $workflowId=1;
-                    foreach($workflowList as $stageNumber=>$stage){
-                        if(isset($attributes[$stage]) && $attributes[$stage]!=""){
-                            if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
 
-                                $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+	public function actionTempImportWorkflow(){
+		$file="workflowData.csv";
+		$fp=fopen($file,'r+');
+		$meta=fgetcsv($fp);
+		$workflowList=array(
+			'1'=>'Contacted',
+			'2'=>'Appointment Set',
+			'3'=>'Interview Conducted',
+			'4'=>'Essay/Assessment Completed',
+			'5'=>'Transcript Request Form',
+			'6'=>'Unofficial Transcript',
+			'7'=>'Application Completed',
+			'8'=>'Recommendation',
+			'9'=>'Notify FA/Prelim',
+			'10'=>'FAFSA Completed',
+			'11'=>'Transcribe Application',
+			'12'=>'Enrolled',
+			'13'=>'FA Complete',
+			'14'=>'Official Transcript',
+			'15'=>'Started',
+			'16'=>'3 2 1 Checklist',
+			'17'=>'Services Lead Card',
+			'18'=>'Q Drive',
+		);
+		while($arr=fgetcsv($fp)){
+			$attributes=array_combine($meta,$arr);
+			$record=CActiveRecord::model('Contacts')->findByPk($attributes['id']);
+			if(isset($record)){
+				$modelId=$record->id;
+				$type="contacts";
+				$workflowId=1;
+				foreach($workflowList as $stageNumber=>$stage){
+					if(isset($attributes[$stage]) && $attributes[$stage]!=""){
+						if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
 
-                            if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
-                                    && (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
+							$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 
-                                    $action = new Actions('workflow');
-                                    $action->associationId = $modelId;
-                                    $action->associationType = $type;
-                                    $action->assignedTo = 'Anyone';
-                                    $action->updatedBy = 'admin';
-                                    $action->complete = 'Yes';
-                                    $action->completeDate = strtotime($attributes[$stage]);
-                                    $action->completedBy='admin';
-                                    $action->type = 'workflow';
-                                    $action->visibility = 1;
-                                    $action->createDate = strtotime($attributes[$stage]);
-                                    $action->lastUpdated = time();
-                                    $action->workflowId = (int)$workflowId;
-                                    $action->stageNumber = (int)$stageNumber;
-                                    // $action->actionDescription = '';
-                                    $action->save();
-                                    // echo var_dump($action->getErrors());
-                                    // echo var_dump($action->attributes);
-                                    // echo var_dump($action->save());
-                                    // echo'derp';
-                                }
-                            }
-                        }
-                    }
-                    
-                }
-            }
-        }
+							if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
+								&& (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
+
+								$action = new Actions('workflow');
+								$action->associationId = $modelId;
+								$action->associationType = $type;
+								$action->assignedTo = 'Anyone';
+								$action->updatedBy = 'admin';
+								$action->complete = 'Yes';
+								$action->completeDate = strtotime($attributes[$stage]);
+								$action->completedBy='admin';
+								$action->type = 'workflow';
+								$action->visibility = 1;
+								$action->createDate = strtotime($attributes[$stage]);
+								$action->lastUpdated = time();
+								$action->workflowId = (int)$workflowId;
+								$action->stageNumber = (int)$stageNumber;
+								// $action->actionDescription = '';
+								$action->save();
+								// echo var_dump($action->getErrors());
+								// echo var_dump($action->attributes);
+								// echo var_dump($action->save());
+								// echo'derp';
+							}
+						}
+					}
+				}
+				
+			}
+		}
+	}
 	
 	public function getRoutingRules($data){
-            $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
-            $online = $admin->onlineOnly;
-            x2base::cleanUpSessions();
-            $sessions = Session::getOnlineUsers();
+		$admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+		$online = $admin->onlineOnly;
+		x2base::cleanUpSessions();
+		$sessions = Session::getOnlineUsers();
 
-            $rules=CActiveRecord::model('LeadRouting')->findAll("",array('order'=>'priority'));
-            foreach($rules as $rule){
-                $arr=LeadRouting::parseCriteria($rule->criteria);
-                $flagArr=array();
-                foreach($arr as $criteria){
-                    if(isset($data[$criteria['field']])){
-                        $val=$data[$criteria['field']];
-                        $operator=$criteria['comparison'];
-                        $target=$criteria['value'];
-                        if($operator!='contains'){
-                            switch($operator){
-                                case '>':
-                                    $flag=($val>=$target);
-                                    break;
-                                case '<':
-                                    $flag=($val<=$target);
-                                    break;
-                                case '=':
-                                    $flag=($val==$target);
-                                    break;
-                                case '!=':
-                                    $flag=($val!=$target);
-                                    break;
-                                default:
-                                    $flag=false;
-                            }
-                        }else{
-                            $flag=preg_match("/$target/i",$val)!=0;
-                            
-                        }
-                        $flagArr[]=$flag;
-                    }
-                    
-                }
-                if(!in_array(false,$flagArr) && count($flagArr)>0){
-                    $users=$rule->users;
-                    $users=explode(", ",$users);
-                            if(is_null($rule->groupType)){
-                                if($online==1)
-                                    $users=array_intersect($users,$sessions);
-                            }else{
-                                $groups=$rule->users;
-                                $groups=explode(", ",$groups);
-                                $users=array();
-                                foreach($groups as $group){
-                                    if($rule->groupType==0){
-                                        $links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$group));
-                                        foreach($links as $link){
-                                                $users[]=User::model()->findByPk($link->userId)->username;
-                                        }
-                                    }else{
-                                        $users[]=$group;
-                                    }
-                                }
-                                if($online==1 && $rule->groupType==0){
-                                    foreach($usernames as $user){
-                                        if(in_array($user,$sessions))
-                                        $users[]=$user;
-                                    }
-                                }
-                            }
-                            $users[]=$rule->rrId;
-                            $rule->rrId++;
-                            $rule->save();
-                            return $users;
-                }
-            }
+		$rules=CActiveRecord::model('LeadRouting')->findAll("",array('order'=>'priority'));
+		foreach($rules as $rule){
+			$arr=LeadRouting::parseCriteria($rule->criteria);
+			$flagArr=array();
+			foreach($arr as $criteria){
+				if(isset($data[$criteria['field']])){
+					$val=$data[$criteria['field']];
+					$operator=$criteria['comparison'];
+					$target=$criteria['value'];
+					if($operator!='contains'){
+						switch($operator){
+							case '>':
+								$flag=($val>=$target);
+								break;
+							case '<':
+								$flag=($val<=$target);
+								break;
+							case '=':
+								$flag=($val==$target);
+								break;
+							case '!=':
+								$flag=($val!=$target);
+								break;
+							default:
+								$flag=false;
+						}
+					}else{
+						$flag=preg_match("/$target/i",$val)!=0;
+						
+					}
+					$flagArr[]=$flag;
+				}
+				
+			}
+			if(!in_array(false,$flagArr) && count($flagArr)>0){
+				$users=$rule->users;
+				$users=explode(", ",$users);
+						if(is_null($rule->groupType)){
+							if($online==1)
+								$users=array_intersect($users,$sessions);
+						}else{
+							$groups=$rule->users;
+							$groups=explode(", ",$groups);
+							$users=array();
+							foreach($groups as $group){
+								if($rule->groupType==0){
+									$links=GroupToUser::model()->findAllByAttributes(array('groupId'=>$group));
+									foreach($links as $link){
+											$users[]=User::model()->findByPk($link->userId)->username;
+									}
+								}else{
+									$users[]=$group;
+								}
+							}
+							if($online==1 && $rule->groupType==0){
+								foreach($usernames as $user){
+									if(in_array($user,$sessions))
+									$users[]=$user;
+								}
+							}
+						}
+						$users[]=$rule->rrId;
+						$rule->rrId++;
+						$rule->save();
+						return $users;
+			}
+		}
 	}
-        
-        
-	
+
 	public function actionRoundRobinRules(){
 		$model=new LeadRouting;
 		$users=User::getNames();
 		unset($users['Anyone']);
 		unset($users['admin']);
-                $priorityArray=array();
-                for($i=1;$i<=LeadRouting::model()->count()+1;$i++){
-                    $priorityArray[$i]=$i;
-                }
+		$priorityArray=array();
+		for($i=1;$i<=LeadRouting::model()->count()+1;$i++){
+			$priorityArray[$i]=$i;
+		}
 		$dataProvider=new CActiveDataProvider('LeadRouting', array(
 				'criteria'=>array(
 					'order'=>'priority ASC',
 				)
 			));
 		if(isset($_POST['LeadRouting'])) {
-                        $values=$_POST['Values'];
-                        $criteria=array();
-                        for($i=0;$i<count($values['field']);$i++){
-                            $tempArr=array($values['field'][$i],$values['comparison'][$i],$values['value'][$i]);
-                            $criteria[]=implode(',',$tempArr);
-                        }
-                        $model->criteria=json_encode($criteria);
+			$values=$_POST['Values'];
+			$criteria=array();
+			for($i=0;$i<count($values['field']);$i++){
+				$tempArr=array($values['field'][$i],$values['comparison'][$i],$values['value'][$i]);
+				$criteria[]=implode(',',$tempArr);
+			}
+			$model->criteria=json_encode($criteria);
 			$model->attributes=$_POST['LeadRouting'];
-                        $model->priority=$_POST['LeadRouting']['priority'];
-                        if(isset($_POST['group'])){
-                            $group=true;
-                            $model->groupType=$_POST['groupType'];
-                        }else{
-                            $model->groupType=null;
-                        }
+			$model->priority=$_POST['LeadRouting']['priority'];
+			if(isset($_POST['group'])){
+				$group=true;
+				$model->groupType=$_POST['groupType'];
+			}else{
+				$model->groupType=null;
+			}
 			
 			$model->users=Accounts::parseUsers($model->users);
-                        $check=LeadRouting::model()->findByAttributes(array('priority'=>$model->priority));
-                        if(isset($check)){
-                            $query="UPDATE x2_lead_routing SET priority=priority+1 WHERE priority>='$model->priority'";
-                            $command=Yii::app()->db->createCommand($query);
-                            $command->execute();
-                        }
+			$check=LeadRouting::model()->findByAttributes(array('priority'=>$model->priority));
+			if(isset($check)){
+				$query="UPDATE x2_lead_routing SET priority=priority+1 WHERE priority>='$model->priority'";
+				$command=Yii::app()->db->createCommand($query);
+				$command->execute();
+			}
 			if($model->save()) {
-                            $this->redirect('roundRobinRules');
+				$this->redirect('roundRobinRules');
 			}
 		}
 		
@@ -435,351 +438,372 @@ class AdminController extends Controller {
 			'model'=>$model,
 			'users'=>$users,
 			'dataProvider'=>$dataProvider,
-                        'priorityArray'=>$priorityArray,
+			'priorityArray'=>$priorityArray,
 		));
-            
-        }
-        
-        public function actionRoleEditor(){
-            $model=new Roles;
-            
-            if(isset($_POST['Roles'])){
-                $model->attributes=$_POST['Roles'];
-                if(!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
-                    $this->redirect('manageRoles');
-                $viewPermissions=$_POST['viewPermissions'];
-                $editPermissions=$_POST['editPermissions'];
-                if(isset($_POST['Roles']['users']))
-                    $users=$model->users;
-                else
-                    $users=array();
-                $model->users="";
-                if($model->save()){
-                    foreach($users as $user){
-                        $role=new RoleToUser;
-                        $role->roleId=$model->id;
-                        if(!is_numeric($user)){
-                            $userRecord=User::model()->findByAttributes(array('username'=>$user));
-                            $role->userId=$userRecord->id;
-                            $role->type='user';
-                        }/* x2temp */else{
-                            $role->userId=$user;
-                            $role->type='group';
-                        }/* end x2temp */
-                        $role->save();
-                    }
-                    $fields=Fields::model()->findAll();
-                    $temp=array();
-                    foreach($fields as $field){
-                        $temp[]=$field->id;
-                    }
-                    $both=array_intersect($viewPermissions,$editPermissions);
-                    $view=array_diff($viewPermissions,$editPermissions);
-                    $neither=array_diff($temp,$viewPermissions);
-                    foreach($both as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=2;
-                        $rolePerm->save();
-                    }
-                    foreach($view as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=1;
-                        $rolePerm->save();
-                    }
-                    foreach($neither as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=0;
-                        $rolePerm->save();
-                    }
-                    
-                }
-                $this->redirect('manageRoles');
-            }
-            
-            $this->render('roleEditor',array(
-                'model'=>$model,
-            ));
-        }
-        
-        public function actionDeleteRole(){
-            $roles=Roles::model()->findAll();
-            if(isset($_POST['role'])){
-                $id=$_POST['role'];
-                $role=Roles::model()->findByAttributes(array('name'=>$id));
-                $id=$role->id;
-                $userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$role->id));
-                foreach($userRoles as $userRole){
-                    $userRole->delete();
-                }
-                $permissions=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$role->id));
-                foreach($permissions as $permission){
-                    $permission->delete();
-                }
-                $workflowRoles=RoleToWorkflow::model()->findAllByAttributes(array('replacementId'=>$role->id));
-                foreach($workflowRoles as $workflow){
-                    $workflow->delete();
-                }
-                $role->delete();
-                
-                $this->redirect('manageRoles');
-            }
-            
-            $this->render('deleteRole',array(
-                'roles'=>$roles,
-            ));
-        }
-        
-        public function actionEditRole(){
-            $model=new Roles;
-            
-            if(isset($_POST['Roles'])){
-                $id=$_POST['Roles']['name'];
-                $model=Roles::model()->findByAttributes(array('name'=>$id));
-                $id=$model->id;
-                if(!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
-                    $this->redirect('manageRoles');
-                $viewPermissions=$_POST['viewPermissions'];
-                $editPermissions=$_POST['editPermissions'];
-                if(isset($_POST['users']))
-                    $users=$_POST['users'];
-                else
-                    $users=array();
-                $model->users="";
-                if($model->save()){
-                    $userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$model->id));
-                    foreach($userRoles as $role){
-                        $role->delete();
-                    }
-                    $permissions=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$model->id));
-                    foreach($permissions as $permission){
-                        $permission->delete();
-                    }
-                    foreach($users as $user){
-                        $userRecord=User::model()->findByAttributes(array('username'=>$user));
-                        $role=new RoleToUser;
-                        $role->roleId=$model->id;
-                        if(!is_numeric($user)){
-                            $userRecord=User::model()->findByAttributes(array('username'=>$user));
-                            $role->userId=$userRecord->id;
-                            $role->type='user';
-                        }/* x2temp */else{
-                            $role->userId=$user;
-                            $role->type='group';
-                        }/* end x2temp */
-                        $role->save();
-                    }
-                    $fields=Fields::model()->findAll();
-                    $temp=array();
-                    foreach($fields as $field){
-                        $temp[]=$field->id;
-                    }
-                    $both=array_intersect($viewPermissions,$editPermissions);
-                    $view=array_diff($viewPermissions,$editPermissions);
-                    $neither=array_diff($temp,$viewPermissions);
-                    foreach($both as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=2;
-                        $rolePerm->save();
-                    }
-                    foreach($view as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=1;
-                        $rolePerm->save();
-                    }
-                    foreach($neither as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=0;
-                        $rolePerm->save();
-                    }
-                    
-                }
-                $this->redirect('manageRoles');
-            }
-            
-            $this->render('editRole',array(
-                'model'=>$model,
-            ));
-        }
-        
-        public function actionRoleException(){
-            $model=new Roles;
-            $temp=Workflow::model()->findAll();
-            $workflows=array();
-            foreach($temp as $workflow){
-                $workflows[$workflow->id]=$workflow->name;
-            }
-            if(isset($_POST['Roles'])){
-                $workflow=$_POST['workflow'];
-                $workflowName=Workflow::model()->findByPk($workflow)->name;
-                $stage=$_POST['workflowStages'];
-                $stageName=WorkflowStage::model()->findByPk($stage)->name;
-                $viewPermissions=$_POST['viewPermissions'];
-                $editPermissions=$_POST['editPermissions'];
-                $users=$_POST['users'];
-                $model->attributes=$_POST['Roles'];
-                $oldRole=Roles::model()->findByAttributes(array('name'=>$model->name));
-                $model->users="";
-                $model->name.=" - $workflowName: $stageName";
-                if($model->save()){
-                    $replacement=new RoleToWorkflow;
-                    $replacement->workflowId=$workflow;
-                    $replacement->stageId=$stage;
-                    $replacement->roleId=$oldRole->id;
-                    $replacement->replacementId=$model->id;
-                    $replacement->save();
-                    $fields=Fields::model()->findAll();
-                    $temp=array();
-                    foreach($fields as $field){
-                        $temp[]=$field->id;
-                    }
-                    $both=array_intersect($viewPermissions,$editPermissions);
-                    $view=array_diff($viewPermissions,$editPermissions);
-                    $neither=array_diff($temp,$viewPermissions);
-                    foreach($both as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=2;
-                        $rolePerm->save();
-                    }
-                    foreach($view as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=1;
-                        $rolePerm->save();
-                    }
-                    foreach($neither as $field){
-                        $rolePerm=new RoleToPermission;
-                        $rolePerm->roleId=$model->id;
-                        $rolePerm->fieldId=$field;
-                        $rolePerm->permission=0;
-                        $rolePerm->save();
-                    }
-                }
-                $this->redirect('manageRoles');
-            }
-            $this->render('roleException',array(
-                'model'=>$model,
-                'workflows'=>$workflows,
-            ));
-        }
-        
-        public function actionGetWorkflowStages(){
-            if(isset($_POST['workflow'])){
-                $id=$_POST['workflow'];
-                $stages=Workflow::getStages($id);
-                foreach($stages as $key=>$value){
-                    echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
-                }
-            
-            }else{
-                echo CHtml::tag('option', array('value'=>''),CHtml::encode(var_dump($_POST)),true); 
-            }
-        }
-        
-        public function actionGetRole(){
-            if(isset($_POST['Roles'])){
-                $id=$_POST['Roles']['name'];
-                if(is_null($id)){
-                    echo ""; 
-                    exit;
-                }
-                $role=Roles::model()->findByAttributes(array('name'=>$id));
-                $id=$role->id;
-                $roles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$id));
-                $users=array();
-                foreach($roles as $link){
-                    if($link->type=='user')
-                        $users[]=User::model()->findByPk($link->userId)->username;
-                    /* x2temp */
-                    else
-                        $users[]=Groups::model()->findByPk($link->userId)->id;
-                    /* end x2temp */
-                }
-                $allUsers=User::model()->findAll();
-                $selected=array();
-                $unselected=array();
-                foreach($users as $user){
-                    $selected[]=$user;
-                }
-                foreach($allUsers as $user){
-                    $unselected[$user->username]=$user->firstName." ".$user->lastName;
-                }
-                /* x2temp */
-                $groups=Groups::model()->findAll();
-                foreach($groups as $group){
-                    $unselected[$group->id]=$group->name;
-                }
-                /* end x2temp */
-                unset($unselected['admin']);
-                echo "<div id='users'><label>Users</label>";
-                echo CHtml::dropDownList('users[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
-                echo "</div>";
-                $fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelName ASC");
-                $viewSelected=array();
-                $editSelected=array();
-                $fieldUnselected=array();
-                $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$role->id));
-                foreach($fieldPerms as $perm){
-                    if($perm->permission==2){
-                        $viewSelected[]=$perm->fieldId;
-                        $editSelected[]=$perm->fieldId;
-                    }else if($perm->permission==1){
-                        $viewSelected[]=$perm->fieldId;
-                    }
-                }
-                foreach($fields as $field){
-                    $fieldUnselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
-                }
-                echo "<br /><label>View Permissions</label>";
-                echo CHtml::dropDownList('viewPermissions[]',$viewSelected,$fieldUnselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
-                echo "<br /><label>Edit Permissions</label>";
-                echo CHtml::dropDownList('editPermissions[]',$editSelected,$fieldUnselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
-            }
-        }
-        
-        public function actionManageRoles(){
-            $model=new Roles;
-            $dataProvider=new CActiveDataProvider('Roles');
-            $roles=$dataProvider->getData();
-            $arr=array();
-            foreach($roles as $role){
-                $arr[$role->name]=$role->name;
-            }
-            $temp=Workflow::model()->findAll();
-            $workflows=array();
-            foreach($temp as $workflow){
-                $workflows[$workflow->id]=$workflow->name;
-            }
-            
-            $this->render('manageRoles',array(
-                'dataProvider'=>$dataProvider,
-                'model'=>$model,
-                'roles'=>$arr,
-                'workflows'=>$workflows,
-            ));
-        }
-        
-        public function actionToggleUpdater(){
-            
-            $admin=AdminChild::model()->findByPk(1);
-            $admin->ignoreUpdates?$admin->ignoreUpdates=0:$admin->ignoreUpdates=1;
-            $admin->save();
-            $this->redirect('index');
-        }
+		
+	}
+	
+	public function actionRoleEditor(){
+		$model=new Roles;
+		
+		if(isset($_POST['Roles'])){
+			$model->attributes=$_POST['Roles'];
+			if(!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
+				$this->redirect('manageRoles');
+			$viewPermissions=$_POST['viewPermissions'];
+			$editPermissions=$_POST['editPermissions'];
+			if(isset($_POST['Roles']['users']))
+				$users=$model->users;
+			else
+				$users=array();
+			$model->users="";
+			if($model->save()){
+				foreach($users as $user){
+					$role=new RoleToUser;
+					$role->roleId=$model->id;
+					if(!is_numeric($user)){
+						$userRecord=User::model()->findByAttributes(array('username'=>$user));
+						$role->userId=$userRecord->id;
+						$role->type='user';
+					}/* x2temp */else{
+						$role->userId=$user;
+						$role->type='group';
+					}/* end x2temp */
+					$role->save();
+				}
+				$fields=Fields::model()->findAll();
+				$temp=array();
+				foreach($fields as $field){
+					$temp[]=$field->id;
+				}
+				$both=array_intersect($viewPermissions,$editPermissions);
+				$view=array_diff($viewPermissions,$editPermissions);
+				$neither=array_diff($temp,$viewPermissions);
+				foreach($both as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=2;
+					$rolePerm->save();
+				}
+				foreach($view as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=1;
+					$rolePerm->save();
+				}
+				foreach($neither as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=0;
+					$rolePerm->save();
+				}
+				
+			}
+			$this->redirect('manageRoles');
+		}
+		
+		$this->render('roleEditor',array(
+			'model'=>$model,
+		));
+	}
+	
+	public function actionDeleteRole(){
+		$roles=Roles::model()->findAll();
+		if(isset($_POST['role'])){
+			$id=$_POST['role'];
+			$role=Roles::model()->findByAttributes(array('name'=>$id));
+			$id=$role->id;
+			$userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$role->id));
+			foreach($userRoles as $userRole){
+				$userRole->delete();
+			}
+			$permissions=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$role->id));
+			foreach($permissions as $permission){
+				$permission->delete();
+			}
+			$workflowRoles=RoleToWorkflow::model()->findAllByAttributes(array('replacementId'=>$role->id));
+			foreach($workflowRoles as $workflow){
+				$workflow->delete();
+			}
+			$role->delete();
+			
+			$this->redirect('manageRoles');
+		}
+		
+		$this->render('deleteRole',array(
+			'roles'=>$roles,
+		));
+	}
+	
+	public function actionEditRole(){
+		$model=new Roles;
+		
+		if(isset($_POST['Roles'])){
+			$id=$_POST['Roles']['name'];
+			$model=Roles::model()->findByAttributes(array('name'=>$id));
+			$id=$model->id;
+			if(!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
+				$this->redirect('manageRoles');
+			$viewPermissions=$_POST['viewPermissions'];
+			$editPermissions=$_POST['editPermissions'];
+			if(isset($_POST['users']))
+				$users=$_POST['users'];
+			else
+				$users=array();
+			$model->users="";
+			if($model->save()){
+				$userRoles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$model->id));
+				foreach($userRoles as $role){
+					$role->delete();
+				}
+				$permissions=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$model->id));
+				foreach($permissions as $permission){
+					$permission->delete();
+				}
+				foreach($users as $user){
+					$userRecord=User::model()->findByAttributes(array('username'=>$user));
+					$role=new RoleToUser;
+					$role->roleId=$model->id;
+					if(!is_numeric($user)){
+						$userRecord=User::model()->findByAttributes(array('username'=>$user));
+						$role->userId=$userRecord->id;
+						$role->type='user';
+					}/* x2temp */else{
+						$role->userId=$user;
+						$role->type='group';
+					}/* end x2temp */
+					$role->save();
+				}
+				$fields=Fields::model()->findAll();
+				$temp=array();
+				foreach($fields as $field){
+					$temp[]=$field->id;
+				}
+				$both=array_intersect($viewPermissions,$editPermissions);
+				$view=array_diff($viewPermissions,$editPermissions);
+				$neither=array_diff($temp,$viewPermissions);
+				foreach($both as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=2;
+					$rolePerm->save();
+				}
+				foreach($view as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=1;
+					$rolePerm->save();
+				}
+				foreach($neither as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=0;
+					$rolePerm->save();
+				}
+				
+			}
+			$this->redirect('manageRoles');
+		}
+		
+		$this->render('editRole',array(
+			'model'=>$model,
+		));
+	}
+	
+	public function actionRoleException(){
+		$model=new Roles;
+		$temp=Workflow::model()->findAll();
+		$workflows=array();
+		foreach($temp as $workflow){
+			$workflows[$workflow->id]=$workflow->name;
+		}
+		if(isset($_POST['Roles'])){
+			$workflow=$_POST['workflow'];
+			$workflowName=Workflow::model()->findByPk($workflow)->name;
+			$stage=$_POST['workflowStages'];
+			$stageName=WorkflowStage::model()->findByPk($stage)->name;
+			$viewPermissions=$_POST['viewPermissions'];
+			$editPermissions=$_POST['editPermissions'];
+			$users=$_POST['users'];
+			$model->attributes=$_POST['Roles'];
+			$oldRole=Roles::model()->findByAttributes(array('name'=>$model->name));
+			$model->users="";
+			$model->name.=" - $workflowName: $stageName";
+			if($model->save()){
+				$replacement=new RoleToWorkflow;
+				$replacement->workflowId=$workflow;
+				$replacement->stageId=$stage;
+				$replacement->roleId=$oldRole->id;
+				$replacement->replacementId=$model->id;
+				$replacement->save();
+				$fields=Fields::model()->findAll();
+				$temp=array();
+				foreach($fields as $field){
+					$temp[]=$field->id;
+				}
+				$both=array_intersect($viewPermissions,$editPermissions);
+				$view=array_diff($viewPermissions,$editPermissions);
+				$neither=array_diff($temp,$viewPermissions);
+				foreach($both as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=2;
+					$rolePerm->save();
+				}
+				foreach($view as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=1;
+					$rolePerm->save();
+				}
+				foreach($neither as $field){
+					$rolePerm=new RoleToPermission;
+					$rolePerm->roleId=$model->id;
+					$rolePerm->fieldId=$field;
+					$rolePerm->permission=0;
+					$rolePerm->save();
+				}
+			}
+			$this->redirect('manageRoles');
+		}
+		$this->render('roleException',array(
+			'model'=>$model,
+			'workflows'=>$workflows,
+		));
+	}
+	
+	public function actionWorkflowSettings() {
+		$admin = &Yii::app()->params->admin;
+		if(isset($_POST['Admin'])) {
+
+			$admin->attributes = $_POST['Admin'];
+			// $admin->timeout *= 60;	//convert from minutes to seconds
+			
+
+			if($admin->save()) {
+				// $this->redirect('workflowSettings');
+			}
+		}
+		// $admin->timeout = ceil($admin->timeout / 60);
+		$this->render('workflowSettings',array(
+			'model'=>$admin,
+		));
+	
+	
+	
+	}
+	
+	public function actionGetWorkflowStages(){
+		if(isset($_POST['workflow'])){
+			$id=$_POST['workflow'];
+			$stages=Workflow::getStages($id);
+			foreach($stages as $key=>$value){
+				echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
+			}
+		
+		}else{
+			echo CHtml::tag('option', array('value'=>''),CHtml::encode(var_dump($_POST)),true); 
+		}
+	}
+
+	public function actionGetRole(){
+		if(isset($_POST['Roles'])){
+			$id=$_POST['Roles']['name'];
+			if(is_null($id)){
+				echo ""; 
+				exit;
+			}
+			$role=Roles::model()->findByAttributes(array('name'=>$id));
+			$id=$role->id;
+			$roles=RoleToUser::model()->findAllByAttributes(array('roleId'=>$id));
+			$users=array();
+			foreach($roles as $link){
+				if($link->type=='user')
+					$users[]=User::model()->findByPk($link->userId)->username;
+				/* x2temp */
+				else
+					$users[]=Groups::model()->findByPk($link->userId)->id;
+				/* end x2temp */
+			}
+			$allUsers=User::model()->findAll();
+			$selected=array();
+			$unselected=array();
+			foreach($users as $user){
+				$selected[]=$user;
+			}
+			foreach($allUsers as $user){
+				$unselected[$user->username]=$user->firstName." ".$user->lastName;
+			}
+			/* x2temp */
+			$groups=Groups::model()->findAll();
+			foreach($groups as $group){
+				$unselected[$group->id]=$group->name;
+			}
+			/* end x2temp */
+			unset($unselected['admin']);
+			echo "<div id='users'><label>Users</label>";
+			echo CHtml::dropDownList('users[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+			echo "</div>";
+			$fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelName ASC");
+			$viewSelected=array();
+			$editSelected=array();
+			$fieldUnselected=array();
+			$fieldPerms=RoleToPermission::model()->findAllByAttributes(array('roleId'=>$role->id));
+			foreach($fieldPerms as $perm){
+				if($perm->permission==2){
+					$viewSelected[]=$perm->fieldId;
+					$editSelected[]=$perm->fieldId;
+				}else if($perm->permission==1){
+					$viewSelected[]=$perm->fieldId;
+				}
+			}
+			foreach($fields as $field){
+				$fieldUnselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
+			}
+			echo "<br /><label>View Permissions</label>";
+			echo CHtml::dropDownList('viewPermissions[]',$viewSelected,$fieldUnselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+			echo "<br /><label>Edit Permissions</label>";
+			echo CHtml::dropDownList('editPermissions[]',$editSelected,$fieldUnselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+		}
+	}
+	
+	public function actionManageRoles(){
+		$model=new Roles;
+		$dataProvider=new CActiveDataProvider('Roles');
+		$roles=$dataProvider->getData();
+		$arr=array();
+		foreach($roles as $role){
+			$arr[$role->name]=$role->name;
+		}
+		$temp=Workflow::model()->findAll();
+		$workflows=array();
+		foreach($temp as $workflow){
+			$workflows[$workflow->id]=$workflow->name;
+		}
+		
+		$this->render('manageRoles',array(
+			'dataProvider'=>$dataProvider,
+			'model'=>$model,
+			'roles'=>$arr,
+			'workflows'=>$workflows,
+		));
+	}
+	
+	public function actionToggleUpdater(){
+		
+		$admin=AdminChild::model()->findByPk(1);
+		$admin->ignoreUpdates?$admin->ignoreUpdates=0:$admin->ignoreUpdates=1;
+		$admin->save();
+		$this->redirect('index');
+	}
 	
 	public function actionContactUs() {
 
@@ -811,78 +835,78 @@ class AdminController extends Controller {
 		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
 			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
 		}
-            
-            $this->render('viewChangelog',array(
-                'model'=>$model,
-            ));
-        }
-        
-        public function actionAddCriteria(){
-            $criteria=new Criteria;
-            $users=User::getNames();
-            $dataProvider=new CActiveDataProvider('Criteria');
-            unset($users['']);
-            if(isset($_POST['Criteria'])){
-               $criteria->attributes=$_POST['Criteria'];
-               $str="";
-               $arr=$criteria->users;
-               if($criteria->type=='assignment' && count($arr)>1){
-                   $this->redirect('addCriteria');
-               }
-               if(isset($arr)){
-                   foreach($arr as $user){
-                       $str.=$user.", ";
-                   }
-                   $str=substr($str,0,-2);
-               }
-               $criteria->users=$str;
-               if($criteria->modelType!=null && $criteria->comparisonOperator!=null){
-                   if($criteria->save()){
+		
+		$this->render('viewChangelog',array(
+			'model'=>$model,
+		));
+	}
+	
+	public function actionAddCriteria(){
+		$criteria=new Criteria;
+		$users=User::getNames();
+		$dataProvider=new CActiveDataProvider('Criteria');
+		unset($users['']);
+		if(isset($_POST['Criteria'])){
+		   $criteria->attributes=$_POST['Criteria'];
+		   $str="";
+		   $arr=$criteria->users;
+		   if($criteria->type=='assignment' && count($arr)>1){
+			   $this->redirect('addCriteria');
+		   }
+		   if(isset($arr)){
+			   foreach($arr as $user){
+				   $str.=$user.", ";
+			   }
+			   $str=substr($str,0,-2);
+		   }
+		   $criteria->users=$str;
+		   if($criteria->modelType!=null && $criteria->comparisonOperator!=null){
+			   if($criteria->save()){
 
-                   }
-                   $this->redirect('index');
-               }
-               
-            }
-            $this->render('addCriteria',array(
-                'users'=>$users,
-                'model'=>$criteria,
-                'dataProvider'=>$dataProvider,
-            ));
-        }
-        
-        public function actionDeleteCriteria($id){
-            
-            $model=Criteria::model()->findByPk($id);
-            $model->delete();
-            $this->redirect(array('addCriteria'));
-        }
-        
-        public function actionDeleteRouting($id){
-            
-            $model=LeadRouting::model()->findByPk($id);
-            $model->delete();
-            $this->redirect(array('roundRobinRules'));
-        }
-        
-        public function actionGetAttributes(){
-            if(isset($_POST['Criteria']['modelType']) || isset($_POST['Fields']['modelName'])){
-                if(isset($_POST['Criteria']['modelType']))
-                    $type=ucfirst($_POST['Criteria']['modelType']);
-                if(isset($_POST['Fields']['modelName']))
-                    $type=ucfirst($_POST['Fields']['modelName']);
-                if($type=='Quotes')$type="Quote";
-                if($type=="Products")$type="Product";
-                
-                $arr=CActiveRecord::model($type)->attributeLabels();
-                
-                foreach($arr as $key=>$value){
-                    echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
-                }
-            }else{
-                echo CHtml::tag('option', array('value'=>''),CHtml::encode(var_dump($_POST)),true); 
-            }
-        }
+			   }
+			   $this->redirect('index');
+		   }
+		   
+		}
+		$this->render('addCriteria',array(
+			'users'=>$users,
+			'model'=>$criteria,
+			'dataProvider'=>$dataProvider,
+		));
+	}
+	
+	public function actionDeleteCriteria($id){
+		
+		$model=Criteria::model()->findByPk($id);
+		$model->delete();
+		$this->redirect(array('addCriteria'));
+	}
+	
+	public function actionDeleteRouting($id){
+		
+		$model=LeadRouting::model()->findByPk($id);
+		$model->delete();
+		$this->redirect(array('roundRobinRules'));
+	}
+	
+	public function actionGetAttributes(){
+		if(isset($_POST['Criteria']['modelType']) || isset($_POST['Fields']['modelName'])){
+			if(isset($_POST['Criteria']['modelType']))
+				$type=ucfirst($_POST['Criteria']['modelType']);
+			if(isset($_POST['Fields']['modelName']))
+				$type=ucfirst($_POST['Fields']['modelName']);
+			if($type=='Quotes')$type="Quote";
+			if($type=="Products")$type="Product";
+			
+			$arr=CActiveRecord::model($type)->attributeLabels();
+			
+			foreach($arr as $key=>$value){
+				echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
+			}
+		}else{
+			echo CHtml::tag('option', array('value'=>''),CHtml::encode(var_dump($_POST)),true); 
+		}
+	}
 	
 	// public function actionToggleAccounts() {
 		// $admin=Admin::model()->findByPk(1);
@@ -1034,32 +1058,32 @@ class AdminController extends Controller {
 			// $model->visible=1;
 			$model->custom=1;
 			$model->modified=1;
-                        $model->fieldName=strtolower($model->fieldName);
+			$model->fieldName=strtolower($model->fieldName);
 			
 			$fieldType=$model->type;
-                        switch($fieldType){
-                            case "boolean":
-                                $fieldType="BOOLEAN";
-                                break;
-                            case "float":
-                                $fieldType="FLOAT";
-                                break;
-                            case "int":
-                                $fieldType="BIGINT";
-                                break;
-                            case "text":
-                                $fieldType="TEXT";
-                                break;
-							case "date":
-								$fieldType="BIGINT";
-								break;
-							case "currency":
-								$fieldType="FLOAT";
-								break;
-                            default:
-                                $fieldType='VARCHAR(250)';
-                                break;
-                        }
+			switch($fieldType){
+				case "boolean":
+					$fieldType="BOOLEAN";
+					break;
+				case "float":
+					$fieldType="FLOAT";
+					break;
+				case "int":
+					$fieldType="BIGINT";
+					break;
+				case "text":
+					$fieldType="TEXT";
+					break;
+				case "date":
+					$fieldType="BIGINT";
+					break;
+				case "currency":
+					$fieldType="FLOAT";
+					break;
+				default:
+					$fieldType='VARCHAR(250)';
+					break;
+			}
 			
 			if($model->type=='dropdown'){
                             if(isset($_POST['dropdown'])){
@@ -1073,17 +1097,20 @@ class AdminController extends Controller {
                                 $model->linkType=ucfirst($linkType); 
                             }
                         }
-			$type=strtolower($model->modelName);
+                        $tableName=CActiveRecord::model($model->modelName)->tableName();
+
+
 			$field=strtolower($model->fieldName);
 			if(preg_match("/\s/",$field)){
 				
 			}else{
                             if($model->save()){
-                                    $sql="ALTER TABLE x2_$type ADD COLUMN $field $fieldType";
+                                    $sql="ALTER TABLE $tableName ADD COLUMN $field $fieldType";
                                     $command = Yii::app()->db->createCommand($sql);
                                     $result = $command->query();
 
-                            }   
+
+				}   
 			}
 			$this->redirect('manageFields');
 		}
@@ -1096,16 +1123,16 @@ class AdminController extends Controller {
 		if(isset($_POST['field']) && $_POST['field']!=""){
 			$id = $_POST['field'];
 			$field = Fields::model()->findByPk($id);
-			$model = strtolower($field->modelName);
 			$fieldName = strtolower($field->fieldName);
+                        $tableName=CActiveRecord::model($field->modelName)->tableName();
 			if($field->delete()){
-				$sql="ALTER TABLE x2_$model DROP COLUMN $fieldName";
+				$sql="ALTER TABLE $tableName DROP COLUMN $fieldName";
 				$command = Yii::app()->db->createCommand($sql);
 				$result = $command->query();
 			}
 			
 		}
-                $this->redirect('manageFields');
+		$this->redirect('manageFields');
 	}
 	
 	public function actionCustomizeFields(){
@@ -1119,17 +1146,17 @@ class AdminController extends Controller {
                         $modelField->attributes=$_POST['Fields'];
                         $modelField->type=$_POST['Fields']['type'];
 			if($modelField->type=='dropdown'){
-                            if(isset($_POST['dropdown'])){
-                                $id=$_POST['dropdown'];
-                                $modelField->linkType=$id;
-                            }
+				if(isset($_POST['dropdown'])){
+					$id=$_POST['dropdown'];
+					$modelField->linkType=$id;
+				}
 			}
-                        if($modelField->type=="link"){
-                            if(isset($_POST['dropdown'])){
-                                $linkType=$_POST['dropdown'];
-                                $modelField->linkType=$linkType;
-                            }
-                        }
+				if($modelField->type=="link"){
+					if(isset($_POST['dropdown'])){
+						$linkType=$_POST['dropdown'];
+						$modelField->linkType=$linkType;
+					}
+				}
 			$modelField->modified=1;
                         (isset($_POST['Fields']['required']) && $_POST['Fields']['required']==1)?$modelField->required=1:$modelField->required=0;
 			(isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable']==1)?$modelField->searchable=1:$modelField->searchable=0;
@@ -1138,39 +1165,39 @@ class AdminController extends Controller {
 		}
 		
 	}
-        
-        public function actionGetFieldData(){
-            if(isset($_POST['Fields']['fieldName'])){
-                $field=$_POST['Fields']['fieldName'];
-                $modelField=Fields::model()->findByAttributes(array('fieldName'=>$field));
-                $temparr=$modelField->attributes;
-                if(!empty($modelField->linkType)){
-                    $type=$modelField->type;
-                    if($type=='link'){
-                        $arr=array();
-                        $modules=Modules::model()->findAll();
-                        foreach($modules as $module){
-                            if($module->searchable){
-                                $arr[$module->name]=$module->title;
-                            }
-                        }
-                        $temparr['dropdown']=CHtml::dropDownList('dropdown',$modelField->linkType,$arr);
-                        
-                    }elseif($type=='dropdown'){
-                        $dropdowns=Dropdowns::model()->findAll();
-                        $arr=array();
-                        foreach($dropdowns as $dropdown){
-                                $arr[$dropdown->id]=$dropdown->name;
-                        }
+	
+	public function actionGetFieldData(){
+		if(isset($_POST['Fields']['fieldName'])){
+			$field=$_POST['Fields']['fieldName'];
+			$modelField=Fields::model()->findByAttributes(array('fieldName'=>$field));
+			$temparr=$modelField->attributes;
+			if(!empty($modelField->linkType)){
+				$type=$modelField->type;
+				if($type=='link'){
+					$arr=array();
+					$modules=Modules::model()->findAll();
+					foreach($modules as $module){
+						if($module->searchable){
+							$arr[$module->name]=$module->title;
+						}
+					}
+					$temparr['dropdown']=CHtml::dropDownList('dropdown',$modelField->linkType,$arr);
+					
+				}elseif($type=='dropdown'){
+					$dropdowns=Dropdowns::model()->findAll();
+					$arr=array();
+					foreach($dropdowns as $dropdown){
+							$arr[$dropdown->id]=$dropdown->name;
+					}
 
-                        $temparr['dropdown']=CHtml::dropDownList('dropdown','',$arr);
-                    }
-                }else{
-                        $temparr['dropdown']="";
-                }
-                echo CJSON::encode($temparr);
-            }
-        }
+					$temparr['dropdown']=CHtml::dropDownList('dropdown','',$arr);
+				}
+			}else{
+					$temparr['dropdown']="";
+			}
+			echo CJSON::encode($temparr);
+		}
+	}
 	
 	public function actionManageFields(){
 		$model=new Fields;
@@ -1208,22 +1235,22 @@ class AdminController extends Controller {
 			$model->updatedBy='admin';
 			
 			$module=new Modules;
-                        $module->adminOnly=0;
-                        $module->toggleable=1;
-                        $module->custom=1;
-                        $module->visible=1;
-                        $module->editable=0;
-                        $module->searchable=0;
-                        $module->menuPosition=Modules::model()->count();
-                        $module->name='document';
-                        $module->title=$model->title;
-                        
-                        if($module->save()){
+			$module->adminOnly=0;
+			$module->toggleable=1;
+			$module->custom=1;
+			$module->visible=1;
+			$module->editable=0;
+			$module->searchable=0;
+			$module->menuPosition=Modules::model()->count();
+			$module->name='document';
+			$module->title=$model->title;
 			
-                            if($model->save()) {
-                                    $this->redirect(array('viewPage','id'=>$model->id));
-                            }
-                        }
+			if($module->save()){
+
+				if($model->save()) {
+						$this->redirect(array('viewPage','id'=>$model->id));
+				}
+			}
 		}
 		
 		$this->render('createPage',array(
@@ -1244,11 +1271,11 @@ class AdminController extends Controller {
 	
 	public function actionRenameModules() {
 		
-                $order=Modules::model()->findAllByAttributes(array('visible'=>1));
-                $menuItems=array();
-                foreach($order as $module){
-                    $menuItems[$module->name]=$module->title;
-                }
+		$order=Modules::model()->findAllByAttributes(array('visible'=>1));
+		$menuItems=array();
+		foreach($order as $module){
+			$menuItems[$module->name]=$module->title;
+		}
 		foreach($menuItems as $key => $value)
 			$menuItems[$key] = preg_replace('/&#58;/',':',$value);	// decode any colons
 
@@ -1272,18 +1299,18 @@ class AdminController extends Controller {
 	public function actionManageModules() {
 
 		// get admin model
-                
-                $modules=Modules::model()->findAll(array('order'=>'menuPosition ASC'));
+
+		$modules=Modules::model()->findAll(array('order'=>'menuPosition ASC'));
 		
 		$menuItems = array();		// assoc. array with correct order, containing realName => nickName
 		$selectedItems = array();
-                
-                foreach($modules as $module){
-                    $menuItems[$module->name]=$module->title;
-                    if($module->visible){
-                        $selectedItems[]=$module->name;
-                    }
-                }
+		
+		foreach($modules as $module){
+			$menuItems[$module->name]=$module->title;
+			if($module->visible){
+				$selectedItems[]=$module->name;
+			}
+		}
 
 
 		if(isset($_POST['formSubmit'])) {
@@ -1297,25 +1324,25 @@ class AdminController extends Controller {
 				unset($menuItems[$item]);					// and remove them from $menuItems
 			}
 			foreach($newMenuItems as $key=>$item){
-                            $moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
-                            if(isset($moduleRecord)){
-                                $moduleRecord->visible=1;
-                                $moduleRecord->menuPosition=array_search($key,array_keys($newMenuItems));
-                                if($moduleRecord->save()){
+				$moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
+				if(isset($moduleRecord)){
+					$moduleRecord->visible=1;
+					$moduleRecord->menuPosition=array_search($key,array_keys($newMenuItems));
+					if($moduleRecord->save()){
 
-                                }
-                            }
-                        }
+					}
+				}
+			}
 			foreach($menuItems as $key=>$item){
-                            $moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
-                            if(isset($moduleRecord)){
-                                $moduleRecord->visible=0;
-                                $moduleRecord->menuPosition=-1;
-                                if($moduleRecord->save()){
+				$moduleRecord=Modules::model()->findByAttributes(array('name'=>$key));
+				if(isset($moduleRecord)){
+					$moduleRecord->visible=0;
+					$moduleRecord->menuPosition=-1;
+					if($moduleRecord->save()){
 
-                                }
-                            }
-                        }
+					}
+				}
+			}
 			
 			$this->redirect('manageModules');
                         
@@ -1433,16 +1460,16 @@ class AdminController extends Controller {
 				$this->createSkeletonDirectories($moduleName);
 				
 				$moduleRecord=new Modules;
-                                $moduleRecord->name=$moduleName;
-                                $moduleRecord->title=$title;
-                                $moduleRecord->custom=1;
-                                $moduleRecord->visible=1;
-                                $moduleRecord->editable=$_POST['editable'];
-                                $moduleRecord->adminOnly=$_POST['adminOnly'];
-                                $moduleRecord->searchable=$_POST['searchable'];
-                                $moduleRecord->toggleable=1;
-                                $moduleRecord->menuPosition=Modules::model()->count();
-                                $moduleRecord->save();
+				$moduleRecord->name=$moduleName;
+				$moduleRecord->title=$title;
+				$moduleRecord->custom=1;
+				$moduleRecord->visible=1;
+				$moduleRecord->editable=$_POST['editable'];
+				$moduleRecord->adminOnly=$_POST['adminOnly'];
+				$moduleRecord->searchable=$_POST['searchable'];
+				$moduleRecord->toggleable=1;
+				$moduleRecord->menuPosition=Modules::model()->count();
+				$moduleRecord->save();
 				
 				$this->redirect(array('/'.$moduleName.'/default/index'));
 			}
@@ -1450,54 +1477,54 @@ class AdminController extends Controller {
 		
 		$this->render('createModule',array('errors'=>$errors));
 	}
-        
-        private function writeConfig($title,$moduleName,$recordName) {
-            
-                $templateFolder=Yii::app()->file->set('protected/modules/template/');
-                $templateFolder->copy($moduleName);
-                
-                $module=Yii::app()->file->set('protected/modules/template/TemplatesModule.php');
-                $module->copy('protected/modules/'.$moduleName.'/TemplatesModule.php');
-               
+		
+		private function writeConfig($title,$moduleName,$recordName) {
+			
+				$templateFolder=Yii::app()->file->set('protected/modules/template/');
+				$templateFolder->copy($moduleName);
+				
+				$module=Yii::app()->file->set('protected/modules/template/TemplatesModule.php');
+				$module->copy('protected/modules/'.$moduleName.'/TemplatesModule.php');
 
-		$configFile = Yii::app()->file->set('protected/config/templatesConfig.php', true);
-		$configFile->copy($moduleName.'Config.php');
 
-		$configFile=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php', true);
+			$configFile = Yii::app()->file->set('protected/config/templatesConfig.php', true);
+			$configFile->copy($moduleName.'Config.php');
 
-		$str = "<?php
+			$configFile=Yii::app()->file->set('protected/config/'.$moduleName.'Config.php', true);
+
+			$str = "<?php
 \$moduleConfig = array(
 	'title'=>'".addslashes($title)."',
 	'moduleName'=>'".addslashes($moduleName)."',
 	'recordName'=>'".addslashes($recordName)."',
 );
 ?>";
-                
-                $configFile->setContents($str);
-}
+
+			$configFile->setContents($str);
+		}
 	
 	private function createNewTable($moduleName) {
-                $moduleTitle=ucfirst($moduleName);
+		$moduleTitle=ucfirst($moduleName);
 		$sqlList=array("CREATE TABLE x2_".$moduleName."(
-                        id INT NOT NULL AUTO_INCREMENT primary key,
-                        assignedTo VARCHAR(250),
-                        name VARCHAR(250) NOT NULL,
-                        description TEXT,
-                        createDate INT,
-                        lastUpdated INT,
-                        updatedBy VARCHAR(250)
-                        )",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
-                        "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
-                foreach($sqlList as $sql){
-                    $command = Yii::app()->db->createCommand($sql);
-                    $command->execute();
-                }
+			id INT NOT NULL AUTO_INCREMENT primary key,
+			assignedTo VARCHAR(250),
+			name VARCHAR(250) NOT NULL,
+			description TEXT,
+			createDate INT,
+			lastUpdated INT,
+			updatedBy VARCHAR(250)
+			)",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
+		foreach($sqlList as $sql){
+			$command = Yii::app()->db->createCommand($sql);
+			$command->execute();
+		}
 	}
 	
 	private function createSkeletonDirectories($moduleName) {
@@ -1530,47 +1557,45 @@ class AdminController extends Controller {
 					$contents = preg_replace('/Templates/',ucfirst($moduleName),$contents);
 					
 					$newFileName = preg_replace('/templates/',$moduleName,$templateFile->filename);
-                                        $newFileName = preg_replace('/template/',$moduleName,$templateFile->filename);// replace 'template' with
+					$newFileName = preg_replace('/template/',$moduleName,$templateFile->filename);// replace 'template' with
 					$newFileName = preg_replace('/Templates/',ucfirst($moduleName),$newFileName);	// module name for new files
-                                        $templateFile->setFileName($newFileName);
-                                        $templateFile->setContents($contents);
+					$templateFile->setFileName($newFileName);
+					$templateFile->setContents($contents);
 				}
 			}
-
 	}
-	
+
 	public function actionDeleteModule() {
-	
-		
+
 		if(isset($_POST['name'])) {
 			$moduleName = $_POST['name'];
 			$module=Modules::model()->findByAttributes(array('name'=>$moduleName));
-                        if(isset($module)){
-                            if($module->name!='document' && $module->delete()) {
-                                    $config=include('protected/modules/'.$moduleName.'/register.php');
-                                    $uninstall=$config['uninstall'];
-                                    foreach($uninstall as $sql){
-                                        $query=Yii::app()->db->createCommand($sql);
-                                        $query->execute();
-                                    }
-                                    $fields=Fields::model()->findAllByAttributes(array('modelName'=>$moduleName));
-                                    foreach($fields as $field){
-                                        $field->delete();
-                                    }
+			if(isset($module)){
+				if($module->name!='document' && $module->delete()) {
+						$config=include('protected/modules/'.$moduleName.'/register.php');
+						$uninstall=$config['uninstall'];
+						foreach($uninstall as $sql){
+							$query=Yii::app()->db->createCommand($sql);
+							$query->execute();
+						}
+						$fields=Fields::model()->findAllByAttributes(array('modelName'=>$moduleName));
+						foreach($fields as $field){
+							$field->delete();
+						}
 
-                                    $this->rrmdir('protected/modules/'.$moduleName);
-                            }else{
-                                $module->delete();
-                            }
-                        }
+						$this->rrmdir('protected/modules/'.$moduleName);
+				}else{
+					$module->delete();
+				}
+			}
 			$this->redirect(array('admin/index'));
 		}
 		
 		$arr = array();
 		$modules=Modules::model()->findAllByAttributes(array('toggleable'=>1));
-                foreach($modules as $item){
-                    $arr[$item->name]=$item->title;
-                }
+		foreach($modules as $item){
+			$arr[$item->name]=$item->title;
+		}
 		
 		$this->render('deleteModule',array(
 			'modules'=>$arr,
@@ -1597,27 +1622,27 @@ class AdminController extends Controller {
 			);
 			foreach($fields as $field){
 				if(array_search($field->fieldName,$disallow)===false){
-                                    $fieldType=$field->type;
-                                    switch($fieldType){
-                                        case "boolean":
-                                        $fieldType="BOOLEAN";
-                                        break;
-                                    case "float":
-                                        $fieldType="FLOAT";
-                                        break;
-                                    case "int":
-                                        $fieldType="BIGINT";
-                                        break;
-                                    case "text":
-                                        $fieldType="TEXT";
-                                        break;
-                                    default:
-                                        $fieldType='VARCHAR(250)'; 
-                                        break;
-                                    }
+					$fieldType=$field->type;
+					switch($fieldType){
+						case "boolean":
+						$fieldType="BOOLEAN";
+						break;
+					case "float":
+						$fieldType="FLOAT";
+						break;
+					case "int":
+						$fieldType="BIGINT";
+						break;
+					case "text":
+						$fieldType="TEXT";
+						break;
+					default:
+						$fieldType='VARCHAR(250)'; 
+						break;
+					}
 					$sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType; INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
-                                }
-                        }
+					}
+				}
 			
 			$db=Yii::app()->file->set("protected/modules/$moduleName/sqlData.sql");
                         $db->create();
@@ -1638,11 +1663,11 @@ class AdminController extends Controller {
 		$arr=array();
 		
 		$modules=Modules::model()->findAll();
-                foreach($modules as $module){
-                    if($module->custom){
-                        $arr[$module->name]=$module->title;
-                    }
-                }
+		foreach($modules as $module){
+			if($module->custom){
+				$arr[$module->name]=$module->title;
+			}
+		}
 		
 		$this->render('exportModules',array(
 			'modules'=>$arr,
@@ -1679,57 +1704,57 @@ class AdminController extends Controller {
 		}
 		$this->render('importModule');
 	}
-        
-        public function actionRegisterModules(){
-            
-            $modules=scandir('protected/modules');
-            $modules=array_combine($modules,$modules);
-            $arr=array();
-            foreach($modules as $module){
-                if(file_exists("protected/modules/$module/register.php") && is_null(Modules::model()->findByAttributes(array('name'=>$module)))){
-                    $arr[]=($module);
-                }
-            }
-            $registeredModules=Modules::model()->findAll();
-            
-            $this->render('registerModules',array(
-                'modules'=>$arr,
-                'registeredModules'=>$registeredModules,
-            ));
-        }
-        
-        public function actionToggleModule($module){
+	
+	public function actionRegisterModules(){
+		
+		$modules=scandir('protected/modules');
+		$modules=array_combine($modules,$modules);
+		$arr=array();
+		foreach($modules as $module){
+			if(file_exists("protected/modules/$module/register.php") && is_null(Modules::model()->findByAttributes(array('name'=>$module)))){
+				$arr[]=($module);
+			}
+		}
+		$registeredModules=Modules::model()->findAll();
+		
+		$this->render('registerModules',array(
+			'modules'=>$arr,
+			'registeredModules'=>$registeredModules,
+		));
+	}
+	
+	public function actionToggleModule($module){
 
-            $config=include("protected/modules/$module/register.php");  
-            $exists=Modules::model()->findByAttributes(array('name'=>$module));
-            if(!isset($exists)){
-                $moduleRecord=new Modules;
-                $moduleRecord->editable=$config['editable']?1:0;
-                $moduleRecord->searchable=$config['searchable']?1:0;
-                $moduleRecord->adminOnly=$config['adminOnly']?1:0;
-                $moduleRecord->custom=$config['custom']?1:0;
-                $moduleRecord->toggleable=$config['toggleable']?1:0;
-                $moduleRecord->name=$module;
-                $moduleRecord->title=$config['name'];
-                $moduleRecord->visible=1;
-                $moduleRecord->menuPosition=Modules::model()->count();
+		$config=include("protected/modules/$module/register.php");  
+		$exists=Modules::model()->findByAttributes(array('name'=>$module));
+		if(!isset($exists)){
+			$moduleRecord=new Modules;
+			$moduleRecord->editable=$config['editable']?1:0;
+			$moduleRecord->searchable=$config['searchable']?1:0;
+			$moduleRecord->adminOnly=$config['adminOnly']?1:0;
+			$moduleRecord->custom=$config['custom']?1:0;
+			$moduleRecord->toggleable=$config['toggleable']?1:0;
+			$moduleRecord->name=$module;
+			$moduleRecord->title=$config['name'];
+			$moduleRecord->visible=1;
+			$moduleRecord->menuPosition=Modules::model()->count();
 
-                if($moduleRecord->save()){
-                    $install=$config['install'];
-                }
-            }else{
-                $exists->visible=$exists->visible?0:1;
-                
-                if($exists->save()){
-                    if($exists->toggleable){
-                        $uninstall=$config['uninstall'];
-                    }else{
-                        
-                    }
-                }
-            }
-            $this->redirect('registerModules');
-        }
+			if($moduleRecord->save()){
+				$install=$config['install'];
+			}
+		}else{
+			$exists->visible=$exists->visible?0:1;
+			
+			if($exists->save()){
+				if($exists->toggleable){
+					$uninstall=$config['uninstall'];
+				}else{
+					
+				}
+			}
+		}
+		$this->redirect('registerModules');
+	}
 	
 	public function actionEditor() {
 
@@ -1920,17 +1945,17 @@ class AdminController extends Controller {
 			$model->attributes=$_POST['Dropdowns'];
 			$temp=array();
 			foreach($model->options as $option){
-                            if($option!="")
+				if($option!="")
 				$temp[$option]=$option;
 			}
-                        if(count($temp)>0){
-                            $model->options=json_encode($temp);
-                            if($model->save()){
-                                    $this->redirect('manageDropDowns');
-                            }
-                        }else{
-                            $this->redirect('manageDropDowns');
-                        }
+			if(count($temp)>0){
+				$model->options=json_encode($temp);
+				if($model->save()){
+						$this->redirect('manageDropDowns');
+				}
+			}else{
+				$this->redirect('manageDropDowns');
+			}
 		}
 		
 		$this->render('dropDownEditor',array(
@@ -2006,18 +2031,18 @@ class AdminController extends Controller {
 				
 				echo CHtml::dropDownList('dropdown','',$arr);
 			}elseif($type=='link'){
-                            $arr=array();
-                            $modules=Modules::model()->findAll();
-                            foreach($modules as $module){
-                                if($module->searchable){
-                                    if($module->name!="products")
-                                        $arr[$module->name]=$module->title;
-                                    else
-                                        $arr['product']="Products";
-                                }
-                            }
-                            echo CHtml::dropDownList('dropdown','',$arr);
-                        }
+				$arr=array();
+				$modules=Modules::model()->findAll();
+				foreach($modules as $module){
+					if($module->searchable){
+						if($module->name!="products")
+							$arr[$module->name]=$module->title;
+						else
+							$arr['product']="Products";
+					}
+				}
+				echo CHtml::dropDownList('dropdown','',$arr);
+			}
 		}
 	}
 	
@@ -2032,128 +2057,128 @@ class AdminController extends Controller {
 		
 		$file='data.csv';
 		$fp = fopen($file, 'w+');
-                
-                $modules=Modules::model()->findAll();
-                $pieces=array();
-                foreach($modules as $module){
-                    $pieces[]=$module->name;
-                }
 		
-                $tempArr=array();
-                foreach($pieces as $model){
-                    if($model=="quotes")
-                        $model="quote";
-                    if($model=="products")
-                        $model="product";
-                    if($model=='marketing')
-                        $model="campaign";
-					if($model=='users')
-						$model='user';
-                    if($model!='dashboard' && $model!='charts' && $model!='calendar' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
-                        $tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
-                }
-                
-                $tempArr['Profile']=ProfileChild::model()->findAll();
-                $labels=array();
-                foreach($tempArr as $model=>$data){
-                    $temp=CActiveRecord::model($model);
-                    $tempKeys=array_keys($temp->attributes);
-                    $tempKeys[]=$model;
-                    $labels[$model]=$tempKeys;
-                }
+		$modules=Modules::model()->findAll();
+		$pieces=array();
+		foreach($modules as $module){
+			$pieces[]=$module->name;
+		}
+
+		$tempArr=array();
+		foreach($pieces as $model){
+			if($model=="quotes")
+				$model="quote";
+			if($model=="products")
+				$model="product";
+			if($model=='marketing')
+				$model="campaign";
+			if($model=='users')
+				$model='user';
+			if($model!='dashboard' && $model!='charts' && $model!='calendar' && is_null(Docs::model()->findByAttributes(array('title'=>$model))))
+				$tempArr[ucfirst($model)]=CActiveRecord::model(ucfirst($model))->findAll();
+		}
+		
+		$tempArr['Profile']=ProfileChild::model()->findAll();
+		$labels=array();
+		foreach($tempArr as $model=>$data){
+			$temp=CActiveRecord::model($model);
+			$tempKeys=array_keys($temp->attributes);
+			$tempKeys[]=$model;
+			$labels[$model]=$tempKeys;
+		}
 		
 		fputcsv($fp,array(Yii::app()->params->version));
 
-                $keys=array_keys($tempArr);
-                
-                for($i=0;$i<count($tempArr);$i++){
-                    $meta=$labels[$keys[$i]];
-                    fputcsv($fp,$meta);
-                    foreach($tempArr[$keys[$i]] as $data){
-                        $tempAtr=$data->attributes;
-                        $tempAtr[]=$keys[$i];
-                        fputcsv($fp,$tempAtr);
-                    }
-                    
-                }
+		$keys=array_keys($tempArr);
+		
+		for($i=0;$i<count($tempArr);$i++){
+			$meta=$labels[$keys[$i]];
+			fputcsv($fp,$meta);
+			foreach($tempArr[$keys[$i]] as $data){
+				$tempAtr=$data->attributes;
+				$tempAtr[]=$keys[$i];
+				fputcsv($fp,$tempAtr);
+			}
+			
+		}
 
 		fclose($fp);
 
 	}
 	
 	public function actionImport() {
-            if (isset($_FILES['data'])) {
-                $overwrite=$_POST['overwrite'];
-                $temp = CUploadedFile::getInstanceByName('data');
-                $temp->saveAs('data.csv');
-                $this->globalImport('data.csv',$overwrite);
-            }
-            $this->render('import');
-        }
+		if (isset($_FILES['data'])) {
+			$overwrite=$_POST['overwrite'];
+			$temp = CUploadedFile::getInstanceByName('data');
+			$temp->saveAs('data.csv');
+			$this->globalImport('data.csv',$overwrite);
+		}
+		$this->render('import');
+	}
 		
 	private function globalImport($file, $overwrite) {
 		$fp = fopen($file,'r+');
 		$version=fgetcsv($fp);
 		$version=$version[0];
 		$type="";
-                $meta=array();
+		$meta=array();
 		while($pieces=fgetcsv($fp)) {
-                    if($pieces[count($pieces)-1]!=$type){
-                            $type=$pieces[count($pieces)-1];
-                            $meta=$pieces;
-                            continue;
-                    }
-                    eval('$model=new '.$pieces[count($pieces)-1].";");
-                    unset($pieces[count($pieces)-1]);
-                    $tempMeta=$meta;
-                    unset($tempMeta[count($tempMeta)-1]);
-                    $temp=array();
-                    for($i=0;$i<count($tempMeta);$i++){
-                            $temp[$tempMeta[$i]]=$pieces[$i];
-                    }
-                    foreach($model->attributes as $field=>$value){
-                        if(isset($temp[$field]))
-                            $model->$field=$temp[$field];
-                    }
-                    $lookup = CActiveRecord::model(get_class($model))->findByPk($model->id);
-                    if(!isset($lookup)){
-                            $model->save();
-                    }else if($overwrite){
-                            $lookup->delete();
-                            $model->save();
-                    }
+			if($pieces[count($pieces)-1]!=$type){
+				$type=$pieces[count($pieces)-1];
+				$meta=$pieces;
+				continue;
+			}
+			eval('$model=new '.$pieces[count($pieces)-1].";");
+			unset($pieces[count($pieces)-1]);
+			$tempMeta=$meta;
+			unset($tempMeta[count($tempMeta)-1]);
+			$temp=array();
+			for($i=0;$i<count($tempMeta);$i++){
+				$temp[$tempMeta[$i]]=$pieces[$i];
+			}
+			foreach($model->attributes as $field=>$value){
+				if(isset($temp[$field]))
+					$model->$field=$temp[$field];
+			}
+			$lookup = CActiveRecord::model(get_class($model))->findByPk($model->id);
+			if(!isset($lookup)){
+				$model->save();
+			}else if($overwrite){
+				$lookup->delete();
+				$model->save();
+			}
 		}
 		unlink($file);
 		$this->redirect('index');
 	}
-        
-        public function actionUpdater(){
-            include('protected/config/emailConfig.php');
+	
+	public function actionUpdater(){
+		include('protected/config/emailConfig.php');
 
-            $context = stream_context_create(array(
-                'http' => array(
-                    'timeout' => 15		// Timeout in seconds
-                )
-            ));
-            if(!isset($updaterVersion)){
-                $updaterVersion="";
-            }else{
-            }
-            if($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context)){
-                $url='x2planet';
-            }
-            else if($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context)){
-                $url='x2base';
-            }
-            
-            $updaterCheck=file_get_contents("http://www.$url.com/updates/updateCheck.php");
-            
-            if($updaterCheck!=$updaterVersion){
-                $file="protected/controllers/AdminController.php";
-                $this->ccopy("http://$url.com/updates/x2engine/".$file , $file);
-                $file="protected/views/admin/updater.php";
-                $this->ccopy("http://$url.com/updates/x2engine/".$file , $file);
-                $config="<?php
+		$context = stream_context_create(array(
+			'http' => array(
+				'timeout' => 15		// Timeout in seconds
+			)
+		));
+		if(!isset($updaterVersion)){
+			$updaterVersion="";
+		}else{
+		}
+		if($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context)){
+			$url='x2planet';
+		}
+		else if($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context)){
+			$url='x2base';
+		}
+		
+		$updaterCheck=file_get_contents("http://www.$url.com/updates/updateCheck.php");
+		
+		if($updaterCheck!=$updaterVersion){
+			$file="protected/controllers/AdminController.php";
+			$this->ccopy("http://$url.com/updates/x2engine/".$file , $file);
+			$file="protected/views/admin/updater.php";
+			$this->ccopy("http://$url.com/updates/x2engine/".$file , $file);
+			$config="<?php
 \$host='$host';
 \$user='$user';
 \$pass='$pass';
@@ -2166,7 +2191,7 @@ class AdminController extends Controller {
             }
             
             $contents=file_get_contents("http://www.$url.com/updates/update.php?version=$version");
-            $pieces=explode(";",$contents);
+            $pieces=explode(";;",$contents);
             $newVersion=$pieces[3];
             $sqlList=$pieces[1];
             $changelog=$pieces[4];
@@ -2178,9 +2203,8 @@ class AdminController extends Controller {
             if($sqlList!="")
                 $sqlList=explode(":&",$sqlList);
             else
-                $sqlList=array('');
+                $sqlList=array(''); 
             $this->saveBackup($fileList);
-            
             $this->render('updater',array(
                 'fileList'=>$fileList,
                 'sqlList'=>$sqlList,
@@ -2196,6 +2220,7 @@ class AdminController extends Controller {
         }
         
         public function actionDownload(){
+	if(isset($_GET['url']) && isset($_GET['file'])){
             if(Yii::app()->request->isAjaxRequest){
                 $url=$_GET['url'];
                 $file=$_GET['file'];
@@ -2217,7 +2242,8 @@ class AdminController extends Controller {
             }else{
                 $this->_sendResponse('400','Update requests must be made via AJAX.');
             }
-        }
+	}
+        } 
         
         public function actionDelete(){
             if(isset($_POST['delete'])){
@@ -2285,6 +2311,8 @@ class AdminController extends Controller {
                     $updaterCheck=file_get_contents("http://www.$url.com/updates/updateCheck.php");
                     $newVersion=$_POST['version'];
                     $config="<?php
+
+
 \$host='$host';
 \$user='$user';
 \$pass='$pass';
@@ -2293,144 +2321,144 @@ class AdminController extends Controller {
 \$updaterVersion='$updaterCheck';
 ?>";
 file_put_contents('protected/config/emailConfig.php', $config);
-                    echo "Update succeeded!";
-                }
-            }
-            if(is_dir('backup'))
-                $this->rrmdir('backup');
-            $assets=scandir('assets');
-            foreach($assets as $folder){
-                if($folder!=".." && $folder!=".")
-                    $this->rrmdir($folder);
-            }
-        }
-        
-        function ccopy($filepath, $file){
-    
-            $pieces=explode('/',$file);
-            unset($pieces[count($pieces)]);
-            for($i=0;$i<count($pieces);$i++){
-                $str="";
-                for($j=0;$j<$i;$j++){
-                    $str.=$pieces[$j].'/';
-                }
+				echo "Update succeeded!";
+			}
+		}
+		if(is_dir('backup'))
+			$this->rrmdir('backup');
+		$assets=scandir('assets');
+		foreach($assets as $folder){
+			if($folder!=".." && $folder!=".")
+				$this->rrmdir($folder);
+		}
+	}
+	
+	function ccopy($filepath, $file){
 
-                if(!is_dir($str) && $str!=""){
-                    mkdir($str);
-                }
-            }
-            return copy($filepath, $file);
-        }
-        function rrmdir($dir) { 
-           if (is_dir($dir)) { 
-             $objects = scandir($dir); 
-             foreach ($objects as $object) { 
-               if ($object != "." && $object != "..") { 
-                 if (filetype($dir."/".$object) == "dir") $this->rrmdir($dir."/".$object); else unlink($dir."/".$object); 
-               } 
-             } 
-             reset($objects); 
-             rmdir($dir); 
-           } 
-        }
-        function saveBackup($fileList){
-            if(!is_dir('backup'))
-                mkdir('backup');
-            foreach($fileList as $file){
-                if($file!="" && file_exists($file)){
-                    $this->ccopy($file,'backup/'.$file);
-                }
-            }
-        }
-        function restoreBackup($fileList){
-            foreach($fileList as $file){
-                if($file!="" && file_exists($file)){
-                    copy('backup/'.$file,$file);
-                }
-            }  
-        }
+		$pieces=explode('/',$file);
+		unset($pieces[count($pieces)]);
+		for($i=0;$i<count($pieces);$i++){
+			$str="";
+			for($j=0;$j<$i;$j++){
+				$str.=$pieces[$j].'/';
+			}
 
-        private function _sendResponse($status = 200, $body = '', $content_type = 'text/html')
-        {
-            // set the status
-            $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
-            header($status_header);
-            // and the content type
-            header('Content-type: ' . $content_type);
+			if(!is_dir($str) && $str!=""){
+				mkdir($str);
+			}
+		}
+		return copy($filepath, $file);
+	}
+	function rrmdir($dir) { 
+	   if (is_dir($dir)) { 
+		 $objects = scandir($dir); 
+		 foreach ($objects as $object) { 
+		   if ($object != "." && $object != "..") { 
+			 if (filetype($dir."/".$object) == "dir") $this->rrmdir($dir."/".$object); else unlink($dir."/".$object); 
+		   } 
+		 } 
+		 reset($objects); 
+		 rmdir($dir); 
+	   } 
+	}
+	function saveBackup($fileList){
+		if(!is_dir('backup'))
+			mkdir('backup');
+		foreach($fileList as $file){
+			if($file!="" && file_exists($file)){
+				$this->ccopy($file,'backup/'.$file);
+			}
+		}
+	}
+	function restoreBackup($fileList){
+		foreach($fileList as $file){
+			if($file!="" && file_exists($file)){
+				copy('backup/'.$file,$file);
+			}
+		}  
+	}
 
-            // pages with body are easy
-            if($body != '')
-            {
-                // send the body
-                echo $body;
-                exit;
-            }
-            // we need to create the body if none is passed
-            else
-            {
-                // create some body messages
-                $message = '';
+	private function _sendResponse($status = 200, $body = '', $content_type = 'text/html')
+	{
+		// set the status
+		$status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
+		header($status_header);
+		// and the content type
+		header('Content-type: ' . $content_type);
 
-                // this is purely optional, but makes the pages a little nicer to read
-                // for your users.  Since you won't likely send a lot of different status codes,
-                // this also shouldn't be too ponderous to maintain
-                switch($status)
-                {
-                    case 401:
-                        $message = 'You must be authorized to view this page.';
-                        break;
-                    case 404:
-                        $message = 'The requested URL ' . $_SERVER['REQUEST_URI'] . ' was not found.';
-                        break;
-                    case 500:
-                        $message = 'The server encountered an error processing your request.';
-                        break;
-                    case 501:
-                        $message = 'The requested method is not implemented.';
-                        break;
-                }
+		// pages with body are easy
+		if($body != '')
+		{
+			// send the body
+			echo $body;
+			exit;
+		}
+		// we need to create the body if none is passed
+		else
+		{
+			// create some body messages
+			$message = '';
 
-                // servers don't always have a signature turned on 
-                // (this is an apache directive "ServerSignature On")
-                $signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
+			// this is purely optional, but makes the pages a little nicer to read
+			// for your users.  Since you won't likely send a lot of different status codes,
+			// this also shouldn't be too ponderous to maintain
+			switch($status)
+			{
+				case 401:
+					$message = 'You must be authorized to view this page.';
+					break;
+				case 404:
+					$message = 'The requested URL ' . $_SERVER['REQUEST_URI'] . ' was not found.';
+					break;
+				case 500:
+					$message = 'The server encountered an error processing your request.';
+					break;
+				case 501:
+					$message = 'The requested method is not implemented.';
+					break;
+			}
 
-                // this should be templated in a real-world solution
-                $body = '
-        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-        <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-            <title>' . $status . ' ' . $this->_getStatusCodeMessage($status) . '</title>
-        </head>
-        <body>
-            <h1>' . $this->_getStatusCodeMessage($status) . '</h1>
-            <p>' . $message . '</p>
-            <hr />
-            <address>' . $signature . '</address>
-        </body>
-        </html>';
+			// servers don't always have a signature turned on 
+			// (this is an apache directive "ServerSignature On")
+			$signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
 
-                echo $body;
-                exit;
-            }
-        }
-        private function _getStatusCodeMessage($status)
-        {
-            // these could be stored in a .ini file and loaded
-            // via parse_ini_file()... however, this will suffice
-            // for an example
-            $codes = Array(
-                200 => 'OK',
-                400 => 'Bad Request',
-                401 => 'Unauthorized',
-                402 => 'Payment Required',
-                403 => 'Forbidden',
-                404 => 'Not Found',
-                500 => 'Internal Server Error',
-                501 => 'Not Implemented',
-            );
-            return (isset($codes[$status])) ? $codes[$status] : '';
-        }
+			// this should be templated in a real-world solution
+			$body = '
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+	<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>' . $status . ' ' . $this->_getStatusCodeMessage($status) . '</title>
+	</head>
+	<body>
+		<h1>' . $this->_getStatusCodeMessage($status) . '</h1>
+		<p>' . $message . '</p>
+		<hr />
+		<address>' . $signature . '</address>
+	</body>
+	</html>';
+
+			echo $body;
+			exit;
+		}
+	}
+	private function _getStatusCodeMessage($status)
+	{
+		// these could be stored in a .ini file and loaded
+		// via parse_ini_file()... however, this will suffice
+		// for an example
+		$codes = Array(
+			200 => 'OK',
+			400 => 'Bad Request',
+			401 => 'Unauthorized',
+			402 => 'Payment Required',
+			403 => 'Forbidden',
+			404 => 'Not Found',
+			500 => 'Internal Server Error',
+			501 => 'Not Implemented',
+		);
+		return (isset($codes[$status])) ? $codes[$status] : '';
+	}
 		
 	public function actionViewLogs() {
 	

@@ -252,7 +252,7 @@ class Contacts extends X2Model {
 		$list = X2List::model()->findByPk($id);
 
 		if(isset($list)) {
-			$search = $list->dbCriteria();
+			$search = $list->queryCriteria();
 				
 			$search->compare('name',$this->name,true);
 			$search->compare('firstName',$this->firstName,true);
@@ -283,11 +283,13 @@ class Contacts extends X2Model {
 			$search->compare('doNotCall',$this->doNotCall);
 			$search->compare('doNotEmail',$this->doNotEmail);
 
+			$search->order = 'lastUpdated DESC';
+
 			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,
-				'sort'=>array(
+				/*'sort'=>array(
 					'defaultOrder'=>'lastupdated DESC'	// true = ASC
-				),
+				),*/
 				'pagination'=>array(
 					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 				),
@@ -296,9 +298,9 @@ class Contacts extends X2Model {
 		} else {
 			//if list is not working, return all contacts
 			return new SmartDataProvider('Contacts',array(
-				'sort'=>array(
+				/*'sort'=>array(
 					'defaultOrder'=>'createDate DESC',
-				),
+				),*/
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),
 				),
@@ -329,11 +331,12 @@ class Contacts extends X2Model {
 		}
 		 
 		$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true, 'OR');
+		$criteria->order = 'lastUpdated DESC';
 
 		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
+			/*'sort'=>array(
 				'defaultOrder'=>'createDate DESC',
-			),
+			),*/
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),

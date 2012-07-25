@@ -200,8 +200,10 @@ class DefaultController extends x2base {
 
             $model->createDate = time();	// created now, full datetime
             //$model->associationId=$_POST['Actions']['associationId'];
-            $dueDate = $this->parseDateTime($model->dueDate);
-            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+			if(!is_numeric($model->dueDate)){
+				$dueDate = $this->parseDateTime($model->dueDate);
+				$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+			}
 
 		//if($type=='none')
 		//	$model->associationId=0;
@@ -657,19 +659,15 @@ class DefaultController extends x2base {
 	}
 
 	public function actionGetTerms(){
-		$type=$_GET['type'];
-		if($type!='none'){
-		if($type=='contacts'){
-			$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm ORDER BY firstName ASC';
-		}else{
+		$type = $_GET['type'];
+		if($type!='none' && ctype_alpha($type)) {
 			$sql = 'SELECT id, name as value FROM x2_'.$type.' WHERE name LIKE :qterm ORDER BY name ASC';
-		}
-		$command = Yii::app()->db->createCommand($sql);
-		$qterm = $_GET['term'].'%';
-		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-		$result = $command->queryAll();
-		echo CJSON::encode($result); exit;
-		}else{
+			$command = Yii::app()->db->createCommand($sql);
+			$qterm = $_GET['term'].'%';
+			$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+			$result = $command->queryAll();
+			echo CJSON::encode($result); exit;
+		} else {
 			echo array('0'=>'None');
 		}
 	}

@@ -74,7 +74,8 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	<div class="form">
 		<?php echo CHtml::link(Yii::t('admin','General Settings'),'appSettings'); ?><br><?php echo Yii::t('admin','Configure automatic updates, session timeout and chat poll rate.');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Manage menu items'),'manageModules'); ?><br><?php echo Yii::t('admin','Re-order and add or remove top bar tabs');?><br><br>
-		<?php echo CHtml::link(Yii::t('admin','User Management'),Yii::app()->request->baseUrl.'/index.php/users/admin'); ?><br><?php echo Yii::t('admin','Add and manage users');?><br><br>
+		<?php echo CHtml::link(Yii::t('admin','User Management'),array('/users/admin')); ?><br><?php echo Yii::t('admin','Add and manage users');?><br><br>
+		<?php echo CHtml::link(Yii::t('admin','Workflow Settings'),'workflowSettings'); ?><br><?php echo Yii::t('admin','Change workflow Settings');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Role Management'),'manageRoles'); ?><br /><?php echo Yii::t('admin','Create and manage user roles');?><br /><br />
 		<?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),'addCriteria'); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?><br><br>
 		<?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),'roundRobinRules'); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?><br><br>

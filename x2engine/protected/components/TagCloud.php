@@ -69,6 +69,7 @@ class TagCloud extends CWidget {
 		$this->render('tagCloud',array(
 			'myTags'=>$myTags,
 			'allTags'=>$allTags,
+			'showAllUsers'=>Yii::app()->params->profile->tagsShowAllUsers,
 		));
 	}
 }

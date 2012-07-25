@@ -242,7 +242,7 @@ class X2Calendar extends CActiveRecord
 	
 	// get a list of the names of all filters
 	public static function getCalendarFilterNames() {
-		return array('completed', 'quotes', 'email', 'attachment');
+		return array('contacts', 'accounts', 'sales', 'quotes', 'products', 'completed', 'email', 'attachment');
 	}
 	
 	// get a google calendar service instance using an access token and,

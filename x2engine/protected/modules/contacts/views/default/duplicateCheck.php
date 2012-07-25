@@ -62,7 +62,7 @@ echo CHtml::ajaxButton("Use This Record",$this->createUrl('/contacts/ignoreDupli
 ),array(
 	'class'=>'x2-button highlight'
 ));
-
+// 
 ?>
 <br /><br />
 <h2><u>Possible Matches</u></h2>
@@ -79,6 +79,7 @@ foreach($duplicates as $duplicate){
 			'success'=>'function(data){
 				window.location="'.$this->createUrl('default/view/id/').'/"+data;
 			}'
+                    //
 		),array(
 			'class'=>'x2-button highlight'
 		));

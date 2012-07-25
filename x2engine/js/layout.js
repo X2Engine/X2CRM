@@ -44,7 +44,7 @@ $(function() {
 	if(window.fullscreen)
 		$('#page-body').addClass('no-widgets');
 
-	// jquery collections to eliminate repeated lookups in window.resize()
+	// jquery references to eliminate repeated lookups in window.resize()
 	var $header = $('#header .width-constraint').first();
 	var $moreMenuLi = $('#main-menu ul').parent();
 	var $moreMenu = $('#main-menu ul');
@@ -138,8 +138,16 @@ $(function() {
 	// force layout calculations on pageload
 	$(window).resize();
 
+	
+	// $('img').mousedown(function(e) {
+		// e.preventDefault ? e.preventDefault() : e.returnValue = false;
+	// });
+	// $('div, span, a').attr('unselectable','on');	
+	
+	
+	
 	// toggle dropdown menus
-	$(".dropdown span").click(function() {
+	$(".dropdown span").mousedown(function() {
 		var $dropdown = $(this).siblings('ul');	// the menu to be opened
 		$dropdown.toggleClass('open');
 		$('.dropdown ul').not($dropdown).removeClass('open');	// close all other menus
@@ -163,7 +171,7 @@ $(function() {
 	});
 	
 	// show/hide widget button
-	$('#fullscreen-button').click(function() { 
+	$('#fullscreen-button').click(function() {
 		// save preference
 		$.ajax({
 			url: yii.baseUrl+'/index.php/site/fullscreen',
@@ -197,7 +205,7 @@ $(function() {
 						sidebarMenu.addClass('fixed').css('top','');
 						
 					if(sidebarMenu.hasClass('fixed'))
-						sidebarMenu.css('top',(pageContainer.height() - sidebarMenu.height() + 10)+'px').removeClass('fixed');
+						sidebarMenu.css('top',(Math.max(pageContainer.height() - sidebarMenu.height(),0) + 10)+'px').removeClass('fixed');
 						
 				} else {
 					sidebarMenu.addClass('fixed').css('top','');

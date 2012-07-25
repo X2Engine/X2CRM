@@ -212,6 +212,7 @@ if(isset($contactList)) {
 				'htmlOptions'=>array('style'=>'text-align: center;'),
 				'headerHtmlOptions'=>array('style'=>'width: 7%;')
 			),
+			/* disable this for now
 			array(
 				'header'=>'Clicked: ' . $contactList->statusCount('clicked'),
 				'class'=>'CCheckBoxColumn',
@@ -220,6 +221,7 @@ if(isset($contactList)) {
 				'htmlOptions'=>array('style'=>'text-align: center;'),
 				'headerHtmlOptions'=>array('style'=>'width: 7%;')
 			),
+			/* disable end */
 			array(
 				'header'=>'Unsubscribed: ' . $contactList->statusCount('unsubscribed'),
 				'class'=>'CCheckBoxColumn',

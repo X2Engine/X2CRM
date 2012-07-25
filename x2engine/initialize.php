@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.6';
-$buildDate = 1342634569;
+$x2Version = '1.6.1';
+$buildDate = 1343253555;
 
 $userData = '';
 
@@ -421,9 +421,9 @@ mysql_query('CREATE TABLE x2_widgets(
 	adminALLOWS				INT				DEFAULT 1,
 	showDASH				INT	 			DEFAULT 1,
 	userID					INT,
-    	posPROF                 		INT,
-    	posDASH                 		INT,
-	widgetSettings				TEXT,
+	posPROF					INT,
+	posDASH					INT,
+	widgetSettings			TEXT,
 	dispNAME				VARCHAR(255),
 	needUSER				INT				DEFAULT 0,
 	userALLOWS				INT				DEFAULT 1,
@@ -603,19 +603,19 @@ mysql_query("ALTER TABLE x2_quotes AUTO_INCREMENT=301;
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_sales.'.mysql_error());
 
 // mysql_query('CREATE TABLE x2_projects(
-	// id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	// id					INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	// name					VARCHAR(60)		NOT NULL,
-	// status					VARCHAR(20),
+	// status				VARCHAR(20),
 	// type					VARCHAR(20), 
 	// priority				VARCHAR(20),
-	// assignedTo				TEXT,
-	// endDate					BIGINT,
-	// timeframe				VARCHAR(40),
-	// createDate				BIGINT,
-	// associatedContacts		TEXT,
-	// description				TEXT,
-	// lastUpdated				BIGINT,
-	// updatedBy				VARCHAR(20)
+	// assignedTo			TEXT,
+	// endDate				BIGINT,
+	// timeframe			VARCHAR(40),
+	// createDate			BIGINT,
+	// associatedContacts	TEXT,
+	// description			TEXT,
+	// lastUpdated			BIGINT,
+	// updatedBy			VARCHAR(20)
 // ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_projects.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_campaigns(
@@ -761,6 +761,7 @@ mysql_query('CREATE TABLE x2_list_criteria (
 	syncGoogleCalendarAccessToken TEXT,
 	syncGoogleCalendarRefreshToken TEXT,
 	googleId				VARCHAR(250),
+	tagsShowAllUsers		TINYINT,
 	
 	UNIQUE(username, emailAddress),
 	INDEX (username)
@@ -855,7 +856,10 @@ mysql_query('CREATE TABLE x2_admin(
 	googleClientId			VARCHAR(255),
 	googleClientSecret		VARCHAR(255),
 	googleAPIKey			VARCHAR(255),
-	inviteKey				VARCHAR(255)
+	inviteKey				VARCHAR(255),
+	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
+	workflowBackdateRange			INT			NOT NULL DEFAULT -1,
+	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_changelog(
@@ -1128,18 +1132,20 @@ mysql_query('INSERT INTO x2_modules
 (name,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) VALUES 
 ("calendar",	"Calendar",		1,			0,				0,			0,			0,			0,		0),
 ("contacts",	"Contacts",		1,			1,				1,			1,			0,			0,		0),
-("workflow",	"Workflow",		1,			2,				0,			0,			0,			0,		0),
-("docs",		"Docs",			1,			3,				0,			0,			0,			0,		0),
-("accounts",	"Accounts",		1,			4,				1,			1,			0,			0,		0),
-("sales",		"Sales",		1,			5,				1,			1,			0,			0,		0),
-("actions",		"Actions",		1,			6,				1,			0,			0,			0,		0),
-("products",	"Products",		1,			7,				1,			1,			0,			0,		0),
-("quotes",		"Quotes",		1,			8,				1,			1,			0,			0,		0),
-("charts",		"Charts",		1,			9,				0,			0,			0,			0,		0),
+("workflow",	"Workflow",		1,			3,				0,			0,			0,			0,		0),
+("actions",		"Actions",		1,			2,				1,			0,			0,			0,		0),
+("marketing",	"Marketing",	1,			4,				0,			1,			0,			0,		0),
+("docs",		"Docs",			1,			5,				0,			0,			0,			0,		0),
+("accounts",	"Accounts",		1,			6,				1,			1,			0,			0,		0),
+("sales",		"Sales",		1,			7,				1,			1,			0,			0,		0),
+("products",	"Products",		1,			8,				1,			1,			0,			0,		0),
+("quotes",		"Quotes",		1,			9,				1,			1,			0,			0,		0),
 ("groups",		"Groups",		1,			10,				0,			0,			0,			0,		0),
-("users",		"Users",		1,			11,				0,			0,			1,			0,		0),
-("marketing",	"Marketing",	1,			12,				0,			1,			0,			0,		0),
-("dashboard",   "Widget Dashboard",	1,       13,             0,          1,          0,          0,      0)'
+("charts",		"Charts",		1,			11,				0,			0,			0,			0,		0),
+("users",		"Users",		1,			12,				0,			0,			1,			0,		0)
+
+'
+// ("dashboard",   "Widget Dashboard",	1,       13,             0,          1,          0,          0,      0)'
 ) or addSqlError("Unable to initialize modules ".mysql_error());
 mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
 ("Contacts","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Contact Info\",\"rows\":[{\"cols\":[{\"width\":286,\"items\":[{\"name\":\"formItem_firstName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_title\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_doNotCall\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]},{\"width\":301,\"items\":[{\"name\":\"formItem_lastName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_company\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_email\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_doNotEmail\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales &amp; Marketing\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_leadtype\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"180\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadSource\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"183\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_leadscore\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"180\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_interest\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealvalue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_closedate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_rating\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"},{\"name\":\"formItem_dealstatus\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"198\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Address\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_address\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"},{\"name\":\"formItem_address2\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"185\",\"tabindex\":\"0\"},{\"name\":\"formItem_city\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"0\"}]},{\"width\":302,\"items\":[{\"name\":\"formItem_state\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"200\",\"tabindex\":\"0\"},{\"name\":\"formItem_zipcode\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"102\",\"tabindex\":\"0\"},{\"name\":\"formItem_country\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Background Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_backgroundInfo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"100\",\"width\":\"488\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Social Media\",\"rows\":[{\"cols\":[{\"width\":79,\"items\":[]},{\"width\":508,\"items\":[{\"name\":\"formItem_skype\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_linkedin\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_twitter\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_facebook\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_googleplus\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_otherUrl\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_priority\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"top\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"157\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[]}]}]}]}","0","1","'.time().'","'.time().'"),
@@ -1563,6 +1569,7 @@ function installer_t($str) {	// translates by looking up string in install.php l
 <head>
 <meta charset="UTF-8" />
 <meta name="language" content="en" />
+<title><?php echo installer_t('Installation Complete'); ?></title>
 <?php $themeURL = 'themes/x2engine'; ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />

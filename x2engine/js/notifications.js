@@ -44,9 +44,10 @@ var pageTitle = '';
 var notifUrl;
 var newNotif = null;
 var notifTimeout;
-notifUpdateInterval = 1500;
+// notifUpdateInterval = 1500;
 var notifViewTimeout;
 var lastNotifId = 0;
+var lastChatId = 0;
 
 /* function updateNotifications() {
     
@@ -138,7 +139,7 @@ function updateNotifications() {
 	$.ajax({
 		type: 'POST',
 		url: yii.baseUrl+'/index.php/notifications/get',
-		data: 'lastId='+lastNotifId,
+		data: 'lastId='+lastNotifId+'&lastChat='+lastChatId,
 		success: function (response) {
 			if(response != '') {	// if there's no new data, we're done
 				try {

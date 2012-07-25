@@ -265,6 +265,7 @@ $timezones = array(
 <head>
 <meta charset="UTF-8" />
 <meta name="language" content="en" />
+<title><?php echo installer_t('X2Engine Installation'); ?></title>
 <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />

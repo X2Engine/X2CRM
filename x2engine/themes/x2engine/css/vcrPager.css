@@ -1,4 +1,3 @@
-<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -11,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,39 +37,37 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-return array (
-// Install screen
-'Install X2Engine'=>'',
-'X2Engine Installation'=>'',
-'Installation Complete'=>'',
+/* use margins to align buttons relative to contact info */
+div.vcrPager {
+	text-align: right;
+	margin-top: 1;
+	margin-bottom: -27px;
+	margin-right: 75px;
+}
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'',
+ul.vcrPager {
+	border:0;
+	margin:0;
+	padding:0;
+	line-height:100%;
+	display:inline;
+}
 
-'X2Engine Application Info'=>'',
+ul.vcrPager li {
+	display:inline;
+}
 
-'Application Name'=>'',
-'Default Language'=>'',
-'Currency'=>'',
-'Admin Password'=>'',
-'Confirm Password'=>'',
-'Administrator Email'=>'',
+ul.vcrPager a {
+	text-decoration: none;
+}
 
-'Database Connection Info'=>'',
+ul.vcrPager .hidden a {
+	display: none;
+}
 
-'Host Name'=>'',
-'Database Name'=>'',
-'Username'=>'',
-'Password'=>'',
-
-'Install'=>'',
-'For help or more information - X2Engine.com'=>'',
-
-'All Rights Reserved.'=>'',
-
-// Splash screen
-'Installation Complete!'=>'',
-'Click here to log in to X2Engine'=>'',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'',
-'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'',
-
-);
+/* override x2-button to be smaller */
+ul.vcrPager input.x2-button {
+	display: inline;
+	margin: 0px;
+	padding: 5px 10px;
+}

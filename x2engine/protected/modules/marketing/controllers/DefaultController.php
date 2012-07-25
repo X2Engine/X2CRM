@@ -210,14 +210,14 @@ class DefaultController extends x2base {
 			// we only allow deletion via POST request
 			$model=$this->loadModel($id);
 			$list = X2List::model()->findByPk($model->listId);
-			if (isset($list) && $list->type == "campaign") 
+			if (isset($list) && $list->type == "campaign")
 				$list->delete();
 			$this->cleanUpTags($model);
 			$model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax'])) {
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 			}
 		}
 		else {
@@ -273,18 +273,21 @@ class DefaultController extends x2base {
 			$this->redirect(array('view', 'id'=>$id));
 		}
 
-		if (CActiveRecord::model($campaign->list->modelName)->count($campaign->list->dbCriteria()) < 1) {
+		if (CActiveRecord::model($campaign->list->modelName)->count($campaign->list->queryCriteria()) < 1) {
 			Yii::app()->user->setFlash('error', Yii::t('marketing','The contact list is empty.'));
 			$this->redirect(array('view', 'id'=>$id));
 		}
 		
 		//Duplicate the list for campaign tracking, leave original untouched
-		$newList = $campaign->list->staticDuplicate();
-		$newList->type = 'campaign';
-		$newList->save();
+		//only if the list is not already a campaign list
+		if ($campaign->list->type != "campaign") {
+			$newList = $campaign->list->staticDuplicate();
+			$newList->type = 'campaign';
+			$newList->save();
+			$campaign->list = $newList;
+			$campaign->listId = $newList->id;
+		}
 
-		$campaign->list = $newList;
-		$campaign->listId = $newList->id;
 		$campaign->launchDate = time();
 		$campaign->save();
 		
@@ -361,17 +364,17 @@ class DefaultController extends x2base {
 				$totalSent += $sent;
 
 				//return status messages for the campaign specified in the request
-				if ($campaign->id == $id && $sent > 0) {
+				if ($campaign->id == $id) {
 					//$messages = array_merge($messages, $errors);
 
 					//count the number of contacts we can't send to
-					$criteria = $campaign->list->dbCriteria();
+					$criteria = $campaign->list->queryCriteria();
 					$criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
 					         ->addCondition('t.email IS NULL OR t.email=""');
 					$blankEmail = CActiveRecord::model('Contacts')->count($criteria);
 
 					//count the number of contacts who don't want email 
-					$criteria = $campaign->list->dbCriteria();
+					$criteria = $campaign->list->queryCriteria();
 					$criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
 					         ->addCondition('t.doNotEmail=1');
 					$doNotEmail = CActiveRecord::model('Contacts')->count($criteria);
@@ -418,7 +421,7 @@ class DefaultController extends x2base {
 		$errors = array();
 	
 		//get eligible contacts from the campaign
-		$criteria = $campaign->list->dbCriteria();
+		$criteria = $campaign->list->queryCriteria();
 		$criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
 		         ->addCondition('t.email IS NOT NULL')->addCondition('t.email!=""')
 		         ->addCondition('t.doNotEmail=0');
@@ -427,8 +430,15 @@ class DefaultController extends x2base {
 		//setup campaign email settings
 		try {
 			$phpMail = $this->getPhpMailer();
-			$fromEmail = Yii::app()->params->admin->emailFromAddr;
-			$fromName = Yii::app()->params->admin->emailFromName;
+			try {
+				//lookup current user's email address
+				$fromEmail = Yii::app()->params->profile->emailAddress;
+				$fromName = Yii::app()->params->profile->fullName;
+			} catch (Exception $e) {
+				//use site defaults otherwise
+				$fromEmail = Yii::app()->params->admin->emailFromAddr;
+				$fromName = Yii::app()->params->admin->emailFromName;
+			}
 			$phpMail->AddReplyTo($fromEmail, $fromName);
 			$phpMail->SetFrom($fromEmail, $fromName);
 			$phpMail->Subject = $campaign->subject;
@@ -447,7 +457,8 @@ class DefaultController extends x2base {
 
 				$now = time();
 				$uniqueId = md5(uniqid(rand(), true));
-				$emailBody = $campaign->content;
+				//add some newlines to prevent hitting 998 line length limit in phpmailer/rfc2821
+				$emailBody = preg_replace('/<br>/',"<br>\n",$campaign->content);
 
 				//if there is no unsubscribe link placeholder, add default
 				if (!preg_match('/\{_unsub\}/', $campaign->content)) {
@@ -475,18 +486,36 @@ class DefaultController extends x2base {
 
 				$emailBody = x2base::convertUrls($emailBody, false);
 				
+				/* disable this for now
 				//replace existing links with tracking links
 				$url = $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'click')); 
 				//profane black magic
 				$emailBody = preg_replace(
 					'/(<a[^>]*href=")([^"]*)("[^>]*>)/e', "(\"\\1" . $url . "&url=\" . urlencode(\"\\2\") . \"\\3\")", $emailBody);
+				/* disable end */
 				
 				//insert unsubscribe links
 				$emailBody = preg_replace(
 					'/\{_unsub\}/', 
 					'<a href="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'unsub')) . '">'. Yii::t('marketing', 'unsubscribe') .'</a>', 
 					$emailBody); 
+			
+				//replace any {attribute} tags with the contact attribute value
+				$attrMatches = array();
+				preg_match_all('/{\w+}/', $emailBody,$attrMatches);
+				
+				if(isset($attrMatches[0])) {
+					foreach($attrMatches[0] as $match) {
+						$match = substr($match,1,-1);	// remove { and }
+						
+						if ($contact->hasAttribute($match)) {
+							$value = $contact->renderAttribute($match, false, true);	// get the correctly formatted attribute
+							$emailBody = preg_replace('/{'.$match.'}/', $value, $emailBody);
+						}
+					}
+				}
 
+				//add a link to transparent img to track when email was viewed
 				$emailBody .= '<img src="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
 
 				$phpMail->ClearAllRecipients();
@@ -543,12 +572,25 @@ class DefaultController extends x2base {
 	public function actionClick($uid, $type, $url=null) {
 		$now = time();
 		$item = X2ListItem::model()->with('contact')->findByAttributes(array('uniqueId'=>$uid));
-		if (!isset($item))
-			return;
 
-		$campaign = Campaign::model()->findByAttributes(array('listId'=>$item->listId));
-		if (!isset($campaign)) //overkill, but should never happen
-			return;
+		if (isset($item))
+			$campaign = Campaign::model()->findByAttributes(array('listId'=>$item->listId));
+		
+		//it should never happen that we have a list item without a campaign, 
+		//but it WILL happen on x2software or any old db where x2_list_items does not cascade on delete
+		//we can't track anything if the listitem was deleted, but at least prevent breaking links
+		if (!isset($item) || !isset($campaign)) {
+			if ($type == 'click') {
+				$this->redirect(urldecode($url));
+			} else if ($type == 'open') {
+				//return a one pixel transparent png
+				header('Content-Type: image/png');
+				echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
+			} else if ($type == 'unsubscribe') {
+				//TODO: the original campaign/list item has been deleted, and user clicks unsub link
+				return;
+			} else return;
+		}
 
 		$action = new Actions;
 		$action->associationType = 'contacts';

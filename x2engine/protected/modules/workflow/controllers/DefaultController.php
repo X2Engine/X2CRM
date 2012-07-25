@@ -240,11 +240,47 @@ class DefaultController extends x2base {
 	
 	public function actionGetStageDetails($workflowId,$stage,$modelId,$type) {
 		if(is_numeric($workflowId) && is_numeric($stage) && is_numeric($modelId) && ctype_alpha($type)) {
-			
-			$model = Workflow::getWorkflowDetails($workflowId,$stage,$modelId,$type);
-			
-			$this->renderPartialAjax('_workflowDetail',array('model'=>$model),false);
-			
+		
+		
+			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+		
+			if(isset($workflowStatus[$stage])) {
+				$model = CActiveRecord::model('Actions')->findByAttributes(array(
+					'associationId'=>$modelId,
+					'associationType'=>$type,
+					'type'=>'workflow',
+					'workflowId'=>$workflowId,
+					'stageNumber'=>$stage
+				));
+				
+				if($model->complete != 'Yes')
+					$model->completedBy = Yii::app()->user->name;
+				
+				$editable = true;	// default is full permission for everybody
+				if(!empty($workflowStatus[$stage]['roles']))	// if roles are specified, check if user has any of them
+					$editable = count(array_intersect(Yii::app()->params->roles,$workflowStatus[$stage]['roles'])) > 0;
+
+				// if the workflow backdate window isn't unlimited, check if the window has passed
+				if(Yii::app()->params->admin->workflowBackdateWindow > 0 && (time() - $model->completeDate) > Yii::app()->params->admin->workflowBackdateWindow)
+					$editable = false;
+					
+				if(Yii::app()->user->getName() == 'admin')
+					$editable = true;
+					
+				$minDate = Yii::app()->params->admin->workflowBackdateRange;
+				if($minDate < 0)
+					$minDate = null;	// if workflowBackdateRange = -1, no limit on backdating
+				else
+					$minDate = '-'.$minDate;	// otherwise, we can only go back this far
+
+
+				$this->renderPartialAjax('_workflowDetail',array(
+					'model'=>$model,
+					'editable'=>$editable,
+					'minDate'=>$minDate,
+					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment,
+				),false);
+			}
 		}
 	}
 	

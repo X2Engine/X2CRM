@@ -60,7 +60,7 @@ class SiteController extends x2base {
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
-					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail'),
+					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail', 'toggleShowTags'),
 				'users'=>array('@'),
 			),
 			// array('allow',
@@ -964,6 +964,17 @@ class SiteController extends x2base {
 			}
 		}else{
 			$this->render('googleLogin');
+		}
+	}
+	
+	
+	public function actionToggleShowTags($tags) {
+		if($tags == 'allUsers') {
+			Yii::app()->params->profile->tagsShowAllUsers = true;
+			Yii::app()->params->profile->update();
+		} else if($tags == 'justMe') {
+			Yii::app()->params->profile->tagsShowAllUsers = false;
+			Yii::app()->params->profile->update();
 		}
 	}
 

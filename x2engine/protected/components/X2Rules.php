@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (c) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,39 +38,40 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-return array (
-// Install screen
-'Install X2Engine'=>'',
-'X2Engine Installation'=>'',
-'Installation Complete'=>'',
+class X2Rules {
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'',
+	// public $model;
+	
+	public function run() {
 
-'X2Engine Application Info'=>'',
+		
+		/*  Notification Engine
+		
+			Events Category		Trigger					Parameters							Example								Response Variables
+			-------------------------------------------------------------------------------------------------------------------------------------------
+			Record		field change					attribute, comparison type/value	'dealValue', '>', '20000'			model, old attributes
+						activity																								model
+							(edit, action, etc)			
+						inactive						duration							'86400'								model, last activity
+								
+			Workflow	start workflow					
+						complete workflow				
+						start stage						
+						complete stage					
+						undo stage						
 
-'Application Name'=>'',
-'Default Language'=>'',
-'Currency'=>'',
-'Admin Password'=>'',
-'Confirm Password'=>'',
-'Administrator Email'=>'',
-
-'Database Connection Info'=>'',
-
-'Host Name'=>'',
-'Database Name'=>'',
-'Username'=>'',
-'Password'=>'',
-
-'Install'=>'',
-'For help or more information - X2Engine.com'=>'',
-
-'All Rights Reserved.'=>'',
-
-// Splash screen
-'Installation Complete!'=>'',
-'Click here to log in to X2Engine'=>'',
-'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'',
-'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'',
-
-);
+			Action: 	complete						
+						uncomplete						
+				
+			
+			
+			
+			
+			
+			
+			
+			
+		 */
+	}
+}
+?>
