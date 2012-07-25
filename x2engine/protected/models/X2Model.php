@@ -80,6 +80,13 @@ abstract class X2Model extends CActiveRecord {
 		else
 			return $id;
 	}
+
+	/**
+	 * Returns a CDbCriteria containing the default query criteria for this model
+	 */
+	public static function defaultCriteria() {
+		return new CDbCriteria;
+	}
 	
 	/**
 	 * Returns a list of behaviors that this model should behave as.

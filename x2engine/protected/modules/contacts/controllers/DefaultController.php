@@ -649,7 +649,7 @@ $model->city, $model->state $model->zipcode
 		$model->setRememberScenario('contacts-index');
 		$name = 'Contacts';
 		//we are no longer viewing a specific list
-		Yii::app()->session->remove('contacts-list');
+		Yii::app()->user->setState('contacts-list', null);
 		parent::index($model,$name);
 	}
 
@@ -661,10 +661,10 @@ $model->city, $model->state $model->zipcode
 			$list = CActiveRecord::model('X2List')->findByPk($id);
 			
 		if(isset($list)) {
-			//set this as the list we are viewing, for use by vcr controls
-			Yii::app()->session['contacts-list'] = $id;
 			$model = new Contacts('search');
 			$model->setRememberScenario('contacts-list-'.$id);
+			//set this as the list we are viewing, for use by vcr controls
+			Yii::app()->user->setState('contacts-list', $id);
 			$dataProvider = $model->searchList($id);
 			$list->count = $dataProvider->totalItemCount;
 			$list->save();
@@ -1231,7 +1231,7 @@ $model->city, $model->state $model->zipcode
 		$model->setRememberScenario('contacts-admin');
 		$name = 'Contacts';
 		//we are no longer viewing a specific list
-		Yii::app()->session->remove('contacts-list');
+		Yii::app()->user->setState('contacts-list', null);
 		parent::admin($model, $name);
 	}
 

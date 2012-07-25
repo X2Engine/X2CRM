@@ -187,9 +187,10 @@ class X2List extends CActiveRecord {
 	 * Returns a CDbCriteria to retrieve all models in the list
 	 */
 	public function queryCriteria() {
+		try { $search = CActiveRecord::model($this->modelName)->defaultCriteria(); }
+		catch (Exception $e) { $search = new CDbCriteria(); }
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
-			$search = new CDbCriteria(array());
 			$criteria = CActiveRecord::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
 			foreach ($criteria as $criterion) {
 				//if this criterion is for a date field, we perform its comparisons differently
@@ -292,10 +293,8 @@ class X2List extends CActiveRecord {
 				}
 			}
 		} else {
-			$search = new CDbCriteria(array(
-				'join'=>'JOIN x2_list_items ON t.id = x2_list_items.contactId',
-				'condition'=>'x2_list_items.listId='.$this->id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")',
-			));
+			$search->join = 'JOIN x2_list_items ON t.id = x2_list_items.contactId';
+			$search->addCondition('x2_list_items.listId='.$this->id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")');
 		}
 		return $search;
 	}

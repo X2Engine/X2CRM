@@ -152,6 +152,16 @@ class Contacts extends X2Model {
 		}
 		return $mailingList;
 	}
+
+	/**
+	 * Returns a CDbCriteria containing the default query criteria for this model
+	 */
+	public static function defaultCriteria() {
+		$criteria = new CDbCriteria;
+		$criteria->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
+		$criteria->order = 'lastUpdated DESC';
+		return $criteria;
+	}
 	
 	public function searchAll() {
 		$criteria=new CDbCriteria;
@@ -283,13 +293,11 @@ class Contacts extends X2Model {
 			$search->compare('doNotCall',$this->doNotCall);
 			$search->compare('doNotEmail',$this->doNotEmail);
 
-			$search->order = 'lastUpdated DESC';
-
 			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,
-				/*'sort'=>array(
+				'sort'=>array(
 					'defaultOrder'=>'lastupdated DESC'	// true = ASC
-				),*/
+				),
 				'pagination'=>array(
 					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 				),
@@ -298,9 +306,9 @@ class Contacts extends X2Model {
 		} else {
 			//if list is not working, return all contacts
 			return new SmartDataProvider('Contacts',array(
-				/*'sort'=>array(
+				'sort'=>array(
 					'defaultOrder'=>'createDate DESC',
-				),*/
+				),
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),
 				),
@@ -334,9 +342,9 @@ class Contacts extends X2Model {
 		$criteria->order = 'lastUpdated DESC';
 
 		return new SmartDataProvider(get_class($this), array(
-			/*'sort'=>array(
+			'sort'=>array(
 				'defaultOrder'=>'createDate DESC',
-			),*/
+			),
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),

@@ -90,7 +90,6 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	*/
 	private $_rememberScenario=null;
 	
-	
 	private function getStatePrefix() {
 	    $modelName = get_class($this->owner);
 	    if ($this->_rememberScenario!=null) {
@@ -110,13 +109,11 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	    return $this->_rememberScenario;
 	}
 		
-
     private function readSearchValues() {
         $modelName = get_class($this->owner);
         $attributes = $this->owner->getSafeAttributeNames();
 
         // set any default value
-
         if (is_array($this->defaults) && (null==Yii::app()->user->getState($modelName . __CLASS__. 'defaultsSet', null))) {
             foreach ($this->defaults as $attribute => $value) {
                 if (null == (Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
@@ -127,11 +124,9 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
         }
         
         // set values from session
-
         foreach ($attributes as $attribute) {
             if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-                try
-                {
+                try {
                     $this->owner->$attribute = $value;
                 }
                 catch (Exception $e) {
@@ -141,7 +136,6 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
     }
 
     private function saveSearchValues() {
-
         $modelName = get_class($this->owner);
         $attributes = $this->owner->getSafeAttributeNames();
         foreach ($attributes as $attribute) {
@@ -152,7 +146,6 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
             }
         }
     }
-    
     
     private function doReadSave() {
         if ($this->owner->scenario == 'search') {
@@ -189,6 +182,5 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
         }
         return $this->owner;
     }
-
 }
 ?>

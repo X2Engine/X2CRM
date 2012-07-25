@@ -87,8 +87,11 @@ class DefaultController extends x2base {
 			return;
 			
 		$contactList = null;
-		if(!empty($model->listId))
+		if(!empty($model->listId)) {
 			$contactList = CActiveRecord::model('X2List')->findByPk($model->listId);
+			//set this as the list we are viewing, for use by vcr controls
+			Yii::app()->user->setState('contacts-list', $id);
+		}
 
 		$this->render('view',array(
 			'model'=>$model,

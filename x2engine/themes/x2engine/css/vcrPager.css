@@ -71,3 +71,13 @@ ul.vcrPager input.x2-button {
 	margin: 0px;
 	padding: 5px 10px;
 }
+
+ul.vcrPager input.x2-button[disabled] {
+	color: #bbbbbb;
+}
+
+ul.vcrPager input.x2-button[disabled]:hover {
+	background-color:#eee;
+	background:-webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#ddd));
+	background:-moz-linear-gradient(top,  #f0f0f0,  #ddd);
+}

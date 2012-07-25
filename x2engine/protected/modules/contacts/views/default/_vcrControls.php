@@ -40,7 +40,7 @@
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/vcrPager.css');
 
-$listId = Yii::app()->session['contacts-list'];
+$listId = Yii::app()->user->getState('contacts-list');
 $vcrControls = array();
 $searchModel = new Contacts('search');
 
@@ -67,10 +67,18 @@ if ($thisIndex !== false) {
 	if ($thisIndex > 0) {
 		$vcrControls['first'] = '<li class="first">'.CHtml::link(CHtml::button('◄◄', array('class'=>'x2-button')), array("view","id"=>$ids[0])).'</li>';
 		$vcrControls['prev'] = '<li class="prev">'.CHtml::link(CHtml::button('◄', array('class'=>'x2-button')), array("view","id"=>$ids[$thisIndex-1])).'</li>';
+	} else {
+		//same looking buttons but disabled
+		$vcrControls['first'] = '<li class="first">'.CHtml::button('◄◄', array('class'=>'x2-button','disabled'=>'disabled')).'</li>';
+		$vcrControls['prev'] = '<li class="prev">'.CHtml::button('◄', array('class'=>'x2-button','disabled'=>'disabled')).'</li>';
 	}
 	if ($thisIndex < count($ids)-1) {
 		$vcrControls['next'] = '<li class="next">'.CHtml::link(CHtml::button('►', array('class'=>'x2-button')), array("view","id"=>$ids[$thisIndex+1])).'</li>';
 		$vcrControls['last'] = '<li class="last">'.CHtml::link(CHtml::button('►►', array('class'=>'x2-button')), array("view","id"=>$ids[count($ids)-1])).'</li>';
+	} else {
+		//same looking buttons but disabled
+		$vcrControls['next'] = '<li class="next">'.CHtml::button('►', array('class'=>'x2-button','disabled'=>'disabled')).'</li>';
+		$vcrControls['last'] = '<li class="last">'.CHtml::button('►►', array('class'=>'x2-button','disabled'=>'disabled')).'</li>';
 	}
 }
 ?>
