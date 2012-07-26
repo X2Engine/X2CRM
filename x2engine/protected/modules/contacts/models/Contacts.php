@@ -159,7 +159,7 @@ class Contacts extends X2Model {
 	public static function defaultCriteria() {
 		$criteria = new CDbCriteria;
 		$criteria->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
-		$criteria->order = 'lastUpdated DESC';
+		//$criteria->order = 'lastUpdated DESC';
 		return $criteria;
 	}
 	
@@ -339,7 +339,7 @@ class Contacts extends X2Model {
 		}
 		 
 		$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true, 'OR');
-		$criteria->order = 'lastUpdated DESC';
+		//$criteria->order = 'lastUpdated DESC';
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(

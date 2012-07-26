@@ -48,7 +48,10 @@ $searchModel = new Contacts('search');
 //find position of model in the list
 if (isset($listId) && is_numeric($listId)){
 	$list = CActiveRecord::model('X2List')->findByPk($listId);
-	$criteria = $searchModel->searchList($listId)->criteria;
+	$dataProvider = $searchModel->searchList($listId);
+	$criteria = $dataProvider->criteria;
+	$order = $dataProvider->sort->defaultOrder;
+	if (isset($order)) $criteria->order = $order;
 	$tableSchema = Contacts::model()->getTableSchema();
 	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
 	$thisIndex = current(array_keys($ids, $model->id));
@@ -57,7 +60,10 @@ if (isset($listId) && is_numeric($listId)){
 //if no list, or model is not in specified list
 //use default all contacts list
 if (!isset($listId) || $thisIndex === false) {
-	$criteria = $searchModel->searchAll()->criteria;
+	$dataProvider = $searchModel->searchAll();
+	$criteria = $dataProvider->criteria;
+	$order = $dataProvider->sort->defaultOrder;
+	if (isset($order)) $criteria->order = $order;
 	$tableSchema = Contacts::model()->getTableSchema();
 	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
 	$thisIndex = current(array_keys($ids, $model->id));
