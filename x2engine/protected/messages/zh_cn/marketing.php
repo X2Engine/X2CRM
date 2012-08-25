@@ -87,6 +87,7 @@ return array (
 'Batch completed, sending again in'=>'批次完成，再发送',
 'minute'=>'分钟',
 'Email These Contacts'=>'这些电子邮件联系人',
+'Email Entire List'=>'发送电子邮件清单',
 'Invalid tag value'=>'标记值无效',
 'Contacts for tag'=>'为标签的联系',
 'Mailing for tag'=>'邮寄的标签',

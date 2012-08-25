@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'No Llame',
 'Do Not Email'=>'No Envíe',
 
+// List Attributes
+'Owner'=>'Dueño',
+'Description'=>'Descripción',
+'Logic Type'=>'Tipo de la Lógica',
+'Record Type'=>'Tipo de Registro',
+'Members'=>'Miembros',
+'Dynamic'=>'Dinámico',
+'Static'=>'Estático',
+
+// List Criteria Attributes
+'List'=>'Lista',
+'Type'=>'Tipo',
+'Attribute'=>'Atributo',
+'Comparison'=>'Comparación',
+'Value'=>'Valor',
+
+// List Criteria Comparitors
+'equals'=>'es igual a',
+'greater than'=>'mayor que',
+'less than'=>'menos que',
+'not equal to'=>'no es igual a',
+'in list'=>'en la lista',
+'not in list'=>'no en la lista',
+'empty'=>'vacío',
+'not empty'=>'no está vacío',
+'contains'=>'contiene',
+'does not contain'=>'no contiene',
+
 // Misc
 'Assigned to {name}'=>'Asignado a {name}',
 'Social Networks'=>'Redes Sociales',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'Mis Contactos',
+'New Contacts'=>'Nuevos Contactos',
 'All Contacts'=>'Todos los Contactos',
 'Create Contact'=>'Crear Contacto',
 'View Contact'=>'Ver Contacto',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'Compartir este Contacto',
 'Create'=>'Crear',
 'Lists'=>'Listas',
+'Create List'=>'Crear Lista',
 'View'=>'Ver',
 'Share'=>'Parte',
 'Update'=>'Actualizar',

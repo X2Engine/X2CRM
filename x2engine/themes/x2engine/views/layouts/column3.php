@@ -59,10 +59,7 @@ $(window).load(function(){
 ");
 
 $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew';
-
 ?>
-
-
 
 <div id="sidebar-left-container">
 
@@ -75,7 +72,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				'id'=>'actions'
 			));
 			
-			$this->widget('zii.widgets.CMenu',array('items'=>$this->actionMenu));
+			$this->widget('zii.widgets.CMenu',array('items'=>$this->actionMenu,'encodeLabel'=>false));
 			$this->endWidget();
 		}
 		if(isset($this->modelClass) && $this->modelClass == 'Actions' && $this->showActions !== null) {
@@ -83,7 +80,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				'title'=>Yii::t('actions', 'Show Actions'),
 				'id'=>'actions-filter',
 			));
-			echo '<div class="form" style="border: none;">';
+			echo '<div class="form no-border" style="text-align:center;">';
 			echo CHtml::dropDownList('show-actions', $this->showActions,
 				array(
 					'uncomplete'=>Yii::t('actions', 'Uncomplete'),
@@ -95,6 +92,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					'onChange'=>'toggleShowActions();',
 				)
 			);
+			
 			echo '</div>';
 			$this->endWidget();
 		}
@@ -103,28 +101,38 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			$showCalendars = json_decode($user->showCalendars, true);
 //			$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
 			$editableUserCalendars = X2CalendarPermissions::getEditableUserCalendarNames(); // list of user calendars current user can edit
+			
 			if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
-			$this->beginWidget('zii.widgets.CPortlet',
-					array(
-						'title'=>Yii::t('calendar', 'Group Calendars'),
-						'id'=>'group-calendar',
-					)
-				);
-				$showGroupCalendars = $showCalendars['groupCalendars'];
-				echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
-				foreach($this->groupCalendars as $groupId=>$groupName) {
-					echo "<li>\n";
-					// checkbox for each user; current user and Anyone are set to checked
-					echo CHtml::checkBox($groupId, in_array($groupId, $showGroupCalendars),
+				$toggleGroupCalendarsVisibleUrl = $this->createUrl('togglePortletVisible', array('portlet'=>'groupCalendars')); // actionTogglePortletVisible is defined in calendar controller
+				$visible = Yii::app()->params->profile->groupCalendarsVisible;
+				$minimizeLink = CHtml::ajaxLink($visible? '[&ndash;]' : '[+]', $toggleGroupCalendarsVisibleUrl, array('success'=>'function(response) { togglePortletVisible($("#group-calendar"), response); }')); // javascript function togglePortletVisible defined in js/layout.js
+				$this->beginWidget('zii.widgets.CPortlet',
 						array(
-							'onChange'=>"toggleGroupCalendarSource(this.name, this.checked);", // add or remove group calendar actions to calendar if checked/unchecked
+							'title'=>Yii::t('calendar', 'Group Calendars') . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
+							'id'=>'group-calendar',
 						)
 					);
-					echo "<label for=\"$groupId\">$groupName</label>\n";
-					echo "</li>";
-				}
-				echo "</ul>\n";
-				$this->endWidget();
+					$showGroupCalendars = $showCalendars['groupCalendars'];
+					echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+					foreach($this->groupCalendars as $groupId=>$groupName) {
+						echo "<li>\n";
+						// checkbox for each user; current user and Anyone are set to checked
+						echo CHtml::checkBox($groupId, in_array($groupId, $showGroupCalendars),
+							array(
+								'onChange'=>"toggleGroupCalendarSource(this.name, this.checked);", // add or remove group calendar actions to calendar if checked/unchecked
+							)
+						);
+						echo "<label for=\"$groupId\">$groupName</label>\n";
+						echo "</li>";
+					}
+					echo "</ul>\n";
+					$this->endWidget();
+					if(!$visible) {
+							Yii::app()->clientScript->registerScript('hideGroupCalendars', "
+								$(function() {
+									$('#group-calendar .portlet-content').hide();
+							});",CClientScript::POS_HEAD);
+					}
 			}
 			/*
 			if(isset($this->sharedCalendars) && $this->sharedCalendars !== null) {
@@ -156,9 +164,12 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			}
 			*/
 			if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
+				$toggleUserCalendarsVisibleUrl = $this->createUrl('togglePortletVisible', array('portlet'=>'userCalendars')); // actionTogglePortletVisible is defined in calendar controller
+				$visible = Yii::app()->params->profile->userCalendarsVisible;
+				$minimizeLink = CHtml::ajaxLink($visible? '[&ndash;]' : '[+]', $toggleUserCalendarsVisibleUrl, array('success'=>'function(response) { togglePortletVisible($("#user-calendars"), response); }')); // javascript function togglePortletVisible defined in js/layout.js
 				$this->beginWidget('zii.widgets.CPortlet',
 					array(
-						'title'=>Yii::t('calendar', 'User Calendars'),
+						'title'=>Yii::t('calendar', 'User Calendars') . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
 						'id'=>'user-calendars',
 					)
 				);
@@ -184,6 +195,12 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				}
 				echo "</ul>\n";
 				$this->endWidget();
+				if(!$visible) {
+						Yii::app()->clientScript->registerScript('hideUserCalendars', "
+							$(function() {
+								$('#user-calendars .portlet-content').hide();
+						});",CClientScript::POS_HEAD);
+				}
 			}
 			/*
 			if(isset($this->googleCalendars) && $this->googleCalendars !== null) {

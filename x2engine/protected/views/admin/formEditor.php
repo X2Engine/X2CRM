@@ -38,8 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?><a href="#" class="x2-button" style="float:right;" onclick="lockEditor();">Hide Borders</a>
-<h2>Form Editor</h2>
-Drag and drop to edit forms.  Press save when finished.
+<h2><?php echo Yii::t('admin','Form Editor');?></h2>
+<div style="width:600px;">
+    Drag and drop fields to the layout.  Press save when finished.
+</div>
 <br /><br />
 <?php
 $admin=Admin::model()->findByPk(1);

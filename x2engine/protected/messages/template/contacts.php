@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'',
 'Do Not Email'=>'',
 
+// List Attributes
+'Owner'=>'',
+'Description'=>'',
+'Logic Type'=>'',
+'Record Type'=>'',
+'Members'=>'',
+'Dynamic'=>'',
+'Static'=>'',
+
+// List Criteria Attributes
+'List'=>'',
+'Type'=>'',
+'Attribute'=>'',
+'Comparison'=>'',
+'Value'=>'',
+
+// List Criteria Comparitors
+'equals'=>'',
+'greater than'=>'',
+'less than'=>'',
+'not equal to'=>'',
+'in list'=>'',
+'not in list'=>'',
+'empty'=>'',
+'not empty'=>'',
+'contains'=>'',
+'does not contain'=>'',
+
 // Misc
 'Assigned to {name}'=>'',
 'Social Networks'=>'',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'',
+'New Contacts'=>'',
 'All Contacts'=>'',
 'Create Contact'=>'',
 'View Contact'=>'',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'',
 'Create'=>'',
 'Lists'=>'',
+'Create List'=>'',
 'View'=>'',
 'Share'=>'',
 'Update'=>'',

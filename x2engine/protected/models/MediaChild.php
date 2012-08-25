@@ -56,28 +56,25 @@ class MediaChild extends Media {
 	public static function attachmentActionText($actionDescription,$makeLink = false,$makeImage = false) {
 	
 		$data = explode(':',$actionDescription);
-		if(count($data) == 2 && is_numeric($data[1])) {
-
+		$media = null;
+		if(count($data) == 2 && is_numeric($data[1])) // ensure data is formatted properly
+			$media = Media::model()->findByPK($data[1]); // look for an entry in the media table
+		
+		if($media) { // did we find an entry in the media table?
 			$str = Yii::t('media','File:') . ' ';
 			
-			$file = Yii::app()->file->set('uploads/'.$data[0]);
+			$fileExists = $media->fileExists();
 			
-			if($makeLink && $file->exists)
-				$str .= CHtml::link($data[0],array('/media/view','id'=>$data[1])); 
+			if($fileExists == false)
+				return $str . $data[0] . ' ' . Yii::t('media','(deleted)');
+
+			if($makeLink)
+			    $str .= $media->getMediaLink();
 			else
-				$str .= $data[0];
-			if (!$file->exists)
-				$str .= ' '.Yii::t('media','(deleted)');
+			    $str .= $data[0];
 
-			if($makeImage && $file->exists) {	// to render an image, first check file extension
-
-				$file_ext = strtolower($file->getExtension());
-				$legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
-				
-				if(in_array($file_ext,$legal_extensions))
-					$str .= CHtml::image(Yii::app()->request->baseUrl.'/uploads/'.$data[0],'',array('class'=>'attachment-img'));
-			}
-			
+			if($makeImage && $media->isImage())	// to render an image, first check file extension
+			    $str .= $media->getImage();
 			
 			return $str;
 			

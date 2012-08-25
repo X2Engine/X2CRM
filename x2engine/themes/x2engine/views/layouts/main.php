@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -60,10 +60,17 @@ $cs->registerCoreScript('jquery.ui');
 
 // custom scripts
 $cs->registerScriptFile($baseUrl.'/js/layout.js');
+$cs->registerScriptFile($baseUrl.'/js/publisher.js');
+$cs->registerScriptFile($baseUrl.'/js/media.js');
 $cs->registerScriptFile($baseUrl.'/js/x2forms.js');
 $cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js');
 $cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js');
 $cs->registerScriptFile($baseUrl.'/js/tinyeditor.js');
+$cs->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js');
+
+if(Yii::app()->session['translate'])
+	$cs->registerScriptFile($baseUrl.'/js/translator.js');
+
 $cs->registerScriptFile($baseUrl.'/js/backgroundImage.js');
 $cs->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js');
 $cs->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css','screen, projection');
@@ -86,12 +93,12 @@ window.enableFullWidth = ' . (!Yii::app()->user->isGuest?(Yii::app()->params->pr
 window.fullscreen = ' . (Yii::app()->session['fullscreen']? 'true':'false') . ';
 ',CClientScript::POS_HEAD);
 
-$cs->registerScript('checkImages',"
+$cs->registerScript('checkImages','
 $(document).ready(function() {
-	$('#main-menu-icon, #footer-logo, #footer-logo img').css({'display':'inline','visibility':'visible','z-index':'2147483647'});
+	$("#main-menu-icon, #footer-logo, #footer-logo img").css({"display":"inline","visibility":"visible","z-index":"2147483647"});
            
 });
-",CClientScript::POS_END);
+',CClientScript::POS_END);
 
 $cs->registerScriptFile($baseUrl.'/js/notifications.js');
 /* if($this->getModule()!='mobile'){
@@ -125,9 +132,24 @@ if($checkResult)
 
 $headerBgClass = '';
 
-if(empty(Yii::app()->params->profile->backgroundImg) && empty(Yii::app()->params->profile->backgroundColor))
+if(empty(Yii::app()->params->profile->backgroundImg) && empty(Yii::app()->params->profile->backgroundColor)) {
 	$headerBgClass = 'defaultBg';
-else
+
+	$cs->registerScript('fixIEBgImageBS','
+		if(document.all && !document.addEventListener) {	// only necessary in IE < 9
+			if(document.URL.indexOf("index.php") == -1) {
+				$("#header.defaultBg").css({
+					"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'../uploads/defaultBg.jpg\', sizingMethod=\'scale\')",
+					"-ms-filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'../../uploads/defaultBg.jpg\', sizingMethod=\'scale\')"
+				});
+			} else {
+				$("#header.defaultBg").css("filter","progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'../../uploads/defaultBg.jpg\', sizingMethod=\'scale\')");
+				
+
+			}
+		}',CClientScript::POS_READY);
+	
+} else
 	$themeCss .= '#header {background-image:url('.$baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg.");}\n";
 
 	
@@ -165,8 +187,12 @@ if($isGuest) {
 	$modules = Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
 	$standardMenuItems = array();	
 	foreach($modules as $moduleItem){
-		if(($isAdmin || $moduleItem->adminOnly==0) && $moduleItem->name != 'users')
-			$standardMenuItems[$moduleItem->name]=$moduleItem->title;
+		if(($isAdmin || $moduleItem->adminOnly==0) && $moduleItem->name != 'users'){
+            if($moduleItem->name!='document')
+                $standardMenuItems[$moduleItem->name]=$moduleItem->title;
+            else
+                $standardMenuItems[$moduleItem->title]=$moduleItem->title;
+        }
 	}
 	$menuItems = array();
 	
@@ -206,8 +232,8 @@ if ($menuItemCount > $maxMenuItems) {
 
 $userMenu = array(
 	// array('label' => Yii::t('app','Chat'), 'url' => array('/site/groupChat')),
-	// array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin'&&Yii::app()->controller->action->id!='viewPage')?true:null, 'visible'=>$isAdmin),
+	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
 	// array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'), 'visible'=>$isAdmin),
 	// array('label' => CHtml::button(Yii::app()->user->getName(),array('id'=>'user-menu-toggle','onclick'=>'','class'=>'x2-button')), 'visible'=>$isUser,
 
@@ -252,7 +278,7 @@ $userMenu = array(
 		<div class="width-constraint">
 			<?php echo CHtml::beginForm(array('/search/search'),'get'); ?>
 				<?php
-					$notifCount = CActiveRecord::model('NotificationChild')->countByAttributes(array('user'=>Yii::app()->user->getName()));
+					$notifCount = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->getName()));
 					echo CHtml::link('<span>'.$notifCount.'</span>','#',array('id'=>'main-menu-notif','style'=>'z-index:999;'));
 					echo CHtml::link('',array('/site/page','view'=>'about'),array('id'=>'main-menu-icon'));
 				?>
@@ -267,7 +293,7 @@ $userMenu = array(
 				<div id="notif-box">
 					<div id="no-notifications" <?php if($notifCount > 0) echo 'style="display:none;"'; ?>><?php echo Yii::t('app','You don\'t have any notifications.'); ?></div>
 					<div id="notifications"></div>
-					<div id="notif-view-all" <?php if($notifCount < 1) echo 'style="display:none;"'; ?>><?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?></div>
+					<div id="notif-view-all" <?php if($notifCount < 11) echo 'style="display:none;"'; ?>><?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?></div>
 				</div>
 				<span id="search-bar-title">
 					<?php echo CHtml::link(CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,'',array('height'=>30,'width'=>200,'style'=>'margin:2px 0 -2px 0')),array('/site/whatsNew')); ?>
@@ -281,6 +307,7 @@ $userMenu = array(
 			//render main menu items
 			$this->widget('zii.widgets.CMenu', array(
 				'id'=>'main-menu',
+				'encodeLabel'=>false,
 				'htmlOptions'=>array('class'=>'main-menu'),
 				'items'=>$menuItems
 			));
@@ -305,7 +332,7 @@ $userMenu = array(
 	<div id="submenu-bar">
 		<div class="width-constraint">
 			<div style="overflow:auto;">
-			<?php $this->widget('zii.widgets.CMenu',array('items'=>$this->menu)); ?>
+			<?php $this->widget('zii.widgets.CMenu',array('encodeLabel'=>false,'items'=>$this->menu)); ?>
 			<?php
 			echo ' '.CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button'))." \n";
 			echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/create'),array('class'=>'x2-button'))." \n";
@@ -375,6 +402,6 @@ $userMenu = array(
 	<br>
 	</div>
 </div>
-
+<?php if(Yii::app()->session['translate']) echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>'; ?>
 </body>
 </html>

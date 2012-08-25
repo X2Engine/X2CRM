@@ -40,9 +40,14 @@
 /* use margins to align buttons relative to contact info */
 div.vcrPager {
 	text-align: right;
-	margin-top: 1;
+	margin-top: 1px;
 	margin-bottom: -27px;
 	margin-right: 75px;
+}
+
+div.vcrPager div.summary {
+	display: inline;
+	margin-right: 11px;
 }
 
 ul.vcrPager {
@@ -69,7 +74,7 @@ ul.vcrPager .hidden a {
 ul.vcrPager input.x2-button {
 	display: inline;
 	margin: 0px;
-	padding: 5px 10px;
+	padding: 7px 13px;
 }
 
 ul.vcrPager input.x2-button[disabled] {

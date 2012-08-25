@@ -56,12 +56,11 @@ class DefaultController extends x2base {
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
 	 */
-	public function accessRules()
-	{
+	public function accessRules() {
 		return array(
-                        array('allow',
-                            'users'=>array('*'), 
-                        ),
+			array('allow',
+				'users'=>array('*'), 
+			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem'),
 				'users'=>array('@'),
@@ -76,7 +75,7 @@ class DefaultController extends x2base {
 		);
 	}
 
-        public function actionGetItems(){
+	public function actionGetItems(){
 		$sql = 'SELECT id, title as value FROM x2_docs WHERE title LIKE :qterm ORDER BY title ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = '%'.$_GET['term'].'%';
@@ -94,8 +93,7 @@ class DefaultController extends x2base {
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionView($id)
-	{
+	public function actionView($id) {
 		$this->redirect(array('/admin/viewPage/'.$id));
 	}
 
@@ -104,16 +102,16 @@ class DefaultController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
-			$users=User::getNames();
-			unset($users['Anyone']);
-			unset($users['admin']);
-			unset($users[Yii::app()->user->getName()]);
-			$model=new DocChild;
+		$users=User::getNames();
+		unset($users['Anyone']);
+		unset($users['admin']);
+		unset($users[Yii::app()->user->getName()]);
+		$model=new DocChild;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['DocChild'])) {
+		if (isset($_POST['DocChild'])) {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['DocChild'];
 
@@ -123,7 +121,7 @@ class DefaultController extends x2base {
 
 			$model->createdBy=Yii::app()->user->getName();
 			$model->createDate=time();
-                        $changes=$this->calculateChanges($temp,$model->attributes);
+						$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangeLog($model,'Create');
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -140,11 +138,11 @@ class DefaultController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreateEmail() {
-			$users = User::getNames();
-			unset($users['Anyone']);
-			unset($users['admin']);
-			unset($users[Yii::app()->user->getName()]);
-			$model = new DocChild;
+		$users = User::getNames();
+		unset($users['Anyone']);
+		unset($users['admin']);
+		unset($users[Yii::app()->user->getName()]);
+		$model = new DocChild;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -161,7 +159,7 @@ class DefaultController extends x2base {
 
 			$model->createdBy=Yii::app()->user->getName();
 			$model->createDate=time();
-                        $changes=$this->calculateChanges($temp,$model->attributes);
+						$changes=$this->calculateChanges($temp,$model->attributes);
 			$model=$this->updateChangeLog($model,'Create');
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -175,7 +173,7 @@ class DefaultController extends x2base {
 	
 	public function actionChangePermissions($id){
 		$model=$this->loadModel($id);
-		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy){
+		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy) {
 			$users=User::getNames();
 			unset($users['admin']);
 			unset($users['Anyone']);
@@ -183,12 +181,12 @@ class DefaultController extends x2base {
 			$pieces=explode(", ",$str);
 			$model->editPermissions=$pieces;
 			
-			if(isset($_POST['DocChild'])){
+			if(isset($_POST['DocChild'])) {
 				$model->attributes=$_POST['DocChild'];
 				$arr=$model->editPermissions;
 				
 				$model->editPermissions=Accounts::parseUsers($arr);
-				if($model->save()){
+				if($model->save()) {
 					$this->redirect(array('view','id'=>$id));
 				}
 			}
@@ -197,13 +195,12 @@ class DefaultController extends x2base {
 				'model'=>$model,
 				'users'=>$users,
 			));
-		}else{
+		} else {
 			$this->redirect(array('view','id'=>$id));
 		}
 	}
-        
-    public function actionExportToHtml($id){
-            
+		
+	public function actionExportToHtml($id){
 		$model=$this->loadModel($id);
 		$file='doc.html';
 		$fp=fopen($file,'w+');
@@ -233,17 +230,14 @@ class DefaultController extends x2base {
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
-	{
+	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
 		$perm=$model->editPermissions;
 		$pieces=explode(", ",$perm);
-		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm){  
-			if(isset($_POST['DocChild']))
-			{
+		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
+			if(isset($_POST['DocChild'])) {
 				$model->attributes=$_POST['DocChild'];
-                                
-                                $model=$this->updateChangeLog($model,'Edited');
+				$model=$this->updateChangeLog($model,'Edited');
 				if($model->save())
 					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));
 			}
@@ -251,8 +245,7 @@ class DefaultController extends x2base {
 			$this->render('update',array(
 				'model'=>$model,
 			));
-		
-		}else{
+		} else {
 			$this->redirect(array('view','id'=>$id));
 		}
 	}
@@ -262,84 +255,55 @@ class DefaultController extends x2base {
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete($id)
-	{
-		if(Yii::app()->request->isPostRequest)
-		{
+	public function actionDelete($id) {
+		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$model=$this->loadModel($id);
-                        $this->cleanUpTags($model);
-                        $model->delete();
+			$this->cleanUpTags($model);
+			$model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
 				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-		}
-		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+		} else throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
 
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
-	{
+	public function actionIndex() {
 		$model=new DocChild('search');
 		$name="Docs";
-                
-                $attachments=new CActiveDataProvider('Media',array(
-                    'criteria'=>array(
-				'order'=>'createDate DESC',
-				'condition'=>'associationType="docs"'
+				
+		$attachments=new CActiveDataProvider('Media',array(
+			'criteria'=>array(
+			'order'=>'createDate DESC',
+			'condition'=>'associationType="docs"'
 		)));
-                
-		$pageParam = ucfirst($this->modelClass). '_page';
-		if (isset($_GET[$pageParam])) {
-			$page = $_GET[$pageParam];
-			Yii::app()->user->setState($this->id.'-page',(int)$page);
-		} else {
-			$page=Yii::app()->user->getState($this->id.'-page',1);
-			$_GET[$pageParam] = $page;
-		}
-
-		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
-		}
-			$this->render('index',array(
+				
+		$this->render('index',array(
 			'model'=>$model,
-                        'attachments'=>$attachments,
+			'attachments'=>$attachments,
 		));
 	}
 
 	/**
 	 * Manages all models.
 	 */
-	public function actionAdmin()
-	{
+	public function actionAdmin() {
 		$model=new DocChild('search');
 		$name="Docs";
-                
-                $attachments=new CActiveDataProvider('Media',array(
-                    'criteria'=>array(
+				
+		$attachments=new CActiveDataProvider('Media',array(
+			'criteria'=>array(
 				'order'=>'createDate DESC',
 				'condition'=>'associationType="docs"'
-		)));
-                
-		$pageParam = ucfirst($this->modelClass). '_page';
-		if (isset($_GET[$pageParam])) {
-			$page = $_GET[$pageParam];
-			Yii::app()->user->setState($this->id.'-page',(int)$page);
-		} else {
-			$page=Yii::app()->user->getState($this->id.'-page',1);
-			$_GET[$pageParam] = $page;
-		}
+			)
+		));
 
-		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
-		}
-			$this->render('admin',array(
+		$this->render('admin',array(
 			'model'=>$model,
-                        'attachments'=>$attachments,
+			'attachments'=>$attachments,
 		));
 	}
 
@@ -348,8 +312,7 @@ class DefaultController extends x2base {
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer the ID of the model to be loaded
 	 */
-	public function loadModel($id)
-	{
+	public function loadModel($id) {
 		$model = CActiveRecord::model('DocChild')->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
@@ -360,10 +323,8 @@ class DefaultController extends x2base {
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated
 	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='docs-form')
-		{
+	protected function performAjaxValidation($model) {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='docs-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}

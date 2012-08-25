@@ -215,7 +215,10 @@ if($inlineForm){
         
 	<div class="cell">
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
-		<?php echo $form->label($actionModel,'dueDate');
+		<?php if($actionModel->type == 'event')
+				echo $form->label($actionModel,'startDate');
+			else
+				echo $form->label($actionModel,'dueDate');
 		if ($actionModel->isNewRecord)
 			if(isset($this->controller)) // inline action?
 				$actionModel->dueDate = $this->controller->formatDateEndOfDay(time());	//default to tomorow for new actions
@@ -244,6 +247,45 @@ if($inlineForm){
 		));
 		?>
 		<?php echo $form->error($actionModel,'dueDate'); ?>
+		
+
+
+
+		<?php if($actionModel->type == 'event') {
+		
+			echo $form->label($actionModel,'endDate');
+			if ($actionModel->isNewRecord)
+				if(isset($this->controller)) // inline action?
+					$actionModel->completeDate = $this->controller->formatDateEndOfDay(time());	//default to tomorow for new actions
+				else
+					$actionModel->completeDate = $this->formatDateEndOfDay(time());	//default to tomorow for new actions
+			else
+				if(isset($this->controller)) // inline action?
+					$actionModel->completeDate = $this->controller->formatDateTime($actionModel->completeDate);	//format date from DATETIME
+				else
+					$actionModel->completeDate = $this->formatDateTime($actionModel->completeDate);	//format date from DATETIME
+			
+			Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+			$this->widget('CJuiDateTimePicker',array(
+				'model'=>$actionModel, //Model object
+				'attribute'=>'completeDate', //attribute name
+				'mode'=>'datetime', //use "time","date" or "datetime" (default)
+				'options'=>array(
+					'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
+					'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formattimePicker() ),
+					'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
+					'changeMonth'=>true,
+					'changeYear'=>true
+				), // jquery plugin options
+				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+				'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
+			));
+			echo $form->error($actionModel,'completeDate');
+		} ?>
+
+
+
+
 		
 		<?php echo $form->label($actionModel, 'allDay'); ?>
 		<?php echo $form->checkBox($actionModel, 'allDay'); ?>

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -77,7 +77,7 @@ function checkName(el, sbm) {
 <div class="form">
 <b><?php echo Yii::t('app','Attach a File'); ?></b><br />
 <?php
-	echo CHtml::form(Yii::app()->request->baseUrl.'/index.php/site/upload','post',array('enctype'=>'multipart/form-data')); 
+	echo CHtml::form(array('/site/upload'),'post',array('enctype'=>'multipart/form-data')); 
 	echo CHtml::hiddenField('type',$this->type);
 	echo CHtml::hiddenField('associationId',$this->associationId);
 	echo CHtml::fileField('upload','',array('id'=>'upload','onchange'=>"checkName(this, '#submitAttach')"));

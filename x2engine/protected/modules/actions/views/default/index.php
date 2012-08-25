@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -121,6 +121,35 @@ function toggleShowActions() {
 }
 ",CClientScript::POS_HEAD);
 
+// init qtip for contact names
+Yii::app()->clientScript->registerScript('contact-qtip', '
+function refreshQtip() {
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
+
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.baseUrl+"/index.php/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get",
+					}
+				},
+				style: {
+				}
+			});
+		}
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+');
+
+
 function trimText($text) {
 	if(strlen($text)>150)
 		return substr($text,0,147).'...';
@@ -138,11 +167,14 @@ function trimText($text) {
 $this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
+	'template'=> '<div class="title-bar"><h2 style="float:none;">'.$heading.'</h2>'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div>'
+		.CHtml::button(Yii::t('actions','Complete Selected'),array('class'=>'x2-button','style'=>'display:inline-block;','onclick'=>'completeSelected()'))
+		.CHtml::button(Yii::t('actions','Uncomplete Selected'),array('class'=>'x2-button','style'=>'display:inline-block;','onclick'=>'uncompleteSelected()'))
+		.'{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -167,66 +199,9 @@ $this->widget('application.components.X2GridView', array(
 		'associationName'=>array(
 			'name'=>'associationName',
 			'header'=>Yii::t('actions','Association Name'),
-			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/default/view","id"=>$data->associationId))',
+			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/default/view","id"=>$data->associationId),array("class"=>($data->associationType=="contacts"? "contact-name" : null)))',
 			'type'=>'raw',
 		),
 	),
 	'enableControls'=>true,
 ));
-?>
-<br />
-<div class="row buttons">
-	<a class="x2-button" href="#" onClick="completeSelected();"><?php echo Yii::t('actions','Complete Selected'); ?></a>
-	<a class="x2-button" href="#" onClick="uncompleteSelected()"><?php echo Yii::t('actions','Uncomplete Selected'); ?></a>
-</div>
-
-<?php /*
-echo "<br />\n";
-$this->widget('application.components.X2GridView', array(
-	'id'=>'actionsComplete-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('actions','Completed Actions').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1))// . ' | '
-		// .CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
-		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$dataProvider2,
-	// 'enableSorting'=>false,
-	// 'model'=>$model,
-	'filter'=>$model,
-	// 'columns'=>$columns,
-	'modelName'=>'Actions',
-	'viewName'=>'actionscomplete',
-	'enableGvSettings'=>false,
-	// 'columnSelectorId'=>'contacts-column-selector',
-	'defaultGvSettings'=>array(
-		'actionDescription'=>257,
-		'associationName'=>113,
-		'completeDate'=>110,
-		'completedBy'=>105,
-	),
-	'specialColumns'=>array(
-		'actionDescription'=>array(
-			'name'=>'actionDescription',
-			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : trimText($data->actionDescription),array("view","id"=>$data->id))',
-			'type'=>'raw',
-		),
-		'associationName'=>array(
-			'name'=>'associationName',
-			'header'=>Yii::t('actions','Association Name'),
-			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/default/view","id"=>$data->associationId))',
-			'type'=>'raw',
-		),
-		'completedBy'=>array(
-			'name'=>'completedBy',
-			'header'=>Yii::t('actions','Completed By'),
-			'value'=>'User::getUserLinks($data->completedBy)',
-			'type'=>'raw',
-		),
-	),
-	'enableControls'=>true,
-)); */
-?>
-<br />
-
-

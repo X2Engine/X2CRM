@@ -91,7 +91,12 @@ $('#deleteVersionButton').click(function() {
 
 ?>
 <h2><?php echo Yii::t('admin','Form Editor'); ?></h2>
-<?php echo Yii::t('admin','Add a form row and drag and drop fields from the field list. Click save when finished.'); ?>
+<div style="width:600px;">
+    <?php echo Yii::t('admin','Add a form row and drag and drop fields from the field list. Click save when finished.'); ?><br /><br />
+    <?php echo Yii::t('admin','Each module can have multiple layouts, but only one view and one form can be active at any given time.');?>
+    <?php echo Yii::t('admin','To choose which layout is used, select either "Default View" or "Default Form" or both depending on how you want the layout to be used.');?>
+    
+</div>
 <br><br>
 <?php
 echo CHtml::beginForm(array('editor','id'=>$id),'post',array('id'=>'formEditorForm'));

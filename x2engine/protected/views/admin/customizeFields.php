@@ -38,7 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?><h3><?php echo Yii::t('admin','Customize Fields'); ?></h3>
-<?php echo Yii::t('admin','This form will allow you to rename or show/hide any field on the four major models (Contacts, Actions, Sales and Accounts).'); ?><br><br>
+<div style="width:600px">
+<?php echo Yii::t('admin','This form will allow you to rename or show/hide any field on any customizable module.  Changing the type of a default field is strongly discouraged.'); ?><br><br>
+</div>
 <div class="form">
 	<?php $form=$this->beginWidget('CActiveForm', array(
 		'id'=>'criteria-form',
@@ -138,13 +140,13 @@
         
         <div class="row">
             <?php echo $form->labelEx($model,'searchable');?>
-            <?php echo $form->checkBox($model,'searchable',array('id'=>'searchable','onclick'=>'$("#relevance_box").toggle();'));?>
+            <?php echo $form->checkBox($model,'searchable',array('id'=>'searchable-custom','onclick'=>'$("#relevance_box_custom").toggle();'));?>
             <?php echo $form->error($model,'searchable');?>
         </div>
         
-        <div class="row" id ="relevance_box" style="display:none">
+        <div class="row" id ="relevance_box_custom" style="display:none">
             <?php echo $form->labelEx($model,'relevance'); ?>
-            <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array("id"=>"relevance",'options'=>array('Medium'=>array('selected'=>true)))); ?>
+            <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array("id"=>"relevance-custom",'options'=>array('Medium'=>array('selected'=>true)))); ?>
             <?php echo $form->error($model,'relevance'); ?> 
         </div>
 	
@@ -165,12 +167,12 @@
             $('#required').attr("checked",false);
         }
         if(data.searchable==1){
-            $('#relevance_box').show();
-            $('#searchable').attr("checked",true);
+            $('#relevance_box_custom').show();
+            $('#searchable-custom').attr("checked",true);
         }else{
-            $('#relevance_box').hide();
-            $('#searchable').attr("checked",false);
+            $('#relevance_box_custom').hide();
+            $('#searchable-custom').attr("checked",false);
         }
-        $('#relevance').val(data.relevance)
+        $('#relevance-custom').val(data.relevance)
     }
 </script>

@@ -43,7 +43,7 @@ class NotificationsController extends CController {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('get','delete','newMessage','getMessages','checkNotifications','saveGridviewSettings','saveFormSettings', 'fullScreen', 'pageOpacity', 'widgetState','widgetOrder'),
+				'actions'=>array('get','delete','deleteAll','newMessage','getMessages','checkNotifications','saveGridviewSettings','saveFormSettings', 'fullScreen', 'pageOpacity', 'widgetState','widgetOrder'),
 				'users'=>array('@'),
 			),
 			array('deny', 
@@ -96,7 +96,7 @@ class NotificationsController extends CController {
 		$notifModels = CActiveRecord::model('Notification')->findAll(new CDbCriteria(array(
 			'condition'=>'id>:lastId AND user=:user',
 			'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),
-			'order'=>'createDate ASC',
+			'order'=>'id DESC',
 			'limit'=>10
 		)));
 
@@ -148,11 +148,13 @@ class NotificationsController extends CController {
 	
 	public function actionDelete($id) {
 		$model = CActiveRecord::model('Notification')->findByPk($id);
-		if(isset($model) && $model->user = Yii::app()->user->name) {
+		if(isset($model) && $model->user = Yii::app()->user->name)
 			$model->delete();
-		}
-		
-		
+	}
+
+	public function actionDeleteAll() {
+		CActiveRecord::model('Notification')->deleteAllByAttributes(array('user'=>Yii::app()->user->name));
+		$this->redirect(array('/site/viewNotifications'));
 	}
 
 	public function actionGetMessages() {
@@ -397,7 +399,7 @@ class NotificationsController extends CController {
 		);
 
 		//convert any tags into links
-		$template="\\1<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.">#\\2</a>";
+		$template="\\1<a href=".Yii::app()->createUrl('/search/search').'?term=%23\\2'.">#\\2</a>";
 		//$text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
 		$text = preg_replace('/(^|[>\s\.])#(\w\w+)/u',$template,$text);
 

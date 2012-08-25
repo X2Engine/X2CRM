@@ -197,9 +197,9 @@ return array (
 <meta name="language" content="en" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>X2Contacts Translation Manager</title>
-<link rel="stylesheet" type="text/css" href="../../css/translationManager.css" />
-<script type="text/javascript" src="../../js/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="../../js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->baseUrl; ?>/css/translationManager.css" />
+<script type="text/javascript" src="<?php echo Yii::app()->baseUrl; ?>/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="<?php echo Yii::app()->baseUrl; ?>/js/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript">
 var lang = 'none';
 

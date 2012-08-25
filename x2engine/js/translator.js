@@ -1,4 +1,3 @@
-<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -38,13 +37,46 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-if($address != null) {
-?>
+$(function() {
 
-<iframe width="100%" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-src="http://maps.google.com/maps?ie=UTF8&t=m&q=<?php echo urlencode($address); ?>&iwloc=near&z=8&output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?ie=UTF8&t=m&q=<?php echo $address; ?>&iwloc=near&z=6&output=embed" style="margin-left:10px;"><?php echo Yii::t('app','View Larger Map'); ?></a></small>
-<?php
-} else {
-	Yii::app()->getClientScript()->registerCss('hideGoogleMaps',"#widget_GoogleMaps{display:none;}",'all');
-}
-?>
+	var $inputs = $("input, button, textarea").filter(function() { return $(this).attr('value').match(/<dt class="yii-t">.+/); });
+	var $options = $("option").filter(function() { return $(this).text().match(/<dt class="yii-t">.+/); });
+	
+	
+	$.each($inputs,function(i,elem) {
+		var translation = $('.yiiTranslationList').append($(elem).attr('value')+'<br>').find('dt').last().text();
+		$(elem).attr('value',translation);
+	});
+	
+	$.each($options,function(i,elem) {
+		var translation = $('.yiiTranslationList').append($(elem).text()+'<br>').find('dt').last().text();
+		$(elem).text(translation);
+	});
+
+
+	var altKeyDown = false;
+
+	$('body').mousemove(function(e) {	// check for altkey on mousemove,
+		if(e.altKey != altKeyDown)		// only call toggleClass if it has changed
+			$(this).toggleClass('yii-t',e.altKey);
+		altKeyDown = e.altKey;
+	});
+
+	$(document).delegate('dt.yii-t','click',function(e) {
+		
+		if(e.altKey) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			
+			
+			var category = $(this).find('input#cat').val();
+			var message = $(this).find('input#msg').val();
+			alert(category+', '+message);	 
+			
+			return false;
+		}
+		return true;
+	});
+
+});

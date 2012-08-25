@@ -337,8 +337,7 @@ Please click on the link below to create an account at X2CRM!
 	 */
 	public function actionAdmin() {
 		$model=new User('search');
-		$name='User';
-		parent::admin($model, $name);
+		$this->render('admin',array('model'=>$model));
 	}
 
 	/**

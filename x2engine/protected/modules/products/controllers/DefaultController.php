@@ -257,8 +257,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new Product('search');
-		$name='Product';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -266,8 +265,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new Product('search');
-		$name='Product';
-		parent::admin($model, $name);
+		$this->render('admin', array('model'=>$model));
 	}
 
 	/**

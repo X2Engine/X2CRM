@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,6 +40,8 @@
 ?>
 <html>
 <h2><?php echo Yii::t('admin','Export All Data'); ?></h2>
+<?php echo Yii::t('admin','This page will export all data from all modules into a CSV file. This CSV can be re-imported to another X2CRM installation as is without any formatting changes.') ?>
+<br /><br />
 <?php echo Yii::t('admin','Please click the link below to download data.');?><br /><br />
 <a href=<?php echo Yii::app()->request->baseUrl.'/'; ?>data.csv><?php echo Yii::t('app','Download');?>!</a>
 </html>

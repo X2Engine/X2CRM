@@ -39,8 +39,8 @@
  ********************************************************************************/
 ?>
 
-<h3>Add A Custom Field</h3>
-This form allows you to add custom fields to models.
+<h3><?php echo Yii::t('admin',"Add A Custom Field");?></h3>
+<?php echo Yii::t('admin',"This form allows you to add custom fields to models.");?>
 <div><br /></div>
 <div class="form">
 
@@ -61,7 +61,7 @@ echo $form->errorSummary($model);
             foreach($modules as $module){
                 if($module->editable){
                     if($module->title!="Marketing")
-                        $arr[$module->name]=$module->title;
+                        $arr[ucfirst($module->name)]=$module->title;
                     else
                         $arr["Campaign"]=$module->title;
                 }
@@ -71,8 +71,8 @@ echo $form->errorSummary($model);
 	</div>
         
         <div class="row">
-            <br /><div>Field Name <b>MUST</b> be of the format: wordWordWord. i.e. firstName
-                <br />The first letter must be lowercase and each following word should have its first letter capitalized.
+            <br /><div><?php echo Yii::t('admin','Field Name <b>MUST</b> be of the format: wordWordWord. i.e. firstName');?>
+                <br /><?php echo Yii::t('admin','The first letter must be lowercase and each following word should have its first letter capitalized.');?>
                 <br />No spaces are allowed.</div><br />
             <?php echo $form->labelEx($model,'fieldName'); ?>
             <?php echo $form->textField($model,'fieldName'); ?>
@@ -129,13 +129,13 @@ echo $form->errorSummary($model);
     
         <div class="row">
             <?php echo $form->labelEx($model,'searchable');?>
-            <?php echo $form->checkBox($model,'searchable');?>
+            <?php echo $form->checkBox($model,'searchable',array('id'=>'searchable','onclick'=>'$("#relevance_box").toggle();'));?>
             <?php echo $form->error($model,'searchable');?>
         </div>
-    
-        <div class="row">
+        
+        <div class="row" id ="relevance_box" style="display:none">
             <?php echo $form->labelEx($model,'relevance'); ?>
-            <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array('options'=>array('Medium'=>array('selected'=>true)))); ?>
+            <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array("id"=>"relevance",'options'=>array('Medium'=>array('selected'=>true)))); ?>
             <?php echo $form->error($model,'relevance'); ?> 
         </div>
 

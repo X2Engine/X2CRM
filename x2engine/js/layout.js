@@ -39,7 +39,7 @@
 
 $(function() {
 
-	$('a.x2-link').draggable({revert:true,helper:'clone',revertDuration:200,appendTo:'body'});
+	$('a.x2-link').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'body'});
 
 	if(window.fullscreen)
 		$('#page-body').addClass('no-widgets');
@@ -170,6 +170,11 @@ $(function() {
 			x.height(23);
 	});
 	
+	// translation list
+	$('.yiiTranslationList').draggable({handle:'td,th'}).offset({top:300,left:0});
+	
+	
+	
 	// show/hide widget button
 	$('#fullscreen-button').click(function() {
 		// save preference
@@ -216,4 +221,21 @@ $(function() {
 			hasScrolled = true;
 		});
 	}
+});
+
+
+function togglePortletVisible(portlet, response) {
+	portlet.children('.portlet-content').toggle('blind');
+	var text;
+	if(response == true) {
+		var text = "[&ndash;]";
+	} else {
+		var text = "[+]";
+	}
+	portlet.find('.portlet-minimize a').html(text);
+}
+
+// set up x2 helper tooltips
+$(function() {
+	$('.x2-hint').qtip();
 });

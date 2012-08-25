@@ -371,8 +371,7 @@ class DefaultController extends x2base {
 	public function actionIndex() {
 		
 		$model=new Accounts('search');
-		$name='Accounts';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -380,8 +379,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new Accounts('search');
-		$name='Accounts';
-		parent::admin($model,$name);
+		$this->render('admin', array('model'=>$model));
 	}
 
 	/**

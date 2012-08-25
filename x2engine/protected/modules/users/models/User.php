@@ -101,6 +101,21 @@ class User extends CActiveRecord {
 		return array(
 		);
 	}
+    
+    public static function hasRole($user,$role){
+        if(is_numeric($role)){
+            $lookup=RoleToUser::model()->findByAttributes(array('userId'=>$user,'roleId'=>$role));
+            return isset($lookup);
+        }else{
+            $roleRecord=Roles::model()->findByAttributes(array('name'=>$role));
+            if(isset($roleRecord)){
+                $lookup=RoleToUser::model()->findByAttributes(array('userId'=>$user,'roleId'=>$roleRecord->id));
+                return isset($lookup);
+            }else{
+                return false;
+            }
+        }
+    }
 
 
 	public static function getNames() {
@@ -119,6 +134,22 @@ class User extends CActiveRecord {
 
 		return array('Anyone'=>Yii::t('app','Anyone')) + $userNames;
 	}
+    
+    public static function getUserIds(){
+        $userNames = array();
+		$query = Yii::app()->db->createCommand()
+			->select('id, CONCAT(firstName," ",lastName) AS name')
+			->from('x2_users')
+			->where('status=1')
+			->order('name ASC')
+			->query();
+
+		while(($row = $query->read()) !== false)
+			$userNames[$row['id']] = $row['name'];
+		natcasesort($userNames);
+
+		return array(''=>Yii::t('app','Anyone')) + $userNames;
+    }
 	
 	public function getName() {
 		return $this->firstName.' '.$this->lastName;

@@ -1,23 +1,28 @@
 README
 
-X2Engine 1.6.1 Changelog
-7/25/2012
+X2EngineCRM 1.6.5 Changelog
+8/24/2012
 
-- New Tag-to-email campaing tool
-- New VCR controls for lists (all contacts, user-defined lists) allows you to 
-  go directly to the next record without going back to the list
-- New workflow stage backdating controls for admin
-- Misc. bug fixes
+X2EngineCRM 1.6.5 Changelog
+- Powerful new web lead capture form editor
+- Enhanced record tagging abilities
+- New single-user lead distribution option
+- Automatic phone number formatting (for US numbers)
+- Reorganized admin page
+- Improved search results
+- Improved notification behavior
+- Tons of bug fixes
+- Improvements to VCR controls and grid sort/filter rememebering
 
-Welcome to  X2Engine v1.6.1!  X2Engine is a next-generation,  open source  social 
-sales application for small and medium sized businesses.  X2Engine was designed 
-to  streamline contact  and  sales actions  into  one  compact  blog-style user 
-interface.    Add  to  this  contact  and  colleague  social  feeds  and  sales 
+Welcome to  X2EngineCRM v1.6.5!  X2EngineCRM is a next-generation,  open source
+social sales application for small and medium sized businesses. X2EngineCRM was 
+designed to streamline  contact and sales actions into  one  compact blog-style 
+user interface.  Add to this  contact  and  colleague  social feeds  and  sales 
 representatives  become  smarter  and  more  effective  resulting  in increased 
 sales and higher customer satisfaction.
 
-X2CRM is  unique in the crowded  Customer  Relationship  Management (CRM) field 
-with its compact,  blog-style  user interface.  Interactive  and  collaborative 
+X2EngineCRM  is  unique  in the  crowded Customer Relationship Management (CRM) 
+field with its compact blog-style user interface. Interactive and collaborative 
 tools which users are already familiar with from  social networking  sites such 
 as  tagging,  pictures,  docs,  web pages,  group chat,  discussions boards and 
 rich  mobile and tablet apps are combined within a  compact  and  fast  contact 

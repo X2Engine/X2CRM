@@ -71,18 +71,18 @@
 
 class ERememberFiltersBehavior extends CActiveRecordBehavior {
 
-    /**
-     * Array that holds any default filter value like array('active'=>'1')
-     *
-     * @var array
-     */
-    public $defaults=array();
-    /**
-     * When this flag is true, the default values will be used also when the user clears the filters
-     *
-     * @var boolean
-     */
-    public $defaultStickOnClear=false;
+	/**
+	 * Array that holds any default filter value like array('active'=>'1')
+	 *
+	 * @var array
+	 */
+	public $defaults=array();
+	/**
+	 * When this flag is true, the default values will be used also when the user clears the filters
+	 *
+	 * @var boolean
+	 */
+	public $defaultStickOnClear=false;
 	/**
 	* Holds a custom stateId key 
 	*
@@ -91,96 +91,108 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	private $_rememberScenario=null;
 	
 	private function getStatePrefix() {
-	    $modelName = get_class($this->owner);
-	    if ($this->_rememberScenario!=null) {
-	        return $modelName.$this->_rememberScenario;
-	    } else {
-	        return $modelName;
-	    }
+		$modelName = get_class($this->owner);
+		if ($this->_rememberScenario!=null) {
+			return $modelName.$this->_rememberScenario;
+		} else {
+			return $modelName;
+		}
 	}
 	
 	public function setRememberScenario($value) {
-	    $this->_rememberScenario=$value;
-	    $this->doReadSave();
-	    return $this->owner;
+		$this->_rememberScenario=$value;
+		$this->doReadSave();
+		//if block added by John M, do this instead of calling EBUttonColumnWithClearFilters::clearFilters
+		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+			$this->unsetFilters();
+			if(isset($_GET['id']))
+				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID,'id'=>Yii::app()->request->getParam('id')));
+			else
+				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID));
+		}
+		return $this->owner;
 	}
 	
 	public function getRememberScenario() {
-	    return $this->_rememberScenario;
+		return $this->_rememberScenario;
 	}
 		
-    private function readSearchValues() {
-        $modelName = get_class($this->owner);
-        $attributes = $this->owner->getSafeAttributeNames();
+	private function readSearchValues() {
+		$modelName = get_class($this->owner);
+		$attributes = $this->owner->getSafeAttributeNames();
 
-        // set any default value
-        if (is_array($this->defaults) && (null==Yii::app()->user->getState($modelName . __CLASS__. 'defaultsSet', null))) {
-            foreach ($this->defaults as $attribute => $value) {
-                if (null == (Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-                    Yii::app()->user->setState($this->getStatePrefix() . $attribute, $value);
-                }
-            }
-            Yii::app()->user->setState($modelName . __CLASS__. 'defaultsSet', 1);
-        }
-        
-        // set values from session
-        foreach ($attributes as $attribute) {
-            if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-                try {
-                    $this->owner->$attribute = $value;
-                }
-                catch (Exception $e) {
-                }
-            }
-        }
-    }
+		// set any default value
+		if (is_array($this->defaults) && (null==Yii::app()->user->getState($modelName . __CLASS__. 'defaultsSet', null))) {
+			foreach ($this->defaults as $attribute => $value) {
+				if (null == (Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
+					Yii::app()->user->setState($this->getStatePrefix() . $attribute, $value);
+				}
+			}
+			Yii::app()->user->setState($modelName . __CLASS__. 'defaultsSet', 1);
+		}
+		
+		// set values from session
+		foreach ($attributes as $attribute) {
+			if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
+				try {
+					$this->owner->$attribute = $value;
+				}
+				catch (Exception $e) {
+				}
+			}
+		}
+	}
 
-    private function saveSearchValues() {
-        $modelName = get_class($this->owner);
-        $attributes = $this->owner->getSafeAttributeNames();
-        foreach ($attributes as $attribute) {
-            if (isset($this->owner->$attribute)) {
-                //echo var_export($attributes,true);
-                //exit;
-                Yii::app()->user->setState($this->getStatePrefix() . $attribute, $this->owner->$attribute);
-            }
-        }
-    }
-    
-    private function doReadSave() {
-        if ($this->owner->scenario == 'search') {
-            $this->owner->unsetAttributes();
-            if (isset($_GET[get_class($this->owner)])) {
-                $this->owner->attributes = $_GET[get_class($this->owner)];
-                $this->saveSearchValues();
-            } else {
-                $this->readSearchValues();
-            }
-        }
-    }
-    
-    public function afterConstruct($event) {
-        $this->doReadSave();
-    }
-    
-    /**
-     * Method is called when we need to unset the filters
-     *
-     * @return owner
-     */
-    public function unsetFilters() {
-        $modelName = get_class($this->owner);
-        $attributes = $this->owner->getSafeAttributeNames();
+	private function saveSearchValues() {
+		$modelName = get_class($this->owner);
+		$attributes = $this->owner->getSafeAttributeNames();
+		foreach ($attributes as $attribute) {
+			if (isset($this->owner->$attribute)) {
+				//echo var_export($attributes,true);
+				//exit;
+				Yii::app()->user->setState($this->getStatePrefix() . $attribute, $this->owner->$attribute);
+			}
+		}
+	}
+	
+	private function doReadSave() {
+		if ($this->owner->scenario == 'search') {
+			$this->owner->unsetAttributes();
+			if (isset($_GET[get_class($this->owner)])) {
+				$this->owner->attributes = $_GET[get_class($this->owner)];
+				$this->saveSearchValues();
+			} else {
+				$this->readSearchValues();
+			}
+		}
+	}
+	
+	public function afterConstruct($event) {
+		//always start with a unique remember scenario
+		//based on the controller/action names, and id if specified
+		$this->setRememberScenario(Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : ''));
 
-        foreach ($attributes as $attribute) {
-            if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-                Yii::app()->user->setState($this->getStatePrefix() . $attribute, 1, 1);
-            }
-        }
-        if ($this->defaultStickOnClear) {
-            Yii::app()->user->setState($modelName . __CLASS__. 'defaultsSet', 1,1);
-        }
-        return $this->owner;
-    }
+		//$this->doReadSave(); //original functionality, overidden by John M
+	}
+	
+	/**
+	 * Method is called when we need to unset the filters
+	 *
+	 * @return owner
+	 */
+	public function unsetFilters() {
+		$modelName = get_class($this->owner);
+		$attributes = $this->owner->getSafeAttributeNames();
+
+		foreach ($attributes as $attribute) {
+			if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
+				Yii::app()->user->setState($this->getStatePrefix() . $attribute, 1, 1);
+			}
+		}
+		if ($this->defaultStickOnClear) {
+			Yii::app()->user->setState($modelName . __CLASS__. 'defaultsSet', 1,1);
+		}
+		return $this->owner;
+	}
 }
 ?>

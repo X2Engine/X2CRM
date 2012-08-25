@@ -252,8 +252,7 @@ class ProjectsController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new ProjectChild('search'); 
-		$name='ProjectChild';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -261,8 +260,7 @@ class ProjectsController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new ProjectChild('search'); 
-		$name='ProjectChild';
-		parent::admin($model, $name);
+		$this->render('admin', array('model'=>$model));
 	}
 
 	/**

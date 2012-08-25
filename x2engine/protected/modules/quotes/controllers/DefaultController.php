@@ -1038,8 +1038,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new Quote('search');
-		$name='Quote';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -1047,9 +1046,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new Quote('search');
-		$name='Quote';
-//		$this->render('test', array('model'=>$name));
-		parent::admin($model, $name);
+		$this->render('admin', array('model'=>$model));
 	}
 
 	/**

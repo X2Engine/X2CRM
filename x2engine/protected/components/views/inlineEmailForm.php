@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -112,7 +112,7 @@ if(!empty($model->status)) {
 	echo '</div>';
 }
 ?>
-<div class="wide form<?php if($emailSent) echo ' hidden'; ?>">
+<div id="email-mini-module" class="wide form<?php if($emailSent) echo ' hidden'; ?>">
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'enableAjaxValidation'=>false,
 		'method'=>'post',
@@ -158,13 +158,23 @@ if(!empty($model->status)) {
 	
 	<div class="row" id="email-attachments">
 		<div class="form" style="text-align:left;">
-		<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
-		<div>
-		<?php echo CHtml::fileField('upload','',array('onchange'=>'checkName(this, "#submitAttach"); if($("#submitAttach").attr("disabled") != "disabled") {fileUpload(this.form, $(this), "'. Yii::app()->createUrl('site/tmpUpload') .'", "'. Yii::app()->createUrl('site/removeTmpUpload') .'"); }')); ?>
-		<span class="filename"></span>
-		<span class="remove"></span>
-		<span class="error"></span>
-		</div>
+			<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
+			<div class="next-attachment">
+				<?php //echo CHtml::fileField('upload','',array('onchange'=>'checkName(this, "#submitAttach"); if($("#submitAttach").attr("disabled") != "disabled") {fileUpload(this.form, $(this), "'. Yii::app()->createUrl('site/tmpUpload') .'", "'. Yii::app()->createUrl('site/removeTmpUpload') .'"); }')); ?>
+				<span class="upload-wrapper">
+					<span class="x2-file-wrapper">
+					    <input type="file" class="x2-file-input" name="upload" onChange="checkName(this, '#submitAttach'); if($('#submitAttach').attr('disabled') != 'disabled') {fileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('site/removeTmpUpload'); ?>'); }">
+					    <input type="button" class="x2-button" value="Choose File">
+					    <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'choose-file-saving-icon', 'style'=>'position: absolute; width: 14px; height: 14px; filter: alpha(opacity=0); -moz-opacity: 0.00; opacity: 0.00;')); ?>
+					</span>
+					<span style="vertical-align: middle">
+					    <?php echo Yii::t('media', 'Max') .' '. Media::getServerMaxUploadSize(); ?> MB
+					</span>
+				</span>
+				<span class="filename"></span>
+				<span class="remove"></span>
+				<span class="error"></span>
+			</div>
 		</div>
 	</div>
 	
@@ -205,18 +215,5 @@ if(!empty($model->status)) {
 	// echo CHtml::htmlButton(Yii::t('app','Send'),array('type'=>'submit','class'=>'x2-button','id'=>'send-button','style'=>'margin-left:90px;')); ?>
 	</div>
 	<?php $this->endWidget(); ?>
-	<?php //echo CHtml::endForm(); ?>
-	<?php
-		/*echo CHtml::form(Yii::app()->request->baseUrl.'/index.php/site/tmpUpload','post',array(
-			'id'=>'email-attachment-form',
-			'enctype'=>'multipart/form-data',
-			'target'=>'upload_target',
-		));
-		 
-		echo CHtml::fileField('upload','',array('id'=>'upload','onchange'=>"checkName(this, '#submitAttach')"));
-		echo CHtml::submitButton('Submit', array(
-			'id'=>'submitAttach','class'=>'x2-button','style'=>'display:inline',));
-		echo CHtml::endForm();*/
-	?>
 </div>
 </div>

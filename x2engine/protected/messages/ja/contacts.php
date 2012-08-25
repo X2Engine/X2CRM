@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'コールはありません',
 'Do Not Email'=>'メールしないでください',
 
+// List Attributes
+'Owner'=>'所有者',
+'Description'=>'説明',
+'Logic Type'=>'ロジックタイプ',
+'Record Type'=>'レコード·タイプ',
+'Members'=>'メンバー',
+'Dynamic'=>'ダイナミック',
+'Static'=>'静的',
+
+// List Criteria Attributes
+'List'=>'リスト',
+'Type'=>'タイプ',
+'Attribute'=>'属性',
+'Comparison'=>'比較',
+'Value'=>'値',
+
+// List Criteria Comparitors
+'equals'=>'等しい',
+'greater than'=>'よりも大きい',
+'less than'=>'以下',
+'not equal to'=>'等しくない',
+'in list'=>'リスト内の',
+'not in list'=>'ないリスト',
+'empty'=>'空の',
+'not empty'=>'空ではありません',
+'contains'=>'含まれています',
+'does not contain'=>'が含まれていません',
+
 // Misc
 'Assigned to {name}'=>'{name} に割り当て',
 'Social Networks'=>'ネットワーク',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'私のコンタクト',
+'New Contacts'=>'新しい連絡先',
 'All Contacts'=>'すべてのコンタクト',
 'Create Contact'=>'コンタクトを作る',
 'View Contact'=>'コンタクトを見る',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'コンタクトを共有する',
 'Create'=>'作る',
 'Lists'=>'リスト',
+'Create List'=>'リストを作成',
 'View'=>'表示',
 'Share'=>'シェア',
 'Update'=>'更新',

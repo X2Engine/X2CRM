@@ -48,10 +48,17 @@ $this->menu=array(
 );
 ?>
 <h2><?php
-	if($model->associationType=='none')
-		echo Yii::t('actions','Update Action');
-	else
-		echo Yii::t('actions','Update Action:').' <b>'.$model->associationName.'</b>';
+	if($model->type == 'event') {
+		if($model->associationType=='none')
+			echo Yii::t('actions','Update Event');
+		else
+			echo Yii::t('actions','Update Event:').' <b>'.$model->associationName.'</b>';
+	} else {
+		if($model->associationType=='none')
+			echo Yii::t('actions','Update Action');
+		else
+			echo Yii::t('actions','Update Action:').' <b>'.$model->associationName.'</b>';
+	}
 ?></h2>
 
 <?php echo $this->renderPartial('_form', array('actionModel'=>$model, 'users'=>$users)); ?>

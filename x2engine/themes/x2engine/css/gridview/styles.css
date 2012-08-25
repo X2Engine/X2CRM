@@ -233,6 +233,7 @@ ul.column-selector input {
 }
 
 .grid-view .checkbox-column {
+	text-align:center;
 }
 
 .grid-view .summary {

@@ -1,5 +1,5 @@
 <?php
-/*********************************************************************************
+/* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -36,9 +36,9 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * ****************************************************************************** */
 
-Yii::app()->clientScript->registerScript('updateChatPollSlider',"
+Yii::app()->clientScript->registerScript('updateChatPollSlider', "
 
 $('#settings-form input, #settings-form select, #settings-form textarea').change(function() {
 	$('#save-button').addClass('highlight'); //css('background','yellow');
@@ -50,93 +50,120 @@ $('#chatPollTime').change(function() {
 $('#timeout').change(function() {
 	$('#timeoutSlider').slider('value',$(this).val());
 });
-",CClientScript::POS_READY);
+", CClientScript::POS_READY);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/webtoolkit.sha256.js');
 ?>
 <div class="span-16">
-<h2><?php echo Yii::t('admin','General Settings'); ?></h2>
-<?php
-$form=$this->beginWidget('CActiveForm', array(
-		'id'=>'settings-form',
-		'enableAjaxValidation'=>false,
+    <h2><?php echo Yii::t('admin', 'General Settings'); ?></h2>
+    <?php
+    $form = $this->beginWidget('CActiveForm', array(
+	'id' => 'settings-form',
+	'enableAjaxValidation' => false,
+	    ));
+    ?>
+    <div class="form">
+	<?php
+	$updatesForm = new UpdatesForm(
+			array(
+			    'x2_version' => Yii::app()->params['version'],
+			    'unique_id' => $model->unique_id,
+			    'formId' => 'settings-form',
+			    'submitButtonId' => 'save-button',
+			    'statusId' => 'error-box',
+			    'themeUrl' => Yii::app()->theme->baseUrl,
+			    'serverInfo' => True,
+			    'titleWrap' => array('<span style="display: block;font-size: 11px;font-weight: bold;">','</span>'),
+			),
+			'Yii::t',
+			array('install')
+	);
+	$this->renderPartial('stayUpdated',array('form'=>$updatesForm));
+
+	?>
+	<input type="hidden" id="adminEmail" name="adminEmail" value="<?php echo $model->emailFromAddr;?>" />
+	<input type="hidden" id="language" name="language" value="<?php echo Yii::app()->language;?>" />
+	<input type="hidden" id="currency" name="currency" value="<?php echo $model->currency;?>" />
+	<input type="hidden" id="timezone" name="timezone" value="<?php echo Yii::app()->params['profile']->timeZone; ?>" />
+	
+	<?php
+	echo $form->labelEx($model, 'updateInterval');
+	echo $form->dropDownList($model, 'updateInterval', array(
+	    '0' => Yii::t('admin', 'Every Login'),
+	    '86400' => Yii::t('admin', 'Daily'),
+	    '604800' => Yii::t('admin', 'Weekly'),
+	    '2592000' => Yii::t('admin', 'Monthly'),
+	    '-1' => Yii::t('admin', 'Never'),
 	));
-?>
-	<div class="form">
-		<?php echo $form->labelEx($model,'updateInterval'); ?>
-		<?php echo $form->dropDownList($model,'updateInterval',array(
-				'0'=>Yii::t('admin','Every Login'),
-				'86400'=>Yii::t('admin','Daily'),
-				'604800'=>Yii::t('admin','Weekly'),
-				'2592000'=>Yii::t('admin','Monthly'),
-				'-1'=>Yii::t('admin','Never'),
-			)); ?><br>
-		<?php echo Yii::t('admin','Set how often to check for available updates.'); ?>
-	</div>
-	<div class="form">
-		<?php
-		echo $form->labelEx($model,'chatPollTime');
-		$this->widget('zii.widgets.jui.CJuiSlider', array(
-			'value'=>$model->chatPollTime,
-			// additional javascript options for the slider plugin
-			'options'=>array(
-				'min'=>100,
-				'max'=>10000,
-				'step'=>100,
-				'change'=>"js:function(event,ui) {
+	?><br />
+	<?php echo Yii::t('admin', 'Set how often to check for available updates.'); ?>
+    </div>
+    <div class="form">
+	<?php
+	echo $form->labelEx($model, 'chatPollTime');
+	$this->widget('zii.widgets.jui.CJuiSlider', array(
+	    'value' => $model->chatPollTime,
+	    // additional javascript options for the slider plugin
+	    'options' => array(
+		'min' => 100,
+		'max' => 10000,
+		'step' => 100,
+		'change' => "js:function(event,ui) {
 					$('#chatPollTime').val(ui.value);
 					$('#chatPollTime').change();
 				}",
-				'slide'=>"js:function(event,ui) {
+		'slide' => "js:function(event,ui) {
 					$('#chatPollTime').val(ui.value);
 				}",
-			),
-			'htmlOptions'=>array(
-				'style'=>'width:340px;margin:10px 0;',
-				'id'=>'chatPollSlider'
-			),
-		));
+	    ),
+	    'htmlOptions' => array(
+		'style' => 'width:340px;margin:10px 0;',
+		'id' => 'chatPollSlider'
+	    ),
+	));
 
-		echo $form->textField($model,'chatPollTime',array('id'=>'chatPollTime'));
-		?><br>
-		<?php echo Yii::t('admin','Set the duration between chat update requests in milliseconds.'); ?>
-		<br><br>
-		<?php echo Yii::t('admin','Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
-	</div>
-	<div class="form">
-		<?php
-		echo $form->labelEx($model,'timeout');
-		$this->widget('zii.widgets.jui.CJuiSlider', array(
-		'value'=>$model->timeout,
-		// additional javascript options for the slider plugin
-		'options'=>array(
-			'min'=>5,
-			'max'=>1440,
-			'step'=>5,
-			'change'=>"js:function(event,ui) {
+	echo $form->textField($model, 'chatPollTime', array('id' => 'chatPollTime'));
+	?><br>
+	<?php echo Yii::t('admin', 'Set the duration between chat update requests in milliseconds.'); ?>
+	<br><br>
+	<?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
+    </div>
+    <div class="form">
+	<?php
+	echo $form->labelEx($model, 'timeout');
+	$this->widget('zii.widgets.jui.CJuiSlider', array(
+	    'value' => $model->timeout,
+	    // additional javascript options for the slider plugin
+	    'options' => array(
+		'min' => 5,
+		'max' => 1440,
+		'step' => 5,
+		'change' => "js:function(event,ui) {
 				$('#timeout').val(ui.value);
 				$('#timeout').change();
 			}",
-			'slide'=>"js:function(event,ui) {
+		'slide' => "js:function(event,ui) {
 				$('#timeout').val(ui.value);
 			}",
-		),
-		'htmlOptions'=>array(
-			'style'=>'width:340px;margin:10px 0;',
-			'id'=>'timeoutSlider'
-		),
+	    ),
+	    'htmlOptions' => array(
+		'style' => 'width:340px;margin:10px 0;',
+		'id' => 'timeoutSlider'
+	    ),
 	));
 
-	echo $form->textField($model,'timeout',array('id'=>'timeout')); ?>
+	echo $form->textField($model, 'timeout', array('id' => 'timeout'));
+	?>
 	<br>
-	<?php echo Yii::t('admin','Set user session expiration time (in minutes). Default is 60.'); ?><br />
+	<?php echo Yii::t('admin', 'Set user session expiration time (in minutes). Default is 60.'); ?><br />
 	<br />
-	
+
 	<?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?>
 	<?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
-	</div><br>
+    </div><br>
 
-	
-	
-	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button'))."\n";?>
-	<?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";?>
-<?php $this->endWidget();?>
+
+    <div id="error-box" class="form" style="display:none"></div>
+    <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
+    <?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n"; ?>
+    <?php $this->endWidget(); ?>
 </div>

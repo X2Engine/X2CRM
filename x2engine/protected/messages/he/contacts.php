@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'לא להתקשר',
 'Do Not Email'=>'אין מייל',
 
+// List Attributes
+'Owner'=>'בעלים',
+'Description'=>'תאור',
+'Logic Type'=>'ההיגיון סוג',
+'Record Type'=>'סוג רשומה',
+'Members'=>'משתמשים',
+'Dynamic'=>'דינמי',
+'Static'=>'סטטי',
+
+// List Criteria Attributes
+'List'=>'רשימה',
+'Type'=>'סוג',
+'Attribute'=>'תכונה',
+'Comparison'=>'השוואה',
+'Value'=>'ערך',
+
+// List Criteria Comparitors
+'equals'=>'שווה',
+'greater than'=>'יותר מ',
+'less than'=>'פחות מ',
+'not equal to'=>'לא שווה',
+'in list'=>'ברשימה',
+'not in list'=>'לא ברשימה',
+'empty'=>'ריק',
+'not empty'=>'לא ריקה',
+'contains'=>'מכיל',
+'does not contain'=>'אינו מכיל',
+
 // Misc
 'Assigned to {name}'=>'{name} שהוקצתה',
 'Social Networks'=>'רשתות חברתיות',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'אנשי הקשר שלי',
+'New Contacts'=>'אנשי הקשר החדש',
 'All Contacts'=>'כל אנשי הקשר',
 'Create Contact'=>'צור קשר',
 'View Contact'=>'הצג את צור',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'שתף צור קשר',
 'Create'=>'ליצור',
 'Lists'=>'רשימות',
+'Create List'=>'יצירת רשימה',
 'View'=>'לראות',
 'Share'=>'חלק',
 'Update'=>'לעדכן',

@@ -39,8 +39,8 @@
  ********************************************************************************/
 
 return array (
-'Calendar'=>'calendário',
-'Calendars'=>'calendários',
+'Calendar'=>'Calendário',
+'Calendars'=>'Calendários',
 
 'User Calendars'=>'Calendários do utilizador',
 'Group Calendars'=>'Calendários do Grupo',

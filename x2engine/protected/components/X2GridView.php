@@ -229,7 +229,10 @@ class X2GridView extends CGridView {
 					$type=ucfirst($field->linkType);
 					$newColumn['value']='$data->'.$columnName.'==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
 					$newColumn['type'] = 'raw';
-				}
+				}elseif($this->allFields[$columnName]->type=='phone'){
+                    $newColumn['type'] = 'raw';
+                    $newColumn['value'] = 'X2Model::getPhoneNumber("'.$columnName.'","'.$this->modelName.'",$data->id)';
+                }
 			
 
 				if(Yii::app()->language == 'en') {
@@ -342,8 +345,8 @@ class X2GridView extends CGridView {
 		");
 		
 		// add a dropdown to the summary text that let's user set how many rows to show on each page
-		$this->summaryText = Yii::t('app','Displaying {start}-{end} of {count} result(s).') . '<br />'
-			. '<div class="form" style="border:none; margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+		$this->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
+			. '<div class="form no-border" style="display:inline;"> '
 			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 					'ajax' => array(
 						'url' => $this->controller->createUrl('/profile/setResultsPerPage'),
@@ -353,14 +356,15 @@ class X2GridView extends CGridView {
 								complete: function(jqXHR, status) {
 									refreshQtip();
 								}
-							})
+							});
 						}",
 						'data' => "js: {results: $(this).val()}",
 					),
-					'style' => 'margin: 0;',
+					'style' => 'margin:0 0 2px 0;',
 				))
 			. ' </div>'
-			. Yii::t('app', 'results per page.');
+			. Yii::t('app', ' results per page');
+
 		
 		// after user moves to a different page, make sure the tool tips get added to the newly showing rows
 		$this->afterAjaxUpdate = "js: function(id, data) { refreshQtip(); }";

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -252,10 +252,9 @@ class Profile extends CActiveRecord {
 			15=>'15',
 			20=>'20',
 			25=>'25',
+			30=>'30',
 			50=>'50',
 			100=>'100',
-			500=>'500',
-			1000=>'1000',
 		);
 	}
 	
@@ -335,13 +334,13 @@ class Profile extends CActiveRecord {
 				unset($visibility[$i]);								// remove it from database fields
 				$updateRecord = true;
 			} else {
-				$widgetList[$widgetNames[$i]] = array('id'=>'widget_'.$widgetNames[$i],'visibility'=>$visibility[$i]);
+				$widgetList[$widgetNames[$i]] = array('id'=>'widget_'.$widgetNames[$i],'visibility'=>$visibility[$i],'params'=>array());
 			}
 		}
 
 		foreach($registeredWidgets as $class) {			// check list of widgets in main cfg file
 			if(!in_array($class,array_keys($widgetList))) {								// if they aren't in the list,
-				$widgetList[$class] = array('id'=>'widget_'.$class,'visibility'=>1);	// add them at the bottom
+				$widgetList[$class] = array('id'=>'widget_'.$class,'visibility'=>1,'params'=>array());	// add them at the bottom
 				
 				$widgetNames[] = $class;	// add new widgets to widgetOrder array
 				$visibility[] = 1;			// and visibility array
@@ -382,6 +381,13 @@ class Profile extends CActiveRecord {
 				),
 			);
 			
+			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+			Yii::app()->params->profile->update();
+		}
+		
+		$widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings);
+		if(!isset($widgetSettings->MediaBox)) {
+			$widgetSettings->MediaBox = array('mediaBoxHeight'=>150, 'hideUsers'=>array());
 			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
 			Yii::app()->params->profile->update();
 		}
@@ -467,6 +473,8 @@ class Profile extends CActiveRecord {
 					
 					$newEvent = $googleCalendar->events->insert($this->syncGoogleCalendarId, $event);
 					$action->syncGoogleCalendarEventId = $newEvent['id'];
+					$action->update();
+					
 				}
 			}
 		} catch (Exception $e) {

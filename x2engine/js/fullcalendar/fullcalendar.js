@@ -1609,7 +1609,14 @@ function _exclEndDay(end, allDay) {
 
 
 function segCmp(a, b) {
-	return (b.msLength - a.msLength) * 100 + (a.event.start - b.event.start);
+	var tryCmp = (b.msLength - a.msLength) * 100 + (a.event.start - b.event.start);
+	if(tryCmp == 0) // x2engine fix: if twe events start at the same time try sorting by titles
+		if(a.event.title < b.event.title)
+			return -1;
+		else
+			return 1;
+	else
+		return tryCmp;
 }
 
 

@@ -41,8 +41,11 @@
 ?>
 
 <h2><?php echo Yii::t('module','Create New Module'); ?></h2>
-<?php echo Yii::t('module','Please fill out the fields below to create a new module.'); ?><br /><br />
+<div style="width:600px">
+<?php echo Yii::t('admin','This form will allow you to create a custom module with similar functionality to the other existing modules. '); ?>
+<?php echo Yii::t('module','Please fill out the fields below to create a new module. After fields are created, you will need to enter the Form Editor to create a form layout'); ?><br /><br />
 Extra fields should be added from the "Manage Fields" page.<br /><br />
+</div>
 <div class="form">
 <?php if(!empty($errors)) { ?>
 	<div class="errorSummary"><p><?php echo Yii::t('yii','Please fix the following input errors:'); ?></p>

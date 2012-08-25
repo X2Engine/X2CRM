@@ -86,6 +86,8 @@ class DefaultController extends x2base {
 					'saveCheckedCalendar',
 					'saveCheckedCalendarFilter',
 					'syncActionsToGoogleCalendar',
+					'toggleUserCalendarsVisible',
+					'togglePortletVisible',
 				),
 				'users'=>array('@'),
 			),
@@ -367,8 +369,7 @@ class DefaultController extends x2base {
 	
 	public function actionList() {
 		$model=new X2Calendar('search');
-		$name='Calendar';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 	
 	/**
@@ -403,6 +404,8 @@ class DefaultController extends x2base {
 			$where .= "AND (associationType != \"quotes\") "; // filter quote actions
 		if(!in_array('products', $filter))
 			$where .= "AND (associationType != \"product\") "; // filter product actions
+		if(!in_array('media', $filter))
+			$where .= "AND (associationType != \"media\") "; // filter media actions
 		if(!in_array('completed', $filter))
 			$where .= "AND (complete != \"Yes\") "; // filter completed actions
 		if(!in_array('email', $filter))
@@ -518,6 +521,8 @@ class DefaultController extends x2base {
 			$where .= "AND (associationType != \"quotes\") "; // filter quotes
 		if(!in_array('products', $filter))
 			$where .= "AND (associationType != \"product\") "; // filter product actions
+		if(!in_array('media', $filter))
+			$where .= "AND (associationType != \"media\") "; // filter media actions
 		if(!in_array('completed', $filter))
 			$where .= "AND (complete != \"Yes\") "; // filter completed actions
 		if(!in_array('email', $filter))
@@ -1283,6 +1288,25 @@ class DefaultController extends x2base {
 				'syncGoogleCalendarName'=>$syncGoogleCalendarName,
 			)
 		);
+	}
+	
+	
+	public function actionToggleUserCalendarsVisible() {
+		echo Yii::app()->params->profile->userCalendarsVisible;
+	}
+	
+	
+	public function actionTogglePortletVisible($portlet) {
+		$parameterName = $portlet . "Visible";
+		if(isset(Yii::app()->params->profile->$parameterName)) {
+			$visible = Yii::app()->params->profile->$parameterName;
+			$visible = !$visible;
+			Yii::app()->params->profile->$parameterName = $visible;
+			Yii::app()->params->profile->update();
+			echo $visible;
+		} else {
+			echo 1; // if portlet not found, just make it visible
+		}
 	}
 		
 	/**

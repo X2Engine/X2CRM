@@ -49,7 +49,7 @@ class DefaultController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','getWorkflow','getStageDetails','updateStageDetails','startStage','completeStage','revertStage','getStageMembers'),
+				'actions'=>array('index','view','getWorkflow','getStageDetails','updateStageDetails','startStage','completeStage','revertStage','getStageMembers','getStages'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -95,6 +95,19 @@ class DefaultController extends x2base {
 	}
 
 	// Displays workflow table/funnel diagram
+	public function actionViewStage($id,$stage) {
+	
+		if(isset($_GET['stage']) && is_numeric($_GET['stage']))
+			$viewStage = $_GET['stage'];
+		else
+			$viewStage = null;
+
+		$this->render('viewStage',array(
+			'model'=>$this->loadModel($id),'viewStage'=>$viewStage
+		));
+	}
+	
+	// Displays workflow table/funnel diagram
 	public function actionView($id) {
 	
 		if(isset($_GET['stage']) && is_numeric($_GET['stage']))
@@ -107,6 +120,12 @@ class DefaultController extends x2base {
 		));
 	}
 
+	
+	
+	
+	
+	
+	
 	// Creates a new Workflow model
 	// Creates 1 or more associated WorkflowStage models
 	// If creation is successful, the browser will be redirected to the 'view' page.
@@ -272,13 +291,15 @@ class DefaultController extends x2base {
 					$minDate = null;	// if workflowBackdateRange = -1, no limit on backdating
 				else
 					$minDate = '-'.$minDate;	// otherwise, we can only go back this far
-
+					
+				if(Yii::app()->user->getName() == 'admin')
+					$minDate = null;
 
 				$this->renderPartialAjax('_workflowDetail',array(
 					'model'=>$model,
 					'editable'=>$editable,
 					'minDate'=>$minDate,
-					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment,
+					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment || Yii::app()->user->getName()=='admin',
 				),false);
 			}
 		}
@@ -290,12 +311,14 @@ class DefaultController extends x2base {
 		
 		if(isset($model, $_POST['Actions'])) {
 			$model->setScenario('workflow');
-		
+
 			$model->createDate = $this->parseDate($_POST['Actions']['createDate']);
 			$model->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
-			$model->completedBy = $_POST['Actions']['completedBy'];
 			$model->actionDescription = $_POST['Actions']['actionDescription'];
-			
+
+			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->getName()=='admin' || Yii::app()->params->admin->workflowBackdateReassignment))
+				$model->completedBy = $_POST['Actions']['completedBy'];
+
 			// don't save if createDate isn't valid
 			if($model->createDate === false)
 				return;
@@ -674,6 +697,19 @@ class DefaultController extends x2base {
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
+		}
+	}
+
+	public function actionGetStages() {
+		if(isset($_GET['id'])) {
+			$stages = Yii::app()->db->createCommand()
+				->select('name')
+				->from('x2_workflow_stages')
+				->where('workflowId=:id',array(':id'=>$_GET['id']))
+				->order('id ASC')
+				->queryColumn();
+
+			echo CJSON::encode($stages);
 		}
 	}
 }

@@ -176,7 +176,7 @@ class Templates extends X2Model {
 			
 		}
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new SmartDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),

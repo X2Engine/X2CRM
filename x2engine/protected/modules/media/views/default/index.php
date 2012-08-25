@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,24 +37,60 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+?>
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+<?php
+$this->menu=array(
+	array('label'=>Yii::t('media', 'List')),
+	array('label'=>Yii::t('media', 'Upload'), 'url'=>array('upload')),
+);
+?>
 
-/**
- * Description of NotificationChild
- *
- * @author Jake
- */
-class NotificationChild extends Notifications {
-    
-    
-    public static function parseLink($str){
-        $pieces=explode(":",$str);
-        return CHtml::link('Link',Yii::app()->request->baseUrl.'/index.php/'.strtolower($pieces[0]).'/'.$pieces[1]);
-    }
-}
+<h1><?php echo Yii::t('media','Media & File Library'); ?></h1>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id' => 'media-grid',
+	'template'=>'{summary}{items}{pager}',
+	'dataProvider' => $model->search(),
+	'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).') . '<br />'
+		. '<div class="form" style="border:none; margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+		    	'ajax' => array(
+		    		'url' => $this->createUrl('/profile/setResultsPerPage'),
+		    		'complete' => "function(response) { $.fn.yiiGridView.update('media-grid', {data: {'id_page': 1}}) }",
+		    		'data' => "js: {results: $(this).val()}",
+		    	),
+		    	'style' => 'margin: 0;',
+		    ))
+		. ' </div>'
+		. Yii::t('app', 'results per page.'),
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'filter'=>$model,
+	'columns' => array(
+		array(
+			'name' => 'fileName',
+			'header' => Yii::t('media','File Name'),
+			'type' => 'raw',
+			'value' => 'CHtml::link(CHtml::encode($data["fileName"]), array("view","id"=>$data->id))', 
+		),
+		array(
+			'name' => 'uploadedBy',
+			'header' => Yii::t('media','Uploaded By'),
+			'type' => 'raw',
+			'value' => 'CHtml::encode($data["uploadedBy"])'
+		),
+		array(
+			'name' => 'associationType',
+			'header' => Yii::t('media','Association'),
+			'type' => 'raw',
+			'value' => 'CHtml::encode($data["associationType"])'
+		),
+		array(
+			'name' => 'createDate',
+			'header' => Yii::t('media','Create Date'),
+			'type' => 'raw',
+			'value' => 'Yii::app()->controller->formatLongDate($data->createDate)'
+		),
+	),
+));
 
 ?>

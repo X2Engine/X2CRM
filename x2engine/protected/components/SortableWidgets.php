@@ -95,10 +95,16 @@ class SortableWidgets extends CJuiWidget
 							var link = $('#widget_'+widget+' .portlet-minimize a');
 							var newLink = (link.html()=='[+]')? '[&ndash;]' : '[+]';			// toggle link between [+] and [-]
 							link.html(newLink);
-							$('#widget_'+widget+' .portlet-content').toggle('blind',{},200);	// slide widget open or closed
+
+							// slide widget open or closed
+							$('#widget_'+widget+' .portlet-content').toggle('blind',{},200,function() {
+								if(widget == 'GoogleMaps' && $(this).is(':visible'))	// for google maps, trigger a resize event
+									google.maps.event.trigger(window.map,'resize');
+							});
 						}
 					}
 				});
+				
 			}
 		",CClientScript::POS_HEAD);
 
@@ -113,28 +119,36 @@ class SortableWidgets extends CJuiWidget
 
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
 
-		$hideWidgetJs = '';
+		$widgetHideList = array();
 		
 		foreach($this->portlets as $class=>$properties) {
 			$visible = ($properties['visibility'] == '1');
 			
 			if(!$visible)
-				$hideWidgetJs .= "$('#widget_" . $class . " .portlet-content').hide();\n";
+				$widgetHideList[] = '#widget_'.$class;
 			
 			$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;"));
 			// $t0 = microtime(true);
-			$this->beginWidget('zii.widgets.CPortlet',array(
-				'title'=>Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
-				'id'=>$properties['id']
-			));
-			$this->widget($class);
-			$this->endWidget();
-			// echo (round(microtime(true)-$t0,3)*1000).'ms';
+			// for($i=0;$i<100;$i++)
+				$widget = $this->widget($class,$properties['params'],true);
+			
+			// $t1 = microtime(true);
+			if(!empty($widget)) {
+				$this->beginWidget('zii.widgets.CPortlet',array(
+					'title'=>Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
+					'id'=>$properties['id']
+				));
+				echo $widget;
+				$this->endWidget();
+				// echo ($t1-$t0);
+			}
 		}
-		Yii::app()->clientScript->registerScript('setWidgetState', "
+		
+		
+		Yii::app()->clientScript->registerScript('setWidgetState', '
 			$(document).ready(function() {
-				" . $hideWidgetJs . "
-			});",CClientScript::POS_HEAD);
+				$("' . implode(',',$widgetHideList) . '").find(".portlet-content").hide();
+			});',CClientScript::POS_HEAD);
 		
 		echo CHtml::closeTag($this->tagName);
 	}

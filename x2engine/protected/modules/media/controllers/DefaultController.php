@@ -39,7 +39,10 @@
  ********************************************************************************/
 
 
-class MediaController extends x2base {
+class DefaultController extends x2base {
+
+	public $modelClass = "Media";
+
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -67,7 +70,7 @@ class MediaController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','delete','download'),
+				'actions'=>array('upload','update','delete','download', 'toggleUserMediaVisible'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -107,19 +110,44 @@ class MediaController extends x2base {
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate() {
+	public function actionUpload() {
 		$model=new Media;
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
 		if(isset($_POST['Media'])) {
-			$model->attributes=$_POST['Media'];
-			if($model->save())
+		
+			$temp = TempFile::model()->findByPk($_POST['TempFileId']);
+						
+			$userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
+			$userFolderPath = 'uploads/media/'. $userFolder;
+			// if user folder doesn't exit, try to create it
+			if( !(file_exists($userFolderPath) && is_dir($userFolderPath)) ) {
+			    if(!@mkdir('uploads/media/'. $userFolder, 0777, true)) { // make dir with edit permission
+			    	// ERROR: Couldn't create user folder
+			    	var_dump($userFolder);
+			    	exit();
+			    }
+			}
+			
+			rename($temp->fullpath(), $userFolderPath .'/'. $temp->name);
+			
+			// save media info
+			$model->fileName = $temp->name;
+			$model->createDate = time();
+			$model->lastUpdated = time();
+			$model->uploadedBy = Yii::app()->user->name;
+			$model->associationType = $_POST['Media']['associationType'];
+			$model->associationId = $_POST['Media']['associationId'];
+			$model->private = $_POST['Media']['private'];
+			if($_POST['Media']['description'])
+				$model->description = $_POST['Media']['description'];
+			
+			if($model->save()) {
 				$this->redirect(array('view','id'=>$model->id));
+			}
+		
 		}
 
-		$this->render('create',array(
+		$this->render('upload',array(
 			'model'=>$model,
 		));
 	}
@@ -132,11 +160,14 @@ class MediaController extends x2base {
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
 		if(isset($_POST['Media'])) {
-			$model->attributes=$_POST['Media'];
+			// save media info
+			$model->lastUpdated = time();
+			$model->associationType = $_POST['Media']['associationType'];
+			$model->associationId = $_POST['Media']['associationId'];
+			$model->private = $_POST['Media']['private'];
+			if($_POST['Media']['description'])
+				$model->description = $_POST['Media']['description'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -155,12 +186,15 @@ class MediaController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$model=$this->loadModel($id);
-			unlink('uploads/'.$model->fileName);
+			if(file_exists("uploads/{$model->uploadedBy}/{$model->fileName}"))
+				unlink("uploads/{$model->uploadedBy}/{$model->fileName}");
+			else if(file_exists("uploads/{$model->fileName}")) 
+				unlink("uploads/{$model->fileName}");
 			$model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('/contacts'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 		}
 		else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
@@ -170,9 +204,11 @@ class MediaController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-		$dataProvider=new CActiveDataProvider('Media');
+		$model=new Media('search');
+		if(isset($_GET['Media']))
+			$model->attributes=$_GET['Media'];
 		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
+			'model'=>$model,
 		));
 	}
 
@@ -212,5 +248,29 @@ class MediaController extends x2base {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
+	}
+	
+	
+	public function actionToggleUserMediaVisible($user) {
+		$widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings, true);
+		$mediaSettings = $widgetSettings['MediaBox'];
+		$hideUsers = $mediaSettings['hideUsers'];
+		$ret = '';
+		
+		if(($key = array_search($user, $hideUsers)) !== false) { // user is not visible, make them visible
+			unset($hideUsers[$key]);
+			$hideUsers = array_values($hideUsers); // reindex array so json is consistent
+			$ret = 1;
+		} else { // user is visible, make them not visible
+			$hideUsers[] = $user;
+			$ret = 0;
+		}
+						
+		$mediaSettings['hideUsers'] = $hideUsers;
+		$widgetSettings['MediaBox'] = $mediaSettings;
+		Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+		Yii::app()->params->profile->update();
+		
+		echo $ret;
 	}
 }

@@ -37,6 +37,33 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+
+Yii::app()->clientScript->registerScript('contact-qtip', '
+function refreshQtip() {
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
+
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.baseUrl+"/index.php/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get",
+					}
+				},
+				style: {
+				}
+			});
+		}
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+');
 ?>
 <h1><?php echo Yii::t('app','Search Results'); ?></h1>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -46,7 +73,7 @@
 		array(
 			'name' => Yii::t('app','Name'),
 			'type' => 'raw',
-			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"])', 
+			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"],$data["type"]=="Contact"?array("class"=>"contact-name"):"")', 
 		),
 		array(
 			'name' => Yii::t('app','Type'),
@@ -57,6 +84,11 @@
 			'name' => Yii::t('app','Description'), 
 			'type' => 'raw',
 			'value' => 'Yii::app()->controller->truncateText(CHtml::encode($data["description"]),140)'
+		),
+        array(
+			'name' => Yii::t('app','Assigned To'),
+			'type' => 'raw',
+			'value' => 'isset($data["assignedTo"])?$data["assignedTo"]:""', 
 		),
 	),
 ));

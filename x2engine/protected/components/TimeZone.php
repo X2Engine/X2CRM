@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,92 +41,180 @@
 class TimeZone extends CWidget {
 
 	//public $visibility;
+	
+	public $model;
+	
 	public function init() {	
 		parent::init();
 	}
 
     public function run() {
-        $contact = array();
-		$message= "";
+		$tzOffset = null;
 		$address = '';
-		$array = array();
-		$lat ='';
-		//For Profile
-		$lang = Yii::app()->language;
-        $actionParams = Yii::app()->controller->getActionParams();
-		if(Yii::app()->controller->module != null && Yii::app()->controller->module->id=='contacts'&& Yii::app()->controller->action->id=='view'&& isset($actionParams['id'])) {
-                $currentRecord = CActiveRecord::model('Contacts')->findByPk($actionParams['id']);
-                if (empty($currentRecord->timezone)){
-			        //Compose an address to be appended to google maps URL to be 
-                    //implemented through the google api.
-		        	if(!empty($currentRecord->city)) {
-                        if(!empty($currentRecord->address))$address .= $currentRecord->address . ',+';
-				        $address .= $currentRecord->city . ',+';
-                    }
-	    		    if(!empty($currentRecord->state))
-		    		$address .= $currentRecord->state;
-			        $address=str_replace(" ","+",$address);
-			        $address.="&sensor=true";//Necessary to obtain privilege to see results.
-			        $address .= "&region=".$lang; //If contact isn't in the US, find location.
-		        	$url="http://maps.googleapis.com/maps/api/geocode/json?address=".$address;
-	        		//Set up a way to obtain results from URL
-		        	$ch = curl_init();
-		        	$timeout = 1;
-		        	curl_setopt($ch,CURLOPT_URL,$url);
-		        	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		        	curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
-		        	$data = curl_exec($ch);
-		        	$array = CJSON::decode($data,false);
-			        //Get latitude and longitude from results.
-	                if(isset($array->results[0])) {
-				        $long = $array->results[0]->geometry->location->lng;
-			            $lat = $array->results[0]->geometry->location->lat;
-	                    //Use of earth tools api to obtain time zone.
-			    	    $url = "http://www.earthtools.org/timezone/".$lat."/".$long;
-			    	    curl_setopt($ch,CURLOPT_URL,$url);
-			    	    $data = curl_exec($ch);
-                        $contact = (array)simplexml_load_string($data);
-                        if (is_null($contact) || (isset($contact[0]) && empty($contact[0]))){
-							$message="The Time Zone isn't available right now. Please try again later.";
-                        }
-                        else {
-                           $offset= $contact["offset"];
-                           $retVL = strstr($offset,".");
-                           if ($retVL==FALSE){
-                                $value = intval($offset);
-                                if ($value < 12){
-                                    $currentRecord->timezone = "UTC-0".$offset.":00";
-                                }else {
-                                    $currentRecord->timezone = "UTC-".$offset.":00";
-                                 }
-                                 $currentRecord->save();
-                           }else {
-                                $retVLFIRST = strstr($offset,".",true);
-                                $valueFIRST = intval($retVLFIRST);
-                                $valueSEC = intval($retVL);
-                                $append="";
-                                if($retVL==50){
-                                  $append = "30";
-                                }else if ($retVL==66){
-                                    $append = "45";
-                                }
-                                if($valueFIRST < 12){
-                                    $currentRecord->timezone = "UTC-0".$valueFIRST.":".$append;
-                                }else {
-                                    $currentRecord->timezone = "UTC-".$valueSEC.":".$append;
-                                }
-                            }
-                           $message = $currentRecord->timezone;
-                        }
-                    }
-                }
-                else {
-                     $message = $currentRecord->timezone;
-                }
-            }
-		    $this->render('timeZone', array(
-		    	'contact'=>$message,
-	    	));
-	    }
+		
+		if(!isset($this->model))
+			return;
+			
+		if(!empty($this->model->city))
+			$address .= $this->model->city.', ';
+		if(!empty($this->model->state))
+			$address .= $this->model->state;
+		if(!empty($this->model->country))
+			$address .= ' '.$this->model->country;
+		
+		
+		// if there's no cached timezone, we have to look it up
+		if (empty($this->model->timezone)) {
+
+			// use google maps API to geocode the contact's address location
+			$url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true";
+			$url .= "&region=".Yii::app()->language; //If contact isn't in the US, find location.
+			$url .= '&address='.preg_replace('/\s/','+',$address);
+
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,1);	// 1s timeout
+			
+			$data = CJSON::decode(@curl_exec($ch),true);
+			// die(var_dump($url));
+			//Get latitude and longitude from results.
+			if(isset($data['results'][0]['geometry']['location'])) {
+				$lon = $data['results'][0]['geometry']['location']['lng'] * 0.01745329;	// convert to radians
+				$lat = $data['results'][0]['geometry']['location']['lat'] * 0.01745329;
+				//Use of earth tools api to obtain time zone.
+				
+				$range = 0.02;
+				
+				$sql = 'SELECT x2_timezones.name FROM x2_timezone_points JOIN x2_timezones ON tz_id=x2_timezones.id 
+					WHERE lat BETWEEN (:lat-:range) AND (:lat+:range) AND lon BETWEEN (:lon-:range) AND (:lon+:range)
+					ORDER BY (POW(:lat-lat,2)+POW((:lon-lon)*COS((:lat-lat)/2),2)) ASC LIMIT 1';
+				
+				$tz = Yii::app()->db->createCommand($sql)->bindValues(array(':lat'=>$lat,':lon'=>$lon,':range'=>0.02))->queryScalar();
+
+				
+				if($tz === false)	// if we don't find anything, try again with a larger search box
+					$tz = Yii::app()->db->createCommand($sql)->bindValues(array(':lat'=>$lat,':lon'=>$lon,':range'=>0.05))->queryScalar();
+					
+				if($tz !== false) {
+					$contactTime = new DateTime();
+
+					try {
+						$dateTimeZone = new DateTimeZone($tz);
+					} catch (Exception $e) {
+						$dateTimeZone = null;
+					}
+					
+					if(@date_timezone_set($contactTime,$dateTimeZone)) {
+						$tzOffset = $contactTime->getOffset();
+						
+						$this->model->timezone = $tz;
+						$this->model->update(array('timezone'));	// save the timezone
+					}
+				}
+
+			}
+		} else {	// timezone already saved, let's use it
+			$contactTime = new DateTime();
+
+			try {
+				$dateTimeZone = new DateTimeZone($this->model->timezone);
+			} catch (Exception $e) {
+				$dateTimeZone = null;
+			}
+		
+			$contactTime = new DateTime();
+			if(@date_timezone_set($contactTime,$dateTimeZone)) {
+				$tzOffset = $contactTime->getOffset();
+			} else {										// if the timezone is messed up, 
+				$this->model->timezone = '';				// clear it
+				$this->model->update(array('timezone'));
+			} 
+		}
+
+		
+		if(isset($tzOffset)) {
+
+	
+			$offset = $tzOffset;
+				
+			$tzString = 'UTC';
+			$tzString .= ($offset > 0)? '+' : '-';
+			
+			$offset = abs($offset);
+			
+			$offsetH = floor($offset/3600);
+			$offset -= $offsetH*3600;
+			$offsetM = floor($offset/60);
+			
+			$tzString .= $offsetH;
+			if($offsetM > 0)
+				$tzString .= ':'.$offsetM;
+
+			echo Yii::t('app','Current time in').'<br><b>'.$address.'</b><span id="tzClock2"></span>';
+				
+				
+			Yii::app()->clientScript->registerScript('timezoneClock','
+			function updateTzClock() {
+			
+				var tzClock = new Date();
+				var tzOffset = '.($tzOffset*1000).';
+				var tzUtcOffset = "'.addslashes($tzString).'";
+				tzClock.setTime(tzClock.getTime() + tzOffset + (tzClock.getTimezoneOffset()*60000));
+			
+				var h = tzClock.getHours();
+				var m = tzClock.getMinutes();
+				var s = tzClock.getSeconds() + tzClock.getMilliseconds()/1000;
+
+				if(Modernizr.csstransforms) {
+
+					var sAngle = Math.round(s * 6);
+					var sCssAngle = "rotate(" + sAngle + "deg)";
+					
+					var hAngle = Math.round(h * 30 + (m / 2));
+					var hCssAngle = "rotate(" + hAngle + "deg)";
+
+					var mAngle = m * 6;
+					var mCssAngle = "rotate(" + mAngle + "deg)";
+					
+					var browsers = ["-moz-transform","-webkit-transform","-o-transform","-ms-transform"];
+					
+					for(i in browsers) {
+						$("#tzClock .sec").css(browsers[i],sCssAngle);
+						$("#tzClock .min").css(browsers[i],mCssAngle);
+						$("#tzClock .hour").css(browsers[i],hCssAngle);
+					}
+					
+					$("#tzClock").attr("title",fixWidth(h)+":"+fixWidth(m)+" ("+tzUtcOffset+")");
+
+				} else {
+					$("#tzClock2").html(
+						fixWidth(h)+":"+fixWidth(m)+":"+fixWidth(Math.floor(s))+" ("+tzUtcOffset+")"
+					);
+				}
+			}
+			
+			function fixWidth(x) {
+				return (x<10)? "0"+x : x;
+			}
+
+			$(function() {
+				if(Modernizr.csstransforms) {
+					$("<ul id=\"tzClock\">\
+						<li class=\"sec\"><div></div><div></div></li>\
+						<li class=\"hour\"><div></div></li>\
+						<li class=\"min\"><div></div></li>\
+					</ul>").appendTo("#widget_TimeZone .portlet-content");
+				} else {
+					$("<div id=\"tzClock2\"></div>").appendTo("#widget_TimeZone .portlet-content");
+				}
+				updateTzClock();
+				setInterval(updateTzClock, 200);
+			});
+
+			');
+		} else
+			echo Yii::t('app','Timezone not available');
+
+	}
 }
-?>

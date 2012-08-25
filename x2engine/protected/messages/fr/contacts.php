@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'Ne Pas Appeler',
 'Do Not Email'=>'Ne pas envoyer de courriel',
 
+// List Attributes
+'Owner'=>'Propriétaire',
+'Description'=>'Description',
+'Logic Type'=>'Type de Logique',
+'Record Type'=>'Type d\'enregistrement',
+'Members'=>'Membres',
+'Dynamic'=>'Dynamique',
+'Static'=>'Statique',
+
+// List Criteria Attributes
+'List'=>'Liste',
+'Type'=>'Type',
+'Attribute'=>'Attribut',
+'Comparison'=>'Comparaison',
+'Value'=>'Valeur',
+
+// List Criteria Comparitors
+'equals'=>'est égal à',
+'greater than'=>'supérieur',
+'less than'=>'moins que',
+'not equal to'=>'pas égal à',
+'in list'=>'dans la liste',
+'not in list'=>'pas dans la liste',
+'empty'=>'vide',
+'not empty'=>'n\'est pas vide',
+'contains'=>'contient',
+'does not contain'=>'ne contient pas',
+
 // Misc
 'Assigned to {name}'=>'Assigné à {name}',
 'Social Networks'=>'Réseaux Sociaux',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'Mes Contacts',
+'New Contacts'=>'Nouveaux Contacts',
 'All Contacts'=>'Tous les Contacts',
 'Create Contact'=>'Créer un contact',
 'View Contact'=>'Voir contacter',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'Partage Contact',
 'Create'=>'Créer',
 'Lists'=>'Listes',
+'Create List'=>'Créer Liste',
 'View'=>'Voir',
 'Share'=>'Part',
 'Update'=>'Mettre à jour',

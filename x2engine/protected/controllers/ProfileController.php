@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 class ProfileController extends x2base {
-	public $modelClass='ProfileChild';
+	public $modelClass='Profile';
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -438,22 +438,8 @@ class ProfileController extends x2base {
 	}
 	
 	public function actionProfiles(){
-		$model=new ProfileChild('search');
-		$pageParam = ucfirst($this->modelClass). '_page';
-		if (isset($_GET[$pageParam])) {
-			$page = $_GET[$pageParam];
-			Yii::app()->user->setState($this->id.'-page',(int)$page);
-		} else {
-			$page=Yii::app()->user->getState($this->id.'-page',1);
-			$_GET[$pageParam] = $page;
-		}
-
-		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
-		}
-		$this->render('profiles',array(
-			'model'=>$model,
-		));
+		$model = new Profile('search');
+		$this->render('profiles', array('model'=>$model));
 	}
 	/**
 	 * Manages all models.

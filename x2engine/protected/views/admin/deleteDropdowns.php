@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +39,7 @@
  ********************************************************************************/
 ?>
 <h3>Delete A Custom Dropdown</h3>
-<br /> <span style="color:red;"><b>WARNING:</b> this operation is not reversible, and will mess up any forms using the deleted dropdown.</span>
+<br /> <span style="color:red;"><b><?php echo Yii::t('admin','WARNING');?>:</b> <?php echo Yii::t('admin','this operation is not reversible, and will create issues with any forms using the deleted dropdown.');?></span>
 <form name="deleteDropdowns" action="deleteDropdown" method="POST">
 	<br />
 	<select name="dropdown">

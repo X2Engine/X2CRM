@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -81,19 +81,19 @@ if(empty($data->type)) {
 	<div class="icon <?php echo $type; ?>"></div>
 	<div class="header">
 		<?php
-		if(empty($data->type)) {
+		if(empty($data->type) || $data->type=='weblead') {
 			if ($data->complete=='Yes') {
 				echo CHtml::link(Yii::t('actions','Action').':',array('/actions/default/view','id'=>$data->id)).' ';
-				echo Yii::t('actions','Completed {date}',array('{date}'=>Actions::formatDate($data->completeDate)));
+				echo Yii::t('actions','Completed {date}',array('{date}'=>Actions::formatCompleteDate($data->completeDate)));
 			} else {
 				echo '<b>'.CHtml::link(Yii::t('actions','Action').':',array('/actions/default/view','id'=>$data->id)).' ';
 				echo Actions::parseStatus($data->dueDate).'</b>';
 			}
 		} elseif ($data->type == 'attachment') {
 			if($data->completedBy=='Email')
-				echo Yii::t('actions','Email Message:').' '.Actions::formatDate($data->completeDate);
+				echo Yii::t('actions','Email Message:').' '.Actions::formatCompleteDate($data->completeDate);
 			else
-				echo Yii::t('actions','Attachment:').' '.Actions::formatDate($data->completeDate);
+				echo Yii::t('actions','Attachment:').' '.Actions::formatCompleteDate($data->completeDate);
 				//User::getUserLinks($data->completedBy);
 				
 			echo ' ';
@@ -110,15 +110,28 @@ if(empty($data->type)) {
 			
 			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
 		} elseif($data->type == 'email') {
-			echo Yii::t('actions','Email Message:').' '.Actions::formatDate($data->completeDate);
+			echo Yii::t('actions','Email Message:').' '.Actions::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'note') {
-			echo Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
-		} elseif($data->type == 'call' || $data->type)
-			echo Yii::t('actions','Call:').' '.Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
+			echo Actions::formatCompleteDate($data->completeDate);
+		} elseif($data->type == 'call') {
+			echo Yii::t('actions','Call:').' '.Actions::formatCompleteDate($data->completeDate); //Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
+		} elseif($data->type == 'event') {
+			echo '<b>'.CHtml::link(Yii::t('calendar','Event').':',array('/actions/default/view','id'=>$data->id)).' ';
+			if($data->allDay) {
+				echo $this->formatLongDate($data->dueDate);
+				if($data->completeDate)
+					echo ' - '. $this->formatLongDate($data->completeDate);
+			} else {
+				echo $this->formatLongDateTime($data->dueDate);
+				if($data->completeDate)
+					echo ' - '. $this->formatLongDateTime($data->completeDate);
+			}
+			echo '</b>';
+		}
 		?>
 		<div class="buttons">
 			<?php
-			if (empty($data->type)) {
+			if (empty($data->type) || $data->type=='weblead') {
 				if ($data->complete=='Yes')
 					echo CHtml::link('['.Yii::t('actions','Uncomplete').']',array('/actions/default/uncomplete','id'=>$data->id,'redirect'=>1),array());
 				else {
@@ -126,9 +139,9 @@ if(empty($data->type)) {
 				}
 			}
 			if ($data->type != 'workflow'){
-                                echo $data->type!='attachment'?' '.CHtml::link('['.Yii::t('actions','Update').']',array('/actions/default/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
+				echo $data->type!='attachment'?' '.CHtml::link('['.Yii::t('actions','Update').']',array('/actions/default/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
 				echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
-                        }
+			}
 			?>
 		</div>
 	</div>
@@ -140,9 +153,9 @@ if(empty($data->type)) {
 		
 			if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)) {
 				if($data->complete == 'Yes')
-					echo ' <b>'.Yii::t('workflow','Completed').'</b> '.date('Y-m-d',$data->completeDate);
+					echo ' <b>'.Yii::t('workflow','Completed').'</b> '.date('Y-m-d H:i:s',$data->completeDate);
 				else
-					echo ' <b>'.Yii::t('workflow','Started').'</b> '.date('Y-m-d',$data->createDate);
+					echo ' <b>'.Yii::t('workflow','Started').'</b> '.date('Y-m-d H:i:s',$data->createDate);
 			}
 			if(isset($data->actionDescription))
 				echo '<br>'.$data->actionDescription;
@@ -153,7 +166,7 @@ if(empty($data->type)) {
 		?>
 	</div>
 	<div class="footer">
-	<?php if(empty($data->type) || $data->type=='workflow') {
+	<?php if(empty($data->type) || $data->type=='weblead' || $data->type=='workflow') {
 		if($data->complete == 'Yes') {
 			echo Yii::t('actions','Completed by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
 		} else {

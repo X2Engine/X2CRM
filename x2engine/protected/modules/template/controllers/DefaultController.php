@@ -132,8 +132,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new Templates('search');
-		$name='Templates';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -141,8 +140,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new Templates('search');
-		$name='Templates';
-		parent::admin($model, $name);
+		$this->render('admin', array('model'=>$model));
 	}
 
 	/**

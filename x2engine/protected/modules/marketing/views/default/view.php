@@ -176,7 +176,7 @@ if(isset($contactList)) {
 			'name'=>'Name',
 			'headerHtmlOptions'=>array('style'=>'width: 15%;'),
 			'value'=>'CHtml::link($data["firstName"] . " " . $data["lastName"],array("/contacts/view/".$data["id"]))',
-			'type'=>'raw'
+			'type'=>'raw',
 		),
 		array(
 			'name'=>'email',
@@ -189,7 +189,7 @@ if(isset($contactList)) {
 			'headerHtmlOptions'=>array('style'=>'width: 10%;'),
 		),	
 		array(
-			'header'=>'Address',
+			'name'=>'Address',
 			'headerHtmlOptions'=>array('style'=>'width: 25%;'),
 			'value'=>'$data["address"]." ".$data["address2"]." ".$data["city"].", ".$data["state"]." ".$data["zipcode"]." ".$data["country"]'
 		)
@@ -236,7 +236,6 @@ if(isset($contactList)) {
 		'id'=>'contacts-grid',
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 		'dataProvider'=>$contactList->statusDataProvider(20),
-		// 'enableSorting'=>false,
 		'columns'=>$displayColumns,
 	));
 }
@@ -283,20 +282,31 @@ if(isset($contactList)) {
 
 <div style="margin-top: 23px;">
 <?php
-$this->widget('InlineActionForm',
+
+$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Campaign'));
+
+$this->widget('Publisher',
 	array(
 		'associationType'=>'Campaign',
 		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'users'=>User::getNames(),
-		'startHidden'=>false
+		'assignedTo'=>Yii::app()->user->getName()
 	)
 );
+if(isset($_GET['history']))
+    $history=$_GET['history'];
+else
+    $history="all";
 $this->widget('zii.widgets.CListView', array(
+	'id'=>'campaign-history',
 	'dataProvider'=>$this->getHistory($model),
 	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
-	'template'=> '<h3>'.Yii::t('app','History').'</h3>{summary}{sorter}{items}{pager}',
+	'template'=> 
+            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),'javascript:$.fn.yiiListView.update("campaign-history", {data: "history=all"})')).
+            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),'javascript:$.fn.yiiListView.update("campaign-history", {data: "history=actions"})')).
+            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),'javascript:$.fn.yiiListView.update("campaign-history", {data: "history=comments"})')).
+            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),'javascript:$.fn.yiiListView.update("campaign-history", {data: "history=attachments"})')).
+            '</h3>{summary}{sorter}{items}{pager}',
 ));
 ?>
 </div>

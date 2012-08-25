@@ -87,6 +87,7 @@ return array (
 'Batch completed, sending again in'=>'Пакетная завершен, отправив снова в',
 'minute'=>'минута',
 'Email These Contacts'=>'Отправить эти контакты',
+'Email Entire List'=>'Отправить письмо к списку',
 'Invalid tag value'=>'Неправильное значение тега',
 'Contacts for tag'=>'Контакты для тега',
 'Mailing for tag'=>'Рассылка для тега',

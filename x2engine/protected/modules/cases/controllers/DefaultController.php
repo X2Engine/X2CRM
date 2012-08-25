@@ -236,8 +236,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new Cases('search');
-		$name='Cases';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -245,8 +244,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new Cases('search');
-		$name='Cases';
-		parent::admin($model, $name);
+		$this->render('admin', array('model'=>$model));
 	}
 
 	/**

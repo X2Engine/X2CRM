@@ -346,7 +346,8 @@ div.form .background-row a.delete-link {
 	padding: 10px 25px;	/* extra big! */
 	float:left;
 }
-#login-form a.x2touch-link {display:inline-block;margin-top:5px;font-size:10px;}
+#login-form a.x2touch-link {display:inline-block;margin-top:5px;font-size:10px; text-decoration:none;}
+#login-form a.x2touch-link img {vertical-align:top;}
 
 #inline-email-form label {
 	width:80px;
@@ -424,14 +425,12 @@ div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
 }
 
 .file-wrapper {
-	cursor: pointer;
 	display: inline-block;
 	overflow: hidden;
 	position: relative;
 }
 
 .file-wrapper input {
-  cursor: pointer;
   height: 100%;
   position: absolute;
   right: 0;
@@ -442,4 +441,45 @@ div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
   filter: alpha(opacity=50);
   -moz-opacity: 0.01;
   opacity: 0.01;
+}
+
+.x2-file-wrapper {
+	display: inline-block;
+	overflow: hidden;
+	position: relative;
+}
+
+.x2-file-wrapper .x2-file-input {
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 100%;
+}
+
+::-webkit-file-upload-button {
+
+}
+
+.x2-file-wrapper .x2-file-input {
+  filter: alpha(opacity=1);
+  -moz-opacity: 0.01;
+  opacity: 0.01;
+  z-index: 100;
+}
+
+.x2-file-wrapper .filename {
+	position: absolute; 
+	filter: alpha(opacity=0); 
+	-moz-opacity: 0.00; 
+	opacity: 0.00;
+	left: 10px;
+}
+
+.x2-state-active {
+	background: #68a000;
+}
+
+.x2-state-hover {
+	background: #468000
 }

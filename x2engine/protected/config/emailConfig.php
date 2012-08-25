@@ -3,6 +3,6 @@ $host='localhost';
 $user='root';
 $pass=' ';
 $dbname='x2engine';
-$version='0.9.9.1';
-$buildDate=1326314361;
+$version = '1.6.5';
+$buildDate = 1345846264;
 ?>

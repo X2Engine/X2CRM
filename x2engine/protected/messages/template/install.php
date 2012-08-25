@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,13 +40,13 @@
 
 return array (
 // Install screen
-'Install X2Engine'=>'',
-'X2Engine Installation'=>'',
+'Install X2EngineCRM'=>'',
+'X2EngineCRM Installation'=>'',
 'Installation Complete'=>'',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'',
+'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'',
 
-'X2Engine Application Info'=>'',
+'X2EngineCRM Application Info'=>'',
 
 'Application Name'=>'',
 'Default Language'=>'',
@@ -62,7 +62,25 @@ return array (
 'Username'=>'',
 'Password'=>'',
 
+// Software updates
+'Notify me of software updates'=>'',
+'First Name'=>'',
+'Last Name'=>'',
+'Email'=>'',
+'How you found X2EngineCRM'=>'',
+'Phone'=>'',
+'Subscribe to the newsletter'=>'',
+'Comments'=>'',
+'Request a follow-up contact'=>'',
+'Software Updates'=>'',
+'Please help us improve X2EngineCRM by providing the following information:'=>'',
+'Software update notifications enabled.'=>'',
+'Optional Information'=>'',
+'Could not connect to the updates server at this time.'=>'',
+'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'',
+
 'Install'=>'',
+
 'For help or more information - X2Engine.com'=>'',
 
 'All Rights Reserved.'=>'',

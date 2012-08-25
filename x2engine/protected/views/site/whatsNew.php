@@ -42,30 +42,32 @@
 <?php
 
 // init qtip for contact names
-$qtipUrl = $this->createUrl('/contacts/qtip');
-Yii::app()->clientScript->registerScript('contact-qtip', "
+Yii::app()->clientScript->registerScript('contact-qtip', '
 function refreshQtip() {
-	$('.contact-name').each(function (i) {
-		var contactId = $(this).next().val();
-		$(this).qtip({
-			content: {
-				text: 'loading...',
-				ajax: {
-					url: '$qtipUrl',
-					data: { id: contactId },
-					method: 'get',
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
+
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.baseUrl+"/index.php/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get",
+					}
+				},
+				style: {
 				}
-			},
-			style: {
-			}
-		});
+			});
+		}
 	});
 }
 
 $(function() {
 	refreshQtip();
 });
-");
+');
 ?>
 
 <h1><?php echo Yii::t('app','What\'s New'); ?></h1>
@@ -86,11 +88,12 @@ $(function() {
 		. ' </div>'
 		. Yii::t('app', 'results per page.'),
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'afterAjaxUpdate'=>'refreshQtip',
 	'columns' => array(
 		array(
 			'name' => Yii::t('app','Name'),
 			'type' => 'raw',
-			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"], array("class" => "contact-name")) . ($data["type"] == "Contact" ? CHtml::hiddenField("contact-id", $data["id"], array("id" => false)) : "")', 
+			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"], array("class"=>($data["type"]=="Contact"? "contact-name":null)))', 
 		),
 		array(
 			'name' => Yii::t('actions','Type'),
@@ -98,7 +101,7 @@ $(function() {
 			'value' => 'Yii::t("app",CHtml::encode($data["type"]))'
 		),
 		array(
-			'name' => Yii::t('sales','Description'),
+			'name' => Yii::t('actions','Description'),
 			'type' => 'raw',
 			'value' => 'Yii::app()->controller->truncateText(CHtml::encode($data["description"]),20)'
 		),

@@ -68,6 +68,8 @@ $form = $this->beginWidget('CActiveForm', array(
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'sales'));
 $this->endWidget();
 
+$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'sales'));
+
 // render workflow box
 // $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'sales','currentWorkflow'=>$currentWorkflow));
 $this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'sales','currentWorkflow'=>$currentWorkflow));
@@ -128,13 +130,11 @@ $this->widget('application.components.X2GridView', array(
 	'enableControls'=>true,
 ));
 echo "<br />";
-$this->widget('InlineActionForm',
+$this->widget('Publisher',
 	array(
 		'associationType'=>'sales',
 		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'users'=>$users,
-		'startHidden'=>false
+		'assignedTo'=>Yii::app()->user->getName()
 	)
 );
 
@@ -143,14 +143,14 @@ if(isset($_GET['history']))
 else
     $history="all";
 $this->widget('zii.widgets.CListView', array(
+	'id'=>'sales-history',
 	'dataProvider'=>$actionHistory,
 	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> 
-            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),"?history=all")).
-            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),"?history=actions")).
-            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),"?history=comments")).
-            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),"?history=attachments")).
+            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),'javascript:$.fn.yiiListView.update("sales-history", {data: "history=all"})')).
+            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),'javascript:$.fn.yiiListView.update("sales-history", {data: "history=actions"})')).
+            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),'javascript:$.fn.yiiListView.update("sales-history", {data: "history=comments"})')).
+            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),'javascript:$.fn.yiiListView.update("sales-history", {data: "history=attachments"})')).
             '</h3>{summary}{sorter}{items}{pager}',
 ));
-?>

@@ -24,6 +24,29 @@ require(dirname(__FILE__).'/YiiBase.php');
  * @package system
  * @since 1.0
  */
-class Yii extends YiiBase
-{
+class Yii extends YiiBase {
+
+	/**
+	 * Translates a message to the specified language, includes special tags if translate mode is on
+	 */
+	 
+	public static function t($category,$message,$params=array(),$source=null,$language=null) {
+	
+		if(isset($_GET['t']) && $_GET['t'])
+			return '<dt class="yii-t">'
+				.CHtml::hiddenField('cat',$category)
+				.CHtml::hiddenField('msg',$message)
+				.parent::t($category,$message,$params,$source,$language)
+				.'</dt>';
+		
+		else
+			return parent::t($category,$message,$params,$source,$language);
+
+	}
+
+
+
+
+
+
 }

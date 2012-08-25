@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,15 +41,11 @@
 $justMeUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'justMe'));
 $allUsersUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'allUsers'));
 echo CHtml::ajaxLink(Yii::t('app','Just Me'), $justMeUrl,array('success'=>'function(response) { $("#myTags").show(); $("#allTags").hide(); } '))." | ".CHtml::ajaxLink(Yii::t('app','All Users'), $allUsersUrl,array('success'=>'function() { $("#allTags").show(); $("#myTags").hide(); }'))."<br />";
-// $template='<a href="'.Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.'"> #\\2</a>';
 ?> <br>
 <div id="myTags" <?php echo ($showAllUsers? 'style="display:none;"' : ''); ?>>
 <?php
 foreach($myTags as &$tag) {
-	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1))).'</span>';
-    // $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
-    // $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
-    // echo "<span class='tag'>".$tag->tag."</span> ";
+	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
 }
 ?>
 </div>
@@ -57,10 +53,7 @@ foreach($myTags as &$tag) {
 <div id="allTags" <?php echo ($showAllUsers? '' : 'style="display:none;"'); ?>>
 <?php
 foreach($allTags as &$tag) {
-	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1))).'</span>';
-    // $tag->tag = mb_ereg_replace('(^|\s)#(\w\w+)',$template,$tag->tag);
-    // $tag->tag = mb_ereg_replace('(>)#(\w\w+)',">".$template,$tag->tag);
-    // echo "<span class='tag'>".$tag->tag."</span> ";
+	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
 }
 ?>
 </div>

@@ -41,41 +41,54 @@
 class GoogleMaps extends CWidget {
 
 	//public $visibility;
-	public function init() {	
+	public function init() {
 		parent::init();
 	}
+	
+	public $location;
 
 	public function run() {
+	
+		if(!isset($this->location) || empty($this->location))
+			return;
+
+		Yii::app()->clientScript->registerScript('inlineEmailForm','
+		if($("#widget_GoogleMaps .portlet-content").is(":visible"))
+			runGoogleMapsWidget();
+		else
+			$("#widget_GoogleMaps .portlet-minimize a").click(function() { runGoogleMapsWidget(); });
 		
-		$actionParams = Yii::app()->controller->getActionParams();
+		function runGoogleMapsWidget() {
+			geocoder = new google.maps.Geocoder();
+			geocoder.geocode( {"address": "'.addslashes($this->location).'"}, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
 
-		$address = '';
-		if(Yii::app()->controller->module != null && Yii::app()->controller->module->id=='contacts'			// must be a contact
-			&& Yii::app()->controller->action->id=='view'	// must be viewing it
-			&& isset($actionParams['id'])) {				// must have an actual ID value
-			
-			$currentRecord = CActiveRecord::model('Contacts')->findByPk($actionParams['id']);
-			
-
-			if(!empty($currentRecord->city)) {
-				if(!empty($currentRecord->address))
-					$address .= $currentRecord->address . ', ';
-
-				$address .= $currentRecord->city . ', ';
-			}
-			
-			if(!empty($currentRecord->state))
-				$address .= $currentRecord->state . ' ';
-			
-			if(!empty($currentRecord->zipcode))
-				$address .= $currentRecord->zipcode . ' ';
-				
-			if(!empty($currentRecord->country))
-				$address .= $currentRecord->country;
+					window.map = new google.maps.Map(document.getElementById("googleMapsCanvas"),{
+						center: results[0].geometry.location,
+						zoom: 8,
+						mapTypeId: google.maps.MapTypeId.ROADMAP,
+						mapTypeControl: false
+					});
+						
+					var marker = new google.maps.Marker({
+						map: window.map,
+						position: results[0].geometry.location
+					});
+				} else {
+					$("#widget_GoogleMaps").remove();
+				}
+			});
 		}
-		$this->render('googleMaps', array(
-			'address'=>$address,
-		));
+		',CClientScript::POS_READY);
+		
+		Yii::app()->clientScript->registerScriptFile('http://maps.googleapis.com/maps/api/js?sensor=false');
+
+		echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';
 	}
 }
-?>
+
+
+
+
+
+

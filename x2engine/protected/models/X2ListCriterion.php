@@ -113,14 +113,16 @@ class X2ListCriterion extends CActiveRecord {
 	 */
 	public function getComparisonList() {
 		return array(
-			'='=>'=',
-			'>'=>'>',
-			'<'=>'<',
-			'<>'=>'<>',
-			'contains'=>Yii::t('contacts','contains'),
+			'='=>Yii::t('contacts','equals'),
+			'>'=>Yii::t('contacts','greater than'),
+			'<'=>Yii::t('contacts','less than'),
+			'<>'=>Yii::t('contacts','not equal to'),
+			'list'=>Yii::t('contacts','in list'),
+			'notList'=>Yii::t('contacts','not in list'),
 			'empty'=>Yii::t('empty','empty'),
 			'notEmpty'=>Yii::t('contacts','not empty'),
-			'list'=>Yii::t('contacts','in list'),
+			'contains'=>Yii::t('contacts','contains'),
+			'noContains'=>Yii::t('contacts','does not contain'),
 		);
 	}
 

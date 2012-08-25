@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'Не звонить',
 'Do Not Email'=>'Не пишите',
 
+// List Attributes
+'Owner'=>'владелец',
+'Description'=>'описание',
+'Logic Type'=>'Логика типа',
+'Record Type'=>'Тип записи',
+'Members'=>'Пользователи',
+'Dynamic'=>'динамический',
+'Static'=>'статический',
+
+// List Criteria Attributes
+'List'=>'список',
+'Type'=>'тип',
+'Attribute'=>'атрибут',
+'Comparison'=>'сравнение',
+'Value'=>'значение',
+
+// List Criteria Comparitors
+'equals'=>'равно',
+'greater than'=>'больше',
+'less than'=>'меньше, чем',
+'not equal to'=>'не равны',
+'in list'=>'в списке',
+'not in list'=>'нет в списке',
+'empty'=>'пустой',
+'not empty'=>'не пустой',
+'contains'=>'содержит',
+'does not contain'=>'не содержит',
+
 // Misc
 'Assigned to {name}'=>'Назначена {name}',
 'Social Networks'=>'Социальных сетей',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'Мои контакты',
+'New Contacts'=>'Новые контакты',
 'All Contacts'=>'Все контакты',
 'Create Contact'=>'Создать контакт',
 'View Contact'=>'Посмотреть Контакт',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'Доля Контакт',
 'Create'=>'создавать',
 'Lists'=>'Списки',
+'Create List'=>'Создать список',
 'View'=>'смотреть',
 'Share'=>'доля',
 'Update'=>'обновление',

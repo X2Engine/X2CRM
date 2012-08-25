@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright Â© 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,92 +39,78 @@
  ********************************************************************************/
 
 /**
- * This is the model class for table "x2_notifications".
+ * This is the model class for table "x2_web_forms".
  *
- * The followings are the available columns in table 'x2_notifications':
+ * The followings are the available columns in table 'x2_web_forms':
  * @property integer $id
- * @property string $text
- * @property string $user
- * @property string $record
- * @property integer $viewed
+ * @property string $name
+ * @property string $type
+ * @property string $description
+ * @property string $modelName				
+ * @property string $fields					
+ * @property string $params					
+ * @property string $css						
+ * @property integer $visibility				
+ * @property string $assignedTo				
+ * @property string $createdBy				
+ * @property string $updatedBy				
  * @property integer $createDate
+ * @property integer $lastUpdated
  */
-class Notifications extends CActiveRecord {
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return Notifications the static model class
-	 */
+class WebForm extends CActiveRecord {
 	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
-	/**
-	 * @return string the associated database table name
-	 */
 	public function tableName() {
-		return 'x2_notifications';
+		return 'x2_web_forms';
 	}
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
 	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
-			array('viewed, createDate', 'numerical', 'integerOnly'=>true),
-			array('user', 'length', 'max'=>100),
-			array('record', 'length', 'max'=>250),
-			array('text', 'safe'),
+			array('name, type, visibility, assignedTo, createdBy, updatedBy, createDate, lastUpdated', 'required'),
+			array('description, modelName, fields', 'safe'),
+			array('id, visibility, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
+			array('name, type, modelName', 'length', 'max'=>100),
+			array('description', 'length', 'max'=>255),
+			array('assignedTo, createdBy, updatedBy', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, text, user, record, viewed, createDate', 'safe', 'on'=>'search'),
+			array('id, name, type, description, modelName, fields, params, css, visibility, assignedTo, createdBy, updatedBy, createDate, lastUpdated', 'safe', 'on'=>'search'),
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
-
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
 	public function attributeLabels() {
 		return array(
-			'id' => 'ID',
-			'text' => 'Text',
-			'user' => 'User',
-			'record' => 'Record',
-			'viewed' => 'Viewed',
-			'createDate' => 'Create Date',
+			'id'=>Yii::t('marketing', 'ID'),
+			'name'=>Yii::t('marketing', 'Name'),
+			'type'=>Yii::t('marketing', 'Type'),
+			'description'=>Yii::t('marketing', 'Description'),
+			'modelName'=>Yii::t('marketing', 'Model Name'),
+			'fields'=>Yii::t('marketing', 'Fields'),
+			'params'=>Yii::t('marketing', 'Parameters'),
+			'css'=>Yii::t('marketing', 'CSS'),
+			'visibility'=>Yii::t('marketing', 'Visibility'),
+			'assignedTo'=>Yii::t('marketing', 'Assigned To'),
+			'createdBy'=>Yii::t('marketing', 'Created By'),
+			'updatedBy'=>Yii::t('marketing', 'Updated By'),
+			'createDate'=>Yii::t('marketing', 'Create Date'),
+			'lastUpdated'=>Yii::t('marketing', 'Last Updated'),
 		);
 	}
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+	protected function beforeSave() {
+		if (!empty($this->params)) {
+			$this->params = json_encode($this->params);
+		}
+		return parent::beforeSave();
+	}
 
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('text',$this->text,true);
-		$criteria->compare('user',$this->user,true);
-		$criteria->compare('record',$this->record,true);
-		$criteria->compare('viewed',$this->viewed);
-		$criteria->compare('createDate',$this->createDate);
-
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
-		));
+	protected function afterFind() {
+		if (!empty($this->params)) {
+			$this->params = json_decode($this->params);
+		}
+		parent::afterFind();
 	}
 }
+?>

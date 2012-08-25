@@ -40,34 +40,53 @@
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/vcrPager.css');
 
-$listId = Yii::app()->user->getState('contacts-list');
+$listId = Yii::app()->user->getState('vcr-list');
+if (empty($listId)) $listId = 'index';
 $vcrControls = array();
 $searchModel = new Contacts('search');
 
+//listId should be either a number (for a list), 'index', or 'admin'
+//convert numbers to list/# for uniform url path
+if (is_numeric($listId)) 
+	$path = 'list/' . $listId;
+else
+	$path = $listId;
+
+//try to get the saved sort and filters from the session if applicable
+//the strings in this code are tied to values specified in ERememberColumnFilters and SmartDataProvider
+$order = Yii::app()->user->getState('contacts/default/'. $path . 'Contacts_sort');
+$searchModel->setRememberScenario('contacts/default/'. $path);
+
+//convert session var to sql
+$order = preg_replace('/\.desc$/', ' DESC', $order);
+
 //look up all ids of the list we are currently viewing
 //find position of model in the list
-if (isset($listId) && is_numeric($listId)){
+if (is_numeric($listId)) {
 	$list = CActiveRecord::model('X2List')->findByPk($listId);
 	$dataProvider = $searchModel->searchList($listId);
 	$criteria = $dataProvider->criteria;
-	$order = $dataProvider->sort->defaultOrder;
-	if (isset($order)) $criteria->order = $order;
-	$tableSchema = Contacts::model()->getTableSchema();
-	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
-	$thisIndex = current(array_keys($ids, $model->id));
-} else $listId = null;
- 
-//if no list, or model is not in specified list
-//use default all contacts list
-if (!isset($listId) || $thisIndex === false) {
-	$dataProvider = $searchModel->searchAll();
-	$criteria = $dataProvider->criteria;
-	$order = $dataProvider->sort->defaultOrder;
-	if (isset($order)) $criteria->order = $order;
+	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
+	if (!empty($order)) $criteria->order = $order;
 	$tableSchema = Contacts::model()->getTableSchema();
 	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
 	$thisIndex = current(array_keys($ids, $model->id));
 }
+ 
+//if no list, or model is not in specified list
+//use default all contacts list
+if (!is_numeric($listId) || $thisIndex === false) {
+	$dataProvider = $searchModel->searchAll();
+	$criteria = $dataProvider->criteria;
+	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
+	if (!empty($order)) $criteria->order = $order;
+	$tableSchema = Contacts::model()->getTableSchema();
+	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
+	$thisIndex = current(array_keys($ids, $model->id));
+}
+
+//back to where we came from button
+$vcrControls['back'] = '<li class="back">'.CHtml::link(CHtml::button('Back', array('class'=>'x2-button')), array($path)).'</li>';
 
 if ($thisIndex !== false) {
 	if ($thisIndex > 0) {
@@ -91,6 +110,7 @@ if ($thisIndex !== false) {
 
 <?php if (count($vcrControls) > 0) { ?>
 	<div class="vcrPager">
+		<div class="summary"><b><?php echo $thisIndex+1; ?></b> of <b><?php echo count($ids); ?></b></div>
 		<?php echo CHtml::tag('ul',array('class'=>'vcrPager'),implode("\n",$vcrControls)); ?>
 	</div>
 <?php } ?>

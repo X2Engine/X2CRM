@@ -120,14 +120,22 @@ class InlineEmailAction extends CAction {
 				$this->model->setScenario('custom');
 				
 			if($this->model->validate() && !$preview) {
-								
+				
+				$mediaLibraryUsed = false; // is there an attachment from the media library?
 				if(isset($_POST['AttachmentFiles']) && isset($_POST['AttachmentFiles']['id']) && isset($_POST['AttachmentFiles']['temp']))  {
 					$ids = $_POST['AttachmentFiles']['id'];
 					$temps = $_POST['AttachmentFiles']['temp'];
 					$attachments = array();
 					for($i = 0; $i < count($ids); $i++) {
-						$tempFile = TempFile::model()->findByPk($ids[$i]);
-						$attachments[] = array('filename' => $tempFile->name, 'folder' => $tempFile->folder, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
+						$temp = json_decode($temps[$i]);
+						if($temp) { // attachment is a temp file
+							$tempFile = TempFile::model()->findByPk($ids[$i]);
+							$attachments[] = array('filename' => $tempFile->name, 'folder' => $tempFile->folder, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
+						} else { // attachment is from media library
+							$mediaLibraryUsed = true;
+							$media = Media::model()->findByPk($ids[$i]);
+							$attachments[] = array('filename' => $media->fileName, 'folder' => $media->uploadedBy, 'temp' => json_decode($temps[$i]), 'id' => $media->id);
+						}
 					}
 				}
 				
@@ -154,9 +162,16 @@ class InlineEmailAction extends CAction {
 							$action->createDate = time();
 							$action->dueDate = time();
 							$action->completeDate = time();
-							if($template == null)
+							if($template == null) {
 								$action->actionDescription = '<b>'.$this->model->subject."</b>\n\n".$this->model->message;
-							else
+								if(isset($attachments)) {
+									$action->actionDescription .= "\n\n";
+									$action->actionDescription .= '<b>'. Yii::t('media', 'Attachments:') . "</b>\n";
+									foreach($attachments as $attachment) {
+										$action->actionDescription .= '<span class="email-attachment-text">'. $attachment['filename'] . "</span>\n";
+									}
+								}
+							} else
 								$action->actionDescription = CHtml::link($template->title,array('/docs/'.$template->id));
 							
 							if($action->save()){

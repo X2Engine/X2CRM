@@ -89,6 +89,34 @@ function toggleShowActions() {
 }
 ",CClientScript::POS_HEAD);
 
+// init qtip for contact names
+Yii::app()->clientScript->registerScript('contact-qtip', '
+function refreshQtip() {
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
+
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.baseUrl+"/index.php/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get",
+					}
+				},
+				style: {
+				}
+			});
+		}
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+');
+
 function trimText($text) {
 	if(strlen($text)>150)
 		return substr($text,0,147).'...';
@@ -119,7 +147,10 @@ $this->widget('application.components.X2GridView', array(
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div>'
+		.CHtml::button(Yii::t('actions','Complete Selected'),array('class'=>'x2-button','style'=>'display:inline-block;','onclick'=>'completeSelected()'))
+		.CHtml::button(Yii::t('actions','Uncomplete Selected'),array('class'=>'x2-button','style'=>'display:inline-block;','onclick'=>'uncompleteSelected()'))
+		.'{items}{pager}',
 	'dataProvider'=>$model->searchAdmin(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -144,21 +175,12 @@ $this->widget('application.components.X2GridView', array(
 			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : CHtml::encode(trimText($data->actionDescription)),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
-		'associationId'=>array(
-			'name'=>'associationId',
+		'associationName'=>array(
+			'name'=>'associationName',
 			'header'=>Yii::t('actions','Association Name'),
-			'value'=>'empty($data->associationId) ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/default/view","id"=>$data->associationId))',
+			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/default/view","id"=>$data->associationId),array("class"=>($data->associationType=="contacts"? "contact-name" : null)))',
 			'type'=>'raw',
 		),
 	),
 	'enableControls'=>true,
 ));
-?>
-<br />
-<div class="row buttons">
-	<a class="x2-button" href="#" onClick="completeSelected();"><?php echo Yii::t('actions','Complete Selected'); ?></a>
-	<a class="x2-button" href="#" onClick="uncompleteSelected()"><?php echo Yii::t('actions','Uncomplete Selected'); ?></a>
-</div>
-<?php //$this->endWidget(); ?>
-
-

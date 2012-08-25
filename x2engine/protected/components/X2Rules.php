@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (c) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -47,21 +47,62 @@ class X2Rules {
 		
 		/*  Notification Engine
 		
-			Events Category		Trigger					Parameters							Example								Response Variables
-			-------------------------------------------------------------------------------------------------------------------------------------------
-			Record		field change					attribute, comparison type/value	'dealValue', '>', '20000'			model, old attributes
-						activity																								model
-							(edit, action, etc)			
-						inactive						duration							'86400'								model, last activity
-								
-			Workflow	start workflow					
-						complete workflow				
-						start stage						
-						complete stage					
-						undo stage						
+		Events
+		
+			Example 1: record_field_change, fieldName=>'dealValue', 'comparison'=>'>', 'value'=>'20000'
+			
+			Example 2: record_inactive, attributes = (('dealValue', '>', '20000'), ('account','not_empty')), duration = '5 days'
 
-			Action: 	complete						
-						uncomplete						
+			Event										Parameters													Response Variables
+			-------------------------------------------------------------------------------------------------------------------------------------------
+			Record - field change						model attributes, fieldName, comparison type/value			record, old attributes, user
+			Record - edit								model attributes, user										record, user
+			Record - create action						model attributes, user										record, user
+			Record - complete action					model attributes, user										record, user
+			Record - delete								model attributes, user										record, user
+			Record - inactive (no edits, actions, etc)	model attributes, user, duration							record, last activity, user
+								
+			Workflow - start							workflowId, stage number, user								record, action, user
+			Workflow - complete							workflowId, stage number, user								record, action, user
+			Workflow - start stage						workflowId, stage number, user								record, action, user
+			Workflow - complete stage					workflowId, stage number, user								record, action, user
+			Workflow - undo stage						workflowId, stage number, user								record, action, user
+
+			Generic action - complete							
+			Generic action - uncomplete							
+
+		Actions:
+		
+			Action										Parameters (can use response variables)
+			-------------------------------------------------------------------------------------------------------------------------------------------
+			Email										to, from, subject, body
+
+			Notification								user, message
+
+			Create Action								assignedTo, type, dueDate, priority, description
+
+			Change Field								attribute, value
+
+			Start workflow stage						workflow, stage number
+
+			Complete workflow stage						workflow, stage number
+
+			Undo workflow stage							workflow, stage number
+				
+				
+				
+				
+				
+		Value calculation:
+		
+			Example: when 
+			
+			record_inactive(attributes={},duration='1 day') => notification (user="{record.assignedTo}",message="{record.linkTo} has been inactive for {{now}-{lastActivity}}"
+				
+				
+				
+				
+				
 				
 			
 			

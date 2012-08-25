@@ -48,7 +48,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 
 <form action="<?php echo Yii::app()->baseUrl; ?>/index.php/marketing/createFromTag">
 	<input type="hidden" name="tag" value="<?php echo $term; ?>"/>
-	<input type="submit" value="<?php echo 'Email These Contacts'; ?>" class="x2-button"/>
+	<input type="submit" value="<?php echo Yii::t('marketing','Email These Contacts'); ?>" class="x2-button"/>
 </form>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(

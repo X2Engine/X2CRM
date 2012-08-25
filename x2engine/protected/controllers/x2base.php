@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -84,6 +84,23 @@ abstract class x2base extends CController {
 	 * @return array access control rules
 	 */
 	public function accessRules() {
+		 $moduleId=Yii::app()->controller->module->id;
+            $module=Modules::model()->findByAttributes(array('name'=>$moduleId));
+            if(isset($module) && $module->adminOnly){
+                return array(
+			array('allow',
+				'actions'=>array('getItems'),
+				'users'=>array('*'), 
+			),
+			array('allow', // allow authenticated user to perform the following actions
+				'actions'=>array('index','view','create','update','search','delete','inlineEmail','admin'),
+				'users'=>array('admin'),
+			),
+			array('deny',  // deny all users
+				'users'=>array('*'),
+			),
+		);
+            }else{
 		return array(
 			array('allow',
 				'actions'=>array('getItems'),
@@ -101,6 +118,7 @@ abstract class x2base extends CController {
 				'users'=>array('*'),
 			),
 		);
+		}
 	}
 	
 	public function actions() {
@@ -124,7 +142,6 @@ abstract class x2base extends CController {
 	 * @return string the rendering result. Null if the rendering result is not required.
 	 * @throws CException if the view does not exist
 	 */
-
 	public function renderPartialAjax($view,$data=null,$return=false,$includeScriptFiles=false) {
 
 		if(($viewFile=$this->getViewFile($view))!==false) {
@@ -186,17 +203,13 @@ abstract class x2base extends CController {
 				$edit = in_array($model->assignedTo,Yii::app()->params->groups);	// if we're in the assignedTo group we act as owners
 				
 			} elseif($model->visibility == 2) {		// if record is shared with owner's groups, see if we're in any of those groups
-				$groupMembers = Yii::app()->db->createCommand()
-					->select('userId')
-					->distinct()
-					->from('x2_group_to_user')
-					->where('groupId IN ('.implode(',',Yii::app()->params->groups).')')
-					->queryColumn();
-				
-				$view =  in_array(Yii::app()->user->getName(),$groupMembers);
+				$view = (bool)Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_group_to_user A JOIN x2_group_to_user B 
+																ON A.groupId=B.groupId AND A.username=:user1 AND B.username=:user2')
+					->bindValues(array(':user1'=>$model->assignedTo,':user2'=>Yii::app()->user->getName()))
+					->queryScalar();
 			}
 		}
-		
+
 		$view = $view || $edit;	// edit permission implies view permission
 		
 		if(!isset($action))	// hash of all permissions if none is specified
@@ -510,7 +523,7 @@ abstract class x2base extends CController {
 		);
 
 		//convert any tags into links
-		$template="\\1<a href=".Yii::app()->getBaseUrl().'/index.php/search/search?term=%23\\2'.">#\\2</a>";
+		$template="\\1<a href=".Yii::app()->createUrl('/search/search').'?term=%23\\2'.">#\\2</a>";
 		//$text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
 		$text = preg_replace('/(^|[>\s\.])#(\w\w+)/u',$template,$text);
 
@@ -675,28 +688,9 @@ abstract class x2base extends CController {
 	}
 
 	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
-	 */
-
-	/**
 	 * Lists all models.
 	 */
 	public function index($model,$name) {
-		$pageParam = ucfirst($this->modelClass). '_page';
-		if (isset($_GET[$pageParam])) {
-			$page = $_GET[$pageParam];
-			Yii::app()->user->setState($this->id.'-page',(int)$page);
-		} else {
-			$page=Yii::app()->user->getState($this->id.'-page',1);
-			$_GET[$pageParam] = $page;
-		}
-
-		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
-		}
-
 		$this->render('index', array('model'=>$model));
 	}
 
@@ -706,21 +700,7 @@ abstract class x2base extends CController {
 	 * @param $name The name of the model being viewed (Sales, Actions, etc.)
 	 */
 	public function admin($model, $name) {
-
-		$pageParam = ucfirst($this->modelClass). '_page';
-		if (isset($_GET[$pageParam])) {
-			$page = $_GET[$pageParam];
-			Yii::app()->user->setState($this->id.'-page',(int)$page);
-		} else {
-			$page=Yii::app()->user->getState($this->id.'-page',1);
-			$_GET[$pageParam] = $page;
-		}
-		if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-			EButtonColumnWithClearFilters::clearFilters($this,$model);//where $this is the controller
-		}
-		$this->render('admin',array(
-			'model'=>$model,
-		));
+		$this->render('admin',array('model'=>$model));
 	}
 
 	/**
@@ -1092,6 +1072,13 @@ abstract class x2base extends CController {
 								$phpMail->AddAttachment($file);
 							else
 								$this->throwException("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
+					} else { // stored in media library
+						$file = 'uploads/media/'. $attachment['folder'] . '/' . $attachment['filename'];
+						if(file_exists($file)) // check file exists
+							if(filesize($file) <= (10 * 1024 * 1024)) // 10mb file size limit
+								$phpMail->AddAttachment($file);
+							else
+								$this->throwException("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
 					}
 				}
 			}
@@ -1191,23 +1178,10 @@ abstract class x2base extends CController {
 	 */
 	public function filterSetPortlets($filterChain) {
 		$themeURL = Yii::app()->theme->getBaseUrl();
-			Yii::app()->clientScript->registerScript('logos',"
-			$(window).load(function(){
-				if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-					$('a').removeAttr('href');
-					alert('Please put the logo back');
-					window.location='http://www.x2engine.com';
-				}
-				var touchlogosrc = $('#x2touch-logo').attr('src');
-				var logosrc=$('#x2crm-logo').attr('src');
-				if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-					$('a').removeAttr('href');
-					alert('Please put the logo back');
-					window.location='http://www.x2engine.com';
-				}
-			});    
-			");
-		$this->portlets = ProfileChild::getWidgets();
+		
+		if($this->action->id != 'webLead')
+			Yii::app()->clientScript->registerScript('logos','var _0xa525=["\x6C\x65\x6E\x67\x74\x68","\x23\x6D\x61\x69\x6E\x2D\x6D\x65\x6E\x75\x2D\x69\x63\x6F\x6E","\x23\x78\x32\x74\x6F\x75\x63\x68\x2D\x6C\x6F\x67\x6F","\x23\x78\x32\x63\x72\x6D\x2D\x6C\x6F\x67\x6F","\x68\x72\x65\x66","\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72","\x61","\x50\x6C\x65\x61\x73\x65\x20\x70\x75\x74\x20\x74\x68\x65\x20\x6C\x6F\x67\x6F\x20\x62\x61\x63\x6B","\x73\x72\x63","\x61\x74\x74\x72","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x66\x6F\x6F\x74\x65\x72\x2E\x70\x6E\x67","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x74\x6F\x75\x63\x68\x2E\x70\x6E\x67","\x6C\x6F\x61\x64"];$(window)[_0xa525[12]](function (){if((!$(_0xa525[1])[_0xa525[0]])||(!$(_0xa525[2])[_0xa525[0]])||(!$(_0xa525[3])[_0xa525[0]])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;var _0x3addx1=$(_0xa525[2])[_0xa525[9]](_0xa525[8]);var _0x3addx2=$(_0xa525[3])[_0xa525[9]](_0xa525[8]);if(_0x3addx2!=("$themeURL"+_0xa525[10])||_0x3addx1!=("$themeURL"+_0xa525[11])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;} );');
+		$this->portlets = Profile::getWidgets();
 		// foreach($widgets as $key=>$value) {
 			// $options = ProfileChild::parseWidget($value,$key);
 			// $this->portlets[$key] = $options;

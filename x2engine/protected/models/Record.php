@@ -53,8 +53,11 @@ class Record {
                             $name='web admin';
                             $userId=1;
                         }
+            $temp=array();
+            $assignment=User::model()->findByAttributes(array('username'=>$record->assignedTo));
+            $temp['assignedTo']=isset($assignment)?CHtml::link($assignment->firstName." ".$assignment->lastName,array('profile/'.$assignment->id)):"";
 			if ($record instanceof Contacts) {
-				$temp=array();
+				
 				$temp['id']=$record->id;
 				$temp['name']=$record->firstName.' '.$record->lastName;
 				$temp['description']=$record->backgroundInfo;
@@ -67,7 +70,6 @@ class Record {
                                 $arr[$temp['lastUpdated']]=$temp;
                                 
 			} elseif ($record instanceof Actions) {
-				$temp=array();
 				$temp['id']=$record->id;
 				$temp['name']=empty($record->type)? Yii::t('actions','Action') : Yii::t('actions','Action: ').ucfirst($record->type);
 				$temp['description']=$record->actionDescription;
@@ -79,7 +81,6 @@ class Record {
                                     $temp['lastUpdated']++;
                                 $arr[$temp['lastUpdated']]=$temp;
 			} else {
-				$temp=array();
 				$temp['id']=$record->id;
 				$temp['name']=$record->name;
                                 if(!is_null($record->description))
@@ -108,6 +109,7 @@ class Record {
                                 else
                                     $arr[]=$temp;
 			}
+            
 		}
                 if($whatsNew){
                     ksort($arr);

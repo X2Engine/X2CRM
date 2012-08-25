@@ -89,7 +89,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'type',
 			'type'=>'raw',
-			'value'=>'$data->type=="static"? Yii::t("app","Static") : Yii::t("app","Dynamic")',
+			'value'=>'$data->type=="static"? Yii::t("contacts","Static") : Yii::t("contacts","Dynamic")',
 			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),
 		array(

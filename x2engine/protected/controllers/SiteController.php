@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -60,7 +60,7 @@ class SiteController extends x2base {
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
-					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail', 'toggleShowTags'),
+					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag'),
 				'users'=>array('@'),
 			),
 			// array('allow',
@@ -504,12 +504,14 @@ class SiteController extends x2base {
 				}
 				$name=$newName;
 			}
-			if($temp->saveAs('uploads/'.$name)) {
+			$username = Yii::app()->user->name;
+			if($temp->saveAs("uploads/media/$username/$name")) {
 				if(isset($_POST['associationId']))
 					$model->associationId=$_POST['associationId'];
 				$model->associationType=$_POST['type'];
 				$model->uploadedBy=Yii::app()->user->getName();
 				$model->createDate=time();
+				$model->lastUpdated = time();
 				$model->fileName=$name;
 				if($model->save()){
 
@@ -631,7 +633,7 @@ class SiteController extends x2base {
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		if(Yii::app()->user->isGuest)
-			$this->redirect('index.php/site/login');
+			$this->redirect(array('/site/login'));
 		else {
 			$profile = CActiveRecord::model('profile')->findByPk(Yii::app()->user->getId());
 			if($profile->username=='admin'){
@@ -659,7 +661,7 @@ class SiteController extends x2base {
 					$page=DocChild::model()->findByAttributes(array('title'=>ucfirst($profile->startPage)));
 					if(isset($page)) {
 						$id=$page->id;
-						$menuItems[$key] = array('label' =>ucfirst($value),		'url' => array('/admin/viewPage/'.$id),		'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/admin/viewPage/'.$id?true:null);
+						$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/admin/viewPage/'.$id),'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/admin/viewPage/'.$id?true:null);
 				
 					} else {
 					$this->redirect(array('site/whatsNew'));
@@ -907,8 +909,9 @@ class SiteController extends x2base {
 			$client->setApplicationName("X2Engine CRM");
 			// Visit https://code.google.com/apis/console to generate your
 			// oauth2_client_id, oauth2_client_secret, and to register your oauth2_redirect_uri.
-			$client->setClientId('1005280624260-464cek3q55cvf8uie7t71l1em9u5k97k.apps.googleusercontent.com');
-			$client->setClientSecret('O1t5yVCXsjP4T_9GDmom_Um_');
+                        $admin=Admin::model()->findByPk(1);
+			$client->setClientId($admin->googleClientId);
+                        $client->setClientSecret($admin->googleClientSecret);
 			$client->setRedirectUri('http://www.x2developer.com/x2jake/site/googleLogin');
 			//$client->setDeveloperKey('insert_your_developer_key');
 			$oauth2 = new apiOauth2Service($client);
@@ -976,6 +979,81 @@ class SiteController extends x2base {
 			Yii::app()->params->profile->tagsShowAllUsers = false;
 			Yii::app()->params->profile->update();
 		}
+	}
+	
+	// add a tag to a module
+	// echo true if tag was created (and was not a duplicate)
+	public function actionAppendTag() {
+		if( isset($_POST['Type']) && isset($_POST['Id']) && isset($_POST['Tag']) ) {
+			$type = ucfirst($_POST['Type']);
+			$id = $_POST['Id'];
+			$value = $_POST['Tag'];
+			
+			if($type == "Quotes" || $type == "Products") // fix for products and quotes
+				$model = CActiveRecord::model(rtrim($type, 's'))->findByPk($id);
+			else
+				$model = CActiveRecord::model($type)->findByPk($id);
+			if($model) {
+				
+				// check for duplicate tag
+				$tag = Tags::model()->findByAttributes(array('type'=>$type, 'itemId'=>$id, 'tag'=>$value));
+				if($tag) {
+					echo json_encode(false); // tag was a duplicate
+					return;
+				} else {
+					// create tag
+					$tag = new Tags;
+					$tag->taggedBy = Yii::app()->user->name;
+					$tag->timestamp = time();
+					$tag->type = $type;
+					$tag->itemId = $id;
+					$tag->tag = $value;
+					
+					if($type == 'Contacts')
+						$tag->itemName = $model->firstName." ".$model->lastName;
+					else if($type == 'Actions')
+						$tag->itemName = $model->actionDescription;
+					else if($type == 'Docs')
+						$tag->itemName = $model->title;
+					else
+						$tag->itemName = $model->name;
+						
+					if($tag->save()) {
+						echo json_encode(true);
+						return;
+					}
+				}
+			}
+		}
+		json_encode(false);
+	}
+	
+	// remove a tag from a module
+	// echo true if tag was removed
+	public function actionRemoveTag() {
+		if( isset($_POST['Type']) && isset($_POST['Id']) && isset($_POST['Tag']) ) {
+			$type = ucfirst($_POST['Type']);
+			$id = $_POST['Id'];
+			$value = $_POST['Tag'];
+			
+			$model = CActiveRecord::model($type)->findByPk($id);
+			if($model) {
+				
+				// make sure tag exists
+				$tag = Tags::model()->findByAttributes(array('type'=>$type, 'itemId'=>$id, 'tag'=>$value));
+				if($tag) {
+					if($tag->delete()) {
+						echo json_encode(true); // tag was removed
+						return;
+					}
+				} else {
+					// tag doesn't exist
+					echo json_encode(false);
+					return;
+				}
+			}
+		}
+		echo json_encode(false);
 	}
 
 	// Logs out the current user and redirect to homepage.

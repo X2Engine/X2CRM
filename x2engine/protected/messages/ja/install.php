@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,11 +40,13 @@
 
 return array (
 // Install screen
-'Install X2Engine'=>'インストールX2Engine',
+'Install X2EngineCRM'=>'インストールX2EngineCRM',
+'X2EngineCRM Installation'=>'X2EngineCRMインストール',
+'Installation Complete'=>'完全インストール',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2Engineアプリケーションインストーラへようこそ！我々はアプリケーションを起動して実行する前に、我々は、少し情報を収集する必要があります。以下のフィールドに記入してください。',
+'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2EngineCRMアプリケーションインストーラへようこそ！我々はアプリケーションを起動して実行する前に、我々は、少し情報を収集する必要があります。以下のフィールドに記入してください。',
 
-'X2Engine Application Info'=>'X2Engineアプリケーション情報',
+'X2EngineCRM Application Info'=>'X2EngineCRMアプリケーション情報',
 
 'Application Name'=>'アプリケーション名',
 'Default Language'=>'デフォルトの言語',
@@ -60,7 +62,25 @@ return array (
 'Username'=>'ユーザー名',
 'Password'=>'パスワード',
 
+// Software updates
+'Notify me of software updates'=>'ソフトウェアの最新情報を知らせて！',
+'First Name'=>'ファーストネーム',
+'Last Name'=>'姓',
+'Email'=>'メール',
+'How you found X2EngineCRM'=>'あなたはX2Engineを見つけた方法',
+'Phone'=>'電話',
+'Subscribe to the newsletter'=>'ニュースレターを購読する',
+'Comments'=>'注釈',
+'Request a follow-up contact'=>'フォローアップの接触を要求する',
+'Software Updates'=>'ソフトウェアアップデート',
+'Please help us improve X2EngineCRM by providing the following information:'=>'私たちは、次の情報を提供することにより、X2EngineCRMを改善する手助けをしてください：',
+'Software update notifications enabled.'=>'ソフトウェア更新通知が有効になっています。',
+'Optional Information'=>'オプションの情報',
+'Could not connect to the updates server at this time.'=>'この時点でアップデートサーバーに接続できませんでした。',
+'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'あなたは、更新を有効にせずにアプリケーションのインストールを続行し、Adminコンソールのセクション"アプリケーションの設定"の "一般設定"に入ることによって、後でもう一度試してみることができます。',
+
 'Install'=>'インストール',
+
 'For help or more information - X2Engine.com'=>'ヘルプまたは詳細については、X2Engine.com',
 
 'All Rights Reserved.'=>'すべての内容は著作権を有します。',

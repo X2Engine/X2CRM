@@ -87,6 +87,7 @@ return array (
 'Batch completed, sending again in'=>'Lote completado, el envío de nuevo en',
 'minute'=>'minutos',
 'Email These Contacts'=>'Estos contactos por correo electrónico',
+'Email Entire List'=>'Enviar correo electrónico a la lista',
 'Invalid tag value'=>'Valor de la variable no válido',
 'Contacts for tag'=>'Contactos para la etiqueta',
 'Mailing for tag'=>'Correo para la etiqueta',

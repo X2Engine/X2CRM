@@ -41,6 +41,12 @@
 
 
 // $this->widget('')
+echo CHtml::link(Yii::t('app','Clear All'),'#',array(
+	'class'=>'x2-button right',
+	'submit'=>array('/notifications/deleteAll'),
+	'confirm'=>Yii::t('app','Permanently delete all notifications?'
+)));
+
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actions-grid',
@@ -48,19 +54,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		array(
-
 			// 'name'=>'text',
 			'header'=>Yii::t('actions','Notification'),
 			'value'=>'$data->getMessage()',
 			'type'=>'raw',
 			'headerHtmlOptions'=>array('style'=>'width:70%'),
 		),
-		// array(
-			// 'name'=>'record',
-			// 'header'=>Yii::t('actions','Link To Record'),
-			// 'value'=>'NotificationChild::parseLink($data->record)',
-			// 'type'=>'raw',
-		// ),
 		array(
 			'name'=>'createDate',
 			'header'=>Yii::t('actions','Time'),

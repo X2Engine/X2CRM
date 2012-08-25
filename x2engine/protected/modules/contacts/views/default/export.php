@@ -42,7 +42,7 @@ $this->menu=array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Import from Outlook'),'url'=>array('importContacts')),
+	// array('label'=>Yii::t('contacts','Import from Outlook'),'url'=>array('importContacts')),
 	array('label'=>Yii::t('contacts','Import from Template'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV')),
 );

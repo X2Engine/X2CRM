@@ -78,8 +78,16 @@ class Campaign extends X2Model {
 		);
 	}
 		
+	public static function load($id) {
+		$model = self::model()->with('list')->findByPk((int)$id, 'x2_checkViewPermission(t.visibility,t.assignedTo,"'.Yii::app()->user->getName().'") > 0');
+		if($model===null)
+			throw new CHttpException(404,Yii::t('app', 'The requested page does not exist.'));
+		return $model;
+	}
+
 	public function search() {
 		$criteria=new CDbCriteria;
+		$criteria->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
 		return $this->searchBase($criteria);
 	}
 }

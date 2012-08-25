@@ -1,4 +1,3 @@
-<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -37,9 +36,29 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-if(!empty($contact)) {
-	echo "<center><h6>Contact Time Zone</h6><p>".$contact."</p>";
-} else {
-	Yii::app()->getClientScript()->registerCss('hideTimeZone',"#widget_TimeZone{display:none;}",'all');
-}
-?>
+
+
+(function($) {
+	
+	
+	if(Modernizr.webworkers) {
+		
+	
+	
+	
+	
+	
+	
+	
+	}
+
+})(jQuery);
+
+
+
+
+
+
+
+
+

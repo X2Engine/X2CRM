@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,11 +40,13 @@
 
 return array (
 // Install screen
-'Install X2Engine'=>'Установка X2Engine',
+'Install X2EngineCRM'=>'Установка X2EngineCRM',
+'X2EngineCRM Installation'=>'Установка X2EngineCRM',
+'Installation Complete'=>'Установка завершена',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Добро пожаловать в программу установки приложения X2Engine! Пожалуйста, заполните поля, перечисленные ниже.',
+'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Добро пожаловать в программу установки приложения X2EngineCRM! Пожалуйста, заполните поля, перечисленные ниже.',
 
-'X2Engine Application Info'=>'Информация о Вашем приложении X2Engine',
+'X2EngineCRM Application Info'=>'Информация о Вашем приложении X2EngineCRM',
 
 'Application Name'=>'Имя приложения',
 'Default Language'=>'Язык по умолчанию',
@@ -60,7 +62,25 @@ return array (
 'Username'=>'Имя пользователя',
 'Password'=>'Пароль',
 
+// Software updates
+'Notify me of software updates'=>'Сообщите мне обновления программного обеспечения',
+'First Name'=>'Имя',
+'Last Name'=>'фамилия',
+'Email'=>'E-mail',
+'How you found X2EngineCRM'=>'Как вы нашли X2EngineCRM',
+'Phone'=>'телефон',
+'Subscribe to the newsletter'=>'Подписаться на рассылку',
+'Comments'=>'Комментарии',
+'Request a follow-up contact'=>'Заказать последующих контактов',
+'Software Updates'=>'Обновления программного обеспечения',
+'Please help us improve X2EngineCRM by providing the following information:'=>'Пожалуйста, помогите нам улучшить X2EngineCRM, предоставив следующую информацию:',
+'Software update notifications enabled.'=>'Уведомления обновление программного обеспечения включено.',
+'Optional Information'=>'Дополнительная информация',
+'Could not connect to the updates server at this time.'=>'Не удалось подключиться к серверу обновлений в это время.',
+'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Вы можете продолжить установку приложения, не включая обновления и попробуйте еще раз позже, перейдя в "Общие настройки" в разделе "Настройки приложения" в консоли администратора.',
+
 'Install'=>'Установить',
+
 'For help or more information - X2Engine.com'=>'Обращайтесь за помощью или дополнительной информацией - X2Engine.com',
 
 'All Rights Reserved.'=>'Все права защищены.',

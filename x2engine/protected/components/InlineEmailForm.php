@@ -80,7 +80,7 @@ class InlineEmailForm extends CWidget {
 				$('.focus-mini-module').removeClass('focus-mini-module');
 				$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
 				$('html,body').animate({
-					scrollTop: ($('#action-form').offset().top - 200)
+					scrollTop: ($('#publisher-form').offset().top - 200)
 				}, 300);
 			}
 			
@@ -135,6 +135,9 @@ class InlineEmailForm extends CWidget {
 		});
 		
 		",CClientScript::POS_READY);
+		
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() .'/js/inlineEmailForm.js');
+		
 		parent::init();
 	}
 

@@ -85,6 +85,9 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 	)
 );
 }
+
+$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'actions'));
+
 ?>
 <div class="form" id="action-form">
 	<form id="complete-action" name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">

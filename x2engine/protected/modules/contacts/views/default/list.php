@@ -66,8 +66,12 @@ $('.search-form form').submit(function(){
 	return false;
 });
 
+$('#content').on('mouseup','#contacts-grid a',function(e) {
+	document.cookie = 'vcr-list=".$listModel->id."; expires=0; path=/';
+});
+
 $('#createList').click(function() {
-	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
 		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
 
@@ -83,7 +87,7 @@ $('#createList').click(function() {
 	return false;
 });
 $('#addToList').click(function() {
-	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	
 	var targetList = $('#addToListTarget').val();
 
@@ -98,7 +102,7 @@ $('#addToList').click(function() {
 	return false;
 });
 $('#removeFromList').click(function() {
-	var selectedItems = $.fn.yiiGridView.getSelection('contacts-grid');
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
 		var confirmRemove = confirm('".addslashes(Yii::t('app','Are you sure you want to remove these items from the list?'))."');
 
@@ -113,9 +117,35 @@ $('#removeFromList').click(function() {
 	}
 	return false;
 });
-
-
 ");
+
+// init qtip for contact names
+Yii::app()->clientScript->registerScript('contact-qtip', '
+function refreshQtip() {
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
+
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.baseUrl+"/index.php/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get",
+					}
+				},
+				style: {
+				}
+			});
+		}
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+');
 ?>
 
 <div class="search-form" style="display:none">
@@ -130,9 +160,10 @@ $this->widget('application.components.X2GridView', array(
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
 		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
+		.CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listModel->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportList/'.$listModel->id)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
+		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
+		.CHtml::link(Yii::t('marketing','Email Entire List'), Yii::app()->createUrl('/marketing/create?Campaign[listId]='.$listModel->id))
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
@@ -155,7 +186,7 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->firstName." ".$data->lastName,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id), array("class" => "contact-name"))',
 			'type'=>'raw',
 		),
 	),
@@ -168,13 +199,11 @@ $this->widget('application.components.X2GridView', array(
 echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
 
 $listNames = array();
-$lists = X2List::model()->findAll();
-foreach($lists as &$list) {
-	if($editPermissions)	// check permissions
+foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
+	if($this->checkPermissions($list,'edit'))	// check permissions
 		$listNames[$list->id] = $list->name;
 }
-unset($list);
-unset($listNames[$listModel->id]);
+unset($listNames[$listModel->id]);	// remove current list from the list...yo dawg, I heard you like lists
 
 if($editPermissions && $listModel->type == 'static')
 	echo ' | '.CHtml::link(Yii::t('contacts','Remove From List'),'#',array('id'=>'removeFromList','class'=>'list-action'));
@@ -183,6 +212,5 @@ if(!empty($listNames)) {
 	echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
 	echo CHtml::dropDownList('addToListTarget',null,$listNames, array());
 }
-// echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'createList','class'=>'list-action')).' ';
 ?>
 </span>

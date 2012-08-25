@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?><h3>Add Exception</h3>
+<div style="width:600px">
+    <?php echo Yii::t('admin','Adding an exception will alter a Role\'s behavior while the contact is on a particular stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.') ?>
+</div>
 <div class="form">
 <?php
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');

@@ -55,7 +55,7 @@ $this->actionMenu = array(
 ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('accounts','Account:'); ?> <b><?php echo CHtml::encode($model->name); ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
+<h2><?php echo Yii::t('accounts','Account:'); ?> <b><?php echo CHtml::encode($model->name); ?></b> <a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a></h2>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'accounts-form',
@@ -65,6 +65,8 @@ $this->actionMenu = array(
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'form'=>$form,'modelName'=>'accounts'));
 
 $this->endWidget();
+
+$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'accounts'));
 ?>
 
 
@@ -73,9 +75,9 @@ $this->endWidget();
 </div>
 <?php
 $contactModel=new Contacts('search');
-if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-			EButtonColumnWithClearFilters::clearFilters($this,$contactModel);//where $this is the controller
-		}
+//if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+	//		EButtonColumnWithClearFilters::clearFilters($this,$contactModel);//where $this is the controller
+	//	}
 $this->widget('application.components.X2GridView', array(
 	'id'=>'associated-contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -110,13 +112,11 @@ $this->widget('application.components.X2GridView', array(
 ?>
 <br>
 <?php
-$this->widget('InlineActionForm',
+$this->widget('Publisher',
 	array(
 		'associationType'=>'accounts',
 		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'users'=>$users,
-		'startHidden'=>false
+		'assignedTo'=>Yii::app()->user->getName()
 	)
 );
 
@@ -125,14 +125,15 @@ if(isset($_GET['history']))
 else
     $history="all";
 $this->widget('zii.widgets.CListView', array(
+	'id'=>'account-history',
 	'dataProvider'=>$actionHistory,
 	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
 	'template'=> 
-            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),"?history=all")).
-            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),"?history=actions")).
-            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),"?history=comments")).
-            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),"?history=attachments")).
+            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),'javascript:$.fn.yiiListView.update("account-history", {data: "history=all"})')).
+            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),'javascript:$.fn.yiiListView.update("account-history", {data: "history=actions"})')).
+            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),'javascript:$.fn.yiiListView.update("account-history", {data: "history=comments"})')).
+            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),'javascript:$.fn.yiiListView.update("account-history", {data: "history=attachments"})')).
             '</h3>{summary}{sorter}{items}{pager}',
 ));
 

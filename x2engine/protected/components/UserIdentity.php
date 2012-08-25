@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -51,10 +51,11 @@ class UserIdentity extends CUserIdentity {
 	public function authenticate($google=false) {
 		$user = CActiveRecord::model('User')->findByAttributes(array('username' => $this->username));
 
-		$this->username = $user->username;
+		if(isset($user))
+			$this->username = $user->username;
 		if ($user === null || $user->status < 1) {				// username not found, or is disabled
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
-		} elseif($google){
+		} elseif($google) {
 			$this->errorCode = self::ERROR_NONE;
 			$this->_id = $user->id;
 			return !$this->errorCode;
@@ -70,7 +71,7 @@ class UserIdentity extends CUserIdentity {
 				$this->_id = $user->id;
 				//$this->setState('lastLoginTime', $user->lastLoginTime); //not yet set up
 				
-				if($isMD5) {	// regenerate a more secure hash and nonce
+				if($isMD5 && version_compare(phpversion(),'5.3') == 1) {	// regenerate a more secure hash and nonce
 					$nonce = '';
 					for($i = 0; $i<16; $i++)	// generate a random 16 character nonce with the Mersenne Twister
 						$nonce .= substr('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./', mt_rand(0, 63), 1); 

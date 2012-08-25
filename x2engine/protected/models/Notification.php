@@ -173,8 +173,7 @@ class Notification extends CActiveRecord {
 
 			case 'change':
 				if($this->comparison == 'change') {
-			
-			
+
 					$msg = $passive? '{record}\'s {field} was changed to {value}' : '{user} changed {record}\'s {field} to {value}';
 
 					return Yii::t('app',$msg,array(
@@ -215,6 +214,14 @@ class Notification extends CActiveRecord {
 					return Yii::t('app','Record updated: {record}',array('{record}'=>$record->getLink()));
 				else
 					return Yii::t('app','{user} updated a record: {record}',array('{user}'=>User::getUserLinks($this->createdBy),'{record}'=>$record->getLink()));
+
+			case 'dup_discard':
+				if($passive)
+					return Yii::t('app','A record has been marked as a duplicate and hidden to everyone but the admin: {record}',
+						array('{record}'=>$record->getLink()));
+				else
+					return Yii::t('app','{user} marked a record as a duplicate. This record is hidden to everyone but the admin: {record}',
+						array('{user}'=>User::getUserLinks($this->createdBy),'{record}'=>$record->getLink()));
 
 			case 'email_clicked':
 				return Yii::t('app','{record} clicked an email link: {campaign}',array('{record}'=>$record->getLink(),'{campaign}'=>$this->value));

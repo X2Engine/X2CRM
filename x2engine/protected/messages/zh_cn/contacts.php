@@ -97,6 +97,34 @@ return array (
 'Do Not Call'=>'不调用',
 'Do Not Email'=>'不支持电子邮件',
 
+// List Attributes
+'Owner'=>'业主',
+'Description'=>'描述',
+'Logic Type'=>'逻辑类型',
+'Record Type'=>'记录类型',
+'Members'=>'成员',
+'Dynamic'=>'动态',
+'Static'=>'静止',
+
+// List Criteria Attributes
+'List'=>'表',
+'Type'=>'类型',
+'Attribute'=>'属性',
+'Comparison'=>'比较',
+'Value'=>'值',
+
+// List Criteria Comparitors
+'equals'=>'等于',
+'greater than'=>'大于',
+'less than'=>'小于',
+'not equal to'=>'不等于',
+'in list'=>'在列表',
+'not in list'=>'不在列表中',
+'empty'=>'空的',
+'not empty'=>'不空',
+'contains'=>'包含',
+'does not contain'=>'不包含',
+
 // Misc
 'Assigned to {name}'=>'分配给 {name}',
 'Social Networks'=>'社会网络',
@@ -108,6 +136,7 @@ return array (
 
 // Contacts Actions
 'My Contacts'=>'我的联系人',
+'New Contacts'=>'新的联系人',
 'All Contacts'=>'所有联系人',
 'Create Contact'=>'创建联系人',
 'View Contact'=>'查看联系人',
@@ -117,6 +146,7 @@ return array (
 'Share Contact'=>'共享联系人',
 'Create'=>'创建',
 'Lists'=>'列表',
+'Create List'=>'创建列表',
 'View'=>'视图',
 'Share'=>'股',
 'Update'=>'更新',

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -78,10 +78,10 @@ $attributeLabels['tags'] = Yii::t('contacts','Tags');
 natcasesort($attributeLabels);
 
 $comparisonList = array(
-	'='=>'=',
-	'>'=>'>',
-	'<'=>'<',
-	'<>'=>'<>',
+	'='=>Yii::t('contacts','equals'),
+	'>'=>Yii::t('contacts','greater than'),
+	'<'=>Yii::t('contacts','less than'),
+	'<>'=>Yii::t('contacts','not equal to'),
 	'list'=>Yii::t('contacts','in list'),
 	'notList'=>Yii::t('contacts','not in list'),
 	'empty'=>Yii::t('empty','empty'),
@@ -306,6 +306,9 @@ function createValueCell(field) {
 			hidden = $('<input type="hidden">');
 			hidden.attr('name', 'X2List[value][]');
 			input = $('<input size=\"30\" type=\"text\" value=\"\">');
+            input.blur(function(){
+                hidden.val(input.val());
+            });
 			input.autocomplete(
 				{'minLength': 0,
 				 'source': fieldOptions[field],
@@ -488,6 +491,20 @@ Yii::app()->clientScript->registerScript('listCriteriaJs', $headjs, CClientScrip
 	<a href="javascript:void(0)" onclick="addCriterion()" class="x2-sortlist-add">[<?php echo Yii::t('app','Add'); ?>]</a>
 </div>
 <?php } ?>
+
+<?php
+$validateName = <<<EOE
+$('#save-button').click(function(e) {
+	if ($.trim($('#X2List_name').val()).length == 0) {
+		$('#X2List_name').addClass('error');
+		$('[for="X2List_name"]').addClass('error');
+		$('#X2List_name').after('<div class="errorMessage">Name cannot be blank.</div>');
+		e.preventDefault();
+	}
+});
+EOE;
+Yii::app()->clientScript->registerScript('validateName', $validateName, CClientScript::POS_READY);
+?>
 
 <div class="row buttons">
 	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24)); ?>

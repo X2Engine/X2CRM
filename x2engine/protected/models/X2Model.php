@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,7 +41,7 @@
 
 Yii::import('application.components.X2LinkableBehavior');
 
-abstract class X2Model extends CActiveRecord {
+abstract class X2Model extends CActiveRecord { 
 
 	protected static $_fields;	// one copy of fields for all instances of this model
 	
@@ -55,9 +55,9 @@ abstract class X2Model extends CActiveRecord {
 			if(self::$_fields[$key] === false) {	// if the cache is empty, look up the fields
 
 				if(get_class($this) === 'Product' || get_class($this) === 'Quote')
-					self::$_fields[$key] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this) . 's'));
+					self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName'=>get_class($this) . 's'));
 				else
-					self::$_fields[$key] = Fields::model()->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
+					self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName'=>get_class($this))); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
 
 				Yii::app()->cache->set('fields_'.$key,self::$_fields[$key],0);	// cache the data
 			}
@@ -80,6 +80,17 @@ abstract class X2Model extends CActiveRecord {
 		else
 			return $id;
 	}
+    
+    public static function getPhoneNumber($field, $class, $id){
+        $phoneCheck=PhoneNumber::model()->findByAttributes(array('modelId'=>$id,'modelType'=>$class,'fieldName'=>$field));
+        if(isset($phoneCheck) && strlen($phoneCheck->number)==10){
+            $temp=$phoneCheck->number;
+            return "(".substr($temp,0,3).") ".substr($temp,3,3)."-".substr($temp,6,4);
+        }else{
+            return CActiveRecord::model($class)->findByPk($id)->$field;
+        }
+        
+    }
 
 	/**
 	 * Returns a CDbCriteria containing the default query criteria for this model
@@ -109,18 +120,19 @@ abstract class X2Model extends CActiveRecord {
 		foreach(self::$_fields[$this->tableName()] as &$_field) {	// loop through $_fields and find any phone type ones
 			$fieldName = $_field->fieldName;
 			if($_field->type=='phone')
-				$numbers[] = $this->$fieldName;					// add those numbers to the list
+				$numbers[$fieldName] = $this->$fieldName;					// add those numbers to the list
 		}
 
 		if(count($numbers))	// if there are any phone fields, clear out any pre-existing entries in x2_phone_numbers
 			CActiveRecord::model('PhoneNumber')->deleteAllByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this)));
 		
-		foreach($numbers as $number) {	// create new entries in x2_phone_numbers
+		foreach($numbers as $field=>$number) {	// create new entries in x2_phone_numbers
 			if($number !== '') {
 				$num = new PhoneNumber;
 				$num->number = preg_replace('/\D/','',$number);		// eliminate everything other than digits
 				$num->modelId = $this->id;
 				$num->modelType = get_class($this);
+                $num->fieldName=$field;
 				$num->save();
 			}
 		}
@@ -242,7 +254,7 @@ abstract class X2Model extends CActiveRecord {
 		if($assoc) {
 			$fields = array();
 			foreach(self::$_fields[$this->tableName()] as &$field)
-				$fields[$field->fieldName] = $field->attributes;
+				$fields[$field->fieldName] = $field;
 				
 			return $fields;
 		} else {
@@ -319,6 +331,17 @@ abstract class X2Model extends CActiveRecord {
 					$mailtoLabel = isset($this->name)? '"'.$this->name.'" <'.$this->$fieldName.'>' : $this->$fieldName;
 					return $makeLinks? CHtml::mailto($this->$fieldName,$mailtoLabel) : $this->fieldName;
 				}
+			case 'phone':
+				if(empty($this->$fieldName))
+					return '';
+				else{
+                    $phoneCheck=PhoneNumber::model()->findByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this),'fieldName'=>$fieldName));
+                    if(isset($phoneCheck) && strlen($phoneCheck->number)==10){
+                        $temp=$phoneCheck->number;
+                        $this->$fieldName="(".substr($temp,0,3).") ".substr($temp,3,3)."-".substr($temp,6,4);
+                    }
+					return $this->$fieldName;
+                }
 			case 'url':
 			
 				if(!$makeLinks)
@@ -389,6 +412,7 @@ abstract class X2Model extends CActiveRecord {
 				
 			case 'text':
 				return Yii::app()->controller->convertUrls($this->$fieldName);     
+                        
 				
 			default:
 				return $this->$fieldName;
@@ -461,7 +485,7 @@ abstract class X2Model extends CActiveRecord {
 							$this->$fieldName = '';
 						}
 					}
-					$linkSource = Yii::app()->controller->createUrl(CActiveRecord::model($field->linkType)->autoCompleteSource);
+					$linkSource = Yii::app()->controller->createUrl(strtolower(CActiveRecord::model($field->linkType)->autoCompleteSource));
 				}
 				return CHtml::hiddenField($field->modelName.'['.$fieldName.'_id]',$linkId,array('id'=>$field->modelName.'_'.$fieldName."_id"))
 				.Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
@@ -640,7 +664,6 @@ abstract class X2Model extends CActiveRecord {
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public function searchBase($criteria) {
-		$this->queryFields();
 		$this->compareAttributes($criteria);
 
 		return new SmartDataProvider(get_class($this), array(
@@ -658,8 +681,8 @@ abstract class X2Model extends CActiveRecord {
 		$this->queryFields();
 		
 		foreach(self::$_fields[$this->tableName()] as &$field) {
-			$fieldName = $field['fieldName'];
-			switch($field['type']) {
+			$fieldName = $field->fieldName;
+			switch($field->type) {
 				case 'boolean':
 					$criteria->compare($fieldName,$this->compareBoolean($this->$fieldName), true);
 					break;
@@ -679,19 +702,19 @@ abstract class X2Model extends CActiveRecord {
 			}
 		}
 		
-		if(get_class($this) == 'Contacts')
-			$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
+		// if(get_class($this) == 'Contacts')
+			// $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
 
 
-		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'createDate DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
+		// return new SmartDataProvider(get_class($this), array(
+			// 'sort'=>array(
+				// 'defaultOrder'=>'createDate DESC',
+			// ),
+			// 'pagination'=>array(
+				// 'pageSize'=>ProfileChild::getResultsPerPage(),
+			// ),
+			// 'criteria'=>$criteria,
+		// ));
 	}
 
 	protected function compareLookup($linkType, $value) {

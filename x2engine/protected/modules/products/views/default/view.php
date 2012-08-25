@@ -54,15 +54,15 @@ $this->menu = array(
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'products')); ?>
 
+<?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'products')); ?>
+
 <?php
-$this->widget('InlineActionForm',
-		array(
-			'associationType'=>'product',
-			'associationId'=>$model->id,
-			'assignedTo'=>Yii::app()->user->getName(),
-			'users'=>$users,
-			'startHidden'=>false
-		)
+$this->widget('Publisher',
+	array(
+		'associationType'=>'product',
+		'associationId'=>$model->id,
+		'assignedTo'=>Yii::app()->user->getName()
+	)
 );
 ?>
 <div id="attachment-form">
@@ -70,10 +70,20 @@ $this->widget('InlineActionForm',
 </div>
 
 <?php
+if(isset($_GET['history']))
+    $history=$_GET['history'];
+else
+    $history="all";
 $this->widget('zii.widgets.CListView', array(
+	'id'=>'product-history',
 	'dataProvider'=>$actionHistory,
 	'itemView'=>'application.modules.actions.views.default._view',
 	'htmlOptions'=>array('class'=>'action list-view'),
-	'template'=> '<h3>'.Yii::t('app','History').'</h3>{summary}{sorter}{items}{pager}',
+	'template'=> 
+            ($history=='all'?'<h3>'.Yii::t('app','History')."</h3>":CHtml::link(Yii::t('app','History'),'javascript:$.fn.yiiListView.update("product-history", {data: "history=all"})')).
+            " | ".($history=='actions'?'<h3>'.Yii::t('app','Actions')."</h3>":CHtml::link(Yii::t('app','Actions'),'javascript:$.fn.yiiListView.update("product-history", {data: "history=actions"})')).
+            " | ".($history=='comments'?'<h3>'.Yii::t('app','Comments')."</h3>":CHtml::link(Yii::t('app','Comments'),'javascript:$.fn.yiiListView.update("product-history", {data: "history=comments"})')).
+            " | ".($history=='attachments'?'<h3>'.Yii::t('app','Attachments')."</h3>":CHtml::link(Yii::t('app','Attachments'),'javascript:$.fn.yiiListView.update("product-history", {data: "history=attachments"})')).
+            '</h3>{summary}{sorter}{items}{pager}',
 ));
 ?>

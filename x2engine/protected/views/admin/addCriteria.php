@@ -73,8 +73,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 ?>
 <br />
 
-<h2>Add Criteria for Notifications</h2>
-To add a condition which will trigger notifications, please fill out the form below.<br /><br />
+<h2><?php echo Yii::t('admin','Add Criteria for Notifications');?></h2>
+<?php echo Yii::t('admin',"To add a condition which will trigger notifications, please fill out the form below.");?><br /><br />
 
 
 <div class="form">

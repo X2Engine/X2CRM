@@ -93,19 +93,22 @@ $('#LoginForm_username').focus();
 					<?php echo CHtml::submitButton(Yii::t('app','Login'),array('class'=>'x2-button')); ?>
 				</div>
 
-				<div class="cell right" style="padding-top:2px;padding-left:5px;">
+				<div class="cell right" style="padding-top:12px;padding-left:5px;">
 					<?php echo $form->checkBox($model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); ?>
 					<?php echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); ?>
 					<?php echo $form->error($model,'rememberMe'); ?><br>
-					<?php echo CHtml::link(Yii::t('app','Login to X2Touch'),Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
+					
 				</div>		
 			</div>
 			
 			<div class="row">
-					<?php echo CHtml::link("<img src='".Yii::app()->baseUrl."/uploads/logos/google-icon.png' width='18' height='18' /> ".Yii::t('app','Login with Google'),
-							(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
-							((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
-							$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link', 'style'=>"text-decoration:none")); ?>
+				<?php echo CHtml::link("<img src='".Yii::app()->baseUrl."/uploads/logos/google-icon.png' width='18' height='18' /> ".Yii::t('app','Login with Google'),
+						(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
+						((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
+						$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link', 'style'=>"text-decoration:none")); ?>
+			</div><br>
+			<div class="row">
+				<?php echo CHtml::link('X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
 			</div>
 		</div>
 	</div>

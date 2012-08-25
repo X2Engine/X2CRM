@@ -73,13 +73,13 @@ a.x2-button, input.x2-button, button.x2-button { /* , a.search-button */
 	-webkit-border-radius:	3px;
 	-o-border-radius:		3px;
 }
-a.x2-button:hover, input.x2-button:hover, button.x2-button:hover {
+a.x2-button:hover, input.x2-button:hover, button.x2-button:hover, input.hover {
 	color:black;
 	background-color:#fff;
 	background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee));
 	background:-moz-linear-gradient(top,  #fff,  #eee);
 }
-a.x2-button:active, input.x2-button:active, button.x2-button:active, a.x2-button.clicked, input.x2-button.clicked, button.x2-button.clicked {
+a.x2-button:active, input.x2-button:active, button.x2-button:active, a.x2-button.clicked, input.x2-button.clicked, button.x2-button.clicked, input.active {
 	color:black;
 	border-color:#666;
 	background-color:#bbb;
@@ -149,7 +149,7 @@ a.x2-button#transparency-button span, a.x2-button#fullscreen-button span{
 a.x2-button#fullscreen-button span{background-image:url(../images/fullscreen-icon.png);}
 
 a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gif) left center no-repeat transparent;}
-.x2-button:hover, .search-button:hover {	background:#fff;}
+.x2-button:hover, .search-button:hover, input.hover {	background:#fff;}
 .x2-button:active, .search-button:active {background:black;border-color:#666;color:white;}
 
 .x2-button.black {
@@ -447,6 +447,62 @@ div.portlet-minimize a {text-decoration:none;}
 	padding:2px;
 	background-color:#f0f0f0;
 }
+
+#widget_TimeZone {text-align:center;} 
+#widget_TimeZone #tzClock {
+	position:relative;
+	display:block;
+	width:88px;
+	height:88px;
+	margin:0 auto 0 auto;
+	background:url(../images/clockface.png);
+	list-style:none;
+}
+#widget_TimeZone #tzClock2 {
+	display:block;
+}
+#widget_TimeZone li {
+	position:absolute;
+	width:4px;
+	height:88px;
+	top:0px;
+	left:42px;
+}
+#widget_TimeZone li div {
+	margin: 0 auto;
+}
+#widget_TimeZone li.sec {z-index:3;}
+#widget_TimeZone li.sec div:first-child {
+	margin-top:12px;
+	width:1px;
+	background:red;
+	height:32px;
+}
+#widget_TimeZone li.sec div:last-child {
+	width:3px;
+	background:red;
+	height:18px;
+}
+
+#widget_TimeZone li.min {z-index:2;}
+#widget_TimeZone li.min div {
+	width:2px;
+	margin-top:14px;
+	background:black;
+	height:30px;
+}
+#widget_TimeZone li.hour {z-index:1;}
+#widget_TimeZone li.hour div {
+	margin-top:22px;
+	width:3px;
+	background:black;
+	height:23px;
+	border-radius:			3px;
+	-moz-border-radius:		3px;
+	-webkit-border-radius:	3px;
+	-o-border-radius:		3px;
+}
+
 #note-box{
 	height:200px;
 	width:auto;
@@ -1000,7 +1056,8 @@ div#code-snippet {
 	-o-border-radius:		4px;
 }
 
-.yiiLog {
+
+.yiiLog, .yiiTranslationList {
 	display:block;
 	z-index:10;
 	position:fixed;
@@ -1009,6 +1066,7 @@ div#code-snippet {
 	width:auto !important;
 	overflow-y:scroll;
 }
+.yiiTranslationList { width:150px;border:1px solid #000; background:#fff; overflow-y:auto;}
 .yiiLog tbody {
 	width:100%;
 }
@@ -1023,4 +1081,88 @@ div#code-snippet {
 .focus-mini-module {
 	box-shadow: 0 0 4px 2px #579100;
 	border-color: #579100;
+}
+
+dt.yii-t {display:inline;}
+body.yii-t dt.yii-t {cursor:help;background:rgba(255,0,0,0.5);}
+.email-attachment-image {
+	display: inline-block;
+	height: 30px;
+	width: 30px;
+}
+
+.email-attachment-text {
+	position: relative;
+	left: 10px;
+	vertical-align: 50%;
+}
+
+#media-library-widget-wrapper {
+	display: inline-block;
+	overflow: hidden;
+	width: 100%;
+}
+
+#media-library-widget-container {
+	overflow: auto;
+	height: 100%;
+	width: 100%;
+}
+
+#widget_MediaBox .ui-resizable-s {
+	height: 14px;
+}
+
+.media-hover-image {
+	height: 64px;
+	width: 64px;
+	float: left;
+}
+
+.media-library-item {
+	cursor: pointer;
+}
+
+.media-library-showhide {
+	cursor: pointer;
+	text-decoration: none;
+	float: right;
+}
+
+#widget_MediaBox .media-item a, #x2-tag-list .tag a {
+	text-decoration: none;
+	color: black;
+}
+
+#widget_MediaBox .media-item, #x2-tag-list .tag {
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border-style:solid;
+	border-width:1px;
+	border-color:gray;
+	margin:2px 2px;
+	display: inline-block;
+	padding:2px;
+	background-color:#f0f0f0;
+}
+
+.delete-tag {
+	color: #06C;
+	font-size: 0.7em;
+	vertical-align: 15%;
+	cursor: pointer;
+}
+
+.delete-tag:hover {
+	color: #09F;
+}
+
+.tag input.x2-new-tag {
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: #F0F0F0;
+	width: 10px;
 }

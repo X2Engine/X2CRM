@@ -57,7 +57,6 @@ function deleteFile(deleteList, k){
                   $('#update-text').html('Deleting file: '+deleteList[deleteCount-1]);
                   deleteFile(deleteList, k+1);
               }
-              
           },
           error: function(){
               cleanUp('error');
@@ -121,6 +120,7 @@ echo "Current updater version: <b>".$updaterCheck."</b><br /><br />";
 echo "Your X2CRM version: <b>".$version."</b><br />";
 echo "Current X2CRM version: <b>".$versionTest."</b><br /><br />";
 echo $changelog;
+
 ?>
 <a href="#" class="x2-button" id="update-button">Update</a><br /><br />
 <div id="update-status" style="">

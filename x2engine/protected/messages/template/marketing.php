@@ -87,6 +87,7 @@ return array (
 'Batch completed, sending again in'=>'',
 'minute'=>'',
 'Email These Contacts'=>'',
+'Email Entire List'=>'',
 'Invalid tag value'=>'',
 'Contacts for tag'=>'',
 'Mailing for tag'=>'',

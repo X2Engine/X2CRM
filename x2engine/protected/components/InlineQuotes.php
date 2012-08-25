@@ -65,7 +65,7 @@ class InlineQuotes extends CWidget {
 					$('.focus-mini-module').removeClass('focus-mini-module');
 					$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
 					$('html,body').animate({
-						scrollTop: ($('#action-form').offset().top - 200)
+						scrollTop: ($('#publisher-form').offset().top - 200)
 					}, 300);
 				}
 				$('#quotes-form').toggle('blind',300,function() {

@@ -39,5 +39,9 @@
  ********************************************************************************/
 ?>
 <h2><?php echo Yii::t('admin','Create Page'); ?></h2>
+<div style="width:600px">
+    <?php echo Yii::t('admin','This form will allow you to create a Document that will be linked on the top menu bar.') ?>
+    <br /><br />
+</div>
 
 <?php echo $this->renderPartial('application.modules.docs.views.default._form', array('model'=>$model,'users'=>$users)); ?>

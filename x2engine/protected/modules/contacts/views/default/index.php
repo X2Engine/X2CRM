@@ -74,6 +74,10 @@ $('.search-form form').submit(function(){
 	return false;
 });
 
+$('#content').on('mouseup','#contacts-grid a',function(e) {
+	document.cookie = 'vcr-list=index; expires=0; path=/';
+});
+
 $('#createList').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
@@ -108,31 +112,32 @@ $('#addToList').click(function() {
 ",CClientScript::POS_READY);
 
 // init qtip for contact names
-$qtipUrl = $this->createUrl('qtip');
-Yii::app()->clientScript->registerScript('contact-qtip', "
+Yii::app()->clientScript->registerScript('contact-qtip', '
 function refreshQtip() {
-	$('.contact-name').each(function (i) {
-		var contactId = $(this).next().val();
-		$(this).qtip({
-			content: {
-				text: 'loading...',
-				ajax: {
-					url: '$qtipUrl',
-					data: { id: contactId },
-					method: 'get',
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
+
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.baseUrl+"/index.php/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get",
+					}
+				},
+				style: {
 				}
-			},
-			style: {
-			}
-		});
+			});
+		}
 	});
 }
 
 $(function() {
 	refreshQtip();
 });
-");
-
+');
 ?>
 
 
@@ -173,7 +178,8 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id), array("class" => "contact-name")) . CHtml::hiddenField("contact-id", $data->id, array("id" => false))',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id), array("class" => "contact-name"))',
+			// 'value'=>'$data->getLink()',
 			'type'=>'raw',
 		),
 	),
@@ -183,12 +189,10 @@ $this->widget('application.components.X2GridView', array(
 echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
 
 $listNames = array();
-$lists = X2List::model()->findAll();
-foreach($lists as &$list) {
-	if($list->type == 'static' && $this->checkPermissions($list,'edit'))	// check permissions
+foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
+	if($this->checkPermissions($list,'edit'))	// check permissions
 		$listNames[$list->id] = $list->name;
 }
-unset($list);
 
 if(!empty($listNames)) {
 	echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));

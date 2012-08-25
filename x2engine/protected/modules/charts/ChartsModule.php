@@ -67,13 +67,13 @@ class ChartsModule extends CWebModule {
 		// Set module specific javascript packages
 
 		$this->packages = array(
-			'jquery' => array(
-				'basePath' => $this->getBasePath(),
-				'baseUrl' => $this->assetsUrl,
-				'js' => array(
-					YII_DEBUG ? 'js/jquery-1.6.2.js' : 'js/jquery-1.6.2.min.js'
-				)
-			),
+			// 'jquery' => array(
+				// 'basePath' => $this->getBasePath(),
+				// 'baseUrl' => $this->assetsUrl,
+				// 'js' => array(
+					// YII_DEBUG ? 'js/jquery-1.6.2.js' : 'js/jquery-1.6.2.min.js'
+				// )
+			// ),
 			'jquerysparkline' => array(
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,

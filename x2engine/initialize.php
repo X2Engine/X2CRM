@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,8 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$x2Version = '1.6.1';
-$buildDate = 1343253555;
+include(__DIR__.'/protected/config/emailConfig.php');
+$x2Version = $version;
 
 $userData = '';
 
@@ -79,17 +79,19 @@ if($silent) {
 		$currency = $currency2;
 	if(empty($currency))
 		$currency = 'USD';
-	$userData .= "";
 	
-	$lang = $_POST['lang'];
+	$lang = $_POST['language'];
 	$timezone = $_POST['timezone'];
 	
 	$adminEmail = $_POST['adminEmail'];
 	$adminPassword = $_POST['adminPass'];
 	$adminPassword2 = $_POST['adminPass2'];
-	$dummyData = (isset($_POST['data']) && $_POST['data']==1)? 1 : 0;
+	$firstName = $_POST['firstName'];
+	$lastName = $_POST['lastName'];
+	$dummy_data = (isset($_POST['dummy_data']) && $_POST['dummy_data']==1)? 1 : 0;
+	$userData .= "&unique_id={$_POST['unique_id']}";
+	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&language=$lang&adminEmail=$adminEmail&dummy_data=$dummy_data&timezone=".urlencode($timezone);
 	
-	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&lang=$lang&adminEmail=$adminEmail&data=$dummyData&timezone=".urlencode($timezone);
 	
 }
 
@@ -121,13 +123,13 @@ $errors = array();
 
 $app = mysql_escape_string($app);
 if(!empty($adminEmail) && !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i',$adminEmail))
-	addError('Please enter a valid email address.');
+	addError('adminEmail--Please enter a valid email address.');
 	
 if($adminPassword == '')
-	addError('Admin password cannot be blank.');
+	addError('adminPass--Admin password cannot be blank.');
 
 if(isset($adminPassword2) && $adminPassword != $adminPassword2)
-	addError('Admin passwords did not match.');
+	addError('adminPass2--Admin passwords did not match.');
  
 
 $con = @mysql_connect($host,$user,$pass) or addError('DB_CONNECTION_FAILED');
@@ -189,7 +191,7 @@ $write =
 \$dbname='$db';
 \$version='$x2Version';
 \$buildDate=$buildDate;
-\$updaterVersion='1.2';
+\$updaterVersion='2.0';
 ?>";
 fwrite($handle,$write);
 fclose($handle);
@@ -235,10 +237,11 @@ function addSqlError($message) {
 mysql_query('DROP TABLE IF EXISTS
 	x2_dashboard_settings,
 	x2_widgets,
+    x2_role_to_workflow,
+    x2_list_items,
+    x2_list_criteria,
 	x2_lists,
-	x2_list_items,
-	x2_list_criteria,
-	x2_cases,
+    x2_cases,
 	x2_profile,
 	x2_accounts,
 	x2_notes,
@@ -255,15 +258,14 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_criteria,
 	x2_lead_routing,
 	x2_sessions,
+    x2_workflow_stages,
 	x2_workflows,
-	x2_workflow_stages,
-	x2_role_to_workflow,
 	x2_fields,
    	x2_urls,
 	x2_form_layouts,
+    x2_role_to_user,
+    x2_role_to_permission,
 	x2_roles,
-	x2_role_to_user,
-	x2_role_to_permission,
 	x2_role_exceptions,
 	x2_dropdowns,
 	x2_groups,
@@ -279,9 +281,12 @@ mysql_query('DROP TABLE IF EXISTS
 	x2_marketing,
 	x2_campaigns,
 	x2_calendars,
-    x2_modules,
-    x2_calendar_permissions,
-    x2_temp_files
+	x2_modules,
+	x2_calendar_permissions,
+	x2_temp_files,
+	x2_timezones,
+	x2_timezone_points,
+	x2_web_forms
 ') or addSqlError('Unable to delete exsting tables.'.mysql_error());
 
 // visibility check MySQL procedure
@@ -293,7 +298,7 @@ mysql_query('DROP TABLE IF EXISTS
 // end;
 
 mysql_query('DROP FUNCTION IF EXISTS `x2_checkViewPermission`;') or addSqlError('Unable to drop function x2_checkViewPermission.'.mysql_error());
-mysql_query('CREATE FUNCTION `x2_checkViewPermission` (mode INT,assignedTo VARCHAR(20),user VARCHAR(20)) RETURNS TINYINT DETERMINISTIC 
+mysql_query('CREATE FUNCTION `x2_checkViewPermission` (`mode` INT,`assignedTo` VARCHAR(20),`user` VARCHAR(20)) RETURNS TINYINT DETERMINISTIC 
 BEGIN
 	DECLARE retv INT DEFAULT 0;
 
@@ -317,8 +322,10 @@ BEGIN
 		END IF;
 
 	ELSE	-- assigned is text (a user)
-		IF mode = 0 AND STRCMP(assignedTo, user) = 0 THEN	-- private, must be assigned to user
-			RETURN 1;
+		IF mode = 0 THEN
+			IF STRCMP(assignedTo, user) = 0 THEN	-- private, must be assigned to user
+				RETURN 1;
+			END IF;
 		ELSE
 			SELECT COUNT(*) INTO retv FROM x2_group_to_user a, x2_group_to_user b WHERE a.username = assignedTo AND b.username = user AND b.groupId = a.groupId;
 				RETURN retv;
@@ -632,6 +639,7 @@ mysql_query('CREATE TABLE x2_campaigns(
 	content					TEXT,
 	createdBy				VARCHAR(20)		NOT NULL,
 	complete				TINYINT 		DEFAULT 0,
+	visibility				INT				NOT NULL,
 	createDate				BIGINT	 		NOT NULL,
 	launchDate				BIGINT	 		NOT NULL,
 	lastUpdated				BIGINT	 		NOT NULL,
@@ -739,8 +747,8 @@ mysql_query('CREATE TABLE x2_list_criteria (
 	language				VARCHAR(40)		DEFAULT "'.$lang.'",
 	timeZone				VARCHAR(100)	DEFAULT "'.$timezone.'",
 	resultsPerPage			INT DEFAULT		20,
-	widgets					VARCHAR(255)	DEFAULT "1:1:1:1:1:1:0:1:1",
-	widgetOrder				VARCHAR(512)	DEFAULT "OnlineUsers:ChatBox:MessageBox:QuickContact:GoogleMaps:TwitterFeed:NoteBox:ActionMenu:TagCloud",
+	widgets					VARCHAR(255),
+	widgetOrder				TEXT,
 	widgetSettings			TEXT,
 	backgroundColor			VARCHAR(6)		NULL,
 	menuBgColor				VARCHAR(6)		NULL,
@@ -761,6 +769,8 @@ mysql_query('CREATE TABLE x2_list_criteria (
 	syncGoogleCalendarAccessToken TEXT,
 	syncGoogleCalendarRefreshToken TEXT,
 	googleId				VARCHAR(250),
+	userCalendarsVisible	TINYINT			DEFAULT 1,
+	groupCalendarsVisible	TINYINT			DEFAULT 1,
 	tagsShowAllUsers		TINYINT,
 	
 	UNIQUE(username, emailAddress),
@@ -814,7 +824,10 @@ mysql_query('CREATE TABLE x2_media(
 	associationId			INT,
 	uploadedBy				VARCHAR(40),
 	fileName				VARCHAR(100),
-	createDate				BIGINT
+	createDate				BIGINT,
+	lastUpdated				BIGINT,
+	private					TINYINT,
+	description				TEXT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_media.'.mysql_error());
  mysql_query('CREATE TABLE x2_urls(
 	 id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -859,7 +872,8 @@ mysql_query('CREATE TABLE x2_admin(
 	inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
 	workflowBackdateRange			INT			NOT NULL DEFAULT -1,
-	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1
+	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1,
+	unique_id		VARCHAR(32) NULL
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_changelog(
@@ -885,6 +899,7 @@ mysql_query('CREATE TABLE x2_phone_numbers(
 	modelId					INT				UNSIGNED NOT NULL,
 	modelType				VARCHAR(100)	NOT NULL,
 	number					VARCHAR(40)		NOT NULL,
+    fieldName               VARCHAR(255),
 	
 	INDEX (modelType,modelId),
 	INDEX (number)
@@ -1071,6 +1086,39 @@ mysql_query('CREATE TABLE x2_temp_files (
 	createDate				INT
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_temp_files.'.mysql_error());
 
+mysql_query('CREATE TABLE IF NOT EXISTS x2_timezone_points (
+	lat						FLOAT			NOT NULL,
+	lon						FLOAT			NOT NULL,
+	tz_id					INT				NOT NULL,
+	INDEX (lat),
+	INDEX (lon)
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_timezone_points.'.mysql_error());
+
+mysql_query('CREATE TABLE IF NOT EXISTS x2_timezones (
+	id						INT(11)			NOT NULL,
+	name					VARCHAR(40)		NOT NULL,
+	PRIMARY KEY (`id`)
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_timezones.'.mysql_error());
+
+mysql_query('CREATE TABLE x2_web_forms(
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT,
+	name					VARCHAR(100)	NOT NULL,
+	type					VARCHAR(100)	NOT NULL,
+	description				VARCHAR(255)	DEFAULT NULL,
+	modelName				VARCHAR(100)	DEFAULT NULL,
+	fields					TEXT,
+	params					TEXT,
+	css						TEXT,
+	visibility				INT				NOT NULL,
+	assignedTo				VARCHAR(20)		NOT NULL,
+	createdBy				VARCHAR(20)		NOT NULL,
+	updatedBy				VARCHAR(20)		NOT NULL,
+	createDate				BIGINT	 		NOT NULL,
+	lastUpdated				BIGINT	 		NOT NULL,
+	
+	PRIMARY KEY (id)
+) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_web_forms.'.mysql_error());
+
 mysql_query("CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	(
 	SELECT
@@ -1142,7 +1190,8 @@ mysql_query('INSERT INTO x2_modules
 ("quotes",		"Quotes",		1,			9,				1,			1,			0,			0,		0),
 ("groups",		"Groups",		1,			10,				0,			0,			0,			0,		0),
 ("charts",		"Charts",		1,			11,				0,			0,			0,			0,		0),
-("users",		"Users",		1,			12,				0,			0,			1,			0,		0)
+("users",		"Users",		1,			12,				0,			0,			1,			0,		0),
+("media",		"Media",		1,			12,				0,			0,			0,			0,		0)
 
 '
 // ("dashboard",   "Widget Dashboard",	1,       13,             0,          1,          0,          0,      0)'
@@ -1160,8 +1209,8 @@ mysql_query('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defau
 ("Quotes","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":true,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_id\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Dates\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_updatedBy\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"57\",\"width\":\"431\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
 ("Calendar","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
 ("Calendar","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Calendar\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Permissions\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_viewPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_editPermission\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"65\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'"),
-("Campaign","Form","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"359\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
-("Campaign","View","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Status\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_complete\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")'
+("Campaign","Form","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"359\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","0","1","'.time().'","'.time().'"),
+("Campaign","View","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Status\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_complete\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","1","0","'.time().'","'.time().'")'
 ) or addSqlError("Unable to create contacts layout.".mysql_error());
 
 // 'UPDATE x2_fields SET type="phone" WHERE fieldName IN("phone", "phone2")'
@@ -1308,6 +1357,7 @@ mysql_query('INSERT INTO x2_fields
 ("Campaign",	"subject",				"Subject",				0,		0,	"varchar",		0,			0,		NULL,			0,		""),
 ("Campaign",	"content",				"Content",				0,		0,	"text",			0,			0,		NULL,			0,		""),
 ("Campaign",	"complete",				"Complete",				0,		0,	"boolean",		0,			1,		NULL,			0,		""),
+("Campaign",	"visibility",			"Visibility",			0,		0,	"visibility",	1,			0,		NULL,			0,		""),
 ("Campaign",	"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		""),
 ("Campaign",	"launchDate",			"Launch Date",			0,		0,	"date",			0,			0,		NULL,			0,		""),
 ("Campaign",	"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		""),
@@ -1369,8 +1419,9 @@ mysql_query('INSERT INTO x2_widgets (name, userID, posPROF, posDASH, dispNAME, n
 ("ActionMenu",1,8,8,"My Actions",0),
 ("TagCloud",1,9,9,"Tag Cloud",0),
 ("DocViewer",1,10,10,"Doc Viewer",0),
-("TimeZone",1,11,11,"Time Zone",1),
-("TopSites",1,12,12,"Top Sites",0)
+("MediaBox",1,11,11,"Media Box",0),
+("TimeZone",1,12,12,"Time Zone",1),
+("TopSites",1,13,13,"Top Sites",0)
 ;') or addSqlError("Unable to create widget fields.".mysql_error());
 mysql_query('INSERT INTO x2_dropdowns (id, name, options) VALUES 
 (1,	"Product Status",	"{\"Active\":\"Active\",\"Inactive\":\"Inactive\"}"),
@@ -1402,7 +1453,7 @@ mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddre
 		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or addSqlError("Error inserting dummy data");
 mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or addSqlError("Unable to set starting MOTD.");
 
-mysql_query('INSERT INTO x2_admin (accounts,sales,timeout,webLeadEmail,currency,installDate,updateDate,quoteStrictLock) VALUES (
+mysql_query('INSERT INTO x2_admin (accounts,sales,timeout,webLeadEmail,currency,installDate,updateDate,quoteStrictLock,unique_id) VALUES (
 	"0",
 	"1",
 	"3600",
@@ -1410,7 +1461,8 @@ mysql_query('INSERT INTO x2_admin (accounts,sales,timeout,webLeadEmail,currency,
 	"'.$currency.'",
 	"'.time().'",
 	0,
-	0
+	0,
+	"'.$_POST['unique_id'].'"
 )') or addSqlError('Unable to input admin config');
 
 $backgrounds = array(
@@ -1426,13 +1478,22 @@ $backgrounds = array(
 	'laguna_blur.jpg',
 	'laguna_seca.jpg',
 );
+
 foreach($backgrounds as $background) {
 	//if(file_exists("uploads/$background")) {
 		mysql_query("INSERT INTO x2_media (associationType, fileName) VALUES ('bg', '$background')"); // or die("Unable to install background image $background.");
 	//}
 }
 
-if($dummyData){
+
+// populate timezone tables
+$fh = fopen('timezoneData.sql','r') or addError('Couldn\'t load timezone data.');
+while(($line = fgets($fh)) !== false)
+	mysql_query($line) or addSqlError('Error inserting timezone data.'.mysql_error());;
+fclose($fh);
+
+
+if($dummy_data){
 
 	mysql_query("INSERT INTO x2_workflows (id, name) VALUES (1,'General Sales')") or addSqlError("Error inserting workflow data.");
 	mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (1,1,'Lead')") or addSqlError("Error inserting workflow data.");
@@ -1527,6 +1588,11 @@ if($dummyData){
 		*/
 	// return $sqlErrors;
 }
+// set default widget order
+	mysql_query('UPDATE x2_profile SET widgets="0:1:1:1:1:0:0:0:0:0:0:0:0", 
+	widgetOrder="OnlineUsers:TimeZone:GoogleMaps:TagCloud:TwitterFeed:MessageBox:ChatBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites"') or addSqlError('Error setting default widget order');
+
+
 mysql_close($con);
 
 // }
@@ -1543,7 +1609,8 @@ $phpVersion = urlencode(phpversion());
 $x2Version = urlencode($x2Version);
 $timezone = urlencode($timezone);
 $dbType = urlencode('MySQL');
-$stats = "lang=$lang&currency=$currency&x2Version=$x2Version&dummyData=$dummyData&phpVersion=$phpVersion&dbType=$dbType&GD=$GDSupport&browser=$browser&timezone=$timezone";
+$unique_id = urlencode($_POST['unique_id']);
+$stats = "language=$lang&currency=$currency&x2_version=$x2Version&dummy_data=$dummy_data&php_version=$phpVersion&db_type=$dbType&GD_support=$GDSupport&user_agent=$browser&timezone=$timezone&unique_id=$unique_id";
 
 // Generate splash page
 
@@ -1575,6 +1642,8 @@ function installer_t($str) {	// translates by looking up string in install.php l
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/form.css" />
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 <style type="text/css">
 body {
 	background-color:black;
@@ -1613,7 +1682,10 @@ body {
 	<!--<img src="images/x2engine_big.png">-->
 	Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 	<?php echo installer_t('All Rights Reserved.'); ?>
-	<img src="http://x2planet.com/listen.php?<?php echo $stats; ?>" style="display:none">
+	<?php if ($_POST['unique_id'] != 'none'): ?>
+	<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo $stats; ?>">
+	<?php endif; ?>
+	
 </div>
 </div>
 </body>

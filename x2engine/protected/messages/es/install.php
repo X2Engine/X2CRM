@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,11 +40,13 @@
 
 return array (
 // Install screen
-'Install X2Engine'=>'Instalar X2Engine',
+'Install X2EngineCRM'=>'Instalar X2EngineCRM',
+'X2EngineCRM Installation'=>'Instalación X2EngineCRM',
+'Installation Complete'=>'Instalación completa',
 
-'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Bienvenido al instalador de la aplicación X2Engine! Le necesitamos pedir un poco de información antes de poner su aplicación en marcha. Por favor, rellene los campos que aparecen debajo.',
+'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Bienvenido al instalador de la aplicación X2EngineCRM! Le necesitamos pedir un poco de información antes de poner su aplicación en marcha. Por favor, rellene los campos que aparecen debajo.',
 
-'X2Engine Application Info'=>'Informació para Aplicación X2Engine',
+'X2EngineCRM Application Info'=>'Informació para Aplicación X2EngineCRM',
 
 'Application Name'=>'Nombre de Aplicación',
 'Default Language'=>'Idioma Predeterminado',
@@ -60,7 +62,25 @@ return array (
 'Username'=>'Nombre de Usuario',
 'Password'=>'Contraseña',
 
+// Software updates
+'Notify me of software updates'=>'Notificarme las actualizaciones de software',
+'First Name'=>'Nombre',
+'Last Name'=>'apellido',
+'Email'=>'Email',
+'How you found X2EngineCRM'=>'Cómo has encontrado X2EngineCRM',
+'Phone'=>'teléfono',
+'Subscribe to the newsletter'=>'Suscríbase al boletín de noticias',
+'Comments'=>'Comentarios',
+'Request a follow-up contact'=>'Solicite una visita de seguimiento',
+'Software Updates'=>'actualizaciones de software',
+'Please help us improve X2EngineCRM by providing the following information:'=>'Por favor, ayúdenos a mejorar X2EngineCRM proporcionando la siguiente información:',
+'Software update notifications enabled.'=>'Notificaciones de actualización de software habilitado.',
+'Optional Information'=>'Información opcional',
+'Could not connect to the updates server at this time.'=>'No se pudo conectar al servidor de actualizaciones en este momento.',
+'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Puede continuar con la instalación de la aplicación sin activar las actualizaciones y vuelva a intentarlo más tarde, entrando en "Configuración general" en la "Configuración de la aplicación" de las secciones de la consola de administración.',
+
 'Install'=>'Instalar',
+
 'For help or more information - X2Engine.com'=>'Para obtener ayuda o más información - X2Engine.com',
 
 'All Rights Reserved.'=>'Todos los derechos reservados.',

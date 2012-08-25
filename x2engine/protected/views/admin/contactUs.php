@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?><h1><?php echo Yii::t('admin','Contact Us');?></h1>
-<?php echo Yii::t('admin','X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.');?>
+<?php echo Yii::t('admin','X2Engine Inc. is the company behind X2Engine CRM - a high-performance contact management and customer relations management web application. X2Engine Inc. can offer to your organization professional support and training on X2Engine CRM.  Please fill out the form below to contact us.');?>
 <form name="contact-us" method="POST"><br />
 	<b><?php echo Yii::t('app','E-Mail');?>:</b><br /><input type="text" name="email" /><br />
 	<b><?php echo Yii::t('admin','Subject');?>:</b><br /><input type="text" name="subject" size="60" /><br />

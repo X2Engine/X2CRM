@@ -48,7 +48,7 @@ class DefaultController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform the following actions
-				'actions'=>array('index','view','create','createFromTag','update','search','delete','launch','toggle','complete','getItems','inlineEmail','mail'),
+				'actions'=>array('index','view','create','createFromTag','update','search','delete','launch','toggle','complete','getItems','inlineEmail','mail','webLeadForm'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' action
@@ -82,7 +82,7 @@ class DefaultController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model=$this->loadModel($id);
+		$model = Campaign::load($id);
 		if(!isset($model))
 			return;
 			
@@ -105,12 +105,18 @@ class DefaultController extends x2base {
 	 */
 	public function actionCreate() {
 		$model=new Campaign;
-		if(isset($_POST['Campaign'])) {
+
+		if (isset($_POST['Campaign'])) {
 			$oldAttributes = $model->attributes;
 			$model->setX2Fields($_POST['Campaign']);
 			$model->createdBy = Yii::app()->user->getName();
 			parent::create($model, $oldAttributes,0);
+		} else if (isset($_GET['Campaign'])) {
+			//preload the create form with query params
+			$model->setAttributes($_GET['Campaign']);			
+			$model->setX2Fields($_GET['Campaign']);
 		}
+
 		$this->render('create',array(
 			'model'=>$model,
 		));
@@ -118,7 +124,7 @@ class DefaultController extends x2base {
 
 	public function actionCreateFromTag($tag) {
 		//enusre tag sanity
-		if (!isset($tag) || strlen($tag) == 0) {
+		if (empty($tag) || strlen(trim($tag)) == 0) {
 			Yii::app()->user->setFlash('error', Yii::t('marketing','Invalid tag value'));
 			$this->redirect(Yii::app()->request->getUrlReferrer());
 		}
@@ -147,8 +153,8 @@ class DefaultController extends x2base {
 		$list->modelName = $modelType;
 		$list->type = 'campaign';
 		$list->count = count($ids);
-		$list->assignedTo = Yii::app()->user->getName();
 		$list->visibility = 1;
+		$list->assignedTo = Yii::app()->user->getName();
 		$list->createDate = $now; 
 		$list->lastUpdated = $now;
 
@@ -156,6 +162,7 @@ class DefaultController extends x2base {
 		$campaign = new Campaign;
 		$campaign->name = Yii::t('marketing', 'Mailing for tag') .' '. $tag;
 		$campaign->type = 'Email';
+		$campaign->visibility = 1;
 		$campaign->assignedTo = Yii::app()->user->getName();
 		$campaign->createdBy = Yii::app()->user->getName();
 		$campaign->updatedBy = Yii::app()->user->getName();
@@ -190,7 +197,7 @@ class DefaultController extends x2base {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-		$model = $this->loadModel($id);
+		$model = Campaign::load($id);
 		
 		if(isset($_POST['Campaign'])) {
 			$oldAttributes = $model->attributes;
@@ -211,7 +218,7 @@ class DefaultController extends x2base {
 	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
-			$model=$this->loadModel($id);
+			$model = Campaign::load($id);
 			$list = X2List::model()->findByPk($model->listId);
 			if (isset($list) && $list->type == "campaign")
 				$list->delete();
@@ -233,8 +240,7 @@ class DefaultController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new Campaign('search');
-		$name='Campaign';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
@@ -242,24 +248,11 @@ class DefaultController extends x2base {
 	 */
 	public function actionAdmin() {
 		$model=new Campaign('search');
-		$name='Campaign';
-		parent::admin($model, $name);
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model=Campaign::model()->with('list')->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,Yii::t('app', 'The requested page does not exist.'));
-		return $model;
+		$this->render('admin', array('model'=>$model));
 	}
 
 	public function actionLaunch($id) {
-		$campaign = $this->loadModel($id);
+		$model = Campaign::load($id);
 
 		if(!isset($campaign->list)) {
 			Yii::app()->user->setFlash('error', Yii::t('marketing','Contact List cannot be blank.'));
@@ -302,7 +295,7 @@ class DefaultController extends x2base {
 	 * Deactivate a campaign to halt mailings, or resume paused campaign
 	 */
 	public function actionToggle($id) {
-		$campaign = $this->loadModel($id);
+		$model = Campaign::load($id);
 		$campaign->active = $campaign->active ? 0 : 1;
 		$campaign->save();
 		$message = $campaign->active ? Yii::t('marketing','Campaign resumed') : Yii::t('marketing','Campaign paused');
@@ -314,7 +307,7 @@ class DefaultController extends x2base {
 	 * Forcibly complete a campaign despite any unsent mail
 	 */
 	public function actionComplete($id) {
-		$campaign = $this->loadModel($id);
+		$model = Campaign::load($id);
 		$campaign->active = 0;
 		$campaign->complete = 1;
 		$campaign->save();
@@ -500,7 +493,7 @@ class DefaultController extends x2base {
 				//insert unsubscribe links
 				$emailBody = preg_replace(
 					'/\{_unsub\}/', 
-					'<a href="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'unsub')) . '">'. Yii::t('marketing', 'unsubscribe') .'</a>', 
+					'<a href="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'unsub', 'email'=>$contact->email)) . '">'. Yii::t('marketing', 'unsubscribe') .'</a>', 
 					$emailBody); 
 			
 				//replace any {attribute} tags with the contact attribute value
@@ -572,7 +565,7 @@ class DefaultController extends x2base {
 		return array($totalSent, $errors);
 	}
 
-	public function actionClick($uid, $type, $url=null) {
+	public function actionClick($uid, $type, $url=null, $email=null) {
 		$now = time();
 		$item = X2ListItem::model()->with('contact')->findByAttributes(array('uniqueId'=>$uid));
 
@@ -589,10 +582,11 @@ class DefaultController extends x2base {
 				//return a one pixel transparent png
 				header('Content-Type: image/png');
 				echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
-			} else if ($type == 'unsubscribe') {
-				//TODO: the original campaign/list item has been deleted, and user clicks unsub link
-				return;
-			} else return;
+			} else if ($type == 'unsub' && !empty($email)) {
+				Contacts::model()->updateAll(array('doNotEmail'=>true), array('email'=>$email));
+				echo 'You have been unsubscribed';
+			} 
+			return;
 		}
 
 		$action = new Actions;
@@ -638,6 +632,41 @@ class DefaultController extends x2base {
 			$action->save();
 
 			$this->redirect(urldecode($url));	
+		}
+	}
+
+	public function actionWebLeadForm() {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$model = WebForm::model()->findByAttributes(array('name'=>$_POST['name'], 'type'=>'weblead'));
+			if (!isset($model)) {
+				$model = new WebForm;
+				$model->name = $_POST['name'];
+			}
+			$model->type = 'weblead';
+			$model->modelName = 'Contacts';
+
+			//grab web lead configuration and stash in 'params'
+			$whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
+			$config = array_filter(array_intersect_key($_POST, array_flip($whitelist)));
+			//restrict param values, alphanumeric, # for color vals, comma for tag list
+			$config = preg_replace('/[^a-zA-Z0-9#,]/', '', $config);
+			if (!empty($config)) $model->params = $config;
+
+			$model->visibility = 1;
+			$model->assignedTo = Yii::app()->user->getName();
+			$model->createdBy = Yii::app()->user->getName();
+			$model->updatedBy = Yii::app()->user->getName();
+			$model->createDate = time();
+			$model->lastUpdated = time();
+
+			if ($model->save()) {
+				echo json_encode($model->attributes);
+			} else {
+				echo json_encode(array('errors'=>$model->getErrors()));
+			}
+		} else {
+			$forms = WebForm::model()->findAll('type="weblead" AND x2_checkViewPermission(t.visibility,t.assignedTo,"'.Yii::app()->user->getName().'") > 0');
+			$this->render('webLeadForm', array('forms'=>$forms));
 		}
 	}
 }

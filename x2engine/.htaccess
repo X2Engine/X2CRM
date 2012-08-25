@@ -1,3 +1,7 @@
+<IfModule mod_rewrite.c>
+# Tell PHP that the mod_rewrite module is ENABLED.
+#SetEnv HTTP_MOD_REWRITE 1
+
 RewriteEngine on
 
 # if a directory or a file exists, use it directly
@@ -6,3 +10,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 
 # otherwise forward it to index.php
 RewriteRule . index.php
+</IfModule>

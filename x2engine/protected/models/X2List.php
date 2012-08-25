@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -115,10 +115,10 @@ class X2List extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'assignedTo' => Yii::t('contacts','List Owner'),
-			'name' => Yii::t('contacts','List Name'),
+			'assignedTo' => Yii::t('contacts','Owner'),
+			'name' => Yii::t('contacts','Name'),
 			'description' => Yii::t('contacts','Description'),
-			'type' => Yii::t('contacts','List Type'),
+			'type' => Yii::t('contacts','Type'),
 			'logicType' => Yii::t('contacts','Logic Type'),
 			'modelName' => Yii::t('contacts','Record Type'),
 			'visibility' => Yii::t('contacts','Visibility'),
@@ -187,8 +187,7 @@ class X2List extends CActiveRecord {
 	 * Returns a CDbCriteria to retrieve all models in the list
 	 */
 	public function queryCriteria() {
-		try { $search = CActiveRecord::model($this->modelName)->defaultCriteria(); }
-		catch (Exception $e) { $search = new CDbCriteria(); }
+		$search=new CDbCriteria;
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
 			$criteria = CActiveRecord::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
@@ -296,6 +295,7 @@ class X2List extends CActiveRecord {
 			$search->join = 'JOIN x2_list_items ON t.id = x2_list_items.contactId';
 			$search->addCondition('x2_list_items.listId='.$this->id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")');
 		}
+        $search->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
 		return $search;
 	}
 
@@ -340,6 +340,10 @@ class X2List extends CActiveRecord {
 			'params'=>$criteria->params,
 			'pagination'=>array(
 				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+			),
+			'sort'=>array(
+				'attributes'=>array('Name','email','phone','Address'), //ick
+				'defaultOrder'=>'lastUpdated DESC',
 			),
 		));
 	}

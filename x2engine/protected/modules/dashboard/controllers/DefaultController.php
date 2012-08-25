@@ -285,10 +285,8 @@ class DefaultController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-		
 		$model=new Dashboard('search');
-		$name='Dashboard';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
     }
 	/**
 	 * Manages all models.

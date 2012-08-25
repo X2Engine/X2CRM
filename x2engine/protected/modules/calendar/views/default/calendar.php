@@ -262,22 +262,21 @@ $(function() {
 				actionDate.setHours(oldActionDate.getHours());
 				actionDate.setMinutes(oldActionDate.getMinutes());
 				
-				var oldEventDate = $('#CalendarEvent_dueDate').datetimepicker('getDate');
-				eventDate.setHours(oldEventDate.getHours());
-				eventDate.setMinutes(oldEventDate.getMinutes());
+				if($('#end-date-input').datetimepicker('getDate')) {
+					var oldEventDate = $('#end-date-input').datetimepicker('getDate');
+					eventDate.setHours(oldEventDate.getHours());
+					eventDate.setMinutes(oldEventDate.getMinutes());
+				}
 			}
 			
 			$('#Actions_dueDate').datetimepicker("destroy");
 			$('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': actionDate}));
 			$('#Actions_dueDate').datetimepicker('setDate', actionDate);
 			
-			$('#CalendarEvent_dueDate').datetimepicker("destroy");
-			$('#CalendarEvent_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
-			$('#CalendarEvent_dueDate').datetimepicker('setDate', eventDate);
-			
-			if(allDay) {
-				$('#CalendarEvent_allDay').attr('checked', true);
-				$('#Actions_allDay').attr('checked', true);
+			if($('#end-date-input').datetimepicker('getDate')) {
+				$('#end-date-input').datetimepicker("destroy");
+				$('#end-date-input').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
+				$('#end-date-input').datetimepicker('setDate', eventDate);
 			}
 
 		},
@@ -718,17 +717,11 @@ $('.ui-dialog-buttonpane').find('button:contains("Save")')
 
 ?>
 <br />
-<?php
-$this->widget('InlineActionForm',
+
+<?php $this->widget('Publisher',
 	array(
 		'associationType'=>'calendar',
-		'associationId'=>'',
-		'assignedTo'=>Yii::app()->user->getName(),
-		'users'=>User::getNames(),
-		'inCalendar'=>true,
-		'startHidden'=>false,
 		'showLogACall'=>false,
 		'showNewComment'=>false,
 	)
-);
-?>
+); ?>

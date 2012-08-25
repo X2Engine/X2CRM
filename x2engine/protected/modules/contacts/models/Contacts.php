@@ -92,6 +92,26 @@ class Contacts extends X2Model {
 	public function beforeSave() {
 		$this->name = $this->firstName.' '.$this->lastName;
 		return true;
+	}	
+	
+	/**
+	 * Returns full human-readable address, using all available address fields
+	 */
+	public function getCityAddress() {
+		$address = '';
+		if(!empty($this->city))
+			$address .= $this->city . ', ';
+		
+		if(!empty($this->state))
+			$address .= $this->state . ' ';
+		
+		if(!empty($this->zipcode))
+			$address .= $this->zipcode . ' ';
+			
+		if(!empty($this->country))
+			$address .= $this->country;
+			
+		return $address;
 	}
 	
 	public static function getNames() {
@@ -292,11 +312,13 @@ class Contacts extends X2Model {
 			$search->compare('rating',$this->rating);
 			$search->compare('doNotCall',$this->doNotCall);
 			$search->compare('doNotEmail',$this->doNotEmail);
+            
 
 			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,
 				'sort'=>array(
-					'defaultOrder'=>'lastupdated DESC'	// true = ASC
+
+					'defaultOrder'=>'lastUpdated DESC'	// true = ASC
 				),
 				'pagination'=>array(
 					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
@@ -307,7 +329,7 @@ class Contacts extends X2Model {
 			//if list is not working, return all contacts
 			return new SmartDataProvider('Contacts',array(
 				'sort'=>array(
-					'defaultOrder'=>'createDate DESC',
+					'defaultOrder'=>'lastUpdated DESC',
 				),
 				'pagination'=>array(
 					'pageSize'=>ProfileChild::getResultsPerPage(),
@@ -343,7 +365,7 @@ class Contacts extends X2Model {
 
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
-				'defaultOrder'=>'createDate DESC',
+				'defaultOrder'=>'lastUpdated DESC',
 			),
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),

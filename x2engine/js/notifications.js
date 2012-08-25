@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -151,6 +151,9 @@ function updateNotifications() {
 					
 						var newNotif = false;
 
+						var $notifBox = $('#notifications');
+						
+						
 						for (var i=data.notifData.length-1;i>=0;--i) {
 							// console.debug(data.notifData[i]);
 							// if(typeof item['text'] != 'undefined')
@@ -158,23 +161,28 @@ function updateNotifications() {
 									.addClass('notif')
 									.html('<div class="msg">'+data.notifData[i].text+'</div><div class="close">x</div>')
 									.data('id',data.notifData[i].id)
-									.prependTo('#notifications');
+									.prependTo($notifBox);
 								
 							if(data.notifData[i].viewed == 0) {
 								notif.addClass('unviewed');
 								newNotif = true;
 							}
-							
-								// .append('<div class="notif">'+</div>\n'); 
-							
 						}
-						
-						if(data.notifData.length) {
-							$('#no-notifications').hide();
-							lastNotifId = data.notifData[data.notifData.length - 1].id;
+						// remove older messages if it gets past 10
+						while($notifBox.find('.notif').length > 10)
+							$notifBox.find('.notif:last').remove();
 							
-						} else
+						if(data.notifData.length)
+							lastNotifId = data.notifData[0].id;
+
+						if(data.notifCount > 0) {
+							$('#no-notifications').hide();
+							if(data.notifCount > 10)
+								$("#notif-view-all").show();
+						} else {
 							$('#no-notifications').show();
+							$("#notif-view-all").hide();
+						}
 							
 						if(newNotif)
 							$(document).trigger('x2.newNotifications');
@@ -225,7 +233,6 @@ $(function() {
 		
 		}
 	});
-	
 	$('#main-menu-notif').click(function() {
 		if($('#notif-box').is(':visible'))
 			closeNotifications();

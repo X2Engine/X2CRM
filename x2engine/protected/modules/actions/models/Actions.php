@@ -114,8 +114,8 @@ class Actions extends X2Model {
 	 */
 	public static function getColors() {
 		return array(
-		    '#3366CC'=>Yii::t('actions', 'Blue'),
 		    'Green'=>Yii::t('actions', 'Green'),
+		    '#3366CC'=>Yii::t('actions', 'Blue'),
 		    'Red'=>Yii::t('actions', 'Red'),
 		    'Orange'=>Yii::t('actions', 'Orange'),
 		    'Black'=>Yii::t('actions', 'Black'),
@@ -184,6 +184,10 @@ class Actions extends X2Model {
 			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'),$date);	// due date is after this year
 		}
 	}
+    
+    public static function formatCompleteDate($date){
+        return Yii::app()->dateFormatter->formatDateTime($date,'long');	
+    }
 	
 	public static function formatTimeLength($seconds) {
 		$seconds = abs($seconds);

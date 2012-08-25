@@ -49,7 +49,7 @@
  * @property string $uploadedBy
  * @property string $createDate
  */
-class Media extends CActiveRecord {
+class Media extends X2Model {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Media the static model class
@@ -65,24 +65,6 @@ class Media extends CActiveRecord {
 		return 'x2_media';
 	}
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('associationId', 'numerical', 'integerOnly'=>true),
-			array('associationType', 'length', 'max'=>40),
-			array('fileName', 'length', 'max'=>100),
-			array('uploadedBy', 'length', 'max'=>60),
-			array('createDate', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, associationType, associationId, fileName, uploadedBy, createDate', 'safe', 'on'=>'search'),
-		);
-	}
-
 	public function behaviors() {
 		return array(
 			'X2LinkableBehavior'=>array(
@@ -92,6 +74,8 @@ class Media extends CActiveRecord {
 			)
 		);
 	}
+	
+
 
 	/**
 	 * @return array relational rules.
@@ -106,7 +90,7 @@ class Media extends CActiveRecord {
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels() {
+/*	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'associationType' => 'Association Type',
@@ -115,27 +99,117 @@ class Media extends CActiveRecord {
 			'uploadedBy' => 'Uploaded By',
 			'createDate' => 'Create Date',
 		);
-	}
+	} */
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
+	 
 	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
+		$username = Yii::app()->user->name;
+		$criteria->addCondition("uploadedBy='$username' OR private=0");
+		return $this->searchBase($criteria);
+	}
+	
+	public function searchAdmin() {
+		$criteria=new CDbCriteria;
+		return $this->searchBase($criteria);
+	}
+	
+	public function isImage() {
+		// $imageExtensions = array('jpg','gif','png','bmp','jpeg','jpe');
+		
+		// $extension = array_pop(explode('.', $this->fileName));
+		// return in_array($extension, $imageExtensions);
+		return (bool)preg_match('/\.(jpg|gif|png|bmp|jpeg|jpe)$/i',$this->fileName);
+	}
+	
+	// return an img tag of this file
+	// return '' if file is not an image
+	public function getImage() {
+		if($this->fileExists() && $this->isImage())
+			return CHtml::image($this->getUrl(), '', array('class'=>'attachment-img'));
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('associationType',$this->associationType,true);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('fileName',$this->fileName,true);
-		$criteria->compare('uploadedBy',$this->uploadedBy,true);
-		$criteria->compare('createDate',$this->createDate,true);
-
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
-		));
+		return '';
+	}
+	
+	// get a directory path to the file (including the file name)
+	// return null if file doesn't exist
+	public function getPath() {
+		$path = "uploads/media/{$this->uploadedBy}/{$this->fileName}"; // try new format
+		if(file_exists($path))
+			return $path;
+		else {
+			$path = "uploads/{$this->fileName}"; // try old format
+			if(file_exists($path))
+				return $path;
+		}
+		
+		return null;
+	}
+	
+	// get a url to a file
+	// return null if file doesn't exist
+	public function getUrl() {
+		if($path = $this->getPath()) // ensure file exists
+			return Yii::app()->request->baseUrl . "/$path";
+		
+		return null;
+	}
+	
+	// return a link to the Media Module view for this file
+	public function getMediaLink() {
+		return CHtml::link($this->fileName, Yii::app()->controller->createUrl('/media/', array('view'=>$this->id)));
+	}
+	
+	// 
+	public function fileExists() {
+		if(file_exists("uploads/media/{$this->uploadedBy}/{$this->fileName}")) // try new format
+			return true;
+		else if(file_exists("uploads/{$this->fileName}")) // try old format
+			return true;
+		
+		return false;
+	}
+	
+	// convert a string (eg '10MB') to bytes
+	private static function toBytes($size) {
+		$type = strtolower(substr($size, -1)); // last char
+		$num = substr($size, 0, -1); // number
+		switch($type) {
+			case 'p':
+				$num *= 1024;
+			case 't':
+				$num *= 1024;
+			case 'g':
+				$num *= 1024;
+			case 'm':
+				$num *= 1024;
+			case 'k':
+				$num *= 1024;
+				break;
+		}
+		
+		return $num;
+	}
+	
+	// return the max file size the server will except for upload files
+	public static function getServerMaxUploadSize() {
+		$max_post = Media::toBytes(ini_get('post_max_size'));
+		$max_upload_file = Media::toBytes(ini_get('upload_max_filesize'));
+		$max_upload_size = min($max_post, $max_upload_file);
+		$max_upload_size /= (1024*1024); // convert bytes to megabytes
+		$max_upload_size = round($max_upload_size, 2); // round to two decimal places
+		
+		return $max_upload_size;
+	}
+	
+	public static function forbiddenFileTypes() {
+		return "exe, bat, dmg, js, jar, swf, php, pl, cgi, htaccess, py";
 	}
 }

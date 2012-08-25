@@ -50,7 +50,7 @@ class Attachments extends CWidget {
 				$('.focus-mini-module').removeClass('focus-mini-module');
 				$('#attachment-form').find('.form').addClass('focus-mini-module');
 				$('html,body').animate({
-					scrollTop: ($('#action-form').offset().top - 200)
+					scrollTop: ($('#publisher-form').offset().top - 200)
 				}, 300);
 			}
 			$('#attachment-form').animate({

@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 return array (
-'Calendar'=>'calendario',
+'Calendar'=>'Calendario',
 'Calendars'=>'Calendarios',
 
 'User Calendars'=>'Calendario de usuario',

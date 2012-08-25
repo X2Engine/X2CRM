@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -89,6 +89,7 @@ return array(
 		
 		'urlManager'=>array(
 			'urlFormat'=>'path',
+			'showScriptName'=>!isset($_SERVER['HTTP_MOD_REWRITE']),
 			'rules'=>array(
 				// special HTTP methods for API
 				array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
@@ -99,9 +100,9 @@ return array(
 				
 				'gii/<controller>'=>'gii/<controller>',
 			
-				'<controller:(site|admin|profile|media|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
-				'<controller:(site|admin|profile|media|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-				'<controller:(site|admin|profile|media|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
+				'<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
+				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
 	
 				// module/action -> assume DefaultController (module/default/action) unless there are 3 tokens (module/controller/action)
 				'<module:\w+>/<id:\d+>'=>'<module>/default/view',
@@ -133,7 +134,9 @@ return array(
 		*/
 		// uncomment the following to use a MySQL database
 
-		'db'=>$db,
+		'db'=>array_merge($db,array(
+			'schemaCachingDuration'=>84600
+		)),
 		/*array(
 			'connectionString' => 'mysql:host=localhost;dbname=test',
 			'emulatePrepare' => true,
@@ -194,6 +197,7 @@ return array(
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
 		'trueWebRoot'=>substr(__DIR__,0,-17), 
 		'registeredWidgets'=>array(
+			'TimeZone' => 'Time Zone',
 			'MessageBox'=>'Message Board',
 			'QuickContact'=>'Quick Contact',
 			'GoogleMaps'=>'Google Map',
@@ -203,8 +207,8 @@ return array(
 			'ActionMenu'=>'My Actions',
 			'TagCloud'=>'Tag Cloud',
 			'OnlineUsers'=>'Active Users',
+			'MediaBox' => 'Media',
 			'DocViewer' => 'Doc Viewer',
-			// 'TimeZone' => 'Time Zone',
 			'TopSites' => 'Top Sites',
 		),
 		'currency'=>'',

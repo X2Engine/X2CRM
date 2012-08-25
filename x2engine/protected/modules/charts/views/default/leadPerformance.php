@@ -40,13 +40,8 @@
 ?>
 <?php
 $this->menu = array(
-	array('label' => Yii::t('dashboard', 'Lead Volume'), 'url' => array('leadVolume')),
-	array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
+	array('label' => Yii::t('dashboard', 'Grid Builder'), 'url'=>array('gridReport')),
 	array('label' => Yii::t('dashboard', 'Lead Performance')),
-	array('label' => Yii::t('dashboard', 'Lead Sources'), 'url' => array('leadSources')),
-	array('label' => Yii::t('dashboard', 'Marketing'), 'url' => array('marketing')),
-	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
-	array('label' => Yii::t('dashboard', 'Sales'), 'url' => array('sales')),
 );
 Yii::app()->clientScript->registerScript('leadPerformance',"
 	$('#startDate,#endDate').change(function() {
@@ -166,6 +161,7 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 				// 'lastQuarter'=>Yii::t('dashboard','Last Quarter'),
 				'thisYear'=>Yii::t('dashboard','This Year'),
 				'lastYear'=>Yii::t('dashboard','Last Year'),
+                                'all'=>Yii::t('dashboard','All Time'),
 				
 			),array('id'=>'dateRange'));
 			?>
@@ -179,55 +175,44 @@ Yii::app()->clientScript->registerScript('leadPerformance',"
 	</div>
 	<div class="row">
 		<div class="cell">
+                    <label>Field</label>
 			<?php
-				echo $form->label($model,'leadSource');
-				$dropdown = Dropdowns::model()->findByPk(4);	// lead source
-				$dropdowns = json_decode($dropdown->options,true);
-				foreach(array_keys($dropdowns) as $key)
-					$dropdowns[$key] = Yii::t(strtolower(Yii::app()->controller->id),$dropdowns[$key]);
-					
-				$dropdowns = array(''=>'---') + $dropdowns;
 				
-				echo $form->dropDownList($model,'leadSource',$dropdowns, array());
+                                $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
+                                $data=array();
+                                foreach($fields as $field){
+                                    $data[$field->fieldName]=$field->attributeLabel;
+                                }
+                                
+                                echo CHtml::dropDownList('field','leadSource',$data,
+                                    array(
+                                        'id'=>'field-selector',
+                                        'ajax' => array(
+                                        'type'=>'GET', //request type
+                                        'url'=>CController::createUrl('getOptions'), //url to call.
+                                        //Style: CController::createUrl('currentController/methodToCall')
+                                        'update'=>'#field-options', //selector to update
+                                        'complete'=>'function(){
+                                            $("#field-options").attr("name","Contacts["+$("#field-selector").val()+"]");
+                                            $("#field-options").autocomplete( "option", "source", "getOptions?fieldType="+$("#field-selector").val());
+                                         }',
+                                        //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                                        //leave out the data key to pass all form values through
+                                    )));
+				
+				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                                    'name'=>'Contacts['.$fieldName.']',
+                                    'source'=>'getOptions?fieldType='.$fieldName,
+                                    'value'=>$input,
+                                    // additional javascript options for the autocomplete plugin
+                                    
+                                    'htmlOptions'=>array(
+                                        'id'=>'field-options',
+                                    ),
+                                ));
 			?>
 		</div>
-		<div class="cell">
-			<?php
-				echo $form->label($model,'company');
-
-				$linkId = '';
-				// if the field is an ID, look up the actual name
-				if(isset($model->company) && ctype_digit($model->company)) {
-					$linkModel = CActiveRecord::model('Accounts')->findByPk($model->company);
-					if(isset($linkModel)) {
-						$model->company = $linkModel->name;
-						$linkId = $linkModel->id;
-					} else {
-						$model->company = '';
-					}
-				}
-				// $linkSource = $this->createUrl(CActiveRecord::model('Accounts')->getAutoCompleteSource());
-				$linkSource = $this->createUrl('/accounts/getItems');
-
-				echo CHtml::hiddenField('Contacts[company_id]',$linkId,array('id'=>'Contacts_company_id'));
-				$form->widget('zii.widgets.jui.CJuiAutoComplete', array(
-					'model'=>$model,
-					'attribute'=>'company',
-					// 'name'=>'autoselect_'.$fieldName,
-					'source' => $linkSource,
-					'value'=>$model->company,
-					'options'=>array(
-						'minLength'=>'1',
-						'select'=>'js:function( event, ui ) {
-							$("#Contacts_company_id").val(ui.item.id);
-							$(this).val(ui.item.value);
-							return false;
-						}',
-					),
-				));
-				// echo $form->textField($model,'company',array());
-			?>
-		</div>
+		
 		<div class="cell">
 			<?php echo CHtml::submitButton(Yii::t('dashboard','Go'),array('class'=>'x2-button','style'=>'margin-top:13px;')); ?>
 		</div>

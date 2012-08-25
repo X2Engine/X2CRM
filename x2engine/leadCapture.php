@@ -41,6 +41,7 @@
 
 <?php
 include('webLeadConfig.php');
+$authData=array('authUser'=>$user,'authPassword'=>$password);
 
 if($url==""){
     $url=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
@@ -54,10 +55,13 @@ if($count==0){
 }
 
 $ccUrl = 'http://'.$url.'/index.php/api/lookUp/model/Contacts/email/'.$email; 
+
 $ccSession = curl_init($ccUrl);
-curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ccSession,CURLOPT_POST,1);
+curl_setopt($ccSession,CURLOPT_POSTFIELDS,$authData);
 curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 $ccResult = curl_exec($ccSession);
+
 curl_close($ccSession);
 if($ccResult!="No Item found with specified attributes."){
 		$pieces=explode(",",$ccResult);
@@ -70,7 +74,7 @@ if($ccResult!="No Item found with specified attributes."){
 		 
 		$ccUrl = 'http://'.$url.'/index.php/api/update/model/Contacts/id/'.$id;
 		$ccSession = curl_init($ccUrl);
-		$data=array('backgroundInfo'=>$newInfo); 
+		$data=array('backgroundInfo'=>$newInfo,'username'=>$user, 'password'=>$password); 
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ccSession,CURLOPT_POST,1);
 		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
@@ -85,6 +89,8 @@ if($ccResult!="No Item found with specified attributes."){
 			'createDate'=>$time,
 			'lastUpdated'=>$time,
 			'updatedBy'=>'admin',
+                        'authUser'=>$user,
+                        'authPassword'=>$password,
 		);
                 foreach($_POST as $field=>$value){
                     $data[$field]=$value;
@@ -103,6 +109,7 @@ if($ccResult!="No Item found with specified attributes."){
 			'createDate'=>$time,
 			'lastUpdated'=>$time,
 			'updatedBy'=>'admin',
+                        
 		); 
                 $ccUrl = 'http://'.$url.'/index.php/admin/getRoutingType';
 		$ccSession = curl_init($ccUrl);
@@ -111,9 +118,11 @@ if($ccResult!="No Item found with specified attributes."){
 		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 		$ccResult = curl_exec($ccSession);
+                
 		curl_close($ccSession);
-                echo $ccResult;exit;
                 $data['assignedTo']=$ccResult;
+                $data['authUser']=$user;
+                $data['authPassowrd']=$password;
                 $actionData['assignedTo']=$ccResult;
                 
                 $ccUrl = 'http://'.$url.'/index.php/api/create/model/Contacts';
@@ -127,8 +136,9 @@ if($ccResult!="No Item found with specified attributes."){
 		
 		$ccUrl = 'http://'.$url.'/index.php/api/lookUp/model/Contacts/email/'.$email; 
 		$ccSession = curl_init($ccUrl);
-		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ccSession,CURLOPT_POST,1);
+                curl_setopt($ccSession,CURLOPT_POSTFIELDS,$authData);
+                curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
 		$ccResult = curl_exec($ccSession);
 		
 		$pieces=explode(",",$ccResult);
@@ -143,7 +153,6 @@ if($ccResult!="No Item found with specified attributes."){
 		$ccSession = curl_init($ccUrl);
 		
 		curl_setopt($ccSession, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-                curl_setopt($ccSession, CURLOPT_USERPWD, "x3engine:x32011!!"); 
 		curl_setopt($ccSession,CURLOPT_POST,1);
 		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$actionData);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);

@@ -201,16 +201,18 @@ function fileUpload(form, fileField, action_url, remove_url) {
             		'value': true,
             	});
             	
-            	var parent = fileField.parent();
+            	var parent = fileField.parent().parent().parent();
+            	
             	parent.parent().find('.error').html(''); // clear error messages
             	var newFileChooser = parent.clone(); // save copy of file upload span before we start making changes
             	
+            	parent.removeClass('next-attachment');
             	parent.append(file);
             	parent.append(temp);
             	
             	var remove = $("<a>", {
             		'href': "#",
-            		'html': "[remove]",
+            		'html': "[x]",
             	});
             	
             	parent.find('.filename').html(response['name']);
@@ -218,13 +220,13 @@ function fileUpload(form, fileField, action_url, remove_url) {
             	
             	remove.click(function() {removeAttachmentFile(remove.parent().parent(), remove_url); return false;});
             	
-            	fileField.remove();
+            	fileField.parent().parent().remove();
             	
             	parent.after(newFileChooser);
-            	
+            	initX2FileInput();
             	
             } else {
-            	fileField.parent().find('.error').html(response['message']);
+            	fileField.parent().parent().parent().find('.error').html(response['message']);
             	fileField.val("");
             }
  			
@@ -246,10 +248,43 @@ function fileUpload(form, fileField, action_url, remove_url) {
     form.submit(); 
 }
 
+// remove an attachment that is stored on the server as a temp file
 function removeAttachmentFile(attachment, remove_url) {
-	
 	var id = attachment.find(".AttachmentFiles");
 	$.post(remove_url, {'id': id.val()});
 
-	attachment.remove();	
+	attachment.remove();
+}
+
+// set up x2 file input
+// call this function everytime an x2 file input is created
+function initX2FileInput() {
+	// bind hover and click effects
+	$('input.x2-file-input[type=file]').hover(function() {
+		var button = $('input.x2-file-input[type=file]').next();
+		if(button.hasClass('active') == false) {
+			$('input.x2-file-input[type=file]').next().addClass('hover');
+		}
+	}, function() {
+		$('input.x2-file-input[type=file]').next().removeClass('hover');
+	});
+	
+	$('input.x2-file-input[type=file]').mousedown(function() {
+		$('input.x2-file-input[type=file]').next().removeClass('hover');
+		$('input.x2-file-input[type=file]').next().addClass('active');
+	});
+	
+	// position the saving icon for uploading files
+	// width
+	var chooseFileButtonCenter = parseInt($('input.x2-file-input[type=file]').css('width'), 10)/2;
+	var halfIconWidth = parseInt($('#choose-file-saving-icon').css('width'), 10)/2;
+	var iconLeft = chooseFileButtonCenter - halfIconWidth;
+	$('#choose-file-saving-icon').css('left', iconLeft + 'px');
+	
+	// height
+	var chooseFileButtonCenter = parseInt($('input.x2-file-input[type=file]').css('height'), 10)/2;
+	var halfIconHeight = parseInt($('#choose-file-saving-icon').height(), 10)/2;
+	var iconTop = chooseFileButtonCenter - halfIconHeight;
+	$('#choose-file-saving-icon').css('top', iconTop + 'px');
+
 }

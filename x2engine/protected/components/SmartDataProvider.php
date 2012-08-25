@@ -39,7 +39,44 @@
  ********************************************************************************/
 
 class SmartDataProvider extends CActiveDataProvider {
+	public function __construct($modelClass,$config=array()) {
+		parent::__construct($modelClass, $config);
+
+		//Sort and page saving code modified from:
+		//http://www.stupidannoyingproblems.com/2012/04/yii-grid-view-remembering-filters-pagination-and-sort-settings/
+
+		//a string unique to each controller/action (and optionally id) combination
+		$statePrefix = Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
+
+		// store also sorting order
+		$key = $this->getId()!='' ? $this->getId().'_sort' : 'sort';
+		if(!empty($_GET[$key])){
+			Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
+		} else {
+			$val = Yii::app()->user->getState($statePrefix . $key);
+			if(!empty($val))
+				$_GET[$key] = $val;
+		}
+
+		// store active page in page
+		$key = $this->getId()!='' ? $this->getId().'_page' : 'page';
+		if(!empty($_GET[$key])){
+			Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
+		} else if (!empty($_GET["ajax"])){
+			// page 1 passes no page number, just an ajax flag
+			Yii::app()->user->setState($statePrefix . $key, 1);
+		} else {
+			$val = Yii::app()->user->getState($statePrefix . $key);
+			if(!empty($val))
+				$_GET[$key] = $val;
+		}
+	}
+
 	private $_pagination;
+	/**
+	 * Returns the pagination object.
+	 * @return CPagination the pagination object. If this is false, it means the pagination is disabled.
+	 */
 	public function getPagination() {
 		if($this->_pagination===null)
 		{

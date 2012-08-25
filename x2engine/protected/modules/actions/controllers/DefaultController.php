@@ -55,7 +55,7 @@ class DefaultController extends x2base {
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','createSplash','createInline','viewGroup','complete',	//quickCreate
-					'completeRedirect','update', 'quickUpdate', 'completeSelected', 'uncompleteSelected', 'saveShowActions', 'updateSelected', 'viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail'),
+					'completeRedirect','update', 'quickUpdate', 'completeSelected', 'uncompleteSelected', 'saveShowActions', 'updateSelected', 'viewAll','search','completeNew','parseType','getTerms','uncomplete','uncompleteRedirect','delete','shareAction','inlineEmail', 'publisherCreate'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -312,10 +312,127 @@ class DefaultController extends x2base {
 		
 	}
 
+	public function actionPublisherCreate() {
+		
+		if(isset($_POST['SelectedTab']) && isset($_POST['Actions']) ) {
+		
+			$model = new Actions;
+		
+			$temp = $model->attributes;
+			foreach(array_keys($model->attributes) as $field){
+				if(isset($_POST['Actions'][$field])){
+					$model->$field=$_POST['Actions'][$field];
+				}
+			}
+			
+			// format dates
+			$model->dueDate = $this->parseDateTime($model->dueDate);
+			
+			if($_POST['SelectedTab'] == 'new-event') {
+				$model->type = 'event';
+				if($model->completeDate)
+					$model->completeDate = $this->parseDateTime($model->completeDate);
+			} else {
+				$model->completeDate = null;
+			}
+			
+			
+			// format association
+			if($model->associationId=='')
+				$model->associationId=0;
+			    
+			$association = $this->getAssociation($model->associationType,$model->associationId);
+			
+			if($association)
+				$model->associationName = $association->name;
+			else
+				$model->associationName = 'none';
+			
+			if($model->associationName == 'None' && $model->associationType != 'none')
+				$model->associationName = ucfirst($model->associationType);
+	
+			if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment') {
+				$model->createDate = time();
+				$model->dueDate = time();
+				$model->completeDate = time();
+				$model->complete='Yes';
+				$model->visibility='1';
+				$model->assignedTo=Yii::app()->user->getName();
+				$model->completedBy=Yii::app()->user->getName();
+				if($_POST['SelectedTab'] == 'log-a-call')
+					$model->type = 'call';
+				else
+					$model->type = 'note';
+			}
+			
+			// save model
+			$name = $this->modelClass;
+			$model->createDate=time();
+			if($model->save()) { // action saved to database *
+			    $fields=Fields::model()->findAllByAttributes(array('modelName'=>$name,'type'=>'link'));
+			    foreach($fields as $field) {
+			        $fieldName=$field->fieldName;
+			        if(isset($model->$fieldName) && is_numeric($model->$fieldName)) {
+			        	if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+			        				(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
+			        				OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))) {
+			        		$rel=new Relationships;
+			        		$rel->firstType=$name;
+			        		$rel->secondType=ucfirst($field->linkType);
+			        		$rel->firstId=$model->id; 
+			        		$rel->secondId=$model->$fieldName;
+			        		if($rel->save()) {
+			        			$lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+			        					(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
+			        					OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
+			        			if(isset($lookup)) {
+			        				$lookup->delete();
+			        			}
+			        		}
+			        	}
+			        }
+			    }
+			
+			    // notify other user (if not assigned to logged in user)
+			    $changes = $this->calculateChanges($temp, $model->attributes, $model);
+			    $this->updateChangelog($model,$changes);
+			    if($model->hasAttribute('assignedTo')) {
+			        if($model->assignedTo != Yii::app()->user->getName()) {
+			        	$notif = new Notification;
+			        	$notif->user = $model->assignedTo;
+			        	$notif->createdBy = Yii::app()->user->getName();
+			        	$notif->createDate = time();
+			        	$notif->type = 'create';
+			        	$notif->modelType = $name;
+			        	$notif->modelId = $model->id;
+			        	$notif->save();
+			        }
+			    }
+			    
+			    
+			    // Google Calendar Sync
+ 			    if(!is_numeric($model->assignedTo)) { // assigned to user
+			    	$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+			    	if(isset($profile))
+			    		$profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
+			    } else { // Assigned to group
+			    	$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
+			    	foreach($groups as $group) {
+			    		$profile = ProfileChild::model()->findByPk($group['userId']);
+			    		$profile->syncActionToGoogleCalendar($model);
+			    	}
+			    }
+			}
+			
+		}
+	}
+
 	public function update($model, $oldAttributes, $api){
 		
-		$dueDate = strtotime($model->dueDate);
-		$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+		$model->dueDate = $this->parseDateTime($model->dueDate);
+
+		if($model->completeDate)
+			$model->completeDate = $this->parseDateTime($model->completeDate);
 
 		$association = $this->getAssociation($model->associationType,$model->associationId);
 
@@ -619,28 +736,24 @@ class DefaultController extends x2base {
 	// Lists all actions assigned to this user
 	public function actionIndex() {
 		$model=new Actions('search');
-		$name='Actions';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	// List all public actions
 	public function actionViewAll() {
 		$model=new Actions('search');
-		$name='Actions';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 	
 	public function actionViewGroup() {
 		$model=new Actions('search');
-		$name='Actions';
-		parent::index($model,$name);
+		$this->render('index', array('model'=>$model));
 	}
 
 	// Admin view of all actions
 	public function actionAdmin() {
 		$model=new Actions('search');
-		$name='Actions';
-		parent::admin($model,$name);
+		$this->render('admin', array('model'=>$model));
 	}
 	
 	// display error page
