@@ -1,9 +1,9 @@
 README
 
-X2EngineCRM 1.6.5 Changelog
-8/24/2012
+X2EngineCRM 1.6.5.1 Changelog
+8/28/2012
 
-X2EngineCRM 1.6.5 Changelog
+X2EngineCRM 1.6.5.1 Changelog
 - Powerful new web lead capture form editor
 - Enhanced record tagging abilities
 - New single-user lead distribution option
@@ -13,6 +13,7 @@ X2EngineCRM 1.6.5 Changelog
 - Improved notification behavior
 - Tons of bug fixes
 - Improvements to VCR controls and grid sort/filter rememebering
+- Fixed bug with updater
 
 Welcome to  X2EngineCRM v1.6.5!  X2EngineCRM is a next-generation,  open source
 social sales application for small and medium sized businesses. X2EngineCRM was 

@@ -39,6 +39,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 
+
 class AdminController extends Controller {
 
     public $portlets = array();
@@ -70,11 +71,20 @@ class AdminController extends Controller {
     }
 
 	public function behaviors() {
-        return array(
+	$file = 'components/LeadRoutingBehavior.php';
+        if(!file_exists(Yii::app()->basePath.'/'.$file)) {
+        if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
+            $url = 'x2base';
+        } else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
+            $url = 'x2planet';
+        }
+        $this->ccopy("http://$url.com/updates/x2engine/protected/" . $file, Yii::app()->basePath.'/'.$file);
+	}
+	return array(
             'LeadRoutingBehavior'=>array(
                 'class'=>'LeadRoutingBehavior'
             )
-        );
+        );	
     }
 
 			
@@ -1873,7 +1883,6 @@ class AdminController extends Controller {
 
     public function actionUpdater() {
         include('protected/config/emailConfig.php');
-
         $context = stream_context_create(array(
             'http' => array(
                 'timeout' => 15  // Timeout in seconds
@@ -1912,8 +1921,7 @@ class AdminController extends Controller {
             $this->redirect('updater');
         }
 
-	$unique_id = Yii::app()->createCommand->select('unique_id')->from('x2_admin')->queryScalar;
-	$contents = file_get_contents("http://www.$url.com/updates/update.php?version=$version".($unique_id!='none'?"&unique_id=$unique_id":Null));
+	$contents = file_get_contents("http://www.$url.com/updates/update.php?version=$version");
         $pieces = explode(";;", $contents);
         $newVersion = $pieces[3];
         $sqlList = $pieces[1];
