@@ -54,21 +54,26 @@ return array (
 'Admin Password'=>'管理者パスワード',
 'Confirm Password'=>'パスワードを確認',
 'Administrator Email'=>'管理者のメール',
+'Please enter a valid email address.'=>'有効なメールアドレスを入力してください。',
 
 'Database Connection Info'=>'データベース接続情報',
 
+'This release only supports MySQL. Please create a database before installing.'=>'このリリースではMySQLのみをサポートしています。インストールする前にデータベースを作成してください。',
 'Host Name'=>'ホスト名',
 'Database Name'=>'データベース名',
 'Username'=>'ユーザー名',
 'Password'=>'パスワード',
 
 // Software updates
+'Software Updates'=>'ソフトウェアアップデート',
 'Notify me of software updates'=>'ソフトウェアの最新情報を知らせて！',
 'First Name'=>'ファーストネーム',
 'Last Name'=>'姓',
 'Email'=>'メール',
+'Company'=>'会社',
+'Position'=>'位置',
 'How you found X2EngineCRM'=>'あなたはX2Engineを見つけた方法',
-'Phone'=>'電話',
+'Phone Number'=>'電話番号',
 'Subscribe to the newsletter'=>'ニュースレターを購読する',
 'Comments'=>'注釈',
 'Request a follow-up contact'=>'フォローアップの接触を要求する',

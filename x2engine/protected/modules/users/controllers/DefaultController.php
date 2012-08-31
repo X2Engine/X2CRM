@@ -368,6 +368,14 @@ Please click on the link below to create an account at X2CRM!
 				$action->assignedTo="Anyone";
                                 $action->save();
 			}
+            $social=Social::model()->findAllByAttributes(array('user'=>$model->username));
+            foreach($social as $socialItem){
+                $socialItem->delete;
+            }
+            $social=Social::model()->findAllByAttributes(array('associationId'=>$model->id));
+            foreach($social as $socialItem){
+                $socialItem->delete;
+            }
                         
                         $dataProvider=new CActiveDataProvider('Contacts', array(
 			'criteria'=>array(

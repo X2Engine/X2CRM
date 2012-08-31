@@ -92,6 +92,7 @@ class DefaultController extends x2base {
 					'quickUpdateHistory',
 					'subscribe',
 					'qtip',
+                    'cleanFailedLeads',
 				),
 				'users' => array('@'),
 			),
@@ -1086,7 +1087,6 @@ $model->city, $model->state $model->zipcode
 
 	public function actionImportExcel() {
 		if (isset($_FILES['contacts'])) {
-
 			$temp = CUploadedFile::getInstanceByName('contacts');
 			$temp->saveAs('contacts.csv');
 			$this->importExcel('contacts.csv');
@@ -1139,13 +1139,17 @@ $model->city, $model->state $model->zipcode
 			$model = new Contacts;
 			$attributes = array_combine($meta, $arr);
 			foreach ($attributes as $attribute => $value) {
-				if (array_search($attribute, array_keys($model->attributes)) !== false) {
+				if ($model->hasAttribute($attribute)) {
 					$model->$attribute = $value;
 				}
 			}
+            if(empty($model->visibility))
+                $model->visibility=1;
 			if ($model->save()) {
 				
-			}
+			}else{
+                printR($model->getErrors(),true);
+            }
 		}
 
 		unlink($file);
@@ -1256,6 +1260,25 @@ $model->city, $model->state $model->zipcode
 
 		$this->renderPartial('qtip', array('contact' => $contact));
 	}
+    
+    public function actionCleanFailedLeads(){
+        $file = 'failed_leads.csv';
+
+        if (file_exists($file)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='.basename($file));
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            ob_clean();
+            flush();
+            readfile($file);
+            unlink($file);
+        }
+    }
 	
 	
 	public function actionWebLead() {

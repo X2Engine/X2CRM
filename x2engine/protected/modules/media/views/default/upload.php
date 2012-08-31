@@ -58,7 +58,7 @@ $this->menu=array(
 <div class="x2-layout form-view" style="margin-bottom: 0;">
 	<div class="formSection">
 		<div class="formSectionHeader">
-			<span class="sectionTitle"><?php echo Yii::t('app', 'Select File'); ?></span>
+			<span class="sectionTitle"><?php echo Yii::t('media', 'Select File'); ?></span>
 		</div>
 		<div class="tableWrapper">
 			<table>
@@ -67,7 +67,7 @@ $this->menu=array(
 						<td style="background: #FAFAFA;">
 							<span class="x2-file-wrapper">
 								<input type="file" class="x2-file-input" name="upload" onChange="var validName = mediaCheckName(this); if(validName) {mediaFileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('site/removeTmpUpload'); ?>'); }">
-								<input type="button" class="x2-button" value="Choose File">
+								<input type="button" class="x2-button" value="<?php echo Yii::t('media', 'Choose File'); ?>">
 								<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'choose-file-saving-icon', 'style'=>'position: absolute; width: 14px; height: 14px; filter: alpha(opacity=0); -moz-opacity: 0.00; opacity: 0.00;')); ?>
 								<span class="filename"></span>
 								<input type="hidden" class="temp-file-id" name="TempFileId" value="">
@@ -95,7 +95,7 @@ $this->menu=array(
 					<tr class="formSectionRow">
 						<td style="width: 300px">
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('app', 'Association Type'); ?></label>
+								<label><?php echo Yii::t('media', 'Association Type'); ?></label>
 								<div class="formInputBox" style="width: 200px; height: auto;">
 									<?php echo $form->dropDownList($model,'associationType',
 										array(
@@ -114,7 +114,7 @@ $this->menu=array(
 					<tr class="formSectionRow">
 						<td style="width: 300px">
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('app', 'Association Name'); ?></label>
+								<label><?php echo Yii::t('media', 'Association Name'); ?></label>
 								<div class="formInputBox" style="width: 200px; height: auto;">
 									<?php
 									
@@ -190,7 +190,7 @@ $this->menu=array(
 	
 	<div class="formSection">
 		<div class="formSectionHeader">
-			<span class="sectionTitle"><?php echo Yii::t('app', 'Permission'); ?></span>
+			<span class="sectionTitle"><?php echo Yii::t('media', 'Permission'); ?></span>
 		</div>
 		<div class="tableWrapper">
 			<table>
@@ -198,7 +198,7 @@ $this->menu=array(
 					<tr class="formSectionRow">
 						<td style="width: 300px">
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('app', 'Private'); ?></label>
+								<label><?php echo Yii::t('media', 'Private'); ?></label>
 								<div class="formInputBox" style="width: 200px; height: auto;">
 									<?php echo $form->checkbox($model,'private'); ?>
 								</div>
@@ -214,7 +214,7 @@ $this->menu=array(
 				
 	<div class="formSection">
 	    <div class="formSectionHeader">
-	    	<span class="sectionTitle"><?php echo Yii::t('app', 'Description'); ?></span>
+	    	<span class="sectionTitle"><?php echo Yii::t('media', 'Description'); ?></span>
 	    </div>
 	    <div class="tableWrapper">
 	    	<table>
@@ -238,7 +238,7 @@ $this->menu=array(
 
 <?php
 echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton(Yii::t('app','Upload'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo '		'.CHtml::submitButton(Yii::t('media','Upload'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
 echo "	</div>\n";
 $this->endWidget();
 ?>

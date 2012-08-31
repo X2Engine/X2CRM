@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,19 +42,38 @@ return array (
 // Attribute Labels
 'ID'=>'ID',
 'Association Type'=>'関連付けの種類',
+'Association Name'=>'協会名',
 'Association'=>'関連付け',
 'File Name'=>'ファイル名',
 'Uploaded By'=>'アップロードした人',
 'Create Date'=>'作成日',
+'Description'=>'説明',
+'Private'=>'プライベート',
+'Permission'=>'パーミッション',
+
 
 // Actions
 'View Attachment'=>'添付ファイルを見る',
 'Delete Media'=>'を削除する',
+'List'=>'リスト',
+'Upload'=>'アップロード',
+'View'=>'表示',
+'Update'=>'更新',
+'Delete'=>'削除',
 
 // Misc
 'File:'=>'ファイル:',
+'File: '=>'ファイル: ',
 '(deleted)'=>'(削除した)',
 'Uploaded by {name}'=>'{name} にアップロードされました',
+'Download File'=>'ファイルをダウンロード',
+'Update File: '=>'ファイルの更新:',
+'Media & File Library'=>'メディア＆ファイルライブラリ',
+'Max'=>'マックス',
+'Forbidden File Extensions:'=>'禁断のファイル拡張子 ',
+'Choose File'=>'ファイルを選択してください',
+'Select File'=>'[ファイル]を選択し',
+'Upload Media File: '=>'ファイルをアップロード：',
 
 // Errors
 'Are you sure you want to delete this item?'=>'あなたがこのアイテムを削除してもよろしいですか？',

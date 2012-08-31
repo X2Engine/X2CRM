@@ -364,7 +364,7 @@ $timezones = array(
 	</script>
     </head>
     <body>
-	<img id="bg" src="uploads/defaultBg.jpg" alt="">
+	<!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
 	<div id="installer-box">
 	    <noscript><h3><span id="noscript-error"><?php echo installer_t('This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'); ?></span></h3></noscript>
 	    <img src="themes/x2engine/images/x2engine_crm_white.png" alt="X2Engine" id="installer-logo">
@@ -425,13 +425,13 @@ $timezones = array(
 		    <div class="row"><label for="adminEmail"><?php echo installer_t('Administrator Email'); ?></label><input type="text" name="adminEmail" id="adminEmail" value="<?php getField('adminEmail', ''); ?>" /></div>
 
 		    <h2><?php echo installer_t('Database Connection Info'); ?></h2><hr>
-<?php echo installer_t('This release only supports MySQL.'); ?> <?php echo installer_t('Please create a database before installing.'); ?><br /><br />
+<?php echo installer_t('This release only supports MySQL. Please create a database before installing.'); ?><br /><br />
 
 		    <div id="db-form-box">
 			<div class="row"><label for="dbHost"><?php echo installer_t('Host Name'); ?></label><input type="text" name="dbHost" id="dbHost" value="<?php getField('dbHost', 'localhost'); ?>" /></div>
 			<div class="row"><label for="dbName"><?php echo installer_t('Database Name'); ?></label><input type="text" name="dbName" id="dbName" value="<?php getField('dbName', 'x2engine'); ?>" /></div>
-			<div class="row"><label for="dbUser"><?php echo installer_t('Database Username'); ?></label><input type="text" name="dbUser" id="dbUser" value="<?php getField('dbUser', 'root'); ?>" /></div>
-			<div class="row"><label for="dbPass"><?php echo installer_t('Database Password'); ?></label><input type="password" name="dbPass" id="dbPass" /></div>
+			<div class="row"><label for="dbUser"><?php echo installer_t('Username'); ?></label><input type="text" name="dbUser" id="dbUser" value="<?php getField('dbUser', 'root'); ?>" /></div>
+			<div class="row"><label for="dbPass"><?php echo installer_t('Password'); ?></label><input type="password" name="dbPass" id="dbPass" /></div>
 		    </div>
 		    <div id="db-test-box"><input type="button" id="db-test-button" class="x2-button" value="<?php echo installer_t('Test Connection'); ?>" />
 			<div id="response-box"><?php echo $dbStatus; ?></div>
@@ -451,6 +451,7 @@ $timezones = array(
 					'submitButtonId' => 'install-button',
 					'statusId' => 'error-box',
 					'themeUrl' => $themeURL,
+					'receiveUpdates' => getField('receiveUpdates',1,True),
 				    ),
 				    'installer_t'
 		    );

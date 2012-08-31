@@ -73,6 +73,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/webtoolkit
 			    'themeUrl' => Yii::app()->theme->baseUrl,
 			    'serverInfo' => True,
 			    'titleWrap' => array('<span style="display: block;font-size: 11px;font-weight: bold;">','</span>'),
+			    'receiveUpdates' => isset($_POST['receiveUpdates']) ? $_POST['receiveUpdates'] : 0,
 			),
 			'Yii::t',
 			array('install')

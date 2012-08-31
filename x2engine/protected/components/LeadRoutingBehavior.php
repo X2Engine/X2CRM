@@ -64,12 +64,14 @@ class LeadRoutingBehavior extends CBehavior {
 		} elseif ($type == "customRoundRobin") {
 			$arr = $_POST;
 			$users = $this->getRoutingRules($arr);
-			if ($users != "") {
+			if (!empty($users) && is_array($users) && count($users)>1) {
 				$rrId = $users[count($users) - 1];
 				unset($users[count($users) - 1]);
 				$i = $rrId % count($users);
 				return $users[$i];
-			}
+			}else{
+                return "Anyone";
+            }
 		}elseif($type=='singleUser'){
             $user=User::model()->findByPk($admin->rrId);
             if(isset($user)){
@@ -136,9 +138,13 @@ class LeadRoutingBehavior extends CBehavior {
 			$users = $usernames;
 		}
 		$rrId = $this->getRoundRobin();
-		$i = $rrId % count($users);
-		$this->updateRoundRobin();
-		return $users[$i];
+        if(count($users)>0){
+            $i = $rrId % count($users);
+            $this->updateRoundRobin();
+            return $users[$i];
+        }else{
+            return "Anyone";
+        }
 	}
 
 	public function getRoundRobin() {

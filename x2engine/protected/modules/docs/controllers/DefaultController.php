@@ -329,4 +329,15 @@ class DefaultController extends x2base {
 			Yii::app()->end();
 		}
 	}
+	
+	public function actionAutosave($id) {
+		$model=$this->loadModel($id);
+		if(isset($_POST['DocChild'])) {
+			$model->attributes=$_POST['DocChild'];
+			$model=$this->updateChangeLog($model,'Edited');
+			if($model->save()) {
+				echo Yii::t('Docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
+			};
+		}
+	}
 }

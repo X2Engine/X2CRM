@@ -100,7 +100,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('app', 'Association Type'); ?></label>
+											<label><?php echo Yii::t('media', 'Association Type'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php if($model->associationType) { ?>
 													<?php echo ($model->associationType == 'bg'? Yii::t('media', 'Background') : ucfirst($model->associationType)); ?>
@@ -114,7 +114,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('app', 'Association Name'); ?></label>
+											<label><?php echo Yii::t('media', 'Association Name'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php if($model->associationType && $model->associationType != 'bg') { ?>
 													<?php 
@@ -143,7 +143,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				
 				<div class="formSection">
 					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('app', 'Permission'); ?></span>
+						<span class="sectionTitle"><?php echo Yii::t('media', 'Permission'); ?></span>
 					</div>
 					<div class="tableWrapper">
 						<table>
@@ -166,7 +166,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				
 				<div class="formSection">
 					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('app', 'Description'); ?></span>
+						<span class="sectionTitle"><?php echo Yii::t('media', 'Description'); ?></span>
 					</div>
 					<div class="tableWrapper">
 						<table>
@@ -193,7 +193,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 	</tr>
 </table>
 
-<?php echo CHtml::link('Download file',array('download','id'=>$model->id),array('class'=>'x2-button')); ?>
+<?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button')); ?>
 
 <br />
 <br />

@@ -84,41 +84,41 @@ abstract class x2base extends CController {
 	 * @return array access control rules
 	 */
 	public function accessRules() {
-		 $moduleId=Yii::app()->controller->module->id;
-            $module=Modules::model()->findByAttributes(array('name'=>$moduleId));
-            if(isset($module) && $module->adminOnly){
-                return array(
-			array('allow',
-				'actions'=>array('getItems'),
-				'users'=>array('*'), 
-			),
-			array('allow', // allow authenticated user to perform the following actions
-				'actions'=>array('index','view','create','update','search','delete','inlineEmail','admin'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-            }else{
-		return array(
-			array('allow',
-				'actions'=>array('getItems'),
-				'users'=>array('*'), 
-			),
-			array('allow', // allow authenticated user to perform the following actions
-				'actions'=>array('index','view','create','update','search','delete','inlineEmail'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' action
-				'actions'=>array('admin'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-		}
+        $moduleId=Yii::app()->controller->module->id;
+        $module=Modules::model()->findByAttributes(array('name'=>$moduleId));
+        if(isset($module) && $module->adminOnly){
+            return array(
+                array('allow',
+                    'actions'=>array('getItems'),
+                    'users'=>array('*'), 
+                ),
+                array('allow', // allow authenticated user to perform the following actions
+                    'actions'=>array('index','view','create','update','search','delete','inlineEmail','admin'),
+                    'users'=>array('admin'),
+                ),
+                array('deny',  // deny all users
+                    'users'=>array('*'),
+                ),
+            );
+        }else{
+            return array(
+                array('allow',
+                    'actions'=>array('getItems'),
+                    'users'=>array('*'), 
+                ),
+                array('allow', // allow authenticated user to perform the following actions
+                    'actions'=>array('index','view','create','update','search','delete','inlineEmail'),
+                    'users'=>array('@'),
+                ),
+                array('allow', // allow admin user to perform 'admin' action
+                    'actions'=>array('admin'),
+                    'users'=>array('admin'),
+                ),
+                array('deny',  // deny all users
+                    'users'=>array('*'),
+                ),
+            );
+        }
 	}
 	
 	public function actions() {
@@ -577,7 +577,7 @@ abstract class x2base extends CController {
 			$changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
 			$this->updateChangelog($model,$changes);
 			if($model->hasAttribute('assignedTo')) {
-				if($model->assignedTo!=Yii::app()->user->getName()) {
+				if(!empty($model->assignedTo) && $model->assignedTo!=Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
 
 					$notif = new Notification;
 					$notif->user = $model->assignedTo;
@@ -1332,5 +1332,27 @@ abstract class x2base extends CController {
 		}
 		return $str;
 	}
+    
+    function deCamelCase($str){
+        $str=preg_replace("/(([a-z])([A-Z])|([A-Z])([A-Z][a-z]))/","\\2\\4 \\3\\5",$str);
+        return ucfirst($str);
+    }
+    
+    function ccopy($filepath, $file) {
+
+        $pieces = explode('/', $file);
+        unset($pieces[count($pieces)]);
+        for ($i = 0; $i < count($pieces); $i++) {
+            $str = "";
+            for ($j = 0; $j < $i; $j++) {
+                $str.=$pieces[$j] . '/';
+            }
+
+            if (!is_dir($str) && $str != "") {
+                mkdir($str);
+            }
+        }
+        return copy($filepath, $file);
+    }
 }
 ?>

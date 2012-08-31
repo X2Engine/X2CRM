@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -86,13 +86,13 @@ class ApplicationConfigBehavior extends CBehavior {
 		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
 
 		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
-		$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk($this->owner->user->getId());
+		$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$this->owner->user->getName()));
 		
 		// die( var_dump($this->owner->request->getPathInfo())); //->getRoute();
 		if(!$this->owner->user->isGuest) {
 			
 			// use the admin's profile as default
-			$this->owner->params->profile = CActiveRecord::model('ProfileChild')->findByPk($this->owner->user->getId());
+			$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$this->owner->user->getName()));
 		
 			$session = Session::model()->findByAttributes(array('user'=>$this->owner->user->getName()));
 			if(isset($session)) {

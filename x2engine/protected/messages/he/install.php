@@ -54,21 +54,26 @@ return array (
 'Admin Password'=>'Admin סיסמה',
 'Confirm Password'=>'אישור סיסמה',
 'Administrator Email'=>'מנהל דוא"ל',
+'Please enter a valid email address.'=>'זן כתובת דוא"ל חוקית.',
 
 'Database Connection Info'=>'חיבור מסד נתונים פרטי',
 
+'This release only supports MySQL. Please create a database before installing.'=>'מהדורה זו תומכת MySQL בלבד. אנא ליצור מסד נתונים לפני ההתקנה.',
 'Host Name'=>'שם מארח',
 'Database Name'=>'שם מסד הנתונים',
 'Username'=>'שם משתמש',
 'Password'=>'סיסמה',
 
 // Software updates
+'Software Updates'=>'עדכוני תוכנה',
 'Notify me of software updates'=>'הודע לי על עדכוני תוכנה',
 'First Name'=>'שם פרטיים',
 'Last Name'=>'שם משפחה',
 'Email'=>'דוא"ל',
+'Company'=>'חברה',
+'Position'=>'עמדה',
 'How you found X2EngineCRM'=>'X2EngineCRM איך מצא את ',
-'Phone'=>'טלפון',
+'Phone Number'=>'מספר טלפון',
 'Subscribe to the newsletter'=>'הירשם לניוזלטר',
 'Comments'=>'תגובות',
 'Request a follow-up contact'=>'בקש מגע מעקב',

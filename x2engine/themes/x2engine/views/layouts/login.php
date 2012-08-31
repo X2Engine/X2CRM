@@ -140,47 +140,10 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
-<body id="body-tag"<?php if(empty($backgroundImg)) echo 'class="defaultBg"';?> style="position:absolute;height:100%;width:100%">
-<?php echo $backgroundImg; ?>
+<body id="body-tag" style="position:absolute;height:100%;width:100%;background:#fff;">
 <!--<div class="ie-shadow" style="display:none;"></div>-->
 <div class="container" id="login-page">
 	<?php echo $content; ?>
-	<!--<div id="footer">
-		<div class="hr"></div><div id="footer-logos">
-			<a href="<?php echo Yii::app()->getBaseUrl().'/index.php/x2touch'; ?>">
-				<?php //echo CHtml::image($themeURL.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
-			<a href="<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>">
-				<?php //echo CHtml::image($themeURL.'/images/x2footer.png','', array('id'=>'x2crm-logo')); ?></a>
-		</div>
-		Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
-		<?php echo Yii::t('app','Rights reserved.'); ?>
-		<?php
-		echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.',
-		array(
-			'{BSD}'=>CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),
-			'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),Yii::app()->getBaseUrl().'/GPL-3.0 License.txt')
-		));?><br>
-		<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>number_format(Yii::getLogger()->getExecutionTime(),3)));
-		?><br>
-		<?php
-		Yii::app()->clientScript->registerScript('logos',"
-		// $(window).load(function(){
-			// if(!$('#x2touch-logo').length || !$('#x2crm-logo').length){
-				// $('a').removeAttr('href');
-				// alert('Please put the logo back');
-				// window.location='http://www.x2engine.com';
-			// }
-			// var touchlogosrc = $('#x2touch-logo').attr('src');
-			// var logosrc=$('#x2crm-logo').attr('src');
-			// if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-				// $('a').removeAttr('href');
-				// alert('Please put the logo back');
-				// window.location='http://www.x2engine.com';
-		// }
-		// });
-		");
-		?><br>
-	</div>-->
 </div>
 </body>
 </html>

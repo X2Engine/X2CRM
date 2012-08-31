@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -58,7 +58,7 @@ $('#LoginForm_username').focus();
 <div class="form" id="login-form">
 	<div class="row">
 		<div class="cell">
-			<?php echo CHtml::image(Yii::app()->theme->baseUrl.'/images/x2engine_crm_white.png','X2Engine',array('id'=>'login-logo')); ?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png','X2Engine',array('id'=>'login-logo')); ?>
 		</div>
 		<div class="cell">
 		
@@ -66,49 +66,48 @@ $('#LoginForm_username').focus();
 			<?php echo $form->textField($model,'username'); ?>
 			<?php //echo $form->error($model,'username'); ?>
 
-			<?php echo $form->label($model,'password'); ?>
+			<?php echo $form->label($model,'password',array('style'=>'margin-top:5px;')); ?>
 			<?php echo $form->passwordField($model,'password'); ?>
 			<?php echo $form->error($model,'password'); ?>
 			<?php if($model->useCaptcha && CCaptcha::checkRequirements()) { ?>
 			<div class="row">
-			<?php
-			// CHtml::$errorCss = 'error';
-			// CHtml::$errorSummaryCss = 'error';
+				<?php
+				// CHtml::$errorCss = 'error';
+				// CHtml::$errorSummaryCss = 'error';
 
-			echo '<div>';
-			$this->widget('CCaptcha',array(
-				'clickableImage'=>true,
-				'showRefreshButton'=>false,
-				'imageOptions'=>array(
-					'style'=>'display:block;cursor:pointer;',
-					'title'=>Yii::t('app','Click to get a new image')
-				)
-			)); echo '</div>';
-			echo '<p class="hint">'.Yii::t('app','Please enter the letters in the image above.').'</p>';
-			echo $form->textField($model,'verifyCode');
-			?>
+				echo '<div>';
+				$this->widget('CCaptcha',array(
+					'clickableImage'=>true,
+					'showRefreshButton'=>false,
+					'imageOptions'=>array(
+						'style'=>'display:block;cursor:pointer;',
+						'title'=>Yii::t('app','Click to get a new image')
+					)
+				)); echo '</div>';
+				echo '<p class="hint">'.Yii::t('app','Please enter the letters in the image above.').'</p>';
+				echo $form->textField($model,'verifyCode');
+				?>
 			</div><?php } ?>
-			<div class="row checkbox">
+			<div class="row checkbox" style="margin-top:5px;">
 				<div class="cell">
 					<?php echo CHtml::submitButton(Yii::t('app','Login'),array('class'=>'x2-button')); ?>
 				</div>
 
-				<div class="cell right" style="padding-top:12px;padding-left:5px;">
+				<div class="cell" style="margin-left:10px;padding-top:12px;padding-left:5px;">
 					<?php echo $form->checkBox($model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); ?>
 					<?php echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); ?>
 					<?php echo $form->error($model,'rememberMe'); ?><br>
 					
 				</div>		
 			</div>
-			
-			<div class="row">
-				<?php echo CHtml::link("<img src='".Yii::app()->baseUrl."/uploads/logos/google-icon.png' width='18' height='18' /> ".Yii::t('app','Login with Google'),
-						(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
-						((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
-						$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link', 'style'=>"text-decoration:none")); ?>
-			</div><br>
-			<div class="row">
-				<?php echo CHtml::link('X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
+		</div>
+		<div class="row">
+			<div class="cell" style="margin-top:20px;text-align:center;width:100%;">
+			<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app','Login with Google'),
+					(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
+					((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
+					$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link', 'style'=>"text-decoration:none")); ?>
+			<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
 			</div>
 		</div>
 	</div>

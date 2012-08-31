@@ -105,7 +105,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('app', 'Association Type'); ?></label>
+											<label><?php echo Yii::t('media', 'Association Type'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php echo $form->dropDownList($model,'associationType',
 													array(
@@ -124,7 +124,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('app', 'Association Name'); ?></label>
+											<label><?php echo Yii::t('media', 'Association Name'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php
 												
@@ -200,7 +200,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				
 				<div class="formSection">
 					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('app', 'Permission'); ?></span>
+						<span class="sectionTitle"><?php echo Yii::t('media', 'Permission'); ?></span>
 					</div>
 					<div class="tableWrapper">
 						<table>
@@ -208,7 +208,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('app', 'Private'); ?></label>
+											<label><?php echo Yii::t('media', 'Private'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php echo $form->checkbox($model, 'private'); ?>
 											</div>
@@ -223,7 +223,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				
 				<div class="formSection">
 					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('app', 'Description'); ?></span>
+						<span class="sectionTitle"><?php echo Yii::t('media', 'Description'); ?></span>
 					</div>
 					<div class="tableWrapper">
 						<table>
@@ -253,7 +253,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 
 <?php
 echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton(Yii::t('app','Update'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo '		'.CHtml::submitButton(Yii::t('media','Update'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
 echo "	</div>\n";
 $this->endWidget();
 ?>

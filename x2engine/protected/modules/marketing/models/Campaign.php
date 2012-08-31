@@ -38,21 +38,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::import('application.models.X2Model');
-
 /**
  * This is the model class for table "x2_campaigns".
  */
 class Campaign extends X2Model {
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return Campaign the static model class
-	 */
-	public static function model($className=__CLASS__) { return parent::model($className); }
+	public static function model($className=__CLASS__) {
+		return parent::model($className);
+	}
 
-	/**
-	 * @return string the associated database table name
-	 */
 	public function tableName()	{ return 'x2_campaigns'; }
 
 	public function behaviors() {
@@ -69,15 +62,51 @@ class Campaign extends X2Model {
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
 	public function relations() {
 		return array(
 			'list'=>array(self::BELONGS_TO, 'X2List', 'listId')
 		);
 	}
+
+	//Similar to X2Model but we had a special case with 'marketing'
+	public function attributeLabels() {
+		$this->queryFields();
 		
+		$labels = array();
+			
+		foreach(self::$_fields[$this->tableName()] as &$_field)
+			$labels[ $_field->fieldName ] = Yii::t('marketing',$_field->attributeLabel);
+
+		return $labels;
+	}
+		
+	//Similar to X2Model but we had a special case with 'marketing'
+	public function getAttributeLabel($attribute) {
+	
+		$this->queryFields();
+		
+		// don't call attributeLabels(), just look in self::$_fields
+		foreach(self::$_fields[$this->tableName()] as &$_field) {
+			if($_field->fieldName == $attribute)
+				return Yii::t('marketing',$_field->attributeLabel);
+		}
+		// original Yii code
+		if(strpos($attribute,'.')!==false) {
+			$segs=explode('.',$attribute);
+			$name=array_pop($segs);
+			$model=$this;
+			foreach($segs as $seg) {
+				$relations=$model->getMetaData()->relations;
+				if(isset($relations[$seg]))
+					$model=CActiveRecord::model($relations[$seg]->className);
+				else
+					break;
+			}
+			return $model->getAttributeLabel($name);
+		} else
+			return $this->generateAttributeLabel($attribute);
+	}
+
 	public static function load($id) {
 		$model = self::model()->with('list')->findByPk((int)$id, 'x2_checkViewPermission(t.visibility,t.assignedTo,"'.Yii::app()->user->getName().'") > 0');
 		if($model===null)

@@ -46,7 +46,7 @@ $this->menu=array(
 );
 ?>
 
-<h1><?php echo Yii::t('media','Media'); ?></h1>
+<h1><?php echo Yii::t('media','Media & File Library'); ?></h1>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id' => 'media-grid',
 	'template'=>'{summary}{items}{pager}',

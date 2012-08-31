@@ -44,7 +44,7 @@ $this->menu = array(
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('/contacts/createList')),
-	array('label'=>Yii::t('admin','Web Lead Form'),'url'=>array('webLeadForm')),
+	array('label'=>Yii::t('marketing','Web Lead Form'),'url'=>array('webLeadForm')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

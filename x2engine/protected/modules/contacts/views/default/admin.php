@@ -122,10 +122,11 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'contactsadmin',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>185,
+		'gvCheckbox'=>30,
+		'name'=>175,
 		'phone'=>95,
-		'lastUpdated'=>96,
-		'leadSource'=>138,
+		'lastUpdated'=>85,
+		'leadSource'=>130,
 		'gvControls'=>70,
 	),
 	'specialColumns'=>array(

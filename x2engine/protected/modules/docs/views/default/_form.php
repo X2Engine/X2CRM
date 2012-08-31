@@ -43,6 +43,13 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/tinyedit
 
 // editor javascript files
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor/tinyeditor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() .'/js/docs.js'); // autosave
+$autosaveUrl = $this->createUrl('autosave') . '?id=' . $model->id;
+Yii::app()->clientScript->registerScript('docs-urls', "
+$(function() {
+	$('body').data('autosaveUrl', '$autosaveUrl'); // used in docs.js to autosave the doc
+});",CClientScript::POS_HEAD);
+
 
 
 $form=$this->beginWidget('CActiveForm', array(
@@ -55,11 +62,13 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->label($model,'title'); ?>
 		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'title'); ?>
-	<?php if(isset($_GET['saved'])){
-                $date=date("g:i:s A",$_GET['time']);
-                echo "Saved at $date.";
-        }
-            echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float','onclick'=>'editor.post();')); ?>
+		<span id="savetime">
+			<?php if(isset($_GET['saved'])){
+				$date=date("g:i:s A",$_GET['time']);
+				echo Yii::t('Docs', 'Saved at') ." $date";
+			} ?>
+		</span>
+		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float','onclick'=>'editor.post();')); ?>
 	</div><?php if($this->route=='docs/createEmail'): ?>
 	<div class="row">
 		<?php echo Yii::t('docs','<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
@@ -88,7 +97,7 @@ $form=$this->beginWidget('CActiveForm', array(
 editor=new TINY.editor.edit('editor',{
     id:'input', // (required) ID of the textarea
     width:550, // (optional) width of the editor
-    height:175, // (optional) heightof the editor
+    height:300, // (optional) heightof the editor
     cssclass:'te', // (optional) CSS class of the editor
     controlclass:'tecontrol', // (optional) CSS class of the buttons
     rowclass:'teheader', // (optional) CSS class of the button rows

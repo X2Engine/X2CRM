@@ -156,7 +156,8 @@ class SearchController extends x2base {
 							if(strlen($token) <= 50 && !in_array($token,$noiseWords)) {
 								$links[] = array(
 									$token,
-									'Contacts:'.$record['id'],
+									'Contacts',
+									$record['id'],
 									$field['relevance'],
 									$record['assignedTo'],
 									$record['visibility']
@@ -169,9 +170,9 @@ class SearchController extends x2base {
 				unset($field);
 			}
 			
-			$sql = 'INSERT INTO x2_search (keyword, record, relevance, assignedTo, visibility) VALUES ';
+			$sql = 'INSERT INTO x2_search (keyword, modelType, modelId, relevance, assignedTo, visibility) VALUES ';
 			for($j=0; $j<count($links); ++$j) {
-				$sql .= '(?,?,?,?,?)';
+				$sql .= '(?,?,?,?,?,?)';
 				if($j < count($links)-1)
 					$sql .= ',';
 			}
@@ -183,11 +184,12 @@ class SearchController extends x2base {
 			$query = Yii::app()->db->createCommand($sql);
 			for($j=0; $j<count($links); ++$j) {
 				$query = $query->bindValues(array(
-					5*$j+1=>$links[$j][0],
-					5*$j+2=>$links[$j][1],
-					5*$j+3=>$links[$j][2],
-					5*$j+4=>$links[$j][3],
-					5*$j+5=>$links[$j][4]
+					6*$j+1=>$links[$j][0],
+					6*$j+2=>$links[$j][1],
+					6*$j+3=>$links[$j][2],
+					6*$j+4=>$links[$j][3],
+					6*$j+5=>$links[$j][4],
+					6*$j+6=>$links[$j][5]
 				));
 			}
 			// die(var_dump($links));
@@ -206,7 +208,15 @@ class SearchController extends x2base {
 
 	}
 	
-	
+	public function actionFastSearch() {
+		
+		
+		
+		
+		
+		
+
+	}
 	
 	
 	
@@ -241,10 +251,17 @@ class SearchController extends x2base {
                                 foreach($fields as $field){
                                     $temp[]=$field->id;
                                     $criteria->compare($field->fieldName,$term,true,"OR");
+                                    if($field->type=='phone'){
+                                        $tempPhone=preg_replace('/\D/','',$term);
+                                        $phoneLookup=PhoneNumber::model()->findByAttributes(array('modelType'=>$field->modelName,'number'=>$tempPhone,'fieldName'=>$field->fieldName));
+                                        if(isset($phoneLookup)){
+                                            $criteria->compare('id',$phoneLookup->modelId,true,"OR");
+                                        }
+                                        
+                                    }
                                 }
                                 
                                 $arr=CActiveRecord::model($type)->findAll($criteria);
-                                
                                 $comparisons[$type]=$temp;
                                 $other[$type]=$arr;
                             
@@ -304,11 +321,25 @@ class SearchController extends x2base {
                                                 else
                                                     $low[]=$otherRecord;
                                         }
+                                    }elseif($fieldRecord->type=='phone'){
+                                        $tempPhone=preg_replace('/\D/','',$term);
+                                        
+                                        if(strlen($tempPhone)==10){
+                                            $phoneLookup=PhoneNumber::model()->findByAttributes(array('modelType'=>$fieldRecord->modelName,'number'=>$tempPhone,'fieldName'=>$fieldName));
+                                            if(!in_array($otherRecord,$high) && !in_array($otherRecord,$medium) && !in_array($otherRecord,$low) && 
+                                                        !in_array($otherRecord,$userHigh) && !in_array($otherRecord,$userMedium) && !in_array($otherRecord,$userLow)){
+                                                if(isset($phoneLookup) && $otherRecord->id==$phoneLookup->modelId){
+                                                    if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo==Yii::app()->user->getName())
+                                                        $userHigh[]=$otherRecord;
+                                                    else
+                                                        $high[]=$otherRecord;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-
 			$records=array_merge($high,$medium);
             $records=array_merge($records,$low);
             

@@ -505,7 +505,7 @@ class SiteController extends x2base {
 				$name=$newName;
 			}
 			$username = Yii::app()->user->name;
-			if($temp->saveAs("uploads/media/$username/$name")) {
+			if($this->ccopy($temp->getTempName(),"uploads/media/$username/$name")) {
 				if(isset($_POST['associationId']))
 					$model->associationId=$_POST['associationId'];
 				$model->associationType=$_POST['type'];

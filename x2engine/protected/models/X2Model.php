@@ -288,11 +288,14 @@ abstract class X2Model extends CActiveRecord {
 			return null;
 
 		switch($field->type) {
-		
-		
 			case 'date':
-				return empty($this->$fieldName)? ' ' : Yii::app()->controller->formatLongDate($this->$fieldName);
-				
+				if(empty($this->$fieldName))
+					return ' ';
+				elseif(is_numeric($this->$fieldName))
+					return Actions::formatCompleteDate($this->$fieldName);
+				else
+					return $this->$fieldName;
+
 			case 'rating':
 			
 				if($textOnly) {
@@ -308,10 +311,10 @@ abstract class X2Model extends CActiveRecord {
 						'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
 					),true);
 				}
-				
+
 			case 'assignment':
 				return User::getUserLinks($this->$fieldName);
-				
+
 			case 'visibility':
 				switch($this->$fieldName) {
 					case '1':
@@ -323,7 +326,7 @@ abstract class X2Model extends CActiveRecord {
 					default:
 						return '';
 				}
-			
+
 			case 'email':
 				if(empty($this->$fieldName)) {
 					return '';
@@ -331,19 +334,20 @@ abstract class X2Model extends CActiveRecord {
 					$mailtoLabel = isset($this->name)? '"'.$this->name.'" <'.$this->$fieldName.'>' : $this->$fieldName;
 					return $makeLinks? CHtml::mailto($this->$fieldName,$mailtoLabel) : $this->fieldName;
 				}
+
 			case 'phone':
 				if(empty($this->$fieldName))
 					return '';
 				else{
-                    $phoneCheck=PhoneNumber::model()->findByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this),'fieldName'=>$fieldName));
-                    if(isset($phoneCheck) && strlen($phoneCheck->number)==10){
-                        $temp=$phoneCheck->number;
-                        $this->$fieldName="(".substr($temp,0,3).") ".substr($temp,3,3)."-".substr($temp,6,4);
-                    }
+					$phoneCheck=PhoneNumber::model()->findByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this),'fieldName'=>$fieldName));
+					if(isset($phoneCheck) && strlen($phoneCheck->number)==10){
+						$temp=$phoneCheck->number;
+						$this->$fieldName="(".substr($temp,0,3).") ".substr($temp,3,3)."-".substr($temp,6,4);
+					}
 					return $this->$fieldName;
-                }
+				}
+
 			case 'url':
-			
 				if(!$makeLinks)
 					return $this->$fieldName;
 					
@@ -384,7 +388,7 @@ abstract class X2Model extends CActiveRecord {
 					));
 				}
 				return $text;
-				
+
 			case 'link':
 				if(!empty($this->$fieldName) && is_numeric($this->$fieldName)) {
 					$className = ucfirst($field->linkType);
@@ -397,23 +401,22 @@ abstract class X2Model extends CActiveRecord {
 				} else {
 					return $this->$fieldName;
 				}
-				
+
 			case 'boolean':
 				return $textOnly? $this->fieldName : CHtml::checkbox('',$this->$fieldName,array('onclick'=>'return false;', 'onkeydown'=>'return false;'));
-				
+
 			case 'currency':
 				if($this instanceof Product) // products have their own currency
 					return Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, $this->currency);
 				else
 					return empty($this->$fieldName)?"&nbsp;":Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, Yii::app()->params['currency']);
-					
+
 			case 'dropdown':
 				return Yii::t(strtolower(Yii::app()->controller->id),$this->$fieldName);
-				
+
 			case 'text':
 				return Yii::app()->controller->convertUrls($this->$fieldName);     
-                        
-				
+
 			default:
 				return $this->$fieldName;
 		}

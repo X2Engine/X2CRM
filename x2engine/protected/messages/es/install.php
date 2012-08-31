@@ -54,21 +54,26 @@ return array (
 'Admin Password'=>'Contraseña de Administrador',
 'Confirm Password'=>'Confirmar la Contraseña',
 'Administrator Email'=>'E-mail de Administrador',
+'Please enter a valid email address.'=>'Por favor, introduzca una dirección válida de correo electrónico.',
 
 'Database Connection Info'=>'Conexión Info de Base de Datos',
 
+'This release only supports MySQL. Please create a database before installing.'=>'Esta versión sólo soporta MySQL. Por favor, cree una base de datos antes de instalar.',
 'Host Name'=>'Nombre de Host',
 'Database Name'=>'Nombre de Base de Datos',
 'Username'=>'Nombre de Usuario',
 'Password'=>'Contraseña',
 
 // Software updates
+'Software Updates'=>'actualizaciones de software',
 'Notify me of software updates'=>'Notificarme las actualizaciones de software',
 'First Name'=>'Nombre',
 'Last Name'=>'apellido',
 'Email'=>'Email',
+'Company'=>'empresa',
+'Position'=>'posición',
 'How you found X2EngineCRM'=>'Cómo has encontrado X2EngineCRM',
-'Phone'=>'teléfono',
+'Phone Number'=>'número de teléfono',
 'Subscribe to the newsletter'=>'Suscríbase al boletín de noticias',
 'Comments'=>'Comentarios',
 'Request a follow-up contact'=>'Solicite una visita de seguimiento',

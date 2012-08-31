@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,19 +42,38 @@ return array (
 // Attribute Labels
 'ID'=>'ID',
 'Association Type'=>'Ассоциация Тип',
+'Association Name'=>'Ассоциация название',
 'Association'=>'ассоциация',
 'File Name'=>'Имя файла',
 'Uploaded By'=>'Загружено',
 'Create Date'=>'Дата создания',
+'Description'=>'описание',
+'Private'=>'частный',
+'Permission'=>'разрешение',
+
 
 // Actions
 'View Attachment'=>'Просмотр вложения',
 'Delete Media'=>'Удалить Медиа',
+'List'=>'список',
+'Upload'=>'загружать',
+'View'=>'смотреть',
+'Update'=>'обновление',
+'Delete'=>'удалять',
 
 // Misc
 'File:'=>'Файл:',
+'File: '=>'файл: ',
 '(deleted)'=>'(удалено)',
 'Uploaded by {name}'=>'Автор {name}',
+'Download File'=>'Скачать файл',
+'Update File: '=>'Загрузить файл',
+'Media & File Library'=>'Медиа-файла библиотеки',
+'Max'=>'Макс',
+'Forbidden File Extensions:'=>'Запретный расширений файлов',
+'Choose File'=>'Выберите File',
+'Select File'=>'Выберите File',
+'Upload Media File: '=>'Загрузить файл:',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Вы действительно хотите удалить этот элемент?',

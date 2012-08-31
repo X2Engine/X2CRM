@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,19 +42,38 @@ return array (
 // Attribute Labels
 'ID'=>'ID',
 'Association Type'=>'Verbindungstyp',
+'Association Name'=>'Verein-Name',
 'Association'=>'Verbindung',
 'File Name'=>'Dateiname',
 'Uploaded By'=>'Hochgeladen von',
 'Create Date'=>'Erstelle Datum',
+'Description'=>'Beschreibung',
+'Private'=>'privat',
+'Permission'=>'Genehmigung',
+
 
 // Actions
 'View Attachment'=>'Anhang anzeigen',
 'Delete Media'=>'Medium löschen',
+'List'=>'Liste',
+'Upload'=>'laden',
+'View'=>'sehen',
+'Update'=>'aktualisieren',
+'Delete'=>'löschen',
 
 // Misc
 'File:'=>'Datei:',
+'File: '=>'Datei: ',
 '(deleted)'=>'(gelöscht)',
 'Uploaded by {name}'=>'Hochgeladen von {name}',
+'Download File'=>'Datei herunterladen',
+'Update File: '=>'Update-Datei: ',
+'Media & File Library'=>'Medien und Datei-Bibliothek',
+'Max'=>'max',
+'Forbidden File Extensions:'=>'Verbotene Dateierweiterungen:',
+'Choose File'=>'Wählen Sie Datei',
+'Select File'=>'Wählen Sie Datei',
+'Upload Media File: '=>'Datei hochladen: ',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Sind Sie sicher, dass Sie dieses Element wirklich löschen möchten?',

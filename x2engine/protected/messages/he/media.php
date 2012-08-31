@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,19 +42,38 @@ return array (
 // Attribute Labels
 'ID'=>'זהות',
 'Association Type'=>'האגודה סוג',
+'Association Name'=>'שם אגודה',
 'Association'=>'עמותה',
 'File Name'=>'שם הקובץ',
 'Uploaded By'=>'נטען ע"י',
 'Create Date'=>'יצירת תאריך',
+'Description'=>'תיאור',
+'Private'=>'פרטים',
+'Permission'=>'רשות',
+
 
 // Actions
 'View Attachment'=>'צפה קובץ מצורף',
 'Delete Media'=>'מחק את מדיה',
+'List'=>'רשימה',
+'Upload'=>'העלה',
+'View'=>'לצפות',
+'Update'=>'לעדכן',
+'Delete'=>'למחוק',
 
 // Misc
 'File:'=>'קובץ:',
+'File: '=>'קובץ: ',
 '(deleted)'=>'(נמחק)',
 'Uploaded by {name}'=>'{name} הוטען על ידי',
+'Download File'=>'הורד קובץ',
+'Update File: '=>'עדכון קובץ: ',
+'Media & File Library'=>'תקשורת וספריית קבצים',
+'Max'=>'מקס',
+'Forbidden File Extensions:'=>'סיומות קבצים אסורים:',
+'Choose File'=>'בחר את הקובץ',
+'Select File'=>'בחר קובץ',
+'Upload Media File: '=>'לטעון את הקובץ:',
 
 // Errors
 'Are you sure you want to delete this item?'=>'האם אתה בטוח שברצונך למחוק פריט זה?',

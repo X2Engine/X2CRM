@@ -283,6 +283,7 @@ class ProfileController extends x2base {
 		// $user = $this->loadModel($id);
 		if(isset($_POST['Social']) && $_POST['Social']['data']!=Yii::t('app','Enter text here...')){
 			$post->data = $_POST['Social']['data'];
+			$post->private = $_POST['Social']['private'];
 			if(isset($_POST['Social']['associationId']))
 				$post->associationId = $_POST['Social']['associationId'];
 			//$soc->attributes = $_POST['Social'];

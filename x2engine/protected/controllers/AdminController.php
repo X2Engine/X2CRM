@@ -109,7 +109,7 @@ class AdminController extends Controller {
                     'createFormLayout', 'deleteFormLayout', 'formVersion', 'dropDownEditor', 'manageDropDowns',
                     'deleteDropdown', 'editDropdown', 'roleEditor', 'deleteRole', 'editRole', 'manageRoles',
                     'roleException', 'appSettings', 'updater', 'registerModules', 'toggleModule', 'viewLogs', 'delete',
-                    'tempImportWorkflow', 'workflowSettings'
+                    'tempImportWorkflow', 'workflowSettings', 'testVariables'
                 ),
                 'users' => array('admin'),
             ),
@@ -123,8 +123,19 @@ class AdminController extends Controller {
         $cache = Yii::app()->cache;
         if (isset($cache))
             $cache->flush();
-        // die('herp');
         $filterChain->run();
+    }
+    
+    public function actionTestVariables(){
+        $data=array();
+        $ccUrl = 'http://comcoursecrm.com/index.php/api/create/model/Contacts';
+		$ccSession = curl_init($ccUrl);
+		curl_setopt($ccSession,CURLOPT_POST,1);
+		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
+		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+		$ccResult = curl_exec($ccSession);
+        echo $ccResult;
+		curl_close($ccSession);
     }
 
     public function actionSearchContact() {

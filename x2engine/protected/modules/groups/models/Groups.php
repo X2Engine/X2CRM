@@ -116,14 +116,14 @@ class Groups extends X2Model {
 		);
 	}
 	
-	public static function getLink($id) {
-		$groupName = Yii::app()->db->createCommand()->select('name')->from('x2_groups')->where('id='.$id)->queryScalar();
+	// public static function getLink($id) {
+		// $groupName = Yii::app()->db->createCommand()->select('name')->from('x2_groups')->where('id='.$id)->queryScalar();
 
-		if(isset($groupName))
-			return CHtml::link($groupName,array('/groups/'.$id));
-		else
-			return '';
-	}
+		// if(isset($groupName))
+			// return CHtml::link($groupName,array('/groups/'.$id));
+		// else
+			// return '';
+	// }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

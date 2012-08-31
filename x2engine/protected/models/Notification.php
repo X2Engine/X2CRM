@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com
  * Community and support website: http://www.x2community.com
  *
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -138,7 +138,7 @@ class Notification extends CActiveRecord {
 	
 	
 	public function getMessage() {
-
+        
 		if(empty($this->modelId) || empty($this->modelType))	// skip if there is no association
 			$record = null;
 		else {
@@ -148,14 +148,14 @@ class Notification extends CActiveRecord {
 				return $this->modelType;
 		}
 		
-		if(!isset($record))
+		if(!isset($record) && $this->type!='lead_failure'){
 			// return var_dump($this->attributes);
 			return null;
-
+        }
 		$passive = $this->createdBy == 'API' || empty($this->createdBy);
-		
+        
 		switch($this->type) {
-
+            
 			case 'action_complete':
 				if($passive)
 					return Yii::t('actions','Action completed: {action}',array('{action}'=>$record->getLink(30)));
@@ -196,6 +196,8 @@ class Notification extends CActiveRecord {
 				
 				
 				}
+            case 'lead_failure':
+                return "A lead failed to come through Lead Capture.  Check ".CHtml::link("here",Yii::app()->controller->createUrl("/contacts/cleanFailedLeads"))." to recover it.";
 
 			case 'assignment':
 				if($passive)

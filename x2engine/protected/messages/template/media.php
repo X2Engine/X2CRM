@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,19 +42,38 @@ return array (
 // Attribute Labels
 'ID'=>'',
 'Association Type'=>'',
+'Association Name'=>'',
 'Association'=>'',
 'File Name'=>'',
 'Uploaded By'=>'',
 'Create Date'=>'',
+'Description'=>'',
+'Private'=>'',
+'Permission'=>'',
+
 
 // Actions
 'View Attachment'=>'',
 'Delete Media'=>'',
+'List'=>'',
+'Upload'=>'',
+'View'=>'',
+'Update'=>'',
+'Delete'=>'',
 
 // Misc
 'File:'=>'',
+'File: '=>'',
 '(deleted)'=>'',
 'Uploaded by {name}'=>'',
+'Download File'=>'',
+'Update File: '=>'',
+'Media & File Library'=>'',
+'Max'=>'',
+'Forbidden File Extensions:'=>'',
+'Choose File'=>'',
+'Select File'=>'',
+'Upload Media File: '=>'',
 
 // Errors
 'Are you sure you want to delete this item?'=>'',

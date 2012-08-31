@@ -61,9 +61,10 @@ if(isset($_POST['testDb'])) {
 $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
 
 if($silent) {
-	if(file_exists('installConfig.php'))
+	if(file_exists('installConfig.php')){
 		require('installConfig.php');
-	else
+        $dummy_data=$dummyData;
+    }else
 		die('Error: Installer config file not found.');
 } else {
 	$host = $_POST['dbHost'];
@@ -89,18 +90,22 @@ if($silent) {
 	$firstName = $_POST['firstName'];
 	$lastName = $_POST['lastName'];
 	$dummy_data = (isset($_POST['dummy_data']) && $_POST['dummy_data']==1)? 1 : 0;
+	$receiveUpdates = (isset($_POST['receiveUpdates']) && $_POST['receiveUpdates']==1)? 1 : 0;
 	$userData .= "&unique_id={$_POST['unique_id']}";
-	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&language=$lang&adminEmail=$adminEmail&dummy_data=$dummy_data&timezone=".urlencode($timezone);
+	$userData .= "&dbHost=$host&dbName=$db&dbUser=$user&app=$app&currency=".$_POST['currency']."&currency2=$currency2&language=$lang&adminEmail=$adminEmail&dummy_data=$dummy_data&receiveUpdates=$receiveUpdates&timezone=".urlencode($timezone);
 	
 	
 }
 
 $webLeadUrl=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+$apiKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0,16);
 $webLeadUrl=substr($webLeadUrl,0,-15);
-
 $contents=file_get_contents('webLeadConfig.php');
-$contents=preg_replace('/\$url=\"\";/',"\$url='$webLeadUrl'",$contents);
-file_put_contents('leadCapture.php',$contents);
+$contents=preg_replace('/\$url=\'\';/',"\$url='$webLeadUrl'",$contents);
+$contents=preg_replace('/\$user=\'\';/',"\$user='api'",$contents);
+$contents=preg_replace('/\$password=\'\';/',"\$password='$apiKey'",$contents);
+file_put_contents('webLeadConfig.php',$contents);
+
 
 if(empty($lang))
 	$lang='en';
@@ -351,70 +356,6 @@ BEGIN
 	RETURN 0;	-- default is false
 END;') or addSqlError('Unable to create function x2_checkOwnership.'.mysql_error());
 
-/* CREATE FUNCTION `x2_checkViewPermission`(mode int, user varchar(255), acl varchar(255)) RETURNS int(11)
-begin
-	declare pos int default 1;
-	declare retv int default 0;
-	declare memb varchar(255);
-
-	-- clean up 2 char sep token in acl
-	set acl = replace(acl,', ',',');
-
-	-- check for public
-	if mode = 1 then
-		return 1;
-	end if;
-
-	-- check for admin
-	if strcmp(user, 'admin') = 0 then
-		return 1;
-	end if;
-
-	-- check for private and single assigment to user
-	if mode = 0 and strcmp(acl, user) = 0 then
-		return 1;
-	end if;
-
-  -- check for private 
-	if mode = 0 then
-		if instr(acl,',') = 0 and (0 + acl) > 0 then -- single assigment to group
-			select count(*) into retv from x2_group_to_user where groupId = (0 + acl) and username = user; 
-			return retv;
-		else -- multiple assignment, fetch acl tokens
-			set memb = x2_func_strSplit(acl,',',pos);
-			while length(memb) > 0 do
-				if (0 + memb) > 0 then -- group
-					select count(*) into retv from x2_group_to_user where groupId = (0 + memb) and username = user; 
-					if retv > 0 then
-						return 1;
-					end if;
-				else -- user
-					if strcmp(acl, user) = 0 then
-						return 1;
-					end if;
-				end if;
-
-				set pos = pos + 1;
-				set memb = x2_func_strSplit(acl,',',pos);
-			end while;
-		end if;
-	end if;
-
-	-- check for shared and single assigment to user
-	if mode = 2 and instr(acl,',') = 0 then
-		if (0 + acl) <= 0 then
-			select count(*) into retv from x2_group_to_user a, x2_group_to_user b where a.username = acl and b.username = user and b.groupId = a.groupId; 
-			return retv;
-		else  -- if user then not defined
-			return 0;  
-		end if;
-	else  -- if multiple assignment then not defined
-		return 0;
-	end if;
-
-	-- default is false
-	return 0;
-end; */
 mysql_query('CREATE TABLE x2_dashboard_settings(
 	userID					INT,
 	numCOLS					INT				DEFAULT 2,
@@ -550,6 +491,7 @@ mysql_query('CREATE TABLE x2_actions(
 	syncGoogleCalendarEventId TEXT,
 	
 	INDEX (assignedTo),
+	INDEX (type),
 	INDEX (associationType,associationId)
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_actions.'.mysql_error());
 
@@ -873,7 +815,7 @@ mysql_query('CREATE TABLE x2_admin(
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
 	workflowBackdateRange			INT			NOT NULL DEFAULT -1,
 	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1,
-	unique_id		VARCHAR(32) NULL
+	unique_id		VARCHAR(32) NOT NULL DEFAULT "none"
 ) COLLATE = utf8_general_ci') or addSqlError('Unable to create table x2_admin.'.mysql_error());
 
 mysql_query('CREATE TABLE x2_changelog(
@@ -1447,10 +1389,17 @@ mysql_query("INSERT INTO x2_dashboard_settings(userID) VALUES (1);") or addSqlEr
 $adminPassword = md5($adminPassword); 
 $adminEmail = mysql_escape_string($adminEmail);
 
-mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) VALUES ('web','admin','admin','$adminPassword',
-			'$adminEmail' ,'1', '0')") or addSqlError("Error inserting admin information.");
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) 
+        VALUES ('web','admin','admin','$adminPassword','$adminEmail' ,'1', '0')") 
+or addSqlError("Error inserting admin information.");
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) 
+        VALUES ('API','User','api','$apiKey','$adminEmail' ,'0', '0')") 
+or addSqlError("Error inserting admin information.");
 mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
-		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or addSqlError("Error inserting dummy data");
+		VALUES ('Web Admin', 'admin', '831-555-5555', '$adminEmail','1')") or addSqlError("Error inserting admin information");
+mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('API User', 'api', '831-555-5555', '$adminEmail','0')") or addSqlError("Error inserting admin information");
+
 mysql_query("INSERT INTO x2_social (type, data) VALUES ('motd', 'Please enter a message of the day!')") or addSqlError("Unable to set starting MOTD.");
 
 mysql_query('INSERT INTO x2_admin (accounts,sales,timeout,webLeadEmail,currency,installDate,updateDate,quoteStrictLock,unique_id) VALUES (
@@ -1646,7 +1595,7 @@ function installer_t($str) {	// translates by looking up string in install.php l
 <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 <style type="text/css">
 body {
-	background-color:black;
+	background-color:#fff;
 	padding-top:50px;
 }
 </style>
@@ -1654,7 +1603,7 @@ body {
 <script type="text/javascript" src="js/backgroundImage.js"></script>
 </head>
 <body>
-<img id="bg" src="uploads/defaultBg.jpg" alt="">
+<!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
 <div id="installer-box" style="padding-top:20px;">
 	<h1><?php echo installer_t('Installation Complete!'); ?></h1>
 	<div id="install-form" class="wide form">
@@ -1684,6 +1633,8 @@ body {
 	<?php echo installer_t('All Rights Reserved.'); ?>
 	<?php if ($_POST['unique_id'] != 'none'): ?>
 	<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo $stats; ?>">
+	<?php else: ?>
+	<img src="http://x2planet.com/listen-v2.php?<?php echo $stats; ?>" style="display:none">
 	<?php endif; ?>
 	
 </div>

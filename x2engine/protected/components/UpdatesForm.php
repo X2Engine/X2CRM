@@ -90,6 +90,7 @@ class UpdatesForm {
 	    'statusId' => '',
 	    'themeUrl' => '',
 	    'titleWrap' => array('<h2>', '</h2>'),
+	    'receiveUpdates' => 1,
 	    'serverInfo' => False,
 	    'user_agent' => $_SERVER['HTTP_USER_AGENT'],
 	);
@@ -102,7 +103,7 @@ class UpdatesForm {
 	    $attrArr = $this->$attr;
 	    foreach (array_keys($this->$attr) as $key)
 		$attrArr[$key] = call_user_func_array($transFunc, array_merge($transFuncArgs, array($attrArr[$key])));
-	    $this->attr = $attrArr;
+	    $this->$attr = $attrArr;
 	}
     }
 

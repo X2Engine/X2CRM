@@ -1,4 +1,3 @@
-<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -11,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,43 +37,27 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-return array (
-// Attribute Labels
-'ID'=>'ID',
-'Association Type'=>'associazione di tipo',
-'Association Name'=>'associazione Nome',
-'Association'=>'associazione',
-'File Name'=>'Nome del file',
-'Uploaded By'=>'caricato da',
-'Create Date'=>'Data di creazione',
-'Description'=>'descrizione',
-'Private'=>'privato',
-'Permission'=>'autorizzazione',
+var typingTimer;
 
 
-// Actions
-'View Attachment'=>'Visualizza l\'allegato',
-'Delete Media'=>'Eliminare media',
-'List'=>'elenco',
-'Upload'=>'caricare',
-'View'=>'vista',
-'Update'=>'aggiornare',
-'Delete'=>'cancellare',
+$(function() {
+	// save after half second when the user is done typing
+	$(editor.e).keyup(function() {
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(autosave, 500);
+	});
+	
+	$(editor.e).keydown(function() {
+		$('#savetime').html('');
+		clearTimeout(typingTimer);
+	});
+});
 
-// Misc
-'File:'=>'File:',
-'File: '=>'File: ',
-'(deleted)'=>'(soppresso)',
-'Uploaded by {name}'=>'Caricato da {nome}',
-'Download File'=>'Scarica file',
-'Update File: '=>'Aggiornamento del file:',
-'Media & File Library'=>'Libreria e supporti file',
-'Max'=>'Max',
-'Forbidden File Extensions:'=>'Estensioni di file proibiti:',
-'Choose File'=>'Scegliere File ',
-'Select File'=>'Selezionare File ',
-'Upload Media File: '=>'Carica file:',
-
-// Errors
-'Are you sure you want to delete this item?'=>'Sei sicuro di voler cancellare questo elemento?',
-);
+// save the doc and display the time that the doc was saved
+function autosave() {
+	editor.post();
+	$('#savetime').html('Saving...');
+	$.post($('body').data('autosaveUrl'), $('form').serializeArray(), function(response) {
+		$('#savetime').html(response);
+	});
+}

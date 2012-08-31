@@ -54,21 +54,26 @@ return array (
 'Admin Password'=>'',
 'Confirm Password'=>'',
 'Administrator Email'=>'',
+'Please enter a valid email address.'=>'',
 
 'Database Connection Info'=>'',
 
+'This release only supports MySQL. Please create a database before installing.'=>'',
 'Host Name'=>'',
 'Database Name'=>'',
 'Username'=>'',
 'Password'=>'',
 
 // Software updates
+'Software Updates'=>'',
 'Notify me of software updates'=>'',
 'First Name'=>'',
 'Last Name'=>'',
 'Email'=>'',
+'Company'=>'',
+'Position'=>'',
 'How you found X2EngineCRM'=>'',
-'Phone'=>'',
+'Phone Number'=>'',
 'Subscribe to the newsletter'=>'',
 'Comments'=>'',
 'Request a follow-up contact'=>'',

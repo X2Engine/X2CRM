@@ -42,7 +42,7 @@
 <?php echo $form->wrapTitle($form->message['updatesTitle']); ?>
 <hr />
 <?php if ($form->config['unique_id'] == 'none'): ?>
-    <div class="row"><label for="receiveUpdates"><?php echo $form->label['receiveUpdates']; ?></label><input type="checkbox" value='1' checked="checked" name="receiveUpdates" id="receiveUpdates" /></div>
+    <div class="row"><label for="receiveUpdates"><?php echo $form->label['receiveUpdates']; ?></label><input type="checkbox" value='1' <?php echo $form->config['receiveUpdates'] ? 'checked="checked"' : Null; ?> name="receiveUpdates" id="receiveUpdates" /></div>
     <div id="receiveUpdates-form">
 	<?php echo $form->wrapTitle($form->message['optionalTitle']); ?><hr />
         <div class="row"><label for="subscribe"><?php echo $form->label['subscribe']; ?></label><input type="checkbox" value='1' name="subscribe" id="subscribe" /></div>
@@ -67,7 +67,7 @@
 
         <div class="row">
     	<label for="info"><?php echo $form->label['info']; ?></label>
-    	<textarea style="width:400px;height:100px;" rows="5" height="50" width="100" columns="10" name="info" id="info"></textarea>
+    	<textarea style="width:360px;height:100px;" rows="5" height="50" width="100" columns="10" name="info" id="info"></textarea>
         </div>
         <script>	
     	jQuery(document).ready(function($) {
@@ -85,7 +85,10 @@
     }
     ?>
 
-    	$("#receiveUpdates").change(function(e) {
+    	$("#receiveUpdates").each(function() {
+	    if(!$(this).is(":checked"))
+		$("#receiveUpdates-form").hide();
+	}).change(function(e) {
     	    if($(this).is(":checked")) {
     		$("#receiveUpdates-form").slideDown();
     	    } else {

@@ -44,6 +44,7 @@ $this->menu = array(
 	array('label' => Yii::t('dashboard', 'Lead Activity')),
 	array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
 	array('label' => Yii::t('dashboard', 'Lead Sources'), 'url' => array('leadSources')),
+	array('label' => Yii::t('dashboard', 'Workflow'), 'url' => array('workflow')),
 	array('label' => Yii::t('dashboard', 'Marketing'), 'url' => array('marketing')),
 	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
 	array('label' => Yii::t('dashboard', 'Sales'), 'url' => array('sales')),
@@ -52,29 +53,6 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 	$('#startDate,#endDate').change(function() {
 		$('#dateRange').val('custom');
 	});
-
-	$('#lead-volume-chart').bind('jqplotDataHighlight', function (e, seriesIndex, pointIndex, data) {
-			$('#pie-tooltip').html('<div style=\"font-size:14px;font-weight:bold;padding:5px;color:#000;background:white;background:rgba(255,255,255);\">' + data[0] + '</span>');
-			$('#pie-tooltip').show();
-			
-			var chart_left = $('#lead-volume-chart').position().left;
-				var chart_top = $('#lead-volume-chart').position().top;
-		
-			$(document).bind('mousemove.pieChart',function(e) {
-				x = e.pageX; //plot.axes.xaxis.u2p(data[0]),  // convert x axis unita to pixels
-				y = e.pageY; //plot.axes.yaxis.u2p(data[1]);  // convert y axis units to pixels
-				$('#pie-tooltip').css({left:x-chart_left+5, top:y-50});
-			});
-		});
-
-		// Bind a function to the unhighlight event to clean up after highlighting.
-		$('#lead-volume-chart').bind('jqplotDataUnhighlight', 
-		function (e, seriesIndex, pointIndex, data) {
-			$(document).unbind('mousemove.pieChart');
-			$('#pie-tooltip').empty();
-			$('#pie-tooltip').hide();
-		});
-
 ",CClientScript::POS_READY);
 ?>
 <div class="form">

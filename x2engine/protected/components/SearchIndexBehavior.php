@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,43 +38,41 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-return array (
-// Attribute Labels
-'ID'=>'ID',
-'Association Type'=>'associazione di tipo',
-'Association Name'=>'associazione Nome',
-'Association'=>'associazione',
-'File Name'=>'Nome del file',
-'Uploaded By'=>'caricato da',
-'Create Date'=>'Data di creazione',
-'Description'=>'descrizione',
-'Private'=>'privato',
-'Permission'=>'autorizzazione',
+ 
+/**
+ * SearchIndexBehavior is a CModelBehavior which manages entries in x2_search_keywords and x2_search
+ *
+ * @property string $baseRoute The default module/controller this model "belongs" to
+ * @property string $viewRoute The default action to view this model
+ * @property string $autoCompleteSource The action to user for autocomplete data
+ */
+ 
+class SearchIndexBehavior extends CModelBehavior {
+
+	// public $baseRoute;
+	// public $viewRoute;
+	// public $autoCompleteSource;
+	// public $icon;
+	
+	public function attach($owner) {
+	
+		parent::attach($owner);
+		
+		if(!isset($this->baseRoute))
+			$this->baseRoute = '/'.strtolower(get_class($this->owner)); 	// assume the model name is the same as the controller
+			
+		if(!isset($this->viewRoute))
+			$this->viewRoute = $this->baseRoute;
+			
+		if(!isset($this->autoCompleteSource))
+			$this->autoCompleteSource = $this->baseRoute.'/getItems';	// assume the model name is the same as the controller
+	}
+}
 
 
-// Actions
-'View Attachment'=>'Visualizza l\'allegato',
-'Delete Media'=>'Eliminare media',
-'List'=>'elenco',
-'Upload'=>'caricare',
-'View'=>'vista',
-'Update'=>'aggiornare',
-'Delete'=>'cancellare',
 
-// Misc
-'File:'=>'File:',
-'File: '=>'File: ',
-'(deleted)'=>'(soppresso)',
-'Uploaded by {name}'=>'Caricato da {nome}',
-'Download File'=>'Scarica file',
-'Update File: '=>'Aggiornamento del file:',
-'Media & File Library'=>'Libreria e supporti file',
-'Max'=>'Max',
-'Forbidden File Extensions:'=>'Estensioni di file proibiti:',
-'Choose File'=>'Scegliere File ',
-'Select File'=>'Selezionare File ',
-'Upload Media File: '=>'Carica file:',
 
-// Errors
-'Are you sure you want to delete this item?'=>'Sei sicuro di voler cancellare questo elemento?',
-);
+
+
+
+

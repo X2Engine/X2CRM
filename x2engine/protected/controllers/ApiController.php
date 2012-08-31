@@ -99,16 +99,14 @@ class ApiController extends x2base {
                         $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
                         exit;
                 }
-                // Try to assign POST values to attributes
-                foreach ($_POST as $var => $value) {
-                    // Does the model have this attribute? If not raise an error
-                    if ($model->hasAttribute($var))
-                        $model->$var = $value;
-                }
+                
+                $model->setX2Fields($_POST);
+                
 
                 switch ($_GET['model']) {
                     // Get an instance of the respective model
                     case 'Contacts':
+                        
                         Yii::import("application.modules.contacts.controllers.DefaultController");
                         $controller = new DefaultController('DefaultController');
                         if ($controller->create($model, $temp, '1')) {
@@ -121,11 +119,41 @@ class ApiController extends x2base {
                             foreach ($model->errors as $attribute => $attr_errors) {
                                 $msg .= "<li>Attribute: $attribute</li>";
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error)
+                                foreach ($attr_errors as $attr_error){
                                     $msg .= "<li>$attr_error</li>";
+                                }
                                 $msg .= "</ul>";
                             }
                             $msg .= "</ul>";
+                            $notif=new Notification;
+                            $notif->user='admin';
+                            $notif->type='lead_failure';
+                            $notif->createdBy='API';
+                            $notif->createDate = time();
+                            $notif->save();
+                            
+                            $to=Yii::app()->params->admin->webLeadEmail;
+                            $subject="Web Lead Failure";
+                            $phpMail = $this->getPhpMailer();
+                            $fromEmail = Yii::app()->params->admin->emailFromAddr;
+                            $fromName = Yii::app()->params->admin->emailFromName;
+                            $phpMail->AddReplyTo($fromEmail, $fromName);
+                            $phpMail->SetFrom($fromEmail, $fromName);
+                            $phpMail->Subject = $subject;
+                            $phpMail->AddAddress($to, 'X2CRM Administrator');
+                            $phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
+                            $phpMail->Send();
+                            
+                            $attributes=$model->attributes;
+                            ksort($attributes);
+                            if(file_exists('failed_leads.csv')){
+                                $fp=fopen('failed_leads.csv',"a+");
+                                fputcsv($fp,$attributes);
+                            }else{
+                                $fp=fopen('failed_leads.csv',"a+");
+                                fputcsv($fp,array_keys($attributes));
+                                fputcsv($fp,$attributes);
+                            }
                             $this->_sendResponse(500, $msg);
                         }
                         break;
@@ -423,9 +451,9 @@ class ApiController extends x2base {
     }
 
     public function actionDelete() {
-        if (isset($_POST['auth'])) {
-            $username = $_POST['auth']['username'];
-            $password = $_POST['auth']['password'];
+        if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
+            $username = $_POST['authUser'];
+            $password = $_POST['authPassword'];
             $apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
             if (isset($apiUser)) {
                 switch ($_GET['model']) {

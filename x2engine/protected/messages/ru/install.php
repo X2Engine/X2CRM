@@ -54,21 +54,26 @@ return array (
 'Admin Password'=>'Пароль администратора',
 'Confirm Password'=>'Подтвердить пароль',
 'Administrator Email'=>'Email администратора',
+'Please enter a valid email address.'=>'Пожалуйста, введите адрес электронной почты.',
 
 'Database Connection Info'=>'Введите данные для подключения к базе данных',
 
+'This release only supports MySQL. Please create a database before installing.'=>'Эта версия поддерживает только MySQL. Пожалуйста, создайте базу данных перед установкой.',
 'Host Name'=>'Адрес базы данных',
 'Database Name'=>'Имя базы данных',
 'Username'=>'Имя пользователя',
 'Password'=>'Пароль',
 
 // Software updates
+'Software Updates'=>'Обновления программного обеспечения',
 'Notify me of software updates'=>'Сообщите мне обновления программного обеспечения',
 'First Name'=>'Имя',
 'Last Name'=>'фамилия',
 'Email'=>'E-mail',
+'Company'=>'компания',
+'Position'=>'положение',
 'How you found X2EngineCRM'=>'Как вы нашли X2EngineCRM',
-'Phone'=>'телефон',
+'Phone Number'=>'Номер телефона',
 'Subscribe to the newsletter'=>'Подписаться на рассылку',
 'Comments'=>'Комментарии',
 'Request a follow-up contact'=>'Заказать последующих контактов',

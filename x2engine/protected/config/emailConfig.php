@@ -1,8 +1,8 @@
 <?php
 $host='localhost';
 $user='root';
-$pass=' ';
+$pass='';
 $dbname='x2engine';
-$version = '1.6.5.1';
-$buildDate = 1346196622;
+$version = '1.6.6';
+$buildDate = 1346444030;
 ?>

@@ -1,21 +1,19 @@
 README
 
-X2EngineCRM 1.6.5.1 Changelog
-8/28/2012
+X2EngineCRM 1.6.6 Changelog
+8/31/2012
 
-X2EngineCRM 1.6.5.1 Changelog
-- Powerful new web lead capture form editor
-- Enhanced record tagging abilities
-- New single-user lead distribution option
-- Automatic phone number formatting (for US numbers)
-- Reorganized admin page
-- Improved search results
-- Improved notification behavior
-- Tons of bug fixes
-- Improvements to VCR controls and grid sort/filter rememebering
-- Fixed bug with updater
+X2EngineCRM 1.6.6 Changelog
+- New Workflow report in Charts module
+- Improved Lead Volume report
+- Improved phone number search (search is now formatting-insensitive)
+- Documents now auto-save (whenever you stop typing)
+- New look for installer and login screen
+- Added logging for failed API requests
+- Numerous bug fixes
+- Added various translations
 
-Welcome to  X2EngineCRM v1.6.5!  X2EngineCRM is a next-generation,  open source
+Welcome to  X2EngineCRM v1.6.6!  X2EngineCRM is a next-generation,  open source
 social sales application for small and medium sized businesses. X2EngineCRM was 
 designed to streamline  contact and sales actions into  one  compact blog-style 
 user interface.  Add to this  contact  and  colleague  social feeds  and  sales 

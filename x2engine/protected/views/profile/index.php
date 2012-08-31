@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,8 @@ $(function(){
 		$feed->data = Yii::t('app','Enter text here...');
 		echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		echo $form->dropDownList($feed,'associationId',$users);
+        $feed->private=1;
+		echo $form->dropDownList($feed,'private',array('1'=>'Public','0'=>'Private'));
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
 		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();"));
 		?>
@@ -83,5 +85,6 @@ $(function(){
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,
 	'itemView'=>'../social/_viewFull', 
-	'template'=>'{items}'
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
+	'template'=>'{summary}{sorter}{items}{pager}'
 )); ?>

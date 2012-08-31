@@ -42,6 +42,7 @@
 $this->menu = array(
 	array('label' => Yii::t('dashboard', 'Grid Builder'), 'url'=>array('gridReport')),
 	array('label' => Yii::t('dashboard', 'Lead Performance')),
+	array('label' => Yii::t('dashboard', 'Workflow'), 'url' => array('workflow')),
 );
 Yii::app()->clientScript->registerScript('leadPerformance',"
 	$('#startDate,#endDate').change(function() {

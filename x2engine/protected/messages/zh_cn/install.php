@@ -54,21 +54,26 @@ return array (
 'Admin Password'=>'管理员密码',
 'Confirm Password'=>'确认密码',
 'Administrator Email'=>'管理员电子邮件',
+'Please enter a valid email address.'=>'请输入一个有效的电子邮件地址。',
 
 'Database Connection Info'=>'数据库连接信息',
 
+'This release only supports MySQL. Please create a database before installing.'=>'此版本只支持MySQL。在安装之前，请创建一个数据库。',
 'Host Name'=>'主机名',
 'Database Name'=>'数据库名称',
 'Username'=>'用户名',
 'Password'=>'密码',
 
 // Software updates
+'Software Updates'=>'软件更新',
 'Notify me of software updates'=>'软件更新时通知我',
 'First Name'=>'名字',
 'Last Name'=>'姓',
 'Email'=>'电子邮件',
+'Company'=>'公司',
+'Position'=>'位置',
 'How you found X2EngineCRM'=>'你如何找到X2EngineCRM的',
-'Phone'=>'电话',
+'Phone Number'=>'电话号码',
 'Subscribe to the newsletter'=>'订阅电子报',
 'Comments'=>'评论',
 'Request a follow-up contact'=>'请求的后续接触',

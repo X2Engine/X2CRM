@@ -103,7 +103,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 <div class="form">
 	<div class="row">
 		<h2><?php echo Yii::t('admin','Web Lead Capture and Sales Workflows'); ?></h2>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Web Lead Form'),array('marketing/webLeadForm')); ?><br><?php echo Yii::t('admin','Create a public form to receive new contacts');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('marketing','Web Lead Form'),array('marketing/webLeadForm')); ?><br><?php echo Yii::t('marketing','Create a public form to receive new contacts');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Set Lead Distribution'),'setLeadRouting'); ?><br><?php echo Yii::t('admin','Change how new web leads are distributed.');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),'roundRobinRules'); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?></div>
 	</div><br>
