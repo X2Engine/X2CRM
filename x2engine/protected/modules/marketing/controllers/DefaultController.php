@@ -252,7 +252,7 @@ class DefaultController extends x2base {
 	}
 
 	public function actionLaunch($id) {
-		$model = Campaign::load($id);
+		$campaign = Campaign::load($id);
 
 		if(!isset($campaign->list)) {
 			Yii::app()->user->setFlash('error', Yii::t('marketing','Contact List cannot be blank.'));
@@ -295,7 +295,7 @@ class DefaultController extends x2base {
 	 * Deactivate a campaign to halt mailings, or resume paused campaign
 	 */
 	public function actionToggle($id) {
-		$model = Campaign::load($id);
+		$campaign = Campaign::load($id);
 		$campaign->active = $campaign->active ? 0 : 1;
 		$campaign->save();
 		$message = $campaign->active ? Yii::t('marketing','Campaign resumed') : Yii::t('marketing','Campaign paused');
@@ -307,7 +307,7 @@ class DefaultController extends x2base {
 	 * Forcibly complete a campaign despite any unsent mail
 	 */
 	public function actionComplete($id) {
-		$model = Campaign::load($id);
+		$campaign = Campaign::load($id);
 		$campaign->active = 0;
 		$campaign->complete = 1;
 		$campaign->save();

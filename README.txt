@@ -1,7 +1,7 @@
 README
 
 X2EngineCRM 1.6.6 Changelog
-8/31/2012
+9/04/2012
 
 X2EngineCRM 1.6.6 Changelog
 - New Workflow report in Charts module
