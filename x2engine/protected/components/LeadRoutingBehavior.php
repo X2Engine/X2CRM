@@ -40,9 +40,12 @@
 
  
 /**
- * LeadRouting is a CBehavior that provides logic for simple or complex distribution of leads to users
+ * Logic attributes/methods for lead distribution.
+ * 
+ * LeadRouting is a CBehavior that provides logic for simple or complex 
+ * distribution of leads to users
+ * @package X2CRM.components
  */
- 
 class LeadRoutingBehavior extends CBehavior {
 
 	public function cleanUpSessions() {
@@ -50,7 +53,9 @@ class LeadRoutingBehavior extends CBehavior {
 	}
 
 	/**
-	 * @return username that should be assigned the next lead
+	 * Picks the next asignee based on the routing type
+	 * 
+	 * @return string Username that should be assigned the next lead
 	 */
 	public function getNextAssignee() {
 		$admin = &Yii::app()->params->admin;
@@ -82,6 +87,12 @@ class LeadRoutingBehavior extends CBehavior {
         }
 	}
 
+	/**
+	 * Picks the next asignee such that the resulting routing distribution 
+	 * would be even.
+	 * 
+	 * @return mixed
+	 */
 	public function evenDistro() {
 		$admin = &Yii::app()->params->admin;
 		$online = $admin->onlineOnly;
@@ -117,6 +128,15 @@ class LeadRoutingBehavior extends CBehavior {
 		return key($numbers);
 	}
 
+	/**
+	 * Picks the next assignee in a round-robin manner.
+	 * 
+	 * Users get a chance to be picked in this manner only if online. In the
+	 * round-robin distribution of leads, the last person who was picked for
+	 * a lead assignment is stored using {@link updateRoundRobin()}. If no 
+	 * one is online, the lead will be assigned to "Anyone".
+	 * @return mixed 
+	 */
 	public function roundRobin() {
 		$admin = &Yii::app()->params->admin;
 		$online = $admin->onlineOnly;
@@ -147,18 +167,30 @@ class LeadRoutingBehavior extends CBehavior {
         }
 	}
 
+	/**
+	 * Returns the round-robin state
+	 * @return integer
+	 */
 	public function getRoundRobin() {
 		$admin = &Yii::app()->params->admin;
 		$rrId = $admin->rrId;
 		return $rrId;
 	}
 
+	/**
+	 * Stores the round-robin state. 
+	 */
 	public function updateRoundRobin() {
 		$admin = &Yii::app()->params->admin;
 		$admin->rrId = $admin->rrId + 1;
 		$admin->save();
 	}
 
+	/**
+	 * Obtains lead routing rules.
+	 * @param type $data
+	 * @return type 
+	 */
 	public function getRoutingRules($data) {
 		$admin = &Yii::app()->params->admin;
 		$online = $admin->onlineOnly;

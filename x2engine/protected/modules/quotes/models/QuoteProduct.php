@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @package X2CRM.modules.quotes.models
+ */
 class QuoteProduct extends CActiveRecord
 {
 	// return: QuoteProduct static model

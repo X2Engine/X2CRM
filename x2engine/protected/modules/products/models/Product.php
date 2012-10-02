@@ -41,7 +41,8 @@
 Yii::import('application.models.X2Model');
 
 /**
- * This is the model class for table "x2_template".
+ * This is the model class for table "x2_products".
+ * @package X2CRM.modules.products.models
  */
 class Product extends X2Model {
 	/**

@@ -293,7 +293,7 @@ $userMenu = array(
 			<?php $this->widget('zii.widgets.CMenu',array('items'=>$this->menu)); ?>
 			<?php
 			echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact').'</span>',array('/contacts/create'),array('class'=>'x2-button'))." \n";
-			echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('/actions/default/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
+			echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Action').'</span>',array('/actions/actions/create','param'=>Yii::app()->user->getName().';none:0'),array('class'=>'x2-button'))." \n";
 			// echo ' '.CHtml::link('<span class="add-button">'.Yii::t('app','Contact + Action').'</span>',array('actions/quickCreate'),array('class'=>'x2-button'))." \n";
 			?>
 			</div>
@@ -329,7 +329,7 @@ $userMenu = array(
 	<?php
 	$cs->registerScript('logos',"
 	$(window).load(function(){
-		if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+		if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
 			$('a').removeAttr('href');
 			alert('Please put the logo back');
 			window.location='http://www.x2engine.com';

@@ -40,13 +40,16 @@
 
  
 /**
- * SearchIndexBehavior is a CModelBehavior which manages entries in x2_search_keywords and x2_search
+ * Search entries management behavior
+ * 
+ * A CModelBehavior subclass which provides methods for managing entries in 
+ * x2_search_keywords and x2_search.
  *
+ * @package X2CRM.components
  * @property string $baseRoute The default module/controller this model "belongs" to
  * @property string $viewRoute The default action to view this model
  * @property string $autoCompleteSource The action to user for autocomplete data
  */
- 
 class SearchIndexBehavior extends CModelBehavior {
 
 	// public $baseRoute;

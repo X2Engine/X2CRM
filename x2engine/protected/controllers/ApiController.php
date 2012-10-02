@@ -39,29 +39,21 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of ApiController
- *
- * @author Jake
+ * Remote data insertion & lookup API
+ * 
+ * @package X2CRM.controllers
+ * @author Jake Houser <jake@x2engine.com>
  */
 class ApiController extends x2base {
-    // Members
+
     /**
-     * Key which has to be in HTTP USERNAME and PASSWORD headers 
+     * @var string The model that the API is currently being used with.
      */
-
-    Const APPLICATION_ID = 'ASCCPE';
-
     public $modelClass = "";
 
     /**
-     * Default response format
-     * either 'json' or 'xml'
+     * Default response format either 'json' or 'xml'
      */
     private $format = 'json';
 
@@ -72,6 +64,16 @@ class ApiController extends x2base {
         return array();
     }
 
+    /**
+     * Creates a new record. 
+     * 
+     * This method allows for the creation of new records via API request. 
+     * Requests should be made of the following format:
+     * www.[server].com/index.php/path/to/x2/index.php/api/create/model/[modelType]
+     * With the model's attributes as $_POST data.  Furthermore, in the post array
+     * a valid username and encrypted password must be submitted under the indeces
+     * 'authUser' and 'authPassword' for the request to be authenticated.
+     */
     public function actionCreate() {
         if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
             $username = $_POST['authUser'];
@@ -104,11 +106,10 @@ class ApiController extends x2base {
                 
 
                 switch ($_GET['model']) {
-                    // Get an instance of the respective model
                     case 'Contacts':
                         
-                        Yii::import("application.modules.contacts.controllers.DefaultController");
-                        $controller = new DefaultController('DefaultController');
+                        Yii::import("application.modules.contacts.controllers.ContactsController");
+                        $controller = new ContactsController('ContactsController');
                         if ($controller->create($model, $temp, '1')) {
                             $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->firstName . " " . $model->lastName));
                         } else {
@@ -158,8 +159,8 @@ class ApiController extends x2base {
                         }
                         break;
                     case 'Accounts':
-                        Yii::import("application.modules.accounts.controllers.DefaultController");
-                        $controller = new DefaultController('DefaultController');
+                        Yii::import("application.modules.accounts.controllers.AccountsController");
+                        $controller = new AccountsController('AccountsController');
                         if ($controller->create($model, $temp, '1')) {
                             $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->name));
                         } else {
@@ -179,8 +180,8 @@ class ApiController extends x2base {
                         }
                         break;
                     case 'Actions':
-                        Yii::import("application.modules.actions.controllers.DefaultController");
-                        $controller = new DefaultController('DefaultController');
+                        Yii::import("application.modules.actions.controllers.ActionsController");
+                        $controller = new ActionsController('ActionsController');
                         if ($controller->create($model, $temp, '1')) {
                             $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with description <b>%s</b>', $_GET['model'], $model->actionDescription));
                         } else {
@@ -211,6 +212,19 @@ class ApiController extends x2base {
         }
     }
 
+    /**
+     * Updates a preexisting record.
+     * 
+     * Usage of this function is very similar to {@link actionCreate}, although
+     * it requires the "id" parameter that corresponds to the (auto-increment)
+     * id field of the record in the database. Thus, URLs for post requests to 
+     * this API function should be formatted as follows:
+     * 
+     * index.php/api/update/model/[model name]/id/[record id]
+     * 
+     * The attributes of the model should be submitted in the $_POST array along
+     * with 'authUser' and 'authPassword' just as in create.
+     */
     public function actionUpdate() {
         if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
             $username = $_POST['authUser'];
@@ -254,8 +268,8 @@ class ApiController extends x2base {
                 switch ($_GET['model']) {
                     // Get an instance of the respective model
                     case 'Contacts':
-                        Yii::import("application.modules.contacts.controllers.DefaultController");
-                        $controller = new DefaultController('DefaultController');
+                        Yii::import("application.modules.contacts.controllers.ContactsController");
+                        $controller = new ContactsController('ContactsController');
                         if ($controller->create($model, $temp, '1')) {
                             $this->_sendResponse(200, sprintf('Model <b>%s</b> was updated with name <b>%s</b>', $_GET['model'], $model->firstName . " " . $model->lastName));
                         } else {
@@ -275,8 +289,8 @@ class ApiController extends x2base {
                         }
                         break;
                     case 'Accounts':
-                        Yii::import("application.modules.accounts.controllers.DefaultController");
-                        $controller = new DefaultController('DefaultController');
+                        Yii::import("application.modules.accounts.controllers.AccountsController");
+                        $controller = new AccountsController('AccountsController');
                         if ($controller->update($model, $temp, '1')) {
                             $this->_sendResponse(200, sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.', $_GET['model'], $model->id));
                         } else {
@@ -296,8 +310,8 @@ class ApiController extends x2base {
                         }
                         break;
                     case 'Actions':
-                        Yii::import("application.modules.actions.controllers.DefaultController");
-                        $controller = new DefaultController('DefaultController');
+                        Yii::import("application.modules.actions.controllers.ActionsController");
+                        $controller = new ActionsController('ActionsController');
                         if ($controller->update($model, $temp, '1')) {
                             $this->_sendResponse(200, sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.', $_GET['model'], $model->id));
                         } else {
@@ -328,6 +342,25 @@ class ApiController extends x2base {
         }
     }
 
+    /**
+     * Records a phone call as a notification.
+     * 
+     * Given a phone number, if a contact matching that phone number exists, a 
+     * notification assigned to that contact's assignee will be created. 
+     * Software-based telephony systems such as Asterisk can thus immediately
+     * notify sales reps of a phone call by making a cURL request to a url 
+     * formatted as follows:
+     * 
+     * api/voip/data/[phone number]
+     * 
+     * (Note: the phone number itself must not contain anything but digits, i.e.
+     * no periods or dashes.)
+     * 
+     * For Asterisk, one possible integration method is to insert into the 
+     * dialplan, at the appropriate position, a call to a script that uses 
+     * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone 
+     * number. The script can then make the necessary request to this action.
+     */
     public function actionVoip() {
 
         if (isset($_GET['data'])) {
@@ -346,9 +379,9 @@ class ApiController extends x2base {
                     $notif->value = $matches[0];
                     $notif->createDate = time();
                     $notif->save();
-                    echo 'Ding!';
+                    echo 'Notification created.';
                 } else {
-                    echo 'No contact found :(';
+                    echo 'No contact found.';
                     // $notif = new Notification;
                     // $notif->type = 'voip_call';
                     // $notif->user = ?;
@@ -358,24 +391,21 @@ class ApiController extends x2base {
                     // $notif->save();
                 }
             } else
-                echo 'That\'s no phone number, it\'s a space station!';
+                echo 'Invalid phone number format.';
         }
-
-        // Phone: >P100 HANSEDER ANTHON           9408836387 
-        // $notif = new Notification;
-        // $notif->createDate = time();
-        // $notif->type = 'voip';
-        // $notif->user = 
-        // $file="calls.log";
-        // $fp=fopen($file,"a+");
-        // fwrite($fp,"A call was logged at ".date("m/d/Y @ g:i:s A")." with this data ".print_r($_POST));
-        // if(isset($_POST) && count($_POST)>0){
-        // echo 'TRUE';
-        // } else {
-        // echo 'FALSE';
-        // }
     }
 
+    /**
+     * Obtain a model by its record ID. 
+     * 
+     * Looks up a model by its record ID and responds with its attributes as a 
+     * JSON-encoded string.
+     * 
+     * URLs to use this function:
+     * index.php/view/id/[record id]
+     * 
+     * Include 'authUser' and 'authPassword' just like in create and update.
+     */
     public function actionView() {
         if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
             $username = $_POST['authUser'];
@@ -414,6 +444,17 @@ class ApiController extends x2base {
         }
     }
 
+    /**
+     * Obtain a model using search parameters. 
+     * 
+     * Finds a record based on its first name, last name, and/or email and responds with its full 
+     * attributes as a JSON-encoded string.
+     * 
+     * URLs to use this function:
+     * index.php/api/lookup/[model name]/[attribute]/[value]/...
+     * 
+     * 'authUser' and 'authPassword' are required.
+     */
     public function actionLookup() {
         if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
             $username = $_POST['authUser'];
@@ -450,6 +491,14 @@ class ApiController extends x2base {
         }
     }
 
+    /**
+     * Delete a model record by ID.
+     * 
+     * URLs to use this action:
+     * index.php/api/delete/id/[id]
+     * 
+     * 'authUser' and 'authPassword' are required
+     */
     public function actionDelete() {
         if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
             $username = $_POST['authUser'];
@@ -489,6 +538,13 @@ class ApiController extends x2base {
         }
     }
 
+   /**
+    * Respond to a request with a specified status code and body.
+    * 
+    * @param integer $status The HTTP status code.
+    * @param string $body The body of the response message
+    * @param string $content_type The response mimetype.
+    */
     private function _sendResponse($status = 200, $body = '', $content_type = 'text/html') {
         // set the status
         $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
@@ -549,7 +605,13 @@ class ApiController extends x2base {
             exit;
         }
     }
-
+    
+    /**
+     * Obtain an appropriate message for a given HTTP response code.
+     * 
+     * @param integer $status
+     * @return string 
+     */
     private function _getStatusCodeMessage($status) {
         // these could be stored in a .ini file and loaded
         // via parse_ini_file()... however, this will suffice

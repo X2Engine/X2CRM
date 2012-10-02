@@ -1,5 +1,6 @@
 <?php
-/*********************************************************************************
+
+/* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -36,12 +37,12 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * ****************************************************************************** */
 
 /**
  * This is the model class for table "x2_media".
  *
- * The followings are the available columns in table 'x2_media':
+ * @package X2CRM.models
  * @property integer $id
  * @property string $associationType
  * @property integer $associationId
@@ -51,8 +52,15 @@
  */
 class MediaChild extends Media {
 
-	// Takes actionDescrption formatted as [filename]:[id]
-	// Generates description message with link and preview image (optional)
+    /**
+     * Generates a description message with a link and optional preview image
+     * for media items.
+     * 
+     * @param string $actionDescription
+     * @param boolean $makeLink
+     * @param boolean $makeImage
+     * @return string 
+     */
 	public static function attachmentActionText($actionDescription,$makeLink = false,$makeImage = false) {
 	
 		$data = explode(':',$actionDescription);
@@ -81,57 +89,58 @@ class MediaChild extends Media {
 		} else
 			return $actionDescription;
 	}
-	
+
+    /**
+     * @param string $str
+     * @param boolean $makeLink
+     * @param boolean $makeImage
+     * @return string 
+     */ 
 	public static function attachmentSocialText($str,$makeLink = false,$makeImage = false) {
 		// $a = '<a href="/x2merge/index.php/media/16">footer.png</a>';
 		
 		// echo ,preg_match('/^<a href=".+(media\/[0-9]+)" target="_blank">.+<\/a>$/i',$description
 		$matches = array();
 		// die(CHtml::encode($description));
-		if(preg_match('/^<a href=".+media\/([0-9]+)">.+<\/a>$/i',$str,$matches)) {
-			
+		if(preg_match('/^<a href=".+media\/view\/([0-9]+)">.+<\/a>$/i',$str,$matches)) {
 			if(count($matches) == 2 && is_numeric($matches[1])) {
 			
 				$media = CActiveRecord::model('MediaChild')->findByPk($matches[1]);
 				if(isset($media)) {
-					$file = Yii::app()->file->set('uploads/'.$media->fileName);
-
 					$str = Yii::t('media','File:') . ' ';
 					
-					if($makeLink && $file->exists)
-						$str .= CHtml::link($media->fileName,array('media/view','id'=>$media->id));
+					$fileExists = $media->fileExists();
+					
+					if($fileExists == false)
+					    return $str . $data[0] . ' ' . Yii::t('media','(deleted)');
+					
+					if($makeLink)
+					    $str .= $media->getMediaLink();
 					else
-						$str .= $media->fileName;
-					if (!$file->exists)
-						$str .= ' '.Yii::t('media','(deleted)');
-
-					if($makeImage && $file->exists) {	// to render an image, first check file extension
-
-						$file_ext = strtolower($file->getExtension());
-						$legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
-						
-						if(in_array($file_ext,$legal_extensions))
-							$str .= CHtml::image(Yii::app()->request->baseUrl.'/uploads/'.$media->fileName,'',array('class'=>'attachment-img'));
-					}
+					    $str .= $data[0];
+					
+					if($makeImage && $media->isImage())	// to render an image, first check file extension
+					    $str .= $media->getImage();
+					
 					return $str;
 				}
 			}
 		}
-		return x2base::convertUrls($str);
-	}
+	return x2base::convertUrls($str);
+    }
 
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels() {
+	return array(
+	    'id' => Yii::t('media', 'ID'),
+	    'associationType' => Yii::t('media', 'Association Type'),
+	    'associationId' => Yii::t('media', 'Association'),
+	    'fileName' => Yii::t('media', 'File Name'),
+	    'uploadedBy' => Yii::t('media', 'Uploaded By'),
+	    'createDate' => Yii::t('media', 'Create Date'),
+	);
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		return array(
-			'id' => Yii::t('media','ID'),
-			'associationType' => Yii::t('media','Association Type'),
-			'associationId' => Yii::t('media','Association'),
-			'fileName' => Yii::t('media','File Name'),
-			'uploadedBy' => Yii::t('media','Uploaded By'),
-			'createDate' => Yii::t('media','Create Date'),
-		);
-	}
 }

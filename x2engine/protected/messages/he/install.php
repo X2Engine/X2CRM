@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,18 +43,32 @@ return array (
 'Install X2EngineCRM'=>'התקנה X2EngineCRM',
 'X2EngineCRM Installation'=>'התקנת X2EngineCRM',
 'Installation Complete'=>'התקנה מלאה',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'יישום אינטרנט זה דורש Javascript בכדי לתפקד כראוי. אנא אפשר Javascript בדפדפן האינטרנט שלך לפני שתמשיך.',
+// Requirements check
+'Cannot install X2EngineCRM'=>'לא ניתן להתקין X2EngineCRM',
+'required but missing'=>'נדרש אך חסר',
+'Your server\'s PHP version'=>'גרסת PHP של השרת שלך',
+'version 5.3 or later is required'=>'גרסת 5.3 או גרסה מאוחרת יותר',
+'Unfortunately, your server does not meet the minimum system requirements for installation'=>'למרבה הצער, השרת שלך אינו עומד בדרישות המערכת המינימאליות להתקנה',
+'Otherwise, contact your hosting provider.'=>'אחרת, צור קשר עם ספק האירוח שלך.',
+'If you are a system administrator of this server, refer to'=>'אם אתה מנהל מערכת של שרת זה, עיין',
 
 'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'ברוכים הבאים מתקין יישום X2EngineCRM! אנחנו צריכים לאסוף מידע מועט לפני שנוכל לקבל את הבקשה שלך ולהפעלתו. נא למלא את השדות המפורטים להלן.',
 
 'X2EngineCRM Application Info'=>'X2EngineCRM פרטי בקשה',
 
+'Create sample data'=>'יצירת נתונים לדוגמה',
 'Application Name'=>'היישום שם',
 'Default Language'=>'שפת ברירת המחדל',
 'Currency'=>'מטבע',
+'Default Timezone'=>'אזור זמן ברירת מחדל',
 'Admin Password'=>'Admin סיסמה',
 'Confirm Password'=>'אישור סיסמה',
 'Administrator Email'=>'מנהל דוא"ל',
 'Please enter a valid email address.'=>'זן כתובת דוא"ל חוקית.',
+'Test Connection'=>'בדוק את החיבור',
+'Connection OK!'=>'חיבור עובד!',
+'Could not connect to host.'=>'לא הצליח להתחבר למארח.',
 
 'Database Connection Info'=>'חיבור מסד נתונים פרטי',
 
@@ -64,7 +78,7 @@ return array (
 'Username'=>'שם משתמש',
 'Password'=>'סיסמה',
 
-// Software updates
+// Software updates & registration
 'Software Updates'=>'עדכוני תוכנה',
 'Notify me of software updates'=>'הודע לי על עדכוני תוכנה',
 'First Name'=>'שם פרטיים',
@@ -83,6 +97,12 @@ return array (
 'Optional Information'=>'מידע אופציונלי',
 'Could not connect to the updates server at this time.'=>'לא ניתן להתחבר לשרת העדכונים בשלב זה.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'אתה יכול להמשיך בהתקנת היישום בלא לאפשר עדכונים ונסה שוב מאוחר יותר על ידי הולך לתוך "הגדרות כלליות" תחת "ההגדרות" App סעיפים בקונסולת הניהול.',
+'Product Key'=>'מפתח המוצר',
+'Registration'=>'הרשמה',
+'Software registration succeeded.'=>'רישום תוכנה הצליח.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'כדי לקבל עדכוני תוכנה מX2Engine, אנא לרשום את העותק של X2EngineCRM:',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'ודא שיש לך חיבור לאינטרנט פעיל. אם הבעיה נמשכת, נא צורו עימנו קשר',
+'For support or sales inquiries, please contact us'=>'לבירורי תמיכה או מכירות, אנא צור איתנו קשר',
 
 'Install'=>'להתקין',
 

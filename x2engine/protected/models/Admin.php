@@ -40,6 +40,7 @@
 
 /**
  * This is the model class for table "x2_admin".
+ * @package X2CRM.models
  */
 class Admin extends CActiveRecord
 {
@@ -66,7 +67,8 @@ class Admin extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('emailFromName, emailFromAddr', 'required'),
-			array('accounts, sales, timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
+			array('timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
+			// accounts, sales, 
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),
 			array('currency', 'length', 'max'=>3),
 			array('emailUseAuth, emailUseSignature', 'length', 'max'=>10),
@@ -87,8 +89,8 @@ class Admin extends CActiveRecord
 	public function attributeLabels() {
 		return array(
 			'id' => Yii::t('admin','ID'),
-			'accounts' => Yii::t('admin','Accounts'),
-			'sales' => Yii::t('admin','Sales'),
+			// 'accounts' => Yii::t('admin','Accounts'),
+			// 'sales' => Yii::t('admin','Opportunities'),
 			'timeout' => Yii::t('admin','Session Timeout'),
 			'webLeadEmail' => Yii::t('admin','Web Lead Email'),
 			'currency' => Yii::t('admin','Currency'),

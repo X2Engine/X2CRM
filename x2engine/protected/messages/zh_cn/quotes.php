@@ -112,5 +112,5 @@ return array (
 'Quote Record Details'=>'引用记录的详细信息',
 'Include Logo'=>'包括标志',
 'Basic Information'=>'基本信息',
-'Sales'=>'销售',
+'Opportunities'=>'销售',
 );

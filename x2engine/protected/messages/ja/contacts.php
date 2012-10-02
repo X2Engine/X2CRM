@@ -131,7 +131,7 @@ return array (
 'Detail View'=>'詳細ビュー',
 'Simple View'=>'簡単なビュー',
 'Contact Info'=>'情報を連絡する',
-'Sales &amp; Marketing'=>'セールス＆マーケティング',
+'Opportunities &amp; Marketing'=>'セールス＆マーケティング',
 'Social Media'=>'ソーシャルメディア',
 
 // Contacts Actions
@@ -142,6 +142,7 @@ return array (
 'View Contact'=>'コンタクトを見る',
 'Update Contact'=>'コンタクトを更新する',
 'Delete Contact'=>'コンタクトを削除する',
+'Contact Lists'=>'リストお問い合わせ',
 'Create Lead'=>'リードを作る',
 'Share Contact'=>'コンタクトを共有する',
 'Create'=>'作る',
@@ -150,7 +151,7 @@ return array (
 'View'=>'表示',
 'Share'=>'シェア',
 'Update'=>'更新',
-'View Sales'=>'売上高を見る',
+'View Opportunities'=>'売上高を見る',
 'Delete'=>'削除する',
 'Show All'=>'すべてを表示',
 'Hide All'=>'すべてを表示しない',
@@ -177,4 +178,17 @@ return array (
 'Subscribe'=>'購読する',
 'The information for {name} has changed.'=>'{name}のための情報が変更されました。',
 'Receive email updates every time information for {name} changes'=>'たびに情報交換{name}の電子メールの更新を受信',
+
+// Web Lead
+'Web Lead'=>'ウェブ接触',
+'Invalid Email Address'=>'無効なメールアドレス',
+'Default list for email list signups'=>'電子メールリストの申し込みのためのデフォルトのリスト',
+'This request cannot be made at this time.'=>'この要求は、現時点では行うことはできません。',
+'Newsletter Signup'=>'ニュースレターのサインアップ',
+'Could not sign up'=>'サインアップすることができませんでした',
+'We\'re Sorry!'=>'申し訳ございません！',
+'Thank You!'=>'ありがとうございました！',
+'Thank you for your interest!'=>'あなたの興味をありがとう！',
+'Someone will be in touch shortly.'=>'誰かがすぐに連絡させていただきます。',
+'Enter any additional information or questions regarding your interest here.'=>'ここにあなたの興味に関する任意の追加情報やご質問を入力してください。',
 );

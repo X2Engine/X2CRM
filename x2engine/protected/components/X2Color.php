@@ -38,6 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * Color utilities (unused)
+ * 
+ * @package X2CRM.components 
+ */
 class X2Color {
 
 	// convert HEX color to RGB values

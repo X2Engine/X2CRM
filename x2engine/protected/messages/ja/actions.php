@@ -137,7 +137,7 @@ return array (
 'Account'=>'アカウント',
 'Project'=>'プロジェクト',
 'Case'=>'ケース',
-'Sale'=>'セール',
+'Opportunity'=>'セール',
 
 // Action Reminder Email
 'No one'=>'誰も',

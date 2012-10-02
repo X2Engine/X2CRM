@@ -37,14 +37,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-function gvSettingsAfterUpdate(id,data,callback) {
-	
-
-	if(typeof callback == 'function')
-		callback();
-}
-
-
 (function($) {
 $.widget("x2.gvSettings", {
 

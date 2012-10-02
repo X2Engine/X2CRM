@@ -37,25 +37,36 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
- echo CHtml::form();
- ?>
+
+
+$canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex');
+
+$this->actionMenu = array(
+	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
+	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
+	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
+	array('label'=>Yii::t('profile','Change Password'),'visible'=>($model->id==Yii::app()->user->getId())),
+);
+
+echo CHtml::form();
+?>
 <div class="form">
-	<h2>Change Password Form</h2>
+	<h2><?php echo Yii::t('app','Change Password Form'); ?></h2>
 	<div class="row" style="margin-bottom:10px;">
 		<div class="cell">
-			<label>Old Password</label>
+			<label><?php echo Yii::t('app','Old Password'); ?></label>
 			<?php echo CHtml::passwordField('oldPassword');?> 
 		</div>
 	</div>
 	<div class="row">
 		<div class="cell">
-		<label>New Password</label>
+		<label><?php echo Yii::t('app','New Password'); ?></label>
 			<?php echo CHtml::passwordField('newPassword','',array('id'=>'newPassword'));?> 
 		</div>
 	</div>
 	<div class="row">
 		<div class="cell">
-		<label>Confirm New Password</label>
+		<label><?php echo Yii::t('app','Confirm New Password'); ?></label>
 			<?php echo CHtml::passwordField('newPassword2','',array('id'=>'newPassword2'));?> 
 		</div>
 	</div>

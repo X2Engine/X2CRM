@@ -39,18 +39,78 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 
-
+/**
+ * Administrative, app-wide configuration actions.
+ * 
+ * Note: when running {@link actionUpdater}, if a new version is available on the
+ * remote updates server, this file will be overwritten by the new file, which
+ * is downloaded upon running the action (route admin/updater).
+ * 
+ * @package X2CRM.controllers 
+ */
 class AdminController extends Controller {
 
     public $portlets = array();
     public $layout = '//layouts/main';
-
+    
+    /**
+     * A list of actions to include.
+     * 
+     * This method specifies which actions are defined elsewhere but used here.
+     * These actions are pro code that is included in the pro version of the software.
+     * 
+     * @return array An array of actions to include. 
+     */
+    public function actions(){
+        return array(
+			'getRoleAccess' => array(
+				'class' => 'GetRoleAccessAction',
+			),
+            'editRoleAccess' => array(
+                'class' => 'EditRoleAccessAction',
+            ),
+		);
+    }
+    
+    /**
+     * View the main admin menu
+     */
     public function actionIndex() {
 		if(isset($_GET['translateMode']))
 			Yii::app()->session['translate'] = $_GET['translateMode']==1;
         $this->render('index');
     }
+    
+    /**
+     * An overridden Yii method that happens before an action.
+     * 
+     * This method handles authorization on an attempt by a user to access an action.
+     * The same method is defined in {@link X2Base::beforeAction} with a few minor differences.
+     * 
+     * @param string $action A paramter passed by Yii's internal action handling.
+     * @return boolean True if the action is allowed to continue, otherwise throw exception.
+     * @throws CHttpException Generates a 403 error if authorization fails
+     */
+    protected function beforeAction($action=null){
+        $auth=Yii::app()->authManager;
+        $action=ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
+        $authItem=$auth->getAuthItem($action);
+        if(Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->user->getName()=='admin'){
+            return true;
+        } else {
+            throw new CHttpException(403,'You are not authorized to perform this action.');
+        }
+    }
 
+    /**
+     * @deprecated
+     * Deprecated method for how to guides.
+     * 
+     * While these guides technically still exist in the software, much more useful
+     * and up to date information can be found on the X2Engine website.
+     * 
+     * @param type $guide Which how to guide to access.
+     */
     public function actionHowTo($guide) {
         if ($guide == 'gii')
             $this->render('howToGii');
@@ -60,25 +120,42 @@ class AdminController extends Controller {
             $this->redirect('index');
     }
 
-    // Uncomment the following methods and override them if needed
-
+    /**
+     * Filters to be used by the controller.
+     * 
+     * This method defines which filters the controller will use.  Filters can be
+     * built in with Yii or defined in the controller (see {@link AdminController::filterClearCache}).
+     * See also Yii documentation for more information on filters.
+     * 
+     * @return array An array consisting of the filters to be used. 
+     */
     public function filters() {
         // return the filter configuration for this controller, e.g.:
         return array(
-            'accessControl',
+            //'accessControl',
             'clearCache'
         );
     }
 
+    /**
+     * A list of behaviors for the controller to use.
+     * 
+     * {@link LeadRoutingBehavior} is used to consolidate code for lead routing rules.
+     * As such, it has been moved to an external file.  This file includes LeadRoutingBehavior
+     * or downloads it if the file does not currently exist.  See also Yii documentation
+     * for more information on behaviors.
+     * 
+     * @return array An array of behaviors to implement. 
+     */
 	public function behaviors() {
-	$file = 'components/LeadRoutingBehavior.php';
-        if(!file_exists(Yii::app()->basePath.'/'.$file)) {
+	$file = 'protected/components/LeadRoutingBehavior.php';
+        if(!file_exists($file)) {
         if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
             $url = 'x2base';
         } else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
             $url = 'x2planet';
         }
-        $this->ccopy("http://$url.com/updates/x2engine/protected/" . $file, Yii::app()->basePath.'/'.$file);
+        $this->ccopy("http://$url.com/updates/x2engine/" . $file, $file);
 	}
 	return array(
             'LeadRoutingBehavior'=>array(
@@ -87,9 +164,16 @@ class AdminController extends Controller {
         );	
     }
 
-			
+	/**
+     * @deprecated
+     * Deprecated access control function.
+     * 
+     * This function used to be used to control access roles for actions within 
+     * the admin tab.  This system has been replaced with Yii's built in RBAC
+     * which uses {@link AdminController::beforeAction} to determine permissions. 
+     */
     public function accessRules() {
-        return array(
+        /*return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('getRoutingType', 'getRole', 'getWorkflowStages', 'download', 'cleanUp', 'sql', 'getFieldData', 'installUpdate'),
                 'users' => array('*'),
@@ -109,16 +193,26 @@ class AdminController extends Controller {
                     'createFormLayout', 'deleteFormLayout', 'formVersion', 'dropDownEditor', 'manageDropDowns',
                     'deleteDropdown', 'editDropdown', 'roleEditor', 'deleteRole', 'editRole', 'manageRoles',
                     'roleException', 'appSettings', 'updater', 'registerModules', 'toggleModule', 'viewLogs', 'delete',
-                    'tempImportWorkflow', 'workflowSettings', 'testVariables'
+                    'tempImportWorkflow', 'workflowSettings', 'testVariables','testRoles'
                 ),
                 'users' => array('admin'),
             ),
             array('deny',
                 'users' => array('*')
             )
-        );
+        );*/
     }
-
+    
+    /**
+     * A filter to clear the cache.
+     * 
+     * This method clears the cache whenever the admin controller is accessed.
+     * Caching improves performance throughout the app, but will occasionally 
+     * need to be cleared. Keeping this filter here allows for cleaning up the
+     * cache when required.
+     * 
+     * @param type $filterChain The filter chain Yii is currently acting on.
+     */
     public function filterClearCache($filterChain) {
         $cache = Yii::app()->cache;
         if (isset($cache))
@@ -126,22 +220,25 @@ class AdminController extends Controller {
         $filterChain->run();
     }
     
-    public function actionTestVariables(){
-        $data=array();
-        $ccUrl = 'http://comcoursecrm.com/index.php/api/create/model/Contacts';
-		$ccSession = curl_init($ccUrl);
-		curl_setopt($ccSession,CURLOPT_POST,1);
-		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
-		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
-		$ccResult = curl_exec($ccSession);
-        echo $ccResult;
-		curl_close($ccSession);
-    }
-
+    /**
+     * @deprecated
+     * Deprecated function for mass emailing contacts.
+     * 
+     * This method used to render a page to search for contacts to send out a 
+     * mass mailing list to. The Marketing module has replaced this functionality
+     * and is significantly more useful. 
+     */
     public function actionSearchContact() {
         $this->render('searchContactInfo');
     }
-
+    
+    /**
+     * @deprecated
+     * Deprecated method to render a list of contacts meeting the search criteria of the previous method.
+     *  
+     * This method would be accessed when the {@link AdminController::actionSearchContact}
+     * action had data posted in the form on the page.  It would 
+     */
     public function actionSendEmail() {
         $criteria = $_POST['searchTerm'];
 
@@ -153,6 +250,14 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * @deprecated
+     * Deprecated method to actually send mass emails.
+     * 
+     * This method links with the previous two deprecated methods to send out emails
+     * after a contact list has been made and confirmed.  It has been replaced
+     * by the Marketing module. 
+     */
     public function actionMail() {
         $subject = $_POST['subject'];
         $body = $_POST['body'];
@@ -172,6 +277,13 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Find user for lead routing.
+     * 
+     * This method uses {@link LeadRoutingBehavior} to determine the proper user
+     * for lead distribution within the app.  The user is echoed out to allow for
+     * access via AJAX request. 
+     */
     public function actionGetRoutingType() {
 		$assignee = $this->getNextAssignee();
 		//support original behavior
@@ -179,6 +291,14 @@ class AdminController extends Controller {
 		echo $assignee;
     }
 
+    /**
+     * Render/save the Custom Lead Routing Rules
+     * 
+     * This method renders a grid of Custom Round Robin Rules and allows for new
+     * rules to be created and saved. These rules are used in conjunction with
+     * {@link AdminController::actionGetRoutingType} when the "Custom Round Robin"
+     * lead distribution method is chosen. 
+     */
     public function actionRoundRobinRules() {
         $model = new LeadRouting;
         $users = User::getNames();
@@ -230,9 +350,16 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Create a new Role.
+     * 
+     * This method is accessed by a form on the {@link AdminController::actionManageRoles}
+     * page to create a new role. View and Edit permissions are set and saved in the proper
+     * tables in this method, and then the user is redirected back to the "Manage Roles"
+     * page.
+     */
     public function actionRoleEditor() {
         $model = new Roles;
-
         if (isset($_POST['Roles'])) {
             $model->attributes = $_POST['Roles'];
             if (!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
@@ -245,6 +372,7 @@ class AdminController extends Controller {
                 $users = array();
             $model->users = "";
             if ($model->save()) {
+                
                 foreach ($users as $user) {
                     $role = new RoleToUser;
                     $role->roleId = $model->id;
@@ -290,14 +418,17 @@ class AdminController extends Controller {
             }
             $this->redirect('manageRoles');
         }
-
-        $this->render('roleEditor', array(
-            'model' => $model,
-        ));
     }
 
+    /**
+     * Delete an existing role.
+     * 
+     * This method is accessed by a form on the {@link AdminController::manageRoles}
+     * page to allow for the deletion of admin created roles.  Default system roles
+     * (authenticated, guest, and admin) cannot be deleted this way.
+     */
     public function actionDeleteRole() {
-        $roles = Roles::model()->findAll();
+        $auth=Yii::app()->authManager;
         if (isset($_POST['role'])) {
             $id = $_POST['role'];
             $role = Roles::model()->findByAttributes(array('name' => $id));
@@ -314,19 +445,22 @@ class AdminController extends Controller {
             foreach ($workflowRoles as $workflow) {
                 $workflow->delete();
             }
+            $auth->removeAuthItem($role->name);
             $role->delete();
 
             $this->redirect('manageRoles');
         }
-
-        $this->render('deleteRole', array(
-            'roles' => $roles,
-        ));
     }
-
+    
+    /**
+     * Modify the permissions on an existing role.
+     * 
+     * This action is called by a form on the {@link AdminController::actionManageRoles}
+     * page to allow for the modification of an existing role. 
+     */
     public function actionEditRole() {
         $model = new Roles;
-
+        
         if (isset($_POST['Roles'])) {
             $id = $_POST['Roles']['name'];
             $model = Roles::model()->findByAttributes(array('name' => $id));
@@ -341,6 +475,7 @@ class AdminController extends Controller {
                 $users = array();
             $model->users = "";
             if ($model->save()) {
+                
                 $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $model->id));
                 foreach ($userRoles as $role) {
                     $role->delete();
@@ -401,6 +536,14 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Create a workflow based exception for a role.
+     * 
+     * This method is called by a form on the {@link AdminController::manageRoles} 
+     * page to allow for the creation of workflow based exceptions for a role.
+     * Workflow exceptions modify which fields are visible or editable based on
+     * what stage of a workflow a contact is in.
+     */
     public function actionRoleException() {
         $model = new Roles;
         $temp = Workflow::model()->findAll();
@@ -410,12 +553,17 @@ class AdminController extends Controller {
         }
         if (isset($_POST['Roles'])) {
             $workflow = $_POST['workflow'];
-            $workflowName = Workflow::model()->findByPk($workflow)->name;
+            if(isset($workflow) && !empty($workflow))
+                $workflowName = Workflow::model()->findByPk($workflow)->name;
+            else
+                $this->redirect('manageRoles');
             $stage = $_POST['workflowStages'];
-            $stageName = WorkflowStage::model()->findByPk($stage)->name;
+            if(isset($stage) && !empty($stage))
+                $stageName = WorkflowStage::model()->findByPk($stage)->name;
+            else
+                $this->redirect('manageRoles');
             $viewPermissions = $_POST['viewPermissions'];
             $editPermissions = $_POST['editPermissions'];
-            $users = $_POST['users'];
             $model->attributes = $_POST['Roles'];
             $oldRole = Roles::model()->findByAttributes(array('name' => $model->name));
             $model->users = "";
@@ -459,12 +607,16 @@ class AdminController extends Controller {
             }
             $this->redirect('manageRoles');
         }
-        $this->render('roleException', array(
-            'model' => $model,
-            'workflows' => $workflows,
-        ));
     }
-
+    
+    /**
+     * Modify workflow configuration settings.
+     * 
+     * This method allows for the configuration of workflow backdating functions.
+     * These settings control whether or not users are allowed to set workflow
+     * completion dates to be in the past, and to what extent they can modify a
+     * workflow action once it is marked as complete. 
+     */
     public function actionWorkflowSettings() {
         $admin = &Yii::app()->params->admin;
         if (isset($_POST['Admin'])) {
@@ -483,6 +635,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * A method to echo a dropdown of workflow stages.
+     * 
+     * This method is called via AJAX request and echoes back a dropdown with 
+     * options consisting of all stages for a particular workflow. 
+     */
     public function actionGetWorkflowStages() {
         if (isset($_POST['workflow'])) {
             $id = $_POST['workflow'];
@@ -495,6 +653,14 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Echo out a series of inputs for a role editor page.
+     *  
+     * This method is called via AJAX from the "Edit Role" portion of the "Manage Roles"
+     * page.  Upon selection of a role in the dropdown on that page, this method
+     * finds all relevant information about the role and echoes it back as a form
+     * to allow for editing of the role.
+     */
     public function actionGetRole() {
         if (isset($_POST['Roles'])) {
             $id = $_POST['Roles']['name'];
@@ -514,7 +680,7 @@ class AdminController extends Controller {
                     $users[] = Groups::model()->findByPk($link->userId)->id;
                 /* end x2temp */
             }
-            $allUsers = User::model()->findAll();
+            $allUsers = User::model()->findAll('status="1"');
             $selected = array();
             $unselected = array();
             foreach ($users as $user) {
@@ -556,8 +722,17 @@ class AdminController extends Controller {
         }
     }
 
+    
+    /**
+     * A catch all page for roles.
+     * 
+     * This action renders a page with forms for the creation, editing, and deletion
+     * of roles.  It also displays a grid with all user created roles (default 
+     * roles are not included and cannot be edited this way). 
+     */
     public function actionManageRoles() {
         $model = new Roles;
+        
         $dataProvider = new CActiveDataProvider('Roles');
         $roles = $dataProvider->getData();
         $arr = array();
@@ -578,6 +753,14 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * @deprecated
+     * A deprecated function controlling the updater.
+     * 
+     * This function formerly toggled whether or not to notify the admin of any
+     * new updates to X2CRM.  This has been replaced with an option in the "Updater
+     * Settings" page of the Admin tab. 
+     */
     public function actionToggleUpdater() {
 
         $admin = AdminChild::model()->findByPk(1);
@@ -586,6 +769,14 @@ class AdminController extends Controller {
         $this->redirect('index');
     }
 
+    /**
+     * @deprecated
+     * A deprecated method for contacting X2Engine Inc.
+     * 
+     * This method has been replaced with a form on our website, and is no longer
+     * linked to anywhere on the application.  If you wish to get in contact with us,
+     * please visit www.x2engine.com 
+     */
     public function actionContactUs() {
 
         if (isset($_POST['email'])) {
@@ -600,31 +791,28 @@ class AdminController extends Controller {
         $this->render('contactUs');
     }
 
+    /**
+     * Render the changelog.
+     * 
+     * This action renders the user changelog page, which contains a list of all
+     * changed made by users within the app. 
+     */
     public function actionViewChangelog() {
 
         $model = new Changelog('search');
         $model->timestamp = null;
-
-		/* Commented this out cause it should be obsolete, but this action is broken
-		 * so I can't test it -John M
-        $pageParam = ucfirst('Changelog') . '_page';
-        if (isset($_GET[$pageParam])) {
-            $page = $_GET[$pageParam];
-            Yii::app()->user->setState($this->id . '-page', (int) $page);
-        } else {
-            $page = Yii::app()->user->getState($this->id . '-page', 1);
-            $_GET[$pageParam] = $page;
-        }
-        if (intval(Yii::app()->request->getParam('clearFilters')) == 1) {
-            EButtonColumnWithClearFilters::clearFilters($this, $model); //where $this is the controller
-        }
-		*/
 
         $this->render('viewChangelog', array(
             'model' => $model,
         ));
     }
 
+    /**
+     * Add notification criteria.
+     * 
+     * This method is called by a form on the "Manage Notification Criteria" page
+     * and is used to create a new criteria for generation notifications. 
+     */
     public function actionAddCriteria() {
         $criteria = new Criteria;
         $users = User::getNames();
@@ -658,13 +846,28 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Delete a notification criteria.
+     * 
+     * This function is called to delete a user created notification critera.
+     * Some criteria are built in to the app and cannot be deleted this way.
+     * 
+     * @param int $id The ID of the criteria to be deleted. 
+     */
     public function actionDeleteCriteria($id) {
 
         $model = Criteria::model()->findByPk($id);
         $model->delete();
         $this->redirect(array('addCriteria'));
     }
-
+    
+    /**
+     * Delete a routing rule.
+     * 
+     * This method will delete a custom routing rule that has been configured
+     * for the lead distribution process.
+     * @param int $id The ID of the rule to be deleted.
+     */
     public function actionDeleteRouting($id) {
 
         $model = LeadRouting::model()->findByPk($id);
@@ -672,27 +875,43 @@ class AdminController extends Controller {
         $this->redirect(array('roundRobinRules'));
     }
 
-    public function actionGetAttributes() {
-        if (isset($_POST['Criteria']['modelType']) || isset($_POST['Fields']['modelName'])) {
-            if (isset($_POST['Criteria']['modelType']))
-                $type = ucfirst($_POST['Criteria']['modelType']);
-            if (isset($_POST['Fields']['modelName']))
-                $type = ucfirst($_POST['Fields']['modelName']);
-            if ($type == 'Quotes')
-                $type = "Quote";
-            if ($type == "Products")
-                $type = "Product";
+    /**
+     * Echo a list of model attributes as a dropdown.
+     * 
+     * This method is called via AJAX as a part of creating notification criteria.
+     * It takes the model or module name as POST data and returns a list of dropdown
+     * options consisting of the fields available to that model. 
+     */
+	public function actionGetAttributes() {
+		$data = array();
+		$type = null;
 
-            $arr = CActiveRecord::model($type)->attributeLabels();
+		if (isset($_POST['Criteria']['modelType']))
+			$type = ucfirst($_POST['Criteria']['modelType']);
+		if (isset($_POST['Fields']['modelName']))
+			$type = $_POST['Fields']['modelName'];
+			
+		if(isset($type)) {
+			foreach(CActiveRecord::model('Fields')->findAllByAttributes(array('modelName'=>$type)) as $field) {
+			
+				if(isset($_POST['Criteria']))
+					$data[$field->fieldName] = $field->attributeLabel;
+				else
+					$data[$field->id] = $field->attributeLabel;
+				
+			}
+		}
+		$htmlOptions = array();
+		echo CHtml::listOptions('',$data,$htmlOptions);
+	}
 
-            foreach ($arr as $key => $value) {
-                echo CHtml::tag('option', array('value' => $key), CHtml::encode($value), true);
-            }
-        } else {
-            echo CHtml::tag('option', array('value' => ''), CHtml::encode(var_dump($_POST)), true);
-        }
-    }
-
+    /**
+     * @deprecated
+     * Deprecated function to set user timeout.
+     * 
+     * This method formerly controlled the user session timeout settings for the 
+     * software.  This setting is now controlled by the "General Settings" page.
+     */
     public function actionSetTimeout() {
 
         $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
@@ -711,6 +930,13 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * @deprecated
+     * Deprecated method to set chat polling
+     * 
+     * This method formerly controlled the configuration of chat polling requests.
+     * This timeout is now set by the "General Settings" page.
+     */
     public function actionSetChatPoll() {
 
         $admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
@@ -729,6 +955,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Control chat polling and session timeout.
+     * 
+     * This method renders a page with settings for user session timeout and chat
+     * request polling.  These settings are application wide and not per user. 
+     */
     public function actionAppSettings() {
 
         $admin = &Yii::app()->params->admin;
@@ -738,7 +970,6 @@ class AdminController extends Controller {
             // $admin->ignoreUpdates = 1;
 
             $admin->attributes = $_POST['Admin'];
-	    $admin->unique_id = $_POST['unique_id'];
             $admin->timeout *= 60; //convert from minutes to seconds
 
 
@@ -752,6 +983,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Sets the lead routing type.
+     * 
+     * This method allows for the admin to configure which option to use for lead
+     * distribution.  This is what determines the actions of {@link LeadRoutingBehavior}. 
+     */
     public function actionSetLeadRouting() {
 
         $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
@@ -776,6 +1013,13 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Configure google integration.
+     * 
+     * This method provides a form for the entry of Google Apps data.  This will
+     * allow for users to log in with their google account and sync X2CRM's calendars
+     * with their Google Calendar. 
+     */
     public function actionGoogleIntegration() {
 
         $admin = &Yii::app()->params->admin;
@@ -795,6 +1039,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Configure email settings.
+     * 
+     * This allows for configuration of how emails are handled by X2CRM.  The admin
+     * can select to use the server that the software is hosted on or a separate mail server. 
+     */
     public function actionEmailSetup() {
 
         $admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
@@ -813,6 +1063,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Add a custom field.
+     * 
+     * This method allows for the creation of custom fields linked to any customizable
+     * module in X2CRM.  This is used by "Manage Fields." 
+     */
     public function actionAddField() {
         $model = new Fields;
         if (isset($_POST['Fields'])) {
@@ -879,6 +1135,12 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Delete a field.
+     * 
+     * This method allows for the deletion of custom fields.  Default fields cannot
+     * be deleted in this way. 
+     */
     public function actionRemoveField() {
 
         if (isset($_POST['field']) && $_POST['field'] != "") {
@@ -895,92 +1157,144 @@ class AdminController extends Controller {
         $this->redirect('manageFields');
     }
 
-    public function actionCustomizeFields() {
+    /**
+     * Edit a pre-existing field.
+     * 
+     * This method allows for the editing of both user created and default fields.
+     * This also changes the database schema to fit the field type and as such must
+     * be used very carefully. 
+     */
+	public function actionCustomizeFields() {
 
-        $model = new Fields;
-        if (isset($_POST['Fields'])) {
-            $type = $_POST['Fields']['modelName'];
-            $field = $_POST['Fields']['fieldName'];
-
-            $modelField = Fields::model()->findByAttributes(array('modelName' => $type, 'fieldName' => $field));
-            $modelField->attributes = $_POST['Fields'];
-            $modelField->type = $_POST['Fields']['type'];
-            if ($modelField->type == 'dropdown') {
-                if (isset($_POST['dropdown'])) {
-                    $id = $_POST['dropdown'];
-                    $modelField->linkType = $id;
-                }
+		if (isset($_POST['Fields'])) {
+			$fieldModel = CActiveRecord::model('Fields')->findByPk($_POST['Fields']['id']);
+			$fieldModel->attributes = $_POST['Fields'];
+			$fieldModel->type = $_POST['Fields']['type'];
+			if ($fieldModel->type == 'dropdown') {
+				if (isset($_POST['dropdown'])) {
+					$id = $_POST['dropdown'];
+					$fieldModel->linkType = $id;
+				}
+			}
+			if ($fieldModel->type == "link") {
+				if (isset($_POST['dropdown'])) {
+					$linkType = $_POST['dropdown'];
+					$fieldModel->linkType = ucfirst($linkType);
+				}
+			}
+            $fieldType = $fieldModel->type;
+            switch ($fieldType) {
+                case "boolean":
+                    $fieldType = "BOOLEAN";
+                    break;
+                case "float":
+                    $fieldType = "FLOAT";
+                    break;
+                case "int":
+                    $fieldType = "BIGINT";
+                    break;
+                case "text":
+                    $fieldType = "TEXT";
+                    break;
+                case "date":
+                    $fieldType = "BIGINT";
+                    break;
+                case "currency":
+                    $fieldType = "FLOAT";
+                    break;
+                default:
+                    $fieldType = 'VARCHAR(250)';
+                    break;
             }
-            if ($modelField->type == "link") {
-                if (isset($_POST['dropdown'])) {
-                    $linkType = $_POST['dropdown'];
-                    $modelField->linkType = ucfirst($linkType);
-                }
+            $fieldName = strtolower($fieldModel->fieldName);
+            $tableName = CActiveRecord::model($fieldModel->modelName)->tableName();
+			$fieldModel->modified = 1;
+			(isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $fieldModel->required = 1 : $fieldModel->required = 0;
+			(isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $fieldModel->searchable = 1 : $fieldModel->searchable = 0;
+			if ($fieldModel->save()){
+                $sql = "ALTER TABLE $tableName MODIFY COLUMN $fieldName $fieldType";
+                $command = Yii::app()->db->createCommand($sql);
+                $result = $command->query();
+				$this->redirect('manageFields');
             }
-            $modelField->modified = 1;
-            (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $modelField->required = 1 : $modelField->required = 0;
-            (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $modelField->searchable = 1 : $modelField->searchable = 0;
-            if ($modelField->save())
-                $this->redirect('manageFields');
-        }
-    }
+		}
+	}
 
-    public function actionGetFieldData() {
-        
-        if (isset($_POST['Fields']['fieldName'])) {
-            $field = $_POST['Fields']['fieldName'];
-            $modelField = Fields::model()->findByAttributes(array('fieldName' => $field));
-            $temparr = $modelField->attributes;
-            if (!empty($modelField->linkType)) {
-                $type = $modelField->type;
-                if ($type == 'link') {
-                    $query = Yii::app()->db->createCommand()
-                        ->select('modelName')
-                        ->from('x2_fields')
-                        ->group('modelName')
-                        ->queryAll();
-                    $arr=array();
-                    foreach($query as $array){
-                        if($array['modelName']!='Calendar')
-                            $arr[$array['modelName']]=$array['modelName'];
-                    }
-                    $temparr['dropdown'] = CHtml::dropDownList('dropdown', $modelField->linkType, $arr);
-                } elseif ($type == 'dropdown') {
-                    $dropdowns = Dropdowns::model()->findAll();
-                    $arr = array();
-                    foreach ($dropdowns as $dropdown) {
-                        $arr[$dropdown->id] = $dropdown->name;
-                    }
+    /**
+     * Echo a dropdown of field data.
+     * 
+     * This method is called via AJAX as part of editing fields.  It echoes back 
+     * a list of all the relevant attributes for a field when a dropdown option
+     * is selected. 
+     */
+	public function actionGetFieldData() {
+		
+		if (isset($_POST['Fields']['id'])) {
+			$fieldModel = CActiveRecord::model('Fields')->findByPk($_POST['Fields']['id']);
+			$temparr = $fieldModel->attributes;
+			if (!empty($fieldModel->linkType)) {
+				$type = $fieldModel->type;
+				if ($type == 'link') {
+					$query = Yii::app()->db->createCommand()
+						->select('modelName')
+						->from('x2_fields')
+						->group('modelName')
+						->queryAll();
+					$arr=array();
+					foreach($query as $array){
+						if($array['modelName']!='Calendar')
+							$arr[$array['modelName']]=$array['modelName'];
+					}
+					$temparr['dropdown'] = CHtml::dropDownList('dropdown', $fieldModel->linkType, $arr);
+				} elseif ($type == 'dropdown') {
+					$dropdowns = Dropdowns::model()->findAll();
+					$arr = array();
+					foreach ($dropdowns as $dropdown) {
+						$arr[$dropdown->id] = $dropdown->name;
+					}
 
-                    $temparr['dropdown'] = CHtml::dropDownList('dropdown', '', $arr);
-                }
-            } else {
-                $temparr['dropdown'] = "";
-            }
-            echo CJSON::encode($temparr);
-        }
-    }
+					$temparr['dropdown'] = CHtml::dropDownList('dropdown', '', $arr);
+				}
+			} else {
+				$temparr['dropdown'] = "";
+			}
+			echo CJSON::encode($temparr);
+		}
+	}
 
-    public function actionManageFields() {
-        $model = new Fields;
-        $dataProvider = new CActiveDataProvider('Fields', array(
-                    'criteria' => array(
-                        'condition' => 'modified=1'
-                    )
-                ));
-        $fields = Fields::model()->findAllByAttributes(array('custom' => '1'));
-        $arr = array();
-        foreach ($fields as $field) {
-            $arr[$field->id] = $field->attributeLabel;
-        }
+    /**
+     * General field management.
+     * 
+     * This action serves as the landing page for all of the custom field related
+     * actions within the software. 
+     */
+	public function actionManageFields() {
+		$model = new Fields;
+		$dataProvider = new CActiveDataProvider('Fields', array(
+			'criteria' => array(
+				'condition' => 'modified=1'
+			)
+		));
+		$fields = Fields::model()->findAllByAttributes(array('custom' => '1'));
+		$arr = array();
+		foreach ($fields as $field) {
+			$arr[$field->id] = $field->attributeLabel;
+		}
 
-        $this->render('manageFields', array(
-            'dataProvider' => $dataProvider,
-            'model' => $model,
-            'fields' => $arr,
-        ));
-    }
+		$this->render('manageFields', array(
+			'dataProvider' => $dataProvider,
+			'model' => $model,
+			'fields' => $arr,
+		));
+	}
 
+    /**
+     * Create a static page.
+     * 
+     * This method allows the admin to create a static page to go on the top bar
+     * menu.  The page is a basic doc editor which is then saved as a Module record
+     * of type "Document." 
+     */
     public function actionCreatePage() {
 
         $model = new DocChild;
@@ -1021,6 +1335,15 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * View a page that has been created.
+     * 
+     * This method is what is called when a user clicks the top bar link to a static
+     * page that has been previously created.  Nearly identical to a document view
+     * but without the widgets in the layout.
+     * 
+     * @param int $id The ID of the page being viewed.
+     */
     public function actionViewPage($id) {
         $model = DocChild::model()->findByPk($id);
         if (!isset($model))
@@ -1031,6 +1354,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Change the title of a module.
+     * 
+     * This allows for the configuration of the display name of a module.  As of 
+     * version 2.0, this will not affect text other than the top bar menu. 
+     */
     public function actionRenameModules() {
 
         $order = Modules::model()->findAllByAttributes(array('visible' => 1));
@@ -1057,10 +1386,14 @@ class AdminController extends Controller {
             'modules' => $menuItems,
         ));
     }
-
+    
+    /**
+     * Re-arrange the top bar menu.
+     * 
+     * This form allows for the admin to change the order and visibility of top bar
+     * menu items for all users.
+     */
     public function actionManageModules() {
-
-        // get admin model
 
         $modules = Modules::model()->findAll(array('order' => 'menuPosition ASC'));
 
@@ -1068,9 +1401,12 @@ class AdminController extends Controller {
         $selectedItems = array();
 
         foreach ($modules as $module) {
-            $menuItems[$module->name] = $module->title;
+            if($module->name!='document')
+                $menuItems[$module->name]=$module->title;
+            else
+                $menuItems[$module->title]=$module->title;
             if ($module->visible) {
-                $selectedItems[] = $module->name;
+                $selectedItems[] = ($module->name!='document')?$module->name:$module->title;
             }
         }
 
@@ -1093,6 +1429,15 @@ class AdminController extends Controller {
                     if ($moduleRecord->save()) {
                         
                     }
+                }else{
+                    $moduleRecord = Modules::model()->findByAttributes(array('title' => $key));
+                    if (isset($moduleRecord)) {
+                        $moduleRecord->visible = 1;
+                        $moduleRecord->menuPosition = array_search($key, array_keys($newMenuItems));
+                        if ($moduleRecord->save()) {
+
+                        }
+                    }
                 }
             }
             foreach ($menuItems as $key => $item) {
@@ -1102,6 +1447,15 @@ class AdminController extends Controller {
                     $moduleRecord->menuPosition = -1;
                     if ($moduleRecord->save()) {
                         
+                    }
+                }else{
+                    $moduleRecord = Modules::model()->findByAttributes(array('title' => $key));
+                    if (isset($moduleRecord)) {
+                        $moduleRecord->visible = 0;
+                        $moduleRecord->menuPosition = -1;
+                        if ($moduleRecord->save()) {
+
+                        }
                     }
                 }
             }
@@ -1114,6 +1468,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Upload a custom logo
+     * 
+     * This method allows for the admin to upload their own logo to go in place of
+     * the X2CRM logo in the top left corner of the software. 
+     */
     public function actionUploadLogo() {
         if (isset($_FILES['logo-upload'])) {
             $temp = CUploadedFile::getInstanceByName('logo-upload');
@@ -1140,6 +1500,9 @@ class AdminController extends Controller {
         $this->render('uploadLogo');
     }
 
+    /**
+     * Reverts the logo back to X2CRM. 
+     */
     public function actionToggleDefaultLogo() {
 
         $adminProf = ProfileChild::model()->findByAttributes(array('username' => 'admin'));
@@ -1161,6 +1524,13 @@ class AdminController extends Controller {
         $this->redirect(array('index'));
     }
 
+    /**
+     * Create or edit translations.
+     * 
+     * This method allows the admin to access the X2CRM built in translation manager.
+     * Any translation for any language can be edited and saved from here, and new
+     * ones can be added. 
+     */
     public function actionTranslationManager() {
         $this->layout = null;
         $messagePath = 'protected/messages';
@@ -1168,6 +1538,13 @@ class AdminController extends Controller {
         // die('hello:'.var_dump($_POST));
     }
 
+    /**
+     * Creates a new custom module.
+     * 
+     * This method allows for the creation of admin defined modules to use in the
+     * software. These modules are more basic in functionality than most other X2
+     * modules, but are fully customizable from the studio. 
+     */
     public function actionCreateModule() {
 
         $errors = array();
@@ -1230,7 +1607,11 @@ class AdminController extends Controller {
                 $moduleRecord->toggleable = 1;
                 $moduleRecord->menuPosition = Modules::model()->count();
                 $moduleRecord->save();
-
+                $auth=Yii::app()->authManager;
+                $auth->createOperation(ucfirst($moduleName).'Index');
+                $auth->addItemChild('authenticated',ucfirst($moduleName).'Index');
+                $auth->createOperation(ucfirst($moduleName).'Admin');
+                $auth->addItemChild('admin',ucfirst($moduleName).'Admin');
                 $this->redirect(array('/' . $moduleName . '/default/index'));
             }
         }
@@ -1238,6 +1619,16 @@ class AdminController extends Controller {
         $this->render('createModule', array('errors' => $errors));
     }
 
+    /**
+     * Create module config file
+     * 
+     * This is called by {@link AdminController::actionCreateModule} in the process
+     * of creating a new module.  This writes a config file for the module to use.
+     * 
+     * @param string $title The display title of the module
+     * @param string $moduleName The actual name of the module
+     * @param string $recordName What to call the records of this module
+     */
     private function writeConfig($title, $moduleName, $recordName) {
 
         $templateFolder = Yii::app()->file->set('protected/modules/template/');
@@ -1263,6 +1654,15 @@ class AdminController extends Controller {
         $configFile->setContents($str);
     }
 
+    /**
+     * Creates a table for a new module
+     * 
+     * This method is called by {@link AdminController::actionCreateModule} as part
+     * of creating a new module.  This creates the table for the new module as well
+     * as creating records in the x2_fields table for use in the studio.
+     * 
+     * @param string $moduleName The name of the module being created
+     */
     private function createNewTable($moduleName) {
         $moduleTitle = ucfirst($moduleName);
         $sqlList = array("CREATE TABLE x2_" . $moduleName . "(
@@ -1287,6 +1687,16 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Create file system for a custom module
+     * 
+     * This method is called by {@link AdminController::actionCreateModule} as a
+     * part of creating a new module.  This method copies all the proper files to
+     * their new directories, renames them, and replaces the contents to fit the
+     * new module name.
+     * 
+     * @param string $moduleName The name of the moduel being created
+     */
     private function createSkeletonDirectories($moduleName) {
 
         $errors = array();
@@ -1326,11 +1736,17 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Deletes a custom module.
+     * 
+     * This method deletes an admin created module from the system.  All files are 
+     * deleted as well as the table associated with it. 
+     */
     public function actionDeleteModule() {
 
         if (isset($_POST['name'])) {
             $moduleName = $_POST['name'];
-            $module = Modules::model()->findByAttributes(array('name' => $moduleName));
+            $module = Modules::model()->findByPk($moduleName);
             if (isset($module)) {
                 if ($module->name != 'document' && $module->delete()) {
                     $config = include('protected/modules/' . $moduleName . '/register.php');
@@ -1343,6 +1759,9 @@ class AdminController extends Controller {
                     foreach ($fields as $field) {
                         $field->delete();
                     }
+                    $auth=Yii::app()->authManager;
+                    $auth->removeAuthItem(ucfirst($moduleName).'Index');
+                    $auth->removeAuthItem(ucfirst($moduleName).'Admin');
 
                     $this->rrmdir('protected/modules/' . $moduleName);
                 } else {
@@ -1355,7 +1774,7 @@ class AdminController extends Controller {
         $arr = array();
         $modules = Modules::model()->findAllByAttributes(array('toggleable' => 1));
         foreach ($modules as $item) {
-            $arr[$item->name] = $item->title;
+            $arr[$item->id] = $item->title;
         }
 
         $this->render('deleteModule', array(
@@ -1363,6 +1782,13 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Export a custom module.
+     * 
+     * This method creates a zip file from a custom module with all the proper 
+     * files and SQL for installation required to set up the module again.  These 
+     * zip files can be imported into other X2 installations. 
+     */
     public function actionExportModule() {
 
         if (isset($_POST['name'])) {
@@ -1433,6 +1859,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Import a zip of a module.
+     * 
+     * This method will allow the admin to import a zip file of an exported X2 
+     * module. 
+     */
     public function actionImportModule() {
 
         if (isset($_FILES['data'])) {
@@ -1463,6 +1895,12 @@ class AdminController extends Controller {
         $this->render('importModule');
     }
 
+    /**
+     * DO NOT USE
+     * 
+     * Testing method used for a prototype system of managing modules in a more
+     * modular fashion.  This is NOT ready for use and should not be accessed. 
+     */
     public function actionRegisterModules() {
 
         $modules = scandir('protected/modules');
@@ -1481,6 +1919,15 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * DO NOT USE
+     * 
+     * Like {@link actionRegisterModules} this method is not yet ready for use.
+     * Please refrain from attempting to use this module or it will likely create
+     * issues in your installation.
+     * 
+     * @param string $module The name of the moduel being toggled.
+     */
     public function actionToggleModule($module) {
 
         $config = include("protected/modules/$module/register.php");
@@ -1514,6 +1961,12 @@ class AdminController extends Controller {
         $this->redirect('registerModules');
     }
 
+    /**
+     * X2Studio Form Editor
+     * 
+     * This method allows the admin to create and edit the form layouts for 
+     * all editable modules within the software. 
+     */
     public function actionEditor() {
 
         $layoutModel = null;
@@ -1569,6 +2022,8 @@ class AdminController extends Controller {
         foreach ($modules as $module) {
             if ($module->name == 'marketing')
                 $modelList['Campaign'] = 'Campaign';
+            elseif ($module->name == 'opportunities')
+                $modelList['Opportunity'] = 'Opportunity';
             else
                 $modelList[ucfirst($module->name)] = $module->title;
         }
@@ -1594,6 +2049,12 @@ class AdminController extends Controller {
     }
 
 
+    /**
+     * Create form Layout
+     * 
+     * This method is called via AJAX from within {@link actionEditor} to create
+     * new form layouts for use with the modules. 
+     */
     public function actionCreateFormLayout() {
         if (isset($_GET['newLayout'], $_GET['model'], $_GET['layoutName'])) {
             // $currentLayouts = FormLayout::model()->findAllByAttributes(array('model'=>$_GET['model']));
@@ -1613,7 +2074,12 @@ class AdminController extends Controller {
             $this->redirect(array('editor', 'id' => $newLayout->id));
         }
     }
-
+    
+    /**
+     * Delete a form layout.
+     * 
+     * @param int $id The ID of the layout to be deleted.
+     */
     public function actionDeleteFormLayout($id) {
 
         $layout = FormLayout::model()->findByPk($id);
@@ -1643,6 +2109,12 @@ class AdminController extends Controller {
             $this->redirect('editor');
     }
 
+    /**
+     * Landing page for admin created dropdowns
+     * 
+     * This method allows the admin to access the functions related to creating
+     * and editing admin created dropdowns in the app.
+     */
     public function actionManageDropDowns() {
 
         $dataProvider = new CActiveDataProvider('Dropdowns');
@@ -1667,6 +2139,12 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Create a custom dropdown
+     * 
+     * This method allows the admin to create a custom dropdown to be used with
+     * a module in conjunction with the form editor. 
+     */
     public function actionDropDownEditor() {
         $model = new Dropdowns;
 
@@ -1692,6 +2170,9 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Delete a custom dropdown 
+     */
     public function actionDeleteDropdown() {
         $dropdowns = Dropdowns::model()->findAll();
 
@@ -1707,6 +2188,9 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Edit a previously created dropdown
+     */
     public function actionEditDropdown() {
         $model = new Dropdowns;
 
@@ -1726,6 +2210,12 @@ class AdminController extends Controller {
         $this->render('editDropdowns');
     }
 
+    /**
+     * Print out a dropdown's data
+     * 
+     * This method is called via AJAX by {@link actionEditDropdown} to get the 
+     * options of the dropdown for the edit dropdown page. 
+     */
     public function actionGetDropdown() {
         if (isset($_POST['Dropdowns']['name'])) {
             $name = $_POST['Dropdowns']['name'];
@@ -1748,6 +2238,12 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Echos a list of custom dropdowns
+     * 
+     * This method is called via AJAX on the field editor to get a list of dropdowns
+     * or modules to be used for modifying the type of field.
+     */
     public function actionGetFieldType() {
         if (isset($_POST['Fields']['type'])) {
             $type = $_POST['Fields']['type'];
@@ -1775,12 +2271,23 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Export all data
+     * 
+     * This method is used to export all of the data from the software as a CSV
+     */
     public function actionExport() {
         $this->globalExport();
         $this->render('export', array(
         ));
     }
 
+    /**
+     * Private method to handle the export
+     * 
+     * This method actually prepares all the data and the CSV for export before
+     * rending the page with the download.
+     */
     private function globalExport() {
         ini_set('memory_limit', -1);
         $file = 'data.csv';
@@ -1833,6 +2340,13 @@ class AdminController extends Controller {
         fclose($fp);
     }
 
+    /** 
+     * Import data from an export
+     * 
+     * This method allows for the import of data by the admin into the software.
+     * The import is compatible with the format from an X2 export only at the moment,
+     * so that CSV should be used as a template for how to format the data. 
+     */
     public function actionImport() {
         if (isset($_FILES['data'])) {
             $overwrite = $_POST['overwrite'];
@@ -1843,6 +2357,12 @@ class AdminController extends Controller {
         $this->render('import');
     }
 
+    /** 
+     * Private method that actually performs the import
+     * 
+     * @param File $file The file of data to be imported
+     * @param boolean $overwrite Whether or not to overwrite old records if there are duplicates, defaults to false
+     */
     private function globalImport($file, $overwrite) {
         $fp = fopen($file, 'r+');
         $version = fgetcsv($fp);
@@ -1877,7 +2397,7 @@ class AdminController extends Controller {
             if (!isset($lookup)) {
                 
                 if($model->save()){
-                    
+                     
                 }else{
                     printR($model->getErrors(),true);
                 }
@@ -1892,6 +2412,10 @@ class AdminController extends Controller {
         $this->redirect('index');
     }
 
+    /**
+     * Runs the updater. It is in this action where the entire file is copied
+     * from the remote update server.
+     */
     public function actionUpdater() {
         include('protected/config/emailConfig.php');
         $context = stream_context_create(array(
@@ -1960,7 +2484,31 @@ class AdminController extends Controller {
             'url' => $url,
         ));
     }
+	
+    /**
+     * Control settings for the updater
+     * 
+     * This method controls the update interval setting for the application.
+     */
+	public function actionUpdaterSettings() {
+		
+        $admin = &Yii::app()->params->admin;
+        if (isset($_POST['Admin'])) {
+			foreach(array('unique_id','edition') as $var)
+				if(isset($_POST['unique_id']))
+					$admin->$var = $_POST[$var];
+			if ($admin->save()) {
+                $this->redirect('updaterSettings');
+            }
+		}
+		$this->render('updaterSettings', array(
+            'model' => $admin,
+        ));
+	}
 
+    /**
+     * Downloads files as a part of the updater. 
+     */
     public function actionDownload() {
         if (isset($_GET['url']) && isset($_GET['file'])) {
             if (Yii::app()->request->isAjaxRequest) {
@@ -1987,6 +2535,9 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Deletes files required for the update.
+     */
     public function actionDelete() {
         if (isset($_POST['delete'])) {
             $file = $_POST['delete'];
@@ -1999,6 +2550,10 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * @deprecated
+     * Deprecated method to run SQL as part of the update. 
+     */
     public function actionSql() {
         if (isset($_POST['sql'])) {
             $sql = $_POST['sql'];
@@ -2008,6 +2563,13 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Finalizes the update
+     * 
+     * This method replaces the SQL method as well as finishing copying files over.
+     * Both of these happen at once to prevent issues from files depending on SQL
+     * changes or vice versa. 
+     */
     public function actionInstallUpdate() {
 
         $this->copyFile("temp");
@@ -2026,6 +2588,12 @@ class AdminController extends Controller {
         $this->_sendResponse('200', 'SQL Executed Successfully');
     }
 
+    /**
+     * Wrapper for {@link ccopy}
+     * 
+     * Recursively copyies a directory if the specified.
+     * @param string $file The starting point, whether file or directory.
+     */
     protected function copyFile($file) {
         if (file_exists($file)) {
             if (is_dir($file)) {
@@ -2041,6 +2609,12 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Perform all post-update tasks. 
+     * 
+     * Writes new data to protected/config/emailConfig.php, removes the backup
+     * files, and returns a message that the update succeeded.
+     */
     public function actionCleanUp() {
         include('protected/config/emailConfig.php');
         if (isset($_POST['status'])) {
@@ -2078,6 +2652,16 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Copies a file. 
+     * 
+     * If the local filesystem directory to where the file will be copied does 
+     * not exist yet, it will be created automatically.
+     * 
+     * @param string $filepath The source file
+     * @param strint $file The destination path.
+     * @return boolean 
+     */
     function ccopy($filepath, $file) {
 
         $pieces = explode('/', $file);
@@ -2095,6 +2679,10 @@ class AdminController extends Controller {
         return copy($filepath, $file);
     }
 
+    /**
+     * Recursively removes a directory.
+     * @param string $dir 
+     */
     function rrmdir($dir) {
         if (is_dir($dir)) {
             $objects = scandir($dir);
@@ -2110,6 +2698,10 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Saves a backup copy of a list of files.
+     * @param array $fileList 
+     */
     function saveBackup($fileList) {
         if (!is_dir('backup'))
             mkdir('backup');
@@ -2120,6 +2712,10 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Restores a backup copy of a list of files.
+     * @param array $fileList 
+     */
     function restoreBackup($fileList) {
         foreach ($fileList as $file) {
             if ($file != "" && file_exists($file)) {
@@ -2128,6 +2724,13 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Respond to a request with a specified status code and body.
+     * 
+     * @param integer $status The HTTP status code.
+     * @param string $body The body of the response message
+     * @param string $content_type The response mimetype.
+     */
     private function _sendResponse($status = 200, $body = '', $content_type = 'text/html') {
         // set the status
         $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
@@ -2189,6 +2792,12 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Obtain an appropriate message for a given HTTP response code.
+     * 
+     * @param integer $status
+     * @return string 
+     */
     private function _getStatusCodeMessage($status) {
         // these could be stored in a .ini file and loaded
         // via parse_ini_file()... however, this will suffice
@@ -2206,7 +2815,45 @@ class AdminController extends Controller {
         return (isset($codes[$status])) ? $codes[$status] : '';
     }
 
+    /**
+     * View the changelogs.
+     */
     public function actionViewLogs() {
         $this->render('viewLogs');
+    }
+    
+    /**
+     * Improved version of array_search that allows for regex searching
+     * 
+     * @param string $find Regex to search on
+     * @param array $in_array An array to search in
+     * @param array $keys_found An array of keys which meet the regex
+     * @return type Returns the an array of keys if $in_array is valid, or false if not. 
+     */
+    function Array_Search_Preg( $find, $in_array, $keys_found=Array() ) 
+    { 
+        if( is_array( $in_array ) ) 
+        { 
+            foreach( $in_array as $key=> $val ) 
+            { 
+                if( is_array( $val ) ) $this->Array_Search_Preg( $find, $val, $keys_found ); 
+                else 
+                { 
+                    if( preg_match( '/'. $find .'/', $val ) ) $keys_found[] = $key; 
+                } 
+            } 
+            return $keys_found; 
+        } 
+        return false; 
+    } 
+    
+    /**
+     * Takes a Camel Cased string and echoes it as separate words.
+     * @param string $str The string to convert
+     * @return string A de-camelcased version of the string
+     */
+    function deCamelCase($str){
+        $str=preg_replace("/(([a-z])([A-Z])|([A-Z])([A-Z][a-z]))/","\\2\\4 \\3\\5",$str);
+        return ucfirst($str);
     }
 }

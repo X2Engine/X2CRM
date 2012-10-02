@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,6 +40,15 @@
 
 Yii::import('zii.widgets.grid.CGridView');
 
+/**
+ * Custom grid view display function.
+ * 
+ * Displays a dynamic grid view that permits save-able resizing and reordering of 
+ * columns and also the adding of new columns based on the available fields for 
+ * the model.
+ * 
+ * @package X2CRM.components 
+ */
 class X2GridView extends CGridView {
 	
 	public $selectableRows = 0;
@@ -56,15 +65,38 @@ class X2GridView extends CGridView {
 	
 	public $summaryText;
 	
-	private $allFields = array();
-	private $allFieldNames = array();
-	private $specialColumnNames = array();
-	private $gvSettings = null;
-	private $columnSelectorId;
-	private $columnSelectorHtml;
+	protected $allFields = array();
+	protected $allFieldNames = array();
+	protected $specialColumnNames = array();
+	protected $gvSettings = null;
+	protected $columnSelectorId;
+	protected $columnSelectorHtml;
+	
+	protected $ajax = false;
+	
+	
+	public static function getFilterHint() {
+	
+		$text = Yii::t('app','<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.');
+		$text .= '<ul class="filter-hint">';
+		$text .= '<li><b>&lt;</b> '		.Yii::t('app','less than')				.'</li>';
+		$text .= '<li><b>&lt;=</b> '	.Yii::t('app','less than or equal to')		.'</li>';
+		$text .= '<li><b>&gt;</b> '		.Yii::t('app','greater than')			.'</li>';
+		$text .= '<li><b>&gt;=</b> '	.Yii::t('app','greater than or equal to')	.'</li>';
+		$text .= '<li><b>=</b> '		.Yii::t('app','equal to')					.'</li>';
+		$text .= '<li><b>&lt;&gt</b> '	.Yii::t('app','not equal to')				.'</li>';
+		$text .= '</ul>';
+
+		return X2Info::hint($text,false);
+	}
+	
 	
 	public function init() {
 		
+		
+		$this->ajax = isset($_GET['ajax']) && $_GET['ajax']===$this->id;
+		if($this->ajax)
+			ob_clean();
 		
 		// $this->selectionChanged = 'js:function() { console.debug($.fn.yiiGridView.getSelection("'.$this->id.'")); }';
 		
@@ -288,24 +320,10 @@ class X2GridView extends CGridView {
 				$columns[] = $newColumn;
 			}
 		}
-		
-	
-		// $this->afterAjaxUpdate = 'function(id, data) { '.$datePickerJs.' }';
-		if(!empty($this->afterAjaxUpdate))
-			$this->afterAjaxUpdate = "var callback = ".$this->afterAjaxUpdate."; if(typeof callback == 'function') callback();";
-		
-		$this->afterAjaxUpdate = " function(id,data) { ".$this->afterAjaxUpdate." ".$datePickerJs;
-				
-		if($this->enableGvSettings) {
-			$this->afterAjaxUpdate.="
-			$('#".$this->getId()." table').gvSettings({
-				viewName:'".$this->viewName."',
-				columnSelectorId:'".$this->columnSelectorId."',
-				ajaxUpdate:true
-			});";
-		}
-		$this->afterAjaxUpdate .= " } ";
 
+		
+		
+		
 		$this->columns = $columns;
 		
 		natcasesort($this->allFieldNames); // sort column names
@@ -320,7 +338,7 @@ class X2GridView extends CGridView {
 			.CHtml::label($attributeLabel,$fieldName.'_checkbox')
 			."</li>";
 		}
-		$this->columnSelectorHtml .= '</ul>'.CHtml::endForm();
+		$this->columnSelectorHtml .= '</ul></form>';
 		// Yii::app()->clientScript->renderBodyBegin($columnHtml);
 		// Yii::app()->clientScript->registerScript(__CLASS__.'#'.$this->getId().'_columnSelector',
 		// "$('#".$this->getId()." table').after('".addcslashes($columnHtml,"'")."');
@@ -329,7 +347,7 @@ class X2GridView extends CGridView {
 		$themeURL = Yii::app()->theme->getBaseUrl();
 		Yii::app()->clientScript->registerScript('logos',"
 		$(window).load(function(){
-			if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+			if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
 				$('a').removeAttr('href');
 				alert('Please put the logo back');
 				window.location='http://www.x2engine.com';
@@ -343,7 +361,7 @@ class X2GridView extends CGridView {
 			}
 		});    
 		");
-		
+		if(isset(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts'){
 		// add a dropdown to the summary text that let's user set how many rows to show on each page
 		$this->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 			. '<div class="form no-border" style="display:inline;"> '
@@ -358,19 +376,72 @@ class X2GridView extends CGridView {
 								}
 							});
 						}",
-						'data' => "js: {results: $(this).val()}",
+						'data' => 'js: {results: $(this).val()}',
 					),
 					'style' => 'margin:0 0 2px 0;',
 				))
 			. ' </div>'
 			. Yii::t('app', ' results per page');
 
+			
+			
+		// $this->afterAjaxUpdate = 'function(id, data) { '.$datePickerJs.' }';
+		// if(!empty($this->afterAjaxUpdate))
+			// $this->afterAjaxUpdate = "var callback = ".$this->afterAjaxUpdate."; if(typeof callback == 'function') callback();";
+		
+		// $this->afterAjaxUpdate = " function(id,data) { ".$this->afterAjaxUpdate." ".$datePickerJs;
+				
+		// if($this->enableGvSettings) {
+			// $this->afterAjaxUpdate.="
+			// $('#".$this->getId()." table').gvSettings({
+				// viewName:'".$this->viewName."',
+				// columnSelectorId:'".$this->columnSelectorId."',
+				// ajaxUpdate:true
+			// });";
+		// }
+		// $this->afterAjaxUpdate .= " } ";
+			
 		
 		// after user moves to a different page, make sure the tool tips get added to the newly showing rows
-		$this->afterAjaxUpdate = "js: function(id, data) { refreshQtip(); }";
-
+		$this->afterAjaxUpdate = 'js: function(id, data) { refreshQtip(); $(".qtip-hint").qtip({content:false}); }';
+        }
 		parent::init();
 	}
+	
+	public function run() { 
+		$this->registerClientScript();
+
+		// give this a special class so the javascript can tell it apart from the regular, lame gridviews
+		if(!isset($this->htmlOptions['class']))
+			$this->htmlOptions['class'] = '';
+		$this->htmlOptions['class'] .= ' x2-gridview';
+		
+		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
+
+		$this->renderContent();
+		$this->renderKeys();
+
+		
+		if($this->ajax) {
+		
+			Yii::app()->clientScript->scriptMap['*.js'] = false;
+			Yii::app()->clientScript->scriptMap['*.css'] = false;
+
+			$output = '';
+			Yii::app()->getClientScript()->renderBodyEnd($output);
+			echo $output;
+			
+			echo CHtml::closeTag($this->tagName);
+			ob_flush();
+			
+			
+			Yii::app()->end();;
+		}
+		echo CHtml::closeTag($this->tagName);
+		
+	}
+	
+	
 
 	/**
 	* Renders the data items for the grid view.
@@ -390,23 +461,33 @@ class X2GridView extends CGridView {
 		}
 	}
 
+	/**
+	 * Override of {@link CGridView::registerClientScript()}.
+	 * 
+	 * Adds scripts essential to modifying the gridview (and saving its configuration).
+	 */
 	public function registerClientScript() {
 		parent::registerClientScript();
-		
+		// die('taco bell');
 		if($this->enableGvSettings) {
-			
-			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.2.x2.js');
-			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.dragtable.x2.js');
-			Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
+			if(!$this->ajax) {
+				Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.2.x2.js');
+				Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/jquery.dragtable.x2.js');
+				Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
+			}
 			Yii::app()->clientScript->registerScript(__CLASS__.'#'.$this->getId().'_gvSettings',
 			"$('#".$this->getId()." table').gvSettings({
 				viewName:'".$this->viewName."',
 				columnSelectorId:'".$this->columnSelectorId."',
-				columnSelectorHtml:'".addcslashes($this->columnSelectorHtml,"'")."'
+				columnSelectorHtml:'".addcslashes($this->columnSelectorHtml,"'")."',
+				ajaxUpdate:".($this->ajax?'true':'false').",
 			});",CClientScript::POS_READY);
 		}
 	}
 	
+	/**
+	 * Echoes the markup for the gridview's table header. 
+	 */
 	public function renderTableHeader() {
 		if(!$this->hideHeader) {
 			echo "<colgroup>";

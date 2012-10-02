@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,18 +43,32 @@ return array (
 'Install X2EngineCRM'=>'Installez X2EngineCRM',
 'X2EngineCRM Installation'=>'Installation X2EngineCRM',
 'Installation Complete'=>'Installation terminée',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Cette application web nécessite JavaScript pour fonctionner correctement. S\'il vous plaît activer JavaScript dans votre navigateur avant de continuer.',
+// Requirements check
+'Cannot install X2EngineCRM'=>'Impossible d\'installer X2EngineCRM',
+'required but missing'=>'nécessaire, mais manquant',
+'Your server\'s PHP version'=>'Votre serveur PHP version',
+'version 5.3 or later is required'=>'version 5.3 ou ultérieure est requis',
+'Unfortunately, your server does not meet the minimum system requirements for installation'=>'Malheureusement, votre serveur ne répond pas à la configuration minimale requise pour l\'installation',
+'Otherwise, contact your hosting provider.'=>'Sinon, contactez votre fournisseur d\'hébergement.',
+'If you are a system administrator of this server, refer to'=>'Si vous êtes un administrateur système de ce serveur, reportez-vous à',
 
 'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Bienvenue à l\'installation de l\'application X2EngineCRM! Nous avons besoin de recueillir un peu d\'information avant que nous puissions obtenir votre application en marche. S\'il vous plaît remplir les champs ci-dessous.',
 
 'X2EngineCRM Application Info'=>'Infos application X2EngineCRM',
 
+'Create sample data'=>'Créer des données d\'échantillon',
 'Application Name'=>'Nom de l\'application',
 'Default Language'=>'Langue par défaut',
 'Currency'=>'Devises',
+'Default Timezone'=>'Fuseau horaire par défaut',
 'Admin Password'=>'Mot de passe Admin',
 'Confirm Password'=>'Confirmer Mot de passe',
 'Administrator Email'=>'électronique de l\'administrateur',
 'Please enter a valid email address.'=>'S\'il vous plaît entrer une adresse email valide.',
+'Test Connection'=>'tester la connexion',
+'Connection OK!'=>'Connexion fonctionne!',
+'Could not connect to host.'=>'Impossible de se connecter à l\'hôte.',
 
 'Database Connection Info'=>'Informations sur la connexion base de données',
 
@@ -64,7 +78,7 @@ return array (
 'Username'=>'Nom d\'utilisateur',
 'Password'=>'Mot de passe',
 
-// Software updates
+// Software updates & registration
 'Software Updates'=>'Mises à jour logicielles',
 'Notify me of software updates'=>'Avertissez-moi des mises à jour logicielles',
 'First Name'=>'Prénom',
@@ -83,6 +97,12 @@ return array (
 'Optional Information'=>'Renseignements facultatifs',
 'Could not connect to the updates server at this time.'=>'No se pudo conectar al servidor de actualizaciones en este momento.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Vous pouvez continuer à installer l\'application sans activer les mises à jour et réessayez plus tard en allant dans "Paramètres généraux" sous "Paramètres App" dans la section des la console d\'administration.',
+'Product Key'=>'clé de produit',
+'Registration'=>'inscription',
+'Software registration succeeded.'=>'Enregistrement du logiciel a réussi.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Pour recevoir des mises à jour logicielles X2Engine, s\'il vous plaît enregistrer votre copie de X2EngineCRM:',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Assurez-vous d\'avoir une connexion Internet active. Si le problème persiste, s\'il vous plaît contactez-nous',
+'For support or sales inquiries, please contact us'=>'Pour toute demande d\'aide ou de vente, s\'il vous plaît contactez-nous',
 
 'Install'=>'Installer',
 

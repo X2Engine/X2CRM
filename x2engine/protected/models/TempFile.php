@@ -41,7 +41,7 @@
 /**
  * This is the model class for table "x2_temp_files".
  *
- * The followings are the available columns in table 'x2_media':
+ * @package X2CRM.models
  * @property integer $id
  * @property string $folder
  * @property string $name

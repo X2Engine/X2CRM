@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,6 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * Provides an action for sending email from a view page with an inline form.
+ * 
+ * @package X2CRM.components 
+ */
 class InlineEmailAction extends CAction {
 
 	public $model;
@@ -188,9 +193,30 @@ class InlineEmailAction extends CAction {
 				
 			}
 		}
+		
+		$attachments = array();
+		if(isset($_POST['AttachmentFiles']) && isset($_POST['AttachmentFiles']['id']) && isset($_POST['AttachmentFiles']['temp']))  {
+		    $ids = $_POST['AttachmentFiles']['id'];
+		    $temps = $_POST['AttachmentFiles']['temp'];
+		    for($i = 0; $i < count($ids); $i++) {
+		    	$temp = json_decode($temps[$i]);
+		    	if($temp) { // attachment is a temp file
+		    		$tempFile = TempFile::model()->findByPk($ids[$i]);
+		    		if(isset($tempFile))
+		    			$attachments[] = array('filename' => $tempFile->name, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
+		    	} else { // attachment is from media library
+		    		$mediaLibraryUsed = true;
+		    		$media = Media::model()->findByPk($ids[$i]);
+		    		if(isset($media))
+		    			$attachments[] = array('filename' => $media->fileName, 'temp' => json_decode($temps[$i]), 'id' => $media->id);
+		    	}
+		    }
+		}
+		
 		echo $this->controller->renderPartial('application.components.views.inlineEmailForm',array(
 			'model'=>$this->model,
 			'preview'=>$preview? $emailBody : null,
+			'attachments'=>$attachments,
 		));
 		
 		// }

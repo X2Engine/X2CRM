@@ -38,6 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * Primary/default controller for the web application.
+ * 
+ * @package X2CRM.controllers
+ */
 class SiteController extends x2base {
 	// Declares class-based actions.
 
@@ -50,7 +55,18 @@ class SiteController extends x2base {
 			'setPortlets',
 		);
 	}
-	
+    
+    protected function beforeAction($action=null){
+        $auth=Yii::app()->authManager;
+        $action=ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
+        $authItem=$auth->getAuthItem($action);
+        if(Yii::app()->user->checkAccess($action) || is_null($authItem)){
+            return true;
+        } else {
+            throw new CHttpException(403,'You are not authorized to perform this action.');
+        }
+    }
+
 	public function accessRules() {
 		return array(
 			array('allow',
@@ -92,21 +108,32 @@ class SiteController extends x2base {
 		);
 	}
 	
-	public function filterSetPortlets($filterChain){
-		if(!Yii::app()->user->isGuest){
-			$this->portlets=array();
-			$this->portlets = ProfileChild::getWidgets();
-			// $this->portlets=array();
-			// $arr=ProfileChild::getWidgets(Yii::app()->user->getId());
-
-			// foreach($arr as $key=>$value){
-				// $config=ProfileChild::parseWidget($value,$key);
-				// $this->portlets[$key]=$config;
-			// }
-		}
-		$filterChain->run();
-	}
+//	/**
+//	 * Obtain the widget list for the current web user.
+//	 * 
+//	 * @param CFilterChain $filterChain 
+//	 */
+//	public function filterSetPortletsq($filterChain){
+//		if(!Yii::app()->user->isGuest){
+//			$this->portlets=array();
+//			$this->portlets = ProfileChild::getWidgets();
+//			// $this->portlets=array();
+//			// $arr=ProfileChild::getWidgets(Yii::app()->user->getId());
+//
+//			// foreach($arr as $key=>$value){
+//				// $config=ProfileChild::parseWidget($value,$key);
+//				// $this->portlets[$key]=$config;
+//			// }
+//		}
+//		$filterChain->run();
+//	}
 	
+	/**
+	 * Default landing page action for the web application.
+	 * 
+	 * Displays a feed of new records that have been created since the last
+	 * login of the current web user.
+	 */
 	public function actionWhatsNew(){
 		
 		if(!Yii::app()->user->isGuest){
@@ -116,10 +143,10 @@ class SiteController extends x2base {
 
 			$contacts = CActiveRecord::model('Contacts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 			$actions = CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
-			$sales = CActiveRecord::model('Sales')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+			$opportunities = CActiveRecord::model('Opportunity')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 			$accounts = CActiveRecord::model('Accounts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 
-			$arr = array_merge($contacts,$actions,$sales,$accounts);
+			$arr = array_merge($contacts,$actions,$opportunities,$accounts);
 
 			$records = Record::convert($arr);
 
@@ -145,6 +172,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Displays message of the day.
+	 */
 	public function actionMotd() {
 		if(isset($_POST['message'])){
 			$motd=$_POST['message'];
@@ -159,6 +189,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Renders the group chat.
+	 */
 	public function actionGroupChat() {
 		$this->portlets = array();
 		$this->layout='//layouts/column1';
@@ -167,7 +200,9 @@ class SiteController extends x2base {
 		$this->render('groupChat');
 	}
 	
-	
+	/**
+	 * Creates a new chat message from the current web user.
+	 */
 	public function actionNewMessage() {
 		if (isset($_POST['chat-message']) && $_POST['chat-message']!=''
 			&& $_POST['chat-message']!=Yii::t('app','Enter text here...')) {
@@ -185,6 +220,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Obtain messages to be displayed within the chat box.
+	 */
 	public function actionGetMessages() {
 	
 		$lastIdCriterion = '';
@@ -238,14 +276,20 @@ class SiteController extends x2base {
 		// }
 	// }
 
-	public function actionUpdateNotes(){
-		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()), 'order timestamp DESC');
-		$res="";
-		foreach($content as $item){
-			$res.=$item->data."<br /><br />";
-		}
-	}
+//	/**
+//	 * Update the content of the notes widget box. 
+//	 */
+//	public function actionUpdateNotes(){
+//		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()), 'order timestamp DESC');
+//		$res="";
+//		foreach($content as $item){
+//			$res.=$item->data."<br /><br />";
+//		}
+//	}
 
+	/**
+	 * Add a personal note to the list of notes for the current web user.
+	 */
 	public function actionAddPersonalNote() {
 		if (isset($_POST['note-message']) && $_POST['note-message']!='') {
 			$user=Yii::app()->user->getName();
@@ -262,6 +306,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Adds a new URL 
+	 */
 	public function actionAddSite(){
 		if((isset($_POST['url-title'])&&isset($_POST['url-url'])) &&($_POST['url-title']!=''&&$_POST['url-url']!='')) {
 			$site = new URL;
@@ -275,6 +322,10 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Obtains notes for displaying within the notes widget.
+	 * @param string $url The deletion URL for notes
+	 */
 	public function actionGetNotes($url) {
 		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()),array(
 			'order'=>'timestamp DESC',
@@ -289,6 +340,10 @@ class SiteController extends x2base {
 		echo $res;
 	}
 
+	/**
+	 * Gets URLs for "top sites"
+	 * @param string $url 
+	 */
 	public function actionGetURLs($url) {
 		$content = URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
 			'order'=>'timestamp DESC',
@@ -304,18 +359,29 @@ class SiteController extends x2base {
 		echo $res;
 	}
 	
+	/**
+	 * Delete a message from the social feed.
+	 * @param integer $id
+	 * @param string $url 
+	 */
 	public function actionDeleteMessage($id,$url){
 		$note=Social::model()->findByPk($id);
 		$note->delete();
 		$this->redirect($url);
 	} 
 
+	/**
+	 * Sets "Fullscreen" mode for the current web user / session
+	 */
 	public function actionFullscreen() {
 		Yii::app()->session['fullscreen'] = (isset($_GET['fs']) && $_GET['fs'] == 1);
 		// echo var_dump(Yii::app()->session['fullscreen']);
 		echo 'Success';
 	}
 	
+	/**
+	 * Sets the page opacity for the current web user.
+	 */
 	public function actionPageOpacity() {
 		if(isset($_GET['opacity']) && is_numeric($_GET['opacity'])) {
 
@@ -336,6 +402,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Checks for the widget's state. 
+	 */
 	public function actionWidgetState() {
 		
 		if(isset($_GET['widget']) && isset($_GET['state'])) {
@@ -361,6 +430,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Responds with the order of widgets for the current user.
+	 */
 	public function actionWidgetOrder() {
 		if(isset($_POST['widget'])) {
 
@@ -399,6 +471,12 @@ class SiteController extends x2base {
 		}
 	}
 	
+	/**
+	 * Save custom gridview settings.
+	 * 
+	 * Saves the settings (i.e. columns, column position and column width)
+	 * for the X2GridView model. 
+	 */
 	public function actionSaveGridviewSettings() {
 		
 		$result = false;
@@ -414,6 +492,11 @@ class SiteController extends x2base {
 			echo '400 Failure';
 	}
 	
+	/**
+	 * Save settings for a custom form layout.
+	 * 
+	 * @throws CHttpException 
+	 */
 	public function actionSaveFormSettings() {
 		$result = false;
 		if(isset($_GET['formSettings']) && isset($_GET['formName'])) {
@@ -428,6 +511,9 @@ class SiteController extends x2base {
 			throw new CHttpException(400,'Invalid request. Probabaly something wrong with the JSON string.');
 	}
 	
+	/**
+	 * Saves the height of a widget. 
+	 */
 	public function actionSaveWidgetHeight() {
 		if( isset($_POST['Widget']) && isset($_POST['Height']) ) {
 			$heights = $_POST['Height'];
@@ -443,7 +529,9 @@ class SiteController extends x2base {
 		}
 	}
 
-	/*
+	/**
+	 * Uploads a file to a temporary folder.
+	 * 
 	 * Upload a file to a temp folder, which will presumably be deleted shortly thereafter
 	 * Temp files are stored in a temp folder with a randomly generated name. They are stored
 	 * in 'uploads/media/temp'
@@ -452,22 +540,27 @@ class SiteController extends x2base {
 		if(isset($_FILES['upload'])) {
 			$upload = CUploadedFile::getInstanceByName('upload');
 			
-			$name=$upload->getName();
-			$name=str_replace(' ','_',$name);
-
-			$temp = TempFile::createTempFile($name);
-
-			if($temp && $upload->saveAs($temp->fullpath())) // temp file saved
-				echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
-			else
-				echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+			if($upload) {
+			
+				$name=$upload->getName();
+				$name=str_replace(' ','_',$name);
+				
+				$temp = TempFile::createTempFile($name);
+				
+				if($temp && $upload->saveAs($temp->fullpath())) // temp file saved
+					echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
+				else
+					echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+			} else {
+				echo json_encode(array('status' => 'notsent', 'message' => Yii::t('media', 'File was not sent to server.')));
+			}
 		} else {
 			echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
 		}
 	}
 	
-	/*
-	 * Remove a temp file and the temp folder that is in
+	/**
+	 * Remove a temp file and the temp folder that is in.
 	 */
 	public function actionRemoveTmpUpload() {
 		if(isset($_POST['id'])) {
@@ -485,6 +578,9 @@ class SiteController extends x2base {
 		}
 	}
 
+	/**
+	 * Upload a file.
+	 */
 	public function actionUpload() {
 		if(isset($_FILES['upload'])) {
 			$model=new Media;
@@ -507,8 +603,11 @@ class SiteController extends x2base {
 			$username = Yii::app()->user->name;
 			if($this->ccopy($temp->getTempName(),"uploads/media/$username/$name")) {
 				if(isset($_POST['associationId']))
-					$model->associationId=$_POST['associationId'];
-				$model->associationType=$_POST['type'];
+					$model->associationId = $_POST['associationId'];
+				if(isset($_POST['associationType']))
+					$model->associationType = $_POST['associationType'];
+				if(isset($_POST['private']))
+					$model->private = $_POST['private'];
 				$model->uploadedBy=Yii::app()->user->getName();
 				$model->createDate=time();
 				$model->lastUpdated = time();
@@ -524,7 +623,7 @@ class SiteController extends x2base {
 					$soc->timestamp = time();
 					$soc->lastUpdated = time();
 					$soc->associationId = $model->associationId;
-					$soc->data = CHtml::link($model->fileName,array('media/view','id'=>$model->id));
+					$soc->data = $model->getMediaLink();
 					if($soc->save()) {
 							$this->redirect(array('profile/'.$model->associationId));
 					} else {
@@ -540,6 +639,10 @@ class SiteController extends x2base {
 					$this->redirect(array('profile/settings','id'=>Yii::app()->user->getId()));
 				} else if($model->associationType=='docs'){
 					$this->redirect(array('docs/index'));
+	//			} else if($model->private) {
+	//				if($model->associationType == 'product')
+	//					$this->redirect(array('/products/'.$model->associationId));
+	//				$this->redirect(array($model->associationType.'/'.$model->associationId));
 				}else {
 					$note=new Actions;
 					$note->createDate = time();
@@ -548,10 +651,15 @@ class SiteController extends x2base {
 					$note->complete='Yes';
 					$note->visibility='1';
 					$note->completedBy=Yii::app()->user->getName();
-					$note->assignedTo='Anyone';
+					if($model->private) {
+						$note->assignedTo = Yii::app()->user->getName();
+						$note->visibility = '0';
+					} else {
+						$note->assignedTo='Anyone';
+					}
 					$note->type='attachment';
 					$note->associationId=$_POST['associationId'];
-					$note->associationType=$_POST['type'];
+					$note->associationType=$_POST['associationType'];
 
 					$association = $this->getAssociation($note->associationType,$note->associationId);
 					if($association != null)
@@ -563,14 +671,16 @@ class SiteController extends x2base {
 							unlink('uploads/'.$name);
 					}
 					if($model->associationType == 'product')
-						$this->redirect(array($model->associationType.'s/'.$model->associationId));
+						$this->redirect(array('/products/'.$model->associationId));
 					$this->redirect(array($model->associationType.'/'.$model->associationId));
 				}
 			}
 		}
 	}
 
-    // upload contact profile picture from facebook
+        /**
+	 * Upload contact profile picture from Facebook.
+	 */
 	public function actionUploadProfilePicture() {
 		if(isset($_POST['photourl'])) {
 			$photourl = $_POST['photourl'];
@@ -627,11 +737,28 @@ class SiteController extends x2base {
 	}
 
 	
-	// This is the default 'index' action that is invoked
-	// when an action is not explicitly requested by users.
+	/**
+	 * Index action.
+	 * 
+	 * This is the default 'index' action that is invoked when an action 
+	 * is not explicitly requested by users.
+	 */
+	// 
 	public function actionIndex() {
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
+		
+		// check if we are on a mobile browser
+		if(isset($_GET['mobile']) && $_GET['mobile'] == 'false') {
+			$cookie = new CHttpCookie('x2mobilebrowser', 'false'); // create cookie
+			$cookie->expire = time() + 31104000; // expires in 1 year
+			Yii::app()->request->cookies['x2mobilebrowser'] = $cookie; // save cookie
+		} else {
+			$mobileBrowser = Yii::app()->request->cookies->contains('x2mobilebrowser') ? Yii::app()->request->cookies['x2mobilebrowser']->value : '';
+			if($mobileBrowser == 'true')
+			    $this->redirect(array('/mobile/site/index'));
+		}
+		
 		if(Yii::app()->user->isGuest)
 			$this->redirect(array('/site/login'));
 		else {
@@ -650,13 +777,13 @@ class SiteController extends x2base {
 			if(empty($profile->startPage)) {
 				$this->redirect(array('site/whatsNew'));
 			} else {
-				$file = Yii::app()->file->set('protected/controllers/'.ucfirst($profile->startPage).'Controller.php');
-				$module = Yii::app()->file->set('protected/modules/'.$profile->startPage.'/controllers/DefaultController.php');
-				if($file->exists || $module->exists){
-					if($file->exists)
+				$controller = Yii::app()->file->set('protected/controllers/'.ucfirst($profile->startPage).'Controller.php');
+				$module = Yii::app()->file->set('protected/modules/'.$profile->startPage.'/controllers/'.ucfirst($profile->startPage).'Controller.php');
+				if($controller->exists || $module->exists){
+					if($controller->exists)
 						$this->redirect(array($profile->startPage.'/index'));
 					if($module->exists)
-						$this->redirect(array($profile->startPage.'/default/index'));
+						$this->redirect(array($profile->startPage.'/'.$profile->startPage.'/index'));
 				} else {
 					$page=DocChild::model()->findByAttributes(array('title'=>ucfirst($profile->startPage)));
 					if(isset($page)) {
@@ -674,7 +801,11 @@ class SiteController extends x2base {
         
          
 
-	// This is the action to handle external exceptions.
+	/**
+	 * Error printing.
+	 * 
+	 * This is the action to handle external exceptions.
+	 */
 	public function actionError() { 
 		if($error=Yii::app()->errorHandler->error) {
 			if(Yii::app()->request->isAjaxRequest)
@@ -685,7 +816,9 @@ class SiteController extends x2base {
 	}
 
 
-	// Displays the About page
+	/**
+	 *  Displays the About page
+	 */
 	public function actionContact() {
 		$model=new ContactForm;
 		if(isset($_POST['ContactForm'])) {
@@ -700,14 +833,27 @@ class SiteController extends x2base {
 		$this->render('contact',array('model'=>$model));
 	}
 
+	/**
+	 * Obtains the record association type for an object, i.e. contacts.
+	 *
+	 * @param string $type
+	 * @param integer $id
+	 * @return mixed 
+	 */
 	protected function getAssociation($type,$id) {
 	
 		$classes = array(
-			'action'=>'Actions',
-			'contact'=>'Contacts',
-			'project'=>'ProjectChild',
-			'account'=>'Accounts',
-			'sale'=>'Sales',
+			'actions'=>'Actions',
+			'contacts'=>'Contacts',
+			'projects'=>'ProjectChild',
+			'accounts'=>'Accounts',
+			'product'=>'Product',
+			'products'=>'Product',
+			'Campaign'=>'Campaign',
+			'quote'=>'Quote',
+			'quotes'=>'Quote',
+			'opportunities'=>'Opportunity',
+			'social'=>'SocialChild',
 		);
 		
 		if(array_key_exists($type,$classes) && $id != 0)
@@ -716,6 +862,9 @@ class SiteController extends x2base {
 			return null;
 	}
 
+	/**
+	 * View all notifications for the current web user.
+	 */
 	public function actionViewNotifications(){
 		$dataProvider = new CActiveDataProvider('Notification',array(
 			'criteria'=>array(
@@ -731,37 +880,6 @@ class SiteController extends x2base {
 		));
 	}
 
-/* 	protected function parseName($arr) {
-		$type=$arr[0]; 
-		$id=$arr[1];
-		if(isset($id) || true) {
-			if($type=='project') {
-				 $data=CActiveRecord::model('ProjectChild')->findByPk($id);
-				 $name=$data->name;
-			} else if($type=='contact') {
-				 $data=CActiveRecord::model('Contacts')->findByPk($id);
-				 $name=$data->name;
-			} else if($type=='account') {
-				 $data=CActiveRecord::model('Accounts')->findByPk($id);
-				 $name=$data->name;
-			} else if($type=='case') {
-				 $data=CActiveRecord::model('CaseChild')->findByPk($id);
-				 $name=$data->name;
-			} else if($type=='sale') {
-				 $data=CActiveRecord::model('Sales')->findByPk($id);
-				 $name=$data->name;
-			} else {
-				$data='None';
-				$name='None';
-			}
-		} else {
-			 $data='None';
-			 $name='None';
-		}
-		$info=array($name,$data);
-		return $info;
-	} */
-
 	public function actionWarning() {
 		header("Content-type: image/gif");
 		$img = 'R0lGODlhZABQAPcAANgAAP///w';
@@ -771,9 +889,10 @@ class SiteController extends x2base {
 		echo base64_decode($img);
 	}
 	
-	// Displays the login page
-	public function actionLogin() {
-	
+	/**
+	 * Displays the login page
+	 */
+	public function actionLogin() {	
 		$this->layout = '//layouts/login';
 	
 		// echo var_dump(Session::getOnlineUsers());
@@ -857,8 +976,8 @@ class SiteController extends x2base {
 							else
 								$newVersion=Yii::app()->params->version;
 						} */
-						
-						if(version_compare($newVersion,Yii::app()->params->version) > 0) {	// if the latest version is newer than our version
+						$unique_id = Yii::app()->db->createCommand("SELECT `unique_id` FROM `x2_admin`")->queryScalar();
+						if(version_compare($newVersion,Yii::app()->params->version) > 0 && $unique_id !='none' && $unique_id != Null) {	// if the latest version is newer than our version
 							Yii::app()->session['versionCheck']=false;
 							Yii::app()->session['newVersion']=$newVersion;
 						}
@@ -891,6 +1010,9 @@ class SiteController extends x2base {
 		$this->render('login',array('model'=>$model));
 	}
 	
+	/**
+	 * Log in using a Google account.
+	 */
 	public function actionGoogleLogin(){
 		$this->layout = '//layouts/login';
 		$model = new LoginForm;
@@ -971,6 +1093,9 @@ class SiteController extends x2base {
 	}
 	
 	
+	/**
+	 * Toggle display of tags.
+	 */
 	public function actionToggleShowTags($tags) {
 		if($tags == 'allUsers') {
 			Yii::app()->params->profile->tagsShowAllUsers = true;
@@ -981,16 +1106,21 @@ class SiteController extends x2base {
 		}
 	}
 	
-	// add a tag to a module
-	// echo true if tag was created (and was not a duplicate)
+	/**
+	 * Add a tag to a module.
+	 * 
+	 * Echoes true if tag was created (and was not a duplicate)
+	 */
 	public function actionAppendTag() {
 		if( isset($_POST['Type']) && isset($_POST['Id']) && isset($_POST['Tag']) ) {
 			$type = ucfirst($_POST['Type']);
 			$id = $_POST['Id'];
 			$value = $_POST['Tag'];
 			
-			if($type == "Quotes" || $type == "Products") // fix for products and quotes
+			if($type == 'Quotes' || $type == 'Products') // fix for products and quotes
 				$model = CActiveRecord::model(rtrim($type, 's'))->findByPk($id);
+			elseif($type == 'Opportunities')
+				$model = CActiveRecord::model('Opportunity')->findByPk($id);
 			else
 				$model = CActiveRecord::model($type)->findByPk($id);
 			if($model) {
@@ -1028,15 +1158,22 @@ class SiteController extends x2base {
 		json_encode(false);
 	}
 	
-	// remove a tag from a module
-	// echo true if tag was removed
+	/**
+	 * Remove a tag from a module.
+	 * 
+	 * Echoes true if tag was removed.
+	 */
 	public function actionRemoveTag() {
 		if( isset($_POST['Type']) && isset($_POST['Id']) && isset($_POST['Tag']) ) {
 			$type = ucfirst($_POST['Type']);
 			$id = $_POST['Id'];
 			$value = $_POST['Tag'];
-			
-			$model = CActiveRecord::model($type)->findByPk($id);
+			if($type == 'Quotes' || $type == 'Products') // fix for products and quotes
+				$model = CActiveRecord::model(rtrim($type, 's'))->findByPk($id);
+			elseif($type == 'Opportunities')
+				$model = CActiveRecord::model('Opportunity')->findByPk($id);
+			else
+				$model = CActiveRecord::model($type)->findByPk($id);
 			if($model) {
 				
 				// make sure tag exists
@@ -1056,7 +1193,9 @@ class SiteController extends x2base {
 		echo json_encode(false);
 	}
 
-	// Logs out the current user and redirect to homepage.
+	/**
+	 * Logs out the current user and redirect to homepage.
+	 */
 	public function actionLogout() {
 		$user = User::model()->findByPk(Yii::app()->user->getId());
 		if(isset($user)) {

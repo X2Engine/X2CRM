@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'运动',
+'Campaigns'=>'广告系列',
 'ID'=>'账号',
 'Master Campaign ID'=>'主广告系列ID',
 'Name'=>'名称',
@@ -59,6 +61,13 @@ return array (
 'Updated By'=>'更新',
 'None'=>'没有',
 
+// Menu
+'All Campaigns'=>'所有广告活动',
+'Create Campaign'=>'建立广告活动',
+'Newsletters'=>'通讯',
+'Create Newsletter'=>'创建通讯',
+'Create Web Form'=>'创建Web窗体',
+
 // Launching
 'The campaign has already been launched.'=>'该活动已经启动。',
 'Contact List cannot be blank.'=>'联系人列表不能为空。',
@@ -71,6 +80,10 @@ return array (
 'Campaign launched'=>'运动已被推出',
 'Campaign paused'=>'运动已被暂停',
 'Campaign resumed'=>'运动继续',
+'Sent'=>'发送',
+'Opened'=>'开业',
+'Clicked'=>'被点击',
+'Unsubscribed'=>'取消订阅',
 
 // Mailing
 'The email sending limit has been reached.'=>'电子邮件发送已达到限制。',
@@ -83,6 +96,7 @@ return array (
 'Attempting to send email'=>'尝试发送电子邮件',
 'Unsendable email'=>'非发送电子邮件',
 'Blank email addresses'=>'空白的电子邮件地址',
+'Duplicate Email Address'=>'重复的电子邮件地址',
 '\'Do Not Email\' contacts'=>'不支持电子邮件往来',
 'Data errors'=>'数据错误',
 'Batch completed, sending again in'=>'批次完成，再发送',
@@ -93,6 +107,15 @@ return array (
 'Contacts for tag'=>'为标签的联系',
 'Mailing for tag'=>'邮寄的标签',
 'Could not create mailing'=>'无法创建邮件',
+'You have been unsubscribed'=>'您已取消订阅',
+'Contact has unsubscribed'=>'接触已取消订阅',
+'\'Do Not Email\' has been set'=>'“不要电子邮件”已定',
+'has unsubscribed'=>'已退订',
+'Contact has opened the email'=>'接触打开邮件',
+'has opened the email'=>'打开邮件',
+'Contact has clicked a link'=>'联系人点击一个链接',
+'has clicked a link'=>'点击一个链接',
+'To stop receiving these messages, click here'=>'要停止接收这些消息，请点击这里',
 
 // WebForm model
 'Model Name'=>'模型名称',
@@ -102,6 +125,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'名称不能为空。',
+'Name cannot be'=>'名称不能',
 'Web Lead Form'=>'网络信息表格',
 'Create a public form to receive new contacts.'=>'创建一个公共的形式来接收新的联系人。',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'如果已经配置了不含铅的路由，所有新联系人都将被分配到“任何人”。',

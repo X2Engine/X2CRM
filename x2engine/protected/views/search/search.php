@@ -65,10 +65,11 @@ $(function() {
 });
 ');
 ?>
-<h1><?php echo Yii::t('app','Search Results'); ?></h1>
+
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $dataProvider,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=>'<h2>'.Yii::t('app','Search Results').'</h2>{summary}{items}{pager}',
 	'columns' => array(
 		array(
 			'name' => Yii::t('app','Name'),

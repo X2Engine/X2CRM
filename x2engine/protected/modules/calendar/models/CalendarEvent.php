@@ -45,7 +45,7 @@
 /**
  * This is the model class for table "x2_actions".
  *
- * The followings are the available columns in table 'x2_actions':
+ * @package X2CRM.modules.calendar.models
  * @property integer $id
  * @property string $assignedTo
  * @property string $actionDescription

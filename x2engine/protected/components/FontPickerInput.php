@@ -38,6 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * Input form element that provides a fontface selection dropdown menu.
+ * 
+ * @package X2CRM.components 
+ */
 class FontPickerInput extends CFormElement {
 	//http://www.w3schools.com/cssref/css_websafe_fonts.asp
 	protected static $fontsCss = array(

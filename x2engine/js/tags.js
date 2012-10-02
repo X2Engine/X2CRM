@@ -112,7 +112,7 @@ $.fn.appendTag = function(tag) {
 	$(this).each(function() {
 		// span holds remove button and tag link
 		var span = $('<span>', {
-		    class: 'tag',
+		    'class': 'tag',
 		});
 		
 		var parent = $(this);
@@ -170,7 +170,7 @@ function tagLinkClickHandler(event) {
 $.fn.appendRemove = function() {
 	$(this).each(function() {
 		var remove = $('<span>', {
-			class: 'delete-tag',
+			'class': 'delete-tag',
 			'html': '[x] '
 		});
 		
@@ -225,13 +225,12 @@ function createNewTagHandler(event) {
     	lockCreateTag(); // don't create another new tag while we're editing this one
     
     	var span = $('<span>', {
-    		class: 'tag',
+    		'class': 'tag',
     	});
     
-    	var textfield = $('<input>', {
-    		type: 'text',
-    		class: 'x2-new-tag',
-    		value: '#',
+    	var textfield = $('<input type="text">', {
+    		'class': 'x2-new-tag',
+    		'value': '#',
     	});
     
     	$('#x2-tag-list').append(span);
@@ -244,10 +243,9 @@ function createNewTagHandler(event) {
 // textfield so the user can fill in a new tag
 $.fn.appendTagInput = function() {
 	$(this).each(function() {
-    	var tagtext = $('<input>', {
-    		type: 'text',
-    		class: 'x2-new-tag',
-    		value: '#',
+    	var tagtext = $('<input type="text">', {
+    		'class': 'x2-new-tag',
+    		'value': '#',
     	});
 
 		var parent = $(this);
@@ -257,6 +255,12 @@ $.fn.appendTagInput = function() {
     	
     	// grow textfield on user input
     	tagtext.bind('keypress paste', function(event) {
+//    		tagtext.qtip({content:'key=' + event.which});
+			if($.browser.msie) {
+				if(parseInt($.browser.version) < 9) { // internet explorer (before version 9) sends ENTER through keyress (unlike every other browser… basterds…)
+					tagKeyHandler(event, parent, tagtext);
+				}
+			}
     		$(this).resizeTag();
     	});
     	
@@ -276,6 +280,7 @@ $.fn.appendTagInput = function() {
 // if the user presses ENTER, and there is no input, remove the new tag
 // if the user presses ENTER, and there is input, create the new tag
 function tagKeyHandler(event, span, textfield) {
+	textfield.qtip({content:'key=' + $.browser.ie});
     if(event.which == 13) { // user hit ENTER; create the new tag (or not if no input)
         if(textfield.val() == '' || textfield.val() == '#') { // if no input, get rid of new tag
         	span.fadeOut(function() { span.empty().remove(); });
@@ -289,8 +294,6 @@ function tagKeyHandler(event, span, textfield) {
         			'href': $('#x2-inline-tags').data('searchUrl') + '?term=' + value.replace(/#/g, '%23'),
         			'html': value,
         		});
-        		console.log(link);
-        		console.log(span);
         		textfield.remove();
         		span.append(link);
         		link.click(function(e) {

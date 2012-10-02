@@ -1,5 +1,8 @@
 <?php
- 
+
+/**
+ * @package X2CRM.modules.workflow 
+ */
 class WorkflowModule extends CWebModule {
 	public function init() {
 		// this method is called when the module is being created

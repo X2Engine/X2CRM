@@ -38,7 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class GoogleMaps extends CWidget {
+/**
+ * Google maps display widget.
+ * 
+ * Before running, the $location attribute needs to be set.
+ * @package X2CRM.components 
+ */
+class GoogleMaps extends X2Widget {
 
 	//public $visibility;
 	public function init() {
@@ -86,9 +92,3 @@ class GoogleMaps extends CWidget {
 		echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';
 	}
 }
-
-
-
-
-
-

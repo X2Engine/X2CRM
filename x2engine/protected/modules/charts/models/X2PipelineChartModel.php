@@ -42,7 +42,7 @@
 /**
  * This is the model class for chart module controls
  *
- * The followings are the available columns in table 'x2_docs':
+ * @package X2CRM.modules.charts.models
  * @property string $dateRange
  */
 class X2PipelineChartModel extends CModel {

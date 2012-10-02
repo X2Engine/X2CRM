@@ -43,7 +43,7 @@ $attributeLabels = $model->attributeLabels();
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 $showWorkflow = Yii::app()->params->profile->showWorkflow;
-if($modelName=='contacts' || $modelName=='sales'){
+if($modelName=='contacts' || $modelName=='opportunities'){
 
 Yii::app()->clientScript->registerScript('toggleWorkflow', "
 function showWorkflow() {
@@ -82,9 +82,9 @@ if($layoutData === false) {
 }
 	
 if($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
-
-echo '<div class="x2-layout">';
-
+?>
+<div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
+<?php
 $formSettings = ProfileChild::getFormSettings($modelName);
 
 $fieldPermissions = array();
@@ -109,21 +109,30 @@ foreach($layoutData['sections'] as &$section) {
 	if(!isset($section['rows'])) $section['rows'] = array();
 	if(!isset($formSettings[$i])) $formSettings[$i] = 1;
 	
-	echo '<div class="formSection'.((!$formSettings[$i] && $section['collapsible'])? ' hideSection' : '').'">';
+	$collapsed = !$formSettings[$i] && $section['collapsible'];
+	
+	echo '<div class="formSection';
+	if($section['collapsible'])
+		echo ' collapsible';
+	if(!$collapsed)
+		echo ' showSection';
+	echo '">';
 	
 	if($section['collapsible'] || !empty($section['title'])) {
 		echo '<div class="formSectionHeader">';
-		if(!empty($section['title']))
-			echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
 		if($section['collapsible']) {
-			echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
-			echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
+			echo '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
+			echo '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
 		}
+		if(!empty($section['title']))
+			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';
 		echo '</div>';
-	} else
-		echo '<hr>';
+	}
 	if(!empty($section['rows'])) {
-		echo '<div class="tableWrapper"><table>';
+		echo '<div class="tableWrapper"';
+		if($collapsed)
+			echo ' style="display:none;"';
+		echo '><table>';
 	
 		foreach($section['rows'] as &$row) {
 			echo '<tr class="formSectionRow">';
@@ -173,7 +182,7 @@ foreach($layoutData['sections'] as &$section) {
 										default:		$labelClass = 'topLabel';
 									}
 									
-									echo '<div class="formItem '.$labelClass.'">';
+									echo "<div id=\"{$field->modelName}_{$field->fieldName}_field\" class=\"formItem $labelClass\">";
 									//echo '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
 									echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
 										

@@ -76,7 +76,7 @@ $(function() {
 	'template'=>Yii::t('app','Records that have been modified since your last login.').'{summary}{items}{pager}',
 	'dataProvider' => $dataProvider,
 	'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).') . '<br />'
-		. '<div class="form" style="border:none; margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+		. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
 		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 		    	'ajax' => array(
 		    		'url' => $this->createUrl('/profile/setResultsPerPage'),

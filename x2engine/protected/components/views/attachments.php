@@ -74,14 +74,18 @@ function checkName(el, sbm) {
 }
 ",CClientScript::POS_HEAD);
 ?>
+<div id="attachment-form-top"></div>
+<div id="attachment-form"<?php if($startHidden) echo ' style="display:none;"'; ?>>
 <div class="form">
 <b><?php echo Yii::t('app','Attach a File'); ?></b><br />
 <?php
 	echo CHtml::form(array('/site/upload'),'post',array('enctype'=>'multipart/form-data')); 
-	echo CHtml::hiddenField('type',$this->type);
+	echo CHtml::hiddenField('associationType',$this->associationType);
 	echo CHtml::hiddenField('associationId',$this->associationId);
+	echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private')));
 	echo CHtml::fileField('upload','',array('id'=>'upload','onchange'=>"checkName(this, '#submitAttach')"));
 	echo CHtml::submitButton('Submit',array('id'=>'submitAttach','disabled'=>'disabled','class'=>'x2-button','style'=>'display:inline'));
 	echo CHtml::endForm();
 ?>
+</div>
 </div>

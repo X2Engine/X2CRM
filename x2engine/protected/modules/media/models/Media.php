@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,8 +40,8 @@
 
 /**
  * This is the model class for table "x2_media".
- *
- * The followings are the available columns in table 'x2_media':
+ * 
+ * @package X2CRM.modules.media.models
  * @property integer $id
  * @property string $associationType
  * @property integer $associationId
@@ -84,6 +84,7 @@ class Media extends X2Model {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'campainAttachments'=>array(self::HAS_MANY, 'CampaignAttachment', 'media'),
 		);
 	}
 
@@ -112,7 +113,7 @@ class Media extends X2Model {
 
 		$criteria=new CDbCriteria;
 		$username = Yii::app()->user->name;
-		$criteria->addCondition("uploadedBy='$username' OR private=0");
+		$criteria->addCondition("uploadedBy='$username' OR private=0 OR private=null");
 		return $this->searchBase($criteria);
 	}
 	
@@ -158,6 +159,15 @@ class Media extends X2Model {
 	public function getUrl() {
 		if($path = $this->getPath()) // ensure file exists
 			return Yii::app()->request->baseUrl . "/$path";
+		
+		return null;
+	}
+	
+	// get the full url (including e.g. example.com) to a file
+	// return null if file doesn't exist
+	public function getFullUrl() {
+		if($path = $this->getPath()) // ensure file exists
+			return Yii::app()->getBaseUrl(true) . "/$path";
 		
 		return null;
 	}

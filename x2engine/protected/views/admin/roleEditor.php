@@ -109,6 +109,7 @@ foreach($groups as $group){
     echo CHtml::dropDownList('editPermissions[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
     ?>
 </div>
+
 <br />
 <div class="row buttons">
 	<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>

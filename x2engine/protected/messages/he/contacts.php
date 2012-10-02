@@ -131,7 +131,7 @@ return array (
 'Detail View'=>'תצוגת פרטים',
 'Simple View'=>'פשוט צפה',
 'Contact Info'=>'פרטים ליצירת קשר',
-'Sales &amp; Marketing'=>'מכירות ושיווק',
+'Opportunities &amp; Marketing'=>'מכירות ושיווק',
 'Social Media'=>'מדיה חברתית',
 
 // Contacts Actions
@@ -142,6 +142,7 @@ return array (
 'View Contact'=>'הצג את צור',
 'Update Contact'=>'עדכון צור',
 'Delete Contact'=>'מחק צור',
+'Contact Lists'=>'צור רשימות',
 'Create Lead'=>'צור יצוקה',
 'Share Contact'=>'שתף צור קשר',
 'Create'=>'ליצור',
@@ -150,7 +151,7 @@ return array (
 'View'=>'לראות',
 'Share'=>'חלק',
 'Update'=>'לעדכן',
-'View Sales'=>'הצג מכירות',
+'View Opportunities'=>'הצג מכירות',
 'Delete'=>'למחוק',
 'Show All'=>'הצג הכל',
 'Hide All'=>'הסתר הכל',
@@ -177,4 +178,17 @@ return array (
 'Subscribe'=>'הירשם',
 'The information for {name} has changed.'=>'מידע עבור {name} השתנה.',
 'Receive email updates every time information for {name} changes'=>'קבל עדכוני דוא"ל כל הזמן מידע על שינויים {name}',
+
+// Web Lead
+'Web Lead'=>'אינטרנט ליצירת קשר',
+'Invalid Email Address'=>'כתובת דוא"ל לא חוקית',
+'Default list for email list signups'=>'רשימת ברירת מחדל עבור רשימת רשמות דוא"ל',
+'This request cannot be made at this time.'=>'בקשה זו לא ניתן בשלב זה.',
+'Newsletter Signup'=>'הרשמה לידיעון',
+'Could not sign up'=>'לא יכל להירשם',
+'We\'re Sorry!'=>'אנחנו מצטערים!',
+'Thank You!'=>'תודה לך!',
+'Thank you for your interest!'=>'תודה לך על התעניינותך!',
+'Someone will be in touch shortly.'=>'מישהו יהיה איתך בקשר בקרוב.',
+'Enter any additional information or questions regarding your interest here.'=>'זן כל מידע או שאלות נוספים לגבי העניין שלך כאן.',
 );

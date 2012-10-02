@@ -38,8 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * User notifications & social feed controller
+ * 
+ * @package X2CRM.controllers
+ */
 class NotificationsController extends CController {
-	
+
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -74,6 +79,9 @@ class NotificationsController extends CController {
  */
 
 
+	/**
+	 * Obtain all current notifications for the current web user. 
+	 */
 	public function actionGet() {
 	
 		// import all the models
@@ -81,6 +89,7 @@ class NotificationsController extends CController {
 		Yii::import('application.models.Profile');
 		Yii::import('application.models.Notification');
 		Yii::import('application.models.Fields');
+        Yii::import('application.components.X2WebUser');
 		foreach(scandir('protected/modules') as $module){
 			if(file_exists('protected/modules/'.$module.'/register.php'))
 				Yii::import('application.modules.'.$module.'.models.*');
@@ -131,6 +140,9 @@ class NotificationsController extends CController {
 		}
 	}
 
+	/**
+	 * Mark an action as viewed. 
+	 */
 	public function actionMarkViewed() {
 		if(isset($_GET['id'])) {
 			if(!is_array($_GET['id']))
@@ -146,17 +158,27 @@ class NotificationsController extends CController {
 		}
 	}
 	
+	/**
+	 * Delete an action by its ID 
+	 * @param type $id
+	 */
 	public function actionDelete($id) {
 		$model = CActiveRecord::model('Notification')->findByPk($id);
 		if(isset($model) && $model->user = Yii::app()->user->name)
 			$model->delete();
 	}
 
+	/**
+	 * Clear all notifications.
+	 */
 	public function actionDeleteAll() {
 		CActiveRecord::model('Notification')->deleteAllByAttributes(array('user'=>Yii::app()->user->name));
 		$this->redirect(array('/site/viewNotifications'));
 	}
 
+	/**
+	 * Obtain chat messages.
+	 */
 	public function actionGetMessages() {
 	
 		$lastIdCriterion = '';
@@ -318,13 +340,23 @@ class NotificationsController extends CController {
 	}
 	 */
 
-	// Used in function convertUrls
+	/**
+	 * Used in function convertUrls
+	 * 
+	 * @todo refactor this out of controllers
+	 * @param mixed $a
+	 * @param mixed $b
+	 * @return mixed
+	 */
 	protected static function compareChunks($a,$b) {
 		return $a[1] - $b[1];
 	}
 
-	// Replaces any URL in text with an html link (supports mailto links)
-	//TODO: refactor this out of controllers
+	/**
+	 *  Replaces any URL in text with an html link (supports mailto links)
+	 * 
+	 * @todo refactor this out of controllers
+	 */
 	public function convertUrls($text, $convertLineBreaks = true) {
 		/*$text = preg_replace(
 			array(
@@ -410,6 +442,15 @@ class NotificationsController extends CController {
 			return $text;
 	}
 
+	/**
+	 * Normalize linebreaks in output.
+	 * 
+	 * @todo refactor this out of controllers
+	 * @param string $text
+	 * @param boolean $allowDouble
+	 * @param boolean $allowUnlimited
+	 * @return string 
+	 */
 	public static function convertLineBreaks($text,$allowDouble = true,$allowUnlimited = false) {
 		$text = mb_ereg_replace("\r\n","\n",$text);		//convert microsoft's stupid CRLF to just LF
 

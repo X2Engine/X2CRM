@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'Kampagne',
+'Campaigns'=>'Kampagnen',
 'ID'=>'ID',
 'Master Campaign ID'=>'Master-Kampagnen-ID',
 'Name'=>'Name',
@@ -59,6 +61,13 @@ return array (
 'Updated By'=>'Aktualisiert von',
 'None'=>'Keine',
 
+// Menu
+'All Campaigns'=>'Alle Kampagnen',
+'Create Campaign'=>'Erstellen Sie eine Kampagne',
+'Newsletters'=>'Nachrichten Briefe',
+'Create Newsletter'=>'Neues Mitteilungsblatt',
+'Create Web Form'=>'Erstellen von Web-Formular',
+
 // Launching
 'The campaign has already been launched.'=>'Die Kampagne wurde bereits eingeleitet.',
 'Contact List cannot be blank.'=>'Kontakt-Liste darf nicht leer sein.',
@@ -71,6 +80,10 @@ return array (
 'Campaign launched'=>'Kampagne wurde ins Leben gerufen',
 'Campaign paused'=>'Kampagne wurde angehalten',
 'Campaign resumed'=>'Kampagne wurde fortgesetzt',
+'Sent'=>'Gesendete',
+'Opened'=>'Eröffnet',
+'Clicked'=>'Geklickt wird',
+'Unsubscribed'=>'Unsubscribed',
 
 // Mailing
 'The email sending limit has been reached.'=>'Die E-Mail-Versand wurde erreicht.',
@@ -83,6 +96,7 @@ return array (
 'Attempting to send email'=>'Der Versuch, E-Mail senden',
 'Unsendable email'=>'Nicht-sendbaren E-Mail',
 'Blank email addresses'=>'Leere E-Mail-Adressen',
+'Duplicate Email Address'=>'Duplicate Email-Adresse',
 '\'Do Not Email\' contacts'=>'\'Nicht per E\' Kontakte',
 'Data errors'=>'Datenfehler',
 'Batch completed, sending again in'=>'Batch abgeschlossen ist, sendet wieder in',
@@ -93,6 +107,15 @@ return array (
 'Contacts for tag'=>'Ansprechpartner für Tag',
 'Mailing for tag'=>'Mailing für Tag',
 'Could not create mailing'=>'Konnte nicht erstellt werden Mailing',
+'You have been unsubscribed'=>'Sie wurden abgemeldet',
+'Contact has unsubscribed'=>'Der Kontakt abgemeldet',
+'\'Do Not Email\' has been set'=>'\'Nicht Mail\' gesetzt wurde',
+'has unsubscribed'=>'hat abbestellt',
+'Contact has opened the email'=>'Der Kontakt hat die E-Mail geöffnet',
+'has opened the email'=>'eröffnet die E-Mail',
+'Contact has clicked a link'=>'Der Kontakt einen Link geklickt',
+'has clicked a link'=>'hat einen Link klickt',
+'To stop receiving these messages, click here'=>'So stoppen Sie diese Meldungen empfangen, klicken Sie hier',
 
 // WebForm model
 'Model Name'=>'Name des Modell',
@@ -102,6 +125,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'Name darf nicht leer sein.',
+'Name cannot be'=>'Name darf nicht',
 'Web Lead Form'=>'Web Blei Formular',
 'Create a public form to receive new contacts.'=>'Erstellen Sie eine öffentliche Form, um neue Kontakte zu erhalten.',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'Wenn kein Blei Routing konfiguriert wurde, werden alle neuen Kontakte zu "Jeder" zugewiesen werden.',

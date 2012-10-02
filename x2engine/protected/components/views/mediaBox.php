@@ -72,7 +72,7 @@ $fullname = Yii::app()->params->profile->fullName;
 				echo CHtml::link($item->fileName, array('/media', 'view'=>$item->id), array('class'=>'x2-link media', 'id'=>$id, 'style'=>'curosr:pointer;'));
 				echo '</span>';
 				if($item->isImage()) {
-					$imageLink = Yii::app()->getBaseUrl() ."/uploads/media/$username/{$item->fileName}";
+					$imageLink = $item->getUrl();
 					$image = CHtml::image($imageLink, '', array('class'=>'media-hover-image'));
 					if($item->description)
 						$imageTooltips .= "$('#$id').qtip({content: '<span style=\"max-width: 200px;\">$image {$item->description}</span>', position: {my: 'top right', at: 'bottom left'}});\n";
@@ -111,7 +111,7 @@ $fullname = Yii::app()->params->profile->fullName;
     							echo CHtml::link($item->fileName, array('/media', 'view'=>$item->id), array('class'=>'x2-link media media-library-item', 'id'=>$id));
     							echo '</span>';
     							if($item->isImage()) {
-    								$imageLink = Yii::app()->getBaseUrl() ."/uploads/media/{$user->username}/{$item->fileName}";
+    								$imageLink = $item->getUrl();
     								$image = CHtml::image($imageLink, '', array('class'=>'media-hover-image'));
     								if($item->description)
     									$imageTooltips .= "$('#$id').qtip({content: '<span style=\"max-width: 200px;\">$image {$item->description}</span>', position: {my: 'top right', at: 'bottom left'}});\n";

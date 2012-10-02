@@ -38,10 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->menu=array(
+$canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex');
+
+$this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
-	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id)),
+	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
 	array('label'=>Yii::t('profile','Change Settings')),
+	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
 );
 ?>
 

@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * @package X2CRM.modules.mobile.controllers
+ */
 class SiteController extends MobileController {
 
 //    public function init() {
@@ -54,15 +57,26 @@ class SiteController extends MobileController {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions' => array('chat', 'logout', 'home', 'getMessages', 'newMessage','contact','home2','more','online'),
+				'actions' => array('chat', 'logout', 'home', 'getMessages', 'newMessage','contact','home2','more','online', 'people', 'profile'),
 				'users' => array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions' => array('index', 'login'),
+				'actions' => array('index', 'login', 'captcha'),
 				'users' => array('*'),
 			),
 			array('deny', // deny all users
 				'users' => array('*'),
+			),
+		);
+	}
+	
+	public function actions() {
+		return array(
+			// captcha action renders the CAPTCHA image displayed on the contact page
+			'captcha'=>array(
+				'class'=>'CCaptchaAction',
+				'backColor'=>0xFFFFFF,
+				'testLimit'=>1,
 			),
 		);
 	}
@@ -224,6 +238,7 @@ class SiteController extends MobileController {
         $this->dataUrl = $this->createUrl('site/login/');
         $this->pageId = 'site-login';
         $model = new LoginForm;
+        $model->useCaptcha = false;
 
         // if it is ajax validation request
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'login-form') {
@@ -234,10 +249,21 @@ class SiteController extends MobileController {
           // collect user input data
         if (isset($_POST['LoginForm'])) {
             $model->attributes = $_POST['LoginForm'];
+ 			$activeCheck=User::model()->findByAttributes(array('username'=>$model->username));
+                        if(isset($activeCheck)){
+                            $model->username=$activeCheck->username;
+                        }
+			if(isset($activeCheck) && $activeCheck->status=='1')
+				$activeCheck=true;
+			else
+				$activeCheck=false;
+
 			$ip = $this->getRealIp();
 
 			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
+			x2base::cleanUpSessions();
 			if(isset($session)) {
+				var_dump($session->status);
 				$session->lastUpdated = time();
 
 				if($session->status < 1) {
@@ -250,7 +276,7 @@ class SiteController extends MobileController {
 					$model->useCaptcha = true;
 				if($session->status < -2)
 					$model->setScenario('loginWithCaptcha');
-			} else {
+			} else { 
 				$session = new Session;
 				$session->user = $model->username;
 				$session->lastUpdated = time();
@@ -260,17 +286,67 @@ class SiteController extends MobileController {
 
             // validate user input and redirect to the previous page if valid
 			if($model->validate() && $model->login()) {
-
 				$user = User::model()->findByPk(Yii::app()->user->getId());
 				$user->login = time();
 				$user->save();
+				if($user->username=='admin'){
+					if(ini_get('allow_url_fopen') == 1) {
+						$context = stream_context_create(array(
+							'http' => array('timeout' => 2)		// set request timeout in seconds
+						));
+						$updateSources = array(
+							'http://x2planet.com/updates/versionCheck.php',
+							'http://x2base.com/updates/versionCheck.php'
+						);
+						$newVersion = '';
+						
+						foreach($updateSources as $url) {
+							$sourceVersion = @file_get_contents($url,0,$context);
+							if($sourceVersion !== false) {
+								$newVersion = $sourceVersion;
+								break;
+							}
+						}
+						if(empty($newVersion))
+							$newVersion = Yii::app()->params->version;
+						/* 
+						// check X2Planet for updates
+						$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
+						if($x2planetVersion !== false)
+							$newVersion = $x2planetVersion;
+						else {
+							// try X2Base if that didn't work
+							$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
+							if($x2baseVersion !== false)
+								$newVersion=$x2baseVersion;
+							else
+								$newVersion=Yii::app()->params->version;
+						} */
+						$unique_id = Yii::app()->db->createCommand("SELECT `unique_id` FROM `x2_admin`")->queryScalar();
+						if(version_compare($newVersion,Yii::app()->params->version) > 0 && $unique_id !='none' && $unique_id != Null) {	// if the latest version is newer than our version
+							Yii::app()->session['versionCheck']=false;
+							Yii::app()->session['newVersion']=$newVersion;
+						}
+						else
+							Yii::app()->session['versionCheck']=true;
+					}
+					else
+						Yii::app()->session['versionCheck']=true;
 				} else
 					Yii::app()->session['versionCheck']=true;
-
+					
 				Yii::app()->session['loginTime']=time();
+                                $session->status=1;
 				$session->save();
 
-                $this->redirect($this->createUrl('site/home/'));
+				$cookie = new CHttpCookie('x2mobilebrowser', 'true'); // create cookie
+				$cookie->expire = time() + 31104000; // expires in 1 year
+				Yii::app()->request->cookies['x2mobilebrowser'] = $cookie; // save cookie
+				$this->redirect($this->createUrl('site/home/'));
+			} else if($activeCheck) {
+				$session->save();
+				$model->verifyCode = '';
+			}
         }
         // display the login form
         $this->render('login', array('model' => $model));
@@ -291,6 +367,26 @@ class SiteController extends MobileController {
         $this->dataUrl = $this->createUrl('site/home2/');
         $this->pageId = 'site-home2';
         $this->render('home2', array());
+    }
+    
+    public function actionPeople() {
+        // display the home page
+        $this->dataUrl = $this->createUrl('site/people/');
+        $this->pageId = 'site-people';
+        
+        $users = User::model()->findAll();
+        
+        $this->render('peopleList', array('users' => $users));
+    }
+    
+    public function actionProfile($id) {
+        // display the home page
+        $this->dataUrl = $this->createUrl("site/profile/$id");
+        $this->pageId = 'site-profile';
+        
+        $user = User::model()->findByPk($id);
+        
+        $this->render('profile', array('user' => $user));
     }
 
     /**

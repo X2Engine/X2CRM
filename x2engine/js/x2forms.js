@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,9 +37,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+var x2CreateAccountDialog = null; // dialog box for creating a new action no the fly
+var x2CreateOpportunityDialog = null; // dialog box for creating a new opportunity on the fly
 
 $(function() {
-	$('div.x2-layout .formSection.hideSection .tableWrapper').hide();
+	// $('div.x2-layout .formSection:not(.showSection) .tableWrapper').hide();
+
 	// $('div.x2-layout .formItem').disableSelection();
 
 	$('div.x2-layout .formSectionShow, .formSectionHide').click(function() {
@@ -50,30 +53,41 @@ $(function() {
 	$('a#showAll, a#hideAll').click(function() {
 		$('a#showAll, a#hideAll').toggleClass('hide');
 		if($('#showAll').hasClass('hide')) {
-			$('div.x2-layout .formSection.hideSection').each(function() {
+			$('div.x2-layout .formSection:not(.showSection)').each(function() {
 				if($(this).find('a.formSectionHide').length > 0)
 					toggleFormSection(this);
 			});
 		} else {
-			$('div.x2-layout .formSection:not(.hideSection)').each(function() {
+			$('div.x2-layout .formSection.showSection').each(function() {
 				if($(this).find('a.formSectionHide').length > 0)
 					toggleFormSection(this);
 			});
 		}
-		saveFormSections();
 	});
 
 	$('.inlineLabel').find('input:text, textarea').focus(function() { formFieldFocus(this); }).blur(function() { formFieldBlur(this); });
+	
+
+	// set up x2 helper tooltips
+	$('.x2-hint').qtip();
 });
 
 
 function toggleFormSection(section) {
-	$(section).toggleClass('hideSection').find('.tableWrapper').slideToggle();
+	if($(section).hasClass('showSection'))
+		$(section).find('.tableWrapper').slideToggle(400,function(){
+			$(this).parent('.formSection').toggleClass('showSection');
+			saveFormSections();
+		});
+	else {
+		$(section).toggleClass('showSection').find('.tableWrapper').slideToggle(400);
+		saveFormSections();
+	}
 }
 function saveFormSections() {
 	var formSectionStatus = [];
 	$('div.x2-layout .formSection').each(function(i,section) {
-		formSectionStatus[i] = $(section).hasClass('hideSection')? '0' : '1';
+		formSectionStatus[i] = $(section).hasClass('showSection')? '1' : '0';
 	});
 	var formSettings = '['+formSectionStatus.join(',')+']';
 	$.ajax({
@@ -274,6 +288,10 @@ function initX2FileInput() {
 		$('input.x2-file-input[type=file]').next().addClass('active');
 	});
 	
+	$('body').mouseup(function() {
+		$('input.x2-file-input[type=file]').next().removeClass('active');
+	});
+	
 	// position the saving icon for uploading files
 	// width
 	var chooseFileButtonCenter = parseInt($('input.x2-file-input[type=file]').css('width'), 10)/2;
@@ -288,3 +306,336 @@ function initX2FileInput() {
 	$('#choose-file-saving-icon').css('top', iconTop + 'px');
 
 }
+
+$.fn.initCreateAccountDialog = function () {
+
+	if(x2CreateAccountDialog != null) {
+		return; // don't create a 2nd dialog, if one already exists
+	}
+	
+	x2CreateAccountDialog = $('<div></div>', {id: 'x2-create-action-dialog'});
+	
+	x2CreateAccountDialog.dialog({
+	    title: 'Create Account', 
+	    autoOpen: false,
+	    resizable: true,
+	    width: '650px',
+	    show: 'fade',
+	    hide: 'fade',
+//	    buttons: boxButtons,
+/*	    open: function() {
+	        $('.ui-dialog-buttonpane').find('button:contains(\"' + focusButton + '\")')
+	        	.css('background', '#579100')
+	        	.css('color', 'white')
+	        	.focus();
+	        $('.ui-dialog-buttonpane').find('button').css('font-size', '0.85em');
+	        $('.ui-dialog-title').css('font-size', '0.8em');
+	        $('.ui-dialog-titlebar').css('padding', '0.2em 0.4em');
+	        $(viewAccount).css('font-size', '0.75em');
+	    }, */
+	});
+	
+	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
+	
+	$(this).click(function() {
+		if($(this).data('createAccountUrl') != undefined) {
+			if(x2CreateAccountDialog.data('inactive')) {
+				$.post($(this).data('createAccountUrl'), {x2ajax: true}, function(response) {
+					x2CreateAccountDialog.append(response);
+					x2CreateAccountDialog.dialog('open');
+					x2CreateAccountDialog.data('inactive', false); // indicate that a create-action page has been appended, don't do it until the old one is submitted or cleared.
+					x2CreateAccountDialog.find('.formSectionHide').remove();
+					submit = x2CreateAccountDialog.find('input[type="submit"]');
+					form = x2CreateAccountDialog.find('form');
+//					submit.attr('disabled', 'disabled');
+					$(submit).click(function() {
+						var formdata = form.serializeArray();
+						var x2ajax = {}; // this form data object indicates this is an ajax request
+						                 // note: yii already uses the name 'ajax' for it's ajax calls, so we use 'x2ajax'
+						x2ajax['name'] = 'x2ajax';
+						x2ajax['value'] = '1';
+						formdata.push(x2ajax);
+						$.post($('.create-account').data('createAccountUrl'), formdata, function(response) {
+							response = $.parseJSON(response);
+							if(response['status'] == 'success') {
+								$('#Contacts_company').val(response['name']);
+								$('#Contacts_company_id').val(response['id']);
+								x2CreateAccountDialog.dialog('close');
+							}
+						});
+						
+						return false; // prevent html submit
+					});
+					$('#Accounts_phone').val($('div.formInputBox #Contacts_phone').val());
+					$('#Accounts_website').val($('div.formInputBox #Contacts_website').val());
+					$('#Accounts_assignedTo_assignedToDropdown').val($('#Contacts_assignedTo_assignedToDropdown').val());
+				});
+			} else {
+				x2CreateAccountDialog.dialog('open');
+			}
+		}
+	});
+	
+	return $(this);
+}
+
+
+$.fn.initCreateOpportunityDialog = function () {
+
+	if(x2CreateOpportunityDialog != null) {
+		return; // don't create a 2nd dialog, if one already exists
+	}
+	
+	x2CreateOpportunityDialog = $('<div></div>', {id: 'x2-create-opportunity-dialog'});
+	
+	x2CreateOpportunityDialog.dialog({
+	    title: 'Create Opportunity', 
+	    autoOpen: false,
+	    resizable: true,
+	    width: '650px',
+	    show: 'fade',
+	    hide: 'fade',
+//	    buttons: boxButtons,
+/*	    open: function() {
+	        $('.ui-dialog-buttonpane').find('button:contains(\"' + focusButton + '\")')
+	        	.css('background', '#579100')
+	        	.css('color', 'white')
+	        	.focus();
+	        $('.ui-dialog-buttonpane').find('button').css('font-size', '0.85em');
+	        $('.ui-dialog-title').css('font-size', '0.8em');
+	        $('.ui-dialog-titlebar').css('padding', '0.2em 0.4em');
+	        $(viewAccount).css('font-size', '0.75em');
+	    }, */
+	});
+	
+	x2CreateOpportunityDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
+	
+	$(this).click(function() {
+		if($(this).data('createOpportunityUrl') != undefined) {
+			if(x2CreateOpportunityDialog.data('inactive')) {
+				$.post($(this).data('createOpportunityUrl'), {x2ajax: true}, function(response) {
+					x2CreateOpportunityDialog.append(response);
+					x2CreateOpportunityDialog.dialog('open');
+					x2CreateOpportunityDialog.data('inactive', false); // indicate that a create-action page has been appended, don't do it until the old one is submitted or cleared.
+					x2CreateOpportunityDialog.find('.formSectionHide').remove();
+					submit = x2CreateOpportunityDialog.find('input[type="submit"]');
+					form = x2CreateOpportunityDialog.find('form');
+//					submit.attr('disabled', 'disabled');
+					$(submit).click(function() {
+						var formdata = form.serializeArray();
+						var x2ajax = {}; // this form data object indicates this is an ajax request
+						                 // note: yii already uses the name 'ajax' for it's ajax calls, so we use 'x2ajax'
+						x2ajax['name'] = 'x2ajax';
+						x2ajax['value'] = '1';
+						var modelName = {};
+						modelName['name'] = 'ModelName';
+						modelName['value'] = $('#create-opportunity').data('modelName');
+						var modelId = {};
+						modelId['name'] = 'ModelId';
+						modelId['value'] = $('#create-opportunity').data('modelId');
+						formdata.push(x2ajax);
+						formdata.push(modelName);
+						formdata.push(modelId);
+						$.post($('#create-opportunity').data('createOpportunityUrl'), formdata, function(response) {
+							response = $.parseJSON(response);
+							if(response['status'] == 'success') {
+								$.fn.yiiGridView.update('opportunities-grid');
+								x2CreateOpportunityDialog.dialog('close');
+								x2CreateOpportunityDialog.empty(); // clean up dialog
+								$('body').off('click','#Opportunity_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+								x2CreateOpportunityDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
+								if($('#relationships-form').is(':hidden')) // show relationships if they are hidden
+									toggleRelationshipsForm();
+
+							}
+						});
+						
+						return false; // prevent html submit
+					});
+					if($('#create-opportunity').data('account-name') != undefined)
+						$('#Opportunity_accountName').val($('#create-opportunity').data('account-name'));
+					if($('#create-opportunity').data('assigned-to') != undefined)
+						$('#Opportunity_assignedTo_assignedToDropdown').val($('#create-opportunity').data('assigned-to'));
+				});
+			} else {
+				x2CreateOpportunityDialog.dialog('open');
+			}
+		}
+	});
+	
+	return $(this);
+}
+
+
+
+$.fn.initCreateAccountDialog2 = function () {
+
+	if(x2CreateAccountDialog != null) {
+		return; // don't create a 2nd dialog, if one already exists
+	}
+	
+	x2CreateAccountDialog = $('<div></div>', {id: 'x2-create-action-dialog'});
+	
+	x2CreateAccountDialog.dialog({
+	    title: 'Create Account', 
+	    autoOpen: false,
+	    resizable: true,
+	    width: '650px',
+	    show: 'fade',
+	    hide: 'fade',
+//	    buttons: boxButtons,
+/*	    open: function() {
+	        $('.ui-dialog-buttonpane').find('button:contains(\"' + focusButton + '\")')
+	        	.css('background', '#579100')
+	        	.css('color', 'white')
+	        	.focus();
+	        $('.ui-dialog-buttonpane').find('button').css('font-size', '0.85em');
+	        $('.ui-dialog-title').css('font-size', '0.8em');
+	        $('.ui-dialog-titlebar').css('padding', '0.2em 0.4em');
+	        $(viewAccount).css('font-size', '0.75em');
+	    }, */
+	});
+	
+	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
+	
+	$(this).click(function() {
+		if($(this).data('createAccountUrl') != undefined) {
+			if(x2CreateAccountDialog.data('inactive')) {
+				$.post($(this).data('createAccountUrl'), {x2ajax: true}, function(response) {
+					x2CreateAccountDialog.append(response);
+					x2CreateAccountDialog.dialog('open');
+					x2CreateAccountDialog.data('inactive', false); // indicate that a create-action page has been appended, don't do it until the old one is submitted or cleared.
+					x2CreateAccountDialog.find('.formSectionHide').remove();
+					submit = x2CreateAccountDialog.find('input[type="submit"]');
+					form = x2CreateAccountDialog.find('form');
+//					submit.attr('disabled', 'disabled');
+					$(submit).click(function() {
+						return x2CreateAccountDialogHandleSubmit(form);
+					});
+					/*
+						var formdata = form.serializeArray();
+						var x2ajax = {}; // this form data object indicates this is an ajax request
+						                 // note: yii already uses the name 'ajax' for it's ajax calls, so we use 'x2ajax'
+						x2ajax['name'] = 'x2ajax';
+						x2ajax['value'] = '1';
+						var modelName = {};
+						modelName['name'] = 'ModelName';
+						modelName['value'] = $('#create-account').data('modelName');
+						var modelId = {};
+						modelId['name'] = 'ModelId';
+						modelId['value'] = $('#create-account').data('modelId');
+						formdata.push(x2ajax);
+						formdata.push(modelName);
+						formdata.push(modelId);
+						$.post($('#create-account').data('createAccountUrl'), formdata, function(response) {
+							response = $.parseJSON(response);
+							if(response['status'] == 'success') {
+								$.fn.yiiGridView.update('opportunities-grid');
+								x2CreateAccountDialog.dialog('close');
+								x2CreateAccountDialog.empty(); // clean up dialog
+								$('body').off('click','#Accounts_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+								x2CreateAccountDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
+								showRelationships = true;
+								if(response['primaryAccountLink'] != undefined) {
+									if(response['primaryAccountLink'] != '') {
+										$('#Contacts_company_field div.formInputBox').html(response['primaryAccountLink']);
+										showRelationships = false;
+									}
+								}
+								if($('#relationships-form').is(':hidden') && showRelationships) // show relationships if they are hidden
+									toggleRelationshipsForm();
+							} else if (response['status'] == 'userError') {
+								if(response['page'] != undefined) {
+									x2CreateAccountDialog.empty(); // clean up dialog
+									$('body').off('click','#Accounts_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+									x2CreateAccountDialog.append(response['page']);
+								}
+							}
+						});
+						
+						return false; // prevent html submit
+					});
+					*/
+					if($('#create-account').data('phone') != undefined)
+						$('#Accounts_phone').val($('#create-account').data('phone'));
+					if($('#create-account').data('website') != undefined)
+						$('#Accounts_website').val($('#create-account').data('website'));
+					if($('#create-account').data('assigned-to') != undefined)
+						$('#Accounts_assignedTo_assignedToDropdown').val($('#create-account').data('assigned-to'));
+				});
+			} else {
+				x2CreateAccountDialog.dialog('open');
+			}
+		}
+	});
+	
+	return $(this);
+}
+
+function x2CreateAccountDialogHandleSubmit(form) {
+	var formdata = form.serializeArray();
+	var x2ajax = {}; // this form data object indicates this is an ajax request
+	                 // note: yii already uses the name 'ajax' for it's ajax calls, so we use 'x2ajax'
+	x2ajax['name'] = 'x2ajax';
+	x2ajax['value'] = '1';
+	var modelName = {};
+	modelName['name'] = 'ModelName';
+	modelName['value'] = $('#create-account').data('modelName');
+	var modelId = {};
+	modelId['name'] = 'ModelId';
+	modelId['value'] = $('#create-account').data('modelId');
+	formdata.push(x2ajax);
+	formdata.push(modelName);
+	formdata.push(modelId);
+	$.post($('#create-account').data('createAccountUrl'), formdata, function(response) {
+	    response = $.parseJSON(response);
+	    if(response['status'] == 'success') {
+	    	$.fn.yiiGridView.update('opportunities-grid');
+	    	x2CreateAccountDialog.dialog('close');
+	    	x2CreateAccountDialog.empty(); // clean up dialog
+	    	$('body').off('click','#Accounts_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+	    	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
+	    	showRelationships = true;
+	    	if(response['primaryAccountLink'] != undefined) {
+	    		if(response['primaryAccountLink'] != '') {
+	    			$('#Contacts_company_field div.formInputBox').html(response['primaryAccountLink']);
+	    			showRelationships = false;
+	    		}
+	    	}
+	    	if($('#relationships-form').is(':hidden') && showRelationships) // show relationships if they are hidden
+	    		toggleRelationshipsForm();
+	    } else if (response['status'] == 'userError') {
+	    	if(response['page'] != undefined) {
+	    		x2CreateAccountDialog.empty(); // clean up dialog
+	    		$('body').off('click','#Accounts_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+	    		x2CreateAccountDialog.append(response['page']);
+				x2CreateAccountDialog.find('.formSectionHide').remove();
+				submit = x2CreateAccountDialog.find('input[type="submit"]');
+				form = x2CreateAccountDialog.find('form');
+//				submit.attr('disabled', 'disabled');
+				$(submit).click(function() {
+				    return x2CreateAccountDialogHandleSubmit(form);
+				});
+	    	}
+	    }
+	});
+	
+	return false; // prevent html submit
+}
+
+
+
+function toggleRelationshipsForm() {			
+    if($('#relationships-form').is(':hidden')) {
+    	$('.focus-mini-module').removeClass('focus-mini-module');
+    	$('#relationships-form').find('.form').addClass('focus-mini-module');
+//    	$('html,body').animate({
+//    		scrollTop: ($('#publisher-form').offset().top - 200)
+//    	}, 300);
+    }
+    $('#relationships-form').animate({
+    	opacity: 'toggle',
+    	height: 'toggle'
+    }, 300);
+}
+

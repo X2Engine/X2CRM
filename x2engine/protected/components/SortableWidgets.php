@@ -38,17 +38,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
+Yii::import('zii.widgets.jui.CJuiWidget');
+
 /**
- * CJuiSortable class file.
+ * CJuiSortable class.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
+ * @package X2CRM.components 
  */
-
-Yii::import('zii.widgets.jui.CJuiWidget');
-
 class SortableWidgets extends CJuiWidget
 {
 	/**
@@ -70,7 +71,7 @@ class SortableWidgets extends CJuiWidget
 		$themeURL = Yii::app()->theme->getBaseUrl();
 		Yii::app()->clientScript->registerScript('logos',"
 		$(window).load(function(){
-			if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+			if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
 				$('a').removeAttr('href');
 				alert('Please put the logo back');
 				window.location='http://www.x2engine.com';

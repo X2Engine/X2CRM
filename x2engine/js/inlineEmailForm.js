@@ -39,7 +39,19 @@
 
 
 $(function() {
+	initX2EmailForm();
+});
 
+/**
+ *	initX2EmailForm
+ *	
+ *	Set up attachments in the email form so that the attachments div is droppable for
+ *  files dragged over from the media widget. This is called when the page loads (if the
+ *  page has an inline email form) and whenever the email form is replaced, like after an
+ *  ajax call from pressing the preview button.
+ *
+ */
+function initX2EmailForm() {
 	$('#email-attachments').droppable({
 		accept: '.media',
 		activeClass: 'x2-state-active',
@@ -93,4 +105,28 @@ $(function() {
 	$(document).mouseup(function() {
 		$('input.x2-file-input[type=file]').next().removeClass('active');
 	});
-});
+	
+	// init remove button for attachment that were carried over after pressing "Preview"
+	$('#email-attachments').find('.remove a').each(function() {
+		$(this).click(function() {$(this).parent().parent().remove(); return false;});
+	});
+	
+	// init cc and bcc buttons
+	$('#cc-toggle').click(function() {
+	    $(this).animate({
+	    		opacity: 'toggle',
+	    		width: 0
+	    	}, 400);
+	    
+	    $('#cc-row').slideDown(300);
+	});
+	
+	$('#bcc-toggle').click(function() {
+	    $(this).animate({
+	    		opacity: 'toggle',
+	    		width: 0
+	    	}, 400);
+	    
+	    $('#bcc-row').slideDown(300);
+	});
+}

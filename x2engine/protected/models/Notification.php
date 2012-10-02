@@ -40,6 +40,8 @@
 
 /**
  * This is the model class for table "x2_notifications".
+ * 
+ * @package X2CRM.models
  */
 class Notification extends CActiveRecord {
 	/**

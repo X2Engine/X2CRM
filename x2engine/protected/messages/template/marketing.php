@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'',
+'Campaigns'=>'',
 'ID'=>'',
 'Master Campaign ID'=>'',
 'Name'=>'',
@@ -59,6 +61,13 @@ return array (
 'Updated By'=>'',
 'None'=>'',
 
+// Menu
+'All Campaigns'=>'',
+'Create Campaign'=>'',
+'Newsletters'=>'',
+'Create Newsletter'=>'',
+'Create Web Form'=>'',
+
 // Launching
 'The campaign has already been launched.'=>'',
 'Contact List cannot be blank.'=>'',
@@ -71,6 +80,10 @@ return array (
 'Campaign launched'=>'',
 'Campaign paused'=>'',
 'Campaign resumed'=>'',
+'Sent'=>'',
+'Opened'=>'',
+'Clicked'=>'',
+'Unsubscribed'=>'',
 
 // Mailing
 'The email sending limit has been reached.'=>'',
@@ -83,6 +96,7 @@ return array (
 'Attempting to send email'=>'',
 'Unsendable email'=>'',
 'Blank email addresses'=>'',
+'Duplicate Email Address'=>'',
 '\'Do Not Email\' contacts'=>'',
 'Data errors'=>'',
 'Batch completed, sending again in'=>'',
@@ -93,6 +107,15 @@ return array (
 'Contacts for tag'=>'',
 'Mailing for tag'=>'',
 'Could not create mailing'=>'',
+'You have been unsubscribed'=>'',
+'Contact has unsubscribed'=>'',
+'\'Do Not Email\' has been set'=>'',
+'has unsubscribed'=>'',
+'Contact has opened the email'=>'',
+'has opened the email'=>'',
+'Contact has clicked a link'=>'',
+'has clicked a link'=>'',
+'To stop receiving these messages, click here'=>'',
 
 // WebForm model
 'Model Name'=>'',
@@ -102,6 +125,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'',
+'Name cannot be'=>'',
 'Web Lead Form'=>'',
 'Create a public form to receive new contacts.'=>'',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'',

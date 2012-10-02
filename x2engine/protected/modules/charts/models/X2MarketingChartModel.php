@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com
  * Community and support website: http://www.x2community.com
  *
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -41,7 +41,7 @@
 /**
  * This is the model class for chart module controls
  *
- * The followings are the available columns in table 'x2_docs':
+ * @package X2CRM.modules.charts.models
  * @property string $dateRange
  */
 class X2MarketingChartModel extends CModel

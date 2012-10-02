@@ -51,10 +51,15 @@ $(function() {
 	var $userSubMenu = $('#user-menu ul');
 	var $pageBodyDiv = $('#page-body');
 	var $pageWidthDivs = $('div.width-constraint');
+	var $contentDiv = $('div#content');
 	
 	var pageMode = -1;		// 0 compact (no widgets)
 	var newPageMode = 0;	// 1 fixed width (960px)
 							// 2 fill screen (5% margins)
+
+	var historyMode = -1;		// 0 underneath record
+	var newHistoryMode = 0;		// 1 side of record
+						
 
 	// move all moreMenu items into the main menu so we can get the correct display widths
 	$moreMenu.children().insertBefore($moreMenuLi);
@@ -73,9 +78,10 @@ $(function() {
 	// the screen just got resized - decide what to do about it
 	$(window).resize(function() {
 		var windowWidth = $(window).width();
+		var contentWidth = $contentDiv.width();
 
 		// figure out what layout mode to use
-		if(windowWidth <= 960) {
+		if(windowWidth <= 1040) {
 			newPageMode = 0;
 		} else {
 			if(windowWidth >= 1040 && window.enableFullWidth) {
@@ -92,26 +98,51 @@ $(function() {
 			// console.debug(pageMode);
 			
 			if(pageMode == 0) {
-				$pageWidthDivs.css({'width':'','margin':'0 auto'});
+				// $pageWidthDivs.css({'width':'','margin-left':'auto','margin-right':'auto'});
 				$pageBodyDiv.addClass('no-widgets');
 			} else {
-				if(!window.fullscreen)
+				 if(!window.fullscreen)
 					$pageBodyDiv.removeClass('no-widgets');
-				if(pageMode == 1)
-					$pageWidthDivs.css({'width':'940px','margin':'0 auto'});
+				/*if(pageMode == 1)
+					// $pageWidthDivs.css({'width':'940px'});
+					$pageWidthDivs.css({'width':'940px','margin-left':'auto','margin-right':'auto'});
 				else if(pageMode == 2)
-					$pageWidthDivs.css({'width':'auto','margin':'0 40px'});
+					// $pageWidthDivs.css({'width':'auto'});
+					$pageWidthDivs.css({'width':'auto','margin-left':'40px','margin-right':'40px'}); */
 			}
 		}
+		
+		if(contentWidth < 940)
+			newHistoryMode = 0;
+		else
+			newHistoryMode = 1
+			
+		if(historyMode != newHistoryMode) {
+			historyMode = newHistoryMode;
+			if(historyMode==1)
+				$('#main-column, .history').addClass('half-width');
+			else
+				$('#main-column, .history').removeClass('half-width');
+		}
+		
+		/* if($('.x2-layout').width() < 600) {
+			$('#main-column, .history').removeClass('half-width');
+			// console.debug($('.x2-layout').width());
+		} else {
+			$('#main-column, .history').addClass('half-width');
+
+		} */
 
 		// calculate number of elements to show in the main menu
 		var visibleItems = 0;
 		for(i=0; i<menuItemCutoffs.length; i++) {
-			if(menuItemCutoffs[i] < $header.outerWidth())
+			if(menuItemCutoffs[i] + 50 < $header.outerWidth())
 				visibleItems = i + 1;
 			else
 				break;
 		}
+		if(visibleItems < 1)
+			visibleItems = 1;
 
 		// there is room for more items, bring some out of the moreMenu
 		if(visibleItems > currentVisibleItems) {
@@ -162,7 +193,7 @@ $(function() {
 	});
 	
 	// Yii CWebLogRoute display
-	$('.yiiLog').draggable({handle:'td,th'}).height(400).offset({top:200,left:80}).find('tr:first').dblclick(function() {
+	$('.yiiLog').draggable({handle:'tr:first th'}).height(400).offset({top:200,left:80}).find('tr:first').dblclick(function() {
 		var x = $(this).closest('.yiiLog');
 		if(x.height() < 50)
 			x.height(400);
@@ -189,6 +220,8 @@ $(function() {
 			$pageBodyDiv.addClass('no-widgets');
 		else if(pageMode != 0)	// don't bring them back if the page is in compact mode
 			$pageBodyDiv.removeClass('no-widgets');
+		
+		$(window).resize();
 	});
 	
 	// deal with the left sidebar scrolling
@@ -200,7 +233,7 @@ $(function() {
 		var pageContainer = $('#flexible-content'); //.find('.container:first');
 		var hasScrolled = false;
 		
-		sidebarMenu.parent().height(sidebarMenu.height());
+		sidebarMenu.parent().height(sidebarMenu.height()+20);
 		
 		$(window).scroll(function(event) {
 			if ($(this).scrollTop() >= sidebarTop) {
@@ -221,6 +254,7 @@ $(function() {
 			hasScrolled = true;
 		});
 	}
+	
 });
 
 
@@ -234,8 +268,3 @@ function togglePortletVisible(portlet, response) {
 	}
 	portlet.find('.portlet-minimize a').html(text);
 }
-
-// set up x2 helper tooltips
-$(function() {
-	$('.x2-hint').qtip();
-});

@@ -112,5 +112,5 @@ return array (
 'Quote Record Details'=>'レコードの詳細を引用する',
 'Include Logo'=>'ロゴを含む',
 'Basic Information'=>'基本情報',
-'Sales'=>'販売',
+'Opportunities'=>'販売',
 );

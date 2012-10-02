@@ -1,7 +1,17 @@
-var formEditorVersion = '1.1';
+var formEditorVersion = '1.2';
 
 window.selectedFormItems = $([]);
 window.layoutChanged = false;
+
+
+function toggleFormSection(section) {
+	if($(section).hasClass('showSection'))
+		$(section).find('.tableWrapper').slideToggle(400,function(){
+			$(this).parent('.formSection').toggleClass('showSection');
+		});
+	else
+		$(section).toggleClass('showSection').find('.tableWrapper').slideToggle(400);
+}
 
 $(function() {
 
@@ -51,19 +61,11 @@ $(function() {
 	});
 
 	// form subsection toggle
-	$(document).delegate('.formSectionToggle','click',function() {
-		var $button = $(this);
-
-		$button.closest('.formSection').find('.formSectionRow').css('min-height','').toggle(); 
-		// animate({
-			// height:'toggle'
-		// },300);
-		if($button.html() == '[ Show ]')
-			$button.html('[ Hide ]');
-		else
-			$button.html('[ Show ]');
+	$('div.x2-layout').delegate('.formSectionShow, .formSectionHide','click',function() {
+		toggleFormSection($(this).closest('.formSection'));
+		saveFormSections();
 	});
-	
+
 	// form section add column
 	$(document).delegate('.formSectionAddCol','click',function() {
 		addColumn($(this).closest('.formSection'));
@@ -193,18 +195,22 @@ function addFormSection(type,columns,title) {
 		title = '';
 	
 	// create formSection div and formSectionHeader, with editing links
-	var html = '<div class="formSection"><div class="formSectionHeader"><span class="sectionTitle">'+title+'</span><a href="javascript:void(0)" class="formSectionDelete">[ x ]</a> ';
+	var html = '<div class="formSection showSection'+((type == 'collapsible')? ' collapsible':'') +'"><div class="formSectionHeader">';
+	html += '<a href="javascript:void(0)" class="formSectionDelCol">&ndash;Col</a>';
+	html += '<a href="javascript:void(0)" class="formSectionAddCol">+Col</a>';
+	html += '<a href="javascript:void(0)" class="formSectionSetName">Rename</a>';
+	html += '<a href="javascript:void(0)" class="formSectionDelete">[ x ]</a>';
 	// add toggle link if this is collapsible
 	if(type == 'collapsible')
-		html += '<a href="javascript:void(0)" class="formSectionToggle">[ Hide ]</a> ';
-	html += '<a href="javascript:void(0)" class="formSectionDelCol">&ndash;Col</a> <a href="javascript:void(0)" class="formSectionAddCol">+Col</a> <a href="javascript:void(0)" class="formSectionSetName">Rename</a>';
-	html += '</div><table><tr class="formSectionRow">';
+		html += '<a href="javascript:void(0)" class="formSectionShow">[+]</a><a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
+	html += '<span class="sectionTitle">'+title+'</span>';
+	html += '</div><div class="tableWrapper"><table><tr class="formSectionRow">';
 	// add however many columns
 	for(a=0; a<columns; a++) {
 		html += '<td><div class=\"formSortable\"></div></td>';
 	}
 		
-	html += '</tr></table></div></div>';
+	html += '</tr></table></div></div></div>';
 	
 	$(html).appendTo('#formEditor').find('.formSortable').sortable({
 			connectWith:'.formSortable',
@@ -444,7 +450,7 @@ function generateFormJson() {
 	$('#formEditor .formSection').each(function(i,section) {
 		var sectionJson = '{';
 		var rows = [];
-		if($(section).find('.formSectionHeader .formSectionToggle').length != 0)
+		if($(section).hasClass('collapsible'))
 			sectionJson += '"collapsible":true,'
 		else
 			sectionJson += '"collapsible":false,'

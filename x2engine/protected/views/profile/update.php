@@ -38,14 +38,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->menu=array(
+
+$authParams['assignedTo'] = $model->username;
+$this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
 	array('label'=>Yii::t('profile','Update Profile')),
+	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
+	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
 );
-if($model->id==Yii::app()->user->getId())
-	$this->menu[]=array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id));
 ?>
-
-<h1><?php echo Yii::t('profile','Update Your Profile'); ?></h1>
+<h2><?php echo Yii::t('profile','Update Your Profile'); ?></h2>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

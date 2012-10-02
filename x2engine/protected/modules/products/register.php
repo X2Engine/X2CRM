@@ -1,9 +1,9 @@
 <?php
 
 return array(
-    'name'=>"Products",
-    'install'=>array(
-        'CREATE TABLE x2_products(
+    'name' => "Products",
+    'install' => array(
+	'CREATE TABLE x2_products(
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(100) NOT NULL,
 	type VARCHAR(100),
@@ -17,7 +17,7 @@ return array(
 	currency VARCHAR(40),
 	adjustment FLOAT
 ) COLLATE = utf8_general_ci',
-            'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES 
+	'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES 
                     ("Products",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
                     ("Products",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
                     ("Products",	"type",					"Type",					0,	0,	"varchar",		0,	NULL),
@@ -30,16 +30,25 @@ return array(
                     ("Products",	"currency",				"Currency",				0,	0,	"dropdown",		0,	"2"),
                     ("Products",	"status",				"Status",				0,	0,	"dropdown",		0,	"1"),
                     ("Products",	"adjustment",                           "Adjustment",                           0,	0,	"varchar",		0,	NULL);',
+	'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES
+		    ("ProductFeature",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
+		    ("ProductFeature",	"productId",				"Product",				0,	0,	"link",			"Products", NULL),
+		    ("ProductFeature",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
+                    ("ProductFeature",	"description",                          "Description",                          0,	0,	"text",			0,	NULL),
+                    ("ProductFeature",	"createDate",                           "Create Date",                          0,	0,	"date",			0,	NULL),
+                    ("ProductFeature",	"lastUpdated",                          "Last Updated",                         0,	0,	"date",			0,	NULL),
+                    ("ProductFeature",	"updatedBy",                            "Updated By",                           0,	0,	"varchar",		0,	NULL),
+                    ("ProductFeature",	"status",				"Status",				0,	0,	"dropdown",		0,	"10");',
     ),
-    'uninstall'=>array(
-        'DELETE FROM x2_fields WHERE modelName="Products"',
-        'DROP TABLE x2_products',
+    'uninstall' => array(
+	'DELETE FROM x2_fields WHERE modelName="Products" OR modelName="ProductFeature"',
+	'DROP TABLE x2_products',
+	'DROP TABLE x2_product_features'
     ),
-    'editable'=>true,
-    'searchable'=>true,
-    'adminOnly'=>false,
-    'custom'=>false,
-    'toggleable'=>false,
-    
+    'editable' => true,
+    'searchable' => true,
+    'adminOnly' => false,
+    'custom' => false,
+    'toggleable' => false,
 );
 ?>

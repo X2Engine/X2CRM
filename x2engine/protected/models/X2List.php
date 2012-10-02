@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,13 +41,7 @@
 /**
  * This is the model class for table "x2_contact_lists".
  *
- * The followings are the available columns in table 'x2_contact_lists':
- * @property integer $id
- * @property string $name
- * @property string $description
- * @property string $type
- * @property integer $createDate
- * @property integer $lastUpdated
+ * @package X2CRM.models
  */
 class X2List extends CActiveRecord {
 
@@ -55,15 +49,12 @@ class X2List extends CActiveRecord {
 	private $_itemFields = array();
 	private $_itemAttributeLabels = array();
 	
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return ContactList the static model class
-	 */
 	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
+	 * Returns the name of the associated database table
 	 * @return string the associated database table name
 	 */
 	public function tableName() {
@@ -80,9 +71,6 @@ class X2List extends CActiveRecord {
 		);
 	}
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
 	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
@@ -98,9 +86,6 @@ class X2List extends CActiveRecord {
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
 	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
@@ -109,9 +94,6 @@ class X2List extends CActiveRecord {
 		);
 	}
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
@@ -183,8 +165,26 @@ class X2List extends CActiveRecord {
 		return $this->_itemAttributeLabels;
 	}
 
+	public static function load($id) {
+        if(Yii::app()->user->getName()!='admin'){
+            $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
+                    /* x2temp */
+                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                    if(!empty($groupLinks))
+                        $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
+
+                    $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+        }else{
+            $condition='';
+        }
+		return self::model()->with('listItems')->findByPk((int)$id, $condition);
+	}
+
 	/**
-	 * Returns a CDbCriteria to retrieve all models in the list
+	 * Returns a CDbCriteria to retrieve all models specified by the list
+	 * @return CDbCriteria Criteria to retrieve all models in the list
 	 */
 	public function queryCriteria() {
 		$search=new CDbCriteria;
@@ -293,14 +293,25 @@ class X2List extends CActiveRecord {
 			}
 		} else {
 			$search->join = 'JOIN x2_list_items ON t.id = x2_list_items.contactId';
-			$search->addCondition('x2_list_items.listId='.$this->id.' AND (t.visibility=1 OR t.assignedTo="'.Yii::app()->user->getName().'")');
+			$search->addCondition('x2_list_items.listId='.$this->id);
 		}
-        $search->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
+        $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+            /* x2temp */
+            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+            if(!empty($groupLinks))
+                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+            $condition .= 'OR (visibility=2 AND assignedTo IN 
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+        if(Yii::app()->user->getName()!='admin')
+            $search->addCondition($condition);
 		return $search;
 	}
 
 	/**
-	 * Returns a CDbCommand to retrieve all models in the list
+	 * Returns a CDbCommand to retrieve all records in the list
+	 * @return CDbCommand Command to retrieve all records in the list
 	 */
 	public function queryCommand() {
 		$tableSchema = CActiveRecord::model($this->modelName)->getTableSchema();
@@ -309,6 +320,7 @@ class X2List extends CActiveRecord {
 
 	/**
 	 * Returns a data provider for all the models in the list
+	 * @return CActiveDataProvider A data provider serving out all the models in the list
 	 */
 	public function dataProvider($pageSize=null, $sort=null) {
 		if (!isset($sort)) $sort = array();
@@ -324,25 +336,30 @@ class X2List extends CActiveRecord {
 	/**
 	 * Returns an array data provider for all models in the list,
 	 * including the list_item status columns
+	 * @return CSqlDataProvider
 	 */
 	public function statusDataProvider($pageSize=null) {
 		$tbl = CActiveRecord::model($this->modelName)->tableName();
 		$lstTbl = X2ListItem::model()->tableName();
-		$criteria = $this->queryCriteria();
-		if ($this->type == 'static' || $this->type == 'campaign') {
-			$criteria->select = "t.*, {$lstTbl}.*";
-			$criteria->join = "JOIN {$lstTbl} ON t.id = {$lstTbl}.contactId";
+		if ($this->type == 'dynamic') {
+			$criteria = $this->queryCriteria();
+			$count = CActiveRecord::model($this->modelName)->count($criteria);
+			$sql = $this->getCommandBuilder()->createFindCommand($tbl, $criteria)->getText();
+			$params = $criteria->params;
+		} else { //static type lists
+			$count = X2ListItem::model()->count('listId=:listId', array('listId'=>$this->id));
+			$sql = "SELECT t.*, c.* FROM {$lstTbl} as t LEFT JOIN {$tbl} as c ON t.contactId=c.id WHERE t.listId=:listId;";
+			$params = array('listId'=>$this->id);
 		}
-		$count = CActiveRecord::model($this->modelName)->count($criteria);
-		$sql = $this->getCommandBuilder()->createFindCommand($tbl, $criteria)->getText();
 		return new CSqlDataProvider($sql, array(
 			'totalItemCount'=>$count,
-			'params'=>$criteria->params,
+			'params'=>$params,
 			'pagination'=>array(
 				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 			),
 			'sort'=>array(
-				'attributes'=>array('Name','email','phone','Address'), //ick
+				//messing with attributes may cause columns to become unsortable
+				'attributes'=>array('name','email','phone','address'),
 				'defaultOrder'=>'lastUpdated DESC',
 			),
 		));
@@ -351,6 +368,7 @@ class X2List extends CActiveRecord {
 	/**
 	 * Returns the count of items in the list that have the specified status
 	 * (i.e. sent, opened, clicked, unsubscribed)
+	 * @return integer
 	 */
 	public function statusCount($type) {
 		$whitelist = array('sent', 'opened', 'clicked', 'unsubscribed');
@@ -366,6 +384,7 @@ class X2List extends CActiveRecord {
 
 	/**
 	 * Creates, saves, and returns a duplicate static list containing the same items.
+	 * @return X2List
 	 */
 	public function staticDuplicate() {
 		$dup = new X2List();
@@ -377,19 +396,37 @@ class X2List extends CActiveRecord {
 		if (!$dup->save()) return;
 
 		$count=0;
-		$itemIds = $this->queryCommand()->select('id')->queryColumn();
-		//generate some sql, because I can't find a yii way to insert many records in one query
 		$values = '';
-		foreach($itemIds as $id) {
-			if ($count !== 0) $values .= ',';
-			$values .= '(' . $id . ',' . $dup->id . ')';
-			$count++;
+		if ($this->type == 'dynamic') {
+			//get all contact ids, generate sql to create list items from them
+			$itemIds = $this->queryCommand()->select('id')->queryColumn();
+			foreach($itemIds as $id) {
+				if ($count !== 0) $values .= ',';
+				$values .= '(NULL,'. $id .','. $dup->id .',0)';
+				$count++;
+			}
+		} else { //static type lists
+			//generate sql to replicate list items
+			foreach($this->listItems as $listItem) {
+				if ($count !== 0) $values .= ',';
+				$values .= '('. (empty($listItem->emailAddress) ? 'NULL' : "'".$listItem->emailAddress."'") .','
+					. (empty($listItem->contactId) ? 'NULL' : $listItem->contactId) .','. $dup->id .','. $listItem->unsubscribed .')';
+				$count++;
+			}
 		}
-		$sql = 'INSERT into x2_list_items (contactId, listId) VALUES ' . $values . ';';
-		Yii::app()->db->createCommand($sql)->execute();
-		
+		$sql = 'INSERT into x2_list_items (emailAddress, contactId, listId, unsubscribed) VALUES ' . $values . ';';
 		$dup->count = $count;
-		$dup->save();
+
+		$transaction = Yii::app()->db->beginTransaction();
+		try {
+			Yii::app()->db->createCommand($sql)->execute();
+			if (!$dup->save()) throw new Exception(array_shift(array_shift($dup->getErrors())));
+			$transaction->commit();
+		} catch (Exception $e) {
+			$transaction->rollBack();
+			$dup->delete();
+			$dup = null;
+		}
 		return $dup;
 	}
 	

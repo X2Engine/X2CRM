@@ -38,9 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class TopSites extends CWidget {
+/**
+ * "Top sites" widget class
+ * 
+ * @package X2CRM.components 
+ */
+class TopSites extends X2Widget {
 
-	
 	public $visibility;
 	public function init() {
 		parent::init();
@@ -67,4 +71,3 @@ class TopSites extends CWidget {
 		));
 	}
 }
-

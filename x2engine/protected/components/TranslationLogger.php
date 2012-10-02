@@ -38,6 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/** 
+ * Logs translation activity.
+ * 
+ * @package X2CRM.components 
+ */
 class TranslationLogger extends CComponent {
 	public function log($event) {
 		// create_function('$event', 'Yii::log("[".$event->language."] [".$event->message."] \'".$event->category."\'","info","translations");');

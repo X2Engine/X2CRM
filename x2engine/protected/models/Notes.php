@@ -1,5 +1,6 @@
 <?php
-/*********************************************************************************
+
+/* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -11,7 +12,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -36,12 +37,11 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * ****************************************************************************** */
 
 /**
- * This is the model class for table "x2_notes".
- *
- * The followings are the available columns in table 'x2_notes':
+ * 
+ * @package X2CRM.models
  * @property integer $id
  * @property string $type
  * @property integer $associationId
@@ -49,90 +49,85 @@
  * @property string $createdBy
  * @property string $createDate
  */
-class Notes extends CActiveRecord
-{
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return Notes the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+class Notes extends CActiveRecord {
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName()
-	{
-		return 'x2_notes';
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @return Notes the static model class
+     */
+    public static function model($className = __CLASS__) {
+	return parent::model($className);
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('type, associationId, note, createdBy', 'required'),
-			array('associationId', 'numerical', 'integerOnly'=>true),
-			array('type', 'length', 'max'=>20),
-			array('createdBy', 'numerical', 'integerOnly'=>true),
-			array('createDate', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, type, associationId, note, createdBy, createDate', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName() {
+	return 'x2_notes';
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules() {
+	// NOTE: you should only define rules for those attributes that
+	// will receive user inputs.
+	return array(
+	    array('type, associationId, note, createdBy', 'required'),
+	    array('associationId', 'numerical', 'integerOnly' => true),
+	    array('type', 'length', 'max' => 20),
+	    array('createdBy', 'numerical', 'integerOnly' => true),
+	    array('createDate', 'safe'),
+	    // The following rule is used by search().
+	    // Please remove those attributes that should not be searched.
+	    array('id, type, associationId, note, createdBy, createDate', 'safe', 'on' => 'search'),
+	);
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'type' => 'Type',
-			'associationId' => 'Association',
-			'note' => 'Note',
-			'createdBy' => 'Created By',
-			'createDate' => 'Create Date',
-		);
-	}
+    /**
+     * @return array relational rules.
+     */
+    public function relations() {
+	// NOTE: you may need to adjust the relation name and the related
+	// class name for the relations automatically generated below.
+	return array(
+	);
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels() {
+	return array(
+	    'id' => 'ID',
+	    'type' => 'Type',
+	    'associationId' => 'Association',
+	    'note' => 'Note',
+	    'createdBy' => 'Created By',
+	    'createDate' => 'Create Date',
+	);
+    }
 
-		$criteria=new CDbCriteria;
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search() {
+	// Warning: Please modify the following code to remove attributes that
+	// should not be searched.
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('type',$this->type,true);
-		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('note',$this->note,true);
-		$criteria->compare('createdBy',$this->createdBy,true);
-		$criteria->compare('createDate',$this->createDate,true);
+	$criteria = new CDbCriteria;
 
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
+	$criteria->compare('id', $this->id);
+	$criteria->compare('type', $this->type, true);
+	$criteria->compare('associationId', $this->associationId);
+	$criteria->compare('note', $this->note, true);
+	$criteria->compare('createdBy', $this->createdBy, true);
+	$criteria->compare('createDate', $this->createDate, true);
+
+	return new CActiveDataProvider(get_class($this), array(
+		    'criteria' => $criteria,
 		));
-	}
+    }
+
 }

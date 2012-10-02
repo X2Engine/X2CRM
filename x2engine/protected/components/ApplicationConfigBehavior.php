@@ -42,11 +42,16 @@
  * ApplicationConfigBehavior is a behavior for the application.
  * It loads additional config paramenters that cannot be statically 
  * written in config/main
+ * 
+ * @package X2CRM.components 
  */
 class ApplicationConfigBehavior extends CBehavior {
+    
 	/**
-	 * Declares events and the event handler methods
-	 * See yii documentation on behaviour
+	 * Declares events and the event handler methods.
+	 * 
+	 * See yii documentation on behavior; this is an override of 
+	 * {@link CBehavior::events()}
 	 */
 	public function events() {
 		return array_merge(parent::events(), array(
@@ -55,7 +60,12 @@ class ApplicationConfigBehavior extends CBehavior {
 	}
 
 	/**
-	 * Load configuration that cannot be put in config/main
+	 * Load dynamic app configuration.
+	 * 
+	 * Per the onBeginRequest key in the array returned by {@link events()},
+	 * this method will be called when the request has begun. It allows for
+	 * many extra configuration tasks to be run on a per-request basis
+	 * without having to extend {@link Yii} and override its methods.
 	 */
 	public function beginRequest() {
 		// $t0 = microtime(true);
@@ -76,6 +86,7 @@ class ApplicationConfigBehavior extends CBehavior {
 			return;
 		}
 		Yii::import('application.models.*');
+		Yii::import('application.controllers.X2Controller');
 		Yii::import('application.controllers.x2base');
 		Yii::import('application.components.*');
 		// Yii::import('application.components.ERememberFiltersBehavior');
@@ -172,6 +183,11 @@ class ApplicationConfigBehavior extends CBehavior {
 		$logo = Media::model()->findByAttributes(array('associationId'=>1,'associationType'=>'logo'));
 		if(isset($logo))
 			$this->owner->params->logo = $logo->fileName;
+			
+		$proLogo = 'images/x2engine_crm_pro.png';
+		if(file_exists($proLogo) && hash_file('md5',$proLogo) == 'fffc90810b8e9b65b6097119ba74fb93')
+			$this->owner->params->edition = 'pro';
+			
 		setlocale(LC_ALL, 'en_US.UTF-8');
 
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/notifications.js');

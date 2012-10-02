@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,7 +41,7 @@
 /**
  * This is the model class for table "x2_dropdowns".
  *
- * The followings are the available columns in table 'x2_dropdowns':
+ * @package X2CRM.models
  * @property integer $id
  * @property string $name
  * @property string $options

@@ -46,7 +46,7 @@ if ($silent) {
     exit;
 }
 
-include(__DIR__ . '/protected/config/emailConfig.php');
+include(dirname(__FILE__) . '/protected/config/emailConfig.php');
 
 
 
@@ -376,6 +376,86 @@ $timezones = array(
 
 
 	    <div class="wide form" id="install-form">
+		<?php
+		    
+		
+		////////////////////////
+		// Requirements Check //
+		////////////////////////
+		/**
+		 * Server variable requirements checker, derived from the Yii requirements checker.
+		 * 
+		 * @license http://www.yiiframework.com/license
+		 * @return string
+		 */
+		function checkServerVar() {
+		    $vars = array('HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT');
+		    $missing = array();
+		    foreach ($vars as $var) {
+			if (!isset($_SERVER[$var]))
+			    $missing[] = $var;
+		    }
+		    if (!empty($missing))
+			return installer_t('yii', '$_SERVER does not have {vars}.', array('{vars}' => implode(', ', $missing)));
+
+		    if (realpath($_SERVER["SCRIPT_FILENAME"]) !== realpath(__FILE__))
+			return installer_t('yii', '$_SERVER["SCRIPT_FILENAME"] must be the same as the entry script file path.');
+
+		    if (!isset($_SERVER["REQUEST_URI"]) && isset($_SERVER["QUERY_STRING"]))
+			return installer_t('yii', 'Either $_SERVER["REQUEST_URI"] or $_SERVER["QUERY_STRING"] must exist.');
+
+		    if (!isset($_SERVER["PATH_INFO"]) && strpos($_SERVER["PHP_SELF"], $_SERVER["SCRIPT_NAME"]) !== 0)
+			return installer_t('yii', 'Unable to determine URL path info. Please make sure $_SERVER["PATH_INFO"] (or $_SERVER["PHP_SELF"] and $_SERVER["SCRIPT_NAME"]) contains proper value.');
+
+		    return '';
+		}
+		
+		
+		$canInstall = True;
+		$reqMessges = array();
+		$rbm = installer_t("required but missing");
+		if(!version_compare(PHP_VERSION,"5.3.0",">=")) {
+		    $canInstall = False;
+		    $reqMessages[] = installer_t("Your server's PHP version").': '.PHP_VERSION.'; '.installer_t("version 5.3 or later is required");
+		}
+		if(($message=checkServerVar()) !== '') {
+		    $canInstall = False;
+		    $reqMessages[] = installer_t($message);
+		}
+		if(!class_exists('Reflection',false)) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://php.net/manual/en/class.reflectionclass.php">PHP reflection class</a>: '.$rbm;
+		}
+		if(!extension_loaded("pcre")) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.pcre.php">PCRE extension</a>: '.$rbm ;
+		}
+		if(!extension_loaded("SPL")) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.spl.php">SPL</a>: '.$rbm;
+		}
+		if(!extension_loaded('pdo_mysql')) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/en/ref.pdo-mysql.php">PDO MySQL extension</a>: '.$rbm;
+		}
+		if(!extension_loaded("ctype")) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.ctype.php">CType extension</a>: '.$rbm;
+		}
+		if(!extension_loaded("mbstring")) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.mbstring.php">Multibyte string extension</a>: '.$rbm;
+		}
+		if(!$canInstall) {
+		    echo "<div style=\"color:red\"><h1>".installer_t('Cannot install X2EngineCRM')."</h1>\n";
+		    echo "<strong>".installer_t('Unfortunately, your server does not meet the minimum system requirements for installation')."</strong><br />\n<ul>";
+		    foreach($reqMessages as $message) {
+			echo "<li>$message</li>";
+		    }
+		    echo "</ul>".installer_t('If you are a system administrator of this server, refer to').' <a href="http://wiki.x2engine.com/index.php?title=Installation#Enabling_PHP_extensions">Installation: Enabling PHP extensions</a>. ';
+		    echo installer_t("Otherwise, contact your hosting provider.")."</div><br />";
+		}
+		?>
 		<form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
 		    <h2><?php echo installer_t('X2EngineCRM Application Info'); ?></h2><hr>
 		    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
@@ -439,24 +519,29 @@ $timezones = array(
 
 		    <br /><br /><br />
 
-		    <?php
-		    include(realpath(__DIR__ . '/protected/components/UpdatesForm.php'));
-//		    use updates;
-		    // Configuration for the updates / optional info form:
-		    $form = new UpdatesForm(
-				    array(
-					'x2_version' => $version,
-					'unique_id' => getField('unique_id', 'none', True),
-					'formId' => 'install',
-					'submitButtonId' => 'install-button',
-					'statusId' => 'error-box',
-					'themeUrl' => $themeURL,
-					'receiveUpdates' => getField('receiveUpdates',1,True),
-				    ),
-				    'installer_t'
-		    );
-		    require_once(realpath(__DIR__ . '/protected/views/admin/stayUpdated.php'));
-		    ?>
+			<?php
+			include(realpath(dirname(__FILE__) . '/protected/components/UpdatesForm.php'));
+			// Configuration for the updates / optional info form:
+			$editions = array('pro');
+			$edition = 'opensource';
+			foreach ($editions as $ed) // Add editional prefixes as necessary
+				if (file_exists("initialize_$ed.php"))
+					$edition = $ed;
+			$form = new UpdatesForm(
+							array(
+								'x2_version' => $version,
+								'unique_id' => getField('unique_id', 'none', True),
+								'formId' => 'install',
+								'submitButtonId' => 'install-button',
+								'statusId' => 'error-box',
+								'themeUrl' => $themeURL,
+								'receiveUpdates' => getField('receiveUpdates', 1, True),
+								'edition' => $edition,
+							),
+							'installer_t'
+			);
+			require_once(realpath(dirname(__FILE__) . '/protected/views/admin/stayUpdated.php'));
+			?>
 
 
 <?php $haveErrors = !empty($errorMessages); ?>

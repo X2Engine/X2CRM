@@ -1,79 +1,80 @@
 <?php
+Yii::import('zii.widgets.grid.CButtonColumn');
+
+
 /**
- * EButtonColumnWithClearFilters class file.
+ * EButtonColumnWithClearFilters class.
+ *
+ * The EButtonColumnWithClearFilters extension adds up some functionality to the default
+ * possibilites of zii's CButtonColumn implementation.
+ *
+ * An image will be placed in the top column(on same line of AJAX filters). When clicked
+ * the filters will be cleared, the content will be refreshed with all items available.
+ *
+ *
+ * To use this extension, just copy this file to your components/ directory,
+ * add 'import' => 'application.components.EButtonColumnWithClearFilters', [...] to your
+ * config/main.php and use this column on each widget's Column array you would like to
+ * inherit the new possibilities:
+ *
+ * array(
+ *   'class'=>'EButtonColumnWithClearFilters',
+ *   //'clearVisible'=>true,
+ *   //'onClick_BeforeClear'=>'alert('this js fragment executes before clear');',
+ *   //'onClick_AfterClear'=>'alert('this js fragment executes after clear');',
+ *   //'clearHtmlOptions'=>array('class'=>'custom-clear'),
+ *   //'imageUrl'=>'/path/to/custom/image/delete.png',
+ *   //'url'=>'Yii::app()->controller->createUrl(Yii::app()->controller->action->ID,array("clearFilters"=>1))',
+ *   //'label'=>'My Custom Label',
+ * ),
+ *
+ *
+ * In your controller in the same action the widget is displayed, you have to add
+ *
+ * if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
+ *    $model->unsetAttributes();
+ *    $this->redirect(array($this->action->ID));
+ * }
+ *
+ * All posible customizations have been enumerated above, you shall comment out those that
+ * you won't override. The minial setup is just the class type for the Columns.
+ *
+ * clearVisible: a PHP expression for determining whether the button is visible
+ *
+ * onClick_BeforeClear: If you want to execute certain JS code before the filters are cleared out,
+ * use this property to pass your custom code. You are allowed to use 'return false;' only, when you want
+ * to stop the clear to happen. This will stop all further JS code, and HTTP request to be executed.
+ * You are not allowed to use 'return true;' it will break the components usage.
+ *
+ * onClick_AfterClear: If you want to execute certain JS code after clear, but before the AJAX call
+ * use this property to pass your custom code. You are allowed to use 'return false' only, when you want
+ * to stop the AJAX call to happen. This will stop the form to be reloaded.
+ * If you want to clear the form by classic GET request, and not by ajax you shall 'return true;' here.
+ *
+ * clearHtmlOptions: Associative array of html elements to be passed for the button
+ * default is: array('class'=>'clear','id'=>'cbcwr_clear','style'=>'text-align:center;display:block;');
+ *
+ * imageUrl: image URL of the button. If not set or false, a text link is used
+ * Default is: $this->grid->baseScriptUrl.'/delete.png'
+ *
+ * url: a PHP expression for generating the URL of the button
+ * Default is: Yii::app()->controller->createUrl(Yii::app()->controller->action->ID,array("clearFilters"=>1))
+ *
+ * label: Label tag to be used on the button when no URL is given
+ * Default is: Clear Filters
+ *
+ * This extension comes handy when you use Remember Filters extension for GridView
+ * http://www.yiiframework.com/extension/remember-filters-gridview
+ * 
+ * Please VOTE this extension if helps you at:
+ * http://www.yiiframework.com/extension/clear-filters-gridview
  *
  * @author Marton Kodok http://www.yiiframework.com/forum/index.php?/user/8824-pentium10/
  * @link http://www.yiiframework.com/
+ * @license http://opensource.org/licenses/bsd-license.php
  * @version 1.0
+ * @package X2CRM.components
  */
-
-/* The EButtonColumnWithClearFilters extension adds up some functionality to the default
-* possibilites of zii�s CButtonColumn implementation.
-*
-* An image will be placed in the top column(on same line of AJAX filters). When clicked
-* the filters will be cleared, the content will be refreshed with all items available.
-*
-*
-* To use this extension, just copy this file to your components/ directory,
-* add 'import' => 'application.components.EButtonColumnWithClearFilters', [...] to your
-* config/main.php and use this column on each widget's Column array you would like to
-* inherit the new possibilities:
-*
-* array(
-*   'class'=>'EButtonColumnWithClearFilters',
-*   //'clearVisible'=>true,
-*   //'onClick_BeforeClear'=>'alert('this js fragment executes before clear');',
-*   //'onClick_AfterClear'=>'alert('this js fragment executes after clear');',
-*   //'clearHtmlOptions'=>array('class'=>'custom-clear'),
-*   //'imageUrl'=>'/path/to/custom/image/delete.png',
-*   //'url'=>'Yii::app()->controller->createUrl(Yii::app()->controller->action->ID,array("clearFilters"=>1))',
-*   //'label'=>'My Custom Label',
-* ),
-*
-*
-* In your controller in the same action the widget is displayed, you have to add
-*
-* if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-*    $model->unsetAttributes();
-*    $this->redirect(array($this->action->ID));
-* }
-*
-* All posible customizations have been enumerated above, you shall comment out those that
-* you won't override. The minial setup is just the class type for the Columns.
-*
-* clearVisible: a PHP expression for determining whether the button is visible
-*
-* onClick_BeforeClear: If you want to execute certain JS code before the filters are cleared out,
-* use this property to pass your custom code. You are allowed to use 'return false;' only, when you want
-* to stop the clear to happen. This will stop all further JS code, and HTTP request to be executed.
-* You are not allowed to use 'return true;' it will break the components usage.
-*
-* onClick_AfterClear: If you want to execute certain JS code after clear, but before the AJAX call
-* use this property to pass your custom code. You are allowed to use 'return false' only, when you want
-* to stop the AJAX call to happen. This will stop the form to be reloaded.
-* If you want to clear the form by classic GET request, and not by ajax you shall 'return true;' here.
-*
-* clearHtmlOptions: Associative array of html elements to be passed for the button
-* default is: array('class'=>'clear','id'=>'cbcwr_clear','style'=>'text-align:center;display:block;');
-*
-* imageUrl: image URL of the button. If not set or false, a text link is used
-* Default is: $this->grid->baseScriptUrl.'/delete.png'
-*
-* url: a PHP expression for generating the URL of the button
-* Default is: Yii::app()->controller->createUrl(Yii::app()->controller->action->ID,array("clearFilters"=>1))
-*
-* label: Label tag to be used on the button when no URL is given
-* Default is: Clear Filters
-*
-* This extension comes handy when you use Remember Filters extension for GridView
-* http://www.yiiframework.com/extension/remember-filters-gridview
-*
-* Please VOTE this extension if helps you at:
-* http://www.yiiframework.com/extension/clear-filters-gridview
-*/
-
-Yii::import('zii.widgets.grid.CButtonColumn');
-
 class EButtonColumnWithClearFilters extends CButtonColumn {
 
     /**

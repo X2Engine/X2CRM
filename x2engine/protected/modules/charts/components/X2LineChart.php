@@ -39,6 +39,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 
+/**
+ * @package X2CRM.modules.charts.components 
+ */
 class X2LineChart extends X2ChartWidget {
 
 	private $plotTicks = array();

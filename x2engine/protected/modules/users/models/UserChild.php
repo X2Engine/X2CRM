@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * @package X2CRM.modules.users.models 
+ */
 class UserChild extends User {
 
 }

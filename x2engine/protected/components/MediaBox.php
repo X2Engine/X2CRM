@@ -38,7 +38,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class MediaBox extends CWidget {
+/**
+ * Class for the media library box widget.
+ * 
+ * @package X2CRM.components 
+ */
+class MediaBox extends X2Widget {
 	
 	public $visibility;
 	public function init() {
@@ -49,4 +54,3 @@ class MediaBox extends CWidget {
 		$this->render('mediaBox',array()); //array(
 	}
 }
-?>

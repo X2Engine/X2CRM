@@ -38,10 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->breadcrumbs=array(
-	'Profiles',
-);
-
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();
@@ -54,12 +50,11 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
-?>
-<?php 
-    $this->menu=array(
-		array('label'=>Yii::t('profile','Social Feed'),'url'=>array('index')),
-		array('label'=>Yii::t('profile','People')),
-	);
+
+$this->actionMenu = $this->formatMenu(array(
+	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('index')),
+	array('label'=>Yii::t('profile','People')),
+));
 ?>
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
@@ -80,7 +75,7 @@ $('.search-form form').submit(function(){
 		array(
 			'name'=>'fullName',
 			'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
-			'htmlOptions'=>array('width'=>'25%'),
+			'headerHtmlOptions'=>array('style'=>'width:35%;'),
 			'type'=>'raw',
 			),
 		'tagLine',

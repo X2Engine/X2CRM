@@ -75,7 +75,7 @@ $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 		<div data-role="footer" data-theme="b">
 			<p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
 				echo Yii::t('app', 'Rights Reserved.'); ?>
-				<?php echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php',array('rel'=>'external')); ?>
+				<?php echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',array('rel'=>'external', 'onClick'=>'setMobileBrowserFalse()')); ?>
 			</p>
 		</div>
 	</div>

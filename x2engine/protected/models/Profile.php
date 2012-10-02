@@ -42,6 +42,7 @@ Yii::import('application.components.X2LinkableBehavior');
 
 /**
  * This is the model class for table "x2_profile".
+ * @package X2CRM.models
  */
 class Profile extends CActiveRecord {
 	/**

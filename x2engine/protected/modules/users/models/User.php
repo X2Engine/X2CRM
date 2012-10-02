@@ -42,6 +42,8 @@
 
 /**
  * This is the model class for table "x2_users".
+ * 
+ * @package X2CRM.modules.users.models
  */
 class User extends CActiveRecord {
 	/**
@@ -156,7 +158,7 @@ class User extends CActiveRecord {
 	}
 
 	public static function getProfiles(){
-		$arr=CActiveRecord::model('User')->findAll();
+		$arr=CActiveRecord::model('User')->findAll('status="1"');
 		$names=array('0'=>Yii::t('app','All'));
 		foreach($arr as $user){
 			$names[$user->id]=$user->firstName." ".$user->lastName;
@@ -224,13 +226,21 @@ class User extends CActiveRecord {
 		}
 	}
 
+	/**
+	 * Generate a link to a user or group.
+	 * 
+	 * Creates a link or list of links to a user or group to be displayed on a record. 
+	 * @param integer|array|string $users If array, links to a group; if integer, the user whose ID is that value; if keyword "Anyone", not a link but simply displays "anyone".
+	 * @param boolean $makeLinks Can be set to False to disable creating links but still return the name of the linked-to object
+	 * @return string The rendered links
+	 */
 	public static function getUserLinks($users, $makeLinks = true) {
 		if(!is_array($users)) {
 			 /* x2temp */
 			if(is_numeric($users)) {
 				$group = Groups::model()->findByPk($users);
 				if(isset($group))
-					$link = $makeLinks? CHtml::link($group->name,array('/groups/default/view','id'=>$group->id)) : $group->name;
+					$link = $makeLinks? CHtml::link($group->name,array('/groups/groups/view','id'=>$group->id)) : $group->name;
 				else
 					$link = '';
 				return $link;
@@ -249,7 +259,7 @@ class User extends CActiveRecord {
 				$group = Groups::model()->findByPk($user);
 				// $group = Groups::model()->findByPk($users);
 				if(isset($group))
-					$links[] = $makeLinks? CHtml::link($group->name,array('/groups/default/view','id'=>$group->id)) : $group->name;
+					$links[] = $makeLinks? CHtml::link($group->name,array('/groups/groups/view','id'=>$group->id)) : $group->name;
 			} else {
 				$model = CActiveRecord::model('User')->findByAttributes(array('username'=>$user));
 				if(isset($model))

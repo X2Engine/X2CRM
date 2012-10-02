@@ -137,7 +137,7 @@ return array (
 'Account'=>'帐户',
 'Project'=>'项目',
 'Case'=>'案例',
-'Sale'=>'销售',
+'Opportunity'=>'销售',
 
 // Action Reminder Email
 'No one'=>'没有人',

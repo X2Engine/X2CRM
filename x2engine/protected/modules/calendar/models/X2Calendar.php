@@ -37,7 +37,9 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
+/**
+ * @package X2CRM.modules.calendar.models 
+ */
 class X2Calendar extends CActiveRecord
 {
 
@@ -242,7 +244,7 @@ class X2Calendar extends CActiveRecord
 	
 	// get a list of the names of all filters
 	public static function getCalendarFilterNames() {
-		return array('contacts', 'accounts', 'sales', 'quotes', 'products', 'media', 'completed', 'email', 'attachment');
+		return array('contacts', 'accounts', 'opportunities', 'quotes', 'products', 'media', 'completed', 'email', 'attachment');
 	}
 	
 	// get a google calendar service instance using an access token and,

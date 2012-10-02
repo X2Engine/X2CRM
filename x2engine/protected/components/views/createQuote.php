@@ -161,7 +161,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 
 <?php echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Create'),
-	array('/quotes/default/quickCreate'),
+	array('/quotes/quotes/quickCreate'),
 	array(
 		'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
 		'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }",

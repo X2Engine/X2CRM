@@ -38,7 +38,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class TimeZone extends CWidget {
+/**
+ * Time Zone information widget.
+ * 
+ * A widget that displays time information (i.e. zone, current time there) 
+ * specific to the contact being viewed.
+ *  
+ * @package X2CRM.components 
+ */
+class TimeZone extends X2Widget {
 
 	//public $visibility;
 	
@@ -215,6 +223,5 @@ class TimeZone extends CWidget {
 			');
 		} else
 			echo Yii::t('app','Timezone not available');
-
 	}
 }

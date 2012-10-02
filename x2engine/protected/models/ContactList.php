@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,11 +40,19 @@
 
 Yii::import('application.models.X2LinkableBehavior');
 
+/**
+ * Model for managing lists of contacts
+ * @package X2CRM.models
+ */
 class ContactList extends X2List {
 
 	public static $modelName = 'Contacts';
 	public static $linkRoute = '/contacts/list';
 
+	/**
+	 * Behaviors for the model.
+	 * @return array 
+	 */
 	public function behaviors() {
 		return array(
 			'X2LinkableBehavior'=>array(
@@ -64,6 +72,11 @@ class ContactList extends X2List {
 		return parent::model($className);
 	}
 
+	/**
+	 * Returns the route for viewing contact lists.
+	 * @param integer $id
+	 * @return array
+	 */
 	public static function getRoute($id) {
 		if($id=='all')
 			return array('contacts/index');
@@ -73,6 +86,11 @@ class ContactList extends X2List {
 			return array('contacts/list','id'=>$id);
 	}
 	
+	/**
+	 * Creates a link (or displays the name, if the ID is not available) of 
+	 * the contact list.
+	 * @return string 
+	 */
 	public function createLink() {
 		if(isset($this->id))
 			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));

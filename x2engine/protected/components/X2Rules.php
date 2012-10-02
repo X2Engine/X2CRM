@@ -38,6 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * (unused) ???
+ * 
+ * @package X2CRM.components 
+ */
 class X2Rules {
 
 	// public $model;
@@ -53,20 +58,20 @@ class X2Rules {
 			
 			Example 2: record_inactive, attributes = (('dealValue', '>', '20000'), ('account','not_empty')), duration = '5 days'
 
-			Event										Parameters													Response Variables
+			Event										Parameters															Response Variables
 			-------------------------------------------------------------------------------------------------------------------------------------------
-			Record - field change						model attributes, fieldName, comparison type/value			record, old attributes, user
-			Record - edit								model attributes, user										record, user
-			Record - create action						model attributes, user										record, user
-			Record - complete action					model attributes, user										record, user
-			Record - delete								model attributes, user										record, user
-			Record - inactive (no edits, actions, etc)	model attributes, user, duration							record, last activity, user
+			Record - field change						model type, model attributes, fieldName, comparison type/value		record, old attributes, user
+			Record - edit								model type, model attributes, user									record, user
+			Record - create action						model type, model attributes, user									record, user
+			Record - complete action					model type, model attributes, user									record, user
+			Record - delete								model type, model attributes, user									record, user
+			Record - inactive (no edits, actions, etc)	model type, model attributes, user, duration						record, last activity, user
 								
-			Workflow - start							workflowId, stage number, user								record, action, user
-			Workflow - complete							workflowId, stage number, user								record, action, user
-			Workflow - start stage						workflowId, stage number, user								record, action, user
-			Workflow - complete stage					workflowId, stage number, user								record, action, user
-			Workflow - undo stage						workflowId, stage number, user								record, action, user
+			Workflow - start							workflowId, stage number, user										record, action, user
+			Workflow - complete							workflowId, stage number, user										record, action, user
+			Workflow - start stage						workflowId, stage number, user										record, action, user
+			Workflow - complete stage					workflowId, stage number, user										record, action, user
+			Workflow - undo stage						workflowId, stage number, user										record, action, user
 
 			Generic action - complete							
 			Generic action - uncomplete							
@@ -90,7 +95,7 @@ class X2Rules {
 			Undo workflow stage							workflow, stage number
 				
 				
-				
+			Create Record								type, all attributes
 				
 				
 		Value calculation:

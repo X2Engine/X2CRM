@@ -38,13 +38,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->menu=array(
+$canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex');
+
+$this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile')),
-	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id)),
+	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
+	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
+	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId()))
 );
-if($model->id==Yii::app()->user->getId())
-	$this->menu[]=array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id));
-	$this->menu[]=array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id));
 ?>
 
 <h2><?php echo Yii::t('profile','Profile:'); ?> <b><?php echo $model->fullName; ?></b></h2>
@@ -69,7 +70,7 @@ if($model->id==Yii::app()->user->getId())
 		else
 			echo "This user does not allow posting on their feed.";
 		if($model->allowPost==1) {
-			echo $form->dropDownList($feed,'private',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private')));
+			echo $form->dropDownList($feed,'private',array(0=>Yii::t('actions','Public'),1=>Yii::t('actions','Private')));
 			echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button'));
 			echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','type'=>'button','onclick'=>"$('#attachments').toggle();return false;"));
 		}
@@ -79,7 +80,7 @@ if($model->id==Yii::app()->user->getId())
 </div>
 
 <div id="attachments" style="display:none;">
-<?php $this->widget('Attachments',array('type'=>'feed','associationId'=>$model->id)); ?>
+<?php $this->widget('Attachments',array('associationType'=>'feed', 'associationId'=>$model->id)); ?>
 </div>
 <?php
 $this->widget('zii.widgets.CListView', array(

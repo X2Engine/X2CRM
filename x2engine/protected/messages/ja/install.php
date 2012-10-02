@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,18 +43,32 @@ return array (
 'Install X2EngineCRM'=>'インストールX2EngineCRM',
 'X2EngineCRM Installation'=>'X2EngineCRMインストール',
 'Installation Complete'=>'完全インストール',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'このWebアプリケーションはJavaスクリプトが正確に機能することが必要です。続行する前に、WebブラウザでJavaScriptを有効にしてください。',
+// Requirements check
+'Cannot install X2EngineCRM'=>'X2EngineCRMをインストールすることはできません',
+'required but missing'=>'が必要ですが欠落',
+'Your server\'s PHP version'=>'ご使用のサーバーのPHPのバージョン',
+'version 5.3 or later is required'=>'それ以降のバージョン5.3以降が必要です',
+'Unfortunately, your server does not meet the minimum system requirements for installation'=>'残念ながら、あなたのサーバーは、インストールするための最小システム要件を満たしていない',
+'Otherwise, contact your hosting provider.'=>'それ以外の場合は、ホスティングプロバイダにお問い合わせください。',
+'If you are a system administrator of this server, refer to'=>'このサーバのシステム管理者である場合は、を参照してください。',
 
 'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2EngineCRMアプリケーションインストーラへようこそ！我々はアプリケーションを起動して実行する前に、我々は、少し情報を収集する必要があります。以下のフィールドに記入してください。',
 
 'X2EngineCRM Application Info'=>'X2EngineCRMアプリケーション情報',
 
+'Create sample data'=>'サンプルデータを作成する',
 'Application Name'=>'アプリケーション名',
 'Default Language'=>'デフォルトの言語',
 'Currency'=>'通貨',
+'Default Timezone'=>'デフォルトのタイムゾーン',
 'Admin Password'=>'管理者パスワード',
 'Confirm Password'=>'パスワードを確認',
 'Administrator Email'=>'管理者のメール',
 'Please enter a valid email address.'=>'有効なメールアドレスを入力してください。',
+'Test Connection'=>'接続をテストする',
+'Connection OK!'=>'接続は働いています！',
+'Could not connect to host.'=>'ホストに接続できませんでした。',
 
 'Database Connection Info'=>'データベース接続情報',
 
@@ -64,7 +78,7 @@ return array (
 'Username'=>'ユーザー名',
 'Password'=>'パスワード',
 
-// Software updates
+// Software updates & registration
 'Software Updates'=>'ソフトウェアアップデート',
 'Notify me of software updates'=>'ソフトウェアの最新情報を知らせて！',
 'First Name'=>'ファーストネーム',
@@ -83,6 +97,12 @@ return array (
 'Optional Information'=>'オプションの情報',
 'Could not connect to the updates server at this time.'=>'この時点でアップデートサーバーに接続できませんでした。',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'あなたは、更新を有効にせずにアプリケーションのインストールを続行し、Adminコンソールのセクション"アプリケーションの設定"の "一般設定"に入ることによって、後でもう一度試してみることができます。',
+'Product Key'=>'プロダクトキー',
+'Registration'=>'登録',
+'Software registration succeeded.'=>'ソフトウェアの登録に成功しました。',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'X2Engineからソフトウェアの更新を受信するには、X2EngineCRMのコピーを登録してください：',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'あなたはアクティブなインターネット接続を持っていることを確認してください。問題が解決しない場合は、お問い合わせください',
+'For support or sales inquiries, please contact us'=>'サポートや販売のお問い合わせは、お問い合わせください',
 
 'Install'=>'インストール',
 

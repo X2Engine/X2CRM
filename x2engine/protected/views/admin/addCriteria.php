@@ -89,12 +89,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 	<div class="row">
             <?php echo $form->labelEx($model,'modelType'); ?>
-            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Sales'=>'Sales','Accounts'=>'Accounts','Docs'=>'Docs'),
+            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Opportunity'=>'Opportunities','Accounts'=>'Accounts','Docs'=>'Docs'),
                 array(
                 'empty'=>'Select a model',
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>$this->createUrl('admin/getAttributes'), //url to call.
+                'url'=>$this->createUrl('admin/getAttributes?criteria=1'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#'.CHtml::activeId($model,'modelField'), //selector to update
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 

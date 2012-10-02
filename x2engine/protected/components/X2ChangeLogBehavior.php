@@ -39,16 +39,18 @@
  ********************************************************************************/
 
 /**
+ * Changelog recording behavior class.
+ * 
  * X2ChangeLogBehavior is a CActiveRecordBehavior which automatically saves changelog 
  * data when a record is saved. It also looks up any applicable notification criteria 
  * and takes the appropriate action (create a notification, create a new action, 
  * reassign the record, etc.)
  *
+ * @package X2CRM.components
  * @property string $baseRoute The default module/controller this model "belongs" to
  * @property string $viewRoute The default action to view this model
  * @property string $autoCompleteSource The action to user for autocomplete data
  */
-
 class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
 

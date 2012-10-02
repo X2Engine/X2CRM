@@ -38,8 +38,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * User profiles controller
+ * 
+ * @package X2CRM.controllers
+ */
 class ProfileController extends x2base {
+	/**
+	 * @var string The class of the model most often handled by this controller.
+	 */
 	public $modelClass='Profile';
+
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -60,7 +69,18 @@ class ProfileController extends x2base {
 			),
 		);
 	}
+    
+    public function filters(){
+        return array(
+            'accessControl',
+            'setPortlets',
+        );
+    }
 
+	/**
+	 * Deletes a post in the public feed for the current user.
+	 * @param integer $id 
+	 */
 	public function actionDeletePost($id) {
 		$post = Social::model()->findByPk($id);
 		if($post->type=='comment') {
@@ -103,6 +123,9 @@ class ProfileController extends x2base {
 		));
 	}
 
+	/**
+	 * Display/set user profile settings.
+	 */
 	public function actionSettings(){
 		$model=$this->loadModel(Yii::app()->user->getId());
 
@@ -151,11 +174,12 @@ class ProfileController extends x2base {
 
 	/**
 	 * Updates a particular model.
+	 * 
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-		if ($id==Yii::app()->user->getId() || Yii::app()->user->getName()=='admin') {
+		if ($id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')) {
                     $model = $this->loadModel($id);
                     $users=User::getNames();
                     $accounts=Accounts::getNames();  
@@ -180,10 +204,14 @@ class ProfileController extends x2base {
                             'accounts'=>$accounts,
                     ));
 		} else {
-			$this->redirect('view/'.$id);
+			$this->redirect(array('/profile/'.$id));
 		}
 	}
 	
+	/**
+	 * Changes the password for the user given by its record ID number.
+	 * @param integer $id ID of the user to be updated.
+	 */
 	public function actionChangePassword($id){
 		if($id==Yii::app()->user->getId()){
 			$user=UserChild::model()->findByPk($id);
@@ -210,6 +238,10 @@ class ProfileController extends x2base {
 		}
 	}
 
+	/**
+	 * Upload a profile photo.
+	 * @param integer $id ID of the user in question.
+	 */
 	public function actionUploadPhoto($id){
 		if($id==Yii::app()->user->getId()){
 			$prof=ProfileChild::model()->findByPk($id);
@@ -236,6 +268,9 @@ class ProfileController extends x2base {
 		$this->redirect(array('view','id'=>$id));
 	}
 	
+	/**
+	 * Set the background image. 
+	 */
 	public function actionSetBackground() {
 		if(isset($_POST['name'])) {
 
@@ -250,6 +285,11 @@ class ProfileController extends x2base {
 		}
 	}
 	
+	/**
+	 * Delete a background image.
+	 * 
+	 * @param type $id 
+	 */
 	public function actionDeleteBackground($id) {
 
 		$image = CActiveRecord::model('MediaChild')->findByPk($id);
@@ -269,6 +309,11 @@ class ProfileController extends x2base {
 		}
 	}
 	
+	/**
+	 * Generate a random filename for a picture.
+	 * 
+	 * @return string
+	 */
 	private function generatePictureName(){
 		
 		$time=time();
@@ -278,6 +323,11 @@ class ProfileController extends x2base {
 		return $name;
 	}
 	
+	/**
+	 * Add a new post to the social feed.
+	 * 
+	 * @param integer $id ID of the user.
+	 */
 	public function actionAddPost($id,$redirect) {
 		$post = new Social;
 		// $user = $this->loadModel($id);
@@ -329,7 +379,8 @@ class ProfileController extends x2base {
 	}
 	
 	/** 
-	 * Posts a comment on some post
+	 * Posts a comment on some post.
+	 * 
 	 * @param $comment string the text you're posting
 	 * @param $id integer the id of the post you're commenting on
 	 */
@@ -438,19 +489,19 @@ class ProfileController extends x2base {
 		));
 	}
 	
+	/**
+	 * Lists users profiles.
+	 */
 	public function actionProfiles(){
 		$model = new Profile('search');
 		$this->render('profiles', array('model'=>$model));
 	}
-	/**
-	 * Manages all models.
-	 */
-
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
+	 * 
 	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
+	 * @param integer $id the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
 		$model=ProfileChild::model('ProfileChild')->findByPk((int)$id);
@@ -459,6 +510,16 @@ class ProfileController extends x2base {
 		return $model;
 	}
 	
+	/**
+	 * Obtain the name of the language given its 2-5 letter code.
+	 * 
+	 * If a language pack was found for the language code, return its full
+	 * name. Otherwise, return false.
+	 * 
+	 * @param string $code
+	 * @param array $languageDirs
+	 * @return mixed
+	 */
 	private function getLanguageName($code,$languageDirs) {	// lookup language name for the language code provided
 
 		if (in_array($code,$languageDirs)) {	// is the language pack here?
@@ -473,7 +534,10 @@ class ProfileController extends x2base {
 	}
 	
 	
-	
+	/**
+	 * Return a mapping of Olson TZ code names to timezone names.
+	 * @return array 
+	 */
 	private function getTimeZones(){
 		return array(
 			'Pacific/Midway'    => "(GMT-11:00) Midway Island",
@@ -593,6 +657,10 @@ class ProfileController extends x2base {
 		);
 	}
 	
+	/**
+	 * Sets the the option for the number of results per page.
+	 * @param integer $results 
+	 */
 	public function actionSetResultsPerPage($results) {
 		Yii::app()->params->profile->resultsPerPage = $results;
 		Yii::app()->params->profile->save();

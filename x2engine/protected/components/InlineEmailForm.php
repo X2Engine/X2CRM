@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class InlineEmailForm extends CWidget {
+/**
+ * Provides an inline form for sending email from a view page.
+ * 
+ * @package X2CRM.components 
+ */
+class InlineEmailForm extends X2Widget {
 
 	public $model;
 	public $attributes;
@@ -80,7 +85,7 @@ class InlineEmailForm extends CWidget {
 				$('.focus-mini-module').removeClass('focus-mini-module');
 				$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
 				$('html,body').animate({
-					scrollTop: ($('#publisher-form').offset().top - 200)
+					scrollTop: ($('#inline-email-top').offset().top - 100)
 				}, 300);
 			}
 			
@@ -89,7 +94,11 @@ class InlineEmailForm extends CWidget {
 				height: 'toggle'
 			}, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
 			
-			
+			$('#InlineEmail_subject').addClass('focus');
+			$('#InlineEmail_subject').focus();
+			$('#InlineEmail_subject').blur(function() {
+				$(this).removeClass('focus');
+			});
 		}
 		
 		$(function() {
@@ -111,27 +120,11 @@ class InlineEmailForm extends CWidget {
 		});
 		",CClientScript::POS_HEAD);
 		
-		Yii::app()->clientScript->registerScript('inlineEmailForm',
+		Yii::app()->clientScript->registerScript('inlineEmailFormCC',
 		"$(document).delegate('#email-template','change',function() {
 			if($(this).val() != '0') // && $('#email-subject').val() == ''
 				$('#email-subject').val($(this).find(':selected').text());
 			$('#preview-email-button').click();
-		});
-		$(document).delegate('#cc-toggle','click',function() {
-			$(this).animate({
-					opacity: 'toggle',
-					width: 0
-				}, 400);
-			
-			$('#cc-row').slideDown(300);
-		});
-		$(document).delegate('#bcc-toggle','click',function() {
-			$(this).animate({
-					opacity: 'toggle',
-					width: 0
-				}, 400);
-			
-			$('#bcc-row').slideDown(300);
 		});
 		
 		",CClientScript::POS_READY);
@@ -147,4 +140,3 @@ class InlineEmailForm extends CWidget {
 		$action->run(); 
 	}
 }
-?>

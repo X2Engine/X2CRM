@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,29 @@ return array (
 'Gii - A Code Generation Module'=>'Gii - Ein Code Generation Module',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'Hinzufügen, Entfernen und Aktualisieren von Übersetzungen in den X2Contacts Sprachpakete.',
+'Tutorial Videos'=>'',
+'Phone Support'=>'Telefon-Support',
+'Manage Roles'=>'Rollen verwalten',
+'Set Lead Distribution'=>'Stellen Sie Kontakt Vertrieb',
+'Add Custom Lead Rules'=>'Hinzufügen von benutzerdefinierten Kontakt Regeln',
+'Workflow Settings'=>'Workflow-Einstellungen',
+'Manage Notification Criteria'=>'Verwalten Benachrichtigung Kriterien',
+'General Settings'=>'General Settings',
+'Updater Settings'=>'Update-Einstellungen',
+'Google Integration'=>'Google Integration',
+'Email Settings'=>'E-Mail-Einstellungen',
+'Create Email Campaign'=>'Neues E-Mail-Kampagne',
+'Manage Campaigns'=>'Kampagnen verwalten',
+'Import Contacts'=>'Kontakte importieren',
+'Export Contacts'=>'Kontakte exportieren',
+'Import All Data'=>'Import Alle Daten',
+'View User Changelog'=>'View User Changelog',
+'Create a Module'=>'Erstellen Sie ein Modul',
+'Manage Fields'=>'Felder verwalten',
+'Dropdown Editor'=>'Dropdown-Editor',
+'Form Editor'=>'Form Editor',
+'Create Workflow'=>'Neues Workflow-',
+'Manage Workflows'=>'Workflows verwalten',
 
 // Text
 'Administrator profile'=>'Administrator-Profil',
@@ -95,6 +118,30 @@ return array (
 'Yii Open Source web framework'=>'Yii Open Source Web-Framework',
 'Show'=>'Zeigen',
 'Hide'=>'Verbergen',
+'Send invitation emails to create X2Engine accounts'=>'Einladung senden E-Mails an X2Engine Konten erstellen',
+'Create and manage user roles'=>'Erstellen und Verwalten von Benutzerrollen',
+'Create and manage user groups'=>'Erstellen und Verwalten von Benutzergruppen',
+'Create a public form to receive new contacts'=>'Erstellen Sie eine öffentliche Form, um neue Kontakte zu erhalten',
+'Change how new web leads are distributed.'=>'Ändern, wie neue Web-Leads verteilt sind.',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'Erstellen Sie einen Workflow für Ihren Vertriebsprozess',
+'Change advanced workflow settings'=>'Ändern der erweiterten Workflow-Einstellungen',
+'Manage what events will trigger user notifications.'=>'Verwalten, welche Ereignisse Benutzer-Benachrichtigungen auslösen.',
+'Configure session timeout and chat poll rate.'=>'Konfigurieren Session-Timeout und plaudern Pollrate.',
+'Configure automatic updates and registration.'=>'Konfigurieren der automatischen Updates und Registrierung.',
+'Enter your google app settings for Calendar/Google login'=>'Geben Sie Ihre Google App-Einstellungen für Kalender / Google Login',
+'Configure X2Engine\'s email settings'=>'Konfigurieren X2Engine E-Mail-Einstellungen',
+'Create an email marketing campaign'=>'Erstellen Sie eine E-Mail-Marketing-Kampagne',
+'Manage your marketing campaigns'=>'Verwalten Ihrer Marketing-Kampagnen',
+'Import contacts using a CSV template'=>'Importieren von Kontakten mit einer CSV-Vorlage',
+'Export contacts to a CSV file'=>'Exportieren von Kontakten in einer CSV-Datei',
+'Export all data (useful for making backups)'=>'Export aller Daten (nützlich für das Erstellen von Backups)',
+'Import from a global export file'=>'Importieren aus einer globalen Export-Datei',
+'View a log of everything that has been changed'=>'Ein Protokoll über alles, was sich geändert hat',
+'Customize fields for the modules.'=>'Passen Sie Felder für die Module.',
+'Manage dropdowns for custom fields.'=>'Verwalten dropdowns für benutzerdefinierte Felder.',
+'Drag and drop editor for forms.'=>'Drag & Drop-Editor für Formulare.',
+
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'Ändern Sie die Links im Hauptmenü',
@@ -154,4 +201,12 @@ return array (
 'User\'s Choice'=>'Ganz nach Wahl',
 'Default Signature'=>'Standard-Signatur',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Sie können die folgenden Variablen in dieser Vorlage: {first}, {last}, {phone}, {email}.',
+
+// Updater/General Settings
+'Update Interval'=>'Aktualisierungsintervall',
+'Every Login'=>'Jeder Anmelden',
+'Daily'=>'täglich',
+'Weekly'=>'wöchentlich',
+'Monthly'=>'monatlich',
+'Never'=>'nie',
 );

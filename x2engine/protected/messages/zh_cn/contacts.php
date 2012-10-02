@@ -131,7 +131,7 @@ return array (
 'Detail View'=>'详细查看',
 'Simple View'=>'简单查看',
 'Contact Info'=>'联系方式',
-'Sales &amp; Marketing'=>'销售及市场推广',
+'Opportunities &amp; Marketing'=>'销售及市场推广',
 'Social Media'=>'社会化媒体',
 
 // Contacts Actions
@@ -142,6 +142,7 @@ return array (
 'View Contact'=>'查看联系人',
 'Update Contact'=>'更新联系人',
 'Delete Contact'=>'删除联系人',
+'Contact Lists'=>'联系人列表',
 'Create Lead'=>'创建潜在客户',
 'Share Contact'=>'共享联系人',
 'Create'=>'创建',
@@ -150,7 +151,7 @@ return array (
 'View'=>'视图',
 'Share'=>'股',
 'Update'=>'更新',
-'View Sales'=>'查看销售',
+'View Opportunities'=>'查看销售',
 'Delete'=>'删除',
 'Show All'=>'显示所有',
 'Hide All'=>'全部隐藏',
@@ -177,4 +178,17 @@ return array (
 'Subscribe'=>'订阅',
 'The information for {name} has changed.'=>'{name}的信息已更改。',
 'Receive email updates every time information for {name} changes'=>'收到电子邮件更新，每一次信息交换{name}',
+
+// Web Lead
+'Web Lead'=>'网络接触',
+'Invalid Email Address'=>'电子邮件地址无效',
+'Default list for email list signups'=>'默认列表邮件列表注册',
+'This request cannot be made at this time.'=>'这一要求不能在这个时候。',
+'Newsletter Signup'=>'订阅电子报',
+'Could not sign up'=>'无法登录',
+'We\'re Sorry!'=>'我们很抱歉！',
+'Thank You!'=>'谢谢您！',
+'Thank you for your interest!'=>'感谢您的关注！',
+'Someone will be in touch shortly.'=>'有人会联系你的不久。',
+'Enter any additional information or questions regarding your interest here.'=>'输入任何附加信息或问题的兴趣。',
 );

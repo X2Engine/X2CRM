@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class MessageBox extends CWidget {
+/**
+ * MOTD widget class.
+ * 
+ * Class for rendering the widget that displays the message of the day.
+ * 
+ * @package X2CRM.components 
+ */
+class MessageBox extends X2Widget {
 
 	public $visibility;
 	public function init() {	
@@ -56,5 +63,3 @@ class MessageBox extends CWidget {
 		));
 	}
 }
-
-?>

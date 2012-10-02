@@ -40,13 +40,16 @@
 
  
 /**
- * X2LinkableBehavior is a CModelBehavior which allows consistent lookup of Yii routes, HTML links and autcomplete sources
+ * CModelBehavior class for route lookups on classes.
+ * 
+ * X2LinkableBehavior is a CModelBehavior which allows consistent lookup of Yii 
+ * routes, HTML links and autcomplete sources.
  *
+ * @package X2CRM.components
  * @property string $baseRoute The default module/controller this model "belongs" to
  * @property string $viewRoute The default action to view this model
  * @property string $autoCompleteSource The action to user for autocomplete data
- */
- 
+ */ 
 class X2LinkableBehavior extends CModelBehavior {
 
 	public $baseRoute;
@@ -54,6 +57,11 @@ class X2LinkableBehavior extends CModelBehavior {
 	public $autoCompleteSource;
 	public $icon;
 	
+	/**
+	 * Attaches the behavior object to the model.
+	 * 
+	 * @param string $owner The component to which the behavior will be applied
+	 */
 	public function attach($owner) {
 	
 		parent::attach($owner);
@@ -69,6 +77,8 @@ class X2LinkableBehavior extends CModelBehavior {
 	}
 
 	/**
+	 * Generates a link to the view of the object.
+	 * 
 	 * @return string a link to the model
 	 */
 	public function getLink() {
@@ -80,5 +90,14 @@ class X2LinkableBehavior extends CModelBehavior {
 		return CHtml::link($tag.$this->owner->name.'</span>',
 			// array($this->viewRoute.'/'.$this->owner->id),array('class'=>'x2-link'));
 			array($this->viewRoute.'/'.$this->owner->id));
+	}
+
+	/**
+	 * Accessor method for $autoCompleteSource
+	 * 
+	 * @return string $autoCompleteSource
+	 */
+	public function getAutoCompleteSource() {
+		return $this->autoCompleteSource;
 	}
 }

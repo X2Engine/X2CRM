@@ -1,5 +1,6 @@
 <?php
-/*********************************************************************************
+
+/* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -11,7 +12,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -36,109 +37,141 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * ****************************************************************************** */
 
 /**
- * InlineEmail class.
- * InlineEmail is the data structure for keeping
- * inline email data. It is used by the InlineEmailForm component and site/inlineEmail
+ * InlineEmail class. InlineEmail is the data structure for keeping inline email
+ * data. It is used by the InlineEmailForm component and site/inlineEmail.
+ * @package X2CRM.models
  */
 class InlineEmail extends CFormModel {
-	public $to;
-	public $cc;
-	public $bcc;
-	public $subject;
-	public $message;
-	public $template = 0;
-	public $redirect = 'index';
-	public $modelName;
-	public $modelId;
-	public $status;
-	
-	public $mailingList = array();
 
-	// public $errors;
-	/**
-	 * Declares the validation rules.
-	 * The rules state that username and password are required,
-	 * and password needs to be authenticated.
-	 */
-	public function rules() {
-		return array(
-			array('to, subject', 'required'),
-			array('message','required','on'=>'custom'),
-			array('to', 'parseMailingList'),
-			array('cc', 'parseMailingList'),
-			array('bcc', 'parseMailingList'),
+    /**
+     * @var string Email address of the addressee
+     */
+    public $to;
+    /**
+     * @var string CC email address(es), if applicable 
+     */
+    public $cc;
+    /**
+     * @var string BCC email address(es), if applicable
+     */
+    public $bcc;
+    /**
+     * @var string Email subject
+     */
+    public $subject;
+    /**
+     * @var string Email body/content
+     */
+    public $message;
+    /**
+     * @var integer Template ID
+     */
+    public $template = 0;
+    /**
+     * @var string
+     */
+    public $modelName;
+    /**
+     * @var integer 
+     */
+    public $modelId;
+    /**
+     * @var array Status codes
+     */
+    public $status;
+    /**
+     * @var array
+     */
+    public $mailingList = array();
 
-			array('to, cc, bcc, message, template, modelId, modelName', 'safe'),
-		);
-	}
+    /**
+     * Declares the validation rules. The rules state that username and password
+     * are required, and password needs to be authenticated.
+     * @return array
+     */
+    public function rules() {
+	return array(
+	    array('to, subject', 'required'),
+	    array('message', 'required', 'on' => 'custom'),
+	    array('to', 'parseMailingList'),
+	    array('cc', 'parseMailingList'),
+	    array('bcc', 'parseMailingList'),
+	    array('to, cc, bcc, message, template, modelId, modelName', 'safe'),
+	);
+    }
 
-	/**
-	 * Declares attribute labels.
-	 */
-	public function attributeLabels() {
-		return array(
-			'to'=>Yii::t('app','To:'),
-			'cc'=>Yii::t('app','CC:'),
-			'bcc'=>Yii::t('app','BCC:'),
-			'subject'=>Yii::t('app','Subject:'),
-			'message'=>Yii::t('app','Message:'),
-			'template'=>Yii::t('app','Template'),
-			// 'redirect'=>Yii::t('app','Redirect'),
-			'modelName'=>Yii::t('app','Model Name'),
-			'modelId'=>Yii::t('app','Model ID'),
-			// 'status'=>Yii::t('app','Status'),
-		);
-	}
-	
-	public function parseMailingList($attribute, $params) {
+    /**
+     * Declares attribute labels.
+     * @return array
+     */
+    public function attributeLabels() {
+	return array(
+	    'to' => Yii::t('app', 'To:'),
+	    'cc' => Yii::t('app', 'CC:'),
+	    'bcc' => Yii::t('app', 'BCC:'),
+	    'subject' => Yii::t('app', 'Subject:'),
+	    'message' => Yii::t('app', 'Message:'),
+	    'template' => Yii::t('app', 'Template:'),
+	    'modelName' => Yii::t('app', 'Model Name'),
+	    'modelId' => Yii::t('app', 'Model ID'),
+	);
+    }
 
-		// $to = trim($this->$attribute);
-		// if(empty($to))
-			// return false;
+    /**
+     * Validation function for lists of email addresses.
+     * 
+     * @param string $attribute
+     * @param array $params
+     */
+    public function parseMailingList($attribute, $params) {
 
-		$splitString = explode(',',$this->$attribute);
-		
-		// require_once('protected/components/phpMailer/class.phpmailer.php');
-		$invalid = false;
-		
-		foreach($splitString as &$token) {
+	// $to = trim($this->$attribute);
+	// if(empty($to))
+	// return false;
 
-			$token = trim($token);
-			if(empty($token))
-				continue;
-			
-			$matches = array();
-			
-			$emailValidator = new CEmailValidator;
-			
-			// if(PHPMailer::ValidateAddress($token)) {	// if it's just a simple email, we're done!
-			
-			if($emailValidator->validateValue($token))	// if it's just a simple email, we're done!
-				$this->mailingList[$attribute][] = array('',$token);
-			elseif(strlen($token) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i',$token,$matches)) {	// otherwise, it must be of the variety <email@example.com> "Bob Slydel"
-				if(count($matches) == 3 && $emailValidator->validateValue($matches[2])) {					// (with or without quotes)
-					$this->mailingList[$attribute][] = array($matches[1],$matches[2]);
-				} else {
-					$invalid = true;
-					break;
-				}
-			} else {
-				$invalid = true;
-				break;
-			}
+	$splitString = explode(',', $this->$attribute);
+
+	// require_once('protected/components/phpMailer/class.phpmailer.php');
+	$invalid = false;
+
+	foreach ($splitString as &$token) {
+
+	    $token = trim($token);
+	    if (empty($token))
+		continue;
+
+	    $matches = array();
+
+	    $emailValidator = new CEmailValidator;
+
+	    // if(PHPMailer::ValidateAddress($token)) {	// if it's just a simple email, we're done!
+
+	    if ($emailValidator->validateValue($token)) // if it's just a simple email, we're done!
+		$this->mailingList[$attribute][] = array('', $token);
+	    elseif (strlen($token) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $token, $matches)) { // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
+		if (count($matches) == 3 && $emailValidator->validateValue($matches[2])) {     // (with or without quotes)
+		    $this->mailingList[$attribute][] = array($matches[1], $matches[2]);
+		} else {
+		    $invalid = true;
+		    break;
 		}
-
-		if($invalid)
-			$this->addError($attribute,Yii::t('app','Invalid email address list.'));
+	    } else {
+		$invalid = true;
+		break;
+	    }
 	}
-	
-	// public function __get($name) {
-		// if($name == '_mailingList')
-			// return $this->_mailingList;
-		// else
-			// return null;
-	// }
+
+	if ($invalid)
+	    $this->addError($attribute, Yii::t('app', 'Invalid email address list.'));
+    }
+
+    // public function __get($name) {
+    // if($name == '_mailingList')
+    // return $this->_mailingList;
+    // else
+    // return null;
+    // }
 }

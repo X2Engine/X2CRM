@@ -37,28 +37,20 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?>
-<h1><?php echo Yii::t('app','Search Results'); ?></h1>
 
-<?php
-foreach(Yii::app()->user->getFlashes() as $key => $message) {
-	echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
-}
-?>
-
-<form action="<?php echo Yii::app()->baseUrl; ?>/index.php/marketing/createFromTag">
-	<input type="hidden" name="tag" value="<?php echo $term; ?>"/>
-	<input type="submit" value="<?php echo Yii::t('marketing','Email These Contacts'); ?>" class="x2-button"/>
-</form>
-
-<?php $this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $tags,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=>'<h2>'.Yii::t('app','Search Results')
+		.CHtml::link(Yii::t('marketing','Email These Contacts'),
+			CHtml::normalizeUrl(array('/marketing/createFromTag')).'?tag='.urlencode($term),
+			array('class'=>'x2-button','style'=>'margin-bottom:2px;'))
+		.'</h2>{summary}{items}{pager}',
 	'columns' => array(
 		array(
 			'name' => Yii::t('app','Record'),
 			'type' => 'raw',
-			'value' => 'CHtml::link($data->itemName,Yii::app()->request->baseUrl."/index.php/".strtolower($data->type)."/default/view/id/".$data->itemId)', 
+			'value' => 'CHtml::link($data->itemName,Yii::app()->request->baseUrl."/index.php/".strtolower($data->type)."/".$data->itemId)', 
 		),
 		array(
 			'name' => Yii::t('app','Record Type'),
@@ -67,4 +59,3 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 		),
 	),
 ));
-?>

@@ -71,7 +71,7 @@ if ($.browser != 'msie' || $.browser.version > 6) {
 ",CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('logos',"
 $(window).load(function(){
-	if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+	if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
 		$('a').removeAttr('href');
 		alert('Please put the logo back');
 		window.location='http://www.x2engine.com';

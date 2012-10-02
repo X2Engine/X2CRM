@@ -42,6 +42,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_groups".
+ * @package X2CRM.modules.groups.models
  */
 class Groups extends X2Model {
 	/**

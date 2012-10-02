@@ -42,6 +42,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_template".
+ * @package X2CRM.modules.template.models
  */
 class Templates extends X2Model {
 	/**

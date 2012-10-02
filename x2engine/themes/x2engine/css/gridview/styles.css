@@ -52,15 +52,15 @@ ul.column-selector {
 	overflow-y:scroll;
 
 	list-style-type:none;
-	border-radius:0 0 2px 2px;
-	-moz-border-radius:0 0 2px 2px;
-	-webkit-border-radius:0 0 2px 2px;
-	-o-border-radius:0 0 2px 2px;
+	border-radius:			0 0 2px 2px;
+	-moz-border-radius:		0 0 2px 2px;
+	-webkit-border-radius:	0 0 2px 2px;
+	-o-border-radius:		0 0 2px 2px;
 
 	clip:rect(1px, 1000px, 1000px, -10px);
-	-moz-box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
-	-webkit-box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
-	box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
+	-moz-box-shadow:		0 0 15px 0 rgba(0,0,0,0.5);
+	-webkit-box-shadow:		0 0 15px 0 rgba(0,0,0,0.5);
+	box-shadow:				0 0 15px 0 rgba(0,0,0,0.5);
 }
 ul.column-selector li {
 	padding:2px 5px;
@@ -87,30 +87,35 @@ ul.column-selector input {
 }
 .grid-view table.items {
 	table-layout:fixed;
+	background:#fff;
 	margin-top:5px;
 	width:100%;
 	clear:both;
 	border:1px solid #ccc;
 	border-collapse:separate; /* no border collapse to make rounded corners work */
-	border-radius:4px;
-	-moz-border-radius:4px;
-	-webkit-border-radius:4px;
-	-o-border-radius:4px;
+	border-radius:			4px;
+	-moz-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	-o-border-radius:		4px;
+	
+/* 	-moz-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
+	-webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
+	box-shadow:				0 1px 6px rgba(0,0,0,0.5); */
 }
 /* rounded corner on top left TH cells in THEAD */
 .grid-view table.items th:first-child {
 	border-left-width:1px;
-	border-radius:4px 0 0 0;
-	-moz-border-radius:4px 0 0 0;
-	-webkit-border-radius:4px 0 0 0;
-	-o-border-radius:4px 0 0 0;
+	border-radius:			4px 0 0 0;
+	-moz-border-radius:		4px 0 0 0;
+	-webkit-border-radius:	4px 0 0 0;
+	-o-border-radius:		4px 0 0 0;
 }
 /* rounded corner on top right TH cells in THEAD */
 .grid-view table.items th:last-child {
-	border-radius:0 4px 0 0;
-	-moz-border-radius:0 4px 0 0;
-	-webkit-border-radius:0 4px 0 0;
-	-o-border-radius:0 4px 0 0;
+	border-radius:			0 4px 0 0;
+	-moz-border-radius:		0 4px 0 0;
+	-webkit-border-radius:	0 4px 0 0;
+	-o-border-radius:		0 4px 0 0;
 }
 /* left border on all left TD cells */
 .grid-view table.items tr td:first-child {
@@ -168,9 +173,9 @@ ul.column-selector input {
 	font-weight:bold;
 	text-decoration:none;
 	cursor:default;
-	-moz-box-shadow: inset 0 1px 0 0 #fff;
-	-webkit-box-shadow: inset 0 1px 0 0 #fff;
-	box-shadow: inset 0 1px 0 0 #fff;
+	-moz-box-shadow:		inset 0 1px 0 0 #fff;
+	-webkit-box-shadow:		inset 0 1px 0 0 #fff;
+	box-shadow:				inset 0 1px 0 0 #fff;
 	-webkit-appearance:none;
 }
 .grid-view table.items thead tr:hover {

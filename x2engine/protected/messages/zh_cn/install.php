@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,18 +43,32 @@ return array (
 'Install X2EngineCRM'=>'安装X2EngineCRM',
 'X2EngineCRM Installation'=>'X2EngineCRM安装',
 'Installation Complete'=>'安装完成',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'本程序需要Javascript才能正常工作。请在您的Web浏览器中启用Javascript，然后再继续。',
+// Requirements check
+'Cannot install X2EngineCRM'=>'无法安装X2EngineCRM的',
+'required but missing'=>'必需的，但失踪',
+'Your server\'s PHP version'=>'您的服务器的PHP版本',
+'version 5.3 or later is required'=>'需要5.3或更高版本',
+'Unfortunately, your server does not meet the minimum system requirements for installation'=>'不幸的是，你的服务器不符合安装的最低系统要求',
+'Otherwise, contact your hosting provider.'=>'否则，请联系您的托管服务提供商。',
+'If you are a system administrator of this server, refer to'=>'如果你是这台服务器的系统管理员，请参阅',
 
 'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'X2EngineCRM应用程序安装欢迎您！我们需要先收集一些的资料才能让您的应用程序运行。请填写以下的填空。',
 
 'X2EngineCRM Application Info'=>'X2EngineCRM应用信息',
 
+'Create sample data'=>'创建示例数据',
 'Application Name'=>'应用程序名称',
 'Default Language'=>'默认语言',
 'Currency'=>'货币',
+'Default Timezone'=>'默认时区',
 'Admin Password'=>'管理员密码',
 'Confirm Password'=>'确认密码',
 'Administrator Email'=>'管理员电子邮件',
 'Please enter a valid email address.'=>'请输入一个有效的电子邮件地址。',
+'Test Connection'=>'测试连接',
+'Connection OK!'=>'连接是工作！',
+'Could not connect to host.'=>'无法连接到主机。',
 
 'Database Connection Info'=>'数据库连接信息',
 
@@ -64,7 +78,7 @@ return array (
 'Username'=>'用户名',
 'Password'=>'密码',
 
-// Software updates
+// Software updates & registration
 'Software Updates'=>'软件更新',
 'Notify me of software updates'=>'软件更新时通知我',
 'First Name'=>'名字',
@@ -83,6 +97,12 @@ return array (
 'Optional Information'=>'可选信息',
 'Could not connect to the updates server at this time.'=>'无法连接到更新服务器，在这个时候。',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'您可以继续安装应用程序，而不启用更新，进入“常规设置”部分下的“应用程序设置”在管理控制台，请稍后再试。',
+'Product Key'=>'产品密钥',
+'Registration'=>'注册',
+'Software registration succeeded.'=>'软件注册成功。',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'要接收软件更新X2Engine的，请注册您的X2EngineCRM：',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'请确保你有一个有效的互联网连接。如果问题仍然存在，请与我们联系',
+'For support or sales inquiries, please contact us'=>'对于支持或销售查询，请与我们联系',
 
 'Install'=>'安装',
 

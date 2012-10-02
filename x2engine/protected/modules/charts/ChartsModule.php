@@ -44,6 +44,9 @@
 // specify how many levels of call stack should be shown in each log message
 //defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL', 3);
 
+/**
+ * @package X2CRM.modules.charts 
+ */
 class ChartsModule extends CWebModule {
 	public $packages = array();
 	private $_assetsUrl;
@@ -67,13 +70,13 @@ class ChartsModule extends CWebModule {
 		// Set module specific javascript packages
 
 		$this->packages = array(
-			// 'jquery' => array(
-				// 'basePath' => $this->getBasePath(),
-				// 'baseUrl' => $this->assetsUrl,
-				// 'js' => array(
-					// YII_DEBUG ? 'js/jquery-1.6.2.js' : 'js/jquery-1.6.2.min.js'
-				// )
-			// ),
+			 'jquery' => array(
+				 'basePath' => $this->getBasePath(),
+				 'baseUrl' => $this->assetsUrl,
+				 'js' => array(
+					 YII_DEBUG ? 'js/jquery.js' : 'js/jquery.min.js'
+				 )
+			 ),
 			'jquerysparkline' => array(
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,

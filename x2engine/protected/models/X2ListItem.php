@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,7 +41,7 @@
 /**
  * This is the model class for table "x2_list_items".
  *
- * The followings are the available columns in table 'x2_list_items':
+ * @package X2CRM.models
  * @property integer $contactId
  * @property integer $listId
  * @property string $code
@@ -70,7 +70,7 @@ class X2ListItem extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('contactId, listId', 'required'),
+			array('listId', 'required'),
 			array('contactId, listId, sent, opened, clicked, unsubscribed', 'numerical', 'integerOnly'=>true),
 			array('uniqueId', 'length', 'max'=>32),
 			// The following rule is used by search().

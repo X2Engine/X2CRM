@@ -38,7 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class TwitterFeed extends CWidget {
+
+/**
+ * Widget for displaying a twitter fee
+ * 
+ * @package X2CRM.components 
+ */
+class TwitterFeed extends X2Widget {
 
 	//public $visibility;
 	public function init() {	
@@ -64,4 +70,3 @@ class TwitterFeed extends CWidget {
 		));
 	}
 }
-?>

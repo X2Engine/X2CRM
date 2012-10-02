@@ -83,7 +83,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo CHtml::link(Yii::t('admin', 'google console'), 'http://code.google.com/apis/console'); ?>.
 		<?php echo Yii::t('admin', 'Also, the following link needs to be added to your app\'s Redirect URIs:'); ?>
 		<br /><br />
-		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/default/create'); ?>
+		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/create'); ?>
 		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/site/googleLogin'); ?>
 	</div>
 	

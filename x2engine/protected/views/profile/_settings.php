@@ -138,8 +138,9 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row">
 		<h3><?php echo Yii::t('profile','Upload a Background'); ?></h3>
 		<?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
-		<?php echo CHtml::dropDownList('type','bg',array('bg'=>Yii::t('actions','Public'),'bg-private'=>Yii::t('actions','Private'))); ?>
+		<?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
 		<?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
+		<?php echo CHtml::hiddenField('associationType', 'bg'); ?>
 		<?php echo CHtml::fileField('upload','',array('id'=>'backgroundImg','onchange'=>"checkName();")); ?>
 		<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'upload-button','disabled'=>'disabled','class'=>'x2-button')); ?>
 		<?php echo CHtml::endForm(); ?>

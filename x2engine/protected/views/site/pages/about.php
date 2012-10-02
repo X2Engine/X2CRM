@@ -52,12 +52,17 @@ $this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','About');
 X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.
 </div>
 <?php
-echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm.png','',array('class'=>'left'));
+$logo = Yii::app()->baseUrl.'/images/x2engine_crm.png';
+if(Yii::app()->params->edition==='pro')
+	$logo = Yii::app()->baseUrl.'/images/x2engine_crm_pro.png';
+echo CHtml::image($logo,'',array('class'=>'left'));
 Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion').html($().jquery);",CClientScript::POS_READY);
 ?>
 
 <div class="prepend-3">
-	<b>Version <?php echo Yii::app()->params->version;?></b> <?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.<br><br>
+	<b>Version <?php echo Yii::app()->params->version;?><br>
+	<?php if(Yii::app()->params->edition==='pro') echo 'Professional Edition'; ?></b><br>
+	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.<br><br>
 	<?php echo Yii::t('app','X2Engine is an open source Customer Relationship Management application designed by John Roberts and licensed under the {link}.',array(
 		'{link}'=>CHtml::link(Yii::t('app','BSD License'),Yii::app()->getBaseUrl().'/LICENSE.txt')
 	)); ?>

@@ -131,7 +131,7 @@ return array (
 'Detail View'=>'',
 'Simple View'=>'',
 'Contact Info'=>'',
-'Sales &amp; Marketing'=>'',
+'Opportunities &amp; Marketing'=>'',
 'Social Media'=>'',
 
 // Contacts Actions
@@ -142,6 +142,7 @@ return array (
 'View Contact'=>'',
 'Update Contact'=>'',
 'Delete Contact'=>'',
+'Contact Lists'=>'',
 'Create Lead'=>'',
 'Share Contact'=>'',
 'Create'=>'',
@@ -150,7 +151,7 @@ return array (
 'View'=>'',
 'Share'=>'',
 'Update'=>'',
-'View Sales'=>'',
+'View Opportunities'=>'',
 'Delete'=>'',
 'Show All'=>'',
 'Hide All'=>'',
@@ -177,4 +178,17 @@ return array (
 'Subscribe'=>'',
 'The information for {name} has changed.'=>'',
 'Receive email updates every time information for {name} changes'=>'',
+
+// Web Lead
+'Web Lead'=>'',
+'Invalid Email Address'=>'',
+'Default list for email list signups'=>'',
+'This request cannot be made at this time.'=>'',
+'Newsletter Signup'=>'',
+'Could not sign up'=>'',
+'We\'re Sorry!'=>'',
+'Thank You!'=>'',
+'Thank you for your interest!'=>'',
+'Someone will be in touch shortly.'=>'',
+'Enter any additional information or questions regarding your interest here.'=>'',
 );

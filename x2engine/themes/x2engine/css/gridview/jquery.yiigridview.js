@@ -175,7 +175,10 @@
 			success: function(data,status) {
 				$.each(settings.ajaxUpdate, function(i,v) {
 					var id='#'+v;
-					$(id).replaceWith($(id,'<div>'+data+'</div>'));
+					if($(id).hasClass('x2-gridview'))
+						$(id).replaceWith(data);
+					else
+						$(id).replaceWith($(id,'<div>'+data+'</div>'));
 				});
 				if(settings.afterAjaxUpdate !== undefined)
 					settings.afterAjaxUpdate(id, data);

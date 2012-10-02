@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,6 +38,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * Data provider class
+ * 
+ * A child of CActiveDataProvider made for the purposes of getting pagingation to
+ * wok properly.
+ * 
+ * @package X2CRM.components 
+ */
 class SmartDataProvider extends CActiveDataProvider {
 	public function __construct($modelClass,$config=array()) {
 		parent::__construct($modelClass, $config);
@@ -73,6 +81,7 @@ class SmartDataProvider extends CActiveDataProvider {
 	}
 
 	private $_pagination;
+	
 	/**
 	 * Returns the pagination object.
 	 * @return CPagination the pagination object. If this is false, it means the pagination is disabled.
@@ -88,4 +97,3 @@ class SmartDataProvider extends CActiveDataProvider {
 		return $this->_pagination;
 	}
 }
-?>

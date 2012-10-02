@@ -108,6 +108,12 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
     			
     			form.setAttribute("action", $(form).data('oldAction'));
             	
+            } else if(response['status'] == 'notsent') {
+            	$('#choose-file-saving-icon').animate({opacity: 0.0});
+    			form.removeAttribute("target");
+    			form.removeAttribute("enctype");
+    			form.removeAttribute("encoding");
+            	form.setAttribute("action", $(form).data('oldAction'));
             } else {
             	fileField.parent().find('.error').html(response['message']);
             	fileField.val("");

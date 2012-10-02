@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,7 +40,7 @@
 
 include("protected/config/templatesConfig.php");
 
-$this->menu = array(
+$this->actionMenu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
 	array('label'=>Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName']))),
@@ -48,9 +48,10 @@ $this->menu = array(
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 );
 ?>
-
+<div id="main-column" class="half-width">
+<div class="record-title">
 <h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php echo $model->name; ?></h2>
-
+</div>
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>
 
 <?php
@@ -85,7 +86,7 @@ $this->widget('application.components.X2GridView', array(
 	'filter'=>$contactModel,
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
-	'viewName'=>'salecontacts',
+	'viewName'=>'opportunitycontacts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
 		'name'=>234,
@@ -104,22 +105,19 @@ $this->widget('application.components.X2GridView', array(
 	'enableControls'=>true,
 ));
 echo "<br />";
-$this->widget('InlineActionForm',
-		array(
-			'associationType'=>'templates',
-			'associationId'=>$model->id,
-			'assignedTo'=>Yii::app()->user->getName(),
-			'users'=>$users,
-			'startHidden'=>false
-		)
-);
-?>
 
-<?php
-$this->widget('zii.widgets.CListView', array(
-	'dataProvider'=>$actionHistory,
-	'itemView'=>'application.modules.actions.views.default._view',
-	'htmlOptions'=>array('class'=>'action list-view'),
-	'template'=> '<h3>'.Yii::t('app','History').'</h3>{summary}{sorter}{items}{pager}',
-));
 ?>
+</div>
+<div class="history half-width">
+<?php
+$this->widget('Publisher',
+	array(
+		'associationType'=>'templates',
+		'associationId'=>$model->id,
+		'assignedTo'=>Yii::app()->user->getName(),
+		'halfWidth'=>true
+	)
+);
+$this->widget('History',array('associationType'=>'templates','associationId'=>$model->id));
+?>
+</div>

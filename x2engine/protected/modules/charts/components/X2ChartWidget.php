@@ -48,6 +48,9 @@
   where a.assignedTo > 0 and b.id = a.assignedTo;
  */
 
+/**
+ * @package X2CRM.modules.charts.components 
+ */
 abstract class X2ChartWidget extends CWidget {
 
 	public $tagName = 'div';

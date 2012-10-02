@@ -42,6 +42,8 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_contacts".
+ * 
+ * @package X2CRM.modules.contacts.models
  */
 class Contacts extends X2Model {
 
@@ -115,7 +117,16 @@ class Contacts extends X2Model {
 	}
 	
 	public static function getNames() {
-		$contactArray = CActiveRecord::model('Contacts')->findAll($condition='x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
+        $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+            /* x2temp */
+            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+            if(!empty($groupLinks))
+                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+            $condition .= 'OR (visibility=2 AND assignedTo IN 
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		$contactArray = CActiveRecord::model('Contacts')->findAll($condition);
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
 			$first = $user->firstName;
@@ -150,7 +161,7 @@ class Contacts extends X2Model {
 		foreach($contacts as &$id){
 			if($id !=0 ) {
 				$model = CActiveRecord::model('Contacts')->findByPk($id);
-				$links[] = CHtml::link($model->name,array('/contacts/default/view','id'=>$id));
+				$links[] = CHtml::link($model->name,array('/contacts/contacts/view','id'=>$id));
 				//$links.=$link.', ';
 				
 			}
@@ -178,7 +189,18 @@ class Contacts extends X2Model {
 	 */
 	public static function defaultCriteria() {
 		$criteria = new CDbCriteria;
-		$criteria->addCondition('x2_checkViewPermission(visibility,assignedTo,"'.Yii::app()->user->getName().'") > 0');
+        if(Yii::app()->user->getName()!='admin'){
+            $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+            /* x2temp */
+            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+            if(!empty($groupLinks))
+                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+            $condition .= 'OR (visibility=2 AND assignedTo IN 
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+            $criteria->addCondition($condition);
+        }
 		//$criteria->order = 'lastUpdated DESC';
 		return $criteria;
 	}
@@ -196,7 +218,8 @@ class Contacts extends X2Model {
 			(SELECT username FROM x2_group_to_user WHERE groupId IN
 				(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		/* end x2temp */
-		$parameters['condition']=$condition;
+        if(Yii::app()->user->getName()!='admin')
+            $parameters['condition']=$condition;
 		$criteria->scopes=array('findAll'=>array($parameters));
 				
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter

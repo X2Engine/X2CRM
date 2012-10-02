@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,6 +43,9 @@ defined('YII_DEBUG') or define('YII_DEBUG', true);
 // specify how many levels of call stack should be shown in each log message
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL', 3);
 
+/**
+ * @package X2CRM.modules.mobile
+ */
 class MobileModule extends CWebModule {
 
     /**
@@ -87,7 +90,7 @@ class MobileModule extends CWebModule {
                 ),
                 'js' => array(
                     'js/x2mobile-init.js',
-                    'js/jquery.mobile-1.0b2.js'
+                    'js/jquery.mobile-1.1.1.js'
                 ),
                 'depends' => array('jquery'),
             ),

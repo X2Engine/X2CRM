@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'キャンペーン',
+'Campaigns'=>'キャンペーン',
 'ID'=>'ID',
 'Master Campaign ID'=>'マスター·キャンペーンのID',
 'Name'=>'名前',
@@ -59,6 +61,13 @@ return array (
 'Updated By'=>'更新した人',
 'None'=>'なし',
 
+// Menu
+'All Campaigns'=>'すべてのキャンペーン',
+'Create Campaign'=>'キャンペーンの作成',
+'Newsletters'=>'ニュースレター',
+'Create Newsletter'=>'ニュースレターを作成する',
+'Create Web Form'=>'Webフォームを作成する',
+
 // Launching
 'The campaign has already been launched.'=>'キャンペーンは既に開始された。',
 'Contact List cannot be blank.'=>'連絡先リストは空白にすることはできません。',
@@ -71,6 +80,10 @@ return array (
 'Campaign launched'=>'キャンペーンが開始された',
 'Campaign paused'=>'キャンペーンが一時停止されました',
 'Campaign resumed'=>'キャンペーンは継続されている',
+'Sent'=>'送信',
+'Opened'=>'開かれた',
+'Clicked'=>'クリックされた',
+'Unsubscribed'=>'サブスクライブ解除',
 
 // Mailing
 'The email sending limit has been reached.'=>'メール送信の上限に達しました。',
@@ -83,6 +96,7 @@ return array (
 'Attempting to send email'=>'電子メールを送信しようとすると、',
 'Unsendable email'=>'非送信可能なメールアドレス',
 'Blank email addresses'=>'空白の電子メールアドレス',
+'Duplicate Email Address'=>'メールアドレスを複製',
 '\'Do Not Email\' contacts'=>'メールしないでくださいコンタクト',
 'Data errors'=>'データエラー',
 'Batch completed, sending again in'=>'バッチはに再度送信して、完了',
@@ -93,6 +107,15 @@ return array (
 'Contacts for tag'=>'タグのコンタクト',
 'Mailing for tag'=>'タグのメーリングリスト',
 'Could not create mailing'=>'メーリングリストを作成できませんでした',
+'You have been unsubscribed'=>'あなたは、登録を解除しました',
+'Contact has unsubscribed'=>'コンタクトは退会した',
+'\'Do Not Email\' has been set'=>'設定されている"メールしない \'',
+'has unsubscribed'=>'退会しました',
+'Contact has opened the email'=>'連絡先は、電子メールをオープンしました',
+'has opened the email'=>'メールを開いている',
+'Contact has clicked a link'=>'連絡先はリンクをクリックした',
+'has clicked a link'=>'リンクをクリックした',
+'To stop receiving these messages, click here'=>'これらのメッセージの受信を停止するには、ここをクリックしてください',
 
 // WebForm model
 'Model Name'=>'モデルの名前',
@@ -102,6 +125,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'名前は空白にすることはできません。',
+'Name cannot be'=>'名前はできません。',
 'Web Lead Form'=>'ウェブリードの形',
 'Create a public form to receive new contacts.'=>'新しい連絡先を受信するパブリックフォームを作成します。',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'鉛ルーティングが設定されていない場合は、すべての新しい連絡先は"誰"に割り当てられます。',

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class InlineQuotes extends CWidget {
+/**
+ * Class for creating quotes from a view page.
+ * 
+ * @package X2CRM.components 
+ */
+class InlineQuotes extends X2Widget {
 
 	public $contactId;
 
@@ -435,7 +440,7 @@ function duplicateQuote(quote) {
 		
 		echo '<div id="quotes-form">';
 		echo '<div id="wide-quote-form" class="wide form" style="overflow: visible;">';
-		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes', "Quotes") .'</span>';
+		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Quotes') .'</span>';
 		echo '<br /><br />';
 		
 		// get a list of products for adding to quotes
@@ -510,4 +515,3 @@ function duplicateQuote(quote) {
 		echo "</div>";
 	}
 }
-?>

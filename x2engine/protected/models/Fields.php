@@ -41,7 +41,7 @@
 /**
  * This is the model class for table "x2_fields".
  *
- * The followings are the available columns in table 'x2_fields':
+ * @package X2CRM.models
  * @property integer $id
  * @property string $modelName
  * @property string $fieldName
@@ -129,13 +129,17 @@ class Fields extends CActiveRecord {
 		));
 	}
 	
+	/**
+	 * Finds a contact matching a full name; returns Contacts::name if a match was found, null otherwise.
+	 * @param string $type
+	 * @param string $name
+	 * @return mixed 
+	 */
 	public static function getLinkId($type,$name) {
-		// die($name);
 		if(strtolower($type) == 'contacts')
 			$model = CActiveRecord::model('Contacts')->find('CONCAT(firstName," ",lastName)=:name',array(':name'=>$name));
 		else
 			$model = CActiveRecord::model(ucfirst($type))->findByAttributes(array('name'=>$name));
-		// die(var_dump($model));
 		if(isset($model))
 			return $model->name;
 		else

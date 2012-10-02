@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * @package X2CRM.modules.calendar.models 
+ */
 class X2CalendarPermissions extends CActiveRecord
 {	
 	/**
@@ -125,6 +128,7 @@ class X2CalendarPermissions extends CActiveRecord
 		$adminName = ucwords($names['admin']); // Round-about way
 		unset($names['admin']);       //          of putting admin
 		$names['admin'] = $adminName; //                at the end of the list
+        unset($names['api']);
 		
 		return $names;
 	}

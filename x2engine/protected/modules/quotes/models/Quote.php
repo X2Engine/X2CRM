@@ -42,6 +42,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_quotes".
+ * @package X2CRM.modules.quotes.models
  */
 class Quote extends X2Model {
 	/**
@@ -115,7 +116,7 @@ class Quote extends X2Model {
 	// }
 	
 	public static function statusList() {
-		$field = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'status'));
+		$field = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'status'));
 		$dropdown = Dropdowns::model()->findByPk($field->linkType);
 		return json_decode($dropdown->options);
 		

@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * @package X2CRM.modules.media 
+ */
 class MediaModule extends CWebModule {
 	public function init() {
 		// this method is called when the module is being created

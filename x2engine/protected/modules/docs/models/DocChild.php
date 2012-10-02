@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * @package X2CRM.modules.docs.models
+ */
 class DocChild extends Docs {
 
 	public function search() {

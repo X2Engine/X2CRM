@@ -42,6 +42,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_actions".
+ * @package X2CRM.modules.actions.models
  */
 class Actions extends X2Model {
 	/**
@@ -100,14 +101,14 @@ class Actions extends X2Model {
 	 * @return array customized attribute labels (name=>label)
 	 */
 	
-	public function attributeLabels() {
+/* 	public function attributeLabels() {
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
 		$arr=array();
 		foreach($fields as &$field)
 			$arr[$field->fieldName] = Yii::t('actions',$field->attributeLabel);
 		
 		return $arr;
-	}
+	} */
 	
 	/**
 	 * return an array of possible colors for an action
@@ -215,8 +216,8 @@ class Actions extends X2Model {
 				return CActiveRecord::model('Accounts')->findByPk($ownerId);
 			if($ownerType=='cases')
 				return CActiveRecord::model('CaseChild')->findByPk($ownerId);
-			if($ownerType=='sales')
-				return CActiveRecord::model('Sales')->findByPk($ownerId);
+			if($ownerType=='opportunities')
+				return CActiveRecord::model('Opportunity')->findByPk($ownerId);
 		}
 		return false;	// either the type is unkown, or there simply is no owner
 	}

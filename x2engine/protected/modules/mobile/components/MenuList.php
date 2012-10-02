@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class MenuList extends CWidget {
+/**
+ * @package X2CRM.modules.mobile.components 
+ */
+class MenuList extends X2Widget {
 
     /**
      * @var array list of menu items. Each menu item is specified as an array of name-value pairs.
@@ -63,7 +66,7 @@ class MenuList extends CWidget {
      */
     public $linkLabelWrapper;
     private $rightOptions = array('data-role' => 'button', 'data-icon' => 'arrow-r', 'data-iconpos' => 'right', );
-    private $leftOptions = array('data-role' => 'button', 'data-icon' => 'arrow-l', 'data-iconpos' => 'left', );
+    private $leftOptions = array('data-role' => 'button', 'data-icon' => 'arrow-l', 'data-iconpos' => 'left', 'data-direction' => "reverse" );
     private $cs;
 
     public function init() {

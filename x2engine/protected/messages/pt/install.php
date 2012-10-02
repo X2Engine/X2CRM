@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,18 +43,32 @@ return array (
 'Install X2EngineCRM'=>'Instale X2EngineCRM',
 'X2EngineCRM Installation'=>'Instalação X2EngineCRM',
 'Installation Complete'=>'instalação completa',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Esta web aplicação requer JavaScript para funcionar corretamente. Ative o JavaScript no seu navegador antes de continuar.',
+// Requirements check
+'Cannot install X2EngineCRM'=>'Não é possível instalar X2EngineCRM',
+'required but missing'=>'necessário, mas falta',
+'Your server\'s PHP version'=>'Versão do seu servidor PHP',
+'version 5.3 or later is required'=>'versão 5.3 ou posterior é necessário',
+'Unfortunately, your server does not meet the minimum system requirements for installation'=>'Infelizmente, o servidor não atender os requisitos mínimos de sistema para instalação',
+'Otherwise, contact your hosting provider.'=>'Caso contrário, entre em contato com seu provedor de hospedagem.',
+'If you are a system administrator of this server, refer to'=>'Se você é um administrador de sistema do servidor, consulte',
 
 'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Bem-vindo ao instalador do aplicativo X2EngineCRM! Que precisamos coletar um pouco de informação antes que possamos obter o seu aplicativo instalado e funcionando. Por favor, preencha os campos abaixo.',
 
 'X2EngineCRM Application Info'=>'X2EngineCRM Informações Aplicação',
 
+'Create sample data'=>'Criar dados de exemplo',
 'Application Name'=>'Nome da Aplicação',
 'Default Language'=>'Idioma Padrão',
 'Currency'=>'Moeda',
+'Default Timezone'=>'Região padrão',
 'Admin Password'=>'Senha de Administrador',
 'Confirm Password'=>'Confirme sua senha',
 'Administrator Email'=>'Email do administrador',
 'Please enter a valid email address.'=>'Por favor insira um endereço de e-mail válido.',
+'Test Connection'=>'testar a ligação',
+'Connection OK!'=>'Conexão está funcionando!',
+'Could not connect to host.'=>'Não foi possível conectar com o servidor.',
 
 'Database Connection Info'=>'Informações de conexão do banco de dados',
 
@@ -64,7 +78,7 @@ return array (
 'Username'=>'Nome de Usuário',
 'Password'=>'Senha',
 
-// Software updates
+// Software updates & registration
 'Software Updates'=>'atualizações de software',
 'Notify me of software updates'=>'Notifique-me de atualizações de software',
 'First Name'=>'Nome',
@@ -83,6 +97,12 @@ return array (
 'Optional Information'=>'Informações opcionais',
 'Could not connect to the updates server at this time.'=>'Não foi possível conectar ao servidor de atualizações neste momento.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Você pode continuar a instalação do aplicativo, sem permitir atualizações e tente mais tarde, indo em "Configurações gerais" na seção "Configurações App" no console de administração.',
+'Product Key'=>'chave do produto',
+'Registration'=>'registro',
+'Software registration succeeded.'=>'Registro de software conseguiu.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Para receber atualizações de software da X2Engine, por favor, registrar sua cópia do X2EngineCRM:',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Certifique-se de que você tem uma conexão de Internet ativa. Se o problema persistir, por favor contacte-nos',
+'For support or sales inquiries, please contact us'=>'Para pedidos de apoio ou de vendas, entre em contato conosco',
 
 'Install'=>'Instalar',
 

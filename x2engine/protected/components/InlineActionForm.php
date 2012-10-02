@@ -38,7 +38,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class InlineActionForm extends CWidget {
+/**
+ * Action form widget for creating actions on record pages
+ * 
+ * Provides a form for creating actions. The form is typically used within the 
+ * view of the record with which the resulting action will be associated.
+ * 
+ * @package X2CRM.components
+ */
+class InlineActionForm extends X2Widget {
 	public $associationType;
 	public $associationId;
 	public $assignedTo;
@@ -77,7 +85,7 @@ class InlineActionForm extends CWidget {
 		$actionModel->associationType = $this->associationType;
 		$actionModel->associationId = $this->associationId;
 		$actionModel->assignedTo = $this->assignedTo;
-		echo $this->render('actions.views.default._form', 
+		echo $this->render('actions.views.actions._form', 
 			array(
 				'actionModel'=>$actionModel,
 				'users'=>$this->users,
@@ -91,4 +99,3 @@ class InlineActionForm extends CWidget {
 		);
 	}
 }
-?>

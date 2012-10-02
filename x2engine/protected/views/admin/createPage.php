@@ -44,4 +44,4 @@
     <br /><br />
 </div>
 
-<?php echo $this->renderPartial('application.modules.docs.views.default._form', array('model'=>$model,'users'=>$users)); ?>
+<?php echo $this->renderPartial('application.modules.docs.views.docs._form', array('model'=>$model,'users'=>$users)); ?>

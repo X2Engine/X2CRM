@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,10 @@
  ********************************************************************************/
 
 /**
- * ContactForm class.
- * ContactForm is the data structure for keeping
- * contact form data. It is used by the 'contact' action of 'SiteController'.
+ * 
+ * ContactForm class. ContactForm is the data structure for keeping contact form data. It is used 
+ * by the 'contact' action of 'SiteController'.
+ * @package X2CRM.models
  */
 class ContactForm extends CFormModel {
 	public $name;

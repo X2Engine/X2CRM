@@ -131,7 +131,7 @@ return array (
 'Detail View'=>'Detailansicht',
 'Simple View'=>'Einfache Ansicht',
 'Contact Info'=>'Kontakt Info',
-'Sales &amp; Marketing'=>'Vertrieb & Marketing',
+'Opportunities &amp; Marketing'=>'Vertrieb & Marketing',
 'Social Media'=>'Social Media',
 
 // Contacts Actions
@@ -142,6 +142,7 @@ return array (
 'View Contact'=>'Kontakt anzeigen',
 'Update Contact'=>'Kontakt aktualisieren',
 'Delete Contact'=>'Kontakt löschen',
+'Contact Lists'=>'Kontakt Lists',
 'Create Lead'=>'Erstelle Akquise',
 'Share Contact'=>'Teile Kontakt',
 'Create'=>'Schaffen',
@@ -150,7 +151,7 @@ return array (
 'View'=>'Sehen',
 'Share'=>'Aktie',
 'Update'=>'Aktualisieren',
-'View Sales'=>'Alle Verkäufe',
+'View Opportunities'=>'Alle Verkäufe',
 'Delete'=>'Löschen',
 'Show All'=>'Alle Zeigen',
 'Hide All'=>'Alle Ausblenden',
@@ -177,4 +178,17 @@ return array (
 'Subscribe'=>'zeichnen',
 'The information for {name} has changed.'=>'Die Information für {name} hat sich geändert.',
 'Receive email updates every time information for {name} changes'=>'Erhalte Job-Emails jedes Mal Informationen für {name} Änderungen',
+
+// Web Lead
+'Web Lead'=>'Web Blei',
+'Invalid Email Address'=>'Ungültige E-Mail-Adresse',
+'Default list for email list signups'=>'Standard für E-Mail-Liste Anmeldungen',
+'This request cannot be made at this time.'=>'Diese Anforderung kann zu diesem Zeitpunkt nicht gemacht werden.',
+'Newsletter Signup'=>'Newsletter abonnieren',
+'Could not sign up'=>'Konnte nicht anmelden',
+'We\'re Sorry!'=>'Wir sind Sorry!',
+'Thank You!'=>'Vielen Dank!',
+'Thank you for your interest!'=>'Vielen Dank für Ihr Interesse!',
+'Someone will be in touch shortly.'=>'Jemand wird in Verbindung Kürze.',
+'Enter any additional information or questions regarding your interest here.'=>'Geben Sie weitere Informationen oder Fragen zu Ihrem Interesse.',
 );

@@ -112,5 +112,5 @@ return array (
 'Quote Record Details'=>'צטט את פרטי שיא',
 'Include Logo'=>'כלול לוגו',
 'Basic Information'=>'מידע בסיסי',
-'Sales'=>'מכירות',
+'Opportunities'=>'מכירות',
 );

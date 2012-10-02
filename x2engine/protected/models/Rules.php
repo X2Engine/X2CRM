@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,6 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+/**
+ * @package X2CRM.models 
+ */
 class Rules {
 	
 	public static function applyRules($model, $version){
@@ -45,8 +48,8 @@ class Rules {
 			$model=Rules::contactRules($model, $version);
 		}else if($model instanceof Users){
 			$model=Rules::userRules($model, $version);
-		}else if($model instanceof Sales){
-			$model=Rules::saleRules($model, $version);
+		}else if($model instanceof Opportunity){
+			$model=Rules::opportunityRules($model, $version);
 		}else if($model instanceof Actions){
 			$model=Rules::actionsRules($model, $version);
 		}else if($model instanceof Accounts){
@@ -66,7 +69,7 @@ class Rules {
 		return $model;
 	}
 	
-	private static function saleRules($model, $version){
+	private static function opportunityRules($model, $version){
 		return $model;
 	}
 	

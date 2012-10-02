@@ -48,47 +48,25 @@
 			<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'publisher-saving-icon', 'style'=>'position: absolute; width: 14px; opacity: 0.0')); ?>
 			<span class="publisher-text"> <?php echo Yii::t('actions','Publisher'); ?></span>
 		</li>
-		
-		<?php if($showLogACall) { ?>
-			<li><a href="#log-a-call"><?php echo Yii::t('actions','Log A Call'); ?></a></li>
-		<?php } ?>
-		
-		<?php if($showNewAction) { ?>
-			<li><a href="#new-action"><?php echo Yii::t('actions','New Action'); ?></a></li>
-		<?php } ?>
-		
-		<?php if($showNewComment) { ?>
-			<li><a href="#new-comment"><?php echo Yii::t('actions','New Comment'); ?></a></li>
-		<?php } ?>
-		
-		<?php if($showNewEvent) { ?>
-			<li><a href="#new-event"><?php echo Yii::t('actions','New Event'); ?></a></li>
-		<?php } ?>
-		
+		<?php if($showLogACall) { ?><li><a href="#log-a-call"><?php echo Yii::t('actions','Log A Call'); ?></a></li><?php } ?>
+		<?php if($showNewAction) { ?><li><a href="#new-action"><?php echo Yii::t('actions','New Action'); ?></a></li><?php } ?>
+		<?php if($showNewComment) { ?><li><a href="#new-comment"><?php echo Yii::t('actions','New Comment'); ?></a></li><?php } ?>
+		<?php if($showNewEvent) { ?><li><a href="#new-event"><?php echo Yii::t('actions','New Event'); ?></a></li><?php } ?>
 	</ul>
-	
 	<div class="form">
-	
-	
 		<div class="row">
 			<b><?php echo $form->labelEx($model,'actionDescription'); ?></b>
 			<div class="text-area-wrapper">
 				<?php echo $form->textArea($model,'actionDescription',array('rows'=>3, 'cols'=>40)); ?>
 			</div>
 		</div>
-		
 		<?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab ?>
-		
-		
 		<?php echo $form->hiddenField($model,'associationType'); ?>
 		<?php echo $form->hiddenField($model,'associationId'); ?>
 		
 		<div id="action-event-panel">
-		
 			<div class="row">
-			
 				<div class="cell">
-				
 					<?php echo $form->label($model,'dueDate', array('id'=>'due-date-label')); ?>
 					
 					<?php // label for New Event ?>
@@ -135,12 +113,9 @@
 						), 
 					));
 					?>
-					
 					<?php echo $form->label($model, 'allDay'); ?>
 					<?php echo $form->checkBox($model, 'allDay'); ?>
-				
 				</div>
-				
 				<div class="cell">
 					<?php echo $form->label($model,'priority'); ?>
 					<?php echo $form->dropDownList($model, 'priority', array(
@@ -152,7 +127,6 @@
 					<?php echo $form->label($model, 'color'); ?>
 					<?php echo $form->dropDownList($model, 'color', Actions::getColors()); ?>
 				</div>
-				
 				<?php /* Assinged To */ ?>
 				<div class="cell">
 				
@@ -199,30 +173,13 @@
 					<?php echo $form->label($model,'reminder'); ?>
 					<?php echo $form->dropDownList($model,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?> 
 				</div>
-				
 			</div>
-		
 		</div>
-	
-
-		<div id="log-a-call">
-		
-		</div>
-		
-		<div id="new-action">
-			
-		</div>
-		
-		<div id="new-comment">
-		
-		</div>
-		
-		<div id="new-event">
-			
-		</div>
-		
+		<div id="log-a-call"></div>
+		<div id="new-action"></div>
+		<div id="new-comment"></div>
+		<div id="new-event"></div>
 	</div>
-	
 	<div class="row buttons">
 		<?php echo CHtml::ajaxSubmitButton(Yii::t('app','Save'),
 			array('/actions/PublisherCreate'),
@@ -247,12 +204,27 @@
 			array('id'=>'save-publisher', 'class'=>'x2-button'));
 		?>
 	</div>
-
 </div>
 
 <?php 
 
 $this->endWidget();
+
+$eventFix = "";
+if($showNewEvent == true && $showLogACall == false && $showNewComment == false && $showNewAction == false) {
+	$eventFix = "
+		// switch labels Due Date vs Start Date
+		$('#due-date-label').css('display', 'none');
+		$('#start-date-label').css('display', 'block');
+		
+		// show end date
+		$('#end-date-label').css('display', 'block');
+		$('#end-date-input').css('display', 'inline-block');
+		
+		// show action-event-panel
+		$('#action-event-panel').css('display', 'block');	
+	";
+}
 
 // save default values of fields for when the publisher is submitted and then reset
 Yii::app()->clientScript->registerScript('defaultValues',"
@@ -295,7 +267,5 @@ $(function() {
 	var iconLeft = publisherLabelCenter - halfIconWidth;
 	$('#publisher-saving-icon').css('left', iconLeft + 'px');
 	
+	$eventFix
 });");
-
-
- ?>

@@ -112,5 +112,5 @@ return array (
 'Quote Record Details'=>'Quota Dettagli record',
 'Include Logo'=>'Includi Logo',
 'Basic Information'=>'Informazioni di Base',
-'Sales'=>'Vendite',
+'Opportunities'=>'Vendite',
 );

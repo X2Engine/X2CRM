@@ -52,7 +52,7 @@ return array (
 'Calendar'=>'日历',
 'Actions'=>'任务',
 'Contacts'=>'联系人',
-'Sales'=>'销售',
+'Opportunities'=>'销售',
 'Projects'=>'项目',
 'Group Chat'=>'群聊',
 'Marketing'=>'市场营销',
@@ -162,7 +162,7 @@ return array (
 'Link'=>'链接',
 'Theme'=>'主题',
 'Account'=>'帐户',
-'Sale'=>'销售',
+'Opportunity'=>'销售',
 'All'=>'所有',
 'Optional'=>'可选',
 'Records that have been modified since your last login.'=>'自从您上次登录已被修改过的档案。',
@@ -185,7 +185,7 @@ return array (
 'Close'=>'关闭',
 'Delete'=>'删除',
 'Group?'=>'集团？',
-'Checkbox'=>'复选框',
+'Check box'=>'复选框',
 
 // Misc Actions
 'Submit'=>'提交',

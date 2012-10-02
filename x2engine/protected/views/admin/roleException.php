@@ -39,7 +39,7 @@
  ********************************************************************************/
 ?><h3>Add Exception</h3>
 <div style="width:600px">
-    <?php echo Yii::t('admin','Adding an exception will alter a Role\'s behavior while the contact is on a particular stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.') ?>
+    <?php echo Yii::t('admin','Adding an exception will alter a Role\'s behavior while the contact is on a particular workflow stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.') ?>
 </div>
 <div class="form">
 <?php

@@ -137,7 +137,7 @@ return array (
 'Account'=>'Conta',
 'Project'=>'Projeto',
 'Case'=>'Caso',
-'Sale'=>'Venda',
+'Opportunity'=>'Venda',
 
 // Action Reminder Email
 'No one'=>'Ninguém',

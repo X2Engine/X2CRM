@@ -38,14 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->pageTitle=Yii::app()->name . ' - Error';
-$this->breadcrumbs=array(
-	'Error',
-);
+$errorTitle = Yii::t('app','Error {code}',array('{code}'=>$code));
+$this->pageTitle=Yii::app()->name . ' - ' . $errorTitle;
 ?>
-
-<h2>Error <?php echo $code; ?></h2>
-
+<h2><?php echo $errorTitle; ?></h2>
 <div class="error">
 <?php echo CHtml::encode($message); ?>
 </div>

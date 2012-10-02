@@ -52,7 +52,7 @@ return array (
 'Calendar'=>'',
 'Actions'=>'',
 'Contacts'=>'',
-'Sales'=>'',
+'Opportunities'=>'',
 'Projects'=>'',
 'Group Chat'=>'',
 'Marketing'=>'',
@@ -162,7 +162,7 @@ return array (
 'Link'=>'',
 'Theme'=>'',
 'Account'=>'',
-'Sale'=>'',
+'Opportunity'=>'',
 'All'=>'',
 'Optional'=>'',
 'Records that have been modified since your last login.'=>'',
@@ -185,7 +185,7 @@ return array (
 'Close'=>'',
 'Delete'=>'',
 'Group?'=>'',
-'Checkbox'=>'',
+'Check box'=>'',
 
 // Misc Actions
 'Submit'=>'',

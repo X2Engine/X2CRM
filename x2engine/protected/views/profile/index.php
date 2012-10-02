@@ -39,10 +39,12 @@
  ********************************************************************************/
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-$this->menu=array(
+
+$this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('profile','Social Feed')),
 	array('label'=>Yii::t('profile','People'),'url'=>array('profiles')),
-);
+));
+
 Yii::app()->clientScript->registerScript('highlightButton',"
 $(function(){
 	$('#feed-form input, #feed-form select, #feed-form textarea').change(function(){
@@ -70,7 +72,7 @@ $(function(){
 		echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		echo $form->dropDownList($feed,'associationId',$users);
         $feed->private=1;
-		echo $form->dropDownList($feed,'private',array('1'=>'Public','0'=>'Private'));
+		echo $form->dropDownList($feed,'private',array(0=>Yii::t('actions','Public'),1=>Yii::t('actions','Private')));
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
 		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();"));
 		?>
@@ -80,7 +82,7 @@ $(function(){
 
 
 <div id="attachments" style="display:none;">
-<?php $this->widget('Attachments',array('type'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
+<?php $this->widget('Attachments',array('associationType'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
 </div>
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,

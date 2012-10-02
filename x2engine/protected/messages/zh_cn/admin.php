@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,29 @@ return array (
 'Gii - A Code Generation Module'=>'全球信息基础设施 - 代码生成模块',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'添加，删除和更新的X2Contacts语言包的消息翻译。',
+'Tutorial Videos'=>'',
+'Phone Support'=>'电话支持',
+'Manage Roles'=>'管理角色',
+'Set Lead Distribution'=>'设置联系人的分布',
+'Add Custom Lead Rules'=>'添加自定义的接触规则',
+'Workflow Settings'=>'工作流设置',
+'Manage Notification Criteria'=>'管理通知标准',
+'General Settings'=>'“常规设置”',
+'Updater Settings'=>'更新设置',
+'Google Integration'=>'谷歌整合',
+'Email Settings'=>'电子邮件设置',
+'Create Email Campaign'=>'创建电子邮件活动',
+'Manage Campaigns'=>'管理广告活动',
+'Import Contacts'=>'导入联系人',
+'Export Contacts'=>'导出联系人',
+'Import All Data'=>'导入所有数据',
+'View User Changelog'=>'查看用户变更',
+'Create a Module'=>'创建一个模块，',
+'Manage Fields'=>'管理域',
+'Dropdown Editor'=>'下拉编辑器',
+'Form Editor'=>'表格编辑器',
+'Create Workflow'=>'创建工作流程',
+'Manage Workflows'=>'管理工作流程',
 
 // Text
 'Administrator profile'=>'管理员的个人资料',
@@ -95,6 +118,30 @@ return array (
 'Yii Open Source web framework'=>'Yii开源web框架',
 'Show'=>'显示',
 'Hide'=>'隐藏',
+'Send invitation emails to create X2Engine accounts'=>'发送邀请邮件创建X2Engine帐户',
+'Create and manage user roles'=>'创建和管理用户角色',
+'Create and manage user groups'=>'创建和管理用户组',
+'Create a public form to receive new contacts'=>'创建一个公共的形式来接收新的联系人',
+'Change how new web leads are distributed.'=>'更改新的网络线分布。',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'为您的销售过程中创建的工作流',
+'Change advanced workflow settings'=>'更改高级的工作流设置',
+'Manage what events will trigger user notifications.'=>'管理用户通知什么样的事件会触发。',
+'Configure session timeout and chat poll rate.'=>'配置会话超时和聊天的投票率。',
+'Configure automatic updates and registration.'=>'配置自动更新和注册。',
+'Enter your google app settings for Calendar/Google login'=>'请输入您的谷歌应用程序设置为日历/谷歌登录',
+'Configure X2Engine\'s email settings'=>'配置X2Engine的电子邮件设置',
+'Create an email marketing campaign'=>'创建一个电子邮件营销活动',
+'Manage your marketing campaigns'=>'管理营销活动',
+'Import contacts using a CSV template'=>'使用CSV模板导入联系人',
+'Export contacts to a CSV file'=>'将联系人导出到CSV文件',
+'Export all data (useful for making backups)'=>'导出进行备份的所有数据（有用的）',
+'Import from a global export file'=>'从全球出口文件导入',
+'View a log of everything that has been changed'=>'查看日志的一切，已经改变',
+'Customize fields for the modules.'=>'自定义字段的模块。',
+'Manage dropdowns for custom fields.'=>'管理自定义字段的下拉菜单中。',
+'Drag and drop editor for forms.'=>'拖放编辑器的形式。',
+
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'重新排列主菜单项目',
@@ -154,4 +201,12 @@ return array (
 'User\'s Choice'=>'用户的选择',
 'Default Signature'=>'默认签名',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'您可以在此模板中使用下列变量： {first}, {last}, {phone}, {email}.',
+
+// Updater/General Settings
+'Update Interval'=>'更新时间间隔',
+'Every Login'=>'每次登录',
+'Daily'=>'日常',
+'Weekly'=>'每周',
+'Monthly'=>'每月一次',
+'Never'=>'从来没有',
 );

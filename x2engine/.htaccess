@@ -11,3 +11,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 # otherwise forward it to index.php
 RewriteRule . index.php
 </IfModule>
+<Files email.php>
+Order allow,deny
+Deny from all
+</Files>

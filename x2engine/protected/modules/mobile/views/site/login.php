@@ -51,45 +51,41 @@ $this->pageTitle = Yii::app()->name . ' - Login';
             'validateOnSubmit' => true,
         ),
             ));
+    	echo $form->errorSummary($model);
     ?>
     <div data-role="fieldcontain">
-        <?php
-        // $for=CHtml::resolveName($model, $name);
-        echo $form->label($model, 'username', array(
-            // 'for' => CHtml::resolveName($model, $a='username')
-        ));
-        ?>
+        <?php echo $form->label($model, 'username', array()); ?>
         <?php echo $form->textField($model, 'username',array('style'=>'height:50px;')); ?>
-        <?php echo $form->error($model, 'username'); ?>
+        <?php //echo $form->error($model, 'username'); ?>
     </div>
     <div data-role="fieldcontain">
-        <?php
-        echo $form->label($model, 'password', array(
-            // 'for' => CHtml::resolveName($model, $a='password')
-        ));
-        ?>
+        <?php echo $form->label($model, 'password', array()); ?>
         <?php echo $form->passwordField($model, 'password', array('style'=>'height:50px;')); ?>
-        <?php echo $form->error($model, 'password'); ?>
+        <?php //echo $form->error($model, 'password'); ?>
+    </div>
+    <div data-role="fieldcontain">
+		<?php echo $form->checkBox($model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); ?>
+		<?php echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); ?>
+		<?php echo $form->error($model,'rememberMe'); ?><br>
     </div>
 
-    <div data-role="fieldcontain">
-        <?php
-        // echo $form->label($model, 'rememberMe', array(
-            // 'for' => CHtml::resolveName($model, $a='rememberMe')
-        // ));
-        ?>
-        <?php
-        // echo $form->dropDownList($model, 'rememberMe', array(
-            // true => Yii::t('app', 'Off'),
-            // false => Yii::t('app', 'On')
-                // ), array(
-            // 'data-role' => 'slider'
-                // )
-        // );
-        ?>
-        <?php //echo $form->error($model, 'rememberMe'); ?>
-    </div>
-        <?php echo CHtml::submitButton(Yii::t('app', 'Login')); ?>
+	<?php if($model->useCaptcha && CCaptcha::checkRequirements()) { ?>
+		<div data-role="field contain">
+		    <?php
+		    $this->widget('CCaptcha',array(
+		    	'clickableImage'=>true,
+		    	'showRefreshButton'=>false,
+		    	'imageOptions'=>array(
+		    		'style'=>'display:block;cursor:pointer;',
+		    		'title'=>Yii::t('app','Click to get a new image')
+		    	)
+		    ));
+		    echo '<p class="hint">'.Yii::t('app','Please enter the letters in the image above.').'</p>';
+		    echo $form->textField($model,'verifyCode', array('style'=>'height:50px;'));
+		    ?>
+		</div>
+	<?php } ?>
+    <?php echo CHtml::submitButton(Yii::t('app', 'Login')); ?>
 
     <?php $this->endWidget(); ?>
 </div>

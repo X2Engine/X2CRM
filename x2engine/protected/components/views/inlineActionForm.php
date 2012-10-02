@@ -104,7 +104,7 @@ echo $form->errorSummary($actionModel);
 			array(
 				'none'=>Yii::t('actions','None'),
 				'contacts'=>Yii::t('actions','Contact'),
-				'sales'=>Yii::t('actions','Sale'),
+				'opportunities'=>Yii::t('actions','Opportunity'),
 				'accounts'=>Yii::t('actions','Account'),
 			),
 			array(

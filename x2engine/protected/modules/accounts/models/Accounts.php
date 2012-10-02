@@ -42,6 +42,8 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_accounts".
+ *
+ * @package X2CRM.modules.accounts.models
  */
 class Accounts extends X2Model {
 	/**
@@ -82,35 +84,23 @@ class Accounts extends X2Model {
 	}
 
 	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_accounts')->order('name ASC')->queryAll(false);
-		foreach($data as $row)
-			$acctNames[$row[0]] = $row[1];
-		
-		return $acctNames;
-
-		/*$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
-		$arr=array();
-		foreach($fields as $field){
-			$arr[$field->fieldName]=Yii::t('accounts',$field->attributeLabel);
-		}
-		
-		return $arr;*/
-	}
-
-	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public static function getNames(){
-		$arr=Accounts::model()->findAll();
-		$names=array('0'=>'None');
-		foreach($arr as $account){
-			$names[$account->id]=$account->name;
-		}
-		return $names;
+	
+		$acctNames = array();
+		foreach(Yii::app()->db->createCommand()->select('id,name')->from('x2_accounts')->order('name ASC')->queryAll(false) as $row)
+			$acctNames[$row[0]] = $row[1];
+		
+		return $acctNames;
+	
+		// $arr=Accounts::model()->findAll();
+		// $names=array('0'=>'None');
+		// foreach($arr as $account){
+			// $names[$account->id]=$account->name;
+		// }
+		// return $names;
 	}
 
 	public static function parseUsers($arr){

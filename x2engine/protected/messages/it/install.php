@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,18 +43,32 @@ return array (
 'Install X2EngineCRM'=>'Installare X2EngineCRM',
 'X2EngineCRM Installation'=>'nstallazione X2EngineCRM',
 'Installation Complete'=>'Installazione completata',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Questa applicazione richiede Javascript per funzionare correttamente. Si prega di abilitare Javascript nel tuo browser prima di continuare.',
+// Requirements check
+'Cannot install X2EngineCRM'=>'Non è possibile installare X2EngineCRM',
+'required but missing'=>'richiesta, ma manca',
+'Your server\'s PHP version'=>'Il tuo server PHP versione',
+'version 5.3 or later is required'=>'versione 5.3 o successiva è necessario',
+'Unfortunately, your server does not meet the minimum system requirements for installation'=>'Sfortunatamente, il server non soddisfa i requisiti minimi di sistema per l\'installazione',
+'Otherwise, contact your hosting provider.'=>'In caso contrario, contattare il proprio fornitore di hosting.',
+'If you are a system administrator of this server, refer to'=>'Se sei un amministratore di sistema del server, fare riferimento a',
 
 'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Benvenuti nel programma di installazione dell\'applicazione X2EngineCRM! Abbiamo bisogno di raccogliere qualche informazione prima di poter ottenere la vostra applicazione in funzione. Si prega di compilare i campi elencati di seguito.',
 
 'X2EngineCRM Application Info'=>'X2EngineCRM Application Info',
 
+'Create sample data'=>'Creazione di dati di esempio',
 'Application Name'=>'Nome applicazione',
 'Default Language'=>'Lingua di default',
 'Currency'=>'Valuta',
+'Default Timezone'=>'Fuso orario predefinito',
 'Admin Password'=>'Admin Password',
 'Confirm Password'=>'Conferma password',
 'Administrator Email'=>'Amministratore e-mail',
 'Please enter a valid email address.'=>'Ti preghiamo di inserire un indirizzo email valido.',
+'Test Connection'=>'verificare la connessione',
+'Connection OK!'=>'Il collegamento è funzionante!',
+'Could not connect to host.'=>'Impossibile connettersi all\'host.',
 
 'Database Connection Info'=>'Connessione al database Info',
 
@@ -64,7 +78,7 @@ return array (
 'Username'=>'Nome utente',
 'Password'=>'Password',
 
-// Software updates
+// Software updates & registration
 'Software Updates'=>'Aggiornamenti del software',
 'Notify me of software updates'=>'Comunica gli aggiornamenti software',
 'First Name'=>'Nome',
@@ -83,6 +97,12 @@ return array (
 'Optional Information'=>'Informazioni opzionali',
 'Could not connect to the updates server at this time.'=>'Impossibile connettersi al server di aggiornamento in questo momento.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'È possibile continuare a installare l\'applicazione senza attivare aggiornamenti e riprovare più tardi andando in "Impostazioni generali" sotto "Impostazioni" nella sezione App nella console di amministrazione.',
+'Product Key'=>'product key',
+'Registration'=>'registrazione',
+'Software registration succeeded.'=>'Registrazione del software è riuscito.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Per ricevere gli aggiornamenti software dal X2Engine, si prega di registrare la propria copia di X2EngineCRM:',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Assicurarsi di avere una connessione Internet attiva. Se il problema persiste, non esitate a contattarci',
+'For support or sales inquiries, please contact us'=>'Per le richieste di supporto o di vendita, non esitate a contattarci',
 
 'Install'=>'Installare',
 

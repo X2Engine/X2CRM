@@ -63,7 +63,7 @@ $workflowList = Workflow::getList();
 			array(
 				'ajax' => array(
 					'type'=>'GET', //request type
-					'url'=>CHtml::normalizeUrl(array('/workflow/default/getWorkflow','modelId'=>$model->id,'type'=>$modelName)), //url to call.
+					'url'=>CHtml::normalizeUrl(array('/workflow/workflow/getWorkflow','modelId'=>$model->id,'type'=>$modelName)), //url to call.
 					//Style: CController::createUrl('currentController/methodToCall')
 					'update'=>'#workflow-diagram', //selector to update
 					'data'=>array('workflowId'=>'js:$(this).val()')

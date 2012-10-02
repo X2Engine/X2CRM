@@ -41,7 +41,7 @@
 /**
  * This is the model class for table "x2_role_to_workflow".
  *
- * The followings are the available columns in table 'x2_role_to_workflow':
+ * @package X2CRM.models
  * @property integer $id
  * @property integer $workflowId
  * @property integer $stageId

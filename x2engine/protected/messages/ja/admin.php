@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,29 @@ return array (
 'Gii - A Code Generation Module'=>'Gii - コード生成モジュール',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'追加とX2Contacts言語パックのメッセージの翻訳を削除し、更新する。',
+'Tutorial Videos'=>'',
+'Phone Support'=>'電話サポート',
+'Manage Roles'=>'ロールの管理',
+'Set Lead Distribution'=>'接触分布を設定',
+'Add Custom Lead Rules'=>'カスタムの接触のルールの追加',
+'Workflow Settings'=>'ワークフローの設定',
+'Manage Notification Criteria'=>'通知基準を管理する',
+'General Settings'=>'一般設定',
+'Updater Settings'=>'設定を更新します',
+'Google Integration'=>'Googleとの統合',
+'Email Settings'=>'電子メールの設定',
+'Create Email Campaign'=>'メールキャンペーンを作成',
+'Manage Campaigns'=>'キャンペーンの管理',
+'Import Contacts'=>'連絡先のインポート',
+'Export Contacts'=>'連絡先のエクスポート',
+'Import All Data'=>'すべてのデータをインポートする',
+'View User Changelog'=>'表示ユーザの変更',
+'Create a Module'=>'モジュールを作成します。',
+'Manage Fields'=>'フィールドの管理',
+'Dropdown Editor'=>'ドロップダウンエディタ',
+'Form Editor'=>'フォームエディタ',
+'Create Workflow'=>'ワークフローの作成',
+'Manage Workflows'=>'ワークフローの管理',
 
 // Text
 'Administrator profile'=>'管理者プロフィール',
@@ -95,6 +118,30 @@ return array (
 'Yii Open Source web framework'=>'YiiのオープンソースのWebフレームワーク',
 'Show'=>'表示する',
 'Hide'=>'隠す',
+'Send invitation emails to create X2Engine accounts'=>'X2Engineアカウントを作成するために招待メールを送信',
+'Create and manage user roles'=>'ユーザロールを作成および管理する',
+'Create and manage user groups'=>'ユーザグループの作成と管理',
+'Create a public form to receive new contacts'=>'新しい連絡先を受信するパブリックフォームを作成',
+'Change how new web leads are distributed.'=>'新しいWebリードがどのように分布しているか変更します。',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'あなたの販売プロセスのワークフローを作成',
+'Change advanced workflow settings'=>'高度なワークフロー設定を変更する',
+'Manage what events will trigger user notifications.'=>'ユーザー通知をトリガするイベントを管理します。',
+'Configure session timeout and chat poll rate.'=>'セッションのタイムアウトを設定すると、ポーリングレートをチャット。',
+'Configure automatic updates and registration.'=>'自動更新や登録を設定します。',
+'Enter your google app settings for Calendar/Google login'=>'カレンダー/ GoogleへのログインのGoogleアプリの設定を入力します。',
+'Configure X2Engine\'s email settings'=>'X2Engineの電子メール設定を構成',
+'Create an email marketing campaign'=>'電子メールマーケティングキャンペーンを作成',
+'Manage your marketing campaigns'=>'あなたのマーケティングキャンペーンを管理',
+'Import contacts using a CSV template'=>'CSVテンプレートを使用して連絡先をインポート',
+'Export contacts to a CSV file'=>'CSVファイルに連絡先をエクスポート',
+'Export all data (useful for making backups)'=>'（バックアップを作成するために便利です）すべてのデータをエクスポート',
+'Import from a global export file'=>'グローバルなエクスポート·ファイルからインポート',
+'View a log of everything that has been changed'=>'変更されたすべてのログを表示',
+'Customize fields for the modules.'=>'モジュール用のフィールドをカスタマイズします。',
+'Manage dropdowns for custom fields.'=>'カスタムフィールドのドロップダウンリストを管理します。',
+'Drag and drop editor for forms.'=>'フォームのエディタにドラッグアンドドロップします。',
+
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'メインメニューのアイテムを並べ替える',
@@ -154,4 +201,12 @@ return array (
 'User\'s Choice'=>'ユーザーの選択',
 'Default Signature'=>'デフォルトの署名',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'このテンプレートには、次の変数を使用することができます。 {first}, {last}, {phone}, {email}.',
+
+// Updater/General Settings
+'Update Interval'=>'更新間隔',
+'Every Login'=>'すべてのログイン',
+'Daily'=>'デイリー',
+'Weekly'=>'毎週',
+'Monthly'=>'毎月',
+'Never'=>'決して',
 );

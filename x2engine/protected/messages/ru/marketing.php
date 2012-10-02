@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'кампания',
+'Campaigns'=>'Кампании',
 'ID'=>'ID',
 'Master Campaign ID'=>'Мастер кампании ID',
 'Name'=>'имя',
@@ -59,6 +61,13 @@ return array (
 'Updated By'=>'Обновил',
 'None'=>'ни один',
 
+// Menu
+'All Campaigns'=>'Все кампании',
+'Create Campaign'=>'Создание кампании',
+'Newsletters'=>'Рассылка',
+'Create Newsletter'=>'Создать рассылку',
+'Create Web Form'=>'Создание веб-форм',
+
 // Launching
 'The campaign has already been launched.'=>'Эта кампания уже началась.',
 'Contact List cannot be blank.'=>'Список контактов не может быть пустым.',
@@ -71,6 +80,10 @@ return array (
 'Campaign launched'=>'Кампания была запущена',
 'Campaign paused'=>'Кампания была приостановлена',
 'Campaign resumed'=>'Кампания была продолжена',
+'Sent'=>'посланный',
+'Opened'=>'открытый',
+'Clicked'=>'нажата',
+'Unsubscribed'=>'отписался',
 
 // Mailing
 'The email sending limit has been reached.'=>'Лимит отправки электронной почты не будет достигнута.',
@@ -83,6 +96,7 @@ return array (
 'Attempting to send email'=>'Попытка отправить письмо',
 'Unsendable email'=>'без отправки электронной почты',
 'Blank email addresses'=>'Пустые адреса электронной почты',
+'Duplicate Email Address'=>'Duplicate Email адрес',
 '\'Do Not Email\' contacts'=>'Не пишите связи',
 'Data errors'=>'Данные ошибки',
 'Batch completed, sending again in'=>'Пакетная завершен, отправив снова в',
@@ -93,6 +107,15 @@ return array (
 'Contacts for tag'=>'Контакты для тега',
 'Mailing for tag'=>'Рассылка для тега',
 'Could not create mailing'=>'Невозможно создать почтовый',
+'You have been unsubscribed'=>'Вы были отписаны',
+'Contact has unsubscribed'=>'контакт отписался',
+'\'Do Not Email\' has been set'=>'"Не электронная почта" была установлена',
+'has unsubscribed'=>'была отписался',
+'Contact has opened the email'=>'контакт открыл электронную почту',
+'has opened the email'=>'открыла электронную почту',
+'Contact has clicked a link'=>'контакт нажал ссылку',
+'has clicked a link'=>'щелкнул ссылку',
+'To stop receiving these messages, click here'=>'Чтобы перестать получать эти сообщения, нажмите здесь',
 
 // WebForm model
 'Model Name'=>'Название модели',
@@ -102,6 +125,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'Имя не может быть пустым.',
+'Name cannot be'=>'Имя не может быть',
 'Web Lead Form'=>'Форма Web покупателей',
 'Create a public form to receive new contacts.'=>'Создать общественную форму, чтобы получать новые контакты.',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'Если нет свинца маршрутизации была настроена, все новые контакты будут назначены "Anyone".',

@@ -38,13 +38,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-/* Provides a way to add a '?' with a tooltip to show users how to use the app */
+/**
+ * Provides a way to add a '?' with a tooltip to show users how to use the app
+ * 
+ * @package X2CRM.components 
+ */
 class X2Info extends CComponent {
 
-	public static function Hint($info) {
-		return '<sup class="x2-hint" title="'. $info .'">?</sup>';
+	public static function hint($text,$superScript = true) {
+		return CHtml::tag($superScript?'sup':'span',array(
+			'class'=>'x2-hint',
+			'title'=>$text
+		),'?');
 	}
 }
-
-?>
- 

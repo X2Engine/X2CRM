@@ -44,7 +44,11 @@ This form will allow you to remove any custom fields you have added.<br /> <b><s
 	<br />
 	<select name="field">
             <option value="">Select A Field</option>
-		<?php foreach($fields as $id=>$field) echo "<option value='$id'>$field</option>"; ?>
+		<?php foreach($fields as $id=>$field){
+            $fieldRecord=CActiveRecord::model('Fields')->findByPk($id);
+            if(isset($fieldRecord))
+                echo "<option value='$id'>$fieldRecord->modelName - $field</option>";
+        }  ?>
 	</select>
 	<br /><br />
 	<input class="x2-button" type="submit" value="<?php echo Yii::t('admin','Delete');?>" />

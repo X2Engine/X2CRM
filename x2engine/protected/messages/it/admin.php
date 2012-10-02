@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,29 @@ return array (
 'Gii - A Code Generation Module'=>'GII - Un modulo di generazione del codice',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'Aggiungere, rimuovere e aggiornare le traduzioni messaggio in pacchetti di lingua del X2Contacts.',
+'Tutorial Videos'=>'',
+'Phone Support'=>'Supporto telefonico',
+'Manage Roles'=>'Gestione ruoli',
+'Set Lead Distribution'=>'Set Distribuzione contatto',
+'Add Custom Lead Rules'=>'Aggiungi regole contatto personalizzate',
+'Workflow Settings'=>'Impostazioni del flusso di lavoro',
+'Manage Notification Criteria'=>'Gestione criteri di notifica',
+'General Settings'=>'Impostazioni generali',
+'Updater Settings'=>'Aggiornare le impostazioni',
+'Google Integration'=>'Integrazione con Google',
+'Email Settings'=>'Impostazioni e-mail',
+'Create Email Campaign'=>'Crea una campagna e-mail',
+'Manage Campaigns'=>'Gestione campagne',
+'Import Contacts'=>'Importa contatti',
+'Export Contacts'=>'Esporta Contatti',
+'Import All Data'=>'Importa tutti i dati',
+'View User Changelog'=>'View User Changelog',
+'Create a Module'=>'Creazione di un modulo',
+'Manage Fields'=>'Gestione campi',
+'Dropdown Editor'=>'Editor discesa',
+'Form Editor'=>'Form Editor',
+'Create Workflow'=>'Crea flusso di lavoro',
+'Manage Workflows'=>'Gestione flussi di lavoro',
 
 // Text
 'Administrator profile'=>'Amministratore profilo',
@@ -95,6 +118,30 @@ return array (
 'Yii Open Source web framework'=>'Yu Open Source framework web',
 'Show'=>'Mostra',
 'Hide'=>'Nascondere',
+'Send invitation emails to create X2Engine accounts'=>'Invia e-mail di invito per creare gli account X2Engine',
+'Create and manage user roles'=>'Creare e gestire i ruoli utente',
+'Create and manage user groups'=>'Creare e gestire gruppi di utenti',
+'Create a public form to receive new contacts'=>'Creare un modulo pubblico di ricevere nuovi contatti',
+'Change how new web leads are distributed.'=>'Modifica della modalità con cavi nuovi Web vengono distribuiti.',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'Creare un flusso di lavoro per il processo di vendita',
+'Change advanced workflow settings'=>'Modificare le impostazioni avanzate del flusso di lavoro',
+'Manage what events will trigger user notifications.'=>'Gestire gli eventi che attiveranno le notifiche agli utenti.',
+'Configure session timeout and chat poll rate.'=>'Configurazione timeout della sessione e chattare tasso di sondaggio.',
+'Configure automatic updates and registration.'=>'Configurare gli aggiornamenti automatici e la registrazione.',
+'Enter your google app settings for Calendar/Google login'=>'Inserisci le tue impostazioni di Google App per il Calendario / accesso di Google',
+'Configure X2Engine\'s email settings'=>'Configurare le impostazioni e-mail X2Engine',
+'Create an email marketing campaign'=>'Creare una campagna di email marketing',
+'Manage your marketing campaigns'=>'Gestisci le tue campagne di marketing',
+'Import contacts using a CSV template'=>'Importa contatti utilizzando un modello CSV',
+'Export contacts to a CSV file'=>'Esportare i contatti in un file CSV',
+'Export all data (useful for making backups)'=>'Esportare tutti i dati (utili per fare i backup)',
+'Import from a global export file'=>'Importare da un file di esportazione globale',
+'View a log of everything that has been changed'=>'Visualizzare un registro di tutto ciò che è stato modificato',
+'Customize fields for the modules.'=>'Personalizzare i campi per i moduli.',
+'Manage dropdowns for custom fields.'=>'Gestione menu di scorrimento per i campi personalizzati.',
+'Drag and drop editor for forms.'=>'Drag and drop editor per le forme.',
+
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'Riorganizzare voci del menu principale',
@@ -154,4 +201,12 @@ return array (
 'User\'s Choice'=>'La scelta per l\'utente',
 'Default Signature'=>'Firma di default',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'È possibile utilizzare le seguenti variabili in questo modello: {first}, {last}, {phone}, {email}.',
+
+// Updater/General Settings
+'Update Interval'=>'Intervallo di aggiornamento',
+'Every Login'=>'Ogni Accedi',
+'Daily'=>'quotidiano',
+'Weekly'=>'settimanale',
+'Monthly'=>'mensile',
+'Never'=>'mai',
 );

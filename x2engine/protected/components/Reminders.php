@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,33 +38,38 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class Reminders extends CWidget{
+/**
+ * Class for rendering the "reminders" widget
+ * 
+ * @package X2CRM.components 
+ */
+class Reminders extends X2Widget {
 	public function init() {
 		parent::init();
 	}
 
-    public function run() {
-        $today = array();
-        $tomorrow = array();
-        $nextDay = array();
-        $name = Yii::app()->user->getName();
-        $tD = mktime(0,0,0,date("m"),date("d"),date("Y"));
-        $tM = mktime(0,0,0,date("m"),date("d")+1,date("Y"));
-        $nD = mktime(0,0,0,date("m"),date("d")+2,date("Y"));
-        $query = "SELECT * FROM x2_actions WHERE assignedTo = '".$name."' OR 'Anyone'";
-        $command = Yii::app()->db->createCommand($query);
-        $result = $command->queryAll();
-        foreach ($result as $row){
-            $dueDate = $row['dueDate'];
-            if ($row['dueDate'] == $tD){$today[] = $row;}
-            else if($row['dueDate'] == $tM){$tomorrow[] = $row;}
-            else if($row['dueDate'] == $nD){$nextDay[] = $row;}
-        }
-        $this->render('reminders',array(
-            'tD' => $tD,
-            'today'=>$today,
-            'tomorrow'=>$tomorrow,
-            'nextDay'=>$nextDay,
+	public function run() {
+		$today = array();
+		$tomorrow = array();
+		$nextDay = array();
+		$name = Yii::app()->user->getName();
+		$tD = mktime(0,0,0,date("m"),date("d"),date("Y"));
+		$tM = mktime(0,0,0,date("m"),date("d")+1,date("Y"));
+		$nD = mktime(0,0,0,date("m"),date("d")+2,date("Y"));
+		$query = "SELECT * FROM x2_actions WHERE assignedTo = '".$name."' OR 'Anyone'";
+		$command = Yii::app()->db->createCommand($query);
+		$result = $command->queryAll();
+		foreach ($result as $row){
+			$dueDate = $row['dueDate'];
+			if ($row['dueDate'] == $tD){$today[] = $row;}
+			else if($row['dueDate'] == $tM){$tomorrow[] = $row;}
+			else if($row['dueDate'] == $nD){$nextDay[] = $row;}
+		}
+		$this->render('reminders',array(
+			'tD' => $tD,
+			'today'=>$today,
+			'tomorrow'=>$tomorrow,
+			'nextDay'=>$nextDay,
 		));
 	}
 }

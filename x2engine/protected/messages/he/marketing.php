@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'מבצע',
+'Campaigns'=>'קמפיינים',
 'ID'=>'זהות',
 'Master Campaign ID'=>'יחידת זיהוי מבצע',
 'Name'=>'שם',
@@ -59,6 +61,13 @@ return array (
 'Updated By'=>'עודכן על ידי',
 'None'=>'אף אחד',
 
+// Menu
+'All Campaigns'=>'כל מסעות הפרסום',
+'Create Campaign'=>'צור מסע פרסום',
+'Newsletters'=>'עלונים',
+'Create Newsletter'=>'יצירת עלון',
+'Create Web Form'=>'יצירת טופס אינטרנט',
+
 // Launching
 'The campaign has already been launched.'=>'הקמפיין כבר השיקה.',
 'Contact List cannot be blank.'=>'רשימת אנשי הקשר לא יכול להיות ריק.',
@@ -71,6 +80,10 @@ return array (
 'Campaign launched'=>'הקמפיין הושק',
 'Campaign paused'=>'קמפיין הושהתה',
 'Campaign resumed'=>'הקמפיין כבר המשיך',
+'Sent'=>'נשלח',
+'Opened'=>'נפתח',
+'Clicked'=>'הוא נלחץ',
+'Unsubscribed'=>'בטל את המינוי',
 
 // Mailing
 'The email sending limit has been reached.'=>'גבול שליחת דוא"ל הושג.',
@@ -83,6 +96,7 @@ return array (
 'Attempting to send email'=>'ניסיון לשלוח דואר אלקטרוני',
 'Unsendable email'=>'לא לשלוח דוא"ל',
 'Blank email addresses'=>'Adresses e-mail vierges',
+'Duplicate Email Address'=>'כפל כתובת דוא"ל',
 '\'Do Not Email\' contacts'=>'\'אין מייל \'אנשי קשר',
 'Data errors'=>'טעויות',
 'Batch completed, sending again in'=>'אצווה הושלמה, שולח שוב',
@@ -93,6 +107,15 @@ return array (
 'Contacts for tag'=>'אנשי קשר עבור תגית',
 'Mailing for tag'=>'תפוצה עבור תגית',
 'Could not create mailing'=>'אין אפשרות ליצור דיוור',
+'You have been unsubscribed'=>'בוטלת מינוי שלך',
+'Contact has unsubscribed'=>'הקשר בטל את המנוי',
+'\'Do Not Email\' has been set'=>'"אל מייל" נקבע',
+'has unsubscribed'=>'בטל את המנוי',
+'Contact has opened the email'=>'הקשר פתח את הדוא"ל',
+'has opened the email'=>'פתח את המייל',
+'Contact has clicked a link'=>'איש הקשר לחץ על קישור',
+'has clicked a link'=>'כבר לחץ על קישור',
+'To stop receiving these messages, click here'=>'כדי להפסיק לקבל הודעות אלה, לחץ כאן',
 
 // WebForm model
 'Model Name'=>'שמו של דגם',
@@ -102,6 +125,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'שם לא יכול להיות ריק.',
+'Name cannot be'=>'שם לא יכול להיות',
 'Web Lead Form'=>'טופס עופרת אינטרנט',
 'Create a public form to receive new contacts.'=>'יצירת טופס הציבור לקבל אנשי קשר חדשים.',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'אם לא ניתוב עופרת הוגדר, כל אנשי הקשר החדש יוקצה ל" מי ".',

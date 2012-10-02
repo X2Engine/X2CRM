@@ -69,11 +69,11 @@ class YiiBase
 	 */
 	public static $enableIncludePath=true;
 
-	private static $_aliases=array('system'=>YII_PATH,'zii'=>YII_ZII_PATH); // alias => path
-	private static $_imports=array();					// alias => class name or directory
-	private static $_includePaths;						// list of include paths
-	private static $_app;
-	private static $_logger;
+	protected static $_aliases=array('system'=>YII_PATH,'zii'=>YII_ZII_PATH); // alias => path
+	protected static $_imports=array();					// alias => class name or directory
+	protected static $_includePaths;						// list of include paths
+	protected static $_app;
+	protected static $_logger;
 
 
 
@@ -629,7 +629,7 @@ class YiiBase
 	 * NOTE, DO NOT MODIFY THIS ARRAY MANUALLY. IF YOU CHANGE OR ADD SOME CORE CLASSES,
 	 * PLEASE RUN 'build autoload' COMMAND TO UPDATE THIS ARRAY.
 	 */
-	private static $_coreClasses=array(
+	protected static $_coreClasses=array(
 		'CApplication' => '/base/CApplication.php',
 		'CApplicationComponent' => '/base/CApplicationComponent.php',
 		'CBehavior' => '/base/CBehavior.php',

@@ -96,318 +96,142 @@ $formSettings = ProfileChild::getFormSettings($modelName);
 
 if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 
-	$fieldPermissions = array();
-	if(!empty(Yii::app()->params->roles)) {
-		$rolePermissions = Yii::app()->db->createCommand()
-			->select('fieldId, permission')
-			->from('x2_role_to_permission')
-			->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
-			->queryAll();
+$fieldPermissions = array();
+if(!empty(Yii::app()->params->roles)) {
+	$rolePermissions = Yii::app()->db->createCommand()
+		->select('fieldId, permission')
+		->from('x2_role_to_permission')
+		->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
+		->queryAll();
 
-		foreach($rolePermissions as &$permission) {
-			if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
-				$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
-		}
+	foreach($rolePermissions as &$permission) {
+		if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
+			$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
 	}
+}
 
-	$i = 0;
-	foreach($layoutData['sections'] as &$section) {
-			// set defaults
-			if(!isset($section['title'])) $section['title'] = '';
-			if(!isset($section['collapsible'])) $section['collapsible'] = false;
-			if(!isset($section['rows'])) $section['rows'] = array();
-			if(!isset($formSettings[$i])) $formSettings[$i] = 1;
-			
-			echo '<div class="formSection'.((!$formSettings[$i] && $section['collapsible'])? ' hideSection' : '').'">';
-			
-			if($section['collapsible'] || !empty($section['title'])) {
-				echo '<div class="formSectionHeader">';
-				if(!empty($section['title']))
-					echo '<span class="sectionTitle">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
-				if($section['collapsible']) {
-					echo '<a href="javascript:void(0)" class="formSectionHide">[ '.Yii::t('admin','Hide').' ]</a>';
-					echo '<a href="javascript:void(0)" class="formSectionShow">[ '.Yii::t('admin','Show').' ]</a>';
-				}
-				echo '</div>';
-			} else
-				echo '<hr>';
+$i = 0;
+foreach($layoutData['sections'] as &$section) {
+	// set defaults
+	if(!isset($section['title'])) $section['title'] = '';
+	if(!isset($section['collapsible'])) $section['collapsible'] = false;
+	if(!isset($section['rows'])) $section['rows'] = array();
+	if(!isset($formSettings[$i])) $formSettings[$i] = 1;
+	
+	$collapsed = !$formSettings[$i] && $section['collapsible'];
+	
+	echo '<div class="formSection';
+	if($section['collapsible'])
+		echo ' collapsible';
+	if(!$collapsed)
+		echo ' showSection';
+	echo '">';
 		
-		if(!empty($section['rows'])) {
-			echo '<div class="tableWrapper"><table>';
-		
-			foreach($section['rows'] as &$row) {
-				echo '<tr class="formSectionRow">';
-				if(isset($row['cols'])) {
-					foreach($row['cols'] as &$col) {
-					
-						$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
-						echo "<td$width>";
-						if(isset($col['items'])) {
-							foreach($col['items'] as &$item) {
-								
-								if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
-									$fieldName = preg_replace('/^formItem_/u','',$item['name']);
-								
-									if(isset($fields[$fieldName])) {
-										$field = &$fields[$fieldName];
-										// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
-										// $perms=array();
-										// foreach($fieldPerms as $permission){
-											// $perms[$permission->roleId]=$permission->permission;
-										// }
-										// $tempPerm=2;
-										// foreach($roles as $role){
-											// if(array_search($role,array_keys($perms))!==false){
-												// if($perms[$role]<$tempPerm)
-													// $tempPerm=$perms[$role];
-											// }
-										// }
-										// if($tempPerm==0){
-										if(isset($fieldPermissions[$field->id])) {
-											if($fieldPermissions[$field->id] == 0) {
-												unset($item);
-												echo '</div></div>';
-												continue;
-											}
-											elseif($fieldPermissions[$field->id] == 1){
-												$item['readOnly']=true;
-                                                                                        }
-										}
-										
-										$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
-										switch($labelType) {
-											case 'inline':	$labelClass = 'inlineLabel'; break;
-											case 'none':	$labelClass = 'noLabel'; break;
-											case 'left':	$labelClass = 'leftLabel'; break;
-											case 'top': 
-											default:		$labelClass = 'topLabel';
-										}
-
-										// set value of field to label if this is an inline labeled field
-										if(empty($model->$fieldName) && $labelType == 'inline')
-											$model->$fieldName = $field->attributeLabel;
-										
-										if($field->type!='text')
-											$item['height'] = 'auto';
-										else
-											$item['height'] .= 'px';
-										
-										echo '<div class="formItem '.$labelClass.'">';
-										echo $form->labelEx($model,$field->fieldName);
-										echo '<div class="formInputBox" style="width:'.$item['width'].'px;height:'.$item['height'].';">';
-										$default=$model->$fieldName==$field->attributeLabel;
-										
-										echo $model->renderInput($fieldName,array(
-											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-											'disabled'=>$item['readOnly']? 'disabled' : null,
-										));
-										
-										
-/*  										if($field->type == 'varchar' || $field->type=='email' || $field->type=='url' ||
-																						$field->type=='int' || $field->type=='float'|| $field->type=='currency') {
-											echo $form->textField($model,$field->fieldName,array(
-													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>$item['readOnly']? 'disabled' : null,
-													'title'=>$field->attributeLabel,
-													'style'=>$default?'color:#aaa;':null,
-											));
-										} else if($field->type == 'text') {
-											echo $form->textArea($model,$field->fieldName,array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'style'=>$default?'color:#aaa;':null,
-										));
-										} else if($field->type == 'text') {
-											echo $form->textArea($model,$field->fieldName,array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'onfocus'=>$default? 'toggleText(this);' : null,
-												'onblur'=>$default? 'toggleText(this);' : null,
-												'style'=>$default?'color:#aaa;':null,
-											));
-										} elseif($field->type=='date') {
-											$model->$fieldName = $this->formatDate($model->$fieldName);
-											Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-											$this->widget('CJuiDateTimePicker',array(
-												'model'=>$model, //Model object
-												'attribute'=>$field->fieldName, //attribute name
-												'mode'=>'date', //use "time","date" or "datetime" (default)
-												'options'=>array(
-													'dateFormat'=>$this->formatDatePicker(),
-													'changeMonth'=>true,
-													'changeYear'=>true,
-
-												), // jquery plugin options
-												'htmlOptions'=>array(
-													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>(defined($item['readOnly']) && $item['readOnly'])? 'disabled' : null,
-													'title'=>$field->attributeLabel,
-												),
-												'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-											)); 
-										} elseif($field->type=='dropdown') {
-											$dropdowns = Dropdowns::getItems($field->linkType);
-
-											echo $form->dropDownList($model,$field->fieldName,$dropdowns, array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'empty'=>Yii::t('app',"Select an option"),
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-											));
-											
-										} elseif($field->type=='link') {
-											// if(empty($model->$fieldName)) 
-												// $model->$fieldName = '';
-											
-											$linkSource = null;
-											$linkId = '';
-											
-											if(class_exists($field->linkType)) {
-												// if the field is an ID, look up the actual name
-												if(isset($model->$fieldName) && ctype_digit($model->$fieldName)) {
-													$linkModel = CActiveRecord::model($field->linkType)->findByPk($model->$fieldName);
-													if(isset($linkModel)) {
-														$model->$fieldName = $linkModel->name;
-														$linkId = $linkModel->id;
-													} else {
-														$model->$fieldName = '';
-													}
-												}
-												$linkSource = $this->createUrl(CActiveRecord::model($field->linkType)->autoCompleteSource);
-												// die($linkSource);
-											}
-											echo CHtml::hiddenField($field->modelName.'['.$fieldName.'_id]',$linkId,array('id'=>$field->modelName.'_'.$fieldName."_id"));
-
-											// if(!isset($linkSource) && $field->linkType == 'ContactList')
-												// die('herp');
-												// $linkSource = $this->createUrl('/contacts/getLists');
-											
-											
-											$form->widget('zii.widgets.jui.CJuiAutoComplete', array(
-													'model'=>$model,
-													'attribute'=>$fieldName,
-													// 'name'=>'autoselect_'.$fieldName,
-													'source' => $linkSource,
-													'value'=>$model->$fieldName,
-													'options'=>array(
-														'minLength'=>'1',
-														'select'=>'js:function( event, ui ) {
-															$("#'.$field->modelName.'_'.$fieldName.'_id").val(ui.item.id);
-															$(this).val(ui.item.value);
-															return false;
-														}',
-
-													),
-													'htmlOptions'=>array(
-														'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-														'disabled'=>$item['readOnly']? 'disabled' : null,
-														'title'=>$field->attributeLabel,
-													),
-											));
-
-										} elseif($field->type=='rating') {
-											$this->widget('CStarRating',array(
-												'model'=>$model,
-												'attribute'=>$field->fieldName,
-												//'callback'=>'highlightSave',
-												'minRating'=>1, //minimal valuez
-												'maxRating'=>5,//max value
-												'starCount'=>5, //number of stars
-												'cssFile'=>Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
-											)); 
-										} elseif($field->type=='boolean') {
-											echo '<div class="checkboxWrapper">';
-											echo $form->checkBox($model,$field->fieldName,array(
-												'unchecked'=>0,
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												)).'</div>';
-										} elseif($field->type=='assignment') {
-											if(is_numeric($model->assignedTo)){
-												$group=true;
-												$groups=Groups::getNames();
-											}else{
-												$group=false;
-											}
-											$model->$fieldName=Yii::app()->user->getName();
-											echo $form->dropDownList($model, $fieldName, $group?$groups:$users, array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName .'_'. $fieldName .'_assignedToDropdown',
-												'multiple'=>($field->linkType=='multiple'? 'multiple' : null),
-											));
-											/* x2temp * /
-											echo '<div class="checkboxWrapper">';
-											echo CHtml::checkBox('group',$group,array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName .'_'. $fieldName .'_groupCheckbox',
-												'ajax'=>array(
-													'type'=>'POST', //request type
-													'url'=>CController::createUrl('/groups/getGroups'), //url to call.
-													//Style: CController::createUrl('currentController/methodToCall')
-													'update'=>'#'.$field->modelName .'_'. $fieldName .'_assignedToDropdown', //selector to update
-													'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
-													'complete'=>'function(){
-														if($("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked")!="checked"){
-															$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").attr("checked","checked");
-															$("#'.$field->modelName .'_'. $fieldName .'_visibility option[value=\'2\']").remove();
-														}else{
-															$("#'.$field->modelName .'_'. $fieldName .'_groupCheckbox").removeAttr("checked");
-															$("#'.$field->modelName .'_'. $fieldName .'_visibility").append(
-																$("<option></option>").val("2").html("User\'s Groups")
-															);
-														}
-													}'
-												)
-											)).'</div><label for="group" class="groupLabel">'.Yii::t('app','Group?').'</label>';
-										/* end x2temp * /  
-										} elseif($field->type=='association') {
-											if($field->linkType!='multiple') {
-												echo $form->dropDownList($model, $fieldName, $contacts, array(
-													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>$item['readOnly']? 'disabled' : null,
-													'title'=>$field->attributeLabel,
-												));
-											} else {
-												echo $form->listBox($model, $fieldName, $contacts, array(
-													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-													'disabled'=>$item['readOnly']? 'disabled' : null,
-													'title'=>$field->attributeLabel,
-													'multiple'=>'multiple',
-												));
-											}
-										} elseif($field->type=='visibility') {
-											echo $form->dropDownList($model,$field->fieldName,array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
-												'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-												'disabled'=>$item['readOnly']? 'disabled' : null,
-												'title'=>$field->attributeLabel,
-												'id'=>$field->modelName."_visibility",
-											));
-										} */
-									}
-								}
-								unset($item);
-								echo '</div></div>';
-							}
-						}
-						echo '</td>';
-					}
-				}
-				unset($col);
-				echo '</tr>';
-			}
-			echo '</table></div>';
+	if($section['collapsible'] || !empty($section['title'])) {
+		echo '<div class="formSectionHeader">';
+		if($section['collapsible']) {
+			echo '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
+			echo '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
 		}
-		unset($row);
+		if(!empty($section['title']))
+			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';
 		echo '</div>';
-		$i++;
 	}
+	
+	if(!empty($section['rows'])) {
+		echo '<div class="tableWrapper"><table>';
+	
+		foreach($section['rows'] as &$row) {
+			echo '<tr class="formSectionRow">';
+			if(isset($row['cols'])) {
+				foreach($row['cols'] as &$col) {
+				
+					$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
+					echo "<td$width>";
+					if(isset($col['items'])) {
+						foreach($col['items'] as &$item) {
+							
+							if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
+								$fieldName = preg_replace('/^formItem_/u','',$item['name']);
+							
+								if(isset($fields[$fieldName])) {
+									$field = &$fields[$fieldName];
+									// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
+									// $perms=array();
+									// foreach($fieldPerms as $permission){
+										// $perms[$permission->roleId]=$permission->permission;
+									// }
+									// $tempPerm=2;
+									// foreach($roles as $role){
+										// if(array_search($role,array_keys($perms))!==false){
+											// if($perms[$role]<$tempPerm)
+												// $tempPerm=$perms[$role];
+										// }
+									// }
+									// if($tempPerm==0){
+									if(isset($fieldPermissions[$field->id])) {
+										if($fieldPermissions[$field->id] == 0) {
+											unset($item);
+											echo '</div></div>';
+											continue;
+										}
+										elseif($fieldPermissions[$field->id] == 1){
+											$item['readOnly']=true;
+																					}
+									}
+									
+									$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
+									switch($labelType) {
+										case 'inline':	$labelClass = 'inlineLabel'; break;
+										case 'none':	$labelClass = 'noLabel'; break;
+										case 'left':	$labelClass = 'leftLabel'; break;
+										case 'top': 
+										default:		$labelClass = 'topLabel';
+									}
+									
+									// set value of field to label if this is an inline labeled field
+									if(empty($model->$fieldName) && $labelType == 'inline')
+										$model->$fieldName = $field->attributeLabel;
+									
+									if($field->type!='text')
+										$item['height'] = 'auto';
+									else
+										$item['height'] .= 'px';
+									
+									echo '<div class="formItem '.$labelClass.'">';
+									echo $form->labelEx($model,$field->fieldName);
+									echo '<div class="formInputBox" style="width:'.$item['width'].'px;height:'.$item['height'].';">';
+									$default=$model->$fieldName==$field->attributeLabel;
+									
+									echo $model->renderInput($fieldName,array(
+										'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+										'disabled'=>$item['readOnly']? 'disabled' : null,
+									));
+
+								}
+
+							}
+							unset($item);
+							echo '</div>';
+
+							if($field->fieldName == 'company') // add button to Acount label to create new account
+							    echo '<span class="create-account">+</span>';
+
+							echo '</div>';
+						}
+					}
+					echo '</td>';
+				}
+			}
+			unset($col);
+			echo '</tr>';
+		}
+		echo '</table></div>';
+	}
+	unset($row);
+	echo '</div>';
+	$i++;
+}
 }
 ?>
 </div>

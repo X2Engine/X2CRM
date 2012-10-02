@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,29 @@ return array (
 'Gii - A Code Generation Module'=>'Gii - модуль генерации кода',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'Добавление, удаление и обновление переводы сообщений в пакетах X2Contacts языке.',
+'Tutorial Videos'=>'',
+'Phone Support'=>'Поддержка по телефону',
+'Manage Roles'=>'Управление ролями',
+'Set Lead Distribution'=>'Установить контакт Распространение',
+'Add Custom Lead Rules'=>'Добавление пользовательских правил контакт',
+'Workflow Settings'=>'Параметры рабочего процесса',
+'Manage Notification Criteria'=>'Управление Уведомление Критерии',
+'General Settings'=>'Общие параметры',
+'Updater Settings'=>'Обновление параметров',
+'Google Integration'=>'Интеграция с Google',
+'Email Settings'=>'Настройки электронной почты',
+'Create Email Campaign'=>'Создание e-mail кампании',
+'Manage Campaigns'=>'Управление кампании',
+'Import Contacts'=>'Импортировать контакты',
+'Export Contacts'=>'Экспорт контактов',
+'Import All Data'=>'Импортировать все данные',
+'View User Changelog'=>'Информация о пользователе изменений',
+'Create a Module'=>'Создание модуля',
+'Manage Fields'=>'Управление полями',
+'Dropdown Editor'=>'Раскрывающийся редактор',
+'Form Editor'=>'Редактор форм',
+'Create Workflow'=>'Создание рабочего процесса',
+'Manage Workflows'=>'Управление рабочие процессы',
 
 // Text
 'Administrator profile'=>'профиль администратора',
@@ -95,6 +118,30 @@ return array (
 'Yii Open Source web framework'=>'Yii Открытый фреймворк Источник',
 'Show'=>'показывать',
 'Hide'=>'скрывать',
+'Send invitation emails to create X2Engine accounts'=>'Отправить приглашение электронной почты для создания X2Engine счетов',
+'Create and manage user roles'=>'Создание и управление ролями пользователей',
+'Create and manage user groups'=>'Создание и управление группами пользователей',
+'Create a public form to receive new contacts'=>'Создать общественную форму, чтобы получать новые контакты',
+'Change how new web leads are distributed.'=>'Изменение способа новых версий веб распределены.',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'Создание рабочего процесса для процесса продаж',
+'Change advanced workflow settings'=>'Изменить дополнительные параметры рабочего процесса',
+'Manage what events will trigger user notifications.'=>'Управление какие события будут вызывать уведомления пользователей.',
+'Configure session timeout and chat poll rate.'=>'Настройка тайм-аута сеанса и общение опрос ставки.',
+'Configure automatic updates and registration.'=>'Настройка автоматического обновления и регистрации.',
+'Enter your google app settings for Calendar/Google login'=>'Введите ваш Google Настройки приложения для Calendar / Google Войти',
+'Configure X2Engine\'s email settings'=>'Настройка X2Engine в настройки электронной почты',
+'Create an email marketing campaign'=>'Создание маркетинговой кампании электронной почты',
+'Manage your marketing campaigns'=>'Управление маркетинговыми кампаниями',
+'Import contacts using a CSV template'=>'Импорт контактов с помощью шаблона CSV',
+'Export contacts to a CSV file'=>'Экспорт контактов в файл CSV',
+'Export all data (useful for making backups)'=>'Экспорт всех данных (полезно для создания резервных копий)',
+'Import from a global export file'=>'Импорт из глобального файла экспорта',
+'View a log of everything that has been changed'=>'Просмотр журнала все, что было изменено',
+'Customize fields for the modules.'=>'Настройка полей для модулей.',
+'Manage dropdowns for custom fields.'=>'Управление выпадающее меню для пользовательских полей.',
+'Drag and drop editor for forms.'=>'Перетащите редактор форм.',
+
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'Изменение порядка пунктов главного меню',
@@ -154,4 +201,12 @@ return array (
 'User\'s Choice'=>'Выбор пользователя',
 'Default Signature'=>'По умолчанию подпись',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Вы можете использовать следующие переменные в шаблоне: {first}, {last}, {phone}, {email}.',
+
+// Updater/General Settings
+'Update Interval'=>'Интервал обновления',
+'Every Login'=>'Каждый вход',
+'Daily'=>'ежедневно',
+'Weekly'=>'еженедельно',
+'Monthly'=>'ежемесячно',
+'Never'=>'никогда',
 );

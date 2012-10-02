@@ -122,7 +122,7 @@ if($ccResult!="No Item found with specified attributes."){
 		curl_close($ccSession);
                 $data['assignedTo']=$ccResult;
                 $data['authUser']=$user;
-                $data['authPassowrd']=$password;
+                $data['authPassword']=$password;
                 $actionData['assignedTo']=$ccResult;
                 
                 $ccUrl = 'http://'.$url.'/index.php/api/create/model/Contacts';

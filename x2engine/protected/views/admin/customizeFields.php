@@ -39,7 +39,7 @@
  ********************************************************************************/
 ?><h3><?php echo Yii::t('admin','Customize Fields'); ?></h3>
 <div style="width:600px">
-<?php echo Yii::t('admin','This form will allow you to rename or show/hide any field on any customizable module.  Changing the type of a default field is strongly discouraged.'); ?><br><br>
+<?php echo Yii::t('admin','This form will allow you to rename or show/hide any field on any customizable module.  Changing the type of a default field is <b>strongly</b> discouraged.'); ?><br><br>
 </div>
 <div class="form">
 	<?php $form=$this->beginWidget('CActiveForm', array(
@@ -51,33 +51,33 @@
 	<div class="row">
 		<?php echo $form->labelEx($model,'modelName'); ?>
 		<?php 
-                $modules=Modules::model()->findAll();
-                foreach($modules as $module){
-                    if($module->editable){
-                        if($module->title!="Marketing")
-                            $arr[$module->name]=$module->title;
-                        else
-                            $arr["Campaign"]=$module->title;
-                    }
-                }
-                echo $form->dropDownList($model,'modelName',$arr,
-			array(
-			'empty'=>'Select a model',
-			'ajax' => array(
-			'type'=>'POST', //request type
-			'url'=>CController::createUrl('admin/getAttributes'), //url to call.
-			//Style: CController::createUrl('currentController/methodToCall')
-			'update'=>'#dynamicFields', //selector to update
-			//'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
-			//leave out the data key to pass all form values through
+			$modelList = array();
+			foreach(CActiveRecord::model('Modules')->findAllByAttributes(array('editable'=>true)) as $module) {
+				if(array_key_exists($module->name,X2Model::$associationModels))
+					$modelName = X2Model::$associationModels[$module->name];
+				else
+					$modelName = ucfirst($module->name);
+					
+				
+				$modelList[$modelName] = $module->title;
+			}
+			echo $form->dropDownList($model,'modelName',$modelList,array(
+				'empty'=>'Select a model',
+				'ajax' => array(
+				'type'=>'POST', //request type
+				'url'=>CController::createUrl('admin/getAttributes'), //url to call.
+				//Style: CController::createUrl('currentController/methodToCall')
+				'update'=>'#dynamicFields', //selector to update
+				//'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+				//leave out the data key to pass all form values through
 			))); ?>
 		<?php echo $form->error($model,'modelName'); ?>
 	</div>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'fieldName'); ?>
-		<?php echo $form->dropDownList($model,'fieldName',array(),array('empty'=>'Select a model first','id'=>'dynamicFields',
-                    'ajax' => array(
+		<?php echo $form->dropDownList($model,'id',array(),array('empty'=>'Select a model first','id'=>'dynamicFields',
+			'ajax' => array(
 			'type'=>'POST', //request type
 			'url'=>CController::createUrl('admin/getFieldData'), //url to call.
 			//Style: CController::createUrl('currentController/methodToCall')
@@ -85,7 +85,7 @@
 			//'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
 			//leave out the data key to pass all form values through
 			))); ?>
-		<?php echo $form->error($model,'fieldName'); ?>
+		<?php echo $form->error($model,'id'); ?>
 	</div>
 	<br>
 	<div class="row">

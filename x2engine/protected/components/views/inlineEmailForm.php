@@ -72,6 +72,8 @@ function setupEmailEditor() {
 		    	$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
 		    }
 		});
+		
+		$('#inline-email-form').find('iframe').attr('tabindex', 5);
 	}
 }
 ",CClientScript::POS_HEAD);
@@ -83,7 +85,7 @@ else
 	setupEmailEditor();
 ",CClientScript::POS_READY);
 ?>
-
+<div id="inline-email-top"></div>
 <div id="inline-email-form">
 <?php
 /* if(isset($preview) && !empty($preview)) { ?>
@@ -105,6 +107,7 @@ if(!empty($model->status)) {
 		$signature = Yii::app()->params->profile->getSignature(true);
 		$model->message = '<font face="Arial" size="2">'.(empty($signature)? '' : '<br><br>' . $signature).'</font>';
 		$model->subject = '';
+		$attachments = array();
 		$emailSent = true;
 	}
 	echo '<div class="form email-status">';
@@ -121,44 +124,51 @@ if(!empty($model->status)) {
 	echo $form->hiddenField($model,'modelName');
 	?>
 	<div class="row">
+		<?php echo $form->errorSummary($model, Yii::t('app', "Please fix the following errors:"), null, array('style'=>'margin-bottom: 5px;')); ?>
+	</div>
+	<div class="row">
 		<?php //echo $form->error($model,'to'); ?>
-		<?php echo $form->label($model,'to'); ?>
-		<?php echo $form->textField($model,'to',array('id'=>'email-to','style'=>'width:400px;'));?> 
+		<?php echo $form->label($model,'to', array('class'=>'x2-email-label')); ?>
+		<?php echo $form->textField($model,'to',array('id'=>'email-to','style'=>'width:400px;', 'tabindex'=>'1'));?> 
 		<a href="javascript:void(0)" id="cc-toggle"<?php if(!empty($model->cc)) echo ' style="display:none;"'; ?>>[cc]</a> 
 		<a href="javascript:void(0)" id="bcc-toggle"<?php if(!empty($model->bcc)) echo ' style="display:none;"'; ?>>[bcc]</a>
 	</div>
 	<div class="row" id="cc-row"<?php if(empty($model->cc)) echo ' style="display:none;"'; ?>>
 		<?php //echo $form->error($model,'to'); ?>
-		<?php echo $form->label($model,'cc'); ?>
-		<?php echo $form->textField($model,'cc',array('id'=>'email-cc')); ?>
+		<?php echo $form->label($model,'cc', array('class'=>'x2-email-label')); ?>
+		<?php echo $form->textField($model,'cc',array('id'=>'email-cc', 'tabindex'=>'2')); ?>
 	</div>
 	<div class="row" id="bcc-row"<?php if(empty($model->bcc)) echo ' style="display:none;"'; ?>>
 		<?php //echo $form->error($model,'to'); ?>
-		<?php echo $form->label($model,'bcc'); ?>
-		<?php echo $form->textField($model,'bcc',array('id'=>'email-bcc')); ?>
+		<?php echo $form->label($model,'bcc', array('class'=>'x2-email-label')); ?>
+		<?php echo $form->textField($model,'bcc',array('id'=>'email-bcc', 'tabindex'=>'3')); ?>
 	</div>
 	<div class="row">
-		<?php echo $form->label($model,'subject'); ?>
-		<?php echo $form->textField($model,'subject'); ?>
+		<?php echo $form->label($model,'subject', array('class'=>'x2-email-label')); ?>
+		<?php echo $form->textField($model,'subject', array('style'=>'width: 265px;', 'tabindex'=>'4')); ?>
+		<?php $templateList = DocChild::getEmailTemplates(); ?>
+		<?php $templateList = array('0'=>Yii::t('docs','Custom Message')) + $templateList; ?>
+		<?php echo $form->label($model,'template', array('class'=>'x2-email-label', 'style'=>'float: none; margin-left: 10px; vertical-align: text-top;')); ?>
+		<?php echo $form->dropDownList($model,'template',$templateList,array('id'=>'email-template')); ?>
 	</div>
-	<div class="row">
-		<?php
-		$templateList = DocChild::getEmailTemplates();
-		$templateList = array('0'=>Yii::t('docs','Custom Message')) + $templateList;
-		
-		// $class = in_array('message',$errors)? 'error':null;
-		echo $form->label($model,'message');
-		echo $form->dropDownList($model,'template',$templateList,array('id'=>'email-template'));
-		// echo $form->error($model,'message');
-		?>
-	</div>
-	<div class="row" id="email-message-box"<?php //if($model->template != 0) echo ' style="display:none;"'; ?>>
+	<div class="row" id="email-message-box">
 		<?php echo $form->textArea($model,'message',array('id'=>'email-message','style'=>'margin:0;padding:0;')); ?>
 	</div>
 	
 	<div class="row" id="email-attachments">
-		<div class="form" style="text-align:left;">
+		<div class="form" style="text-align:left; background-color: inherit">
 			<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
+			<?php if(isset($attachments)) { // is this a refreshed form with previous attachments? ?>
+				<?php foreach($attachments as $attachment) { ?>
+					<div>
+						<span class="filename"><?php echo $attachment['filename']; ?></span>
+						<span class="remove"><a href="#">[x]</a></span>
+						<span class="error"></span>
+						<input type="hidden" name="AttachmentFiles[temp][]" value="<?php echo ($attachment['temp']? "true" : "false"); ?>">
+						<input type="hidden" name="AttachmentFiles[id][]" class="AttachmentFiles" value="<?php echo $attachment['id']; ?>">
+					</div>
+				<?php } ?>
+			<?php } ?>
 			<div class="next-attachment">
 				<?php //echo CHtml::fileField('upload','',array('onchange'=>'checkName(this, "#submitAttach"); if($("#submitAttach").attr("disabled") != "disabled") {fileUpload(this.form, $(this), "'. Yii::app()->createUrl('site/tmpUpload') .'", "'. Yii::app()->createUrl('site/removeTmpUpload') .'"); }')); ?>
 				<span class="upload-wrapper">
@@ -186,7 +196,7 @@ if(!empty($model->status)) {
 		array(
 			'beforeSend'=>"function(a,b) { teditor.post(); $('#email-sending-icon').show(); }",
 			'replace'=>'#inline-email-form',
-			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); updateHistory(); }",
+			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); updateHistory(); initX2EmailForm(); }",
 		),
 		array(
 			'id'=>'send-email-button',
@@ -202,7 +212,7 @@ if(!empty($model->status)) {
 		array(
 			'beforeSend'=>"function(a,b) { teditor.post(); $('#email-sending-icon').show(); }",
 			'replace'=>'#inline-email-form',
-			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); }",
+			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); initX2EmailForm(); }",
 		),
 		array(
 			'id'=>'preview-email-button',

@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -46,37 +46,100 @@ div.x2-layout {
 	margin-bottom:5px;
 	overflow:hidden;
 	border:1px solid #ccc;
+	background:#fafafa;
 	-moz-border-radius:		4px;
 	-o-border-radius:		4px;
 	-webkit-border-radius:	4px;
 	border-radius:			4px;
+/* 	-moz-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
+	-webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
+	box-shadow:				0 1px 6px rgba(0,0,0,0.5); */
 }
+div.half-width {
+	width:65%;
+	float:left;
+}
+div.half-width > div, div.half-width > form {margin-right:10px;}
+.history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;}
+
+div.half-width > div.form {background:#fff;}
 div.x2-layout a {text-decoration:none;}
 div.x2-layout a:hover {text-decoration:underline;}
 /* Form Sections */
-div.x2-layout .formSection {}
-div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;}
-div.x2-layout .formSectionHeader {position:relative;margin-top:-1px;display:block;overflow:auto;border:1px solid #999;border-width:1px 0 1px 0;}
+div.x2-layout .formSection {/* background:#fff; */overflow:hidden;border-top:1px solid #333;}
+div.x2-layout .formSection:first-child {border-top:none;}
+div.x2-layout .tableWrapper {margin-left:16px;width:auto;border-left:1px solid #aaa;margin-bottom:-1px;margin-right:-1px;}
+/* div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;} */
+div.x2-layout .formSection:first-child {
+	-moz-border-radius:		3px 0 0 0;
+	-o-border-radius:		3px 0 0 0;
+	-webkit-border-radius:	3px 0 0 0;
+	border-radius:			3px 0 0 0;
+}
+div.x2-layout .formSection:last-child {
+	-moz-border-radius:		0 0 0 3px;
+	-o-border-radius:		0 0 0 3px;
+	-webkit-border-radius:	0 0 0 3px;
+	border-radius:			0 0 0 3px;
+}
+div.x2-layout .formSectionHeader {
+	float:left;
+	display:block;
+	height:16px;
+}
+div.x2-layout .showSection .formSectionHeader {
+	display:block; width:15px;
+}
 div.x2-layout .formSectionHeader a {
 	display:none;
-	float:right;
-	margin-right:5px;
+	float:left;
+	/* margin-right:1px; */
+	width:16px;
 	font-size:12px;
+	font-style:normal;
 	text-decoration:none;
 	text-align:center;
+	/* margin-bottom:-5px; */
 }
+
 div.x2-layout .sectionTitle {
-	display:block;
-	float:left;
-	margin:2px 2px 2px 20px;
-	color:#333;
-	font-weight:bold;
+	
+	/*filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',M11=0.0, M12=1.0, M21=-1.0, M22=0.0); /* IE6, IE7 */
+	
+	display:inline-block;
+	white-space:nowrap;
+	padding-right:5px;
+
+	color:#000;
+	font-weight:normal;
+	font-style:italic;
 	font-size:11px;
 }
-div.x2-layout .formSection a.formSectionShow {display:none;margin:0 15px 0 10px;}
-div.x2-layout .formSection a.formSectionHide {display:block;margin:0 15px 0 10px;}
-div.x2-layout .formSection.hideSection a.formSectionShow {display:block !important;}
-div.x2-layout .formSection.hideSection a.formSectionHide {display:none !important;}
+div,.x2-layout .collapsible .sectionTitle {padding-right:0;}
+
+div.x2-layout .showSection .sectionTitle {
+
+	height:15px;
+	
+	-webkit-transform-origin:	top left;
+	-moz-transform-origin:		top left;
+	-o-transform-origin:		top left;
+	-ms-transform-origin:		top left;
+	transform-origin:			top left;
+	-webkit-transform:	rotate(270deg) translate(-100%,0);
+	-moz-transform:		rotate(270deg) translate(-100%,0);
+	-o-transform:		rotate(270deg) translate(-100%,0);
+	-ms-transform:		rotate(270deg) translate(-100%,0);
+	transform:			rotate(270deg) translate(-100%,0);
+}
+.lt-ie9 div.x2-layout .showSection .sectionTitle {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+div.x2-layout .formSection a.formSectionShow {display:block;}
+div.x2-layout .formSection a.formSectionHide {display:none;}
+div.x2-layout .formSection.showSection a.formSectionShow {display:none !important;}
+div.x2-layout .formSection.showSection a.formSectionHide {display:block !important;}
 
 
 div.x2-layout .formSection table {
@@ -94,21 +157,22 @@ div.x2-layout td {
 	vertical-align:top;
 	border-right:1px solid #ccc;
 	/* border-bottom:1px solid #999; */
-	background:#eee;
+	/* background:#eee; */
 }
 div.x2-layout td:last-child {border-right:none !important;}
 div.x2-layout .formItem {
 	/* position:relative; */
 	float:left;
+	/* white-space:nowrap; */
 	overflow:hidden;
 	margin-left:-1px;
 	margin-right:-1000px;	/* css voodoo: row extends all the way across */
 	padding-right:1000px;	/* and doesnt' mess up the flow */
 	border:1px solid #ccc;
 	border-width:0 0 1px 1px;
-	background:#fafafa;
+	/* background:#fafafa; */
 }
-div.x2-layout.form-view .formSectionHeader {border-top:1px solid #999;}
+/* div.x2-layout.form-view .formSectionHeader {border-top:1px solid #999;} */
 div.x2-layout.form-view .formItem {border-width:0 0 0;}
 div.x2-layout .formItem label {
 	display:block;
@@ -171,17 +235,17 @@ div.x2-layout .formInputBox input {margin:0;padding:2px;}
 div.x2-layout .formInputBox input[type="text"] {width:100%;}
 div.x2-layout .formInputBox textarea {height:100%;resize:none;padding:2px;}
 
-div.x2-layout div.error label,div.x2-layout label.error,div.x2-layout span.error {color: #C00;}
+div.x2-layout div.error label,div.x2-layout label.error,div.x2-layout span.error {color:#C00;}
 div.x2-layout div.error input,div.x2-layout div.error textarea,div.x2-layout div.error select,div.x2-layout input.error,div.x2-layout textarea.error,div.x2-layout select.error {
-	background: #FEE !important;
-	border-color: #C00 !important;
+	background:#FEE !important;
+	border-color:#C00 !important;
 }
 /* div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
-	background: #E6EFC2;
-	border-color: #C6D880;
+	background:#E6EFC2;
+	border-color:#C6D880;
 } */
 div.x2-layout .errorSummary {
-	background: #FEE;
+	background:#FEE;
 	border:2px solid #C00;
 	font-size:0.9em;
 	padding:5px;
@@ -198,8 +262,33 @@ div.x2-layout .errorSummary ul {margin:0;padding:0 0 0 20px;}
 
 /* Editor CSS Begins Here */
 div.x2-layout.editMode td {border:1px dashed #f00;border-width:1px 1px 1px 0;}
-div.x2-layout.editMode .formSectionHeader a {display:block;}
+div.x2-layout.editMode .formSectionHeader {
+	width:100%;
+	background:#fff;
+}
+div.x2-layout.editMode .formSectionHeader a {
+	display:inline;
+	float:right;
+	width:auto;
+	margin:0 5px;
+}
+div.x2-layout.editMode .showSection .formSectionHeader a.formSectionShow {display:none;}
+div.x2-layout.editMode .formSectionHeader a.formSectionHide {display:none;}
 
+
+div.x2-layout.editMode .formSectionHeader .formSectionShow, div.x2-layout.editMode .formSectionHeader .formSectionHide {
+	float:left;
+}
+div.x2-layout.editMode .showSection .sectionTitle {
+	-webkit-transform:	none;
+	-moz-transform:		none;
+	-o-transform:		none;
+	-ms-transform:		none;
+	transform:			none;
+}
+.lt-ie9 div.x2-layout.editMode .showSection .sectionTitle {
+	filter:none;
+}
 div.x2-layout.editMode .formTabOrder {
 	display:none;
 	top:0;
@@ -285,10 +374,10 @@ div.x2-layout.editMode .formInputBox {
 	position:relative;
 	z-index:2;
 	clip:rect(0px, 1000px, 1000px, 0px);
-	-moz-box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
-	-webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
-	box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
 	margin-bottom:-1px;
+	-moz-box-shadow:	0 0 10px 0 rgba(0,0,0,0.75);
+	-webkit-box-shadow:	0 0 10px 0 rgba(0,0,0,0.75);
+	box-shadow:			0 0 10px 0 rgba(0,0,0,0.75);
 }
 div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 #formEditorControls a.x2-button {margin-bottom:0;}
@@ -305,7 +394,7 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 	vertical-align:bottom;
 	position:relative;
 	top:-3px;
-	*overflow: hidden;
+	*overflow:hidden;
 }
 #formEditorControls .formItemOptions select {
 	font-size:11px;
@@ -350,14 +439,23 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 	font-size:12px;
 	font-weight:normal;
 }
-#editorFieldList label.emailIcon		{background:url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;}
-#editorFieldList label.phoneIcon	{background:url(../images/formEditor/phone_icon.gif) 2px 0px no-repeat transparent;}
-#editorFieldList label.booleanIcon	{background:url(../images/formEditor/boolean_icon.gif) 2px 0px no-repeat transparent;}
-#editorFieldList label.dropdownIcon	{background:url(../images/formEditor/dropdown_icon.gif) 2px 0px no-repeat transparent;}
-#editorFieldList label.dateIcon		{background:url(../images/formEditor/date_icon.gif) 2px 0px no-repeat transparent;}
-#editorFieldList label.textIcon		{background:url(../images/formEditor/text_icon.gif) 2px 0px no-repeat transparent;}
-#editorFieldList label.varcharIcon	{background:url(../images/formEditor/varchar_icon.gif) 2px 0px no-repeat transparent;}
+#editorFieldList label.emailIcon	{background:url(../images/formEditor/email_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.phoneIcon	{background:url(../images/formEditor/phone_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.booleanIcon	{background:url(../images/formEditor/boolean_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.dropdownIcon	{background:url(../images/formEditor/dropdown_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.dateIcon		{background:url(../images/formEditor/date_icon.gif)		2px	0px no-repeat transparent;}
+#editorFieldList label.textIcon		{background:url(../images/formEditor/text_icon.gif)		2px	0px no-repeat transparent;}
+#editorFieldList label.varcharIcon	{background:url(../images/formEditor/varchar_icon.gif)	2px 0px no-repeat transparent;}
 
 
 /* Tab Order Mode */
 #formEditor.tabOrderMode .formTabOrder {display:block;}
+
+span.create-account {
+	font-size: 24px;
+	font-weight: bold;
+	vertical-align: middle;
+	color: #579100;
+	display: inline-block;
+	cursor: pointer;
+}

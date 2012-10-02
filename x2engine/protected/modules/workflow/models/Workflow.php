@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,6 +42,7 @@
 
 /**
  * This is the model class for table "x2_workflows".
+ * @package X2CRM.modules.workflow.models
  */
 class Workflow extends CActiveRecord {
 	/**
@@ -301,7 +302,13 @@ class Workflow extends CActiveRecord {
 	}
 	
 	public static function renderWorkflowStats(&$workflowStatus) {
-	
+        $dateRange=Yii::app()->controller->getDateRange();
+        $user=isset($_GET['users'])?$_GET['users']:''; 
+        if(!empty($user)){
+            $userString=" AND assignedTo='$user' ";
+        }else{
+            $userString="";
+        }
 		$stageCount = count($workflowStatus)-1;
 	
 		if($stageCount < 1)
@@ -345,24 +352,24 @@ class Workflow extends CActiveRecord {
 
 			$contacts = CActiveRecord::model('Actions')->countByAttributes(
 				array('type'=>'workflow','workflowId'=>$workflowStatus[0],'stageNumber'=>$i),
-				new CDbCriteria(array('condition'=>"complete != 'Yes' AND (completeDate IS NULL OR completeDate = 0)"))
+				new CDbCriteria(array('condition'=>"complete != 'Yes' $userString AND (completeDate IS NULL OR completeDate = 0) AND createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']))
 			);
 			
-			// $sales = CActiveRecord::model('Actions')->countByAttributes(
-				// array('type'=>'workflow','associationType'=>'sales','actionDescription'=>$workflowStatus[0].':'.$i),
+			// $opportunities = CActiveRecord::model('Actions')->countByAttributes(
+				// array('type'=>'workflow','associationType'=>'opportunities','actionDescription'=>$workflowStatus[0].':'.$i),
 				// new CDbCriteria(array('condition'=>"complete != 'Yes' OR completeDate IS NULL OR completeDate = 0"))
 			// );
 			
 			$funnelStr .= '<div class="workflow-funnel-stage" style="width:'.$width.'px;background:'.$color.';"><span class="name">';
 				
-			$funnelStr .= CHtml::link($workflowStatus[$i]['name'],array('workflow/view','id'=>$workflowStatus[0],'stage'=>$i),
+			$funnelStr .= CHtml::link($workflowStatus[$i]['name'],array('workflow/view','id'=>$workflowStatus[0],'stage'=>$i,'start'=>Yii::app()->controller->formatDate($dateRange['start']),'end'=>Yii::app()->controller->formatDate($dateRange['end']),'range'=>$dateRange['range'],$user),
 				array('onclick'=>'getStageMembers('.$i.'); return false;')
 			);
 			
 			$funnelStr .= '</span><span class="contact-icon">'
 				.Yii::app()->locale->numberFormatter->formatDecimal($contacts).'</span></div>';
 				// <span class="sales-icon">'
-				// .Yii::app()->locale->numberFormatter->formatDecimal($sales).'</span>
+				// .Yii::app()->locale->numberFormatter->formatDecimal($opportunities).'</span>
 		}
 		$str = '<div class="row">
 					<div class="cell"><div class="workflow-funnel-box" style="width:'.($startingWidth+10).'px">'.$funnelStr.'</div></div>

@@ -41,16 +41,18 @@ var typingTimer;
 
 
 $(function() {
-	// save after half second when the user is done typing
-	$(editor.e).keyup(function() {
-		clearTimeout(typingTimer);
-		typingTimer = setTimeout(autosave, 500);
-	});
-	
-	$(editor.e).keydown(function() {
-		$('#savetime').html('');
-		clearTimeout(typingTimer);
-	});
+	if(! $.browser.msie) {
+		// save after half second when the user is done typing
+		$(editor.e).keyup(function() {
+			clearTimeout(typingTimer);
+			typingTimer = setTimeout(autosave, 500);
+		});
+		
+		$(editor.e).keydown(function() {
+			$('#savetime').html('');
+			clearTimeout(typingTimer);
+		});
+	}
 });
 
 // save the doc and display the time that the doc was saved

@@ -131,7 +131,7 @@ return array (
 'Detail View'=>'Детальный просмотр',
 'Simple View'=>'Простой вид',
 'Contact Info'=>'Контактная информация',
-'Sales &amp; Marketing'=>'Продажи и маркетинг',
+'Opportunities &amp; Marketing'=>'Продажи и маркетинг',
 'Social Media'=>'Социальные СМИ',
 
 // Contacts Actions
@@ -142,6 +142,7 @@ return array (
 'View Contact'=>'Посмотреть Контакт',
 'Update Contact'=>'Обновление контакта',
 'Delete Contact'=>'Удалить контакт',
+'Contact Lists'=>'Связаться списки',
 'Create Lead'=>'Создание возможностей',
 'Share Contact'=>'Доля Контакт',
 'Create'=>'создавать',
@@ -150,7 +151,7 @@ return array (
 'View'=>'смотреть',
 'Share'=>'доля',
 'Update'=>'обновление',
-'View Sales'=>'Просмотр продажам',
+'View Opportunities'=>'Просмотр продажам',
 'Delete'=>'удалять',
 'Show All'=>'Показать все',
 'Hide All'=>'Скрыть все',
@@ -177,4 +178,17 @@ return array (
 'Subscribe'=>'подписать',
 'The information for {name} has changed.'=>'Информация для {name} изменилась.',
 'Receive email updates every time information for {name} changes'=>'Получение обновлений по электронной почте для каждого обмена информацией время {name}',
+
+// Web Lead
+'Web Lead'=>'веб-контакт',
+'Invalid Email Address'=>'Неверный адрес электронной почты',
+'Default list for email list signups'=>'Список по умолчанию для электронной почты регистраций список',
+'This request cannot be made at this time.'=>'Этот запрос не может быть сделано на данный момент.',
+'Newsletter Signup'=>'Подписка на бюллетень',
+'Could not sign up'=>'Не могу зарегистрироваться',
+'We\'re Sorry!'=>'Мы Извините!',
+'Thank You!'=>'Спасибо за внимание!',
+'Thank you for your interest!'=>'Спасибо за ваш интерес!',
+'Someone will be in touch shortly.'=>'Кто-то будет на связи в ближайшее время.',
+'Enter any additional information or questions regarding your interest here.'=>'Введите любую дополнительную информацию или вопросы относительно вашего интереса.',
 );

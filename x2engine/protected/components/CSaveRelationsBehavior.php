@@ -1,13 +1,8 @@
 <?php
-/**
- * CSaveRelationsBehavior class file.
- *
- * @author Alban Jubert <alban.jubert@trinidev.fr>
- * @link http://www.trinidev.fr/
- * @version 1.0.3
- */
 
-/*
+/**
+ * CSaveRelationsBehavior class.
+ * 
  * The CSaveRelationBehavior enables ActiveRecord model to save HasMany and ManyMany 
  * relational active records along with the main model
  * 
@@ -54,6 +49,12 @@
  * Simply do the oposite
  * - $model->setSaveRelationMessage('relationName','customErrorMessage')
  * Set the message to be shown in the error summary of the main model
+ *
+ * @author Alban Jubert <alban.jubert@trinidev.fr>
+ * @link http://www.trinidev.fr/
+ * @license CSaveRelationsBehavior
+ * @package X2CRM.components 
+ * @version 1.0.3
  */
 
 class CSaveRelationsBehavior extends CActiveRecordBehavior {

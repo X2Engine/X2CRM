@@ -88,7 +88,7 @@ foreach($topContacts as $contact) {
 	echo "</li>\n";
 }
 
-if(Yii::app()->controller->id=='contacts' || (!is_null(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts')			// must be a contact
+if((Yii::app()->controller->id=='contacts' || (!is_null(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts'))			// must be a contact
 	&& Yii::app()->controller->action->id=='view'	// must be viewing it
 	&& $viewId != null							// must have an actual ID value
 	&& !in_array($viewId,$contactIdList)) {		// must not already be in Top Contacts

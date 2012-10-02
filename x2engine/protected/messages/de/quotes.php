@@ -112,5 +112,5 @@ return array (
 'Quote Record Details'=>'Angebotsdatensatz Einzelheiten',
 'Include Logo'=>'Include Logo',
 'Basic Information'=>'Grundlegende Informationen',
-'Sales'=>'Vertrieb',
+'Opportunities'=>'Vertrieb',
 );

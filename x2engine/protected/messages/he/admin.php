@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,6 +69,29 @@ return array (
 'Gii - A Code Generation Module'=>'Gii - הדור מודול קוד',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'הוספה, הסרה ועדכון תרגומים הודעה בתיבת X2Contacts חבילות שפה.',
+'Tutorial Videos'=>'',
+'Phone Support'=>'תמיכה טלפונית',
+'Manage Roles'=>'ניהול תפקידים',
+'Set Lead Distribution'=>'קבע חלוקת מגע',
+'Add Custom Lead Rules'=>'הוסף חוקי קשר מותאמים אישית',
+'Workflow Settings'=>'הגדרות זרימת עבודה',
+'Manage Notification Criteria'=>'נהל קריטריוני הודעה',
+'General Settings'=>'הגדרות כלליות',
+'Updater Settings'=>'עדכון הגדרות',
+'Google Integration'=>'גוגל אינטגרציה',
+'Email Settings'=>'הגדרות דואר אלקטרוניות',
+'Create Email Campaign'=>'צור את מסע דוא"ל',
+'Manage Campaigns'=>'ניהול קמפיינים',
+'Import Contacts'=>'יבוא אנשי קשר',
+'Export Contacts'=>'יצוא אנשי קשר',
+'Import All Data'=>'לייבא את כל הנתונים',
+'View User Changelog'=>'צפו המשתמש Changelog',
+'Create a Module'=>'יצירת מודול',
+'Manage Fields'=>'ניהול שדות',
+'Dropdown Editor'=>'עורך נפתח',
+'Form Editor'=>'עורך טופס',
+'Create Workflow'=>'יצירת זרימת עבודה',
+'Manage Workflows'=>'ניהול זרימות עבודה',
 
 // Text
 'Administrator profile'=>'מנהל פרופיל',
@@ -95,6 +118,30 @@ return array (
 'Yii Open Source web framework'=>'Yii קוד פתוח באינטרנט במסגרת',
 'Show'=>'להראות',
 'Hide'=>'להסתיר',
+'Send invitation emails to create X2Engine accounts'=>'שלח אימיילי הזמנה ליצור חשבונות X2Engine',
+'Create and manage user roles'=>'יצירה וניהול תפקידי משתמשים',
+'Create and manage user groups'=>'יצירה וניהול של קבוצות משתמשים',
+'Create a public form to receive new contacts'=>'יצירת טופס הציבור לקבל אנשי קשר חדשים',
+'Change how new web leads are distributed.'=>'שינוי אופן מוביל האינטרנט חדש מופץ.',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'יצירת זרימת עבודה עבור תהליך המכירה שלך',
+'Change advanced workflow settings'=>'שינוי הגדרות זרימת עבודה מתקדמות',
+'Manage what events will trigger user notifications.'=>'נהל את האירועים יפעיל התראות משתמש.',
+'Configure session timeout and chat poll rate.'=>'להגדיר זמן קצוב להפעלה ולשוחח שיעור סקר.',
+'Configure automatic updates and registration.'=>'הגדרת עדכונים והרשמה אוטומטיים.',
+'Enter your google app settings for Calendar/Google login'=>'הזן את ההגדרות ב-Google App שלך ללוח שנה / גוגל כניסה',
+'Configure X2Engine\'s email settings'=>'קביעת תצורה של הגדרות הדוא"ל של X2Engine',
+'Create an email marketing campaign'=>'יצירת קמפיין שיווק בדוא"ל',
+'Manage your marketing campaigns'=>'ניהול מסעות השיווק שלך',
+'Import contacts using a CSV template'=>'יבוא אנשי קשר באמצעות תבנית CSV',
+'Export contacts to a CSV file'=>'לייצא את אנשי קשר לקובץ CSV',
+'Export all data (useful for making backups)'=>'לייצא את כל הנתונים (השימושיים לביצוע גיבויים)',
+'Import from a global export file'=>'יבוא מקובץ יצוא העולמי',
+'View a log of everything that has been changed'=>'צפו ביומן של כל מה שהשתנה',
+'Customize fields for the modules.'=>'התאמה אישית של שדות עבור מודולים.',
+'Manage dropdowns for custom fields.'=>'נהל dropdowns עבור שדות מותאמים אישית.',
+'Drag and drop editor for forms.'=>'גרור ושחררת עורך עבור טפסים.',
+
 // Modules
 // Text
 'Rearrange Main Menu Items'=>'סידור מחדש של פריטי תפריט ראשי',
@@ -154,4 +201,12 @@ return array (
 'User\'s Choice'=>'המשתמש של בחירה',
 'Default Signature'=>'ברירת מחדל חתימה',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'ניתן להשתמש במשתנים הבאים בתבנית זו: {first}, {last}, {phone}, {email}.',
+
+// Updater/General Settings
+'Update Interval'=>'עדכון מרווח',
+'Every Login'=>'בכל כניסה',
+'Daily'=>'יומי',
+'Weekly'=>'שבועי',
+'Monthly'=>'ירחון',
+'Never'=>'מעולם לא',
 );

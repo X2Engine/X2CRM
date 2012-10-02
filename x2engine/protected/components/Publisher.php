@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,7 +38,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class Publisher extends CWidget {
+/**
+ * Widget class for displaying all available inline actions.
+ * 
+ * Displays tabs for "log a call","new action" and the like.
+ * 
+ * @package X2CRM.components 
+ */
+class Publisher extends X2Widget {
 	public $associationType;		// type of record to associate actions with
 	public $associationId = '';		// record to associate actions with
 	public $assignedTo = null;	// user actions will be assigned to by default
@@ -47,8 +54,8 @@ class Publisher extends CWidget {
 	public $showLogACall = true;
 	public $showNewAction = true;
 	public $showNewComment = true;
-	public $showNewEvent = true;
-	
+	public $showNewEvent = false;
+	public $halfWidth = false;
 	
 	public function run() {
 		$model = new Actions;
@@ -59,7 +66,7 @@ class Publisher extends CWidget {
 		else
 			$model->assignedTo = Yii::app()->user->getName();
 		
-		$this->render('publisher',
+		$this->render($this->halfWidth? 'publisherHalfWidth':'publisher',
 			array(
 				'model' => $model,
 				'showLogACall'=>$this->showLogACall,

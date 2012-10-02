@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,21 +41,7 @@
 /**
  * This is the model class for table "x2_web_forms".
  *
- * The followings are the available columns in table 'x2_web_forms':
- * @property integer $id
- * @property string $name
- * @property string $type
- * @property string $description
- * @property string $modelName				
- * @property string $fields					
- * @property string $params					
- * @property string $css						
- * @property integer $visibility				
- * @property string $assignedTo				
- * @property string $createdBy				
- * @property string $updatedBy				
- * @property integer $createDate
- * @property integer $lastUpdated
+ * @package X2CRM.modules.marketing.models
  */
 class WebForm extends CActiveRecord {
 	public static function model($className=__CLASS__) {

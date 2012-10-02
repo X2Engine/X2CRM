@@ -38,17 +38,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-/**
- * CJuiSortable class file.
- *
- * @author Sebastian Thierer <sebathi@gmail.com>
- * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
-
 Yii::import('zii.widgets.jui.CJuiWidget');
 
+/**
+ * @package X2CRM.modules.dashboard.components 
+ */
 class SortWidg extends CJuiWidget{
 	/**
 	 * @var array list of sortable items (id=>item content).
@@ -70,7 +64,7 @@ class SortWidg extends CJuiWidget{
 		$themeURL = Yii::app()->theme->getBaseUrl();
 		Yii::app()->clientScript->registerScript('logos',"
 		$(window).load(function(){
-			if((!$('#main-menu-icon').length) || (!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
+			if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
 				$('a').removeAttr('href');
 				alert('Please put the logo back');
 				window.location='http://www.x2engine.com';

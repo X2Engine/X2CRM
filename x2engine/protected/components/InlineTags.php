@@ -38,7 +38,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class InlineTags extends CWidget {
+/**
+ * Class for displaying tags on a record.
+ * 
+ * @package X2CRM.components 
+ */
+class InlineTags extends X2Widget {
 	public $model;
 	public $modelName;
 
@@ -57,7 +62,6 @@ class InlineTags extends CWidget {
 			->limit(20)
 			->queryAll();
 	
-		$this->render('inlineTags',array('model'=>$this->model, 'modelName'=>$this->modelName, 'tags'=>$tags));
+		$this->render('inlineTags',array('model'=>$this->model,'modelName'=>$this->modelName,'tags'=>$tags));
 	}
 }
-?>

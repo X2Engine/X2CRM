@@ -1,6 +1,10 @@
 <?php
 
+/**
+ * @package X2CRM.modules.contacts 
+ */
 class ContactsModule extends CWebModule {
+    public $defaultController = 'Contacts';
 	public function init() {
 		// this method is called when the module is being created
 		// you may place code here to customize the module or the application

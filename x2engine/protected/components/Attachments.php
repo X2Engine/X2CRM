@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,9 +38,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-class Attachments extends CWidget {
+/**
+ * Widget class for the attatchment form
+ * 
+ * @package X2CRM.components 
+ */
+class Attachments extends X2Widget {
 
-	public $type='';
+	public $associationType = '';
+	public $startHidden = false;
 	public $associationId='';
 	public function init() {
 	
@@ -50,7 +56,7 @@ class Attachments extends CWidget {
 				$('.focus-mini-module').removeClass('focus-mini-module');
 				$('#attachment-form').find('.form').addClass('focus-mini-module');
 				$('html,body').animate({
-					scrollTop: ($('#publisher-form').offset().top - 200)
+					scrollTop: ($('#attachment-form-top').offset().top - 100)
 				}, 300);
 			}
 			$('#attachment-form').animate({
@@ -74,23 +80,8 @@ class Attachments extends CWidget {
 	}
 
 	public function run() {
-		$this->render('attachments');
+		$this->render('attachments',array('startHidden'=>$this->startHidden));
 	}
 }
 
-/* Yii::import('zii.widgets.CPortlet');
-
-class Attachments extends CPortlet {
-	public $type='';
-	public $associationId='';
-	public function init() {
-		$this->title=Yii::t('app','Attachments');
-		parent::init();
-	}
-
-	protected function renderContent() {
-		$this->render('attachments',array()); //array(
-	}
-
-} */
 ?>
