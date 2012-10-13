@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,7 +40,7 @@
 
 return array (
 // Account Attributes
-'ID'=>'ID',
+'ID'=>'番号',
 'Name'=>'名前',
 'Website'=>'ウェブサイト',
 'Type'=>'種類',
@@ -55,6 +55,9 @@ return array (
 'Last Updated'=>'最後を更新する',
 'Updated By'=>'更新した人',
 'None'=>'なし',
+'Contacts'=>'コンタクト',
+'Basic Information'=>'基本情報',
+'Additional Information'=>'追加情報',
 
 // Accounts Actions
 'Accounts List'=>'アカウントリスト',
@@ -67,11 +70,17 @@ return array (
 'Remove a User'=>'ユーザーを削除する',
 'Remove a Contact'=>'コンタクトを削除する',
 'Share Account'=>'アカウントを共有する',
+'Create'=>'作る',
+'View'=>'表示',
+'Update'=>'更新',
+'Delete'=>'削除',
+'Update Account:'=>'アカウントを更新する：',
+'Share Opportunity'=>'共有する機会',
 
 // Accounts Titles
 'Accounts'=>'アカウント',
 'Manage Accounts'=>'アカウントの管理',
-'Update Account: {name}'=>'更新アカウント：{name}',
+'Update Account: {name}'=>'更新アカウント：{名前}',
 'Account:'=>'アカウント：',
 
 // Misc

@@ -247,7 +247,7 @@ class ProfileController extends x2base {
 			$prof=ProfileChild::model()->findByPk($id);
 			if(isset($_FILES['photo'])){
 				if ($_FILES["photo"]["size"] < 2000000){
-					if($prof->avatar!='' && isset($prof->avatar)){
+					if($prof->avatar!='' && isset($prof->avatar) && file_exists($prof->avatar)){
 						unlink($prof->avatar);
 					}
 					$temp = CUploadedFile::getInstanceByName('photo');

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -62,6 +62,12 @@ return array (
 'Cold Call'=>'',
 'E-Mail'=>'',
 'Store'=>'',
+'Other Info'=>'',
+'Basic Information'=>'',
+'None'=>'',
+'Google'=>'',
+'Facebook'=>'',
+'Walk In'=>'',
 
 // Opportunities Actions
 'Opportunities List'=>'',
@@ -70,12 +76,19 @@ return array (
 'Update Opportunity'=>'',
 'Delete Opportunity'=>'',
 'Manage Opportunities'=>'',
+'Create'=>'',
+'View'=>'',
+'Update'=>'',
+'Update Opportunity:'=>'',
 
-'Add a User'=>'',
-'Add a Contact'=>'',
-'Remove a User'=>'',
-'Remove a Contact'=>'',
+'Add A User'=>'',
+'Add A Contact'=>'',
+'Remove A User'=>'',
+'Remove A Contact'=>'',
 'Share Opportunity'=>'',
+'Delete'=>'',
+'Add'=>'',
+'Remove'=>'',
 
 // Opportunities Titles
 'Opportunities'=>'',

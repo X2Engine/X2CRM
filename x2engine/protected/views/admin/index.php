@@ -50,11 +50,11 @@ if($admin->updateInterval == -1)
 	echo Yii::t('admin','Automatic updates are currently disabled.').' '.CHtml::link(Yii::t('app','Enable Updates'),array('toggleUpdater'));
 // else
 	
-	
+
 	?>
 
 <?php
-if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()) && $admin->unique_id!='none') {
+if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()) && !in_array($admin->unique_id,array('none',Null))) {
 	echo '<span style="color:red;">';
 	echo Yii::t('app','A new version is available! Click here to update to version {version}',array(
 		'{version}'=>Yii::app()->session['newVersion'].' '.CHtml::link(Yii::t('app','Update'),'updater',array('class'=>'x2-button'))

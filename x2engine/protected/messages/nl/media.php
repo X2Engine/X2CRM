@@ -45,7 +45,7 @@ return array (
 'Association Name'=>'Relatie Naam',
 'Association'=>'Relatie',
 'File Name'=>'Bestandsnaam',
-'Uploaded By'=>'Geupload door',
+'Uploaded By'=>'Geupload Door',
 'Create Date'=>'Aanmaak Datum',
 'Description'=>'Omschrijving',
 'Private'=>'Prive',
@@ -53,10 +53,10 @@ return array (
 
 
 // Actions
-'View Attachment'=>'Bekijk bijlage',
+'View Attachment'=>'Bekijk Bijlage',
 'Delete Media'=>'Verwijder Media',
 'List'=>'Lijst',
-'Upload'=>'Upload',
+'Upload'=>'Uploaden',
 'View'=>'Bekijk',
 'Update'=>'Bijwerken',
 'Delete'=>'Verwijder',
@@ -68,12 +68,13 @@ return array (
 'Uploaded by {name}'=>'Geupload door {name}',
 'Download File'=>'Download Bestand',
 'Update File: '=>'Bestand Bijwerken',
-'Media & File Library'=>'Media & Bestand bibliotheek',
-'Max'=>'Max',
-'Forbidden File Extensions:'=>'Verboden Bestands extensie',
+'Media & File Library'=>'Media een Bestand Bibliotheek',
+'Max'=>'Maximaal',
+'Forbidden File Extensions:'=>'Verboden Bestands Extensie',
 'Choose File'=>'Kies Bestand',
 'Select File'=>'Selecteer Bestand',
-'Upload Media File: '=>'Upload Media Bestand',
+'Upload Media File: '=>'Upload Media Bestand:',
+'Background'=>'Achtergrond',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Weet je zeker dat je dit bestand wil verwijderen?',

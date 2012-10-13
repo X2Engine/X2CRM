@@ -1,6 +1,37 @@
 <?php
 $timeDiff = time() - 1329420240;	// time that original dummy data was generated
 
+mysql_query("INSERT INTO x2_workflows (id, name) VALUES (1,'General Sales')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (1,1,'Lead')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (2,1,'Suspect')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (3,1,'Prospect')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (4,1,'Customer')") or addSqlError("Error inserting workflow data.");
+
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Chris','Hames','chames',md5('password'),
+		'831-555-5555','10 Downing St. Santa Cruz, CA 95060', 'chris@hames.com','1')") or addSqlError("Error inserting dummy data");
+mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Chris Hames', 'chames', '831-555-5555', 'chris@hames.com','1')") or addSqlError("Error inserting dummy data");
+
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('James','Valerian','jvalerian',md5('password'),
+		'831-555-5555','123 Main St. Santa Cruz, CA 95060', 'james@valerian.com','1')") or addSqlError("Error inserting dummy data");
+mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('James Valerian', 'jvalerian', '831-555-5555', 'james@valerian.com','1')") or addSqlError("Error inserting dummy data");
+
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Sarah','Smith','ssmith',md5('password'),
+		'831-555-5555','467 2nd Ave. Santa Cruz, CA 95060', 'sarah@smith.com','1')") or addSqlError("Error inserting dummy data");
+mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Sarah Smith', 'ssmith', '831-555-5555', 'sarah@smith.com','1')") or addSqlError("Error inserting dummy data");
+
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Kevin','Flynn','kflynn',md5('password'),
+		'831-555-5555','10 Flynn\'s Arcade Way', 'flynn@encom.com','1')") or addSqlError("Error inserting dummy data");
+mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Kevin Flynn', 'kflynn', '831-555-5555', 'flynn@encom.com','1')") or addSqlError("Error inserting dummy data");
+
+mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Malcolm','Reynolds','mreynolds',md5('password'),
+		'831-555-5555','290 Serenity Valley Road Santa Cruz, CA 95060', 'malcolm@reynolds.com','1')") or addSqlError("Error inserting dummy data");
+mysql_query("INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status) 
+		VALUES ('Malcolm Reynolds', 'mreynolds', '831-555-5555', 'malcolm@reynolds.com','1')") or addSqlError("Error inserting dummy data");
+mysql_query("UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:TagCloud:TwitterFeed:MessageBox:ChatBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites'");
 
 mysql_query("INSERT INTO x2_contacts (id, firstName, lastName, title, company, phone, email, website, address, city, state, zipcode, country, visibility, assignedTo, backgroundInfo, twitter, linkedin, skype, googleplus, lastUpdated, updatedBy, priority, leadSource, rating, createDate, facebook, otherUrl) VALUES 
 (1,'Steve','McQueen','',0,'605-636-5634','nfuchs@pierreofficesupplies.com','','931 Sunset Blvd','Pierre','SD','57501','USA',1,'chames','President','','','','','1315755215','chames','Medium','Web search',2,1315755215,NULL,NULL),

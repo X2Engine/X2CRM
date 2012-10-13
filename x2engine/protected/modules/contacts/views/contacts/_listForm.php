@@ -38,16 +38,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-
-$js = <<<EOA
-$(function(){
-	$('#contacts-form input, #contacts-form select, #contacts-form textarea').change(function() {
-		$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
-	});
+$js = "
+$('#contacts-form input, #contacts-form select, #contacts-form textarea').change(function() {
+	$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
 });
-EOA;
-Yii::app()->clientScript->registerScript('highlightSaveContact', $js);
+";
+Yii::app()->clientScript->registerScript('highlightSaveContact',$js,CClientScript::POS_READY);
 
 $fieldTypes = array();
 $fieldLinkTypes = array();

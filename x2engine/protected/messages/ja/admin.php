@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'ユーティリティ',
-'X2Studio'=>'X2スタジオ',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'サポートとドキュメント',
 'Contact Us'=>'私達に連絡する',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'管理者プロフィール',
 'Admin Account Settings'=>'管理者アカウントの設定',
 'User Management'=>'ユーザの管理',
@@ -68,8 +68,8 @@ return array (
 'Rename a module'=>'モジュールの名前を変更する',
 'Gii - A Code Generation Module'=>'Gii - コード生成モジュール',
 'X2Translate'=>'X2Translate',
-'Add, remove and update message translations in the X2Contacts language packs.'=>'追加とX2Contacts言語パックのメッセージの翻訳を削除し、更新する。',
-'Tutorial Videos'=>'',
+'Add, remove and update message translations in the X2Contacts language packs.'=>'追加とX2コンタクト言語パックのメッセージの翻訳を削除し、更新する。',
+'Tutorial Videos'=>'チュートリアルビデオ',
 'Phone Support'=>'電話サポート',
 'Manage Roles'=>'ロールの管理',
 'Set Lead Distribution'=>'接触分布を設定',
@@ -77,7 +77,6 @@ return array (
 'Workflow Settings'=>'ワークフローの設定',
 'Manage Notification Criteria'=>'通知基準を管理する',
 'General Settings'=>'一般設定',
-'Updater Settings'=>'設定を更新します',
 'Google Integration'=>'Googleとの統合',
 'Email Settings'=>'電子メールの設定',
 'Create Email Campaign'=>'メールキャンペーンを作成',
@@ -92,16 +91,16 @@ return array (
 'Form Editor'=>'フォームエディタ',
 'Create Workflow'=>'ワークフローの作成',
 'Manage Workflows'=>'ワークフローの管理',
-
-// Text
+// // 
+// // Text
 'Administrator profile'=>'管理者プロフィール',
 'UI theme settings / background image'=>'UIのテーマの設定/背景画像',
 'Add and manage users'=>'ユーザーの追加および管理',
 'Re-order and add or remove top bar tabs'=>'再注文とトップバーのタブを追加または削除',
-'Send email based on X2Tags(currently only has basic function)'=>'X2Tagsに基づいて電子メールを送る（現在は基本的な機能を持っている）',
+'Send email based on X2Tags(currently only has basic function)'=>'X2Tags（現在は基本的な機能を持っています）に基づいて電子メールを送信 ',
 'Export data to a CSV (useful for updates when the database gets wiped)'=>'（データベースが一掃されるときに更新する際に便利）CSVにデータをエクスポートする',
 'Import data from a CSV template or exported records'=>'CSVのテンプレートまたはエクスポートされたレコードからデータをインポート',
-'Mobile web application'=>'モバイルWebアプリケーション',
+'Mobile web application'=>'モバイルインターネットアプリケーション',
 'Set time before an idle user is logged out'=>'アイドル状態のユーザの前に設定した時間がログアウトされます',
 'Adjust chat refresh rate for performance'=>'パフォーマンスの調整チャットリフレッシュレート',
 'Change logo back to X2Contacts'=>'X2Contactsに戻ってロゴを変更',
@@ -115,7 +114,7 @@ return array (
 'Use the Yii framework\'s code generation tools'=>'Yiiフレームワークのコード生成ツールを使用して、',
 'Commercial support and hosting'=>'商用サポートおよびホスティング',
 'X2Engine Support Forums'=>'X2Engineサポートフォーラム',
-'Yii Open Source web framework'=>'YiiのオープンソースのWebフレームワーク',
+'Yii Open Source web framework'=>'Yiiのオープンソースのインターネットフレームワーク',
 'Show'=>'表示する',
 'Hide'=>'隠す',
 'Send invitation emails to create X2Engine accounts'=>'X2Engineアカウントを作成するために招待メールを送信',
@@ -123,12 +122,11 @@ return array (
 'Create and manage user groups'=>'ユーザグループの作成と管理',
 'Create a public form to receive new contacts'=>'新しい連絡先を受信するパブリックフォームを作成',
 'Change how new web leads are distributed.'=>'新しいWebリードがどのように分布しているか変更します。',
-'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'"カスタムラウンドロビン"リード分布設定のための規則を管理します。',
 'Create a workflow for your sales process'=>'あなたの販売プロセスのワークフローを作成',
 'Change advanced workflow settings'=>'高度なワークフロー設定を変更する',
 'Manage what events will trigger user notifications.'=>'ユーザー通知をトリガするイベントを管理します。',
-'Configure session timeout and chat poll rate.'=>'セッションのタイムアウトを設定すると、ポーリングレートをチャット。',
-'Configure automatic updates and registration.'=>'自動更新や登録を設定します。',
+'Configure automatic updates, session timeout and chat poll rate.'=>'自動アップデート、セッションタイムアウトとチャットポーリングレートを設定します。',
 'Enter your google app settings for Calendar/Google login'=>'カレンダー/ GoogleへのログインのGoogleアプリの設定を入力します。',
 'Configure X2Engine\'s email settings'=>'X2Engineの電子メール設定を構成',
 'Create an email marketing campaign'=>'電子メールマーケティングキャンペーンを作成',
@@ -141,9 +139,9 @@ return array (
 'Customize fields for the modules.'=>'モジュール用のフィールドをカスタマイズします。',
 'Manage dropdowns for custom fields.'=>'カスタムフィールドのドロップダウンリストを管理します。',
 'Drag and drop editor for forms.'=>'フォームのエディタにドラッグアンドドロップします。',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'メインメニューのアイテムを並べ替える',
 'Add, remove and reorder modules:'=>'追加してモジュールを削除し、順序を変更：',
 'Select Email Criteria'=>'電子メールの基準を選択',
@@ -163,9 +161,9 @@ return array (
 'Export'=>'エクスポート',
 'Rename A Module'=>'モジュールの名前を変更する',
 'You can rename a module by selecting a module and typing the new name below.'=>'あなたがモジュールを選択し、以下の新しい名前を入力して、モジュールの名前を変更できます。',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'すべてのデータのエクスポート',
 'Please click the link below to download data.'=>'データをダウンロードするには、次のリンクをクリックしてください。',
 'Import Data from Template'=>'テンプレートからのデータのインポート',
@@ -181,8 +179,8 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'検索バーの横に表示するためにあなたのロゴをアップロードするには、下記のフォームを使用して、ここにファイルをアップロードしてください。',
 'Create Page'=>'ページを作成する',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'高性能な連絡先管理Webアプリケーション - X2Engine株式会社はX2Contacts後ろの会社です。 X2Engineは、組織のプロフェッショナルサポートとX2Contactsの訓練に提供することができます。私達に連絡するために下記のフォームに記入してください。',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'メールサーバの設定',
 'Ready to send email? We need some information about your mail server.'=>'メールを送る準備はできましたか？私達はあなたのメールサーバーに関するいくつかの情報を必要としています。',
 'Outbound Email Server'=>'アウトバウンド電子メールサーバー',
@@ -200,13 +198,5 @@ return array (
 'None'=>'なし',
 'User\'s Choice'=>'ユーザーの選択',
 'Default Signature'=>'デフォルトの署名',
-'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'このテンプレートには、次の変数を使用することができます。 {first}, {last}, {phone}, {email}.',
-
-// Updater/General Settings
-'Update Interval'=>'更新間隔',
-'Every Login'=>'すべてのログイン',
-'Daily'=>'デイリー',
-'Weekly'=>'毎週',
-'Monthly'=>'毎月',
-'Never'=>'決して',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'このテンプレートには、次の変数を使用することができます。 {first}, {last}, {phone} and {email}.',
 );

@@ -1,48 +1,24 @@
 <?php
 
 return array(
-    'name'=>"Accounts",
-    'install'=>array(
-        'CREATE TABLE x2_accounts(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(40) NOT NULL,
-	website VARCHAR(40),
-	type VARCHAR(60), 
-	annualRevenue FLOAT,
-	phone VARCHAR(40),
-	tickerSymbol VARCHAR(10),
-	employees INT,
-	assignedTo TEXT,
-	createDate INT,
-	associatedContacts TEXT,
-	description TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20)
-) COLLATE = utf8_general_ci',
-            'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES 
-                    ("Accounts",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-                    ("Accounts",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-                    ("Accounts",	"website",				"Website",				0,	0,	"url",			0,	NULL),
-                    ("Accounts",	"type",					"Type",					0,	0,	"varchar",		0,	NULL),
-                    ("Accounts",	"annualRevenue",                        "Revenue",				0,	0,	"currency",		0,	NULL),
-                    ("Accounts",	"phone",				"Phone",				0,	0,	"varchar",		0,	NULL),
-                    ("Accounts",	"tickerSymbol",                         "Symbol",				0,	0,	"varchar",		0,	NULL),
-                    ("Accounts",	"employees",                            "Employees",                            0,	0,	"int",			0,	NULL),
-                    ("Accounts",	"assignedTo",                           "Assigned To",                          0,	0,	"assignment",           0,	"multiple"),
-                    ("Accounts",	"createDate",                           "Create Date",                          0,	0,	"date",			0,	NULL),
-                    ("Accounts",	"associatedContacts",                   "Contacts",				0,	0,	"varchar",		0,	NULL),
-                    ("Accounts",	"description",                          "Description",                          0,	0,	"text",			0,	NULL),
-                    ("Accounts",	"lastUpdated",                          "Last Updated",                         0,	0,	"date",			0,	NULL);',
-    ),
-    'uninstall'=>array(
-        'DELETE FROM x2_fields WHERE modelName="Accounts"',
-        'DROP TABLE x2_accounts',
-    ),
-    'editable'=>true,
-    'searchable'=>true,
-    'adminOnly'=>false,
-    'custom'=>false,
-    'toggleable'=>false,
-    
+	'name' => "Accounts",
+	'install' => array(
+		dirname(__FILE__) . '/data/install.sql',
+		array(
+			'INSERT INTO x2_form_layouts 
+						(model,version,layout,defaultView,defaultForm,createDate,lastUpdated) 
+				VALUES	("Accounts","Form","{\"version\":\"1.2\",\"sections\":[{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"193\",\"tabindex\":\"0\"},{\"name\":\"formItem_tickerSymbol\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":286,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_employees\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_annualRevenue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":286,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"189\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"487\",\"tabindex\":\"0\"}]}]}]}]}","0","1","' . time() . '","' . time() . '"),
+						("Accounts","View","{\"version\":\"1.2\",\"sections\":[{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_tickerSymbol\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":286,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_website\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":285,\"items\":[{\"name\":\"formItem_employees\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_phone\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"},{\"name\":\"formItem_annualRevenue\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"192\",\"tabindex\":\"0\"}]},{\"width\":286,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"189\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"61\",\"width\":\"487\",\"tabindex\":\"0\"}]}]}]}]}","1","0","' . time() . '","' . time() . '")'
+			),
+	),
+	'uninstall' => array(
+		dirname(__FILE__) . '/data/uninstall.sql'
+	),
+	'editable' => true,
+	'searchable' => true,
+	'adminOnly' => false,
+	'custom' => false,
+	'toggleable' => false,
+	'version' => '2.0',
 );
 ?>

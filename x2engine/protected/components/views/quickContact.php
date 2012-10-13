@@ -38,10 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-
-$prof=Profile::model()->findByPk(Yii::app()->user->getId());
-
 $model = new Contacts;
 $attributeLabels = $model->attributeLabels();
 

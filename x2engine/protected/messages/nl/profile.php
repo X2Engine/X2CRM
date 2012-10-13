@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -59,12 +59,12 @@ return array (
 'Widgets'=>'Widgets',
 'Background Color'=>'Achtergrond Kleur',
 'Menu Color'=>'Menu Kleur',
-'Menu Text Color'=>'Menu Tekst kleur',
+'Menu Text Color'=>'Menu Tekst Kleur',
 'Background Image'=>'Achtergrond Afbeelding',
 'Start Page'=>'Start Pagina',
 'Results Per Page'=>'Resultaten Per Pagina',
-'Show Social Media'=>'Laat Social media zien',
-'Upload a Background'=>'Upload een achtergrond',
+'Show Social Media'=>'Laat Social Media Zien',
+'Upload a Background'=>'Upload een Achtergrond',
 
 // Profile Actions
 'View Profile'=>'Bekijk Profiel',
@@ -72,14 +72,14 @@ return array (
 'Change Settings'=>'Bewerk Instellingen',
 'Social Feed'=>'Social Feed',
 'People'=>'Mensen',
-'Change Personal Settings'=>'Verander persoonlijke instellingen',
+'Change Personal Settings'=>'Verander Persoonlijke Instellingen',
 
 // Profile Titles
 'Profile:'=>'Profiel:',
-'Update Your Profile'=>'Bewerk je profiel',
+'Update Your Profile'=>'Bewerk Je Profiel',
 
 // Social
-'Feed'=>'Feed',
+'Feed'=>'Nieuwsfeed',
 'Social'=>'Sociaal',
 'Reply'=>'Antwoord',
 'A larger Chat Box'=>'Een grotere Chate Box',

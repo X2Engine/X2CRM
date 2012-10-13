@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,21 +41,21 @@
 return array (
 // Attributes
 'ID'=>'ID',
-'Assigned To'=>'Asignado a',
+'Assigned To'=>'Asignado A',
 'Name'=>'Nombre',
 'Description'=>'Descripción',
-'Create Date'=>'Fecha de creación',
-'Last Updated'=>'Última actualización',
-'Updated By'=>'Actualizado por',
+'Create Date'=>'Fecha de Creación',
+'Last Updated'=>'Última Actualización',
+'Updated By'=>'Actualizado Por',
 
 'Data fields'=>'Campos de dtos',
 'Show'=>'Mostrar',
 'Hide'=>'Ocultar',
-'Module Title'=>'Título de módulo',
+'Module Title'=>'Título de Módulo',
 'The name for your new module'=>'El nombre para su nuevo módulo',
-'Item Name'=>'Nobre de item',
+'Item Name'=>'Nobre de Item',
 '(Optional) What to call individual records, e.g. "Create new X"'=>'(Opcional) Qué llamar registros individuales, por ejemplo, "crear nuevo X"',
-'DB Table Name'=>'Nombre de tabla de BD',
+'DB Table Name'=>'Nombre de Tabla de BD',
 'Optional (alphanumeric only, must start with a letter)'=>'Opcional (sólo alfanumérico, debe comenzar con una letra)',
 
 // Menu Items

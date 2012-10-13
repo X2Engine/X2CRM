@@ -38,19 +38,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
-
-$admin = Admin::model()->findByPk(1);
-$updateInterval = $admin->chatPollTime;
-
-$ajaxUrl = $this->controller->createUrl('/notifications/getMessages');
 $saveWidgetHeight = $this->controller->createUrl('/site/saveWidgetHeight');
 Yii::app()->clientScript->registerScript('updateChatJs', "
-	chatUpdateInterval = " . $updateInterval . ";
-	chatAjaxUrl = '".$ajaxUrl . "';
-	$(document).ready(updateChat());	//update on page load
-	
 $(function() {
 	$('#chat-container').resizable({
 		handles: 's',
@@ -112,19 +101,19 @@ $chatContainerFixHeight = $chatContainerHeight + 5;
 				<?php echo CHtml::textArea('chat-message','', array('style'=>'height:'.$chatmessageHeight.'px;')); ?>
 			</div>
 			<?php
-			echo CHtml::ajaxSubmitButton(
+			echo CHtml::submitButton(
 				Yii::t('app','Send'),
-				array('/site/newMessage'),
+				/* array('/site/newMessage'),
 				array(
 					'update'=>'#chat-box',
 					'success'=>"function(response) {
-						updateChat();
+						//updateChat();
 						$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
 						// $('#chat-message').css('color','#aaa');
 						// toggleText($('#chat-message').get());
 					}",
-				),
-				array('class'=>'x2-button')
+				), */
+				array('id'=>'chat-submit','class'=>'x2-button')
 			);
 			?>
 			<?php echo CHtml::endForm(); ?>

@@ -60,6 +60,12 @@ return array (
 'Last Updated'=>'',
 'Updated By'=>'',
 'None'=>'',
+'Basic Info'=>'',
+'Email'=>'',
+'Call List'=>'',
+'Physical Mail'=>'',
+'Email Template'=>'',
+'Update Campaign'=>'',
 
 // Menu
 'All Campaigns'=>'',
@@ -84,6 +90,7 @@ return array (
 'Opened'=>'',
 'Clicked'=>'',
 'Unsubscribed'=>'',
+'Status'=>'',
 
 // Mailing
 'The email sending limit has been reached.'=>'',

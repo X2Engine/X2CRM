@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,72 +45,75 @@ return array (
 'Name'=>'Nome',
 'Locked'=>'Bloccato',
 'Contacts'=>'Contatti',
-'Assigned To'=>'Assegnata a',
+'Assigned To'=>'Assegnata A',
 'Account'=>'Conto',
 'Probability'=>'Probabilità',
 'Expiration Date'=>'Data di Scadenza',
-'Last Updated'=>'Ultimo aggiornamento',
-'Create Date'=>'Data di creazione',
-'Updated By'=>'Aggiornato da',
-'Created By'=>'Creato da',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Create Date'=>'Data di Creazione',
+'Updated By'=>'Aggiornato Da',
+'Created By'=>'Creato Da',
 'Notes'=>'Note',
 'Products'=>'Prodotti',
-'Expected Close Date'=>'Data di chiusura prevista',
+'Expected Close Date'=>'Data di Chiusura Prevista',
 
-'Sales Stage'=>'Fase di vendita',
+'Sales Stage'=>'Fase di Vendita',
 'Existing Products'=>'I Prodotti Esistenti',
-'Lead Source'=>'Fonte di piombo',
+'Lead Source'=>'Fonte di Piombo',
 'Description'=>'Descrizione',
 'Notes/Terms'=>'Note / Termini',
 'Hold Control or Command key to select multiple items.'=>'Tenere il controllo o il tasto Comando per selezionare più elementi.',
 
 'Draft'=>'Bozza',
-'Pending'=>'In Attesa di',
+'Pending'=>'In Attesa Di',
 'Issued'=>'Rilasciato',
 
-'Won'=>'Ha vinto',
+'Won'=>'Ha Vinto',
 
 'Working'=>'Lavoro',
 'Lost'=>'Perso',
 
-'Website'=>'Sito web',
-'Cold Call'=>'Chiamata a freddo',
+'Website'=>'Sito Web',
+'Cold Call'=>'Chiamata a Freddo',
 'E-Mail'=>'E-Mail',
 'Store'=>'Negozio',
 
 // Quotes Actions
-'Quotes List'=>'Quotes List',
+'Quotes List'=>'Citazioni List',
 'Create'=>'Creare',
-'View Quote'=>'Visualizza Quote',
+'View Quote'=>'Visualizza Preventivo',
 'Update'=>'Aggiornare',
 'Delete'=>'Cancellare',
 'Manage'=>'Gestire',
 'Delete Quote'=>'Elimina Quote',
-'Manage Quotes'=>'Gestire Quotes',
-'Create Quote'=>'Crea Quote',
+'Manage Quotes'=>'Gestire Citazioni',
+'Create Quote'=>'Crea Citazioni',
+'New Quote'=>'Cita Nuova',
+'Expires'=>'Scade',
 
-'Add a User'=>'Aggiungi un utente',
-'Add a Contact'=>'Aggiungere un contatto',
-'Remove a User'=>'Rimuovere un utente',
-'Remove a Contact'=>'Rimuovere un contatto',
-'Share Quote'=>'Condividi Quote',
+'Add a User'=>'Aggiungi un Utente',
+'Add a Contact'=>'Aggiungere un Contatto',
+'Remove a User'=>'Rimuovere un Utente',
+'Remove a Contact'=>'Rimuovere un Contatto',
+'Share Quote'=>'Condividi Citazioni',
 'Print'=>'Stampa',
-'Print Quote'=>'Stampa Quote',
+'Print Quote'=>'Stampa Citazioni',
 
 // Quotes Titles
-'Quotes'=>'Quotes',
+'Quotes'=>'Citazioni',
 'Quote'=>'Citare',
-'Quote:'=>'Quote:',
-'Update Quote: {name}'=>'Aggiornamento Quote: {name}',
-'Print Options'=>'Opzioni di stampa',
+'Quote:'=>'Citazione:',
+'Update Quote: {name}'=>'Aggiornamento Citazione: {name}',
+'Print Options'=>'Opzioni di Stampa',
 
 // Misc Text
 'Please click any new users you wish to add.'=>'Seguendo uno i nuovi utenti che si desidera aggiungere.',
 'Please select the contacts you wish to add.'=>'Si prega di selezionare i contatti che si desidera aggiungere.',
 'Please select the users you wish to remove.'=>'Si prega di selezionare gli utenti che si desidera rimuovere.',
 'Please select the contacts you wish to remove.'=>'Si prega di selezionare i contatti che si desidera rimuovere.',
-'Quote Record Details'=>'Quota Dettagli record',
+'Quote Record Details'=>'Quota dei Dettagli del Record',
 'Include Logo'=>'Includi Logo',
 'Basic Information'=>'Informazioni di Base',
 'Opportunities'=>'Vendite',
+'Subscribe'=>'Abbonarsi',
 );

@@ -60,6 +60,12 @@ return array (
 'Last Updated'=>'Последнее обновление',
 'Updated By'=>'Обновил',
 'None'=>'ни один',
+'Basic Info'=>'Основная информация',
+'Email'=>'E-mail',
+'Call List'=>'список вызова',
+'Physical Mail'=>'Физические почты',
+'Email Template'=>'электронной почте Шаблон',
+'Update Campaign'=>'Обновление кампании',
 
 // Menu
 'All Campaigns'=>'Все кампании',
@@ -76,7 +82,7 @@ return array (
 'Launch Now'=>'Запуск Теперь',
 'Stop'=>'останавливаться',
 'Resume'=>'продолжать',
-'Send Test Email'=>'Отправить Email тест',
+'Send Test Email'=>'Отправить тестовое письмо',
 'Campaign launched'=>'Кампания была запущена',
 'Campaign paused'=>'Кампания была приостановлена',
 'Campaign resumed'=>'Кампания была продолжена',
@@ -84,6 +90,7 @@ return array (
 'Opened'=>'открытый',
 'Clicked'=>'нажата',
 'Unsubscribed'=>'отписался',
+'Status'=>'статус',
 
 // Mailing
 'The email sending limit has been reached.'=>'Лимит отправки электронной почты не будет достигнута.',
@@ -96,7 +103,7 @@ return array (
 'Attempting to send email'=>'Попытка отправить письмо',
 'Unsendable email'=>'без отправки электронной почты',
 'Blank email addresses'=>'Пустые адреса электронной почты',
-'Duplicate Email Address'=>'Duplicate Email адрес',
+'Duplicate Email Address'=>'Duplicate Email Aдрес',
 '\'Do Not Email\' contacts'=>'Не пишите связи',
 'Data errors'=>'Данные ошибки',
 'Batch completed, sending again in'=>'Пакетная завершен, отправив снова в',

@@ -1,6 +1,5 @@
 <?php
-
-/* * *******************************************************************************
+/*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -12,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,49 +36,34 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ****************************************************************************** */
+ ********************************************************************************/
 
 /**
- * @package X2CRM.modules.contacts.controllers 
+ * Widget class for the relationships form.
+ *
+ * Relationships lists the relationships a model has with other models,
+ * and provides a way to add existing models to the models relationships.
+ * 
+ * @package X2CRM.components 
  */
-class MyContactsController extends ContactsController {
+class InlineRelationships extends X2Widget {
 
-	public function actionView($id) {
-		$contact = $this->loadModel($id);
-		
-		if(isset($this->portlets['TimeZone']))
-			$this->portlets['TimeZone']['params']['model'] = &$contact;
-		if(isset($this->portlets['GoogleMaps']))
-			$this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
+	public $model = null;
+	public $startHidden = false;
+	public $modelName = "";
+	
+	public function init() {
+	
+ 		Yii::app()->clientScript->registerScript('toggleAttachmentForm', "
 
-		if ($this->checkPermissions($contact,'view')) {
-		
-			if(isset($_COOKIE['vcr-list']))
-				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
-		
-			if ($contact->dupeCheck != '1') {
-				$criteria = new CDbCriteria();
-				$criteria->compare('CONCAT(firstName," ",lastName)', $contact->firstName . " " . $contact->lastName, false, "OR");
-				$criteria->compare('email', $contact->email, false, "OR");
-				$criteria->compare('phone', $contact->phone, false, "OR");
-				$criteria->compare('phone2', $contact->phone2, false, "OR");
-				$criteria->compare('id', "<>" . $contact->id, false, "AND");
-				$duplicates = Contacts::model()->findAll($criteria);
-				if (count($duplicates) > 0) {
-					$this->render('duplicateCheck', array(
-						'newRecord' => $contact,
-						'duplicates' => $duplicates,
-						'ref' => 'view'
-					));
-				} else {
-					User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
-					parent::view($contact, 'contacts');
-				}
-			} else {
-				User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
-				parent::view($contact, 'contacts');
-			}
-		} else
-			$this->redirect('index');
+		",CClientScript::POS_HEAD);
+	
+		parent::init();
+	}
+
+	public function run() {
+		$this->render('inlineRelationships',array('model'=>$this->model, 'modelName'=>$this->modelName, 'startHidden'=>$this->startHidden));
 	}
 }
+
+?>

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,6 +55,9 @@ return array (
 'Last Updated'=>'Последнее обновление',
 'Updated By'=>'Обновил',
 'None'=>'ни один',
+'Contacts'=>'связи',
+'Basic Information'=>'Основная информация',
+'Additional Information'=>'Дополнительная информация',
 
 // Accounts Actions
 'Accounts List'=>'Список счетов',
@@ -67,11 +70,17 @@ return array (
 'Remove a User'=>'Удаление пользователя',
 'Remove a Contact'=>'Удалить Контакт',
 'Share Account'=>'паевой счет',
+'Create'=>'создавать',
+'View'=>'смотреть',
+'Update'=>'обновление',
+'Delete'=>'удалять',
+'Update Account:'=>'Обновление счет:',
+'Share Opportunity'=>'Поделиться возможностей',
 
 // Accounts Titles
 'Accounts'=>'счета',
 'Manage Accounts'=>'Управление учетными записями',
-'Update Account: {name}'=>'Обновление счет: {name}',
+'Update Account: {name}'=>'Обновление счет: {имя}',
 'Account:'=>'счет:',
 
 // Misc

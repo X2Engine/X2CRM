@@ -41,59 +41,68 @@
 return array (
 'Calendar'=>'Calendrier',
 'Calendars'=>'Calendriers',
-
-'User Calendars'=>'Calendriers des utilisateurs',
-'Group Calendars'=>'Calendriers de groupe',
+// // 
+'User Calendars'=>'Calendriers des Utilisateurs',
+'Group Calendars'=>'Calendriers de Groupe',
 'Google Calendars'=>'Google Calendars',
 'Filter'=>'Filtrer',
 'My Calendar Permissions'=>'Mes permissions Calendrier',
-'User Calendar Permissions'=>'Autorisations calendrier de l\'utilisateur',
-'Google Event'=>'Google événement',
-
+'User Calendar Permissions'=>'Autorisations Calendrier de l\'Utilisateur',
+'Google Event'=>'Google Événement',
+'Contacts'=>'Contacts',
+'Accounts'=>'Comptes',
+'Opportunities'=>'Opportunités',
+'Products'=>'Produits',
+'Media'=>'Médias',
+'View Permission'=>'Afficher les Autorisations',
+'These users can view your calendar.'=>'Ces utilisateurs peuvent consulter votre agenda.',
+'Edit Permission'=>'Modifier Autorisation',
+'These users can edit your calendar.'=>'Ces utilisateurs peuvent modifier votre calendrier.',
+// // 
 'Completed'=>'Terminé',
 'Quotes'=>'Citations',
 'Email'=>'Email',
 'Attachment'=>'Attachement',
-
+// // 
 'List'=>'Liste',
 'Delete'=>'Efacer',
 'Create'=>'Créer',
-// button text
-'Update'=>'Mettre à jour',
+// // button text
+'Update'=>'Mettre à Jour',
 'today'=>'aujourd\'hui',
 'month'=>'mois',
 'week'=>'semaine',
 'day'=>'jour',
-
-// month names
-'January'=>'janvier',
-'February'=>'février',
-'March'=>'mars',
-'April'=>'avril',
-'May'=>'mai',
-'June'=>'juin',
-'July'=>'juillet',
-'August'=>'août',
-'September'=>'septembre',
-'October'=>'octobre',
-'November'=>'novembre',
-'December'=>'décembre',
-
-// short month names
-'Jan'=>'janv',
-'Feb'=>'févr',
-'Mar'=>'mars',
-'Apr'=>'avril',
-'May'=>'mai',
-'Jun'=>'juin',
-'Jul'=>'juil',
-'Aug'=>'août',
-'Sep'=>'sept',
-'Oct'=>'oct',
-'Nov'=>'nov',
-'Dec'=>'déc',
-
-// day names
+// // 
+// // month names
+'January'=>'Janvier',
+'February'=>'Février',
+'March'=>'Mars',
+'April'=>'Avril',
+'May'=>'Mai',
+'June'=>'Juin',
+'July'=>'Juillet',
+'August'=>'Août',
+'September'=>'Septembre',
+'October'=>'Octobre',
+'November'=>'Novembre',
+'December'=>'Décembre',
+// // 
+// // short month names
+'Jan'=>'Janv',
+'Feb'=>'Févr',
+'Mar'=>'Mars',
+'Apr'=>'Avril',
+'May'=>'Mai',
+'Jun'=>'Juin',
+'Jul'=>'Juil',
+'Aug'=>'Août',
+'Sep'=>'Sept',
+'Oct'=>'Oct',
+'Nov'=>'Nov',
+'Dec'=>'Déc',
+// // 
+// // day names
 'Sunday'=>'Dimanche',
 'Monday'=>'Lundi',
 'Tuesday'=>'Mardi',
@@ -101,13 +110,13 @@ return array (
 'Thursday'=>'Jeudi',
 'Friday'=>'Vendredi',
 'Saturday'=>'Samedi',
-
-// short day names,
-'Sun'=>'dim',
-'Mon'=>'lun',
-'Tue'=>'mar',
-'Wed'=>'mer',
-'Thu'=>'jeu',
-'Fri'=>'ven',
-'Sat'=>'sam',
+// // 
+// // short day names,
+'Sun'=>'Dim',
+'Mon'=>'Lun',
+'Tue'=>'Mar',
+'Wed'=>'Mer',
+'Thu'=>'Jeu',
+'Fri'=>'Ven',
+'Sat'=>'Sam',
 );

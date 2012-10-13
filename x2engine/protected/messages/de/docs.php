@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,34 +44,36 @@ return array (
 'ID'=>'ID',
 'Title'=>'Titel',
 'Text'=>'Text',
-'Created By'=>'Erstellt von',
-'Updated By'=>'Aktualisiert von',
-'Last Updated'=>'Zuletzt aktualisiert',
+'Created By'=>'Erstellt Von',
+'Updated By'=>'Aktualisiert Von',
+'Last Updated'=>'Zuletzt Aktualisiert',
 'Create Date'=>'Erstellen Datum',
-'Edit Permissions'=>'Berechtigungen bearbeiten',
-'Doc Type'=>'Doc Type',
+'Edit Permissions'=>'Berechtigungen Bearbeiten',
+'Doc Type'=>'Belegart',
 
 // Labels
 'Doc'=>'Dokument',
 'Document:'=>'Dokument',
 'Edit Document:'=>'Dokument Bearbeiten:',
 'Documents'=>'Dokumente',
-'Manage Docs'=>'Dokumente verwalten',
+'Manage Docs'=>'Dokumente Verwalten',
 'Docs'=>'Unterlagen',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Bitte wählen Sie, welche Benutzer das Dokument bearbeiten dürfen. Verwenden Sie Control + Click und aktivieren / deaktivieren einzelne Benutzer.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Bitte rechten Maustaste auf den unten stehenden Link und wählen "Speichern unter" um das Dokument herunterzuladen! Ein Linksklick öffnet das Dokument in einem Druck-Modus.',
 'Uploaded Documents'=>'Hochgeladene Dokumente',
+'Custom Message'=>'Custom Message',
 
 // Doc Navbar
-'List Docs'=>'Dokumente auflisten',
-'Create Docs'=>'Dokumente erstellen',
-'View Doc'=>'Dokumente zeigen',
-'Edit Doc'=>'Dokumente bearbeiten',
-'Delete Doc'=>'Dokument löschen',
-'Export Doc'=>'Dokument exportieren',
-'Edit Doc Permissions'=>'Berechtigungen Dokument bearbeiten ',
+'List Docs'=>'Dokumente Auflisten',
+'Create Docs'=>'Dokumente Erstellen',
+'View Doc'=>'Dokumente Zeigen',
+'Edit Doc'=>'Dokumente Bearbeiten',
+'Delete Doc'=>'Dokument Löschen',
+'Export Doc'=>'Dokument Exportieren',
+'Edit Doc Permissions'=>'Berechtigungen Dokument Bearbeiten ',
 'Edit'=>'Bearbeiten',
 'Export'=>'Exportieren',
 'Create'=>'Schaffen',
 'Create Email'=>'Neues E-Mail',
+'Create Document'=>'Dokument Erstellen',
 );

@@ -151,9 +151,9 @@ foreach($layoutData['sections'] as &$section) {
 									$field = $fields[$fieldName];
 									
 										if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
-											// unset($item);
-											// echo '</div></div>';
-											// continue;
+											unset($item);
+											echo '</div></div>';
+											continue;
 										}
 									// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
 									// $perms=array();

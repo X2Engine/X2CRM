@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,7 +40,7 @@
 
 return array (
 // Product Attributes
-'ID'=>'ID',
+'ID'=>'番号',
 'Name'=>'名',
 'Type'=>'タイプ',
 'Price'=>'価格',
@@ -50,6 +50,10 @@ return array (
 'Description'=>'説明',
 'Create Date'=>'作成日',
 'Tools'=>'ツール',
+'Basic Information'=>'基本情報',
+'Product Information'=>'製品情報',
+'USD'=>'USD',
+'Active'=>'アクティブ',
 
 // Product Actions
 'Product List'=>'商品リスト',

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -57,28 +57,23 @@ return array (
 
 'X2EngineCRM Application Info'=>'X2EngineCRM Applicatie Info',
 
-'Create sample data'=>'Maak voorbeelddata',
 'Application Name'=>'Applicatie Naam',
 'Default Language'=>'Standaard Taal',
 'Currency'=>'Valuta',
-'Default Timezone'=>'standaard Tijdzone',
 'Admin Password'=>'Beheerder Wachtwoord',
 'Confirm Password'=>'Bevestig Wachtwoord',
 'Administrator Email'=>'Beheerder Email',
 'Please enter a valid email address.'=>'Voer een geldig email adres in',
-'Test Connection'=>'de verbinding testen',
-'Connection OK!'=>'Verbinding werkt!',
-'Could not connect to host.'=>'Kan geen verbinding maken met host.',
 
 'Database Connection Info'=>'Database Connectie Info',
 
 'This release only supports MySQL. Please create a database before installing.'=>'Deze release ondersteunt alleen MySQL. Maak een database aan voor installatie.',
 'Host Name'=>'Hostnaam',
-'Database Name'=>'Database naam',
+'Database Name'=>'Database Naam',
 'Username'=>'Gebruikersnaam',
 'Password'=>'Wachtwoord',
 
-// Software updates & registration
+// Software updates
 'Software Updates'=>'Software Updates',
 'Notify me of software updates'=>'Bericht me bij software updates',
 'First Name'=>'Voornaam',
@@ -87,22 +82,16 @@ return array (
 'Company'=>'Bedrijf',
 'Position'=>'Functie',
 'How you found X2EngineCRM'=>'Hoe heb je X2EngineCRM gevonden',
-'Phone Number'=>'Telefoon nummer',
+'Phone Number'=>'Telefoon Nummer',
 'Subscribe to the newsletter'=>'Aanmelden voor nieuwsbrief',
 'Comments'=>'Commentaar',
 'Request a follow-up contact'=>'Vraag een follow-up contact aan',
 'Software Updates'=>'Software Updates',
 'Please help us improve X2EngineCRM by providing the following information:'=>'Help ons om X2EngineCRM te verbeteren door de volgende gegevens te verstrekken:',
 'Software update notifications enabled.'=>'Software update meldingn ingeschakeld',
-'Optional Information'=>'Optionele informatie',
+'Optional Information'=>'Optionele Informatie',
 'Could not connect to the updates server at this time.'=>'Kon geen verbingen maken met de updates server.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Je kunt doorgaan met de installatie zonder updates in te schakelen en later opnieuw proberen door naar "instellingen" onder de categorie "App Instellingen" te gaan binnen de Admin Console.',
-'Product Key'=>'product key',
-'Registration'=>'registratie',
-'Software registration succeeded.'=>'Software registratie is gelukt.',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Als u software-updates van X2Engine, registreer u dan uw exemplaar van X2EngineCRM:',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Zorg ervoor dat u een actieve internetverbinding. Als het probleem zich blijft voordoen, neem dan contact met ons op',
-'For support or sales inquiries, please contact us'=>'Voor ondersteuning of verkoop vragen, neem dan contact met ons op',
 
 'Install'=>'Installeer',
 

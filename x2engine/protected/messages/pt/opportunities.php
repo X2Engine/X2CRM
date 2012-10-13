@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,19 +41,19 @@
 return array (
 // Opportunities Attributes
 'ID'=>'ID',
-'Assigned To'=>'Atribuído a',
+'Assigned To'=>'Atribuído A',
 'Name'=>'Nome',
 'Account'=>'Conta',
 'Contacts'=>'Contactos',
 'Quote Amount'=>'Valor Citação',
-'Sales Stage'=>'Estágio vendas',
-'Expected Close Date'=>'Data esperada Fechar',
+'Sales Stage'=>'Estágio Vendas',
+'Expected Close Date'=>'Data Esperada Fechar',
 'Probability'=>'Probabilidade',
-'Lead Source'=>'Fonte levar',
+'Lead Source'=>'Fonte Levar',
 'Description'=>'Descrição',
 'Create Date'=>'Data de Criação',
 'Last Updated'=>'Última Atualização',
-'Updated By'=>'Atualizado por',
+'Updated By'=>'Atualizado Por',
 'Hold Control or Command key to select multiple items.'=>'Segure tecla Control ou Command para selecionar vários itens.',
 'Working'=>'Trabalhar',
 'Won'=>'Ganhou',
@@ -62,20 +62,33 @@ return array (
 'Cold Call'=>'Chamada Frio',
 'E-Mail'=>'E-Mail',
 'Store'=>'Loja',
+'Other Info'=>'Outras Informações',
+'Basic Information'=>'Informações Básicas',
+'None'=>'Nenhum',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'Chantagista',
 
 // Opportunities Actions
-'Opportunities List'=>'Lista de vendas',
+'Opportunities List'=>'Lista de Vendas',
 'Create Opportunity'=>'Crie Venda',
 'View Opportunity'=>'Ver Venda',
 'Update Opportunity'=>'Atualizar Venda',
 'Delete Opportunity'=>'Excluir Venda',
 'Manage Opportunities'=>'Gerenciar Vendas',
+'Create'=>'Criar',
+'View'=>'Ver',
+'Update'=>'Atualizar',
+'Update Opportunity:'=>'Atualizar Venda:',
 
-'Add a User'=>'Adicionar um usuário',
-'Add a Contact'=>'Adicionar um contato',
-'Remove a User'=>'Remover um usuário',
-'Remove a Contact'=>'Remover um contato',
+'Add A User'=>'Adicionar um Usuário',
+'Add A Contact'=>'Adicionar um Contato',
+'Remove A User'=>'Remover um Usuário',
+'Remove A Contact'=>'Remover um Contato',
 'Share Opportunity'=>'Compartilhar Venda',
+'Delete'=>'Excluir',
+'Add'=>'Adicionar',
+'Remove'=>'Remover',
 
 // Opportunities Titles
 'Opportunities'=>'Vendas',

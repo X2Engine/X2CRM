@@ -41,31 +41,40 @@
 return array (
 'Calendar'=>'לוח שנה',
 'Calendars'=>'לוחות שנה',
-
+// // 
 'User Calendars'=>'המשתמש לוחות שנה',
 'Group Calendars'=>'קבוצה לוחות שנה',
-'Google Calendars'=>'Google Calendar',
+'Google Calendars'=>'לוחות שנת Google',
 'Filter'=>'סנן',
 'My Calendar Permissions'=>'לוח שנה הרשאות שלי',
 'User Calendar Permissions'=>'לוח שנה הרשאות המשתמש',
 'Google Event'=>'Google אירועים',
-
+'Contacts'=>'אנשי קשר',
+'Accounts'=>'חשבונות',
+'Opportunities'=>'הזדמנויות',
+'Products'=>'מוצרים',
+'Media'=>'כלי תקשורת',
+'View Permission'=>'צפו בהרשאות',
+'These users can view your calendar.'=>'משתמשים אלו יכולים להציג את לוח השנה שלך.',
+'Edit Permission'=>'ערוך הרשאה',
+'These users can edit your calendar.'=>'משתמשים אלו יכולים לערוך את לוח השנה שלך.',
+// // 
 'Completed'=>'הושלם',
 'Quotes'=>'ציטוטים',
 'Email'=>'דוא"ל',
 'Attachment'=>'התקשרות',
-
+// // 
 'List'=>'רשימה',
 'Delete'=>'למחוק',
 'Create'=>'ליצור',
-// button text
+// // button text
 'Update'=>'לעדכן',
 'today'=>'היום',
 'month'=>'חודש',
 'week'=>'שבוע',
 'day'=>'יום',
-
-// month names
+// // 
+// // month names
 'January'=>'ינואר',
 'February'=>'פברואר',
 'March'=>'מרץ',
@@ -78,8 +87,8 @@ return array (
 'October'=>'אוקטובר',
 'November'=>'נובמבר',
 'December'=>'דצמבר',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'ינואר',
 'Feb'=>'פבואר',
 'Mar'=>'קלקול',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'אוקטובר',
 'Nov'=>'נובמבר',
 'Dec'=>'דצמבר',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'יום ראשון',
 'Monday'=>'יום שני',
 'Tuesday'=>'יום שלישי',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'יום חמישי',
 'Friday'=>'יום שישי',
 'Saturday'=>'יום שבת',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'שמש',
 'Mon'=>'יום שני',
 'Tue'=>'יום שלישי',

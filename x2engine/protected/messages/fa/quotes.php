@@ -56,18 +56,23 @@ return array (
 'Notes'=>'یادداشتها',
 'Products'=>'محصولات',
 'Expected Close Date'=>'تاریخ مورد انتظار',
+
 'Sales Stage'=>'مراحل فروش',
 'Existing Products'=>'محصولات موجود',
 'Lead Source'=>'معرف',
 'Description'=>'شرح',
 'Notes/Terms'=>'یادداشتها/شرایط',
 'Hold Control or Command key to select multiple items.'=>'.کلید کنترل را حهت انتخاب چندین مورد نگاه دارید',
+
 'Draft'=>'حواله',
 'Pending'=>'در انتظار',
 'Issued'=>'صادر شده',
+
 'Won'=>'برد',
+
 'Working'=>'در حال کار',
 'Lost'=>'باخت',
+
 'Website'=>'پایگاه وب',
 'Cold Call'=>'تماس اولیه',
 'E-Mail'=>'ای-نامه',
@@ -83,6 +88,9 @@ return array (
 'Delete Quote'=>'حذف سفارش',
 'Manage Quotes'=>'مدیریت شفارشات',
 'Create Quote'=>'سفارش جدید',
+'New Quote'=>'نقل قول جدید',
+'Expires'=>'منقضی می شود',
+
 'Add a User'=>'اضافه کردن کاربر',
 'Add a Contact'=>'اضافه کردن تماس',
 'Remove a User'=>'حذف کاربر',
@@ -106,5 +114,6 @@ return array (
 'Quote Record Details'=>'جزییات رکورد سفارش',
 'Include Logo'=>'افزودن لوگو',
 'Basic Information'=>'اطلاعات پایه',
-'Sales'=>'فروشها',
+'Opportunities'=>'فرصت',
+'Subscribe'=>'اشتراک در',
 );

@@ -39,6 +39,7 @@
  ********************************************************************************/
  
 $isGuest = Yii::app()->user->isGuest;
+$auth=Yii::app()->authManager;
 $isAdmin = !$isGuest && (Yii::app()->user->getName()=='admin' || Yii::app()->user->checkAccess('AdminIndex'));
 $isUser = !($isGuest || $isAdmin);
 if(Yii::app()->session['alertUpdate']){
@@ -53,40 +54,42 @@ $baseUrl = Yii::app()->getBaseUrl();
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $cs = Yii::app()->clientScript;
+$jsVersion = '?'.Yii::app()->params->buildDate;
 
 // jQuery and jQuery UI libraries
 $cs->registerCoreScript('jquery');
 $cs->registerCoreScript('jquery.ui');
 
 // custom scripts
-$cs->registerScriptFile($baseUrl.'/js/layout.js');
-$cs->registerScriptFile($baseUrl.'/js/publisher.js');
-$cs->registerScriptFile($baseUrl.'/js/media.js');
-$cs->registerScriptFile($baseUrl.'/js/x2forms.js');
-$cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js');
-$cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js');
-$cs->registerScriptFile($baseUrl.'/js/tinyeditor.js');
-$cs->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js');
+$cs->registerScriptFile($baseUrl.'/js/layout.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/publisher.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/media.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/x2forms.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/tinyeditor.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion);
 
 if(Yii::app()->session['translate'])
-	$cs->registerScriptFile($baseUrl.'/js/translator.js');
+	$cs->registerScriptFile($baseUrl.'/js/translator.js'.$jsVersion);
 
-$cs->registerScriptFile($baseUrl.'/js/backgroundImage.js');
-$cs->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js');
-$cs->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css','screen, projection');
+$cs->registerScriptFile($baseUrl.'/js/backgroundImage.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion);
+$cs->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
 
 // blueprint CSS framework
-$cs->registerCssFile($themeUrl.'/css/screen.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/dragtable.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/print.css','print');
-$cs->registerCssFile($themeUrl.'/css/main.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/layout.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/details.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/x2forms.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/form.css','screen, projection');
-$cs->registerCssFile($themeUrl.'/css/tinyeditor.css','screen, projection');
-// $cs->registerCssFile($themeURL.'/css/jquery-ui.css','screen, projection');
-$cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'); 
+$cs->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print');
+$cs->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection');
+$cs->registerCssFile($themeUrl.'/css/tinyeditor.css'.$jsVersion,'screen, projection');
+// $cs->registerCssFile($themeURL.'/css/jquery-ui.css'.$jsVersion,'screen, projection');
+// $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion); 
 
 $cs->registerScript('fullscreenToggle','
 window.enableFullWidth = ' . (!Yii::app()->user->isGuest?(Yii::app()->params->profile->enableFullWidth? 'true':'false'):'true') . ';
@@ -100,7 +103,8 @@ $(document).ready(function() {
 });
 ',CClientScript::POS_END);
 
-$cs->registerScriptFile($baseUrl.'/js/notifications.js');
+$cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion);
+$cs->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
 /* if($this->getModule()!='mobile'){
 $notifUrl = $this->createUrl('/site/checkNotifications');
 // $cs->registerScript('updateNotificationJs', "
@@ -171,13 +175,13 @@ if($isGuest) {
 
 	$modules = Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
 	$standardMenuItems = array();	
-	foreach($modules as $moduleItem){
-		if(($isAdmin || $moduleItem->adminOnly==0) && $moduleItem->name != 'users'){
-            if($moduleItem->name!='document')
-                $standardMenuItems[$moduleItem->name]=$moduleItem->title;
-            else
-                $standardMenuItems[$moduleItem->title]=$moduleItem->title;
-        }
+	foreach($modules as $moduleItem) {
+		if(($isAdmin || $moduleItem->adminOnly==0) && $moduleItem->name != 'users') {
+			if($moduleItem->name!='document')
+				$standardMenuItems[$moduleItem->name]=$moduleItem->title;
+			else
+				$standardMenuItems[$moduleItem->title]=$moduleItem->title;
+		}
 	}
 	$menuItems = array();
 	
@@ -186,13 +190,16 @@ if($isGuest) {
 	
 	foreach($standardMenuItems as $key=>$value) {
 		$file=Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
+        $action=ucfirst($key).ucfirst($defaultAction);
+        $authItem=$auth->getAuthItem($action);
+        $permission=Yii::app()->user->checkAccess($action) || is_null($authItem);
 		if($file->exists){
-            if(Yii::app()->user->checkAccess(ucfirst($key).ucfirst($defaultAction)))
+            if($permission)
                 $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
         }elseif(is_dir('protected/modules/'.$key)) {
 			if(!is_null($this->getModule()))
 				$module=$this->getModule()->id;
-            if(Yii::app()->user->checkAccess(ucfirst($key).ucfirst($defaultAction)))
+            if($permission)
                 $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
 		} else {
 			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
@@ -256,27 +263,12 @@ else
 
 
 $userMenu = array(
-	// array('label' => Yii::t('app','Chat'), 'url' => array('/site/groupChat')),
-
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin'&&Yii::app()->controller->action->id!='viewPage')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
-	// array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'), 'visible'=>$isAdmin),
-	// array('label' => CHtml::button(Yii::app()->user->getName(),array('id'=>'user-menu-toggle','onclick'=>'','class'=>'x2-button')), 'visible'=>$isUser,
 
 	array('label' => Yii::t('app','Users'),'url' => array('/users/admin'),'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Users'),'url' => array('/profile/profiles'),'visible'=>!$isAdmin),
-	
-	// array('label' => Yii::t('app','Users'),'itemOptions'=>array('id'=>'social-dropdown','class'=>'dropdown'),
-		// 'items' => array(
-			// array('label' => Yii::t('app','Users'),'url' => array('/profile/profiles'),'visible'=>$isUser),
-			// array('label' => Yii::t('app','Manage Users'),'url' => array('/users/admin'),'visible'=>$isAdmin),
-			// array('label' => Yii::t('app','Social Feed'),'url' => array('/profile/index')),
-			// array('label' => Yii::t('app','Group Chat'),'url' => array('/site/groupChat')),
-		// )
-	// ),
-	
-	// array('label' => Yii::t('app','Profile').' ('.Yii::app()->user->getName().')','itemOptions'=>array('id'=>'profile-dropdown','class'=>'dropdown'),
-	
+
 	array('label' => $searchbarHtml,'itemOptions'=>array('id'=>'search-bar','class'=>'special')),
 	array('label'=>CHtml::link('<span>'.$notifCount.'</span>','#',array('id'=>'main-menu-notif','style'=>'z-index:999;')),'itemOptions'=>array('class'=>'special')),
 	array('label'=>CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button')),'itemOptions'=>array('class'=>'search-bar special')),
@@ -331,7 +323,6 @@ $userMenu = array(
 			));
 			//render user menu items if logged in
 			if (!$isGuest) {
-				// echo CHtml::button(Yii::app()->user->getName(),array('id'=>'user-menu-toggle','onclick'=>'','class'=>'x2-button float'));
 				$this->widget('zii.widgets.CMenu', array(
 					'id' => 'user-menu',
 					'items' => $userMenu,
@@ -367,7 +358,12 @@ $userMenu = array(
 			
 	</div>
 	<b>v<?php echo Yii::app()->params->version; ?>
-	<?php if(Yii::app()->params->edition==='pro') echo 'Professional Edition'; ?>.</b>
+	<?php
+	if(Yii::app()->params->edition==='pro')
+		echo 'Professional Edition';
+	else
+		echo 'Open Source Edition';
+	?>.</b>
 	<?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?><br>
 	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
 	<?php echo Yii::t('app','Rights reserved.'); ?>

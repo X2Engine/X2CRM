@@ -47,7 +47,6 @@ class SocialForm extends X2Widget {
 	public $vars;
 
 	public function init() {
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 		Yii::app()->clientScript->registerScript('hideActionForm',
 			"$(document).ready(hideActionForm);
 			function hideActionForm() {

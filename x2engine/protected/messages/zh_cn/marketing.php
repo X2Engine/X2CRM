@@ -60,6 +60,12 @@ return array (
 'Last Updated'=>'最后更新',
 'Updated By'=>'更新',
 'None'=>'没有',
+'Basic Info'=>'基本信息',
+'Email'=>'电子邮件',
+'Call List'=>'呼叫清单',
+'Physical Mail'=>'实物邮件',
+'Email Template'=>'电子邮件模板',
+'Update Campaign'=>'更新广告',
 
 // Menu
 'All Campaigns'=>'所有广告活动',
@@ -84,6 +90,7 @@ return array (
 'Opened'=>'开业',
 'Clicked'=>'被点击',
 'Unsubscribed'=>'取消订阅',
+'Status'=>'状态',
 
 // Mailing
 'The email sending limit has been reached.'=>'电子邮件发送已达到限制。',

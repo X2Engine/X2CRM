@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -62,6 +62,12 @@ return array (
 'Cold Call'=>'קר שיחה',
 'E-Mail'=>'דוא"ל',
 'Store'=>'לאחסן',
+'Other Info'=>'מידע אחר',
+'Basic Information'=>'מידע בסיסי',
+'None'=>'אף לא אחד',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'נכנס',
 
 // Opportunities Actions
 'Opportunities List'=>'רשימת המכירות',
@@ -70,12 +76,19 @@ return array (
 'Update Opportunity'=>'עדכן מכירה',
 'Delete Opportunity'=>'מחק למכירה',
 'Manage Opportunities'=>'ניהול מכירות',
+'Create'=>'ליצור',
+'View'=>'לצפות',
+'Update'=>'לעדכן',
+'Update Opportunity:'=>':עדכן מכירה',
 
-'Add a User'=>'הוספת משתמש',
-'Add a Contact'=>'הוספת איש קשר',
-'Remove a User'=>'להסיר משתמש',
-'Remove a Contact'=>'הסר צור קשר',
+'Add A User'=>'הוספת משתמש',
+'Add A Contact'=>'הוספת איש קשר',
+'Remove A User'=>'להסיר משתמש',
+'Remove A Contact'=>'הסר צור קשר',
 'Share Opportunity'=>'שתף למכירה',
+'Delete'=>'למחוק',
+'Add'=>'להוסיף',
+'Remove'=>'להסיר',
 
 // Opportunities Titles
 'Opportunities'=>'מכירות',

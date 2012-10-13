@@ -96,6 +96,23 @@ return array (
 'Deal Status'=>'',
 'Do Not Call'=>'',
 'Do Not Email'=>'',
+'Sales &amp; Marketing'=>'',
+'In Person'=>'',
+'Accepted'=>'',
+'Lost'=>'',
+'None'=>'',
+'Web'=>'',
+'Assigned'=>'',
+'Won'=>'',
+'E-Mail'=>'',
+'Google'=>'',
+'Walk In'=>'',
+'Unassigned'=>'',
+'Working'=>'',
+'Dead'=>'',
+'Rejected'=>'',
+'Tags'=>'',
+'Associated Contacts'=>'',
 
 // List Attributes
 'Owner'=>'',
@@ -133,6 +150,10 @@ return array (
 'Contact Info'=>'',
 'Opportunities &amp; Marketing'=>'',
 'Social Media'=>'',
+'AND'=>'',
+'OR'=>'',
+'User'=>'',
+'Leads'=>'',
 
 // Contacts Actions
 'My Contacts'=>'',
@@ -141,6 +162,7 @@ return array (
 'Create Contact'=>'',
 'View Contact'=>'',
 'Update Contact'=>'',
+'Update Contact:'=>'',
 'Delete Contact'=>'',
 'Contact Lists'=>'',
 'Create Lead'=>'',
@@ -157,6 +179,10 @@ return array (
 'Hide All'=>'',
 'Show'=>'',
 'Hide'=>'',
+'View Relationships'=>'',
+'Subscribe'=>'',
+'View List'=>'',
+'Share Action'=>'',
 
 // Contacts Titles
 'Contacts'=>'',
@@ -178,6 +204,7 @@ return array (
 'Subscribe'=>'',
 'The information for {name} has changed.'=>'',
 'Receive email updates every time information for {name} changes'=>'',
+'Unsubscribe'=>'',
 
 // Web Lead
 'Web Lead'=>'',

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,28 +43,28 @@ return array (
 'ID'=>'ID',
 'First Name'=>'Nome',
 'Last Name'=>'Cognome',
-'Username'=>'Nome utente',
+'Username'=>'Nome Utente',
 'Password'=>'Password',
 'Title'=>'Titolo',
 'Department'=>'Reparto',
-'Office Phone'=>'Telefono ufficio',
+'Office Phone'=>'Telefono Ufficio',
 'Cell Phone'=>'Cellulare',
-'Home Phone'=>'Telefono di casa',
+'Home Phone'=>'Telefono di Casa',
 'Address'=>'Indirizzo',
 'Background Info'=>'Informazioni Generali',
 'Email'=>'E-mail',
 'Status'=>'Stato',
-'Update Password'=>'Aggiorna password',
-'Last Updated'=>'Ultimo aggiornamento',
-'Updated By'=>'Aggiornato da',
-'Recent Items'=>'Elementi recenti',
+'Update Password'=>'Aggiorna Password',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Updated By'=>'Aggiornato Da',
+'Recent Items'=>'Elementi Recenti',
 
 // Users Actions
-'Create User'=>'Crea utente',
+'Create User'=>'Crea Utente',
 'View User'=>'Vista User',
-'Update User'=>'Aggiornamento utente',
-'Manage Users'=>'Gestire gli utenti',
-'Invite Users'=>'Invitare gli utenti',
+'Update User'=>'Aggiornamento Utente',
+'Manage Users'=>'Gestire gli Utenti',
+'Invite Users'=>'Invitare gli Utenti',
 
 // Users Titles
 'User: {name}'=>'Utente: {name}',

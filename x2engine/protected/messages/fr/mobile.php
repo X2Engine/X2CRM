@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,13 +41,13 @@
 return array (
 // Text
 'Logout ({username})'=>'Déconnexion ({username})',
-'New Record'=>'Nouveau record',
-'Find Contacts'=>'Trouver des contacts',
+'New Record'=>'Nouveau Record',
+'Find Contacts'=>'Trouver des Contacts',
 'Top Contacts'=>'Contacts Haut',
 'No top contacts for this user!'=>'Aucun contact supérieure pour cet utilisateur!',
-'Create Message'=>'Créer un message',
-'Message List'=>'Liste des messages',
+'Create Message'=>'Créer un Message',
+'Message List'=>'Liste des Messages',
 'Clear'=>'Effacer',
-'Search for a Contact'=>'Rechercher un contact',
-'Go to Full Site'=>'Aller au site principal',
+'Search for a Contact'=>'Rechercher un Contact',
+'Go to Full Site'=>'Aller au Site Principal',
 );

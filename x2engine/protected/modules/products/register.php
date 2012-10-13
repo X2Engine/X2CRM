@@ -1,54 +1,22 @@
 <?php
 
 return array(
-    'name' => "Products",
-    'install' => array(
-	'CREATE TABLE x2_products(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(100) NOT NULL,
-	type VARCHAR(100),
-	price FLOAT,
-	inventory INT,
-	description TEXT,
-	createDate INT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	status VARCHAR(20),
-	currency VARCHAR(40),
-	adjustment FLOAT
-) COLLATE = utf8_general_ci',
-	'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES 
-                    ("Products",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-                    ("Products",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-                    ("Products",	"type",					"Type",					0,	0,	"varchar",		0,	NULL),
-                    ("Products",	"price",				"Price",				0,	0,	"currency",		0,	NULL),
-                    ("Products",	"inventory",                            "Inventory",                            0,	0,	"varchar",		0,	NULL),
-                    ("Products",	"description",                          "Description",                          0,	0,	"text",			0,	NULL),
-                    ("Products",	"createDate",                           "Create Date",                          0,	0,	"date",			0,	NULL),
-                    ("Products",	"lastUpdated",                          "Last Updated",                         0,	0,	"date",			0,	NULL),
-                    ("Products",	"updatedBy",                            "Updated By",                           0,	0,	"varchar",		0,	NULL),
-                    ("Products",	"currency",				"Currency",				0,	0,	"dropdown",		0,	"2"),
-                    ("Products",	"status",				"Status",				0,	0,	"dropdown",		0,	"1"),
-                    ("Products",	"adjustment",                           "Adjustment",                           0,	0,	"varchar",		0,	NULL);',
-	'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES
-		    ("ProductFeature",	"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-		    ("ProductFeature",	"productId",				"Product",				0,	0,	"link",			"Products", NULL),
-		    ("ProductFeature",	"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-                    ("ProductFeature",	"description",                          "Description",                          0,	0,	"text",			0,	NULL),
-                    ("ProductFeature",	"createDate",                           "Create Date",                          0,	0,	"date",			0,	NULL),
-                    ("ProductFeature",	"lastUpdated",                          "Last Updated",                         0,	0,	"date",			0,	NULL),
-                    ("ProductFeature",	"updatedBy",                            "Updated By",                           0,	0,	"varchar",		0,	NULL),
-                    ("ProductFeature",	"status",				"Status",				0,	0,	"dropdown",		0,	"10");',
-    ),
-    'uninstall' => array(
-	'DELETE FROM x2_fields WHERE modelName="Products" OR modelName="ProductFeature"',
-	'DROP TABLE x2_products',
-	'DROP TABLE x2_product_features'
-    ),
-    'editable' => true,
-    'searchable' => true,
-    'adminOnly' => false,
-    'custom' => false,
-    'toggleable' => false,
+	'name' => "Products",
+	'install' => array(
+		dirname(__FILE__) . '/data/install.sql',
+		array('INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
+				("Product","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"1\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"2\"}]}]}]},{\"collapsible\":false,\"title\":\"Product Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_price\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"182\",\"tabindex\":\"3\"},{\"name\":\"formItem_currency\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"188\",\"tabindex\":\"4\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_inventory\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"187\",\"tabindex\":\"5\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"188\",\"tabindex\":\"6\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"62\",\"width\":\"477\",\"tabindex\":\"7\"}]}]}]}]}","0","1","' . time() . '","' . time() . '"),
+				("Product","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"205\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"3\"}]}]}]},{\"collapsible\":false,\"title\":\"Product Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_price\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"4\"},{\"name\":\"formItem_currency\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"203\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_inventory\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"202\",\"tabindex\":\"6\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"203\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Description\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"62\",\"width\":\"477\",\"tabindex\":\"7\"}]}]}]}]}","1","0","' . time() . '","' . time() . '");'
+		)
+	),
+	'uninstall' => array(
+		dirname(__FILE__) . '/data/uninstall.sql',
+	),
+	'editable' => true,
+	'searchable' => true,
+	'adminOnly' => false,
+	'custom' => false,
+	'toggleable' => false,
+	'version' => '2.0',
 );
 ?>

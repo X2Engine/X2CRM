@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'نرم افزار',
 'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'پشتیبانی و مستندات',
 'Contact Us'=>'تماس با ما',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'پروفایل مدیر',
 'Admin Account Settings'=>'تنظیمات حساب مدیریت',
 'User Management'=>'مدیریت کاربر',
@@ -66,10 +66,10 @@ return array (
 'Export a module'=>'صادرات یک ماژول',
 'Import a module'=>'وارد کردن یک ماژول',
 'Rename a module'=>'تغییر نام یک ماژول',
-'Gii - A Code Generation Module'=>'',
+'Gii - A Code Generation Module'=>'گروه II - کد ماژول نسل',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'اضافه کردن، حذف و به روز رسانی ترجمه ارسال در بسته X2Contacts زبان.',
-'Tutorial Videos'=>'',
+'Tutorial Videos'=>'ویدیوهای آموزشی',
 'Phone Support'=>'پشتیبانی تلفنی',
 'Manage Roles'=>'مدیریت نقش ها',
 'Set Lead Distribution'=>'تنظیم توزیع تماس با ما',
@@ -77,7 +77,6 @@ return array (
 'Workflow Settings'=>'تنظیمات گردش کار',
 'Manage Notification Criteria'=>'مدیریت معیار هشدار از طریق',
 'General Settings'=>'تنظیمات عمومی',
-'Updater Settings'=>'بروز تنظیمات',
 'Google Integration'=>'گوگل ادغام',
 'Email Settings'=>'تنظیمات ایمیل',
 'Create Email Campaign'=>'ایجاد کمپین به ایمیل',
@@ -92,43 +91,42 @@ return array (
 'Form Editor'=>'ویرایشگر فرم',
 'Create Workflow'=>'ایجاد گردش کار',
 'Manage Workflows'=>'مدیریت گردش کار',
-
-// Text
+// // 
+// // Text
 'Administrator profile'=>'مشخصات مدیر',
-'UI theme settings / background image'=>'تنظیمات UI تم / تصویر پس زمینه',
+'UI theme settings / background image'=>'تنظیمات رابط کاربر تم / تصویر پس زمینه',
 'Add and manage users'=>'اضافه کردن و مدیریت کاربران',
 'Re-order and add or remove top bar tabs'=>'تغییر مجدد ترتیب و اضافه کردن و یا حذف زبانه های نوار بالا',
-'Send email based on X2Tags(currently only has basic function)'=>'',
-'Export data to a CSV (useful for updates when the database gets wiped)'=>'',
-'Import data from a CSV template or exported records'=>'',
-'Mobile web application'=>'',
-'Set time before an idle user is logged out'=>'',
-'Adjust chat refresh rate for performance'=>'',
-'Change logo back to X2Contacts'=>'',
-'Upload your own logo. 30x200 pixel image.'=>'',
-'Create a custom module to add to the top bar'=>'',
-'Add a static page to the top bar'=>'',
-'Remove a custom module or page'=>'',
-'Export one of your custom modules to a .zip'=>'',
-'Import a .zip of a module'=>'',
-'Change module titles on top bar'=>'',
-'Use the Yii framework\'s code generation tools'=>'',
-'Commercial support and hosting'=>'',
-'X2Engine Support Forums'=>'',
-'Yii Open Source web framework'=>'',
-'Show'=>'',
-'Hide'=>'',
+'Send email based on X2Tags(currently only has basic function)'=>'ارسال ایمیل بر اساس X2Tags (در حال حاضر فقط دارای تابع اولیه)',
+'Export data to a CSV (useful for updates when the database gets wiped)'=>'صادرات داده ها به CSV (مفید برای به روز رسانی و زمانی که پایگاه داده پاک می شود)',
+'Import data from a CSV template or exported records'=>'وارد کردن داده از یک قالب CSV یا پرونده صادر شده',
+'Mobile web application'=>'نرم افزار وب سایت تلفن همراه',
+'Set time before an idle user is logged out'=>'تنظیم زمان قبل از بیکار کاربر از سیستم خارج شده است',
+'Adjust chat refresh rate for performance'=>'تنظیم چت تجدید سرعت برای عملکرد',
+'Change logo back to X2Contacts'=>'تغییر لوگوی بازگشت به X2Contacts',
+'Upload your own logo. 30x200 pixel image.'=>'بارگذاری آرم خود را.30 * 200 پیکسل است.',
+'Create a custom module to add to the top bar'=>'ایجاد یک ماژول سفارشی برای اضافه کردن به نوار بالا',
+'Add a static page to the top bar'=>'اضافه کردن یک صفحه استاتیک به نوار بالا',
+'Remove a custom module or page'=>'حذف ماژول های سفارشی و یا صفحه',
+'Export one of your custom modules to a .zip'=>'صادرات یکی از ماژول های دلخواه خود را به یک فایل فشرده.',
+'Import a .zip of a module'=>'واردات یک فایل فشرده از یک ماژول',
+'Change module titles on top bar'=>'تغییر عنوان ماژول در نوار بالا',
+'Use the Yii framework\'s code generation tools'=>'استفاده از چارچوب Yii کد ابزار نسل',
+'Commercial support and hosting'=>'پشتیبانی تجاری و میزبانی وب',
+'X2Engine Support Forums'=>'X2Engine انجمن پشتیبانی',
+'Yii Open Source web framework'=>'Yii منبع باز قالب وب سایت',
+'Show'=>'نشان',
+'Hide'=>'پنهان کردن',
 'Send invitation emails to create X2Engine accounts'=>'ارسال ایمیل دعوت به ایجاد حساب X2Engine',
 'Create and manage user roles'=>'ایجاد و مدیریت نقش های کاربر',
 'Create and manage user groups'=>'ایجاد و مدیریت گروه های کاربری',
 'Create a public form to receive new contacts'=>'ایجاد یک فرم عمومی برای دریافت تماس های جدید',
 'Change how new web leads are distributed.'=>'تغییر منجر جدید وب سایت چگونه توزیع شده است.',
-'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'مدیریت قوانین برای "سفارشی دور رابین" تنظیم سرب توزیع.',
 'Create a workflow for your sales process'=>'ایجاد یک گردش کار برای روند فروش خود را',
 'Change advanced workflow settings'=>'تغییر تنظیمات پیشرفته گردش کار',
 'Manage what events will trigger user notifications.'=>'مدیریت رویدادها را اعلان های کاربر ماشه.',
-'Configure session timeout and chat poll rate.'=>'پیکربندی ایست جلسه و چت نرخ نظرسنجی.',
-'Configure automatic updates and registration.'=>'پیکربندی به روز رسانی خودکار و ثبت نام.',
+'Configure automatic updates, session timeout and chat poll rate.'=>'پیکربندی به روز رسانی خودکار، جلسه ایست و نرخ های نظرسنجی ها چت.',
 'Enter your google app settings for Calendar/Google login'=>'خود را وارد کنید تنظیمات برنامه گوگل برای ورود به تقویم / گوگل',
 'Configure X2Engine\'s email settings'=>'پیکربندی تنظیمات ایمیل X2Engine',
 'Create an email marketing campaign'=>'ایجاد یک کمپین بازاریابی ایمیل',
@@ -139,11 +137,11 @@ return array (
 'Import from a global export file'=>'واردات از صادرات جهانی فایل',
 'View a log of everything that has been changed'=>'ورود از همه چیز تغییر کرده است',
 'Customize fields for the modules.'=>'زمینه را برای ماژول سفارشی.',
-'Manage dropdowns for custom fields.'=>'مدیریت dropdowns در زمینه های سفارشی.',
+'Manage dropdowns for custom fields.'=>'مدیریت رها کردن منو در زمینه های سفارشی.',
 'Drag and drop editor for forms.'=>'کشیدن و رها کردن ویرایشگر برای فرم.',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'ترتیب مجدد اقلام منوی اصلی',
 'Add, remove and reorder modules:'=>'اضافه کردن، حذف و دوباره مرتب کردن ماژول ها:',
 'Select Email Criteria'=>'انتخاب معیار ایمیل',
@@ -163,9 +161,9 @@ return array (
 'Export'=>'صادر کردن',
 'Rename A Module'=>'تغییر نام یک ماژول',
 'You can rename a module by selecting a module and typing the new name below.'=>'شما می توانید یک ماژول را با انتخاب ماژول و تایپ کردن نام جدید زیر تغییر نام دهید.',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'صادرات همه داده ها',
 'Please click the link below to download data.'=>'لطفا برای دانلود داده ها روی لینک زیر کلیک کنید.',
 'Import Data from Template'=>'وارد کردن داده از الگو',
@@ -181,8 +179,8 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'برای ارسال لوگوی خود را برای نمایش در کنار نوار جستجو، لطفا آپلود فایل در اینجا با استفاده از فرم زیر است.',
 'Create Page'=>'یک صفحه بسازید',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'بالا تماس با مدیریت عملکرد برنامه وب - X2Engine شرکت این شرکت در پشت X2Contacts است. X2Engine می تواند به حمایت از سازمان شما را حرفه ای و آموزش در X2Contacts ارائه دهد. لطفا با پر کردن فرم زیر با ما تماس بگیرید.',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'پیکربندی سرور ایمیل',
 'Ready to send email? We need some information about your mail server.'=>'آماده برای ارسال ایمیل؟ ما نیاز به برخی از اطلاعات در مورد میل سرور شما است.',
 'Outbound Email Server'=>'سرور ایمیل خروجی',
@@ -200,13 +198,5 @@ return array (
 'None'=>'هیچ یک',
 'User\'s Choice'=>'انتخاب کاربر',
 'Default Signature'=>'امضا پیش فرض',
-'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'',
-
-// Updater/General Settings
-'Update Interval'=>'بروز فاصله',
-'Every Login'=>'هر ورود',
-'Daily'=>'روزانه',
-'Weekly'=>'هفتگی',
-'Monthly'=>'ماهیانه',
-'Never'=>'هرگز',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'{first}, {last}, {phone} and {email}.:شما می توانید از متغیر های زیر را در این قالب استفاده کنید: ',
 );

@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'Русский',
-// Login
+// // Login
 'Please log in to continue:'=>'Пожалуйста, войдите для продолжения:',
 'Username'=>'имя пользователя',
 'Password'=>'пароль',
 'Remember me'=>'Запомнить меня',
 'Login'=>'Войти',
-
-// Main Menu
+'Welcome to {appName}.'=>'Добро пожаловать в {appName}.',
+'Verification Code'=>'Код проверки',
+'Login with Google'=>'Войти с Google',
+// // 
+// // Main Menu
 'Calendar'=>'календарь',
 'Actions'=>'Действия',
 'Contacts'=>'связи',
@@ -75,20 +78,24 @@ return array (
 'Workflow'=>'рабочий процесс',
 'Groups'=>'Группы',
 'Notifications'=>'Уведомления',
-
-// Search Bar
+'Charts'=>'Чарты',
+'Manage Users'=>'Управление пользователями',
+'Social Feed'=>'Социальная поток',
+'Preferences'=>'Предпочтения',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
 'Go'=>'идти',
 'Contact'=>'контакт',
 'Action'=>'действие',
 'Contact + Action'=>'Контакт + Действие',
 'Search for contact, action, deal...'=>'Поиск контакта, действие, сделка ...',
-
-// Footer
+// // 
+// // Footer
 'All Rights Reserved.'=>'Все права защищены.',
 'Generated in {time} seconds.'=>'Сгенерировано за {time} секунд',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'Мои действия',
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Быстрый контакт',
@@ -101,22 +108,24 @@ return array (
 'Doc Viewer'=>'Просмотр документов',
 'Time Zone'=>'часовой пояс',
 'Top Sites'=>'Лучшие сайты',
-
+'Media'=>'средства массовой информации',
+'Current time in'=>'Точное время в',
+// // 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
 'Overdue Action|Overdue Actions'=>'Просроченные Действие | Просроченная Действия',
 'Completed Action|Completed Actions'=>'Завершено Действие | завершенных действий',
-
+// // 
 'Message Board'=>'Форум',
 'Please enter a message of the day!'=>'Пожалуйста, введите сообщение дня!',
 'Edit Message'=>'Изменить сообщение',
-
+// // 
 'Note Pad'=>'Блокнот',
 'Feel free to enter some notes!'=>'Не стесняйтесь ввести некоторые ноты!',
-
+// // 
 'Top Contacts'=>'Топ Контакты',
 'Add {name}'=>'Добавьте {name}',
-
+// // 
 'Enter Title'=>'Введите название',
 'Title'=>'название',
 'Title:'=>'Название:',
@@ -124,20 +133,22 @@ return array (
 'Link:'=>'Ссылка:',
 'Add Site'=>'Добавить сайт',
 'Example'=>'пример',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'Тело сообщения',
 'Enter text here...'=>'Введите текст здесь ...',
 'Send'=>'послать',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'Кому:',
 'Subject:'=>'Тема:',
 'Message:'=>'сообщение:',
 'Error: Could not send email.'=>'Ошибка: не удалось отправить электронную почту.',
 'Email Sent!'=>'Отправки сообщения!',
-
-// Comments
+'Preview'=>'предварительный просмотр',
+'Attachments'=>'Вложения',
+// // 
+// // Comments
 'Add Comment'=>'Добавить комментарий',
 'Create Action'=>'Создать действия',
 'Add a comment...'=>'Добавить комментарий ...',
@@ -146,8 +157,8 @@ return array (
 'Tomorrow'=>'завтра',
 'Comments'=>'Комментарии',
 'Post'=>'пост',
-
-// Misc
+// // 
+// // Misc
 'Advanced Search'=>'Расширенный поиск',
 'Clear Filters'=>'Очистить фильтры',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Можно ввести оператор сравнения (<b> <</ B>, <b> <= </ B>, <b>> </ B>, <b>> = </ B>, <b> <> </ B> или <b> = </ B>) в начале каждого из ваших ценностей поиска, чтобы указать, как сравнение должно быть сделано.',
@@ -170,7 +181,7 @@ return array (
 'Columns'=>'Колонны',
 'Tools'=>'инструментарий',
 'Rights reserved.'=>'Права защищены.',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'GNU общественность лицензия версии 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'Программа поставляется как есть, без гарантии. <br> Лицензия {BSD} под.',
 'Generated in {time} seconds'=>'Сгенерировано в {time} секунд',
 'Minimize'=>'минимизировать',
@@ -186,8 +197,27 @@ return array (
 'Delete'=>'удалять',
 'Group?'=>'Группа?',
 'Check box'=>'Флажок',
-
-// Misc Actions
+'results per page'=>' результатов на странице',
+'Public'=>'общественность',
+'Tags'=>'Теги',
+'Template:'=>'шаблон:',
+'Model Name'=>'название модели',
+'Model ID'=>'Идентификация модели',
+'What should the list be named?'=>'Что списке будет называться?',
+'Added items to list.'=>'Добавлены пункты к списку.',
+'Select an option'=>'Выберите один из вариантов',
+'loading...'=>'Загрузка ...',
+'Checkbox'=>'флажок',
+'New List From Selection'=>'Новый список от выбора',
+'No'=>'нет',
+'Yes'=>'да',
+'View'=>'смотреть',
+'Update'=>'обновление',
+'results per page.'=>'результатов на странице.',
+'Displaying {start}-{end} of {count} result(s).'=>'Показано {start} - {end} из {count} результат (ы).',
+'Marketing Dashboard'=>'маркетинговые приборной панели',
+// // 
+// // Misc Actions
 'Submit'=>'подавать',
 'Save'=>'сохранять',
 'Cancel'=>'отменить',
@@ -207,26 +237,30 @@ return array (
 'Download'=>'скачать',
 'Contact Saved'=>'Связаться с Сохраненные',
 'Add Note'=>'Добавить Примечание',
-
-// Timestamps
+'New List'=>'Новый список',
+'Add'=>'добавлять',
+'Remove'=>'удаление',
+// // 
+// // Timestamps
 'Just now'=>'сейчас',
 '{n} minutes ago'=>'{п} минут назад',
 '{n} hours ago'=>'{п} часов назад',
 '{n} days ago'=>'{п} дней назад',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'Ошибка при создании Внимание!',
 'Invalid request. Please do not repeat this request again.'=>'Неверный запрос. Пожалуйста, не повторяйте эту просьбу еще раз.',
 'The requested page does not exist.'=>'Запрошенная страница не существует.',
-
-// Admin Page
+'Please fix the following errors:'=>'Пожалуйста, исправьте следующие ошибки:',
+// // 
+// // Admin Page
 'Administration Tools'=>'Средства администрирования',
 'Welcome to the administration tool set.'=>'Добро пожаловать в наборе инструментов управления.',
 'Links'=>'связи',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'Как в',
+'Gii - A Code Generation Module'=>'Gii - модуль генерации кода',
+'Send Mass E-mail'=>'Отправить массовой электронной почте',
+'How to use Gii'=>'Как использовать Gii',
 'How to add a database field'=>'Как добавить поля базы данных',
-
+// // 
 );

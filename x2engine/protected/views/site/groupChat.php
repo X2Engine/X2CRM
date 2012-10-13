@@ -39,8 +39,6 @@
  ********************************************************************************/
 
 $this->pageTitle=Yii::app()->name . ' - Chat';
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/chat.js');
 
 $admin = Admin::model()->findByPk(1);
 $updateInterval = $admin->chatPollTime;

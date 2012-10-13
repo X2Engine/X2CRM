@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,8 +50,8 @@ return array (
 'Notes'=>'Hinweise',
 'Status'=>'Status',
 'Description'=>'Beschreibung',
-'Last Updated'=>'Zuletzt aktualisiert',
-'Updated By'=>'Aktualisiert von',
+'Last Updated'=>'Zuletzt Aktualisiert',
+'Updated By'=>'Aktualisiert Von',
 'Allow users to post on your profile?'=>'Benutzern erlauben, auf Ihrem Profil zu schreiben?',
 'Language'=>'Sprache',
 'Time Zone'=>'Zeitzone',
@@ -62,25 +62,25 @@ return array (
 'Menu Text Color'=>'Menu Textfarbe',
 'Background Image'=>'Hintergrundbild',
 'Start Page'=>'Startseite',
-'Results Per Page'=>'Ergebnisse pro Seite',
+'Results Per Page'=>'Ergebnisse Pro Seite',
 'Show Social Media'=>'Zeige Soziale Medien',
-'Upload a Background'=>'Laden Sie ein Hintergrund hoch',
+'Upload a Background'=>'Laden Sie ein Hintergrund Hoch',
 
 // Profile Actions
 'View Profile'=>'Profil Anzeigen',
-'Update Profile'=>'Profil aktualisieren',
-'Change Settings'=>'Einstellungen ändern',
+'Update Profile'=>'Profil Aktualisieren',
+'Change Settings'=>'Einstellungen Ändern',
 'Social Feed'=>'Soziale-Feed',
 'People'=>'Menschen',
-'Change Personal Settings'=>'Ändern Sie Ihre persönliche Einstellungen',
+'Change Personal Settings'=>'Ändern Sie Ihre Persönliche Einstellungen',
 
 // Profile Titles
 'Profile:'=>'Profil:',
 'Update Your Profile'=>'Aktualisieren Sie Ihr Profil',
 
 // Social
-'Feed'=>'Feed',
-'Social'=>'Social',
+'Feed'=>'Eingabe',
+'Social'=>'Sozial',
 'Reply'=>'Antwort',
 'A larger Chat Box'=>'Eine größere Chatt-Box',
 'A blog-like discussion forum'=>'Ein Blog-ähnliches Diskussionsforum',

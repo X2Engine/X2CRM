@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,14 +45,14 @@ return array (
 'Name'=>'Name',
 'Locked'=>'Verschlossen',
 'Contacts'=>'Kontakte',
-'Assigned To'=>'Zugeordnet zu',
+'Assigned To'=>'Zugeordnet Zu',
 'Account'=>'Konto',
 'Probability'=>'Wahrscheinlichkeit',
 'Expiration Date'=>'Ablaufdatum',
-'Last Updated'=>'Zuletzt aktualisiert',
+'Last Updated'=>'Zuletzt Aktualisiert',
 'Create Date'=>'Erstelle Datum',
-'Updated By'=>'Aktualisiert von',
-'Created By'=>'Erstellt von',
+'Updated By'=>'Aktualisiert Von',
+'Created By'=>'Erstellt Von',
 'Notes'=>'Hinweise',
 'Products'=>'Produkte',
 'Expected Close Date'=>'Geschätzte Abschlussdatum',
@@ -68,10 +68,10 @@ return array (
 'Pending'=>'Bis',
 'Issued'=>'Ausgestellt',
 
-'Won'=>'Auftrag geholt',
+'Won'=>'Auftrag Geholt',
 
-'Working'=>'In arbeit',
-'Lost'=>'Auftrag verloren',
+'Working'=>'In Arbeit',
+'Lost'=>'Auftrag Verloren',
 
 'Website'=>'Webseite',
 'Cold Call'=>'Kaltakquise',
@@ -81,21 +81,23 @@ return array (
 // Quotes Actions
 'Quotes List'=>'Kursliste',
 'Create'=>'Schaffen',
-'View Quote'=>'Zitat anzeigen',
+'View Quote'=>'Zitat Anzeigen',
 'Update'=>'Aktualisieren',
-'Delete'=>'löschen',
+'Delete'=>'Löschen',
 'Manage'=>'Verwalten',
 'Delete Quote'=>'Löschen Zitieren',
 'Manage Quotes'=>'Verwalten von Nachrichten',
 'Create Quote'=>'Erstellen Zitat',
+'New Quote'=>'Neu Angebot',
+'Expires'=>'Verfällt',
 
 'Add a User'=>'Hinzufügen eines Benutzers',
-'Add a Contact'=>'Kontakt hinzufügen',
-'Remove a User'=>'Benutzers entfernen',
-'Remove a Contact'=>'Kontakt entfernen',
+'Add a Contact'=>'Kontakt Hinzufügen',
+'Remove a User'=>'Benutzers Entfernen',
+'Remove a Contact'=>'Kontakt Entfernen',
 'Share Quote'=>'Share Zitat',
 'Print'=>'Drucken',
-'Print Quote'=>'Zitat drucken',
+'Print Quote'=>'Zitat Drucken',
 
 // Quotes Titles
 'Quotes'=>'Zitate',
@@ -113,4 +115,5 @@ return array (
 'Include Logo'=>'Include Logo',
 'Basic Information'=>'Grundlegende Informationen',
 'Opportunities'=>'Vertrieb',
+'Subscribe'=>'Zeichnen',
 );

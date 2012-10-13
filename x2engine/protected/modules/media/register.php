@@ -1,5 +1,6 @@
 <?php
-/*********************************************************************************
+
+/* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -36,36 +37,21 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * ****************************************************************************** */
 
 return array(
-    'name'=>"Media",
-    'install'=>array(
-        'CREATE TABLE x2_media(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	associationType			VARCHAR(40)		NOT NULL,
-	associationId			INT,
-	uploadedBy				VARCHAR(40),
-	fileName				VARCHAR(100),
-	createDate				BIGINT
-) COLLATE = utf8_general_ci',
-            'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, readOnly, linkType, searchable, relevance) VALUES 
-                    ("Media",	"id",					"ID",					0,	0,	"varchar",		0,	0,	"",		0,		""),
-                    ("Media",	"associationType",		"Association Type",		0,	0,	"varchar",		1,	1,	"",		0,		""),
-                    ("Media",	"associationId",		"Association Id",		0,	0,	"varchar",		0,	0,	"",		0,		""),
-                    ("Media",	"uploadedBy",			"Uploaded By",			0,	0,	"varchar",		0,	0,	"",		0,		""),
-                    ("Media",	"fileName",				"File Name",			0,	0,	"varchar",		1,	1,	"",		1,		""),
-                    ("Media",	"createDate",			"Create Date",			0,	0,	"date",			1,	1,	"",		0,		"")',
-    ),
-    'uninstall'=>array(
-        'DELETE FROM x2_fields WHERE modelName="Media"',
-        'DROP TABLE x2_media',
-    ),
-    'editable'=>true,
-    'searchable'=>true,
-    'adminOnly'=>false,
-    'custom'=>false,
-    'toggleable'=>false,
-    
+	'name' => "Media",
+	'install' => array(
+		dirname(__FILE__) . '/data/install.sql',
+	),
+	'uninstall' => array(
+		dirname(__FILE__) . '/data/uninstall.sql',
+	),
+	'editable' => true,
+	'searchable' => true,
+	'adminOnly' => false,
+	'custom' => false,
+	'toggleable' => false,
+	'version' => '2.0',
 );
 ?>

@@ -62,8 +62,10 @@ class SiteController extends x2base {
         $authItem=$auth->getAuthItem($action);
         if(Yii::app()->user->checkAccess($action) || is_null($authItem)){
             return true;
-        } else {
-            throw new CHttpException(403,'You are not authorized to perform this action.');
+        }elseif(Yii::app()->user->isGuest){
+            $this->redirect($this->createUrl('/site/login'));
+        }else{
+            throw new CHttpException(403, 'You are not authorized to perform this action.');
         }
     }
 
@@ -76,7 +78,7 @@ class SiteController extends x2base {
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
-					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag'),
+					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship'),
 				'users'=>array('@'),
 			),
 			// array('allow',
@@ -215,77 +217,17 @@ class SiteController extends x2base {
 			$chat->type = 'chat';
 			
 			if($chat->save()) {
-				echo '1';
+				echo CJSON::encode(array(
+					array(
+						$chat->id,
+						date('g:i:s A',$chat->timestamp),
+						'<span class="my-username">'.$chat->user.'</span>',
+						$this->convertUrls($chat->data)
+					)
+				));
 			}
 		}
 	}
-
-	/**
-	 * Obtain messages to be displayed within the chat box.
-	 */
-	public function actionGetMessages() {
-	
-		$lastIdCriterion = '';
-		if(isset($_POST['latestId']) && is_numeric($_POST['latestId']))	// if the client specifies the last message ID received,
-			$lastIdCriterion = ' AND id > '.$_POST['latestId'];		// only send newer messages
-
-		
-		$time=time();
-		$chatLog=new CActiveDataProvider('Social', array(
-			'criteria'=>array(
-				'order'=>'timestamp ASC',														// only get messages from today,
-				'condition'=>"type='chat' AND timestamp > " . mktime(0,0,0) . $lastIdCriterion	// and (optionally) only new messages
-			),
-			'pagination'=>false,
-		));
-		$records = $chatLog->getData(); //array_reverse($chatLog->getData());
-		$messages = array();
-
-		foreach($records as $model) {
-			if(isset($model)){
-				$user=User::model()->findByAttributes(array('username'=>$model->user));
-				if(isset($user)){
-					$html = '<div class="message">';
-					if($user->id == Yii::app()->user->getId())	// if it's me, then make it grey and not a link
-						$html.='<span class="my-username">'.$user->username.'</span>';
-					else
-						$html.=CHtml::link($user->username,array('profile/view','id'=>$user->id),array('class'=>'username'));
-
-					$html .= '<span class="chat-timestamp"> ('.date('g:i:s A',$model->timestamp).')</span>';
-					$html .= ': '.$this->convertUrls($model->data)."</div>\n";
-
-					//$html = "[$lastIdCriterion]";
-					$messages[] = array(
-						'message' => $html,
-						'id' => $model->id,
-					);
-				}
-		}
-		}
-		echo json_encode($messages);
-	}
-
-
-	// public function actionCheckNotifications(){
-		
-		// $list=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
-		// if(count($list)>0){
-			// echo json_encode(count($list));
-		// }else{
-			// echo null;
-		// }
-	// }
-
-//	/**
-//	 * Update the content of the notes widget box. 
-//	 */
-//	public function actionUpdateNotes(){
-//		$content=Social::model()->findAllByAttributes(array('type'=>'note','associationId'=>Yii::app()->user->getId()), 'order timestamp DESC');
-//		$res="";
-//		foreach($content as $item){
-//			$res.=$item->data."<br /><br />";
-//		}
-//	}
 
 	/**
 	 * Add a personal note to the list of notes for the current web user.
@@ -409,17 +351,20 @@ class SiteController extends x2base {
 		
 		if(isset($_GET['widget']) && isset($_GET['state'])) {
 			$widgetName = $_GET['widget'];
-			$widgetState = ($_GET['state']==0)? 0 : 1;
+			$widgetState = ($_GET['state']==0)? '0' : '1';
 			
 			// $profile = Yii::app()->params->profile;
 			
 			$order = explode(":",Yii::app()->params->profile->widgetOrder);
 			$visibility = explode(":",Yii::app()->params->profile->widgets);
 
+				// var_dump($order);
+				// var_dump($visibility);
 			if(array_key_exists($widgetName,Yii::app()->params->registeredWidgets)) {
 
 				$pos = array_search($widgetName,$order);
 				$visibility[$pos] = $widgetState;
+				// die(var_dump($visibility));
 			
 				Yii::app()->params->profile->widgets = implode(':',$visibility);
 				
@@ -941,6 +886,7 @@ class SiteController extends x2base {
 
 			if($model->validate() && $model->login()) {
 				$user = User::model()->findByPk(Yii::app()->user->getId());
+                $user->lastLogin=$user->login;
 				$user->login = time();
 				$user->save();
 				if($user->username=='admin'){
@@ -948,10 +894,13 @@ class SiteController extends x2base {
 						$context = stream_context_create(array(
 							'http' => array('timeout' => 2)		// set request timeout in seconds
 						));
-						$updateSources = array(
-							'http://x2planet.com/updates/versionCheck.php',
-							'http://x2base.com/updates/versionCheck.php'
-						);
+						$updateSources = array('http://x2planet.com/installs/updates/versionCheck');
+						if (in_array(Yii::app()->params->admin['edition'],array('opensource',Null))) {
+							$updateSources = array(
+								'http://x2planet.com/updates/versionCheck.php',
+								'http://x2base.com/updates/versionCheck.php'
+							);
+						}
 						$newVersion = '';
 						
 						foreach($updateSources as $url) {
@@ -976,8 +925,8 @@ class SiteController extends x2base {
 							else
 								$newVersion=Yii::app()->params->version;
 						} */
-						$unique_id = Yii::app()->db->createCommand("SELECT `unique_id` FROM `x2_admin`")->queryScalar();
-						if(version_compare($newVersion,Yii::app()->params->version) > 0 && $unique_id !='none' && $unique_id != Null) {	// if the latest version is newer than our version
+						$unique_id = Yii::app()->params->admin['unique_id'];
+						if(version_compare($newVersion,Yii::app()->params->version) > 0 && !in_array($unique_id, array('none',Null))) {	// if the latest version is newer than our version
 							Yii::app()->session['versionCheck']=false;
 							Yii::app()->session['newVersion']=$newVersion;
 						}
@@ -1191,6 +1140,65 @@ class SiteController extends x2base {
 			}
 		}
 		echo json_encode(false);
+	}
+	
+	
+	/**
+	 * Add a record to record relationship
+	 *
+	 * A record can be a contact, opportunity, or account. This function is
+	 * called via ajax from the Relationships Widget.
+	 *
+	 */
+	public function actionAddRelationship() {
+		//check if relationship already exits
+		if(isset($_POST['ModelName']) && isset($_POST['ModelId']) && isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])) {
+		
+			$modelName = $_POST['ModelName'];
+			$modelId = $_POST['ModelId'];
+			$relationshipModelName = $_POST['RelationshipModelName'];
+			$relationshipModelId = $_POST['RelationshipModelId'];
+		
+			$relationship = Relationships::model()->findByAttributes(array(
+				'firstType'=>$_POST['ModelName'],
+				'firstId'=>$_POST['ModelId'],
+				'secondType'=>$_POST['RelationshipModelName'],
+				'secondId'=>$_POST['RelationshipModelId'],
+			));
+			if($relationship) {
+				echo "duplicate";
+				Yii::app()->end();
+			}
+			$relationship = Relationships::model()->findByAttributes(array(
+				'firstType'=>$_POST['RelationshipModelName'],
+				'firstId'=>$_POST['RelationshipModelId'],
+				'secondType'=>$_POST['ModelName'],
+				'secondId'=>$_POST['ModelId'],
+			));
+			if($relationship) {
+				echo "duplicate";
+				Yii::app()->end();
+			}
+			
+			$relationship = new Relationships;
+			$relationship->firstType = $_POST['ModelName'];
+			$relationship->firstId = $_POST['ModelId'];
+			$relationship->secondType = $_POST['RelationshipModelName'];
+			$relationship->secondId = $_POST['RelationshipModelId'];
+			$relationship->save();
+			if($relationshipModelName == "Contacts") {
+				$results = Yii::app()->db->createCommand("SELECT * from x2_relationships WHERE (firstType='Contacts' AND firstId=$relationshipModelId AND secondType='Accounts') OR (secondType='Contacts' AND secondId=$relationshipModelId AND firstType='Accounts')")->queryAll();
+				if(sizeof($results) == 1) {
+					$model = Contacts::model()->findByPk($relationshipModelId);
+					if($model) {
+						$model->company = $modelId;
+						$model->update();
+					}
+				}
+			}
+			echo "success";
+			Yii::app()->end();
+		}
 	}
 
 	/**

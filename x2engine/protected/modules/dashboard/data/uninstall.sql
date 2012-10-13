@@ -1,0 +1,1 @@
+DROP TABLE x2_widgets,x2_dashboard_settings;

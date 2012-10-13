@@ -50,6 +50,10 @@ return array (
 'Description'=>'شرح',
 'Create Date'=>'تاریخ ایجاد',
 'Tools'=>'ابزار ها',
+'Basic Information'=>'اطلاعات پایه',
+'Product Information'=>'اطلاعات محصول',
+'USD'=>'USD',
+'Active'=>'فعال',
 
 // Product Actions
 'Product List'=>'فهرست محصولات',

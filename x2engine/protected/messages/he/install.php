@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -57,18 +57,13 @@ return array (
 
 'X2EngineCRM Application Info'=>'X2EngineCRM פרטי בקשה',
 
-'Create sample data'=>'יצירת נתונים לדוגמה',
 'Application Name'=>'היישום שם',
 'Default Language'=>'שפת ברירת המחדל',
 'Currency'=>'מטבע',
-'Default Timezone'=>'אזור זמן ברירת מחדל',
 'Admin Password'=>'Admin סיסמה',
 'Confirm Password'=>'אישור סיסמה',
 'Administrator Email'=>'מנהל דוא"ל',
 'Please enter a valid email address.'=>'זן כתובת דוא"ל חוקית.',
-'Test Connection'=>'בדוק את החיבור',
-'Connection OK!'=>'חיבור עובד!',
-'Could not connect to host.'=>'לא הצליח להתחבר למארח.',
 
 'Database Connection Info'=>'חיבור מסד נתונים פרטי',
 
@@ -78,7 +73,7 @@ return array (
 'Username'=>'שם משתמש',
 'Password'=>'סיסמה',
 
-// Software updates & registration
+// Software updates
 'Software Updates'=>'עדכוני תוכנה',
 'Notify me of software updates'=>'הודע לי על עדכוני תוכנה',
 'First Name'=>'שם פרטיים',
@@ -97,12 +92,6 @@ return array (
 'Optional Information'=>'מידע אופציונלי',
 'Could not connect to the updates server at this time.'=>'לא ניתן להתחבר לשרת העדכונים בשלב זה.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'אתה יכול להמשיך בהתקנת היישום בלא לאפשר עדכונים ונסה שוב מאוחר יותר על ידי הולך לתוך "הגדרות כלליות" תחת "ההגדרות" App סעיפים בקונסולת הניהול.',
-'Product Key'=>'מפתח המוצר',
-'Registration'=>'הרשמה',
-'Software registration succeeded.'=>'רישום תוכנה הצליח.',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'כדי לקבל עדכוני תוכנה מX2Engine, אנא לרשום את העותק של X2EngineCRM:',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'ודא שיש לך חיבור לאינטרנט פעיל. אם הבעיה נמשכת, נא צורו עימנו קשר',
-'For support or sales inquiries, please contact us'=>'לבירורי תמיכה או מכירות, אנא צור איתנו קשר',
 
 'Install'=>'להתקין',
 

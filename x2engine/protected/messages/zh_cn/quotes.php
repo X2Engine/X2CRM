@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -88,6 +88,8 @@ return array (
 'Delete Quote'=>'删除引用',
 'Manage Quotes'=>'管理报价',
 'Create Quote'=>'创建报价',
+'New Quote'=>'新报价',
+'Expires'=>'到期',
 
 'Add a User'=>'添加用户',
 'Add a Contact'=>'添加联系人',
@@ -113,4 +115,5 @@ return array (
 'Include Logo'=>'包括标志',
 'Basic Information'=>'基本信息',
 'Opportunities'=>'销售',
+'Subscribe'=>'订阅',
 );

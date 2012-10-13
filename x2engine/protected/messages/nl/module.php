@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,8 +45,8 @@ return array (
 'Name'=>'Naam',
 'Description'=>'Omschrijving',
 'Create Date'=>'Aanmaak Datum',
-'Last Updated'=>'Laatst bijgewerkt',
-'Updated By'=>'Bijgewerkt door',
+'Last Updated'=>'Laatst Bijgewerkt',
+'Updated By'=>'Bijgewerkt Door',
 
 'Data fields'=>'Data Velden',
 'Show'=>'Toon',
@@ -60,7 +60,7 @@ return array (
 
 // Menu Items
 '{X} List'=>'{X} Lijst',
-'View {X}'=>'{X} View',
+'View {X}'=>'Bekijk {X}',
 'Create {X}'=>'Maak {X}',
 'Update {X}'=>'{X} Bijwerken',
 'Delete {X}'=>'{X} Verwijderen',
@@ -71,7 +71,7 @@ return array (
 
 // Page Titles
 'Create New Module'=>'Maak Nieuwe Module',
-'Create New {X}'=>'Maak nieuwe {X}',
+'Create New {X}'=>'Maak Nieuwe {X}',
 'Manage {X}'=>'Beheer {X}',
 
 // Errors

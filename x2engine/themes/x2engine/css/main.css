@@ -1132,7 +1132,7 @@ body.yii-t dt.yii-t {cursor:help;background:rgba(255,0,0,0.5);}
 #media-library-widget-wrapper {
 	display: inline-block;
 	overflow: hidden;
-	width: 100%;
+	/* width: 100%; */
 }
 
 #media-library-widget-container {

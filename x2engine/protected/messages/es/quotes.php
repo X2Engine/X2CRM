@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,23 +45,23 @@ return array (
 'Name'=>'Nombre',
 'Locked'=>'Cerrado',
 'Contacts'=>'Contactos',
-'Assigned To'=>'Asignado a',
+'Assigned To'=>'Asignado A',
 'Account'=>'Compañía',
 'Probability'=>'Probabilidad',
 'Expiration Date'=>'Fecha de Expiración',
-'Last Updated'=>'Última actualización',
+'Last Updated'=>'Última Actualización',
 'Create Date'=>'Fecha de Creación',
-'Updated By'=>'Actualizado por',
-'Created By'=>'Creado por',
+'Updated By'=>'Actualizado Por',
+'Created By'=>'Creado Por',
 'Notes'=>'Notas',
 'Products'=>'Productos',
-'Expected Close Date'=>'Fecha prevista para Cerrar',
+'Expected Close Date'=>'Fecha Prevista para Cerrar',
 
 'Sales Stage'=>'Etapa de Venta',
 'Existing Products'=>'Productos Existentes',
 'Lead Source'=>'Procedencia',
 'Description'=>'Descripción',
-'Notes/Terms'=>'Notas y Condiciones',
+'Notes/Terms'=>'Notas/Condiciones',
 'Hold Control or Command key to select multiple items.'=>'Sostenga Control o la tecla Comando para seleccionar varios elementos.',
 
 'Draft'=>'Borrador',
@@ -88,11 +88,13 @@ return array (
 'Delete Quote'=>'Eliminar Cita',
 'Manage Quotes'=>'Gestión de Citas',
 'Create Quote'=>'Crear Cita',
+'New Quote'=>'Citar Nueva',
+'Expires'=>'Expira',
 
-'Add a User'=>'Agregar un usuario',
-'Add a Contact'=>'Agregar un contacto',
-'Remove a User'=>'Eliminar un usuario',
-'Remove a Contact'=>'Eliminar un contacto',
+'Add a User'=>'Agregar un Usuario',
+'Add a Contact'=>'Agregar un Contacto',
+'Remove a User'=>'Eliminar un Usuario',
+'Remove a Contact'=>'Eliminar un Contacto',
 'Share Quote'=>'Compartir Cita',
 'Print'=>'Imprimir',
 'Print Quote'=>'Imprimir Cita',
@@ -113,4 +115,5 @@ return array (
 'Include Logo'=>'Incluir el Logotipo',
 'Basic Information'=>'Información Básica',
 'Opportunities'=>'Venta',
+'Subscribe'=>'Suscribir',
 );

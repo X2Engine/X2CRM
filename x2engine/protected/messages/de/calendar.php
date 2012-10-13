@@ -41,31 +41,40 @@
 return array (
 'Calendar'=>'Kalender',
 'Calendars'=>'Kalender',
-
+// // 
 'User Calendars'=>'Benutzer-Kalender',
 'Group Calendars'=>'Gruppe Kalender',
 'Google Calendars'=>'Google-Kalender',
-'Filter'=>'filtern',
+'Filter'=>'Filtern',
 'My Calendar Permissions'=>'Mein Kalender Berechtigungen',
 'User Calendar Permissions'=>'Benutzer Kalender Berechtigungen',
 'Google Event'=>'Google-Ereignis',
-
+'Contacts'=>'Kontakte',
+'Accounts'=>'Konten',
+'Opportunities'=>'Opportunities',
+'Products'=>'Produkte',
+'Media'=>'Medien',
+'View Permission'=>'Anzeigen Berechtigungen',
+'These users can view your calendar.'=>'Diese Benutzer können Ihren Kalender.',
+'Edit Permission'=>'Bearbeiten Permission',
+'These users can edit your calendar.'=>'Diese Benutzer können Ihre Kalender.',
+// // 
 'Completed'=>'Fertiggestellt',
 'Quotes'=>'Zitate',
 'Email'=>'E-Mail',
 'Attachment'=>'Befestigung',
-
+// // 
 'List'=>'Liste',
 'Delete'=>'Löschen',
 'Create'=>'Schaffen',
-// button text
+// // button text
 'Update'=>'Aktualisieren',
 'today'=>'heute',
-'month'=>'Monat',
-'week'=>'Woche',
-'day'=>'Tag',
-
-// month names
+'month'=>'monat',
+'week'=>'woche',
+'day'=>'tag',
+// // 
+// // month names
 'January'=>'Januar',
 'February'=>'Februar',
 'March'=>'März',
@@ -78,8 +87,8 @@ return array (
 'October'=>'Oktober',
 'November'=>'November',
 'December'=>'Dezember',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'Jän',
 'Feb'=>'Feb',
 'Mar'=>'März',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'Okt',
 'Nov'=>'Nov',
 'Dec'=>'Dez',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'Sonntag',
 'Monday'=>'Montag',
 'Tuesday'=>'Dienstag',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'Donnerstag',
 'Friday'=>'Freitag',
 'Saturday'=>'Samstag',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'So',
 'Mon'=>'Mo',
 'Tue'=>'Di',

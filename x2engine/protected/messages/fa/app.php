@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'فارسی',
-// Login
+// // Login
 'Please log in to continue:'=>'لطفا برای ادامه وارد شوید',
 'Username'=>'نام کاربر',
 'Password'=>'گذر واژه',
 'Remember me'=>'من را بخاطر بسپار',
 'Login'=>'ورود',
-
-// Main Menu
+'Welcome to {appName}.'=>'.{appName}به انجمن خوش آمدید',
+'Verification Code'=>'کد تأیید',
+'Login with Google'=>'ورود به سیستم با گوگل',
+// // 
+// // Main Menu
 'Calendar'=>'تقویم',
 'Actions'=>'اقدامات',
 'Contacts'=>'تماس ها',
@@ -75,20 +78,24 @@ return array (
 'Workflow'=>'گردش کار',
 'Groups'=>'گروهها',
 'Notifications'=>'اطلاعیه ها',
-
-// Search Bar
+'Charts'=>'نمودارها',
+'Manage Users'=>'مدیریت کاربران',
+'Social Feed'=>'خوراک اجتماعی',
+'Preferences'=>'تنظیمات',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM گروه افزار',
 'Go'=>'برو',
 'Contact'=>'تماس',
 'Action'=>'حرکت',
 'Contact + Action'=>'تماس + اقدام',
 'Search for contact, action, deal...'=>'پرس وجو برای تماس، اقدام، قرارداد و ...',
-
-// Footer
+// // 
+// // Footer
 'All Rights Reserved.'=>'تمام حقوق محفوظ.',
 'Generated in {time} seconds.'=>'ثانیه. {time} ساخته شده در',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'اقدامات من',
 'Twitter Feed'=>'خوراک توییتر',
 'Quick Contact'=>'ارتباط سریع',
@@ -101,22 +108,24 @@ return array (
 'Doc Viewer'=>'نمایشگر سند',
 'Time Zone'=>'منطقه زمانی',
 'Top Sites'=>'سایت های برتر',
-
+'Media'=>'رسانه ها',
+'Current time in'=>'زمان کنونی در',
+// // 
 'Total Action|Total Actions'=>'تمام اقدام| تمام اقدامات',
 'Unfinished Action|Unfinished Actions'=>'اقدام ناتمام|اقدامات ناتمام',
 'Overdue Action|Overdue Actions'=>'اقدام عقب افتاده|اقدامات عقب افتاده',
 'Completed Action|Completed Actions'=>'اقدام کامل شد|اقدامات کامل شدند',
-
+// // 
 'Message Board'=>'تابلو اعلانات',
 'Please enter a message of the day!'=>'پیام روز را وارد کنید!',
 'Edit Message'=>'ویرایش پیام',
-
+// // 
 'Note Pad'=>'دفتر یادداشت',
 'Feel free to enter some notes!'=>'با احساس راحتی یادداشت وارد کنید!',
-
+// // 
 'Top Contacts'=>'تماس های برتر',
 'Add {name}'=>'اضافه کردن {name}',
-
+// // 
 'Enter Title'=>'عنوان را وارد کنید',
 'Title'=>'عنوان',
 'Title:'=>'عنوان:',
@@ -124,20 +133,22 @@ return array (
 'Link:'=>'پیوند:',
 'Add Site'=>'اضافه کردن پایگاه ',
 'Example'=>'مثال',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'متن  پیام',
 'Enter text here...'=>'اینجا متن را وارد کنید...',
 'Send'=>'ارسال',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'به:',
 'Subject:'=>'موضوع:',
 'Message:'=>'پیام:',
 'Error: Could not send email.'=>'خطا: امکان ارسال ای-نامه نیست.',
 'Email Sent!'=>'ای-نامه ارسال شد!',
-
-// Comments
+'Preview'=>'پیش دید',
+'Attachments'=>'فایل های پیوست',
+// // 
+// // Comments
 'Add Comment'=>'ایجاد نظر',
 'Create Action'=>'ایجاد اقدام',
 'Add a comment...'=>'ایجاد یک نظر...',
@@ -146,8 +157,8 @@ return array (
 'Tomorrow'=>'فردا',
 'Comments'=>'نظر',
 'Post'=>'پست',
-
-// Misc
+// // 
+// // Misc
 'Advanced Search'=>'پرس و جوی پیشرفته',
 'Clear Filters'=>'پاک کردن شرایط',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'عملکرد مقایسه',
@@ -170,9 +181,9 @@ return array (
 'Columns'=>'ستونها',
 'Tools'=>'ابزار',
 'Rights reserved.'=>'حقوق محفوظ است.',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'GNU عمومی نسخه 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'این برنامه به عنوان است، ارائه بدون گارانتی. <BR> تحت مجوز {BSD}.',
-'Generated in {time} seconds'=>'',
+'Generated in {time} seconds'=>'تولید شده در {زمان} ثانیه',
 'Minimize'=>'به حداقل رساندن',
 '"{X}" is not an allowed filetype.'=>'"{X}" نوع فایل مجاز نیست.',
 'Loading'=>'بارگزاری کردن',
@@ -186,8 +197,27 @@ return array (
 'Delete'=>'حذف کردن',
 'Group?'=>'گروه؟',
 'Check box'=>'جعبه چک',
-
-// Misc Actions
+'results per page'=>' تعداد نتایج در هر صفحه',
+'Public'=>'عمومی',
+'Tags'=>'برچسب ها',
+'Template:'=>':قالب',
+'Model Name'=>'نام مدل',
+'Model ID'=>'شناسایی مدل',
+'What should the list be named?'=>'چه باید این فهرست می توان نام برد؟',
+'Added items to list.'=>'.آیتم های اضافه شده به لیست',
+'Select an option'=>'یک گزینه را انتخاب کنید',
+'loading...'=>'...در حال بارگیری',
+'Checkbox'=>'جعبه',
+'New List From Selection'=>'لیست جدید از انتخاب',
+'No'=>'بدون',
+'Yes'=>'بله',
+'View'=>'دیدن',
+'Update'=>'بروز',
+'results per page.'=>'تعداد نتایج در هر صفحه است.',
+'Displaying {start}-{end} of {count} result(s).'=>'نمایش {start} - {end} {count} نتیجه (ها).',
+'Marketing Dashboard'=>'داشبورد بازاریابی',
+// // 
+// // Misc Actions
 'Submit'=>'ارائه دادن',
 'Save'=>'ذخیره',
 'Cancel'=>'لغو کردن',
@@ -207,26 +237,30 @@ return array (
 'Download'=>'بارگزاری',
 'Contact Saved'=>'تماس ذخیره شد',
 'Add Note'=>'افزودن تماس',
-
-// Timestamps
+'New List'=>'لیست جدید',
+'Add'=>'اضافه کردن',
+'Remove'=>'برداشتن',
+// // 
+// // Timestamps
 'Just now'=>'هم اکنون',
 '{n} minutes ago'=>'دقیقه قبل {n}',
 '{n} hours ago'=>'ساعت قبل {n}',
 '{n} days ago'=>'روز قبل {n}',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'خطا در ایجاد توجه کنید!',
 'Invalid request. Please do not repeat this request again.'=>'نامعتبر درخواست. لطفا این درخواست را دوباره تکرار نمی کنید.',
 'The requested page does not exist.'=>'صفحه درخواست شده وجود ندارد.',
-
-// Admin Page
+'Please fix the following errors:'=>':لطفا خطاهای زیر را حل کنید',
+// // 
+// // Admin Page
 'Administration Tools'=>'ابزار مدیریت',
 'Welcome to the administration tool set.'=>'به دولت مجموعه ابزار خوش آمدید.',
 'Links'=>'کلیدهای',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'چگونه به',
+'Gii - A Code Generation Module'=>'گروه II - کد ماژول نسل',
+'Send Mass E-mail'=>'ارسال ایمیل به جرم',
+'How to use Gii'=>'چگونه به استفاده از گروه II',
 'How to add a database field'=>'چگونه برای اضافه کردن یک فیلد پایگاه داده',
-
+// // 
 );

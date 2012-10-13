@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'',
 'X2Studio'=>'',
 'Support & Documentation'=>'',
 'Contact Us'=>'',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'',
 'Admin Account Settings'=>'',
 'User Management'=>'',
@@ -77,7 +77,6 @@ return array (
 'Workflow Settings'=>'',
 'Manage Notification Criteria'=>'',
 'General Settings'=>'',
-'Updater Settings'=>'',
 'Google Integration'=>'',
 'Email Settings'=>'',
 'Create Email Campaign'=>'',
@@ -92,8 +91,8 @@ return array (
 'Form Editor'=>'',
 'Create Workflow'=>'',
 'Manage Workflows'=>'',
-
-// Text
+// // 
+// // Text
 'Administrator profile'=>'',
 'UI theme settings / background image'=>'',
 'Add and manage users'=>'',
@@ -127,8 +126,7 @@ return array (
 'Create a workflow for your sales process'=>'',
 'Change advanced workflow settings'=>'',
 'Manage what events will trigger user notifications.'=>'',
-'Configure session timeout and chat poll rate.'=>'',
-'Configure automatic updates and registration.'=>'',
+'Configure automatic updates, session timeout and chat poll rate.'=>'',
 'Enter your google app settings for Calendar/Google login'=>'',
 'Configure X2Engine\'s email settings'=>'',
 'Create an email marketing campaign'=>'',
@@ -141,9 +139,9 @@ return array (
 'Customize fields for the modules.'=>'',
 'Manage dropdowns for custom fields.'=>'',
 'Drag and drop editor for forms.'=>'',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'',
 'Add, remove and reorder modules:'=>'',
 'Select Email Criteria'=>'',
@@ -163,9 +161,9 @@ return array (
 'Export'=>'',
 'Rename A Module'=>'',
 'You can rename a module by selecting a module and typing the new name below.'=>'',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'',
 'Please click the link below to download data.'=>'',
 'Import Data from Template'=>'',
@@ -181,8 +179,8 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'',
 'Create Page'=>'',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'',
 'Ready to send email? We need some information about your mail server.'=>'',
 'Outbound Email Server'=>'',
@@ -201,12 +199,4 @@ return array (
 'User\'s Choice'=>'',
 'Default Signature'=>'',
 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'',
-
-// Updater/General Settings
-'Update Interval'=>'',
-'Every Login'=>'',
-'Daily'=>'',
-'Weekly'=>'',
-'Monthly'=>'',
-'Never'=>'',
 );

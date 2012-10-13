@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'כלי עזר',
-'X2Studio'=>'סטודיוX2',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'תמיכה תיעוד',
 'Contact Us'=>'צור קשר',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'הפרופיל של ניהול',
 'Admin Account Settings'=>'הגדרות חשבון רשומים',
 'User Management'=>'ניהול משתמשים',
@@ -69,7 +69,7 @@ return array (
 'Gii - A Code Generation Module'=>'Gii - הדור מודול קוד',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'הוספה, הסרה ועדכון תרגומים הודעה בתיבת X2Contacts חבילות שפה.',
-'Tutorial Videos'=>'',
+'Tutorial Videos'=>'סרטוני הדרכה',
 'Phone Support'=>'תמיכה טלפונית',
 'Manage Roles'=>'ניהול תפקידים',
 'Set Lead Distribution'=>'קבע חלוקת מגע',
@@ -77,7 +77,6 @@ return array (
 'Workflow Settings'=>'הגדרות זרימת עבודה',
 'Manage Notification Criteria'=>'נהל קריטריוני הודעה',
 'General Settings'=>'הגדרות כלליות',
-'Updater Settings'=>'עדכון הגדרות',
 'Google Integration'=>'גוגל אינטגרציה',
 'Email Settings'=>'הגדרות דואר אלקטרוניות',
 'Create Email Campaign'=>'צור את מסע דוא"ל',
@@ -85,20 +84,20 @@ return array (
 'Import Contacts'=>'יבוא אנשי קשר',
 'Export Contacts'=>'יצוא אנשי קשר',
 'Import All Data'=>'לייבא את כל הנתונים',
-'View User Changelog'=>'צפו המשתמש Changelog',
+'View User Changelog'=>'צפו המשתמש לשנות מסמך',
 'Create a Module'=>'יצירת מודול',
 'Manage Fields'=>'ניהול שדות',
 'Dropdown Editor'=>'עורך נפתח',
 'Form Editor'=>'עורך טופס',
 'Create Workflow'=>'יצירת זרימת עבודה',
 'Manage Workflows'=>'ניהול זרימות עבודה',
-
-// Text
+// // 
+// // Text
 'Administrator profile'=>'מנהל פרופיל',
 'UI theme settings / background image'=>'ממשק הגדרות נושא / תמונת רקע',
 'Add and manage users'=>'הוספה וניהול של משתמשים',
 'Re-order and add or remove top bar tabs'=>'מחדש את סדר להוסיף או להסיר כרטיסיות בר העליון',
-'Send email based on X2Tags(currently only has basic function)'=>'שלח דוא"ל מבוסס על X2Tags (כרגע רק הפונקציה הבסיסית)',
+'Send email based on X2Tags(currently only has basic function)'=>'שלח דוא"ל המבוסס על X2Tags (כרגע יש פונקציה בסיסית בלבד)',
 'Export data to a CSV (useful for updates when the database gets wiped)'=>'לייצא נתונים CSV (שימושי עבור עדכוני כאשר מסד הנתונים נמחקת)',
 'Import data from a CSV template or exported records'=>'ייבוא ​​נתונים מ תבנית CSV או רשומות שיוצאו',
 'Mobile web application'=>'האינטרנט הנייד יישום',
@@ -123,12 +122,11 @@ return array (
 'Create and manage user groups'=>'יצירה וניהול של קבוצות משתמשים',
 'Create a public form to receive new contacts'=>'יצירת טופס הציבור לקבל אנשי קשר חדשים',
 'Change how new web leads are distributed.'=>'שינוי אופן מוביל האינטרנט חדש מופץ.',
-'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'ניהול כללים להגדרה "המותאמת אישית העגולה רובין" עופרת ההפצה',
 'Create a workflow for your sales process'=>'יצירת זרימת עבודה עבור תהליך המכירה שלך',
 'Change advanced workflow settings'=>'שינוי הגדרות זרימת עבודה מתקדמות',
 'Manage what events will trigger user notifications.'=>'נהל את האירועים יפעיל התראות משתמש.',
-'Configure session timeout and chat poll rate.'=>'להגדיר זמן קצוב להפעלה ולשוחח שיעור סקר.',
-'Configure automatic updates and registration.'=>'הגדרת עדכונים והרשמה אוטומטיים.',
+'Configure automatic updates, session timeout and chat poll rate.'=>'להגדיר עדכונים אוטומטיים, פסק זמן הפעלה וקצב סקר צ\'אט.',
 'Enter your google app settings for Calendar/Google login'=>'הזן את ההגדרות ב-Google App שלך ללוח שנה / גוגל כניסה',
 'Configure X2Engine\'s email settings'=>'קביעת תצורה של הגדרות הדוא"ל של X2Engine',
 'Create an email marketing campaign'=>'יצירת קמפיין שיווק בדוא"ל',
@@ -141,9 +139,9 @@ return array (
 'Customize fields for the modules.'=>'התאמה אישית של שדות עבור מודולים.',
 'Manage dropdowns for custom fields.'=>'נהל dropdowns עבור שדות מותאמים אישית.',
 'Drag and drop editor for forms.'=>'גרור ושחררת עורך עבור טפסים.',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'סידור מחדש של פריטי תפריט ראשי',
 'Add, remove and reorder modules:'=>'להוסיף, להסיר ולסדר מחדש מודולים:',
 'Select Email Criteria'=>'בחר קריטריונים דוא"ל',
@@ -163,9 +161,9 @@ return array (
 'Export'=>'יצוא',
 'Rename A Module'=>'שינוי שם של מודול',
 'You can rename a module by selecting a module and typing the new name below.'=>'אתה יכול לשנות שם של מודול על ידי בחירה מודול להקליד את השם החדש בהמשך.',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'לייצא את כל הנתונים',
 'Please click the link below to download data.'=>'אנא לחץ על הקישור הבא כדי להוריד את הנתונים.',
 'Import Data from Template'=>'ייבוא ​​נתונים מ תבנית',
@@ -181,8 +179,8 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'כדי להעלות את הלוגו שלך להצגה לצד שורת החיפוש, בבקשה להעלות את הקובץ כאן על ידי שימוש בטופס הבא.',
 'Create Page'=>'יצירת דף',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine בע"מ היא החברה מאחורי X2Contacts - ביצועים גבוהים לניהול אנשי קשר יישום אינטרנט. X2Engine יכול להציע תמיכה בארגון המקצועי וההכשרה על X2Contacts. נא למלא את הטופס הבא לפנות אלינו.',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'שרת הדוא"ל תצורת',
 'Ready to send email? We need some information about your mail server.'=>'מוכן לשלוח דוא"ל? אנחנו צריכים קצת מידע על שרת הדואר שלך.',
 'Outbound Email Server'=>'שרת דוא"ל יוצא',
@@ -200,13 +198,5 @@ return array (
 'None'=>'אף אחד',
 'User\'s Choice'=>'המשתמש של בחירה',
 'Default Signature'=>'ברירת מחדל חתימה',
-'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'ניתן להשתמש במשתנים הבאים בתבנית זו: {first}, {last}, {phone}, {email}.',
-
-// Updater/General Settings
-'Update Interval'=>'עדכון מרווח',
-'Every Login'=>'בכל כניסה',
-'Daily'=>'יומי',
-'Weekly'=>'שבועי',
-'Monthly'=>'ירחון',
-'Never'=>'מעולם לא',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'ניתן להשתמש במשתנים הבאים בתבנית זו: {first}, {last}, {phone} and {email}.}.',
 );

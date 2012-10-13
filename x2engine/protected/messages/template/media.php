@@ -74,6 +74,7 @@ return array (
 'Choose File'=>'',
 'Select File'=>'',
 'Upload Media File: '=>'',
+'Background'=>'',
 
 // Errors
 'Are you sure you want to delete this item?'=>'',

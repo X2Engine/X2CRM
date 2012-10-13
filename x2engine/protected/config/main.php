@@ -43,9 +43,7 @@
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-require_once "dbConfig.php";
-require_once "emailConfig.php";
-
+require_once "X2Config.php";
 
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
@@ -60,6 +58,7 @@ return array(
 	// autoloading model and component classes
 	'import'=>array(
 		'application.components.ApplicationConfigBehavior',
+        'application.components.X2UrlRule',
 		// 'application.controllers.x2base',
 		// 'application.models.*',
 		// 'application.components.*',
@@ -90,12 +89,30 @@ return array(
 		
 		'urlManager'=>array(
 			'urlFormat'=>'path',
+            'urlRuleClass'=>'X2UrlRule',
 			'showScriptName'=>!isset($_SERVER['HTTP_MOD_REWRITE']),
 			'rules'=>array(
+                
+                
+                '<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
+				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
+                
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow)>/<id:\d+>'=>'<module>/<module>/view',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow)>/<action:\w+>'=>'<module>/<module>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow)>/<action:\w+>/<id:\d+>'=>'<module>/<module>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow)>/<controller:\w+>/<id:\d+>'=>'<module>/<module>/view',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow)>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow)>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
+                
+                '<module:\w+>/<id:\d+>'=>'<module>/default/view',
+				'<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
+				'<module:\w+>/<action:\w+>/<id:\d+>'=>'<module>/default/<action>',
+				'<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
+				'<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
 			
-			
-				// array('class'=>'application.components.X2UrlManager'),
-
+				
+                /*
 				// special HTTP methods for API
 				array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
 				array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'POST'),
@@ -105,9 +122,7 @@ return array(
 				
 				// 'gii/<controller>'=>'gii/<controller>',
 			
-				'<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
-				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
+				
 
 				'contacts/<id:\d+>'							=>	'contacts/contacts/view',
 				'contacts/<action:\w+>'						=>	'contacts/contacts/<action>',
@@ -224,17 +239,13 @@ return array(
 	
 	
 				// module/action -> assume DefaultController (module/default/action) unless there are 3 tokens (module/controller/action)
-				'<module:\w+>/<id:\d+>'=>'<module>/default/view',
-				'<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
-				'<module:\w+>/<action:\w+>/<id:\d+>'=>'<module>/default/<action>',
-				'<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
-				'<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
+				
 
 				// old type
 				// '<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				// '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				// '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
-				
+				*/
 				
 
 				'x2touch'=>'mobile/site/home', 
@@ -253,9 +264,17 @@ return array(
 		*/
 		// uncomment the following to use a MySQL database
 
-		'db'=>array_merge($db,array(
-			'schemaCachingDuration'=>84600
-		)),
+		'db'=>array_merge(
+                array(
+                    'connectionString' => "mysql:host=$host;dbname=$dbname",
+                    'emulatePrepare' => true,
+                    'username' => $user,
+                    'password' => $pass,
+                    'charset' => 'utf8',
+                ),
+                array(
+                    'schemaCachingDuration'=>84600
+                )),
         
         'authManager'=>array(
             'class' => 'CDbAuthManager',
@@ -330,7 +349,7 @@ return array(
 			'MessageBox'=>'Message Board',
 			'QuickContact'=>'Quick Contact',
 			'GoogleMaps'=>'Google Map',
-			'TwitterFeed'=>'Twitter Feed',
+			//'TwitterFeed'=>'Twitter Feed',
 			'ChatBox'=>'Chat',
 			'NoteBox'=>'Note Pad',
 			'ActionMenu'=>'My Actions',

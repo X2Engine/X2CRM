@@ -41,7 +41,7 @@
 return array (
 'Calendar'=>'',
 'Calendars'=>'',
-
+// // 
 'User Calendars'=>'',
 'Group Calendars'=>'',
 'Google Calendars'=>'',
@@ -49,23 +49,32 @@ return array (
 'My Calendar Permissions'=>'',
 'User Calendar Permissions'=>'',
 'Google Event'=>'',
-
+'Contacts'=>'',
+'Accounts'=>'',
+'Opportunities'=>'',
+'Products'=>'',
+'Media'=>'',
+'View Permission'=>'',
+'These users can view your calendar.'=>'',
+'Edit Permission'=>'',
+'These users can edit your calendar.'=>'',
+// // 
 'Completed'=>'',
 'Quotes'=>'',
 'Email'=>'',
 'Attachment'=>'',
-
+// // 
 'List'=>'',
 'Delete'=>'',
 'Create'=>'',
-// button text
+// // button text
 'Update'=>'',
 'today'=>'',
 'month'=>'',
 'week'=>'',
 'day'=>'',
-
-// month names
+// // 
+// // month names
 'January'=>'',
 'February'=>'',
 'March'=>'',
@@ -78,8 +87,8 @@ return array (
 'October'=>'',
 'November'=>'',
 'December'=>'',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'',
 'Feb'=>'',
 'Mar'=>'',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'',
 'Nov'=>'',
 'Dec'=>'',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'',
 'Monday'=>'',
 'Tuesday'=>'',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'',
 'Friday'=>'',
 'Saturday'=>'',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'',
 'Mon'=>'',
 'Tue'=>'',

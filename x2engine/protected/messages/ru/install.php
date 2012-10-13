@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -57,18 +57,13 @@ return array (
 
 'X2EngineCRM Application Info'=>'Информация о Вашем приложении X2EngineCRM',
 
-'Create sample data'=>'Создание образца данных',
 'Application Name'=>'Имя приложения',
 'Default Language'=>'Язык по умолчанию',
 'Currency'=>'Укажите валюту',
-'Default Timezone'=>'По умолчанию часовой пояс',
 'Admin Password'=>'Пароль администратора',
 'Confirm Password'=>'Подтвердить пароль',
 'Administrator Email'=>'Email администратора',
 'Please enter a valid email address.'=>'Пожалуйста, введите адрес электронной почты.',
-'Test Connection'=>'проверить соединение',
-'Connection OK!'=>'Подключение работает!',
-'Could not connect to host.'=>'Не удается подключиться к хосту.',
 
 'Database Connection Info'=>'Введите данные для подключения к базе данных',
 
@@ -78,7 +73,7 @@ return array (
 'Username'=>'Имя пользователя',
 'Password'=>'Пароль',
 
-// Software updates & registration
+// Software updates
 'Software Updates'=>'Обновления программного обеспечения',
 'Notify me of software updates'=>'Сообщите мне обновления программного обеспечения',
 'First Name'=>'Имя',
@@ -97,12 +92,6 @@ return array (
 'Optional Information'=>'Дополнительная информация',
 'Could not connect to the updates server at this time.'=>'Не удалось подключиться к серверу обновлений в это время.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Вы можете продолжить установку приложения, не включая обновления и попробуйте еще раз позже, перейдя в "Общие настройки" в разделе "Настройки приложения" в консоли администратора.',
-'Product Key'=>'ключ продукта',
-'Registration'=>'регистрация',
-'Software registration succeeded.'=>'Регистрация программы удалось.',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Для получения обновлений программного обеспечения из X2Engine, пожалуйста, зарегистрировать Вашу копию X2EngineCRM:',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Убедитесь, что у вас есть активное подключение к Интернету. Если проблема не устраняется, свяжитесь с нами',
-'For support or sales inquiries, please contact us'=>'Для поддержки или продажи вопросы, пожалуйста, свяжитесь с нами',
 
 'Install'=>'Установить',
 

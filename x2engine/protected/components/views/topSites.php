@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -60,62 +60,61 @@ $siteContainerFixHeight = 250;
 <div id="sites-box" style="height:<?php echo $topsitesHeight;?>px">
 <?php
 $echoSTR = "<table><tr><th>".Yii::t('app',"Title")."</th><th>".Yii::t('app',"Link")."</th></tr>";
-foreach($data as $entry){
-        $echoSTR .=  "<tr><td>".$entry['title']."</td><td><a href='".$entry['url']."'>".Yii::t('app',"Link")."</a></td></tr>";
-    }
+foreach($data as $entry)
+	$echoSTR .=  "<tr><td>".$entry['title']."</td><td><a href='".$entry['url']."'>".Yii::t('app',"Link")."</a></td></tr>";
+
 $echoSTR .= "</table>";
 echo $echoSTR;
 ?>
 <?php
 $saveWidgetHeight = $this->controller->createUrl('/site/saveWidgetHeight');
 Yii::app()->clientScript->registerScript('updateURLs', "
-    $(document).ready(updateURLs());
-    function updateURLs(){
-        $.ajax({
-            type: 'POST',
-            url: '".$this->controller->createUrl('/site/getURLs?url='.Yii::app()->request->requestUri)."',
-            success:
-            function(data){
-                $('#sites-box').html(data);
-            }
-        });
-    }
+	$(document).ready(updateURLs());
+	function updateURLs(){
+		$.ajax({
+			type: 'POST',
+			url: '".$this->controller->createUrl('/site/getURLs?url='.Yii::app()->request->requestUri)."',
+			success:
+			function(data){
+				$('#sites-box').html(data);
+			}
+		});
+	}
 ;
 ",CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript("topSitesResize","
 $('#sites-container').resizable({
-    handles: 's',
-    minHeight: 75,
-    alsoResize: '#sites-container, #sites-box',
-    stop: function(event, ui){
-        $.post('".Yii::app()->createUrl("/site/saveWidgetHeight")."',           {Widget: 'TopSites',
-            Height: {topsitesHeight: parseInt($('topsites-box').css('height'))}
-            });
-    },
+	handles: 's',
+	minHeight: 75,
+	alsoResize: '#sites-container, #sites-box',
+	stop: function(event, ui){
+		$.post('".Yii::app()->createUrl("/site/saveWidgetHeight")."',           {Widget: 'TopSites',
+			Height: {topsitesHeight: parseInt($('topsites-box').css('height'))}
+			});
+	},
 });
 ",CClientScript::POS_HEAD);
 ?>
 </div>
 <?php echo CHtml::beginForm();?>
 <div id='site-url-container' style="height: <?php echo $urlTitleContainerHeight;?>px; margin-bottom:35px;">
-    <?php echo Yii::t('app','Title:').CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
-    <br/>
-    <?php echo Yii::t('app','Link:').CHtml::textField('url-url', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
+	<?php echo Yii::t('app','Title:').CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
+	<br/>
+	<?php echo Yii::t('app','Link:').CHtml::textField('url-url', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
 </div>
 <?php
 echo CHtml::ajaxSubmitButton(
-    Yii::t('app','Add Site'),
-    array('/site/addSite'),
-    array(
-        'update'=>'site-box',
-        'success'=>"function(response){
-            updateURLs();
-            $('#url-title').val('');
-            $('#url-url').val('');
-        }",
-    ),
-    array('class'=>'x2-button','id'=>'submit-button')
+	Yii::t('app','Add Site'),
+	array('/site/addSite'),
+	array(
+		'update'=>'site-box',
+		'success'=>"function(response){
+			updateURLs();
+			$('#url-title').val('');
+			$('#url-url').val('');
+		}",
+	),
+	array('class'=>'x2-button','id'=>'submit-button')
 );
 echo CHtml::endForm();?>
 </div></div></div>
-

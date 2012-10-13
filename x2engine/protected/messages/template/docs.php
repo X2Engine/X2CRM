@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -61,6 +61,7 @@ return array (
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'',
 'Uploaded Documents'=>'',
+'Custom Message'=>'',
 
 // Doc Navbar
 'List Docs'=>'',
@@ -74,4 +75,5 @@ return array (
 'Export'=>'',
 'Create'=>'',
 'Create Email'=>'',
+'Create Document'=>'',
 );

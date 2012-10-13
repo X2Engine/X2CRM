@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,23 +39,42 @@
  ********************************************************************************/
 
 return array (
-
 // Attribute Labels
 'ID'=>'编号',
 'Association Type'=>'关联类型',
+'Association Name'=>'协会名称',
 'Association'=>'关联',
 'File Name'=>'文件名',
 'Uploaded By'=>'上传者',
 'Create Date'=>'创建日期',
+'Description'=>'描述',
+'Private'=>'私人',
+'Permission'=>'允许',
+
 
 // Actions
 'View Attachment'=>'查看附件',
 'Delete Media'=>'删除媒体',
+'List'=>'表',
+'Upload'=>'上载',
+'View'=>'览',
+'Update'=>'更新',
+'Delete'=>'删除',
 
 // Misc
 'File:'=>'文件:',
+'File: '=>'文件:',
 '(deleted)'=>'(删除)',
 'Uploaded by {name}'=>'上传者{name}',
+'Download File'=>'下载文件',
+'Update File: '=>'更新文件：',
+'Media & File Library'=>'媒体与档案库',
+'Max'=>'最大',
+'Forbidden File Extensions:'=>'禁止的文件扩展名：',
+'Choose File'=>'选择“文件”',
+'Select File'=>'选择“文件”',
+'Upload Media File: '=>'上传媒体文件：',
+'Background'=>'背景',
 
 // Errors
 'Are you sure you want to delete this item?'=>'您确定要删除这个项目吗？',

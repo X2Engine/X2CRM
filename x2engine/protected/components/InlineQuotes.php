@@ -445,10 +445,10 @@ function duplicateQuote(quote) {
 		
 		// get a list of products for adding to quotes
 		$products = Product::model()->findAll(array('select'=>'id, name'));
-		$productNames = array(0 => '');
-		foreach($products as $product) {
-			$productNames[$product->id] = $product->name;
-		}	
+		// $productNames = array(0 => '');
+		// foreach($products as $product) {
+			// $productNames[$product->id] = $product->name;
+		// }	
 		
 		$quotes = Quote::model()->findAllByAttributes(array('associatedContacts'=>$this->contactId));
 		
@@ -494,7 +494,7 @@ function duplicateQuote(quote) {
 				'contactId'=>$this->contactId,
 				'dataProvider'=>$dataProvider,
 				'products'=>$products,
-				'productNames'=>$productNames,
+				// 'productNames'=>$productNames,
 				'orders'=>$quoteProducts,
 				'total'=>$total,
 			));
@@ -507,7 +507,7 @@ function duplicateQuote(quote) {
 		$this->render('createQuote', array(
 			'model'=>$model,
 			'contactId'=>$this->contactId,
-			'productNames'=>$productNames,
+			// 'productNames'=>$productNames,
 	//		'showNewQuote'=>$showNewQuote,
 		));
 		

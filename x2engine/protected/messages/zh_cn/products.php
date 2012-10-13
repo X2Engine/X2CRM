@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,6 +50,10 @@ return array (
 'Description'=>'描述',
 'Create Date'=>'创建日期',
 'Tools'=>'工具',
+'Basic Information'=>'基本信息',
+'Product Information'=>'产品信息',
+'USD'=>'USD',
+'Active'=>'活跃',
 
 // Product Actions
 'Product List'=>'产品列表',

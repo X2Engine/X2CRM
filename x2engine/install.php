@@ -46,7 +46,7 @@ if ($silent) {
     exit;
 }
 
-include(dirname(__FILE__) . '/protected/config/emailConfig.php');
+include(dirname(__FILE__) . '/protected/config/X2Config.php');
 
 
 
@@ -101,55 +101,55 @@ $dbStatus = '';
 
 if (isset($_GET['errors'])) {
 
-    $errorMessagesIni = $_GET['errors'];
-    $errorMessages = array();
-    $errorCss = array();
+	$errorMessagesIni = $_GET['errors'];
+	$errorMessages = array();
+	$errorCss = array();
 
-    foreach ($errorMessagesIni as $message) {
-	if ($message == 'DB_COULD_NOT_SELECT') {
-	    $dbErr = installer_t('Could not select database.');
-	    $dbStatus = '<img src="' . $themeURL . '/images/NOT_OK.png">' . addslashes($dbErr);
-	    $errorMessages[] = $dbErr;
-	    $errorCss = array_unique(array_merge($errorCss, array('dbName', 'dbUser', 'dbPass')));
-	} else if ($message == 'DB_CONNECTION_FAILED') {
-	    $dbErr = installer_t('Could not connect to host.');
-	    $dbStatus = '<img src="' . $themeURL . '/images/NOT_OK.png">' . addslashes($dbErr);
-	    $errorMessages[] = $dbErr;
-	    $errorCss = array_unique(array_merge($errorCss, array('dbHost', 'dbName', 'dbUser', 'dbPass')));
-	} else {
-	    $error = explode('--', $message);
-	    if (count($error) > 1) {
-		$errorMessages[] = $error[1];
-		$errorCss[] = $error[0];
-	    } else {
-		$errorMessages[] = $message;
-	    }
+	foreach ($errorMessagesIni as $message) {
+		if ($message == 'DB_COULD_NOT_SELECT') {
+			$dbErr = installer_t('Could not select database.');
+			$dbStatus = '<img src="' . $themeURL . '/images/NOT_OK.png">' . addslashes($dbErr);
+			$errorMessages[] = $dbErr;
+			$errorCss = array_unique(array_merge($errorCss, array('dbName', 'dbUser', 'dbPass')));
+		} else if ($message == 'DB_CONNECTION_FAILED') {
+			$dbErr = installer_t('Could not connect to host.');
+			$dbStatus = '<img src="' . $themeURL . '/images/NOT_OK.png">' . addslashes($dbErr);
+			$errorMessages[] = $dbErr;
+			$errorCss = array_unique(array_merge($errorCss, array('dbHost', 'dbName', 'dbUser', 'dbPass')));
+		} else {
+			$error = explode('--', $message);
+			if (count($error) > 1) {
+				$errorMessages[] = $error[1];
+				$errorCss[] = $error[0];
+			} else {
+				$errorMessages[] = $message;
+			}
+		}
 	}
-    }
 }
 
 function getField($name, $default, $return = False) {
-    $ret = Null;
-    if (isset($_GET[$name])) {
-	if ($name == 'dummy_data' && $_GET[$name] == 1)
-	    $ret = ' checked="checked"';
+	$ret = Null;
+	if (isset($_GET[$name])) {
+		if ($name == 'dummy_data' && $_GET[$name] == 1)
+			$ret = ' checked="checked"';
+		else
+			$ret = $_GET[$name];
+	} else {
+		$ret = $default;
+	}
+	if ($return)
+		return $ret;
 	else
-	    $ret = $_GET[$name];
-    } else {
-	$ret = $default;
-    }
-    if ($return)
-	return $ret;
-    else
-	echo $ret;
+		echo $ret;
 }
 
 function checkCurrency($code) {
-    if (isset($_GET['currency'])) {
-	if ($_GET['currency'] == $code)
-	    echo ' selected="selected"';
-    } else if ($code == 'USD')
-	echo ' selected="selected"';
+	if (isset($_GET['currency'])) {
+		if ($_GET['currency'] == $code)
+			echo ' selected="selected"';
+	} else if ($code == 'USD')
+		echo ' selected="selected"';
 }
 
 function checkTimezone($timezone) {
@@ -295,71 +295,131 @@ $timezones = array(
 	<script type="text/javascript" src="js/webtoolkit.sha256.js"></script>
 
 	<script type="text/javascript">
-
-	    function validate(form) {
+		
+	function validate(form) {
 		if(form.adminPass.value == form.adminPass2.value) {
-		    return true;
+			return true;
 		} else {
-		    alert("Passwords do not match!");
-		    return false;
+			alert("Passwords do not match!");
+			return false;
 		}
-	    }
-
-	    function changeLang(lang) {
-		window.location=('install.php?language='+lang);
-	    } 
-	    $(function() {
-		$('#db-test-button').click(testDB);
+	}
 	
+
+	function installStage(stages,formData,form,nDone,responseData) {
+		var thisStage = stages[0],stagesRemaining = stages.slice(1);
+		var box = $('#error-box');
+		if (typeof thisStage != 'undefined') {
+			if (thisStage=='validate') {
+				$.ajax({
+					url:'initialize.php?stage=validate',
+					type:'POST',
+					data:formData,
+					dataType:'json'
+				}).done(function(data) {
+					if(data.errors || data.globalError) {
+						box.html($("<h3>").text(data.message));
+						if(data.globalError)
+							box.append($("<span>").text(data.globalError).addClass('error'));
+						var errorList = $('<ul>');
+						for (var i in data.errors) {
+							errorList.append($('<li>').text(data.errors[i]).addClass('error'));
+							form.find("#"+i).addClass('error');
+						}
+						box.append(errorList);	
+					} else {
+						installStage(stagesRemaining,formData,form,nDone+1,data);
+					}
+				}).fail(function() {
+					alert('An unexpected error occurred during validation.');
+				});
+			} else {
+				var messageHeader = box.find('h3');
+				var percentDone = messageHeader.find('#percentDone');
+				var progressList = box.find('ul');
+				if(percentDone.length == 0) {
+					progressList.remove(); // Get rid of any error messages
+					box.append($('<img src="<?php echo $themeURL; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'}));
+					messageHeader.text("<?php echo installer_t("Installing X2EngineCRM"); ?>");
+					percentDone = $('<span id="percentDone">');
+					messageHeader.append(percentDone);
+					progressList = $('<ul>');
+					progressList.insertAfter(messageHeader);
+				}
+				$.ajax({
+					url:'initialize.php?stage='+thisStage,
+					type:'POST',
+					data:formData,
+					dataType:'json'
+				}).done(function(data) {
+					progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
+					if(!data.failed)
+						installStage(stagesRemaining,formData,form,nDone+1,data);
+					else
+						box.find('img').remove();
+				}).fail(function() {
+					alert('An unexpected server error occurred during installation.');
+				});
+			}
+		} else {
+			// Submit the form, mark as complete.
+			form.find("#complete").val(1);
+			document.forms[form.attr('id')].submit();
+		}
+	}
+	
+	submitExternalForm = function() {
+		(function($){
+			var form = $('form#install');
+			form.find('.error').removeClass('error');
+			var stages = <?php $stageLabels = require_once(dirname(__FILE__).'/protected/data/installStageLabels.php'); echo '["'.implode('","',array_keys($stageLabels)).'"]'; ?>;
+			installStage(stages,form.serialize(),form,0);
+		})(jQuery);
+	}
+	
+	
+	function changeLang(lang) {
+		window.location=('install.php?language='+lang);
+	} 
+	$(function() {
+		$('#db-test-button').click(testDB);
+		
 		$('#currency').change(function() {
-		    if($('#currency').val() == 'other')
-			$('#currency2').fadeIn(300);
-		    else
-			$('#currency2').fadeOut(300);
+			if($('#currency').val() == 'other')
+				$('#currency2').fadeIn(300);
+			else
+				$('#currency2').fadeOut(300);
 		});
 
-		
-<?php if (!empty($errorMessages)): ?>
-    	$("#install").find("#<?php echo implode(',#', $errorCss); ?>").addClass('error');
+<?php if (!empty($errorMessages)): // Add error class to fields that failed validation ?>
+		$("#install").find("#<?php echo implode(',#', $errorCss); ?>").addClass('error');
 <?php endif; ?>
-    });
-
-
-    function testDB() {
-	
-	var data = $('#install').serialize()+'&testDb=1';
-	
-	$.ajax({
-	    type: "POST",
-	    url: "initialize.php",
-	    data: data,
-	    beforeSend: function() {
-		
-		$('#response-box').html('<img src="<?php echo $themeURL; ?>/images/loading.gif">');
-		
-		
-	    },
-	    success: function(response) {
-		
-		var message = '';
-			
-		var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
-		var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
-		
-		if(response.indexOf('DB_OK') > -1)
-		    message = okImage + '<?php echo addslashes(installer_t('Connection OK!')); ?>';
-		if(response.indexOf('DB_CONNECTION_FAILED') > -1)
-		    message = notOkImage + '<?php echo addslashes(installer_t('Could not connect to host.')); ?>';
-		if(response.indexOf('DB_COULD_NOT_SELECT') > -1)
-		    message = notOkImage + '<?php echo addslashes(installer_t('Could not select database.')); ?>';
-
-		$('#response-box').html(message);
-		// $(this).addClass("done");
-	    }
 	});
-	
-	// alert(data);
-    }
+			
+			
+	function testDB() {
+		var data = $('#install').serialize()+'&testDb=1';
+		$.ajax({
+			type: "POST",
+			url: "initialize.php",
+			data: data,
+			beforeSend: function() {
+				$('#response-box').html('<img src="<?php echo $themeURL; ?>/images/loading.gif">');
+			},
+			success: function(response) {
+				var message = '';
+				var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
+				var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
+				if(response.indexOf('DB_OK') > -1)
+					message = okImage + '<?php echo addslashes(installer_t('Connection OK!')); ?>';
+				if(response.indexOf('DB_CONNECTION_FAILED') > -1)
+					message = notOkImage + '<?php echo addslashes(installer_t('Could not connect to host.')); ?>';
+				if(response.indexOf('DB_COULD_NOT_SELECT') > -1)
+					message = notOkImage + '<?php echo addslashes(installer_t('Could not select database.')); ?>';
+				$('#response-box').html(message);
+			}
+		});
+	}
 
 	</script>
     </head>
@@ -424,27 +484,31 @@ $timezones = array(
 		}
 		if(!class_exists('Reflection',false)) {
 		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://php.net/manual/en/class.reflectionclass.php">PHP reflection class</a>: '.$rbm;
+		    $reqMessages[] = '<a href="http://php.net/manual/class.reflectionclass.php">PHP reflection class</a>: '.$rbm;
 		}
 		if(!extension_loaded("pcre")) {
 		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.pcre.php">PCRE extension</a>: '.$rbm ;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/book.pcre.php">PCRE extension</a>: '.$rbm ;
 		}
 		if(!extension_loaded("SPL")) {
 		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.spl.php">SPL</a>: '.$rbm;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/book.spl.php">SPL</a>: '.$rbm;
+		}
+		if(!extension_loaded("curl")) {
+		    $canInstall = False;
+		    $reqMessages[] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: '.$rbm;
 		}
 		if(!extension_loaded('pdo_mysql')) {
 		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/en/ref.pdo-mysql.php">PDO MySQL extension</a>: '.$rbm;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/ref.pdo-mysql.php">PDO MySQL extension</a>: '.$rbm;
 		}
 		if(!extension_loaded("ctype")) {
 		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.ctype.php">CType extension</a>: '.$rbm;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/book.ctype.php">CType extension</a>: '.$rbm;
 		}
 		if(!extension_loaded("mbstring")) {
 		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/en/book.mbstring.php">Multibyte string extension</a>: '.$rbm;
+		    $reqMessages[] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: '.$rbm;
 		}
 		if(!$canInstall) {
 		    echo "<div style=\"color:red\"><h1>".installer_t('Cannot install X2EngineCRM')."</h1>\n";
@@ -556,6 +620,7 @@ $timezones = array(
     			</ul>
 <?php endif; ?>
 		    </div>
+			<input type="hidden" id="complete" name="complete" value="0" />
 		    <input type="submit" id="install-button" class="x2-button" value="<?php echo installer_t('Install'); ?>" />
 		    <br />
 		</form>

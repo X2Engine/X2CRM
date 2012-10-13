@@ -77,7 +77,7 @@ return array (
 'High'=>'высокий',
 'Public'=>'общественность',
 'Private'=>'частный',
-'Twitter'=>'щебетать',
+'Twitter'=>'Twitter',
 'Linkedin'=>'Linkedin',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
@@ -96,6 +96,23 @@ return array (
 'Deal Status'=>'Статус сделки',
 'Do Not Call'=>'Не звонить',
 'Do Not Email'=>'Не пишите',
+'Sales &amp; Marketing'=>'Продажи и маркетинг',
+'In Person'=>'В лицо',
+'Accepted'=>'принятый',
+'Lost'=>'потерянный',
+'None'=>'никто',
+'Web'=>'интернет',
+'Assigned'=>'назначенный',
+'Won'=>'выигранный',
+'E-Mail'=>'электронной почте',
+'Google'=>'Google',
+'Walk In'=>'шли в',
+'Unassigned'=>'Нераспределенные',
+'Working'=>'рабочий',
+'Dead'=>'мертвый',
+'Rejected'=>'Отклонен',
+'Tags'=>'Теги',
+'Associated Contacts'=>'связанная Контакты',
 
 // List Attributes
 'Owner'=>'владелец',
@@ -133,6 +150,10 @@ return array (
 'Contact Info'=>'Контактная информация',
 'Opportunities &amp; Marketing'=>'Продажи и маркетинг',
 'Social Media'=>'Социальные СМИ',
+'AND'=>'И',
+'OR'=>'ИЛИ',
+'User'=>'пользователь',
+'Leads'=>'Объявления',
 
 // Contacts Actions
 'My Contacts'=>'Мои контакты',
@@ -141,6 +162,7 @@ return array (
 'Create Contact'=>'Создать контакт',
 'View Contact'=>'Посмотреть Контакт',
 'Update Contact'=>'Обновление контакта',
+'Update Contact:'=>'Обновление контакта',
 'Delete Contact'=>'Удалить контакт',
 'Contact Lists'=>'Связаться списки',
 'Create Lead'=>'Создание возможностей',
@@ -149,7 +171,7 @@ return array (
 'Lists'=>'Списки',
 'Create List'=>'Создать список',
 'View'=>'смотреть',
-'Share'=>'доля',
+'Share'=>'делиться',
 'Update'=>'обновление',
 'View Opportunities'=>'Просмотр продажам',
 'Delete'=>'удалять',
@@ -157,6 +179,10 @@ return array (
 'Hide All'=>'Скрыть все',
 'Show'=>'показывать',
 'Hide'=>'скрывать',
+'View Relationships'=>'Посмотреть отношения',
+'Subscribe'=>'подписать',
+'View List'=>'Просмотр списка',
+'Share Action'=>'Поделиться действий',
 
 // Contacts Titles
 'Contacts'=>'связи',
@@ -164,7 +190,7 @@ return array (
 'Contact:'=>'контакт:',
 
 // Import from Outlook
-'Import from Outlook'=>'Импорт контактов из перспективы',
+'Import from Outlook'=>'Импорт из Outlook',
 'Import from Template'=>'Импорт контактов из шаблона',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Чтобы импортировать контакты из шаблона, пожалуйста, заполните наш файл шаблона. Затем загрузите файл здесь, используя форму ниже.',
 'The template file can be found here:'=>'Файл шаблона можно найти здесь:',
@@ -178,6 +204,7 @@ return array (
 'Subscribe'=>'подписать',
 'The information for {name} has changed.'=>'Информация для {name} изменилась.',
 'Receive email updates every time information for {name} changes'=>'Получение обновлений по электронной почте для каждого обмена информацией время {name}',
+'Unsubscribe'=>'Отменить',
 
 // Web Lead
 'Web Lead'=>'веб-контакт',

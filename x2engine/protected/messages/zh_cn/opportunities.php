@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +39,6 @@
  ********************************************************************************/
 
 return array (
-
 // Opportunities Attributes
 'ID'=>'编号',
 'Assigned To'=>'分配给',
@@ -63,6 +62,12 @@ return array (
 'Cold Call'=>'冷拨',
 'E-Mail'=>'电子信箱',
 'Store'=>'商店',
+'Other Info'=>'其他信息',
+'Basic Information'=>'基本信息',
+'None'=>'无',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'走在',
 
 // Opportunities Actions
 'Opportunities List'=>'销售列表',
@@ -71,12 +76,19 @@ return array (
 'Update Opportunity'=>'更新销售',
 'Delete Opportunity'=>'删除销售',
 'Manage Opportunities'=>'管理销售',
+'Create'=>'创建',
+'View'=>'看',
+'Update'=>'更新',
+'Update Opportunity:'=>'更新销售:',
 
-'Add a User'=>'添加用户',
-'Add a Contact'=>'添加联系人',
-'Remove a User'=>'删除用户',
-'Remove a Contact'=>'删除联系人',
+'Add A User'=>'添加用户',
+'Add A Contact'=>'添加联系人',
+'Remove A User'=>'删除用户',
+'Remove A Contact'=>'删除联系人',
 'Share Opportunity'=>'共享销售',
+'Delete'=>'删除',
+'Add'=>'加',
+'Remove'=>'清除',
 
 // Opportunities Titles
 'Opportunities'=>'销售',

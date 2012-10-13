@@ -98,11 +98,23 @@ class X2WebApplication extends CWebApplication {
 			else
 				$controllerID.='/';
 			$className=ucfirst($id).'Controller';
+
 			$classFile=$basePath.DIRECTORY_SEPARATOR.$className.'.php';
-			if(is_file($classFile))
-			{
+			
+			$extendedClassFile = Yii::getCustomPath($basePath.DIRECTORY_SEPARATOR.'My'.$className.'.php');
+			
+			if(is_file($extendedClassFile)) {					// see if there's an extended controller in /custom
 				if(!class_exists($className,false))
-					require(Yii::getCustomPath($classFile));	// look in /custom for controller file
+					require(Yii::getCustomPath($classFile));	// import the 'real' controller
+				$className = 'My'.$className;					// add "My" to the class name
+				$classFile = $extendedClassFile;
+			} else {
+				$classFile = Yii::getCustomPath($classFile);	// look in /custom for controller file
+			}
+
+			if(is_file($classFile)) {
+				if(!class_exists($className,false))
+					require($classFile);
 				if(class_exists($className,false) && is_subclass_of($className,'CController'))
 				{
 					$id[0]=strtolower($id[0]);

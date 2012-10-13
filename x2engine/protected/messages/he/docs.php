@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -61,6 +61,7 @@ return array (
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'נא לבחור אילו משתמשים רשאים לערוך את המסמך. השימוש לחץ Control כדי לבחור או לבטל את הבחירה משתמשים בודדים.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'אנא לחץ לחיצה ימנית על הקישור הבא ובחר באפשרות "שמירה בשם" כדי להוריד את המסמך! לחיצה שמאלה פותח את המסמך במצב להדפסה.',
 'Uploaded Documents'=>'מסמכים שנטענו',
+'Custom Message'=>'הודעה מותאמת אישית',
 
 // Doc Navbar
 'List Docs'=>'רשימת מסמכים',
@@ -74,4 +75,5 @@ return array (
 'Export'=>'יצוא',
 'Create'=>'ליצור',
 'Create Email'=>'צור דוא"ל',
+'Create Document'=>'צור מסמך',
 );

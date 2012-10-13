@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,7 +40,7 @@
 
 return array (
 // Quotes Attributes
-'ID'=>'ID',
+'ID'=>'番号',
 'Status'=>'ステータス',
 'Name'=>'名前',
 'Locked'=>'ロック',
@@ -88,6 +88,8 @@ return array (
 'Delete Quote'=>'見積りを削除します。',
 'Manage Quotes'=>'引用符を管理する',
 'Create Quote'=>'見積りを作成します。',
+'New Quote'=>'新しい見積もり',
+'Expires'=>'切れる',
 
 'Add a User'=>'ユーザの追加',
 'Add a Contact'=>'コンタクトの追加',
@@ -113,4 +115,5 @@ return array (
 'Include Logo'=>'ロゴを含む',
 'Basic Information'=>'基本情報',
 'Opportunities'=>'販売',
+'Subscribe'=>'購読する',
 );

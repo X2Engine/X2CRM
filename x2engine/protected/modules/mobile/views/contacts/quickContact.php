@@ -38,14 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-
-$prof=Profile::model()->findByPk(Yii::app()->user->getId());
-// if($prof->widgets=='1'){
-// Yii::app()->clientScript->registerScript('updateChat', "
-
-// ",CClientScript::POS_HEAD);
-// }
 $menuItems = array(
             array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
         );

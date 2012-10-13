@@ -41,7 +41,7 @@
 /**
  * @package X2CRM.modules.accounts.controllers 
  */
-class AccountsController extends x2base {
+class AccountsController extends x2base { 
 
 	public $modelClass = 'Accounts';
 
@@ -176,6 +176,8 @@ class AccountsController extends x2base {
 			if(isset($_POST['x2ajax'])) {
 				if($this->create($model,$temp, '1')) { // success creating account?
 					$primaryAccountLink = '';
+					$newPhone = '';
+					$newWebsite = '';
 					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
 						$rel=new Relationships;
 						$rel->firstType=$_POST['ModelName'];
@@ -184,11 +186,34 @@ class AccountsController extends x2base {
 						$rel->secondId=$model->id;
 						$rel->save();
 						if($_POST['ModelName'] == 'Contacts') {
-						$contact = Contacts::model()->findByPk($_POST['ModelId']);
+							$contact = Contacts::model()->findByPk($_POST['ModelId']);
 							if($contact) {
+								$changed = false;
 								if($contact->company == '') { // if no primary account on this contact
 									$contact->company = $model->id; // make this primary account
+									$changed = true;
+									$primaryAccountLink = $model->createLink();
+								}
+								if(isset($model->website) && (!isset($contact->website) || $contact->website == "")) {
+									$contact->website = $model->website;
+									$newWebsite = $contact->website;
+									$changed = true;
+								}
+								if(isset($model->phone) && (!isset($contact->phone) || $contact->phone == "")) {
+									$contact->phone = $model->phone;
+									$newPhone = $contact->phone;
+									$changed = true;
+								}
+								
+								if($changed)
 									$contact->update();
+							}
+						} else if($_POST['ModelName'] == 'Opportunity') {
+							$opportunity = Opportunity::model()->findByPk($_POST['ModelId']);
+							if($opportunity) {
+								if(!isset($opportunity->accountName) || $opportunity->accountName == '') {
+									$opportunity->accountName = $model->id;
+									$opportunity->update();
 									$primaryAccountLink = $model->createLink();
 								}
 							}
@@ -200,7 +225,9 @@ class AccountsController extends x2base {
 							'status'=>'success',
 							'name'=>$model->name,
 							'id'=>$model->id,
-							'primaryAccountLink'=>$primaryAccountLink
+							'primaryAccountLink'=>$primaryAccountLink,
+							'newWebsite'=>$newWebsite,
+							'newPhone'=>$newPhone,
 						)
 					);
 					Yii::app()->end();

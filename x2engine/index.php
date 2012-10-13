@@ -65,6 +65,7 @@ Yii::registerAutoloader(array('Yii','x2_autoload'));
 Yii::createWebApplication($config)->run();
 
 
+
 function printR($obj, $die=false){
     echo "<pre>" . print_r($obj, true) . "</pre>";
     if($die){

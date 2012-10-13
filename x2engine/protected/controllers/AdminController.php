@@ -97,8 +97,10 @@ class AdminController extends Controller {
         $authItem=$auth->getAuthItem($action);
         if(Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->user->getName()=='admin'){
             return true;
-        } else {
-            throw new CHttpException(403,'You are not authorized to perform this action.');
+        }elseif(Yii::app()->user->isGuest){
+            $this->redirect($this->createUrl('/site/login'));
+        }else{
+            throw new CHttpException(403, 'You are not authorized to perform this action.');
         }
     }
 
@@ -1612,7 +1614,7 @@ class AdminController extends Controller {
                 $auth->addItemChild('authenticated',ucfirst($moduleName).'Index');
                 $auth->createOperation(ucfirst($moduleName).'Admin');
                 $auth->addItemChild('admin',ucfirst($moduleName).'Admin');
-                $this->redirect(array('/' . $moduleName . '/default/index'));
+                $this->redirect(array('/' . $moduleName . '/index'));
             }
         }
 
@@ -1638,10 +1640,10 @@ class AdminController extends Controller {
         $module->copy('protected/modules/' . $moduleName . '/TemplatesModule.php');
 
 
-        $configFile = Yii::app()->file->set('protected/config/templatesConfig.php', true);
-        $configFile->copy($moduleName . 'Config.php');
+        $configFile = Yii::app()->file->set('protected/modules/template/templatesConfig.php', true);
+        $configFile->copy('protected/modules/' . $moduleName . '/' . $moduleName . 'Config.php');
 
-        $configFile = Yii::app()->file->set('protected/config/' . $moduleName . 'Config.php', true);
+        $configFile = Yii::app()->file->set('protected/modules/' . $moduleName . '/' . $moduleName . 'Config.php', true);
 
         $str = "<?php
 \$moduleConfig = array(
@@ -1734,6 +1736,7 @@ class AdminController extends Controller {
                 $templateFile->setContents($contents);
             }
         }
+        //rename('protected/modules/' . $moduleName . '/views/templates',"protected/modules/$moduleName/views/$moduleName");
     }
 
     /**
@@ -1747,14 +1750,34 @@ class AdminController extends Controller {
         if (isset($_POST['name'])) {
             $moduleName = $_POST['name'];
             $module = Modules::model()->findByPk($moduleName);
+            $moduleName=$module->name;
             if (isset($module)) {
                 if ($module->name != 'document' && $module->delete()) {
                     $config = include('protected/modules/' . $moduleName . '/register.php');
                     $uninstall = $config['uninstall'];
-                    foreach ($uninstall as $sql) {
-                        $query = Yii::app()->db->createCommand($sql);
-                        $query->execute();
-                    }
+					if (isset($config['version'])) {
+						foreach ($uninstall as $sql) {
+							// New convention:
+							// If element is a string, treat as a path to an SQL script file.
+							// Otherwise, if array, treat as a list of SQL commands to run.
+							if (is_string($sql)) {
+								if (file_exists($sql)) {
+									Yii::app()->db->createCommand(file_get_contents($sql));
+								}
+							} else {
+								foreach ($sql as $sqlLine) {
+									$query = Yii::app()->db->createCommand($sql);
+									$query->execute();
+								}
+							}
+						}
+					} else {
+						// The old way, for backwards compatibility:
+						foreach ($uninstall as $sql) {
+							$query = Yii::app()->db->createCommand($sql);
+							$query->execute();
+						}
+					}
                     $fields = Fields::model()->findAllByAttributes(array('modelName' => $moduleName));
                     foreach ($fields as $field) {
                         $field->delete();
@@ -2417,7 +2440,7 @@ class AdminController extends Controller {
      * from the remote update server.
      */
     public function actionUpdater() {
-        include('protected/config/emailConfig.php');
+        include('protected/config/X2Config.php');
         $context = stream_context_create(array(
             'http' => array(
                 'timeout' => 15  // Timeout in seconds
@@ -2428,11 +2451,16 @@ class AdminController extends Controller {
         } else {
             
         }
-        if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
-            $url = 'x2base';
-        } else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
-            $url = 'x2planet';
-        }
+		$url = 'x2planet';
+		if (in_array(Yii::app()->params->admin['edition'],array('opensource',Null))) {
+			if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
+				$url = 'x2base';
+			} else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
+				$url = 'x2planet';
+			}
+		} else {
+			$versionTest = @file_get_contents('http://x2planet.com/installs/updates/versionCheck');
+		}
 
         $updaterCheck = file_get_contents("http://www.$url.com/updates/updateCheck.php");
 
@@ -2452,11 +2480,12 @@ class AdminController extends Controller {
 \$updaterVersion='$updaterCheck';
 \$buildDate='$buildDate';
 ?>";
-            file_put_contents('protected/config/emailConfig.php', $config);
+            file_put_contents('protected/config/X2Config.php', $config);
             $this->redirect('updater');
         }
 
-	$contents = file_get_contents("http://www.$url.com/updates/update.php?version=$version");
+	$unique_id = Yii::app()->params->admin['unique_id'];
+	$contents = file_get_contents("http://www.$url.com/updates/update.php?version=$version&unique_id=$unique_id");
         $pieces = explode(";;", $contents);
         $newVersion = $pieces[3];
         $sqlList = $pieces[1];
@@ -2612,11 +2641,11 @@ class AdminController extends Controller {
     /**
      * Perform all post-update tasks. 
      * 
-     * Writes new data to protected/config/emailConfig.php, removes the backup
+     * Writes new data to protected/config/X2Config.php, removes the backup
      * files, and returns a message that the update succeeded.
      */
     public function actionCleanUp() {
-        include('protected/config/emailConfig.php');
+        include('protected/config/X2Config.php');
         if (isset($_POST['status'])) {
             $status = $_POST['status'];
             if ($status == 'error') {
@@ -2639,7 +2668,7 @@ class AdminController extends Controller {
 \$updaterVersion='$updaterCheck';
 \$buildDate='$buildDate';
 ?>";
-                file_put_contents('protected/config/emailConfig.php', $config);
+                file_put_contents('protected/config/X2Config.php', $config);
                 echo "Update succeeded!";
             }
         }

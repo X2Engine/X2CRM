@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,44 +41,57 @@
 return array (
 // Opportunities Attributes
 'ID'=>'ID',
-'Assigned To'=>'Assegnata a',
+'Assigned To'=>'Assegnata A',
 'Name'=>'Nome',
 'Account'=>'Conto',
 'Contacts'=>'Contatti',
 'Quote Amount'=>'Quote Importo',
-'Sales Stage'=>'Fase di vendita',
-'Expected Close Date'=>'Data di chiusura previsto',
+'Sales Stage'=>'Fase di Vendita',
+'Expected Close Date'=>'Data di Chiusura Previsto',
 'Probability'=>'Probabilità',
-'Lead Source'=>'Fonte di piombo',
+'Lead Source'=>'Fonte di Piombo',
 'Description'=>'Descrizione',
-'Create Date'=>'Data di creazione',
-'Last Updated'=>'Ultimo aggiornamento',
-'Updated By'=>'Aggiornato da',
+'Create Date'=>'Data di Creazione',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Updated By'=>'Aggiornato Da',
 'Hold Control or Command key to select multiple items.'=>'Tenere il controllo o il tasto Comando per selezionare più elementi.',
 'Working'=>'Lavoro',
 'Won'=>'Ha vinto',
 'Lost'=>'Perso',
-'Website'=>'Sito web',
-'Cold Call'=>'Chiamata a freddo',
+'Website'=>'Sito Web',
+'Cold Call'=>'Chiamata a Freddo',
 'E-Mail'=>'E-Mail',
 'Store'=>'Negozio',
+'Other Info'=>'Altre Informazioni',
+'Basic Information'=>'Informazioni di Base',
+'None'=>'Nessuno',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'Entrò',
 
 // Opportunities Actions
-'Opportunities List'=>'Lista di vendita',
+'Opportunities List'=>'Lista di Vendita',
 'Create Opportunity'=>'Creare Vendita',
-'View Opportunity'=>'vista Vendita',
+'View Opportunity'=>'Vista Vendita',
 'Update Opportunity'=>'Aggiornamento Vendita',
 'Delete Opportunity'=>'Eliminare Vendita',
-'Manage Opportunities'=>'Gestire le vendite',
+'Manage Opportunities'=>'Gestire le Vendite',
+'Create'=>'Creare',
+'View'=>'Vista',
+'Update'=>'Aggiornare',
+'Update Opportunity:'=>'Aggiornamento Vendita:',
 
-'Add a User'=>'Aggiungi un utente',
-'Add a Contact'=>'Aggiungere un contatto',
-'Remove a User'=>'Rimuovere un utente',
-'Remove a Contact'=>'Rimuovere un contatto',
+'Add A User'=>'Aggiungi un Utente',
+'Add A Contact'=>'Aggiungere un Contatto',
+'Remove A User'=>'Rimuovere un Utente',
+'Remove A Contact'=>'Rimuovere un Contatto',
 'Share Opportunity'=>'Condividi Vendita',
+'Delete'=>'Cancellare',
+'Add'=>'Aggiungere',
+'Remove'=>'Rimuovere',
 
 // Opportunities Titles
-'Opportunities'=>'Di vendita',
+'Opportunities'=>'Di Vendita',
 'Opportunity'=>'Vendita',
 'Opportunity:'=>'Vendita:',
 'Update Opportunity: {name}'=>'Aggiornamento Vendita: {name}',
@@ -88,5 +101,5 @@ return array (
 'Please select the contacts you wish to add.'=>'Si prega di selezionare i contatti che si desidera aggiungere.',
 'Please select the users you wish to remove.'=>'Si prega di selezionare gli utenti che si desidera rimuovere.',
 'Please select the contacts you wish to remove.'=>'Si prega di selezionare i contatti che si desidera rimuovere.',
-'Opportunity Record Details'=>'Vendita record Dettagli',
+'Opportunity Record Details'=>'Vendita Record Dettagli',
 );

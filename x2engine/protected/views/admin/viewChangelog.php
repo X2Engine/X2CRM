@@ -73,9 +73,21 @@
                         'htmlOptions'=>array('width'=>'20%'),
 		),
 		array(
-			'name'=>'changed',
-			'header'=>Yii::t('actions','Change'),
-			'value'=>'$data->changed',
+			'name'=>'fieldName',
+			'header'=>Yii::t('actions','Field Name'),
+			'value'=>'$data->fieldName',
+			'type'=>'raw',
+		),
+        array(
+			'name'=>'oldValue',
+			'header'=>Yii::t('actions','Old Value'),
+			'value'=>'$data->oldValue',
+			'type'=>'raw',
+		),
+        array(
+			'name'=>'newValue',
+			'header'=>Yii::t('actions','New Value'),
+			'value'=>'$data->newValue',
 			'type'=>'raw',
 		)
 	),

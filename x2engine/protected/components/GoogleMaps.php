@@ -58,7 +58,7 @@ class GoogleMaps extends X2Widget {
 		if(!isset($this->location) || empty($this->location))
 			return;
 
-		Yii::app()->clientScript->registerScript('inlineEmailForm','
+		Yii::app()->clientScript->registerScript('setupGoogleMapsWidget','
 		if($("#widget_GoogleMaps .portlet-content").is(":visible"))
 			runGoogleMapsWidget();
 		else

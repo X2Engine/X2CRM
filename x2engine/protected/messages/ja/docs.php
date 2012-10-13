@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,7 +41,7 @@
 return array (
 
 // Attribute Labels
-'ID'=>'ID',
+'ID'=>'番号',
 'Title'=>'題名',
 'Text'=>'ぶん',
 'Created By'=>'作った人',
@@ -61,6 +61,7 @@ return array (
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'ユーザーが文書を編集するために許可されている選択してください。コントロールを使用する+個々のユーザーを選択または選択解除する]をクリックします。',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'右下のリンクをクリックすると、ドキュメントをダウンロードするには、"名前を付けて保存"を選択してください！左クリックは、プリンタフレンドリモードで文書を開きます。',
 'Uploaded Documents'=>'アップロードされたドキュメント',
+'Custom Message'=>'カスタムメッセージ',
 
 // Doc Navbar
 'List Docs'=>'ドクのリスト',
@@ -74,4 +75,5 @@ return array (
 'Export'=>'エクスポート',
 'Create'=>'作る',
 'Create Email'=>'電子メールを作成します。',
+'Create Document'=>'文書を作成します',
 );

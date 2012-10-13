@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,35 +48,44 @@ return array (
 'Phone'=>'Telefono',
 'Symbol'=>'Simbolo',
 'Employees'=>'Dipendenti',
-'Assigned To'=>'Assegnata a',
-'Create Date'=>'Data di creazione',
+'Assigned To'=>'Assegnata A',
+'Create Date'=>'Data Di Creazione',
 'Associated Contacts'=>'Associati Contatti',
 'Description'=>'Descrizione',
-'Last Updated'=>'Ultimo aggiornamento',
-'Updated By'=>'Aggiornato da',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Updated By'=>'Aggiornato Da',
 'None'=>'Nessuno',
+'Contacts'=>'Contatti',
+'Basic Information'=>'Informazioni di Base',
+'Additional Information'=>'Informazioni Aggiuntive',
 
 // Accounts Actions
-'Accounts List'=>'Lista conti',
-'Create Account'=>'Crea un account',
-'View Account'=>'Vista del conto',
-'Update Account'=>'Aggiornamento Account',
-'Delete Account'=>'Elimina account',
-'Add a User'=>'Aggiungi un utente',
-'Add a Contact'=>'Aggiungere un contatto',
-'Remove a User'=>'Rimuovere un utente',
-'Remove a Contact'=>'Rimuovere un contatto',
-'Share Account'=>'Condividi account',
+'Accounts List'=>'Lista Conti',
+'Create Account'=>'Crea Un Account',
+'View Account'=>'Vista Del Conto',
+'Update Account'=>'Aggiornamento Conto',
+'Delete Account'=>'Elimina Account',
+'Add a User'=>'Aggiungi un Utente',
+'Add a Contact'=>'Aggiungere un Contatto',
+'Remove a User'=>'Rimuovere un Utente',
+'Remove a Contact'=>'Rimuovere un Contatto',
+'Share Account'=>'Condividi Account',
+'Create'=>'Creare',
+'View'=>'Vista',
+'Update'=>'Aggiornare',
+'Delete'=>'Cancellare',
+'Update Account:'=>'Aggiorna Account:',
+'Share Opportunity'=>'Condividi Opportunità',
 
 // Accounts Titles
 'Accounts'=>'Conti',
-'Manage Accounts'=>'Gestione degli account',
-'Update Account: {name}'=>'Aggiornamento del conto: {name}',
-'Account:'=>'conto:',
+'Manage Accounts'=>'Gestisci Account',
+'Update Account: {name}'=>'Aggiornamento del Conto: {nome}',
+'Account:'=>'Conto:',
 
 // Misc
 'Please click any new users you wish to add.'=>'Seguendo uno i nuovi utenti che si desidera aggiungere.',
 'Please click any new users you wish to remove.'=>'Seguendo uno i nuovi utenti che si desidera rimuovere.',
-'Account Record Details'=>'Record conto Dettagli',
+'Account Record Details'=>'Record Conto Dettagli',
 'Account Record'=>'Conto Record',
 );

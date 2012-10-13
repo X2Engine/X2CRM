@@ -1,14 +1,28 @@
-# X2EngineCRM 2.0 Changelog #
-- New and greatly improved UI
-- New features in X2Touch Mobile
-- Renamed Sales to Opportunities
-- Improved relationships between Contacts, Accounts, and Opportunities
-- Added date and user filtering to Workflow view
-- Reworked the back-end of access permissions to fit with Yii roles
-- Added attachments to Marketing campaigns
+# X2EngineCRM 2.1 Changelog #
+10/12/2012
+* Overhauled real-time notification and chat
+	* Much lower server load, especially with multiple tabs
+* Improved URL handling (more efficient)
+* Improved changelog storage
+* Big improvements to the installer
+	* Real-time installation status updates
+	* No more timeout errors
+* Numerous bug fixes
+* Improvements to Relationships for contacts, accounts and opportunities
+* Fix for all bugs related to browsers caching old javascript files
+* Additional feature in Customization Framework: you can now override controller 
+  files by adding "My" to the class and putting the file in /custom, for example 
+  to override actionIndex in ContactsController you can create a class 
+  MyContactsController extending ContactsController and only define actionIndex. 
+  This class will automatically be used in place of the original file, and you 
+  don't have to override the entire class.
+
+Note: Any existing changelog data will be preserved, but not visible in the 
+changelog table. In the next update we will include code to convert this data 
+to the new format.
 
 # Introduction #
-Welcome to  X2EngineCRM v2.0!  X2EngineCRM is a next-generation,  open source
+Welcome to  X2EngineCRM v2.1!  X2EngineCRM is a next-generation,  open source
 social sales application for small and medium sized businesses. X2EngineCRM was 
 designed to streamline  contact and sales actions into  one  compact blog-style 
 user interface.  Add to this  contact  and  colleague  social feeds  and  sales 

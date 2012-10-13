@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,44 +42,44 @@ return array (
 // Profile Attributes
 'ID'=>'ID',
 'Full Name'=>'Nome e Cognome',
-'Username'=>'Nome utente',
-'Tag Line'=>'Linea tag',
-'Office Phone'=>'Telefono ufficio',
+'Username'=>'Nome Utente',
+'Tag Line'=>'Linea Tag',
+'Office Phone'=>'Telefono Ufficio',
 'Cell Phone'=>'Cellulare',
-'Email Address'=>'Indirizzo e-mail',
+'Email Address'=>'Indirizzo E-mail',
 'Notes'=>'Note',
 'Status'=>'Stato',
 'Description'=>'Descrizione',
-'Last Updated'=>'Ultimo aggiornamento',
-'Updated By'=>'Aggiornato da',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Updated By'=>'Aggiornato Da',
 'Allow users to post on your profile?'=>'Consentire agli utenti di inviare il vostro profilo?',
 'Language'=>'Lingua',
-'Time Zone'=>'Fuso orario',
+'Time Zone'=>'Fuso Orario',
 'Enable group chat?'=>'Attivare la chat di gruppo?',
 'Widgets'=>'Widget',
-'Background Color'=>'Colore di sfondo',
+'Background Color'=>'Colore di Sfondo',
 'Menu Color'=>'Menu Colore',
-'Menu Text Color'=>'Menu Colore testo',
-'Background Image'=>'Immagine di sfondo',
-'Start Page'=>'Pagina iniziale',
-'Results Per Page'=>'Risultati per pagina',
+'Menu Text Color'=>'Menu Colore Testo',
+'Background Image'=>'Immagine di Sfondo',
+'Start Page'=>'Pagina Iniziale',
+'Results Per Page'=>'Risultati Per Pagina',
 'Show Social Media'=>'Mostra Social Media',
-'Upload a Background'=>'Carica uno sfondo',
+'Upload a Background'=>'Carica uno Sfondo',
 
 // Profile Actions
-'View Profile'=>'Guarda il profilo',
-'Update Profile'=>'Aggiornamento profilo',
-'Change Settings'=>'Modifica delle impostazioni',
-'Social Feed'=>'Feed sociale',
+'View Profile'=>'Guarda il Profilo',
+'Update Profile'=>'Aggiornamento Profilo',
+'Change Settings'=>'Modifica delle Impostazioni',
+'Social Feed'=>'Feed Sociale',
 'People'=>'Persone',
-'Change Personal Settings'=>'Modifica delle impostazioni personali',
+'Change Personal Settings'=>'Modifica delle Impostazioni Personali',
 
 // Profile Titles
 'Profile:'=>'Profilo:',
-'Update Your Profile'=>'Aggiorna il tuo profilo',
+'Update Your Profile'=>'Aggiorna il Tuo Profilo',
 
 // Social
-'Feed'=>'Feed',
+'Feed'=>'Newsfeed',
 'Social'=>'Sociale',
 'Reply'=>'Risposta',
 'A larger Chat Box'=>'Una Chat Box grande',

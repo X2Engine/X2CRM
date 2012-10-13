@@ -41,7 +41,8 @@ $jsProductList = "\$(productList).append(\$('<option>', {value: 0}).append(''));
 $jsProductPrices = "var prices = [];\n";
 $jsProductPrices .= "prices[0] = 0;\n";
 foreach($products as $product) {
-	$jsProductList .= "\$(productList).append(\$('<option>', {value: {$product->id}}).append('{$product->name}'));\n";
+	$name = json_encode($product->name);
+	$jsProductList .= "\$(productList).append(\$('<option>', {value: {$product->id}}).append($name));\n";
 	$jsProductPrices .= "prices[{$product->id}] = {$product->price};\n";
 }
 

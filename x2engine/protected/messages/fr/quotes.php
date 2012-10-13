@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,63 +45,65 @@ return array (
 'Name'=>'Nom',
 'Locked'=>'Fermé',
 'Contacts'=>'Contacts',
-'Assigned To'=>'Assignée à',
+'Assigned To'=>'Assignée À',
 'Account'=>'Compte',
 'Probability'=>'Probabilité',
 'Expiration Date'=>'Date D\'Expiration',
-'Last Updated'=>'Dernière mise à jour',
-'Create Date'=>'Créez date',
-'Updated By'=>'Mis à jour par',
-'Created By'=>'Créé par',
+'Last Updated'=>'Dernière Mise à Jour',
+'Create Date'=>'Créez Date',
+'Updated By'=>'Mis à Jour Par',
+'Created By'=>'Créé Par',
 'Notes'=>'Remarques',
 'Products'=>'Produits',
-'Expected Close Date'=>'Date prévue Fermer',
+'Expected Close Date'=>'Date Prévue Fermer',
 
-'Sales Stage'=>'Phase de vente',
+'Sales Stage'=>'Phase de Vente',
 'Existing Products'=>'Produits Existants',
-'Lead Source'=>'Source de plomb',
+'Lead Source'=>'Source de Plomb',
 'Description'=>'Descriptif',
-'Notes/Terms'=>'Notes Conditions',
+'Notes/Terms'=>'Notes/Conditions',
 'Hold Control or Command key to select multiple items.'=>'Tenez touches Ctrl ou Commande pour sélectionner plusieurs éléments.',
 
 'Draft'=>'ébauche',
-'Pending'=>'en attendant',
+'Pending'=>'En Attendant',
 'Issued'=>'Publié',
 
 'Won'=>'Won',
 
-'Working'=>'de travail',
+'Working'=>'De Travail',
 'Lost'=>'Perdu',
 
 'Website'=>'Site Web',
-'Cold Call'=>'Cold Call',
+'Cold Call'=>'Appel Spontané',
 'E-Mail'=>'E-Mail',
 'Store'=>'Boutique',
 
 // Quotes Actions
-'Quotes List'=>'Quote List',
+'Quotes List'=>'Liste des Citations',
 'Create'=>'Créer',
-'View Quote'=>'Voir Quote',
+'View Quote'=>'Voir Citer',
 'Update'=>'Mettre à Jour',
 'Delete'=>'Effacer',
-'Manage'=>'gérer',
+'Manage'=>'Gérer',
 'Delete Quote'=>'Supprimer Quote',
-'Manage Quotes'=>'Gérer Quotes',
-'Create Quote'=>'Créer Quote',
+'Manage Quotes'=>'Gérer Citations',
+'Create Quote'=>'Créer Citations',
+'New Quote'=>'Citation Nouveau',
+'Expires'=>'Expire Le',
 
-'Add a User'=>'Ajouter un utilisateur',
-'Add a Contact'=>'Ajouter un contact',
-'Remove a User'=>'Supprimer un utilisateur',
-'Remove a Contact'=>'Supprimer un contact',
+'Add a User'=>'Ajouter un Utilisateur',
+'Add a Contact'=>'Ajouter un Contact',
+'Remove a User'=>'Supprimer un Utilisateur',
+'Remove a Contact'=>'Supprimer un Contact',
 'Share Quote'=>'Citation Partager',
 'Print'=>'Imprimer',
-'Print Quote'=>'Imprimer un devis',
+'Print Quote'=>'Imprimer un Devis',
 
 // Quotes Titles
 'Quotes'=>'Citations',
 'Quote'=>'Citer',
 'Quote:'=>'Citation:',
-'Update Quote: {name}'=>'Mise à jour Citation: {name}',
+'Update Quote: {name}'=>'Mise à Jour Citation: {name}',
 'Print Options'=>'Options d\'Impression',
 
 // Misc Text
@@ -110,7 +112,8 @@ return array (
 'Please select the users you wish to remove.'=>'S\'il vous plaît sélectionnez les utilisateurs que vous souhaitez supprimer.',
 'Please select the contacts you wish to remove.'=>'S\'il vous plaît sélectionnez les contacts que vous souhaitez supprimer.',
 'Quote Record Details'=>'Citation Renseignements sur',
-'Include Logo'=>'Inclure le logo',
+'Include Logo'=>'Inclure le Logo',
 'Basic Information'=>'Renseignements de Base',
 'Opportunities'=>'Ventes',
+'Subscribe'=>'Souscrire',
 );

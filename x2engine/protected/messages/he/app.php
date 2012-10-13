@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'עברית',
-// Login
+// // Login
 'Please log in to continue:'=>'נא להתחבר כדי להמשיך:',
 'Username'=>'שם משתמש',
 'Password'=>'סיסמה',
 'Remember me'=>'זכור אותי',
 'Login'=>'כניסה',
-
-// Main Menu
+'Welcome to {appName}.'=>'.{appName}ברוכים הבאים ל',
+'Verification Code'=>'קוד אימות',
+'Login with Google'=>'כניסה עם גוגל',
+// // 
+// // Main Menu
 'Calendar'=>'לוח שנה',
 'Actions'=>'פעולות',
 'Contacts'=>'אנשי קשר',
@@ -75,20 +78,24 @@ return array (
 'Workflow'=>'זרימת עבודה',
 'Groups'=>'קבוצות',
 'Notifications'=>'הודעות',
-
-// Search Bar
+'Charts'=>'תרשימים',
+'Manage Users'=>'ניהול משתמשים',
+'Social Feed'=>'הזנה חברתית',
+'Preferences'=>'העדפות',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine קשרי לקוחות קבוצת התוכנה',
 'Go'=>'ללכת',
 'Contact'=>'ליצור קשר',
 'Action'=>'פעולה',
 'Contact + Action'=>'צור פעולה',
 'Search for contact, action, deal...'=>'חיפוש, מגע פעולה וכו \', מציאה',
-
-// Footer
+// // 
+// // Footer
 'All Rights Reserved.'=>'כל הזכויות שמורות.',
 'Generated in {time} seconds.'=>'שנוצר בתוך שניות {זמן ההמתנה',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'פעולות שלי',
 'Twitter Feed'=>'רשימת בטוויטר',
 'Quick Contact'=>'יצירת קשר מהיר',
@@ -101,22 +108,24 @@ return array (
 'Doc Viewer'=>'דוק חלון',
 'Time Zone'=>'אזור זמן',
 'Top Sites'=>'למעלה אתרים',
-
+'Media'=>'כלי תקשורת',
+'Current time in'=>'בזמן נוכחי',
+// // 
 'Total Action|Total Actions'=>'סה"כ פעולה | פעולות סך הכל',
 'Unfinished Action|Unfinished Actions'=>'פעולה לא גמור | פעולות שלא נשלמו',
 'Overdue Action|Overdue Actions'=>'פעולה איחור | פעולות איחור',
 'Completed Action|Completed Actions'=>'פעולה השלים | פעולות שהושלמו',
-
+// // 
 'Message Board'=>'פורום',
 'Please enter a message of the day!'=>'אנא הכנס מסר של היום!',
 'Edit Message'=>'ערוך הודעה',
-
+// // 
 'Note Pad'=>'פנקס רשימות',
 'Feel free to enter some notes!'=>'אתה מוזמן להיכנס כמה הערות!',
-
+// // 
 'Top Contacts'=>'אנשי הקשר הפופולריים ביותר',
 'Add {name}'=>'{name} הוסף',
-
+// // 
 'Enter Title'=>'הזן כותרת',
 'Title'=>'כותרת',
 'Title:'=>'כותרת:',
@@ -124,20 +133,22 @@ return array (
 'Link:'=>'קישור:',
 'Add Site'=>'הוסף אתר',
 'Example'=>'דוגמה',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'הודעה גוף',
 'Enter text here...'=>'הזן את הטקסט כאן ...',
 'Send'=>'לשלוח',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'עד:',
 'Subject:'=>'נושא ההודעה:',
 'Message:'=>'הודעה:',
 'Error: Could not send email.'=>'שגיאה: לא ניתן לשלוח דואר אלקטרוני.',
 'Email Sent!'=>'מייל נשלח!',
-
-// Comments
+'Preview'=>'תצוגה מקדימה',
+'Attachments'=>'קבצים מצורפים',
+// // 
+// // Comments
 'Add Comment'=>'הוסף תגובה',
 'Create Action'=>'יצירת פעולה',
 'Add a comment...'=>'הוסף ביקורת ...',
@@ -146,8 +157,8 @@ return array (
 'Tomorrow'=>'מחר',
 'Comments'=>'תגובות',
 'Post'=>'להציב',
-
-// Misc
+// // 
+// // Misc
 'Advanced Search'=>'חיפוש מתקדם',
 'Clear Filters'=>'ניקוי מסננים',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'ייתכן לחלופין להיכנס אופרטור השוואה (<b> << / b>, <b> <= </ b>, <b>> </ b>, <b>> = </ b>, <b> <> </ b> או <b> = </ b>) בתחילת כל ערכי החיפוש שלך כדי לציין כיצד יש לעשות השוואה.',
@@ -170,9 +181,9 @@ return array (
 'Columns'=>'עמודות',
 'Tools'=>'כלי עבודה',
 'Rights reserved.'=>'זכויות שמורות.',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'גרסה של גניו רישיון הציבורי הכללית 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'התכנית מסופקת AS IS, ללא אחריות. <br> תחת רישיון {BSD}.',
-'Generated in {time} seconds'=>'',
+'Generated in {time} seconds'=>'נוצר בשניות {זמן}',
 'Minimize'=>'לצמצם',
 '"{X}" is not an allowed filetype.'=>'"{X}" היא לא קובץ מורשה.',
 'Loading'=>'טעינה',
@@ -186,12 +197,31 @@ return array (
 'Delete'=>'למחוק',
 'Group?'=>'קבוצה?',
 'Check box'=>'תיבת סימון',
-
-// Misc Actions
+'results per page'=>' תוצאות בכל עמוד',
+'Public'=>'ציבורי',
+'Tags'=>'תגיות',
+'Template:'=>':תבנית',
+'Model Name'=>'שם דגם',
+'Model ID'=>'זיהוי דגם',
+'What should the list be named?'=>'?מה צריך להיות שם הרשימה',
+'Added items to list.'=>'.פריטים שנוסף לרשימה',
+'Select an option'=>'בחר באפשרות',
+'loading...'=>'...טוען',
+'Checkbox'=>'סימון',
+'New List From Selection'=>'רשימה חדשה מתוך בחירה',
+'No'=>'לא',
+'Yes'=>'כן',
+'View'=>'לצפות',
+'Update'=>'לעדכן',
+'results per page.'=>'תוצאות בכל עמוד.',
+'Displaying {start}-{end} of {count} result(s).'=>'מציג {start} - {end} של תוצאת {count} (הים).',
+'Marketing Dashboard'=>'לוח מחווני שיווק',
+// // 
+// // Misc Actions
 'Submit'=>'להגיש',
 'Save'=>'להציל',
 'Cancel'=>'לבטל',
-'Send Email'=>'Envoyer un email',
+'Send Email'=>'שלח',
 'Attach A File'=>'צרף קובץ',
 'Save Changes'=>'שמור שינויים',
 'Save Action'=>'שמור פעולה',
@@ -207,26 +237,30 @@ return array (
 'Download'=>'הורד',
 'Contact Saved'=>'צורו נשמר',
 'Add Note'=>'הוסף הערה',
-
-// Timestamps
+'New List'=>'רשימה חדשה',
+'Add'=>'להוסיף',
+'Remove'=>'להסיר',
+// // 
+// // Timestamps
 'Just now'=>'זה עתה',
 '{n} minutes ago'=>'{n} דקות',
 '{n} hours ago'=>'שעתי {n} לפני',
 '{n} days ago'=>'{n} ימים לפני',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'שגיאה ביצירת לב!',
 'Invalid request. Please do not repeat this request again.'=>'בקשה לא חוקי. נא לא לחזור על בקשה זו שוב.',
 'The requested page does not exist.'=>'הדף המבוקש לא קיים.',
-
-// Admin Page
+'Please fix the following errors:'=>':אנא תקן את השגיאות הבאות',
+// // 
+// // Admin Page
 'Administration Tools'=>'כלי לניהול',
 'Welcome to the administration tool set.'=>'ברוכים באים לסט כלי הניהול.',
 'Links'=>'קישורים',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'איך של',
+'Gii - A Code Generation Module'=>'Gii - מודול דור קוד',
+'Send Mass E-mail'=>'שלח המוני בדואר אלקטרוני',
+'How to use Gii'=>'כיצד להשתמש Gii',
 'How to add a database field'=>'כיצד להוסיף שדה במסד נתונים',
-
+// // 
 );

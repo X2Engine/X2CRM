@@ -57,16 +57,16 @@ echo $form->errorSummary($model);
 	<div class="row">
             <?php echo $form->labelEx($model,'modelName'); ?>
             <?php 
-            $modules=Modules::model()->findAll();
-            foreach($modules as $module){
-                if($module->editable){
-                    if($module->title!="Marketing")
-                        $arr[ucfirst($module->name)]=$module->title;
-                    else
-                        $arr["Campaign"]=$module->title;
-                }
-            }
-            echo $form->dropDownList($model,'modelName',$arr); ?>
+			$modelList = array();
+			foreach(CActiveRecord::model('Modules')->findAllByAttributes(array('editable'=>true)) as $module) {
+				if(array_key_exists($module->name,X2Model::$associationModels))
+					$modelName = X2Model::$associationModels[$module->name];
+				else
+					$modelName = ucfirst($module->name);
+
+				$modelList[$modelName] = $module->title;
+			}
+            echo $form->dropDownList($model,'modelName',$modelList); ?>
             <?php echo $form->error($model,'modelName'); ?>
 	</div>
         

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -49,7 +49,7 @@ return array (
 'Last Updated'=>'Последнее обновление',
 'Create Date'=>'Дата создания',
 'Edit Permissions'=>'Изменить разрешения',
-'Doc Type'=>'Doc Тип',
+'Doc Type'=>'Тип документа',
 
 // Labels
 'Doc'=>'документ',
@@ -61,6 +61,7 @@ return array (
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Пожалуйста, выберите пользователей, которым разрешено редактировать документ. Используйте Ctrl + Нажмите, чтобы выбрать или отменить выбор отдельных пользователей.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Пожалуйста, щелкните правой кнопкой мыши на ссылку внизу и выберите "Сохранить как", чтобы загрузить документ! Щелчок левой кнопкой мыши открывает документ в печати режиме.',
 'Uploaded Documents'=>'загруженных документов',
+'Custom Message'=>'Пользовательские сообщения',
 
 // Doc Navbar
 'List Docs'=>'Список документов',
@@ -74,4 +75,5 @@ return array (
 'Export'=>'экспорт',
 'Create'=>'создавать',
 'Create Email'=>'Создание электронной почты',
+'Create Document'=>'Создать документ',
 );

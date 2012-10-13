@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,21 +41,21 @@
 return array (
 // Attributes
 'ID'=>'ID',
-'Assigned To'=>'Assegnata a',
+'Assigned To'=>'Assegnata A',
 'Name'=>'Nome',
 'Description'=>'Descrizione',
-'Create Date'=>'Data di creazione',
-'Last Updated'=>'Ultimo aggiornamento',
-'Updated By'=>'Aggiornato da',
+'Create Date'=>'Data di Creazione',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Updated By'=>'Aggiornato Da',
 
 'Data fields'=>'Dati i campi',
 'Show'=>'Spettacolo',
 'Hide'=>'Nascondere',
-'Module Title'=>'Titolo del modulo',
+'Module Title'=>'Titolo del Modulo',
 'The name for your new module'=>'Il nome per il nuovo modulo',
 'Item Name'=>'Articolo Nome',
 '(Optional) What to call individual records, e.g. "Create new X"'=>'(Opzionale) Cosa chiamare singoli record, per esempio "Crea nuovo X"',
-'DB Table Name'=>'DB Nome tabella',
+'DB Table Name'=>'DB Nome Tabella',
 'Optional (alphanumeric only, must start with a letter)'=>'Opzionale (alfanumerici, deve iniziare con una lettera)',
 
 // Menu Items
@@ -70,8 +70,8 @@ return array (
 'Delete'=>'Eliminare',
 
 // Page Titles
-'Create New Module'=>'Creare nuovo modulo',
-'Create New {X}'=>'Crea nuovo {X}',
+'Create New Module'=>'Creare Nuovo Modulo',
+'Create New {X}'=>'Crea Nuovo {X}',
 'Manage {X}'=>'Gestire {X}',
 
 // Errors

@@ -10,7 +10,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -136,7 +136,7 @@ $(function() {
 		// calculate number of elements to show in the main menu
 		var visibleItems = 0;
 		for(i=0; i<menuItemCutoffs.length; i++) {
-			if(menuItemCutoffs[i] + 50 < $header.outerWidth())
+			if(menuItemCutoffs[i] + 70 < $header.outerWidth())
 				visibleItems = i + 1;
 			else
 				break;

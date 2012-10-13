@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,10 +39,6 @@
  ********************************************************************************/
 
 return array (
-
-
-
-
 // Account Attributes
 'ID'=>'账号',
 'Name'=>'名称',
@@ -59,6 +55,9 @@ return array (
 'Last Updated'=>'最后更新',
 'Updated By'=>'更新',
 'None'=>'没有',
+'Contacts'=>'往来',
+'Basic Information'=>'基本信息',
+'Additional Information'=>'其他信息',
 
 // Accounts Actions
 'Accounts List'=>'帐户列表',
@@ -71,11 +70,17 @@ return array (
 'Remove a User'=>'删除用户',
 'Remove a Contact'=>'删除联系人',
 'Share Account'=>'共享账户',
+'Create'=>'创建',
+'View'=>'看',
+'Update'=>'更新',
+'Delete'=>'删除',
+'Update Account:'=>'更新帐户：',
+'Share Opportunity'=>'分享机会',
 
 // Accounts Titles
 'Accounts'=>'帐户',
 'Manage Accounts'=>'管理帐户',
-'Update Account: {name}'=>'更新帐户：{name}',
+'Update Account: {name}'=>'更新帐户：{名}',
 'Account:'=>'帐号：',
 
 // Misc

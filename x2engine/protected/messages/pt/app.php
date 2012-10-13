@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'Português',
-// Login
+// // Login
 'Please log in to continue:'=>'Por favor faça login para continuar',
 'Username'=>'Nome de Usuário',
 'Password'=>'Senha',
 'Remember me'=>'Lembre-me',
 'Login'=>'Login',
-
-// Main Menu
+'Welcome to {appName}.'=>'Bem-vindo ao {appName}.',
+'Verification Code'=>'Código de Verificação',
+'Login with Google'=>'Entrar com Google',
+// // 
+// // Main Menu
 'Calendar'=>'Calendário',
 'Actions'=>'Ações',
 'Contacts'=>'Contactos',
@@ -68,76 +71,84 @@ return array (
 'Logout'=>'Sair',
 'Login'=>'Login',
 'More'=>'Mais',
-'What\'s New'=>'O que há de novo',
+'What\'s New'=>'O Que há de Novo',
 'Quotes'=>'Citações',
 'Dashboard'=>'Painel de Instrumentos',
 'Products'=>'Produtos',
 'Workflow'=>'Fluxo de Trabalho',
 'Groups'=>'Grupos',
 'Notifications'=>'Notificações',
-
-// Search Bar
+'Charts'=>'Gráficos',
+'Manage Users'=>'Gerenciar Usuários',
+'Social Feed'=>'Alimentação Sociais',
+'Preferences'=>'Preferências',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
 'Go'=>'Ir',
 'Contact'=>'Contato',
 'Action'=>'Ação',
 'Contact + Action'=>'Contato + Ação',
 'Search for contact, action, deal...'=>'Busca de contato, a ação negócio...',
-
-// Footer
-'All Rights Reserved.'=>'Todos os direitos reservados.',
+// // 
+// // Footer
+'All Rights Reserved.'=>'Todos os Direitos Reservados.',
 'Generated in {time} seconds.'=>'Gerado em {time} segundos',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'Minhas Ações',
 'Twitter Feed'=>'Twiiter Feed',
 'Quick Contact'=>'Contato Rápido',
 'Google Map'=>'Google Mapa',
 'Recently Viewed'=>'Recentemente Vista',
 'Active Users'=>'Usuários Ativos',
-'Tag Cloud'=>'Tag Cloud',
+'Tag Cloud'=>'Nuvem de Tags',
 'Just Me'=>'Só Eu',
 'All Users'=>'Todos os Usuários',
 'Doc Viewer'=>'Visualizador Doc',
-'Time Zone'=>'Fuso horário',
+'Time Zone'=>'Fuso Horário',
 'Top Sites'=>'Top Sites',
-
+'Media'=>'Mídia',
+'Current time in'=>'Hora atual em',
+// // 
 'Total Action|Total Actions'=>'Ação Total | Total de Ações',
-'Unfinished Action|Unfinished Actions'=>'Ação inacabada | Ações inacabada',
-'Overdue Action|Overdue Actions'=>'Ação em atraso | Ações em atraso',
-'Completed Action|Completed Actions'=>'Ação concluída | Ações concluída',
-
+'Unfinished Action|Unfinished Actions'=>'Ação Inacabada | Ações Inacabada',
+'Overdue Action|Overdue Actions'=>'Ação em Atraso | Ações em Atraso',
+'Completed Action|Completed Actions'=>'Ação Concluída | Ações Concluída',
+// // 
 'Message Board'=>'Placa da Mensagem',
 'Please enter a message of the day!'=>'Por favor, escreva uma mensagem do dia!',
 'Edit Message'=>'Editar Mensagem',
-
+// // 
 'Note Pad'=>'Bloco de Notas',
 'Feel free to enter some notes!'=>'Sinta-se livre para entrar algumas notas!',
-
+// // 
 'Top Contacts'=>'Contactos Topo',
 'Add {name}'=>'Adicionar {name}',
-
+// // 
 'Enter Title'=>'Digite Título',
 'Title'=>'Título',
 'Title:'=>'Título:',
 'Link'=>'Link',
 'Link:'=>'Link:',
-'Add Site'=>'Adicionar site',
+'Add Site'=>'Adicionar Site',
 'Example'=>'Exemplo',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'Corpo da Mensagem',
 'Enter text here...'=>'Digite o texto aqui...',
 'Send'=>'Enviar',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'Para:',
 'Subject:'=>'Assunto:',
 'Message:'=>'Mensagem:',
 'Error: Could not send email.'=>'Erro: Não foi possível enviar e-mail.',
-'Email Sent!'=>'E-mail enviado!',
-
-// Comments
+'Email Sent!'=>'E-mail Enviado!',
+'Preview'=>'Visualização',
+'Attachments'=>'Anexos',
+// // 
+// // Comments
 'Add Comment'=>'Adicionar Comentário',
 'Create Action'=>'Criar Ação',
 'Add a comment...'=>'Adicionar um comentário...',
@@ -146,9 +157,9 @@ return array (
 'Tomorrow'=>'Amanhã',
 'Comments'=>'Comentários',
 'Post'=>'Postar',
-
-// Misc
-'Advanced Search'=>'Busca avançada',
+// // 
+// // Misc
+'Advanced Search'=>'Busca Avançada',
 'Clear Filters'=>'Limpar Filtros',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Você pode, opcionalmente, digite um operador de comparação (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>or <b>=</b>) no início de cada um dos valores a sua pesquisa para especificar como a comparação deve ser feito.',
 'Fields with <span class="required">*</span> are required.'=>'Os campos com <span class="required">*</span>  são obrigatórios.',
@@ -170,7 +181,7 @@ return array (
 'Columns'=>'Colunas',
 'Tools'=>'Ferramentas',
 'Rights reserved.'=>'Os direitos reservados.',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'GNU - geral público licença versão 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'O programa é fornecido como está, sem garantia. <br> Licenciado sob {BSD}.',
 'Generated in {time} seconds'=>'Gerada em {time} segundos',
 'Minimize'=>'Minimizar',
@@ -181,20 +192,39 @@ return array (
 'Help'=>'Ajudar',
 '---'=>'---',
 'You don\'t have any notifications.'=>'Você não tem quaisquer notificações.',
-'View all'=>'Ver todos',
-'Close'=>'fechar',
+'View all'=>'Ver Todos',
+'Close'=>'Fechar',
 'Delete'=>'Excluir',
 'Group?'=>'Grupo?',
 'Check box'=>'Caixa de verificação',
-
-// Misc Actions
+'results per page'=>' resultados por página',
+'Public'=>'Público',
+'Tags'=>'Etiquetas',
+'Template:'=>'Modelo:',
+'Model Name'=>'Nome do Modelo',
+'Model ID'=>'ID do Modelo',
+'What should the list be named?'=>'O que deve ser nomeado na lista?',
+'Added items to list.'=>'Itens adicionados à lista.',
+'Select an option'=>'Selecione uma opção',
+'loading...'=>'carregamento...',
+'Checkbox'=>'Checkbox',
+'New List From Selection'=>'Nova lista da Seleção',
+'No'=>'Não',
+'Yes'=>'Sim',
+'View'=>'Ver',
+'Update'=>'Atualizar',
+'results per page.'=>'Resultados por Página.',
+'Displaying {start}-{end} of {count} result(s).'=>'Exibindo {start} - {end} de {count} resultado (s).',
+'Marketing Dashboard'=>'Painel de Marketing',
+// // 
+// // Misc Actions
 'Submit'=>'Entregar-se',
 'Save'=>'Salvar',
 'Cancel'=>'Cancelar',
 'Send Email'=>'Enviar E-mail',
-'Attach A File'=>'Anexar arquivo',
-'Save Changes'=>'Salvar alterações',
-'Save Action'=>'Guardar acção',
+'Attach A File'=>'Anexar Qrquivo',
+'Save Changes'=>'Salvar Alterações',
+'Save Action'=>'Guardar Acção',
 'Save Comment'=>'Guardar Comentário',
 'Create'=>'Criar',
 'Search'=>'Pesquisar',
@@ -207,26 +237,30 @@ return array (
 'Download'=>'Baixar',
 'Contact Saved'=>'Fale Salvo',
 'Add Note'=>'Adicionar Nota',
-
-// Timestamps
+'New List'=>'Nova Lista',
+'Add'=>'Adicionar',
+'Remove'=>'Remover',
+// // 
+// // Timestamps
 'Just now'=>'Agora mesmo',
 '{n} minutes ago'=>'{n} minutos',
 '{n} hours ago'=>'{n} horas atrás',
 '{n} days ago'=>'{n} dias atrás',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'Erro na criação de nota!',
 'Invalid request. Please do not repeat this request again.'=>'Inválido pedido. Por favor não repita este pedido novamente.',
 'The requested page does not exist.'=>'A página solicitada não existe.',
-
-// Admin Page
+'Please fix the following errors:'=>'Por favor, corrija os seguintes erros:',
+// // 
+// // Admin Page
 'Administration Tools'=>'Ferramentas de Administração',
 'Welcome to the administration tool set.'=>'Bem-vindo ao conjunto de ferramentas de administração.',
 'Links'=>'Ligações',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'Como O',
+'Gii - A Code Generation Module'=>'Gii - um módulo de geração de código',
+'Send Mass E-mail'=>'Enviar Email em Massa',
+'How to use Gii'=>'Como utilizar Gii',
 'How to add a database field'=>'Como adicionar um campo de banco de dados',
-
+// // 
 );

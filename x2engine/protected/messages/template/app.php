@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'Template',
-// Login
+// // Login
 'Please log in to continue:'=>'',
 'Username'=>'',
 'Password'=>'',
 'Remember me'=>'',
 'Login'=>'',
-
-// Main Menu
+'Welcome to {appName}.'=>'',
+'Verification Code'=>'',
+'Login with Google'=>'',
+// // 
+// // Main Menu
 'Calendar'=>'',
 'Actions'=>'',
 'Contacts'=>'',
@@ -75,20 +78,24 @@ return array (
 'Workflow'=>'',
 'Groups'=>'',
 'Notifications'=>'',
-
-// Search Bar
+'Charts'=>'',
+'Manage Users'=>'',
+'Social Feed'=>'',
+'Preferences'=>'',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'',
 'Go'=>'',
 'Contact'=>'',
 'Action'=>'',
 'Contact + Action'=>'',
 'Search for contact, action, deal...'=>'',
-
-// Footer
+// // 
+// // Footer
 'All Rights Reserved.'=>'',
 'Generated in {time} seconds.'=>'',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'',
 'Twitter Feed'=>'',
 'Quick Contact'=>'',
@@ -101,22 +108,24 @@ return array (
 'Doc Viewer'=>'',
 'Time Zone'=>'',
 'Top Sites'=>'',
-
+'Media'=>'',
+'Current time in'=>'',
+// // 
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
 'Overdue Action|Overdue Actions'=>'',
 'Completed Action|Completed Actions'=>'',
-
+// // 
 'Message Board'=>'',
 'Please enter a message of the day!'=>'',
 'Edit Message'=>'',
-
+// // 
 'Note Pad'=>'',
 'Feel free to enter some notes!'=>'',
-
+// // 
 'Top Contacts'=>'',
 'Add {name}'=>'',
-
+// // 
 'Enter Title'=>'',
 'Title'=>'',
 'Title:'=>'',
@@ -124,20 +133,22 @@ return array (
 'Link:'=>'',
 'Add Site'=>'',
 'Example'=>'',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'',
 'Enter text here...'=>'',
 'Send'=>'',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'',
 'Subject:'=>'',
 'Message:'=>'',
 'Error: Could not send email.'=>'',
 'Email Sent!'=>'',
-
-// Comments
+'Preview'=>'',
+'Attachments'=>'',
+// // 
+// // Comments
 'Add Comment'=>'',
 'Create Action'=>'',
 'Add a comment...'=>'',
@@ -146,8 +157,8 @@ return array (
 'Tomorrow'=>'',
 'Comments'=>'',
 'Post'=>'',
-
-// Misc
+// // 
+// // Misc
 'Advanced Search'=>'',
 'Clear Filters'=>'',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'',
@@ -186,8 +197,27 @@ return array (
 'Delete'=>'',
 'Group?'=>'',
 'Check box'=>'',
-
-// Misc Actions
+'results per page'=>'',
+'Public'=>'',
+'Tags'=>'',
+'Template:'=>'',
+'Model Name'=>'',
+'Model ID'=>'',
+'What should the list be named?'=>'',
+'Added items to list.'=>'',
+'Select an option'=>'',
+'loading...'=>'',
+'Checkbox'=>'',
+'New List From Selection'=>'',
+'No'=>'',
+'Yes'=>'',
+'View'=>'',
+'Update'=>'',
+'results per page.'=>'',
+'Displaying {start}-{end} of {count} result(s).'=>'',
+'Marketing Dashboard'=>'',
+// // 
+// // Misc Actions
 'Submit'=>'',
 'Save'=>'',
 'Cancel'=>'',
@@ -207,19 +237,23 @@ return array (
 'Download'=>'',
 'Contact Saved'=>'',
 'Add Note'=>'',
-
-// Timestamps
+'New List'=>'',
+'Add'=>'',
+'Remove'=>'',
+// // 
+// // Timestamps
 'Just now'=>'',
 '{n} minutes ago'=>'',
 '{n} hours ago'=>'',
 '{n} days ago'=>'',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'',
 'Invalid request. Please do not repeat this request again.'=>'',
 'The requested page does not exist.'=>'',
-
-// Admin Page
+'Please fix the following errors:'=>'',
+// // 
+// // Admin Page
 'Administration Tools'=>'',
 'Welcome to the administration tool set.'=>'',
 'Links'=>'',
@@ -228,5 +262,5 @@ return array (
 'Send Mass E-mail'=>'',
 'How to use Gii'=>'',
 'How to add a database field'=>'',
-
+// // 
 );

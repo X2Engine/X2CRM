@@ -91,8 +91,15 @@
 		</div><!-- .row -->
 	</div><!-- #receiveUpdates-form -->
 
-	<script>	
+	<script>
+<?php foreach (array('formId', 'submitButtonId', 'statusId') as $attr): ?>
+		<?php echo $attr; ?> = '<?php echo $form->config[$attr]; ?>';
+<?php endforeach; ?>
+		
 		jQuery(document).ready(function($) {
+			if (typeof submitExternalForm === 'undefined') {
+				submitExternalForm = function() {document.forms[formId].submit();};
+			}
 			var isos = <?php echo $form->os ? 'true' : 'false' ; ?>;
 			$("#source").change(function() {
 				if($(this).find("option:selected").first().attr("value") == "Other") {
@@ -101,9 +108,6 @@
 					$("#source2").fadeOut(300);
 				}
 			}).change();
-<?php foreach (array('formId', 'submitButtonId', 'statusId') as $attr): ?>
-			var <?php echo $attr; ?> = '<?php echo $form->config[$attr]; ?>';
-<?php endforeach; ?>
 <?php if ($form->os): ?>
 			$("#receiveUpdates").each(function() {
 				if(!$(this).is(":checked"))
@@ -177,99 +181,62 @@
 					elts.source = form.find("#source2");
 					postData.source = elts.source.val();
 				}
-				// Admin email as a backup
-				elts.adminEmail = form.find('#adminEmail');
-				idEmail = elts.email.val();
 				
-				if(isos && empty(idEmail)) {
-					// Contact email assumed same as admin email if empty.
-					idEmail = elts.adminEmail.val();
-					if(sendOptional) // Send it with other info
-						postData.email = idEmail;
-				}
+//				// Admin email as a backup
+				idEmail = elts.email.val();
 				
 				// Send a salted hash of the email address to identify the 
 				// user while respecting their privacy; if no optional PII 
 				// is submitted, the only thing that identifies them is the 
 				// hash of the email.
-				postData.emailHash = SHA256(idEmail+SHA256(idEmail));
-				elts.emailHash = elts.email;
-				console.log('Criteria for posting form:');
-				console.log(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked")));
-				console.log(isos);
-				console.log(postData.unique_id);
-				console.log(elts.receiveUpdates.is(':checked'));
+				if (!empty(idEmail)) {
+					postData.emailHash = SHA256(idEmail+SHA256(idEmail));
+				}
+				var loadingImg = $('<img src="<?php echo $form->config['themeUrl']; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'});
 
 				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
-					// Form hasn't been submitted, or there were validation 
-					// errors on the last submit. Try submitting again.
-					// Submission: 
-					// isos implies unique_id not set properly & receiveUpdates checked
-					// (otherwise, submit one way or another)
-					var emlEl = elts['adminEmail'];
-					var proceed = true;
-					emlEl.removeClass('error');
-					if(!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(emlEl.val()))) {
-						// Preliminary email validation. Can't send email
-						// address to the server in plain text unless optional
-						// PII is being willingly given, so no validation can be
-						// performed on a hash, hence admin email is needed.
-						emlEl.addClass('error');
-						proceed = false;
-					}
-
-					if(!proceed) {
-						status.fadeIn(300).html('<span class="error"><?php echo str_replace("'","\\'",$form->message['emailValidation']); ?></span>');
-					
-					} else {
-						form.find('.error').removeClass('error');
-						var loadingImg = $('<img src="<?php echo $form->config['themeUrl']; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'});
-						status.fadeIn(300).html(loadingImg);
-
-						$.ajax({
-							type:'POST',
-							url:'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>',
-							data:postData,
-							dataType:'json'
-						}).success(function(data,statusObj,jqXHR) {
-							var messages = "<h3>"+data.message+"</h3>";
-							if(data.errors != undefined || data.log != undefined) {
-								messages += '<ul>';
-								if(data.errors != undefined) {
-									for(var attr in data.errors) {
-										var attrId = attr;
-										elts[attr].addClass('error');
-										for (var error in data.errors[attr]) {
-											messages += '<li><span class="error">'+data.errors[attr][error]+'</span></li>';
-										}
-									}
-									
-								}
-								if(data.log != undefined) {
-									for(var i in data.log) {
-										messages += '<li style="color:green">'+data.log[i]+'</li>';
+					form.find('.error').removeClass('error');
+					status.fadeIn(300).html(loadingImg);
+					$.ajax({
+						type:'POST',
+						url:'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>',
+						data:postData,
+						dataType:'json'
+					}).done(function(data,statusObj,jqXHR) {
+						var messages = "<h3>"+data.message+"</h3>";
+						if(data.errors != undefined || data.log != undefined) {
+							messages += '<ul id="registryerrors">';
+							if(data.errors != undefined) {
+								for(var attr in data.errors) {
+									elts[attr].addClass('error');
+									for (var error in data.errors[attr]) {
+										messages += '<li><span class="error">'+data.errors[attr][error]+'</span></li>';
 									}
 								}
-								
-								messages += '</ul>';
-								status.html(messages);
-								
-							} else {
-								if (data.message != undefined) 
-									status.html(messages);
-								elts.unique_id.val(data.unique_id);
-								if(!isos)
-									elts.edition.val(data.edition);
-								document.forms[formId].submit();
-								status.append(loadingImg);
 							}
-						}).error(function(data,statusObj,jqXHR) {
-							status.html('<?php echo str_replace("'", "\\'", '<h3>' . $form->message['connectionErrHeader'] . '</h3>' . ($form->os ? $form->message['connectionErrMessage'] : $form->message['connectionNOsMessage'])); ?>');
-						});
-					}
+							if(data.log != undefined) {
+								for(var i in data.log) {
+									messages += '<li style="color:green">'+data.log[i]+'</li>';
+								}
+							}
+							messages += '</ul>';
+							status.html(messages);
+						} else {
+							if (data.message)
+								status.html(messages);
+							elts.unique_id.val(data.unique_id);
+							if(!isos)
+								elts.edition.val(data.edition);
+							setTimeout(function(){submitExternalForm();},500);
+						}
+					}).fail(function(data,statusObj,jqXHR) {
+						status.html('<?php echo str_replace("'", "\\'", '<h3>' . $form->message['connectionErrHeader'] . '</h3>' . ($form->os ? $form->message['connectionErrMessage'] : $form->message['connectionNOsMessage'])); ?>');
+					});
+					
 				} else {
 					// Submit form as usual
-					document.forms[formId].submit();
+					status.fadeIn(300).html('<h3></h3><ul></ul>');
+					submitExternalForm();
 				}
 			});
 		});

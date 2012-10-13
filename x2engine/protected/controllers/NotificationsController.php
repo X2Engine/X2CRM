@@ -57,28 +57,6 @@ class NotificationsController extends CController {
 		);
 	}
 
-/* 	
-	public function actionNewMessage() {
-		Yii::import('application.models.Social');
-	
-		if (isset($_POST['chat-message']) && $_POST['chat-message']!=''
-			&& $_POST['chat-message']!=Yii::t('app','Enter text here...')) {
-
-			$user=Yii::app()->user->getName();
-			$chat=new Social;
-			$chat->data = $_POST['chat-message'];;
-			$chat->user = $user;
-			$chat->timestamp = time();
-			$chat->type = 'chat';
-			
-			if($chat->save()) {
-				echo '1';
-			}
-		}
-	}
- */
-
-
 	/**
 	 * Obtain all current notifications for the current web user. 
 	 */
@@ -94,33 +72,27 @@ class NotificationsController extends CController {
 			if(file_exists('protected/modules/'.$module.'/register.php'))
 				Yii::import('application.modules.'.$module.'.models.*');
 		}
-	
-		$lastId = 0;
-		if(isset($_POST['lastId']))		// if the client specifies the last message ID received,
-			$lastId = $_POST['lastId'];	// only send newer messages
+
+		if(!isset($_GET['lastNotifId']))	// if the client doesn't specify the last 
+			$_GET['lastNotifId'] = 0;		// message ID received, send everything
 
 		$notifications = array();
-		$total = 0;
+		$notifCount = 0;
 		
 		$notifModels = CActiveRecord::model('Notification')->findAll(new CDbCriteria(array(
 			'condition'=>'id>:lastId AND user=:user',
-			'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),
+			'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$_GET['lastNotifId']),
 			'order'=>'id DESC',
 			'limit'=>10
 		)));
 
-		if(count($notifModels)) {
-			$total = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
-		}
+		if(count($notifModels))
+			$notifCount = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
 		
 		foreach($notifModels as &$model) {
-
-			// if(in_array($item[3],array('create','update','delete','action','event','social','weblead','voip')) {
-
 			$msg = $model->getMessage();
 
 			if(isset($msg)) {
-			
 				$notifications[] = array(
 					'id'=>$model->id,
 					'viewed'=>$model->viewed,
@@ -129,13 +101,45 @@ class NotificationsController extends CController {
 				);
 			}
 		}
-		$chat = array();
+		
+		
+		$chatMessages = array();
+		$lastChatId = 0;
+		if(isset($_GET['lastChatId']) && is_numeric($_GET['lastChatId']))	// if the client specifies the last message ID received,
+			$lastChatId = $_GET['lastChatId'];								// only send newer messages
 
-		if(!empty($notifications) || !empty($chat)) {
+		
+		$messages = Yii::app()->db->createCommand()
+			->select('x2_social.id,x2_social.user,x2_social.timestamp,x2_social.data,x2_users.id AS userId')
+			->from('x2_social')
+			->where('x2_social.type="chat" AND x2_social.timestamp > :time AND x2_social.id > :lastId')
+			->join('x2_users','x2_social.user=x2_users.username AND x2_users.status=1')
+			->order('x2_social.id DESC')
+			->limit(10)
+			->bindValues(array(':time'=>mktime(0,0,0),':lastId'=>$lastChatId))
+			->queryAll();
+			// die(var_dump($messages));
+			
+			
+		for($i=count($messages)-1; $i>-1; --$i) {
+			if($messages[$i]['userId'] == Yii::app()->user->getId())
+				$userLink = '<span class="my-username">'.$messages[$i]['user'].'</span>';
+			else
+				$userLink = CHtml::link($messages[$i]['user'],array('profile/view','id'=>$messages[$i]['userId']),array('class'=>'username'));
+			
+			$chatMessages[] = array(
+				$messages[$i]['id'],
+				date('g:i:s A',$messages[$i]['timestamp']),
+				$userLink,
+				$this->convertUrls($messages[$i]['data'])
+			);
+		}
+
+		if(!empty($notifications) || !empty($chatMessages)) {
 			echo CJSON::encode(array(
-				'notifCount'=>$total,
+				'notifCount'=>$notifCount,
 				'notifData'=>$notifications,
-				'chat'=>$chat
+				'chatData'=>$chatMessages
 			));
 		}
 	}
@@ -176,36 +180,6 @@ class NotificationsController extends CController {
 		$this->redirect(array('/site/viewNotifications'));
 	}
 
-	/**
-	 * Obtain chat messages.
-	 */
-	public function actionGetMessages() {
-	
-		$lastIdCriterion = '';
-		if(isset($_POST['latestId']) && is_numeric($_POST['latestId']))	// if the client specifies the last message ID received,
-			$lastIdCriterion = ' AND id > '.$_POST['latestId'];		// only send newer messages
-
-		$chatLog = Yii::app()->db->createCommand()->select('id,user,timestamp,data')->from('x2_social')->where('type="chat" AND timestamp > ' . mktime(0,0,0). $lastIdCriterion)->queryAll();
-		
-		$messages = array();
-		$userCache = array();
-		foreach($chatLog as &$entry) {
-			if(!isset($userCache[$entry['user']]))
-				$userCache[$entry['user']] = Yii::app()->db->createCommand()->select('id,status')->from('x2_users')->where('username="'.$entry['user'].'"')->queryRow();
-			$user = &$userCache[$entry['user']];
-
-			if(isset($user) && $user['status'] == 1) {
-				$messages[] = array(
-					$entry['id'],
-					date('g:i:s A',$entry['timestamp']),
-					$user['id'] == Yii::app()->user->getId()? '<span class="my-username">'.$entry['user'].'</span>' : CHtml::link($entry['user'],array('profile/view','id'=>$user['id']),array('class'=>'username')),
-					$this->convertUrls($entry['data'])
-				);
-			}
-		}
-		// $messages = array(array('0','0','System',number_format(Yii::getLogger()->getExecutionTime(),3).'<br>'));
-		echo json_encode($messages,true);
-	}
 /* 
 	public function actionCheckNotifications(){
 		Yii::import('application.models.Notifications');

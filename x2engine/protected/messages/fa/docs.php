@@ -61,6 +61,7 @@ return array (
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'.لظفا کاربرانی را که مجاز به ویرایش سند هستند را انتخاب کنید. از کنترل + تلیک جهت اینکار استفاده کنید',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'.لطفا جهت دانلود سند با قابلیت  چاپ بهتر روی پیوند راست تلیک کرده و آن را ذخیره کنید',
 'Uploaded Documents'=>'مستندات بارگزاری شده',
+'Custom Message'=>'پیام های سفارشی',
 
 // Doc Navbar
 'List Docs'=>'فهرست مستندات',
@@ -74,4 +75,5 @@ return array (
 'Export'=>'ارسال',
 'Create'=>'جدید',
 'Create Email'=>'ای-نامه جدید',
+'Create Document'=>'ایجاد سند',
 );

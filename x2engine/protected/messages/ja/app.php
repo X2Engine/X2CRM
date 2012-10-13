@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'日本語',
-// Login
+// // Login
 'Please log in to continue:'=>'続行するにはログインしてください。',
 'Username'=>'ユーザ名',
 'Password'=>'パスワード',
 'Remember me'=>'私を覚えている',
 'Login'=>'ログイン',
-
-// Main Menu
+'Welcome to {appName}.'=>'へようこそ{appName}。',
+'Verification Code'=>'認証コード',
+'Login with Google'=>'Googleにログイン',
+// // 
+// // Main Menu
 'Calendar'=>'カレンダ',
 'Actions'=>'アクション',
 'Contacts'=>'コンタクト',
@@ -75,20 +78,24 @@ return array (
 'Workflow'=>'ワークフロー',
 'Groups'=>'グループ',
 'Notifications'=>'通知',
-
-// Search Bar
+'Charts'=>'チャート',
+'Manage Users'=>'ユーザーの管理',
+'Social Feed'=>'社会のフィード',
+'Preferences'=>'プ',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'グループウェアのシーアールエムのX2Engine',
 'Go'=>'検索',
 'Contact'=>'コンタクト',
 'Action'=>'アクション',
 'Contact + Action'=>'コンタクト+アクション',
 'Search for contact, action, deal...'=>'コンタクト、アクション、取引のための検索...',
-
-// Footer
+// // 
+// // Footer
 'All Rights Reserved.'=>'すべての内容は著作権を有します。',
 'Generated in {time} seconds.'=>'{time}秒で生成',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'私のアクション',
 'Twitter Feed'=>'Twitterのフィード',
 'Quick Contact'=>'クイックコンタクト',
@@ -101,22 +108,24 @@ return array (
 'Doc Viewer'=>'ドキュメントビューア',
 'Time Zone'=>'時間帯',
 'Top Sites'=>'トップサイト',
-
+'Media'=>'メディア',
+'Current time in'=>'の現在の時刻',
+// // 
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
 'Overdue Action|Overdue Actions'=>'延滞アクション|期限超過アクション',
 'Completed Action|Completed Actions'=>'完了したアクション|完了したアクション',
-
+// // 
 'Message Board'=>'メッセージボード',
 'Please enter a message of the day!'=>'毎日のメッセージを入力してください！',
 'Edit Message'=>'メッセージを編集する',
-
+// // 
 'Note Pad'=>'メモ帳',
 'Feel free to enter some notes!'=>'いくつかの音符を入力して自由に感じる！',
-
+// // 
 'Top Contacts'=>'最高のコンタクト',
 'Add {name}'=>'{name}を追加する。',
-
+// // 
 'Enter Title'=>'タイトルを入力します。',
 'Title'=>'タイトル',
 'Title:'=>'タイトル：',
@@ -124,20 +133,22 @@ return array (
 'Link:'=>'リンク：',
 'Add Site'=>'サイトを追加',
 'Example'=>'例',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'メッセージ本文',
 'Enter text here...'=>'ここにテキストを入力してください...',
 'Send'=>'送信',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'へ：',
 'Subject:'=>'件名：',
 'Message:'=>'メッセージ：',
 'Error: Could not send email.'=>'エラー：メールを送信できませんでした。',
 'Email Sent!'=>'メールを送信しました！',
-
-// Comments
+'Preview'=>'プレビュー',
+'Attachments'=>'添付ファイル',
+// // 
+// // Comments
 'Add Comment'=>'コメントを追加',
 'Create Action'=>'アクションを作る。',
 'Add a comment...'=>'コメントを追加...',
@@ -146,8 +157,8 @@ return array (
 'Tomorrow'=>'明日',
 'Comments'=>'コメント',
 'Post'=>'投稿',
-
-// Misc
+// // 
+// // Misc
 'Advanced Search'=>'高度な検索',
 'Clear Filters'=>'フィルタをクリア',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'必要に応じて、比較が行われる方法を指定する検索値のそれぞれの先頭に比較演算子（<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>, <b>=</b>）を入力することができます。',
@@ -170,7 +181,7 @@ return array (
 'Columns'=>'コラム',
 'Tools'=>'ツール',
 'Rights reserved.'=>'の権利を保有。',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'GNU 一般公有使用許諾バージョン3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'プログラムは、保証なしで、提供されるものです。<BR>は{BSD}の下でライセンス。',
 'Generated in {time} seconds'=>'{time}秒で生成',
 'Minimize'=>'最小限に抑える',
@@ -186,8 +197,27 @@ return array (
 'Delete'=>'削除',
 'Group?'=>'グループ？',
 'Check box'=>'チェック·ボックス',
-
-// Misc Actions
+'results per page'=>' ページごとの結果',
+'Public'=>'公共',
+'Tags'=>'タグ',
+'Template:'=>'テンプレート:',
+'Model Name'=>'モデル名',
+'Model ID'=>'モデル同定',
+'What should the list be named?'=>'リストはどのような名前を付けることでしょうか？',
+'Added items to list.'=>'リストに追加アイテム。',
+'Select an option'=>'オプションを選択',
+'loading...'=>'読み込んでいます...',
+'Checkbox'=>'チェックボックス',
+'New List From Selection'=>'選択部分から新しいリスト',
+'No'=>'ノー',
+'Yes'=>'はい',
+'View'=>'表示',
+'Update'=>'更新',
+'results per page.'=>'ページごとの結果。',
+'Displaying {start}-{end} of {count} result(s).'=>'{start}表示 - {end} {count}が結果（S）の。',
+'Marketing Dashboard'=>'マーケティングダッシュボード',
+// // 
+// // Misc Actions
 'Submit'=>'提出する',
 'Save'=>'貯める',
 'Cancel'=>'キャンセル',
@@ -207,26 +237,30 @@ return array (
 'Download'=>'ダウンロード',
 'Contact Saved'=>'保存された連絡先',
 'Add Note'=>'メモを追加',
-
-// Timestamps
+'New List'=>'新規リスト',
+'Add'=>'加える',
+'Remove'=>'削除する',
+// // 
+// // Timestamps
 'Just now'=>'たった今',
 '{n} minutes ago'=>'{n}分前',
 '{n} hours ago'=>'{n}時間前',
 '{n} days ago'=>'{n}日前',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'エラーがノートを作成！',
 'Invalid request. Please do not repeat this request again.'=>'無効な要求です。再びこの要求を繰り返してはいけない。',
 'The requested page does not exist.'=>'要求されたページは存在しません。',
-
-// Admin Page
+'Please fix the following errors:'=>'次のエラーを修正してください：',
+// // 
+// // Admin Page
 'Administration Tools'=>'管理ツール',
 'Welcome to the administration tool set.'=>'管理ツールセットへようこそ。',
 'Links'=>'リンクス',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'どのようにのへ',
+'Gii - A Code Generation Module'=>'Gii - コード生成モジュール',
+'Send Mass E-mail'=>'大量の電子メールを送信',
+'How to use Gii'=>'GIIを使用する方法',
 'How to add a database field'=>'データベースのフィールドを追加する方法',
-
+// // 
 );

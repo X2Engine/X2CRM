@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -62,6 +62,12 @@ return array (
 'Cold Call'=>'Холодная вызова',
 'E-Mail'=>'E-Mail',
 'Store'=>'магазин',
+'Other Info'=>'Другая информация',
+'Basic Information'=>'Основная информация',
+'None'=>'никто',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'ходил в',
 
 // Opportunities Actions
 'Opportunities List'=>'Продажи Список',
@@ -70,12 +76,19 @@ return array (
 'Update Opportunity'=>'Обновление продажу',
 'Delete Opportunity'=>'Удалить продажу',
 'Manage Opportunities'=>'Управление продаж',
+'Create'=>'создавать',
+'View'=>'смотреть',
+'Update'=>'обновление',
+'Update Opportunity:'=>'Обновление продажу:',
 
-'Add a User'=>'Добавить пользователя',
-'Add a Contact'=>'Добавить контакт',
-'Remove a User'=>'Удаление пользователя',
-'Remove a Contact'=>'Удалить Контакт',
+'Add A User'=>'Добавить пользователя',
+'Add A Contact'=>'Добавить контакт',
+'Remove A User'=>'Удаление пользователя',
+'Remove A Contact'=>'Удалить Контакт',
 'Share Opportunity'=>'Доля продажи',
+'Delete'=>'удалять',
+'Add'=>'добавлять',
+'Remove'=>'удаление',
 
 // Opportunities Titles
 'Opportunities'=>'реализация',

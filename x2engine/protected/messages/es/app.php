@@ -39,16 +39,19 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'Español',
-// Login
+// // Login
 'Please log in to continue:'=>'Inicia sesión para continuar:',
 'Username'=>'Nombre de Usuario',
 'Password'=>'Contraseña',
 'Remember me'=>'Acuérdate de mí',
 'Login'=>'Entrar',
-
-// Main Menu
+'Welcome to {appName}.'=>'Bienvenido a {appName}.',
+'Verification Code'=>'Del Código de Verificación',
+'Login with Google'=>'Ingresar con Google',
+// // 
+// // Main Menu
 'Calendar'=>'Calendario',
 'Actions'=>'Acciones',
 'Contacts'=>'Contactos',
@@ -75,22 +78,26 @@ return array (
 'Workflow'=>'Flujo de Trabajo',
 'Groups'=>'Grupos',
 'Notifications'=>'Notificaciones',
-
-// Search Bar
+'Charts'=>'Gráficos',
+'Manage Users'=>'Administrar Usuarios',
+'Social Feed'=>'Social de Alimentación',
+'Preferences'=>'Preferencias',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine Sistema CRM',
 'Go'=>'Buscar',
 'Contact'=>'Contacto',
 'Action'=>'Acción',
 'Contact + Action'=>'Contacto + Acción',
 'Search for contact, action, deal...'=>'Buscar contactos, acciones, trato...',
-
-// Footer
-'All Rights Reserved.'=>'Todos los derechos reservados.',
+// // 
+// // Footer
+'All Rights Reserved.'=>'Todos los Derechos Reservados.',
 'Generated in {time} seconds.'=>'Generada en {time} segundos',
-
-// Widgets
+// // 
+// // Widgets
 'My Actions'=>'Mis Acciones',
-'Twitter Feed'=>'Twitter',
+'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Contacto Rápido',
 'Google Map'=>'Google Map',
 'Recently Viewed'=>'Visto Recientemente',
@@ -99,46 +106,50 @@ return array (
 'Just Me'=>'Sólo Me',
 'All Users'=>'Todos los Usuarios',
 'Doc Viewer'=>'Visor Doc',
-'Time Zone'=>'Huso horario',
-'Top Sites'=>'Las mejores webs',
-
-'Total Action|Total Actions'=>'Total de Acciones',
+'Time Zone'=>'Huso Horario',
+'Top Sites'=>'Las Mejores Webs',
+'Media'=>'Medios de Comunicación',
+'Current time in'=>'Hora en',
+// // 
+'Total Action|Total Actions'=>'Total Acción | Acciones Totales',
 'Unfinished Action|Unfinished Actions'=>'Accion Pendiente|Acciones Pendientes',
 'Overdue Action|Overdue Actions'=>'Accion Atrasada|Acciones Atrasadas',
 'Completed Action|Completed Actions'=>'Accion Completada|Acciones Completadas',
-
+// // 
 'Message Board'=>'Tablón de Anuncios',
 'Please enter a message of the day!'=>'Por favor, introduzca un mensaje del día!',
-'Edit Message'=>'Editar mensaje',
-
+'Edit Message'=>'Editar Mensaje',
+// // 
 'Note Pad'=>'Libreta para Notas',
 'Feel free to enter some notes!'=>'No dude en entrar en algunas notas!',
-
+// // 
 'Top Contacts'=>'Contactos Principales',
 'Add {name}'=>'Añadir {name}',
-
-'Enter Title'=>'Introduzca el título',
+// // 
+'Enter Title'=>'Introduzca el Título',
 'Title'=>'Título',
 'Title:'=>'Título:',
 'Link'=>'Enlace',
-'Link:'=>'Link:',
+'Link:'=>'Enlace:',
 'Add Site'=>'Agregar Sitio',
 'Example'=>'Ejemplo',
-
-// Chat
+// // 
+// // Chat
 'Message Body'=>'Cuerpo del Mensaje',
 'Enter text here...'=>'Escriba el texto aquí ...',
 'Send'=>'Enviar',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'A:',
 'Subject:'=>'Asunto:',
 'Message:'=>'Mensaje:',
 'Error: Could not send email.'=>'Error: No se puede enviar un correo electrónico.',
-'Email Sent!'=>'Correo electrónico enviado!',
-
-// Comments
-'Add Comment'=>'Poner comentario',
+'Email Sent!'=>'Correo Electrónico Enviado!',
+'Preview'=>'Avance',
+'Attachments'=>'Archivos Adjuntos',
+// // 
+// // Comments
+'Add Comment'=>'Poner Comentario',
 'Create Action'=>'Crear Acción',
 'Add a comment...'=>'Poner un comentario...',
 'History'=>'Historia',
@@ -146,9 +157,9 @@ return array (
 'Tomorrow'=>'Mañana',
 'Comments'=>'Comentarios',
 'Post'=>'Enviar',
-
-// Misc
-'Advanced Search'=>'Búsqueda avanzada',
+// // 
+// // Misc
+'Advanced Search'=>'Búsqueda Avanzada',
 'Clear Filters'=>'Limpiar Filtros',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Si lo desea, puede introducir un operador de comparación (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>or <b>=</b>) al comienzo de cada uno de los valores de su búsqueda para especificar cómo la comparación se debe hacer.',
 'Fields with <span class="required">*</span> are required.'=>'Los campos marcados con <span class="required">*</span> son obligatorios.',
@@ -170,7 +181,7 @@ return array (
 'Columns'=>'Columnas',
 'Tools'=>'Instrumentos',
 'Rights reserved.'=>'Derechos reservados.',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'GNU General Público Licencia Versión 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'El Programa se proporciona TAL CUAL, sin garantía. MedlinePlus licenciado bajo {BSD}.',
 'Generated in {time} seconds'=>'Generado en {time} segundos',
 'Minimize'=>'Minimizar',
@@ -181,52 +192,75 @@ return array (
 'Help'=>'Ayudar',
 '---'=>'---',
 'You don\'t have any notifications.'=>'Usted no tiene ninguna notificación.',
-'View all'=>'Ver todos',
-'Close'=>'cerrar',
+'View all'=>'Ver Todos',
+'Close'=>'Cerrar',
 'Delete'=>'Borrar',
 'Group?'=>'Grupo?',
 'Check box'=>'Marque la casilla',
-
-// Misc Actions
+'results per page'=>' resultados por página',
+'Public'=>'Público',
+'Tags'=>'Etiquetas',
+'Template:'=>'Plantilla:',
+'Model Name'=>'Nombre del Modelo',
+'Model ID'=>'Modelo ID',
+'What should the list be named?'=>'¿Cuál debe ser el nombre de la lista?',
+'Added items to list.'=>'Ítems añadidos a la lista.',
+'Select an option'=>'Seleccione una opción',
+'loading...'=>'Cargando ...',
+'Checkbox'=>'Caja',
+'New List From Selection'=>'Nueva lista a partir de selección',
+'No'=>'No',
+'Yes'=>'Sí',
+'View'=>'Ver',
+'Update'=>'Actualizar',
+'results per page.'=>'Resultados por Página.',
+'Displaying {start}-{end} of {count} result(s).'=>'Viendo {start} - {end} de {count} resultado (s).',
+'Marketing Dashboard'=>'Comercialización de Paneles',
+// // 
+// // Misc Actions
 'Submit'=>'Entregar',
 'Save'=>'Guardar',
 'Cancel'=>'Cancelar',
-'Send Email'=>'Enviar correo',
-'Attach A File'=>'Adjuntar un archivo',
-'Save Changes'=>'Guardar cambios',
-'Save Action'=>'Guardar acción',
-'Save Comment'=>'Ahorra un comentario!',
+'Send Email'=>'Enviar Correo',
+'Attach A File'=>'Adjuntar un Archivo',
+'Save Changes'=>'Guardar Cambios',
+'Save Action'=>'Guardar Acción',
+'Save Comment'=>'Ahorra un Comentario',
 'Create'=>'Crear',
 'Search'=>'Buscar',
-'Search Results'=>'Resultados de la búsqueda',
+'Search Results'=>'Resultados de la Búsqueda',
 'Name'=>'Nombre',
 'Description'=>'Descripción',
 'Action'=>'Acción',
 'Status'=>'Estado',
 'E-mail'=>'Email',
 'Download'=>'Descargar',
-'Contact Saved'=>'Contacto guardado',
-'Add Note'=>'Añadir nota',
-
-// Timestamps
+'Contact Saved'=>'Contacto Guardado',
+'Add Note'=>'Añadir Nota',
+'New List'=>'Nueva Lista',
+'Add'=>'Añadir',
+'Remove'=>'Quitar',
+// // 
+// // Timestamps
 'Just now'=>'En este momento',
 '{n} minutes ago'=>'{n} minutos hace',
 '{n} hours ago'=>'{n} horas hace',
 '{n} days ago'=>'{n} días hace',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'Error al crear la cuenta!',
 'Invalid request. Please do not repeat this request again.'=>'Invalid petición. Por favor, no repita esta solicitud nuevamente.',
 'The requested page does not exist.'=>'La página solicitada no existe.',
-
-// Admin Page
-'Administration Tools'=>'Herramientas de administración',
+'Please fix the following errors:'=>'Por favor, corrija los siguientes errores:',
+// // 
+// // Admin Page
+'Administration Tools'=>'Herramientas de Administración',
 'Welcome to the administration tool set.'=>'Bienvenido al conjunto de herramientas de administración.',
 'Links'=>'Enlaces',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'Cómo Es',
+'Gii - A Code Generation Module'=>'Gii - Un módulo de generación de código',
+'Send Mass E-mail'=>'Enviar Correo Electrónico Masivo',
+'How to use Gii'=>'Cómo utilizar Gii',
 'How to add a database field'=>'Cómo agregar un campo de base de datos',
-
+// // 
 );

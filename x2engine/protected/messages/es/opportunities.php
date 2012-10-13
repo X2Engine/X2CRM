@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,7 +41,7 @@
 return array (
 // Opportunities Attributes
 'ID'=>'ID',
-'Assigned To'=>'Asignado a',
+'Assigned To'=>'Asignado A',
 'Name'=>'Nombre',
 'Account'=>'Compañía',
 'Contacts'=>'Contactos',
@@ -52,8 +52,8 @@ return array (
 'Lead Source'=>'Procedencia',
 'Description'=>'Descripción',
 'Create Date'=>'Fecha de Creación',
-'Last Updated'=>'Última actualización',
-'Updated By'=>'Actualizado por',
+'Last Updated'=>'Última Actualización',
+'Updated By'=>'Actualizado Por',
 'Hold Control or Command key to select multiple items.'=>'Sostenga Control o la tecla Comando para seleccionar varios elementos.',
 'Working'=>'En El Progreso',
 'Won'=>'Ganó',
@@ -62,6 +62,12 @@ return array (
 'Cold Call'=>'Llamada en Frío',
 'E-Mail'=>'E-Mail',
 'Store'=>'Tienda',
+'Other Info'=>'Información Adicional',
+'Basic Information'=>'Información Básica',
+'None'=>'Ninguno',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'Entró En',
 
 // Opportunities Actions
 'Opportunities List'=>'Lista de Ventas',
@@ -70,12 +76,19 @@ return array (
 'Update Opportunity'=>'Actualizar Venta',
 'Delete Opportunity'=>'Eliminar Venta',
 'Manage Opportunities'=>'Administrar Ventas',
+'Create'=>'Crear',
+'View'=>'Ver',
+'Update'=>'Actualizar',
+'Update Opportunity:'=>'Actualizar Venta:',
 
-'Add a User'=>'Agregar un usuario',
-'Add a Contact'=>'Agregar un contacto',
-'Remove a User'=>'Eliminar un usuario',
-'Remove a Contact'=>'Eliminar un contacto',
+'Add A User'=>'Agregar un Usuario',
+'Add A Contact'=>'Agregar un Contacto',
+'Remove A User'=>'Eliminar un Usuario',
+'Remove A Contact'=>'Eliminar un Contacto',
 'Share Opportunity'=>'Compartir este Venta',
+'Delete'=>'Borrar',
+'Add'=>'Añadir',
+'Remove'=>'Quitar',
 
 // Opportunities Titles
 'Opportunities'=>'Ventas',

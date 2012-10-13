@@ -39,7 +39,6 @@
  ********************************************************************************/
 
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 Yii::app()->clientScript->registerScript('formUIScripts',"
 $('.x2-layout.form-view :input').change(function() {
 	$('#save-button, #save-button1, #save-button2, h2 a.x2-button').addClass('highlight');

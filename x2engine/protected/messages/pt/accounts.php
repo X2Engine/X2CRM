@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,35 +48,44 @@ return array (
 'Phone'=>'Telefone',
 'Symbol'=>'Símbolo',
 'Employees'=>'Funcionários',
-'Assigned To'=>'Atribuído a',
-'Create Date'=>'Data de Criação',
-'Associated Contacts'=>'Contactos associados',
+'Assigned To'=>'Atribuído A',
+'Create Date'=>'Data De Criação',
+'Associated Contacts'=>'Contactos Associados',
 'Description'=>'Descrição',
 'Last Updated'=>'Última Atualização',
-'Updated By'=>'Atualizado por',
+'Updated By'=>'Atualizado Por',
 'None'=>'Nenhum',
+'Contacts'=>'Contactos',
+'Basic Information'=>'Informações Básicas',
+'Additional Information'=>'Informações Adicionais',
 
 // Accounts Actions
-'Accounts List'=>'Lista de contas',
+'Accounts List'=>'Lista De Contas',
 'Create Account'=>'Criar Conta',
 'View Account'=>'Ver Conta',
-'Update Account'=>'Atualizar conta',
-'Delete Account'=>'excluir Conta',
-'Add a User'=>'Adicionar um usuário',
+'Update Account'=>'Atualizar Conta',
+'Delete Account'=>'Excluir Conta',
+'Add a User'=>'Adicionar um Usuário',
 'Add a Contact'=>'Adicionar um contato',
-'Remove a User'=>'Remover um usuário',
-'Remove a Contact'=>'Remover um contato',
-'Share Account'=>'Conta de ações',
+'Remove a User'=>'Remover um Usuário',
+'Remove a Contact'=>'Remover um Contato',
+'Share Account'=>'Conta de Ações',
+'Create'=>'Criar',
+'View'=>'Ver',
+'Update'=>'Atualizar',
+'Delete'=>'Excluir',
+'Update Account:'=>'Atualize conta:',
+'Share Opportunity'=>'Oportunidade Compartilhar',
 
 // Accounts Titles
 'Accounts'=>'Contas',
 'Manage Accounts'=>'Gerenciar Contas',
-'Update Account: {name}'=>'Atualização da conta: {name}',
+'Update Account: {name}'=>'Atualização da Conta: {nome}',
 'Account:'=>'Conta:',
 
 // Misc
 'Please click any new users you wish to add.'=>'Por favor, clique em qualquer novo usuário que deseja adicionar.',
 'Please click any new users you wish to remove.'=>'Por favor, clique em qualquer novo usuário que deseja remover.',
 'Account Record Details'=>'Gravar Detalhes da Conta',
-'Account Record'=>'Grave conta',
+'Account Record'=>'Grave Conta',
 );

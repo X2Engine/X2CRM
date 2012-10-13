@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,34 +44,36 @@ return array (
 'ID'=>'ID',
 'Title'=>'Titre',
 'Text'=>'Texte',
-'Created By'=>'Créé par',
-'Updated By'=>'Mis à jour par',
-'Last Updated'=>'Dernière mise à jour',
-'Create Date'=>'Créez date',
-'Edit Permissions'=>'Modifier les autorisations',
-'Doc Type'=>'Doc Type',
+'Created By'=>'Créé Par',
+'Updated By'=>'Mis à Jour Par',
+'Last Updated'=>'Dernière Mise à Jour',
+'Create Date'=>'Créez Date',
+'Edit Permissions'=>'Modifier les Autorisations',
+'Doc Type'=>'Type De Document',
 
 // Labels
 'Doc'=>'Doc',
 'Document:'=>'Document de:',
-'Edit Document:'=>'Modifier un document:',
+'Edit Document:'=>'Modifier un Document:',
 'Documents'=>'Documents',
-'Manage Docs'=>'Gestion des documents',
-'Docs'=>'Docs',
+'Manage Docs'=>'Gestion des Documents',
+'Docs'=>'Documents',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'S\'il vous plaît sélectionner les utilisateurs qui sont autorisés à modifier le document. Utilisez Ctrl + clic pour sélectionner ou désélectionner les utilisateurs individuels.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'S\'il vous plaît faites un clic droit sur ​​le lien ci-dessous et sélectionnez "Enregistrer sous" pour télécharger le document! Clic gauche ouvre le document dans un mode imprimable.',
 'Uploaded Documents'=>'Documents Téléchargés',
+'Custom Message'=>'Message Personnalisé',
 
 // Doc Navbar
-'List Docs'=>'Liste de documents',
-'Create Docs'=>'Créer Docs',
-'View Doc'=>'Voir Doc',
-'Edit Doc'=>'Modifier Doc',
-'Delete Doc'=>'Supprimer Doc',
-'Export Doc'=>'Exporter Doc',
-'Edit Doc Permissions'=>'Modifier les autorisations Doc',
+'List Docs'=>'Liste de Documents',
+'Create Docs'=>'Créer Des Documents',
+'View Doc'=>'Afficher le Document',
+'Edit Doc'=>'Modifier Document',
+'Delete Doc'=>'Supprimer Document',
+'Export Doc'=>'Exporter Document',
+'Edit Doc Permissions'=>'Modifier les Autorisations Document',
 'Edit'=>'Modifier',
 'Export'=>'Exporter',
 'Create'=>'Créer',
 'Create Email'=>'Créer E-mail',
+'Create Document'=>'Créer un Document',
 );

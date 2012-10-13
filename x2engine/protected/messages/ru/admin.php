@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,20 +39,20 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'коммунальные услуги',
-'X2Studio'=>'X2студия',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Поддержка и Документация',
 'Contact Us'=>'Связаться с Нами',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'администратор профиля',
 'Admin Account Settings'=>'Параметры администратора счета',
 'User Management'=>'Управление пользователями',
 'Manage menu items'=>'Управление меню',
-'Send mass E-mail'=>'Отправить Email массы',
+'Send mass E-mail'=>'Отправить электронной почте массы',
 'Export data'=>'Экспорт данных',
 'Import data'=>'Импорт данных',
 'X2Touch'=>'X2Touch',
@@ -69,7 +69,7 @@ return array (
 'Gii - A Code Generation Module'=>'Gii - модуль генерации кода',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'Добавление, удаление и обновление переводы сообщений в пакетах X2Contacts языке.',
-'Tutorial Videos'=>'',
+'Tutorial Videos'=>'Учебник Видео',
 'Phone Support'=>'Поддержка по телефону',
 'Manage Roles'=>'Управление ролями',
 'Set Lead Distribution'=>'Установить контакт Распространение',
@@ -77,10 +77,9 @@ return array (
 'Workflow Settings'=>'Параметры рабочего процесса',
 'Manage Notification Criteria'=>'Управление Уведомление Критерии',
 'General Settings'=>'Общие параметры',
-'Updater Settings'=>'Обновление параметров',
 'Google Integration'=>'Интеграция с Google',
 'Email Settings'=>'Настройки электронной почты',
-'Create Email Campaign'=>'Создание e-mail кампании',
+'Create Email Campaign'=>'Создание электронной почте кампании',
 'Manage Campaigns'=>'Управление кампании',
 'Import Contacts'=>'Импортировать контакты',
 'Export Contacts'=>'Экспорт контактов',
@@ -92,13 +91,13 @@ return array (
 'Form Editor'=>'Редактор форм',
 'Create Workflow'=>'Создание рабочего процесса',
 'Manage Workflows'=>'Управление рабочие процессы',
-
-// Text
+// // 
+// // Text
 'Administrator profile'=>'профиль администратора',
 'UI theme settings / background image'=>'Пользовательский интерфейс настройки темы / фоновое изображение',
 'Add and manage users'=>'Добавление и управление пользователями',
 'Re-order and add or remove top bar tabs'=>'Изменение порядка отображения и добавить или удалить верхний бар вкладок',
-'Send email based on X2Tags(currently only has basic function)'=>'Отправить электронное сообщение на основе X2Tags (в настоящее время имеет только основные функции)',
+'Send email based on X2Tags(currently only has basic function)'=>'Отправить письмо на основе X2Tags (в настоящее время имеет только основные функции)',
 'Export data to a CSV (useful for updates when the database gets wiped)'=>'Экспорт данных в формате CSV (удобно для обновления, когда база данных получает вытер)',
 'Import data from a CSV template or exported records'=>'Импорт данных из CSV-шаблон или экспортировать записи',
 'Mobile web application'=>'Мобильный веб-приложений',
@@ -123,12 +122,11 @@ return array (
 'Create and manage user groups'=>'Создание и управление группами пользователей',
 'Create a public form to receive new contacts'=>'Создать общественную форму, чтобы получать новые контакты',
 'Change how new web leads are distributed.'=>'Изменение способа новых версий веб распределены.',
-'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'Управление правила для "собственных правил маршрутизации" ведущего настройки распределения.',
 'Create a workflow for your sales process'=>'Создание рабочего процесса для процесса продаж',
 'Change advanced workflow settings'=>'Изменить дополнительные параметры рабочего процесса',
 'Manage what events will trigger user notifications.'=>'Управление какие события будут вызывать уведомления пользователей.',
-'Configure session timeout and chat poll rate.'=>'Настройка тайм-аута сеанса и общение опрос ставки.',
-'Configure automatic updates and registration.'=>'Настройка автоматического обновления и регистрации.',
+'Configure automatic updates, session timeout and chat poll rate.'=>'Настройка автоматического обновления, тайм-аут сеанса и общение скорости опроса.',
 'Enter your google app settings for Calendar/Google login'=>'Введите ваш Google Настройки приложения для Calendar / Google Войти',
 'Configure X2Engine\'s email settings'=>'Настройка X2Engine в настройки электронной почты',
 'Create an email marketing campaign'=>'Создание маркетинговой кампании электронной почты',
@@ -141,16 +139,16 @@ return array (
 'Customize fields for the modules.'=>'Настройка полей для модулей.',
 'Manage dropdowns for custom fields.'=>'Управление выпадающее меню для пользовательских полей.',
 'Drag and drop editor for forms.'=>'Перетащите редактор форм.',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'Изменение порядка пунктов главного меню',
 'Add, remove and reorder modules:'=>'Добавить, удалить и изменить порядок модулей:',
 'Select Email Criteria'=>'Выберите Email Критерии',
 'Send A Mass Email'=>'Отправить Массовая Email',
 'Change'=>'изменение',
 'Mailing List Size'=>'Размер список рассылок',
-'Email Form'=>'Email форма',
+'Email Form'=>'электронной почте форма',
 'Subject'=>'тема',
 'Send Mail'=>'Отправить почту',
 'Delete A Module'=>'Удалить модуль',
@@ -163,9 +161,9 @@ return array (
 'Export'=>'экспорт',
 'Rename A Module'=>'Переименование модуля',
 'You can rename a module by selecting a module and typing the new name below.'=>'Вы можете переименовать модуль, выбрав модуль и введя новое имя ниже.',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'Экспорт всех данных',
 'Please click the link below to download data.'=>'Пожалуйста, нажмите на ссылку ниже для загрузки данных.',
 'Import Data from Template'=>'Импорт данных из шаблона',
@@ -181,12 +179,12 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Чтобы загрузить логотип, чтобы отображать рядом с панелью поиска, пожалуйста, загрузите файл здесь, используя форму ниже.',
 'Create Page'=>'Создать страницу',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Инк является компания, которая за X2Contacts - высокопроизводительное управление контактами веб-приложения. X2Engine может предложить ваша организация профессиональной поддержки и обучения по X2Contacts. Пожалуйста, заполните форму ниже, чтобы связаться с нами.',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'Конфигурация сервера электронной почты',
 'Ready to send email? We need some information about your mail server.'=>'Готовы отправить электронную почту? Нам нужна информация о вашем почтовом сервере.',
 'Outbound Email Server'=>'Исходящий сервер электронной почты',
-'Hostname'=>'Hostname',
+'Hostname'=>'хоста',
 'Port'=>'порт',
 'Security'=>'безопасность',
 'Authentication'=>'идентификация',
@@ -200,13 +198,5 @@ return array (
 'None'=>'никто',
 'User\'s Choice'=>'Выбор пользователя',
 'Default Signature'=>'По умолчанию подпись',
-'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Вы можете использовать следующие переменные в шаблоне: {first}, {last}, {phone}, {email}.',
-
-// Updater/General Settings
-'Update Interval'=>'Интервал обновления',
-'Every Login'=>'Каждый вход',
-'Daily'=>'ежедневно',
-'Weekly'=>'еженедельно',
-'Monthly'=>'ежемесячно',
-'Never'=>'никогда',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Вы можете использовать следующие переменные в шаблоне: {first}, {last}, {phone} and {email}.',
 );

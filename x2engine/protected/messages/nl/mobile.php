@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,9 +45,9 @@ return array (
 'Find Contacts'=>'Vind Contacten',
 'Top Contacts'=>'Top Contacten',
 'No top contacts for this user!'=>'Geen Top Contacten voor deze gebruiker!',
-'Create Message'=>'Maak bericht',
+'Create Message'=>'Maak Bericht',
 'Message List'=>'Berichten Lijst',
 'Clear'=>'Leeg Maken',
 'Search for a Contact'=>'Zoek een Contact',
-'Go to Full Site'=>'Ga naar volledige site',
+'Go to Full Site'=>'Ga naar Volledige Site',
 );

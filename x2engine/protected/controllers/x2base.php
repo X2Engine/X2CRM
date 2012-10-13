@@ -89,7 +89,7 @@ abstract class x2base extends X2Controller {
     protected function beforeAction($action = null) {
         $auth = Yii::app()->authManager;
         $params = array();
-        if (isset($_GET['id'])) {
+        if(isset($_GET['id']) && $this->getAction()->getId() != 'updateStageDetails') {
             if (method_exists($this, 'loadModel')) {
                 $model = $this->loadModel($_GET['id']);
                 if ($model->hasAttribute('assignedTo')) {
@@ -101,7 +101,9 @@ abstract class x2base extends X2Controller {
         $authItem = $auth->getAuthItem($actionAccess);
         if (Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin') {
             return true;
-        } else {
+        }elseif(Yii::app()->user->isGuest){
+            $this->redirect($this->createUrl('/site/login'));
+        }else{
             throw new CHttpException(403, 'You are not authorized to perform this action.');
         }
     }
@@ -268,42 +270,7 @@ abstract class x2base extends X2Controller {
      * @param String $type The type of the module being displayed
      */
     public function view($model, $type, $params = array()) {
-        // eval($this->varString);
-
         $actionHistory = $this->getHistory($model, $type);
-        // $actionHistory=new CActiveDataProvider('Actions', array(
-        // 'criteria'=>array(
-        // 'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-        // 'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
-        // )
-        // ));
-        // if(isset($_GET['history'])) {
-        // $history=$_GET['history'];
-        // } else {
-        // $history='all';
-        // }
-        // if($history=='actions') {
-        // $actionHistory=new CActiveDataProvider('Actions', array(
-        // 'criteria'=>array(
-        // 'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-        // 'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND type IS NULL'
-        // )
-        // ));
-        // } elseif($history=='comments') {
-        // $actionHistory=new CActiveDataProvider('Actions', array(
-        // 'criteria'=>array(
-        // 'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-        // 'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND type="note"'
-        // )
-        // ));
-        // } elseif($history=='attachments') {
-        // $actionHistory = new CActiveDataProvider('Actions', array(
-        // 'criteria'=>array(
-        // 'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-        // 'condition'=>'associationId='.$model->id.' AND associationType=\''.$type.'\' AND type="attachment"'
-        // )
-        // ));
-        // }
 
         $users = User::getNames();
         $showActionForm = isset($_GET['showActionForm']);
@@ -325,44 +292,27 @@ abstract class x2base extends X2Controller {
      */
     public function getHistory(&$model, $type = null) {
 
-        if (!isset($type))
-            $type = get_class($model);
+		if (!isset($type))
+			$type = get_class($model);
 
-        $history = 'all';
-        if (isset($_GET['history']))
-            $history = $_GET['history'];
+		$filters = array(
+			'actions'=>' AND type IS NULL',
+			'comments'=>' AND type="note"',
+			'attachments'=>' AND type="attachment"',
+			'all'=>''
+		);
+			
+		$history = 'all';
+		if(isset($_GET['history']) && array_key_exists($_GET['history'],$filters))
+			$history = $_GET['history'];
 
-        switch ($history) {
-            case 'actions':
-                return new CActiveDataProvider('Actions', array(
-                            'criteria' => array(
-                                'order' => '(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-                                'condition' => 'associationId=' . $model->id . ' AND associationType=\'' . $type . '\' AND type IS NULL'
-                            )
-                        ));
-            case 'comments':
-                return new CActiveDataProvider('Actions', array(
-                            'criteria' => array(
-                                'order' => '(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-                                'condition' => 'associationId=' . $model->id . ' AND associationType=\'' . $type . '\' AND type="note"'
-                            )
-                        ));
-            case 'attachments':
-                return new CActiveDataProvider('Actions', array(
-                            'criteria' => array(
-                                'order' => '(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-                                'condition' => 'associationId=' . $model->id . ' AND associationType=\'' . $type . '\' AND type="attachment"'
-                            )
-                        ));
-            default:
-                return new CActiveDataProvider('Actions', array(
-                            'criteria' => array(
-                                'order' => '(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
-                                'condition' => 'associationId=' . $model->id . ' AND associationType=\'' . $type . '\' AND (visibility="1" OR assignedTo="admin" OR assignedTo="' . Yii::app()->user->getName() . '")'
-                            )
-                        ));
-        }
-    }
+		return new CActiveDataProvider('Actions',array(
+			'criteria'=>array(
+				'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+				'condition'=>'associationId='.$model->id.' AND associationType="'.$type.'" '.$filters[$history].' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
+			)
+		));
+	}
 
     /**
      * Obtains the worflow for a model of given type and id.
@@ -782,30 +732,33 @@ abstract class x2base extends X2Controller {
      * @param type $model The model to be updated
      * @return type $model The model with modified attributes
      */
-    protected function updateChangelog($model, $change) {
+    protected function updateChangelog($model, $changes) {
         $model->lastUpdated = time();
         $model->updatedBy = Yii::app()->user->getName();
         $model->save();
         $type = get_class($model);
+        foreach($changes as $field=>$array){
+            $changelog = new Changelog;
+            $changelog->type = $type;
+            if (!isset($model->id)) {
+                if ($model->save()) {
 
-        $changelog = new Changelog;
-        $changelog->type = $type;
-        if (!isset($model->id)) {
-            if ($model->save()) {
-                
+                }
+            }
+            $changelog->itemId = $model->id;
+            $changelog->changedBy = Yii::app()->user->getName();
+            $changelog->fieldName = $field;
+            $changelog->oldValue=$array['old'];
+            $changelog->newValue=$array['new'];
+            $changelog->timestamp = time();
+
+            if ($changelog->save()) {
+
             }
         }
-        $changelog->itemId = $model->id;
-        $changelog->changedBy = Yii::app()->user->getName();
-        $changelog->changed = $change;
-        $changelog->timestamp = time();
-
-        if ($changelog->save()) {
-            
-        }
-        $changes = array();
-        if ($change != 'Create' && $change != 'Completed' && $change != 'Edited') {
-            if ($change != "") {
+        
+        if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
+            if ($changes != "" && !is_array($changes)) {
                 $pieces = explode("<br />", $change);
                 foreach ($pieces as $piece) {
                     $newPieces = explode("TO:", $piece);
@@ -823,7 +776,7 @@ abstract class x2base extends X2Controller {
                     }
                 }
             }
-        }else if ($change == 'Create' || $change == 'Edited') {
+        }else if ($changes == 'Create' || $changes == 'Edited') {
             if ($model instanceof Contacts)
                 $change = $model->backgroundInfo;
             else if ($model instanceof Actions)
@@ -833,8 +786,8 @@ abstract class x2base extends X2Controller {
             else
                 $change = $model->name;
         }
-        foreach ($changes as $change) {
-            preg_match_all('/(^|\s|)#(\w\w+)/', $change, $matches);
+        foreach ($changes as $field=>$array) {
+            preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
             $matches = $matches[0];
             foreach ($matches as $match) {
                 $tag = new Tags;
@@ -870,30 +823,6 @@ abstract class x2base extends X2Controller {
      */
     public function cleanUpTags($model) {
         Tags::model()->deleteAllByAttributes(array('itemId' => $model->id));
-        /* $type=get_class($model);
-          if(substr($type,-1)!="s"){
-          $type=substr($type,0,-5)."s";
-          }
-          $change="";
-          if($model instanceof Contacts)
-          $change=$model->backgroundInfo;
-          else if($model instanceof Actions)
-          $change=$model->actionDescription;
-          else if($model instanceof Docs)
-          $change=$model->text;
-          else
-          $change=$model->description;
-          if($change!=""){
-          $forDeletion=$change;
-          preg_match_all('/(^|\s|)#(\w\w+)/',$forDeletion,$deleteMatches);
-          $deleteMatches=$deleteMatches[0];
-          foreach($deleteMatches as $match){
-          $oldTag=Tags::model()->findByAttributes(array('tag'=>$match,'type'=>$type,'itemId'=>$model->id));
-          if(isset($oldTag)) {
-          $oldTag->delete();
-          }
-          }
-          } */
     }
 
     protected function calculateChanges($old, $new, &$model = null) {
@@ -975,11 +904,13 @@ abstract class x2base extends X2Controller {
                 }
             }
         }
-        $str = '';
+        $changes=array();
         foreach ($arr as $key => $item) {
-            $str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
+			if(is_array($old[$key]))
+				$old[$key] = implode(', ',$old[$key]);
+            $changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
         }
-        return $str;
+        return $changes;
     }
 
     public function partialDateRange($input) {
@@ -1592,6 +1523,50 @@ abstract class x2base extends X2Controller {
         }
         return $dateRange;
     }
+    
+    function ucwords_specific ($string, $delimiters = '', $encoding = NULL) 
+    { 
+        
+        if ($encoding === NULL) { $encoding = mb_internal_encoding();} 
+
+        if (is_string($delimiters)) 
+        { 
+            $delimiters =  str_split( str_replace(' ', '', $delimiters)); 
+        } 
+
+        $delimiters_pattern1 = array(); 
+        $delimiters_replace1 = array(); 
+        $delimiters_pattern2 = array(); 
+        $delimiters_replace2 = array(); 
+        foreach ($delimiters as $delimiter) 
+        { 
+            $ucDelimiter=$delimiter;
+            $delimiter=strtolower($delimiter);
+            $uniqid = uniqid(); 
+            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/'; 
+            $delimiters_replace1[]   = $delimiter.$uniqid.' '; 
+            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/'; 
+            $delimiters_replace2[]   = $ucDelimiter; 
+            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/'; 
+            $delimiters_cleanup_pattern1[]   = $delimiter; 
+        } 
+        $return_string = mb_strtolower($string, $encoding); 
+        //$return_string = $string; 
+        $return_string = preg_replace($delimiters_pattern1, $delimiters_replace1, $return_string);
+
+        $words = explode(' ', $return_string); 
+        
+        foreach ($words as $index => $word) 
+        { 
+            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding); 
+        } 
+        $return_string = implode(' ', $words); 
+        
+        $return_string = preg_replace($delimiters_pattern2, $delimiters_replace2, $return_string);
+        $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
+
+        return $return_string; 
+    } 
 
 }
 

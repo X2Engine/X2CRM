@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,16 +48,16 @@ return array (
 'Title'=>'Título',
 'Department'=>'Departamento',
 'Office Phone'=>'Telefone Escritório',
-'Cell Phone'=>'Telefone celular',
+'Cell Phone'=>'Telefone Celular',
 'Home Phone'=>'Telefone Residencial',
 'Address'=>'Endereço',
-'Background Info'=>'Informações de fundo',
+'Background Info'=>'Informações de Fundo',
 'Email'=>'Email',
 'Status'=>'Estado',
 'Update Password'=>'Atualização Senha',
 'Last Updated'=>'Última Atualização',
 'Updated By'=>'Atualizado Por',
-'Recent Items'=>'Itens recentes',
+'Recent Items'=>'Itens Recentes',
 
 // Users Actions
 'Create User'=>'Criar Usuário',

@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 return array (
-// // Profile Attributes
+// Profile Attributes
 'ID'=>'شناسایی',
 'Full Name'=>'نام و نام خانوادگی',
 'Username'=>'نام کاربر',
@@ -66,7 +66,7 @@ return array (
 'Show Social Media'=>'نمایش چند رسانه ای های اجتماعی',
 'Upload a Background'=>'بارگزاری پس زمینه',
 
-// // Profile Actions
+// Profile Actions
 'View Profile'=>'مشاهده پروفایل',
 'Update Profile'=>'بروزرسانی پروفایل',
 'Change Settings'=>'تغییر تنطیمات',
@@ -74,17 +74,17 @@ return array (
 'People'=>'افراد',
 'Change Personal Settings'=>'تغییر مشخصات فردی',
 
-// // Profile Titles
+// Profile Titles
 'Profile:'=>':پروفایل',
 'Update Your Profile'=>'بروز رسانی پروفایل',
 
-// // Social
-'Feed'=>'خوراک',
+// Social
+'Feed'=>'اشتراک خبری',
 'Social'=>'اجتماعی',
 'Reply'=>'پاسخ',
 'A larger Chat Box'=>'جعبه انتخاب بزرگتر',
 'A blog-like discussion forum'=>'فروم گفتگو شبیه بلاگ',
 
-// // Misc
+// Misc
 'This user does not allow posting on their feed.'=>'.این کاربران اجازه پست به خوراک خود را نداده اند',
 );

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -54,19 +54,19 @@ return array (
 'Background Info'=>'Hintergrund-Infos',
 'Email'=>'E-Mail',
 'Status'=>'Status',
-'Update Password'=>'Passwort aktualisieren',
-'Last Updated'=>'Zuletzt aktualisiert',
-'Updated By'=>'Aktualisiert von',
-'Recent Items'=>'Zuletzt verwendet',
+'Update Password'=>'Passwort Aktualisieren',
+'Last Updated'=>'Zuletzt Aktualisiert',
+'Updated By'=>'Aktualisiert Von',
+'Recent Items'=>'Zuletzt Verwendet',
 
 // Users Actions
-'Create User'=>'Benutzer erstellen',
-'View User'=>'Benutzer erstellen',
-'Update User'=>'Benutzer aktualisieren',
-'Manage Users'=>'Benutzer verwalten',
+'Create User'=>'Benutzer Erstellen',
+'View User'=>'Benutzer Erstellen',
+'Update User'=>'Benutzer Aktualisieren',
+'Manage Users'=>'Benutzer Verwalten',
 'Invite Users'=>'Einladen Benutzer',
 
 // Users Titles
 'User: {name}'=>'Benutzer: {name}',
-'Update User: {name}'=>'Benutzer aktualisieren: {name}',
+'Update User: {name}'=>'Benutzer Aktualisieren: {name}',
 );

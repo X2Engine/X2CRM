@@ -69,8 +69,7 @@ class ApplicationConfigBehavior extends CBehavior {
 	 */
 	public function beginRequest() {
 		// $t0 = microtime(true);
-	
-		
+        
 		if($this->owner->request->getPathInfo() == 'notifications/get') {	// skip all the loading if this is a chat/notification update
 			$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar();	// set the timezone to the admin's
 			if(!isset($timezone))
@@ -151,6 +150,7 @@ class ApplicationConfigBehavior extends CBehavior {
 				$arr[$module]=ucfirst($module);
 				Yii::import("application.modules.$module.models.*");
 			}
+            
 		}
 		foreach($arr as $key=>$module){
 			$record=Modules::model()->findByAttributes(array('name'=>$key));
@@ -189,8 +189,6 @@ class ApplicationConfigBehavior extends CBehavior {
 			$this->owner->params->edition = 'pro';
 			
 		setlocale(LC_ALL, 'en_US.UTF-8');
-
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/notifications.js');
 
 		// set base path and theme path globals for JS
 		Yii::app()->clientScript->registerScript('setParams','

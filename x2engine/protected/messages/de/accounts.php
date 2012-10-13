@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,25 +48,34 @@ return array (
 'Phone'=>'Telefon',
 'Symbol'=>'Symbol',
 'Employees'=>'Mitarbeiter',
-'Assigned To'=>'Zugeordnet zu',
+'Assigned To'=>'Zugeordnet Zu',
 'Create Date'=>'Erstellen Datum',
 'Associated Contacts'=>'Assoziierte Kontakte',
 'Description'=>'Beschreibung',
 'Last Updated'=>'Zuletzt Aktualisiert',
-'Updated By'=>'Aktualisiert von',
+'Updated By'=>'Aktualisiert Von',
 'None'=>'Keine',
+'Contacts'=>'Kontakte',
+'Basic Information'=>'Grundlegende Informationen',
+'Additional Information'=>'Weitere Informationen',
 
 // Accounts Actions
 'Accounts List'=>'Konten-Liste',
 'Create Account'=>'Erstellen Konto',
 'View Account'=>'Konto Anzeigen',
-'Update Account'=>'Konto aktualisieren',
-'Delete Account'=>'Konto löschen',
+'Update Account'=>'Konto Aktualisieren',
+'Delete Account'=>'Konto Löschen',
 'Add a User'=>'Hinzufügen eines Benutzers',
-'Add a Contact'=>'Hinzufügen eines Kontakts',
+'Add a Contact'=>'Hinzufügen Eines Kontakts',
 'Remove a User'=>'Entfernen eines Benutzers',
 'Remove a Contact'=>'Entfernen eines Kontakt',
 'Share Account'=>'Teile Konto',
+'Create'=>'Schaffen',
+'View'=>'Sehen',
+'Update'=>'Aktualisieren',
+'Delete'=>'Löschen',
+'Update Account:'=>'Konto Aktualisieren:',
+'Share Opportunity'=>'Teilen Chance',
 
 // Accounts Titles
 'Accounts'=>'Konten',

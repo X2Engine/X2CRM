@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,21 +45,21 @@ return array (
 'Name'=>'Nome',
 'Locked'=>'Trancado',
 'Contacts'=>'Contactos',
-'Assigned To'=>'Atribuído a',
+'Assigned To'=>'Atribuído A',
 'Account'=>'Conta',
 'Probability'=>'Probabilidade',
 'Expiration Date'=>'Data de Validade',
 'Last Updated'=>'Última Atualização',
 'Create Date'=>'Data de Criação',
-'Updated By'=>'Atualizado por',
-'Created By'=>'Criado por',
+'Updated By'=>'Atualizado Por',
+'Created By'=>'Criado Por',
 'Notes'=>'Notas',
 'Products'=>'Produtos',
 'Expected Close Date'=>'Data Esperada Fechar',
 
-'Sales Stage'=>'Estágio vendas',
+'Sales Stage'=>'Estágio Vendas',
 'Existing Products'=>'Produtos Existentes',
-'Lead Source'=>'Fonte levar',
+'Lead Source'=>'Fonte Levar',
 'Description'=>'Descrição',
 'Notes/Terms'=>'Notes / Termos',
 'Hold Control or Command key to select multiple items.'=>'Segure tecla Control ou Command para selecionar vários itens.',
@@ -88,11 +88,13 @@ return array (
 'Delete Quote'=>'Excluir Citação',
 'Manage Quotes'=>'Gerenciar Citações',
 'Create Quote'=>'Criar Citação',
+'New Quote'=>'Citação Novo',
+'Expires'=>'Expira',
 
-'Add a User'=>'Adicionar um usuário',
-'Add a Contact'=>'Adicionar um contato',
-'Remove a User'=>'Remover um usuário',
-'Remove a Contact'=>'Remover um contato',
+'Add a User'=>'Adicionar um Usuário',
+'Add a Contact'=>'Adicionar um Contato',
+'Remove a User'=>'Remover um Usuário',
+'Remove a Contact'=>'Remover um Contato',
 'Share Quote'=>'Cotação das Ações',
 'Print'=>'Imprimir',
 'Print Quote'=>'Imprimir Citação',
@@ -102,15 +104,16 @@ return array (
 'Quote'=>'Citar',
 'Quote:'=>'Citação:',
 'Update Quote: {name}'=>'Atualize Citação: {name}',
-'Print Options'=>'Opções de impressão',
+'Print Options'=>'Opções de Impressão',
 
 // Misc Text
 'Please click any new users you wish to add.'=>'Por favor, clique em qualquer novo usuário que deseja adicionar.',
 'Please select the contacts you wish to add.'=>'Por favor, selecione os contatos que deseja adicionar.',
 'Please select the users you wish to remove.'=>'Por favor, selecione os usuários que você deseja remover.',
 'Please select the contacts you wish to remove.'=>'Por favor, selecione os contatos que você deseja remover.',
-'Quote Record Details'=>'Citação de detalhes de registro',
+'Quote Record Details'=>'Citação de Detalhes de Registro',
 'Include Logo'=>'Incluir Logo',
 'Basic Information'=>'Informações Básicas',
 'Opportunities'=>'De Vendas',
+'Subscribe'=>'Subscrever',
 );

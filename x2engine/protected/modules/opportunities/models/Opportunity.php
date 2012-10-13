@@ -186,7 +186,8 @@ class Opportunity extends X2Model {
 
 	public function search() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		// $parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria);

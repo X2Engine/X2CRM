@@ -46,6 +46,16 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId()))
 );
+
+Yii::app()->clientScript->registerScript('highlightButton','
+$("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
+	.change(function(){
+		if($(this).val()=="")
+			$("#save-button").removeClass("highlight");
+		else
+			$("#save-button").addClass("highlight");
+	});
+',CClientScript::POS_READY);
 ?>
 
 <h2><?php echo Yii::t('profile','Profile:'); ?> <b><?php echo $model->fullName; ?></b></h2>
@@ -66,12 +76,12 @@ $this->actionMenu = array(
 	<div class="float-row">
 		<?php
 		if($model->allowPost==1)
-			echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
+			echo $form->textArea($feed,'data',array('style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		else
 			echo "This user does not allow posting on their feed.";
 		if($model->allowPost==1) {
 			echo $form->dropDownList($feed,'private',array(0=>Yii::t('actions','Public'),1=>Yii::t('actions','Private')));
-			echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button'));
+			echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
 			echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','type'=>'button','onclick'=>"$('#attachments').toggle();return false;"));
 		}
 		?>

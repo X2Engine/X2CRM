@@ -70,6 +70,7 @@ return array (
 'Color'=>'颜色',
 'Start Date'=>'开始日期',
 'End Date'=>'结束日期',
+'User\'s Group'=>'用户组',
 
 // Colors
 'Blue'=>'蓝色',
@@ -92,6 +93,13 @@ return array (
 'New Action'=>'新行动',
 'New Comment'=>'新评论',
 'Publisher'=>'出版者',
+'Update'=>'更新',
+'Complete Selected'=>'完成选择',
+'Uncomplete Selected'=>'不完整选择',
+'Show Actions'=>'显示操作',
+'All'=>'所有',
+'Delete'=>'删除',
+'Overdue'=>'过期的',
 
 // Actions Titles
 'Manage Actions'=>'管理任务',
@@ -110,6 +118,7 @@ return array (
 'Share Action'=>'分担任务',
 'Create'=>'创建',
 'New Event'=>'新事件',
+'Call:'=>'请致电：',
 
 
 // Misc

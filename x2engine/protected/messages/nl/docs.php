@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -49,7 +49,7 @@ return array (
 'Last Updated'=>'Laatst Bijgewerkt',
 'Create Date'=>'Maken Datum Aan',
 'Edit Permissions'=>'Bewerk Permissies',
-'Doc Type'=>'Doc Type',
+'Doc Type'=>'Soort Document',
 
 // Labels
 'Doc'=>'Doc',
@@ -57,21 +57,23 @@ return array (
 'Edit Document:'=>'Bewerk Document:',
 'Documents'=>'Documenten',
 'Manage Docs'=>'Beheer Docs',
-'Docs'=>'Docs',
+'Docs'=>'Documenten',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Kies de gebruiker die permissie hebben om het document te bewerken. Gebruik Control + Click om meerdere gebruikers te (de)selecteren.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Rechts klikken op de link hier onder, en kies "opslaan als" om het document te downloaden! Links klikken opent het document in print view.',
-'Uploaded Documents'=>'',
+'Uploaded Documents'=>'geupload Documenten',
+'Custom Message'=>'Aangepast Bericht',
 
 // Doc Navbar
 'List Docs'=>'Doc Lijst',
-'Create Docs'=>'Maak Docs Aan',
-'View Doc'=>'Bekijk Doc',
-'Edit Doc'=>'Bewerk Doc',
-'Delete Doc'=>'Verwijder Doc',
-'Export Doc'=>'Exporteer Doc',
-'Edit Doc Permissions'=>'Bewerk Doc permissies',
+'Create Docs'=>'Maak Documenten',
+'View Doc'=>'Bekijk Document',
+'Edit Doc'=>'Bewerk Document',
+'Delete Doc'=>'Verwijder Document',
+'Export Doc'=>'Exporteer Document',
+'Edit Doc Permissions'=>'Bewerk Document Permissies',
 'Edit'=>'Bewerk',
 'Export'=>'Exporteer',
 'Create'=>'Aanmaken',
 'Create Email'=>'Email Aanmaken',
+'Create Document'=>'Maak Document',
 );

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,52 +41,65 @@
 return array (
 // Opportunities Attributes
 'ID'=>'ID',
-'Assigned To'=>'Assignée à',
+'Assigned To'=>'Assignée À',
 'Name'=>'Nom',
 'Account'=>'Compte',
 'Contacts'=>'Contacts',
-'Quote Amount'=>'Montant de la soumission',
-'Sales Stage'=>'Phase de vente',
-'Expected Close Date'=>'Date prévue Fermer',
+'Quote Amount'=>'Montant de la Soumission',
+'Sales Stage'=>'Phase de Vente',
+'Expected Close Date'=>'Date Prévue Fermer',
 'Probability'=>'Probabilité',
-'Lead Source'=>'Source de plomb',
+'Lead Source'=>'Source de Plomb',
 'Description'=>'Descriptif',
-'Create Date'=>'Créez date',
-'Last Updated'=>'Dernière mise à jour',
-'Updated By'=>'Mis à jour par',
+'Create Date'=>'Créez Date',
+'Last Updated'=>'Dernière Mise à Jour',
+'Updated By'=>'Mis à Jour Par',
 'Hold Control or Command key to select multiple items.'=>'Tenez touches Ctrl ou Commande pour sélectionner plusieurs éléments.',
-'Working'=>'de travail',
+'Working'=>'De Travail',
 'Won'=>'Won',
 'Lost'=>'Perdu',
 'Website'=>'Site Web',
-'Cold Call'=>'Cold Call',
+'Cold Call'=>'Appel Spontané',
 'E-Mail'=>'E-Mail',
 'Store'=>'Boutique',
+'Other Info'=>'Autres Infos',
+'Basic Information'=>'Renseignements de Base',
+'None'=>'Aucun',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'Marché Dans',
 
 // Opportunities Actions
-'Opportunities List'=>'Liste des ventes',
+'Opportunities List'=>'Liste des Ventes',
 'Create Opportunity'=>'Créer Vente',
 'View Opportunity'=>'Voir Vente',
-'Update Opportunity'=>'Vente à jour',
+'Update Opportunity'=>'Vente à Jour',
 'Delete Opportunity'=>'Supprimer Vente',
-'Manage Opportunities'=>'Gérer les ventes',
+'Manage Opportunities'=>'Gérer les Ventes',
+'Create'=>'Créer',
+'View'=>'Voir',
+'Update'=>'Mettre à Jour',
+'Update Opportunity:'=>'Vente à Jour:',
 
-'Add a User'=>'Ajouter un utilisateur',
-'Add a Contact'=>'Ajouter un contact',
-'Remove a User'=>'Supprimer un utilisateur',
-'Remove a Contact'=>'Supprimer un contact',
+'Add A User'=>'Ajouter un Utilisateur',
+'Add A Contact'=>'Ajouter un Contact',
+'Remove A User'=>'Supprimer un Utilisateur',
+'Remove A Contact'=>'Supprimer un Contact',
 'Share Opportunity'=>'Vente Partager',
+'Delete'=>'Effacer',
+'Add'=>'Ajouter',
+'Remove'=>'Enlever',
 
 // Opportunities Titles
-'Opportunities'=>'Les ventes',
+'Opportunities'=>'Les Ventes',
 'Opportunity'=>'Vente',
 'Opportunity:'=>'Vente:',
-'Update Opportunity: {name}'=>'Mise à jour de vente: {name}',
+'Update Opportunity: {name}'=>'Mise à Jour de Vente: {name}',
 
 // Misc Text
 'Please click any new users you wish to add.'=>'S\'il vous plaît cliquer tout nouvel utilisateur que vous voulez ajouter.',
 'Please select the contacts you wish to add.'=>'S\'il vous plaît sélectionnez les contacts que vous souhaitez ajouter.',
 'Please select the users you wish to remove.'=>'S\'il vous plaît sélectionnez les utilisateurs que vous souhaitez supprimer.',
 'Please select the contacts you wish to remove.'=>'S\'il vous plaît sélectionnez les contacts que vous souhaitez supprimer.',
-'Opportunity Record Details'=>'Détails Vente record',
+'Opportunity Record Details'=>'Détails Vente Record',
 );

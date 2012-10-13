@@ -39,117 +39,128 @@
  ********************************************************************************/
 
 return array (
-// Language Name
+// // Language Name
 'languageName'=>'Français',
-// Login
+// // Login
 'Please log in to continue:'=>'S\'il vous plaît vous connecter pour continuer:',
-'Username'=>'Nom d\'utilisateur',
-'Password'=>'Mot de passe',
+'Username'=>'Nom d\'Utilisateur',
+'Password'=>'Mot de Passe',
 'Remember me'=>'Se souvenir de moi',
-'Login'=>'Connectez-vous',
-
-// Main Menu
+'Login'=>'Connectez-Vous',
+'Welcome to {appName}.'=>'Bienvenue à {appName}.',
+'Verification Code'=>'Code de Vérification',
+'Login with Google'=>'Connectez-vous avec Google',
+// // 
+// // Main Menu
 'Calendar'=>'Calendrier',
 'Actions'=>'Actions',
 'Contacts'=>'Contacts',
-'Opportunities'=>'Les ventes',
+'Opportunities'=>'Les Ventes',
 'Projects'=>'Projets',
-'Group Chat'=>'Chat en groupe',
+'Group Chat'=>'Chat en Groupe',
 'Marketing'=>'Commercialisation',
 'Cases'=>'Cas',
 'Accounts'=>'Comptes',
 'Users'=>'Utilisateurs',
 'Admin'=>'Admin',
 'Docs'=>'Docs',
-'Chat'=>'Chat',
+'Chat'=>'Conversation',
 'Social'=>'Social',
 'Profile'=>'Profil',
 'Settings'=>'Réglages',
 'Logout'=>'Déconnexion',
-'Login'=>'Connectez-vous',
+'Login'=>'Connectez-Vous',
 'More'=>'Plus',
-'What\'s New'=>'Quoi de neuf',
+'What\'s New'=>'Quoi de Neuf',
 'Quotes'=>'Citations',
 'Dashboard'=>'Tableau de Bord',
 'Products'=>'Produits',
 'Workflow'=>'Flux de Travail',
 'Groups'=>'Groupes',
 'Notifications'=>'Alertes',
-
-// Search Bar
+'Charts'=>'Graphiques',
+'Manage Users'=>'Gérer les Utilisateurs',
+'Social Feed'=>'RSS Sociale',
+'Preferences'=>'Préférences',
+// // 
+// // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
 'Go'=>'Aller',
 'Contact'=>'Contactez',
 'Action'=>'Action',
 'Contact + Action'=>'Contactez + Action',
 'Search for contact, action, deal...'=>'Recherche de contacts, d\'action, face ...',
-
-// Footer
-'All Rights Reserved.'=>'Tous droits réservés.',
+// // 
+// // Footer
+'All Rights Reserved.'=>'Tous Droits Réservés.',
 'Generated in {time} seconds.'=>'Généré dans {time} secondes',
-
-// Widgets
-'My Actions'=>'Mes actions',
+// // 
+// // Widgets
+'My Actions'=>'Mes Actions',
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Contact Rapide',
 'Google Map'=>'Google Map',
-'Recently Viewed'=>'Vu récemment',
+'Recently Viewed'=>'Vu Récemment',
 'Active Users'=>'Utilisateurs Actifs',
-'Tag Cloud'=>'Tag Cloud',
+'Tag Cloud'=>'Nuage de Mots-clés ',
 'Just Me'=>'Seulement Moi',
 'All Users'=>'Tous les Utilisateurs',
 'Doc Viewer'=>'Visionneuse Doc',
-'Time Zone'=>'Fuseau horaire',
-'Top Sites'=>'Meilleurs sites',
-
+'Time Zone'=>'Fuseau Horaire',
+'Top Sites'=>'Meilleurs Sites',
+'Media'=>'Médias',
+'Current time in'=>'L\'heure à',
+// // 
 'Total Action|Total Actions'=>'Total Action|Total des Actiona',
-'Unfinished Action|Unfinished Actions'=>'Action inachevée | Actions inachevé',
-'Overdue Action|Overdue Actions'=>'Action en souffrance | Actions en souffrance',
-'Completed Action|Completed Actions'=>'Action terminée | Actions Terminé',
-
-'Message Board'=>'Babillard électronique',
+'Unfinished Action|Unfinished Actions'=>'Action Inachevée | Actions Inachevé',
+'Overdue Action|Overdue Actions'=>'Action en Souffrance | Actions en Souffrance',
+'Completed Action|Completed Actions'=>'Action Terminée | Actions Terminé',
+// // 
+'Message Board'=>'Babillard Électronique',
 'Please enter a message of the day!'=>'S\'il vous plaît entrer un message de la journée!',
-'Edit Message'=>'Modifier le message',
-
+'Edit Message'=>'Modifier le Message',
+// // 
 'Note Pad'=>'Bloc-notes',
 'Feel free to enter some notes!'=>'N\'hésitez pas à entrer quelques notes!',
-
+// // 
 'Top Contacts'=>'Contacts Haut',
 'Add {name}'=>'Ajouter {name}',
-
-'Enter Title'=>'Entrez le titre',
+// // 
+'Enter Title'=>'Entrez le Titre',
 'Title'=>'Titre',
 'Title:'=>'Titre:',
 'Link'=>'Lien',
 'Link:'=>'Lien:',
-'Add Site'=>'Ajouter un site',
+'Add Site'=>'Ajouter un Site',
 'Example'=>'Exemple',
-
-// Chat
-'Message Body'=>'Corps du message',
+// // 
+// // Chat
+'Message Body'=>'Corps du Message',
 'Enter text here...'=>'Entrez le texte ici...',
 'Send'=>'Envoyer',
-
-// Email Form
+// // 
+// // Email Form
 'To:'=>'Pour:',
 'Subject:'=>'Sujet:',
 'Message:'=>'Message:',
 'Error: Could not send email.'=>'Erreur: Impossible d\'envoyer un courriel.',
-'Email Sent!'=>'E-mail envoyé!',
-
-// Comments
-'Add Comment'=>'Ajouter un commentaire',
-'Create Action'=>'Créer une action',
+'Email Sent!'=>'E-mail Envoyé!',
+'Preview'=>'Avant-Première',
+'Attachments'=>'Pièces Jointes',
+// // 
+// // Comments
+'Add Comment'=>'Ajouter un Commentaire',
+'Create Action'=>'Créer une Action',
 'Add a comment...'=>'Ajouter un commentaire...',
 'History'=>'Histoire',
 'Today'=>'Aujourd\'hui',
 'Tomorrow'=>'Demain',
 'Comments'=>'Commentaires',
-'Post'=>'Message',
-
-// Misc
-'Advanced Search'=>'Recherche avancée',
-'Clear Filters'=>'Effacer la',
+'Post'=>'Poster',
+// // 
+// // Misc
+'Advanced Search'=>'Recherche Avancée',
+'Clear Filters'=>'Effacer La',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Vous pouvez éventuellement entrer un opérateur de comparaison (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>or <b>=</b>), au début de chacune de vos valeurs de recherche pour préciser comment la comparaison devrait être faite.',
 'Fields with <span class="required">*</span> are required.'=>'Les champs <span class="required">*</span> sont obligatoires.',
 'Click here to return to where you were'=>'Cliquez ici pour retourner à l\'endroit où vous étiez',
@@ -157,76 +168,99 @@ return array (
 'Attach A File/Photo'=>'Joindre un fichier /photo',
 'Attach a File'=>'Joindre un fichier',
 'None'=>'Aucun',
-'Anyone'=>'N\'importe qui',
+'Anyone'=>'N\'Importe Qui',
 'Share'=>'Partager',
 'Link'=>'Lien',
 'Theme'=>'Thème',
 'Account'=>'Compte',
 'Opportunity'=>'Occasion',
 'All'=>'Tous',
-'Optional'=>'En option',
+'Optional'=>'En Option',
 'Records that have been modified since your last login.'=>'Enregistrements qui ont été modifiés depuis votre dernière connexion.',
 'Are you sure you want to delete this item?'=>'Êtes-vous sûr de vouloir supprimer cet élément?',
 'Columns'=>'Colonnes',
 'Tools'=>'Outils',
 'Rights reserved.'=>'Droits réservés.',
-'GNU General Public License version 3'=>'',
+'GNU General Public License version 3'=>'GNU Général Public Permis Version 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'Le programme est fourni TEL QUEL, sans garantie. <br> Sous licence {BSD}.',
 'Generated in {time} seconds'=>'Généré en {time} secondes',
 'Minimize'=>'Minimiser',
 '"{X}" is not an allowed filetype.'=>'"{X}" n\'est pas un type de fichier autorisé.',
 'Loading'=>'Chargement',
-'Edit'=>'éditer',
+'Edit'=>'Éditer',
 'Due'=>'Dû',
 'Help'=>'Aider',
 '---'=>'---',
 'You don\'t have any notifications.'=>'Vous n\'avez pas de notifications.',
-'View all'=>'Voir tous',
-'Close'=>'fermer',
+'View all'=>'Voir Tous',
+'Close'=>'Fermer',
 'Delete'=>'Effacer',
 'Group?'=>'Groupe?',
 'Check box'=>'Case à cocher',
-
-// Misc Actions
+'results per page'=>' résultats par page',
+'Public'=>'Public',
+'Tags'=>'Balises',
+'Template:'=>'Modèle:',
+'Model Name'=>'Nom du Modèle',
+'Model ID'=>'ID de Modèle',
+'What should the list be named?'=>'Quelle devrait être la liste de l\'anonymat?',
+'Added items to list.'=>'Éléments ajoutés à la liste.',
+'Select an option'=>'Sélectionnez une option',
+'loading...'=>'Chargement ...',
+'Checkbox'=>'Case à Cocher',
+'New List From Selection'=>'Nouvelle liste à partir sélection',
+'No'=>'Aucun',
+'Yes'=>'Oui',
+'View'=>'Voir',
+'Update'=>'Mettre à Jour',
+'results per page.'=>'Résultats par Page.',
+'Displaying {start}-{end} of {count} result(s).'=>'Affichage de {start} - {end} de {count} résultat (s).',
+'Marketing Dashboard'=>'Tableau de Bord Marketing',
+// // 
+// // Misc Actions
 'Submit'=>'Soumettre',
 'Save'=>'Sauvegarder',
 'Cancel'=>'Annuler',
-'Send Email'=>'Envoyer un email',
-'Attach A File'=>'Joindre un fichier',
-'Save Changes'=>'Enregistrer les modifications',
-'Save Action'=>'Enregistrer action',
-'Save Comment'=>'Enregistrer un commentaire',
+'Send Email'=>'Envoyer un Email',
+'Attach A File'=>'Joindre un Fichier',
+'Save Changes'=>'Enregistrer les Modifications',
+'Save Action'=>'Enregistrer Action',
+'Save Comment'=>'Enregistrer un Commentaire',
 'Create'=>'Créer',
 'Search'=>'Rechercher',
-'Search Results'=>'Résultats de la recherche',
+'Search Results'=>'Résultats de la Recherche',
 'Name'=>'Nom',
 'Description'=>'Description',
 'Action'=>'Action',
 'Status'=>'Statut',
 'E-mail'=>'Email',
 'Download'=>'Télécharger',
-'Contact Saved'=>'Contact sauvegardé',
-'Add Note'=>'Ajouter une note',
-
-// Timestamps
+'Contact Saved'=>'Contact Sauvegardé',
+'Add Note'=>'Ajouter une Note',
+'New List'=>'Nouvelle Liste',
+'Add'=>'Ajouter',
+'Remove'=>'Enlever',
+// // 
+// // Timestamps
 'Just now'=>'Tout à l\'heure',
 '{n} minutes ago'=>'{n} minutes',
 '{n} hours ago'=>'{n} hours ago',
 '{n} days ago'=>'{n} jours',
-
-// Errors
+// // 
+// // Errors
 'Error creating note!'=>'Erreur de création noter!',
 'Invalid request. Please do not repeat this request again.'=>'Invalid demande. S\'il vous plaît ne pas réitérer cette demande à nouveau.',
 'The requested page does not exist.'=>'La page demandée n\'existe pas.',
-
-// Admin Page
-'Administration Tools'=>'Outils d\'administration',
+'Please fix the following errors:'=>'S\'il vous plaît corriger les erreurs suivantes:',
+// // 
+// // Admin Page
+'Administration Tools'=>'Outils d\'Administration',
 'Welcome to the administration tool set.'=>'Bienvenue sur l\'ensemble d\'outils d\'administration.',
 'Links'=>'Links',
-'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
-'Send Mass E-mail'=>'',
-'How to use Gii'=>'',
+'How To\'s'=>'Comment Faire',
+'Gii - A Code Generation Module'=>'Gii - Un module de génération de code',
+'Send Mass E-mail'=>'Envoyer des E-mail',
+'How to use Gii'=>'Comment utiliser Gii',
 'How to add a database field'=>'Comment ajouter un champ de base de données',
-
+// // 
 );

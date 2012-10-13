@@ -70,6 +70,7 @@ return array (
 'Color'=>'цвет',
 'Start Date'=>'Дата начала',
 'End Date'=>'Дата окончания',
+'User\'s Group'=>'Пользователь Группа',
 
 // Colors
 'Blue'=>'синий',
@@ -92,6 +93,13 @@ return array (
 'New Action'=>'Новая акция',
 'New Comment'=>'Новый комментарий',
 'Publisher'=>'издатель',
+'Update'=>'обновление',
+'Complete Selected'=>'Завершить выбранные',
+'Uncomplete Selected'=>'неполное Выбранные',
+'Show Actions'=>'Показать Действия',
+'All'=>'все',
+'Delete'=>'удалять',
+'Overdue'=>'просроченный',
 
 // Actions Titles
 'Manage Actions'=>'Управление действиями',
@@ -110,6 +118,7 @@ return array (
 'Share Action'=>'Доля Действие',
 'Create'=>'создавать',
 'New Event'=>'Дни рождения',
+'Call:'=>'Звоните:',
 
 
 // Misc

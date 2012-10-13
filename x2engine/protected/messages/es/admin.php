@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'Utilidades',
-'X2Studio'=>'X2Estudio',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Soporte y Documentación',
 'Contact Us'=>'Contacte con Nosotros',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'Perfil de Admin',
 'Admin Account Settings'=>'Configuración de Cuenta de Admin',
 'User Management'=>'Gestión de Usuarios',
@@ -55,45 +55,44 @@ return array (
 'Send mass E-mail'=>'Enviar Correo Masivo',
 'Export data'=>'Exportación de Datos',
 'Import data'=>'Importar Datos',
-'X2Touch'=>'X2Tacto',
-'Set session timeout'=>'Establecer el Tiempo de la Sesión',
-'Set chat poll rate'=>'Ajuste de Chat Tasa de Encuesta',
-'Toggle default logo'=>'Logo por Defecto Cambiar',
-'Upload your logo'=>'Cargando su Logotipo',
-'Create new module'=>'Crear Nuevo Módulo',
-'Create static page'=>'Crear Páginas Estáticas',
-'Delete a module or Page'=>'Eliminación de un Módulo o Página',
-'Export a module'=>'Exportación de un Módulo',
-'Import a module'=>'Importar un Módulo',
-'Rename a module'=>'Cambiar el Nombre de un Módulo',
+'X2Touch'=>'X2Touch',
+'Set session timeout'=>'Establecer el tiempo de la sesión',
+'Set chat poll rate'=>'Ajuste de chat tasa de encuesta',
+'Toggle default logo'=>'Logo por defecto cambiar',
+'Upload your logo'=>'Cargando su logotipo',
+'Create new module'=>'Crear nuevo módulo',
+'Create static page'=>'Crear páginas estáticas',
+'Delete a module or Page'=>'Eliminación de un módulo o página',
+'Export a module'=>'Exportación de un módulo',
+'Import a module'=>'Importar un módulo',
+'Rename a module'=>'Cambiar el Nombre de un módulo',
 'Gii - A Code Generation Module'=>'Gii - Un Módulo de Generación de Código',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'Añadir, eliminar y actualizar las traducciones de mensajes en los paquetes de idiomas X2Contacts.',
-'Tutorial Videos'=>'',
-'Phone Support'=>'teléfono de Ayuda',
-'Manage Roles'=>'Administrar funciones',
-'Set Lead Distribution'=>'Conjunto Distribution contacto',
-'Add Custom Lead Rules'=>'Añadir reglas personalizadas de contacto',
-'Workflow Settings'=>'Configuración del flujo de trabajo',
-'Manage Notification Criteria'=>'Administrar criterios de notificación',
-'General Settings'=>'Configuración general',
-'Updater Settings'=>'Actualizar la configuración',
+'Tutorial Videos'=>'Videos Tutoriales',
+'Phone Support'=>'Teléfono de Ayuda',
+'Manage Roles'=>'Administrar Funciones',
+'Set Lead Distribution'=>'Conjunto Distribution Contacto',
+'Add Custom Lead Rules'=>'Añadir Reglas Personalizadas Plomo',
+'Workflow Settings'=>'Configuración del Flujo de Trabajo',
+'Manage Notification Criteria'=>'Administrar Criterios de Notificación',
+'General Settings'=>'Configuración General',
 'Google Integration'=>'Integración de Google',
-'Email Settings'=>'Configuración del correo electrónico',
-'Create Email Campaign'=>'Crear campaña de Email',
-'Manage Campaigns'=>'gestionar campañas',
-'Import Contacts'=>'Importar contactos',
-'Export Contacts'=>'Exportar contactos',
-'Import All Data'=>'Importar todos los datos',
-'View User Changelog'=>'Ver galería de cambios',
-'Create a Module'=>'Crear un módulo',
-'Manage Fields'=>'Administrar campos',
-'Dropdown Editor'=>'Editor desplegable',
+'Email Settings'=>'Configuración del Correo Electrónico',
+'Create Email Campaign'=>'Crear Campaña de Email',
+'Manage Campaigns'=>'Gestionar Campañas',
+'Import Contacts'=>'Importar Contactos',
+'Export Contacts'=>'Exportar Contactos',
+'Import All Data'=>'Importar Todos los Datos',
+'View User Changelog'=>'Ver Galería de Cambios',
+'Create a Module'=>'Crear un Módulo',
+'Manage Fields'=>'Administrar Campos',
+'Dropdown Editor'=>'Editor Desplegable',
 'Form Editor'=>'Editor de Formulario',
-'Create Workflow'=>'Crear flujos de trabajo',
-'Manage Workflows'=>'Administrar flujos de trabajo',
-
-// Text
+'Create Workflow'=>'Crear Flujos de Trabajo',
+'Manage Workflows'=>'Administrar Flujos de Trabajo',
+// // 
+// // Text
 'Administrator profile'=>'Perfil de Administrador',
 'UI theme settings / background image'=>'IU de configuración de tema / imagen de fondo',
 'Add and manage users'=>'Agregar y administrar usuarios',
@@ -114,8 +113,8 @@ return array (
 'Change module titles on top bar'=>'Cambiar los títulos de módulo en la barra superior',
 'Use the Yii framework\'s code generation tools'=>'Usar las herramientas del marco Yii de generación de código',
 'Commercial support and hosting'=>'Soporte comercial y hosting',
-'X2Engine Support Forums'=>'X2Engine Foros de soporte',
-'Yii Open Source web framework'=>'Yii web de código abierto marco',
+'X2Engine Support Forums'=>'X2Engine Foros de Soporte',
+'Yii Open Source web framework'=>'Yii Web de Código Abierto Marco',
 'Show'=>'Mostrar',
 'Hide'=>'Ocultar',
 'Send invitation emails to create X2Engine accounts'=>'Enviar correos electrónicos de invitación para crear cuentas X2Engine',
@@ -123,13 +122,12 @@ return array (
 'Create and manage user groups'=>'Creación y gestión de grupos de usuarios',
 'Create a public form to receive new contacts'=>'Crear un formulario pública para recibir los nuevos contactos',
 'Change how new web leads are distributed.'=>'Cambiar la forma en nuevos clientes potenciales web se distribuyen.',
-'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'Administrar reglas para las "reglas personalizadas de enrutamiento" de ajuste de distribución de plomo.',
 'Create a workflow for your sales process'=>'Crear un flujo de trabajo para el proceso de ventas',
 'Change advanced workflow settings'=>'Cambiar la configuración avanzada de flujo de trabajo',
 'Manage what events will trigger user notifications.'=>'Administrar los eventos que activarán las notificaciones de los usuarios.',
-'Configure session timeout and chat poll rate.'=>'Configurar el tiempo de espera de sesión y chatear tasa de encuesta.',
-'Configure automatic updates and registration.'=>'Configurar las actualizaciones automáticas y registro.',
-'Enter your google app settings for Calendar/Google login'=>'Introduzca los ajustes de google app para Calendario / Google sesión',
+'Configure automatic updates, session timeout and chat poll rate.'=>'Configurar las actualizaciones automáticas, tiempo de espera de sesión y la tasa de sondeo de chat.',
+'Enter your google app settings for Calendar/Google login'=>'Introduzca los ajustes de Google app para Calendario / Google sesión',
 'Configure X2Engine\'s email settings'=>'Configurar las opciones de correo electrónico de X2Engine',
 'Create an email marketing campaign'=>'Crear una campaña de marketing por correo electrónico',
 'Manage your marketing campaigns'=>'Administre sus campañas de marketing',
@@ -141,9 +139,9 @@ return array (
 'Customize fields for the modules.'=>'Personalización de los campos de los módulos.',
 'Manage dropdowns for custom fields.'=>'Administrar listas desplegables para los campos personalizados.',
 'Drag and drop editor for forms.'=>'Arrastrar y soltar editor de formularios.',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'Reorganizar los Elementos del Menú Principal',
 'Add, remove and reorder modules:'=>'Añadir, eliminar y reordenar los módulos de:',
 'Select Email Criteria'=>'Seleccione los Criterios para el Correo Electrónico',
@@ -153,19 +151,19 @@ return array (
 'Email Form'=>'Email Forma',
 'Subject'=>'Tema',
 'Send Mail'=>'Enviar Correo',
-'Delete A Module'=>'Eliminar un Módulo',
+'Delete A Module'=>'Eliminar Un Módulo',
 'Please select a model to delete.  WARNING: This operation cannot be undone, be very careful.'=>'Por favor, seleccione un modelo que desea eliminar. ADVERTENCIA: Esta operación no puede deshacerse, ser muy cuidadosos.',
 'Delete'=>'Eliminar',
 'Import Module'=>'Importar un Módulo',
 'To import a module, please  upload the file here using the form below.'=>'Para importar un módulo, por favor, subir el archivo aquí usando el siguiente formulario.',
-'Export A Module'=>'Exportar un Módulo',
+'Export A Module'=>'Exportar Un Módulo',
 'Please select a model to export.'=>'Por favor, seleccione un modelo para la exportación.',
 'Export'=>'Exportar',
-'Rename A Module'=>'Cambiar el Nombre de un Módulo',
+'Rename A Module'=>'Cambiar El Nombre De Un Módulo',
 'You can rename a module by selecting a module and typing the new name below.'=>'Puede cambiar el nombre de un módulo mediante la selección de un módulo y escriba el nombre nuevo a continuación.',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'Exportar Todos los Datos',
 'Please click the link below to download data.'=>'Por favor, haga clic en el enlace para descargar los datos.',
 'Import Data from Template'=>'Importación de Datos de Plantilla',
@@ -181,32 +179,24 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Para cargar su logotipo para mostrar junto a la barra de búsqueda, por favor, subir el archivo aquí usando el siguiente formulario.',
 'Create Page'=>'Crear Página',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. es la compañía detrás de X2Contacts - un alto rendimiento de la gestión de contactos de aplicaciones web. X2Engine puede ofrecer a su organización de apoyo y formación profesional en X2Contacts. Por favor, rellene el siguiente formulario para contactar con nosotros. ',
-
-// Email Config
-'Email Server Configuration'=>'Configuración del servidor de correo electrónico',
+// // 
+// // Email Config
+'Email Server Configuration'=>'Configuración del Servidor de Correo Electrónico',
 'Ready to send email? We need some information about your mail server.'=>'Listo para enviar correo electrónico? Necesitamos un poco de información acerca de su servidor de correo.',
-'Outbound Email Server'=>'Servidor de correo saliente',
-'Hostname'=>'Nombre de la máquina',
+'Outbound Email Server'=>'Servidor de Correo Saliente',
+'Hostname'=>'Nombre de la Máquina',
 'Port'=>'Puerto',
 'Security'=>'Seguridad',
 'Authentication'=>'Autenticación',
-'Username'=>'Nombre de usuario',
+'Username'=>'Nombre de Usuario',
 'Password'=>'Contraseña',
-'Sender Name'=>'Nombre del remitente',
-'Sender Email Address'=>'Dirección de correo electrónico del remitente',
-'Batch Size'=>'Tamaño de lote',
+'Sender Name'=>'Nombre del Remitente',
+'Sender Email Address'=>'Dirección de Correo Electrónico del Remitente',
+'Batch Size'=>'Tamaño de Lote',
 'Interval (Minutes)'=>'Intervalo (Minutos)',
-'Email Signatures'=>'Firmas de correo electrónico',
+'Email Signatures'=>'Firmas de Correo Electrónico',
 'None'=>'Ninguno',
-'User\'s Choice'=>'Elección del usuario',
-'Default Signature'=>'Firma por defecto',
-'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Puede utilizar las siguientes variables en esta plantilla: {first}, {last}, {phone}, {email}.',
-
-// Updater/General Settings
-'Update Interval'=>'Intervalo de actualización',
-'Every Login'=>'Cada sesión',
-'Daily'=>'diario',
-'Weekly'=>'semanal',
-'Monthly'=>'mensual',
-'Never'=>'nunca',
+'User\'s Choice'=>'Elección del Usuario',
+'Default Signature'=>'Firma por Defecto',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'Puede utilizar las siguientes variables en esta plantilla: {first}, {last}, {phone} and {email}.',
 );

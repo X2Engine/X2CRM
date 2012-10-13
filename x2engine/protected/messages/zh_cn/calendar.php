@@ -41,7 +41,7 @@
 return array (
 'Calendar'=>'日历',
 'Calendars'=>'日历',
-
+// // 
 'User Calendars'=>'用户日历',
 'Group Calendars'=>'组日历',
 'Google Calendars'=>'谷歌日历',
@@ -49,23 +49,32 @@ return array (
 'My Calendar Permissions'=>'我的日历权限',
 'User Calendar Permissions'=>'用户日历权限',
 'Google Event'=>'谷歌事件',
-
+'Contacts'=>'往来',
+'Accounts'=>'帐户',
+'Opportunities'=>'机会',
+'Products'=>'产品',
+'Media'=>'媒体',
+'View Permission'=>'查看权限',
+'These users can view your calendar.'=>'这些用户可以查看您的日历。',
+'Edit Permission'=>'编辑权限',
+'These users can edit your calendar.'=>'这些用户可以编辑您的日历。',
+// // 
 'Completed'=>'完成',
 'Quotes'=>'行情',
 'Email'=>'电子邮件',
 'Attachment'=>'附件',
-
+// // 
 'List'=>'表',
 'Delete'=>'删除',
 'Create'=>'创建',
-// button text
+// // button text
 'Update'=>'更新',
 'today'=>'今日',
 'month'=>'月',
 'week'=>'周',
 'day'=>'天',
-
-// month names
+// // 
+// // month names
 'January'=>'一月',
 'February'=>'二月',
 'March'=>'三月',
@@ -78,8 +87,8 @@ return array (
 'October'=>'十月',
 'November'=>'十一月',
 'December'=>'十二月',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'一月',
 'Feb'=>'二月',
 'Mar'=>'三月',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'十月',
 'Nov'=>'十一月',
 'Dec'=>'十二月',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'星期日',
 'Monday'=>'星期',
 'Tuesday'=>'星期',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'星期四',
 'Friday'=>'星期五',
 'Saturday'=>'星期',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'星期日',
 'Mon'=>'星期',
 'Tue'=>'星期',

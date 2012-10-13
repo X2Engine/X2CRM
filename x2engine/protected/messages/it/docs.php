@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,34 +44,36 @@ return array (
 'ID'=>'ID',
 'Title'=>'Titolo',
 'Text'=>'Testo',
-'Created By'=>'Creato da',
-'Updated By'=>'Aggiornato da',
-'Last Updated'=>'Ultimo aggiornamento',
-'Create Date'=>'Data di creazione',
-'Edit Permissions'=>'Modifica autorizzazioni',
-'Doc Type'=>'Doc Type',
+'Created By'=>'Creato Da',
+'Updated By'=>'Aggiornato Da',
+'Last Updated'=>'Ultimo Aggiornamento',
+'Create Date'=>'Data di Creazione',
+'Edit Permissions'=>'Modifica Autorizzazioni',
+'Doc Type'=>'Tipo Di Documento',
 
 // Labels
 'Doc'=>'Doc',
 'Document:'=>'Documento:',
-'Edit Document:'=>'Modifica documento:',
+'Edit Document:'=>'Modifica Documento:',
 'Documents'=>'Documentazione',
-'Manage Docs'=>'Gestione di documenti',
+'Manage Docs'=>'Gestione di Documenti',
 'Docs'=>'Documenti',
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Si prega di selezionare gli utenti che sono autorizzati a modificare il documento. Utilizzare Ctrl + Click per selezionare o deselezionare i singoli utenti.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Si prega di fare clic destro sul link qui sotto e selezionare "Salva con nome" per scaricare il documento! Cliccando sinistra si apre il documento in una versione stampabile in modalità.',
 'Uploaded Documents'=>'I Documenti Caricati',
+'Custom Message'=>'Messaggio Personalizzato',
 
 // Doc Navbar
-'List Docs'=>'Elenco documenti',
+'List Docs'=>'Elenco Documenti',
 'Create Docs'=>'Creare Documenti',
-'View Doc'=>'Visualizza Doc',
-'Edit Doc'=>'Modifica Doc',
-'Delete Doc'=>'Eliminare Doc',
-'Export Doc'=>'Esportazione Doc',
-'Edit Doc Permissions'=>'Modifica Doc Permessi',
+'View Doc'=>'Visualizza Documento',
+'Edit Doc'=>'Modifica Documento',
+'Delete Doc'=>'Eliminare Documento',
+'Export Doc'=>'Esportazione Documento',
+'Edit Doc Permissions'=>'Modifica Documento Permessi',
 'Edit'=>'Modifica',
 'Export'=>'Esportazione',
 'Create'=>'Creare',
 'Create Email'=>'Creare E-mail',
+'Create Document'=>'Crea Documento',
 );

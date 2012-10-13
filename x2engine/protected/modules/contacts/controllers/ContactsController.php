@@ -168,6 +168,31 @@ class ContactsController extends x2base {
 		} else
 			$this->redirect('index');
 	}
+    
+    public function actionRevisions($id, $timestamp){
+        $contact = $this->loadModel($id);
+        $changes=CActiveRecord::model('Changelog')->findAll('type="Contacts" AND itemId="'.$contact->id.'" AND timestamp > '.$timestamp.' ORDER BY timestamp DESC');
+		foreach($changes as $change){
+            $fieldName=$change->fieldName;
+            if($contact->hasAttribute($fieldName))
+                $contact->$fieldName=$change->oldValue;
+        }
+		if(isset($this->portlets['TimeZone']))
+			$this->portlets['TimeZone']['params']['model'] = &$contact;
+		if(isset($this->portlets['GoogleMaps']))
+			$this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
+
+		if ($this->checkPermissions($contact,'view')) {
+		
+			if(isset($_COOKIE['vcr-list']))
+				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
+            
+            User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
+            parent::view($contact, 'contacts');
+			
+		} else
+			$this->redirect('index');
+    }
 
 	/**
 	 * Displays the a model's relationships with other models.
@@ -215,8 +240,8 @@ class ContactsController extends x2base {
 	}
 
 	public function actionGetItems() {
-		$sql = 'SELECT id, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
-		$command = Yii::app()->db->createCommand($sql);
+		$sql = 'SELECT id, city, state, country, (SELECT fullname from x2_profile WHERE username=assignedTo) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
+		$command = Yii::app()->db->createCommand($sql);  
 		$qterm = $_GET['term'] . '%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
 		$result = $command->queryAll();
@@ -396,24 +421,97 @@ class ContactsController extends x2base {
 			$criteria->compare('phone', $model->phone, false, "OR");
 			$criteria->compare('phone2', $model->phone2, false, "OR");
 
-			$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
-			if (count($duplicates) > 0) {
-				$this->render('duplicateCheck', array(
-					'newRecord' => $model,
-					'duplicates' => $duplicates,
-					'ref' => 'create'
-				));
-				$renderFlag = false;
+			if(isset($_POST['x2ajax'])) {
+			    if($this->create($model,$model->attributes, '1')) { // success creating account?
+			    	$primaryAccountLink = '';
+			    	$newPhone = '';
+			    	$newWebsite = '';
+			    	if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
+			    		Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Contacts', $model->id);
+			    		
+			    		if($_POST['ModelName'] == 'Accounts') {
+			    			$account = Accounts::model()->findByPk($_POST['ModelId']);
+			    			if($account) {
+			    				$changed = false;
+			    				if(isset($model->website) && (!isset($account->website) || $account->website == "")) {
+			    					$account->website = $model->website;
+			    					$newWebsite = $account->website;
+			    					$changed = true;
+			    				}
+			    				if(isset($model->phone) && (!isset($account->phone) || $account->phone == "")) {
+			    					$account->phone = $model->phone;
+			    					$newPhone = $account->phone;
+			    					$changed = true;
+			    				}
+			    				
+			    				if($changed)
+			    					$account->update();
+			    			}
+			    		} else if($_POST['ModelName'] == 'Opportunity') {
+			    			$opportunity = Opportunity::model()->findByPk($_POST['ModelId']);
+			    			if($opportunity) {
+			    				if(isset($model->company) && $model->company != '' && (!isset($opportunity->accountName) || $opportunity->accountName == '')) {
+			    					$opportunity->accountName = $model->company;
+			    					$opportunity->update();
+			    					$primaryAccountLink = $model->createLink();
+			    				}
+			    			}
+			    		}
+			    		
+			    	}
+			
+			    	echo json_encode(
+			    		array(
+			    			'status'=>'success',
+			    			'name'=>$model->name,
+			    			'id'=>$model->id,
+			    			'primaryAccountLink'=>$primaryAccountLink,
+			    			'newWebsite'=>$newWebsite,
+			    			'newPhone'=>$newPhone,
+			    		)
+			    	);
+			    	Yii::app()->end();
+			    } else {
+			    	$x2ajaxCreateError = true;
+			    }
 			} else {
-				$this->create($model, $model->attributes, '0');
+				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
+				if (count($duplicates) > 0) {
+					$this->render('duplicateCheck', array(
+						'newRecord' => $model,
+						'duplicates' => $duplicates,
+						'ref' => 'create'
+					));
+					$renderFlag = false;
+				} else {
+					$this->create($model, $model->attributes, '0');
+				}
 			}
 		}
+		
 		if ($renderFlag) {
-			$this->render('create', array(
-				'model' => $model,
-				'users' => $users,
-				'accounts' => $accounts,
-			));
+		
+			if(isset($_POST['x2ajax'])) {
+				Yii::app()->clientScript->scriptMap['*.js'] = false;
+				Yii::app()->clientScript->scriptMap['*.css'] = false;
+				if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true) {
+					$page = $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts'), true, true);
+					echo json_encode(
+						array(
+							'status'=>'userError',
+							'page'=>$page,
+						)
+					);
+				} else {
+					$this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts'), false, true);
+				}
+			} else {
+				$this->render('create', array(
+					'model' => $model,
+					'users' => $users,
+					'accounts' => $accounts,
+				));
+			}
 		}
 	}
 

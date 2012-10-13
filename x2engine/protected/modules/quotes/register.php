@@ -1,57 +1,23 @@
 <?php
 
 return array(
-    'name'=>"Quotes",
-    'install'=>array(
-        'CREATE TABLE x2_quotes(
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(40) NOT NULL,
-	accountName VARCHAR(250),
-	salesStage VARCHAR(20),
-	expectedCloseDate VARCHAR(20),
-	probability INT,
-	leadSource VARCHAR(10),
-	description TEXT,
-	assignedTo TEXT,
-	createDate INT,
-	createdBy VARCHAR(20),
-	associatedContacts TEXT,
-	lastUpdated INT,
-	updatedBy VARCHAR(20),
-	expirationDate INT,
-	status VARCHAR(20),
-	currency VARCHAR(40),
-	locked TINYINT
-) COLLATE = utf8_general_ci',
-            'INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, required, linkType) VALUES 
-                    ("Quotes",		"id",					"ID",					0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"name",					"Name",					0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"accountName",                          "Account",				0,	0,	"link",                 0,	"accounts"),
-                    ("Quotes",		"existingProducts",                     "Existing Products",                    0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"salesStage",                           "Sales Stage",                          0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"expectedCloseDate",                    "Expected Close Date",                  0,	0,	"date",			0,	NULL),
-                    ("Quotes",		"probability",                          "Probability",                          0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"leadSource",                           "Lead Source",                          0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"description",                          "Notes",				0,	0,	"text",			0,	NULL),
-                    ("Quotes",		"assignedTo",                           "Assigned To",                          0,	0,	"assignment",           0,	""),
-                    ("Quotes",		"createDate",                           "Create Date",                          0,	0,	"date",			0,	NULL),
-                    ("Quotes",		"associatedContacts",                   "Contacts",				0,	0,	"link",                 0,	"contacts"),
-                    ("Quotes",		"lastUpdated",                          "Last Updated",                         0,	0,	"date",			0,	NULL),
-                    ("Quotes",		"updatedBy",                            "Updated By",                           0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"status",				"Status",				0,	0,	"dropdown",		0,	"7"),
-                    ("Quotes",		"expirationDate",                       "Expiration Date",                      0,	0,	"date",                 0,	NULL),
-                    ("Quotes",		"products",				"Products",				0,	0,	"varchar",		0,	NULL),
-                    ("Quotes",		"locked",				"Locked",				0,	0,	"boolean",		0,	NULL);',
-    ),
-    'uninstall'=>array(
-        'DELETE FROM x2_fields WHERE modelName="Quotes"',
-        'DROP TABLE x2_quotes',
-    ),
-    'editable'=>true,
-    'searchable'=>true,
-    'adminOnly'=>false,
-    'custom'=>false,
-    'toggleable'=>false,
-    
+	'name' => "Quotes",
+	'install' => array(
+		dirname(__FILE__) . '/data/install.sql',
+		array(
+			'INSERT INTO x2_form_layouts (model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES 
+				("Quote","Form","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"52\",\"width\":\"430\",\"tabindex\":\"0\"}]}]}]}]}","0","1","' . time() . '","' . time() . '"),
+				("Quote","View","{\"version\":\"1.0\",\"sections\":[{\"collapsible\":true,\"title\":\"Basic Information\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_id\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_status\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"0\",\"width\":\"0\",\"tabindex\":\"NaN\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_locked\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Sales\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_associatedContacts\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"undefined\"},{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_accountName\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_probability\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Dates\",\"rows\":[{\"cols\":[{\"width\":293,\"items\":[{\"name\":\"formItem_expirationDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_lastUpdated\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]},{\"width\":294,\"items\":[{\"name\":\"formItem_createDate\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_updatedBy\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Notes\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"57\",\"width\":\"431\",\"tabindex\":\"0\"}]}]}]}]}","1","0","' . time() . '","' . time() . '");',
+		)
+	),
+	'uninstall' => array(
+		dirname(__FILE__) . '/data/uninstall.sql',
+	),
+	'editable' => true,
+	'searchable' => true,
+	'adminOnly' => false,
+	'custom' => false,
+	'toggleable' => false,
+	'version' => '2.0',
 );
 ?>

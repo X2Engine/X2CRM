@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,7 +40,7 @@
 
 return array (
 // Opportunities Attributes
-'ID'=>'ID',
+'ID'=>'番号',
 'Assigned To'=>'割り当て',
 'Name'=>'名前',
 'Account'=>'アカウント',
@@ -62,6 +62,12 @@ return array (
 'Cold Call'=>'コールドコール',
 'E-Mail'=>'メール',
 'Store'=>'店先',
+'Other Info'=>'その他の情報',
+'Basic Information'=>'基本情報',
+'None'=>'なし',
+'Google'=>'Google',
+'Facebook'=>'Facebook',
+'Walk In'=>'で歩いた',
 
 // Opportunities Actions
 'Opportunities List'=>'セールスのリスト',
@@ -70,12 +76,19 @@ return array (
 'Update Opportunity'=>'セールを更新する',
 'Delete Opportunity'=>'セールを削除する',
 'Manage Opportunities'=>'セールスの管理',
+'Create'=>'作る',
+'View'=>'表示',
+'Update'=>'更新',
+'Update Opportunity:'=>'セールを更新する:',
 
-'Add a User'=>'ユーザの追加',
-'Add a Contact'=>'コンタクトの追加',
-'Remove a User'=>'ユーザーを削除する',
-'Remove a Contact'=>'コンタクトを削除する',
+'Add A User'=>'ユーザの追加',
+'Add A Contact'=>'コンタクトの追加',
+'Remove A User'=>'ユーザーを削除する',
+'Remove A Contact'=>'コンタクトを削除する',
 'Share Opportunity'=>'セールを共有する',
+'Delete'=>'削除',
+'Add'=>'加える',
+'Remove'=>'削除する',
 
 // Opportunities Titles
 'Opportunities'=>'セールス',

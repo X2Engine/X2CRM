@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,7 +42,7 @@ return array (
 // Install screen
 'Install X2EngineCRM'=>'Instalar X2EngineCRM',
 'X2EngineCRM Installation'=>'Instalación X2EngineCRM',
-'Installation Complete'=>'Instalación completa',
+'Installation Complete'=>'Instalación Completa',
 'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Esta aplicacion requiere JavaScript para funcionar correctamente. Por favor, activa el Javascript en su navegador web antes de continuar.',
 // Requirements check
 'Cannot install X2EngineCRM'=>'No se puede instalar X2EngineCRM',
@@ -57,18 +57,13 @@ return array (
 
 'X2EngineCRM Application Info'=>'Informació para Aplicación X2EngineCRM',
 
-'Create sample data'=>'Crear datos de ejemplo',
 'Application Name'=>'Nombre de Aplicación',
 'Default Language'=>'Idioma Predeterminado',
 'Currency'=>'Moneda',
-'Default Timezone'=>'Zona horaria predeterminada',
 'Admin Password'=>'Contraseña de Administrador',
 'Confirm Password'=>'Confirmar la Contraseña',
 'Administrator Email'=>'E-mail de Administrador',
 'Please enter a valid email address.'=>'Por favor, introduzca una dirección válida de correo electrónico.',
-'Test Connection'=>'probar la conexión',
-'Connection OK!'=>'Conexión está funcionando!',
-'Could not connect to host.'=>'No puedo conectar al servidor.',
 
 'Database Connection Info'=>'Conexión Info de Base de Datos',
 
@@ -78,37 +73,31 @@ return array (
 'Username'=>'Nombre de Usuario',
 'Password'=>'Contraseña',
 
-// Software updates & registration
-'Software Updates'=>'actualizaciones de software',
+// Software updates
+'Software Updates'=>'Actualizaciones de Software',
 'Notify me of software updates'=>'Notificarme las actualizaciones de software',
 'First Name'=>'Nombre',
 'Last Name'=>'apellido',
 'Email'=>'Email',
-'Company'=>'empresa',
-'Position'=>'posición',
+'Company'=>'Empresa',
+'Position'=>'Posición',
 'How you found X2EngineCRM'=>'Cómo has encontrado X2EngineCRM',
-'Phone Number'=>'número de teléfono',
+'Phone Number'=>'Número de Teléfono',
 'Subscribe to the newsletter'=>'Suscríbase al boletín de noticias',
 'Comments'=>'Comentarios',
 'Request a follow-up contact'=>'Solicite una visita de seguimiento',
-'Software Updates'=>'actualizaciones de software',
+'Software Updates'=>'Actualizaciones de Software',
 'Please help us improve X2EngineCRM by providing the following information:'=>'Por favor, ayúdenos a mejorar X2EngineCRM proporcionando la siguiente información:',
 'Software update notifications enabled.'=>'Notificaciones de actualización de software habilitado.',
-'Optional Information'=>'Información opcional',
+'Optional Information'=>'Información Opcional',
 'Could not connect to the updates server at this time.'=>'No se pudo conectar al servidor de actualizaciones en este momento.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Puede continuar con la instalación de la aplicación sin activar las actualizaciones y vuelva a intentarlo más tarde, entrando en "Configuración general" en la "Configuración de la aplicación" de las secciones de la consola de administración.',
-'Product Key'=>'clave del producto',
-'Registration'=>'registro',
-'Software registration succeeded.'=>'Software de registro correctamente.',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Para recibir actualizaciones de software de X2Engine, registre su copia de X2EngineCRM:',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Asegúrese de tener una conexión a Internet activa. Si el problema persiste, póngase en contacto con nosotros',
-'For support or sales inquiries, please contact us'=>'Para consultas de soporte o ventas, por favor póngase en contacto con nosotros',
 
 'Install'=>'Instalar',
 
 'For help or more information - X2Engine.com'=>'Para obtener ayuda o más información - X2Engine.com',
 
-'All Rights Reserved.'=>'Todos los derechos reservados.',
+'All Rights Reserved.'=>'Todos los Derechos Reservados.',
 
 // Splash screen
 'Installation Complete!'=>'Instalación Completa',

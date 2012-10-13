@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,37 +41,37 @@
 return array (
 // Attributes
 'ID'=>'ID',
-'Assigned To'=>'Assignée à',
+'Assigned To'=>'Assignée À',
 'Name'=>'Nom',
 'Description'=>'Descriptif',
 'Create Date'=>'Créez date',
-'Last Updated'=>'Dernière mise à jour',
-'Updated By'=>'Mis à jour par',
+'Last Updated'=>'Dernière Mise à Jour',
+'Updated By'=>'Mis à Jour Par',
 
 'Data fields'=>'Les champs de données',
 'Show'=>'Voir',
 'Hide'=>'Cacher',
-'Module Title'=>'Titre du module',
+'Module Title'=>'Titre du Module',
 'The name for your new module'=>'Le nom de votre nouveau module',
-'Item Name'=>'Nom de l\'article',
+'Item Name'=>'Nom de l\'Article',
 '(Optional) What to call individual records, e.g. "Create new X"'=>'(En option) Que d\'appeler les dossiers individuels, par exemple "Créer nouveau X"',
-'DB Table Name'=>'Nom de la table DB',
+'DB Table Name'=>'Nom de la Table DB',
 'Optional (alphanumeric only, must start with a letter)'=>'En option (alphanumériques, doit commencer par une lettre)',
 
 // Menu Items
 '{X} List'=>'{X} Liste',
 'View {X}'=>'Voir {X}',
 'Create {X}'=>'Créer {X}',
-'Update {X}'=>'Mise à jour {X}',
+'Update {X}'=>'Mise à Jour {X}',
 'Delete {X}'=>'Supprimer {X}',
 'View'=>'Voir',
 'Create'=>'Créer',
-'Update'=>'Mise à jour',
+'Update'=>'Mise à Jour',
 'Delete'=>'Supprimer',
 
 // Page Titles
 'Create New Module'=>'Créer Nouveau Module',
-'Create New {X}'=>'Créer un nouveau {X}',
+'Create New {X}'=>'Créer un Nouveau {X}',
 'Manage {X}'=>'Gérer {X}',
 
 // Errors

@@ -42,21 +42,22 @@ mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
 
 
-Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
+Yii::app()->params->profile = ProfileChild::model()->findByPk(1);	// use the admin's profile since the user hasn't logged in
+$jsVersion = '?'.Yii::app()->params->buildDate;
 
 // jQuery and jQuery UI libraries
 Yii::app()->clientScript->registerCoreScript('jquery');
 Yii::app()->clientScript->registerCoreScript('jquery.ui');
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/layout.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/layout.js'.$jsVersion);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js'.$jsVersion);
 
 // blueprint CSS framework
 $themeURL = Yii::app()->theme->getBaseUrl();
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/screen.css','screen, projection');
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css','print');
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css','screen, projection');
-Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css','screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/screen.css'.$jsVersion,'screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css'.$jsVersion,'print');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css'.$jsVersion,'screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css'.$jsVersion,'screen, projection');
 
 Yii::app()->clientScript->registerScript('checkImages',"
 $(document).ready(function() {
@@ -150,7 +151,7 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 <!--<div class="ie-shadow" style="display:none;"></div>-->
 <div class="container" id="login-page">
 	<?php echo $content; ?>
-	<span id="login-version"><?php echo Yii::app()->params->edition=='pro'? 'PROFESSIONAL EDITION' : 'OPEN SOURCE'; ?></span>
+	<span id="login-version"><?php echo Yii::app()->params->edition=='pro'? 'PROFESSIONAL EDITION' : 'OPEN SOURCE EDITION'; ?></span>
 	<br><a href="http://www.x2engine.com" id="login-x2engine">X2Engine, Inc.</a>
 </div>
 </body>

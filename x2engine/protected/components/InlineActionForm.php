@@ -59,7 +59,6 @@ class InlineActionForm extends X2Widget {
 	public $showNewEvent = true;
 
 	public function init() {
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
 		Yii::app()->clientScript->registerScript('hideActionForm',
 			"$(document).ready(hideActionForm);
 			function hideActionForm() {

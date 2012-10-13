@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,6 +55,9 @@ return array (
 'Last Updated'=>'עדכון אחרון',
 'Updated By'=>'עודכן על ידי',
 'None'=>'אף אחד',
+'Contacts'=>'אנשי קשר',
+'Basic Information'=>'מידע בסיסי',
+'Additional Information'=>'מידע נוסף',
 
 // Accounts Actions
 'Accounts List'=>'רשימת חשבונות',
@@ -67,11 +70,17 @@ return array (
 'Remove a User'=>'להסיר משתמש',
 'Remove a Contact'=>'הסר צור קשר',
 'Share Account'=>'לשתף את החשבון',
+'Create'=>'ליצור',
+'View'=>'לצפות',
+'Update'=>'לעדכן',
+'Delete'=>'למחוק',
+'Update Account:'=>':עדכון חשבון',
+'Share Opportunity'=>'שתף את ההזדמנות הזאת',
 
 // Accounts Titles
 'Accounts'=>'חשבונות',
 'Manage Accounts'=>'לנהל את חשבונות',
-'Update Account: {name}'=>'{name} :לעדכן את החשבון',
+'Update Account: {name}'=>'{עדכון חשבון: {שם',
 'Account:'=>':חשבון',
 
 // Misc

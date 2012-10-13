@@ -42,7 +42,7 @@ return array (
 // Campaign model
 'Campaign'=>'キャンペーン',
 'Campaigns'=>'キャンペーン',
-'ID'=>'ID',
+'ID'=>'番号',
 'Master Campaign ID'=>'マスター·キャンペーンのID',
 'Name'=>'名前',
 'Assigned To'=>'割り当て',
@@ -60,6 +60,12 @@ return array (
 'Last Updated'=>'最後を更新する',
 'Updated By'=>'更新した人',
 'None'=>'なし',
+'Basic Info'=>'基本情報',
+'Email'=>'メール',
+'Call List'=>'リストを呼び出す',
+'Physical Mail'=>'通常の郵便',
+'Email Template'=>'メールテンプレート',
+'Update Campaign'=>'キャンペーンを更新',
 
 // Menu
 'All Campaigns'=>'すべてのキャンペーン',
@@ -84,6 +90,7 @@ return array (
 'Opened'=>'開かれた',
 'Clicked'=>'クリックされた',
 'Unsubscribed'=>'サブスクライブ解除',
+'Status'=>'ステータス',
 
 // Mailing
 'The email sending limit has been reached.'=>'メール送信の上限に達しました。',

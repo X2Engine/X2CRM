@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-include("protected/config/templatesConfig.php");
+include("protected/modules/templates/templatesConfig.php");
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),

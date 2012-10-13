@@ -97,9 +97,9 @@ function subscribe(link) {
 
 
 <?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
-<h2><b><?php echo $model->name; ?></b> 
+<h2><b><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></b> 
 <?php if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams)) { ?>
-	<?php echo CHtml::link(Yii::t('app','Edit'),array('update/'.$model->id),array('class'=>'x2-button right')); ?>
+	<?php echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right')); ?>
 <?php } ?>
 
 </h2>
@@ -115,89 +115,30 @@ $this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'contact
 // $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
 ?>
 <?php
-$relationshipsDataProvider = new CActiveDataProvider('Relationships', array(
-    'criteria' => array(
-    	'condition' => '(firstType="Contacts" AND firstId="' . $model->id . '") OR (secondType="Contacts" AND secondId="' . $model->id . '")',
-    )
-));
-$hideRelationships = true;
-$relationshipsCount = count($relationshipsDataProvider->data);
-if($relationshipsCount > 1) {
-	$hideRelationships = false;
-} else if($relationshipsCount == 1) {
-	$relationshipsData = $relationshipsDataProvider->data;
-	$relationship = $relationshipsData[0];
-	if($relationship && $relationship->firstType != 'Accounts' && $relationship->secondType != 'Accounts') {
-		$hideRelationships = false;
-	}
-}
-?>
-<div id="relationships-form" <?php echo ($hideRelationships? 'style="display: none"' : ''); ?>>
-	<div class="form">
-<?php 
+$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'contacts'));
 
-$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'opportunities-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('opportunities','Relationships').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$relationshipsDataProvider,
-	'columns'=>array(
-		array(
-			'name'=>'secondType',
-			'header'=>Yii::t("contacts",'Type'),
-			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?$data->secondType:$data->firstType',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
-		),
-                array(
-			'name'=>'name',
-			'header'=>Yii::t("contacts",'Record'),
-			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
-                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId)):"Record not found."):
-                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->firstId)):"Record not found.")',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
-		),
-	),
-));
-?>
-<br />
-<?php
 $linkModel = CActiveRecord::model('Accounts')->findByPk($model->company);
 if (isset($linkModel))
-	$accountName = $linkModel->name;
+	$accountName = json_encode($linkModel->name);
 else
-	$accountName = '';
+	$accountName = json_encode('');
 $createOpportunityUrl = $this->createUrl('/opportunities/create');
 $createAccountUrl = $this->createUrl('/accounts/create');
-Yii::app()->clientScript->registerScript('create-account', "
+$assignedTo = json_encode($model->assignedTo);
+$tooltip = json_encode(Yii::t('contacts', 'Create a new Opportunity associated with this Contact.'));
+$accountsTooltip = json_encode(Yii::t('contacts', 'Create a new Account associated with this Contact.'));
+$phone = json_encode($model->phone);
+$website = json_encode($model->website);
+Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {
-		$('#create-opportunity').data('createOpportunityUrl', '$createOpportunityUrl');
-		$('#create-opportunity').data('modelName', 'Contacts');
-		$('#create-opportunity').data('modelId', '{$model->id}');
-		$('#create-opportunity').data('account-name', \"$accountName\");
-		$('#create-opportunity').data('assigned-to', '{$model->assignedTo}');
-		$('#create-opportunity').qtip({content: 'Create a new Opportunity associated with this Contact.'});
-		// init create action button
-		$('#create-opportunity').initCreateOpportunityDialog();
-		
-		$('#create-account').data('createAccountUrl', '$createAccountUrl');
-		$('#create-account').data('modelName', 'Contacts');
-		$('#create-account').data('modelId', '{$model->id}');
-		$('#create-account').data('account-name', \"$accountName\");
-		$('#create-account').data('assigned-to', '{$model->assignedTo}');
-		$('#create-account').data('phone', '{$model->phone}');
-		$('#create-account').data('website', '{$model->website}');
-		$('#create-account').qtip({content: 'Create a new Account associated with this Contact.'});
-		// init create action button
-		$('#create-account').initCreateAccountDialog2();
+		// init create opportunity button
+		$('#create-opportunity').initCreateOpportunityDialog('$createOpportunityUrl', 'Contacts', {$model->id}, $accountName, $assignedTo, $tooltip);
+
+		// init create account button
+		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Contacts', {$model->id}, $accountName, $assignedTo, $phone, $website, $accountsTooltip);
 	});
 ");
 ?>
-</div>
-</div>
-
 <?php $this->widget('Attachments',array('associationType'=>'contacts','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php

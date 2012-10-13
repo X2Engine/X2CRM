@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'工具',
-'X2Studio'=>'X2工作室',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'支持和文档',
 'Contact Us'=>'联系我们',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'管理员的个人资料',
 'Admin Account Settings'=>'管理员帐户设置',
 'User Management'=>'用户管理',
@@ -69,7 +69,7 @@ return array (
 'Gii - A Code Generation Module'=>'全球信息基础设施 - 代码生成模块',
 'X2Translate'=>'X2Translate',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'添加，删除和更新的X2Contacts语言包的消息翻译。',
-'Tutorial Videos'=>'',
+'Tutorial Videos'=>'视频教程',
 'Phone Support'=>'电话支持',
 'Manage Roles'=>'管理角色',
 'Set Lead Distribution'=>'设置联系人的分布',
@@ -77,7 +77,6 @@ return array (
 'Workflow Settings'=>'工作流设置',
 'Manage Notification Criteria'=>'管理通知标准',
 'General Settings'=>'“常规设置”',
-'Updater Settings'=>'更新设置',
 'Google Integration'=>'谷歌整合',
 'Email Settings'=>'电子邮件设置',
 'Create Email Campaign'=>'创建电子邮件活动',
@@ -92,8 +91,8 @@ return array (
 'Form Editor'=>'表格编辑器',
 'Create Workflow'=>'创建工作流程',
 'Manage Workflows'=>'管理工作流程',
-
-// Text
+// // 
+// // Text
 'Administrator profile'=>'管理员的个人资料',
 'UI theme settings / background image'=>'UI主题设置/背景图片',
 'Add and manage users'=>'添加和管理用户',
@@ -123,12 +122,11 @@ return array (
 'Create and manage user groups'=>'创建和管理用户组',
 'Create a public form to receive new contacts'=>'创建一个公共的形式来接收新的联系人',
 'Change how new web leads are distributed.'=>'更改新的网络线分布。',
-'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'管理规则“自定义循环”铅分布设置。',
 'Create a workflow for your sales process'=>'为您的销售过程中创建的工作流',
 'Change advanced workflow settings'=>'更改高级的工作流设置',
 'Manage what events will trigger user notifications.'=>'管理用户通知什么样的事件会触发。',
-'Configure session timeout and chat poll rate.'=>'配置会话超时和聊天的投票率。',
-'Configure automatic updates and registration.'=>'配置自动更新和注册。',
+'Configure automatic updates, session timeout and chat poll rate.'=>'配置自动更新，会话超时和聊天的投票率。',
 'Enter your google app settings for Calendar/Google login'=>'请输入您的谷歌应用程序设置为日历/谷歌登录',
 'Configure X2Engine\'s email settings'=>'配置X2Engine的电子邮件设置',
 'Create an email marketing campaign'=>'创建一个电子邮件营销活动',
@@ -141,9 +139,9 @@ return array (
 'Customize fields for the modules.'=>'自定义字段的模块。',
 'Manage dropdowns for custom fields.'=>'管理自定义字段的下拉菜单中。',
 'Drag and drop editor for forms.'=>'拖放编辑器的形式。',
-
-// Modules
-// Text
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'重新排列主菜单项目',
 'Add, remove and reorder modules:'=>'添加、删除和重新排序模块：',
 'Select Email Criteria'=>'选择电子邮件标准',
@@ -163,9 +161,9 @@ return array (
 'Export'=>'导出',
 'Rename A Module'=>'重命名模块',
 'You can rename a module by selecting a module and typing the new name below.'=>'您可以选择一个模块，然后键入新的名称来重命名模块。',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'输出所有数据',
 'Please click the link below to download data.'=>'请点击以下的链接来下载数据。',
 'Import Data from Template'=>'从模板输入数据',
@@ -181,8 +179,8 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'若要上传您的标志显示搜索栏旁边，请在此处上传的文件，使用下面的表格。',
 'Create Page'=>'创建网页',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine公司背后X2Contacts的公司 - 一个高性能的联系人管理Web应用程序。 X2Engine可以提供给您的组织的专业支持和培训上X2Contacts。请填写下面的表格与我们联系。',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'电子邮件服务器配置',
 'Ready to send email? We need some information about your mail server.'=>'准备发送电子邮件？我们需要对您的邮件服务器的一些信息。',
 'Outbound Email Server'=>'出站电子邮件服务器',
@@ -200,13 +198,5 @@ return array (
 'None'=>'没有',
 'User\'s Choice'=>'用户的选择',
 'Default Signature'=>'默认签名',
-'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'您可以在此模板中使用下列变量： {first}, {last}, {phone}, {email}.',
-
-// Updater/General Settings
-'Update Interval'=>'更新时间间隔',
-'Every Login'=>'每次登录',
-'Daily'=>'日常',
-'Weekly'=>'每周',
-'Monthly'=>'每月一次',
-'Never'=>'从来没有',
+'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'=>'在此模板，您可以使用下面的变量：{first}, {last}, {phone} and {email}.',
 );

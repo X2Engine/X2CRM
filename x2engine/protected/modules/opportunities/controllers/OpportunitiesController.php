@@ -225,15 +225,25 @@ class OpportunitiesController extends x2base {
 			} */
 			if(isset($_POST['x2ajax'])) {
 				if($this->create($model,$temp, '1')) { // success creating account?
+					$primaryAccountLink = '';
 					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
-						$rel=new Relationships;
-						$rel->firstType=$_POST['ModelName'];
-						$rel->firstId=$_POST['ModelId'];
-						$rel->secondType='Opportunity';
-						$rel->secondId=$model->id;
-						$rel->save();
+						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Opportunity', $model->id);
+						if($_POST['ModelName'] == 'Contacts') {
+							$contact = Contacts::model()->findByPk($_POST['ModelId']);
+							if($contact) {
+								// Note: Account ID is saved in Contacts Model as "company" but in Opportunity Model as "accountName"
+								if(isset($model->accountName) && $model->accountName != '' && (!isset($contact->company) || $contact->company == "")) {
+									$contact->company = $model->accountName;
+									$contact->update();
+									$account = Accounts::model()->findByPk($contact->company);
+									if($account) {
+										$primaryAccountLink = $account->createLink();
+									}
+								}
+							}
+						}
 					}
-					echo json_encode(array('status'=>'success'));
+					echo json_encode(array('status'=>'success', 'primaryAccountLink'=>$primaryAccountLink));
 					Yii::app()->end();
 				}
 			} else {

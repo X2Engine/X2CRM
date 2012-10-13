@@ -152,7 +152,7 @@ class InlineEmailAction extends CAction {
 				if(in_array('200',$this->model->status)) {
 					
 					foreach($this->model->mailingList['to'] as &$target) {
-						$contact = CActiveRecord::model('Contacts')->findByAttributes(array('email'=>$target[1]));
+						$contact = CActiveRecord::model('Contacts')->findByPk($this->model->modelId);
 						if(isset($contact)) {
 
 							$action = new Actions;

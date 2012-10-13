@@ -41,7 +41,7 @@
 return array (
 'Calendar'=>'календарь',
 'Calendars'=>'Календари',
-
+// // 
 'User Calendars'=>'Google Календарь',
 'Group Calendars'=>'Группа Календари',
 'Google Calendars'=>'Пользователь Календари',
@@ -49,23 +49,32 @@ return array (
 'My Calendar Permissions'=>'Мои разрешения календарь',
 'User Calendar Permissions'=>'Разрешения Пользователь календарь',
 'Google Event'=>'Google события',
-
+'Contacts'=>'связи',
+'Accounts'=>'счета',
+'Opportunities'=>'возможности',
+'Products'=>'Продукты',
+'Media'=>'средства массовой информации',
+'View Permission'=>'Просмотр разрешений',
+'These users can view your calendar.'=>'Эти пользователи могут просматривать ваш календарь.',
+'Edit Permission'=>'Изменить разрешение',
+'These users can edit your calendar.'=>'Эти пользователи могут редактировать свои календаря.',
+// // 
 'Completed'=>'завершенный',
 'Quotes'=>'кавычки',
 'Email'=>'E-mail',
 'Attachment'=>'привязанность',
-
+// // 
 'List'=>'список',
 'Delete'=>'удалять',
 'Create'=>'создавать',
-// button text
+// // button text
 'Update'=>'обновление',
 'today'=>'сегодня',
 'month'=>'месяц',
 'week'=>'неделя',
 'day'=>'день',
-
-// month names
+// // 
+// // month names
 'January'=>'январь',
 'February'=>'февраль',
 'March'=>'март',
@@ -78,8 +87,8 @@ return array (
 'October'=>'октябрь',
 'November'=>'ноябрь',
 'December'=>'декабрь',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'янв',
 'Feb'=>'февр',
 'Mar'=>'март',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'окт',
 'Nov'=>'ноябрь',
 'Dec'=>'дек',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'воскресенье',
 'Monday'=>'понедельник',
 'Tuesday'=>'вторник',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'четверг',
 'Friday'=>'пятница',
 'Saturday'=>'суббота',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'ВСК',
 'Mon'=>'ПНД',
 'Tue'=>'ВТР',

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -42,7 +42,7 @@ return array (
 // Install screen
 'Install X2EngineCRM'=>'Installieren X2EngineCRM',
 'X2EngineCRM Installation'=>'Installation von X2EngineCRM',
-'Installation Complete'=>'Installation abgeschlossen',
+'Installation Complete'=>'Installation Abgeschlossen',
 'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Diese Web-Anwendung benötigt Javascript um richtig funktionieren. Bitte aktivieren Sie Javascript in Ihrem Browser, bevor Sie fortfahren.',
 // Requirements check
 'Cannot install X2EngineCRM'=>'Kann nicht installieren X2EngineCRM',
@@ -57,18 +57,13 @@ return array (
 
 'X2EngineCRM Application Info'=>'X2EngineCRM Anwendung Info',
 
-'Create sample data'=>'Neues Sample-Daten',
 'Application Name'=>'Anwendungsname',
 'Default Language'=>'Standardsprache',
 'Currency'=>'Währung',
-'Default Timezone'=>'Standard-Zeitzone',
 'Admin Password'=>'Admin Passwort',
 'Confirm Password'=>'Passwort Bestätigen',
 'Administrator Email'=>'Administrator E-Mail',
 'Please enter a valid email address.'=>'Bitte geben Sie eine gültige E-Mail-Adresse.',
-'Test Connection'=>'testen Sie die Verbindung',
-'Connection OK!'=>'Verbindung funktioniert!',
-'Could not connect to host.'=>'Konnte keine Verbindung zum Host zu verbinden.',
 
 'Database Connection Info'=>'Datenbankverbindung Info',
 
@@ -78,7 +73,7 @@ return array (
 'Username'=>'Benutzername',
 'Password'=>'Kennwort',
 
-// Software updates & registration
+// Software updates
 'Software Updates'=>'Software Updates',
 'Notify me of software updates'=>'Benachrichtigen Sie mich über Software-Updates',
 'First Name'=>'Vorname',
@@ -88,30 +83,24 @@ return array (
 'Position'=>'Position',
 'How you found X2EngineCRM'=>'Wie Sie gefunden X2EngineCRM',
 'Phone Number'=>'Telefonnummer',
-'Subscribe to the newsletter'=>'Abonnieren Sie den Newsletter',
+'Subscribe to the newsletter'=>'Abonnieren Sie den Mitteilungsblatt',
 'Comments'=>'Kommentare',
 'Request a follow-up contact'=>'Fordern Sie eine Follow-up-Kontakt',
 'Software Updates'=>'Software Updates',
 'Please help us improve X2EngineCRM by providing the following information:'=>'Bitte helfen Sie uns zu verbessern X2EngineCRM durch die folgenden Informationen:',
 'Software update notifications enabled.'=>'Software Update-Benachrichtigungen aktiviert.',
-'Optional Information'=>'optionale Angaben',
+'Optional Information'=>'Optionale Angaben',
 'Could not connect to the updates server at this time.'=>'Konnte keine Verbindung zum Update-Server verbinden zu diesem Zeitpunkt.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Sie können weiterhin die Installation der Anwendung ohne Aktivierung Updates und später erneut versuchen, indem Sie in "Allgemeine Einstellungen" unter der Rubrik "App-Einstellungen" im Admin-Konsole.',
-'Product Key'=>'Product Key',
-'Registration'=>'Anmeldung',
-'Software registration succeeded.'=>'Software-Registrierung gelungen.',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Um Software-Updates von X2Engine erhalten, registrieren Sie sich bitte Ihre Kopie von X2EngineCRM:',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Stellen Sie sicher, dass eine aktive Internet-Verbindung. Wenn das Problem weiterhin besteht, kontaktieren Sie uns bitte',
-'For support or sales inquiries, please contact us'=>'Für Support oder Sales-Anfragen, kontaktieren Sie uns bitte',
 
 'Install'=>'Installieren',
 
 'For help or more information - X2Engine.com'=>'Für Hilfe oder weitere Informationen - X2Engine.com',
 
-'All Rights Reserved.'=>'Alle Rechte vorbehalten.',
+'All Rights Reserved.'=>'Alle Rechte Vorbehalten.',
 
 // Splash screen
-'Installation Complete!'=>'Installation abgeschlossen!',
+'Installation Complete!'=>'Installation Abgeschlossen!',
 'Click here to log in to X2Engine'=>'Klicken Sie hier, um sich bei X2Engine anzumelden',
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine wurde erfolgreich auf Ihrem Webserver installiert! Sie können sich jetzt anmelden mit dem Benutzernamen "admin" und dem Passwort, das Sie während der Installation angegeben haben.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Wenn Sie Gii installiert haben, finden Sie es <a href="index.php/gii/"> hier </ a>. Das Passwort ist das gleiche wie Ihr Admin-Passwort.',

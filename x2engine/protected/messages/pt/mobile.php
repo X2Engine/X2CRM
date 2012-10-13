@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,6 +48,6 @@ return array (
 'Create Message'=>'Criar Mensagem',
 'Message List'=>'Lista Mensagem',
 'Clear'=>'Claro',
-'Search for a Contact'=>'Busca de um contato',
-'Go to Full Site'=>'Ir para o site principal',
+'Search for a Contact'=>'Busca de um Contato',
+'Go to Full Site'=>'Ir para o Site Principal',
 );

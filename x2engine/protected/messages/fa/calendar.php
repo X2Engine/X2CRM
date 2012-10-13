@@ -41,7 +41,7 @@
 return array (
 'Calendar'=>'تقویم',
 'Calendars'=>'تقویم ها',
-
+// // 
 'User Calendars'=>'تقویم های کاربران',
 'Group Calendars'=>'تقویم های گروه',
 'Google Calendars'=>'تقویمهای گوگل',
@@ -49,28 +49,37 @@ return array (
 'My Calendar Permissions'=>'دسترسیهای تقویم من',
 'User Calendar Permissions'=>'دسترسیهای تقویم کاربران',
 'Google Event'=>'رویداد گوگل',
-
+'Contacts'=>'مخابرات',
+'Accounts'=>'حساب',
+'Opportunities'=>'فرصت',
+'Products'=>'محصولات',
+'Media'=>'رسانه ها',
+'View Permission'=>'نمایش و ویرایش',
+'These users can view your calendar.'=>'این کاربران می توانید تقویم خود را مشاهده کنید.',
+'Edit Permission'=>'ویرایش اجازه',
+'These users can edit your calendar.'=>'این کاربران می توانند از تقویم های خود را ویرایش کنید.',
+// // 
 'Completed'=>'تکمیل',
 'Quotes'=>'نقل قول',
 'Email'=>'ای-نامه',
 'Attachment'=>'پیوست',
-
+// // 
 'List'=>'فهرست',
 'Delete'=>'حذف',
 'Create'=>'جدید',
-// button text
+// // button text
 'Update'=>'بروز رسانی',
 'today'=>'امروز',
 'month'=>'ماه',
 'week'=>'هفته',
 'day'=>'روز',
-
-// month names
+// // 
+// // month names
 'January'=>'زانویه',
 'February'=>'فوریه',
 'March'=>'مارچ',
 'April'=>'آپریل',
-'May'=>'می',
+'May'=>'May',
 'June'=>'جون',
 'July'=>'جولای',
 'August'=>'آگوست',
@@ -78,8 +87,8 @@ return array (
 'October'=>'اکتبر',
 'November'=>'نوامبر',
 'December'=>'دسامبر',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'Jan',
 'Feb'=>'Feb',
 'Mar'=>'Mar',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'Oct',
 'Nov'=>'Nov',
 'Dec'=>'Dec',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'یکشنبه',
 'Monday'=>'دوشنبه',
 'Tuesday'=>'سه شنبه',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'پنجشنبه',
 'Friday'=>'آدینه',
 'Saturday'=>'شنبه',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'Sun',
 'Mon'=>'Mon',
 'Tue'=>'Tue',

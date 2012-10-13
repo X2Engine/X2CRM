@@ -41,7 +41,7 @@
 return array (
 'Calendar'=>'カレンダ',
 'Calendars'=>'カレンダ',
-
+// // 
 'User Calendars'=>'ユーザーのカレンダー',
 'Group Calendars'=>'グループカレンダー',
 'Google Calendars'=>'Googleカレンダー',
@@ -49,23 +49,32 @@ return array (
 'My Calendar Permissions'=>'マイカレンダーの権限',
 'User Calendar Permissions'=>'ユーザーカレンダのアクセス権',
 'Google Event'=>'Googleのイベント',
-
+'Contacts'=>'コンタクト',
+'Accounts'=>'アカウント',
+'Opportunities'=>'機会',
+'Products'=>'製品',
+'Media'=>'メディア',
+'View Permission'=>'アクセス許可を表示',
+'These users can view your calendar.'=>'これらのユーザーは、自分の予定表を表示することができます。',
+'Edit Permission'=>'編集権限',
+'These users can edit your calendar.'=>'これらのユーザーは、自分の予定表を編集することができます。',
+// // 
 'Completed'=>'完了する',
 'Quotes'=>'引用',
 'Email'=>'メール',
 'Attachment'=>'添付ファイル',
-
+// // 
 'List'=>'リスト',
 'Delete'=>'削除する',
 'Create'=>'作る',
-// button text
+// // button text
 'Update'=>'更新',
 'today'=>'今日',
 'month'=>'月',
 'week'=>'週',
 'day'=>'日',
-
-// month names
+// // 
+// // month names
 'January'=>'1月',
 'February'=>'2月',
 'March'=>'3月',
@@ -78,8 +87,8 @@ return array (
 'October'=>'10月',
 'November'=>'11月',
 'December'=>'12月',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'1月',
 'Feb'=>'2月',
 'Mar'=>'3月',
@@ -92,8 +101,8 @@ return array (
 'Oct'=>'10月',
 'Nov'=>'11月',
 'Dec'=>'12月',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'日曜日',
 'Monday'=>'月曜日',
 'Tuesday'=>'火曜日',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'木曜日',
 'Friday'=>'金曜日',
 'Saturday'=>'土曜日',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'日曜日',
 'Mon'=>'月曜日',
 'Tue'=>'火曜日',

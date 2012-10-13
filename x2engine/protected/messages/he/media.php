@@ -69,11 +69,12 @@ return array (
 'Download File'=>'הורד קובץ',
 'Update File: '=>'עדכון קובץ: ',
 'Media & File Library'=>'תקשורת וספריית קבצים',
-'Max'=>'מקס',
+'Max'=>'מקסימום',
 'Forbidden File Extensions:'=>'סיומות קבצים אסורים:',
 'Choose File'=>'בחר את הקובץ',
 'Select File'=>'בחר קובץ',
 'Upload Media File: '=>'לטעון את הקובץ:',
+'Background'=>'רקע',
 
 // Errors
 'Are you sure you want to delete this item?'=>'האם אתה בטוח שברצונך למחוק פריט זה?',

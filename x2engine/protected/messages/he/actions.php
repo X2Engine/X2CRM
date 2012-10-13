@@ -70,6 +70,7 @@ return array (
 'Color'=>'צבע',
 'Start Date'=>'תאריך התחלה',
 'End Date'=>'תאריך סיום',
+'User\'s Group'=>'קבוצתו של המשתמש',
 
 // Colors
 'Blue'=>'כחול',
@@ -92,6 +93,13 @@ return array (
 'New Action'=>'ליצירת פעולה חדשה',
 'New Comment'=>'תגובה חדשה',
 'Publisher'=>'מוציא לאור',
+'Update'=>'לעדכן',
+'Complete Selected'=>'השלם נבחר',
+'Uncomplete Selected'=>'בטל להשלים נבחר',
+'Show Actions'=>'צג פעולות',
+'All'=>'כל',
+'Delete'=>'למחוק',
+'Overdue'=>'מאחר',
 
 // Actions Titles
 'Manage Actions'=>'ניהול פעולות',
@@ -110,6 +118,7 @@ return array (
 'Share Action'=>'שיתוף פעולה',
 'Create'=>'ליצור',
 'New Event'=>'אירוע',
+'Call:'=>'התקשר:',
 
 
 // Misc

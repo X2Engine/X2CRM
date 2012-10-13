@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -47,8 +47,8 @@ return array (
 'Password'=>'Contraseña',
 'Title'=>'Título',
 'Department'=>'Departamento',
-'Office Phone'=>'Teléfono de la oficina',
-'Cell Phone'=>'Teléfono celular',
+'Office Phone'=>'Teléfono de la Oficina',
+'Cell Phone'=>'Teléfono Celular',
 'Home Phone'=>'Teléfono',
 'Address'=>'Dirección',
 'Background Info'=>'Antecedentes',
@@ -56,7 +56,7 @@ return array (
 'Status'=>'Estado',
 'Update Password'=>'Actualizar Contraseña',
 'Last Updated'=>'Última Actualización',
-'Updated By'=>'Actualizado por',
+'Updated By'=>'Actualizado Por',
 'Recent Items'=>'Ítems Recientes',
 
 // Users Actions
@@ -64,7 +64,7 @@ return array (
 'View User'=>'Ver Usuario',
 'Update User'=>'Actualizar Usuario',
 'Manage Users'=>'Administrar Usuarios',
-'Invite Users'=>'Invitar a usuarios',
+'Invite Users'=>'Invitar a Usuarios',
 
 // Users Titles
 'User: {name}'=>'Usuario: {name}',

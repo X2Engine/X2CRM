@@ -233,6 +233,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>"quote-{$quote['id']}-grid",
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'summaryText'=>'',
+	'loadingCssClass'=>'grid-view-loading',
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		array(
@@ -380,7 +381,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     	array('/quotes/quotes/quickUpdate', 'id'=>$quote->id),
     	array(
     		'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
-			'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }",
+			'complete'=>"function(response) { $.fn.yiiListView.update('history'); }",
     		'type'=>'POST',
     	),
     	array('id'=>"update-quote-button-{$quote->id}", 'class'=>'x2-button', 'style'=>'display:inline; padding:3px;', 'live'=>false)

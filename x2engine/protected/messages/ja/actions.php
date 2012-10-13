@@ -40,7 +40,7 @@
 
 return array (
 // Action Attributes
-'ID'=>'ID',
+'ID'=>'番号',
 'Assigned To'=>'割り当て',
 'Action Description'=>'アクション説明',
 'Description'=>'説明',
@@ -70,6 +70,7 @@ return array (
 'Color'=>'カラー',
 'Start Date'=>'開始日',
 'End Date'=>'終了日',
+'User\'s Group'=>'ユーザーズグループ',
 
 // Colors
 'Blue'=>'ブルー',
@@ -92,6 +93,13 @@ return array (
 'New Action'=>'新しいアクション',
 'New Comment'=>'新しいコメント',
 'Publisher'=>'出版社',
+'Update'=>'更新',
+'Complete Selected'=>'選択完了',
+'Uncomplete Selected'=>'選択完了取り消す',
+'Show Actions'=>'アクションを表示',
+'All'=>'すべて',
+'Delete'=>'削除',
+'Overdue'=>'期限を過ぎた',
 
 // Actions Titles
 'Manage Actions'=>'アクションの管理',
@@ -110,6 +118,7 @@ return array (
 'Share Action'=>'アクションを共有する',
 'Create'=>'作る',
 'New Event'=>'新しいイベント',
+'Call:'=>'呼び出し：',
 
 
 // Misc

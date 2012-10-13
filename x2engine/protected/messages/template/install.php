@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -57,18 +57,13 @@ return array (
 
 'X2EngineCRM Application Info'=>'',
 
-'Create sample data'=>'',
 'Application Name'=>'',
 'Default Language'=>'',
 'Currency'=>'',
-'Default Timezone'=>'',
 'Admin Password'=>'',
 'Confirm Password'=>'',
 'Administrator Email'=>'',
 'Please enter a valid email address.'=>'',
-'Test Connection'=>'',
-'Connection OK!'=>'',
-'Could not connect to host.'=>'',
 
 'Database Connection Info'=>'',
 
@@ -78,7 +73,7 @@ return array (
 'Username'=>'',
 'Password'=>'',
 
-// Software updates & registration
+// Software updates
 'Software Updates'=>'',
 'Notify me of software updates'=>'',
 'First Name'=>'',
@@ -97,12 +92,6 @@ return array (
 'Optional Information'=>'',
 'Could not connect to the updates server at this time.'=>'',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'',
-'Product Key'=>'',
-'Registration'=>'',
-'Software registration succeeded.'=>'',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'',
-'For support or sales inquiries, please contact us'=>'',
 
 'Install'=>'',
 

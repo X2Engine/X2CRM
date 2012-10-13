@@ -213,7 +213,7 @@ div.x2-layout .formInputBox {
 	/* border-left:1px solid #ccc; */
 }
 div.x2-layout .formInputBox .checkboxWrapper {display:inline-block;vertical-align:middle;height:18px;padding:4px 0 0 4px;}
-div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea {
+div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea, input[type="text"].relationships-add-autocomplete {
 	-webkit-appearance:none;
 	height:22px;
 	width:100% !important;
@@ -458,4 +458,11 @@ span.create-account {
 	color: #579100;
 	display: inline-block;
 	cursor: pointer;
+}
+
+/* Custom CSS for Jquery UI Autocomplete */
+.ui-autocomplete {
+	max-height: 200px;
+	overflow-y: auto;
+	overflow-x: hidden;
 }

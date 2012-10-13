@@ -67,7 +67,13 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 	background: linear-gradient(to bottom, #417dcd 0%,#3d70b4 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#417dcd', endColorstr='#3d70b4',GradientType=0 ); /* IE6-9 */
 }
-#header-body-container {min-height:100%;height:auto !important;background:#eee;height:100%;margin:0 0 -111px 0;}
+#header-body-container {
+	min-height:100%;
+	height:auto !important;
+	height:100%;
+	margin:0 0 -111px 0;
+	background:#efeee8;	/* eee */
+}
 /* Search Bar */
 .main-menu li.search-bar {
 	padding-left:0;

@@ -40,7 +40,7 @@
 
 return array (
 // Attribute Labels
-'ID'=>'ID',
+'ID'=>'番号',
 'Association Type'=>'関連付けの種類',
 'Association Name'=>'協会名',
 'Association'=>'関連付け',
@@ -69,11 +69,12 @@ return array (
 'Download File'=>'ファイルをダウンロード',
 'Update File: '=>'ファイルの更新:',
 'Media & File Library'=>'メディア＆ファイルライブラリ',
-'Max'=>'マックス',
+'Max'=>'最大',
 'Forbidden File Extensions:'=>'禁断のファイル拡張子 ',
 'Choose File'=>'ファイルを選択してください',
 'Select File'=>'[ファイル]を選択し',
 'Upload Media File: '=>'ファイルをアップロード：',
+'Background'=>'背景',
 
 // Errors
 'Are you sure you want to delete this item?'=>'あなたがこのアイテムを削除してもよろしいですか？',

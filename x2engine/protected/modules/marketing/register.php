@@ -1,51 +1,23 @@
 <?php
+
 return array(
-	'name'=>'Marketing',
-	'install'=>array(
-		'CREATE TABLE x2_campaigns(
-			id				INT(10)			UNSIGNED NOT NULL AUTO_INCREMENT,
-			masterId		INT(10)			UNSIGNED NULL,
-			name			VARCHAR(250)	NOT NULL,
-			assignedTo		VARCHAR(20),
-			listId			VARCHAR(100),
-			description		TEXT,
-			type			VARCHAR(100)	DEFAULT NULL,
-			cost			VARCHAR(100)	DEFAULT NULL,
-			content			TEXT,
-			createdBy		VARCHAR(20)		NOT NULL,
-			complete		TINYINT 		DEFAULT 0,
-			createDate		INT(10) 		UNSIGNED NOT NULL,
-			launchDate		INT(10) 		UNSIGNED NOT NULL,
-			lastUpdated		INT(10) 		UNSIGNED NOT NULL,
-			updatedBy		varchar(20),
-			PRIMARY KEY		(id),
-			FOREIGN KEY		(masterId) REFERENCES x2_marketing(id) ON UPDATE CASCADE ON DELETE CASCADE
-		)',
-		'INSERT INTO x2_fields	
-			(modelName,		fieldName,				attributeLabel,		modified, custom, type, 	required, linkType) VALUES
-			("Campaign",	"id",					"ID",					0,		0,	"int",			0,		NULL),
-			("Campaign",	"masterId",				"Master Campaign ID",	0,		0,	"int",			0,		NULL),
-			("Campaign",	"name",					"Name",					0,		0,	"varchar",		1,		NULL),
-			("Campaign",	"assignedTo",			"Assigned To",			0,		0,	"assignment",	1,		NULL),
-			("Campaign",	"listId",				"Contact List",			0,		0,	"list",			0,		NULL),
-			("Campaign",	"description",			"Description",			0,		0,	"text",			0,		NULL),
-			("Campaign",	"type",					"Type",					0,		0,	"varchar",		0,		NULL),
-			("Campaign",	"cost",					"Cost",					0,		0,	"varchar",		0,		NULL),
-			("Campaign",	"content",				"Content",				0,		0,	"text",			0,		NULL),
-			("Campaign",	"complete",				"Complete",				0,		0,	"boolean",		0,		NULL),
-			("Campaign",	"createDate",			"Create Date",			0,		0,	"date",			0,		NULL),
-			("Campaign",	"launchDate",			"Launch Date",			0,		0,	"date",			0,		NULL),
-			("Campaign",	"lastUpdated",			"Last Updated",			0,		0,	"date",			0,		NULL),
-			("Campaign",	"updatedBy",			"Updated By",			0,		0,	"assignment",	0,		NULL)'
+	'name' => 'Marketing',
+	'install' => array(
+		dirname(__FILE__) . '/data/install.sql',
+		array('INSERT INTO x2_form_layouts
+						(model,version,layout,defaultView,defaultForm,createDate,lastUpdated)
+				VALUES	("Campaign","Form","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"359\",\"width\":\"578\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","0","1","' . time() . '","' . time() . '"),
+						("Campaign","View","{\"version\":\"1.1\",\"sections\":[{\"collapsible\":false,\"title\":\"Basic Info\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"498\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"311\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"478\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"Status\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_complete\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":588,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","1","0","' . time() . '","' . time() . '")'
+		)
 	),
-	'uninstall'=>array(
-		'DELETE FROM x2_fields WHERE modelName="Campaign"',
-		'DROP TABLE x2_campaigns',
+	'uninstall' => array(
+		dirname(__FILE__) . '/data/uninstall.sql',
 	),
-	'editable'=>true,
-	'searchable'=>true,
-	'adminOnly'=>false,
-	'custom'=>false,
-	'toggleable'=>true,
+	'editable' => true,
+	'searchable' => true,
+	'adminOnly' => false,
+	'custom' => false,
+	'toggleable' => true,
+	'version' => '2.0',
 );
 ?>

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,12 +50,16 @@ return array (
 'Description'=>'Description',
 'Create Date'=>'Date de Création',
 'Tools'=>'Outils',
+'Basic Information'=>'Renseignements de Base',
+'Product Information'=>'Information sur le Produit',
+'USD'=>'USD',
+'Active'=>'Actif',
 
 // Product Actions
 'Product List'=>'Liste des Produits',
 'Create'=>'Créer',
 'View'=>'Voir',
-'Update'=>'Mettre à jour',
+'Update'=>'Mettre à Jour',
 'Delete'=>'Effacer',
 'Manage'=>'Gérer',
 
@@ -63,12 +67,12 @@ return array (
 'Products'=>'Produits',
 'Product'=>'Produit',
 'Product:'=>'Produit:',
-'Update Product: {name}'=>'Mise à jour du produit: {name}',
+'Update Product: {name}'=>'Mise à jour du Produit: {name}',
 
 'Adjustments'=>'Ajustements',
 // Product Table
 'Line Item'=>'Point Ligne',
-'Unit Price'=>'Prix ​​unitaire',
+'Unit Price'=>'Prix ​​Unitaire',
 'Quantity'=>'Quantité',
 'Adjustment'=>'Ajustement',
 

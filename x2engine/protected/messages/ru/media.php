@@ -69,11 +69,12 @@ return array (
 'Download File'=>'Скачать файл',
 'Update File: '=>'Загрузить файл',
 'Media & File Library'=>'Медиа-файла библиотеки',
-'Max'=>'Макс',
+'Max'=>'максимальный',
 'Forbidden File Extensions:'=>'Запретный расширений файлов',
 'Choose File'=>'Выберите File',
 'Select File'=>'Выберите File',
 'Upload Media File: '=>'Загрузить файл:',
+'Background'=>'фон',
 
 // Errors
 'Are you sure you want to delete this item?'=>'Вы действительно хотите удалить этот элемент?',

@@ -448,7 +448,7 @@ $event->assignedTo = $actionModel->assignedTo;
 		<?php //echo $form->error($actionModel,'assignedTo'); ?>
             <?php /* x2temp */
                             echo "<br />";
-                            if($this instanceof Controller){
+                            if($this instanceof CController){
                                 $url=$this->createUrl('/groups/getGroups');
                             }else{
                                 $url=$this->controller->createUrl('/groups/getGroups');

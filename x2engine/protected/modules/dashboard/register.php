@@ -12,5 +12,6 @@ return array(
     'adminOnly'=>false,
     'custom'=>false,
     'toggleable'=>false,
+	'version' => '2.0',
 );
 ?>

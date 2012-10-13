@@ -1,4 +1,5 @@
 <?php
+
 /* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of
  * the following BSD License.
@@ -39,57 +40,18 @@
  * ****************************************************************************** */
 
 return array(
-	'name'=>'Dashboard',
-        'install'=>array(
-            "create or replace view `x2_bi_leads` as
-            (
-            select
-            `a`.`id` AS `id`,
-            `a`.`dealvalue` AS `dealValue`,
-            `a`.`leadDate` AS `leadDate`,
-            `a`.`leadstatus` AS `leadStatus`,
-            `a`.`leadSource` AS `leadSource`,
-            `a`.`leadtype` AS `leadType`,
-            `a`.`assignedTo` AS `assignedTo`,
-            concat(`b`.`firstName`, ' ',`b`.`lastName`) AS `assignedToName`,
-            `a`.`interest` AS `interest`,
-            `a`.`closedate` AS `closeDate`,
-            `a`.`rating` AS `confidence`,
-            `a`.`visibility` AS `visibility`,
-            `a`.`leadscore` AS `leadScore`,
-            `a`.`dealstatus` AS `dealStatus`
-            from (`x2_contacts` `a` join `x2_users` `b`)
-            where ((`a`.`assignedTo` <= 0) and (`b`.`userName` = `a`.`assignedTo`))
-            )
-            union
-            (
-            select
-            `a`.`id` AS `id`,
-            `a`.`dealvalue` AS `dealValue`,
-            `a`.`leadDate` AS `leadDate`,
-            `a`.`leadstatus` AS `leadStatus`,
-            `a`.`leadSource` AS `leadSource`,
-            `a`.`leadtype` AS `leadType`,
-            `a`.`assignedTo` AS `assignedTo`,
-            `b`.`name` AS `assignedToName`,
-            `a`.`interest` AS `interest`,
-            `a`.`closedate` AS `closeDate`,
-            `a`.`rating` AS `confidence`,
-            `a`.`visibility` AS `visibility`,
-            `a`.`leadscore` AS `leadScore`,
-            `a`.`dealstatus` AS `dealStatus`
-            from (`x2_contacts` `a` join `x2_groups` `b`)
-            where ((`a`.`assignedTo` > 0) and (`b`.`id` = `a`.`assignedTo`))
-            )
-            order by leadDate asc;",
-        ),
-        'uninstall'=>array(
-            "drop view if exists `x2_bi_leads`;",
-        ),
-        'editable'=>false,
-        'searchable'=>false,
-        'adminOnly'=>false,
-        'custom'=>false,
-        'toggleable'=>false,
-    );
+	'name' => 'Dashboard',
+	'install' => array(
+		dirname(__FILE__) . '/data/install.sql',
+	),
+	'uninstall' => array(
+		dirname(__FILE__) . '/data/uninstall.sql',
+	),
+	'editable' => false,
+	'searchable' => false,
+	'adminOnly' => false,
+	'custom' => false,
+	'toggleable' => false,
+	'version' => '2.0',
+);
 ?>

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -43,9 +43,9 @@ return array (
 'ID'=>'ID',
 'Full Name'=>'Nome Completo',
 'Username'=>'Nome de Usuário',
-'Tag Line'=>'Tag Line',
-'Office Phone'=>'Telefone escritório',
-'Cell Phone'=>'Telefone celular',
+'Tag Line'=>'Tagline',
+'Office Phone'=>'Telefone Escritório',
+'Cell Phone'=>'Telefone Celular',
 'Email Address'=>'Endereço de Email',
 'Notes'=>'Notas',
 'Status'=>'Estado',
@@ -57,14 +57,14 @@ return array (
 'Time Zone'=>'Fuso Horário',
 'Enable group chat?'=>'Ativar bate-papo em grupo?',
 'Widgets'=>'Widgets',
-'Background Color'=>'Cor de fundo',
+'Background Color'=>'Cor de Fundo',
 'Menu Color'=>'Cor do Menu',
-'Menu Text Color'=>'Cor do texto do menu',
-'Background Image'=>'Imagem de fundo',
+'Menu Text Color'=>'Cor do Texto do Menu',
+'Background Image'=>'Imagem de Fundo',
 'Start Page'=>'Página Inicial',
-'Results Per Page'=>'Resultados por página',
-'Show Social Media'=>'Mostrar as mídias sociais',
-'Upload a Background'=>'Upload de um fundo',
+'Results Per Page'=>'Resultados Por Página',
+'Show Social Media'=>'Mostrar as Mídias Sociais',
+'Upload a Background'=>'Upload de um Fundo',
 
 // Profile Actions
 'View Profile'=>'Ver Perfil',
@@ -72,14 +72,14 @@ return array (
 'Change Settings'=>'Alterar Configurações',
 'Social Feed'=>'Alimentação Sociais',
 'People'=>'Pessoas',
-'Change Personal Settings'=>'Alterar configurações pessoais',
+'Change Personal Settings'=>'Alterar Configurações Pessoais',
 
 // Profile Titles
 'Profile:'=>'Perfil:',
-'Update Your Profile'=>'Atualize o seu perfil',
+'Update Your Profile'=>'Atualize o Seu Perfil',
 
 // Social
-'Feed'=>'Feed',
+'Feed'=>'Feed de Notícias',
 'Social'=>'Social',
 'Reply'=>'Responder',
 'A larger Chat Box'=>'Uma caixa maior bate-papo',

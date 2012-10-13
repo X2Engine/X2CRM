@@ -44,6 +44,9 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('accounts','View')),
 	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
+	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
+	array('label'=>Yii::t('contacts','Create Contact'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-contact')),
+	array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')),
 	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
@@ -57,7 +60,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 <h2><?php echo Yii::t('accounts','Account:'); ?> <b><?php echo CHtml::encode($model->name); ?></b> 
 <?php if(Yii::app()->user->checkAccess('AccountsUpdate',$authParams)){ ?>
-    <a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+    <a class="x2-button" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><?php echo Yii::t('app','Edit');?></a>
 <?php } ?>
 </h2>
 </div>
@@ -75,58 +78,26 @@ $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'accounts'));
 
 <?php $this->widget('Attachments',array('associationType'=>'accounts','associationId'=>$model->id,'startHidden'=>true)); ?>
 <?php
-$contactFilter=new Contacts('search');
-$contactModel=new Contacts();
-$links=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts', 'secondType'=>'Accounts','secondId'=>$model->id));
-$str="(";
-foreach($links as $link){
-    $str.=$link->firstId.", ";
-}
-if($str!="("){
-    $flag=true;
-    $str=substr($str,0,-2).")";
-}else
-    $flag=false;
-$contactDataProvider=new CActiveDataProvider('Contacts',array(
-    'criteria'=>array(
-            'order'=>'lastName DESC, firstName DESC',
-            'condition'=>($flag?'id IN '.$str:'id=null') . " OR company={$model->id}",
-    )
-));
-//if (intval(Yii::app()->request->getParam('clearFilters'))==1) {
-	//		EButtonColumnWithClearFilters::clearFilters($this,$contactModel);//where $this is the controller
-	//	}
-$this->widget('application.components.X2GridView', array(
-	'id'=>'associated-contacts-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('contacts','Associated Contacts').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Clear Filters'),array($model->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
-		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$contactDataProvider,
-	// 'enableSorting'=>false,
-	// 'model'=>$model,
-	'filter'=>$contactFilter,
-	// 'columns'=>$columns,
-	'modelName'=>'Contacts',
-	'viewName'=>'accountcontacts',
-	// 'columnSelectorId'=>'contacts-column-selector',
-	'defaultGvSettings'=>array(
-		'name'=>234,
-		'email'=>108,
-		'leadsource'=>128,
-		'assignedTo'=>115,
-	),
-	'specialColumns'=>array(
-		'name'=>array(
-			'name'=>'name',
-			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->name,array("/contacts/".$data->id))',
-			'type'=>'raw',
-		),
-	),
-	'enableControls'=>true,
-));
+$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Accounts'));
+
+$createContactUrl = $this->createUrl('/contacts/create');
+$createOpportunityUrl = $this->createUrl('/opportunities/create');
+$accountName = json_encode($model->name);
+$assignedTo = json_encode($model->assignedTo);
+$phone = json_encode($model->phone);
+$website = json_encode($model->website);
+$opportunityTooltip = json_encode(Yii::t('contacts', 'Create a new Opportunity associated with this Account.'));
+$contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact associated with this Account.'));
+
+Yii::app()->clientScript->registerScript('create-model', "
+	$(function() {
+		// init create opportunity button
+		$('#create-opportunity').initCreateOpportunityDialog('$createOpportunityUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, $opportunityTooltip);
+		
+		// init create contact button
+		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, $phone, $website, $contactTooltip);
+	});
+");
 ?>
 </div>
 <div class="history half-width">
@@ -143,3 +114,5 @@ $this->widget('Publisher',
 $this->widget('History',array('associationType'=>'accounts','associationId'=>$model->id));
 ?>
 </div>
+
+<?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>

@@ -57,7 +57,7 @@ echo CHtml::ajaxButton("Use This Record",$this->createUrl('/contacts/ignoreDupli
 	'type'=>'POST',
 	'data'=>"data=".json_encode($newRecord->attributes)."&ref=".$ref,
 	'success'=>'function(data){
-		window.location="'.$this->createUrl('/contacts/').'"+data;
+		window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
 	}'
 ),array(
 	'class'=>'x2-button highlight'
@@ -77,7 +77,7 @@ foreach($duplicates as $duplicate){
 			'type'=>'POST',
 			'data'=>"id=$newRecord->id&newId=$duplicate->id",
 			'success'=>'function(data){
-				window.location="'.$this->createUrl('/contacts/').'"+data;
+				window.location="'.$this->createUrl('/contacts/view?id').'"+data;
 			}'
                     //
 		),array(

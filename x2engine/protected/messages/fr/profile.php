@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -41,48 +41,48 @@
 return array (
 // Profile Attributes
 'ID'=>'ID',
-'Full Name'=>'Nom complet',
-'Username'=>'Nom d\'utilisateur',
-'Tag Line'=>'tag line',
-'Office Phone'=>'Téléphone au bureau',
-'Cell Phone'=>'Téléphone cellulaire',
-'Email Address'=>'Adresse e-mail',
+'Full Name'=>'Nom Complet',
+'Username'=>'Nom d\'Utilisateur',
+'Tag Line'=>'Slogan',
+'Office Phone'=>'Téléphone au Bureau',
+'Cell Phone'=>'Téléphone Cellulaire',
+'Email Address'=>'Adresse E-mail',
 'Notes'=>'Remarques',
 'Status'=>'Statut',
 'Description'=>'Descriptif',
-'Last Updated'=>'Dernière mise à jour',
-'Updated By'=>'Mis à jour par',
+'Last Updated'=>'Dernière Mise à Jour',
+'Updated By'=>'Mis à Jour Par',
 'Allow users to post on your profile?'=>'Autoriser les utilisateurs à afficher sur votre profil?',
 'Language'=>'Langue',
-'Time Zone'=>'Fuseau horaire',
+'Time Zone'=>'Fuseau Horaire',
 'Enable group chat?'=>'Activer groupe de chat?',
 'Widgets'=>'Widgets',
-'Background Color'=>'Couleur de fond',
-'Menu Color'=>'Couleur du menu',
-'Menu Text Color'=>'Couleur du texte au menu',
-'Background Image'=>'Image de fond',
-'Start Page'=>'Page de démarrage',
-'Results Per Page'=>'Résultats par page',
-'Show Social Media'=>'Montrer les médias sociaux',
-'Upload a Background'=>'Charger un fond',
+'Background Color'=>'Couleur de Fond',
+'Menu Color'=>'Couleur du Menu',
+'Menu Text Color'=>'Couleur du Texte au Menu',
+'Background Image'=>'Image de Fond',
+'Start Page'=>'Page de Démarrage',
+'Results Per Page'=>'Résultats Par Page',
+'Show Social Media'=>'Montrer les Médias Sociaux',
+'Upload a Background'=>'Charger un Fond',
 
 // Profile Actions
-'View Profile'=>'Voir le profil',
-'Update Profile'=>'Mise à jour le profil',
-'Change Settings'=>'Modifier les paramètres',
+'View Profile'=>'Voir le Profil',
+'Update Profile'=>'Mise à Jour le Profil',
+'Change Settings'=>'Modifier les Paramètres',
 'Social Feed'=>'Flux Sociale',
-'People'=>'Les gens',
-'Change Personal Settings'=>'Modifier les paramètres personnels',
+'People'=>'Les Gens',
+'Change Personal Settings'=>'Modifier les Paramètres Personnels',
 
 // Profile Titles
 'Profile:'=>'Profil:',
-'Update Your Profile'=>'Mettre à jour votre profil',
+'Update Your Profile'=>'Mettre à Jour Votre Profil',
 
 // Social
-'Feed'=>'Alimentation',
+'Feed'=>'Contributions',
 'Social'=>'Social',
 'Reply'=>'Répondre',
-'A larger Chat Box'=>'Une boîte plus grande Tchat',
+'A larger Chat Box'=>'Une boîte plus Grande Tchat',
 'A blog-like discussion forum'=>'Un forum de discussion blog-like',
 
 // Misc

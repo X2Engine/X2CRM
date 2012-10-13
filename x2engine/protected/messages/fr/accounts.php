@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -48,35 +48,44 @@ return array (
 'Phone'=>'Téléphone',
 'Symbol'=>'Symbole',
 'Employees'=>'Employés',
-'Assigned To'=>'Assignée à',
+'Assigned To'=>'Assignée À',
 'Create Date'=>'Créez Date',
 'Associated Contacts'=>'Contacts Associés',
 'Description'=>'Descriptif',
-'Last Updated'=>'Dernière mise à jour',
-'Updated By'=>'Mis à jour par',
+'Last Updated'=>'Dernière Mise À Jour',
+'Updated By'=>'Mis À Jour Par',
 'None'=>'Aucun',
+'Contacts'=>'Contacts',
+'Basic Information'=>'Renseignements de Base',
+'Additional Information'=>'Informations Complémentaires',
 
 // Accounts Actions
-'Accounts List'=>'Liste des comptes',
-'Create Account'=>'Créer un compte',
-'View Account'=>'Voir compte',
-'Update Account'=>'Mise à jour du compte',
-'Delete Account'=>'Supprimer le compte',
-'Add a User'=>'Ajouter un utilisateur',
-'Add a Contact'=>'Ajouter un contact',
-'Remove a User'=>'Supprimer un utilisateur',
-'Remove a Contact'=>'Supprimer un contact',
+'Accounts List'=>'Liste Des Comptes',
+'Create Account'=>'Créer Un Compte',
+'View Account'=>'Voir Compte',
+'Update Account'=>'Mise À Jour Du Compte',
+'Delete Account'=>'Supprimer Le Compte',
+'Add a User'=>'Ajouter un Utilisateur',
+'Add a Contact'=>'Ajouter un Contact',
+'Remove a User'=>'Supprimer un Utilisateur',
+'Remove a Contact'=>'Supprimer un Contact',
 'Share Account'=>'Compte Partager',
+'Create'=>'Créer',
+'View'=>'Voir',
+'Update'=>'Mettre à Jour',
+'Delete'=>'Effacer',
+'Update Account:'=>'Mise à Jour du Compte:',
+'Share Opportunity'=>'Opportunity Partager',
 
 // Accounts Titles
 'Accounts'=>'Comptes',
-'Manage Accounts'=>'Gérer les comptes',
-'Update Account: {name}'=>'Mise à jour du compte: {name}',
+'Manage Accounts'=>'Gérer les Comptes',
+'Update Account: {name}'=>'Mise à Jour du Compte: {nom}',
 'Account:'=>'Compte:',
 
 // Misc
 'Please click any new users you wish to add.'=>'S\'il vous plaît cliquer tout nouvel utilisateur que vous voulez ajouter.',
 'Please click any new users you wish to remove.'=>'S\'il vous plaît cliquer tout nouvel utilisateur que vous souhaitez supprimer.',
-'Account Record Details'=>'Détails enregistrement de compte',
+'Account Record Details'=>'Détails Enregistrement de Compte',
 'Account Record'=>'Enregistrement de Compte',
 );

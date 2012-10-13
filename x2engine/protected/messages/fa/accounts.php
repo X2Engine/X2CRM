@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,6 +55,9 @@ return array (
 'Last Updated'=>'آخرین بروز رسانی',
 'Updated By'=>'بروز شده بوسیله',
 'None'=>'هیچ',
+'Contacts'=>'مخابرات',
+'Basic Information'=>'اطلاعات پایه',
+'Additional Information'=>'اطلاعات اضافی',
 
 // Accounts Actions
 'Accounts List'=>'فهرست حساب ها',
@@ -67,11 +70,17 @@ return array (
 'Remove a User'=>'حذف یک کاربر',
 'Remove a Contact'=>'حذف یک تماس',
 'Share Account'=>'اشتراک حساب',
+'Create'=>'ساختن',
+'View'=>'دیدن',
+'Update'=>'بروز',
+'Delete'=>'حذف کردن',
+'Update Account:'=>':بروز حساب',
+'Share Opportunity'=>'فرصت های اشتراک گذاری',
 
 // Accounts Titles
 'Accounts'=>'حساب ها',
 'Manage Accounts'=>'مدیریت حسابها',
-'Update Account: {name}'=>'{name} :بروزآوری حساب',
+'Update Account: {name}'=>'{حساب به روز رسانی: {نام',
 'Account:'=>'حساب',
 
 // Misc

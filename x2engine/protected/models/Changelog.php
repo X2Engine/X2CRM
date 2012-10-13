@@ -74,16 +74,7 @@ class Changelog extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('type, itemId, changedBy, changed', 'required'),
-			array('itemId, timestamp', 'numerical', 'integerOnly'=>true),
-			array('type, changedBy', 'length', 'max'=>50),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, type, itemId, changedBy, changed', 'safe', 'on'=>'search'),
-		);
+        return array();
 	}
         
         public function behaviors() {
@@ -112,14 +103,7 @@ class Changelog extends CActiveRecord
 	 */
 	public function attributeLabels()
 	{
-		return array(
-			'id' => 'ID',
-			'type' => 'Type',
-			'itemId' => 'Item',
-			'changedBy' => 'Changed By',
-			'changed' => 'Changed',
-			'timestamp' => 'Timestamp',
-		);
+		return array();
 	}
 
 	/**

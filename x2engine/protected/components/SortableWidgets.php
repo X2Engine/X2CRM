@@ -56,7 +56,7 @@ class SortableWidgets extends CJuiWidget
 	 * @var array list of sortable items (id=>item content).
 	 * Note that the item contents will not be HTML-encoded.
 	 */
-	public $portlets=array();
+	public $portlets = array();
 	public $jQueryOptions = array();
 	/**
 	 * @var string the name of the container element that contains all items. Defaults to 'ul'.
@@ -115,7 +115,7 @@ class SortableWidgets extends CJuiWidget
 		else
 			$this->htmlOptions['id']=$id;
 
-		$options=empty($this->jQueryOptions) ? '' : CJavaScript::encode($this->jQueryOptions);
+		$options = empty($this->jQueryOptions) ? '' : CJavaScript::encode($this->jQueryOptions);
 		Yii::app()->getClientScript()->registerScript('SortableWidgets'.'#'.$id,"jQuery('#{$id}').sortable({$options});");
 
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
@@ -142,6 +142,8 @@ class SortableWidgets extends CJuiWidget
 				echo $widget;
 				$this->endWidget();
 				// echo ($t1-$t0);
+			} else {
+				echo '<div ',CHtml::renderAttributes(array('style'=>'display;none;','id'=>$properties['id'])),'></div>';
 			}
 		}
 		

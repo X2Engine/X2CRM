@@ -42,19 +42,39 @@ return array (
 // Attribute Labels
 'ID'=>'شناسایی',
 'Association Type'=>'نوع ارتباط',
+'Association Name'=>'نام انجمن',
 'Association'=>'مرتبط',
 'File Name'=>'نام کامل',
 'Uploaded By'=>'بارکزاری شده توسط',
 'Create Date'=>'تاریخ ایجاد',
+'Description'=>'شرح',
+'Private'=>'خصوصی',
+'Permission'=>'اجازه',
+
 
 // Actions
 'View Attachment'=>'نمایش پیوست',
 'Delete Media'=>'حذف رسانه',
+'List'=>'فهرست',
+'Upload'=>'بارگذاری',
+'View'=>'دیدن',
+'Update'=>'بروز',
+'Delete'=>'حذف کردن',
 
 // Misc
 'File:'=>':پرونده',
+'File: '=>':پرونده',
 '(deleted)'=>'(حذف شد)',
 'Uploaded by {name}'=>'{name} بارگزاری شده توسط',
+'Download File'=>'دانلود فایل',
+'Update File: '=>':بروز فایل',
+'Media & File Library'=>'رسانه ها و کتابخانه فایل',
+'Max'=>'بیشترین',
+'Forbidden File Extensions:'=>':ممنوعه افزودن فایل',
+'Choose File'=>'را انتخاب کنید فایل',
+'Select File'=>'فایل را انتخاب کنید',
+'Upload Media File: '=>':آپلود فایل رسانه ای',
+'Background'=>'زمینه',
 
 // Errors
 'Are you sure you want to delete this item?'=>'آیا از حدف این مورد اطمینان دارید؟',

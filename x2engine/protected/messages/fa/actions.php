@@ -70,6 +70,7 @@ return array (
 'Color'=>'رنگ',
 'Start Date'=>'تاریخ شروع',
 'End Date'=>'تاریخ پایان',
+'User\'s Group'=>'گروه کاربری',
 
 // Colors
 'Blue'=>'آبی',
@@ -92,6 +93,13 @@ return array (
 'New Action'=>'اقدام جدید',
 'New Comment'=>'نظر جدید',
 'Publisher'=>'منتشر کننده',
+'Update'=>'بروز',
+'Complete Selected'=>'کامل انتخاب',
+'Uncomplete Selected'=>'ناتمام منتخب',
+'Show Actions'=>'نمایش عملیات',
+'All'=>'همه',
+'Delete'=>'حذف کردن',
+'Overdue'=>'سر رسیده',
 
 // Actions Titles
 'Manage Actions'=>'مدیریت اقدامات',
@@ -110,6 +118,7 @@ return array (
 'Share Action'=>'اشتراک اقدام',
 'Create'=>'ایجاد',
 'New Event'=>'رویداد جدید',
+'Call:'=>':تماس',
 
 
 // Misc
@@ -137,7 +146,7 @@ return array (
 'Account'=>'حساب',
 'Project'=>'پروژه',
 'Case'=>'مورد',
-'Sale'=>'فروش',
+'Opportunity'=>'فرصت',
 
 // Action Reminder Email
 'No one'=>'هیچ کس',

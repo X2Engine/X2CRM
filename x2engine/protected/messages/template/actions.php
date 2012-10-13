@@ -70,6 +70,7 @@ return array (
 'Color'=>'',
 'Start Date'=>'',
 'End Date'=>'',
+'User\'s Group'=>'',
 
 // Colors
 'Blue'=>'',
@@ -92,6 +93,13 @@ return array (
 'New Action'=>'',
 'New Comment'=>'',
 'Publisher'=>'',
+'Update'=>'',
+'Complete Selected'=>'',
+'Uncomplete Selected'=>'',
+'Show Actions'=>'',
+'All'=>'',
+'Delete'=>'',
+'Overdue'=>'',
 
 // Actions Titles
 'Manage Actions'=>'',
@@ -110,6 +118,7 @@ return array (
 'Share Action'=>'',
 'Create'=>'',
 'New Event'=>'',
+'Call:'=>'',
 
 
 // Misc

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,12 +39,7 @@
  ********************************************************************************/
 
 return array (
-// // 
-// // 
-// // 
-// // 
-// // 
-// // Profile Attributes
+// Profile Attributes
 'ID'=>'编号',
 'Full Name'=>'姓名',
 'Username'=>'用户名',
@@ -70,26 +65,26 @@ return array (
 'Results Per Page'=>'每页显示的结果数',
 'Show Social Media'=>'显示社交媒体',
 'Upload a Background'=>'上传背景',
-// // 
-// // Profile Actions
+
+// Profile Actions
 'View Profile'=>'查看个人资料',
 'Update Profile'=>'更新个人资料',
 'Change Settings'=>'更改设置',
 'Social Feed'=>'社交动态',
 'People'=>'用户',
 'Change Personal Settings'=>'更改个人设置',
-// // 
-// // Profile Titles
+
+// Profile Titles
 'Profile:'=>'个人资料：',
 'Update Your Profile'=>'更新您的个人资料',
-// // 
-// // Social
-'Feed'=>'信息',
+
+// Social
+'Feed'=>'新闻提要',
 'Social'=>'社交',
 'Reply'=>'回复',
 'A larger Chat Box'=>'扩大的聊天框',
 'A blog-like discussion forum'=>'一个类似博客的讨论论坛',
-// // 
-// // Misc
+
+// Misc
 'This user does not allow posting on their feed.'=>'此用户不允许他人发布在他／她的信息栏上。',
 );

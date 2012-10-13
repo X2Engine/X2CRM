@@ -38,21 +38,20 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2forms.js');
-
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('profile','Social Feed')),
 	array('label'=>Yii::t('profile','People'),'url'=>array('profiles')),
 ));
 
-Yii::app()->clientScript->registerScript('highlightButton',"
-$(function(){
-	$('#feed-form input, #feed-form select, #feed-form textarea').change(function(){
-		$('#save-button').addClass('highlight'); //css('background','yellow');
-	}
-	);
-}
-);");
+Yii::app()->clientScript->registerScript('highlightButton','
+$("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
+	.change(function(){
+		if($(this).val()=="")
+			$("#save-button").removeClass("highlight");
+		else
+			$("#save-button").addClass("highlight");
+	});
+',CClientScript::POS_READY);
 ?>
 
 <h2><?php echo Yii::t('profile','Social Feed'); ?></h2>
@@ -69,7 +68,7 @@ $(function(){
 	<div class="float-row">
 		<?php
 		$feed->data = Yii::t('app','Enter text here...');
-		echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
+		echo $form->textArea($feed,'data',array('style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		echo $form->dropDownList($feed,'associationId',$users);
         $feed->private=1;
 		echo $form->dropDownList($feed,'private',array(0=>Yii::t('actions','Public'),1=>Yii::t('actions','Private')));

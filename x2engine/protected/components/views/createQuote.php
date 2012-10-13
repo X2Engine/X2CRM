@@ -164,7 +164,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 	array('/quotes/quotes/quickCreate'),
 	array(
 		'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
-		'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }",
+		'complete'=>"function(response) { $.fn.yiiListView.update('history'); }",
 		'type'=>'POST',
 	),
 	array('id'=>"create-quote-button", 'class'=>'x2-button', 'live'=>false)

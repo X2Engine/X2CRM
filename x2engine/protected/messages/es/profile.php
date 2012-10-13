@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -44,25 +44,25 @@ return array (
 'Full Name'=>'Nombre Completo',
 'Username'=>'Nombre de Usuario',
 'Tag Line'=>'Lema',
-'Office Phone'=>'Teléfono de la oficina',
-'Cell Phone'=>'Teléfono celular',
+'Office Phone'=>'Teléfono de la Oficina',
+'Cell Phone'=>'Teléfono Celular',
 'Email Address'=>'E-mail',
 'Notes'=>'Notas',
 'Status'=>'Estado',
 'Description'=>'Descripción',
 'Last Updated'=>'Última Actualización',
-'Updated By'=>'Actualizado por',
+'Updated By'=>'Actualizado Por',
 'Allow users to post on your profile?'=>'Permitir a los usuarios publicar en su perfil?',
 'Language'=>'Lengua',
 'Time Zone'=>'Huso Horario',
 'Enable group chat?'=>'Activar el chat de grupo?',
-'Widgets'=>'Widgets',
+'Widgets'=>'Artilugios',
 'Background Color'=>'Color de Fondo',
 'Menu Color'=>'Menú Color',
 'Menu Text Color'=>'Menu Color de Texto',
 'Background Image'=>'Imagen de Fondo',
 'Start Page'=>'Página de Inicio',
-'Results Per Page'=>'Resultados por Página',
+'Results Per Page'=>'Resultados Por Página',
 'Show Social Media'=>'Mostrar Medios Social',
 'Upload a Background'=>'Subir un Fondo',
 
@@ -79,7 +79,7 @@ return array (
 'Update Your Profile'=>'Actualizar Su Perfil',
 
 // Social
-'Feed'=>'Fuente',
+'Feed'=>'Suministro de Noticias',
 'Social'=>'Social',
 'Reply'=>'Responder',
 'A larger Chat Box'=>'Una Charla más grande Caja',

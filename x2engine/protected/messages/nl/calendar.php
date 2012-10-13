@@ -41,7 +41,7 @@
 return array (
 'Calendar'=>'Kalender',
 'Calendars'=>'Kalenders',
-
+// // 
 'User Calendars'=>'Gebruiker Kalenders',
 'Group Calendars'=>'Groep Kalenders',
 'Google Calendars'=>'Google Kalenders',
@@ -49,23 +49,32 @@ return array (
 'My Calendar Permissions'=>'Mijn Kalender Permissies',
 'User Calendar Permissions'=>'Gebruikers Kalender Permissies',
 'Google Event'=>'Google Evenement',
-
+'Contacts'=>'Contacten',
+'Accounts'=>'Accounts',
+'Opportunities'=>'Kansen',
+'Products'=>'Producten',
+'Media'=>'Media',
+'View Permission'=>'Bekijk Rechten',
+'These users can view your calendar.'=>'Deze gebruikers kunnen uw agenda bekijken.',
+'Edit Permission'=>'Bewerk Toestemming',
+'These users can edit your calendar.'=>'Deze gebruikers kunnen bewerken uw agenda.',
+// // 
 'Completed'=>'Afgerond',
 'Quotes'=>'Offertes',
 'Email'=>'Email',
 'Attachment'=>'Bijlage',
-
+// // 
 'List'=>'Lijst',
 'Delete'=>'Verwijder',
 'Create'=>'Aanmaken',
-// button text
+// // button text
 'Update'=>'Bijwerken',
 'today'=>'Vandaag',
-'month'=>'Maand',
-'week'=>'Week',
-'day'=>'Dag',
-
-// month names
+'month'=>'maand',
+'week'=>'week',
+'day'=>'dag',
+// // 
+// // month names
 'January'=>'Januari',
 'February'=>'Februari',
 'March'=>'Maart',
@@ -78,22 +87,22 @@ return array (
 'October'=>'Oktober',
 'November'=>'November',
 'December'=>'December',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'Jan',
 'Feb'=>'Feb',
 'Mar'=>'Mar',
 'Apr'=>'Apr',
 'May'=>'Mei',
-'Jun'=>'JUn',
+'Jun'=>'Jun',
 'Jul'=>'Jul',
 'Aug'=>'Aug',
 'Sep'=>'Sept',
 'Oct'=>'Okt',
 'Nov'=>'Nov',
 'Dec'=>'Dec',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'Zondag',
 'Monday'=>'Maandag',
 'Tuesday'=>'Dinsdag',
@@ -101,8 +110,8 @@ return array (
 'Thursday'=>'Donderdag',
 'Friday'=>'Vrijdag',
 'Saturday'=>'Zondag',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'Zon',
 'Mon'=>'Maa',
 'Tue'=>'Din',

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -57,18 +57,13 @@ return array (
 
 'X2EngineCRM Application Info'=>'اطلاعات برنامه X2EngineCRM',
 
-'Create sample data'=>'ایجاد داده های نمونه',
 'Application Name'=>'نام برنامه',
 'Default Language'=>'زبان پیش فرض',
 'Currency'=>'پول',
-'Default Timezone'=>'منطقه زمانی پیش فرض',
 'Admin Password'=>'رمز عبور مدیریت',
 'Confirm Password'=>'تکرار رمز عبور',
 'Administrator Email'=>'ایمیل مدیر',
 'Please enter a valid email address.'=>'لطفا یک آدرس ایمیل معتبر وارد کنید.',
-'Test Connection'=>'آزمایش اتصال',
-'Connection OK!'=>'اتصال کار!',
-'Could not connect to host.'=>'اتصال به میزبان است.',
 
 'Database Connection Info'=>'اتصال به پایگاه داده اطلاعات',
 
@@ -78,7 +73,7 @@ return array (
 'Username'=>'نام کاربری',
 'Password'=>'رمز عبور',
 
-// Software updates & registration
+// Software updates
 'Software Updates'=>'به روز رسانی نرم افزار',
 'Notify me of software updates'=>'مرا از به روز رسانی نرم افزار',
 'First Name'=>'نام',
@@ -97,12 +92,6 @@ return array (
 'Optional Information'=>'اطلاعات اختیاری',
 'Could not connect to the updates server at this time.'=>'می تواند اتصال به سرور به روز رسانی در این زمان.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'شما می توانید در ادامه نصب نرم افزار بدون به روز رسانی را قادر می سازد و دوباره سعی کنید بعد از آن با رفتن به "تنظیمات عمومی" در زیر بخش "تنظیمات برنامه" در کنسول مدیریت است.',
-'Product Key'=>'کلید محصول',
-'Registration'=>'ثبت',
-'Software registration succeeded.'=>'ثبت نام نرم افزار موفق شد.',
-'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'برای دریافت به روز رسانی های نرم افزار از X2Engine، لطفا برای ثبت نام اینجا را کلیک کنید وبلاگ خود کپی X2EngineCRM:',
-'Make sure you have an active internet connection. If the problem persists, please contact us'=>'اطمینان حاصل کنید که یک اتصال به اینترنت فعال است.اگر مشکل همچنان ادامه دارد، لطفا با ما تماس بگیرید',
-'For support or sales inquiries, please contact us'=>'برای پشتیبانی یا فروش سوالات، لطفا با ما تماس بگیرید',
 
 'Install'=>'نصب کردن',
 

@@ -60,6 +60,12 @@ return array (
 'Last Updated'=>'עדכון אחרון',
 'Updated By'=>'עודכן על ידי',
 'None'=>'אף אחד',
+'Basic Info'=>'מידע בסיסי',
+'Email'=>'דוא"ל',
+'Call List'=>'התקשר רשימה',
+'Physical Mail'=>'דואר פיזי',
+'Email Template'=>'תבנית דוא"ל',
+'Update Campaign'=>'עדכון מבצע',
 
 // Menu
 'All Campaigns'=>'כל מסעות הפרסום',
@@ -84,6 +90,7 @@ return array (
 'Opened'=>'נפתח',
 'Clicked'=>'הוא נלחץ',
 'Unsubscribed'=>'בטל את המינוי',
+'Status'=>'מצב',
 
 // Mailing
 'The email sending limit has been reached.'=>'גבול שליחת דוא"ל הושג.',
@@ -95,7 +102,7 @@ return array (
 'Error for contact'=>'שגיאה עבור איש קשר',
 'Attempting to send email'=>'ניסיון לשלוח דואר אלקטרוני',
 'Unsendable email'=>'לא לשלוח דוא"ל',
-'Blank email addresses'=>'Adresses e-mail vierges',
+'Blank email addresses'=>'כתובות מייל ריקות',
 'Duplicate Email Address'=>'כפל כתובת דוא"ל',
 '\'Do Not Email\' contacts'=>'\'אין מייל \'אנשי קשר',
 'Data errors'=>'טעויות',
