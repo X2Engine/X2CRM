@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions;
-
+/*&*/
 CREATE TABLE x2_calendars (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(100)	NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE x2_calendars (
 	googleAccessToken		VARCHAR(512),
 	googleRefreshToken		VARCHAR(255)
 ) COLLATE utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_calendar_permissions (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	user_id					INT,
@@ -23,11 +23,11 @@ CREATE TABLE x2_calendar_permissions (
 	view					TINYINT,
 	edit					TINYINT
 ) COLLATE utf8_general_ci;
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(name,				title,				visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	("calendar",		"Calendar",			1,			6,				0,			0,			0,			0,		0);
-
+/*&*/
 INSERT INTO `x2_fields` 
 (modelName,		fieldName,			attributeLabel,		modified,	custom,	type,			required,	readOnly,  linkType,	searchable,	isVirtual,	relevance)
 VALUES 	

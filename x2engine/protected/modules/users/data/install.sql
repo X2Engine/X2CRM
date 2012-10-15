@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS x2_users;
-
+/*&*/
 CREATE TABLE x2_users (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstName				VARCHAR(20)		NOT NULL,
@@ -26,11 +26,11 @@ CREATE TABLE x2_users (
 	calendarEditPermission	TEXT,
 	calendarFilter			TEXT,
 	setCalendarPermissions	TINYINT,
-	
+
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	("users",			"Users",			1,			14,				0,			0,			1,			0,		0);

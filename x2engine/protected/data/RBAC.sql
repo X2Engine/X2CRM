@@ -38,7 +38,7 @@
  ********************************************************************************/
 
 drop table if exists `x2_auth_assignment`,`x2_auth_item_child`,`x2_auth_item`;
-
+/*&*/
 create table `x2_auth_item`
 (
    `name`                 varchar(64) not null,
@@ -48,7 +48,7 @@ create table `x2_auth_item`
    `data`                 text,
    primary key (`name`)
 ) engine InnoDB;
-
+/*&*/
 create table `x2_auth_item_child`
 (
    `parent`               varchar(64) not null,
@@ -57,7 +57,7 @@ create table `x2_auth_item_child`
    foreign key (`parent`) references `x2_auth_item` (`name`) on delete cascade on update cascade,
    foreign key (`child`) references `x2_auth_item` (`name`) on delete cascade on update cascade
 ) engine InnoDB;
-
+/*&*/
 create table `x2_auth_assignment`
 (
    `itemname`             varchar(64) not null,
@@ -67,7 +67,7 @@ create table `x2_auth_assignment`
    primary key (`itemname`,`userid`),
    foreign key (`itemname`) references `x2_auth_item` (`name`) on delete cascade on update cascade
 ) engine InnoDB;
-
+/*&*/
 INSERT INTO `x2_auth_item` VALUES ('AccountsAddUser',0,'',NULL,'N;'),
 ('AccountsAdmin',0,'',NULL,'N;'),
 ('AccountsAdminAccess',1,'',NULL,'N;'),
@@ -508,7 +508,7 @@ INSERT INTO `x2_auth_item` VALUES ('AccountsAddUser',0,'',NULL,'N;'),
 ('WorkflowView',0,'',NULL,'N;'),
 ('WorkflowViewStage',0,'',NULL,'N;'),
 ('X2StudioTask',1,'A set of permissions for the use of X2Studio.',NULL,'N;');
-
+/*&*/
 INSERT INTO `x2_auth_item_child` VALUES ('AccountsUpdateAccess','AccountsAddUser'),
 ('AccountsUpdatePrivate','AccountsAddUser'),
 ('AccountsAdminAccess','AccountsAdmin'),

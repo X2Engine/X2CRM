@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `x2_accounts`;
+/*&*/
 CREATE TABLE `x2_accounts` (
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name				VARCHAR(40)		NOT NULL,
@@ -15,10 +16,11 @@ CREATE TABLE `x2_accounts` (
 	lastUpdated			BIGINT,
 	updatedBy			VARCHAR(20)
 ) COLLATE = utf8_general_ci;
+/*&*/
 INSERT INTO `x2_modules` 
 			(name,				title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	("accounts",		"Accounts",		1,			1,				1,			1,			0,			0,		0);
-
+/*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES

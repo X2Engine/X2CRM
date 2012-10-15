@@ -7,7 +7,6 @@
 * Big improvements to the installer
 	* Real-time installation status updates
 	* No more timeout errors
-* Numerous bug fixes
 * Improvements to Relationships for contacts, accounts and opportunities
 * Fix for all bugs related to browsers caching old javascript files
 * Additional feature in Customization Framework: you can now override controller 
@@ -16,7 +15,11 @@
   MyContactsController extending ContactsController and only define actionIndex. 
   This class will automatically be used in place of the original file, and you 
   don't have to override the entire class.
-
+* Bug fixes for 2.1.1:
+	* Installer: incomplete error reporting
+	* Role manager: CSS
+	* Updater / updater settings: safeguards & interval setting
+	* Mobile (X2Touch) login: JavaScript errors
 Note: Any existing changelog data will be preserved, but not visible in the 
 changelog table. In the next update we will include code to convert this data 
 to the new format.

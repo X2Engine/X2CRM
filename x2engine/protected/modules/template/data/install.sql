@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS x2_templates;
+/*&*/
 CREATE TABLE x2_templates(
 		id INT NOT NULL AUTO_INCREMENT primary key,
 		assignedTo VARCHAR(250),
@@ -8,11 +9,11 @@ CREATE TABLE x2_templates(
 		lastUpdated INT,
 		updatedBy VARCHAR(250)
 );
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	('templates',		'Templates',	1,			1,				1,			1,			0,			1,		1);
-
+/*&*/
 INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES 
 		("Templates", "id", "ID", "0", "int"),
 		("Templates", "name", "Name", "0", "varchar"),

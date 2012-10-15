@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS x2_actions;
+/*&*/
 CREATE TABLE x2_actions	(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	assignedTo				VARCHAR(20),
@@ -28,10 +29,11 @@ CREATE TABLE x2_actions	(
 	INDEX (type),
 	INDEX (associationType,associationId)
 ) COLLATE = utf8_general_ci;
+/*&*/
 INSERT INTO `x2_modules` 
 			(name,				title,				visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	("actions",			"Actions",			1,			7,				1,			0,			0,			0,		0);
-
+/*&*/
 INSERT INTO `x2_fields` 
 (modelName,	fieldName,				attributeLabel,		modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance) 
 VALUES 	("Actions",	"id",					"ID",					0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),

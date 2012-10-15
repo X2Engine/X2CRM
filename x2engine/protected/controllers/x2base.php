@@ -737,23 +737,25 @@ abstract class x2base extends X2Controller {
         $model->updatedBy = Yii::app()->user->getName();
         $model->save();
         $type = get_class($model);
-        foreach($changes as $field=>$array){
-            $changelog = new Changelog;
-            $changelog->type = $type;
-            if (!isset($model->id)) {
-                if ($model->save()) {
+        if(is_array($changes)){
+            foreach($changes as $field=>$array){
+                $changelog = new Changelog;
+                $changelog->type = $type;
+                if (!isset($model->id)) {
+                    if ($model->save()) {
+
+                    }
+                }
+                $changelog->itemId = $model->id;
+                $changelog->changedBy = Yii::app()->user->getName();
+                $changelog->fieldName = $field;
+                $changelog->oldValue=$array['old'];
+                $changelog->newValue=$array['new'];
+                $changelog->timestamp = time();
+
+                if ($changelog->save()) {
 
                 }
-            }
-            $changelog->itemId = $model->id;
-            $changelog->changedBy = Yii::app()->user->getName();
-            $changelog->fieldName = $field;
-            $changelog->oldValue=$array['old'];
-            $changelog->newValue=$array['new'];
-            $changelog->timestamp = time();
-
-            if ($changelog->save()) {
-
             }
         }
         
@@ -786,32 +788,34 @@ abstract class x2base extends X2Controller {
             else
                 $change = $model->name;
         }
-        foreach ($changes as $field=>$array) {
-            preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
-            $matches = $matches[0];
-            foreach ($matches as $match) {
-                $tag = new Tags;
-                $tag->type = $type;
-                $tag->taggedBy = Yii::app()->user->getName();
-                $tag->type = $type;
-                //cut out leading whitespace
-                $tag->tag = trim($match);
-                if ($model instanceof Contacts)
-                    $tag->itemName = $model->firstName . " " . $model->lastName;
-                else if ($model instanceof Actions)
-                    $tag->itemName = $model->actionDescription;
-                else if ($model instanceof Docs)
-                    $tag->itemName = $model->title;
-                else
-                    $tag->itemName = $model->name;
-                if (!isset($model->id)) {
-                    $model->save();
-                }
-                $tag->itemId = $model->id;
-                $tag->timestamp = time();
-                //save tags including # sign
-                if ($tag->save()) {
-                    
+        if(is_array($changes)){
+            foreach ($changes as $field=>$array) {
+                preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
+                $matches = $matches[0];
+                foreach ($matches as $match) {
+                    $tag = new Tags;
+                    $tag->type = $type;
+                    $tag->taggedBy = Yii::app()->user->getName();
+                    $tag->type = $type;
+                    //cut out leading whitespace
+                    $tag->tag = trim($match);
+                    if ($model instanceof Contacts)
+                        $tag->itemName = $model->firstName . " " . $model->lastName;
+                    else if ($model instanceof Actions)
+                        $tag->itemName = $model->actionDescription;
+                    else if ($model instanceof Docs)
+                        $tag->itemName = $model->title;
+                    else
+                        $tag->itemName = $model->name;
+                    if (!isset($model->id)) {
+                        $model->save();
+                    }
+                    $tag->itemId = $model->id;
+                    $tag->timestamp = time();
+                    //save tags including # sign
+                    if ($tag->save()) {
+
+                    }
                 }
             }
         }

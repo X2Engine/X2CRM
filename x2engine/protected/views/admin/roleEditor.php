@@ -40,17 +40,17 @@
 
 // Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/jquery-1.3.2.min.js');
 // Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/jquery-ui-1.7.1.custom.min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-Yii::app()->clientScript->registerCss('multiselectCss',"
-.multiselect {
-	width: 460px;
-	height: 200px;
-}
-#switcher {
-	margin-top: 20px;
-}
-",'screen, projection');
+//Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
+//Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
+//Yii::app()->clientScript->registerCss('multiselectCss',"
+//.multiselect {
+//	width: 460px;
+//	height: 200px;
+//}
+//#switcher {
+//	margin-top: 20px;
+//}
+//",'screen, projection');
 
 
 Yii::app()->clientScript->registerScript('renderMultiSelect',"

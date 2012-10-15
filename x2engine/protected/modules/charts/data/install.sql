@@ -41,7 +41,7 @@ CREATE OR REPLACE VIEW `x2_bi_leads` AS
 	WHERE ((`a`.`assignedTo` > 0) AND (`b`.`id` = `a`.`assignedTo`))
 	)
 	ORDER BY leadDate ASC;
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	("charts",			"Charts",			1,			9,				0,			0,			0,			0,		0);

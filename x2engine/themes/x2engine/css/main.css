@@ -577,7 +577,7 @@ p.descrip{
 
 
 .history.half-width {width:35%;}
-.history .text-area-wrapper {margin:0;padding:0;}
+.history .text-area-wrapper {margin:0;padding:2px 4px;}
 .history #save-publisher {
 	width:70px;
 	text-align:center;

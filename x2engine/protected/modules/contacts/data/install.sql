@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `x2_contacts`,`x2_subscribe_contacts`;
+/*&*/
 CREATE TABLE `x2_contacts` (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(200),
@@ -46,16 +47,16 @@ CREATE TABLE `x2_contacts` (
 	INDEX (email),
 	INDEX (assignedTo)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_subscribe_contacts(
 	contact_id				INT				UNSIGNED,
 	user_id					INT				UNSIGNED
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	("contacts",		"Contacts",			1,			0,				1,			1,			0,			0,		0);
-
+/*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES

@@ -36,10 +36,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-/* These have foreign key constraints in them and should thus be dropped first: */
-DROP TABLE IF EXISTS x2_list_criteria,x2_list_items;
-
 DROP TABLE IF EXISTS x2_admin;
+/*&*/
 CREATE TABLE x2_admin(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout					INT,
@@ -78,8 +76,9 @@ CREATE TABLE x2_admin(
 	unique_id		VARCHAR(32) NOT NULL DEFAULT "none",
 	edition			VARCHAR(10) NOT NULL DEFAULT "opensource"
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_changelog;
+/*&*/
 CREATE TABLE x2_changelog(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(50)		NOT NULL,
@@ -91,8 +90,9 @@ CREATE TABLE x2_changelog(
     newValue                TEXT,
 	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_criteria;
+/*&*/
 CREATE TABLE x2_criteria(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	modelType				VARCHAR(100),
@@ -102,15 +102,17 @@ CREATE TABLE x2_criteria(
 	users					TEXT,
 	type					VARCHAR(250)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_dropdowns;
+/*&*/
 CREATE TABLE x2_dropdowns (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
 	options					TEXT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_fields;
+/*&*/
 CREATE TABLE x2_fields (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	modelName				VARCHAR(100),
@@ -128,8 +130,9 @@ CREATE TABLE x2_fields (
 	INDEX (modelName),
 	UNIQUE (modelName, fieldName)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_form_layouts;
+/*&*/
 CREATE TABLE x2_form_layouts (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	model					VARCHAR(250)	NOT NULL,
@@ -140,8 +143,9 @@ CREATE TABLE x2_form_layouts (
 	createDate				BIGINT,
 	lastUpdated				BIGINT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_lead_routing;
+/*&*/
 CREATE TABLE x2_lead_routing( 
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	criteria				TEXT,
@@ -150,9 +154,12 @@ CREATE TABLE x2_lead_routing(
 	rrId					INT				DEFAULT 0,
 	groupType				INT
 ) COLLATE = utf8_general_ci;
-
-
+/*&*/
+/* These have foreign key constraints in them and should thus be dropped first: */
+DROP TABLE IF EXISTS x2_list_criteria,x2_list_items;
+/*&*/
 DROP TABLE IF EXISTS x2_lists;
+/*&*/
 CREATE TABLE x2_lists (
 	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	assignedTo				VARCHAR(20),
@@ -166,7 +173,7 @@ CREATE TABLE x2_lists (
 	createDate				BIGINT			NOT NULL,
 	lastUpdated				BIGINT			NOT NULL
 ) COLLATE utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_list_criteria (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	listId					INT				UNSIGNED NOT NULL,
@@ -174,11 +181,10 @@ CREATE TABLE x2_list_criteria (
 	attribute				VARCHAR(40)		NULL,
 	comparison				VARCHAR(10)		NULL,
 	value					VARCHAR(100)	NOT NULL,
-	
 	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_list_items (
 	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	emailAddress			VARCHAR(255)	NULL,
@@ -189,12 +195,12 @@ CREATE TABLE x2_list_items (
 	opened					INT				UNSIGNED NOT NULL DEFAULT 0,
 	clicked					INT				UNSIGNED NOT NULL DEFAULT 0,
 	unsubscribed			INT				UNSIGNED NOT NULL DEFAULT 0,
-	
 	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_modules;
+/*&*/
 CREATE TABLE x2_modules (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(100),
@@ -207,8 +213,9 @@ CREATE TABLE x2_modules (
 	editable				INT,
 	custom					INT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_notifications;
+/*&*/
 CREATE TABLE x2_notifications( 
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(20),
@@ -222,19 +229,20 @@ CREATE TABLE x2_notifications(
 	viewed					TINYINT			DEFAULT 0,
 	createDate				BIGINT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_phone_numbers;
+/*&*/
 CREATE TABLE x2_phone_numbers(
 	modelId					INT				UNSIGNED NOT NULL,
 	modelType				VARCHAR(100)	NOT NULL,
 	number					VARCHAR(40)		NOT NULL,
     fieldName               VARCHAR(255),
-	
 	INDEX (modelType,modelId),
 	INDEX (number)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_profile;
+/*&*/
 CREATE TABLE x2_profile(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	fullName				VARCHAR(60)		NOT NULL,
@@ -277,21 +285,33 @@ CREATE TABLE x2_profile(
 	userCalendarsVisible	TINYINT			DEFAULT 1,
 	groupCalendarsVisible	TINYINT			DEFAULT 1,
 	tagsShowAllUsers		TINYINT,
-	
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_relationships;
-CREATE TABLE x2_relationships( 
+/*&*/
+CREATE TABLE x2_relationships ( 
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstType				VARCHAR(100),
 	firstId					INT,
 	secondType				VARCHAR(100),
 	secondId				INT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
+/* The following needs to be dropped first; there is a foreign key constraint */
+DROP TABLE IF EXISTS x2_role_to_workflow;
+/*&*/
+DROP TABLE IF EXISTS x2_roles;
+/*&*/
+CREATE TABLE x2_roles (
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name					VARCHAR(250),
+	users					TEXT
+) COLLATE = utf8_general_ci;
+/*&*/
 DROP TABLE IF EXISTS x2_role_exceptions;
+/*&*/
 CREATE TABLE x2_role_exceptions (
 	id						INT				NOT NULL AUTO_INCREMENT primary key,
 	workflowId				INT,
@@ -299,31 +319,27 @@ CREATE TABLE x2_role_exceptions (
 	roleId					INT,
 	replacementId int
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_role_to_permission;
+/*&*/
 CREATE TABLE x2_role_to_permission (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId					INT,
 	fieldId					INT,
 	permission				INT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_role_to_user;
+/*&*/
 CREATE TABLE x2_role_to_user (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId					INT,
 	userId					INT,
 	type					VARCHAR(250)
 ) COLLATE = utf8_general_ci;
-
-DROP TABLE IF EXISTS x2_roles;
-CREATE TABLE x2_roles (
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name					VARCHAR(250),
-	users					TEXT
-) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_sessions;
+/*&*/
 CREATE TABLE x2_sessions(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	user					VARCHAR(250),
@@ -331,8 +347,9 @@ CREATE TABLE x2_sessions(
 	IP						VARCHAR(40)		NOT NULL,
 	status					TINYINT			NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_social;
+/*&*/
 CREATE TABLE x2_social(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(40)		NOT NULL,
@@ -343,8 +360,9 @@ CREATE TABLE x2_social(
 	timestamp				INT,
 	lastUpdated				BIGINT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_tags;
+/*&*/
 CREATE TABLE x2_tags( 
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(50)		NOT NULL,
@@ -354,16 +372,18 @@ CREATE TABLE x2_tags(
 	itemName				VARCHAR(250),
 	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_temp_files;
+/*&*/
 CREATE TABLE x2_temp_files (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	folder					VARCHAR(10),
 	name					TEXT,
 	createDate				INT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 DROP TABLE IF EXISTS x2_urls;
+/*&*/
 CREATE TABLE x2_urls(
 	 id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	 title					VARCHAR(20)				NOT NULL,

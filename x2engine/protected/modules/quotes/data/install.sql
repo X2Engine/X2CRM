@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS x2_quotes,x2_quotes_products;
-
+/*&*/
 CREATE TABLE x2_quotes(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(40)		NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE x2_quotes(
 	currency				VARCHAR(40),
 	locked					TINYINT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_quotes_products( 
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	quoteId					INT,
@@ -40,10 +40,11 @@ CREATE TABLE x2_quotes_products(
 	adjustment				FLOAT,
 	adjustmentType			VARCHAR(20)
 ) COLLATE = utf8_general_ci;
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	("quotes",			"Quotes",			1,			12,				1,			1,			0,			0,		0);
-
+/*&*/
 INSERT INTO x2_fields
 (modelName,		fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES

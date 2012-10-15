@@ -284,6 +284,12 @@ return array(
 			'itemChildTable' => 'x2_auth_item_child',
 			'assignmentTable' => 'x2_auth_assignment',
 		),
+        // 'clientScript'=>array(
+            // 'class' => 'X2ClientScript',
+		// ),
+		
+		
+		
 		/*array(
 			'connectionString' => 'mysql:host=localhost;dbname=test',
 			'emulatePrepare' => true,

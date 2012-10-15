@@ -87,8 +87,8 @@ class InlineEmailAction extends CAction {
 					$emailBody = preg_replace('/{signature}/u','<!--BeginSig-->'.$signature.'<!--EndSig-->',$emailBody);
 					
 					// check if subject is empty, or is from another template
-					if(empty($this->model->subject) || CActiveRecord::model('Docs')->countByAttributes(array('type'=>'email','title'=>$this->model->subject)))
-						$this->model->subject = $template->title;
+					if(empty($this->model->subject) || CActiveRecord::model('Docs')->countByAttributes(array('type'=>'email','subject'=>$this->model->subject)))
+						$this->model->subject = $template->subject;
 					
 					// if there is a model name/id available, look it up and use its attributes
 					if(isset($this->model->modelName, $this->model->modelId)) {

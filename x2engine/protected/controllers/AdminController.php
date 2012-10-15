@@ -150,21 +150,21 @@ class AdminController extends Controller {
      * @return array An array of behaviors to implement. 
      */
 	public function behaviors() {
-	$file = 'protected/components/LeadRoutingBehavior.php';
-        if(!file_exists($file)) {
-        if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
-            $url = 'x2base';
-        } else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
-            $url = 'x2planet';
-        }
-        $this->ccopy("http://$url.com/updates/x2engine/" . $file, $file);
+		$file = 'protected/components/LeadRoutingBehavior.php';
+		if (!file_exists($file)) {
+			if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
+				$url = 'x2base';
+			} else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
+				$url = 'x2planet';
+			}
+			$this->ccopy("http://$url.com/updates/x2engine/" . $file, $file);
+		}
+		return array(
+			'LeadRoutingBehavior' => array(
+				'class' => 'LeadRoutingBehavior'
+			)
+		);
 	}
-	return array(
-            'LeadRoutingBehavior'=>array(
-                'class'=>'LeadRoutingBehavior'
-            )
-        );	
-    }
 
 	/**
      * @deprecated
@@ -1760,15 +1760,15 @@ class AdminController extends Controller {
 							// New convention:
 							// If element is a string, treat as a path to an SQL script file.
 							// Otherwise, if array, treat as a list of SQL commands to run.
+							$sqlComm = $sql;
 							if (is_string($sql)) {
 								if (file_exists($sql)) {
-									Yii::app()->db->createCommand(file_get_contents($sql));
+									$sqlComm = explode('/*&*/', file_get_contents($sql));
 								}
-							} else {
-								foreach ($sql as $sqlLine) {
-									$query = Yii::app()->db->createCommand($sql);
-									$query->execute();
-								}
+							}
+							foreach ($sqlComm as $sqlLine) {
+								$query = Yii::app()->db->createCommand($sql);
+								$query->execute();
 							}
 						}
 					} else {
@@ -2440,7 +2440,13 @@ class AdminController extends Controller {
      * from the remote update server.
      */
     public function actionUpdater() {
-        include('protected/config/X2Config.php');
+		if(!file_exists('protected/config/X2Config.php')) {
+			// App is using old config files.
+			include('protected/config/emailConfig.php');
+		} else {
+			include('protected/config/X2Config.php');
+		}
+		
         $context = stream_context_create(array(
             'http' => array(
                 'timeout' => 15  // Timeout in seconds
@@ -2469,22 +2475,23 @@ class AdminController extends Controller {
             $this->ccopy("http://$url.com/updates/x2engine/" . $file, $file);
             $file = "protected/views/admin/updater.php";
             $this->ccopy("http://$url.com/updates/x2engine/" . $file, $file);
-            if (!isset($buildDate))
+            
+			$config = "<?php\n";
+			if (!isset($buildDate))
                 $buildDate = time();
-            $config = "<?php
-\$host='$host';
-\$user='$user';
-\$pass='$pass';
-\$dbname='$dbname';
-\$version='$version';
-\$updaterVersion='$updaterCheck';
-\$buildDate='$buildDate';
-?>";
+			$updaterVersion=$updaterCheck;
+			$appName = Yii::app()->name;
+			$email = Yii::app()->params->admin->emailFromAddr;
+			$language = Yii::app()->language;
+			foreach(array('appName','email','language','host','user','pass','dbname','version','updaterVersion') as $var)
+				$config .= "\$$var='".${$var}."';\n";
+			$config .= "\$buildDate = $buildDate;\n?>";
             file_put_contents('protected/config/X2Config.php', $config);
             $this->redirect('updater');
         }
 
-	$unique_id = Yii::app()->params->admin['unique_id'];
+	$admin = Yii::app()->params->admin;
+	$unique_id = isset($admin->unique_id) ? $admin->unique_id : 'none';
 	$contents = file_get_contents("http://www.$url.com/updates/update.php?version=$version&unique_id=$unique_id");
         $pieces = explode(";;", $contents);
         $newVersion = $pieces[3];
@@ -2523,6 +2530,7 @@ class AdminController extends Controller {
 		
         $admin = &Yii::app()->params->admin;
         if (isset($_POST['Admin'])) {
+			$admin->setAttributes($_POST['Admin']);
 			foreach(array('unique_id','edition') as $var)
 				if(isset($_POST['unique_id']))
 					$admin->$var = $_POST[$var];
@@ -2654,20 +2662,20 @@ class AdminController extends Controller {
             } else {
                 $url = $_POST['url'];
                 $updaterCheck = file_get_contents("http://www.$url.com/updates/updateCheck.php");
-                $newVersion = $_POST['version'];
-                if (!isset($buildDate))
-                    $buildDate = time();
-                $config = "<?php
-
-
-\$host='$host';
-\$user='$user';
-\$pass='$pass';
-\$dbname='$dbname';
-\$version='$newVersion';
-\$updaterVersion='$updaterCheck';
-\$buildDate='$buildDate';
-?>";
+                $version = $_POST['version'];
+                
+			$config = "<?php\n";
+			if (!isset($buildDate))
+                $buildDate = time();
+			$updaterVersion='$updaterCheck';
+			$appName = Yii::app()->name;
+			$email = Yii::app()->params->admin->emailFromAddr;
+			$language = Yii::app()->language;
+			foreach(array('appName','email','language','host','user','pass','dbname','version','updaterVersion','buildDate') as $var)
+				$config .= "\$$var='".${$var}."';\n";
+			$config .= "?>";
+            file_put_contents('protected/config/X2Config.php', $config);
+            $this->redirect('updater');
                 file_put_contents('protected/config/X2Config.php', $config);
                 echo "Update succeeded!";
             }

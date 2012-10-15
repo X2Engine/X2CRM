@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS `x2_campaigns`,`x2_campaigns_attachments`,`x2_web_forms`;
-
+/*&*/
 CREATE TABLE x2_campaigns (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT,
 	masterId				INT				UNSIGNED NULL,
@@ -23,7 +23,7 @@ CREATE TABLE x2_campaigns (
 	PRIMARY KEY (id),
 	FOREIGN KEY (masterId) REFERENCES x2_campaigns(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_campaigns_attachments (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT,
 	campaign				INT				UNSIGNED,
@@ -31,7 +31,7 @@ CREATE TABLE x2_campaigns_attachments (
 
 	PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 CREATE TABLE x2_web_forms(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT,
 	name					VARCHAR(100)	NOT NULL,
@@ -50,11 +50,11 @@ CREATE TABLE x2_web_forms(
 	
 	PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	("marketing",		"Marketing",		1,			2,				0,			1,			0,			0,		0);
-
+/*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES

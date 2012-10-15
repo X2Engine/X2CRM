@@ -62,6 +62,11 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->label($model,'title'); ?>
 		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'title'); ?>
+        <?php if($this->action->id=='createEmail' || ($this->action->id=='update' && $model->type=='email')){ ?>
+            <?php echo $form->label($model,'subject'); ?>
+            <?php echo $form->textField($model,'subject',array('size'=>60,'maxlength'=>255)); ?>
+            <?php echo $form->error($model,'subject'); ?>
+        <?php } ?>
 		<span id="savetime">
 			<?php if(isset($_GET['saved'])){
 				$date=date("g:i:s A",$_GET['time']);

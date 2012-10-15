@@ -2,10 +2,10 @@
 $timeDiff = time() - 1329420240;	// time that original dummy data was generated
 
 mysql_query("INSERT INTO x2_workflows (id, name) VALUES (1,'General Sales')") or addSqlError("Error inserting workflow data.");
-mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (1,1,'Lead')") or addSqlError("Error inserting workflow data.");
-mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (2,1,'Suspect')") or addSqlError("Error inserting workflow data.");
-mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (3,1,'Prospect')") or addSqlError("Error inserting workflow data.");
-mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, name) VALUES (4,1,'Customer')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (1,1,1,'Lead')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (2,1,2,'Suspect')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (3,1,3,'Prospect')") or addSqlError("Error inserting workflow data.");
+mysql_query("INSERT INTO x2_workflow_stages (id, workflowId, stageNumber, name) VALUES (4,1,4,'Customer')") or addSqlError("Error inserting workflow data.");
 
 mysql_query("INSERT INTO x2_users (firstName, lastName, username, password, officePhone, address, emailAddress, status) VALUES ('Chris','Hames','chames',md5('password'),
 		'831-555-5555','10 Downing St. Santa Cruz, CA 95060', 'chris@hames.com','1')") or addSqlError("Error inserting dummy data");

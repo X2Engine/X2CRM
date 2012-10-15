@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com
  * Community and support website: http://www.x2community.com
  *
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -198,9 +198,11 @@ class Notification extends CActiveRecord {
 				
 				
 				}
-            case 'lead_failure':
-                return "A lead failed to come through Lead Capture.  Check ".CHtml::link("here",Yii::app()->controller->createUrl("/contacts/cleanFailedLeads"))." to recover it.";
 
+			case 'lead_failure':
+				return Yii::t('app','A lead failed to come through Lead Capture. Check {link} to recover it.',array(
+					'{link}'=>CHtml::link(Yii::t('app','here'),Yii::app()->controller->createUrl('/contacts/cleanFailedLeads'))
+				));
 			case 'assignment':
 				if($passive)
 					return Yii::t('app','You have been assigned a record: {record}',array('{record}'=>$record->getLink()));

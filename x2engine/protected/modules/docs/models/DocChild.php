@@ -51,6 +51,7 @@ class DocChild extends Docs {
 
 		// $criteria->compare('id',$this->id);
 		$criteria->compare('title',$this->title,true);
+        $criteria->compare('subject',$this->subject,true);
 		// $criteria->compare('text',$this->text,true);
 		$criteria->compare('createdBy',$this->createdBy,true);
 		$criteria->compare('createDate',$this->createDate);
@@ -106,6 +107,7 @@ class DocChild extends Docs {
 			'updatedBy' => Yii::t('docs','Updated By'),
 			'lastUpdated' => Yii::t('docs','Last Updated'),
 			'editPermissions' => Yii::t('docs','Edit Permissions'),
+            'subject'=>Yii::t('docs','Subject'),
 			
 		);
 	}

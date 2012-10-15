@@ -37,7 +37,17 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
+Yii::app()->clientScript->registerCss('multiselectCss',"
+.multiselect {
+	width: 460px;
+	height: 200px;
+}
+#switcher {
+	margin-top: 20px;
+}
+",'screen, projection');
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',

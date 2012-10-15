@@ -43,17 +43,17 @@
 </div>
 <div class="form">
 <?php
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-Yii::app()->clientScript->registerCss('multiselectCss',"
-.multiselect {
-	width: 460px;
-	height: 200px;
-}
-#switcher {
-	margin-top: 20px;
-}
-",'screen, projection');
+//Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
+//Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
+//Yii::app()->clientScript->registerCss('multiselectCss',"
+//.multiselect {
+//	width: 460px;
+//	height: 200px;
+//}
+//#switcher {
+//	margin-top: 20px;
+//}
+//",'screen, projection');
 $list=Roles::model()->findAll();
 $names=array();
 foreach($list as $role){

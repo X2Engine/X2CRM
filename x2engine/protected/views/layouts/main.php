@@ -57,38 +57,38 @@ $cs = Yii::app()->clientScript;
 $jsVersion = '?'.Yii::app()->params->buildDate;
 
 // jQuery and jQuery UI libraries
-$cs->registerCoreScript('jquery');
-$cs->registerCoreScript('jquery.ui');
+$cs ->registerCoreScript('jquery')
+	->registerCoreScript('jquery.ui');
 
 // custom scripts
-$cs->registerScriptFile($baseUrl.'/js/layout.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/publisher.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/media.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/x2forms.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/tinyeditor.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion);
+$cs ->registerScriptFile($baseUrl.'/js/layout.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/publisher.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/media.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/x2forms.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/tinyeditor.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion);
 
 if(Yii::app()->session['translate'])
 	$cs->registerScriptFile($baseUrl.'/js/translator.js'.$jsVersion);
 
-$cs->registerScriptFile($baseUrl.'/js/backgroundImage.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion);
-$cs->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
+$cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
+	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
 
 // blueprint CSS framework
-$cs->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print');
-$cs->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection');
-$cs->registerCssFile($themeUrl.'/css/tinyeditor.css'.$jsVersion,'screen, projection');
-// $cs->registerCssFile($themeURL.'/css/jquery-ui.css'.$jsVersion,'screen, projection');
+$cs ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print')
+	->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/tinyeditor.css'.$jsVersion,'screen, projection');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion); 
 
 $cs->registerScript('fullscreenToggle','
@@ -103,8 +103,8 @@ $(document).ready(function() {
 });
 ',CClientScript::POS_END);
 
-$cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion);
-$cs->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
+$cs ->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
 /* if($this->getModule()!='mobile'){
 $notifUrl = $this->createUrl('/site/checkNotifications');
 // $cs->registerScript('updateNotificationJs', "
@@ -200,12 +200,12 @@ if($isGuest) {
 			if(!is_null($this->getModule()))
 				$module=$this->getModule()->id;
             if($permission)
-                $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key))? true : null);
+                $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key) && (!isset($_GET['static']) || $_GET['static']!='true'))? true : null);
 		} else {
 			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
 			if(isset($page)){
 				$id=$page->id;
-				$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/admin/viewPage/'.$id),'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/admin/viewPage/'.$id?true:null);
+				$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/docs/'.$id.'?static=true'),'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/docs/'.$id.'?static=true'?true:null);
 			}
 		}
 	}
@@ -263,7 +263,7 @@ else
 
 
 $userMenu = array(
-	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin'&&Yii::app()->controller->action->id!='viewPage')?true:null, 'visible'=>$isAdmin),
+	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
 
 	array('label' => Yii::t('app','Users'),'url' => array('/users/admin'),'visible'=>$isAdmin),

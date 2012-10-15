@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS x2_media;
+/*&*/
 CREATE TABLE x2_media(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	associationType			VARCHAR(40)		NOT NULL,
@@ -10,11 +11,11 @@ CREATE TABLE x2_media(
 	private					TINYINT,
 	description				TEXT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	("media",			"Media",			1,			10,				0,			0,			0,			0,		0);
-
+/*&*/
 INSERT INTO x2_media 
 (associationType, fileName) 
 VALUES

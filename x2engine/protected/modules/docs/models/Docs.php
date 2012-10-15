@@ -79,7 +79,7 @@ class Docs extends CActiveRecord {
 		return array(
 			array('title, text, createdBy', 'required'),
 			array('createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('title, editPermissions', 'length', 'max'=>100),
+			array('title, editPermissions, subject', 'length', 'max'=>100),
 			array('createdBy', 'length', 'max'=>60),
 			array('updatedBy', 'length', 'max'=>40),
 			array('type', 'length', 'max'=>10),
@@ -113,6 +113,7 @@ class Docs extends CActiveRecord {
 			'updatedBy' => Yii::t('docs','Updated By'),
 			'lastUpdated' => Yii::t('docs','Last Updated'),
 			'editPermissions' => Yii::t('docs','Edit Permissions'),
+            'subject'=>Yii::t('docs','Subject'),
 		);
 	}
 
@@ -132,7 +133,8 @@ class Docs extends CActiveRecord {
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('type',$this->type);
-		$criteria->compare('title',$this->title,true);
+		$criteria->compare('subject',$this->subject,true);
+        $criteria->compare('title',$this->title,true);
 		$criteria->compare('text',$this->text,true);
 		$criteria->compare('createdBy',$this->createdBy,true);
 		$criteria->compare('createDate',$this->createDate);
