@@ -5,7 +5,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -39,7 +39,7 @@
 
 $(function() {
 
-	$('a.x2-link').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'body'});
+	$('a.x2-link').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'body',iframeFix:true});
 
 	if(window.fullscreen)
 		$('#page-body').addClass('no-widgets');
@@ -226,11 +226,11 @@ $(function() {
 	
 	// deal with the left sidebar scrolling
 	
-	var sidebarMenu = $('#sidebar-left');
+	/* var sidebarMenu = $('#sidebar-left');
 	if (sidebarMenu.length && ($.browser != 'msie' || $.browser.version > 6)) {
 
 		var sidebarTop = sidebarMenu.parent().offset().top - 5;
-		var pageContainer = $('#flexible-content'); //.find('.container:first');
+		var pageContainer = $('#page-body'); //.find('.container:first');
 		var hasScrolled = false;
 		
 		sidebarMenu.parent().height(sidebarMenu.height()+20);
@@ -243,7 +243,7 @@ $(function() {
 						sidebarMenu.addClass('fixed').css('top','');
 						
 					if(sidebarMenu.hasClass('fixed'))
-						sidebarMenu.css('top',(Math.max(pageContainer.height() - sidebarMenu.height(),0) + 10)+'px').removeClass('fixed');
+						sidebarMenu.css('top',(Math.max(pageContainer.height() - sidebarMenu.height(),0))+'px').removeClass('fixed');
 						
 				} else {
 					sidebarMenu.addClass('fixed').css('top','');
@@ -253,7 +253,7 @@ $(function() {
 			}
 			hasScrolled = true;
 		});
-	}
+	} */
 	
 });
 

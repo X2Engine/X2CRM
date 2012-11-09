@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -37,7 +37,6 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
 $menuItems = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
@@ -65,6 +64,12 @@ if($this->route=='contacts/contacts/index') {
 	$dataProvider = $model->searchNewContacts();
 }
 
+$opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
+$accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
+
+if($opportunityModule->visible && $accountModule->visible)
+	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
 $this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
@@ -80,7 +85,7 @@ $('.search-form form').submit(function(){
 });
 
 $('#content').on('mouseup','#contacts-grid a',function(e) {
-	document.cookie = 'vcr-list=index; expires=0; path=/';
+	document.cookie = 'vcr-list=".$this->getAction()->getId()."; expires=0; path=/';
 });
 
 $('#createList').click(function() {

@@ -9,6 +9,7 @@ CREATE TABLE x2_products(
 	description				TEXT,
 	createDate				BIGINT,
 	lastUpdated				BIGINT,
+	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20),
 	status					VARCHAR(20),
 	currency				VARCHAR(40),
@@ -32,5 +33,6 @@ VALUES
 ("Product",		"description",			"Description",			0,		0,	"text",			0,			0,		NULL,			1,		0,			"Medium"),
 ("Product",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Product",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Product",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Product",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			""),
 ("Product",		"adjustment",			"Adjustment",			0,		0,	"varchar",		0,			0,		NULL,			0,		0,			"");

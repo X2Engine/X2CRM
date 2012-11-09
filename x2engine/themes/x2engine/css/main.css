@@ -5,12 +5,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -83,6 +83,15 @@ a.x2-button, input.x2-button, button.x2-button { /* , a.search-button */
 	-o-border-radius:		3px;
 }
 h2 .x2-button {padding:0 20px;}
+h2 .x2-button.email {padding:0 8px;}
+h2 .x2-button.email span {
+	height:24px;
+	width:25px;
+	background:url(../images/email_icon.png) center center no-repeat;
+	
+
+
+}
 a.x2-button:hover, input.x2-button:hover, button.x2-button:hover, input.hover {
 	color:black;
 	background-color:#fff;
@@ -954,10 +963,12 @@ div.workflow-status {display:block;float:left;line-height:20px;height:24px;width
 .action.list-view .icon.complete {		background-image:url(../images/action_complete.png); }
 .action.list-view .icon.workflow {		background-image:url(../images/action_workflow.png); }
 .action.list-view .icon.email {			background-image:url(../images/action_email.png); }
+.action.list-view .icon.emailOpened {			background-image:url(../images/action_email_opened.png); }
 .action.list-view .icon.note {			background-image:url(../images/action_comment.png); }
 .action.list-view .icon.call {			background-image:url(../images/action_call.png); }
 .action.list-view .icon.marketing {		background-image:url(../images/action_marketing.png); }
 .action.list-view .icon.event {			background-image:url(../images/action_event.png); }
+
 
 .action.list-view .items span.empty {padding:10px;display:block;}
 
@@ -1188,7 +1199,7 @@ div.record-title {
 	padding-bottom:5px;
 	overflow:auto;
 }
-div.record-title h2 {display:inline;}
+div.record-title h2 {display:inline;line-height:28px;}
 
 /* VCR Controls */
 div.vcrPager {

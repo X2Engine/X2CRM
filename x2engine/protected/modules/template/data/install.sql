@@ -7,6 +7,7 @@ CREATE TABLE x2_templates(
 		description TEXT,
 		createDate INT,
 		lastUpdated INT,
+		lastActivity BIGINT,
 		updatedBy VARCHAR(250)
 );
 /*&*/
@@ -14,11 +15,14 @@ INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
 	VALUES	('templates',		'Templates',	1,			1,				1,			1,			0,			1,		1);
 /*&*/
-INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES 
-		("Templates", "id", "ID", "0", "int"),
-		("Templates", "name", "Name", "0", "varchar"),
-		("Templates", "assignedTo", "Assigned To", "0", "assignment"),
-		("Templates", "description", "Description", "0", "text"),
-		("Templates", "createDate", "Create Date", "0", "date"),
-		("Templates", "lastUpdated", "Last Updated", "0", "date"),
-		("Templates", "updatedBy", "Updated By", "0", "assignment");
+INSERT INTO x2_fields 
+(modelName,		fieldName,			attributeLabel,		custom,		type		required,	readOnly, 		linkType,   searchable,	isVirtual,	relevance)
+VALUES
+("Templates",	"id",				"ID",					0,		"int"			0,			0,			NULL,		0,			0,			""			),
+("Templates",	"name",				"Name",					0,		"varchar"		0,			0,			NULL,		0,			0,			"High"		),
+("Templates",	"assignedTo",		"Assigned To",			0,		"assignment"	0,			0,			NULL,		0,			0,			""			),
+("Templates",	"description",		"Description",			0,		"text"			0,			0,			NULL,		0,			0,			"Medium"	),
+("Templates",	"createDate",		"Create Date",			0,		"date"			0,			0,			NULL,		0,			0,			""			),
+("Templates",	"lastUpdated",		"Last Updated",			0,		"date"			0,			0,			NULL,		0,			0,			""			),
+("Templates",	"lastActivity",		"Last Activity",		0,		"date"			0,			0,			NULL,		0,			0,			""			),
+("Templates",	"updatedBy",		"Updated By",			0,		"assignment"	0,			0,			NULL,		0,			0,			""			);

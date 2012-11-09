@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -140,15 +140,14 @@ class ContactsController extends x2base {
 
 		if ($this->checkPermissions($contact,'view')) {
 		
-			if(isset($_COOKIE['vcr-list']))
+			if(isset($_COOKIE['vcr-list'])){
 				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
+            }
 		
-			if ($contact->dupeCheck != '1') {
+			if ($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)) {
 				$criteria = new CDbCriteria();
 				$criteria->compare('CONCAT(firstName," ",lastName)', $contact->firstName . " " . $contact->lastName, false, "OR");
 				$criteria->compare('email', $contact->email, false, "OR");
-				$criteria->compare('phone', $contact->phone, false, "OR");
-				$criteria->compare('phone2', $contact->phone2, false, "OR");
 				$criteria->compare('id', "<>" . $contact->id, false, "AND");
 				$duplicates = Contacts::model()->findAll($criteria);
 				if (count($duplicates) > 0) {
@@ -174,7 +173,7 @@ class ContactsController extends x2base {
         $changes=CActiveRecord::model('Changelog')->findAll('type="Contacts" AND itemId="'.$contact->id.'" AND timestamp > '.$timestamp.' ORDER BY timestamp DESC');
 		foreach($changes as $change){
             $fieldName=$change->fieldName;
-            if($contact->hasAttribute($fieldName))
+            if($contact->hasAttribute($fieldName) && $fieldName!='id')
                 $contact->$fieldName=$change->oldValue;
         }
 		if(isset($this->portlets['TimeZone']))
@@ -386,6 +385,9 @@ class ContactsController extends x2base {
 			$oldRecord->assignedTo='Anyone';
 			$oldRecord->visibility=0;
 			$oldRecord->save();
+            Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
+            Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
+                            
 
 			$notif = new Notification;
 			$notif->user = 'admin';
@@ -395,11 +397,15 @@ class ContactsController extends x2base {
 			$notif->modelType = 'Contacts';
 			$notif->modelId = $_POST['id'];
 			$notif->save();
+            
+            $newRecord=Contacts::model()->findByPk($_POST['newId']);
+            $newRecord->dupeCheck=1;
+            $newRecord->save();
 
 			echo $_POST['newId'];
 		}
 	}
-
+ 
 	// Controller/action wrapper for create()
 	public function actionCreate() {
 		$model = new Contacts;
@@ -412,7 +418,7 @@ class ContactsController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if (isset($_POST['Contacts'])) {
-
+            $oldAttributes=$model->attributes;
 			$model->setX2Fields($_POST['Contacts']);
 
 			$criteria = new CDbCriteria();
@@ -422,7 +428,7 @@ class ContactsController extends x2base {
 			$criteria->compare('phone2', $model->phone2, false, "OR");
 
 			if(isset($_POST['x2ajax'])) {
-			    if($this->create($model,$model->attributes, '1')) { // success creating account?
+			    if($this->create($model,$oldAttributes, '1')) { // success creating account?
 			    	$primaryAccountLink = '';
 			    	$newPhone = '';
 			    	$newWebsite = '';
@@ -484,7 +490,7 @@ class ContactsController extends x2base {
 					));
 					$renderFlag = false;
 				} else {
-					$this->create($model, $model->attributes, '0');
+					$this->create($model, $oldAttributes, '0');
 				}
 			}
 		}
@@ -607,8 +613,6 @@ class ContactsController extends x2base {
 				$criteria = new CDbCriteria();
 				$criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
 				$criteria->compare('email', $model->email, false, "OR");
-				$criteria->compare('phone', $model->phone, false, "OR");
-				$criteria->compare('phone2', $model->phone2, false, "OR");
 				$criteria->compare('id', "<>" . $model->id, false, "AND");
 				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
 				if (count($duplicates) > 0) {
@@ -623,13 +627,14 @@ class ContactsController extends x2base {
 			} else {
 				$this->update($model, $oldAttributes, false);
 			}
-		}
+		}else{
 
-		$this->render('update', array(
-			'model' => $model,
-			'users' => $users,
-			'accounts' => $accounts,
-		));
+            $this->render('update', array(
+                'model' => $model,
+                'users' => $users,
+                'accounts' => $accounts,
+            ));
+        }
 	}
 
 	// Default action - displays all visible Contact Lists
@@ -711,12 +716,14 @@ class ContactsController extends x2base {
 	// Lists all contacts assigned to this user
 	public function actionMyContacts() {
 		$model = new Contacts('search');
+        Yii::app()->user->setState('vcr-list', 'myContacts');
 		$this->render('index', array('model'=>$model));
 	}
 
 	// Lists all contacts assigned to this user
 	public function actionNewContacts() {
 		$model = new Contacts('search');
+        Yii::app()->user->setState('vcr-list', 'newContacts');
 		$this->render('index', array('model'=>$model));
 	}
 
@@ -866,7 +873,7 @@ class ContactsController extends x2base {
 			$default->value = '';
 			$default->attribute = '';
 			$default->comparison = 'contains';
-			$criteriaModels[] = $default;
+			$criteriaModels[] = $default; 
 		}
 
 		$this->render('createList', array(
@@ -1183,85 +1190,346 @@ class ContactsController extends x2base {
 		$file->download();
 	}
 
-	public function actionImportContacts() {
-		if (isset($_FILES['contacts'])) {
+//	public function actionImportContacts() {
+//		if (isset($_FILES['contacts'])) {
+//
+//			$temp = CUploadedFile::getInstanceByName('contacts');
+//			$temp->saveAs('contacts.csv');
+//			$this->import('contacts.csv');
+//		}
+//		$this->render('importContacts');
+//	}
 
-			$temp = CUploadedFile::getInstanceByName('contacts');
-			$temp->saveAs('contacts.csv');
-			$this->import('contacts.csv');
-		}
-		$this->render('importContacts');
-	}
+	
 
-	public function actionImportExcel() {
-		if (isset($_FILES['contacts'])) {
-			$temp = CUploadedFile::getInstanceByName('contacts');
-			$temp->saveAs('contacts.csv');
-			$this->importExcel('contacts.csv');
-		}
-		$this->render('importExcel');
-	}
+//	private function import($file) {
+//		$arr = file($file);
+//
+//		for ($i = 1; $i < count($arr) - 1; $i++) {
+//
+//			$str = $arr[$i] . $arr[$i + 1];
+//			$i++;
+//			$pieces = explode(',', $str);
+//
+//			$model = new Contacts;
+//
+//			$model->visibility = 1;
+//			$model->createDate = time();
+//			$model->lastUpdated = time();
+//			$model->updatedBy = 'admin';
+//			$model->backgroundInfo = $this->stripquotes($pieces[77]);
+//			$model->firstName = $this->stripquotes($pieces[1]);
+//			$model->lastName = $this->stripquotes($pieces[3]);
+//			$model->assignedTo = Yii::app()->user->getName();
+//			$model->company = $this->stripquotes($pieces[5]);
+//			$model->title = $this->stripquotes($pieces[7]);
+//			$model->email = $this->stripquotes($pieces[57]);
+//			$model->phone = $this->stripquotes($pieces[31]);
+//			$model->address = $this->stripquotes($pieces[8]) . ' ' . $this->stripquotes($pieces[9]) . ' ' . $this->stripquotes($pieces[10]);
+//			$model->city = $this->stripquotes($pieces[11]);
+//			$model->state = $this->stripquotes($pieces[12]);
+//			$model->zipcode = $this->stripquotes($pieces[13]);
+//			$model->country = $this->stripquotes($pieces[14]);
+//
+//			if ($model->save()) {
+//			   
+//			}
+//		}
+//		unlink($file);
+//		$this->redirect('index');
+//	}
+    
+    
 
-	private function import($file) {
-		$arr = file($file);
-
-		for ($i = 1; $i < count($arr) - 1; $i++) {
-
-			$str = $arr[$i] . $arr[$i + 1];
-			$i++;
-			$pieces = explode(',', $str);
-
-			$model = new Contacts;
-
-			$model->visibility = 1;
-			$model->createDate = time();
-			$model->lastUpdated = time();
-			$model->updatedBy = 'admin';
-			$model->backgroundInfo = $this->stripquotes($pieces[77]);
-			$model->firstName = $this->stripquotes($pieces[1]);
-			$model->lastName = $this->stripquotes($pieces[3]);
-			$model->assignedTo = Yii::app()->user->getName();
-			$model->company = $this->stripquotes($pieces[5]);
-			$model->title = $this->stripquotes($pieces[7]);
-			$model->email = $this->stripquotes($pieces[57]);
-			$model->phone = $this->stripquotes($pieces[31]);
-			$model->address = $this->stripquotes($pieces[8]) . ' ' . $this->stripquotes($pieces[9]) . ' ' . $this->stripquotes($pieces[10]);
-			$model->city = $this->stripquotes($pieces[11]);
-			$model->state = $this->stripquotes($pieces[12]);
-			$model->zipcode = $this->stripquotes($pieces[13]);
-			$model->country = $this->stripquotes($pieces[14]);
-
-			if ($model->save()) {
-			   
-			}
-		}
-		unlink($file);
-		$this->redirect('index');
-	}
-
-	private function importExcel($file) {
-		$fp = fopen($file, 'r+');
-
-		$meta = fgetcsv($fp);
-		while ($arr = fgetcsv($fp)) {
-			$model = new Contacts;
-			$attributes = array_combine($meta, $arr);
-			foreach ($attributes as $attribute => $value) {
-				if ($model->hasAttribute($attribute)) {
-					$model->$attribute = $value;
-				}
-			}
-            if(empty($model->visibility))
-                $model->visibility=1;
-			if ($model->save()) {
-				
-			}else{
-                printR($model->getErrors(),true);
+    public function actionImportExcel() {
+        function createImportMap($attributes,$meta){
+            $originalAttributes=$attributes;
+            $attributes=array_map('strtolower',$attributes);
+            $processedMeta=array_map('strtolower',$meta);
+            $processedMeta=preg_replace('/[\W|_]/','',$processedMeta);
+            $labels=Contacts::model()->attributeLabels();
+            $labels=array_map('strtolower',$labels);
+            $labels=preg_replace('/[\W|_]/','',$labels);
+            foreach($meta as $metaVal){
+                $originalMetaVal=$metaVal;
+                $metaVal=strtolower(preg_replace('/[\W|_]/','',$metaVal));
+                if(in_array($metaVal,$attributes)){
+                    $attrKey=array_search($metaVal,$attributes);
+                    $_SESSION['importMap'][$originalAttributes[$attrKey]]=$originalMetaVal;
+                }elseif(in_array($metaVal,$labels)){
+                    $attrKey=array_search($metaVal,$labels);
+                    $_SESSION['importMap'][$attrKey]=$originalMetaVal;
+                }elseif(count(preg_grep("/\b$metaVal/i",$attributes))>0){
+                    $keys=array_keys(preg_grep("/\b$metaVal/i",$attributes));
+                    $attrKey=$keys[0];
+                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
+                        $_SESSION['importMap'][$originalAttributes[$attrKey]]=$originalMetaVal;
+                }elseif(count(preg_grep("/\b$metaVal/i",$labels))>0){
+                    $keys=array_keys(preg_grep("/\b$metaVal/i",$labels));
+                    $attrKey=$keys[0];
+                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
+                        $_SESSION['importMap'][$attrKey]=$originalMetaVal;
+                }
             }
-		}
-
-		unlink($file);
-		$this->redirect('index');
+            foreach($originalAttributes as $attribute){
+                if(in_array($attribute,$processedMeta)){
+                    $metaKey=array_search($attribute,$processedMeta);
+                    $_SESSION['importMap'][$attribute]=$meta[$metaKey];
+                }elseif(count(preg_grep("/\b$attribute/i",$processedMeta))>0){
+                    $matches=preg_grep("/\b$attribute/i",$processedMeta);
+                    $metaKeys=array_keys($matches);
+                    $metaValue=$meta[$metaKeys[0]];
+                    if(!isset($_SESSION['importMap'][$attribute]))
+                        $_SESSION['importMap'][$attribute]=$metaValue;
+                }
+            }
+            
+        }
+		if (isset($_FILES['contacts'])) {
+			$temp = CUploadedFile::getInstanceByName('contacts');
+			$temp->saveAs('contacts.csv');
+			//$this->importExcel('contacts.csv');
+            $fp=fopen('contacts.csv','r+');
+            $meta=fgetcsv($fp);
+            while ("" === end($meta)) {
+                array_pop($meta);
+            }
+            if(count($meta)==1){
+                $version=$meta[0];
+                $meta=fgetcsv($fp);
+            }
+            $_SESSION['offset']=ftell($fp);
+            $_SESSION['metaData']=$meta;
+            $x2attributes=array_keys(CActiveRecord::model('Contacts')->attributes);
+            while(""===end($x2attributes)){
+                array_pop($x2attributes);
+            }
+            $_SESSION['importMap']=array();
+            $_SESSION['fields']=CActiveRecord::model('Contacts')->getFields(true);
+            $_SESSION['x2attributes']=$x2attributes;
+            //$compareX2Attributes=array_map('strtolower',$x2attributes);
+            createImportMap($x2attributes,$meta);
+            //printR($x2diff);
+            //printR($metadiff);
+            //printR($matchingAttributes,true);
+            $importMap=$_SESSION['importMap'];
+            $importMap=array_flip($importMap);
+            $sampleRecords=array();
+            for($i=0;$i<5;$i++){
+                if($sampleRecord=fgetcsv($fp)){
+                    $sampleRecord=array_combine($meta,$sampleRecord);
+                    $sampleRecords[]=$sampleRecord;
+                }
+            }
+            fclose($fp);
+            $this->render('processContacts',array(
+                'attributes'=>$x2attributes,
+                'meta'=>$meta,
+                'fields'=>$_SESSION['fields'],
+                'sampleRecords'=>$sampleRecords,
+                'importMap'=>$importMap,
+            ));
+		}else{
+            $this->render('importExcel');
+        }
+	}
+    
+    public function actionPrepareImport(){
+        if(isset($_POST['attributes']) && isset($_POST['keys'])){
+            $keys=$_POST['keys'];
+            $attributes=$_POST['attributes'];
+            $_SESSION['tags']=array();
+            if(isset($_POST['tags'])){
+                $tags=explode(',',$_POST['tags']);
+                foreach($tags as $tag){
+                    if(substr($tag,0,1)!="#")
+                        $tag="#".$tag;
+                    $_SESSION['tags'][]=$tag;
+                }
+            }
+            $_SESSION['createRecords']=$_POST['createRecords']=="checked"?"1":"0";
+            $_SESSION['imported']=0;
+            $_SESSION['failed']=0;
+            $_SESSION['created']=array();
+            $importMap=array_combine($keys,$attributes);
+            foreach($importMap as $key=>&$value){
+                $key=$this->deCamelCase($key);
+                $key=preg_replace('/\[W|_]/',' ',$key);
+                $key=mb_convert_case($key,MB_CASE_TITLE,"UTF-8");
+                $key=preg_replace('/\W/','',$key);
+                if($value=='createNew'){
+                    $fieldLookup=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$key));
+                    if(isset($fieldLookup)){
+                        echo "2 ".$key;
+                        break;
+                    }else{
+                        $columnName=strtolower($key);
+                        $field=new Fields;
+                        $field->modelName="Contacts";
+                        $field->type="varchar";
+                        $field->fieldName=$columnName;
+                        $field->required=0;
+                        $field->searchable=1;
+                        $field->relevance="Medium";
+                        $field->custom=1;
+                        $field->modified=1;
+                        $field->attributeLabel=$field->generateAttributeLabel($key);
+                        if($field->save()){
+                            $fieldType="VARCHAR(250)";
+                            $sql = "ALTER TABLE x2_contacts ADD COLUMN $columnName $fieldType";
+                            $command = Yii::app()->db->createCommand($sql);
+                            $result = $command->query();
+                            $value=$key;
+                        }
+                    }
+                }
+            }
+            $_SESSION['importMap']=$importMap;
+            $cache = Yii::app()->cache;
+            if (isset($cache))
+                $cache->flush();
+            }
+    }
+    
+	public function actionImportRecords() {
+        if(isset($_POST['count']) && file_exists('contacts.csv')){
+            $count=$_POST['count'];
+            $metaData = $_SESSION['metaData'];
+            $importMap = $_SESSION['importMap'];
+            $fp = fopen('contacts.csv', 'r+');
+            fseek($fp, $_SESSION['offset']);
+            for($i=0;$i<$count;$i++){
+                if (($arr = fgetcsv($fp)) !== false){
+                    while ("" === end($arr)) {
+                        array_pop($arr);
+                    }
+                    $relationships=array();
+                    $importAttributes=array_combine($metaData,$arr);
+                    $model=new Contacts;
+                    foreach($metaData as $attribute){
+                        if($model->hasAttribute($importMap[$attribute])){
+                            $fieldRecord=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$importMap[$attribute]));
+                            switch($fieldRecord->type){
+                                case "link":
+                                    $className=ucfirst($fieldRecord->linkType);
+                                    if(is_numeric($importAttributes[$attribute])){
+                                        $model->$importMap[$attribute]=$importAttributes[$attribute];
+                                        $relationship=new Relationships;
+                                        $relationship->firstType='Contacts';
+                                        $relationship->secondType=$className;
+                                        $relationship->secondId=$importAttributes[$attribute];
+                                        $relationships[]=$relationship;
+                                    }else{
+                                        $lookup=CActiveRecord::model(ucfirst($fieldRecord->linkType))->findByAttributes(array('name'=>$importAttributes[$attribute]));
+                                        if(isset($lookup)){
+                                            $model->$importMap[$attribute]=$lookup->id;
+                                            $relationship=new Relationships;
+                                            $relationship->firstType='Contacts';
+                                            $relationship->secondType=$className;
+                                            $relationship->secondId=$lookup->id;
+                                            $relationships[]=$relationship;
+                                        }elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords']==1){
+                                            $className=ucfirst($fieldRecord->linkType);
+                                            if(class_exists($className)){
+                                                $lookup = new $className;
+                                                $lookup->name=$importAttributes[$attribute];
+                                                if($lookup->hasAttribute('visibility')){
+                                                    $lookup->visibility=1;
+                                                }
+                                                if($lookup->hasAttribute('description')){
+                                                    $lookup->description="Generated by Contacts import.";
+                                                }
+                                                if($lookup->hasAttribute('createDate')){
+                                                    $lookup->createDate=time();
+                                                }
+                                                if($lookup->save()){
+                                                    if(isset($_SESSION['created'][$className])){
+                                                        $_SESSION['created'][$className]++;
+                                                    }else{
+                                                        $_SESSION['created'][$className]=1;
+                                                    }
+                                                    $model->$importMap[$attribute]=$lookup->id;
+                                                    $relationship=new Relationships;
+                                                    $relationship->firstType='Contacts';
+                                                    $relationship->secondType=$className;
+                                                    $relationship->secondId=$lookup->id;
+                                                    $relationships[]=$relationship;
+                                                }
+                                            }
+                                        }else{
+                                            $model->$importMap[$attribute]=$importAttributes[$attribute];
+                                        }
+                                    }
+                                    break;
+                                case "date":
+                                    if(is_numeric($importAttributes[$attribute])){
+                                        $model->$importMap[$attribute]=$importAttributes[$attribute];
+                                    }elseif(strtotime($importAttributes[$attribute])!==false){
+                                        $model->$importMap[$attribute]=strtotime($importAttributes[$attribute]);
+                                    }else{
+                                    }
+                                    break;
+                                default:
+                                    $model->$importMap[$attribute]=$importAttributes[$attribute];
+                            }
+                        }
+                    }
+                    if(!isset($model->visibility))
+                        $model->visibility=1;
+                    if(empty($model->createDate)){
+                        $model->createDate=time();
+                    }
+                    if(empty($model->lastUpdated)){
+                        $model->lastUpdated=time();
+                    }
+                    if(empty($model->lastActivity)){
+                        $model->lastActivity=time();
+                    }
+                    if($model->validate()){
+                        $lookup=Contacts::model()->findByPk($model->id);
+                        if(isset($lookup)){
+                            Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$lookup->id));
+                            Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$lookup->id));
+                            $lookup->delete();
+                        }
+                        if($model->save()){
+                            $_SESSION['imported']++;
+                            foreach($relationships as $relationship){
+                                $relationship->firstId=$model->id;
+                                $relationship->save();
+                            }
+                            foreach($_SESSION['tags'] as $tag){
+                                $tagModel = new Tags;
+                                $tagModel->taggedBy = 'Import';
+                                $tagModel->timestamp = time();
+                                $tagModel->type = 'Contacts';
+                                $tagModel->itemId = $model->id;
+                                $tagModel->tag = $tag;
+                                $tagModel->itemName = $model->name;
+                                $tagModel->save();
+                            }
+                        }
+                    }else{
+                        $_SESSION['failed']++;
+                    }
+                }else{
+                    echo json_encode(array(
+                        '1',
+                        $_SESSION['imported'],
+                        $_SESSION['failed'],
+                        json_encode($_SESSION['created']),
+                    ));
+                    return;
+                }
+            }
+            $_SESSION['offset']=ftell($fp);
+            echo json_encode(array(
+                '0',
+                $_SESSION['imported'],
+                $_SESSION['failed'],
+                json_encode($_SESSION['created']),
+            ));
+        }
 	}
 
 	public function actionExport() {
@@ -1285,13 +1553,6 @@ class ContactsController extends x2base {
 		}
 
 		fclose($fp);
-	}
-
-	private function stripquotes($str) {
-		if (strlen($str) > 2) {
-			$str = substr($str, 1, strlen($str) - 2);
-		}
-		return $str;
 	}
 
 
@@ -1394,18 +1655,6 @@ class ContactsController extends x2base {
 				return;
 			}
 
-			//seek and process special params
-			if (!empty($_POST['tags'])) {
-				$taglist = explode(',', $_POST['tags']);
-				if (count($taglist) > 1) {
-					if (!empty($model->backgroundInfo)) $model->backgroundInfo .= "\n";
-					foreach ($taglist as $tag) {
-						$model->backgroundInfo .= ' #'. trim($tag);
-					}
-					$model->backgroundInfo .= "\n";
-				}
-			}
-
 			//use the submitted info to create an action
 			$action = new Actions;
 			$action->actionDescription = Yii::t('contacts','Web Lead') ."\n\n". Yii::t('contacts','Name') .': '. $model->firstName ." ". $model->lastName 
@@ -1438,12 +1687,34 @@ class ContactsController extends x2base {
 				//TODO: upload profile picture url from webleadfb
 			}
 
+			// add tags
+			if(!empty($_POST['tags'])) {
+				$taglist = explode(',', $_POST['tags']);
+				if($taglist !== false) {
+					foreach($taglist as &$tag) {
+						if($tag === '')
+							continue;
+                        if(substr($tag,0,1)!='#')
+                            $tag="#".$tag;
+						$tagModel = new Tags;
+						$tagModel->taggedBy = 'API';
+						$tagModel->timestamp = time();
+						$tagModel->type = 'Contacts';
+						$tagModel->itemId = $model->id;
+						$tagModel->tag = $tag;
+						$tagModel->itemName = $model->name;
+						$tagModel->save();
+					}
+				}
+			}
+
+			// create action
 			$action->type = 'note';
 			$action->assignedTo = $model->assignedTo;
 			$action->visibility = '1';
 			$action->associationType = 'contacts';
 			$action->associationId = $model->id;
-			$action->associationName = $model->firstName ." ". $model->lastName;
+			$action->associationName = $model->name;
 			$action->createDate = $now;
 			$action->lastUpdated = $now;
 			$action->completeDate = $now;

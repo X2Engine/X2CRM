@@ -5,7 +5,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -53,9 +53,9 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 	height:38px;
 	background-size:cover;
 	/* border-bottom:1px solid #333; */
-	-moz-box-shadow:		0px 1px 10px 0px rgba(0,0,0,0.5);
-	-webkit-box-shadow:		0px 1px 10px 0px rgba(0,0,0,0.5);
-	box-shadow:				0px 1px 10px 0px rgba(0,0,0,0.5);
+	-moz-box-shadow:		0px 0px 10px 0px rgba(0,0,0,0.5);
+	-webkit-box-shadow:		0px 0px 10px 0px rgba(0,0,0,0.5);
+	box-shadow:				0px 0px 10px 0px rgba(0,0,0,0.5);
 }
 #header.defaultBg {
 	background: #417dcd; /* Old browsers */
@@ -109,7 +109,7 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 	width:200px;
 	margin:6px 0 0 0;
 	float:right;
-	padding:3px 5px 5px 5px;
+	padding:4px 5px 4px 5px;
 	border:1px solid #444;
 	border-right:none;
 	background:#f0f0f0;
@@ -562,6 +562,30 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 	box-shadow:				0 1px 6px rgba(0,0,0,0.5);
 }
 
+#sidebar-left *, #main-menu-bar * {
+	-webkit-touch-callout:	none;
+	-webkit-user-select:	none;
+	-khtml-user-select:		none;
+	-moz-user-select:		none;
+	-ms-user-select:		none;
+	user-select:			none;
+}
+#sidebar-left #recent-items a, #sidebar-left #top-contacts-list a, #main-menu-bar #notif-box * {
+	-webkit-touch-callout:	text;
+	-webkit-user-select:	text;
+	-khtml-user-select:		text;
+	-moz-user-select:		text;
+	-ms-user-select:		text;
+	user-select:			text;
+}
+#search-bar-box {
+	-webkit-touch-callout:	text;
+	-webkit-user-select:	text;
+	-khtml-user-select:		text;
+	-moz-user-select:		text;
+	-ms-user-select:		text;
+	user-select:			text;
+}
 
 .portlet {
 	background:none;

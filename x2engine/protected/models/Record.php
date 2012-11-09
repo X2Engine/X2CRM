@@ -7,7 +7,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -63,9 +63,13 @@ class Record {
 				$userId=1;
 			}
             $temp=array();
-            $assignment=User::model()->findByAttributes(array('username'=>$record->assignedTo));
-            $temp['assignedTo']=isset($assignment)?CHtml::link($assignment->firstName." ".$assignment->lastName,array('profile/'.$assignment->id)):"";
-			if($record instanceof Contacts) {
+            if($record->hasAttribute('assignedTo')){
+                $assignment=User::model()->findByAttributes(array('username'=>$record->assignedTo));
+                $temp['assignedTo']=isset($assignment)?CHtml::link($assignment->firstName." ".$assignment->lastName,array('profile/'.$assignment->id)):"";
+            }else{
+                $temp['assignedTo']='';
+            }
+            if($record instanceof Contacts) {
 				$temp['id']=$record->id;
 				$temp['name']=$record->firstName.' '.$record->lastName;
 				$temp['description']=$record->backgroundInfo;
@@ -107,7 +111,11 @@ class Record {
 				elseif($record instanceof Accounts) {
 					$temp['link']='/accounts/'.$record->id;
 					$temp['type']='Account';
-				} else {
+				} elseif($record instanceof Quote || $record instanceof Product){
+                    $temp['type']=get_class($record);
+					$temp['link']='/'.strtolower(get_class($record)).'s/'.$record->id;
+                }else {
+                    $temp['type']=get_class($record);
 					$temp['link']='/'.strtolower(get_class($record)).'/'.$record->id;
 				}
 

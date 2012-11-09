@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -206,9 +206,19 @@
 	</div>
 </div>
 
+
 <?php 
 
 $this->endWidget();
+
+// set date, time, and region format for when javascript replaces datetimepicker
+// datetimepicker is replaced in the calendar module when the user clicks on a day
+$dateformat = $this->controller->formatDatePicker('medium');
+$timeformat = $this->controller->formatTimePicker();
+$ampmformat = $this->controller->formatAMPM();
+$region = Yii::app()->locale->getLanguageId(Yii::app()->locale->getId());
+if($region == 'en')
+	$region = '';
 
 $eventFix = "";
 if($showNewEvent == true && $showLogACall == false && $showNewComment == false && $showNewAction == false) {
@@ -266,6 +276,12 @@ $(function() {
 	var halfIconWidth = parseInt($('#publisher-saving-icon').css('width'), 10)/2;
 	var iconLeft = publisherLabelCenter - halfIconWidth;
 	$('#publisher-saving-icon').css('left', iconLeft + 'px');
+	
+	// set date and time format for when datetimepicker is recreated
+	$('#publisher-form').data('dateformat', '$dateformat');
+	$('#publisher-form').data('timeformat', '$timeformat');
+	$('#publisher-form').data('ampmformat', '$ampmformat');
+	$('#publisher-form').data('region', '$region');
 	
 	$eventFix
 });");

@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -53,20 +53,12 @@ class SiteController extends x2base {
 	public function filters() {
 		return array(
 			'setPortlets',
+            'accessControl',
 		);
 	}
     
     protected function beforeAction($action=null){
-        $auth=Yii::app()->authManager;
-        $action=ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
-        $authItem=$auth->getAuthItem($action);
-        if(Yii::app()->user->checkAccess($action) || is_null($authItem)){
-            return true;
-        }elseif(Yii::app()->user->isGuest){
-            $this->redirect($this->createUrl('/site/login'));
-        }else{
-            throw new CHttpException(403, 'You are not authorized to perform this action.');
-        }
+        return true;
     }
 
 	public function accessRules() {
@@ -78,7 +70,9 @@ class SiteController extends x2base {
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('groupChat','newMessage','getMessages','checkNotifications','updateNotes','addPersonalNote',
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
-					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact','viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship'),
+					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact',
+                    'viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
+                    'whatsNew','toggleVisibility','page'),
 				'users'=>array('@'),
 			),
 			// array('allow',
@@ -1200,6 +1194,146 @@ class SiteController extends x2base {
 			Yii::app()->end();
 		}
 	}
+	
+	
+	public function actionCreateRecords() {
+		$contact = new Contacts;
+		$account = new Accounts;
+		$opportunity = new Opportunity;
+		$users = User::getNames();
+		
+		if (isset($_POST['Contacts']) && isset($_POST['Accounts']) && isset($_POST['Opportunity']) ) {
+	//		var_dump($_POST);
+	//		exit();
+			$contact->setX2Fields($_POST['Contacts']);
+			$account->setX2Fields($_POST['Accounts']);
+			$opportunity->setX2Fields($_POST['Opportunity']);
+			
+			$allValid = true;
+			
+			if($contact->validate() == false)
+				$allValid = false;
+			
+			if($account->validate() == false)
+				$allValid = false;
+			
+			if($opportunity->validate() == false)
+				$allValid = false;
+			
+			if($allValid) {
+				$c = $this->createContact($contact, $contact->attributes, '1');
+				$a = $this->createAccount($account, $account->attributes, '1');
+				$o = $this->createOpportunity($opportunity, $opportunity->attributes, '1');
+				
+				
+				
+				if($c && $a && $o) { // all records created?
+					$contact->company = $account->id;
+					$contact->update();
+					$opportunity->accountName = $account->id;
+					$opportunity->update();
+					
+					Relationships::create('Contacts', $contact->id, 'Accounts', $account->id);
+					Relationships::create('Opportunity', $opportunity->id, 'Contacts', $contact->id);
+					Relationships::create('Opportunity', $opportunity->id, 'Accounts', $account->id);	
+					
+					if(isset($_GET['ret'])) {
+						if($_GET['ret'] == 'contacts')
+							$this->redirect(array("/contacts/{$contact->id}"));
+						else if($_GET['ret'] == 'accounts')
+							$this->redirect(array("/accounts/{$account->id}"));
+						else if($_GET['ret'] == 'opportunities')
+							$this->redirect(array("/opportunities/{$opportunity->id}"));
+					} else {
+						$this->redirect(array("/contacts/{$contact->id}"));
+					}
+				}
+			}
+		}
+		
+		$this->render('createRecords', array(
+			'contact'=>$contact,
+			'account'=>$account,
+			'opportunity'=>$opportunity,
+			'users'=>$users,
+		));
+	}
+	
+	/** 
+	 * Creates contact record
+	 *
+	 * Call this function from createRecords
+	 */
+	public function createContact($model, $oldAttributes, $api) {
+		$model->createDate = time();
+		$model->lastUpdated = time();
+        if(empty($model->visibility) && $model->visibility!=0)
+            $model->visibility=1;
+		if ($api == 0) {
+			parent::create($model, $oldAttributes, $api);
+		} else {
+			$lookupFields = Fields::model()->findAllByAttributes(array('modelName' => 'Contacts', 'type' => 'link'));
+			foreach ($lookupFields as $field) {
+				$fieldName = $field->fieldName;
+				if (isset($model->$fieldName)) {
+					$lookup = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
+					if (isset($lookup))
+						$model->$fieldName = $lookup->id;
+				}
+			}
+			return parent::create($model, $oldAttributes, $api);
+		}
+	}
+	
+	/** 
+	 * Creates account record
+	 *
+	 * Call this function from createRecords
+	 */
+	public function createAccount($model,$oldAttributes, $api) {
+            
+		$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
+		$model->createDate=time();
+		if($api==0)
+			parent::create($model,$oldAttributes,$api);
+		else
+			return parent::create($model,$oldAttributes,$api);
+	}
+	
+	/** 
+	 * Creates opportunity record
+	 *
+	 * Call this function from createRecords
+	 */
+	public function createOpportunity($model,$oldAttributes,$api=0) {
+		
+		// process currency into an INT
+//		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+		
+		if(isset($model->associatedContacts))
+			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
+		$model->createDate = time();
+		$model->lastUpdated = time();
+		// $model->expectedCloseDate = $this->parseDate($model->expectedCloseDate);
+		if($api == 1) {
+			return parent::create($model,$oldAttributes,$api);
+		} else {
+			parent::create($model,$oldAttributes,'0');
+		}
+	}
+
+	/** 
+	 * Checks for any tasks that need to be executed at a specific time
+	 *
+	 * Needs to be called by a cronjob.
+	 */
+	public function actionCron() {
+		$emails = CActiveRecord::model('Actions')->findByAttributes(array(
+			'type'=>'email_staged',
+			'dueDate'=>'<'.time(),
+			'complete'=>'No'
+		));
+	}
 
 	/**
 	 * Logs out the current user and redirect to homepage.
@@ -1220,4 +1354,15 @@ class SiteController extends x2base {
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
+    
+    public function actionToggleVisibility(){
+        $username=Yii::app()->user->getName();
+        $ip = $this->getRealIp();
+        $session=Session::model()->findByAttributes(array('user'=>$username,'IP'=>$ip));
+        if(isset($session)){
+            $session->status=!$session->status;
+            $session->save();
+        }
+        $this->redirect($_GET['redirect']);
+    }
 }

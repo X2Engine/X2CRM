@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -89,7 +89,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 	<div class="row">
             <?php echo $form->labelEx($model,'modelType'); ?>
-            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Opportunity'=>'Opportunities','Accounts'=>'Accounts','Docs'=>'Docs'),
+            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Opportunity'=>'Opportunities','Accounts'=>'Accounts','Quote'=>'Quotes'),
                 array(
                 'empty'=>'Select a model',
                 'ajax' => array(

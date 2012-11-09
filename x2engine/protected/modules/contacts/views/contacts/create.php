@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,11 +38,19 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
+$menuItems = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact')),
-));
+);
+
+$opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
+$accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
+
+if($opportunityModule->visible && $accountModule->visible)
+	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+$this->actionMenu = $this->formatMenu($menuItems);
 
 ?>
 <h2><?php echo Yii::t('contacts','Create Contact'); ?></h2> 

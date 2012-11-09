@@ -5,12 +5,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,6 +40,7 @@
 var x2CreateContactDialog = null; // dialog box for creating a new contact on the fly
 var x2CreateAccountDialog = null; // dialog box for creating a new action on the fly
 var x2CreateOpportunityDialog = null; // dialog box for creating a new opportunity on the fly
+var x2CreateCaseDialog = null; // dialog box for creating a new service case on the fly
 
 /**
  * Create an account dialog when the '+' next to the Account field in Contacts
@@ -64,7 +65,7 @@ $.fn.initCreateAccountDialog = function () {
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
-	    hide: 'fade',
+	    hide: 'fade'
 	});
 	
 	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
@@ -153,7 +154,7 @@ $.fn.initCreateContactDialog = function (createContactUrl, modelName, modelId, a
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
-	    hide: 'fade',
+	    hide: 'fade'
 	});
 	
 	x2CreateContactDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
@@ -211,7 +212,9 @@ function x2CreateContactDialogHandleSubmit(form) {
 	$.post($('#create-contact').data('createContactUrl'), formdata, function(response) {
 	    response = $.parseJSON(response);
 	    if(response['status'] == 'success') {
-	    	$.fn.yiiGridView.update('opportunities-grid');
+	    	if($('#opportunities-grid').length == 1) {
+	    		$.fn.yiiGridView.update('opportunities-grid');
+	    	}
 	    	x2CreateContactDialog.dialog('close');
 	    	x2CreateContactDialog.empty(); // clean up dialog
 	    	$('body').off('click','#Contact_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
@@ -234,6 +237,12 @@ function x2CreateContactDialogHandleSubmit(form) {
 	    	}
 	    	if($('#relationships-form').is(':hidden')) // show relationships if they are hidden
 	    		toggleRelationshipsForm();
+	    	
+	    	if(response['name'] != undefined && response['id'] != undefined && $('#Services_contactId').length == 1 && $('#Services_contactId_id').length == 1) {
+	    		// Services Module uses this to set field 'Contact'
+	    		$('#Services_contactId').val(response['name']);
+	    		$('#Services_contactId_id').val(response['id']);
+	    	}
 	    
 	    } else if (response['status'] == 'userError') {
 	    	if(response['page'] != undefined) {
@@ -295,7 +304,7 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
-	    hide: 'fade',
+	    hide: 'fade'
 	});
 	
 	x2CreateOpportunityDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
@@ -358,6 +367,130 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 
 
 
+
+
+
+
+/**
+ * Initialize a Dialog to create a Service Case
+ *
+ * Use a JQuery selector to add this function to an element. When the element is
+ * clicked it will open a dialog to create a new Service Case. When the Case is saved
+ * a new relationship is created between the new Case and the model with the id modelId.
+ * This function is used in the view for Contacts.
+ *
+ * @param string createCaseUrl url for creating a new Service Case
+ * @param string modelName model type (Contacts) for the relationship
+ * @param int modelId id of the model for the relationship
+ * @param string contactName Contact name to associate with the new Case (can be blank)
+ * @param string assignedTo user to assign new Case to
+ * @param string tooltip text for when the mouse hovers over the button that creates the dialog
+ *
+ */
+$.fn.initCreateCaseDialog = function (createCaseUrl, modelName, modelId, contactName, assignedTo, tooltip) {
+
+	$(this).data('createCaseUrl', createCaseUrl);
+	$(this).data('modelName', modelName);
+	$(this).data('modelId', modelId);
+	$(this).data('contact-name', contactName);
+	$(this).data('assigned-to', assignedTo);
+	$(this).qtip({content: tooltip});
+
+	if(x2CreateCaseDialog != null) {
+		return; // don't create a 2nd dialog, if one already exists
+	}
+	
+	x2CreateCaseDialog = $('<div></div>', {id: 'x2-create-opportunity-dialog'});
+	
+	x2CreateCaseDialog.dialog({
+	    title: 'Create Case', 
+	    autoOpen: false,
+	    resizable: true,
+	    width: '650px',
+	    show: 'fade',
+	    hide: 'fade'
+	});
+	
+	x2CreateCaseDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
+	
+	$(this).click(function() {
+		if($(this).data('createCaseUrl') != undefined) {
+			if(x2CreateCaseDialog.data('inactive')) {
+				$.post($(this).data('createCaseUrl'), {x2ajax: true}, function(response) {
+					x2CreateCaseDialog.append(response);
+					x2CreateCaseDialog.dialog('open');
+					x2CreateCaseDialog.data('inactive', false); // indicate that a create-case page has been appended, don't do it until the old one is submitted or cleared.
+					x2CreateCaseDialog.find('.formSectionHide').remove();
+					submit = x2CreateCaseDialog.find('input[type="submit"]');
+					form = x2CreateCaseDialog.find('form');
+//					submit.attr('disabled', 'disabled');
+					$(submit).click(function() {
+						 return x2CreateCaseDialogHandleSubmit(form);
+					});
+					if($('#create-case').data('contact-name') != undefined)
+						$('#Services_contactId').val($('#create-case').data('contact-name'));
+					if($('#create-case').data('assigned-to') != undefined)
+						$('#Services_assignedTo_assignedToDropdown').val($('#create-case').data('assigned-to'));
+				});
+			} else {
+				x2CreateCaseDialog.dialog('open');
+			}
+		}
+	});
+	
+	return $(this);
+}
+
+function x2CreateCaseDialogHandleSubmit(form) {
+	var formdata = form.serializeArray();
+	var x2ajax = {}; // this form data object indicates this is an ajax request
+	                 // note: yii already uses the name 'ajax' for it's ajax calls, so we use 'x2ajax'
+	x2ajax['name'] = 'x2ajax';
+	x2ajax['value'] = '1';
+	var modelName = {};
+	modelName['name'] = 'ModelName';
+	modelName['value'] = $('#create-case').data('modelName');
+	var modelId = {};
+	modelId['name'] = 'ModelId';
+	modelId['value'] = $('#create-case').data('modelId');
+	formdata.push(x2ajax);
+	formdata.push(modelName);
+	formdata.push(modelId);
+	$.post($('#create-case').data('createCaseUrl'), formdata, function(response) {
+	    response = $.parseJSON(response);
+	    if(response['status'] == 'success') {
+	    	$.fn.yiiGridView.update('opportunities-grid');
+	    	x2CreateCaseDialog.dialog('close');
+	    	x2CreateCaseDialog.empty(); // clean up dialog
+	    	$('body').off('click','#Services_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+	    	x2CreateCaseDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
+	    	if($('#relationships-form').is(':hidden')) // show relationships if they are hidden
+	    		toggleRelationshipsForm();
+	    
+	    } else if (response['status'] == 'userError') {
+	    	if(response['page'] != undefined) {
+	    		x2CreateCaseDialog.empty(); // clean up dialog
+	    		$('body').off('click','#Services_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
+	    		x2CreateCaseDialog.append(response['page']);
+				x2CreateCaseDialog.find('.formSectionHide').remove();
+				submit = x2CreateCaseDialog.find('input[type="submit"]');
+				form = x2CreateCaseDialog.find('form');
+//				submit.attr('disabled', 'disabled');
+				$(submit).click(function() {
+				    return x2CreateCaseDialogHandleSubmit(form);
+				});
+	    	}
+	    }
+	});
+	
+	return false; // prevent html submit
+}
+
+
+
+
+
+
 /**
  * Initialize a Dialog to create an Account
  *
@@ -399,7 +532,7 @@ $.fn.initCreateAccountDialog2 = function (createAccountUrl, modelName, modelId, 
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
-	    hide: 'fade',
+	    hide: 'fade'
 	});
 	
 	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a create action page to this dialog

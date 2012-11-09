@@ -14,6 +14,7 @@ CREATE TABLE x2_opportunities(
 	createDate				BIGINT,
 	associatedContacts		TEXT,
 	lastUpdated				BIGINT,
+	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20)
 ) COLLATE = utf8_general_ci;
 /*&*/
@@ -25,7 +26,7 @@ INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES
 ("Opportunity",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
-("Opportunity",		"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL,			1,		0,			"High"),
+("Opportunity",		"name",					"Name",					0,		0,	"varchar",		1,			0,		NULL,			1,		0,			"High"),
 ("Opportunity",		"accountName",			"Account",				0,		0,	"link",			0,			0,		"Accounts",	 	0,		0,			""),
 ("Opportunity",		"quoteAmount",			"Quote Amount",			0,		0,	"currency",		0,			0,		NULL,			0,		0,			""),
 ("Opportunity",		"salesStage",			"Sales Stage",			0,		0,	"dropdown",		0,			0,		"6",			0,		0,			""),
@@ -37,4 +38,5 @@ VALUES
 ("Opportunity",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Opportunity",		"associatedContacts",	"Contacts",				0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Opportunity",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Opportunity",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Opportunity",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			"");

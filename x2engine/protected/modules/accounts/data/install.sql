@@ -14,6 +14,7 @@ CREATE TABLE `x2_accounts` (
 	associatedContacts	TEXT,
 	description			TEXT,
 	lastUpdated			BIGINT,
+	lastActivity		BIGINT,
 	updatedBy			VARCHAR(20)
 ) COLLATE = utf8_general_ci;
 /*&*/
@@ -24,7 +25,7 @@ INSERT INTO `x2_modules`
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES
-("Accounts",		"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL,			1,		0,			"High"),
+("Accounts",		"name",					"Name",					0,		0,	"varchar",		1,			0,		NULL,			1,		0,			"High"),
 ("Accounts",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Accounts",		"website",				"Website",				0,		0,	"url",			0,			0,		NULL,			0,		0,			""),
 ("Accounts",		"type",					"Type",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
@@ -37,4 +38,5 @@ VALUES
 ("Accounts",		"associatedContacts",	"Contacts",				0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Accounts",		"description",			"Description",			0,		0,	"text",			0,			0,		NULL,			1,		0,			"Medium"),
 ("Accounts",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Accounts",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Accounts",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			"");

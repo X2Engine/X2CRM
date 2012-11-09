@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -53,7 +53,7 @@ class ActionsController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('invalid','sendReminder'),
+				'actions'=>array('invalid','sendReminder','emailOpened'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -216,6 +216,10 @@ class ActionsController extends x2base {
 
 		if($association != null) {
 			$model->associationName = $association->name;
+			if($association->hasAttribute('lastActivity') && $api==0) {
+				$association->lastActivity = time();
+				$association->update(array('lastActivity'));
+			}
 		} else {
 			$model->associationName='None';
 			//$model->associationId = 0;
@@ -347,9 +351,13 @@ class ActionsController extends x2base {
 			    
 			$association = $this->getAssociation($model->associationType,$model->associationId);
 			
-			if($association)
+			if($association){
 				$model->associationName = $association->name;
-			else
+                if($association->hasAttribute('lastActivity')) {
+                    $association->lastActivity = time();
+                    $association->update(array('lastActivity'));
+                }
+            }else
 				$model->associationName = 'none';
 			
 			if($model->associationName == 'None' && $model->associationType != 'none')
@@ -545,7 +553,7 @@ class ActionsController extends x2base {
 				if(is_numeric($action->assignedTo)) { // we have an action assigned to a group? Then check if we are in the group
 					$inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
 				}
-				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || $inGroup || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
+				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || $inGroup || Yii::app()->user->checkAccess('AdminIndex')) { // make sure current user can edit this action
 					$action->complete = 'Yes';
 					$action->completedBy = Yii::app()->user->getName();
 					$action->completeDate = time();
@@ -568,7 +576,7 @@ class ActionsController extends x2base {
 				if(is_numeric($action->assignedTo)) { // we have an action assigned to a group? Then check if we are in the group
 					$inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
 				}
-				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || $inGroup || Yii::app()->user->getName()=='admin') { // make sure current user can edit this action
+				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=="" || $inGroup || Yii::app()->user->checkAccess('AdminIndex')) { // make sure current user can edit this action
 					$action->complete = 'No';
 					$action->completeDate = null;
 					$action->update();
@@ -601,7 +609,7 @@ class ActionsController extends x2base {
 				if(Yii::app()->user->getName()==$action->assignedTo || // make sure current user can edit this action
 					$action->assignedTo=='Anyone' || 
 					$action->assignedTo=="" || 
-					Yii::app()->user->getName()=='admin') {
+					Yii::app()->user->checkAccess('AdminIndex')) {
 				   
 					$action->complete = $complete;
 					$action->completedBy = Yii::app()->user->getName();
@@ -675,7 +683,7 @@ class ActionsController extends x2base {
 			$inGroup = Groups::inGroup(Yii::app()->user->id, $model->assignedTo);
 		}
 		
-		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || $inGroup || Yii::app()->user->getName()=='admin') {
+		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || $inGroup || Yii::app()->user->checkAccess('AdminIndex')) {
 			
 			if(isset($_POST['note']))
 				$model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
@@ -742,6 +750,50 @@ class ActionsController extends x2base {
 			}
 		}else{
 			print_r($model->getErrors());
+		}
+	}
+	
+	/**
+	 * Called when a Contact opens an email sent from Inline Email Form. Inline Email Form
+	 * appends an image to the email with src pointing to this function. This function
+	 * creates an action associated with the Contact indicating that the email was opened. 
+	 *
+	 * @param integer $uid The unique id of the recipient
+	 * @param string $type 'open', 'click', or 'unsub'
+	 *
+	 */
+	public function actionEmailOpened($uid, $type) {
+		if($type == 'open') {
+			$track = TrackEmail::model()->findByAttributes(array('uniqueId'=>$uid));
+			if($track && $track->opened == null) {
+				$action = $track->action;
+				if($action) {
+					$note = new Actions;
+					$note->type = 'emailOpened';
+					$now = time();
+					$note->createDate = $now;
+					$note->lastUpdated = $now;
+					$note->completeDate = $now;
+					$note->complete = 'Yes';
+					$note->updatedBy = 'admin';
+					$note->associationType = $action->associationType;
+					$note->associationId = $action->associationId;
+					$note->associationName = $action->associationName;
+					$note->visibility = $action->visibility;
+					$note->assignedTo = $action->assignedTo;
+					$note->actionDescription = Yii::t('marketing','Contact has opened the email sent on ');
+					$note->actionDescription .= $this->formatLongDateTime($action->createDate) . ".\n\n";
+					$note->actionDescription .= $action->actionDescription;
+					if($note->save()) {
+						$track->opened = $now;
+						$track->update();
+					}
+				}
+			}
+			
+			//return a one pixel transparent png
+			header('Content-Type: image/png');
+			echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
 		}
 	}
 	

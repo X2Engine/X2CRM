@@ -10,7 +10,8 @@ CREATE TABLE `x2_docs` (
 	createDate				BIGINT,
 	editPermissions			VARCHAR(250), 
 	updatedBy				VARCHAR(40),
-	lastUpdated				BIGINT
+	lastUpdated				BIGINT,
+    visibility              TINYINT
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules` 

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -56,13 +56,23 @@
 <?php echo $form->wrapTitle($form->os ? $form->message['updatesTitle'] : $form->message['registrationTitle']); ?>
 <hr />
 <?php if (in_array($form->config['unique_id'],array('none',Null))): ?>
-<?php if ($form->os): ?>
+<?php if ($form->os && !$form->config['isUpgrade']): ?>
 		<div class="row">
 			<label for="receiveUpdates"><?php echo $form->label['receiveUpdates']; ?></label><input type="checkbox" value='1' <?php echo $form->config['receiveUpdates'] ? 'checked="checked"' : Null; ?> name="receiveUpdates" id="receiveUpdates" />
 		</div><!-- .row -->
 <?php
 	else:
-		include($form->nosForm);
+		$mandatoryFields = array('unique_id', 'firstName', 'lastName', 'email');
+		if (in_array($form->config['unique_id'],array(Null,'none'))) {
+			echo $form->message['registrationSubtext'] . '<br /><br />';
+			$form->textFields($mandatoryFields);
+			echo '<br />'.$form->message['registrationPostText'].': <a href="http://www.x2engine.com/contact/">x2engine.com</a><br /><br />';
+		} else {
+			echo $form->message['registrationSuccess'] . '<br /><br />';
+			$form->hiddenFields($mandatoryFields);
+		}
+		echo '<input type="checkbox" style="display:none" value="1"'.($form->config['receiveUpdates'] ? ' checked="checked"' : Null).' name="receiveUpdates" id="receiveUpdates" />';
+
 	endif;
 ?>
 	<div id="receiveUpdates-form">
@@ -96,7 +106,8 @@
 		<?php echo $attr; ?> = '<?php echo $form->config[$attr]; ?>';
 <?php endforeach; ?>
 		
-		jQuery(document).ready(function($) {
+		$(function() {
+			$.support.cors = true;
 			if (typeof submitExternalForm === 'undefined') {
 				submitExternalForm = function() {document.forms[formId].submit();};
 			}
@@ -193,7 +204,7 @@
 					postData.emailHash = SHA256(idEmail+SHA256(idEmail));
 				}
 				var loadingImg = $('<img src="<?php echo $form->config['themeUrl']; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'});
-
+				
 				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
 					form.find('.error').removeClass('error');
 					status.fadeIn(300).html(loadingImg);

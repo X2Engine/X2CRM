@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 $this->pageTitle = $newRecord->name; 
-
+$authParams['assignedTo'] = $newRecord->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
@@ -51,11 +51,14 @@ $this->actionMenu = $this->formatMenu(array(
 <h2><u>You Entered</u><br />
 <?php
 
-echo $newRecord->firstName." ".$newRecord->lastName."</h2>";
+echo $newRecord->firstName." ".$newRecord->lastName;
+if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams) && $ref!='create')
+	echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$newRecord->id)),array('class'=>'x2-button'));
+echo "</h2>";
 $this->renderPartial('application.components.views._detailView',array('model'=>$newRecord,'modelName'=>'contacts'));
 echo CHtml::ajaxButton("Use This Record",$this->createUrl('/contacts/ignoreDuplicates'),array(
 	'type'=>'POST',
-	'data'=>"data=".json_encode($newRecord->attributes)."&ref=".$ref,
+	'data'=>array('data'=>json_encode($newRecord->attributes),'ref'=>$ref),
 	'success'=>'function(data){
 		window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
 	}'
@@ -77,7 +80,7 @@ foreach($duplicates as $duplicate){
 			'type'=>'POST',
 			'data'=>"id=$newRecord->id&newId=$duplicate->id",
 			'success'=>'function(data){
-				window.location="'.$this->createUrl('/contacts/view?id').'"+data;
+				window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
 			}'
                     //
 		),array(

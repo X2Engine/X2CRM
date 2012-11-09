@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -88,8 +88,10 @@ class DocsController extends x2base {
 	}
 
 	public function actionGetItem($id) {
-		$model = $this->loadModel($id);
-		echo $model->text;
+        $model = $this->loadModel($id);
+        if((($model->visibility==1 || ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || Yii::app()->user->checkAccess('AdminIndex'))){ 
+            echo $model->text;
+        }
 	}
 		
 	/**
@@ -98,7 +100,18 @@ class DocsController extends x2base {
 	 */
 	public function actionView($id) {
 		$model = DocChild::model()->findByPk($id);
-        if (!isset($model))
+        if(isset($model)){
+            $permissions=explode(", ",$model->editPermissions);
+            if(in_array(Yii::app()->user->getName(),$permissions))
+                $editFlag=true;
+            else
+                $editFlag=false;
+        }
+        //echo $model->visibility;exit;
+        if (!isset($model) || 
+               !(($model->visibility==1 || 
+                ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || 
+                Yii::app()->user->checkAccess('AdminIndex')|| $editFlag))
             $this->redirect(array('docs/index'));
 
         $this->render('view', array(
@@ -123,6 +136,7 @@ class DocsController extends x2base {
 		if (isset($_POST['DocChild'])) {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['DocChild'];
+            $model->visibility=$_POST['DocChild']['visibility'];
 
 			$arr=$model->editPermissions;
 			if(isset($arr))
@@ -182,7 +196,7 @@ class DocsController extends x2base {
 	
 	public function actionChangePermissions($id){
 		$model=$this->loadModel($id);
-		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy) {
+		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy) {
 			$users=User::getNames();
 			unset($users['admin']);
 			unset($users['Anyone']);
@@ -243,7 +257,7 @@ class DocsController extends x2base {
 		$model=$this->loadModel($id);
 		$perm=$model->editPermissions;
 		$pieces=explode(", ",$perm);
-		if(Yii::app()->user->getName()=='admin' || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
+		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
 			if(isset($_POST['DocChild'])) {
 				$model->attributes=$_POST['DocChild'];
 				$model=$this->updateChangeLog($model,'Edited');
@@ -273,7 +287,7 @@ class DocsController extends x2base {
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 		} else throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
 

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -59,6 +59,12 @@ class SearchController extends x2base {
             array('deny', // deny all users
                 'users' => array('*'),
             ),
+        );
+    }
+    public function filters(){
+        return array(
+            'setPortlets',
+            'accessControl',
         );
     }
 
@@ -271,8 +277,8 @@ class SearchController extends x2base {
                         if (preg_match($regEx, $otherRecord->$fieldName) > 0) {
                             switch ($fieldRecord->relevance) {
                                 case "High":
-                                    if (!in_array($otherRecord, $high) && !in_array($otherRecord, $medium) && !in_array($otherRecord, $low) &&
-                                            !in_array($otherRecord, $userHigh) && !in_array($otherRecord, $userMedium) && !in_array($otherRecord, $userLow)) {
+                                    if (!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                            !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)) {
                                         if ($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
                                             $userHigh[] = $otherRecord;
                                         else
@@ -280,8 +286,8 @@ class SearchController extends x2base {
                                     }
                                     break;
                                 case "Medium":
-                                    if (!in_array($otherRecord, $high) && !in_array($otherRecord, $medium) && !in_array($otherRecord, $low) &&
-                                            !in_array($otherRecord, $userHigh) && !in_array($otherRecord, $userMedium) && !in_array($otherRecord, $userLow)) {
+                                    if (!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                            !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)) {
                                         if ($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
                                             $userMedium[] = $otherRecord;
                                         else
@@ -289,8 +295,8 @@ class SearchController extends x2base {
                                     }
                                     break;
                                 case "Low":
-                                    if (!in_array($otherRecord, $high) && !in_array($otherRecord, $medium) && !in_array($otherRecord, $low) &&
-                                            !in_array($otherRecord, $userHigh) && !in_array($otherRecord, $userMedium) && !in_array($otherRecord, $userLow)) {
+                                    if (!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                            !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)) {
                                         if ($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
                                             $userLow[] = $otherRecord;
                                         else
@@ -308,8 +314,8 @@ class SearchController extends x2base {
 
                             if (strlen($tempPhone) == 10) {
                                 $phoneLookup = PhoneNumber::model()->findByAttributes(array('modelType' => $fieldRecord->modelName, 'number' => $tempPhone, 'fieldName' => $fieldName));
-                                if (!in_array($otherRecord, $high) && !in_array($otherRecord, $medium) && !in_array($otherRecord, $low) &&
-                                        !in_array($otherRecord, $userHigh) && !in_array($otherRecord, $userMedium) && !in_array($otherRecord, $userLow)) {
+                                if (!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                        !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)) {
                                     if (isset($phoneLookup) && $otherRecord->id == $phoneLookup->modelId) {
                                         if ($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
                                             $userHigh[] = $otherRecord;

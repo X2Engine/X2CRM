@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -38,10 +38,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
+$menuItems = array(
 	array('label'=>Yii::t('opportunities','Opportunities List')),
 	array('label'=>Yii::t('opportunities','Create'), 'url'=>array('create')),
-));
+);
+
+$accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
+$contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
+
+if($accountModule->visible && $contactModule->visible)
+	$menuItems[] = array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'opportunities'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+$this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

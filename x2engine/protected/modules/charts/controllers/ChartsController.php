@@ -6,7 +6,7 @@
  *
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  *
  * Company website: http://www.x2engine.com
  * Community and support website: http://www.x2community.com
@@ -42,7 +42,7 @@
  * @package X2CRM.modules.charts.controllers 
  */
 class ChartsController extends x2base {
-
+    public $modelClass="";
 
 	public function getDateRange() {
 	

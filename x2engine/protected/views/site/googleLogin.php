@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,8 +40,12 @@
 
 $this->pageTitle=Yii::app()->name . ' - Login';
 
-
-
+?>
+<div class="form" id="login-form">
+<div class="cell">
+    <?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png','X2Engine',array('id'=>'login-logo','width'=>74,'height'=>84)); ?>
+</div>
+<?php
 
 Yii::app()->clientScript->registerCss('fixMenuShadow',"
 #page .container {
@@ -49,9 +53,7 @@ Yii::app()->clientScript->registerCss('fixMenuShadow',"
 	z-index:2;
 }
 ",'screen',CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScript('loginFocus',"
-$('#LoginForm_username').focus();
-",CClientScript::POS_READY);
+
 $admin=Admin::model()->findByPk(1);
 if(isset($admin->googleIntegration) && $admin->googleIntegration=='1'){
 
@@ -104,7 +106,9 @@ if(!isset($authUrl) && !isset($failure)){
 	$this->redirect('googleLogin');
 }
 ?>
+<?php  ?>
 <div id="login-box">
+    
 	<div id="error-message">
 	<?php
 		if(isset($failure) && $failure=='email'){
@@ -130,5 +134,13 @@ if(!isset($authUrl) && !isset($failure)){
 	<a class='x2-button' href='<?php echo $this->createUrl('login');?>'>Return to Login Screen</a>
 </div>
 <?php
-}
+} ?>
 
+<div class="row" style="margin-top:10px;text-align:center;">
+    <?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app','Login with Google'),
+            (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
+            ((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
+            $this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link')); ?>
+    <?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
+</div>
+</div>

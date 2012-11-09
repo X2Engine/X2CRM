@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -155,28 +155,17 @@ foreach($layoutData['sections'] as &$section) {
 							
 								if(isset($fields[$fieldName])) {
 									$field = &$fields[$fieldName];
-									// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
-									// $perms=array();
-									// foreach($fieldPerms as $permission){
-										// $perms[$permission->roleId]=$permission->permission;
-									// }
-									// $tempPerm=2;
-									// foreach($roles as $role){
-										// if(array_search($role,array_keys($perms))!==false){
-											// if($perms[$role]<$tempPerm)
-												// $tempPerm=$perms[$role];
-										// }
-									// }
-									// if($tempPerm==0){
+									if( ($field->fieldName == "company" || $field->fieldName == "accountName") && isset($hideAccount) && $hideAccount == true)
+										continue;
+
 									if(isset($fieldPermissions[$field->id])) {
 										if($fieldPermissions[$field->id] == 0) {
 											unset($item);
 											echo '</div></div>';
 											continue;
-										}
-										elseif($fieldPermissions[$field->id] == 1){
+										} elseif($fieldPermissions[$field->id] == 1) {
 											$item['readOnly']=true;
-																					}
+										}
 									}
 									
 									$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
@@ -215,6 +204,9 @@ foreach($layoutData['sections'] as &$section) {
 
 							if($field->fieldName == 'company') // add button to Acount label to create new account
 							    echo '<span class="create-account">+</span>';
+							
+							if($modelName == "services" && $field->fieldName == 'contactId')
+								echo '<span id="create-contact">+</span>';
 
 							echo '</div>';
 						}

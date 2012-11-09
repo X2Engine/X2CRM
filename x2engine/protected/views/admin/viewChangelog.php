@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -45,13 +45,19 @@
         'template'=> '<h2>Changelog</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$model->search(),
-        'filter'=>$model,
+    'dataProvider'=>$dataProvider,
+    'filter'=>$model,
+    'afterAjaxUpdate'=>'refreshQtipHistory',
 	'columns'=>array(
+        array(
+            'header'=>Yii::t('admin','History'),
+            'value'=>'$data->type=="Contacts"?CHtml::link("View",Yii::app()->controller->createUrl("/contacts/revisions?id=$data->itemId&timestamp=$data->timestamp"),array("class"=>"x2-hint","title"=>"Click to view the record at this point in its history.")):""',
+            'type'=>'raw',
+        ),
 		array(
-
+            
 			'name'=>'type',
-			'header'=>Yii::t('admin','Type'),
+			'header'=>Yii::t('admin','Record'),
 			'value'=>'
 				!is_null(CActiveRecord::model($data->type)->findByPk($data->itemId))?
 				($data->type!="Actions"?CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId)):
@@ -60,6 +66,24 @@
 			'type'=>'raw',
 		),
 		array(
+			'name'=>'fieldName',
+			'header'=>Yii::t('actions','Field Name'),
+			'value'=>'$data->fieldName',
+			'type'=>'raw',
+		),
+        array(
+			'name'=>'newValue',
+			'header'=>Yii::t('actions','New Value'),
+			'value'=>'$data->newValue',
+			'type'=>'raw',
+		),
+        array(
+			'name'=>'oldValue',
+			'header'=>Yii::t('actions','Old Value'),
+			'value'=>'$data->oldValue',
+			'type'=>'raw',
+		),
+        array(
 			'name'=>'changedBy',
 			'header'=>Yii::t('admin','Changed By'),
 			'value'=>'$data->changedBy',
@@ -72,25 +96,13 @@
 			'type'=>'raw',
                         'htmlOptions'=>array('width'=>'20%'),
 		),
-		array(
-			'name'=>'fieldName',
-			'header'=>Yii::t('actions','Field Name'),
-			'value'=>'$data->fieldName',
-			'type'=>'raw',
-		),
-        array(
-			'name'=>'oldValue',
-			'header'=>Yii::t('actions','Old Value'),
-			'value'=>'$data->oldValue',
-			'type'=>'raw',
-		),
-        array(
-			'name'=>'newValue',
-			'header'=>Yii::t('actions','New Value'),
-			'value'=>'$data->newValue',
-			'type'=>'raw',
-		)
 	),
 ));
-
+echo "<br />";
+echo CHtml::link('Clear Changelog','#',array('class'=>'x2-button', 'submit'=>'clearChangelog','confirm'=>'Are you sure you want to clear the changelog?'));
 ?>
+<script>
+    function refreshQtipHistory(){
+        $('.x2-hint').qtip();
+    }
+</script>

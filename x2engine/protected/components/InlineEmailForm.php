@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -70,67 +70,14 @@ class InlineEmailForm extends X2Widget {
 			$this->startHidden = false;
 		}
 
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/inlineEmailForm.js');
+		
  		Yii::app()->clientScript->registerScript('toggleEmailForm',
-		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n") .
-		"function toggleEmailForm() {
-			setupEmailEditor();
-			
-			if($('#inline-email-form .wide.form').hasClass('hidden')) {
-				$('#inline-email-form .wide.form').removeClass('hidden');
-				$('#inline-email-form .form.email-status').remove();
-				return;
-			}
-			
-			if($('#inline-email-form').is(':hidden')) {
-				$('.focus-mini-module').removeClass('focus-mini-module');
-				$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
-				$('html,body').animate({
-					scrollTop: ($('#inline-email-top').offset().top - 100)
-				}, 300);
-			}
-			
-			$('#inline-email-form').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
-			
-			$('#InlineEmail_subject').addClass('focus');
-			$('#InlineEmail_subject').focus();
-			$('#InlineEmail_subject').blur(function() {
-				$(this).removeClass('focus');
-			});
-		}
-		
-		$(function() {
-			// give send-email module focus when clicked
-		    $('#inline-email-form').click(function() {
-		    	if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
-		    		$('.focus-mini-module').removeClass('focus-mini-module');
-		    		$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
-		    	}
-		    });
-		    
-		    // give send-email module focus when tinyedit clicked
-		    $('#email-message').click(function() {
-		        if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
-		        	$('.focus-mini-module').removeClass('focus-mini-module');
-		        	$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
-		        }
-		    });
-		});
-		",CClientScript::POS_HEAD);
-		
-		Yii::app()->clientScript->registerScript('inlineEmailFormCC',
-		"$(document).delegate('#email-template','change',function() {
-			if($(this).val() != '0') // && $('#email-subject').val() == ''
-				$('#email-subject').val($(this).find(':selected').text());
-			$('#preview-email-button').click();
-		});
-		
-		",CClientScript::POS_READY);
-		
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() .'/js/inlineEmailForm.js');
-		
+		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n"),CClientScript::POS_HEAD);
+
 		parent::init();
 	}
 

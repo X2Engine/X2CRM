@@ -7,7 +7,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -106,7 +106,7 @@ class UpdatesForm {
 	 * @var boolean Form display flag
 	 */
 	public $os = True;
-	public $nosForm = 'protected/views/admin/_register.php';
+
 
 	public function __construct($config, $transFunc, $transFuncArgs = array()) {
 		$this->config = array(
@@ -126,13 +126,14 @@ class UpdatesForm {
 			'user_agent' => $_SERVER['HTTP_USER_AGENT'],
 			'registered' => 0,
 			'edition' => 'opensource',
+			'isUpgrade' => False,
 		);
 
 		foreach ($config as $key => $value)
 			$this->config[$key] = $value;
 
 		// Is it OS edition?
-		$this->os = !file_exists($this->nosForm);
+		$this->os = $config['edition']=='opensource' && ! $this->config['isUpgrade'];
 		// Empty the unique_id field; user will fill it.
 		if (!$this->os)
 			if ($this->config['unique_id'] == 'none')

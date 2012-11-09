@@ -177,13 +177,19 @@ $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
 // Load Install Configuration //
 ////////////////////////////////
 // Get base values:
-include(dirname(__FILE__).'/protected/config/X2Config.php');
-foreach($confMap as $name2=>$name1) {
-	if(isset(${$name2})) {
-		$config[$name1] = ${$name2};
+
+function baseConfig() {
+	global $config,$confMap;
+	include(dirname(__FILE__) . '/protected/config/X2Config.php');
+	foreach ($confMap as $name2 => $name1) {
+		if (isset(${$name2})) {
+			$config[$name1] = ${$name2};
+		}
 	}
 }
-if ($silent) {
+
+function installConfig() {
+	global $config,$confMap;
 	if (file_exists('installConfig.php')) {
 		require('installConfig.php');
 	} else
@@ -193,6 +199,12 @@ if ($silent) {
 	foreach($confMap as $name2 => $name1)
 		if (isset(${$name2}))
 			$config[$name1] = ${$name2};
+}
+
+baseConfig();
+
+if ($silent) {
+	installConfig();
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	// Collect configuration values from install form
 	foreach ($confKeys as $var)
@@ -265,7 +277,7 @@ if ($gii == '1') {
 } else {
 	$gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'password',\n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>array('127.0.0.1', '::1'),\n)";
 }
-$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'],'initialize.php')) ? substr($config['webLeadUrl'], 0, -15) : $config['webLeadUrl'];
+$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'],'initialize.php')) ? substr($config['webLeadUrl'], 0, strpos($config['webLeadUrl'],'initialize.php')) : $config['webLeadUrl'];
 $X2Config = "<?php\n";
 foreach(array('appName','email','host','user','pass','dbname','version') as $confKey) {
 	$X2Config .= "\$$confKey = '{$config[$confMap[$confKey]]}';\n";
@@ -458,9 +470,9 @@ function installStage($stage) {
 		// Configure with initial data and write files
 
 		$contents = file_get_contents('webLeadConfig.php');
-		$contents = preg_replace('/\$url=\'\';/', "\$url='{$config['webLeadUrl']}'", $contents);
-		$contents = preg_replace('/\$user=\'\';/', "\$user='api'", $contents);
-		$contents = preg_replace('/\$password=\'\';/', "\$password='{$config['apiKey']}'", $contents);
+		$contents = preg_replace('/\$url=\'\'/', "\$url='{$config['webLeadUrl']}'", $contents);
+		$contents = preg_replace('/\$user=\'\'/', "\$user='api'", $contents);
+		$contents = preg_replace('/\$password=\'\'/', "\$password='{$config['apiKey']}'", $contents);
 		file_put_contents('webLeadConfig.php', $contents);
 
 		$filename = 'protected/config/X2Config.php';

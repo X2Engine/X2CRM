@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -71,10 +71,33 @@ if (is_numeric($listId)) {
 	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
 	$thisIndex = current(array_keys($ids, $model->id));
 }
+if($listId=='myContacts'){
+    $listLink = CHtml::link(Yii::t('contacts','My Contacts'),$path);
+	$dataProvider = $searchModel->searchMyContacts();
+	$criteria = $dataProvider->criteria;
+	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
+	if (!empty($order)) $criteria->order = $order;
+	$tableSchema = Contacts::model()->getTableSchema();
+    $criteria->compare('assignedTo',Yii::app()->user->getName());
+	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
+	$thisIndex = current(array_keys($ids, $model->id));
+}
+if($listId=='newContacts'){
+    $listLink = CHtml::link(Yii::t('contacts','New Contacts'),$path);
+	$dataProvider = $searchModel->searchNewContacts();
+	$criteria = $dataProvider->criteria;
+	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
+	if (!empty($order)) $criteria->order = $order;
+	$tableSchema = Contacts::model()->getTableSchema();
+    $criteria->compare('assignedTo',Yii::app()->user->getName());
+    $criteria->compare('createDate','>'.mktime(0,0,0));
+	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
+	$thisIndex = current(array_keys($ids, $model->id));
+}
  
 //if no list, or model is not in specified list
 //use default all contacts list
-if (!is_numeric($listId) || $thisIndex === false) {
+if ((!is_numeric($listId) || $thisIndex === false) && $listId!='myContacts' && $listId!='newContacts') {
 	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),$path);
 	$dataProvider = $searchModel->searchAll();
 	$criteria = $dataProvider->criteria;

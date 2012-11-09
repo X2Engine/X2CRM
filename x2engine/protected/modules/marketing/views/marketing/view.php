@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -71,12 +71,12 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'Campaign')); ?>
 
-<h2>Attachments</h2>
+<h2><?php echo Yii::t('app','Attachments'); ?></h2>
 
 <div id="campaign-attachments-wrapper" class="x2-layout form-view">
 <div class="formSection showSection">
 	<div class="formSectionHeader">
-		<span class="sectionTitle">Attachments</span>
+		<span class="sectionTitle"><?php echo Yii::t('app','Attachments'); ?></span>
 	</div>
 	<div id="campaign-attachments" class="tableWrapper" style="min-height: 100px; padding: 5px;">
 		<?php $attachments = $model->attachments; ?>
@@ -230,10 +230,12 @@ if(isset($contactList)) {
 				'headerHtmlOptions'=>array('style'=>'width: 7%;')
 			),
 			array(
+				'name'=>'opened',
+				'value'=>'$data["opened"]',
 				'header'=>Yii::t('marketing','Opened') .': ' . $contactList->statusCount('opened'),
-				'class'=>'CCheckBoxColumn',
-				'checked'=>'$data["opened"] != 0',
-				'selectableRows'=>0,
+				'class'=>'CDataColumn', // this is a raw CDataColumn because CCheckboxColumns are not sortable
+				'type'=>'raw',
+				'value'=>'CHtml::checkbox("", $data["opened"] != 0, array("onclick"=>"return false;"))',
 				'htmlOptions'=>array('style'=>'text-align: center;'),
 				'headerHtmlOptions'=>array('style'=>'width: 7%;')
 			),
@@ -268,7 +270,7 @@ if(isset($contactList)) {
 	$this->widget('zii.widgets.grid.CGridView', array(
 		'id'=>'contacts-grid',
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-		'dataProvider'=>$contactList->statusDataProvider(20),
+		'dataProvider'=>$contactList->campaignDataProvider(20),
 		'columns'=>$displayColumns,
 	));
 }

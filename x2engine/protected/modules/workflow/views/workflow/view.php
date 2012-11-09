@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -52,7 +52,7 @@ function getStageMembers(stage) {
 	});
 }
 ",CClientScript::POS_HEAD);
-$isAdmin = (Yii::app()->user->getName()=='admin');
+$isAdmin = (Yii::app()->user->checkAccess('AdminIndex'));
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),

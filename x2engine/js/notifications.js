@@ -5,7 +5,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -158,8 +158,10 @@ $(function() {
 				}
 			}
 			
-			if(masterId == windowId || forceUpdate)
-				getUpdates();	// do AJAX check
+			if(forceUpdate)
+				getUpdates(true);	// check for notifs but don't update other windows
+			else if(masterId == windowId)
+				getUpdates();	// check for notifs
 		}
 		
 		checkMasterId(true);	// always get updates on startup, because the master 
@@ -288,7 +290,7 @@ $(function() {
 	 * addNotification or whatever, then publishes to the other windows via 
 	 * the IWC system
 	 */
-	function getUpdates() {
+	function getUpdates(firstCall) {
 		$.ajax({
 			type: 'GET',
 			url: yii.baseUrl+'/index.php/notifications/get',
@@ -310,7 +312,7 @@ $(function() {
 				if(data.notifData) {
 					addNotifications(data.notifData,data.notifCount);		// add new notifications to the notif box
 					
-					if(iwcMode) {	// tell other windows about it
+					if(iwcMode && !firstCall) {	// tell other windows about it
 						$.jStorage.publish("x2iwc_notif",{
 							origin:windowId,
 							data:data.notifData,
@@ -319,7 +321,7 @@ $(function() {
 					}
 				}
 				if(data.chatData) {
-					if(iwcMode) {	// tell other windows about it
+					if(iwcMode && !firstCall) {	// tell other windows about it
 						$.jStorage.publish("x2iwc_chat",{
 							origin:windowId,
 							data:data.chatData
@@ -343,13 +345,16 @@ $(function() {
 		
 			var notifIds = [];
 			
-			$('#notifications .notif').each(function() { notifIds.push('id[]='+$(this).data('id')); });
-			
-			$.ajax({
-				type: 'GET',
-				url: yii.baseUrl+'/index.php/notifications/markViewed',
-				data: encodeURI(notifIds.join('&'))
+			$('#notifications .notif.unviewed').each(function() {	// loop through notifs, collect IDs (ignore if already viewed)
+				notifIds.push('id[]='+$(this).removeClass('unviewed').data('id'));
 			});
+			if(notifIds.length) {
+				$.ajax({
+					type: 'GET',
+					url: yii.baseUrl+'/index.php/notifications/markViewed',
+					data: encodeURI(notifIds.join('&'))
+				});
+			}
 		},2000);
 		
 		$('#notif-box').fadeIn(300);

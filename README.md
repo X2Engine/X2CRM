@@ -1,31 +1,24 @@
-# X2EngineCRM 2.1 Changelog #
-10/12/2012
-* Overhauled real-time notification and chat
-	* Much lower server load, especially with multiple tabs
-* Improved URL handling (more efficient)
-* Improved changelog storage
-* Big improvements to the installer
-	* Real-time installation status updates
-	* No more timeout errors
-* Improvements to Relationships for contacts, accounts and opportunities
-* Fix for all bugs related to browsers caching old javascript files
-* Additional feature in Customization Framework: you can now override controller 
-  files by adding "My" to the class and putting the file in /custom, for example 
-  to override actionIndex in ContactsController you can create a class 
-  MyContactsController extending ContactsController and only define actionIndex. 
-  This class will automatically be used in place of the original file, and you 
-  don't have to override the entire class.
-* Bug fixes for 2.1.1:
-	* Installer: incomplete error reporting
-	* Role manager: CSS
-	* Updater / updater settings: safeguards & interval setting
-	* Mobile (X2Touch) login: JavaScript errors
-Note: Any existing changelog data will be preserved, but not visible in the 
-changelog table. In the next update we will include code to convert this data 
-to the new format.
+# X2EngineCRM 2.2 Changelog #
+11/08/2012
+* Service module
+	* Unique Case # and fields for nature of request and service status
+	* Generate a custom Web Form to let contacts request a new service case
+	* Automatic response email with case # when a contact makes a service request
+* Improved import tools
+	* More robust global import
+	* Customizable import for contacts (you can now import data in almost any 
+	  format, and can manually map the columns to X2CRM fields.
+* CKEditor has replaced TinyEditor as the docs and email editor.
+	* Images can now be dragged directly into the editor from the Media widget
+	* You can upload images from within the editor
+* Numerous bug fixes
+* You can now upgrade to the Professional Edition (on the admin page)
+* Emails sent using the inline email form now detects when the user opens it 
+  (like campaigns do)
+
 
 # Introduction #
-Welcome to  X2EngineCRM v2.1!  X2EngineCRM is a next-generation,  open source
+Welcome to  X2EngineCRM v2.2!  X2EngineCRM is a next-generation,  open source
 social sales application for small and medium sized businesses. X2EngineCRM was 
 designed to streamline  contact and sales actions into  one  compact blog-style 
 user interface.  Add to this  contact  and  colleague  social feeds  and  sales 

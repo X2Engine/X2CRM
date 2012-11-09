@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,17 +38,41 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-// editor CSS file	
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/tinyeditor/style.css');
-
 // editor javascript files
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor/tinyeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() .'/js/docs.js'); // autosave
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
+
+
+
 $autosaveUrl = $this->createUrl('autosave') . '?id=' . $model->id;
-Yii::app()->clientScript->registerScript('docs-urls', "
-$(function() {
-	$('body').data('autosaveUrl', '$autosaveUrl'); // used in docs.js to autosave the doc
-});",CClientScript::POS_HEAD);
+// autosave code
+Yii::app()->clientScript->registerScript('doc-editor','
+var typingTimer;
+
+function autosave() {
+	window.docEditor.updateElement();
+	$("#savetime").html("'.addslashes(Yii::t('app','Saving...')).'");
+	$.post("'.$autosaveUrl.'", $("form").serializeArray(), function(response) {
+		$("#savetime").html(response);
+	});
+}
+
+if(window.docEditor)
+	window.docEditor.destroy(true);
+window.docEditor = createCKEditor("input",{toolbar:"Full",height:600},function() {
+	if($.browser.msie)
+		return;
+
+	// save after 1.5 seconds when the user is done typing
+	window.docEditor.document.on("keyup",function() {
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(autosave, 1500);
+	});
+	
+	window.docEditor.document.on("keydown",function(){ clearTimeout(typingTimer); });
+});
+',CClientScript::POS_READY);
 
 
 
@@ -56,12 +80,21 @@ $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'docs-form',
 	'enableAjaxValidation'=>false,
 )); ?>
-<div class="form" id="doc-form">
+<div class="form no-border">
 	<div class="row">
-		<?php echo $form->errorSummary($model); ?>
-		<?php echo $form->label($model,'title'); ?>
-		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
-		<?php echo $form->error($model,'title'); ?>
+		<div class="cell">
+			<?php echo $form->errorSummary($model); ?>
+			<?php echo $form->label($model,'title'); ?>
+			<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
+			<?php echo $form->error($model,'title'); ?>
+		</div>
+		<div class="cell">
+			<?php echo $form->label($model,'visibility'); ?>
+			<?php echo $form->dropDownList($model,'visibility',array(1=>'Public',0=>'Private')); ?>
+			<?php echo $form->error($model,'visibility'); ?>
+		</div>
+	</div>
+	<div class="row">
         <?php if($this->action->id=='createEmail' || ($this->action->id=='update' && $model->type=='email')){ ?>
             <?php echo $form->label($model,'subject'); ?>
             <?php echo $form->textField($model,'subject',array('size'=>60,'maxlength'=>255)); ?>
@@ -73,11 +106,12 @@ $form=$this->beginWidget('CActiveForm', array(
 				echo Yii::t('Docs', 'Saved at') ." $date";
 			} ?>
 		</span>
-		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float','onclick'=>'editor.post();')); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
 	</div><?php if($this->route=='docs/createEmail'): ?>
 	<div class="row">
 		<?php echo Yii::t('docs','<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
 	</div><?php endif; ?>
+
 	<div class="row">
 		<?php 
 		if($model->isNewRecord && isset($users)){
@@ -85,9 +119,8 @@ $form=$this->beginWidget('CActiveForm', array(
 			echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
 			echo $form->error($model,'editPermissions');
 		}
-                echo $form->label($model,'text');
-                echo $form->textArea($model,'text',array('id'=>'input'));
-                echo $form->error($model,'text');
+		echo $form->error($model,'text');
+		echo $form->textArea($model,'text',array('id'=>'input'));
 		?>
 	</div>
 
@@ -95,28 +128,3 @@ $form=$this->beginWidget('CActiveForm', array(
 <?php echo $form->error($model,'text'); ?>
 
 <?php $this->endWidget(); ?>
-
-
-
-<script>
-editor=new TINY.editor.edit('editor',{
-    id:'input', // (required) ID of the textarea
-    width:550, // (optional) width of the editor
-    height:300, // (optional) heightof the editor
-    cssclass:'te', // (optional) CSS class of the editor
-    controlclass:'tecontrol', // (optional) CSS class of the buttons
-    rowclass:'teheader', // (optional) CSS class of the button rows
-    dividerclass:'tedivider', // (optional) CSS class of the button diviers
-    controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|', 'orderedlist', 'unorderedlist', '|' ,'outdent' ,'indent', '|', 'leftalign', 'centeralign', 'rightalign', 'blockjustify', 'n', '|', 'unformat', '|', 'undo', 'redo', 'font', 'size', 'style','n', '|', 'image', 'hr', 'link', 'unlink', '|', 'cut', 'copy', 'paste'], // (required) options you want available, a '|' represents a divider and an 'n' represents a new row
-    footer:true, // (optional) show the footer
-    fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
-    xhtml:false, // (optional) generate XHTML vs HTML
-    cssfile:'style.css', // (optional) attach an external CSS file to the editor
-    css:'', // (optional) attach CSS to the editor
-    bodyid:'editor', // (optional) attach an ID to the editor body
-    footerclass:'tefooter', // (optional) CSS class of the footer
-    toggle:{text:'source',activetext:'wysiwyg',cssclass:'toggle'}, // (optional) toggle to markup view options
-    resize:{cssclass:'resize'} // (optional) display options for the editor resize
-});
-
-</script>

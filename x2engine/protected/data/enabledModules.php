@@ -26,7 +26,8 @@ $iniModules = array(
 	'quotes',
 	'reports',
 	'workflow',
-	'charts'
+	'charts',
+	'services'
 );
 
 // Search for module availability; criteria = existence of register.php

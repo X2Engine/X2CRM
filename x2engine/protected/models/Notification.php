@@ -6,7 +6,7 @@
  *
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  *
  * Company website: http://www.x2engine.com
  * Community and support website: http://www.x2community.com
@@ -247,7 +247,14 @@ class Notification extends CActiveRecord {
 			case 'voip_call':
 				
 				return Yii::t('app','Incoming call from <b>{phone}</b> ({record})',array('{record}'=>$record->getLink(),'{phone}'=>$this->value));
-
+			
+			case 'escalateCase':
+			
+				return Yii::t('app', '{user} escalated a Service Case to you: {record}', array(
+					'{user}'=>User::getUserLinks($this->createdBy),
+					'{record}'=>$record->createLink(),
+				));
+			
 			default:
 				return null;
 

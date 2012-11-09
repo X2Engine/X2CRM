@@ -5,7 +5,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -38,7 +38,7 @@
  ********************************************************************************/
 
 h2 .x2-button {
-	margin:0 0 0 10px;
+	margin:0 0 0 5px;
 }
 
 div.x2-layout {
@@ -451,7 +451,7 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 /* Tab Order Mode */
 #formEditor.tabOrderMode .formTabOrder {display:block;}
 
-span.create-account {
+span.create-account, span#create-contact {
 	font-size: 24px;
 	font-weight: bold;
 	vertical-align: middle;

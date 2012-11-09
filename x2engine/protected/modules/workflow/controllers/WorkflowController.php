@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -42,7 +42,7 @@
  * @package X2CRM.modules.workflow.controllers 
  */
 class WorkflowController extends x2base {
-
+    public $modelClass="Workflow";
 
 	/**
 	 * Specifies the access control rules.
@@ -286,7 +286,7 @@ class WorkflowController extends x2base {
 					'model'=>$model,
 					'editable'=>$editable,
 					'minDate'=>$minDate,
-					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment || Yii::app()->user->getName()=='admin',
+					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment || Yii::app()->user->checkAccess('AdminIndex'),
 				),false);
 			}
 		}
@@ -302,7 +302,7 @@ class WorkflowController extends x2base {
 			$model->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
 			$model->actionDescription = $_POST['Actions']['actionDescription'];
 
-			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->getName()=='admin' || Yii::app()->params->admin->workflowBackdateReassignment))
+			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->params->admin->workflowBackdateReassignment))
 				$model->completedBy = $_POST['Actions']['completedBy'];
 
 			// don't save if createDate isn't valid
@@ -341,6 +341,9 @@ class WorkflowController extends x2base {
 				$action->workflowId = (int)$workflowId;
 				$action->stageNumber = (int)$stageNumber;
 				$action->save();
+                $contact=Contacts::model()->findByPk($modelId);
+                $contact->lastactivity=time();
+                $contact->save();
 				// die(var_dump($action->getErrors()));
 				// die(var_dump($action->rules()));
 				
@@ -432,6 +435,9 @@ class WorkflowController extends x2base {
 				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
 			}
 		}
+        $contact=Contacts::model()->findByPk($modelId);
+        $contact->lastactivity=time();
+        $contact->save();
 		echo Workflow::renderWorkflow($workflowStatus);
 	}
 	

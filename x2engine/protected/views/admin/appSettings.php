@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -69,14 +69,14 @@ $('#timeout').change(function() {
 	    'value' => $model->chatPollTime,
 	    // additional javascript options for the slider plugin
 	    'options' => array(
-		'min' => 100,
-		'max' => 10000,
-		'step' => 100,
-		'change' => "js:function(event,ui) {
+			'min' => 100,
+			'max' => 10000,
+			'step' => 100,
+			'change' => "js:function(event,ui) {
 					$('#chatPollTime').val(ui.value);
-					$('#chatPollTime').change();
+					$('#save-button').addClass('highlight');
 				}",
-		'slide' => "js:function(event,ui) {
+			'slide' => "js:function(event,ui) {
 					$('#chatPollTime').val(ui.value);
 				}",
 	    ),
@@ -99,16 +99,16 @@ $('#timeout').change(function() {
 	    'value' => $model->timeout,
 	    // additional javascript options for the slider plugin
 	    'options' => array(
-		'min' => 5,
-		'max' => 1440,
-		'step' => 5,
-		'change' => "js:function(event,ui) {
-				$('#timeout').val(ui.value);
-				$('#timeout').change();
-			}",
-		'slide' => "js:function(event,ui) {
-				$('#timeout').val(ui.value);
-			}",
+			'min' => 5,
+			'max' => 1440,
+			'step' => 5,
+			'change' => "js:function(event,ui) {
+					$('#timeout').val(ui.value);
+					$('#save-button').addClass('highlight');
+				}",
+			'slide' => "js:function(event,ui) {
+					$('#timeout').val(ui.value);
+				}",
 	    ),
 	    'htmlOptions' => array(
 		'style' => 'width:340px;margin:10px 0;',

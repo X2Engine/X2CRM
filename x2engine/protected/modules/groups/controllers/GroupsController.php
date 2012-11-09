@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -42,7 +42,7 @@
  * @package X2CRM.modules.groups.controllers 
  */
 class GroupsController extends x2base {
-
+    public $modelClass="Groups";
 
 	/**
 	 * Displays a particular model.
@@ -192,7 +192,7 @@ class GroupsController extends x2base {
 		));
 	}
         
-	public function actionGetGroups() {				
+	public function actionGetGroups() {	
 		if(isset($_POST['checked'])) { // coming from a group checkbox?
 			$checked = json_decode($_POST['checked']);
 		} else if(isset($_POST['group'])){
@@ -200,7 +200,9 @@ class GroupsController extends x2base {
 		}else{
 			$checked = false;
 		}
-		
+		if(isset($_POST['field'])){
+            $field=$_POST['field'];
+        }
 		if($checked) { // group checkbox checked, return list of groups
 			$groups=Groups::model()->findAll();
 			foreach($groups as $group){
@@ -208,8 +210,11 @@ class GroupsController extends x2base {
 			}
 		} else { // group checkbox unchecked, return list of user names
 			$users=User::getNames();
+            if(!in_array($field,array_keys($users))){
+                $field=Yii::app()->user->getName();
+            }
 			foreach($users as $key=>$value){
-				echo CHtml::tag('option', array('value'=>$key),CHtml::encode($value),true);
+				echo CHtml::tag('option', array('value'=>$key, 'selected'=>$key==$field?"true":null),CHtml::encode($value),true);
 			}
 		}
 	}

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,9 +40,11 @@
 
 // $attributeLabels = $model->getAttributeLabel();
 
-if($actionModel->associationId!=0)
+if(isset($actionModel) && $actionModel->associationId!=0)
 	$link = CHtml::link(CHtml::encode($model->name),
 		array('/contacts/contacts/view','id'=>$model->id));
+else if(isset($serviceModel) && $serviceModel->contactId != 0)
+	$link = CHtml::link(CHtml::encode($model->name), array('/contacts/contacts/view','id'=>$model->id));
 else
 	$link = Yii::t('actions','No one');
 ?>

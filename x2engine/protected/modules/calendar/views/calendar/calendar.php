@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -271,13 +271,31 @@ $(function() {
 				}
 			}
 			
+			var dateformat = $('#publisher-form').data('dateformat');
+			var timeformat = $('#publisher-form').data('timeformat');
+			var ampmformat = $('#publisher-form').data('ampmformat');
+			var region = $('#publisher-form').data('region');
+			
+			if(typeof(dateformat) == 'undefined') {
+				dateformat = 'M d, yy';
+			}
+			if(typeof(timeformat) == 'undefined') {
+				timeformat = 'h:mm TT';
+			}
+			if(typeof(ampmformat) == 'undefined') {
+				ampmformat = true
+			}
+			if(typeof(region) == 'undefined') {
+				region = '';
+			}
+			
 			$('#Actions_dueDate').datetimepicker("destroy");
-			$('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': actionDate}));
+			$('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': actionDate}));
 			$('#Actions_dueDate').datetimepicker('setDate', actionDate);
 			
 			if($('#end-date-input').datetimepicker('getDate')) {
 				$('#end-date-input').datetimepicker("destroy");
-				$('#end-date-input').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[''], {'dateFormat':'M d, yy','timeFormat':'h:mm TT','ampm':true,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
+				$('#end-date-input').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
 				$('#end-date-input').datetimepicker('setDate', eventDate);
 			}
 
@@ -508,56 +526,56 @@ $(function() {
 		editable: true,
 		// translate (if local not set to english)
 		buttonText: { // translate buttons
-			today: '<?php echo Yii::t('calendar', 'today'); ?>',
-			month: '<?php echo Yii::t('calendar', 'month'); ?>',
-			week: '<?php echo Yii::t('calendar', 'week'); ?>',
-			day: '<?php echo Yii::t('calendar', 'day'); ?>',
+			today: '<?php echo CHtml::encode(Yii::t('calendar', 'today')); ?>',
+			month: '<?php echo CHtml::encode(Yii::t('calendar', 'month')); ?>',
+			week: '<?php echo CHtml::encode(Yii::t('calendar', 'week')); ?>',
+			day: '<?php echo CHtml::encode(Yii::t('calendar', 'day')); ?>',
 		},
 		monthNames: [ // translate month names
-			'<?php echo Yii::t('calendar', 'January'); ?>',
-			'<?php echo Yii::t('calendar', 'February'); ?>',
-			'<?php echo Yii::t('calendar', 'March'); ?>',
-			'<?php echo Yii::t('calendar', 'April'); ?>',
-			'<?php echo Yii::t('calendar', 'May'); ?>',
-			'<?php echo Yii::t('calendar', 'June'); ?>',
-			'<?php echo Yii::t('calendar', 'July'); ?>',
-			'<?php echo Yii::t('calendar', 'August'); ?>',
-			'<?php echo Yii::t('calendar', 'September'); ?>',
-			'<?php echo Yii::t('calendar', 'October'); ?>',
-			'<?php echo Yii::t('calendar', 'November'); ?>',
-			'<?php echo Yii::t('calendar', 'December'); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'January')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'February')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'March')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'April')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'May')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'June')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'July')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'August')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'September')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'October')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'November')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'December')); ?>',
 		],
 		monthNamesShort: [ // translate short month names
-			'<?php echo Yii::t('calendar', 'Jan'); ?>',
-			'<?php echo Yii::t('calendar', 'Feb'); ?>',
-			'<?php echo Yii::t('calendar', 'Mar'); ?>',
-			'<?php echo Yii::t('calendar', 'Apr'); ?>',
-			'<?php echo Yii::t('calendar', 'May'); ?>',
-			'<?php echo Yii::t('calendar', 'Jun'); ?>',
-			'<?php echo Yii::t('calendar', 'Jul'); ?>',
-			'<?php echo Yii::t('calendar', 'Aug'); ?>',
-			'<?php echo Yii::t('calendar', 'Sep'); ?>',
-			'<?php echo Yii::t('calendar', 'Oct'); ?>',
-			'<?php echo Yii::t('calendar', 'Nov'); ?>',
-			'<?php echo Yii::t('calendar', 'Dec'); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Jan')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Feb')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Mar')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Apr')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'May')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Jun')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Jul')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Aug')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Sep')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Oct')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Nov')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Dec')); ?>',
 		],
 		dayNames: [ // translate day names
-			'<?php echo Yii::t('calendar', 'Sunday'); ?>',
-			'<?php echo Yii::t('calendar', 'Monday'); ?>',
-			'<?php echo Yii::t('calendar', 'Tuesday'); ?>',
-			'<?php echo Yii::t('calendar', 'Wednesday'); ?>',
-			'<?php echo Yii::t('calendar', 'Thursday'); ?>',
-			'<?php echo Yii::t('calendar', 'Friday'); ?>',
-			'<?php echo Yii::t('calendar', 'Saturday'); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Sunday')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Monday')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Tuesday')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Wednesday')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Thursday')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Friday')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Saturday')); ?>',
 		],
 		dayNamesShort: [ // translate short day names
-			'<?php echo Yii::t('calendar', 'Sun'); ?>',
-			'<?php echo Yii::t('calendar', 'Mon'); ?>',
-			'<?php echo Yii::t('calendar', 'Tue'); ?>',
-			'<?php echo Yii::t('calendar', 'Wed'); ?>',
-			'<?php echo Yii::t('calendar', 'Thu'); ?>',
-			'<?php echo Yii::t('calendar', 'Fri'); ?>',
-			'<?php echo Yii::t('calendar', 'Sat'); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Sun')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Mon')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Tue')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Wed')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Thu')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Fri')); ?>',
+			'<?php echo CHtml::encode(Yii::t('calendar', 'Sat')); ?>',
 		]
 
 	});

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -58,6 +58,19 @@ class DocChild extends Docs {
 		$criteria->compare('updatedBy',$this->updatedBy,true);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
 		$criteria->compare('type',$this->type);
+        
+        if(!Yii::app()->user->checkAccess('AdminIndex')){
+            $condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'" OR editPermissions LIKE "%'.Yii::app()->user->getName().'%"';
+            /* x2temp */
+            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+            if(!empty($groupLinks))
+                $condition .= ' OR createdBy IN ('.implode(',',$groupLinks).')';
+
+            $condition .= 'OR (visibility=2 AND createdBy IN 
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+            $criteria->addCondition($condition);
+        }
 		// $criteria->compare('editPermissions',$this->editPermissions,true);
 
 		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
@@ -78,7 +91,20 @@ class DocChild extends Docs {
 	
 	public static function getEmailTemplates() {
 		$templateLinks = array();
-		$templates = CActiveRecord::model('Docs')->findAllByAttributes(array('type'=>'email'),new CDbCriteria(array('order'=>'lastUpdated DESC')));
+        $criteria=new CDbCriteria(array('order'=>'lastUpdated DESC'));
+        if(!Yii::app()->user->checkAccess('AdminIndex')){
+            $condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
+            /* x2temp */
+            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+            if(!empty($groupLinks))
+                $condition .= ' OR createdBy IN ('.implode(',',$groupLinks).')';
+
+            $condition .= 'OR (visibility=2 AND createdBy IN 
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+            $criteria->addCondition($condition);
+        }
+		$templates = CActiveRecord::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
 		foreach($templates as &$template)
 			$templateLinks[$template->id] = $template->title;
 		natcasesort($templateLinks);
@@ -108,6 +134,7 @@ class DocChild extends Docs {
 			'lastUpdated' => Yii::t('docs','Last Updated'),
 			'editPermissions' => Yii::t('docs','Edit Permissions'),
             'subject'=>Yii::t('docs','Subject'),
+            'visibility'=>Yii::t('docs','Visibility'),
 			
 		);
 	}

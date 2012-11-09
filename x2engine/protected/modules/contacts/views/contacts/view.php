@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -49,7 +49,7 @@ $result = Yii::app()->db->createCommand()
 $subscribed = !empty($result); // if we got any results then user is subscribed
 
 $authParams['assignedTo'] = $model->assignedTo;
-$this->actionMenu = $this->formatMenu(array(
+$menuItems = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
@@ -57,14 +57,36 @@ $this->actionMenu = $this->formatMenu(array(
     array('label'=>Yii::t('contacts','Edit Contact'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('contacts','Share Contact'),'url'=>array('shareContact','id'=>$model->id)),
 	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
-	array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')),
-	array('label'=>Yii::t('contacts','Create Account'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-account')),
     array('label'=>Yii::t('contacts','Delete Contact'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 	array('label'=>Yii::t('quotes','Quotes'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
 	array('label'=>Yii::t('quotes',($subscribed? 'Unsubscribe' : 'Subscribe' )), 'url'=>'#', 'linkOptions'=>array('class'=>'x2-subscribe-button', 'onclick'=>'return subscribe($(this));', 'title'=>Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}'=>$model->firstName.' '.$model->lastName)))),
-),$authParams);
+);
+
+$opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
+$accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
+$serviceModule = Modules::model()->findByAttributes(array('name'=>'services'));
+
+if($accountModule->visible) {
+	$createAccountButton = 	array(array('label'=>Yii::t('contacts','Create Account'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-account')));
+	array_splice($menuItems, 6, 0, $createAccountButton);
+}
+
+if($opportunityModule->visible) {
+	$createAccountButton = 	array(array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
+	array_splice($menuItems, 6, 0, $createAccountButton);
+}
+
+if($serviceModule->visible) {
+	$createCaseButton = array(array('label'=>Yii::t('contacts','Create Case'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-case')));
+	array_splice($menuItems, 6, 0, $createCaseButton);
+}
+
+if($opportunityModule->visible && $accountModule->visible)
+	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+$this->actionMenu = $this->formatMenu($menuItems, $authParams);
 
 Yii::app()->clientScript->registerScript('subscribe', "
 $(function() {
@@ -98,10 +120,10 @@ function subscribe(link) {
 
 <?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
 <h2><b><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></b> 
-<?php if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams)) { ?>
-	<?php echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right')); ?>
-<?php } ?>
-
+<?php echo CHtml::link('<span></span>','#',array('class'=>'x2-button email right','onclick'=>'toggleEmailForm(); return false;'));
+if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
+	echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right'));
+?>
 </h2>
 </div>
 
@@ -124,9 +146,12 @@ else
 	$accountName = json_encode('');
 $createOpportunityUrl = $this->createUrl('/opportunities/create');
 $createAccountUrl = $this->createUrl('/accounts/create');
+$createCaseUrl = $this->createUrl('/services/create');
 $assignedTo = json_encode($model->assignedTo);
 $tooltip = json_encode(Yii::t('contacts', 'Create a new Opportunity associated with this Contact.'));
 $accountsTooltip = json_encode(Yii::t('contacts', 'Create a new Account associated with this Contact.'));
+$caseTooltip = json_encode(Yii::t('contacts', 'Create a new Service Case associated with this Contact.'));
+$contactName = json_encode($model->firstName .' '. $model->lastName);
 $phone = json_encode($model->phone);
 $website = json_encode($model->website);
 Yii::app()->clientScript->registerScript('create-model', "
@@ -136,6 +161,9 @@ Yii::app()->clientScript->registerScript('create-model', "
 
 		// init create account button
 		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Contacts', {$model->id}, $accountName, $assignedTo, $phone, $website, $accountsTooltip);
+		
+		// init create case button
+		$('#create-case').initCreateCaseDialog('$createCaseUrl', 'Contacts', {$model->id}, $contactName, $assignedTo, $caseTooltip);
 	});
 ");
 ?>

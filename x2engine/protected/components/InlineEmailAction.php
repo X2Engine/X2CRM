@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -50,9 +50,11 @@ class InlineEmailAction extends CAction {
 	public function run() {
 
 		$preview = false;
+		$stageEmail = false;
 		$emailBody = '';
 		$signature = '';
 		$template = null;
+		$attachments = null;
 			
 		if(!isset($this->model))
 			$this->model = new InlineEmail;
@@ -61,6 +63,8 @@ class InlineEmailAction extends CAction {
 
 			if(isset($_GET['preview']) || (isset($_POST['InlineEmail']['submit']) && $_POST['InlineEmail']['submit'] == Yii::t('app','Preview')))
 				$preview = true;
+			// if(isset($_GET['emailSendTimeSelector']) && $_GET['emailSendTimeSelector'] === '1')
+				// $emailSendTimeSelector = '1';
 
 			$this->model->attributes = $_POST['InlineEmail'];
 
@@ -119,12 +123,13 @@ class InlineEmailAction extends CAction {
 				// $emailBody = $this->model->message.'<br><br>'.Yii::app()->params->profile->getSignature(true);
 			}
 			
-
-			
 			if($this->model->template == 0)
 				$this->model->setScenario('custom');
 				
 			if($this->model->validate() && !$preview) {
+			
+				$uniqueId = md5(uniqid(rand(), true));
+				$emailBody .= '<img src="' . $this->controller->createAbsoluteUrl('actions/emailOpened', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
 				
 				$mediaLibraryUsed = false; // is there an attachment from the media library?
 				if(isset($_POST['AttachmentFiles']) && isset($_POST['AttachmentFiles']['id']) && isset($_POST['AttachmentFiles']['temp']))  {
@@ -144,29 +149,46 @@ class InlineEmailAction extends CAction {
 					}
 				}
 				
-				if(isset($attachments))
+				// if(isset($attachments))
+				if(empty($this->model->emailSendTimeParsed))
 					$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody, $attachments);
 				else
-					$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody);
+					$stageEmail = true;
+				// else
+					// $this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody);
 				
-				if(in_array('200',$this->model->status)) {
+				if(in_array('200',$this->model->status) || $stageEmail) {
 					
 					foreach($this->model->mailingList['to'] as &$target) {
-						$contact = CActiveRecord::model('Contacts')->findByPk($this->model->modelId);
-						if(isset($contact)) {
+						$model = CActiveRecord::model(ucwords($this->model->modelName))->findByPk($this->model->modelId);
+						if(isset($model)) {
 
 							$action = new Actions;
-							$action->associationType = 'contacts';
-							$action->associationId = $contact->id;
-							$action->associationName = $contact->name;
-							$action->visibility = $contact->visibility;
+							$action->associationType = strtolower($this->model->modelName);
+							$action->associationId = $model->id;
+							$action->associationName = $model->name;
+							if(isset($model->visibility))
+								$action->visibility = $model->visibility;
+							else
+								$action->visibility = 1;
 							$action->complete = 'Yes';
 							$action->type = 'email';
 							$action->completedBy = Yii::app()->user->getName();
-							$action->assignedTo = $contact->assignedTo;
+							$action->assignedTo = $model->assignedTo;
 							$action->createDate = time();
-							$action->dueDate = time();
-							$action->completeDate = time();
+
+							if($stageEmail) {
+								$action->complete = 'No';
+								$action->type = 'email_staged';
+								$action->dueDate = time();
+								$action->completeDate = time();
+							} else {
+								$action->complete = 'Yes';
+								$action->type = 'email';
+								$action->dueDate = time();
+								$action->completeDate = time();
+							}
+
 							if($template == null) {
 								$action->actionDescription = '<b>'.$this->model->subject."</b>\n\n".$this->model->message;
 								if(isset($attachments)) {
@@ -179,9 +201,13 @@ class InlineEmailAction extends CAction {
 							} else
 								$action->actionDescription = CHtml::link($template->title,array('/docs/'.$template->id));
 							
-							if($action->save()){
-                                                            
-                                                        }
+							if($action->save()) {
+								$track = new TrackEmail;
+								$track->actionId = $action->id;
+								$track->uniqueId = $uniqueId;
+								$track->save();
+							}
+							
 							// $message="2";
 							// $email=$toEmail;
 							// $id=$contact['id'];

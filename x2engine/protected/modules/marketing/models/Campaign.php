@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -123,16 +123,19 @@ class Campaign extends X2Model {
 	 * @return Campaign
 	 */
 	public static function load($id) {
-        $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
+		$condition = '';
+		if(Yii::app()->user->getName() != 'admin') {
+			$condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
+				/* x2temp */
+				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+				if(!empty($groupLinks))
+					$condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-            $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		return self::model()->with('list')->findByPk((int)$id, $condition);
+				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+					(SELECT username FROM x2_group_to_user WHERE groupId IN
+						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		}
+		return CActiveRecord::model('Campaign')->with('list')->findByPk((int)$id, $condition);
 	}
 
 	/**
@@ -142,15 +145,18 @@ class Campaign extends X2Model {
 	 */
 	public function search() {
 		$criteria=new CDbCriteria;
-        $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+		$condition = '';
+		if(Yii::app()->user->getName() != 'admin') {
+			$condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+				/* x2temp */
+				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+				if(!empty($groupLinks))
+					$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+				$condition .= 'OR (visibility=2 AND assignedTo IN 
+					(SELECT username FROM x2_group_to_user WHERE groupId IN
+						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		}
         if(Yii::app()->user->getName()!='admin')
             $criteria->addCondition($condition);
 		return $this->searchBase($criteria);

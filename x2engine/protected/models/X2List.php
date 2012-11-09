@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -166,7 +166,7 @@ class X2List extends CActiveRecord {
 	}
 
 	public static function load($id) {
-        if(Yii::app()->user->getName()!='admin'){
+        if(Yii::app()->user->checkAccess('AdminIndex')){
             $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
                     /* x2temp */
                     $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -361,6 +361,39 @@ class X2List extends CActiveRecord {
 				//messing with attributes may cause columns to become unsortable
 				'attributes'=>array('name','email','phone','address'),
 				'defaultOrder'=>'lastUpdated DESC',
+			),
+		));
+	}
+	
+	/**
+	 * Return a SQL data provider for a list of emails in a campaign
+	 * includes associated contact info with each email
+	 * @return CSqlDataProvider
+	 */
+	public function campaignDataProvider($pageSize=null) {
+		$tbl = CActiveRecord::model($this->modelName)->tableName();
+		$lstTbl = X2ListItem::model()->tableName();
+		$count = X2ListItem::model()->count('listId=:listId', array('listId'=>$this->id));
+		$params = array('listId'=>$this->id);
+		
+		$sql = Yii::app()->db->createCommand()
+			->select('t.*, c.*')
+			->from("{$lstTbl} as t")
+			->leftJoin("{$tbl} c", "t.contactId=c.id")
+			->where('t.listId=:listId')
+			->getText();
+			
+		return new CSqlDataProvider($sql, array(
+			'totalItemCount'=>$count,
+			'params'=>$params,
+			'pagination'=>array(
+				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+			),
+			'sort'=>array(
+				//messing with attributes may cause columns to become unsortable
+				'attributes'=>array('name','email','phone','address','opened'
+				),
+				'defaultOrder'=>'opened DESC',
 			),
 		));
 	}

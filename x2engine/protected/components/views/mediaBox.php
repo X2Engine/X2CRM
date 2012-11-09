@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -69,7 +69,16 @@ $fullname = Yii::app()->params->profile->fullName;
 			<?php foreach($myMediaItems as $item) {
 				$id = "$username-media-id-{$item->id}";
 				echo '<span class="media-item">';
-				echo CHtml::link($item->fileName, array('/media', 'view'=>$item->id), array('class'=>'x2-link media', 'id'=>$id, 'style'=>'curosr:pointer;'));
+				$filename = $item->fileName;
+				if(strlen($filename) > 35) {
+					$filename = substr($filename, 0, 35) . '…';
+				}
+				echo CHtml::link($filename, array('/media', 'view'=>$item->id),array(
+					'class'=>'x2-link media'.($item->isImage()? ' image-file' : ''),
+					'id'=>$id,
+					'style'=>'curosr:pointer;',
+					'data-url'=>$item->fullUrl
+				));
 				echo '</span>';
 				if($item->isImage()) {
 					$imageLink = $item->getUrl();
@@ -95,7 +104,7 @@ $fullname = Yii::app()->params->profile->fullName;
 		 ?>
 
 		<?php foreach($users as $user) { ?>
-    		<?php $userMediaItems = Media::model()->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
+    		<?php $userMediaItems = CActiveRecord::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
 				<?php if($userMediaItems) { // user has any media items? ?>
     				<?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/toggleUserMediaVisible') ."?user={$user->username}"; ?>
     				<?php $visible = !in_array($user->username, $hideUsers); ?>
@@ -108,7 +117,15 @@ $fullname = Yii::app()->params->profile->fullName;
     						if(!$item->private || $admin) {
     							$id = "{$user->username}-media-id-{$item->id}";
     							echo '<span class="media-item">';
-    							echo CHtml::link($item->fileName, array('/media', 'view'=>$item->id), array('class'=>'x2-link media media-library-item', 'id'=>$id));
+   								$filename = $item->fileName;
+								if(strlen($filename) > 45) {
+									$filename = substr($filename, 0, 35) . '…';
+								}
+    							echo CHtml::link($filename, array('/media', 'view'=>$item->id), array(
+									'class'=>'x2-link media media-library-item'.($item->isImage()? ' image-file' : ''),
+									'id'=>$id,
+									'data-url'=>$item->fullUrl
+								));
     							echo '</span>';
     							if($item->isImage()) {
     								$imageLink = $item->getUrl();

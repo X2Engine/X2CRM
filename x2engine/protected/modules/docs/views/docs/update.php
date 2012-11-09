@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -52,9 +52,9 @@ $this->actionMenu = $this->formatMenu(array(
 
 if(array_search($user,$pieces)!==false || $user==$model->editPermissions || $user=='admin' || $user==$model->createdBy)
 	$this->actionMenu[] = array('label'=>Yii::t('docs','Edit Doc'));
-if($user=='admin' || $user==$model->createdBy)
+if(Yii::app()->user->checkAccess('AdminIndex') || $user==$model->createdBy)
 	$this->actionMenu[] = array('label'=>Yii::t('docs','Delete Doc'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('docs','Are you sure you want to delete this item?')));
-if($user=='admin' || $user==$model->createdBy)
+if(Yii::app()->user->checkAccess('AdminIndex') || $user==$model->createdBy)
 	$this->actionMenu[]=array('label'=>Yii::t('docs','Edit Doc Permissions'), 'url'=>array('changePermissions', 'id'=>$model->id));
 	
 $this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('exportToHtml','id'=>$model->id));

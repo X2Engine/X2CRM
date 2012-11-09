@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -328,19 +328,6 @@ class Quote extends X2Model {
 	}
 	
 	public function searchBase($criteria) {
-		// $criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('accountName',$this->accountName,true);
-		$criteria->compare('salesStage',$this->salesStage,true);
-		// $criteria->compare('expectedCloseDate',$this->expectedCloseDate,true);
-		$criteria->compare('probability',$this->probability);
-		$criteria->compare('leadSource',$this->leadSource,true);
-		$criteria->compare('description',$this->description,true);
-		$criteria->compare('assignedTo',$this->assignedTo,true);
-		// $criteria->compare('createDate',$this->createDate);
-		$criteria->compare('associatedContacts',$this->associatedContacts,true);
-		// $criteria->compare('lastUpdated',$this->lastUpdated);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
 
 		$dateRange = Yii::app()->controller->partialDateRange($this->expectedCloseDate);
 		if($dateRange !== false)
@@ -353,6 +340,8 @@ class Quote extends X2Model {
 		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
 		if($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
+        
+        $this->compareAttributes($criteria);
 		
 		return new SmartDataProvider(get_class($this), array(
 			'sort'=>array(

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -115,7 +115,7 @@ class LeadRoutingBehavior extends CBehavior {
 
 		$numbers = array();
 		foreach ($users as $user) {
-			if ($user != 'admin') {
+			if ($user != 'admin' && $user!='api') {
 				$actions = CActiveRecord::model('Actions')->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
 				if (isset($actions))
 					$numbers[$user] = count($actions);
@@ -144,24 +144,24 @@ class LeadRoutingBehavior extends CBehavior {
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
 		$users = CActiveRecord::model('User')->findAll();
-		foreach ($users as $user) {
+		foreach ($users as $userRecord) {
 			//exclude admin from candidates
-			if ($user->username != 'admin') $usernames[] = $user->username;
+			if ($userRecord->username != 'admin' && $userRecord->username!='api') $usernames[] = $userRecord->username;
 		}
 		if ($online == 1) {
-			$user = array();
+			$userList = array();
 			foreach ($usernames as $user) {
 				if (in_array($user, $sessions))
-					$users[] = $user;
+					$userList[] = $user;
 			}
 		}else {
-			$users = $usernames;
+			$userList = $usernames;
 		}
 		$rrId = $this->getRoundRobin();
-        if(count($users)>0){
-            $i = $rrId % count($users);
+        if(count($userList)>0){
+            $i = $rrId % count($userList);
             $this->updateRoundRobin();
-            return $users[$i];
+            return $userList[$i];
         }else{
             return "Anyone";
         }

@@ -7,7 +7,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -89,10 +89,13 @@ abstract class x2base extends X2Controller {
     protected function beforeAction($action = null) {
         $auth = Yii::app()->authManager;
         $params = array();
-        if(isset($_GET['id']) && $this->getAction()->getId() != 'updateStageDetails') {
+		$action = $this->getAction()->getId();
+		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions');
+
+        if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest) {
             if (method_exists($this, 'loadModel')) {
                 $model = $this->loadModel($_GET['id']);
-                if ($model->hasAttribute('assignedTo')) {
+                if($model!==null && $model->hasAttribute('assignedTo')) {
                     $params['assignedTo'] = $model->assignedTo;
                 }
             }
@@ -543,6 +546,9 @@ abstract class x2base extends X2Controller {
     public function create($model, $oldAttributes, $api) {
         $name = $this->modelClass;
         $model->createDate = time();
+		if($model->hasAttribute('lastActivity'))
+			$model->lastActivity = time();
+		
         if ($model->save()) {
             if (!($model instanceof Actions)) {
                 $fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
@@ -611,6 +617,9 @@ abstract class x2base extends X2Controller {
      */
     public function update($model, $oldAttributes, $api) {
         $name = $this->modelClass;
+		if($model->hasAttribute('lastActivity'))
+			$model->lastActivity = time();
+		
         $temp = $oldAttributes;
         $changes = $this->calculateChanges($temp, $model->attributes, $model);
         $model = $this->updateChangelog($model, $changes);
@@ -988,7 +997,6 @@ abstract class x2base extends X2Controller {
                 $phpMail->Host = Yii::app()->params->admin->emailHost;
                 $phpMail->Port = Yii::app()->params->admin->emailPort;
                 $phpMail->SMTPSecure = Yii::app()->params->admin->emailSecurity;
-
                 if (Yii::app()->params->admin->emailUseAuth == 'admin') {
                     $phpMail->SMTPAuth = true;
                     $phpMail->Username = Yii::app()->params->admin->emailUser;
@@ -1172,7 +1180,7 @@ abstract class x2base extends X2Controller {
     public function filterSetPortlets($filterChain) {
         $themeURL = Yii::app()->theme->getBaseUrl();
 
-        if ($this->action->id != 'webLead' && $this->action->id != 'login')
+        if ($this->action->id != 'webLead' && $this->action->id != 'login' && $this->action->id!='googleLogin')
             Yii::app()->clientScript->registerScript('logos', 'var _0xa525=["\x6C\x65\x6E\x67\x74\x68","\x23\x6D\x61\x69\x6E\x2D\x6D\x65\x6E\x75\x2D\x69\x63\x6F\x6E","\x23\x78\x32\x74\x6F\x75\x63\x68\x2D\x6C\x6F\x67\x6F","\x23\x78\x32\x63\x72\x6D\x2D\x6C\x6F\x67\x6F","\x68\x72\x65\x66","\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72","\x61","\x50\x6C\x65\x61\x73\x65\x20\x70\x75\x74\x20\x74\x68\x65\x20\x6C\x6F\x67\x6F\x20\x62\x61\x63\x6B","\x73\x72\x63","\x61\x74\x74\x72","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x66\x6F\x6F\x74\x65\x72\x2E\x70\x6E\x67","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x74\x6F\x75\x63\x68\x2E\x70\x6E\x67","\x6C\x6F\x61\x64"];$(window)[_0xa525[12]](function (){if((!$(_0xa525[1])[_0xa525[0]])||(!$(_0xa525[2])[_0xa525[0]])||(!$(_0xa525[3])[_0xa525[0]])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;var _0x3addx1=$(_0xa525[2])[_0xa525[9]](_0xa525[8]);var _0x3addx2=$(_0xa525[3])[_0xa525[9]](_0xa525[8]);if(_0x3addx2!=("$themeURL"+_0xa525[10])||_0x3addx1!=("$themeURL"+_0xa525[11])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;} );');
         $this->portlets = Profile::getWidgets();
         // foreach($widgets as $key=>$value) {
@@ -1194,6 +1202,8 @@ abstract class x2base extends X2Controller {
         else
             return $_SERVER['REMOTE_ADDR'];
     }
+    
+    
 
     // This function needs to be made in your extensions of the class with similar code. 
     // Replace "Opportunities" with the Model being used.
@@ -1277,6 +1287,9 @@ abstract class x2base extends X2Controller {
      * @return string 
      */
     function formatTimePicker($width = '') {
+    	if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+    		return "hh:mm";
+    	}
         $format = Yii::app()->locale->getTimeFormat('short');
         $format = strtolower($format); // jquery specifies hours/minutes as hh/mm instead of HH//MM
         $format = str_replace('a', 'TT', $format); // yii and jquery have different format to specify am/pm
@@ -1289,6 +1302,8 @@ abstract class x2base extends X2Controller {
     function formatAMPM() {
         if (strstr(Yii::app()->locale->getTimeFormat(), "a") === false)
             return false;
+        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') // 24 hour format for china
+        	return false;
         else
             return true;
     }
@@ -1332,6 +1347,8 @@ abstract class x2base extends X2Controller {
         else
         if (Yii::app()->language == 'en')
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium') . ' ' . Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
+        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
+        	return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . 'HH:mm', strtotime("tomorrow", $timestamp) - 60);
         else
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
     }
@@ -1347,6 +1364,8 @@ abstract class x2base extends X2Controller {
         else
         if (Yii::app()->language == 'en')
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium') . ' ' . Yii::app()->locale->getTimeFormat('short'), $timestamp);
+        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
+			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . 'HH:mm', $timestamp);
         else
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . Yii::app()->locale->getTimeFormat('short'), $timestamp);
     }

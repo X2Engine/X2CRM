@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -38,52 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerScript('inlineEmailEditor',"
-function setupEmailEditor() {
-	if($('#email-message').data('editorSetup') != true) {
-		new TINY.editor.edit('teditor',{
-			id:'email-message',
-			// width:560,
-			height:200,
-			cssclass:'tinyeditor',
-			controlclass:'tecontrol',
-			rowclass:'teheader',
-			dividerclass:'tedivider',
-			controls:['bold','italic','underline','strikethrough','|','subscript','superscript','|',
-					'orderedlist','unorderedlist','|','outdent','indent','|','leftalign',
-					'centeralign','rightalign','blockjustify','|','undo','redo','n',
-					'font','size','unformat','|','image','hr','link','unlink','|','print'],
-			footer:true,
-			fonts:['Verdana','Arial','Georgia','Trebuchet MS'],
-			xhtml:false,
-			cssfile:'".Yii::app()->theme->getBaseUrl().'/css/tinyeditor.css'."',
-			// bodyid:'editor',
-			footerclass:'tefooter',
-			toggle:{text:'source',activetext:'wysiwyg',cssclass:'tetoggle'},
-			resize:{cssclass:'teresize'}
-		});
-		
-		$('#email-message').data('editorSetup',true);
-		
-		// give send-email module focus when tinyedit clicked		
-		$('#email-message-box').find('iframe').contents().find('body').click(function() {
-		    if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
-		    	$('.focus-mini-module').removeClass('focus-mini-module');
-		    	$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
-		    }
-		});
-		
-		$('#inline-email-form').find('iframe').attr('tabindex', 5);
-	}
-}
-",CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScript('inlineEmailEditorSetup',"
 
-if(window.hideInlineEmail)
-	$('#inline-email-form').hide();
-else
-	setupEmailEditor();
-",CClientScript::POS_READY);
 ?>
 <div id="inline-email-top"></div>
 <div id="inline-email-form">
@@ -156,7 +111,7 @@ if(!empty($model->status)) {
 	</div>
 	
 	<div class="row" id="email-attachments">
-		<div class="form" style="text-align:left; background-color: inherit">
+		<div class="form" style="text-align:left;background:none;overflow:visible;">
 			<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
 			<?php if(isset($attachments)) { // is this a refreshed form with previous attachments? ?>
 				<?php foreach($attachments as $attachment) { ?>
@@ -188,41 +143,47 @@ if(!empty($model->status)) {
 		</div>
 	</div>
 	
-	<div class="row buttons">
+	<div class="row buttons" style="padding-left:0;">
 	<?php
+
+	
 	echo CHtml::ajaxSubmitButton(
 		Yii::t('app','Send'),
 		array('inlineEmail','ajax'=>1),
 		array(
-			'beforeSend'=>"function(a,b) { teditor.post(); $('#email-sending-icon').show(); }",
+			'beforeSend'=>"function() { $('#email-sending-icon').show(); }",
 			'replace'=>'#inline-email-form',
-			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); updateHistory(); initX2EmailForm(); }",
+			'complete'=>"function(response) { $('#email-sending-icon').hide(); updateHistory(); setupInlineEmailForm(); return false; }",
 		),
 		array(
 			'id'=>'send-email-button',
 			'class'=>'x2-button highlight',
-			'style'=>'margin-left:-20px;',
+			// 'style'=>'margin-left:-20px;',
 			'name'=>'InlineEmail[submit]',
-			'onclick'=>'teditor.post();',
+			'onclick'=>'window.inlineEmailEditor.updateElement();',
 		)
 	);
 	echo CHtml::ajaxSubmitButton(
 		Yii::t('app','Preview'),
 		array('inlineEmail','ajax'=>1,'preview'=>1),
 		array(
-			'beforeSend'=>"function(a,b) { teditor.post(); $('#email-sending-icon').show(); }",
+			'beforeSend'=>"function() { $('#email-sending-icon').show(); }",
 			'replace'=>'#inline-email-form',
-			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupEmailEditor(); initX2EmailForm(); }",
+			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupInlineEmailForm(); return false; }",
 		),
 		array(
 			'id'=>'preview-email-button',
 			'class'=>'x2-button',
 			'name'=>'InlineEmail[submit]',
-			'onclick'=>'teditor.post();',
+			'onclick'=>'window.inlineEmailEditor.updateElement();',
 		)
 	);
-	echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button','onclick'=>"toggleEmailForm();return false;"));
-	// echo CHtml::htmlButton(Yii::t('app','Send'),array('type'=>'submit','class'=>'x2-button','id'=>'send-button','style'=>'margin-left:90px;')); ?>
+	
+	
+	// if(is_file(__DIR__.'/inlineEmailForm_pro.php'))
+		// include('inlineEmailForm_pro.php');
+		
+	echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button right','onclick'=>"toggleEmailForm();return false;")); ?>
 	</div>
 	<?php $this->endWidget(); ?>
 </div>

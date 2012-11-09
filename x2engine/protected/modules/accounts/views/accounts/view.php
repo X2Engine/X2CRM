@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -38,20 +38,37 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 $authParams['assignedTo']=$model->assignedTo;
-$this->actionMenu = $this->formatMenu(array(
+$menuItems = array(
 	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
 	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
 	array('label'=>Yii::t('accounts','View')),
 	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
 	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
-	array('label'=>Yii::t('contacts','Create Contact'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-contact')),
-	array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')),
 	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach a File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
-),$authParams);
+);
+
+$opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
+$contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
+
+if($contactModule->visible) {
+	$createContactButton = 	array(array('label'=>Yii::t('contacts','Create Contact'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-contact')));
+	array_splice($menuItems, 6, 0, $createContactButton);
+}
+
+if($opportunityModule->visible) {
+	$createOpportunityButton = 	array(array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
+	array_splice($menuItems, 6, 0, $createOpportunityButton);
+}
+
+if($opportunityModule->visible && $contactModule->visible)
+	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'accounts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+$this->actionMenu = $this->formatMenu($menuItems, $authParams);
+
 ?>
 <div id="main-column" class="half-width">
 <div class="record-title">

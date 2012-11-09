@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -63,6 +63,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 }
 ?>
 <br>
+<div class="span-20">
 <div class="form">
 	<h2><?php echo Yii::t('admin','Support'); ?></h2>
 	<div class="row">
@@ -100,6 +101,9 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Roles'),'manageRoles'); ?><br><?php echo Yii::t('admin','Create and manage user roles');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('groups','Groups'),array('/groups/index')); ?><br><?php echo Yii::t('admin','Create and manage user groups');?></div>
 	</div>
+    <div class="row">
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Sessions'),array('manageSessions')); ?><br><?php echo Yii::t('admin','Manage user sessions.');?></div>
+	</div>
 </div>
 <div class="form">
 	<div class="row">
@@ -110,11 +114,12 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	</div><br>
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Workflow'),array('/workflow/create')); ?><br><?php echo Yii::t('admin','Create a workflow for your sales process');?></div>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Workflows'),array('/workflow/admin')); ?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Workflows'),array('/workflow/index')); ?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Workflow Settings'),'workflowSettings'); ?><br><?php echo Yii::t('admin','Change advanced workflow settings');?></div>
 	</div><br>
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),'addCriteria'); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Service Case Web Form'),array('services/createWebForm')); ?><br><?php echo Yii::t('admin','Create a public form to receive new service cases.');?></div>
 	</div>
 </div>
 <div class="form">
@@ -131,6 +136,12 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	</div><br />
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2CRM'),'updater'); ?><br><?php echo Yii::t('admin','The X2CRM remote update utility.');?></div>
+		<?php if (isset(Yii::app()->params->admin->edition)): ?>
+		<?php if(in_array(Yii::app()->params->admin->edition,array('opensource',Null))): ?>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),'upgrader'); ?><br><?php echo Yii::t('admin','Upgrade X2CRM to Professional Edition; license key required.');?></div>
+		<?php endif;
+		endif; ?>
 	</div>
 </div>
 <div class="form">
@@ -171,6 +182,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export a module'),'exportModule'); ?><br><?php echo Yii::t('admin','Export one of your custom modules to a .zip');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rename a module'),'renameModules'); ?><br><?php echo Yii::t('admin','Change module titles on top bar');?></div>
 	</div>
+</div>
 </div>
 <br><br>
 

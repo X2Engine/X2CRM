@@ -6,7 +6,7 @@ CREATE TABLE x2_users (
 	lastName				VARCHAR(40)		NOT NULL,
 	username				VARCHAR(20)		NOT NULL,
 	password				VARCHAR(100)	NOT NULL,
-	title					VARCHAR(20),
+	title					VARCHAR(50),
 	department				VARCHAR(40),
 	officePhone				VARCHAR(40),
 	cellPhone				VARCHAR(40),

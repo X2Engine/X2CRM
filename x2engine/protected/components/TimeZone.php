@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -173,6 +173,15 @@ class TimeZone extends X2Widget {
 				var h = tzClock.getHours();
 				var m = tzClock.getMinutes();
 				var s = tzClock.getSeconds() + tzClock.getMilliseconds()/1000;
+				
+				var ampm = "am";
+				
+				if(h>11)			// 0-11 -> am, 12-23 -> pm
+					ampm = "pm";
+				if(h>12)			// 13-23 -> 1->11
+					h -= 12;
+				if(h==0)
+					h = 12;
 
 				if(Modernizr.csstransforms) {
 
@@ -198,6 +207,7 @@ class TimeZone extends X2Widget {
 				} else {
 					$("#tzClock2").html(
 						fixWidth(h)+":"+fixWidth(m)+":"+fixWidth(Math.floor(s))+" ("+tzUtcOffset+")"
+						// h+":"+fixWidth(m)+":"+fixWidth(Math.floor(s))+ampm+" ("+tzUtcOffset+")"	// 12 hour time version
 					);
 				}
 			}
@@ -213,11 +223,12 @@ class TimeZone extends X2Widget {
 						<li class=\"hour\"><div></div></li>\
 						<li class=\"min\"><div></div></li>\
 					</ul>").appendTo("#widget_TimeZone .portlet-content");
+					setInterval(updateTzClock, 200);
 				} else {
 					$("<div id=\"tzClock2\"></div>").appendTo("#widget_TimeZone .portlet-content");
+					setInterval(updateTzClock, 1000);
 				}
 				updateTzClock();
-				setInterval(updateTzClock, 200);
 			});
 
 			');

@@ -18,6 +18,7 @@ CREATE TABLE x2_campaigns (
 	createDate				BIGINT	 		NOT NULL,
 	launchDate				BIGINT	 		NOT NULL,
 	lastUpdated				BIGINT	 		NOT NULL,
+	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20),
 	
 	PRIMARY KEY (id),
@@ -74,4 +75,5 @@ VALUES
 ("Campaign",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Campaign",		"launchDate",			"Launch Date",			0,		0,	"date",			0,			0,		NULL,			0,		0,			""),
 ("Campaign",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Campaign",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Campaign",		"updatedBy",			"Updated By",			0,		0,	"assignment",	0,			1,		NULL,			0,		0,			"");

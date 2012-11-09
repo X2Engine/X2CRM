@@ -7,12 +7,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -64,6 +64,155 @@ class ApiController extends x2base {
         return array();
     }
 
+	
+	
+	/* 
+	public function actionCreate2() {
+        if(!isset($_POST['authUser'],$_POST['authPassword'])) {
+			$this->_sendResponse(403, "No user credentials provided.");
+			return;
+		}
+		
+		$username = $_POST['authUser'];
+		$password = $_POST['authPassword'];
+		$apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
+		if (isset($apiUser)) {
+			switch ($_GET['model']) {
+				// Get an instance of the respective model
+				case 'Contacts':
+					$model = new Contacts;
+					$this->modelClass = "Contacts";
+					$temp = $model->attributes;
+					break;
+				case 'Actions':
+					$model = new Actions;
+					$this->modelClass = "Actions";
+					$temp = $model->attributes;
+					break;
+				case 'Accounts':
+					$model = new Accounts;
+					$this->modelClass = "Accounts";
+					$temp = $model->attributes;
+					break;
+				default:
+					$this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
+					exit;
+			}
+			
+			$model->setX2Fields($_POST);
+			
+
+			switch ($_GET['model']) {
+				case 'Contacts':
+					
+					Yii::import("application.modules.contacts.controllers.ContactsController");
+					$controller = new ContactsController('ContactsController');
+					if ($controller->create($model, $temp, '1')) {
+						$this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->firstName . " " . $model->lastName));
+					} else {
+						// Errors occurred
+						$msg = "<h1>Error</h1>";
+						$msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
+						$msg .= "<ul>";
+						foreach ($model->errors as $attribute => $attr_errors) {
+							$msg .= "<li>Attribute: $attribute</li>";
+							$msg .= "<ul>";
+							foreach ($attr_errors as $attr_error){
+								$msg .= "<li>$attr_error</li>";
+							}
+							$msg .= "</ul>";
+						}
+						$msg .= "</ul>";
+						$notif=new Notification;
+						$notif->user='admin';
+						$notif->type='lead_failure';
+						$notif->createdBy='API';
+						$notif->createDate = time();
+						$notif->save();
+						
+						$to=Yii::app()->params->admin->webLeadEmail;
+						$subject="Web Lead Failure";
+						$phpMail = $this->getPhpMailer();
+						$fromEmail = Yii::app()->params->admin->emailFromAddr;
+						$fromName = Yii::app()->params->admin->emailFromName;
+						$phpMail->AddReplyTo($fromEmail, $fromName);
+						$phpMail->SetFrom($fromEmail, $fromName);
+						$phpMail->Subject = $subject;
+						$phpMail->AddAddress($to, 'X2CRM Administrator');
+						$phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
+						$phpMail->Send();
+						
+						$attributes=$model->attributes;
+						ksort($attributes);
+						if(file_exists('failed_leads.csv')){
+							$fp=fopen('failed_leads.csv',"a+");
+							fputcsv($fp,$attributes);
+						}else{
+							$fp=fopen('failed_leads.csv',"a+");
+							fputcsv($fp,array_keys($attributes));
+							fputcsv($fp,$attributes);
+						}
+						$this->_sendResponse(500, $msg);
+					}
+					break;
+				case 'Accounts':
+					Yii::import("application.modules.accounts.controllers.AccountsController");
+					$controller = new AccountsController('AccountsController');
+					if ($controller->create($model, $temp, '1')) {
+						$this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->name));
+					} else {
+						// Errors occurred
+						$msg = "<h1>Error</h1>";
+						$msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
+						$msg .= "<ul>";
+						foreach ($model->errors as $attribute => $attr_errors) {
+							$msg .= "<li>Attribute: $attribute</li>";
+							$msg .= "<ul>";
+							foreach ($attr_errors as $attr_error)
+								$msg .= "<li>$attr_error</li>";
+							$msg .= "</ul>";
+						}
+						$msg .= "</ul>";
+						$this->_sendResponse(500, $msg);
+					}
+					break;
+				case 'Actions':
+					Yii::import("application.modules.actions.controllers.ActionsController");
+					$controller = new ActionsController('ActionsController');
+					if ($controller->create($model, $temp, '1')) {
+						$this->_sendResponse(200, sprintf('Model <b>%s</b> was created with description <b>%s</b>', $_GET['model'], $model->actionDescription));
+					} else {
+						// Errors occurred
+						$msg = "<h1>Error</h1>";
+						$msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
+						$msg .= "<ul>";
+						foreach ($model->errors as $attribute => $attr_errors) {
+							$msg .= "<li>Attribute: $attribute</li>";
+							$msg .= "<ul>";
+							foreach ($attr_errors as $attr_error)
+								$msg .= "<li>$attr_error</li>";
+							$msg .= "</ul>";
+						}
+						$msg .= "</ul>";
+						$this->_sendResponse(500, $msg);
+					}
+					break;
+				default:
+					$this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
+					exit;
+			}
+		} else {
+			$this->_sendResponse(403, "Invalid user credentials.");
+		}
+    } */
+	
+	
+	
+	
+	
+	
+	
+	
     /**
      * Creates a new record. 
      * 

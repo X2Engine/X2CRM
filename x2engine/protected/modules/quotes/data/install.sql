@@ -14,12 +14,13 @@ CREATE TABLE x2_quotes(
 	createdBy				VARCHAR(20),
 	associatedContacts		TEXT,
 	lastUpdated				BIGINT,
+    lastActivity            BIGINT,
 	updatedBy				VARCHAR(20),
 	expirationDate			BIGINT,
 	status					VARCHAR(20),
 	currency				VARCHAR(40),
 	locked					TINYINT
-) COLLATE = utf8_general_ci;
+) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
 CREATE TABLE x2_quotes_products( 
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -34,6 +35,7 @@ CREATE TABLE x2_quotes_products(
 	assignedTo				TEXT,
 	createDate				BIGINT,
 	lastUpdated				BIGINT,
+	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20),
 	active					TINYINT,
 	currency				VARCHAR(40),
@@ -60,6 +62,7 @@ VALUES
 ("Quote",			"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Quote",			"associatedContacts",	"Contacts",				0,		0,	"link",			0,			0,		"Contacts",		0,		0,			""),
 ("Quote",			"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Quote",			"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Quote",			"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			""),
 ("Quote",			"status",				"Status",				0,		0,	"dropdown",		0,			0,		"7",			0,		0,			""),
 ("Quote",			"expirationDate",		"Expiration Date",		0,		0,	"date",			0,			0,		NULL,			0,		0,			""),

@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -103,7 +103,7 @@ class InlineQuotes extends X2Widget {
 		function sendQuoteEmail(quote) {
 			var notes = ".'"\n"'." + quote['notes']['label'] + ".'"\n"'." + quote['notes']['notes'] + ".'"\n"'.";
 			toggleEmailForm();
-			teditor.e.body.innerHTML = '' + quote['name'] + quote['products'] + notes;
+			window.inlineEmailEditor.setData('' + quote['name'] + quote['products'] + notes);
 			var value = $('#email-template option:contains(\"Quote\")').val();
 			$('#email-template').val(value);
 			$('#InlineEmail_subject').val('Quote');

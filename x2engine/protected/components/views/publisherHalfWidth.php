@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -71,10 +71,10 @@
 							\$('#publisher-saving-icon').animate({opacity: 0.0}); }",
 					'type'=>'POST',
 				),
-				array('id'=>'save-publisher', 'class'=>'x2-button'));
+				array('id'=>'save-publisher', 'class'=>'x2-button','tabindex'=>21));
 			?>
 			<div class="text-area-wrapper" style="margin-right:75px;">
-				<?php echo $form->textArea($model,'actionDescription',array('rows'=>3, 'cols'=>40)); ?>
+				<?php echo $form->textArea($model,'actionDescription',array('rows'=>3, 'cols'=>40,'tabindex'=>20)); ?>
 			</div>
 		</div>
 		<?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab ?>

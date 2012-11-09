@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -118,6 +118,72 @@ class MediaController extends x2base {
 		$this->render('upload',array(
 			'model'=>$model,
 		));
+	}	
+	/**
+	 * Creates a new media object via an ajax upload
+	 * 
+	 */
+	public function actionAjaxUpload() {
+	
+		$fileUrl = '';
+	
+		try {
+			if(Yii::app()->user->isGuest)
+				throw new Exception('You are not logged in.');
+
+			if(!isset($_FILES['upload'],$_GET['CKEditorFuncNum']))	//,$_GET['Media']
+				throw new Exception('Invalid request.');
+
+			$upload = CUploadedFile::getInstanceByName('upload');
+			
+			if($upload == null)
+				throw new Exception('Invalid file.');
+			
+			$fileName = $upload->getName();
+			$fileName = str_replace(' ','_',$fileName);
+
+			$userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
+			$userFolderPath = 'uploads/media/'. $userFolder;
+			// if user folder doesn't exit, try to create it
+			if( !(file_exists($userFolderPath) && is_dir($userFolderPath)) ) {
+				if(!@mkdir('uploads/media/'. $userFolder, 0777, true)) { // make dir with edit permission
+					throw new Exception('Error creating user folder.');
+					// ERROR: Couldn't create user folder
+					// var_dump($userFolder);
+					// exit();
+				}
+			}
+			
+			if(!$upload->saveAs($userFolderPath.DIRECTORY_SEPARATOR.$fileName))
+				throw new Exception('Error saving file');
+
+			// save media info
+			$model = new Media;
+			$model->fileName = $fileName;
+			$model->createDate = time();
+			$model->lastUpdated = time();
+			$model->uploadedBy = Yii::app()->user->name;
+			// $model->associationType = $_GET['Media']['associationType'];
+			// $model->associationId = $_GET['Media']['associationId'];
+			$model->private = true; //$_GET['Media']['private'];
+			// if($_POST['GET']['description'])
+				// $model->description = $_POST['Media']['description'];
+			
+			if(!$model->save())
+				throw new Exception('Error saving Media entry');
+			
+			
+			$fileUrl = $model->getFullUrl();
+
+		} catch(Exception $e) {
+			echo '<html><body><script type="text/javascript">',
+				'window.parent.CKEDITOR.tools.callFunction(',$_GET['CKEditorFuncNum'],',"","',$e->getMessage(),'");',
+				'</script></body></html>';
+			return;
+		}
+		echo '<html><body><script type="text/javascript">',
+			'window.parent.CKEDITOR.tools.callFunction(',$_GET['CKEditorFuncNum'],',"',$fileUrl,'","");',
+			'</script></body></html>';
 	}
 
 	/**

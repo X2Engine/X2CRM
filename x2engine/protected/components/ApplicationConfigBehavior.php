@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -184,17 +184,33 @@ class ApplicationConfigBehavior extends CBehavior {
 		if(isset($logo))
 			$this->owner->params->logo = $logo->fileName;
 			
-		$proLogo = 'images/x2engine_crm_pro.png';
-		if(file_exists($proLogo) && hash_file('md5',$proLogo) == 'fffc90810b8e9b65b6097119ba74fb93')
-			$this->owner->params->edition = 'pro';
 			
+		// set edition
+		$this->owner->params->edition = $this->owner->params->admin->edition;
+		
+		if($this->owner->params->edition === 'pro') {
+			$proLogo = 'images/x2engine_crm_pro.png';
+			if(!file_exists($proLogo) || hash_file('md5',$proLogo) !== '31a192054302bc68e1ed5a59c36ce731')
+				$this->owner->params->edition = 'opensource';
+		}
+		
+		
 		setlocale(LC_ALL, 'en_US.UTF-8');
 
+		
+		$datePickerFormat = Yii::app()->locale->getDateFormat('short'); // translate Yii date format to jquery
+		$datePickerFormat = str_replace('yy', 'y', $datePickerFormat);
+		$datePickerFormat = str_replace('MM', 'mm', $datePickerFormat);
+		$datePickerFormat = str_replace('M', 'm', $datePickerFormat);
+			
+		
 		// set base path and theme path globals for JS
 		Yii::app()->clientScript->registerScript('setParams','
 		var	yii = {
 			baseUrl: "'.Yii::app()->baseUrl.'",
-			themeBaseUrl: "'.Yii::app()->theme->baseUrl.'"
+			themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
+			language: "'.(Yii::app()->language == 'en'? '' : Yii::app()->getLanguage()).'",
+			datePickerFormat: "'.$datePickerFormat.'"
 		},
 		notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 		', CClientScript::POS_HEAD);

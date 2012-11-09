@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -101,15 +101,13 @@ $('#LoginForm_username').focus();
 				</div>		
 			</div>
 		</div>
-		<div class="row">
-			<div class="cell" style="margin-top:20px;text-align:center;width:100%;">
-			<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app','Login with Google'),
-					(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
-					((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
-					$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link')); ?>
-			<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
-			</div>
-		</div>
+	</div>
+	<div class="row" style="margin-top:10px;text-align:center;">
+		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app','Login with Google'),
+				(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
+				((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
+				$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link')); ?>
+		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
 	</div>
 </div>
 <!--<div id="login-logo"></div>-->

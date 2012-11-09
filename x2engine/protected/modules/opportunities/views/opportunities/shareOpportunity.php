@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -51,11 +51,12 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('opportunities','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ),$authParams);
 
-// editor CSS file	
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/tinyeditor/style.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 
-// editor javascript files
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/tinyeditor/tinyeditor.js');
+Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
+
 ?>
 <h2><?php echo Yii::t('opportunities','Share Opportunity');?>: <b><?php echo $model->name;?></b></h2>
 <?php
@@ -90,26 +91,3 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'opportunity','form'=>$form,'currentWorkflow'=>$currentWorkflow)); 
 $this->endWidget(); ?>
-
-<script>
-editor=new TINY.editor.edit('editor',{
-    id:'input', // (required) ID of the textarea
-    width:550, // (optional) width of the editor
-    height:300, // (optional) heightof the editor
-    cssclass:'te', // (optional) CSS class of the editor
-    controlclass:'tecontrol', // (optional) CSS class of the buttons
-    rowclass:'teheader', // (optional) CSS class of the button rows
-    dividerclass:'tedivider', // (optional) CSS class of the button diviers
-    controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|', 'orderedlist', 'unorderedlist', '|' ,'outdent' ,'indent', '|', 'leftalign', 'centeralign', 'rightalign', 'blockjustify', 'n', '|', 'unformat', '|', 'undo', 'redo', 'font', 'size', 'style','n', '|', 'image', 'hr', 'link', 'unlink', '|', 'cut', 'copy', 'paste'], // (required) options you want available, a '|' represents a divider and an 'n' represents a new row
-    footer:true, // (optional) show the footer
-    fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
-    xhtml:false, // (optional) generate XHTML vs HTML
-    cssfile:'style.css', // (optional) attach an external CSS file to the editor
-    css:'', // (optional) attach CSS to the editor
-    bodyid:'editor', // (optional) attach an ID to the editor body
-    footerclass:'tefooter', // (optional) CSS class of the footer
-    toggle:{text:'source',activetext:'wysiwyg',cssclass:'toggle'}, // (optional) toggle to markup view options
-    resize:{cssclass:'resize'} // (optional) display options for the editor resize
-});
-
-</script>

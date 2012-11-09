@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -40,7 +40,7 @@
  
 $isGuest = Yii::app()->user->isGuest;
 $auth=Yii::app()->authManager;
-$isAdmin = !$isGuest && (Yii::app()->user->getName()=='admin' || Yii::app()->user->checkAccess('AdminIndex'));
+$isAdmin = !$isGuest && (Yii::app()->user->checkAccess('AdminIndex'));
 $isUser = !($isGuest || $isAdmin);
 if(Yii::app()->session['alertUpdate']){
 ?><script>
@@ -61,13 +61,13 @@ $cs ->registerCoreScript('jquery')
 	->registerCoreScript('jquery.ui');
 
 // custom scripts
-$cs ->registerScriptFile($baseUrl.'/js/layout.js'.$jsVersion)
+$cs ->registerScriptFile($baseUrl.'/js/json2.js')
+	->registerScriptFile($baseUrl.'/js/layout.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/publisher.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/media.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/x2forms.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/tinyeditor.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion);
 
@@ -87,8 +87,7 @@ $cs ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection
 	->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/tinyeditor.css'.$jsVersion,'screen, projection');
+	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion); 
 
 $cs->registerScript('fullscreenToggle','
@@ -261,7 +260,12 @@ else
 
 
 
-
+$session=Session::model()->findByAttributes(array('user'=>Yii::app()->user->getName(),'IP'=>$this->getRealIp()));
+if(isset($session)){
+    $sessionStatus=$session->status;
+}else{
+    $sessionStatus=0;
+}
 $userMenu = array(
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
@@ -280,6 +284,7 @@ $userMenu = array(
 			array('label' => Yii::t('app','Preferences'),'url' => array('/profile/settings')),
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
 			array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
+            array('label' => ($sessionStatus==1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
@@ -369,7 +374,7 @@ $userMenu = array(
 	<?php echo Yii::t('app','Rights reserved.'); ?>
 	<?php echo Yii::t('app','The Program is provided AS IS, without warranty.'); ?><br>
 	
-	<?php echo Yii::t('app','Licensed under {BSD}.',array('{BSD}'=>CHtml::link('BSD License',$baseUrl.'/LICENSE.txt')));?><br>
+	<?php if(Yii::app()->params->admin->edition==='opensource') echo Yii::t('app','Licensed under {BSD}.',array('{BSD}'=>CHtml::link('BSD License',$baseUrl.'/LICENSE.txt')));?><br>
 	<?php echo Yii::t('app','Generated in {time} seconds.',array('{time}'=>number_format(Yii::getLogger()->getExecutionTime(),3))); ?> 
 	<?php
 	$cs->registerScript('logos',"

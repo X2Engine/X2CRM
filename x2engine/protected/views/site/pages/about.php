@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -59,13 +59,18 @@ echo CHtml::image($logo,'',array('class'=>'left'));
 Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion').html($().jquery);",CClientScript::POS_READY);
 ?>
 
-<div class="prepend-3">
+<div class="prepend-1 span-10">
 	<b>Version <?php echo Yii::app()->params->version;?><br>
 	<?php if(Yii::app()->params->edition==='pro') echo 'Professional Edition'; ?></b><br>
 	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.<br><br>
-	<?php echo Yii::t('app','X2Engine is an open source Customer Relationship Management application designed by John Roberts and licensed under the {link}.',array(
-		'{link}'=>CHtml::link(Yii::t('app','BSD License'),Yii::app()->getBaseUrl().'/LICENSE.txt')
-	)); ?>
+	<?php
+	if(Yii::app()->params->edition==='opensource')
+		echo Yii::t('app','X2Engine is an open source Customer Relationship Management application designed by John Roberts and licensed under the {link}.',array(
+			'{link}'=>CHtml::link(Yii::t('app','BSD License'),Yii::app()->getBaseUrl().'/LICENSE.txt')
+		));
+	else
+		echo Yii::t('app','X2Engine is a Customer Relationship Management application designed by John Roberts.');
+	?>
 
 	<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?>
 
@@ -91,7 +96,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 
 	<div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a><br><br></div>
 	<div id="about-legal">
-		Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty. Licensed under the <?php echo CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'); ?>.
+		Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty.
+		<?php if(Yii::app()->params->edition==='opensource') echo 'Licensed under the ',CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),'.'; ?>
 	</div>
 	<br><hr>
 	<div id="about-credits">
@@ -129,8 +135,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
 		<!--JS SHA-256: <a href="http://www.webtoolkit.info/javascript-sha256.html" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 		<a href="http://www.webtoolkit.info/license" target="_blank" class="no-underline" title="License">[License]</a><br>-->
-		TinyEditor: <a href="http://www.scriptiny.com/2010/02/javascript-wysiwyg-editor/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://creativecommons.org/licenses/by/3.0/us/" target="_blank" class="no-underline" title="Creative Commons Attribution 3.0">[CC]</a><br>
+		CKEditor: <a href="http://www.ckeditor.com/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+		<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
 		CFile Class:
 		<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
 		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>

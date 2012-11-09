@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -249,7 +249,7 @@ class X2GridView extends CGridView {
 					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
 				} else if($columnName == 'assignedTo') {
-					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):UserChild::getUserLinks($data->assignedTo)';
+					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):$data->assignedTo';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["'.$columnName.'"])';

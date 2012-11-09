@@ -5,12 +5,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,94 +39,124 @@
 
 
 $(function() {
-	initX2EmailForm();
-});
 
-/**
- *	initX2EmailForm
- *	
- *	Set up attachments in the email form so that the attachments div is droppable for
- *  files dragged over from the media widget. This is called when the page loads (if the
- *  page has an inline email form) and whenever the email form is replaced, like after an
- *  ajax call from pressing the preview button.
- *
- */
-function initX2EmailForm() {
-	$('#email-attachments').droppable({
-		accept: '.media',
-		activeClass: 'x2-state-active',
-		hoverClass: 'x2-state-hover',
-		drop: function(event, ui) {
+	/**
+	 *	Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
+	 */
+	$(document).on('setupInlineEmailEditor',function(){
+		if(window.inlineEmailEditor)
+			window.inlineEmailEditor.destroy(true);
+		window.inlineEmailEditor = createCKEditor('email-message',{tabIndex:5}, function() {
+			if(typeof inlineEmailEditorCallback == 'function') {
+				inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
+			}
+		});
+		
+		setupEmailAttachments('email-attachments');
+	});
 
-			var media = ui.draggable.context;
-			
-			var mediaId = media.href.split('/').pop();
-			var mediaName = media.innerHTML;
-
-            var file = $('<input>', {
-                'type': 'hidden',
-                'name': 'AttachmentFiles[id][]',
-                'class': 'AttachmentFiles',
-                'value': mediaId, // name of temp file
-            });		
-
-            var temp = $('<input>', { 
-                'type': 'hidden',
-                'name': 'AttachmentFiles[temp][]',
-                'value': false, // indicates that this is not a temp file
-            });
-            
-           	var remove = $("<a>", {
-           	    'href': "#",
-           	    'html': "[x]",
-           	});
-            
-			var attachment = $('.next-attachment');
-			var newFileChooser = attachment.clone();
-			attachment.children('.error').html(''); // clear attachment errors (if any)
-			
-			attachment.removeClass('next-attachment');
-			
-			attachment.append(temp);
-			attachment.append(file);
-			attachment.find('.filename').html(mediaName);
-			attachment.find('.remove').append(remove);
-			attachment.find('.upload-wrapper').remove();
-			
-            remove.click(function() {attachment.remove(); return false;});
-			
-			attachment.after(newFileChooser);
-			initX2FileInput();
+	$(document).delegate('#email-template','change',function() {
+		if($(this).val() != '0')
+			$('#email-subject').val($(this).find(':selected').text());
+		$('#preview-email-button').click();
+	});
+	
+	
+	// give send-email module focus when clicked
+	$('#inline-email-form').click(function() {
+		if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
+			$('.focus-mini-module').removeClass('focus-mini-module');
+			$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
 		}
 	});
+	
+	// give send-email module focus when tinyedit clicked
+	$('#email-message').click(function() {
+		if(!$('#inline-email-form').find('.wide.form').hasClass('focus-mini-module')) {
+			$('.focus-mini-module').removeClass('focus-mini-module');
+			$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
+		}
+	});
+	
+	if(window.hideInlineEmail)
+		$('#inline-email-form').hide();
+	else
+		$(document).trigger('setupInlineEmailEditor');
+
+
+	
+	// setupInlineEmailForm();
+});
+
+
+/**
+ * Toggles the inline email form open or closed. Scrolls to the email form and animates 
+ * the form sliding open. Alternatively, slides the form closed.
+ */
+function toggleEmailForm() {
+	
+	
+	if($('#inline-email-form .wide.form').hasClass('hidden')) {
+		$('#inline-email-form .wide.form').removeClass('hidden');
+		$('#inline-email-form .form.email-status').remove();
+		return;
+	}
+	
+	if($('#inline-email-form').is(':hidden')) {
+		$(document).trigger('setupInlineEmailEditor');
+		$('.focus-mini-module').removeClass('focus-mini-module');
+		$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
+		$('html,body').animate({
+			scrollTop: ($('#inline-email-top').offset().top - 100)
+		}, 300);
+	}
+	
+	$('#inline-email-form').animate({
+		opacity: 'toggle',
+		height: 'toggle'
+	}, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
+	
+	$('#InlineEmail_subject')
+		.addClass('focus')
+		.focus()
+		.blur(function() {$(this).removeClass('focus');});
+}
+
+
+/**
+ * Set up attachments in the email form so that the attachments div is droppable for
+ * files dragged over from the media widget. This is called when the page loads (if the
+ * page has an inline email form) and whenever the email form is replaced, like after an
+ * ajax call from pressing the preview button.
+ */
+function setupInlineEmailForm() {
+	
+	$(document).trigger('setupInlineEmailEditor');
+	
+	// setupEmailAttachments();
 	
 	initX2FileInput();
 	
 	$(document).mouseup(function() {
 		$('input.x2-file-input[type=file]').next().removeClass('active');
 	});
-	
-	// init remove button for attachment that were carried over after pressing "Preview"
-	$('#email-attachments').find('.remove a').each(function() {
-		$(this).click(function() {$(this).parent().parent().remove(); return false;});
-	});
-	
+
 	// init cc and bcc buttons
 	$('#cc-toggle').click(function() {
-	    $(this).animate({
-	    		opacity: 'toggle',
-	    		width: 0
-	    	}, 400);
-	    
-	    $('#cc-row').slideDown(300);
+		$(this).animate({
+				opacity: 'toggle',
+				width: 0
+			}, 400);
+		
+		$('#cc-row').slideDown(300);
 	});
 	
 	$('#bcc-toggle').click(function() {
-	    $(this).animate({
-	    		opacity: 'toggle',
-	    		width: 0
-	    	}, 400);
-	    
-	    $('#bcc-row').slideDown(300);
+		$(this).animate({
+				opacity: 'toggle',
+				width: 0
+			}, 400);
+		
+		$('#bcc-row').slideDown(300);
 	});
 }

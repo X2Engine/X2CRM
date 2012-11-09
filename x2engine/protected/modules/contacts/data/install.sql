@@ -25,6 +25,7 @@ CREATE TABLE `x2_contacts` (
 	skype					VARCHAR(32)		NULL,
 	googleplus				VARCHAR(100)	NULL,
 	lastUpdated				BIGINT,
+	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20),
 	priority				VARCHAR(40),
 	leadSource				VARCHAR(40),
@@ -60,8 +61,8 @@ INSERT INTO `x2_modules`
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES
-("Contact",		"leadscore",			"Lead Score",			0,		0,	"rating",		0,			0,		NULL,			0,		0,			""),
-("Contact",		"dealstatus",			"Deal Status",			0,		0,	"dropdown",		0,			0,		"6",			0,		0,			""),
+("Contacts",		"leadscore",			"Lead Score",			0,		0,	"rating",		0,			0,		NULL,			0,		0,			""),
+("Contacts",		"dealstatus",			"Deal Status",			0,		0,	"dropdown",		0,			0,		"6",			0,		0,			""),
 ("Contacts",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"name",					"Full Name",			0,		0,	"varchar",		0,			0,		NULL,			1,		0,			"High"),
 ("Contacts",		"firstName",			"First Name",			0,		0,	"varchar",		1,			0,		NULL,			1,		0,			"High"),
@@ -86,6 +87,7 @@ VALUES
 ("Contacts",		"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"backgroundInfo",		"Background Info",		0,		0,	"text",			0,			0,		NULL,			1,		0,			"Medium"),
 ("Contacts",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Contacts",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
 ("Contacts",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			""),
 ("Contacts",		"leadSource",			"Lead Source",			0,		0,	"dropdown",		0,			0,		"4",			0,		0,			""),
 ("Contacts",		"leadDate",				"Lead Date",			0,		0,	"date",			0,			0,		NULL,			0,		0,			""),
@@ -100,4 +102,6 @@ VALUES
 ("Contacts",		"dealvalue",			"Deal Value",			0,		0,	"currency",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"leadstatus",			"Lead Status",			0,		0,	"dropdown",		0,			0,		"5",			0,		0,			""),
 ("Contacts",		"doNotCall",			"Do Not Call",			0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
+("Contacts",		"timezone",             "Timezone",             0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
+("Contacts",		"dupeCheck",			"Duplicate Check",		0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"doNotEmail",			"Do Not Email",			0,		0,	"boolean",		0,			0,		NULL,			0,		0,			"");

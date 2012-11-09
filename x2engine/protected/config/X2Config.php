@@ -6,7 +6,7 @@ $host='';
 $user='';
 $pass='';
 $dbname='x2engine';
-$version = '2.1.1';
+$version = '2.2';
 $updaterVersion = '2.0';
-$buildDate = 1350340953;
+$buildDate = 1352410940;
 ?>

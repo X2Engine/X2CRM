@@ -6,7 +6,7 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
@@ -111,6 +111,8 @@ if(empty($data->type)) {
 			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
 		} elseif($data->type == 'email') {
 			echo Yii::t('actions','Email Message:').' '.Actions::formatCompleteDate($data->completeDate);
+		} elseif($data->type == 'emailOpened') {
+			echo Yii::t('actions', 'Email Opened:'). ' '.Actions::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'note') {
 			echo Actions::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'call') {
@@ -174,7 +176,7 @@ if(empty($data->type)) {
 			$userLink = empty($userLink)? Yii::t('actions','Anyone') : $userLink;
 			echo Yii::t('actions','Assigned to {name}',array('{name}'=>$userLink));
 		}
-	} else if($data->type == 'note' || $data->type == 'call') {
+	} else if($data->type == 'note' || $data->type == 'call' || $data->type == 'emailOpened') {
 		echo User::getUserLinks($data->completedBy);
 		// echo ' '.Actions::formatDate($data->completeDate);
 	} else if($data->type == 'attachment' && $data->completedBy!='Email') {
