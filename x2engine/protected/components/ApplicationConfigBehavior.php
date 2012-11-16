@@ -212,6 +212,7 @@ class ApplicationConfigBehavior extends CBehavior {
 			language: "'.(Yii::app()->language == 'en'? '' : Yii::app()->getLanguage()).'",
 			datePickerFormat: "'.$datePickerFormat.'"
 		},
+		x2 = {},
 		notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 		', CClientScript::POS_HEAD);
 	}

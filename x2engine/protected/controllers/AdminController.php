@@ -403,10 +403,14 @@ class AdminController extends Controller {
         $model = new Roles;
         if (isset($_POST['Roles'])) {
             $model->attributes = $_POST['Roles'];
-            if (!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
-                $this->redirect('manageRoles');
-            $viewPermissions = $_POST['viewPermissions'];
-            $editPermissions = $_POST['editPermissions'];
+            if(!isset($_POST['viewPermissions']))
+                $viewPermissions=array();
+            else
+                $viewPermissions = $_POST['viewPermissions'];
+            if(!isset($_POST['editPermissions']))
+                $editPermissions=array();
+            else
+                $editPermissions = $_POST['editPermissions'];
             if (isset($_POST['Roles']['users']))
                 $users = $model->users;
             else
@@ -506,10 +510,14 @@ class AdminController extends Controller {
             $id = $_POST['Roles']['name'];
             $model = Roles::model()->findByAttributes(array('name' => $id));
             $id = $model->id;
-            if (!(isset($_POST['viewPermissions']) && isset($_POST['editPermissions'])))
-                $this->redirect('manageRoles');
-            $viewPermissions = $_POST['viewPermissions'];
-            $editPermissions = $_POST['editPermissions'];
+            if(!isset($_POST['viewPermissions']))
+                $viewPermissions=array();
+            else
+                $viewPermissions = $_POST['viewPermissions'];
+            if(!isset($_POST['editPermissions']))
+                $editPermissions=array();
+            else
+                $editPermissions = $_POST['editPermissions'];
             if (isset($_POST['users']))
                 $users = $_POST['users'];
             else

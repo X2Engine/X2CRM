@@ -121,30 +121,35 @@ function clearText(field){
 	if (typeof field != "undefined" && field.defaultValue == field.value)
 		field.value = "";
 }
-
-function errorize(element) {
-	element.style['border-color'] = "#C00";
-	element.style['background-color'] = "#FEE";
-}
- 
 function validateField(field) {
-	var input = document.forms['<?php echo $type; ?>']['Contacts[' + field + ']'];
-	if (!typeof field === "undefined" && input.value.trim() == "" || (field == "email" && input.value.match(/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/) == null)) {
-		errorize(input);
-		return false; 
+
+	var input = document.getElementById(field);
+	
+	input.style.borderColor = "";
+	input.style.backgroundColor = "";
+
+	if (input.value.trim() == "" || (field == "email" && input.value.match(/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/) == null)) {
+		
+		input.style.borderColor = "#c00";
+		input.style.backgroundColor = "#fee";
+		return false;
 	}
 	return true;
 }
 
 function validate() {
-	var proceed = true;
+
+	clearText(document.forms['<?php echo $type; ?>']['Contacts[backgroundInfo]']);
+
+
+	// alert('ding!');
+	var valid = true;
 	var fields = ['firstName', 'lastName', 'email'];
-	for (var i=0; i<fields.length; i++) {
-		if (!validateField(fields[i])) {
-			proceed = false;
-		}
+	for (var i in fields) {
+		valid = validateField(fields[i]) && valid;
 	}
-	return proceed;
+
+	return valid;
 }
 </script>
 </head>
@@ -155,20 +160,20 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
     echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
 } ?>
 
-<form name="<?php echo $type; ?>" action="<?php echo $this->createUrl($type); ?>" method="POST">
+<form name="<?php echo $type; ?>" action="<?php echo $this->createUrl($type); ?>" method="POST" onsubmit="return validate();">
 	<?php if ($type == 'weblead') { ?>
-	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('firstName'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Contacts[firstName]" /><br /></div>
-	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('lastName'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Contacts[lastName]" /><br /></div>
+	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('firstName'); ?>: *</b><br /> <input style="width:170px;" type="text" id="firstName" name="Contacts[firstName]" /><br /></div>
+	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('lastName'); ?>: *</b><br /> <input style="width:170px;" type="text" id="lastName" name="Contacts[lastName]" /><br /></div>
 	<?php } ?>
-	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('email'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Contacts[email]" /><br /></div>
+	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('email'); ?>: *</b><br /> <input style="width:170px;" type="text" id="email" name="Contacts[email]" /><br /></div>
 	<?php if ($type == 'weblead') { ?>
-	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('phone'); ?>:</b><br /> <input style="width:170px;" type="text" name="Contacts[phone]" /><br /></div>
-	<div class="row"><b>Interest:</b><br /> <textarea style="height:100px;width:170px;font-family:arial;font-size:10px;" name="Contacts[backgroundInfo]" onfocus="clearText(this);"><?php echo Yii::t('contacts','Enter any additional information or questions regarding your interest here.'); ?></textarea><br /></div>
+	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('phone'); ?>:</b><br /> <input style="width:170px;" type="text" id="phone" name="Contacts[phone]" /><br /></div>
+	<div class="row"><b>Interest:</b><br /> <textarea style="height:100px;width:170px;font-family:arial;font-size:10px;" id="backgroundInfo" name="Contacts[backgroundInfo]" onfocus="clearText(this);"><?php echo Yii::t('contacts','Enter any additional information or questions regarding your interest here.'); ?></textarea><br /></div>
 	<?php } ?>
 	<?php foreach ($_GET as $key=>$value) { ?>
 		<input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />
 	<?php } ?>
-	<input id='submit' type="submit" value="Submit" onclick="clearText(document.forms['<?php echo $type; ?>']['Contacts[backgroundInfo]']); return validate();"/>
+	<input id='submit' type="submit" value="Submit" />
 </form>
 </body>
 </html>

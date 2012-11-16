@@ -18,13 +18,13 @@ CREATE TABLE `x2_services` (
 	subIssue			VARCHAR(40),
 	origin				VARCHAR(40),
 	escalatedTo			VARCHAR(20),
-	lastactivity		BIGINT,
+	lastActivity		BIGINT,
 	parentCase			INT
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
 INSERT INTO `x2_modules` 
 			(name,				title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
-	VALUES	("services",		"Services",		1,			15,				1,			1,			0,			0,		0);
+	VALUES	("services",		"Service",		1,			15,				1,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,			modified,	custom,	type,					required,	readOnly,	linkType,   	searchable,	isVirtual,	relevance)
@@ -45,5 +45,5 @@ VALUES
 ("Services",		"subIssue",				"Sub Issue",			0,			0, 		"dropdown",				0, 			0, 			'12', 			0,			0,			""			),
 ("Services",		"origin",				"Case Origin",			0,			0, 		"dropdown",				0, 			0, 			'13', 			0,			0,			""			),
 ("Services",		"escalatedTo",			"Escalated To",			0,			0, 		"optionalAssignment",	0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"lastactivity",			"Last Activity",		1,			1, 		"date",					0, 			0, 			NULL, 			0,			0,			""			),
+("Services",		"lastActivity",			"Last Activity",		0,			0, 		"date",					0, 			0, 			NULL, 			0,			0,			""			),
 ("Services",		"parentCase",			"Parent Case",			0,			0, 		"link",					0, 			0, 			'Services', 	1,			0,			""			);

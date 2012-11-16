@@ -288,7 +288,13 @@ $userMenu = array(
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
-	
+	// array(
+		// 'label'=>'',
+		// 'itemOptions'=>array(
+			// 'class'=>'special leadrouting-indicator'.($sessionStatus==1? ' visible' : ''),
+			// 'title'=>($sessionStatus==1? Yii::t('app','Visible to lead routing') : Yii::t('app','Visible to lead routing'))
+		// )
+	// ),
 );
 	
 ?><!DOCTYPE html>
@@ -313,7 +319,7 @@ $userMenu = array(
 </head>
 <body class="<?php echo $headerBgClass; ?>">
 <?php //echo $backgroundImg; ?>
-<div id="header-body-container">
+<!--<div id="header-body-container">-->
 <div id="header" class="<?php echo $headerBgClass; ?>">
 <div id="header-inner">
 	<div id="main-menu-bar">
@@ -346,11 +352,11 @@ $userMenu = array(
 	<div style="clear:both;"></div>
 </div>
 </div>
-<div class="width-constraint" id="page-body" style="clear:both;margin-top:0px;margin-bottom:40px;">
+<div class="width-constraint" id="page-body">
 <?php echo $content; ?>
 </div>
-<div id="footer-push"></div>
-</div>
+<!--<div id="footer-push"></div>-->
+<!--</div>-->
 <div id="footer">
 <div class="width-constraint">
 	<div id="footer-logos">

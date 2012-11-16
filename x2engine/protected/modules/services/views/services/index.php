@@ -68,16 +68,26 @@ $('.search-form form').submit(function(){
 </div><!-- search-form -->
 <?php
 */
+
+$field = Fields::model()->findByAttributes(array('modelName'=>'Services', 'fieldName'=>'status', 'type'=>'dropdown'));
+if($field) {
+	$statuses = Dropdowns::getItems($field->linkType);
+	if($statuses) {
+//		var_dump(json_decode($dropdown->options));
+		$this->serviceCaseStatuses = $statuses;
+	}
+}
+
 $this->widget('application.components.X2GridView', array(
 	'id'=>'services-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('services','Support Cases').'</h2><div class="title-bar">'
+	'template'=> '<h2>'.Yii::t('services','Service Cases').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
 		.X2GridView::getFilterHint()
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$model->search(),
+	'dataProvider'=>$model->searchWithStatusFilter(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,

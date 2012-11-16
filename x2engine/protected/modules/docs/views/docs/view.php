@@ -42,4 +42,4 @@ $this->setPageTitle($model->title);
 echo CHtml::link(Yii::t('docs','Export'),array('/docs/docs/exportToHtml','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
 echo CHtml::link(Yii::t('docs','Edit Doc'),array('/docs/docs/update','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
 echo "<br>\n";
-echo x2base::convertUrls($model->text);
+echo $model->text;

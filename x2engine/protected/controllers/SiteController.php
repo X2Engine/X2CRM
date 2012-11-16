@@ -64,7 +64,7 @@ class SiteController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow',
-				'actions'=>array('login','index','logout','warning','captcha'),
+				'actions'=>array('login','index','logout','warning','captcha','googleLogin'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -138,7 +138,7 @@ class SiteController extends x2base {
 			$lastLogin = $user->lastLogin;
 
 			$contacts = CActiveRecord::model('Contacts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$actions = CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
+			$actions = CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND type!='workflow' AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
 			$opportunities = CActiveRecord::model('Opportunity')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 			$accounts = CActiveRecord::model('Accounts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
 

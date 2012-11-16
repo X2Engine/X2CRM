@@ -97,7 +97,7 @@ class Services extends X2Model {
                             $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
                             break;
                         case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
+                            $criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
                             break;
                         case 'assignment':
                             $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
@@ -124,5 +124,67 @@ class Services extends X2Model {
 
 		return $dataProvider;
 	}
+	
+	/**
+	 *  Like search but filters by status based on the user's profile
+	 *
+	 */
+	public function searchWithStatusFilter() {
+		// Warning: Please modify the following code to remove attributes that
+		// should not be searched.
+
+		$criteria=new CDbCriteria;
+
+	//	$criteria->compare('status', '<>Program Manager investigation');
+
+		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Services'));
+                foreach($fields as $field){
+                    $fieldName=$field->fieldName;
+                    
+                    if($field->fieldName == 'status') { // if status exists
+						// filter statuses based on user's profile
+						$hideStatus = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
+						if(!$hideStatus) {
+						    $hideStatus = array();
+						}
+						foreach($hideStatus as $hide) {
+							$criteria->compare('status', '<>'.$hide);
+						}
+                    }
+                    
+                    switch($field->type){
+                        case 'boolean':
+                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
+                            break;
+                        case 'link':
+                            $criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
+                            break;
+                        case 'assignment':
+                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
+                            break;
+                        default:
+                            $criteria->compare($field->fieldName,$this->$fieldName,true);
+                    }
+                    
+                }
+
+		
+		$dataProvider=new SmartDataProvider(get_class($this), array(
+			'sort'=>array('defaultOrder'=>'id ASC'),
+			'pagination'=>array(
+				'pageSize'=>ProfileChild::getResultsPerPage(),
+			),
+			'criteria'=>$criteria,
+		));
+		$arr=$dataProvider->getData();
+		foreach($arr as $service){
+			$service->assignedTo=User::getUserLinks($service->assignedTo);
+		}
+		$dataProvider->setData($arr);
+
+		return $dataProvider;
+	}
+	
+
  
 }

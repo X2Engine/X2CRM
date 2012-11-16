@@ -260,6 +260,7 @@ class DocsController extends x2base {
 		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
 			if(isset($_POST['DocChild'])) {
 				$model->attributes=$_POST['DocChild'];
+                $model->visibility=$_POST['DocChild']['visibility'];
 				$model=$this->updateChangeLog($model,'Edited');
 				if($model->save())
 					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));

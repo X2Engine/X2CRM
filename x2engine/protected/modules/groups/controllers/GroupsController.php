@@ -193,29 +193,25 @@ class GroupsController extends x2base {
 	}
         
 	public function actionGetGroups() {	
-		if(isset($_POST['checked'])) { // coming from a group checkbox?
+		$checked = false;
+		if(isset($_POST['checked'])) // coming from a group checkbox?
 			$checked = json_decode($_POST['checked']);
-		} else if(isset($_POST['group'])){
+		elseif(isset($_POST['group']))
 			$checked = true;
-		}else{
-			$checked = false;
-		}
-		if(isset($_POST['field'])){
-            $field=$_POST['field'];
-        }
+
+		$id = null;
+		if(isset($_POST['field']))
+			$id = $_POST['field'];
+		
+		$options = array();
 		if($checked) { // group checkbox checked, return list of groups
-			$groups=Groups::model()->findAll();
-			foreach($groups as $group){
-				echo CHtml::tag('option', array('value'=>$group->id),CHtml::encode($group->name),true);
-			}
+			echo CHtml::listOptions($id,Groups::getNames(),$options);
 		} else { // group checkbox unchecked, return list of user names
-			$users=User::getNames();
-            if(!in_array($field,array_keys($users))){
-                $field=Yii::app()->user->getName();
-            }
-			foreach($users as $key=>$value){
-				echo CHtml::tag('option', array('value'=>$key, 'selected'=>$key==$field?"true":null),CHtml::encode($value),true);
-			}
+			$users = User::getNames();
+			if(!in_array($id,array_keys($users)))
+				$id = Yii::app()->user->getName();
+
+			echo CHtml::listOptions($id,$users,$options);
 		}
 	}
 

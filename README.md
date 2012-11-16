@@ -1,41 +1,52 @@
-# X2EngineCRM 2.2 Changelog #
-11/08/2012
-* Service module
-	* Unique Case # and fields for nature of request and service status
-	* Generate a custom Web Form to let contacts request a new service case
-	* Automatic response email with case # when a contact makes a service request
-* Improved import tools
-	* More robust global import
-	* Customizable import for contacts (you can now import data in almost any 
-	  format, and can manually map the columns to X2CRM fields.
-* CKEditor has replaced TinyEditor as the docs and email editor.
-	* Images can now be dragged directly into the editor from the Media widget
-	* You can upload images from within the editor
-* Numerous bug fixes
-* You can now upgrade to the Professional Edition (on the admin page)
-* Emails sent using the inline email form now detects when the user opens it 
-  (like campaigns do)
+# X2CRM 2.2.1 Changelog #
+11/15/2012
 
+* Numerous improvements to Contacts importer
+	* Improved UI
+	* Better reliability
+* WYSIWYG editor now lets you insert record attributes in emails/campaign templates
+	* Fixed several bugs with editor
+* Improvements to Service module
+	* You can now specify the from address for Service module emails
+	* Filter by Status
+	* Numerous bug fixes
+* Numerous other bug fixes
 
 # Introduction #
-Welcome to  X2EngineCRM v2.2!  X2EngineCRM is a next-generation,  open source
-social sales application for small and medium sized businesses. X2EngineCRM was 
-designed to streamline  contact and sales actions into  one  compact blog-style 
-user interface.  Add to this  contact  and  colleague  social feeds  and  sales 
-representatives  become  smarter  and  more  effective  resulting  in increased 
-sales and higher customer satisfaction.
+Welcome to  X2CRM v2.2.1!
+X2CRM is a next-generation,  open source social sales application for small and 
+medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
+actions into  one  compact blog-style user interface.  Add to this contact  and
+colleague social feeds  and  sales  representatives  become  smarter  and  more
+effective resulting in increased sales and higher customer satisfaction.
 
-X2EngineCRM  is  unique  in the  crowded Customer Relationship Management (CRM) 
-field with its compact blog-style user interface. Interactive and collaborative 
-tools which users are already familiar with from  social networking  sites such 
-as  tagging,  pictures,  docs,  web pages,  group chat,  discussions boards and 
-rich  mobile and tablet apps are combined within a  compact  and  fast  contact 
-sales management application. Reps are able to make  more  sales contacts while 
+X2CRM is  unique  in the  crowded  Customer Relationship Management (CRM) field 
+with its compact blog-style user interface. Interactive and collaborative tools 
+which  users are already  familiar  with from  social networking  sites such as  
+tagging,  pictures,  docs,  web pages,  group chat, discussions boards and rich 
+mobile and tablet apps are combined within a  compact  and  fast  contact sales 
+management application. Reps  are  able  to  make  more  sales  contacts  while 
 leveraging the combined  social intelligence of peers enabling them to add more 
 value to their customer interactions resulting in higher close rates. 
 
+# System Requirements #
+* A web server that can execute PHP
+* A password-protected MySQL database server connection, and a database on 
+  which the user of the connection has full permissions rights (i.e. SELECT, 
+  DROP, CREATE and UPDATE)
+* PHP 5.3 or later
+* PHP must be run as the same system user that owns the directory where X2CRM 
+  will be installed
+* The server must have internet access for automatic updates
+* The server must be publicly accessible for web lead capture, service requests 
+  and email tracking to work
+
+X2CRM comes with a requirements check script, "requirements.php", which you can 
+upload by itself to your server. Simply visit the script in your browser to see 
+if your server will run X2CRM.
+
 # Installation #
-1. Extract and upload X2Engine to the web directory of your choice.
+1. Upload X2Engine to the web directory of your choice.
 2. Create a new MySQL database for X2Engine to use
 3. Navigate to the x2engine web folder in your browser and you will be redirected to the installer.
 4. Fill out the form, click install, and that's it!

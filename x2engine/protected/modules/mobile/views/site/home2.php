@@ -45,7 +45,7 @@ $this->pageTitle = Yii::app()->name . ' - Home';
     //render home page
     $app=Yii::app();
     $isGuest=$app->user->isGuest;
-    $isAdmin = !$isGuest && $app->user->getName() == 'admin';
+    $isAdmin = !$isGuest && $app->user->checkAccess('AdminIndex');
     $isUser = !($isGuest || $isAdmin);
     $module = $app->controller->id;
 

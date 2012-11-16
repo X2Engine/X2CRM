@@ -361,7 +361,6 @@ class X2GridView extends CGridView {
 			}
 		});    
 		");
-		if(isset(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts'){
 		// add a dropdown to the summary text that let's user set how many rows to show on each page
 		$this->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 			. '<div class="form no-border" style="display:inline;"> '
@@ -372,7 +371,9 @@ class X2GridView extends CGridView {
 							\$.fn.yiiGridView.update('{$this->id}', {" . 
 								(isset($this->modelName)? "data: {'{$this->modelName}_page': 1}," : "") . "
 								complete: function(jqXHR, status) {
-									refreshQtip();
+									if(typeof(refreshQtip) == 'function') {
+										refreshQtip();
+									}
 								}
 							});
 						}",
@@ -401,9 +402,9 @@ class X2GridView extends CGridView {
 		// }
 		// $this->afterAjaxUpdate .= " } ";
 			
-		
-		// after user moves to a different page, make sure the tool tips get added to the newly showing rows
-		$this->afterAjaxUpdate = 'js: function(id, data) { refreshQtip(); $(".qtip-hint").qtip({content:false}); }';
+		if(isset(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts'){
+			// after user moves to a different page, make sure the tool tips get added to the newly showing rows
+			$this->afterAjaxUpdate = 'js: function(id, data) { refreshQtip(); $(".qtip-hint").qtip({content:false}); }';
         }
 		parent::init();
 	}

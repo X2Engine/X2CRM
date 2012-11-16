@@ -66,7 +66,7 @@ class Admin extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('emailFromName, emailFromAddr', 'required'),
+			array('emailFromName, emailFromAddr, serviceCaseFromEmailName, serviceCaseFromEmailAddress, serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
 			array('timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
 			// accounts, sales, 
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),
@@ -123,6 +123,10 @@ class Admin extends CActiveRecord
 			'workflowBackdateWindow' => Yii::t('admin','Workflow Backdate Window'),
 			'workflowBackdateRange' => Yii::t('admin','Workflow Backdate Range'),
 			'workflowBackdateReassignment' => Yii::t('admin','Workflow Backdate Reassignment'),
+			'serviceCaseFromEmailName' => Yii::t('admin','Sender Name'),
+			'serviceCaseFromEmailAddress' => Yii::t('admin','Sender Email Address'),
+			'serviceCaseEmailSubject' => Yii::t('admin', 'Subject'),
+			'serviceCaseEmailMessage' => Yii::t('admin', 'Email Message'),
 		);
 	}
 

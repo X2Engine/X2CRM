@@ -270,7 +270,7 @@ class WorkflowController extends x2base {
 				if(Yii::app()->params->admin->workflowBackdateWindow > 0 && (time() - $model->completeDate) > Yii::app()->params->admin->workflowBackdateWindow)
 					$editable = false;
 					
-				if(Yii::app()->user->getName() == 'admin')
+				if(Yii::app()->user->checkAccess('WorkflowAdmin') || Yii::app()->user->checkAccess('AdminIndex'))
 					$editable = true;
 					
 				$minDate = Yii::app()->params->admin->workflowBackdateRange;
@@ -279,7 +279,7 @@ class WorkflowController extends x2base {
 				else
 					$minDate = '-'.$minDate;	// otherwise, we can only go back this far
 					
-				if(Yii::app()->user->getName() == 'admin')
+				if(Yii::app()->user->checkAccess('WorkflowAdmin') || Yii::app()->user->checkAccess('AdminIndex'))
 					$minDate = null;
 
 				$this->renderPartialAjax('_workflowDetail',array(
@@ -342,7 +342,7 @@ class WorkflowController extends x2base {
 				$action->stageNumber = (int)$stageNumber;
 				$action->save();
                 $contact=Contacts::model()->findByPk($modelId);
-                $contact->lastactivity=time();
+                $contact->lastActivity=time();
                 $contact->save();
 				// die(var_dump($action->getErrors()));
 				// die(var_dump($action->rules()));
@@ -436,7 +436,7 @@ class WorkflowController extends x2base {
 			}
 		}
         $contact=Contacts::model()->findByPk($modelId);
-        $contact->lastactivity=time();
+        $contact->lastActivity=time();
         $contact->save();
 		echo Workflow::renderWorkflow($workflowStatus);
 	}

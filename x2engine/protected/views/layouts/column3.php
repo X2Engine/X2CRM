@@ -96,6 +96,55 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			echo '</div>';
 			$this->endWidget();
 		}
+		
+		// Add Show/Hide Status for Service Cases
+		// This is a list of service case statuses. When the User checks one of the corresponding checkboxes
+		// the status will be hidden in the gridview in services/index
+		if(isset($this->modelClass) && $this->modelClass == 'Services' && isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
+			$hideStatus = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
+			if(!$hideStatus) {
+				$hideStatus = array();
+			}
+
+			$this->beginWidget('zii.widgets.CPortlet',
+			    array(
+			    	'title'=>Yii::t('services', 'Filter By Status'),
+			    	'id'=>'service-case-status-filter',
+			    )
+			);			
+
+			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+			$i = 1;
+			foreach($this->serviceCaseStatuses as $status) {
+				echo "<li>\n";
+				echo CHtml::checkBox("service-case-status-filter-$i", !in_array($status, $hideStatus),
+				    array(
+				    	'id'=>"service-case-status-filter-$i",
+		//		    	'onChange'=>"toggleUserCalendarSource(this.name, this.checked, $editable);", // add or remove user's actions to calendar if checked/unchecked
+						'ajax' => array(
+							'type' => 'POST', //request type
+							'url' => Yii::app()->controller->createUrl('/services/statusFilter'), //url to call
+							'success' => 'js:function(response) { $.fn.yiiGridView.update("services-grid"); }', //selector to update
+							'data' => 'js:{checked: $(this).attr("checked")=="checked", status:"'.$status.'"}',
+							// check / uncheck the checkbox after the ajax call
+							'complete'=>'function(){
+								if($("#service-case-status-filter-'.$i.'").attr("checked")=="checked") {
+									$("#service-case-status-filter-'.$i.'").removeAttr("checked","checked");
+								} else {
+									$("#service-case-status-filter-'.$i.'").attr("checked","checked");
+								}
+							}'
+						)
+				    )
+				);
+				echo CHtml::label(CHtml::encode($status), "service-case-status-filter-$i");
+				echo "</li>";
+				$i++;
+			}
+			echo "</ul>\n";
+			$this->endWidget();
+		}
+		
 		if(isset($this->modelClass) && $this->modelClass == 'Calendar') {
 			$user = UserChild::model()->findByPk(Yii::app()->user->getId());
 			$showCalendars = json_decode($user->showCalendars, true);

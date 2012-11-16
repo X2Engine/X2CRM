@@ -44,6 +44,7 @@
 class ServicesController extends x2base { 
 
 	public $modelClass = 'Services';
+	public $serviceCaseStatuses = null;
 
 	public function accessRules() {
 		return array(
@@ -52,7 +53,7 @@ class ServicesController extends x2base {
                             'users'=>array('*'), 
                         ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','update','search','saveChanges','delete','inlineEmail','createWebForm'),
+				'actions'=>array('index','view','create','update','search','saveChanges','delete','inlineEmail','createWebForm', 'statusFilter'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -100,6 +101,17 @@ class ServicesController extends x2base {
 		     if( !$model->isNewRecord ) {
 		     	$model->name = $model->id;
 		     	$model->update();
+				if($model->escalatedTo != '') {
+				    $notif = new Notification;
+				    $notif->user = $model->escalatedTo;
+				    $notif->createDate = time();
+				    $notif->createdBy = Yii::app()->user->name;
+				    $notif->type = 'escalateCase';
+				    $notif->modelType = $this->modelClass;
+				    $notif->modelId = $model->id;
+				    $notif->save();
+				}
+
 		     	$this->redirect(array('view', 'id' => $model->id));
 		     }
 		} else {
@@ -446,29 +458,51 @@ class ServicesController extends x2base {
 			$emailBody .= Yii::t('services', 'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}.  One of  our Technical Analysts will contact you shortly.', array(
 				'{casenumber}'=>$model->id,
 			));
+			
+			$emailBody = Yii::app()->params->admin->serviceCaseEmailMessage;
+			$emailBody = preg_replace('/{first}/u', $firstName, $emailBody);
+			$emailBody = preg_replace('/{last}/u', $lastName, $emailBody);
+			$emailBody = preg_replace('/{phone}/u', $phone, $emailBody);
+			$emailBody = preg_replace('/{email}/u', $email, $emailBody);
+			$emailBody = preg_replace('/{description}/u', $description, $emailBody);
+			$emailBody = preg_replace('/{case}/u', $model->id, $emailBody);
+			$emailBody = preg_replace('/\n|\r\n/', "<br>", $emailBody);
+			
 			$uniqueId = md5(uniqid(rand(), true));
 			$emailBody .= '<img src="' . $this->createAbsoluteUrl('actions/emailOpened', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
-			$this->sendUserEmail(array($fullName, $email), $model->subject, $emailBody);
 			
-			//email action
-			$action = new Actions;
-			$action->associationType = 'services';
-			$action->associationId = $model->id;
-			$action->associationName = $model->name;
-			$action->visibility = 1;
-			$action->complete = 'Yes';
-			$action->type = 'email';
-			$action->completedBy = 'admin';
-			$action->assignedTo = $model->assignedTo;
-			$action->createDate = time();
-			$action->dueDate = time();
-			$action->completeDate = time();
-			$action->actionDescription = '<b>'.$model->subject."</b>\n\n".$emailBody;
-			if($action->save()) {
-			    $track = new TrackEmail;
-			    $track->actionId = $action->id;
-			    $track->uniqueId = $uniqueId;
-			    $track->save();
+			$emailSubject = Yii::app()->params->admin->serviceCaseEmailSubject;
+			$emailSubject = preg_replace('/{first}/u', $firstName, $emailSubject);
+			$emailSubject = preg_replace('/{last}/u', $lastName, $emailSubject);
+			$emailSubject = preg_replace('/{phone}/u', $phone, $emailSubject);
+			$emailSubject = preg_replace('/{email}/u', $email, $emailSubject);
+			$emailSubject = preg_replace('/{description}/u', $description, $emailSubject);
+			$emailSubject = preg_replace('/{case}/u', $model->id, $emailSubject);
+			
+			$from = array('name' => Yii::app()->params->admin->serviceCaseFromEmailName, 'address'=> Yii::app()->params->admin->serviceCaseFromEmailAddress);
+			$status = $this->sendUserEmail(array($fullName, $email), $emailSubject, $emailBody, null, $from);
+			
+			if($status[0] == 200) {
+				//email action
+				$action = new Actions;
+				$action->associationType = 'services';
+				$action->associationId = $model->id;
+				$action->associationName = $model->name;
+				$action->visibility = 1;
+				$action->complete = 'Yes';
+				$action->type = 'email';
+				$action->completedBy = 'admin';
+				$action->assignedTo = $model->assignedTo;
+				$action->createDate = time();
+				$action->dueDate = time();
+				$action->completeDate = time();
+				$action->actionDescription = '<b>'.$model->subject."</b>\n\n".$emailBody;
+				if($action->save()) {
+				    $track = new TrackEmail;
+				    $track->actionId = $action->id;
+				    $track->uniqueId = $uniqueId;
+				    $track->save();
+				}
 			}
 			
 			$this->renderPartial('webFormSubmit', array('caseNumber'=>$model->id));
@@ -563,6 +597,38 @@ class ServicesController extends x2base {
 	
 			$this->renderPartial('webForm', array('type'=>'webForm'));
 		}
+	}
+	
+	/**
+	 *  Show or hide a certain status in the gridview
+	 *
+	 *  Called through ajax with a status and if that status should be shown or hidden.
+	 *  Saves the result in the user's profile.
+	 *
+	 */
+	public function actionStatusFilter() {
+	//	var_dump($_POST);
+		$checked = CJSON::decode($_POST['checked']);
+		$status = $_POST['status'];
+		
+		var_dump($checked);
+		var_dump($status);
+		
+		$hideStatuses = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
+		if(!$hideStatuses) {
+			$hideStatuses = array();
+		}
+		
+		var_dump($checked);
+		var_dump(in_array($status, $hideStatuses));
+		if($checked && ($key = array_search($status, $hideStatuses)) !== false) { // if we want to show the status, and it's not being shown
+			unset($hideStatuses[$key]); // show status
+		} else if(!$checked && !in_array($status, $hideStatuses)) { // if we want to hide the status, and it's not being hidden
+			$hideStatuses[] = $status;
+		}
+		
+		Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($hideStatuses);
+		Yii::app()->params->profile->update();
 	}
 
 

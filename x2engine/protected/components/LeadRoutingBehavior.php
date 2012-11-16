@@ -196,8 +196,9 @@ class LeadRoutingBehavior extends CBehavior {
 		$online = $admin->onlineOnly;
 		$this->cleanUpSessions();
 		$sessions = Session::getOnlineUsers();
-
-		$rules = CActiveRecord::model('LeadRouting')->findAll("", array('order' => 'priority'));
+        $criteria=new CDbCriteria;
+        $criteria->order="priority ASC";
+		$rules = CActiveRecord::model('LeadRouting')->findAll($criteria);
 		foreach ($rules as $rule) {
 			$arr = LeadRouting::parseCriteria($rule->criteria);
 			$flagArr = array();
@@ -243,7 +244,7 @@ class LeadRoutingBehavior extends CBehavior {
 						if ($rule->groupType == 0) {
 							$links = GroupToUser::model()->findAllByAttributes(array('groupId' => $group));
 							foreach ($links as $link) {
-								$users[] = User::model()->findByPk($link->userId)->username;
+								$usernames[] = User::model()->findByPk($link->userId)->username;
 							}
 						} else {
 							$users[] = $group;
@@ -254,7 +255,9 @@ class LeadRoutingBehavior extends CBehavior {
 							if (in_array($user, $sessions))
 								$users[] = $user;
 						}
-					}
+					}elseif($rule->groupType == 0){
+                        $users=$usernames;
+                    }
 				}
 				$users[] = $rule->rrId;
 				$rule->rrId++;

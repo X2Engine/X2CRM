@@ -619,9 +619,6 @@ class ActionsController extends x2base {
 			    }
 			}
 		}
-		if(Yii::app()->user->name == 'admin')
-			$this->redirect(array('/actions/admin'));
-		else
 			$this->redirect(array('/actions/index'));
 	}
 	

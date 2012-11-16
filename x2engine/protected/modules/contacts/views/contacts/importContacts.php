@@ -43,7 +43,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	// array('label'=>Yii::t('contacts','Import from Outlook')),
-	array('label'=>Yii::t('contacts','Import from Template'),'url'=>array('importExcel')),
+	array('label'=>Yii::t('contacts','Import Contacts')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
 ));
 

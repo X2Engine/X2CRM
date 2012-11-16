@@ -5,7 +5,7 @@ CREATE TABLE `x2_contacts` (
 	name					VARCHAR(200),
 	firstName				VARCHAR(80)		NOT NULL,
 	lastName				VARCHAR(80)		NOT NULL,
-	title					VARCHAR(40),
+	title					VARCHAR(100),
 	company					VARCHAR(250),
 	phone					VARCHAR(40),
 	phone2					VARCHAR(40),

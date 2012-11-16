@@ -66,9 +66,19 @@ div.half-width > div.form {background:#fff;}
 div.x2-layout a {text-decoration:none;}
 div.x2-layout a:hover {text-decoration:underline;}
 /* Form Sections */
-div.x2-layout .formSection {/* background:#fff; */overflow:hidden;border-top:1px solid #333;}
+div.x2-layout .formSection {
+	/* background:#fff; */
+	overflow:hidden;	/* disable */
+	border-top:1px solid #333;
+}
 div.x2-layout .formSection:first-child {border-top:none;}
-div.x2-layout .tableWrapper {margin-left:16px;width:auto;border-left:1px solid #aaa;margin-bottom:-1px;margin-right:-1px;}
+div.x2-layout .tableWrapper {
+	margin-left:16px;
+	width:auto;
+	border-left:1px solid #aaa;
+	margin-bottom:-1px;
+	margin-right:-1px;
+}
 /* div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;} */
 div.x2-layout .formSection:first-child {
 	-moz-border-radius:		3px 0 0 0;
@@ -151,7 +161,7 @@ div.x2-layout .formSection table {
 }
 div.x2-layout .formSection:last-child table {margin-bottom:-1px;}
 div.x2-layout td {
-	overflow:hidden;
+	overflow:hidden;	/* disable */
 	margin:0;
 	padding:0;
 	vertical-align:top;
@@ -160,18 +170,20 @@ div.x2-layout td {
 	/* background:#eee; */
 }
 div.x2-layout td:last-child {border-right:none !important;}
-div.x2-layout .formItem {
+div.x2-layout .formItem {	/* set field width in this element */
 	/* position:relative; */
 	float:left;
 	/* white-space:nowrap; */
-	overflow:hidden;
+	overflow:hidden;	/* disable */
 	margin-left:-1px;
 	margin-right:-1000px;	/* css voodoo: row extends all the way across */
 	padding-right:1000px;	/* and doesnt' mess up the flow */
 	border:1px solid #ccc;
 	border-width:0 0 1px 1px;
-	/* background:#fafafa; */
 }
+div.x2-layout .formItem.multiLine {overflow:hidden;}
+div.x2-layout .formItem.checkBox {width:auto;}
+
 /* div.x2-layout.form-view .formSectionHeader {border-top:1px solid #999;} */
 div.x2-layout.form-view .formItem {border-width:0 0 0;}
 div.x2-layout .formItem label {
@@ -190,43 +202,70 @@ div.x2-layout .formItem.topLabel label {
 div.x2-layout .formItem.leftLabel label {
 	float:left;
 	padding:3px 5px;
+	/* height:20px; */
 	padding-bottom:2003px;	/* equal height columns hack */
-	margin-bottom:-2000px;
+	margin-bottom:-2000px;	/* disable */
 	text-align:right;
-	width:70px;
+	width:70px;	/* 69 */
 	vertical-align:middle;
+	/* border:1px solid #ccc;
+	border-right:none; */
 	border-right:1px solid #ccc;
 }
+div.x2-layout .formItem.multiLine.leftLabel label {
+	padding-bottom:2003px;
+	margin-bottom:-2000px;
+}
+
 div.x2-layout .formItem label.groupLabel {
 	background:none;
 	display:inline;
 	margin-left:5px;
 }
 div.x2-layout .formInputBox {
-	float:left;
-	/* background:#def; */
+	float:left;		/* disable */
+	/* width:auto; */
+	/* margin-left:80px; */
 	margin-right:1px;
 	padding:3px;
+	/* padding:0 10px 0 0; */
+	
 	padding-bottom:503px;	/* equal height columns hack */
-	margin-bottom:-500px;
+	margin-bottom:-500px;	/* disable */
+	/* margin-bottom:3px; */
 	font-weight:bold;
-	/* border-left:1px solid #ccc; */
 }
-div.x2-layout .formInputBox .checkboxWrapper {display:inline-block;vertical-align:middle;height:18px;padding:4px 0 0 4px;}
+div.x2-layout .formInputBox .checkboxWrapper {
+	display:inline-block;
+	vertical-align:middle;
+	height:18px;
+	padding:4px 0 0 4px;
+	/* height: 20px;
+	padding: 6px 6px 0 6px;
+	background: white;
+	border: 1px solid #CCC;
+	border-radius: 0 3px 3px 0; */
+}
 div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea, input[type="text"].relationships-add-autocomplete {
 	-webkit-appearance:none;
 	height:22px;
 	width:100% !important;
-	box-sizing:border-box;
+	box-sizing:border-box;	/* disable */
 	-webkit-box-sizing:border-box;
 	-moz-box-sizing:border-box;
-	border:1px solid #ccc;
+	/* box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.15); */
+	border: 1px solid #aaa;
+	/* border:1px solid #ccc; */
 	font-size:12px;
 	font-family:Arial, Helvetica, sans-serif;
 	-moz-border-radius:		3px;
 	-o-border-radius:		3px;
 	-webkit-border-radius:	3px;
 	border-radius:			3px;
+/* 	-moz-border-radius:		0 3px 3px 0;
+	-o-border-radius:		0 3px 3px 0;
+	-webkit-border-radius:	0 3px 3px 0;
+	border-radius:			0 3px 3px 0; */
 	background:#fff;
 }
 div.x2-layout .formItem .placeholder {color:#aaa;}

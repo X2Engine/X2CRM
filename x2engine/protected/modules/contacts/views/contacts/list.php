@@ -60,7 +60,7 @@ if($opportunityModule->visible && $accountModule->visible)
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 
 Yii::app()->clientScript->registerScript('search', "
-$('.search-button').click(function(){
+$('.search-button').unbind('click').click(function(){
 	$('.search-form').toggle();
 	return false;
 });
@@ -75,7 +75,7 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 	document.cookie = 'vcr-list=".$listModel->id."; expires=0; path=/';
 });
 
-$('#createList').click(function() {
+$('#createList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
 		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
@@ -91,7 +91,7 @@ $('#createList').click(function() {
 	}
 	return false;
 });
-$('#addToList').click(function() {
+$('#addToList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	
 	var targetList = $('#addToListTarget').val();
@@ -106,7 +106,7 @@ $('#addToList').click(function() {
 	}
 	return false;
 });
-$('#removeFromList').click(function() {
+$('#removeFromList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
 		var confirmRemove = confirm('".addslashes(Yii::t('app','Are you sure you want to remove these items from the list?'))."');

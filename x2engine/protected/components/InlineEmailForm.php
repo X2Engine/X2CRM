@@ -47,6 +47,8 @@ class InlineEmailForm extends X2Widget {
 
 	public $model;
 	public $attributes;
+	
+	public $insertableAttributes = null;
 
 	public $errors = array();
 	public $startHidden = false;
@@ -74,6 +76,17 @@ class InlineEmailForm extends X2Widget {
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/inlineEmailForm.js');
+		// var_dump($this->insertableAttributes);
+		if($this->insertableAttributes !== null) { // && !empty($this->model->attributes['modelName'])) {
+			// $this->insertableAttributes = array(
+				// Yii::t('contacts','Contact Attributes')=>CActiveRecord::model($this->model->attributes['modelName'])->attributeLabels()
+			// );
+			Yii::app()->clientScript->registerScript('setInsertableAttributes',
+				'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';',
+			CClientScript::POS_HEAD);
+		}
+		
+		
 		
  		Yii::app()->clientScript->registerScript('toggleEmailForm',
 		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n"),CClientScript::POS_HEAD);

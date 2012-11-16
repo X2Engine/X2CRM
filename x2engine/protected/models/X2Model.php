@@ -340,7 +340,7 @@ abstract class X2Model extends CActiveRecord {
 				}
 
 			case 'assignment':
-				return User::getUserLinks($this->$fieldName);
+				return User::getUserLinks($this->$fieldName,$makeLinks);
 
 			case 'optionalAssignment':
 				if($this->$fieldName == '')
@@ -368,7 +368,7 @@ abstract class X2Model extends CActiveRecord {
 					return '';
 				} else {
 					$mailtoLabel = isset($this->name) ? '"' . $this->name . '" <' . $this->$fieldName . '>' : $this->$fieldName;
-					return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel,array('onclick'=>'toggleEmailForm();return false;')) : $this->fieldName;
+					return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel,array('onclick'=>'toggleEmailForm();return false;')) : $this->$fieldName;
 				}
 
 			case 'phone':
@@ -437,7 +437,7 @@ abstract class X2Model extends CActiveRecord {
 				}
 
 			case 'boolean':
-				return $textOnly ? $this->fieldName : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
+				return $textOnly ? $this->$fieldName : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
 
 			case 'currency':
 				if($this instanceof Product) // products have their own currency

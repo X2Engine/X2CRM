@@ -100,7 +100,7 @@ $fullname = Yii::app()->params->profile->fullName;
 		    'condition'=>'username!=:username',
 		    'params'=>array(':username'=>Yii::app()->user->name)
 		));
-		$admin = Yii::app()->params->profile->username == 'admin';
+		$admin = Yii::app()->user->checkAccess('AdminIndex');
 		 ?>
 
 		<?php foreach($users as $user) { ?>

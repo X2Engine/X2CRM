@@ -64,12 +64,12 @@ $this->actionMenu = $this->formatMenu(array(
 <?php
 $this->widget('Publisher',
 	array(
-		'associationType'=>'product',
+		'associationType'=>'products',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
 		'halfWidth'=>true
 	)
 );
 
-$this->widget('History',array('associationType'=>'product','associationId'=>$model->id));
+$this->widget('History',array('associationType'=>'products','associationId'=>$model->id));
 ?>

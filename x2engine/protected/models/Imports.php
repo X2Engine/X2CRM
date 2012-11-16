@@ -38,59 +38,50 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->pageTitle = Yii::app()->name . ' - Home';
-?>
-<div>
-    <?php
-    //render home page
-    $app=Yii::app();
-    $isGuest=$app->user->isGuest;
-    $isAdmin = !$isGuest && $app->user->checkAccess('AdminIndex');
-    $isUser = !($isGuest || $isAdmin);
-    $module = $app->controller->id;
+/**
+ * This is the model class for table "x2_imports".
+ * @package X2CRM.models
+ */
+class Imports extends CActiveRecord
+{
+	/**
+	 * Returns the static model of the specified AR class.
+	 * @return Imports the static model class
+	 */
+	public static function model($className=__CLASS__) {
+		return parent::model($className);
+	}
 
-    if ($isUser || $isAdmin) {
-        $menuItems = array(
-            array('label' => Yii::t('app', 'Top Contacts'), 'url' => array('contacts/index/')),
-            array('label' => Yii::t('app', 'Chat'), 'url' => array('site/chat/')),
-            array('label' => Yii::t('mobile', 'New Record'), 'url' => array('contacts/new/')),
-            array('label' => Yii::t('mobile', 'Find Contacts'), 'url' => array('contacts/search/')),
-            array('label' => Yii::t('mobile', 'People'), 'url' => array('site/people/')),
-            array('label' => Yii::t('mobile', 'More'), 'url' => array('site/more/')),
+	/**
+	 * @return string the associated database table name
+	 */
+	public function tableName() {
+		return 'x2_imports';
+	}
+
+	/**
+	 * @return array validation rules for model attributes.
+	 */
+	public function rules() {
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
+		return array(
+			array('importId, modelId, modelType', 'required'),
         );
-    } else {
-        $menuItems = array(
-            array('label' => Yii::t('app', 'Login'), 'url' => array('site/login/'))
-        );
-    }
+	}
+	
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	public function attributeLabels() {
+		return array(
+			'id' => Yii::t('admin','ID'),
+			'importId' => Yii::t('admin','Import ID'),
+			'modelId' => Yii::t('admin','Model ID'),
+			'modelType' => Yii::t('admin','Model Type'),
+			'timestamp' => Yii::t('admin','Timestamp'),
+	
+		);
+	}
 
-    //check if menu has too many items to fit nicely
-    $menuItemCount = count($menuItems);
-    if ($menuItemCount > 6) {
-        $moreMenuItems = array();
-        //move the last few menu items into the "More" dropdown
-        for ($i = 0; $i < $menuItemCount - 5; $i++) {
-            array_unshift($moreMenuItems, array_pop($menuItems));
-        }
-        //add "More" to main menu
-        array_push($menuItems, array('label' => Yii::t('app', 'More'), 'items' => $moreMenuItems));
-    }
-
-    $userMenu = array(
-        array('label' => Yii::t('mobile', 'Logout ({username})', array('{username}' => Yii::app()->user->name)), 'url' => array('site/logout/'), 'left'=>true)
-    );
-
-    //render main menu items
-    $this->widget('MenuList', array(
-        'id' => 'main-menu',
-        'items' => $menuItems
-    ));
-    //render user menu items if logged in
-    if (!($isGuest || $isAdmin)) {
-        $this->widget('MenuList', array(
-            'id' => 'user-menu',
-            'items' => $userMenu
-        ));
-    }
-    ?>
-</div>
+}

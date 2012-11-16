@@ -74,7 +74,11 @@ CREATE TABLE x2_admin(
 	workflowBackdateRange			INT			NOT NULL DEFAULT -1,
 	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1,
 	unique_id		VARCHAR(32) NOT NULL DEFAULT "none",
-	edition			VARCHAR(10) NOT NULL DEFAULT "opensource"
+	edition			VARCHAR(10) NOT NULL DEFAULT "opensource",
+	serviceCaseFromEmailAddress	TEXT,
+	serviceCaseFromEmailName	TEXT,
+	serviceCaseEmailSubject		TEXT,
+	serviceCaseEmailMessage		TEXT
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -285,6 +289,7 @@ CREATE TABLE x2_profile(
 	userCalendarsVisible	TINYINT			DEFAULT 1,
 	groupCalendarsVisible	TINYINT			DEFAULT 1,
 	tagsShowAllUsers		TINYINT,
+	hideCasesWithStatus		TEXT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -400,3 +405,13 @@ CREATE TABLE x2_track_emails(
 	 uniqueId			VARCHAR(32),
 	 opened				INT
  ) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_imports;
+/*&*/
+CREATE TABLE x2_imports(
+     id                 INT                 NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     importId           INT                 NOT NULL,
+     modelId            INT                 NOT NULL,
+     modelType          VARCHAR(250)        NOT NULL,
+     timestamp          BIGINT
+) COLLATE = utf8_general_ci;

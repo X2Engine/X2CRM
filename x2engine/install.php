@@ -46,7 +46,7 @@ if ($silent) {
     exit;
 }
 
-include(dirname(__FILE__) . '/protected/config/X2Config.php');
+include(realpath('protected/config/X2Config.php'));
 
 
 
@@ -62,7 +62,7 @@ foreach ($languageDirs as $code) {  // look for langauges name
 $lang = isset($_GET['language']) ? strtolower($_GET['language']) : ''; // get language setting, default to none (english)
 
 if (array_key_exists($lang, $languages))    // is this language installed?
-    $installMessageFile = "protected/messages/$lang/install.php";
+    $installMessageFile = realpath("protected/messages/$lang/install.php");
 
 $installMessages = array();
 
@@ -76,7 +76,7 @@ function getLanguageName($code) { // lookup language name for the language code 
     global $languageDirs;
 
     if (in_array($code, $languageDirs)) { // is the language pack here?
-	$appMessageFile = "protected/messages/$code/app.php";
+	$appMessageFile = realpath("protected/messages/$code/app.php");
 	if (file_exists($appMessageFile)) { // attempt to load 'app' messages in
 	    $appMessages = include($appMessageFile);     // the chosen language
 	    if (is_array($appMessages) and isset($appMessages['languageName']) && $appMessages['languageName'] != 'Template')
@@ -280,7 +280,7 @@ $timezones = array(
     <head>
 	<meta charset="UTF-8" />
 	<meta name="language" content="en" />
-	<title><?php echo installer_t('X2EngineCRM Installation'); ?></title>
+	<title><?php echo installer_t('X2CRM Installation'); ?></title>
 	<link rel="icon" href="images/favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
@@ -330,8 +330,8 @@ $timezones = array(
 					} else {
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					}
-				}).fail(function() {
-					alert('An unexpected error occurred during validation.');
+				}).fail(function(jqXHR,textStatus) {
+					alert('An unexpected internal server error occurred during validation: '+textStatus+' '+jqXHR.status);
 				});
 			} else {
 				var messageHeader = box.find('h3');
@@ -340,26 +340,30 @@ $timezones = array(
 				if(percentDone.length == 0) {
 					progressList.remove(); // Get rid of any error messages
 					box.append($('<img src="<?php echo $themeURL; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'}));
-					messageHeader.text("<?php echo installer_t("Installing X2EngineCRM"); ?>");
+					messageHeader.text("<?php echo installer_t("Installing X2CRM"); ?>");
 					percentDone = $('<span id="percentDone">');
 					messageHeader.append(percentDone);
 					progressList = $('<ul>');
 					progressList.insertAfter(messageHeader);
 				}
-				$.ajax({
-					url:'initialize.php?stage='+thisStage,
-					type:'POST',
-					data:formData,
-					dataType:'json'
-				}).done(function(data) {
-					progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
-					if(!data.failed)
-						installStage(stagesRemaining,formData,form,nDone+1,data);
-					else
-						box.find('img').remove();
-				}).fail(function() {
-					alert('An unexpected server error occurred during installation.');
-				});
+				if (thisStage != 'dummy_data' || form.find('#dummy_data').is(':checked')) {
+					$.ajax({
+						url:'initialize.php?stage='+thisStage,
+						type:'POST',
+						data:formData,
+						dataType:'json'
+					}).done(function(data) {
+						progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
+						if(!data.failed)
+							installStage(stagesRemaining,formData,form,nDone+1,data);
+						else
+							box.find('img').remove();
+					}).fail(function(jqXHR,textStatus) {
+						alert('An unexpected internal server error occurred during installation: '+textStatus+' '+jqXHR.status);
+					});
+				} else { // Skip insertion of sample data and don't increment nDone because nothing is being done at this point
+					installStage(stagesRemaining,formData,form,nDone,responseData);
+				}
 			}
 		} else {
 			// Submit the form, mark as complete.
@@ -372,7 +376,7 @@ $timezones = array(
 		(function($){
 			var form = $('form#install');
 			form.find('.error').removeClass('error');
-			var stages = <?php $stageLabels = require_once(dirname(__FILE__).'/protected/data/installStageLabels.php'); echo '["'.implode('","',array_keys($stageLabels)).'"]'; ?>;
+			var stages = <?php $stageLabels = require_once(realpath('protected/data/installStageLabels.php')); echo '["'.implode('","',array_keys($stageLabels)).'"]'; ?>;
 			installStage(stages,form.serialize(),form,0);
 		})(jQuery);
 	}
@@ -432,106 +436,26 @@ $timezones = array(
 
 
 
-<?php echo installer_t('Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
+<?php echo installer_t('Welcome to the X2CRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
 
 
 	    <div class="wide form" id="install-form">
-		<?php
-		    
-		
-		////////////////////////
-		// Requirements Check //
-		////////////////////////
-		/**
-		 * Server variable requirements checker, derived from the Yii requirements checker.
-		 * 
-		 * @license http://www.yiiframework.com/license
-		 * @return string
-		 */
-		function checkServerVar() {
-		    $vars = array('HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT');
-		    $missing = array();
-		    foreach ($vars as $var) {
-			if (!isset($_SERVER[$var]))
-			    $missing[] = $var;
-		    }
-		    if (!empty($missing))
-			return installer_t('yii', '$_SERVER does not have {vars}.', array('{vars}' => implode(', ', $missing)));
-
-		    if (realpath($_SERVER["SCRIPT_FILENAME"]) !== realpath(__FILE__))
-			return installer_t('yii', '$_SERVER["SCRIPT_FILENAME"] must be the same as the entry script file path.');
-
-		    if (!isset($_SERVER["REQUEST_URI"]) && isset($_SERVER["QUERY_STRING"]))
-			return installer_t('yii', 'Either $_SERVER["REQUEST_URI"] or $_SERVER["QUERY_STRING"] must exist.');
-
-		    if (!isset($_SERVER["PATH_INFO"]) && strpos($_SERVER["PHP_SELF"], $_SERVER["SCRIPT_NAME"]) !== 0)
-			return installer_t('yii', 'Unable to determine URL path info. Please make sure $_SERVER["PATH_INFO"] (or $_SERVER["PHP_SELF"] and $_SERVER["SCRIPT_NAME"]) contains proper value.');
-
-		    return '';
-		}
-		
-		
-		$canInstall = True;
-		$reqMessges = array();
-		$rbm = installer_t("required but missing");
-		if(!version_compare(PHP_VERSION,"5.3.0",">=")) {
-		    $canInstall = False;
-		    $reqMessages[] = installer_t("Your server's PHP version").': '.PHP_VERSION.'; '.installer_t("version 5.3 or later is required");
-		}
-		if(($message=checkServerVar()) !== '') {
-		    $canInstall = False;
-		    $reqMessages[] = installer_t($message);
-		}
-		if(!class_exists('Reflection',false)) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://php.net/manual/class.reflectionclass.php">PHP reflection class</a>: '.$rbm;
-		}
-		if(!extension_loaded("pcre")) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/book.pcre.php">PCRE extension</a>: '.$rbm ;
-		}
-		if(!extension_loaded("SPL")) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/book.spl.php">SPL</a>: '.$rbm;
-		}
-		if(!extension_loaded("curl")) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: '.$rbm;
-		}
-		if(!extension_loaded('pdo_mysql')) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/ref.pdo-mysql.php">PDO MySQL extension</a>: '.$rbm;
-		}
-		if(!extension_loaded("ctype")) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/book.ctype.php">CType extension</a>: '.$rbm;
-		}
-		if(!extension_loaded("mbstring")) {
-		    $canInstall = False;
-		    $reqMessages[] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: '.$rbm;
-		}
-		if(!$canInstall) {
-		    echo "<div style=\"color:red\"><h1>".installer_t('Cannot install X2EngineCRM')."</h1>\n";
-		    echo "<strong>".installer_t('Unfortunately, your server does not meet the minimum system requirements for installation')."</strong><br />\n<ul>";
-		    foreach($reqMessages as $message) {
-			echo "<li>$message</li>";
-		    }
-		    echo "</ul>".installer_t('If you are a system administrator of this server, refer to').' <a href="http://wiki.x2engine.com/index.php?title=Installation#Enabling_PHP_extensions">Installation: Enabling PHP extensions</a>. ';
-		    echo installer_t("Otherwise, contact your hosting provider.")."</div><br />";
-		}
+		<?php 
+		$thisFile = __FILE__;
+		require_once('requirements.php'); 
 		?>
 		<form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
-		    <h2><?php echo installer_t('X2EngineCRM Application Info'); ?></h2><hr>
+		    <h2><?php echo installer_t('X2CRM Application Info'); ?></h2><hr>
 		    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
 		    <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
 			<select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>
 			    <?php
 			    foreach ($languageDirs as $code) { // generate language dropdown
-				$languageName = getLanguageName($code); // lookup language name
-				if ($languageName !== false) {
-				    $selected = ($code == $lang) ? ' selected' : ''; // mark option selected if user has chosen this language
-				    echo "		<option value=\"$code\"$selected>$languageName</option>\n"; // list all available languages
-				}
+					$languageName = getLanguageName($code); // lookup language name
+					if ($languageName !== false) {
+					    $selected = ($code == $lang) ? ' selected' : ''; // mark option selected if user has chosen this language
+					    echo "		<option value=\"$code\"$selected>$languageName</option>\n"; // list all available languages
+					}
 			    }
 
 			    // flag images are public domain from http://www.famfamfam.com/lab/icons/flags
@@ -584,7 +508,7 @@ $timezones = array(
 		    <br /><br /><br />
 
 			<?php
-			include(realpath(dirname(__FILE__) . '/protected/components/UpdatesForm.php'));
+			include(realpath('protected/components/UpdatesForm.php'));
 			// Configuration for the updates / optional info form:
 			$editions = array('pro');
 			$edition = 'opensource';
@@ -604,7 +528,7 @@ $timezones = array(
 							),
 							'installer_t'
 			);
-			require_once(realpath(dirname(__FILE__) . '/protected/views/admin/stayUpdated.php'));
+			require_once(realpath('protected/views/admin/stayUpdated.php'));
 			?>
 
 

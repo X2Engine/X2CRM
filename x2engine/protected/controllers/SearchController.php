@@ -354,7 +354,10 @@ class SearchController extends x2base {
             ));
         } else {
             $results = new CActiveDataProvider('Tags', array(
-                        'criteria' => array('condition' => 'tag="' . $term . '"')
+                        'criteria' => array('condition' => 'tag="' . $term . '"'),
+                        'pagination' => array(
+                                            'pageSize' => ProfileChild::getResultsPerPage(),
+                                        ),
                     ));
             $this->render('searchTags', array(
                 'tags' => $results,

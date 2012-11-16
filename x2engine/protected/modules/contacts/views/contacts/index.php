@@ -44,7 +44,7 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
 	array('label'=>Yii::t('contacts','View List')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','Import from Template'),'url'=>array('importExcel')),
+    array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
 );
 
@@ -73,7 +73,7 @@ if($opportunityModule->visible && $accountModule->visible)
 $this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
-$('.search-button').click(function(){
+$('.search-button').unbind('click').click(function(){
 	$('.search-form').toggle();
 	return false;
 });
@@ -88,7 +88,7 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 	document.cookie = 'vcr-list=".$this->getAction()->getId()."; expires=0; path=/';
 });
 
-$('#createList').click(function() {
+$('#createList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	if(selectedItems.length > 0) {
 		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
@@ -104,7 +104,7 @@ $('#createList').click(function() {
 	}
 	return false;
 });
-$('#addToList').click(function() {
+$('#addToList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
 	
 	var targetList = $('#addToListTarget').val();

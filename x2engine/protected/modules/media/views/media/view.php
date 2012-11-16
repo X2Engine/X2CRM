@@ -46,8 +46,8 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-
-<h2><?php echo Yii::t('media','File: '); ?><b><?php echo $model->fileName; ?></b></h2>
+<div id="main-column" class="half-width">
+<div class="record-title"><h2><?php echo Yii::t('media','File: '); ?><b><?php echo $model->fileName; ?></b></h2></div>
 <?php 
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
@@ -192,33 +192,17 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 </table>
 
 <?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button')); ?>
-
-<br />
-<br />
+</div>
+<div class="history half-width">
 <?php $this->widget('Publisher',
 	array(
 		'associationType'=>'media',
 		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName()
+		'assignedTo'=>Yii::app()->user->getName(),
+		'halfWidth'=>true
 	)
-); ?>
-
-<?php
-if(isset($_GET['history']))
-	$history=$_GET['history'];
-else
-	$history='all';
-$this->widget('zii.widgets.CListView', array(
-	'dataProvider'=>$this->getHistory($model, 'media'),
-	'itemView'=>'application.modules.actions.views.actions._view',
-	'id'=>'media-history',
-	'htmlOptions'=>array('class'=>'action list-view'),
-	'template'=> 
-	($history=='all'?'<h3>'.Yii::t('app','History').'</h3>':CHtml::link(Yii::t('app','History'),'javascript:$.fn.yiiListView.update("media-history", {data: "history=all"})')).
-	' | '.($history=='actions'?'<h3>'.Yii::t('app','Actions').'</h3>':CHtml::link(Yii::t('app','Actions'),'javascript:$.fn.yiiListView.update("media-history", {data: "history=actions"})')).
-	' | '.($history=='comments'?'<h3>'.Yii::t('app','Comments').'</h3>':CHtml::link(Yii::t('app','Comments'),'javascript:$.fn.yiiListView.update("media-history", {data: "history=comments"})')).
-	' | '.($history=='attachments'?'<h3>'.Yii::t('app','Attachments').'</h3>':CHtml::link(Yii::t('app','Attachments'),'javascript:$.fn.yiiListView.update("media-history", {data: "history=attachments"})')).
-	'</h3>{summary}{sorter}{items}{pager}',
-));
+);
+$this->widget('History',array('associationType'=>'media','associationId'=>$model->id));
 
 ?>
+</div>

@@ -115,6 +115,9 @@ class ContactsController extends x2base {
 			'inlineEmail' => array(
 				'class' => 'InlineEmailAction',
 			),
+            'LeadRoutingBehavior' => array(
+                'class' => 'LeadRoutingBehavior'
+            ),
 		);
 	}
 
@@ -1288,7 +1291,7 @@ class ContactsController extends x2base {
 		if (isset($_FILES['contacts'])) {
 			$temp = CUploadedFile::getInstanceByName('contacts');
 			$temp->saveAs('contacts.csv');
-			//$this->importExcel('contacts.csv');
+            
             $fp=fopen('contacts.csv','r+');
             $meta=fgetcsv($fp);
             while ("" === end($meta)) {
@@ -1300,6 +1303,9 @@ class ContactsController extends x2base {
             }
             $_SESSION['offset']=ftell($fp);
             $_SESSION['metaData']=$meta;
+            $failedContacts=fopen('failedContacts.csv','w+');
+            fputcsv($failedContacts,$meta);
+            fclose($failedContacts);
             $x2attributes=array_keys(CActiveRecord::model('Contacts')->attributes);
             while(""===end($x2attributes)){
                 array_pop($x2attributes);
@@ -1307,11 +1313,9 @@ class ContactsController extends x2base {
             $_SESSION['importMap']=array();
             $_SESSION['fields']=CActiveRecord::model('Contacts')->getFields(true);
             $_SESSION['x2attributes']=$x2attributes;
-            //$compareX2Attributes=array_map('strtolower',$x2attributes);
+            
             createImportMap($x2attributes,$meta);
-            //printR($x2diff);
-            //printR($metadiff);
-            //printR($matchingAttributes,true);
+            
             $importMap=$_SESSION['importMap'];
             $importMap=array_flip($importMap);
             $sampleRecords=array();
@@ -1339,13 +1343,35 @@ class ContactsController extends x2base {
             $keys=$_POST['keys'];
             $attributes=$_POST['attributes'];
             $_SESSION['tags']=array();
-            if(isset($_POST['tags'])){
+            if(isset($_POST['tags']) && !empty($_POST['tags'])){
                 $tags=explode(',',$_POST['tags']);
                 foreach($tags as $tag){
                     if(substr($tag,0,1)!="#")
                         $tag="#".$tag;
                     $_SESSION['tags'][]=$tag;
                 }
+            }
+            $_SESSION['override']=array();
+            if(isset($_POST['forcedAttributes']) && isset($_POST['forcedValues'])){
+                $override=array_combine($_POST['forcedAttributes'],$_POST['forcedValues']);
+                $_SESSION['override']=$override;
+            }
+            $_SESSION['comment']="";
+            if(isset($_POST['comment']) && !empty($_POST['comment'])){
+                $_SESSION['comment']=$_POST['comment'];
+            }
+            $_SESSION['leadRouting']=0;
+            if(isset($_POST['routing']) && $_POST['routing']==1){
+                $_SESSION['leadRouting']=1;
+            }
+            $criteria=new CDbCriteria;
+            $criteria->order="importId DESC";
+            $criteria->limit=1;
+            $import=Imports::model()->find($criteria);
+            if(isset($import)){
+                $_SESSION['importId']=$import->importId+1;
+            }else{
+                $_SESSION['importId']=1;
             }
             $_SESSION['createRecords']=$_POST['createRecords']=="checked"?"1":"0";
             $_SESSION['imported']=0;
@@ -1379,16 +1405,36 @@ class ContactsController extends x2base {
                             $sql = "ALTER TABLE x2_contacts ADD COLUMN $columnName $fieldType";
                             $command = Yii::app()->db->createCommand($sql);
                             $result = $command->query();
-                            $value=$key;
+                            $value=$columnName;
                         }
                     }
                 }
             }
             $_SESSION['importMap']=$importMap;
             $cache = Yii::app()->cache;
-            if (isset($cache))
+            if (isset($cache)){
                 $cache->flush();
             }
+        }
+    }
+    
+    public function actionCleanUpImport(){
+        unset($_SESSION['tags']);
+        unset($_SESSION['override']);
+        unset($_SESSION['comment']);
+        unset($_SESSION['leadRouting']);
+        unset($_SESSION['createRecords']);
+        unset($_SESSION['imported']);
+        unset($_SESSION['failed']);
+        unset($_SESSION['created']);
+        unset($_SESSION['importMap']);
+        unset($_SESSION['offset']);
+        unset($_SESSION['metaData']);
+        unset($_SESSION['fields']);
+        unset($_SESSION['x2attributes']);
+        if(file_exists('contacts.csv')){
+            unlink('contacts.csv');
+        }
     }
     
 	public function actionImportRecords() {
@@ -1400,9 +1446,16 @@ class ContactsController extends x2base {
             fseek($fp, $_SESSION['offset']);
             for($i=0;$i<$count;$i++){
                 if (($arr = fgetcsv($fp)) !== false){
-                    while ("" === end($arr)) {
-                        array_pop($arr);
+                    if(count($arr)>count($metaData)){
+                        while ("" === end($arr)) {
+                            array_pop($arr);
+                        }
+                    }elseif(count($arr)<count($metaData)){
+                        while(count($arr)!=count($metaData)){
+                            array_push($arr,"");
+                        }
                     }
+                    unset($_POST);
                     $relationships=array();
                     $importAttributes=array_combine($metaData,$arr);
                     $model=new Contacts;
@@ -1472,6 +1525,8 @@ class ContactsController extends x2base {
                                 default:
                                     $model->$importMap[$attribute]=$importAttributes[$attribute];
                             }
+                            
+                            $_POST[$importMap[$attribute]]=$model->$importMap[$attribute];
                         }
                     }
                     if(!isset($model->visibility))
@@ -1485,18 +1540,43 @@ class ContactsController extends x2base {
                     if(empty($model->lastActivity)){
                         $model->lastActivity=time();
                     }
+                    if($_SESSION['leadRouting']==1){
+                        $assignee = $this->getNextAssignee();
+                        if ($assignee == "Anyone")
+                            $assignee = "";
+                        $model->assignedTo=$assignee;
+                    }
+                    foreach($_SESSION['override'] as $attr=>$val){
+                        $model->$attr=$val;
+                    }
                     if($model->validate()){
-                        $lookup=Contacts::model()->findByPk($model->id);
-                        if(isset($lookup)){
-                            Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$lookup->id));
-                            Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$lookup->id));
-                            $lookup->delete();
+                        if(!empty($model->id)){
+                            $lookup=Contacts::model()->findByPk($model->id);
+                            if(isset($lookup)){
+                                Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$lookup->id));
+                                Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$lookup->id));
+                                $lookup->delete();
+                                unset($lookup);
+                            }
                         }
                         if($model->save()){
+                            $importLink=new Imports;
+                            $importLink->modelType="Contacts";
+                            $importLink->modelId=$model->id;
+                            $importLink->importId=$_SESSION['importId'];
+                            $importLink->timestamp=time();
+                            $importLink->save();
                             $_SESSION['imported']++;
                             foreach($relationships as $relationship){
                                 $relationship->firstId=$model->id;
-                                $relationship->save();
+                                if($relationship->save()){
+                                    $importLink=new Imports;
+                                    $importLink->modelType=$relationship->secondType;
+                                    $importLink->modelId=$relationship->secondId;
+                                    $importLink->importId=$_SESSION['importId'];
+                                    $importLink->timestamp=time();
+                                    $importLink->save(); 
+                                }
                             }
                             foreach($_SESSION['tags'] as $tag){
                                 $tagModel = new Tags;
@@ -1508,8 +1588,35 @@ class ContactsController extends x2base {
                                 $tagModel->itemName = $model->name;
                                 $tagModel->save();
                             }
+                            if(!empty($_SESSION['comment'])){
+                                $action=new Actions;
+                                $action->associationType="Contacts";
+                                $action->associationId=$model->id;
+                                $action->actionDescription=$_SESSION['comment'];
+                                $action->createDate=time();
+                                $action->updatedBy=Yii::app()->user->getName();
+                                $action->lastUpdated=time();
+                                $action->complete="Yes";
+                                $action->completeDate=time();
+                                $action->completedBy=Yii::app()->user->getName();
+                                $action->type="note";
+                                $action->visibility=1;
+                                $action->reminder="No";
+                                $action->priority="Low";
+                                if($action->save()){
+                                    $importLink=new Imports;
+                                    $importLink->modelType="Actions";
+                                    $importLink->modelId=$action->id;
+                                    $importLink->importId=$_SESSION['importId'];
+                                    $importLink->timestamp=time();
+                                    $importLink->save();
+                                }
+                            }
                         }
                     }else{
+                        $failedContacts=fopen('failedContacts.csv','a+');
+                        fputcsv($failedContacts,$arr);
+                        fclose($failedContacts);
                         $_SESSION['failed']++;
                     }
                 }else{
@@ -1538,14 +1645,14 @@ class ContactsController extends x2base {
 		));
 	}
 
-	private function exportToTemplate() {
+	protected function exportToTemplate() {
 		ini_set('memory_limit', -1);
 		$contacts = CActiveRecord::model('Contacts')->findAll();
 		$list = array(array_keys($contacts[0]->attributes));
 		foreach ($contacts as $contact) {
 			$list[] = $contact->attributes;
 		}
-		$file = 'file.csv';
+		$file = Yii::getPathOfAlias('application').'/file.csv';
 		$fp = fopen($file, 'w+');
 
 		foreach ($list as $fields) {

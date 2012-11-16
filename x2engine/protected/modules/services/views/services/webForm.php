@@ -137,7 +137,7 @@ function validateField(field) {
 
 function validate() {
 	var proceed = true;
-	var fields = ['firstName', 'lastName', 'email', 'phone', 'description'];
+	var fields = ['firstName', 'lastName', 'email', 'description'];
 	for (var i=0; i<fields.length; i++) {
 		if (!validateField(fields[i])) {
 			proceed = false;
@@ -158,7 +158,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('firstName'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[firstName]" /><br /></div>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('lastName'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[lastName]" /><br /></div>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('email'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[email]" /><br /></div>
-	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('phone'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[phone]" /><br /></div>
+	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('phone'); ?>: </b><br /> <input style="width:170px;" type="text" name="Services[phone]" /><br /></div>
 	<div class="row"><b><?php echo Services::model()->getAttributeLabel('description'); ?>: *</b><br /> <textarea style="height:100px;width:170px;font-family:arial;font-size:10px;" name="Services[description]" onfocus="clearText(this);"></textarea><br /></div>
 	<?php foreach ($_GET as $key=>$value) { ?>
 		<input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />

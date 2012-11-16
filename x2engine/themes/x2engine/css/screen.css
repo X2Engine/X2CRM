@@ -69,7 +69,6 @@ body {font-size:75%;color:#222;font-family:"Helvetica Neue", Arial, Helvetica, s
 -moz-background-size: cover;
 -o-background-size: cover;
 background-size: cover; }*/
-body {background:/* url(../images/bg-noise2.png) repeat  */#bbb6ae;}
 #bg {position:fixed;top:0;left:0;overflow:hidden;}
 /* .bgwidth {width:100%;}
 .bgheight {height:100%;} */

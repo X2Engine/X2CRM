@@ -1,4 +1,3 @@
-<?php
 /*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -38,59 +37,74 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$this->pageTitle = Yii::app()->name . ' - Home';
-?>
-<div>
-    <?php
-    //render home page
-    $app=Yii::app();
-    $isGuest=$app->user->isGuest;
-    $isAdmin = !$isGuest && $app->user->checkAccess('AdminIndex');
-    $isUser = !($isGuest || $isAdmin);
-    $module = $app->controller->id;
+CKEDITOR.plugins.add('insertattributes',{
+	requires:['richcombo'],
+	init:function(editor) {
 
-    if ($isUser || $isAdmin) {
-        $menuItems = array(
-            array('label' => Yii::t('app', 'Top Contacts'), 'url' => array('contacts/index/')),
-            array('label' => Yii::t('app', 'Chat'), 'url' => array('site/chat/')),
-            array('label' => Yii::t('mobile', 'New Record'), 'url' => array('contacts/new/')),
-            array('label' => Yii::t('mobile', 'Find Contacts'), 'url' => array('contacts/search/')),
-            array('label' => Yii::t('mobile', 'People'), 'url' => array('site/people/')),
-            array('label' => Yii::t('mobile', 'More'), 'url' => array('site/more/')),
-        );
-    } else {
-        $menuItems = array(
-            array('label' => Yii::t('app', 'Login'), 'url' => array('site/login/'))
-        );
-    }
+		if(editor.config.insertableAttributes.length < 1)
+			return;
 
-    //check if menu has too many items to fit nicely
-    $menuItemCount = count($menuItems);
-    if ($menuItemCount > 6) {
-        $moreMenuItems = array();
-        //move the last few menu items into the "More" dropdown
-        for ($i = 0; $i < $menuItemCount - 5; $i++) {
-            array_unshift($moreMenuItems, array_pop($menuItems));
-        }
-        //add "More" to main menu
-        array_push($menuItems, array('label' => Yii::t('app', 'More'), 'items' => $moreMenuItems));
-    }
+		editor.addCommand('insertAttribute',{
+			exec:function(editor) {
 
-    $userMenu = array(
-        array('label' => Yii::t('mobile', 'Logout ({username})', array('{username}' => Yii::app()->user->name)), 'url' => array('site/logout/'), 'left'=>true)
-    );
+				var timestamp = new Date();
+				editor.insertHtml('{attribute!}');
+			}
+		});
+		
+		var attributeDropdown = editor.ui.addRichCombo('Attribute',{
+			label:"{attribute}",
+			title:"Insert Record Attribute",
+			voiceLabel:"Insert Record Attribute",
+			className:'cke_format',
+			multiSelect:false,
 
-    //render main menu items
-    $this->widget('MenuList', array(
-        'id' => 'main-menu',
-        'items' => $menuItems
-    ));
-    //render user menu items if logged in
-    if (!($isGuest || $isAdmin)) {
-        $this->widget('MenuList', array(
-            'id' => 'user-menu',
-            'items' => $userMenu
-        ));
-    }
-    ?>
-</div>
+			panel:{
+				css:[editor.config.contentsCss, CKEDITOR.getUrl(editor.skinPath + 'editor.css')],
+				voiceLabel:editor.lang.format.panelVoiceLabel
+			},
+
+			init:function() {
+			
+				var attributes = editor.config.insertableAttributes;
+			
+				for(var model in attributes) {
+					if(attributes.hasOwnProperty(model)) {
+						this.startGroup(model);
+						
+						var attributeLabels = [];
+						for(var key in attributes[model]) {
+							if(attributes[model].hasOwnProperty(key))
+								attributeLabels.push(key);
+						}
+						attributeLabels.sort();
+
+						for(var i in attributeLabels) {
+							this.add(attributes[model][attributeLabels[i]],attributeLabels[i],attributes[model][attributeLabels[i]]);
+							// this.add('value', 'drop_text', 'drop_label');
+						}
+					}
+				}
+			},
+
+			onClick:function(value) {
+				editor.focus();
+				editor.fire("saveSnapshot");
+				editor.insertHtml(value);
+				editor.fire("saveSnapshot");
+				// console.debug(this);
+			}
+		});
+	}
+
+});
+
+
+
+
+
+
+
+
+
+

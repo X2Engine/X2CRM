@@ -89,7 +89,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 	<div class="row">
             <?php echo $form->labelEx($model,'modelType'); ?>
-            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Opportunity'=>'Opportunities','Accounts'=>'Accounts','Quote'=>'Quotes'),
+            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Opportunity'=>'Opportunities','Accounts'=>'Accounts','Quote'=>'Quotes', 'Services'=>'Services'),
                 array(
                 'empty'=>'Select a model',
                 'ajax' => array(

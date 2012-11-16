@@ -434,7 +434,7 @@ class CalendarController extends x2base {
 		foreach($actions as $action) {
 			if($action['visibility'] >= 1 || // // don't show private actions, 
 				$action['assignedTo'] == Yii::app()->user->name ||           // unless they belong to current user
-				Yii::app()->user->name == 'admin') { // admin sees all
+				Yii::app()->user->checkAccess('AdminIndex')) { // admin sees all
 				if(in_array($action['type'], $possibleFilters)) // type of action user might filter?
 					if(!in_array($action['type'], $filter)) // filter actions user doesn't want to see
 						continue;
@@ -551,7 +551,7 @@ class CalendarController extends x2base {
 		foreach($actions as $action) {
 			if($action['visibility'] >= 1 || // // don't show private actions, 
 				$action['assignedTo'] == Yii::app()->user->name ||           // unless they belong to current user
-				Yii::app()->user->name == 'admin') { // admin sees all
+				Yii::app()->user->checkAccess('AdminIndex')) { // admin sees all
 				if(in_array($action['type'], $possibleFilters)) // type of action user might filter?
 					if(!in_array($action['type'], $filter)) // filter actions user doesn't want to see
 						continue;
@@ -634,7 +634,7 @@ class CalendarController extends x2base {
 		$filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
 		$possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
 		foreach($actions as $action) {
-			if($action->visibility >= 1 || $action->assignedTo == Yii::app()->user->name || Yii::app()->user->name == 'admin') { // don't show private actions, unless they belong to current user
+			if($action->visibility >= 1 || $action->assignedTo == Yii::app()->user->name || Yii::app()->user->checkAccess('AdminIndex')) { // don't show private actions, unless they belong to current user
 				if(in_array($action->type, $possibleFilters)) // type of action user might filter?
 					if(!in_array($action->type, $filter)) // filter actions user doesn't want to see
 						continue;

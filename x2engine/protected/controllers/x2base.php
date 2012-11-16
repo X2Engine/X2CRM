@@ -212,7 +212,7 @@ abstract class x2base extends X2Controller {
      * @return boolean  
      */
     public function editPermissions(&$model) {
-        if (Yii::app()->user->getName() == 'admin' || !$model->hasAttribute('assignedTo'))
+        if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo'))
             return true;
         else
             return $model->assignedTo == Yii::app()->user->getName() || in_array($model->assignedTo, Yii::app()->params->groups);
@@ -230,7 +230,7 @@ abstract class x2base extends X2Controller {
         $view = false;
         $edit = false;
         // if we're the admin, visibility is public, there is no visibility/assignedTo, or it's directly assigned to the user, then we're done
-        if (Yii::app()->user->getName() == 'admin' || !$model->hasAttribute('assignedTo') || $model->assignedTo == 'Anyone' || $model->assignedTo == Yii::app()->user->getName()) {
+        if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo') || $model->assignedTo == 'Anyone' || $model->assignedTo == Yii::app()->user->getName()) {
 
             $edit = true;
         } elseif (!$model->hasAttribute('visibility') || $model->visibility == 1) {
@@ -1045,18 +1045,32 @@ abstract class x2base extends X2Controller {
         throw new Exception($message);
     }
 
-    public function sendUserEmail($addresses, $subject, $message, $attachments = null) {
+	/**
+	 *	send an email from x2
+	 *
+	 *	@param addresses
+	 *	@param $subject the subject for the email
+	 *	@param $message the body of the email
+	 *	@param $attachments array of attachments to send
+	 *	@param $from from and reply to address for the email array(name, address)
+	 */
+    public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null) {
 
         $user = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
 
         $phpMail = $this->getPhpMailer();
 
         try {
-            if (empty(Yii::app()->params->profile->emailAddress))
-                throw new Exception('<b>' . Yii::t('app', 'Your profile doesn\'t have a valid email address.') . '</b>');
-
-            $phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress, $user->name);
-            $phpMail->SetFrom(Yii::app()->params->profile->emailAddress, $user->name);
+        	if($from == null) { // if no from address (or not formatted properly)
+				if (empty(Yii::app()->params->profile->emailAddress))
+    	            throw new Exception('<b>' . Yii::t('app', 'Your profile doesn\'t have a valid email address.') . '</b>');
+	
+            	$phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress, $user->name);
+            	$phpMail->SetFrom(Yii::app()->params->profile->emailAddress, $user->name);
+            } else {
+            	$phpMail->AddReplyTo($from['address'], $from['name']);
+            	$phpMail->SetFrom($from['address'], $from['name']);
+            }
 
             $this->addEmailAddresses($phpMail, $addresses);
 

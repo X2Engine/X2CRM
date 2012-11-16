@@ -170,6 +170,13 @@ Yii::app()->clientScript->registerScript('create-model', "
 <?php $this->widget('Attachments',array('associationType'=>'contacts','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php
+$insertableAttributes = array();
+foreach($model->attributeLabels() as $fieldName => $label)
+	$insertableAttributes[$label] = $model->renderAttribute($fieldName,false);
+
+// echo CJSON::encode($insertableAttributes);
+// var_dump($insertableAttributes);
+
 $this->widget('InlineEmailForm',
 	array(
 		'attributes'=>array(
@@ -179,6 +186,7 @@ $this->widget('InlineEmailForm',
 			'modelName'=>'Contacts',
 			'modelId'=>$model->id,
 		),
+		'insertableAttributes'=>array(Yii::t('app','Contact Attributes')=>$insertableAttributes),
 		'startHidden'=>true,
 	)
 );

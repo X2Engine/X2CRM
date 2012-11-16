@@ -69,7 +69,7 @@ INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status)
 /*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/
-INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition) VALUES (
+INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage) VALUES (
 	'3600',
 	'{adminEmail}',
 	'{bulkEmail}',
@@ -78,7 +78,11 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 	0,
 	0,
 	'{unique_id}',
-	'{edition}'
+	'{edition}',
+	'{adminEmail}',
+	'Tech Support',
+	'Tech Support',
+	'Hello {first} {last},\n\nJust wanted to check in with you about the support case you created. It is number {case}. We will get back to you as soon as possible.'
 );
 /*&*/
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',

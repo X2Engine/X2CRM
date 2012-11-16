@@ -162,6 +162,10 @@ class InlineEmailAction extends CAction {
 					foreach($this->model->mailingList['to'] as &$target) {
 						$model = CActiveRecord::model(ucwords($this->model->modelName))->findByPk($this->model->modelId);
 						if(isset($model)) {
+                            if($model->hasAttribute('lastActivity')){
+                                $model->lastActivity=time();
+                                $model->save();
+                            }
 
 							$action = new Actions;
 							$action->associationType = strtolower($this->model->modelName);

@@ -70,7 +70,7 @@ class X2CalendarPermissions extends CActiveRecord
 		$names = array(); // array mapping username to user's full name for user calendars we can view
 
 		
-		if(Yii::app()->user->name == 'admin') { // admin sees all user calendars
+		if(Yii::app()->user->checkAccess('AdminIndex')) { // admin sees all user calendars
 			foreach($users as $user) {
 				$first = $user->firstName;
 				$last = $user->lastName;
@@ -143,7 +143,7 @@ class X2CalendarPermissions extends CActiveRecord
 		
 		$names = array('Anyone'=>'Anyone'); // array mapping username to user's full name for user calendars we can edit
 		
-		if(Yii::app()->user->name == 'admin') {
+		if(Yii::app()->user->checkAccess('AdminIndex')) {
 			foreach($users as $user) {
 				$first = $user->firstName;
 				$last = $user->lastName;

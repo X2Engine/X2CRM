@@ -44,7 +44,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckedi
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 
+$insertableAttributes = array();
+foreach(CActiveRecord::model('Contacts')->attributeLabels() as $fieldName => $label)
+	$insertableAttributes[$label] = '{'.$fieldName.'}';
+
 Yii::app()->clientScript->registerScript('editorSetup','
+
+x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).';
+
 $("#Campaign_content").parent()
 	.css({width:"",height:""})
 	.removeClass("formInputBox")
@@ -55,7 +62,7 @@ $("#Campaign_content").parent()
 
 if(window.emailEditor)
 	window.emailEditor.destroy(true);
-window.emailEditor = createCKEditor("Campaign_content",{tabIndex:5});
+window.emailEditor = createCKEditor("Campaign_content",{tabIndex:5,insertableAttributes:x2.insertableAttributes});
 	
 setupEmailAttachments("campaign-attachments");
 

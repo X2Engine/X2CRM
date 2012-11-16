@@ -46,7 +46,7 @@ $(function() {
 	$(document).on('setupInlineEmailEditor',function(){
 		if(window.inlineEmailEditor)
 			window.inlineEmailEditor.destroy(true);
-		window.inlineEmailEditor = createCKEditor('email-message',{tabIndex:5}, function() {
+		window.inlineEmailEditor = createCKEditor('email-message',{tabIndex:5,insertableAttributes:x2.insertableAttributes}, function() {
 			if(typeof inlineEmailEditorCallback == 'function') {
 				inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
 			}
@@ -85,7 +85,7 @@ $(function() {
 
 
 	
-	// setupInlineEmailForm();
+	setupInlineEmailForm();
 });
 
 

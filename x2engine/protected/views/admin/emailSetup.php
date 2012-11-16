@@ -181,6 +181,34 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo Yii::t('admin','You can use the following variables in this template: {first}, {last}, {phone} and {email}.'); ?>
 	</div>
 
+	<br>
+	<h4><?php echo Yii::t('admin','Service Case Email Settings'); ?></h4>
+	<div class="row">
+		<div class="cell">
+			<?php echo $form->labelEx($model,'serviceCaseFromEmailName'); ?>
+			<?php echo $form->textField($model,'serviceCaseFromEmailName',array('size'=>30)); ?>
+		</div>
+		<div class="cell">
+			<?php echo $form->labelEx($model,'serviceCaseFromEmailAddress'); ?>
+			<?php echo $form->textField($model,'serviceCaseFromEmailAddress',array('size'=>40)); ?>
+		</div>
+	</div>
+	<div class="row">
+		<div class="cell">
+			<?php echo $form->labelEx($model,'serviceCaseEmailSubject'); ?>
+			<?php echo $form->textField($model,'serviceCaseEmailSubject',array('size'=>30)); ?>
+		</div>
+	</div>
+	<div class="row">
+		<div class="cell">
+			<?php echo $form->labelEx($model,'serviceCaseEmailMessage'); ?>
+			<?php echo $form->textArea($model,'serviceCaseEmailMessage',array('style'=>'width:490px;height:80px;')); ?>
+			<br>
+			<?php echo Yii::t('admin','You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
+		</div>
+	</div>
+	<br>
+	
 <?php //echo $form->labelEx($admin,'chatPollTime'); ?>
 <?php
 

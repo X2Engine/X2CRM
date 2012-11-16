@@ -288,13 +288,13 @@ $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Campaign'));
 <?php
 $this->widget('Publisher',
 	array(
-		'associationType'=>'Campaign',
+		'associationType'=>'marketing',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
 		'halfWidth'=>true
 	)
 );
 
-$this->widget('History',array('associationType'=>'Campaign','associationId'=>$model->id));
+$this->widget('History',array('associationType'=>'marketing','associationId'=>$model->id));
 ?>
 </div>

@@ -1,5 +1,5 @@
-<?php 
-/*********************************************************************************
+<?php
+/* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -36,19 +36,19 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * ****************************************************************************** */
 
 // Test the connection and exit:
-if(isset($_POST['testDb'])) {
-	
-	$con = @mysql_connect($_POST['dbHost'],$_POST['dbUser'],$_POST['dbPass']);
-	
-	if($con !== false) {
-		if($selectDb = @mysql_select_db($_POST['dbName'],$con))
+if (isset($_POST['testDb'])) {
+
+	$con = @mysql_connect($_POST['dbHost'], $_POST['dbUser'], $_POST['dbPass']);
+
+	if ($con !== false) {
+		if ($selectDb = @mysql_select_db($_POST['dbName'], $con))
 			echo 'DB_OK';
 		else
 			echo 'DB_COULD_NOT_SELECT';
-			
+
 		@mysql_close($con);
 	} else
 		echo 'DB_CONNECTION_FAILED';
@@ -58,6 +58,8 @@ if(isset($_POST['testDb'])) {
 ////////////////////
 // Global Objects //
 ////////////////////
+// Run the silent installer with default values?
+$silent = isset($_GET['silent']) || (isset($argv) && in_array('silent', $argv));
 // Response object for AJAX-driven installation
 $response = array();
 // Configuration values passed to PDOStatement::execute for parameter binding
@@ -143,35 +145,98 @@ $sendArgs = array(
 );
 // Old or inconsistent variable names in installConfig.php and the config file(s)
 $confMap = array(
-	'host'=>'dbHost',
-	'db'=>'dbName',
+	'host' => 'dbHost',
+	'db' => 'dbName',
 	'dbname' => 'dbName',
 	'email' => 'adminEmail',
-	'user'=>'dbUser',
-	'pass'=>'dbPass',
-	'adminPassword'=>'adminPass',
-	'x2Version'=>'x2_version',
-	'lang'=>'language',
+	'user' => 'dbUser',
+	'pass' => 'dbPass',
+	'adminPassword' => 'adminPass',
+	'x2Version' => 'x2_version',
+	'lang' => 'language',
 	'dummyData' => 'dummy_data',
-	'appName'=> 'app',
+	'appName' => 'app',
 	'version' => 'x2_version',
-	'dummyData' => 'dummy_data',
 );
 
+/**
+ * Function for communicating status messages to the installer
+ * 
+ * @param $message The message with which to respond
+ * @param $error The error, if any
+ */
+function respond($message, $error = Null) {
+	global $response, $silent;
+	if ($error)
+		$response['globalError'] = $error;
+	if ($silent) {
+		echo "$message\n";
+	} else if (isset($_GET['stage'])) {
+		header('Content-Type: application/json');
+		$response['message'] = $message;
+		echo json_encode($response);
+		exit(0);
+	}
+}
+
+/**
+ * Wrapper for "die": agnostic to whether the installation is web-based or silent or otherwise.
+ */
+function RIP($message) {
+	global $silent, $response;
+	if ($silent) {
+		die($message . "\n");
+	} else {
+		$response['failed'] = 1;
+		respond($message);
+	}
+}
+
+/**
+ * Error-handling function: displays info about what went horribly wrong if anything
+ * @param type $no
+ * @param type $st
+ * @param type $fi
+ * @param type $ln 
+ */
+function respondWithError($no, $st, $fi=Null, $ln=Null) {
+	RIP("PHP Error [$no]: $st ($fi, L$ln)");
+}
+
+/**
+ * Exception-handling function: displays full exception message, if any wasn't caught.
+ */
+function respondWithException($exception) {
+	RIP("Uncaught exception with message: ".$exception->getMessage());
+}
+
+set_error_handler('respondWithError');
+set_exception_handler('respondWithException');
+
+
 // Fill in the rest as normal
-foreach(array_diff($confKeys,array_keys($confMap)) as $confKey) {
+foreach (array_diff($confKeys, array_keys($confMap)) as $confKey) {
 	$confMap[$confKey] = $confKey;
 }
 // Initialize config with empty values:
-foreach($confKeys as $key) {
+foreach ($confKeys as $key) {
 	$config[$key] = Null;
 }
 
-$editions = require_once(dirname(__FILE__).'/protected/data/editions.php'); // Add editions as necessary
-$stageLabels = require_once(dirname(__FILE__).'/protected/data/installStageLabels.php');
-$enabledModules = require_once(dirname(__FILE__).'/protected/data/enabledModules.php');
-// Run the silent installer with default values?
-$silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
+$staticConfig = array(
+	'editions' => 'protected/data/editions.php',
+	'stageLabels' => 'protected/data/installStageLabels.php',
+	'enabledModules' => 'protected/data/enabledModules.php',
+	'dateFields' => 'protected/data/dateFields.php'
+);
+foreach ($staticConfig as $varName => $path) {
+	$realpath = realpath($path);
+	if ($realpath) {
+		${$varName} = require_once($realpath);
+	} else {
+		RIP("Could not find static configuration file $path.");
+	}
+}
 
 ////////////////////////////////
 // Load Install Configuration //
@@ -179,24 +244,29 @@ $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent',$argv));
 // Get base values:
 
 function baseConfig() {
-	global $config,$confMap;
-	include(dirname(__FILE__) . '/protected/config/X2Config.php');
-	foreach ($confMap as $name2 => $name1) {
-		if (isset(${$name2})) {
-			$config[$name1] = ${$name2};
+	global $config, $confMap;
+	$confFile = realpath('protected/config/X2Config.php');
+	if ($confFile) {
+		include($confFile);
+		foreach ($confMap as $name2 => $name1) {
+			if (isset(${$name2})) {
+				$config[$name1] = ${$name2};
+			}
 		}
+	} else {
+		RIP('Could not find essential configuration file at protected/config/X2Config.php');
 	}
 }
 
 function installConfig() {
-	global $config,$confMap;
+	global $config, $confMap;
 	if (file_exists('installConfig.php')) {
 		require('installConfig.php');
 	} else
 		die(installer_t('Error: Installer config file not found.'));
 
 	// Collect configuration values from the configuration file
-	foreach($confMap as $name2 => $name1)
+	foreach ($confMap as $name2 => $name1)
 		if (isset(${$name2}))
 			$config[$name1] = ${$name2};
 }
@@ -208,7 +278,7 @@ if ($silent) {
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	// Collect configuration values from install form
 	foreach ($confKeys as $var)
-		if(isset($_POST[$var]))
+		if (isset($_POST[$var]))
 			$config[$var] = $_POST[$var];
 	// Determine currency
 	$config['currency2'] = strtoupper($config['currency2']);
@@ -217,7 +287,7 @@ if ($silent) {
 	if (empty($config['currency']))
 		$config['currency'] = 'USD';
 	// Checkbox fields
-	foreach(array('dummy_data','receiveUpdates') as $checkbox) {
+	foreach (array('dummy_data', 'receiveUpdates') as $checkbox) {
 		$config[$checkbox] = (isset($_POST[$checkbox]) && $_POST[$checkbox] == 1) ? 1 : 0;
 	}
 	$config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
@@ -241,7 +311,7 @@ if (!empty($_POST['edition'])) {
 			$config['edition'] = $ed;
 }
 // Generate API Key
-$config['apiKey'] = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0,16);
+$config['apiKey'] = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 16)), 0, 16);
 
 // Set up language & translations:
 if (empty($config['language']))
@@ -249,21 +319,21 @@ if (empty($config['language']))
 $installMessageFile = "protected/messages/{$config['language']}/install.php";
 $installMessages = array();
 if (isset($installMessageFile) && file_exists($installMessageFile)) { // attempt to load installer messages
-	$installMessages = include($installMessageFile);	 // from the chosen language
+	$installMessages = include($installMessageFile);  // from the chosen language
 	if (!is_array($installMessages))
-		$installMessages = array();	  // ...or return an empty array
+		$installMessages = array();   // ...or return an empty array
 }
 
 // Timezone
-if(empty($config['timezone']))
-	$config['timezone']='UTC';
+if (empty($config['timezone']))
+	$config['timezone'] = 'UTC';
 date_default_timezone_set($config['timezone']);
 
 // Email address for sending
-if(!empty($config['adminEmail']))
+if (!empty($config['adminEmail']))
 	$config['bulkEmail'] = $config['adminEmail'];
 else
-	$config['bulkEmail'] = 'contact@'.preg_replace('/^www\./','',$_SERVER['HTTP_HOST']);
+	$config['bulkEmail'] = 'contact@' . preg_replace('/^www\./', '', $_SERVER['HTTP_HOST']);
 
 // At this stage, all user-entered data should be avaliable. Populate response data:
 foreach ($returnKeys as $key) {
@@ -273,13 +343,13 @@ foreach ($returnKeys as $key) {
 // Generate config file content:
 $gii = 1;
 if ($gii == '1') {
-	$gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'".str_replace("'","\\'",$config['adminPass'])."', \n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>false,\n)";
+	$gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'" . str_replace("'", "\\'", $config['adminPass']) . "', \n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>false,\n)";
 } else {
 	$gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'password',\n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>array('127.0.0.1', '::1'),\n)";
 }
-$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'],'initialize.php')) ? substr($config['webLeadUrl'], 0, strpos($config['webLeadUrl'],'initialize.php')) : $config['webLeadUrl'];
+$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'], 'initialize.php')) ? substr($config['webLeadUrl'], 0, strpos($config['webLeadUrl'], 'initialize.php')) : $config['webLeadUrl'];
 $X2Config = "<?php\n";
-foreach(array('appName','email','host','user','pass','dbname','version') as $confKey) {
+foreach (array('appName', 'email', 'host', 'user', 'pass', 'dbname', 'version') as $confKey) {
 	$X2Config .= "\$$confKey = '{$config[$confMap[$confKey]]}';\n";
 }
 $X2Config .= "\$buildDate = {$config['buildDate']};\n\$updaterVersion = '{$config['updaterVersion']}';\n";
@@ -288,7 +358,7 @@ $X2Config .= (empty($config['language'])) ? '$language=null;' : "\$language='{$c
 // Save config values to be inserted in the database:
 $config['time'] = time();
 foreach ($dbKeys as $property)
-	$dbConfig['{'.$property.'}'] = $config[$property];
+	$dbConfig['{' . $property . '}'] = $config[$property];
 
 ///////////////////////
 // Declare Functions //
@@ -296,25 +366,25 @@ foreach ($dbKeys as $property)
 /*
  * Translation function
  */
-function installer_t($str) {	// translates by looking up string in install.php language file
+function installer_t($str) { // translates by looking up string in install.php language file
 	global $installMessages;
-	if(isset($installMessages[$str]) && $installMessages[$str]!='')		// if the chosen language is available
-		return $installMessages[$str];									// and the message is in there, use it
+	if (isset($installMessages[$str]) && $installMessages[$str] != '')  // if the chosen language is available
+		return $installMessages[$str];   // and the message is in there, use it
 	return $str;
 }
 
 /**
  * Translation function wrapper (for using parameters)
  */
-function installer_tr($str,$params) {
-	return strtr(installer_t($str),$params);
+function installer_tr($str, $params) {
+	return strtr(installer_t($str), $params);
 }
 
 /**
  * Redirect to the installer with errors.
  */
 function outputErrors() {
-	global $response,$userData,$silent;
+	global $response, $userData, $silent;
 	if (!$silent) {
 		if (!isset($_GET['stage'])) {
 			if (isset($response['errors'])) {
@@ -324,7 +394,7 @@ function outputErrors() {
 				if (count($response['errors']) > 0) {
 					$errorData = implode('&errors%5B%5D=', $response['errors']);
 					$url = preg_replace('/initialize/', 'install', $_SERVER['REQUEST_URI']);
-					header("Location: $url?errors%5B%5D=" . $errorData .'&'. http_build_query($userData));
+					header("Location: $url?errors%5B%5D=" . $errorData . '&' . http_build_query($userData));
 					die();
 				}
 			}
@@ -340,16 +410,17 @@ function outputErrors() {
  */
 function addError($message) {
 	global $response;
-	if(!isset($response['errors'])) {
+	if (!isset($response['errors'])) {
 		$response['errors'] = array();
 	}
 	$response['errors'][] = $message;
 }
 
 $sqlError = '';
+
 function addSqlError($message) {
 	global $sqlError;
-	if(empty($sqlError))
+	if (empty($sqlError))
 		$sqlError = $message;
 }
 
@@ -359,42 +430,15 @@ function addSqlError($message) {
  * @param type $attr
  * @param type $error 
  */
-function addValidationError($attr,$error) {
-	global $response,$silent;
-	if(isset($_GET['stage']) || $silent) {
-		if(!isset($response['errors']))
+function addValidationError($attr, $error) {
+	global $response, $silent;
+	if (isset($_GET['stage']) || $silent) {
+		if (!isset($response['errors']))
 			$response['errors'] = array();
 		$response['errors'][$attr] = installer_t($error);
 	} else {
 		// Slip the validation error into the GET parameters as [attribute]--[errormessage]
 		$response['errors'][] = "$attr--$error";
-	}
-}
-
-function respond($message,$error=Null) {
-	global $response,$silent;
-	if($error)
-		$response['globalError'] = $error;
-	if($silent) {
-		echo "$message\n";
-	} else if(isset($_GET['stage'])) {
-		header('Content-Type: application/json');
-		$response['message'] = $message;
-		echo json_encode($response);
-		exit(0);
-	}
-}
-
-/**
- * Wrapper for "die"
- */
-function RIP($message) {
-	global $silent, $response;
-	if($silent) {
-		die($message."\n");
-	} else {
-		$response['failed'] = 1;
-		respond($message);
 	}
 }
 
@@ -404,11 +448,12 @@ function RIP($message) {
  * @global PDO $dbo
  * @param type $module 
  */
-function installModule($module,$respond = True) {
+function installModule($module, $respond = True) {
 	global $dbo;
 	$moduleName = installer_t($module);
-	$install = file_exists($regFile = dirname(__FILE__) . "/protected/modules/$module/register.php");
-	if ($install) {
+	$regPath = "protected/modules/$module/register.php";
+	$regFile = realpath($regPath);
+	if ($regFile) {
 		$install = require_once($regFile);
 		foreach ($install['install'] as $sql) {
 			// Install a module.
@@ -426,15 +471,16 @@ function installModule($module,$respond = True) {
 			foreach ($sqlComm as $sqlLine) {
 				try {
 					$statement = $dbo->prepare($sqlLine);
-					$statement->execute() or RIP(installer_tr('Error installing module "{module}". SQL statement "{sql}" failed;', array('{sql}' => substr(trim($sqlLine), 0, 50).(strlen(trim($sqlLine))>50?'...':''), '{module}' => $moduleName)) . implode(',', $statement->errorInfo()));
+					$statement->execute() or RIP(installer_tr('Error installing module "{module}". SQL statement "{sql}" failed;', array('{sql}' => substr(trim($sqlLine), 0, 50) . (strlen(trim($sqlLine)) > 50 ? '...' : ''), '{module}' => $moduleName)) . implode(',', $statement->errorInfo()));
 				} catch (PDOException $e) {
 					RIP(installer_tr('Could not install module "{module}"; ', array('{module}' => $moduleName)) . $e->getMessage());
 				}
 			}
-			
 		}
-		if($respond)
-			respond(installer_tr('Module "{module}" installed.', array('{module}'=>$moduleName)));
+		if ($respond)
+			respond(installer_tr('Module "{module}" installed.', array('{module}' => $moduleName)));
+	} else {
+		RIP(installer_tr('Failed to install module "{module}"; could not find configuration file at {path}.', array('{module}'=>$moduleName,'{path}'=>$regPath)));
 	}
 }
 
@@ -444,7 +490,7 @@ function installModule($module,$respond = True) {
  * @param $stage The named stage of installation.
  */
 function installStage($stage) {
-	global $editions, $silent, $dbo,$config,$dbConfig, $stageLabels, $response,$write,$X2Config,$enabledModules;
+	global $editions, $silent, $dbo, $config, $dbConfig, $stageLabels, $response, $write, $X2Config, $enabledModules,$dateFields;
 	if ($stage == 'validate') {
 		if (empty($config['adminEmail']) || !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i', $config['adminEmail']))
 			addValidationError('adminEmail', 'Please enter a valid email address.');
@@ -454,7 +500,7 @@ function installStage($stage) {
 			addValidationError('adminPass2', 'Please confirm the admin password.');
 		else if ($config['adminPass'] != $_POST['adminPass2'])
 			addValidationError('adminPass2', 'Admin passwords did not match.');
-		if(!empty($response['errors'])) {
+		if (!empty($response['errors'])) {
 			respond(installer_t('Please correct the following errors:'));
 		}
 	} else if ($stage == 'module') {
@@ -464,7 +510,7 @@ function installStage($stage) {
 		} else {
 			// Install all modules:
 			foreach ($enabledModules as $module)
-				installModule($module,$silent);
+				installModule($module, $silent);
 		}
 	} else if ($stage == 'config') {
 		// Configure with initial data and write files
@@ -480,19 +526,24 @@ function installStage($stage) {
 
 		fwrite($handle, $X2Config);
 		fclose($handle);
-		
+
 		$dbConfig['{adminPass}'] = md5($config['adminPass']);
 		try {
-			$sql = explode('/*&*/',strtr(file_get_contents(dirname(__FILE__) . '/protected/data/config.sql'),$dbConfig));
-			foreach($sql as $sqlLine) {
-				$installConf = $dbo->prepare($sqlLine);
-				if (!$installConf->execute())
-					RIP(installer_t('Error applying initial configuration') . ': ' . implode(',', $installConf->errorInfo()));
+			$sqlPath = 'protected/data/config.sql';
+			$sqlFile = realpath($sqlPath);
+			if ($sqlFile) {
+				$sql = explode('/*&*/', strtr(file_get_contents($sqlFile), $dbConfig));
+				foreach ($sql as $sqlLine) {
+					$installConf = $dbo->prepare($sqlLine);
+					if (!$installConf->execute())
+						RIP(installer_t('Error applying initial configuration') . ': ' . implode(',', $installConf->errorInfo()));
+				}
+			} else {
+				RIP(installer_t('Could not find database configuration script')." $sqlPath");
 			}
 		} catch (PDOException $e) {
 			die($e->getMessage());
 		}
-		
 	} else if ($stage == 'finalize') {
 		/**
 		 * Look for additional initialization files and perform final tasks
@@ -502,7 +553,8 @@ function installStage($stage) {
 				include("initialize_$ed.php");
 	} else {
 		// Look for a named SQL file and run it:
-		if (file_exists($sqlFile = dirname(__FILE__) . "/protected/data/$stage.sql")) {
+		$stagePath = "protected/data/$stage.sql";
+		if ($sqlFile = realpath($stagePath)) {
 			$sql = explode('/*&*/', file_get_contents($sqlFile));
 			foreach ($sql as $sqlLine) {
 				$statement = $dbo->prepare($sqlLine);
@@ -515,7 +567,7 @@ function installStage($stage) {
 			}
 			// Hunt for init SQL files associated with other editions:
 			foreach ($editions as $ed) {
-				if (file_exists($sqlFile = dirname(__FILE__) . "/protected/data/$stage-$ed.sql")) {
+				if ($sqlFile = realpath("protected/data/$stage-$ed.sql")) {
 					$sql = explode('/*&*/', file_get_contents($sqlFile));
 					foreach ($sql as $sqlLine) {
 						$statement = $dbo->prepare($sqlLine);
@@ -528,14 +580,26 @@ function installStage($stage) {
 					}
 				}
 			}
+
+			if ($stage == 'dummy_data') {
+				// Need to update the timestamp fields on all the sample data that has been inserted.
+				$timeDiff = time() - 1352913902;  // Last time dummy data was generated was 1352913902
+				foreach($dateFields as $table => $fields) {
+					foreach($fields as $field) {
+						$dbo->prepare("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL")->execute();
+					}
+				}
+			}
+		} else {
+			RIP(installer_t("Could not find installation stage database script")." $stagePath");
 		}
 	}
-	if(in_array($stage,array_keys($stageLabels)) && $stage != 'finalize')
-		respond(installer_tr("Completed: {stage}",array('{stage}'=>$stageLabels[$stage])));
+	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize')
+		respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
 
 // Translate response messages
-foreach(array_keys($stageLabels) as $stage) {
+foreach (array_keys($stageLabels) as $stage) {
 	$stageLabels[$stage] = installer_t($stageLabels[$stage]);
 }
 
@@ -558,27 +622,27 @@ if (!$silent) {
 // Establish database connection
 try {
 	$dbo = new PDO("mysql:host={$config['dbHost']};dbname={$config['dbName']}", $config['dbUser'], $config['dbPass']);
-	$con = @mysql_connect($config['dbHost'],$config['dbUser'],$config['dbPass']) or addError('DB_CONNECTION_FAILED');
-	@mysql_select_db($config['dbName'],$con) or addError('DB_COULD_NOT_SELECT');
+	$con = @mysql_connect($config['dbHost'], $config['dbUser'], $config['dbPass']) or addError('DB_CONNECTION_FAILED');
+	@mysql_select_db($config['dbName'], $con) or addError('DB_COULD_NOT_SELECT');
 } catch (PDOException $e) {
 	// Database connection failed. Send validation errors.
-	foreach(array('dbHost'=>'Host Name','dbName'=>'Database Name','dbUser'=>'Username','dbPass'=>'Password') as $attr=>$label) {
-		if(empty($_POST[$attr])) {
-			addValidationError($attr,installer_tr('{attr}: cannot be blank',array('{attr}'=>installer_t($label))));
+	foreach (array('dbHost' => 'Host Name', 'dbName' => 'Database Name', 'dbUser' => 'Username', 'dbPass' => 'Password') as $attr => $label) {
+		if (empty($_POST[$attr])) {
+			addValidationError($attr, installer_tr('{attr}: cannot be blank', array('{attr}' => installer_t($label))));
 		} else {
-			addValidationError($attr,installer_tr('{attr}: please check that it is correct',array('{attr}'=>installer_t($label))));
+			addValidationError($attr, installer_tr('{attr}: please check that it is correct', array('{attr}' => installer_t($label))));
 		}
 	}
-	respond(installer_t('Database connection error'),htmlentities($e->getMessage()));
+	respond(installer_t('Database connection error'), htmlentities($e->getMessage()));
 }
 
 $complete = isset($_POST['complete']) ? $_POST['complete'] == 1 : False;
 
-if(!$complete)
+if (!$complete)
 	outputErrors();
 
 // Install everything all at once:
-if (($silent || !isset($_GET['stage']))&& !$complete) {
+if (($silent || !isset($_GET['stage'])) && !$complete) {
 	// Install core schema/data, modules, and configure:
 	foreach (array('core', 'RBAC', 'timezoneData', 'module', 'config', 'finalize') as $component)
 		installStage($component);
@@ -587,12 +651,6 @@ if (($silent || !isset($_GET['stage']))&& !$complete) {
 }
 
 if (!$complete || $silent) {
-	if ($config['dummy_data']) {
-		include("dummydata.php");
-	}
-
-	mysql_close($con);
-
 	if (!empty($sqlError))
 		$errors[] = 'MySQL Error: ' . $sqlError;
 	outputErrors();
@@ -604,70 +662,67 @@ if (!$silent && $complete):
 	foreach ($sendArgs as $urlKey) {
 		$stats[$urlKey] = $config[$urlKey];
 	}
-?><!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="language" content="en" />
-<title><?php echo installer_t('Installation Complete'); ?></title>
-<?php $themeURL = 'themes/x2engine'; ?>
-<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
-<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/form.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
-<link rel="icon" href="images/favicon.ico" type="image/x-icon">
-<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
-<style type="text/css">
-body {
-	background-color:#fff;
-	padding-top:50px;
-}
-</style>
-<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="js/backgroundImage.js"></script>
-</head>
-<body>
-<!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
-<div id="installer-box" style="padding-top:20px;">
-	<h1><?php echo installer_t('Installation Complete!'); ?></h1>
-	<div id="install-form" class="wide form">
-		<ul>
-			<li><?php echo installer_t('Able to connect to database'); ?></li>
-			<li><?php echo installer_t('Dropped old X2Engine tables (if any)'); ?></li>
-			<li><?php echo installer_t('Created new tables for X2Engine'); ?></li>
-			<li><?php echo installer_t('Created login for admin account'); ?></li>
-			<li><?php echo installer_t('Created config file'); ?></li>
-		</ul>
-		<h2><?php echo installer_t('Next Steps'); ?></h2>
-		<ul>
-			<li><?php echo installer_t('Log in to app'); ?></li>
-			<li><?php echo installer_t('Create new users'); ?></li>
-			<li><?php echo installer_t('Set up Cron Job to deal with action reminders (see readme)'); ?></li>
-			<li><?php echo installer_t('Set location'); ?></li>
-			<li><?php echo installer_t('Explore the app'); ?></li>
-		</ul>
-		<h3><a class="x2-button" href="index.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
-		<?php echo installer_t('X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'); ?><br /><br />
-	</div>
-<a href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a><br /><br />
-<div id="footer">
-	<div class="hr"></div>
-	<!--<img src="images/x2engine_big.png">-->
-	Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
-	<?php echo installer_t('All Rights Reserved.'); ?>
-	<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
-</div>
-</div>
-</body>
-</html>
-<?php
+	?><!DOCTYPE html>
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+		<head>
+			<meta charset="UTF-8" />
+			<meta name="language" content="en" />
+			<title><?php echo installer_t('Installation Complete'); ?></title>
+			<?php $themeURL = 'themes/x2engine'; ?>
+			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
+			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />
+			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/form.css" />
+			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
+			<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+				<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+				<style type="text/css">
+					body {
+						background-color:#fff;
+						padding-top:50px;
+					}
+				</style>
+				<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+				<script type="text/javascript" src="js/backgroundImage.js"></script>
+		</head>
+		<body>
+		<!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
+			<div id="installer-box" style="padding-top:20px;">
+				<h1><?php echo installer_t('Installation Complete!'); ?></h1>
+				<div id="install-form" class="wide form">
+					<ul>
+						<li><?php echo installer_t('Able to connect to database'); ?></li>
+						<li><?php echo installer_t('Dropped old X2Engine tables (if any)'); ?></li>
+						<li><?php echo installer_t('Created new tables for X2Engine'); ?></li>
+						<li><?php echo installer_t('Created login for admin account'); ?></li>
+						<li><?php echo installer_t('Created config file'); ?></li>
+					</ul>
+					<h2><?php echo installer_t('Next Steps'); ?></h2>
+					<ul>
+						<li><?php echo installer_t('Log in to app'); ?></li>
+						<li><?php echo installer_t('Create new users'); ?></li>
+						<li><?php echo installer_t('Set up Cron Job to deal with action reminders (see readme)'); ?></li>
+						<li><?php echo installer_t('Set location'); ?></li>
+						<li><?php echo installer_t('Explore the app'); ?></li>
+					</ul>
+					<h3><a class="x2-button" href="index.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
+					<?php echo installer_t('X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'); ?><br /><br />
+				</div>
+				<a href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a><br /><br />
+				<div id="footer">
+					<div class="hr"></div>
+					<!--<img src="images/x2engine_big.png">-->
+					Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
+					<?php echo installer_t('All Rights Reserved.'); ?>
+					<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
+				</div>
+			</div>
+		</body>
+	</html>
+	<?php
 endif;
 // delete install files (including self)
-if (file_exists('install.php'))
-	unlink('install.php');
-if (file_exists('installConfig.php'))
-	unlink('installConfig.php');
-if (file_exists('initialize_pro.php'))
-	unlink('initialize_pro.php');
+foreach(array('install.php','installConfig.php','requirements.php','initialize_pro.php') as $file) 
+	if (file_exists($file))
+		unlink($file);
 unlink(__FILE__);
 ?>

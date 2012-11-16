@@ -3,19 +3,23 @@ Copyright (c) 2003-2012,CKSource - Frederico Knabben. All rights reserved.
 For licensing,see LICENSE.html or http://ckeditor.com/license
 */
 
-CKEDITOR.editorConfig = function( config )
+CKEDITOR.editorConfig = function(config)
 {
 	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
+	config.language = yii.language || 'en';
 	
 	config.enterMode = CKEDITOR.ENTER_BR;
 	config.shiftEnterMode = CKEDITOR.ENTER_P;
+	
+	config.insertableAttributes = Array();
 	
 	config.toolbar = 'Full';
 	config.height = 600;
 	config.resize_enabled = true;
 	config.removePlugins = 'autogrow,contextmenu,blockquote,showblocks,elementspath';
+	
+	config.extraPlugins = 'insertattributes';
 	config.resize_dir = 'vertical';
 	
 	config.toolbar_Full = [
@@ -47,6 +51,7 @@ CKEDITOR.editorConfig = function( config )
 	];
 	config.toolbar_MyEmailToolbar = [
 		{name: 'document',items: ['Source']},
+		{name: 'insertAttributes',items:['Attribute']},
 		{name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
 		// {name: 'forms',items: ['Form','Checkbox','Radio','TextField','Textarea','Select','Button','HiddenField']},
 		{name: 'links',items: ['Link','Unlink','Anchor']},

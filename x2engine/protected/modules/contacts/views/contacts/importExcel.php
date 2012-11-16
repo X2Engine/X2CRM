@@ -43,18 +43,33 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	// array('label'=>Yii::t('contacts','Import from Outlook'),'url'=>array('importContacts')),
-	array('label'=>Yii::t('contacts','Import from Template')),
+	array('label'=>Yii::t('contacts','Import Contacts')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
 ));
 
 ?>
 <h2><?php echo Yii::t('contacts','Import Contacts from Template'); ?></h2>
-<?php echo Yii::t('contacts','To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'); ?>
-<br /><br /><?php echo Yii::t('contacts','The template file can be found here:');?> <a href=<?php echo Yii::app()->request->baseUrl.'/'; ?>contacts_template.csv><?php echo Yii::t('app','Download');?>!</a>
+<div id="info-box" style="width:600px;" class="form">
+<?php echo Yii::t('contacts','To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'); ?>
 <br /><br />
+<?php echo Yii::t('contacts','The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'); ?>
+<br /><br />
+<?php echo Yii::t('contacts','If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'); ?>
 
+<br /><br /><?php echo Yii::t('contacts','Example');?> <a href="#" id="example-link">[+]</a>
+<div id="example-box" style="display:none;"><img src="<?php echo Yii::app()->getBaseUrl()."/images/examplecsv.png" ?>"/></div>
+<br /><br />
+</div>
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
+<div class="form" style="width:600px;">
 <?php echo CHtml::form('importExcel','post',array('enctype'=>'multipart/form-data')); ?>
 <?php echo CHtml::fileField('contacts', '', array('id'=>'contacts')); ?> <br /><br />
-<?php echo CHtml::submitButton(Yii::t('app','Submit')); ?> 
+<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?> 
 <?php echo CHtml::endForm(); ?> 
+</div>
+<script>
+    $('#example-link').click(function(){
+       $('#example-box').toggle(); 
+    });
+</script>
+    

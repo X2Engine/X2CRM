@@ -216,7 +216,7 @@ class Workflow extends CActiveRecord {
 			else
 				$editPermission = true;	// default is full permission for everybody
 				
-			if(Yii::app()->user->getName() == 'admin')	// admin override
+			if(Yii::app()->user->checkAccess('AdminIndex'))	// admin override
 				$editPermission = true;
 			
 			$color = Workflow::rgb2hex(
@@ -267,7 +267,7 @@ class Workflow extends CActiveRecord {
 					// can only undo if there is no restriction on backdating, or we're still within the edit time window
 					$allowUndo = Yii::app()->params->admin->workflowBackdateWindow < 0 || (time() - $workflowStatus[$stage]['completeDate']) < Yii::app()->params->admin->workflowBackdateWindow;
 					
-					if($editPermission && ($allowUndo || Yii::app()->user->getName() == 'admin'))
+					if($editPermission && ($allowUndo || Yii::app()->user->checkAccess('AdminIndex')))
 						$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
 				} else {
 					// $started = true;
