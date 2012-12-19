@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -54,19 +54,18 @@ return array (
 'Background Info'=>'Achtergrond Info',
 'Email'=>'Email',
 'Status'=>'Status',
-'Update Password'=>'Wachtwoord Bewerken',
-'Last Updated'=>'Laatst Bewerkt',
+'Update Password'=>'Wachtwoord bewerken',
+'Last Updated'=>'Laatst bewerkt',
 'Updated By'=>'Bewerkt Door',
 'Recent Items'=>'Recente Items',
 
 // Users Actions
-'Create User'=>'Maak een Gebruiker Aan',
+'Create User'=>'Maak een gebruiker aan',
 'View User'=>'Bekijk Gebruiker',
 'Update User'=>'Bewerk Gebruiker',
 'Manage Users'=>'Beheer Gebruikers',
-'Invite Users'=>'Nodig Gebruikers',
 
 // Users Titles
 'User: {name}'=>'Gebruiker: {name}',
-'Update User: {name}'=>'Bewerk Gebruiker: {name}',
+'Update User: {name}'=>'Bewerk gebruiker: {name}',
 );

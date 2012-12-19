@@ -148,7 +148,34 @@ class Groups extends X2Model {
 	 *
 	 * Find out if a user belongs to a group
 	 */
-	public static function inGroup($user_id, $group_id) {
-		return GroupToUser::model()->exists("userId=$user_id AND groupId=$group_id");
+	public static function inGroup($userId, $groupId) {
+		return GroupToUser::model()->exists("userId=$userId AND groupId=$groupId");
+	}
+
+	/* Looks up groups to which the specified user belongs.
+	 * Uses cache to lookup/store groups.
+	 * 
+	 * @param Integer $userId user to look up groups for
+	 * @param Boolean $cache whether to use cache
+	 * @return Array array of groupIds
+	 */
+	public static function getUserGroups($userId,$cache=true) {
+		// check the app cache for user's groups
+		if($cache === true && ($userGroups = Yii::app()->cache->get('user_groups')) !== false) {
+			if(isset($userGroups[$userId]))
+				return $userGroups[$userId];
+		} else {
+			$userGroups = array();
+		}
+		
+		$userGroups[$userId] = Yii::app()->db->createCommand()	// get array of groupIds
+			->select('groupId')
+			->from('x2_group_to_user')
+			->where('userId=' . $userId)->queryColumn();
+		
+		if($cache === true)
+			Yii::app()->cache->set('user_groups',$userGroups,259200); // cache user groups for 3 days
+		
+		return $userGroups[$userId];
 	}
 }

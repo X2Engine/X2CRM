@@ -117,7 +117,7 @@ class UsersController extends x2base {
 			$profile=new ProfileChild;
 			$profile->fullName=$model->firstName." ".$model->lastName;
 			$profile->username=$model->username;
-                        $profile->allowPost=1;
+            $profile->allowPost=1;
 			$profile->emailAddress=$model->emailAddress;
 			$profile->status=$model->status;
 
@@ -161,31 +161,42 @@ class UsersController extends x2base {
 		$this->layout='//layouts/main';
 		if(isset($_GET['key'])){
 			$key=$_GET['key'];
-			$admin=Admin::model()->findByPk(1);
-			if($key==$admin->inviteKey){
-				if(isset($_POST['User'])) {
-					$model=new User;
-					$model->attributes=$_POST['User'];
-					//$this->updateChangelog($model);
-					$model->password = md5($model->password);
+			$user=User::model()->findByAttributes(array('inviteKey'=>$key));
+            if(isset($user)){
+                $user->setScenario('insert');
+                if($key==$user->inviteKey){
+                    if(isset($_POST['User'])) {
+                        $model=$user;
+                        $model->attributes=$_POST['User'];
+                        $model->status=1;
+                        //$this->updateChangelog($model);
+                        $model->password = md5($model->password);
 
-					$profile=new ProfileChild;
-					$profile->fullName=$model->firstName." ".$model->lastName;
-					$profile->username=$model->username;
-								$profile->allowPost=1;
-					$profile->emailAddress=$model->emailAddress;
-					$profile->status=$model->status;
+                        $profile=new ProfileChild;
+                        $profile->fullName=$model->firstName." ".$model->lastName;
+                        $profile->username=$model->username;
+                        $profile->allowPost=1;
+                        $profile->emailAddress=$model->emailAddress;
+                        $profile->status=$model->status;
 
-					if($model->save()){
-						$profile->id=$model->id;
-						$profile->save();
-						$this->redirect(array('/site/login'));
-					}
-				}
-				$this->render('createAccount');
-			}else{
-				$this->redirect($this->createUrl('/site/login'));
-			}
+                        if($model->save()){
+                            $model->inviteKey=null;
+                            $model->temporary=0;
+                            $model->save();
+                            $profile->id=$model->id;
+                            $profile->save();
+                            $this->redirect(array('/site/login'));
+                        }
+                    }
+                    $this->render('createAccount',array(
+                        'user'=>$user,
+                    ));
+                }else{
+                    $this->redirect($this->createUrl('/site/login'));
+                }
+            }else{
+                $this->redirect($this->createUrl('/site/login'));
+            }
 		}else{
 			$this->redirect($this->createUrl('/site/login'));
 		}
@@ -308,43 +319,55 @@ class UsersController extends x2base {
 	}
 	
 	public function actionInviteUsers(){
-		$admin=Admin::model()->findByPk(1);
-		if(empty($admin->inviteKey)){
-			$admin->inviteKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0,16);
-			$admin->save();
-		}
+        
 		if(isset($_POST['emails'])){
 			$list=$_POST['emails'];
-			$link=(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/createAccount?key='.$admin->inviteKey);
+			
 			$body="Hello,
 
 You are receiving this email because your X2CRM admin has invited you to create an account.
 Please click on the link below to create an account at X2CRM!
 
-".$link;
+";
 			
 			$subject="Create Your X2CRM User Account";
 			$list=trim($list);
 			$emails=explode(',',$list);
 			foreach($emails as &$email){
-				$email=trim($email);
-				mail($email,$subject,$body);
+                $key=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0,16);
+                $user=new User('invite');
+                $email=trim($email);
+                $user->inviteKey=$key;
+                $user->temporary=1;
+                $user->emailAddress=$email;
+                $user->status=0;
+                $userList=User::model()->findAllByAttributes(array('emailAddress'=>$email,'temporary'=>1));
+                foreach($userList as $userRecord){
+                    if(isset($userRecord)){
+                        $userRecord->delete();
+                    }
+                }
+                $user->save();
+                $link=(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/createAccount?key='.$key);
+				mail($email,$subject,$body.$link);
 			}
+            $this->redirect('admin');
 		}
 		
 		$this->render('inviteUsers');
 	}
 
-	/**
-	 * Lists all models.
-	 */
+	public function actionDeleteTemporary(){
+        $deleted=User::model()->deleteAllByAttributes(array('temporary'=>1));
+        $this->redirect('admin');
+    }
 
 	/**
 	 * Manages all models.
 	 */
 	public function actionAdmin() {
 		$model=new User('search');
-		$this->render('admin',array('model'=>$model));
+		$this->render('admin',array('model'=>$model,'count'=>User::model()->countByAttributes(array('temporary'=>1))));
 	}
 
 	/**
@@ -377,11 +400,11 @@ Please click on the link below to create an account at X2CRM!
 			}
             $social=Social::model()->findAllByAttributes(array('user'=>$model->username));
             foreach($social as $socialItem){
-                $socialItem->delete;
+                $socialItem->delete();
             }
             $social=Social::model()->findAllByAttributes(array('associationId'=>$model->id));
             foreach($social as $socialItem){
-                $socialItem->delete;
+                $socialItem->delete();
             }
                         
                         $dataProvider=new CActiveDataProvider('Contacts', array(

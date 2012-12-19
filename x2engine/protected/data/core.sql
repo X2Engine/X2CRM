@@ -78,7 +78,11 @@ CREATE TABLE x2_admin(
 	serviceCaseFromEmailAddress	TEXT,
 	serviceCaseFromEmailName	TEXT,
 	serviceCaseEmailSubject		TEXT,
-	serviceCaseEmailMessage		TEXT
+	serviceCaseEmailMessage		TEXT,
+	srrId						INT				DEFAULT 0,
+	sgrrId						INT				DEFAULT 0,
+	serviceDistribution			varchar(255),
+	serviceOnlineOnly			TINYINT
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -88,7 +92,7 @@ CREATE TABLE x2_changelog(
 	type					VARCHAR(50)		NOT NULL,
 	itemId					INT				NOT NULL,
 	changedBy				VARCHAR(50)		NOT NULL,
-	changed					TEXT			NOT NULL,
+	changed					TEXT			NULL,
     fieldName               VARCHAR(255),
     oldValue                TEXT,
     newValue                TEXT,
@@ -113,7 +117,7 @@ CREATE TABLE x2_dropdowns (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
 	options					TEXT
-) COLLATE = utf8_general_ci;
+) AUTO_INCREMENT=1000 COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_fields;
 /*&*/
@@ -146,7 +150,7 @@ CREATE TABLE x2_form_layouts (
 	defaultForm				TINYINT			NOT NULL DEFAULT 0,
 	createDate				BIGINT,
 	lastUpdated				BIGINT
-) COLLATE = utf8_general_ci;
+) AUTO_INCREMENT=1000 COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_lead_routing;
 /*&*/
@@ -176,7 +180,7 @@ CREATE TABLE x2_lists (
 	count					INT UNSIGNED	NOT NULL DEFAULT 0,
 	createDate				BIGINT			NOT NULL,
 	lastUpdated				BIGINT			NOT NULL
-) COLLATE utf8_general_ci;
+) ENGINE InnoDB COLLATE utf8_general_ci;
 /*&*/
 CREATE TABLE x2_list_criteria (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -187,7 +191,7 @@ CREATE TABLE x2_list_criteria (
 	value					VARCHAR(100)	NOT NULL,
 	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
-) COLLATE utf8_general_ci;
+) ENGINE InnoDB COLLATE utf8_general_ci;
 /*&*/
 CREATE TABLE x2_list_items (
 	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -201,7 +205,7 @@ CREATE TABLE x2_list_items (
 	unsubscribed			INT				UNSIGNED NOT NULL DEFAULT 0,
 	INDEX (listId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
-) COLLATE utf8_general_ci;
+) ENGINE InnoDB COLLATE utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_modules;
 /*&*/
@@ -290,6 +294,7 @@ CREATE TABLE x2_profile(
 	groupCalendarsVisible	TINYINT			DEFAULT 1,
 	tagsShowAllUsers		TINYINT,
 	hideCasesWithStatus		TEXT,
+    hiddenTags              TEXT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -313,7 +318,7 @@ CREATE TABLE x2_roles (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
 	users					TEXT
-) COLLATE = utf8_general_ci;
+) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_exceptions;
 /*&*/
@@ -346,8 +351,8 @@ CREATE TABLE x2_role_to_user (
 DROP TABLE IF EXISTS x2_sessions;
 /*&*/
 CREATE TABLE x2_sessions(
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	user					VARCHAR(250),
+	id						CHAR(40)		PRIMARY KEY,
+	user					VARCHAR(20),
 	lastUpdated				BIGINT,
 	IP						VARCHAR(40)		NOT NULL,
 	status					TINYINT			NOT NULL DEFAULT 0
@@ -358,10 +363,11 @@ DROP TABLE IF EXISTS x2_social;
 CREATE TABLE x2_social(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(40)		NOT NULL,
+    subtype                 VARCHAR(250),
 	data					TEXT,
 	user					VARCHAR(20),
 	associationId			INT,
-	private					TINYINT			DEFAULT 0,
+	visibility				TINYINT			DEFAULT 1,
 	timestamp				INT,
 	lastUpdated				BIGINT
 ) COLLATE = utf8_general_ci;
@@ -375,7 +381,8 @@ CREATE TABLE x2_tags(
 	taggedBy				VARCHAR(50)		NOT NULL,
 	tag						VARCHAR(250)	NOT NULL,
 	itemName				VARCHAR(250),
-	timestamp				INT				NOT NULL DEFAULT 0
+	timestamp				INT				NOT NULL DEFAULT 0,
+	INDEX (tag)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_temp_files;
@@ -390,28 +397,51 @@ CREATE TABLE x2_temp_files (
 DROP TABLE IF EXISTS x2_urls;
 /*&*/
 CREATE TABLE x2_urls(
-	 id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	 title					VARCHAR(20)				NOT NULL,
-	 url					VARCHAR(256),
-	 userid					INT,
-	 timestamp				INT
- ) COLLATE = utf8_general_ci;
+	id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	title					VARCHAR(20)				NOT NULL,
+	url					VARCHAR(256),
+	userid					INT,
+	timestamp				INT
+) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_track_emails;
 /*&*/
 CREATE TABLE x2_track_emails(
-	 id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	 actionId			INT,
-	 uniqueId			VARCHAR(32),
-	 opened				INT
- ) COLLATE = utf8_general_ci;
+	id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	actionId			INT,
+	uniqueId			VARCHAR(32),
+	opened				INT
+) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_imports;
 /*&*/
 CREATE TABLE x2_imports(
-     id                 INT                 NOT NULL AUTO_INCREMENT PRIMARY KEY,
-     importId           INT                 NOT NULL,
-     modelId            INT                 NOT NULL,
-     modelType          VARCHAR(250)        NOT NULL,
-     timestamp          BIGINT
+	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	importId			INT				NOT NULL,
+	modelId				INT				NOT NULL,
+	modelType			VARCHAR(250)	NOT NULL,
+	timestamp			BIGINT
 ) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_locations;
+/*&*/
+CREATE TABLE x2_locations(
+	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	contactId			INT				NOT NULL,
+	lat                 FLOAT			NOT NULL,
+	lon                 FLOAT           NOT NULL
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_maps;
+/*&*/
+CREATE TABLE x2_maps(
+	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    owner               VARCHAR(250),
+	name    			VARCHAR(250),
+    contactId           INT,
+    params              TEXT,
+    centerLat           FLOAT,
+    centerLng           FLOAT,
+    zoom                INT
+) COLLATE = utf8_general_ci;
+

@@ -49,7 +49,7 @@
 class LeadRoutingBehavior extends CBehavior {
 
 	public function cleanUpSessions() {
-		Session::model()->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
+		CActiveRecord::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
 	}
 
 	/**

@@ -13,7 +13,7 @@ return array(
 	'timezoneData' => 'insert time zone data',
 	'module' => 'install modules',
 	'config' => 'apply configuration',
-	'dummy_data' => 'insert sample data',
+	'dummy_data' => '%s sample data', /* %s = "insert" or "remove" */ 
 	'finalize' => 'finish installation',
 );
 

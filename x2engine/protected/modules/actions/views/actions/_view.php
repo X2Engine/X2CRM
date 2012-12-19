@@ -113,6 +113,8 @@ if(empty($data->type)) {
 			echo Yii::t('actions','Email Message:').' '.Actions::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'emailOpened') {
 			echo Yii::t('actions', 'Email Opened:'). ' '.Actions::formatCompleteDate($data->completeDate);
+		} elseif($data->type == 'webactivity') {
+			echo Yii::t('actions','This contact visited your website');
 		} elseif($data->type == 'note') {
 			echo Actions::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'call') {
@@ -162,7 +164,10 @@ if(empty($data->type)) {
 			if(isset($data->actionDescription))
 				echo '<br>'.$data->actionDescription;
 			
-			
+		} elseif($type=='webactivity') {
+			if(!empty($data->actionDescription))
+				echo $data->actionDescription,'<br>';
+			echo date('Y-m-d H:i:s',$data->completeDate);
 		} else
 			echo Yii::app()->controller->convertUrls(($data->actionDescription));	// convert LF and CRLF to <br />
 		?>

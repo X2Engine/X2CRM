@@ -72,7 +72,16 @@ else
 		</td>
 		<td class="label"><?php echo $model->getAttributeLabel('phone'); ?></td>
 		<td>
-			<b><?php echo $model->phone; ?></b>
+			<?php
+				$phone = $model->phone;
+				// see if we need/can to format the phone number
+				$phoneCheck = PhoneNumber::model()->findByAttributes(array('modelId' => $model->id, 'modelType' => 'Contacts', 'fieldName' => 'phone'));
+				if(isset($phoneCheck) && strlen($phoneCheck->number) == 10) {
+				    $temp = $phoneCheck->number;
+				    $phone = "(" . substr($temp, 0, 3) . ") " . substr($temp, 3, 3) . "-" . substr($temp, 6, 4);
+				}
+			?>
+			<b><?php echo $phone; ?></b>
 		</td>
 	</tr>
 	<tr>

@@ -68,7 +68,11 @@ class GoogleMaps extends X2Widget {
 			geocoder = new google.maps.Geocoder();
 			geocoder.geocode( {"address": "'.addslashes($this->location).'"}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
-
+                    $.ajax({
+                        url:"updateLocation",
+                        type:"GET",
+                        data:{contactId:'.$_GET['id'].',lat:results[0].geometry.location.lat(),lon:results[0].geometry.location.lng()},
+                    });
 					window.map = new google.maps.Map(document.getElementById("googleMapsCanvas"),{
 						center: results[0].geometry.location,
 						zoom: 8,
@@ -80,6 +84,13 @@ class GoogleMaps extends X2Widget {
 						map: window.map,
 						position: results[0].geometry.location
 					});
+                    var content=\'<span><a href="'.CHtml::normalizeUrl('googleMaps?contactId='.$_GET['id']).'">View on Large Map</a></span>\'
+                    var infowindow = new google.maps.InfoWindow({
+                                content:content
+                            });
+                    google.maps.event.addListener(marker,"click",function(){
+                            infowindow.open(map,marker);
+                        });
 				} else {
 					$("#widget_GoogleMaps").remove();
 				}

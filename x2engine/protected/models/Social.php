@@ -75,11 +75,11 @@ class Social extends CActiveRecord {
 		// will receive user inputs.
 		return array(
 			array('type', 'required'),
-			array('associationId, private, timestamp, lastUpdated', 'numerical', 'integerOnly'=>true),
+			array('associationId, visibility, timestamp, lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('type, user', 'length', 'max'=>40),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, type, data, user, associationId, private, timestamp, lastUpdated', 'safe', 'on'=>'search'),
+			array('id, type, data, user, associationId, visibility, timestamp, lastUpdated', 'safe', 'on'=>'search'),
 		);
 	}
 	
@@ -103,7 +103,7 @@ class Social extends CActiveRecord {
 			'data' => 'Data',
 			'user' => 'User',
 			'associationId' => 'Association',
-			'private' => Yii::t('app','Private'),
+			'visibility' => Yii::t('app','Visibility'),
 			'timestamp' => 'Timestamp',
 			'lastUpdated' => 'Last Updated',
 		);
@@ -124,7 +124,7 @@ class Social extends CActiveRecord {
 		$criteria->compare('data',$this->data,true);
 		$criteria->compare('user',$this->user,true);
 		$criteria->compare('associationId',$this->associationId);
-		$criteria->compare('private',$this->private);
+		$criteria->compare('visibility',$this->private);
 		$criteria->compare('timestamp',$this->timestamp);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
 

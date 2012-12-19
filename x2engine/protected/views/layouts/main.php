@@ -201,7 +201,7 @@ if($isGuest) {
             if($permission)
                 $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key) && (!isset($_GET['static']) || $_GET['static']!='true'))? true : null);
 		} else {
-			$page=DocChild::model()->findByAttributes(array('title'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
+			$page=DocChild::model()->findByAttributes(array('name'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
 			if(isset($page)){
 				$id=$page->id;
 				$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/docs/'.$id.'?static=true'),'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/docs/'.$id.'?static=true'?true:null);
@@ -357,6 +357,52 @@ $userMenu = array(
 </div>
 <!--<div id="footer-push"></div>-->
 <!--</div>-->
+
+<div style="font-family:monospace, 'Courier New';">
+<?php
+	// if(!empty($GLOBALS['modelDebug']))
+		// foreach($GLOBALS['modelDebug'] as $modelName=>$calls) {
+			// echo "<u>$modelName</u><br>";
+			// foreach($calls as $x) {
+				
+				// foreach($x as $y) {
+					// if(isset($y['file'],$y['line'],$y['function'])) {
+						// $file = preg_replace('/^.+x2engine/','',$y['file']).' <b>('.$y['line'].')</b>';
+						
+						// $file .= '<span style="color:#aaa">';
+						// $file .= substr('---------------------------------------------------------------------------------------------------',0,110-strlen($file));
+						// echo $file.'</span> <em>'.$y['function'].'()</em><br>';
+					// }
+				// }
+				// echo '<br>';
+			// }
+		// }
+	
+	// if(!empty($GLOBALS['modelCount'])) {
+	
+		// $total = 0;
+		// foreach($GLOBALS['modelCount'] as $modelname=>$ids) {
+			// $total += count($ids);
+			// $values = array_count_values($ids);
+			
+			// foreach($values as $id=>$count) {
+				// if($id<0) $id='null';
+				// echo "$modelname-$id ... $count<br>";
+				
+			// }
+		// }
+		// echo "<br>total: $total";
+	// }
+	
+	// echo $GLOBALS['accessCount'];
+	// if(isset( $GLOBALS['access'] ))
+		// var_dump( $GLOBALS['access'] );
+	// var_dump( Yii::app()->db->getStats());
+
+?>
+</div>
+
+
 <div id="footer">
 <div class="width-constraint">
 	<div id="footer-logos">
@@ -364,7 +410,7 @@ $userMenu = array(
 			<?php echo CHtml::image($themeUrl.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
 			<?php echo CHtml::link(
 				CHtml::image($themeUrl.'/images/x2footer.png','', array('id'=>'x2crm-logo')),
-				array('site/page','view'=>'about')
+				array('/site/page','view'=>'about')
 			); ?>
 			
 	</div>
@@ -399,14 +445,7 @@ $userMenu = array(
 	}
 	});
 	");
-	 ?>
-	 <?php
-	// function convert($size) {
-	   // $unit=array('b','kb','mb','gb','tb','pb');
-	   // return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-	// }
-	// echo 'Memory Usage: '.convert(memory_get_peak_usage(true));
-	
+
 	$peak_memory = memory_get_peak_usage(true);
 	$memory_units = array('b','kb','mb','gb','tb','pb');
 	echo round($peak_memory/pow(1024,($memory_log=floor(log($peak_memory,1024)))),2).' '.$memory_units[$memory_log];

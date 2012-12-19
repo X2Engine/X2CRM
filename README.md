@@ -1,19 +1,27 @@
-# X2CRM 2.2.1 Changelog #
-11/15/2012
+# X2CRM 2.5 Changelog #
+12/18/2012
 
-* Numerous improvements to Contacts importer
-	* Improved UI
-	* Better reliability
-* WYSIWYG editor now lets you insert record attributes in emails/campaign templates
-	* Fixed several bugs with editor
-* Improvements to Service module
-	* You can now specify the from address for Service module emails
-	* Filter by Status
-	* Numerous bug fixes
-* Numerous other bug fixes
+* New web tracking system (Professional edition)
+	* Track using a simple embed code on your website
+	* Real time notifications when a contact visits the website
+* New large Google Maps page with heatmap and tag-based filtering
+* You can now hide tags
+* Numerous bug fixes
+* Duplicate checker - major usability improvements
+* New web form designer (Professional edition)
+	* Contact lead capture
+	* Service request form
+	* Save multiple forms
+	* Fully customizable fields
+* Charts and reports - UI enhancements
+* Notifications - improved behavior and stability
+* Translations - new Dutch and Spanish packs
+* Much more complete sample data
+* Improved page load time on most pages
+* New login page
 
 # Introduction #
-Welcome to  X2CRM v2.2.1!
+Welcome to  X2CRM v2.5!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

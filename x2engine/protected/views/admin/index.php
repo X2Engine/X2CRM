@@ -120,6 +120,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),'addCriteria'); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Service Case Web Form'),array('services/createWebForm')); ?><br><?php echo Yii::t('admin','Create a public form to receive new service cases.');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Set Service Case Distribution'),'setServiceRouting'); ?><br><?php echo Yii::t('admin','Change how service cases are distributed.');?></div>
 	</div>
 </div>
 <div class="form">
@@ -161,10 +162,15 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	</div><br>
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import All Data'),array('import')); ?><br><?php echo Yii::t('admin','Import from a global export file');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rollback Import'),array('rollbackImport')); ?><br><?php echo Yii::t('admin','Delete all records created by a previous import.');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','View User Changelog'),'viewChangelog'); ?><br><?php echo Yii::t('admin','View a log of everything that has been changed');?></div>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Translations'),array('translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2Contacts language packs.');?></div>
+		
 		<!--<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Translate Mode'),array('index','translateMode'=>Yii::app()->session['translate']?0:1),array('class'=>Yii::app()->session['translate']?'x2-button clicked':'x2-button')); ?><br><?php echo Yii::t('admin','Enable translation tool on all pages.');?></div>-->
 	</div>
+    <div class="row">
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Translations'),array('translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2Contacts language packs.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tag Manager'),array('manageTags')); ?><br><?php echo Yii::t('admin','View a list of all used tags with options for deletion.');?></div>
+    </div>
 </div>
 <div class="form">
 	<div class="row">

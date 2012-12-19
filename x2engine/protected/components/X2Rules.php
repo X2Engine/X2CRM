@@ -64,6 +64,7 @@ class X2Rules {
 			Record - edit								model type, model attributes, user									record, user
 			Record - create action						model type, model attributes, user									record, user
 			Record - complete action					model type, model attributes, user									record, user
+			Record - create								model type, model attributes, user									record, user
 			Record - delete								model type, model attributes, user									record, user
 			Record - inactive (no edits, actions, etc)	model type, model attributes, user, duration						record, last activity, user
 								
@@ -75,8 +76,33 @@ class X2Rules {
 
 			Generic action - complete							
 			Generic action - uncomplete							
+			
+			Weblead										model type, lead source, model attributes							record, lead source
+			Web activity								model attributes, campaign, 
 
-		Actions:
+		Conditions *
+		
+			Record attribute (=, <, >, <>, in list, not in list, empty, not empty, contains)
+			Linked record attribute (eg. a contact's account has > 30 employees)
+			Current user
+			Current time (day of week, hours, etc)
+			Current time in record's timezone
+			Is user X logged in
+			Workflow status (in workflow X, started stage Y, completed Y, completed all)
+			
+			* Any condition parameter can be a variable from the record
+				Example 1: test if current user = {assignedTo} (if the user initiating the event is the owner of the record)
+				Example 2: test if current_time > {dueDate} on an action (if the action is overdue)
+				Example 3: test if user {assignedTo} is logged in (if the record's owner is logged in)
+				Example 4: 
+			* Conditions can be chained with nested AND/OR
+				Example: if (account="Black Mesa" OR city="17") AND lastName="freeman"
+			
+			
+			
+			
+		Actions
+		
 		
 			Action										Parameters (can use response variables)
 			-------------------------------------------------------------------------------------------------------------------------------------------
@@ -96,8 +122,13 @@ class X2Rules {
 				
 				
 			Create Record								type, all attributes
-				
-				
+			
+			Create/Remove Tags							tags
+			
+			Request URL (for APIs)						url, GET and POST variables
+
+		
+		
 		Value calculation:
 		
 			Example: when 

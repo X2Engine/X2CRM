@@ -182,7 +182,7 @@
 	</div>
 	<div class="row buttons">
 		<?php echo CHtml::ajaxSubmitButton(Yii::t('app','Save'),
-			array('/actions/PublisherCreate'),
+			array('/actions/publisherCreate'),
 			array(
 				'beforeSend'=>"function() {
 					if($('#Actions_actionDescription').val() == '') {

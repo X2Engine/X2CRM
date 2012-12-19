@@ -58,8 +58,8 @@ return array (
 'Documents'=>'Documentos',
 'Manage Docs'=>'Administrar Documentos',
 'Docs'=>'Documentos',
-'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Por favor, seleccione el que los usuarios pueden editar el documento. Use las teclas Control + clic para seleccionar o anular la selección de los usuarios individuales.',
-'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Por favor, haga clic derecho en el siguiente enlace y seleccione "Guardar como" para descargar el documento! Clic en la izquierda se abre el documento en un modo de imprimir.',
+'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Por favor, seleccione los usuarios que pueden editar el documento. Use las teclas Control + clic para seleccionar o anular la selección de los usuarios individuales.',
+'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Por favor, haga clic derecho en el siguiente enlace y seleccione "Guardar como" para descargar el documento! Clic izquierdo  abre el documento en un modo de impresión.',
 'Uploaded Documents'=>'Documentos Subidos',
 'Custom Message'=>'Mensaje Personalizado',
 

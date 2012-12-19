@@ -41,15 +41,15 @@
 return array (
 // Product Attributes
 'ID'=>'ID',
-'Name'=>'Nombre',
 'Type'=>'Tipo',
 'Price'=>'Precio',
 'Inventory'=>'Inventario',
 'Currency'=>'Moneda',
 'Status'=>'Estado',
 'Description'=>'Descripción',
-'Create Date'=>'Fecha de Creación',
-'Tools'=>'Instrumentos',
+'Create Date'=>'Fecha de Creacion',
+'Tools'=>'Herramientas',
+'Name'=>'Nombre',
 'Basic Information'=>'Información Básica',
 'Product Information'=>'Información Sobre el Producto',
 'USD'=>'USD',
@@ -64,17 +64,18 @@ return array (
 'Manage'=>'Gestionar',
 
 // Product Titles
-'Products'=>'Productos',
 'Product'=>'Producto',
 'Product:'=>'Producto:',
 'Update Product: {name}'=>'Actualización de Producto: {name}',
 
 'Adjustments'=>'Ajustes',
 // Product Table
-'Line Item'=>'De Partidas',
+'Line Item'=>'Líneas de Partidas',
 'Unit Price'=>'Precio Unitario',
 'Quantity'=>'Cantidad',
 'Adjustment'=>'Ajuste',
 
 // Misc Text
+'Description'=>'Descripción',
+'Type'=>'Tipo',
 );

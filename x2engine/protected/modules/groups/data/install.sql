@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS `x2_group_to_user`;
 CREATE TABLE x2_groups (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250)
-) COLLATE = utf8_general_ci;
+) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE x2_group_to_user (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,

@@ -70,8 +70,9 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 		$feed->data = Yii::t('app','Enter text here...');
 		echo $form->textArea($feed,'data',array('style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		echo $form->dropDownList($feed,'associationId',$users);
-        $feed->private=1;
-		echo $form->dropDownList($feed,'private',array(0=>Yii::t('actions','Public'),1=>Yii::t('actions','Private')));
+        $feed->visibility=1;
+		echo $form->dropDownList($feed,'visibility',array(1=>Yii::t('actions','Public'),0=>Yii::t('actions','Private')));
+        echo $form->dropDownList($feed,'subtype',json_decode(Dropdowns::model()->findByPk(14)->options,true));
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
 		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();"));
 		?>
@@ -83,9 +84,20 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 <div id="attachments" style="display:none;">
 <?php $this->widget('Attachments',array('associationType'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
 </div>
-<?php $this->widget('zii.widgets.CListView', array(
+<?php 
+$allFlag=(isset($_GET['filter']) && $_GET['filter']=='all') || !isset($_GET['filter']);
+$publicFlag=isset($_GET['filter']) && $_GET['filter']=='public';
+$privateFlag=isset($_GET['filter']) && $_GET['filter']=='private';
+$subtypeFlag=isset($_GET['subtype'])?true:false;
+$subtype=$subtypeFlag?$_GET['subtype']:'all';
+$socialTabs = array(
+			'all'=>$allFlag?'All':CHtml::link('All','index?filter=all&subtype='.$subtype),
+			'public'=>$publicFlag?'Public':CHtml::link('Public','index?filter=public&subtype='.$subtype),
+			'private'=>$privateFlag?'Private':CHtml::link('Private','index?filter=private&subtype='.$subtype),
+		);
+$this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,
 	'itemView'=>'../social/_viewFull', 
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
-	'template'=>'{summary}{sorter}{items}{pager}'
+	'template'=>'<div class="social-tabs" style="float:left;">'.implode(' | ',array_values($socialTabs)).' || '.implode(' | ',array_values($subtypes)).'</div> {summary}{items}{pager}',
 )); ?>

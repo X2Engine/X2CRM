@@ -236,11 +236,13 @@ class SearchController extends x2base {
                 $criteria = new CDbCriteria();
                 $fields = Fields::model()->findAllByAttributes(array('modelName' => $type, 'searchable' => 1));
                 $temp = array();
+                $fieldNames=array();
                 if (count($fields) < 1) {
                     $criteria->compare('id', '<0', true, 'AND');
                 }
                 foreach ($fields as $field) {
                     $temp[] = $field->id;
+                    $fieldNames[]=$field->fieldName;
                     $criteria->compare($field->fieldName, $term, true, "OR");
                     if ($field->type == 'phone') {
                         $tempPhone = preg_replace('/\D/', '', $term);
@@ -250,7 +252,18 @@ class SearchController extends x2base {
                         }
                     }
                 }
+                if(Yii::app()->user->getName()!='admin' && CActiveRecord::model($type)->hasAttribute('visibility') && CActiveRecord::model($type)->hasAttribute('assignedTo')){
+                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                    /* x2temp */
+                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                    if(!empty($groupLinks))
+                        $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
+                    $condition .= 'OR (visibility=2 AND assignedTo IN 
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                    $criteria->addCondition($condition);
+                }
                 $arr = CActiveRecord::model($type)->findAll($criteria);
                 $comparisons[$type] = $temp;
                 $other[$type] = $arr;

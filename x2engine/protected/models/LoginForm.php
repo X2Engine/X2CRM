@@ -89,32 +89,41 @@ class LoginForm extends CFormModel {
      * @param string $attribute Attribute name
      * @param array $params validation parameters
      */
-    public function authenticate($attribute, $params) {
-	if (!$this->hasErrors()) {
-	    $this->_identity = new UserIdentity($this->username, $this->password);
-	    if (!$this->_identity->authenticate())
-		$this->addError('password', Yii::t('app', 'Incorrect username or password.'));
+	public function authenticate($attribute, $params) {
+		if (!$this->hasErrors()) {
+			$this->_identity = new UserIdentity($this->username, $this->password);
+			if (!$this->_identity->authenticate())
+			$this->addError('password', Yii::t('app', 'Incorrect username or password.'));
+		}
 	}
-    }
 
-    /**
-     * Logs in the user using the given username and password in the model.
-     * 
-     * @param boolean $google Whether or not Google is being used for the login
-     * @return boolean whether login is successful
-     */
+	/**
+	 * Logs in the user using the given username and password in the model.
+	 * 
+	 * @param boolean $google Whether or not Google is being used for the login
+	 * @return boolean whether login is successful
+	 */
     public function login($google = false) {
-	if ($this->_identity === null) {
-	    $this->_identity = new UserIdentity($this->username, $this->password);
-	    $this->_identity->authenticate($google);
+		if($this->_identity === null) {
+			$this->_identity = new UserIdentity($this->username, $this->password);
+			$this->_identity->authenticate($google);
+		}
+		if($this->_identity->errorCode === UserIdentity::ERROR_NONE) {
+			$duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days
+			Yii::app()->user->login($this->_identity, $duration);
+
+			// update lastLogin time
+			$user = User::model()->findByPk(Yii::app()->user->getId());
+			$user->lastLogin = $user->login;
+			$user->login = time();
+			$user->update(array('lastLogin','login'));
+			
+			Yii::app()->session['loginTime'] = time();
+			
+			return true;
+		}
+		
+		return false;
 	}
-	if ($this->_identity->errorCode === UserIdentity::ERROR_NONE) {
-	    $duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days
-	    Yii::app()->user->login($this->_identity, $duration);
-	    return true;
-	}
-	else
-	    return false;
-    }
 
 }

@@ -44,6 +44,7 @@ CREATE TABLE `x2_contacts` (
 	timezone				VARCHAR(250)	NULL,
 	doNotCall				TINYINT			DEFAULT 0,
 	doNotEmail				TINYINT			DEFAULT 0,
+	trackingKey				VARCHAR(32),
 	dupeCheck				INT			DEFAULT 0,
 	INDEX (email),
 	INDEX (assignedTo)
@@ -104,4 +105,5 @@ VALUES
 ("Contacts",		"doNotCall",			"Do Not Call",			0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"timezone",             "Timezone",             0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"dupeCheck",			"Duplicate Check",		0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
-("Contacts",		"doNotEmail",			"Do Not Email",			0,		0,	"boolean",		0,			0,		NULL,			0,		0,			"");
+("Contacts",		"doNotEmail",			"Do Not Email",			0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
+("Contacts",		"trackingKey",			"Web Tracking Key",		0,		0,	"varchar",		0,			0,		NULL,			0,		0,			"");

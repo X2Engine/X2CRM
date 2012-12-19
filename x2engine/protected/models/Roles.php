@@ -46,30 +46,26 @@
  * @property string $name
  * @property string $users
  */
-class Roles extends CActiveRecord
-{
+class Roles extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Roles the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'x2_roles';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -85,19 +81,16 @@ class Roles extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-		return array(
-		);
+		return array();
 	}
 
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'name' => 'Name',
@@ -109,8 +102,7 @@ class Roles extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -123,5 +115,41 @@ class Roles extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	/* Looks up roles held by the specified user.
+	 * Uses cache to lookup/store roles.
+	 * 
+	 * @param Integer $userId user to look up roles for
+	 * @param Boolean $cache whether to use cache
+	 * @return Array array of roleIds
+	 */
+	public static function getUserRoles($userId,$cache=true) {
+		// check the app cache for user's roles
+		if($cache === true && ($userRoles = Yii::app()->cache->get('user_roles')) !== false) {
+			if(isset($userRoles[$userId]))
+				return $userRoles[$userId];
+		} else {
+			$userRoles = array();
+		}
+
+		$userRoles = Yii::app()->db->createCommand() // lookup the user's roles
+			->select('roleId')
+			->from('x2_role_to_user')
+			->where('type="user" AND userId='.$userId)
+			->queryColumn();
+
+		$groupRoles = Yii::app()->db->createCommand()	// lookup roles of all the user's groups
+			->select('x2_role_to_user.roleId')
+			->from('x2_group_to_user')
+			->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId='.$userId.' AND type="group"')
+			->queryColumn();
+
+		$userRoles[$userId] = array_unique($userRoles + $groupRoles);  // combine all the roles, remove duplicates
+
+		if($cache === true)
+			Yii::app()->cache->set('user_roles',$userRoles,259200); // cache user groups for 3 days
+
+		return $userRoles[$userId];
 	}
 }

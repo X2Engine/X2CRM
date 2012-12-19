@@ -216,7 +216,7 @@ var record=0;
                 comment:comment,
                 routing:routing
             },
-            complete:function(data){
+            success:function(data){
                 if(data[0]!=2){
                     $('#import-status').show();
                     var str="Import setup completed successfully...<br />Beginning import.";
@@ -227,7 +227,11 @@ var record=0;
                     $('#prep-status-box').css({'color':'red'});
                     $('#prep-status-box').html(str);
                 }
-                
+            },
+            error:function(){
+                var str="Import preparation failed.  Aborting import.";
+                $('#prep-status-box').css({'color':'red'});
+                $('#prep-status-box').html(str);
             }
         });
     }

@@ -46,10 +46,11 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (7,	'Quote Status',		'{"Draft":"Draft","Presented":"Presented","Issued":"Issued","Won":"Won"}'),
 (8,	'Campaign Type',	'{"Email":"Email","Call List":"Call List","Physical Mail":"Physical Mail"}'),
 (9, 'Case Impact', 		'{"1 - Severe":"1 - Severe"," 2 - Critical":" 2 - Critical","3 - Moderate":"3 - Moderate","4 - Minor":"4 - Minor"}'),
-(10, 'Case Status', 	'{"New":"New","WIP":"WIP","Waiting for response":"Waiting for response","Needs more info":"Needs more info","Escalated":"Escalated","Reopened":"Reopened","Work around provided, waiting for fix":"Work around provided, waiting for fix","Program Manager investigation":"Program Manager investigation","Closed \\u2013 Resolved":"Closed \\u2013 Resolved","Closed - No Response":"Closed - No Response"}'),
+(10, 'Case Status', 	'{"New":"New","WIP":"WIP","Waiting for response":"Waiting for response","Needs more info":"Needs more info","Escalated":"Escalated","Reopened":"Reopened","Work around provided, waiting for fix":"Work around provided, waiting for fix","Program Manager investigation":"Program Manager investigation","Closed - Resolved":"Closed - Resolved","Closed - No Response":"Closed - No Response"}'),
 (11, 'Case Main Issue', '{"Hardware":"Hardware","Software":"Software","Internet Connection":"Internet Connection","LMS":"LMS","General Request":"General Request"}'),
 (12, 'Case Sub Issue', 	'{"Laptop":"Laptop","Desktop":"Desktop","WiFi":"WiFi","Loss Connection":"Loss Connection","Windows OS":"Windows OS","MS Office":"MS Office","Class Access":"Class Access","Lost Password":"Lost Password","Download\\/Upload":"Download\\/Upload","Other":"Other"}'),
-(13, 'Case Origin', 		'{"Email":"Email","Web":"Web","Phone":"Phone"}');
+(13, 'Case Origin', 	'{"Email":"Email","Web":"Web","Phone":"Phone"}'),
+(14, 'Social Subtypes',  '{"Social Post":"Social Post","Link":"Link","Announcement":"Announcement","Product Info":"Product Info","Competitive Info":"Competitive Info","Confidential":"Confidential"}');
 /*&*/
 ALTER TABLE x2_profile CHANGE `language` language varchar(40) DEFAULT '{language}', CHANGE `timeZone` timeZone varchar(100) DEFAULT '{timezone}';
 /*&*/

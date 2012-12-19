@@ -150,8 +150,22 @@ class ContactsController extends x2base {
 			if ($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)) {
 				$criteria = new CDbCriteria();
 				$criteria->compare('CONCAT(firstName," ",lastName)', $contact->firstName . " " . $contact->lastName, false, "OR");
-				$criteria->compare('email', $contact->email, false, "OR");
+				if(!empty($contact->email))
+                    $criteria->compare('email', $contact->email, false, "OR");
 				$criteria->compare('id', "<>" . $contact->id, false, "AND");
+                if(Yii::app()->user->getName()!='admin'){
+                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                    /* x2temp */
+                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                    if(!empty($groupLinks))
+                        $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+                    $condition .= 'OR (visibility=2 AND assignedTo IN 
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                    $criteria->addCondition($condition);
+                }
+
 				$duplicates = Contacts::model()->findAll($criteria);
 				if (count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
@@ -242,7 +256,7 @@ class ContactsController extends x2base {
 	}
 
 	public function actionGetItems() {
-		$sql = 'SELECT id, city, state, country, (SELECT fullname from x2_profile WHERE username=assignedTo) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
+		$sql = 'SELECT id, city, state, country, email, IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), (SELECT fullname from x2_profile WHERE username=assignedTo) ) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
 		$command = Yii::app()->db->createCommand($sql);  
 		$qterm = $_GET['term'] . '%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -252,19 +266,19 @@ class ContactsController extends x2base {
 	}
 
 	public function actionGetLists(){
-        if(Yii::app()->user->getName()!='admin'){
-            $condition = 'AND (visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-                /* x2temp */
-                $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                if(!empty($groupLinks))
-                    $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+        if(Yii::app()->user->getName()!='admin') {
+			$condition = ' AND (visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+			/* x2temp */
+			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			if(!empty($groupLinks))
+				$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-                $condition .= 'OR (visibility=2 AND assignedTo IN 
-                    (SELECT username FROM x2_group_to_user WHERE groupId IN
-                        (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().'))))';
-        }else{
-            $condition="";
-        }
+			$condition .= ' OR (visibility=2 AND assignedTo IN 
+				(SELECT username FROM x2_group_to_user WHERE groupId IN
+				(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().'))))';
+		} else {
+			$condition='';
+		}
 		$qterm = isset($_GET['term'])? $_GET['term'].'%' : '';
 		$result = Yii::app()->db->createCommand()
 			->select('id,name as value')
@@ -275,6 +289,156 @@ class ContactsController extends x2base {
 			->queryAll();
 		echo CJSON::encode($result);
 	}
+    
+    public function actionGoogleMaps($contactId=null,$params=array(),$loadMap=null){
+        if(isset($_POST['contactId']))
+            $contactId=$_POST['contactId'];
+        if(isset($_POST['params'])){
+            $params=$_POST['params'];
+        }
+        if(!empty($loadMap)){
+            $map=Maps::model()->findByPk($loadMap);
+            if(isset($map)){
+                $contactId=$map->contactId;
+                $params=json_decode($map->params,true);
+                
+            }
+        }
+        $conditions="TRUE";
+        $parameters=array();
+        $tagCount=0;
+        $tagFlag=false;
+        foreach($params as $field=>$value){
+            if($field!='tags' && $value!=''){
+                $conditions.=" AND x2_contacts.$field=:$field";
+                $parameters[":$field"]=$value;
+            }elseif($value!=''){
+                $tagFlag=true;
+                if(!is_array($value)){
+                    $value=explode(",",$value);
+                }
+                $tags=$value;
+                $tagCount=count($value);
+                $tagStr="(";
+                for($i=0;$i<count($value);$i++){
+                    $tagStr.=':tag'.$i.', ';
+                    $parameters[":tag$i"]=$value[$i];
+                }
+                $tagStr=substr($tagStr,0,strlen($tagStr)-2).")";
+                $conditions.=" AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
+            }
+        }
+        if($tagFlag){
+            $locations=Yii::app()->db->createCommand()
+                ->select('x2_locations.*')
+                ->from('x2_locations')
+                ->join('x2_contacts','x2_contacts.id=x2_locations.contactId')
+                ->join('x2_tags','x2_tags.itemId=x2_locations.contactId')
+                ->where($conditions, $parameters)
+                ->group('x2_tags.itemId')
+                ->having('COUNT(x2_tags.itemId)>='.$tagCount)
+                ->queryAll();
+        }else{
+            $locations=Yii::app()->db->createCommand()
+                ->select('x2_locations.*')
+                ->from('x2_locations')
+                ->join('x2_contacts','x2_contacts.id=x2_locations.contactId')
+                ->where($conditions, $parameters)
+                ->queryAll();
+        }
+        $locationCodes=array();
+        
+        foreach($locations as $location){
+            if(isset($location['lat']) && isset($location['lon'])){
+                $tempArr['lat']=$location['lat'];
+                $tempArr['lng']=$location['lon'];
+                $locationCodes[]=$tempArr;
+            }
+        }
+        if(isset($contactId)){
+            $location=CActiveRecord::model('Locations')->findByAttributes(array('contactId'=>$contactId));
+            if(isset($location)){
+                $loc=array("lat"=>$location->lat,"lng"=>$location->lon);
+                $markerLoc=array("lat"=>$location->lat,"lng"=>$location->lon);
+                $markerFlag=true;
+            }elseif(count($locationCodes)>0){
+                $loc=$locationCodes[0];
+                $markerFlag="false";
+            }else{
+                $loc=array('lat'=>0,'lng'=>0);
+                $markerFlag="false";
+            }
+        }else{
+            $loc=$locationCodes[0];
+            $markerFlag="false";
+        }
+        if(isset($map)){
+            $loc['lat']=$map->centerLat;
+            $loc['lng']=$map->centerLng;
+            $zoom=$map->zoom;
+        }
+        $this->render('googleEarth', array(
+            'locations'=>json_encode($locationCodes),
+            'center'=>json_encode($loc),
+            'markerLoc'=>isset($markerLoc)?json_encode($markerLoc):json_encode($loc),
+            'markerFlag'=>$markerFlag,
+            'contactId'=>isset($contactId)?$contactId:0,
+            'assignment'=>isset($_POST['params']['assignedTo']) || isset($params['assignedTo'])?(isset($_POST['params']['assignedTo'])?$_POST['params']['assignedTo']:$params['assignedTo']):'',
+            'leadSource'=>isset($_POST['params']['leadSource'])?$_POST['params']['leadSource']:'',
+            'tags'=>(isset($_POST['params']['tags']) && isset($tags) || isset($params['tags']))?isset($tags)?$tags:$params['tags']:array(),
+            'zoom'=>isset($zoom)?$zoom:null,
+            'mapFlag'=>isset($map)?'true':'false',
+        ));
+    }
+    
+    public function actionSaveMap(){
+        if(isset($_POST['centerLat']) && isset($_POST['centerLng']) && isset($_POST['mapName'])){
+            $zoom=$_POST['zoom'];
+            $centerLat=$_POST['centerLat'];
+            $centerLng=$_POST['centerLng'];
+            $contactId=isset($_POST['contactId'])?$_POST['contactId']:'';
+            $params=isset($_POST['parameters'])?$_POST['parameters']:array();
+            $mapName=$_POST['mapName'];
+            
+            $map=new Maps;
+            $map->name=$mapName;
+            $map->owner=Yii::app()->user->getName();
+            $map->contactId=$contactId;
+            $map->zoom=$zoom;
+            $map->centerLat=$centerLat;
+            $map->centerLng=$centerLng;
+            $map->params=json_encode($params);
+            if($map->save()){
+                
+            }else{
+                
+            }
+        }
+    }
+    
+    public function actionSavedMaps(){
+        $dataProvider=new CActiveDataProvider('Maps');
+        $this->render('savedMaps',array(
+            'dataProvider'=>$dataProvider,
+        ));
+    }
+    
+    public function actionUpdateLocation($contactId, $lat, $lon){
+        $location=Locations::model()->findByAttributes(array('contactId'=>$contactId));
+        if(!isset($location)){
+            $location=new Locations;
+            $location->contactId=$contactId;
+            $location->lat=$lat;
+            $location->lon=$lon;
+            $location->save();
+        }else{
+            if($location->lat!=$lat || $location->lon!=$lon){
+                $location->lat=$lat;
+                $location->lon=$lon;
+                $location->save();
+            }
+        }
+    }
 
 	public function actionShareContact($id) {
 		$users = User::getNames();
@@ -377,35 +541,123 @@ class ContactsController extends x2base {
 			} else {
 				$model->save();
 			}
+            $action=$_POST['action'];
+            if(!is_null($action)){
+                $criteria = new CDbCriteria();
+                if(!empty($model->firstName) && !empty($model->lastName))
+                    $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
+				if(!empty($model->email))
+                    $criteria->compare('email', $model->email, false, "OR");
+				$criteria->compare('id', "<>" . $model->id, false, "AND");
+                if(Yii::app()->user->getName()!='admin'){
+                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                    /* x2temp */
+                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                    if(!empty($groupLinks))
+                        $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+                    $condition .= 'OR (visibility=2 AND assignedTo IN 
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                    $criteria->addCondition($condition);
+                }
+
+                if($action=='hideAll'){
+                    $duplicates = Contacts::model()->findAll($criteria);
+                    foreach($duplicates as $duplicate){
+                        $duplicate->dupeCheck=1;
+                        $duplicate->assignedTo='Anyone';
+                        $duplicate->visibility=0;
+                        $duplicate->save();
+                        $notif = new Notification;
+                        $notif->user = 'admin';
+                        $notif->createdBy = Yii::app()->user->getName();
+                        $notif->createDate = time();
+                        $notif->type = 'dup_discard';
+                        $notif->modelType = 'Contacts';
+                        $notif->modelId = $duplicate->id;
+                        $notif->save();
+                    }
+                }elseif($action=='deleteAll'){
+                    Contacts::model()->deleteAll($criteria);
+                }
+            }
 			echo $model->id;
 		}
 	}
 
 	public function actionDiscardNew() {
 		if(isset($_POST['id']) && isset($_POST['newId'])) {
-			$oldRecord=Contacts::model()->findByPk($_POST['id']);
-			$oldRecord->dupeCheck=1;
-			$oldRecord->assignedTo='Anyone';
-			$oldRecord->visibility=0;
-			$oldRecord->save();
-            Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
-            Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
-                            
+            $ref=$_POST['ref'];
+            $action=$_POST['action'];
+            $oldId=$_POST['id'];
+            if($ref=='create' && is_null($action)){
+                echo $_POST['id'];
+                return;
+            }elseif($ref=='create'){
+                $oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
+                if(isset($oldRecord)){
+                    Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
+                    Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
+                    if($action=='hideThis'){
+                        $oldRecord->dupeCheck=1;
+                        $oldRecord->assignedTo='Anyone';
+                        $oldRecord->visibility=0;
+                        $oldRecord->save();
+                        $notif = new Notification;
+                        $notif->user = 'admin';
+                        $notif->createdBy = Yii::app()->user->getName();
+                        $notif->createDate = time();
+                        $notif->type = 'dup_discard';
+                        $notif->modelType = 'Contacts';
+                        $notif->modelId = $oldId;
+                        $notif->save();
+                        echo $_POST['id'];
+                        return;
+                    }elseif($action=='deleteThis'){
+                        $oldRecord->delete();
+                        echo $_POST['id'];
+                        return;
+                    }
+                }
+            }else{
+                $newId=$_POST['newId'];
+                $oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
+                $newRecord=Contacts::model()->findByPk($_POST['newId']);
+                $newRecord->dupeCheck=1;
+                $newRecord->save();
+                if(is_null($action)){
+                    $newRecord->delete();
+                    echo $oldId;
+                    return;
+                }else{
+                    if(isset($oldRecord)){
+                         
+                        if($action=='hideThis'){
+                            $oldRecord->dupeCheck=1;
+                            $oldRecord->assignedTo='Anyone';
+                            $oldRecord->visibility=0;
+                            $oldRecord->save();
+                            $notif = new Notification;
+                            $notif->user = 'admin';
+                            $notif->createdBy = Yii::app()->user->getName();
+                            $notif->createDate = time();
+                            $notif->type = 'dup_discard';
+                            $notif->modelType = 'Contacts';
+                            $notif->modelId = $oldId;
+                            $notif->save();
+                        }elseif($action=='deleteThis'){
+                            Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
+                            Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
+                            Tags::model()->deleteAllByAttributes(array('type'=>'Contacts','itemId'=>$oldRecord->id));
+                            Actions::model()->deleteAllByAttributes(array('associationType'=>'Contacts','associationId'=>$oldRecord->id));
+                            $oldRecord->delete();
+                        }
+                    }
 
-			$notif = new Notification;
-			$notif->user = 'admin';
-			$notif->createdBy = Yii::app()->user->getName();
-			$notif->createDate = time();
-			$notif->type = 'dup_discard';
-			$notif->modelType = 'Contacts';
-			$notif->modelId = $_POST['id'];
-			$notif->save();
-            
-            $newRecord=Contacts::model()->findByPk($_POST['newId']);
-            $newRecord->dupeCheck=1;
-            $newRecord->save();
-
-			echo $_POST['newId'];
+                    echo $_POST['newId'];
+                }
+            }
 		}
 	}
  
@@ -425,10 +677,22 @@ class ContactsController extends x2base {
 			$model->setX2Fields($_POST['Contacts']);
 
 			$criteria = new CDbCriteria();
-			$criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
-			$criteria->compare('email', $model->email, false, "OR");
-			$criteria->compare('phone', $model->phone, false, "OR");
-			$criteria->compare('phone2', $model->phone2, false, "OR");
+            if(!empty($model->firstName) && !empty($model->lastName))
+                $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
+			if(!empty($model->email))
+                $criteria->compare('email', $model->email, false, "OR");
+            if(Yii::app()->user->getName()!='admin'){
+                $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                /* x2temp */
+                $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                if(!empty($groupLinks))
+                    $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+                $condition .= 'OR (visibility=2 AND assignedTo IN 
+                    (SELECT username FROM x2_group_to_user WHERE groupId IN
+                        (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                $criteria->addCondition($condition);
+            }
 
 			if(isset($_POST['x2ajax'])) {
 			    if($this->create($model,$oldAttributes, '1')) { // success creating account?
@@ -595,7 +859,7 @@ class ContactsController extends x2base {
 
 	// Updates a contact record
 	public function update($model, $oldAttributes, $api) {
-
+        
 		if ($api == 0)
 			parent::update($model, $oldAttributes, $api);
 		else
@@ -614,9 +878,24 @@ class ContactsController extends x2base {
 			$model->setX2Fields($_POST['Contacts']);
 			if ($model->dupeCheck != '1') {
 				$criteria = new CDbCriteria();
-				$criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
-				$criteria->compare('email', $model->email, false, "OR");
+                if(!empty($model->firstName) && !empty($model->lastName))
+                    $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
+				if(!empty($model->email))
+                    $criteria->compare('email', $model->email, false, "OR");
 				$criteria->compare('id', "<>" . $model->id, false, "AND");
+                if(Yii::app()->user->getName()!='admin'){
+                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                    /* x2temp */
+                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                    if(!empty($groupLinks))
+                        $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+                    $condition .= 'OR (visibility=2 AND assignedTo IN 
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                    $criteria->addCondition($condition);
+                }
+
 				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
 				if (count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
@@ -1321,6 +1600,16 @@ class ContactsController extends x2base {
             $sampleRecords=array();
             for($i=0;$i<5;$i++){
                 if($sampleRecord=fgetcsv($fp)){
+                    if(count($sampleRecord)>count($meta)){
+                        while ("" === end($sampleRecord)) {
+                            array_pop($sampleRecord);
+                        }
+                    }
+                    if(count($sampleRecord)<count($meta)){
+                        while(count($sampleRecord)!=count($meta)){
+                            array_push($sampleRecord,"");
+                        }
+                    }
                     $sampleRecord=array_combine($meta,$sampleRecord);
                     $sampleRecords[]=$sampleRecord;
                 }
@@ -1445,12 +1734,14 @@ class ContactsController extends x2base {
             $fp = fopen('contacts.csv', 'r+');
             fseek($fp, $_SESSION['offset']);
             for($i=0;$i<$count;$i++){
-                if (($arr = fgetcsv($fp)) !== false){
+                $arr = fgetcsv($fp);
+                if ($arr !== false && !is_null($arr)){
                     if(count($arr)>count($metaData)){
                         while ("" === end($arr)) {
                             array_pop($arr);
                         }
-                    }elseif(count($arr)<count($metaData)){
+                    }
+                    if(count($arr)<count($metaData)){
                         while(count($arr)!=count($metaData)){
                             array_push($arr,"");
                         }
@@ -1529,7 +1820,7 @@ class ContactsController extends x2base {
                             $_POST[$importMap[$attribute]]=$model->$importMap[$attribute];
                         }
                     }
-                    if(!isset($model->visibility))
+                    if(empty($model->visibility) && ($model->visibility!==0 || $model->visibility!=="0"))
                         $model->visibility=1;
                     if(empty($model->createDate)){
                         $model->createDate=time();
@@ -1652,7 +1943,7 @@ class ContactsController extends x2base {
 		foreach ($contacts as $contact) {
 			$list[] = $contact->attributes;
 		}
-		$file = Yii::getPathOfAlias('application').'/file.csv';
+		$file = 'file.csv';
 		$fp = fopen($file, 'w+');
 
 		foreach ($list as $fields) {
@@ -1670,7 +1961,7 @@ class ContactsController extends x2base {
 	 */
 	public function loadModel($id) {
 		$model = CActiveRecord::model('Contacts')->findByPk((int) $id);
-		if ($model === null)
+		if($model === null)
 			throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
 		return $model;
 	}
@@ -1698,26 +1989,27 @@ class ContactsController extends x2base {
 
 	public function actionSubscribe() {
 		if (isset($_POST['ContactId']) && isset($_POST['Checked'])) {
-			$contact_id = $_POST['ContactId'];
+			$id = $_POST['ContactId'];
+
 			$checked = json_decode($_POST['Checked']);
 
 			if ($checked) { // user wants to subscribe to this contact
 				$result = Yii::app()->db->createCommand()
 						->select()
 						->from('x2_subscribe_contacts')
-						->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $contact_id, 'user_id' => Yii::app()->user->id))
+						->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $id, 'user_id' => Yii::app()->user->id))
 						->queryAll();
 				if (empty($result)) { // ensure user isn't already subscribed to this contact
-					Yii::app()->db->createCommand()->insert('x2_subscribe_contacts', array('contact_id' => $contact_id, 'user_id' => Yii::app()->user->id));
+					Yii::app()->db->createCommand()->insert('x2_subscribe_contacts', array('contact_id' => $id, 'user_id' => Yii::app()->user->id));
 				}
 			} else { // user wants to unsubscribe to this contact
 				$result = Yii::app()->db->createCommand()
 						->select()
 						->from('x2_subscribe_contacts')
-						->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $contact_id, 'user_id' => Yii::app()->user->id))
+						->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $id, 'user_id' => Yii::app()->user->id))
 						->queryAll();
 				if (!empty($result)) { // ensure user is subscribed before unsubscribing
-					Yii::app()->db->createCommand()->delete('x2_subscribe_contacts', array('contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $contact_id, ':user_id' => Yii::app()->user->id));
+					Yii::app()->db->createCommand()->delete('x2_subscribe_contacts', array('contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $id, ':user_id' => Yii::app()->user->id));
 				}
 			}
 		}
@@ -1750,6 +2042,12 @@ class ContactsController extends x2base {
 	
 	
 	public function actionWeblead() {
+	
+		if(file_exists(__DIR__ . '/pro/actionWeblead.php')) {
+			include(__DIR__ . '/pro/actionWeblead.php');
+			return;
+		}
+		
 		if (isset($_POST['Contacts'])) {
 			$model = new Contacts;
 			$oldAttributes = $model->getAttributes();
@@ -1838,6 +2136,6 @@ class ContactsController extends x2base {
 			$_GET = preg_replace('/[^a-zA-Z0-9#,]/', '', $_GET);
 	
 			$this->renderPartial('webleadForm', array('type'=>'weblead'));
-		}
+		}	
 	}
 }

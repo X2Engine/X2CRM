@@ -38,7 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerCss('campaignContentCss',"#Campaign_content_inputBox {min-height:300px;}");
+Yii::app()->clientScript->registerCss('campaignContentCss','
+#Campaign_content_inputBox {min-height:300px;}
+#Campaign_content_field {float:none;}
+#Campaign_content_field .formInputBox {float:none;width:auto !important;margin-left:80px;}
+#Campaign_content_field .formInputBox iframe {width:100%;background:#fff;border:0;}
+');
+
 $this->pageTitle = $model->name; 
 
 $authParams['assignedTo']=$model->createdBy;
@@ -52,13 +58,14 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
     array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 ),$authParams);
+
 ?>
 <div id="main-column" class="half-width">
 <div class="record-title">
 <h2><?php echo Yii::t('marketing', 'Campaign'); ?>: <b><?php echo $model->name; ?></b>
 
-<?php if (Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
-	<a class="x2-button" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+<?php if(Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
+	<a class="x2-button right" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
 <?php } ?>
 
 </h2>
@@ -69,7 +76,82 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 }
 ?>
 
-<?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'Campaign')); ?>
+<?php
+// var_dump($model->attributes);
+$this->renderPartial('application.components.views._detailView',array(
+	'model'=>$model,
+	'modelName'=>'Campaign',
+	'specialFields'=>array(
+		'content'=>'<iframe src="'.$this->createUrl('/marketing/viewContent/'.$model->id).'" id="docIframe" frameBorder="0" height="400" width="100%" style="background:#fff;"></iframe>'
+	)
+
+)); ?>
+<div style="overflow: auto;">
+<?php
+if(!$model->complete && $model->type=='Email') {
+	if($model->launchDate == 0) {
+		echo CHtml::beginForm(array('launch', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('marketing','Launch Now'),
+			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::Button(
+			Yii::t('marketing', 'Send Test Email'),
+			array(
+				'id'=>'test-email-button',
+				'class'=>'x2-button left',
+				'onclick'=>'toggleEmailForm(); return false;'
+			)
+		);
+	} elseif($model->active) {
+		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('app','Stop'),
+			array('class'=>'x2-button left urgent','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::beginForm(array('complete', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('marketing','Complete'),
+			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+	} else {	//active == 0
+		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('app','Resume'),
+			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::beginForm(array('complete', 'id'=>$model->id));
+		echo CHtml::submitButton(
+			Yii::t('marketing','Complete'),
+			array('class'=>'x2-button left','style'=>'margin-left:0;'));
+		echo CHtml::endForm();
+		echo CHtml::Button(
+			Yii::t('marketing', 'Send Test Email'),
+			array(
+				'id'=>'test-email-button',
+				'class'=>'x2-button left',
+				'onclick'=>'toggleEmailForm(); return false;'
+			)
+		);
+	}
+}
+?>
+</div><br>
+<?php
+$this->widget('InlineEmailForm',
+	array(
+		'attributes'=>array(
+			//'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
+			'subject'=>$model->subject,
+			'message'=>$model->content,
+			// 'redirect'=>'contacts/'.$model->id,
+			'modelName'=>'Campaign',
+			'modelId'=>$model->id,
+		),
+		'startHidden'=>true,
+	)
+);
+?>
 
 <h2><?php echo Yii::t('app','Attachments'); ?></h2>
 
@@ -93,78 +175,8 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 	</div>
 </div>
 </div>
-
-<div style="overflow: auto;">
-<?php
-if ($model->complete != 1 && $model->type=='Email') {
-	if ($model->launchDate == 0) {
-		echo CHtml::beginForm(array('launch', 'id'=>$model->id));
-		echo CHtml::submitButton(
-			Yii::t('marketing','Launch Now'),
-			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
-		echo CHtml::endForm();
-		echo CHtml::Button(
-			Yii::t('marketing', 'Send Test Email'),
-			array(
-				'id'=>'test-email-button',
-				'class'=>'x2-button left',
-				'onclick'=>'toggleEmailForm(); return false;'
-			)
-		);
-	} else if ($model->active == 1) {
-		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
-		echo CHtml::submitButton(
-			Yii::t('app','Stop'),
-			array('class'=>'x2-button left urgent','style'=>'margin-left:0;'));
-		echo CHtml::endForm();
-		echo CHtml::beginForm(array('complete', 'id'=>$model->id));
-		echo CHtml::submitButton(
-			Yii::t('marketing','Complete'),
-			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
-		echo CHtml::endForm();
-	} else {  //active == 0
-		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
-		echo CHtml::submitButton(
-			Yii::t('app','Resume'),
-			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
-		echo CHtml::endForm();
-		echo CHtml::beginForm(array('complete', 'id'=>$model->id));
-		echo CHtml::submitButton(
-			Yii::t('marketing','Complete'),
-			array('class'=>'x2-button left','style'=>'margin-left:0;'));
-		echo CHtml::endForm();
-		echo CHtml::Button(
-			Yii::t('marketing', 'Send Test Email'),
-			array(
-				'id'=>'test-email-button',
-				'class'=>'x2-button left',
-				'onclick'=>'toggleEmailForm(); return false;'
-			)
-		);
-	}
-
-}?>
-</div>
-
-<div>
-<?php
-$this->widget('InlineEmailForm',
-	array(
-		'attributes'=>array(
-			//'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
-			'subject'=>$model->subject,
-			'message'=>$model->content,
-			// 'redirect'=>'contacts/'.$model->id,
-			'modelName'=>'Campaign',
-			'modelId'=>$model->id,
-		),
-		'startHidden'=>true,
-	)
-);
-?>
-</div>
-
-<?php if ($model->launchDate && $model->active && !$model->complete && $model->type == 'Email') { ?>
+<?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Campaign')); ?>
+<?php if($model->launchDate && $model->active && !$model->complete && $model->type == 'Email') { ?>
 <div id="mailer-status" class="wide form" style="max-height: 150px; margin-top:13px;">
 </div>
 <?php 
@@ -219,7 +231,7 @@ if(isset($contactList)) {
 			'value'=>'$data["address"]." ".$data["address2"]." ".$data["city"]." ".$data["state"]." ".$data["zipcode"]." ".$data["country"]'
 		),
 	);
-	if ($model->type == 'Email' && ($contactList->type == 'campaign')) {
+	if($model->type == 'Email' && ($contactList->type == 'campaign')) {
 		$displayColumns = array_merge($displayColumns, array(
 			array(
 				'header'=>Yii::t('marketing','Sent') .': ' . $contactList->statusCount('sent'),
@@ -276,13 +288,7 @@ if(isset($contactList)) {
 }
 ?>
 </div>
-<div style="margin-top: 23px;">
-<?php
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Campaign'));
 
-
-?>
-</div>
 </div>
 <div class="history half-width">
 <?php

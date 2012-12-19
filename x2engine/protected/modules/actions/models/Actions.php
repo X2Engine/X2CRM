@@ -143,6 +143,12 @@ class Actions extends X2Model {
 		return CHtml::link($text,array($this->viewRoute.'/'.$this->owner->id));
 	}
 	
+	public function getAssociationLink() {
+		$model = Yii::app()->controller->getAssociationModel($this->associationType, $this->associationId);
+		if($model !== null)
+			return $model->getLink();
+		return false;
+	}
 	
 	public static function parseStatus($dueDate) {
 

@@ -48,6 +48,13 @@ function getStageMembers(stage) {
 		success: function(response) {
 			if(response!='')
 				$('#workflow-gridview').html(response);
+            $.ajax({
+                url: '" . CHtml::normalizeUrl(array('/workflow/workflow/getStageValue')) . "',
+                data: 'workflowId=".$model->id."&stageId='+stage+'"."&user=".$user."',
+                success: function(response) {
+                    $('#data-summary-box').html(response);
+                }
+            });
 		}
 	});
 }
@@ -78,7 +85,10 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 		'action'=>'view',
 		'id'=>'dateRangeForm',
 		'enableAjaxValidation'=>false,
-		'method'=>'get'
+		'method'=>'get',
+        'htmlOptions'=>array(
+            'style'=>'width:400px;float:left;'
+        )
 	)); ?>
 	<div class="row">
 		<div class="cell">
@@ -152,13 +162,16 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 		</div>
 	</div>
 	<?php $this->endWidget();?>
+    <div id="data-summary-box" style="float:right;">
+        
+    </div>
 </div>
 
 <div id="workflow-gridview">
 <?php
-if(isset($viewStage))
+if(isset($viewStage)){
 	echo Yii::app()->controller->actionGetStageMembers($model->id,$viewStage,$this->formatDate($dateRange['start']),$this->formatDate($dateRange['end']),$dateRange['range'],$user);
-else {
+}else {
 $this->widget('zii.widgets.grid.CGridView', array(
 	// 'id'=>'docs-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',

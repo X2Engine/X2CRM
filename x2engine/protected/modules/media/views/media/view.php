@@ -74,7 +74,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 }
 ?>
 
-<table style="width: 900px;">
+<table>
 	<tr>
 		<?php if(!empty($fileView)) { ?>
 			<td style="width: 32%;">

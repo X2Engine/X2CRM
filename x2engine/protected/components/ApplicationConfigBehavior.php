@@ -58,7 +58,7 @@ class ApplicationConfigBehavior extends CBehavior {
 			'onBeginRequest'=>'beginRequest',
 		));
 	}
-
+		
 	/**
 	 * Load dynamic app configuration.
 	 * 
@@ -69,47 +69,56 @@ class ApplicationConfigBehavior extends CBehavior {
 	 */
 	public function beginRequest() {
 		// $t0 = microtime(true);
-        
-		if($this->owner->request->getPathInfo() == 'notifications/get') {	// skip all the loading if this is a chat/notification update
-			$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar();	// set the timezone to the admin's
-			if(!isset($timezone))
-				$timezone = 'UTC';
-			date_default_timezone_set($timezone);
-			
-			// Yii::import('application.models.*');
-			// foreach(scandir('protected/modules') as $module){
+        $cli = $this->owner->params->isCli;
+		if (!$cli) {
+			if ($this->owner->request->getPathInfo() == 'notifications/get') { // skip all the loading if this is a chat/notification update
+				$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar(); // set the timezone to the admin's
+				if (!isset($timezone))
+					$timezone = 'UTC';
+				date_default_timezone_set($timezone);
+
+				// Yii::import('application.models.*');
+				// foreach(scandir('protected/modules') as $module){
 				// if(file_exists('protected/modules/'.$module.'/register.php'))
-					// Yii::import('application.modules.'.$module.'.models.*');
-			// }
-			
-			return;
+				// Yii::import('application.modules.'.$module.'.models.*');
+				// }
+
+				return;
+			}
 		}
 		Yii::import('application.models.*');
 		Yii::import('application.controllers.X2Controller');
 		Yii::import('application.controllers.x2base');
 		Yii::import('application.components.*');
+		Yii::import('application.modules.media.models.Media');
+		Yii::import('application.modules.groups.models.Groups');
 		// Yii::import('application.components.ERememberFiltersBehavior');
 		// Yii::import('application.components.EButtonColumnWithClearFilters');
 
 
 		// $this->owner->messages->forceTranslation = true;
 		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
-
 		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
-		$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$this->owner->user->getName()));
+		$notGuest = True;
+		$uname = 'admin';
+		if (!$cli) {
+			$uname = $this->owner->user->getName();
+			$notGuest = !$this->owner->user->isGuest;
+		}
 		
-		// die( var_dump($this->owner->request->getPathInfo())); //->getRoute();
-		if(!$this->owner->user->isGuest) {
-			
-			// use the admin's profile as default
-			$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$this->owner->user->getName()));
+		$sessionId = isset($_SESSION['sessionId'])? $_SESSION['sessionId'] : session_id();
 		
-			$session = Session::model()->findByAttributes(array('user'=>$this->owner->user->getName()));
+		
+		$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$uname));
+		$session = Session::model()->findByPk($sessionId);
+
+		
+		if($notGuest && !$cli) {
 			if(isset($session)) {
-				if($session->lastUpdated + $this->owner->params->admin->timeout < time() ) {
+				if($session->lastUpdated + $this->owner->params->admin->timeout < time()) {
 					$session->delete();
 					$this->owner->user->logout();
-				} else if($this->owner->request->getPathInfo() != 'site/checkNotifications') {
+				} elseif($this->owner->request->getPathInfo() != 'site/checkNotifications') {
 					$session->lastUpdated = time();
 					$session->save();
 				}
@@ -117,44 +126,26 @@ class ApplicationConfigBehavior extends CBehavior {
 				$this->owner->user->logout();
 				// $this->redirect(Yii::app()->controller->createUrl('site/logout'));
 			}
-			if(!is_null($this->owner->user->getId()) && $this->owner->user->getName()!='admin'){
-				$this->owner->params->roles = $this->owner->db->createCommand()	// lookup the user's roles
-						->select('roleId')
-						->from('x2_role_to_user')
-						->where('type="user" AND userId='.$this->owner->user->getId())->queryColumn();
-
-				$this->owner->params->groups = $this->owner->db->createCommand()		// lookup the user's groups
-						->select('groupId')
-						->from('x2_group_to_user')
-						->where('userId='.$this->owner->user->getId())->queryColumn();
-						
-				$groupRoles = Yii::app()->db->createCommand()
-					->select('x2_role_to_user.roleId')
-					->from('x2_group_to_user')
-					->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId="'.Yii::app()->user->getId().'" AND type="group"')
-					->queryColumn();
-				// foreach($this->owner->params->groups as $groupId) {		// lookup roles for all the user's groups
-						// $groupRoles += $this->owner->db->createCommand()
-						// ->select('roleId')
-						// ->from('x2_role_to_user')
-						// ->where('type="group" AND userId='.$groupId)->queryColumn();
-				// }
-				$this->owner->params->roles = array_unique($this->owner->params->roles + $groupRoles);		// combine all the roles, remove duplicates
+			
+			
+			$userId = $this->owner->user->getId();
+			if(!is_null($userId)) {
+				$this->owner->params->groups = Groups::getUserGroups($userId);
+				$this->owner->params->roles = Roles::getUserRoles($userId);
 			}
 		}
 		
 		$modules=$this->owner->modules;
 		$arr=array();
-		foreach(scandir('protected/modules') as $module){
+		foreach(scandir($this->owner->basePath.'/../protected/modules') as $module){
 			if(file_exists("protected/modules/$module/register.php")){
 				$arr[$module]=ucfirst($module);
 				Yii::import("application.modules.$module.models.*");
 			}
-            
 		}
 		foreach($arr as $key=>$module){
 			$record=Modules::model()->findByAttributes(array('name'=>$key));
-			if(isset($record) && $record->visible)
+			if(isset($record))
 				$modules[]=$key;
 		}
 		$this->owner->setModules($modules);
@@ -179,7 +170,6 @@ class ApplicationConfigBehavior extends CBehavior {
 		else
 			date_default_timezone_set('UTC');
 			
-			
 		$logo = Media::model()->findByAttributes(array('associationId'=>1,'associationType'=>'logo'));
 		if(isset($logo))
 			$this->owner->params->logo = $logo->fileName;
@@ -202,18 +192,19 @@ class ApplicationConfigBehavior extends CBehavior {
 		$datePickerFormat = str_replace('yy', 'y', $datePickerFormat);
 		$datePickerFormat = str_replace('MM', 'mm', $datePickerFormat);
 		$datePickerFormat = str_replace('M', 'm', $datePickerFormat);
-			
-		
+
+
 		// set base path and theme path globals for JS
-		Yii::app()->clientScript->registerScript('setParams','
-		var	yii = {
-			baseUrl: "'.Yii::app()->baseUrl.'",
-			themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
-			language: "'.(Yii::app()->language == 'en'? '' : Yii::app()->getLanguage()).'",
-			datePickerFormat: "'.$datePickerFormat.'"
-		},
-		x2 = {},
-		notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
-		', CClientScript::POS_HEAD);
+		if(!$cli)
+			Yii::app()->clientScript->registerScript('setParams','
+			var	yii = {
+				baseUrl: "'.Yii::app()->baseUrl.'",
+				themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
+				language: "'.(Yii::app()->language == 'en'? '' : Yii::app()->getLanguage()).'",
+				datePickerFormat: "'.$datePickerFormat.'"
+			},
+			x2 = {},
+			notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+			', CClientScript::POS_HEAD);
 	}
 }

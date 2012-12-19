@@ -57,4 +57,5 @@ $this->actionMenu = array(
 		'times'=>$times,
 		'myBackgrounds'=>$myBackgrounds,
 		'menuItems'=>$menuItems,
+        'allTags'=>$allTags
 	)); ?>

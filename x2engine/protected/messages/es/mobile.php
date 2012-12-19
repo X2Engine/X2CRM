@@ -44,10 +44,10 @@ return array (
 'New Record'=>'Nuevo Registro',
 'Find Contacts'=>'Buscar Contactos',
 'Top Contacts'=>'Contactos Principales',
-'No top contacts for this user!'=>'No hay contactos de alto nivel para este usuario!',
+'No top contacts for this user!'=>'No hay contactos principales para este usuario!',
 'Create Message'=>'Crear Mensaje',
 'Message List'=>'Lista de Mensajes',
-'Clear'=>'Aclarar',
+'Clear'=>'Limpiar',
 'Search for a Contact'=>'Buscar un Contacto',
 'Go to Full Site'=>'Ir al Sitio Principal',
 );

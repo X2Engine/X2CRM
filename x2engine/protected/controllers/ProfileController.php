@@ -57,7 +57,7 @@ class ProfileController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword', 'setResultsPerPage'),
+				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword', 'setResultsPerPage','hideTag','unhideTag'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -75,6 +75,36 @@ class ProfileController extends x2base {
             'accessControl',
             'setPortlets',
         );
+    }
+    
+    public function actionHideTag($tag){
+        $tag="#".$tag;
+        $profile=Yii::app()->params->profile;
+        if(isset($profile)){
+            $hiddenTags=json_decode($profile->hiddenTags,true);
+            if(!is_array($hiddenTags))
+                $hiddenTags=array();
+            if(!in_array($tag,$hiddenTags)){
+                array_push($hiddenTags,$tag);
+                $profile->hiddenTags=json_encode($hiddenTags);
+                $profile->save();
+            }
+        }
+    }
+    
+    public function actionUnhideTag($tag){
+        $tag="#".$tag;
+        $profile=Yii::app()->params->profile;
+        if(isset($profile)){
+            $hiddenTags=json_decode($profile->hiddenTags,true);
+            if(!is_array($hiddenTags))
+                $hiddenTags=array();
+            if(in_array($tag,$hiddenTags)){
+                unset($hiddenTags[array_search($tag,$hiddenTags)]);
+                $profile->hiddenTags=json_encode($hiddenTags);
+                $profile->save();
+            }
+        }
     }
 
 	/**
@@ -114,7 +144,7 @@ class ProfileController extends x2base {
 		$dataProvider=new CActiveDataProvider('Social', array(
 			'criteria'=>array(
 				'order'=>'timestamp DESC',
-				'condition'=>"type='feed' AND associationId=$id AND (private=0 OR associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."')",
+				'condition'=>"type='feed' AND associationId=$id AND (visibility=1 OR associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."')",
 		)));
 
 		$this->render('view',array(
@@ -162,13 +192,25 @@ class ProfileController extends x2base {
 				'order'=>'createDate DESC'
 			),
 		));
+        $hiddenTags=json_decode(Yii::app()->params->profile->hiddenTags,true);
+        if(empty($hiddenTags))
+            $hiddenTags=array();
+        $allTags = Yii::app()->db->createCommand()
+			->select('COUNT(*) AS count, tag')
+			->from('x2_tags')
+			->group('tag')
+            ->where('tag IS NOT NULL AND tag IN (\''.implode("','",$hiddenTags).'\')')
+			->order('tag ASC')
+			->limit(20)
+			->queryAll();
 		
 		$this->render('settings',array(
 			'model'=>$model,
 			'languages'=>$languages,
 			'times'=>$times,
 			'myBackgrounds'=>$myBackgroundProvider,
-			'menuItems'=>$menuItems
+			'menuItems'=>$menuItems,
+            'allTags'=>$allTags
 		));
 	}
 
@@ -333,13 +375,14 @@ class ProfileController extends x2base {
 		// $user = $this->loadModel($id);
 		if(isset($_POST['Social']) && $_POST['Social']['data']!=Yii::t('app','Enter text here...')){
 			$post->data = $_POST['Social']['data'];
-			$post->private = $_POST['Social']['private'];
+			$post->visibility = $_POST['Social']['visibility'];
 			if(isset($_POST['Social']['associationId']))
 				$post->associationId = $_POST['Social']['associationId'];
 			//$soc->attributes = $_POST['Social'];
 			//die(var_dump($_POST['Social']));
 			$post->user = Yii::app()->user->getName();
 			$post->type = 'feed';
+            $post->subtype=$_POST['Social']['subtype'];
 			$post->lastUpdated = time();
 			$post->timestamp = time();
 			if(!isset($post->associationId) || $post->associationId==0)
@@ -476,9 +519,40 @@ class ProfileController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
+        $condition="type='feed'";
+        if(isset($_GET['filter'])){
+            $filter=$_GET['filter'];
+            if($filter=='all'){
+                if(!Yii::app()->user->checkAccess('AdminIndex'))
+                    $condition.=" AND (visibility=1 OR (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."'))";
+            }elseif($filter=='public'){
+                $condition.=" AND (visibility=1)";
+            }elseif($filter=='private'){
+                $condition.=" AND (visibility!=1 AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."'))";
+            }else{
+                $condition.=" AND (visibility=1 OR associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."')";
+            }
+        }else{
+            if(!Yii::app()->user->checkAccess('AdminIndex'))
+                $condition.=" AND (visibility=1 OR (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."'))";
+            $filter='all';
+        }
+        if(isset($_GET['subtype'])){
+            $subtype=$_GET['subtype'];
+            if($subtype!='all')
+                $condition.=" AND subtype='$subtype'";
+        }else{
+            $subtype='all';
+        }
+        $subtypes=json_decode(Dropdowns::model()->findByPk(14)->options,true);
+        $linksArray=array();
+        foreach($subtypes as $key=>$value){
+            $links[$key]=$subtype==$value?$value:CHtml::link($value,'index?filter='.$filter.'&subtype='.$value);
+        }
+        $subtypes=array_merge(array('all'=>$subtype=='all'?'All':CHtml::link('All','index?filter='.$filter.'&subtype=all')),$links);
 		$dataProvider=new CActiveDataProvider('Social',array(
 			'criteria'=>array(
-				'condition'=>"type='feed' AND (private!=1 OR associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."')",
+				'condition'=>$condition,
 				'order'=>'lastUpdated DESC'
 			),
 		));
@@ -486,6 +560,7 @@ class ProfileController extends x2base {
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 			'users'=>$users,
+            'subtypes'=>$subtypes,
 		));
 	}
 	

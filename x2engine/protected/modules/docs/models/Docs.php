@@ -77,15 +77,15 @@ class Docs extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, text, createdBy', 'required'),
+			array('name, text, createdBy', 'required'),
 			array('createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('title, editPermissions, subject', 'length', 'max'=>100),
+			array('name, editPermissions, subject', 'length', 'max'=>100),
 			array('createdBy', 'length', 'max'=>60),
 			array('updatedBy', 'length', 'max'=>40),
 			array('type', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, title, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions, type', 'safe', 'on'=>'search'),
+			array('id, name, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions, type', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -106,7 +106,7 @@ class Docs extends CActiveRecord {
 		return array(
 			'id' => Yii::t('docs','ID'),
 			'type' => Yii::t('docs','Doc Type'),
-			'title' => Yii::t('docs','Title'),
+			'name' => Yii::t('docs','Title'),
 			'text' => Yii::t('docs','Text'),
 			'createdBy' => Yii::t('docs','Created By'),
 			'createDate' => Yii::t('docs','Create Date'),
@@ -117,10 +117,6 @@ class Docs extends CActiveRecord {
 		);
 	}
 
-	public function getName() {
-		return $this->title;
-	}
-	
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -134,7 +130,7 @@ class Docs extends CActiveRecord {
 		$criteria->compare('id',$this->id);
 		$criteria->compare('type',$this->type);
 		$criteria->compare('subject',$this->subject,true);
-        $criteria->compare('title',$this->title,true);
+        $criteria->compare('name',$this->name,true);
 		$criteria->compare('text',$this->text,true);
 		$criteria->compare('createdBy',$this->createdBy,true);
 		$criteria->compare('createDate',$this->createDate);

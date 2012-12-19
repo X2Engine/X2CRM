@@ -65,6 +65,7 @@ return array (
 'Update User'=>'Actualizar Usuario',
 'Manage Users'=>'Administrar Usuarios',
 'Invite Users'=>'Invitar a Usuarios',
+'Delete User'=>'Borrar Usuarios',
 
 // Users Titles
 'User: {name}'=>'Usuario: {name}',

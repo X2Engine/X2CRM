@@ -252,18 +252,18 @@ class X2Calendar extends CActiveRecord
 	public function getGoogleCalendar() {
 		// Google Calendar Libraries
 		$timezone = date_default_timezone_get();
-		require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-		require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+		require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+		require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 		date_default_timezone_set($timezone);
 
 		$admin = Yii::app()->params->admin;
 		if($admin->googleIntegration) {
-			$client = new apiClient();
+			$client = new Google_Client();
 			$client->setClientId($admin->googleClientId);
 			$client->setClientSecret($admin->googleClientSecret);
-			$client->setDeveloperKey($admin->googleAPIKey);
+			//$client->setDeveloperKey($admin->googleAPIKey);
 			$client->setAccessToken($this->googleAccessToken);
-			$service = new apiCalendarService($client);
+			$service = new Google_CalendarService($client);
 
 			// check if the access token needs to be refreshed
 			// note that the google library automatically refreshes the access token if we need a new one, 
@@ -285,8 +285,8 @@ class X2Calendar extends CActiveRecord
 	
 		// Google Calendar Libraries
 		$timezone = date_default_timezone_get();
-		require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-		require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+		require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+		require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 		date_default_timezone_set($timezone);
 		
 		$googleCalendar = $this->getGoogleCalendar();

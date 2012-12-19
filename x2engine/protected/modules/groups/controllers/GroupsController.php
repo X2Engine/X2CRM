@@ -42,7 +42,23 @@
  * @package X2CRM.modules.groups.controllers 
  */
 class GroupsController extends x2base {
-    public $modelClass="Groups";
+    public $modelClass='Groups';
+
+	
+	/**
+	 * Filters to be used by the controller.
+	 * 
+	 * This method defines which filters the controller will use.  Filters can be
+	 * built in with Yii or defined in the controller (see {@link GroupsController::filterClearGroupsCache}).
+	 * See also Yii documentation for more information on filters.
+	 * 
+	 * @return array An array consisting of the filters to be used. 
+	 */
+	public function filters() {
+		return array(
+			'clearGroupsCache - view, index'	// clear the cache, unless we're doing a read-only operation here
+		);
+	}
 
 	/**
 	 * Displays a particular model.
@@ -176,7 +192,7 @@ class GroupsController extends x2base {
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-					$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+					$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -237,4 +253,22 @@ class GroupsController extends x2base {
 			Yii::app()->end();
 		}
 	}
+	
+	
+	/**
+	 * A filter to clear the groups cache.
+	 * 
+	 * This method clears the cache whenever the groups controller is accessed.
+	 * Caching improves performance throughout the app, but will occasionally 
+	 * need to be cleared. Keeping this filter here allows for cleaning up the
+	 * cache when required.
+	 * 
+	 * @param type $filterChain The filter chain Yii is currently acting on.
+	 */
+	public function filterClearGroupsCache($filterChain) {
+		$filterChain->run();
+		Yii::app()->cache->delete('user_groups');
+		Yii::app()->cache->delete('user_roles');
+	}
+
 }

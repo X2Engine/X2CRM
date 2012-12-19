@@ -39,27 +39,49 @@
  * ****************************************************************************** */
 
 class X2WebUser extends CWebUser{
-    
-    private $_keyPrefix;
-    private $_access=array();
-    
-    public function checkAccess($operation,$params=array(),$allowCaching=false)
-	{
-		if($allowCaching && $params===array() && isset($this->_access[$operation]))
-			return $this->_access[$operation];
-        $roles=RoleToUser::model()->findAllByAttributes(array('userId'=>$this->getId()));
-        $access=Yii::app()->getAuthManager()->checkAccess($operation,$this->getId(),$params);
-        
-        foreach($roles as $role){
-            $roleRecord=Roles::model()->findByPk($role->roleId); 
-            if(isset($roleRecord))
-                $access=$access || Yii::app()->getAuthManager()->checkAccess($operation,$roleRecord->id,$params);
-        }
-		if($allowCaching && $params===array())
-			$this->_access[$operation]=$access;
-        
-		return $access;
+	
+	private $_keyPrefix;
+	// private $_access=array();
+	private $_access = null;
+	
+	public function checkAccess($operation,$params=array(),$allowCaching=true) {
+		
+		// return true;
+		if($allowCaching && $params===array()) {
+		
+			if($this->_access===null)
+				$this->_access = Yii::app()->authCache->loadAuthCache($this->getId());
+	
+			if(isset($this->_access[$operation]))
+				return $this->_access[$operation];
+				
+			// if(isset($this->_access[$operation]))
+				// return $this->_access[$operation];
+			// if(($result = Yii::app()->authCache->checkResult($this->getId(),$operation)) !== null)
+				// return $result;
+		}
+		// $GLOBALS['access'][] = $operation;
+		
+		$result = Yii::app()->getAuthManager()->checkAccess($operation,$this->getId(),$params);
+		foreach(Yii::app()->params['roles'] as $roleId) {
+			if($result = ($result || Yii::app()->getAuthManager()->checkAccess($operation,$roleId,$params)))
+				break;
+		}
+
+		// $test = CActiveRecord::model('Contacts')->findAllByAttributes(array('company'=>2));
+		// $GLOBALS['accessCount'] = isset($GLOBALS['accessCount'])? $GLOBALS['accessCount']+1 : 1;
+
+		// $roles=RoleToUser::model()->findAllByAttributes(array('userId'=>$this->getId()));
+		// foreach($roles as $role){
+			// $roleRecord=Roles::model()->findByPk($role->roleId); 
+			// if(isset($roleRecord))
+				// $result=$result || Yii::app()->getAuthManager()->checkAccess($operation,$roleRecord->id,$params);
+		// }
+
+		if($allowCaching && $params===array()) {
+			$this->_access[$operation] = $result;
+			Yii::app()->authCache->addResult($this->getId(),$operation,$result);
+		}
+		return $result;
 	}
 }
-
-?>

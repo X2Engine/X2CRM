@@ -75,10 +75,10 @@ class SiteController extends x2base {
                     'whatsNew','toggleVisibility','page'),
 				'users'=>array('@'),
 			),
-			// array('allow',
-				// 'actions'=>array('index'),
-				// 'users'=>array('admin'),
-			// ),
+			 array('allow',
+				 'actions'=>array('motd'),
+				 'users'=>array('admin'),
+			 ),
 			array('deny', 
 				'users'=>array('*')
 			)
@@ -133,14 +133,37 @@ class SiteController extends x2base {
 	public function actionWhatsNew(){
 		
 		if(!Yii::app()->user->isGuest){
-		
-			$user = User::model()->findByPk(Yii::app()->user->getId());
+            $user = User::model()->findByPk(Yii::app()->user->getId());
 			$lastLogin = $user->lastLogin;
+            $criteria = new CDbCriteria();
+            $condition = "lastUpdated > $lastLogin";
+            $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()),'order'=>'lastUpdated DESC');
+            $parameters['condition']=$condition;
+            $contactsCriteria=$criteria;
+            $criteria->scopes=array('findAll'=>array($parameters));
+            $opportunities = CActiveRecord::model('Opportunity')->findAll($criteria);
+			$accounts = CActiveRecord::model('Accounts')->findAll($criteria);
+            if(Yii::app()->user->getName()!='admin'){
+                $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                /* x2temp */
+                $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                if(!empty($groupLinks))
+                    $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-			$contacts = CActiveRecord::model('Contacts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$actions = CActiveRecord::model('Actions')->findAll("lastUpdated > $lastLogin AND type!='workflow' AND (assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone') ORDER BY lastUpdated DESC LIMIT 50");
-			$opportunities = CActiveRecord::model('Opportunity')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
-			$accounts = CActiveRecord::model('Accounts')->findAll("lastUpdated > $lastLogin ORDER BY lastUpdated DESC LIMIT 50");
+                $condition .= 'OR (visibility=2 AND assignedTo IN 
+                    (SELECT username FROM x2_group_to_user WHERE groupId IN
+                        (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                $contactsCriteria->addCondition($condition);
+            }
+            
+            $actionsCriteria=$contactsCriteria;
+            $contactsCriteria->scopes=array('findAll'=>array($parameters));
+            $contacts = CActiveRecord::model('Contacts')->findAll($contactsCriteria);
+            $actionParams=$parameters;
+            $actionParams['condition']="lastUpdated > $lastLogin AND type!='workflow'";
+            $actionsCriteria->scopes=array('findAll'=>array($actionParams));
+			$actions = CActiveRecord::model('Actions')->findAll($actionsCriteria);
+			
 
 			$arr = array_merge($contacts,$actions,$opportunities,$accounts);
 
@@ -207,6 +230,7 @@ class SiteController extends x2base {
 			$chat=new Social;
 			$chat->data = $_POST['chat-message'];;
 			$chat->user = $user;
+            $chat->visibility=1;
 			$chat->timestamp = time();
 			$chat->type = 'chat';
 			
@@ -233,6 +257,7 @@ class SiteController extends x2base {
 			$note->associationId=Yii::app()->user->getId();
 			$note->data = $_POST['note-message'];;
 			$note->user = $user;
+            $note->visibility=1;
 			$note->timestamp=time();
 			$note->type = 'note';
 			
@@ -831,127 +856,106 @@ class SiteController extends x2base {
 	/**
 	 * Displays the login page
 	 */
-	public function actionLogin() {	
+	public function actionLogin() {
 		$this->layout = '//layouts/login';
-	
-		// echo var_dump(Session::getOnlineUsers());
+
 		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
 			$this->redirect(Yii::app()->homeUrl);
 			return;
 		}
-		
+
 		$model = new LoginForm;
 		$model->useCaptcha = false;
 
-		// collect user input data
 		if(isset($_POST['LoginForm'])) {
-			$model->attributes = $_POST['LoginForm'];
-			$activeCheck=User::model()->findByAttributes(array('username'=>$model->username));
-                        if(isset($activeCheck)){
-                            $model->username=$activeCheck->username;
-                        }
-			if(isset($activeCheck) && $activeCheck->status=='1')
-				$activeCheck=true;
-			else
-				$activeCheck=false;
-			$ip = $this->getRealIp();
+			$model->attributes = $_POST['LoginForm'];	// get user input data
+
 			x2base::cleanUpSessions();
-			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
-			if(isset($session)) {
-				$session->lastUpdated = time();
+			
+			$ip = $this->getRealIp();
+
+			// increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
+			Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1, lastUpdated=:time WHERE user=:name AND IP=:ip AND status BETWEEN -2 AND 0')
+				->bindValues(array(':time'=>time(),':name'=>$model->username,':ip'=>$ip))
+				->execute();
+			
+			// foreach($localSessions as $session) {
+				// $session->lastUpdated = time();
+				// if($session->status < 1 && $session->status > -3)
+					// $session->status -= 1;
+				// else
+					// $session->status = -1;
 				
-				if($session->status < 1) {
-					if($session->status > -3)
-						$session->status -= 1;
-				} else {
-					$session->status = -1;
-				}
-				if($session->status < -1)
-					$model->useCaptcha = true;
-				if($session->status < -2)
-					$model->setScenario('loginWithCaptcha');
-			} else if($activeCheck) {
-				$session = new Session;
-				$session->user = $model->username;
-				$session->lastUpdated = time();
-				$session->status = 1;
-				$session->IP = $ip;
-			}
+				// $session->update(array('status'));
+			// }
+			
+			$activeUser = Yii::app()->db->createCommand()	// see if this is an actual, active user
+				->select('username')
+				->from('x2_users')
+				->where('username=:name AND status=1',array(':name'=>$model->username))
+				->limit(1)
+				->queryScalar();	// get the correctly capitalized username
+				
+			if($activeUser === false) {
+				$model->verifyCode = '';	// clear captcha code
+				$model->addError('username',Yii::t('app','Incorrect username or password.'));
+				$model->addError('password',Yii::t('app','Incorrect username or password.'));
+			} else {
+				$model->username = $activeUser;
 
-			if($model->validate() && $model->login()) {
-				$user = User::model()->findByPk(Yii::app()->user->getId());
-                $user->lastLogin=$user->login;
-				$user->login = time();
-				$user->save();
-				if($user->username=='admin'){
-					if(ini_get('allow_url_fopen') == 1) {
-						$context = stream_context_create(array(
-							'http' => array('timeout' => 2)		// set request timeout in seconds
-						));
-						$updateSources = array('http://x2planet.com/installs/updates/versionCheck');
-						if (in_array(Yii::app()->params->admin['edition'],array('opensource',Null))) {
-							$updateSources = array(
-								'http://x2planet.com/updates/versionCheck.php',
-								'http://x2base.com/updates/versionCheck.php'
-							);
-						}
-						$newVersion = '';
-						
-						foreach($updateSources as $url) {
-							$sourceVersion = @file_get_contents($url,0,$context);
-							if($sourceVersion !== false) {
-								$newVersion = $sourceVersion;
-								break;
-							}
-						}
-						if(empty($newVersion))
-							$newVersion = Yii::app()->params->version;
-						/* 
-						// check X2Planet for updates
-						$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
-						if($x2planetVersion !== false)
-							$newVersion = $x2planetVersion;
-						else {
-							// try X2Base if that didn't work
-							$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
-							if($x2baseVersion !== false)
-								$newVersion=$x2baseVersion;
-							else
-								$newVersion=Yii::app()->params->version;
-						} */
-						$unique_id = Yii::app()->params->admin['unique_id'];
-						if(version_compare($newVersion,Yii::app()->params->version) > 0 && !in_array($unique_id, array('none',Null))) {	// if the latest version is newer than our version
-							Yii::app()->session['versionCheck']=false;
-							Yii::app()->session['newVersion']=$newVersion;
-						}
-						else
-							Yii::app()->session['versionCheck']=true;
-					}
-					else
-						Yii::app()->session['versionCheck']=true;
-				} else
-					Yii::app()->session['versionCheck']=true;
-					
-				Yii::app()->session['loginTime']=time();
-                                $session->status=1;
-				$session->save();
-
-				if(Yii::app()->user->returnUrl=='site/index')
-					$this->redirect('index');
+				if(isset($_SESSION['sessionId']))
+					$sessionId = $_SESSION['sessionId'];
 				else
-					$this->redirect(Yii::app()->user->returnUrl);
-			} else if($activeCheck) {
-				$session->save();
-				$model->verifyCode = '';
-				if($model->hasErrors())
-					$model->addError('username',Yii::t('app','Incorrect username or password.'));
-					$model->addError('password',Yii::t('app','Incorrect username or password.'));
+					$sessionId = $_SESSION['sessionId'] = session_id();
+					
+				$session = CActiveRecord::model('Session')->findByPk($sessionId);
+				
+				// if this client has already tried to log in, increment their attempt count
+				if($session === null) {
+					$session = new Session;
+					$session->id = $sessionId;
+					$session->user = $model->username;
+					$session->lastUpdated = time();
+					$session->status = 0;
+					$session->IP = $ip;
+				} else {
+					$session->lastUpdated = time();
+					if($session->status < -1)
+						$model->useCaptcha = true;
+					if($session->status < -2)
+						$model->setScenario('loginWithCaptcha');
+				}
+				
+				if($model->validate() && $model->login()) {		// user successfully logged in
+					if($model->username === 'admin')
+						$this->checkUpdates();			// check for updates if admin
+					else
+						Yii::app()->session['versionCheck'] = true;	// ...or don't
+					
+					$session->status = 1;
+					$session->save();
+					
+					if(Yii::app()->user->returnUrl=='site/index')
+						$this->redirect('index');
+					else
+						$this->redirect(Yii::app()->user->returnUrl);	// after login, redirect to wherever
+						
+				} else {	// login failed
+					$model->verifyCode = '';	// clear captcha code
+					if($model->hasErrors()) {
+						$model->addError('username',Yii::t('app','Incorrect username or password.'));
+						$model->addError('password',Yii::t('app','Incorrect username or password.'));
+					}
+					$session->save();
+				}
 			}
 		}
 		
-		// display the login form
-		$this->render('login',array('model'=>$model));
+		header('REQUIRES_AUTH: 1');    // tell windows making AJAX requests to redirect
+		
+		$this->render('login',array('model'=>$model));	// display the login form
 	}
+
 	
 	/**
 	 * Log in using a Google account.
@@ -966,49 +970,69 @@ class SiteController extends x2base {
 			$this->redirect(Yii::app()->homeUrl);
 			return;
 		}
-		if(isset($_SESSION['access_token'])){
-			require_once 'protected/extensions/google-api-php-client/src/apiClient.php';
-			require_once 'protected/extensions/google-api-php-client/src/contrib/apiOauth2Service.php';
+		if(isset($_SESSION['access_token'])) {
+			require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
+			require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php';
 
-			$client = new apiClient();
+			$client = new Google_Client();
 			$client->setApplicationName("X2Engine CRM");
 			// Visit https://code.google.com/apis/console to generate your
 			// oauth2_client_id, oauth2_client_secret, and to register your oauth2_redirect_uri.
-                        $admin=Admin::model()->findByPk(1);
+			$admin=Admin::model()->findByPk(1);
 			$client->setClientId($admin->googleClientId);
                         $client->setClientSecret($admin->googleClientSecret);
 			$client->setRedirectUri('http://www.x2developer.com/x2jake/site/googleLogin');
 			//$client->setDeveloperKey('insert_your_developer_key');
-			$oauth2 = new apiOauth2Service($client);
+			$oauth2 = new Google_Oauth2Service($client);
 			
 			$client->setAccessToken($_SESSION['access_token']);
 			
 			$user = $oauth2->userinfo->get();
 			$email = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
 			
-			$userRecord=User::model()->findByAttributes(array('emailAddress'=>$email));
-			$profileRecord=Profile::model()->findByAttributes(array(), "emailAddress='$email' OR googleId='$email'");
+			$userRecord = User::model()->findByAttributes(array('emailAddress'=>$email));
+			$profileRecord = Profile::model()->findByAttributes(array(), "emailAddress='$email' OR googleId='$email'");
 			if(isset($userRecord) || isset($profileRecord)){
 				if(!isset($userRecord)){
-					$userRecord=User::model()->findByPk($profileRecord->id);
+					$userRecord = User::model()->findByPk($profileRecord->id);
 				}
-				$username=$userRecord->username;
-				$password=$userRecord->password;
+				$username = $userRecord->username;
+				$password = $userRecord->password;
 				$model->username=$username;
 				$model->password=$password;
-				if($model->login(true)){
+				if($model->login(true)) {
 					$ip = $this->getRealIp();
+					
 					x2base::cleanUpSessions();
-					$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
-					if(isset($session)) {
-						$session->lastUpdated = time();
-					} else {
+					if(isset($_SESSION['sessionId']))
+						$sessionId = $_SESSION['sessionId'];
+					else
+						$sessionId = $_SESSION['sessionId'] = session_id();
+					
+					$session = CActiveRecord::model('Session')->findByPk($sessionId);
+				
+					// if this client has already tried to log in, increment their attempt count
+					if($session === null) {
 						$session = new Session;
+						$session->id = $sessionId;
 						$session->user = $model->username;
 						$session->lastUpdated = time();
 						$session->status = 1;
 						$session->IP = $ip;
+					} else {
+						$session->lastUpdated = time();
 					}
+					// x2base::cleanUpSessions();
+					// $session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
+					// if(isset($session)) {
+						// $session->lastUpdated = time();
+					// } else {
+						// $session = new Session;
+						// $session->user = $model->username;
+						// $session->lastUpdated = time();
+						// $session->status = 1;
+						// $session->IP = $ip;
+					// }
 					$session->save();
 					$userRecord->login = time();
 					$userRecord->save();
@@ -1021,16 +1045,16 @@ class SiteController extends x2base {
 						$this->redirect('index');
 					else
 						$this->redirect(Yii::app()->user->returnUrl);
-				}else{
+				} else {
 					print_r($model->getErrors());
 				}
-			}else{
+			} else {
 				$this->render('googleLogin',array(
 					'failure'=>'email',
 					'email'=>$email,
 				));
 			}
-		}else{
+		} else {
 			$this->render('googleLogin');
 		}
 	}
@@ -1062,9 +1086,10 @@ class SiteController extends x2base {
 			
 			if($type == 'Quotes' || $type == 'Products') // fix for products and quotes
 				$model = CActiveRecord::model(rtrim($type, 's'))->findByPk($id);
-			elseif($type == 'Opportunities')
+			elseif($type == 'Opportunities'){
 				$model = CActiveRecord::model('Opportunity')->findByPk($id);
-			else
+                $type="Opportunity";
+            }else
 				$model = CActiveRecord::model($type)->findByPk($id);
 			if($model) {
 				
@@ -1323,17 +1348,70 @@ class SiteController extends x2base {
 	}
 
 	/** 
+	 * Connects to one of the X2 update servers and sets Yii::app()->session['versionCheck'] 
+	 * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion'] 
+	 * to the latest version if not up to date.
+	 */
+	protected function checkUpdates() {
+		if(ini_get('allow_url_fopen') != 1) {
+			Yii::app()->session['versionCheck'] = true;
+			return;
+		}
+
+		$context = stream_context_create(array(
+			'http' => array('timeout'=>2)		// set request timeout in seconds
+		));
+		$updateSources = array('http://x2planet.com/installs/updates/versionCheck');
+		if(in_array(Yii::app()->params->admin['edition'],array('opensource',Null))) {
+			$updateSources = array(
+				'http://x2planet.com/updates/versionCheck.php',
+				'http://x2base.com/updates/versionCheck.php'
+			);
+		}
+		$newVersion = '';
+		
+		foreach($updateSources as $url) {
+			$sourceVersion = @file_get_contents($url,0,$context);
+			if($sourceVersion !== false) {
+				$newVersion = $sourceVersion;
+				break;
+			}
+		}
+		if(empty($newVersion))
+			$newVersion = Yii::app()->params->version;
+		/* 
+		// check X2Planet for updates
+		$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
+		if($x2planetVersion !== false)
+			$newVersion = $x2planetVersion;
+		else {
+			// try X2Base if that didn't work
+			$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
+			if($x2baseVersion !== false)
+				$newVersion=$x2baseVersion;
+			else
+				$newVersion=Yii::app()->params->version;
+		} */
+		$unique_id = Yii::app()->params->admin['unique_id'];
+		if(version_compare($newVersion,Yii::app()->params->version) > 0 && !in_array($unique_id, array('none',Null))) {	// if the latest version is newer than our version
+			Yii::app()->session['versionCheck']=false;
+			Yii::app()->session['newVersion']=$newVersion;
+		} else
+			Yii::app()->session['versionCheck']=true;
+	}
+
+	/** 
 	 * Checks for any tasks that need to be executed at a specific time
 	 *
 	 * Needs to be called by a cronjob.
 	 */
-	public function actionCron() {
-		$emails = CActiveRecord::model('Actions')->findByAttributes(array(
-			'type'=>'email_staged',
-			'dueDate'=>'<'.time(),
-			'complete'=>'No'
-		));
-	}
+	// public function actionCron() {
+		// $emails = CActiveRecord::model('Actions')->findByAttributes(array(
+			// 'type'=>'email_staged',
+			// 'dueDate'=>'<'.time(),
+			// 'complete'=>'No'
+		// ));
+	// }
 
 	/**
 	 * Logs out the current user and redirect to homepage.
@@ -1341,28 +1419,34 @@ class SiteController extends x2base {
 	public function actionLogout() {
 		$user = User::model()->findByPk(Yii::app()->user->getId());
 		if(isset($user)) {
-			$user->lastLogin=time();
+			$user->lastLogin = time();
+			$user->save();
+			
+			if(isset($_SESSION['sessionId']))
+				CActiveRecord::model('Session')->deleteByPk($_SESSION['sessionId']);
+			else
+				CActiveRecord::model('Session')->deleteAllByAttributes(array('IP'=>$this->getRealIp()));
+				
 			// $session = Session::model()->findByAttributes(array('user'=>$user->username));
-			$session = Session::model()->deleteAllByAttributes(array('user'=>$user->username));
+			// $session = Session::model()->deleteAllByAttributes(array('user'=>$user->username));
 			// if(isset($session))
 				// $session->delete();
-			$user->save();
+			// $user->save();
 		}
-		if(isset($_SESSION['access_token'])){
+		if(isset($_SESSION['access_token']))
 			unset($_SESSION['access_token']);
-		}
+		
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
-    
-    public function actionToggleVisibility(){
-        $username=Yii::app()->user->getName();
-        $ip = $this->getRealIp();
-        $session=Session::model()->findByAttributes(array('user'=>$username,'IP'=>$ip));
-        if(isset($session)){
-            $session->status=!$session->status;
-            $session->save();
-        }
-        $this->redirect($_GET['redirect']);
-    }
+
+	public function actionToggleVisibility(){
+		$ip = $this->getRealIp();
+		$session = Session::model()->findByAttributes(array('user'=>Yii::app()->user->getName(),'IP'=>$ip));
+		if(isset($session)) {
+			$session->status = !$session->status;
+			$session->save();
+		}
+		$this->redirect($_GET['redirect']);
+	}
 }

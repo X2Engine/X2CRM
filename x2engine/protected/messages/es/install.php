@@ -43,7 +43,7 @@ return array (
 'Install X2EngineCRM'=>'Instalar X2EngineCRM',
 'X2EngineCRM Installation'=>'Instalación X2EngineCRM',
 'Installation Complete'=>'Instalación Completa',
-'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Esta aplicacion requiere JavaScript para funcionar correctamente. Por favor, activa el Javascript en su navegador web antes de continuar.',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Esta aplicacion requiere JavaScript para funcionar correctamente. Por favor, active el Javascript en su navegador web antes de continuar.',
 // Requirements check
 'Cannot install X2EngineCRM'=>'No se puede instalar X2EngineCRM',
 'required but missing'=>'requerido pero falta',
@@ -65,7 +65,7 @@ return array (
 'Administrator Email'=>'E-mail de Administrador',
 'Please enter a valid email address.'=>'Por favor, introduzca una dirección válida de correo electrónico.',
 
-'Database Connection Info'=>'Conexión Info de Base de Datos',
+'Database Connection Info'=>' Info. de Conexión de Base de Datos',
 
 'This release only supports MySQL. Please create a database before installing.'=>'Esta versión sólo soporta MySQL. Por favor, cree una base de datos antes de instalar.',
 'Host Name'=>'Nombre de Host',

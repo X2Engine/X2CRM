@@ -144,13 +144,14 @@ $(document).ready(function() {
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'emailAddress'); ?>
-		<?php echo $form->textField($model,'emailAddress',array('size'=>40,'maxlength'=>40)); ?>
+		<?php echo $form->textField($model,'emailAddress',array('size'=>40,'maxlength'=>40,'disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
 		<?php echo $form->error($model,'emailAddress'); ?>
 	</div>
 
 	<div class="row">
+        <?php if(isset($flag) && $flag){ $model->status=1; } ?>
 		<?php echo $form->labelEx($model,'status'); ?>
-		<?php echo $form->dropDownList($model,'status', array(1=>'Active', 0=>'Inactive')); ?>
+		<?php echo $form->dropDownList($model,'status', array(1=>'Active', 0=>'Inactive'),array('disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
 		<?php echo $form->error($model,'status'); ?>
 	</div>
        <?php if((isset($flag) && !$flag) || !isset($flag)){?>

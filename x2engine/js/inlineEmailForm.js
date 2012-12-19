@@ -159,4 +159,27 @@ function setupInlineEmailForm() {
 		
 		$('#bcc-row').slideDown(300);
 	});
+	
+	$('#email-template').change(function() {
+		var template = $(this).val();
+		if(template != "0") {
+			window.inlineEmailEditor.updateElement();
+			jQuery.ajax({
+				'beforeSend':function() {
+					$('#email-sending-icon').show();
+				},
+				'complete':function(response) {
+					$('#email-sending-icon').hide();
+					setupInlineEmailForm();
+					return false;
+				},
+				'type':'POST',
+				'url':yii.baseUrl+'/index.php/contacts/inlineEmail?ajax=1&preview=1',
+				'data':jQuery(this).parents("form").serialize(),
+				'success':function(html){
+					jQuery("#inline-email-form").replaceWith(html)
+				}
+			});
+		}
+	});
 }

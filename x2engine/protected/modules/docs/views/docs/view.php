@@ -37,9 +37,18 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$this->setPageTitle($model->title);
-
+$this->setPageTitle($model->name);
+Yii::app()->getClientScript()->registerScript('docIframeAutoExpand','
+$("#docIframe").load(function() {
+	$(this).height($(this).contents().height());
+});
+$(window).resize(function() {
+	$("#docIframe").height($("#docIframe").height(650).contents().height());
+});
+',CClientScript::POS_READY);
 echo CHtml::link(Yii::t('docs','Export'),array('/docs/docs/exportToHtml','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
 echo CHtml::link(Yii::t('docs','Edit Doc'),array('/docs/docs/update','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
 echo "<br>\n";
-echo $model->text;
+?>
+<iframe src="<?php echo $this->createUrl('/docs/docs/fullView/'.$model->id); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+

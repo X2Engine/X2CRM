@@ -116,6 +116,9 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		SourceForge: <a href="https://sourceforge.net/projects/x2engine/" target="_blank">https://sourceforge.net/projects/x2engine/</a><br>
 		<!--BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a><br>--><br>
 		<h4><?php echo Yii::t('about','Plugins/Extensions'); ?></h4>
+		Google API PHP Client:
+		<a href="http://code.google.com/p/google-api-php-client/" target="_blank"><?php echo Yii::t('about','Project'); ?></a>
+		<a href="http://www.apache.org/licenses/" target="_blank" class="no-underline" title="Apache License 2.0">[Apache]</a><br>
 		Modernizr:
 		<a href="http://http://modernizr.com" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 		<a href="http://modernizr.com/license/" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>

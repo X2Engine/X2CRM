@@ -52,6 +52,8 @@ class AdminController extends Controller {
 
     public $portlets = array();
     public $layout = '//layouts/main';
+	
+	public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior');
 
     /**
      * A list of actions to include.
@@ -148,7 +150,8 @@ class AdminController extends Controller {
         // return the filter configuration for this controller, e.g.:
         return array(
             //'accessControl',
-            'clearCache'
+            'clearCache',
+			'clearAuthCache'
         );
     }
 
@@ -159,24 +162,47 @@ class AdminController extends Controller {
      * As such, it has been moved to an external file.  This file includes LeadRoutingBehavior
      * or downloads it if the file does not currently exist.  See also Yii documentation
      * for more information on behaviors.
+	 * {@link UpdaterBehavior} is a centralized, re-usable behavior class for code
+	 * pertaining to the updater.
      * 
      * @return array An array of behaviors to implement. 
      */
     public function behaviors() {
-        $file = 'protected/components/LeadRoutingBehavior.php';
-        if (!file_exists($file)) {
-            if ($versionTest = @file_get_contents('http://x2base.com/updates/versionCheck.php', 0, $context)) {
-                $url = 'x2base';
-            } else if ($versionTest = @file_get_contents('http://x2planet.com/updates/versionCheck.php', 0, $context)) {
-                $url = 'x2planet';
-            }
-            $this->ccopy("http://$url.com/updates/x2engine/" . $file, $file);
-        }
-        return array(
-            'LeadRoutingBehavior' => array(
-                'class' => 'LeadRoutingBehavior'
-            )
-        );
+		set_error_handler('AdminController::missingBehaviorError');
+		$missingBehaviors = array();
+		$behaviors = array();
+		$maxTries = 3;
+		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine';
+		foreach (self::$behaviorClasses as $class) {
+			// First try to download from the X2Engine update server...
+			$path = "protected/components/$class.php";
+			if (!file_exists($path)) {
+				if(!is_dir(dirname($path)))
+					throw new CHttpException(500,'The protected/components folder is missing on the webserver! This is very bad. How is this even possible?');
+				$i = 0;
+				while (!copy("http://x2planet.com/updates/x2engine/" . $path, $path) && $i < $maxTries) {
+					$i++;
+				}
+				// Try to download the file from Github...
+				if ($i == 5) {
+					$i = 0;
+					while (!copy("$GithubUrl/$path", $path) && $i < $maxTries) {
+						$i++;
+					}
+				}
+				// Mark the file as a failed download. An exception will be thrown.
+				if ($i == 5) {
+					$missingBehaviors[$class] = $path;
+				}
+			}
+			$behaviors[$class] = array(
+				'class' => $class
+			);
+		}
+		if(count($missingBehaviors))
+			self::missingBehaviorError(null,null);
+		restore_error_handler();
+        return $behaviors;
     }
 
     /**
@@ -218,22 +244,37 @@ class AdminController extends Controller {
           ); */
     }
 
-    /**
-     * A filter to clear the cache.
-     * 
-     * This method clears the cache whenever the admin controller is accessed.
-     * Caching improves performance throughout the app, but will occasionally 
-     * need to be cleared. Keeping this filter here allows for cleaning up the
-     * cache when required.
-     * 
-     * @param type $filterChain The filter chain Yii is currently acting on.
-     */
-    public function filterClearCache($filterChain) {
-        $cache = Yii::app()->cache;
-        if (isset($cache))
-            $cache->flush();
-        $filterChain->run();
-    }
+	/**
+	 * A filter to clear the cache.
+	 * 
+	 * This method clears the cache whenever the admin controller is accessed.
+	 * Caching improves performance throughout the app, but will occasionally 
+	 * need to be cleared. Keeping this filter here allows for cleaning up the
+	 * cache when required.
+	 * 
+	 * @param type $filterChain The filter chain Yii is currently acting on.
+	 */
+	public function filterClearCache($filterChain) {
+		$cache = Yii::app()->cache;
+		if(isset($cache))
+			$cache->flush();
+		$filterChain->run();
+	}
+	
+	/**
+	 * A filter to clear the authItem cache.
+	 * @param type $filterChain The filter chain Yii is currently acting on.
+	 */
+	public function filterClearAuthCache($filterChain) {
+		// Check for existence of authCache object (for backwards compatibility)
+		if (property_exists(Yii::app(), 'authCache')) {
+			$authCache = Yii::app()->authCache;
+			if (isset($authCache))
+				$authCache->clear();
+		}
+		$filterChain->run();
+		
+	}
 
     /**
      * @deprecated
@@ -290,6 +331,33 @@ class AdminController extends Controller {
             'mailingList' => $mailingList,
             'criteria' => $criteria,
         ));
+    }
+    
+    public function actionManageTags(){
+        $dataProvider=new CActiveDataProvider('Tags',array(
+            'criteria'=>array(
+                'group'=>'tag'
+            ),
+            'pagination'=>array(
+                'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+            ),
+        ));
+        
+        $this->render('manageTags',array(
+            'dataProvider'=>$dataProvider,
+        ));
+    }
+    
+    public function actionDeleteTag($tag){
+        if(!empty($tag)){
+            if($tag!='all'){
+                $tag="#".$tag;
+                CActiveRecord::model('Tags')->deleteAllByAttributes(array('tag'=>$tag));
+            }else{
+                CActiveRecord::model('Tags')->deleteAll();
+            }
+        }
+        $this->redirect('manageTags');
     }
 
     public function actionManageSessions() {
@@ -848,10 +916,8 @@ class AdminController extends Controller {
     public function actionViewChangelog() {
 
         $model = new Changelog('search');
-        $dataProvider = $model->search();
 
         $this->render('viewChangelog', array(
-            'dataProvider' => $dataProvider,
             'model' => $model,
         ));
     }
@@ -1067,6 +1133,39 @@ class AdminController extends Controller {
     }
 
     /**
+     * Sets the service routing type.
+     * 
+     * This method allows for the admin to configure which option to use for service case
+     * distribution.  This is what determines the actions of {@link ServiceRoutingBehavior}. 
+     */
+    public function actionSetServiceRouting() {
+
+        $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+        if (isset($_POST['Admin'])) {
+            $routing = $_POST['Admin']['serviceDistribution'];
+            $online = $_POST['Admin']['serviceOnlineOnly'];
+            if ($routing == 'singleUser') {
+                $user = $_POST['Admin']['srrId'];
+                $admin->srrId = $user;
+            } else if($routing == 'singleGroup') {
+                $group = $_POST['Admin']['sgrrId'];
+                $admin->sgrrId = $group;
+            }
+
+            $admin->serviceDistribution = $routing;
+            $admin->serviceOnlineOnly = $online;
+
+            if ($admin->save()) {
+                $this->redirect('index');
+            }
+        }
+
+        $this->render('serviceRouting', array(
+            'admin' => $admin,
+        ));
+    }
+
+    /**
      * Configure google integration.
      * 
      * This method provides a form for the entry of Google Apps data.  This will
@@ -1132,7 +1231,6 @@ class AdminController extends Controller {
             // $model->visible=1;
             $model->custom = 1;
             $model->modified = 1;
-            $model->fieldName = strtolower($model->fieldName);
 
             $fieldType = $model->type;
             switch ($fieldType) {
@@ -1172,9 +1270,7 @@ class AdminController extends Controller {
                 }
             }
             $tableName = CActiveRecord::model($model->modelName)->tableName();
-
-
-            $field = strtolower($model->fieldName);
+            $field=$model->fieldName;
             if (preg_match("/\s/", $field)) {
                 
             } else {
@@ -1185,6 +1281,15 @@ class AdminController extends Controller {
                 }
             }
             $this->redirect('manageFields');
+        }
+    }
+    
+    public function actionValidateField($fieldName, $modelName){
+        $field=CActiveRecord::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>$fieldName));
+        if(isset($field)){
+            echo "1";
+        }else{
+            echo "0";
         }
     }
 
@@ -1262,9 +1367,9 @@ class AdminController extends Controller {
                         break;
                 }
             }
-            $fieldName = strtolower($fieldModel->fieldName);
             $tableName = CActiveRecord::model($fieldModel->modelName)->tableName();
             $fieldModel->modified = 1;
+            $fieldName=$fieldModel->fieldName;
             (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $fieldModel->required = 1 : $fieldModel->required = 0;
             (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $fieldModel->searchable = 1 : $fieldModel->searchable = 0;
             if ($fieldModel->save()) {
@@ -1377,7 +1482,7 @@ class AdminController extends Controller {
             $module->searchable = 0;
             $module->menuPosition = Modules::model()->count();
             $module->name = 'document';
-            $module->title = $model->title;
+            $module->title = $model->name;
 
             if ($module->save()) {
 
@@ -1774,15 +1879,16 @@ class AdminController extends Controller {
             'protected/modules/' . $moduleName . '/controllers/DefaultController.php',
             'protected/modules/' . $moduleName . '/register.php',
             'protected/modules/' . $moduleName . '/TemplatesModule.php',
+            'protected/modules/' . $moduleName . '/data/uninstall.sql',
+            'protected/modules/' . $moduleName . '/data/install.sql',
         );
         foreach ($fileNames as $fileName) {
-            chmod($fileName, 0755);
             $templateFile = Yii::app()->file->set($fileName);
             if (!$templateFile->exists) {
                 $errors[] = Yii::t('module', 'Template file {filename} could not be found');
                 break;
             } else {
-
+                chmod($fileName, 0755);
                 $contents = $templateFile->getContents();
                 $contents = preg_replace('/templates/', $moduleName, $contents);   // write moduleName into view files
                 $contents = preg_replace('/Templates/', ucfirst($moduleName), $contents);
@@ -1825,7 +1931,7 @@ class AdminController extends Controller {
                                 }
                             }
                             foreach ($sqlComm as $sqlLine) {
-                                $query = Yii::app()->db->createCommand($sql);
+                                $query = Yii::app()->db->createCommand($sqlLine);
                                 $query->execute();
                             }
                         }
@@ -2424,21 +2530,6 @@ class AdminController extends Controller {
                 fputcsv($fp, $tempAttributes);
             }
 
-//            $pageCount=$dp->getPagination()->getPageCount();
-//            if($pageCount>1){
-//                for($i=1;$i<$pageCount;$i++){
-//                    $pg=$dp->getPagination();
-//                    $pg->setCurrentPage($i);
-//                    $dp->setPagination($pg);
-//                    $records=$dp->getData(true);
-//                    foreach($records as $record){
-//                        $tempAttributes=$tempModel->attributes;
-//                        $tempAttributes=array_merge($tempAttributes,$record->attributes);
-//                        $tempAttributes[]=$model;
-//                        fputcsv($fp,$tempAttributes);
-//                    }
-//                }
-//            }
             unset($tempModel, $dp);
 
             fclose($fp);
@@ -2451,6 +2542,94 @@ class AdminController extends Controller {
     public function actionDownloadData($file) {
         $file = Yii::app()->file->set($file);
         $file->send();
+    }
+    
+    public function actionRollbackStage($model,$stage,$importId){
+        $stages=array(
+            "tags"=>"DELETE a FROM x2_tags a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.itemId AND b.modelType=a.type
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            "relationships"=>"DELETE a FROM x2_relationships a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.firstId AND b.modelType=a.firstType
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            "actions"=>"DELETE a FROM x2_actions a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            "records"=>"DELETE a FROM ".CActiveRecord::model($model)->tableName()." a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.id
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            "import"=>"DELETE FROM x2_imports WHERE modelType='$model' AND importId='$importId'",
+        );
+        $sqlQuery=$stages[$stage];
+        $command=Yii::app()->db->createCommand($sqlQuery);
+        $result=$command->execute();
+        echo $result;
+    }
+    
+    public function actionRollbackImport(){
+        if(isset($_GET['importId'])){
+            $importId=$_GET['importId'];
+            $types=Yii::app()->db->createCommand()
+                ->select('modelType')
+                ->from('x2_imports')
+                ->group('modelType')
+                ->where('importId=:importId',array(':importId'=>$importId))
+                ->queryAll();
+            $count=Yii::app()->db->createCommand()
+                    ->select('COUNT(*)')
+                    ->from('x2_imports')
+                    ->group('importId')
+                    ->where('importId=:importId',array(':importId'=>$importId))
+                    ->queryRow();
+            $count=$count['COUNT(*)'];
+            $typeArray=array();
+            foreach($types as $tempArr){
+                $typeArray[]=$tempArr['modelType'];
+            }
+            $this->render('rollbackImport',array(
+                'typeArray'=>$typeArray,
+                'dataProvider'=>null,
+                'count'=>$count,
+            ));
+            
+        }else{
+            $data=array();
+            $imports=Yii::app()->db->createCommand()
+                ->select('importId')
+                ->from('x2_imports')
+                ->group('importId')
+                ->queryAll();
+            foreach($imports as $key=>$array){
+                $data[$key]['id']=$key;
+                $data[$key]['importId']=$array['importId'];
+                $count=Yii::app()->db->createCommand()
+                    ->select('COUNT(*)')
+                    ->from('x2_imports')
+                    ->group('importId')
+                    ->where('importId=:importId',array(':importId'=>$array['importId']))
+                    ->queryRow();
+                $data[$key]['records']=$count['COUNT(*)'];
+                $timestamp=Yii::app()->db->createCommand()
+                    ->select('timestamp')
+                    ->from('x2_imports')
+                    ->group('importId')
+                    ->order('timestamp ASC')
+                    ->where('importId=:importId',array(':importId'=>$array['importId']))
+                    ->queryRow();
+                $data[$key]['timestamp']=$timestamp['timestamp'];
+                $data[$key]['link']="";
+            }
+            $dataProvider=new CArrayDataProvider($data);
+            $this->render('rollbackImport',array(
+                'typeArray'=>array(),
+                'dataProvider'=>$dataProvider,
+            ));
+        }
+        
     }
 
     /**
@@ -2492,6 +2671,15 @@ class AdminController extends Controller {
         $_SESSION['lastFailed'] = "";
         $_SESSION['offset'] = ftell($fp);
         fclose($fp);
+        $criteria=new CDbCriteria;
+        $criteria->order="importId DESC";
+        $criteria->limit=1;
+        $import=Imports::model()->find($criteria);
+        if(isset($import)){
+            $_SESSION['importId']=$import->importId+1;
+        }else{
+            $_SESSION['importId']=1;
+        }
         $failedImport = fopen('failedImport.csv', 'w+');
         fputcsv($failedImport, array(Yii::app()->params->version));
         fclose($failedImport);
@@ -2506,7 +2694,8 @@ class AdminController extends Controller {
             $fp = fopen('data.csv', 'r+');
             fseek($fp, $_SESSION['offset']);
             for ($i = 0; $i < $count; $i++) {
-                if (($arr = fgetcsv($fp)) !== false) {
+                $arr = fgetcsv($fp);
+                if ($arr !== false && !is_null($arr)) {
                     while ("" === end($arr)) {
                         array_pop($arr);
                     }
@@ -2517,62 +2706,80 @@ class AdminController extends Controller {
                         $modelType = $_SESSION['model'];
                         $metaData = $_SESSION['metaData'];
                     } else {
-                        $model = new $modelType;
                         $attributes = array_combine($metaData, $arr);
+                        if($modelType=="Actions" && (isset($attributes['type']) && $attributes['type']=='workflow')){
+                            $model = new Actions('workflow');
+                        }else{
+                            $model = new $modelType;
+                        }
+                        
                         foreach ($attributes as $key => $value) {
                             if ($model->hasAttribute($key) && isset($value)) {
+                                if($value=="")
+                                    $value=null;
                                 $model->$key = $value;
                             }
                         }
                         $lookup = CActiveRecord::model($modelType)->findByPk($model->id);
-                        if($model->validate()){
-                            
-                        }
                         $lookupFlag = isset($lookup);
-                        if ($lookupFlag) {
-                            if ($_SESSION['overwrite'] == 1) {
-                                $tempAttr = $lookup->attributes;
-                                $lookup->delete();
+                        if($model->validate() || $modelType=="User"){
+                            $saveFlag=true;
+                            if ($lookupFlag) {
+                                if ($_SESSION['overwrite'] == 1) {
+                                    $lookup->delete();
+                                }else{
+                                    $saveFlag=false;
+                                    isset($_SESSION['overwriteFailure'][$modelType])?$_SESSION['overwriteFailure'][$modelType]++:$_SESSION['overwriteFailure'][$modelType]=1;
+                                }
+                                if(!$model->validate()){
+                                    $saveFlag=false; 
+                                    $failedImport = fopen('failedImport.csv', 'a+');
+                                    $lastFailed = $_SESSION['lastFailed'];
+                                    if ($lastFailed != $modelType) {
+                                        $tempMeta = $metaData;
+                                        $tempMeta[] = $modelType;
+                                        fputcsv($failedImport, $tempMeta);
+                                    }
+                                    $attr = $model->attributes;
+                                    $tempAttributes = CActiveRecord::model($modelType)->attributes;
+                                    $attr = array_merge($tempAttributes, $attr);
+                                    $attr[] = $modelType;
+                                    fputcsv($failedImport, $attr);
+                                    $_SESSION['lastFailed'] = $modelType;
+                                    isset($_SESSION['failed']) ? $_SESSION['failed']++ : $_SESSION['failed'] = 1;
+                                }
                             }
-                        }
-                        if ($lookupFlag && $_SESSION['overwrite'] != 1) {
-                            isset($_SESSION['overwriteFailure'][$modelType])?$_SESSION['overwriteFailure'][$modelType]++:$_SESSION['overwriteFailure'][$modelType]=1;
-                        } else {
-                            if ($model->save()) {
+                            if ($saveFlag && $model->save()) {
+                                if($modelType!="Admin" && !(($modelType=="User" || $modelType=="Profile") && ($model->username=='admin' || $model->username=='api'))){
+                                    $importLink=new Imports;
+                                    $importLink->modelType=$modelType;
+                                    $importLink->modelId=$model->id;
+                                    $importLink->importId=$_SESSION['importId'];
+                                    $importLink->timestamp=time();
+                                    $importLink->save();
+                                }
                                 isset($_SESSION['counts'][$modelType]) ? $_SESSION['counts'][$modelType]++ : $_SESSION['counts'][$modelType] = 1;
                                 if ($lookupFlag) {
                                     isset($_SESSION['overwriten'][$modelType]) ? $_SESSION['overwriten'][$modelType]++ : $_SESSION['overwriten'][$modelType] = 1;
                                 } else {
                                     isset($_SESSION['overwriten'][$modelType])? : $_SESSION['overwriten'][$modelType] = 0;
                                 }
-                            } else {
-                                if ($lookupFlag) {
-                                    $newModel = new $modelType;
-                                    foreach ($tempAttr as $key => $value) {
-                                        if ($newModel->hasAttribute($key) && isset($value)) {
-                                            $newModel->$key = $value;
-                                        }
-                                    }
-                                    $newModel->id = $model->id;
-                                    if ($newModel->save()) {
-                                        
-                                    }
-                                }
-                                $failedImport = fopen('failedImport.csv', 'a+');
-                                $lastFailed = $_SESSION['lastFailed'];
-                                if ($lastFailed != $modelType) {
-                                    $tempMeta = $metaData;
-                                    $tempMeta[] = $modelType;
-                                    fputcsv($failedImport, $tempMeta);
-                                }
-                                $attr = $model->attributes;
-                                $tempAttributes = CActiveRecord::model($modelType)->attributes;
-                                $attr = array_merge($tempAttributes, $attr);
-                                $attr[] = $modelType;
-                                fputcsv($failedImport, $attr);
-                                $_SESSION['lastFailed'] = $modelType;
-                                isset($_SESSION['failed']) ? $_SESSION['failed']++ : $_SESSION['failed'] = 1;
+                            } 
+                        } else {
+                            $failedImport = fopen('failedImport.csv', 'a+');
+                            $lastFailed = $_SESSION['lastFailed'];
+                            if ($lastFailed != $modelType) {
+                                $tempMeta = $metaData;
+                                $tempMeta[] = $modelType;
+                                fputcsv($failedImport, $tempMeta);
                             }
+                            $attr = $model->attributes;
+                            $tempAttributes = CActiveRecord::model($modelType)->attributes;
+                            $attr = array_merge($tempAttributes, $attr);
+                            $attr[] = $modelType;
+                            fputcsv($failedImport, $attr);
+                            $_SESSION['lastFailed'] = $modelType;
+                            isset($_SESSION['failed']) ? $_SESSION['failed']++ : $_SESSION['failed'] = 1;
                         }
                     }
                 } else {
@@ -2610,65 +2817,6 @@ class AdminController extends Controller {
     }
 
     /**
-     * Private method that actually performs the import (deprecated)
-     * 
-     * @deprecated
-     * @param File $file The file of data to be imported
-     * @param boolean $overwrite Whether or not to overwrite old records if there are duplicates, defaults to false
-     */
-//    private function globalImport($file, $overwrite) {
-//        $fp = fopen($file, 'r+');
-//        $version = fgetcsv($fp);
-//        $version = $version[0];
-//        $type = "";
-//        $meta = array();
-//        while ($pieces = fgetcsv($fp)) {
-//            if ($pieces[count($pieces) - 1] != $type) {
-//                $type = $pieces[count($pieces) - 1];
-//                $meta = $pieces;
-//                continue;
-//            }
-//            if(class_exists($pieces[count($pieces) - 1]))
-//                $model=new $pieces[count($pieces) - 1];
-//            else
-//                continue;
-//            unset($pieces[count($pieces) - 1]);
-//            $tempMeta = $meta;
-//            unset($tempMeta[count($tempMeta) - 1]);
-//            $temp = array();
-//            for ($i = 0; $i < count($tempMeta); $i++) {
-//                $temp[$tempMeta[$i]] = $pieces[$i];
-//            }
-//            foreach ($temp as $field => $value) {
-//                if (isset($temp[$field]) && $model->hasAttribute($field)){
-//                    $model->$field = $temp[$field];
-//                }
-//            }
-//            $lookup = CActiveRecord::model(get_class($model))->findByPk($model->id);
-//            
-//            if (!isset($lookup)) {
-//                
-//                if($model->save()){
-//                    
-//                }else{
-//                    printR($model->getErrors(),true);
-//                }
-//                
-//            } else if ($overwrite) {
-//                $lookup->delete();
-//                if($model->save()){
-//                     
-//                }else{
-//                    printR($model->getErrors(),true);
-//                }
-//            }
-//            unset($model);
-//        }
-//        unlink($file);
-//        $this->redirect('index');
-//    }
-
-    /**
 	 * Runs the updater. It is in this action where the entire file is copied
 	 * from the remote update server.
 	 */
@@ -2692,7 +2840,8 @@ class AdminController extends Controller {
 				// Download the new updater so that update can proceed as usual;
 				$updaterFiles = array(
 					"protected/controllers/AdminController.php",
-					"protected/views/admin/updater.php"
+					"protected/views/admin/updater.php",
+					"protected/components/UpdaterBehavior.php"
 					);
 				foreach($updaterFiles as $file) {
 					$this->ccopy("http://x2planet.com/updates/x2engine/$file", $file);
@@ -2720,12 +2869,16 @@ class AdminController extends Controller {
 					}
 				}
 				$updateData = @file_get_contents('http://x2planet.com/installs/updates/' . strtr($route, $params));
-
+				
+				
 				if ($updateData) {
 					// Render the updater with the data
 					$updateData = CJSON::decode($updateData);
 					$updateData['newVersion'] = $versionTest;
 					$updateData['updaterCheck'] = $updaterCheck;
+					
+					
+					
 					if (!isset($updateData['errors'])) {
 						$updateData['scenario'] = 'update';
 						foreach(array('updaterCheck','updaterVersion','version','unique_id') as $var)
@@ -2735,7 +2888,10 @@ class AdminController extends Controller {
 							$updateData['edition'] = Yii::app()->params->admin->edition;
 						$updateData['url'] = 'x2planet';
 						// Ready to run the updater.
-						$this->saveBackup($updateData['fileList']);
+						$newFiles = $updateData['fileList'];
+						if(!empty($updateData['nonFreeFileList']))
+							$newFiles = array_merge($newFiles,$updateData['nonFreeFileList']);
+						$this->saveBackup($newFiles);
 						$this->render('updater', $updateData);
 					} else { // Scenario $updateData['errors'] is set; server denied/dropped request
 						// Redirect, with the appropriate error message
@@ -2791,7 +2947,7 @@ class AdminController extends Controller {
 			if (isset($_POST[$var]))
 				${$var} = $_POST[$var];
 			else
-				$this->_sendResponse('400', "Missing POST data variable $var.");
+				$this->respond("Missing POST data variable $var.",true);
 		}
 		$fileList = CJSON::decode($fileList);
 
@@ -2801,7 +2957,7 @@ class AdminController extends Controller {
 				$admin->edition = $edition;
 				$admin->unique_id = $unique_id;
 				$admin->save();
-				echo "Upgrade succeeded!";
+				$this->respond("Upgrade succeeded!");
 			} else {
 				$this->_sendResponse('400', 'Edition info must be updated via AJAX.');
 			}
@@ -2810,7 +2966,7 @@ class AdminController extends Controller {
 			foreach ($fileList as $file)
 				if (file_exists($file))
 					unlink($file);
-			echo "Upgrade failed.  Please try again or contact X2Engine.";
+			$this->respond("Upgrade failed.  Please try again or contact X2Engine.",true);
 		}
 	}
 	
@@ -2839,6 +2995,7 @@ class AdminController extends Controller {
      * Downloads files as a part of the updater. 
      */
     public function actionDownload($url,$route, $file) {
+		set_error_handler('AdminController::respondWithError');
 		if (Yii::app()->request->isAjaxRequest) {
 			if ($url == 'x2planet') {
 				$i = 0;
@@ -2848,16 +3005,17 @@ class AdminController extends Controller {
 					}
 				}
 				if ($i == 5) {
-					$this->_sendResponse('500', 'Error copying file');
+					$this->respond("Error copying file $file.",true,false,true);
 				} else {
-					$this->_sendResponse('200', 'File copied successfully');
+					$this->respond('File copied successfully');
 				}
 			} else {
-				$this->_sendResponse('501', 'Update server not implemented for URL provided.');
+				$this->respond('Update server not implemented for URL provided.',true,false,true);
 			}
 		} else {
 			$this->_sendResponse('400', 'Update requests must be made via AJAX.');
 		}
+		restore_error_handler();
 	}
 
     /**
@@ -2868,9 +3026,9 @@ class AdminController extends Controller {
             $file = $_POST['delete'];
             if (file_exists($file)) {
                 if (unlink($file))
-                    $this->_sendResponse('200', 'File deleted successfully');
+                    $this->respond('File deleted successfully');
                 else
-                    $this->_sendResponse('500', 'File deletion failed');
+                    $this->respond('File deletion failed',true);
             }
         }
     }
@@ -2896,43 +3054,37 @@ class AdminController extends Controller {
      * changes or vice versa. 
      */
     public function actionInstallUpdate() {
-
         $this->copyFile("temp");
+		$sqlRun = array();
         if (isset($_POST['sqlList'])) {
             $sql = $_POST['sqlList'];
             foreach ($sql as $query) {
                 if ($query != "") {
-                    $command = Yii::app()->db->createCommand($query);
-                    $result = $command->execute();
+					try {
+						$command = Yii::app()->db->createCommand($query);
+						$result = $command->execute();
+						$sqlRun[] = $query;
+					} catch (CDbException $e) {
+						$message = 'A database change failed to apply. ';
+						if (count($sqlRun)) {
+							$message .= count($sqlRun).' changes were applied prior to this failure:<ol>';
+							foreach ($sqlRun as $sqlStatemt)
+								$message .= '<li>' . CHtml::encode($sqlStatemt) . '</li>';
+							$message .= '</ol> Please save the above list. <br /><br />';
+						}
+						$message .= " The error message given was: ".CHtml::encode($e->getMessage());
+						$message .= '<br /><br /> Update failed.';
+						$this->respond($message,true,false,true);
+					}
                 }
             }
         } else {
-            $this->_sendResponse('500', 'Failure.');
+            $this->respond('Improper request; expected postdata variable "sqlList"',true);
         }
         $this->rrmdir("temp");
-        $this->_sendResponse('200', 'SQL Executed Successfully');
+        $this->respond('Database changes succesfully applied.');
     }
 
-    /**
-     * Wrapper for {@link ccopy}
-     * 
-     * Recursively copyies a directory if the specified.
-     * @param string $file The starting point, whether file or directory.
-     */
-    protected function copyFile($file) {
-        if (file_exists($file)) {
-            if (is_dir($file)) {
-                $objects = scandir($file);
-                foreach ($objects as $object) {
-                    if ($object != "." && $object != "..") {
-                        $this->copyFile($file . "/" . $object);
-                    }
-                }
-            } else {
-                $this->ccopy("$file", substr($file, 5));
-            }
-        }
-    }
 
     /**
      * Perform all post-update tasks. 
@@ -2945,12 +3097,12 @@ class AdminController extends Controller {
 			$status = $_POST['status'];
 			if ($status == 'error') {
 				$this->restoreBackup(CJSON::decode($_POST['fileList']));
-				echo "Update failed.  Please try again or contact X2Engine.";
+				$this->respond("Update failed.  Please try again or contact X2Engine.",true);
 			} else {
 				$url = $_POST['url'];
 				$updaterCheck = file_get_contents("http://www.$url.com/updates/updateCheck.php");
 				$this->regenerateConfig($_POST['version'],$_POST['updater'],time());
-				echo "Update succeeded!";
+				$this->respond("Update succeeded!");
 			}
 		}
 		if (is_dir('backup'))
@@ -2969,33 +3121,6 @@ class AdminController extends Controller {
 		echo Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
 		Yii::app()->end();
 	}
-
-    /**
-     * Copies a file. 
-     * 
-     * If the local filesystem directory to where the file will be copied does 
-     * not exist yet, it will be created automatically.
-     * 
-     * @param string $filepath The source file
-     * @param strint $file The destination path.
-     * @return boolean 
-     */
-    function ccopy($filepath, $file) {
-
-        $pieces = explode('/', $file);
-        unset($pieces[count($pieces)]);
-        for ($i = 0; $i < count($pieces); $i++) {
-            $str = "";
-            for ($j = 0; $j < $i; $j++) {
-                $str.=$pieces[$j] . '/';
-            }
-
-            if (!is_dir($str) && $str != "") {
-                mkdir($str);
-            }
-        }
-        return copy($filepath, $file);
-    }
 
     /**
      * Recursively removes a directory.
@@ -3174,53 +3299,41 @@ class AdminController extends Controller {
     }
 	
 	/**
-	 * Rebuilds the configuration file, i.e. during an update.
+	 * Error handler for AJAX-called actions that returns errors in JSON format.
 	 * 
-	 * @param type $newversion If set, change the version to this value in the resulting config file
-	 * @param type $newupdaterVersion If set, change the updater version to this value in the resulting config file
-	 * @param type $newbuildDate If set, change the build date to this value in the resulting config file
+	 * @param type $no
+	 * @param type $st
+	 * @param type $fi
+	 * @param type $ln 
 	 */
-	public function regenerateConfig($newversion=Null,$newupdaterVersion=Null,$newbuildDate=Null) {
-		if(!file_exists('protected/config/X2Config.php')) {
-			// App is using old config file. New one will be generated.
-			include('protected/config/emailConfig.php');
-			include('protected/config/dbConfig.php');
-		} else {
-			include('protected/config/X2Config.php');
+	public static function respondWithError($no, $st, $fi = Null, $ln = Null) {
+		header("Content-type: application/json");
+		echo CJSON::encode(array(
+			'message' => "Error [$no]: $st",
+			'error' => true
+		));
+		Yii::app()->end();
+	}
+	
+	/**
+	 * Error handler for missing behavior classes. 
+	 * 
+	 * @param type $no
+	 * @param type $st
+	 * @param type $fi
+	 * @param type $ln
+	 * @throws CHttpException 
+	 */
+	public static function missingBehaviorError($no,$st,$fi=Null,$ln=Null) {
+		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine';
+		$message = "One or more behaviors of AdminController are missing and could not be automatically retrieved. The behaviors are: ";
+		$behaviorPaths = array();
+		foreach (self::$behaviorClasses as $class) {
+			$behaviorPaths[] = "protected/components/$class.php";
 		}
-		
-		if (!isset($appName)) {
-			if(!empty(Yii::app()->name))
-				$appName = Yii::app()->name;
-			else
-				$appName = "X2EngineCRM";
-		}
-		if (!isset($email)) {
-			if(!empty(Yii::app()->params->admin->emailFromAddr))
-				$email = Yii::app()->params->admin->emailFromAddr;
-			else
-				$email = 'contact@'.$_SERVER['SERVER_NAME'];
-		}
-		if (!isset($language)) {
-			if(!empty(Yii::app()->language))
-				$language = Yii::app()->language;
-			else
-				$language = 'en';
-		}
-		
-		$config = "<?php\n";
-		if (!isset($buildDate))
-			$buildDate = time();
-		if (!isset($updaterVersion))
-			$updaterVersion = '';
-
-		foreach(array('version','updaterVersion','buildDate') as $var)
-			if(!empty(${'new'.$var}))
-				${$var} = ${'new'.$var};
-		
-		foreach (array('appName', 'email', 'language', 'host', 'user', 'pass', 'dbname', 'version', 'updaterVersion') as $var)
-			$config .= "\$$var='" . ${$var} . "';\n";
-		$config .= "\$buildDate = $buildDate;\n";
-		file_put_contents('protected/config/X2Config.php', $config);
+		$message .= implode(', ',$behaviorPaths);
+		$message .= '; this error is due to PHP\'s "copy" function failing during an update, which could be caused either by a server misconfiguration or a faltering connection to the internet.';
+		$message .= ' You can fix this by downloading the missing files from Github or SourceForge and uploading them to your web server at the specified paths, or by trying your request to the Admin console again.';
+		throw new CHttpException(500, $message);
 	}
 }

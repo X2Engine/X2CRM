@@ -62,46 +62,16 @@ class NotificationsController extends CController {
 	 */
 	public function actionGet() {
 	
-		// import all the models
-		Yii::import('application.models.Social');
-		Yii::import('application.models.Profile');
-		Yii::import('application.models.Notification');
-		Yii::import('application.models.Fields');
-        Yii::import('application.components.X2WebUser');
-		foreach(scandir('protected/modules') as $module){
-			if(file_exists('protected/modules/'.$module.'/register.php'))
-				Yii::import('application.modules.'.$module.'.models.*');
-		}
-
 		if(!isset($_GET['lastNotifId']))	// if the client doesn't specify the last 
 			$_GET['lastNotifId'] = 0;		// message ID received, send everything
-
-		$notifications = array();
+	
+	
+		$notifications = $this->getNotifications($_GET['lastNotifId']);
 		$notifCount = 0;
-		
-		$notifModels = CActiveRecord::model('Notification')->findAll(new CDbCriteria(array(
-			'condition'=>'id>:lastId AND user=:user',
-			'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$_GET['lastNotifId']),
-			'order'=>'id DESC',
-			'limit'=>10
-		)));
 
-		if(count($notifModels))
+		
+		if(count($notifications))
 			$notifCount = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
-		
-		foreach($notifModels as &$model) {
-			$msg = $model->getMessage();
-
-			if(isset($msg)) {
-				$notifications[] = array(
-					'id'=>$model->id,
-					'viewed'=>$model->viewed,
-					'date'=>Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'),$model->createDate),
-					'text'=>$msg
-				);
-			}
-		}
-		
 		
 		$chatMessages = array();
 		$lastChatId = 0;
@@ -145,6 +115,59 @@ class NotificationsController extends CController {
 	}
 
 	/**
+	 * Looks up notifications using the specified offset and limit
+	 */
+	public function getNotifications($lastId=0,$getNext=false) {
+	
+		// import all the models
+		Yii::import('application.models.Social');
+		Yii::import('application.models.Profile');
+		Yii::import('application.models.Notification');
+		Yii::import('application.models.Fields');
+        Yii::import('application.components.X2WebUser');
+		foreach(scandir('protected/modules') as $module){
+			if(file_exists('protected/modules/'.$module.'/register.php'))
+				Yii::import('application.modules.'.$module.'.models.*');
+		}
+		
+		$notifications = array();
+		
+		if($getNext) {
+			$criteria = new CDbCriteria(array(
+				'condition'=>'id<=:lastId AND user=:user',								// don't get anything more recent than lastId, 
+				'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),	// because these are going to get appended to the end, 
+				'order'=>'id DESC',														// not the beginning of the list
+				'limit'=>1,		// only get the 10th row
+				'offset'=>9
+			));
+		} else {
+			$criteria = new CDbCriteria(array(
+				'condition'=>'id>:lastId AND user=:user',								// normal request; get everything since lastId
+				'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),
+				'order'=>'id DESC',
+				'limit'=>10
+			));
+		}
+
+		
+		$notifModels = CActiveRecord::model('Notification')->findAll($criteria);
+		
+		foreach($notifModels as &$model) {
+			$msg = $model->getMessage();
+			
+			if($msg !== null) {
+				$notifications[] = array(
+					'id'=>$model->id,
+					'viewed'=>$model->viewed,
+					'date'=>Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'),$model->createDate),
+					'text'=>$msg
+				);
+			}
+		}
+		return $notifications;
+	}
+	
+	/**
 	 * Mark an action as viewed. 
 	 */
 	public function actionMarkViewed() {
@@ -163,13 +186,20 @@ class NotificationsController extends CController {
 	}
 	
 	/**
-	 * Delete an action by its ID 
+	 * Delete an action by its ID. Encode and return the next notification if requested
 	 * @param type $id
 	 */
 	public function actionDelete($id) {
+	
+		if(!isset($_GET['lastNotifId']))
+			$_GET['lastNotifId'] = 0;
+	
 		$model = CActiveRecord::model('Notification')->findByPk($id);
 		if(isset($model) && $model->user = Yii::app()->user->name)
 			$model->delete();
+			
+		if(isset($_GET['getNext']))
+			echo CJSON::encode(array('notifData'=>$this->getNotifications($_GET['lastNotifId'],true)));
 	}
 
 	/**

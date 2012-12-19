@@ -50,7 +50,7 @@ class DocChild extends Docs {
 		$criteria=new CDbCriteria;
 
 		// $criteria->compare('id',$this->id);
-		$criteria->compare('title',$this->title,true);
+		$criteria->compare('name',$this->name,true);
         $criteria->compare('subject',$this->subject,true);
 		// $criteria->compare('text',$this->text,true);
 		$criteria->compare('createdBy',$this->createdBy,true);
@@ -85,6 +85,9 @@ class DocChild extends Docs {
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),
+            'sort'=>array(
+                'defaultOrder'=>'lastUpdated DESC',
+            ),
 			'criteria'=>$criteria,
 		));
 	}
@@ -106,7 +109,7 @@ class DocChild extends Docs {
         }
 		$templates = CActiveRecord::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
 		foreach($templates as &$template)
-			$templateLinks[$template->id] = $template->title;
+			$templateLinks[$template->id] = $template->name;
 		natcasesort($templateLinks);
 		return $templateLinks;
 	}
@@ -126,7 +129,7 @@ class DocChild extends Docs {
 		return array(
 			'id' => Yii::t('docs','ID'),
 			'type' => Yii::t('docs','Doc Type'),
-			'title' => Yii::t('docs','Title'),
+			'name' => Yii::t('docs','Title'),
 			'text' => Yii::t('docs','Text'),
 			'createdBy' => Yii::t('docs','Created By'),
 			'createDate' => Yii::t('docs','Create Date'),

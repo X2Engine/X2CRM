@@ -45,7 +45,7 @@ $author = $authorRecord->firstName.' '.$authorRecord->lastName;
 	<div class="deleteButton">
 		<?php 
 		$parent=Social::model()->findByPk($data->associationId);
-		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId())
+		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex'))
 			echo CHtml::link('[x]',array('deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
 	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)); ?> <span class="comment-age"><?php echo x2base::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />

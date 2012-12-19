@@ -70,7 +70,6 @@ return array (
 'Color'=>'Kleur',
 'Start Date'=>'Begin Datum',
 'End Date'=>'Eind Datum',
-'User\'s Group'=>'Gebruikers Groep',
 
 // Colors
 'Blue'=>'Blauw',
@@ -83,23 +82,16 @@ return array (
 'All Actions'=>'Alle Acties',
 'Create Lead'=>'Lead Aanmaken',
 'Create Action'=>'Actie Aanmaken',
-'View Action'=>'Bekijk Actie',
+'View Action'=>'Actie bekijken',
 'Update Action'=>'Actie Bijwerken',
 'Complete Action'=>'Actie Afronden',
 'Complete + New Action'=>'Afgerond + Nieuwe Actie',
 'Complete and View Contact'=>'Afgerond en Bekijk Contact',
-'Uncomplete'=>'Niet Afgerond',
-'Log A Call'=>'Een Gesprek Opslaan',
+'Uncomplete'=>'Niet afgerond',
+'Log A Call'=>'Een gesprek Opslaan',
 'New Action'=>'Nieuwe Actie',
 'New Comment'=>'Nieuw Commentaar',
 'Publisher'=>'Publicator',
-'Update'=>'Bijwerken',
-'Complete Selected'=>'Compleet Geselecteerde',
-'Uncomplete Selected'=>'Onvolledig Geselecteerde',
-'Show Actions'=>'Toon Acties',
-'All'=>'Alle',
-'Delete'=>'Verwijder',
-'Overdue'=>'Achterstallig',
 
 // Actions Titles
 'Manage Actions'=>'Beheer Acties',
@@ -110,24 +102,23 @@ return array (
 'Update Action:'=>'Actie Bijwerken',
 'Action'=>'Actie',
 'Action: '=>'Actie:',
-'Today\'s Actions'=>'Actie\'s van Vandaag',
+'Today\'s Actions'=>'Actie\'s van vandaag',
 'My Actions'=>'Mijn Acties',
 'All My Actions'=>'Al Mijn Acties',
-'Everyone\'s Actions'=>'Iedereeens Actie\'s',
+'Everyone\'s Actions'=>'iedereeens Actie\'s',
 'Delete Action'=>'Verwijder Actie',
 'Share Action'=>'Deel Actie',
 'Create'=>'Aanmaken',
 'New Event'=>'Nieuw Evenement',
-'Call:'=>'Bel:',
 
 
 // Misc
-'Email Message:'=>'Email Bericht:',
-'Attachment:'=>'Bijlage:',
+'Email Message:'=>'Email Bericht',
+'Attachment:'=>'Bijlage',
 'Assigned to {name}'=>'Toegewezen aan {name}',
 'Completed by {name}'=>'Afgerond door {name}',
 'Completed {date}'=>'Afgerond {date}',
-'Completion Notes'=>'Afronding Notities',
+'Completion Notes'=>'Afronding notities',
 'That action is not assigned to you.'=>'Die actie is niet aan jou toegewezen',
 'Associated With'=>'Relatie Met',
 'Association Info'=>'Relatie Info',
@@ -137,7 +128,7 @@ return array (
 'Status'=>'Status',
 'Contact Info'=>'Contact Info',
 'View'=>'Bekijk',
-'Overdue {time}'=>'Te Laat {time}',
+'Overdue {time}'=>'Te laat {time}',
 'Due {date}'=>'Einddatum',
 
 // Create Action Types
@@ -146,7 +137,7 @@ return array (
 'Account'=>'Account',
 'Project'=>'Project',
 'Case'=>'Zaak',
-'Opportunity'=>'Kans',
+'Sale'=>'Verkoop',
 
 // Action Reminder Email
 'No one'=>'Niemand',
@@ -158,5 +149,5 @@ return array (
 'Associations'=>'Relaties',
 'Link to the action'=>'Link naar de actie',
 'Link to the'=>'Link naar de',
-'Powered by '=>'Mogelijk gemaakt door',
+'Powered by '=>'Werkend door',
 );

@@ -100,6 +100,8 @@ if(!empty(Yii::app()->params->roles)) {
 			$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
 	}
 }
+if(!isset($specialFields))
+	$specialFields = array();
 
 $i = 0;
 foreach($layoutData['sections'] as &$section) {
@@ -191,7 +193,10 @@ foreach($layoutData['sections'] as &$section) {
 										$style .= 'min-height:'.$item['height'].'px;';
 									echo '<div class="formInputBox" style="'.$style.'">';
 									
-									$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
+									if(isset($specialFields[$fieldName]))
+										$fieldHtml = $specialFields[$fieldName];
+									else
+										$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
 									if(empty($fieldHtml))
 										echo '&nbsp;';
 									else

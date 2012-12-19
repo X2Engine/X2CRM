@@ -125,10 +125,13 @@ class X2CalendarPermissions extends CActiveRecord
 		
 		// put 'Web Admin' and 'Anyone' at the end of the list
 		$names['Anyone'] = 'Anyone';
-		$adminName = ucwords($names['admin']); // Round-about way
-		unset($names['admin']);       //          of putting admin
-		$names['admin'] = $adminName; //                at the end of the list
-        unset($names['api']);
+		if(isset($names['admin'])) {
+			$adminName = ucwords($names['admin']); // Round-about way
+			unset($names['admin']);       //          of putting admin
+			$names['admin'] = $adminName; //                at the end of the list
+		}
+		if(isset($names['api']))
+        	unset($names['api']);
 		
 		return $names;
 	}

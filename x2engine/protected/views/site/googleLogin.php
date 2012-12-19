@@ -58,12 +58,12 @@ $admin=Admin::model()->findByPk(1);
 if(isset($admin->googleIntegration) && $admin->googleIntegration=='1'){
 
 $timezone = date_default_timezone_get();
-require_once 'protected/extensions/google-api-php-client/src/apiClient.php';
-require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php"; // for google calendar sync
-require_once 'protected/extensions/google-api-php-client/src/contrib/apiOauth2Service.php'; // for google oauth login
+require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
+require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php"; // for google calendar sync
+require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php'; // for google oauth login
 date_default_timezone_set($timezone);
 
-$client = new apiClient();
+$client = new Google_Client();
 $client->setApplicationName("X2Engine CRM");
 // Visit https://code.google.com/apis/console to generate your
 // oauth2_client_id, oauth2_client_secret, and to register your oauth2_redirect_uri.
@@ -71,8 +71,8 @@ $client->setClientId($admin->googleClientId);
 $client->setClientSecret($admin->googleClientSecret);
 $client->setRedirectUri( (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('') );
 //$client->setDeveloperKey('insert_your_developer_key');
-$oauth2 = new apiOauth2Service($client);
-$googleCalendar = new apiCalendarService($client);
+$oauth2 = new Google_Oauth2Service($client);
+$googleCalendar = new Google_CalendarService($client);
 
 if (isset($_REQUEST['logout'])) {
   unset($_SESSION['access_token']);

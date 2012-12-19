@@ -195,7 +195,7 @@ function addFormSection(type,columns,title) {
 		title = '';
 	
 	// create formSection div and formSectionHeader, with editing links
-	var html = '<div class="formSection showSection'+((type == 'collapsible')? ' collapsible':'') +'"><div class="formSectionHeader">';
+	var html = '<div class="formSectionHeader">';
 	html += '<a href="javascript:void(0)" class="formSectionDelCol">&ndash;Col</a>';
 	html += '<a href="javascript:void(0)" class="formSectionAddCol">+Col</a>';
 	html += '<a href="javascript:void(0)" class="formSectionSetName">Rename</a>';
@@ -209,10 +209,14 @@ function addFormSection(type,columns,title) {
 	for(a=0; a<columns; a++) {
 		html += '<td><div class=\"formSortable\"></div></td>';
 	}
-		
-	html += '</tr></table></div></div></div>';
-	
-	$(html).appendTo('#formEditor').find('.formSortable').sortable({
+	html += '</tr></table></div></div>';
+	// $('#formEditor').find('.formSortable').css('border','1px solid red');
+
+	$(document.createElement('div'))
+		.addClass('formSection showSection'+((type == 'collapsible')? ' collapsible':''))
+		.appendTo('#formEditor').html(html)
+		.find('.formSortable')
+		.sortable({
 			connectWith:'.formSortable',
 			items:'.formItem',
 			tolerance:'pointer',
@@ -499,8 +503,8 @@ function generateFormJson() {
 // parse a JSON layout string and call appropriate functions to recreate the layout
 function loadFormJson(formJson) {
 
-	// console.debug(formJson);
 	var form = $.parseJSON(formJson);
+	// console.log(form);
 
 	for(i=0; i<form.sections.length; i++) {
 
@@ -518,10 +522,9 @@ function loadFormJson(formJson) {
 				$col.width(formSection.rows[0].cols[j].width);
 
 				for(k=0; k<formSection.rows[0].cols[j].items.length; k++) {
-				
+					// console.log(formSection.rows[0].cols[j].items[k]);
 					var properties = formSection.rows[0].cols[j].items[k];
 					var formItem = $('#editorFieldList').find('#'+properties.name);
-					
 					formItem.appendTo($col.find('.formSortable'))
 						.data({'labelType':properties.labelType,'readOnly':properties.readOnly}).find('.formInputBox').resizable({
 							grid: [5,10],

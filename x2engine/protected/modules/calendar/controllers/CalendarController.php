@@ -281,10 +281,10 @@ class CalendarController extends x2base {
 		
 		// if google integration is activated let user choose if they want to link this calendar to a google calendar
 		if($googleIntegration) {
-			require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-			require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+			require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+			require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 			
-			$client = new apiClient();
+			$client = new Google_Client();
 			$client->setApplicationName("Google Calendar Integration");
 			
 			// Visit https://code.google.com/apis/console?api=calendar to generate your
@@ -292,9 +292,9 @@ class CalendarController extends x2base {
 			$client->setClientId($admin->googleClientId);
 			$client->setClientSecret($admin->googleClientSecret);
 			$client->setRedirectUri( (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl(''));
-			$client->setDeveloperKey($admin->googleAPIKey);
+			//$client->setDeveloperKey($admin->googleAPIKey);
 			$client->setAccessType('offline');
-			$googleCalendar = new apiCalendarService($client);
+			$googleCalendar = new Google_CalendarService($client);
 						
 			if (isset($_GET['unlinkGoogleCalendar'])) { // user changed thier mind about linking their google calendar
 			  unset($_SESSION['token']);
@@ -1185,12 +1185,12 @@ class CalendarController extends x2base {
 		// if google integration is activated let user choose if they want to link this calendar to a google calendar
 		if($googleIntegration) {
 			$timezone = date_default_timezone_get();
-			require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-			require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php"; // for google calendar sync
-			require_once 'protected/extensions/google-api-php-client/src/contrib/apiOauth2Service.php'; // for google oauth login
+			require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+			require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php"; // for google calendar sync
+			require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php'; // for google oauth login
 			date_default_timezone_set($timezone);
 			
-			$client = new apiClient();
+			$client = new Google_Client();
 			$syncGoogleCalendarName = null; // name of the Google Calendar that current user's actions are being synced to if it has been set
 			
 			if (isset($_GET['unlinkGoogleCalendar'])) { // user changed thier mind about linking their google calendar
@@ -1208,9 +1208,9 @@ class CalendarController extends x2base {
 				$client->setClientId($admin->googleClientId);
 				$client->setClientSecret($admin->googleClientSecret);
 				$client->setRedirectUri( (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl(''));
-				$client->setDeveloperKey($admin->googleAPIKey);
+				//$client->setDeveloperKey($admin->googleAPIKey);
 				$client->setAccessType('offline');
-				$googleCalendar = new apiCalendarService($client);
+				$googleCalendar = new Google_CalendarService($client);
 			
 				if (isset($_GET['code'])) { // returning from google with access token
 				  $client->authenticate();
@@ -1230,9 +1230,9 @@ class CalendarController extends x2base {
 			} else if($model->syncGoogleCalendarRefreshToken) {
 				$client->setClientId($admin->googleClientId);
 				$client->setClientSecret($admin->googleClientSecret);
-				$client->setDeveloperKey($admin->googleAPIKey);
+				//$client->setDeveloperKey($admin->googleAPIKey);
 				$client->setAccessToken($model->syncGoogleCalendarAccessToken);
-				$googleCalendar = new apiCalendarService($client);
+				$googleCalendar = new Google_CalendarService($client);
 				
 				// check if the access token needs to be refreshed
 				// note that the google library automatically refreshes the access token if we need a new one, 
@@ -1259,10 +1259,10 @@ class CalendarController extends x2base {
 				$client->setClientId($admin->googleClientId);
 				$client->setClientSecret($admin->googleClientSecret);
 				$client->setRedirectUri( (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl(''));
-				$client->setDeveloperKey($admin->googleAPIKey);
+				//$client->setDeveloperKey($admin->googleAPIKey);
 				$client->setAccessType('offline');
-				$googleCalendar = new apiCalendarService($client);
-				$oauth2 = new apiOauth2Service($client);
+				$googleCalendar = new Google_CalendarService($client);
+				$oauth2 = new Google_Oauth2Service($client);
 			
 				if (isset($_GET['code'])) { // returning from google with access token
 				  $client->authenticate();

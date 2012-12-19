@@ -60,6 +60,6 @@ if(Yii::app()->user->checkAccess('AdminIndex') || $user==$model->createdBy)
 $this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('exportToHtml','id'=>$model->id));
 ?>
 
-<h2><?php echo $title; ?> <b><?php echo CHtml::encode($model->title); ?></b></h2>
+<h2><?php echo $title; ?> <b><?php echo CHtml::encode($model->name); ?></b></h2>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

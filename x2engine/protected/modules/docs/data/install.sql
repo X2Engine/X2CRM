@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `x2_docs`;
 /*&*/
 CREATE TABLE `x2_docs` (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	title					VARCHAR(100)	NOT NULL,
+	name					VARCHAR(100)	NOT NULL,
     subject                 VARCHAR(255),
 	type					VARCHAR(10)		NOT NULL DEFAULT "",
 	text					LONGTEXT		NOT NULL,

@@ -129,7 +129,7 @@ class X2List extends CActiveRecord {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
-		$criteria=new CDbCriteria;
+		$criteria = new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('name',$this->name,true);
@@ -166,20 +166,20 @@ class X2List extends CActiveRecord {
 	}
 
 	public static function load($id) {
-        if(Yii::app()->user->checkAccess('AdminIndex')){
-            $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
-                    /* x2temp */
-                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                    if(!empty($groupLinks))
-                        $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
+        // if(Yii::app()->user->checkAccess('AdminIndex')) {
+            // $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
+			// /* x2temp */
+			// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			// if(!empty($groupLinks))
+				// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-                    $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
-                        (SELECT username FROM x2_group_to_user WHERE groupId IN
-                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-        }else{
-            $condition='';
-        }
-		return self::model()->with('listItems')->findByPk((int)$id, $condition);
+			// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+				// (SELECT username FROM x2_group_to_user WHERE groupId IN
+					// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		// } else {
+			// $condition='';
+		// }
+		return self::model()->with('listItems')->findByPk((int)$id,CActiveRecord::model('Contacts')->getAccessCriteria());
 	}
 
 	/**
@@ -187,7 +187,8 @@ class X2List extends CActiveRecord {
 	 * @return CDbCriteria Criteria to retrieve all models in the list
 	 */
 	public function queryCriteria() {
-		$search=new CDbCriteria;
+		$search = CActiveRecord::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
+
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
 			$criteria = CActiveRecord::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
@@ -295,17 +296,17 @@ class X2List extends CActiveRecord {
 			$search->join = 'JOIN x2_list_items ON t.id = x2_list_items.contactId';
 			$search->addCondition('x2_list_items.listId='.$this->id);
 		}
-        $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+        // $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+            // /* x2temp */
+            // $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+            // if(!empty($groupLinks))
+                // $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-        if(Yii::app()->user->getName()!='admin')
-            $search->addCondition($condition);
+            // $condition .= 'OR (visibility=2 AND assignedTo IN 
+                // (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    // (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+        // if(Yii::app()->user->getName()!='admin')
+            // $search->addCondition($condition);
 		return $search;
 	}
 
@@ -371,16 +372,23 @@ class X2List extends CActiveRecord {
 	 * @return CSqlDataProvider
 	 */
 	public function campaignDataProvider($pageSize=null) {
-		$tbl = CActiveRecord::model($this->modelName)->tableName();
-		$lstTbl = X2ListItem::model()->tableName();
-		$count = X2ListItem::model()->count('listId=:listId', array('listId'=>$this->id));
+
+		$conditions = CActiveRecord::model('Campaign')->getAccessCriteria()->condition;
+
+		$count = Yii::app()->db->createCommand()
+			->select('COUNT(*)')
+			->from(X2ListItem::model()->tableName().' as list')
+			->leftJoin(CActiveRecord::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
+			->where('list.listId=:listId AND '.$conditions,array(':listId'=>$this->id))
+			->queryScalar();
+
 		$params = array('listId'=>$this->id);
-		
+
 		$sql = Yii::app()->db->createCommand()
-			->select('t.*, c.*')
-			->from("{$lstTbl} as t")
-			->leftJoin("{$tbl} c", "t.contactId=c.id")
-			->where('t.listId=:listId')
+			->select('list.*, t.*')
+			->from(X2ListItem::model()->tableName().' as list')
+			->leftJoin(CActiveRecord::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
+			->where('list.listId=:listId AND '.$conditions)
 			->getText();
 			
 		return new CSqlDataProvider($sql, array(

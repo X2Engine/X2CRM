@@ -58,7 +58,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 <?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Product')); ?>
 
-<?php $this->widget('Attachments',array('associationType'=>'product','associationId'=>$model->id)); ?>
+<?php $this->widget('Attachments',array('associationType'=>'products','associationId'=>$model->id)); ?>
 </div>
 <div class="history half-width">
 <?php

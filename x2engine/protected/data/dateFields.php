@@ -9,7 +9,7 @@ return array(
 	'x2_contacts' => array('lastUpdated','lastActivity','leadDate','createDate','closedate'),
 	'x2_docs' => array('createDate','lastUpdated'),
 	'x2_lists' => array('createDate','lastUpdated'),
-	'x2_notifications' => array('createDate','lastUpdated'),
+	'x2_notifications' => array('createDate'),
 	'x2_opportunities' => array('expectedCloseDate','createDate','lastUpdated','lastActivity'),
 	'x2_products' => array('createDate','lastUpdated','lastActivity'),
 	'x2_profile' => array('lastUpdated'),

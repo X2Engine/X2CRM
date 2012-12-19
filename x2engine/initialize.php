@@ -38,23 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 
-// Test the connection and exit:
-if (isset($_POST['testDb'])) {
-
-	$con = @mysql_connect($_POST['dbHost'], $_POST['dbUser'], $_POST['dbPass']);
-
-	if ($con !== false) {
-		if ($selectDb = @mysql_select_db($_POST['dbName'], $con))
-			echo 'DB_OK';
-		else
-			echo 'DB_COULD_NOT_SELECT';
-
-		@mysql_close($con);
-	} else
-		echo 'DB_CONNECTION_FAILED';
-	exit;
-}
-
 ////////////////////
 // Global Objects //
 ////////////////////
@@ -171,7 +154,7 @@ function respond($message, $error = Null) {
 		$response['globalError'] = $error;
 	if ($silent) {
 		echo "$message\n";
-	} else if (isset($_GET['stage'])) {
+	} else if (isset($_GET['stage']) || isset($_POST['testDb'])) {
 		header('Content-Type: application/json');
 		$response['message'] = $message;
 		echo json_encode($response);
@@ -213,6 +196,49 @@ function respondWithException($exception) {
 set_error_handler('respondWithError');
 set_exception_handler('respondWithException');
 
+// Test the connection and exit:
+if (isset($_POST['testDb'])) {
+	// First open the connection
+	$con = null;
+	try {
+		$con = new PDO("mysql:host={$_POST['dbHost']};dbname={$_POST['dbName']}", $_POST['dbUser'], $_POST['dbPass'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+	} catch (PDOException $e) {
+		RIP(installer_t('Could not connect to host or select database.'));
+	}
+	
+	// Now test creating a table:
+	try {
+		$con->exec("CREATE TABLE IF NOT EXISTS `x2_test_table` (
+			    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			    `a` varchar(10) NOT NULL,
+			    PRIMARY KEY (`id`))");
+	} catch(PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot create tables'));
+	}
+
+	// Test inserting data:
+	try {
+		$con->exec("INSERT INTO `x2_test_table` VALUES (1,'a')");
+	} catch(PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot insert data'));
+	}
+	
+	// Test deleting data:
+	try {
+		$con->exec("DELETE FROM `x2_test_table`");
+	} catch(PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot delete data'));
+	}
+	
+	// Test removing the table:
+	try {
+		$con->exec("DROP TABLE `x2_test_table`");
+	} catch (PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot drop tables'));
+	}
+	
+	respond(installer_t("Connection successful!"));
+}
 
 // Fill in the rest as normal
 foreach (array_diff($confKeys, array_keys($confMap)) as $confKey) {
@@ -443,6 +469,26 @@ function addValidationError($attr, $error) {
 }
 
 /**
+ * Delete files
+ */
+$donotDelete = array('.', '..', '.htaccess');
+$noDelPat = '/('.implode('|',array_map(function($b){return str_replace('.','\.',$b);},$donotDelete)).')$/';
+function rrmdir($path) {
+	global $noDelPat;
+	if (!preg_match($noDelPat, $path)) {
+		if (is_dir($path)) {
+			$objects = scandir($path);
+			foreach ($objects as $object)
+				if (!preg_match($noDelPat, $object))
+					rrmdir($path . DIRECTORY_SEPARATOR . $object);
+			reset($objects);
+			rmdir($path);
+		} else
+			unlink($path);
+	}
+}
+
+/**
  * Installs a named module
  * 
  * @global PDO $dbo
@@ -490,7 +536,7 @@ function installModule($module, $respond = True) {
  * @param $stage The named stage of installation.
  */
 function installStage($stage) {
-	global $editions, $silent, $dbo, $config, $dbConfig, $stageLabels, $response, $write, $X2Config, $enabledModules,$dateFields;
+	global $editions, $silent, $dbo, $config, $dbConfig, $stageLabels, $response, $write, $X2Config, $enabledModules,$dateFields,$noDelPat;
 	if ($stage == 'validate') {
 		if (empty($config['adminEmail']) || !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i', $config['adminEmail']))
 			addValidationError('adminEmail', 'Please enter a valid email address.');
@@ -554,44 +600,79 @@ function installStage($stage) {
 	} else {
 		// Look for a named SQL file and run it:
 		$stagePath = "protected/data/$stage.sql";
-		if ($sqlFile = realpath($stagePath)) {
-			$sql = explode('/*&*/', file_get_contents($sqlFile));
-			foreach ($sql as $sqlLine) {
-				$statement = $dbo->prepare($sqlLine);
-				try {
-					if (!$statement->execute())
-						RIP(installer_tr('Could not {stage}. SQL statement "{sql}" from {file} failed', array('{stage}' => $stageLabels[$stage], '{sql}' => substr(trim($sqlLine), 0, 50) . (strlen(trim($sqlLine)) > 50 ? '...' : ''), '{file}' => $sqlFile)) . '; ' . implode(',', $statement->errorInfo()));
-				} catch (PDOException $e) {
-					RIP(installer_tr("Could not {stage}", array('{stage}' => $stageLabels[$stage])) . '; ' . $e->getMessage());
+		if($stage == 'dummy_data')
+			$stageLabels['dummy_data'] = sprintf($stageLabels['dummy_data'], $config['dummy_data'] ? 'insert' : 'delete');
+		if ((bool) ((int) $config['dummy_data']) || $stage != 'dummy_data') {
+			if ($sqlFile = realpath($stagePath)) {
+				$sql = explode('/*&*/', file_get_contents($sqlFile));
+				foreach ($sql as $sqlLine) {
+					$statement = $dbo->prepare($sqlLine);
+					try {
+						if (!$statement->execute())
+							RIP(installer_tr('Could not {stage}. SQL statement "{sql}" from {file} failed', array('{stage}' => $stageLabels[$stage], '{sql}' => substr(trim($sqlLine), 0, 50) . (strlen(trim($sqlLine)) > 50 ? '...' : ''), '{file}' => $sqlFile)) . '; ' . implode(',', $statement->errorInfo()));
+					} catch (PDOException $e) {
+						RIP(installer_tr("Could not {stage}", array('{stage}' => $stageLabels[$stage])) . '; ' . $e->getMessage());
+					}
 				}
+				// Hunt for init SQL files associated with other editions:
+				foreach ($editions as $ed) {
+					if ($sqlFile = realpath("protected/data/$stage-$ed.sql")) {
+						$sql = explode('/*&*/', file_get_contents($sqlFile));
+						foreach ($sql as $sqlLine) {
+							$statement = $dbo->prepare($sqlLine);
+							try {
+								if (!$statement->execute())
+									RIP(installer_tr('Could not {stage}. SQL statement "{sql}" from {file} failed', array('{stage}' => $stageLabels[$stage], '{sql}' => substr(trim($sqlLine), 0, 50) . (strlen($sqlLine) > 50 ? '...' : ''), '{file}' => $sqlFile)) . '; ' . implode(',', $statement->errorInfo()));
+							} catch (PDOException $e) {
+								RIP(installer_tr("Could not {stage}", array('{stage}' => $stageLabels[$stage])) . '; ' . $e->getMessage());
+							}
+						}
+					}
+				}
+
+				if ($stage == 'dummy_data') {
+					// Need to update the timestamp fields on all the sample data that has been inserted.
+					$dateGen = @file_get_contents(realpath("protected/data/dummy_data_date")) or RIP("Sample data generation date not set.");
+					$time = time();
+					$time2 = $time*2;
+					$timeDiff = $time - (int) trim($dateGen);
+					foreach ($dateFields as $table => $fields) {
+						foreach ($fields as $field) {
+							$dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL");
+						}
+						// Fix timestamps that are in the future.
+						/*  
+						$ordered = array('lastUpdated','createDate');
+						if(count(array_intersect($ordered,$fields)) == count($ordered)) {
+							$affected = 0;
+							foreach($ordered as $field) {
+								$affected += $dbo->exec("UPDATE `$table` SET `$field`=$time2-`$field` WHERE `$field` > $time");
+							}
+							if($affected)
+								$dbo->exec("UPDATE `$table` set `lastUpdated`=`createDate`,`createDate`=`lastUpdated` WHERE `createDate` > `lastUpdated`");
+						}
+						 */
+					}
+				}
+			} else {
+				RIP(installer_t("Could not find installation stage database script") . " $stagePath");
 			}
-			// Hunt for init SQL files associated with other editions:
-			foreach ($editions as $ed) {
-				if ($sqlFile = realpath("protected/data/$stage-$ed.sql")) {
-					$sql = explode('/*&*/', file_get_contents($sqlFile));
-					foreach ($sql as $sqlLine) {
-						$statement = $dbo->prepare($sqlLine);
-						try {
-							if (!$statement->execute())
-								RIP(installer_tr('Could not {stage}. SQL statement "{sql}" from {file} failed', array('{stage}' => $stageLabels[$stage], '{sql}' => substr(trim($sqlLine), 0, 50) . (strlen($sqlLine) > 50 ? '...' : ''), '{file}' => $sqlFile)) . '; ' . implode(',', $statement->errorInfo()));
-						} catch (PDOException $e) {
-							RIP(installer_tr("Could not {stage}", array('{stage}' => $stageLabels[$stage])) . '; ' . $e->getMessage());
+		} else {
+			// This is the dummy data stage, and we need to clear out all unneeded files.
+			$stageLabels[$stage] = sprintf($stageLabels[$stage], 'remove');
+			if ($paths = @require_once(realpath('protected/data/dummy_data_files.php'))) {
+				foreach ($paths as $pathClear) {
+					if ($path = realpath($pathClear)) {
+						if (is_dir($path)) {
+							foreach(scandir($path) as $subPath)
+								if(!preg_match($noDelPat,$path))
+									rrmdir($path.DIRECTORY_SEPARATOR.$subPath);
+						} else {
+							unlink($path);
 						}
 					}
 				}
 			}
-
-			if ($stage == 'dummy_data') {
-				// Need to update the timestamp fields on all the sample data that has been inserted.
-				$timeDiff = time() - 1352913902;  // Last time dummy data was generated was 1352913902
-				foreach($dateFields as $table => $fields) {
-					foreach($fields as $field) {
-						$dbo->prepare("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL")->execute();
-					}
-				}
-			}
-		} else {
-			RIP(installer_t("Could not find installation stage database script")." $stagePath");
 		}
 	}
 	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize')
@@ -604,7 +685,7 @@ foreach (array_keys($stageLabels) as $stage) {
 }
 
 // App name:
-$config['app'] = mysql_escape_string($config['app']);
+$config['app'] = addslashes($config['app']);
 
 if (!$silent) {
 	// Ad-hoc validation in the no-javascript case
@@ -622,8 +703,6 @@ if (!$silent) {
 // Establish database connection
 try {
 	$dbo = new PDO("mysql:host={$config['dbHost']};dbname={$config['dbName']}", $config['dbUser'], $config['dbPass']);
-	$con = @mysql_connect($config['dbHost'], $config['dbUser'], $config['dbPass']) or addError('DB_CONNECTION_FAILED');
-	@mysql_select_db($config['dbName'], $con) or addError('DB_COULD_NOT_SELECT');
 } catch (PDOException $e) {
 	// Database connection failed. Send validation errors.
 	foreach (array('dbHost' => 'Host Name', 'dbName' => 'Database Name', 'dbUser' => 'Username', 'dbPass' => 'Password') as $attr => $label) {
@@ -644,7 +723,7 @@ if (!$complete)
 // Install everything all at once:
 if (($silent || !isset($_GET['stage'])) && !$complete) {
 	// Install core schema/data, modules, and configure:
-	foreach (array('core', 'RBAC', 'timezoneData', 'module', 'config', 'finalize') as $component)
+	foreach (array('core', 'RBAC', 'timezoneData', 'module','config','dummy_data','finalize') as $component)
 		installStage($component);
 } else if (isset($_GET['stage'])) {
 	installStage($_GET['stage']);
@@ -655,6 +734,16 @@ if (!$complete || $silent) {
 		$errors[] = 'MySQL Error: ' . $sqlError;
 	outputErrors();
 	respond('Installation complete.');
+	if($silent && function_exists('curl_init')) {
+		foreach ($sendArgs as $urlKey) {
+			$stats[$urlKey] = $config[$urlKey];
+			$stats['type'] = 'Silent';
+		}
+		$ch = curl_init('http://x2planet.com/installs/registry/activity?'.http_build_query($stats));
+		curl_setopt($ch,CURLOPT_POST,0);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		$gif = curl_exec($ch);
+	}
 }
 
 // Generate splash page
@@ -720,9 +809,10 @@ if (!$silent && $complete):
 	</html>
 	<?php
 endif;
-// delete install files (including self)
+// Delete install files
 foreach(array('install.php','installConfig.php','requirements.php','initialize_pro.php') as $file) 
 	if (file_exists($file))
 		unlink($file);
+// Delete self
 unlink(__FILE__);
 ?>

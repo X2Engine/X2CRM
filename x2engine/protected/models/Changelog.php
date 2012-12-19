@@ -77,7 +77,7 @@ class Changelog extends CActiveRecord
         return array();
 	}
         
-        public function behaviors() {
+    public function behaviors() {
 		return array(
 			'ERememberFiltersBehavior' => array(
 				'class' => 'application.components.ERememberFiltersBehavior',

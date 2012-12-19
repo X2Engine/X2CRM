@@ -43,7 +43,7 @@
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-require_once "X2Config.php";
+include "X2Config.php";
 
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
@@ -264,28 +264,26 @@ return array(
 		*/
 		// uncomment the following to use a MySQL database
 
-		'db'=>array_merge(
-                array(
-                    'connectionString' => "mysql:host=$host;dbname=$dbname",
-                    'emulatePrepare' => true,
-                    'username' => $user,
-                    'password' => $pass,
-                    'charset' => 'utf8',
-                ),
-                array(
-                    'schemaCachingDuration'=>84600
-                )),
-        
-        'authManager'=>array(
-            'class' => 'CDbAuthManager',
+		'db'=>array(
+			'connectionString' => "mysql:host=$host;dbname=$dbname",
+			'emulatePrepare' => true,
+			'username' => $user,
+			'password' => $pass,
+			'charset' => 'utf8',
+			'enableProfiling'=>true,
+            'enableParamLogging' => true,
+			'schemaCachingDuration'=>84600
+		),
+		'authManager'=>array(
+			'class' => 'CDbAuthManager',
 			'connectionID' => 'db',
 			'defaultRoles' => array('guest', 'authenticated', 'admin'),
 			'itemTable' => 'x2_auth_item',
 			'itemChildTable' => 'x2_auth_item_child',
 			'assignmentTable' => 'x2_auth_assignment',
 		),
-        // 'clientScript'=>array(
-            // 'class' => 'X2ClientScript',
+		// 'clientScript'=>array(
+			// 'class' => 'X2ClientScript',
 		// ),
 		
 		
@@ -305,9 +303,20 @@ return array(
 			// use 'site/error' action to display errors
 			'errorAction'=>'site/error',
 		),
-		'log'=>array(
-			'class'=>'CLogRouter',
-			'routes'=>array(
+        'log'=>array(
+            'class'=>'CLogRouter',
+//            'routes'=>array(
+//                    // …
+//                    array(
+//                        'class'=>'application.extensions.DbProfileLogRoute',
+//                        'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
+//                        'slowQueryMin' => 0.01, // Minimum time for the query to be slow
+//                    ),
+//            ),
+        ),
+		//'log'=>array(
+			//'class'=>'CLogRouter',
+			//'routes'=>array(
 				// array(
 					// 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
 					// 'ipFilters'=>array('127.0.0.1'),
@@ -327,10 +336,20 @@ return array(
 						// 'categories' => 'translations',
 						// 'levels' => 'missing',
 				 // ),
-			),
-		),
+			//),
+		//),
 		'cache'=>array(
 			'class'=>'system.caching.CFileCache',
+			// 'servers'=>array(
+				// array('host'=>'server1', 'port'=>11211, 'weight'=>60),
+				// array('host'=>'server2', 'port'=>11211, 'weight'=>40),
+			// ),
+		),
+		'authCache'=>array(
+			'class'=>'application.components.X2AuthCache',
+			'connectionID'=>'db',
+			'tableName'=>'x2_auth_cache',
+			// 'autoCreateCacheTable'=>false,
 			// 'servers'=>array(
 				// array('host'=>'server1', 'port'=>11211, 'weight'=>60),
 				// array('host'=>'server2', 'port'=>11211, 'weight'=>40),
@@ -369,5 +388,6 @@ return array(
 		'version'=>$version,
 		'edition'=>'',
 		'buildDate'=>$buildDate,
+		'isCli' => false
 	),
 );

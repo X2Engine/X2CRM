@@ -46,6 +46,8 @@
 class InlineTags extends X2Widget {
 	public $model;
 	public $modelName;
+    public $filter=false;
+    public $tags=array();
 
 	public function init() {
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() .'/js/tags.js');
@@ -53,15 +55,19 @@ class InlineTags extends X2Widget {
 	}
 
 	public function run() {
-		$tags = Yii::app()->db->createCommand()
-			->select('COUNT(*) AS count, tag')
-			->from('x2_tags')
-			->where('type=:type AND itemId=:itemId',array(':type'=>ucfirst($this->modelName), ':itemId'=>$this->model->id))
-			->group('tag')
-			->order('count DESC')
-			->limit(20)
-			->queryAll();
-	
-		$this->render('inlineTags',array('model'=>$this->model,'modelName'=>$this->modelName,'tags'=>$tags));
+        if($this->filter){
+            $this->render('inlineTags',array('filter'=>true,'tags'=>$this->tags));
+        }else{
+            $tags = Yii::app()->db->createCommand()
+                ->select('COUNT(*) AS count, tag')
+                ->from('x2_tags')
+                ->where('type=:type AND itemId=:itemId',array(':type'=>ucfirst($this->modelName), ':itemId'=>$this->model->id))
+                ->group('tag')
+                ->order('count DESC')
+                ->limit(20)
+                ->queryAll();
+
+            $this->render('inlineTags',array('model'=>$this->model,'modelName'=>$this->modelName,'tags'=>$tags,'filter'=>false));
+        }
 	}
 }

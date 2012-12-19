@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -52,19 +52,19 @@ return array (
 'Description'=>'Omschrijving',
 'Last Updated'=>'Laatst Bijgewerkt',
 'Updated By'=>'Bijgewerkt Door',
-'Allow users to post on your profile?'=>'Gebruikers toestaan om op je profiel te posten',
+'Allow users to post on your profile?'=>'Gebruikers toestaan om berichten op je profiel te posten',
 'Language'=>'Taal',
 'Time Zone'=>'Tijdzone',
 'Enable group chat?'=>'Groep Chat inschakelen?',
 'Widgets'=>'Widgets',
 'Background Color'=>'Achtergrond Kleur',
 'Menu Color'=>'Menu Kleur',
-'Menu Text Color'=>'Menu Tekst Kleur',
+'Menu Text Color'=>'Menu Tekst kleur',
 'Background Image'=>'Achtergrond Afbeelding',
 'Start Page'=>'Start Pagina',
 'Results Per Page'=>'Resultaten Per Pagina',
-'Show Social Media'=>'Laat Social Media Zien',
-'Upload a Background'=>'Upload een Achtergrond',
+'Show Social Media'=>'Laat Social media zien',
+'Upload a Background'=>'Upload een achtergrond',
 
 // Profile Actions
 'View Profile'=>'Bekijk Profiel',
@@ -72,17 +72,17 @@ return array (
 'Change Settings'=>'Bewerk Instellingen',
 'Social Feed'=>'Social Feed',
 'People'=>'Mensen',
-'Change Personal Settings'=>'Verander Persoonlijke Instellingen',
+'Change Personal Settings'=>'Verander persoonlijke instellingen',
 
 // Profile Titles
 'Profile:'=>'Profiel:',
-'Update Your Profile'=>'Bewerk Je Profiel',
+'Update Your Profile'=>'Bewerk je profiel',
 
 // Social
-'Feed'=>'Nieuwsfeed',
+'Feed'=>'Feed',
 'Social'=>'Sociaal',
 'Reply'=>'Antwoord',
-'A larger Chat Box'=>'Een grotere Chate Box',
+'A larger Chat Box'=>'Een grotere Chat Box',
 'A blog-like discussion forum'=>'Een blog-achtig discussie forum',
 
 // Misc

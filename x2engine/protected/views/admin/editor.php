@@ -198,15 +198,12 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			echo CHtml::dropDownList($field->fieldName,'', array('Users'), array(
 					'title'=>$field->attributeLabel,
 			));
-	   /* x2temp */
-			
-		/* end x2temp */  
 		}elseif($field->type=='visibility'){
 			echo CHtml::dropDownList($field->fieldName,'',array(1=>'Public',0=>'Private',2=>'User\'s Groups'), array(
 					'title'=>$field->attributeLabel,
 			));
 		} else {
-			echo CHtml::textField($modelName.'_'.$field->fieldName,'', array( 
+			echo CHtml::textField($modelName.'_'.$field->fieldName,'', array(
 					'title'=>$field->attributeLabel,
 			));
 		}

@@ -41,17 +41,31 @@
 
 <h2><?php echo $contact->firstName . ' ' . $contact->lastName; ?></h2>
 
-<?php /* add info that is not null */ ?>
+<?php 
+if(isset($_GET['fields'])){
+    $fields=$_GET['fields'];
+    if(count($fields)>0 && $fields[0]!='link'){
+        $attrLabels=$contact->attributeLabels();
+        foreach($fields as $field){
+            if($contact->hasAttribute($field)){
+                echo Yii::t('contacts', $attrLabels[$field]).": <strong> ".$contact->$field."</strong><br />";
+            }
+        }
+    }else{
+        echo CHtml::link(Yii::t('contacts','Link to Record'),$this->createUrl('view',array('id'=>$contact->id)),array('style'=>'text-decoration:none;'));
+    }
+}else{
+?>
 
 
 <?php /* Contact Info */ ?>
 <?php if(isset($contact->email) || isset($contact->website)) { ?>
 	<?php if(isset($contact->email) && $contact->email != "") { ?>
-		<?php echo Yii::t('app', 'Email: '); ?> <strong><?php echo $contact->email; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Email: '); ?> <strong><?php echo $contact->email; ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->website) && $contact->website != "") { ?>
-		<?php echo Yii::t('app', 'Website: '); ?> <strong><?php echo $contact->website; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Website: '); ?> <strong><?php echo $contact->website; ?></strong><br />
 	<?php } ?>
 	<br />
 <?php } ?>
@@ -66,37 +80,39 @@
 		isset($contact->closedate) ||
 		isset($contact->closestatus)) { ?>
 	<?php if(isset($contact->leadtype) && $contact->leadtype != "") { ?>
-	    <?php echo Yii::t('app', 'Lead Type: '); ?> <strong><?php echo $contact->leadtype; ?></strong><br />
+	    <?php echo Yii::t('contacts', 'Lead Type').": "; ?> <strong><?php echo $contact->leadtype; ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->leadstatus) && $contact->leadstatus != "") { ?>
-		<?php echo Yii::t('app', 'Lead Status: '); ?> <strong><?php echo $contact->leadstatus; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Lead Status').": "; ?> <strong><?php echo $contact->leadstatus; ?></strong><br />
 	<?php } ?>
 
 	
 	<?php if(isset($contact->leadDate) && $contact->leadDate != "") { ?>
-		<?php echo Yii::t('app', 'Lead Date: '); ?> <strong><?php echo $this->formatLongDate($contact->leadDate); ?></strong><br />
+		<?php echo Yii::t('contacts', 'Lead Date').": "; ?> <strong><?php echo $this->formatLongDate($contact->leadDate); ?></strong><br />
 	<?php } ?>
 	
 	
 	<?php if(isset($contact->interest) && $contact->interest != "") { ?>
-		<?php echo Yii::t('app', 'Interest: '); ?> <strong><?php echo $contact->interest; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Interest').": "; ?> <strong><?php echo $contact->interest; ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->dalevalue) && $contact->dealvalue != "") { ?>
-		<?php echo Yii::t('app', 'Date Value: '); ?> <strong><?php echo $contact->dealvalue; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Deal Value').": "; ?> <strong><?php echo $contact->dealvalue; ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->closedate) && $contact->closedate != "") { ?>
-		<?php echo Yii::t('app', 'Close Date: '); ?> <strong><?php echo $this->formatLongDate($contact->closedate); ?></strong><br />
+		<?php echo Yii::t('contacts', 'Close Date').": "; ?> <strong><?php echo $this->formatLongDate($contact->closedate); ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->dealstatus) && $contact->dealstatus != "") { ?>
-		<?php echo Yii::t('app', 'Deal Status: '); ?> <strong><?php echo $contact->dealstatus; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Deal Status').": "; ?> <strong><?php echo $contact->dealstatus; ?></strong><br />
 	<?php } ?>
 	<br />
 <?php } ?>
 
 <?php if(isset($contact->backgroundInfo) && $contact->backgroundInfo != "") { ?>
-		<?php echo Yii::t('app', 'Background Info: '); ?> <strong><?php echo $contact->backgroundInfo; ?></strong><br />
-<?php } ?>
+		<?php echo Yii::t('contacts', 'Background Info').": "; ?> <strong><?php echo $contact->backgroundInfo; ?></strong><br />
+<?php } 
+
+} ?>

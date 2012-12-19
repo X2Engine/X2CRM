@@ -80,6 +80,12 @@ class X2StackedBarChart extends X2ChartWidget {
 				'yaxis' => array(
 					'padMin' => 0
 				)
+			),
+			'seriesColors'=> array('#417DCD', '#6AEA3B', '#FFF440', '#FFB740', '#EF3C5C', '#7434AC', '#2C83A0', '#9DE93A', '#FFE63F', '#FFA33F', '#D8357D', '#6137AE'),
+			'grid' => array(
+			    'background'=> '#FFFFFF',
+			    'borderColor'=> '#000000',
+			    'borderWidth'=> 1.0,
 			)
 		);
 		$this->defaultOptions = array(

@@ -79,7 +79,8 @@ class User extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('firstName, lastName, username, password, status', 'required'),
+            array('status','required'),
+			array('firstName, lastName, username, password', 'required','on'=>'insert'),
 			array('status, lastLogin, login', 'numerical', 'integerOnly'=>true),
 			array('firstName, username, title, updatedBy', 'length', 'max'=>20),
 			array('lastName, department, officePhone, cellPhone, homePhone', 'length', 'max'=>40),
@@ -270,7 +271,7 @@ class User extends CActiveRecord {
 	}
 
 	public static function getEmails(){
-		$userArray = User::model()->findAll();
+		$userArray = User::model()->findAllByAttributes(array('status'=>1));
 		$emails = array('Anyone'=>Yii::app()->params['adminEmail']);
 		foreach($userArray as $user){
 			$emails[$user->username]=$user->emailAddress;
@@ -334,6 +335,7 @@ class User extends CActiveRecord {
 		$criteria->compare('topContacts',$this->topContacts,true);
 		$criteria->compare('lastLogin',$this->lastLogin);
 		$criteria->compare('login',$this->login);
+        $criteria->compare('temporary',0);
 
 		return new SmartDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

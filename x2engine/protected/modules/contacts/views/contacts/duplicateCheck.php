@@ -47,7 +47,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','View')),
 ));
 ?>
-<h1><span style="color:red">This record may be a duplicate!</span></h1><br /><br />
+<h1><span style="color:red">This record may be a duplicate!</span></h1><br />
 <h2><u>You Entered</u><br />
 <?php
 
@@ -56,34 +56,91 @@ if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams) && $ref!='create
 	echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$newRecord->id)),array('class'=>'x2-button'));
 echo "</h2>";
 $this->renderPartial('application.components.views._detailView',array('model'=>$newRecord,'modelName'=>'contacts'));
-echo CHtml::ajaxButton("Use This Record",$this->createUrl('/contacts/ignoreDuplicates'),array(
+echo "<span style='float:left'>";
+echo CHtml::ajaxButton("Keep This Record",$this->createUrl('/contacts/ignoreDuplicates'),array(
 	'type'=>'POST',
-	'data'=>array('data'=>json_encode($newRecord->attributes),'ref'=>$ref),
+	'data'=>array('data'=>json_encode($newRecord->attributes),'ref'=>$ref,'action'=>null),
 	'success'=>'function(data){
 		window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
 	}'
 ),array(
 	'class'=>'x2-button highlight'
 ));
-// 
+echo "</span>";
+if(Yii::app()->user->checkAccess('ContactsUpdate')){
+    echo "<span style='float:left'>";
+    echo CHtml::ajaxButton("Keep + Hide Others",$this->createUrl('/contacts/ignoreDuplicates'),array(
+        'type'=>'POST',
+        'data'=>array('data'=>json_encode($newRecord->attributes),'ref'=>$ref,'action'=>'hideAll'),
+        'success'=>'function(data){
+            window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
+        }'
+    ),array(
+        'class'=>'x2-button highlight',
+        'confirm'=>'Are you sure you want to hide all other records?'
+    ));
+    echo "</span>";
+}
+if(Yii::app()->user->checkAccess('ContactsDelete')){
+    echo "<span style='float:left'>";
+    echo CHtml::ajaxButton("Keep + Delete Others",$this->createUrl('/contacts/ignoreDuplicates'),array(
+        'type'=>'POST',
+        'data'=>array('data'=>json_encode($newRecord->attributes),'ref'=>$ref,'action'=>'deleteAll'),
+        'success'=>'function(data){
+            window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
+        }'
+    ),array(
+        'class'=>'x2-button highlight',
+        'confirm'=>'Are you sure you want to delete all other records?'
+    ));
+    echo "</span>";
+}
 ?>
-<br /><br />
+<div style="clear:both;"></div>
+<br />
 <h2><u>Possible Matches</u></h2>
 <?php
 foreach($duplicates as $duplicate){
-	echo "<br /><h2>".$duplicate->firstName." ".$duplicate->lastName."</h2>";
+	echo "<div id=".$duplicate->firstName."-".$duplicate->lastName."><br /><h2>".$duplicate->firstName." ".$duplicate->lastName."</h2>";
 	$this->renderPartial('application.components.views._detailView',array('model'=>$duplicate,'modelName'=>'contacts'));
-	if($ref!='view')
-		echo CHtml::link("Use This Record",array('/contacts/view?id='.$duplicate->id),array('class'=>'x2-button highlight'));
-	else
-		echo CHtml::ajaxButton("Use This Record",$this->createUrl('/contacts/discardNew'),array(
-			'type'=>'POST',
-			'data'=>"id=$newRecord->id&newId=$duplicate->id",
-			'success'=>'function(data){
-				window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
-			}'
-                    //
-		),array(
-			'class'=>'x2-button highlight'
-		));
+    echo "<span style='float:left'>";
+    echo CHtml::ajaxButton("Discard New Record",$this->createUrl('/contacts/discardNew'),array(
+        'type'=>'POST',
+        'data'=>array('ref'=>$ref,'action'=>null,'id'=>$duplicate->id,'newId'=>$newRecord->id),
+        'success'=>'function(data){
+            window.location="'.$this->createUrl('/contacts/view?id=').'"+data;
+        }'
+    ),array(
+        'class'=>'x2-button highlight'
+    ));
+    echo "</span>";
+    if(Yii::app()->user->checkAccess('ContactsUpdate', array('assignedTo'=>$duplicate->assignedTo))){
+        echo "<span style='float:left'>";
+        echo CHtml::ajaxButton("Hide This Record",$this->createUrl('/contacts/discardNew'),array(
+            'type'=>'POST',
+            'data'=>array('ref'=>$ref,'action'=>'hideThis','id'=>$duplicate->id,'newId'=>$newRecord->id),
+            'success'=>'function(data){
+                $("#'.$duplicate->firstName."-".$duplicate->lastName.'").hide();
+            }'
+        ),array(
+            'class'=>'x2-button highlight',
+            'confirm'=>'Are you sure you want to hide this record?'
+        ));
+        echo "</span>";
+    }
+    if(Yii::app()->user->checkAccess('ContactsDelete',array('assignedTo'=>$duplicate->assignedTo))){
+        echo "<span style='float:left'>";
+        echo CHtml::ajaxButton("Delete This Record",$this->createUrl('/contacts/discardNew'),array(
+            'type'=>'POST',
+            'data'=>array('ref'=>$ref,'action'=>'deleteThis','id'=>$duplicate->id,'newId'=>$newRecord->id),
+            'success'=>'function(data){
+                $("#'.$duplicate->firstName."-".$duplicate->lastName.'").hide();
+            }'
+        ),array(
+            'class'=>'x2-button highlight',
+            'confirm'=>'Are you sure you want to delete this record?',
+        ));
+        echo "</span></div>";
+    }
+    echo "<br /><br />";
 }

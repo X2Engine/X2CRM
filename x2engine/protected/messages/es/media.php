@@ -54,7 +54,7 @@ return array (
 
 // Actions
 'View Attachment'=>'Ver Archivo Adjunto',
-'Delete Media'=>'Eliminar los Medios de Comunicación',
+'Delete Media'=>'Eliminar los Archivos',
 'List'=>'Lista',
 'Upload'=>'Subir',
 'View'=>'Ver',
@@ -64,7 +64,7 @@ return array (
 // Misc
 'File:'=>'Expediente:',
 'File: '=>'Expediente: ',
-'(deleted)'=>'(Suprimido)',
+'(deleted)'=>'(ELiminado)',
 'Uploaded by {name}'=>'Subido por {name}',
 'Download File'=>'Descargar Archivo',
 'Update File: '=>'Subir Archivo:',

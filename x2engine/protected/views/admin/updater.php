@@ -52,11 +52,15 @@ function downloadFile(i,altSource) {
 			copyInstall();
 		}
 	} else { // Download next file in queue at index i
+		if (!altSource)
+			if (fileList0[i] == undefined)
+				altSource = true; // No non-free files to download, so skip this list
 		var currentFile = altSource ? fileList1[i] : fileList0[i];
 		$('#update-text').text('Downloading file {0}/{1}: {2}'.format((fileCount+1).toString(),n_files.toString(),currentFile));
 		$.ajax({
 			url: "download",
 			type: "GET",
+			dataType: 'json',
 			data: {
 				// The server from which to download
 				url:'<?php echo $url; ?>',
@@ -66,18 +70,23 @@ function downloadFile(i,altSource) {
 				route:(altSource ? 'installs/update/{0}/{1}'.format(edition,unique_id) : 'updates/x2engine')
 			},
 			context: document.body
-		}).done(function() {
-			fileCount++; // One more file successfully downloaded
-			var width=fileCount/n_files*100;
-			width=Math.round(width);
-			$('#progress').css({'width':width+'%'});
-			$('#progress-text').text(width+"%");
-			if (fileCount==fileList0.length && fileList1.length > 0) {
-				// Begin alternate source downloads
-				downloadFile(0,true);
+		}).done(function(data) {
+			if(!data.error) {
+				fileCount++; // One more file successfully downloaded
+				var width=fileCount/n_files*100;
+				width=Math.round(width);
+				$('#progress').css({'width':width+'%'});
+				$('#progress-text').text(width+"%");
+				if (fileCount==fileList0.length && fileList1.length > 0) {
+					// Begin alternate source downloads
+					downloadFile(0,true);
+				} else {
+					// Continue downloading as before
+					downloadFile(i+1,altSource);
+				}
 			} else {
-				// Continue downloading as before
-				downloadFile(i+1,altSource);
+				$('#progress-errors').html(data.message).show();
+				cleanUp('error');
 			}
 		}).fail(function(){
 			cleanUp('error');
@@ -117,15 +126,22 @@ function copyInstall() {
 		url: "installUpdate",
 		type: "POST",
 		data: {'sqlList':sqlList},
+		dataType: 'json',
 		context: document.body
-	}).done(function() {
-		var scenarioTitle = scenario.charAt(0).toUpperCase() + scenario.slice(1)
-		$('#update-text').text(scenarioTitle+' complete.');
-		alert(scenarioTitle+" Complete.");
-		if(scenario == 'update') {
-			cleanUp('success');			
+	}).done(function(data) {
+		if(!data.error) {
+			var scenarioTitle = scenario.charAt(0).toUpperCase() + scenario.slice(1)
+			$('#update-text').text(scenarioTitle+' complete.');
+			
+			alert(scenarioTitle+" Complete.");
+			if(scenario == 'update') {
+				cleanUp('success');			
+			} else {
+				finishUpgrade('success');
+			}
 		} else {
-			finishUpgrade('success');
+			$('#progress-errors').html(data.message).show();
+			cleanUp('error');
 		}
 	}).fail(function() {
 		cleanUp('error');
@@ -141,6 +157,7 @@ function cleanUp(status){
 			'status':status, 
 			'version':'<?php echo $newVersion; ?>', 
 			'updater':'<?php echo $updaterCheck; ?>',
+			'dataType':'json',
 			'fileList':"<?php echo addslashes(CJSON::encode($filesToDownload)); ?>",
 			'url':'<?php echo $url; ?>'
 		}:{
@@ -150,8 +167,10 @@ function cleanUp(status){
 			'fileList':"<?php echo addslashes(CJSON::encode($filesToDownload)); ?>"
 		}
 	}).done(function(response){
-		alert(response);
-		window.location.reload();
+		if(status != 'error') {
+			alert(response.message);
+			window.location.reload();
+		}
 	});
 }
 
@@ -199,11 +218,14 @@ function finishUpgrade(status) {
 			'status':status, 
 			'edition':edition,
 			'unique_id':unique_id,
+			'dataType':'json',
 			'fileList':"<?php echo addslashes(CJSON::encode($filesToDownload)); ?>"
 		}
 	}).done(function(response){
-		alert(response);
-		window.location.href = '<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>';
+		if (status != 'error') {
+			alert(response.message);
+			window.location.href = '<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>';
+		}
 	});
 }
 
@@ -282,6 +304,7 @@ Yii::app()->clientScript->registerScript("updater","$('#update-button').click(fu
 <div id="update-text" style="">Click "<?php echo ucfirst($scenario); ?>" to begin the <?php echo $scenario; ?>.</div>
 </div>
 </div>
+<div id="progress-errors" class="form" style="display:none; color:red"></div>
 <?php else: ?>
 <?php 
 if (isset($longMessage)) echo "<p>$longMessage</p>";

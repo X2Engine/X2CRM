@@ -411,16 +411,16 @@ class Profile extends CActiveRecord {
 				if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId) {
 					// Google Calendar Libraries
 					$timezone = date_default_timezone_get();
-					require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-					require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+					require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+					require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 					date_default_timezone_set($timezone);
 					
-					$client = new apiClient();
+					$client = new Google_Client();
 					$client->setClientId($admin->googleClientId);
 					$client->setClientSecret($admin->googleClientSecret);
-					$client->setDeveloperKey($admin->googleAPIKey);
+					//$client->setDeveloperKey($admin->googleAPIKey);
 					$client->setAccessToken($this->syncGoogleCalendarAccessToken);
-					$googleCalendar = new apiCalendarService($client);
+					$googleCalendar = new Google_CalendarService($client);
 					
 					// check if the access token needs to be refreshed
 					// note that the google library automatically refreshes the access token if we need a new one, 
@@ -436,27 +436,27 @@ class Profile extends CActiveRecord {
 					if($action->associationType == 'contacts' || $action->associationType == 'contact')
 						$summary = $action->associationName . ' - ' . $action->actionDescription;
 					
-					$event = new Event();
+					$event = new Google_Event();
 					$event->setSummary($summary);
 					
 					if($action->allDay) {
-						$start = new EventDateTime();
+						$start = new Google_EventDateTime();
 						$start->setDate(date('Y-m-d', $action->dueDate));
 						$event->setStart($start);
 						
 						if(!$action->completeDate)
 							$action->completeDate = $action->dueDate;
-						$end = new EventDateTime();
+						$end = new Google_EventDateTime();
 						$end->setDate(date('Y-m-d', $action->completeDate + 86400));
 						$event->setEnd($end);
 					} else {
-						$start = new EventDateTime();
+						$start = new Google_EventDateTime();
 						$start->setDateTime(date('c', $action->dueDate));
 						$event->setStart($start);
 						
 						if(!$action->completeDate)
 							$action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
-						$end = new EventDateTime();
+						$end = new Google_EventDateTime();
 						$end->setDateTime(date('c', $action->completeDate));
 						$event->setEnd($end);
 					}
@@ -479,7 +479,7 @@ class Profile extends CActiveRecord {
 				}
 			}
 		} catch (Exception $e) {
-
+            printR($e,true);
 		}
 	}
 	
@@ -490,17 +490,17 @@ class Profile extends CActiveRecord {
 				if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId) {
 					// Google Calendar Libraries
 					$timezone = date_default_timezone_get();
-					require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-					require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+					require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+					require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 					date_default_timezone_set($timezone);
 					
-					$client = new apiClient();
+					$client = new Google_Client();
 					$client->setClientId($admin->googleClientId);
 					$client->setClientSecret($admin->googleClientSecret);
-					$client->setDeveloperKey($admin->googleAPIKey);
+					//$client->setDeveloperKey($admin->googleAPIKey);
 					$client->setAccessToken($this->syncGoogleCalendarAccessToken);
 					$client->setUseObjects(true); // return objects instead of arrays
-					$googleCalendar = new apiCalendarService($client);
+					$googleCalendar = new Google_CalendarService($client);
 					
 					// check if the access token needs to be refreshed
 					// note that the google library automatically refreshes the access token if we need a new one, 
@@ -518,25 +518,27 @@ class Profile extends CActiveRecord {
 					
 					$event = $googleCalendar->events->get($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
 					$event->setSummary($summary);
-					
+                    if(empty($action->dueDate)){
+                        $action->dueDate=time();
+                    }
 					if($action->allDay) {
-						$start = new EventDateTime();
+						$start = new Google_EventDateTime();
 						$start->setDate(date('Y-m-d', $action->dueDate));
 						$event->setStart($start);
 						
 						if(!$action->completeDate)
 							$action->completeDate = $action->dueDate;
-						$end = new EventDateTime();
+						$end = new Google_EventDateTime();
 						$end->setDate(date('Y-m-d', $action->completeDate + 86400));
 						$event->setEnd($end);
 					} else {
-						$start = new EventDateTime();
+						$start = new Google_EventDateTime();
 						$start->setDateTime(date('c', $action->dueDate));
 						$event->setStart($start);
 						
 						if(!$action->completeDate)
 							$action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
-						$end = new EventDateTime();
+						$end = new Google_EventDateTime();
 						$end->setDateTime(date('c', $action->completeDate));
 						$event->setEnd($end);
 					}
@@ -567,17 +569,17 @@ class Profile extends CActiveRecord {
 				if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId) {
 					// Google Calendar Libraries
 					$timezone = date_default_timezone_get();
-					require_once "protected/extensions/google-api-php-client/src/apiClient.php";
-					require_once "protected/extensions/google-api-php-client/src/contrib/apiCalendarService.php";
+					require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+					require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 					date_default_timezone_set($timezone);
 					
-					$client = new apiClient();
+					$client = new Google_Client();
 					$client->setClientId($admin->googleClientId);
 					$client->setClientSecret($admin->googleClientSecret);
-					$client->setDeveloperKey($admin->googleAPIKey);
+					//$client->setDeveloperKey($admin->googleAPIKey);
 					$client->setAccessToken($this->syncGoogleCalendarAccessToken);
 					$client->setUseObjects(true); // return objects instead of arrays
-					$googleCalendar = new apiCalendarService($client);
+					$googleCalendar = new Google_CalendarService($client);
 					
 					$googleCalendar->events->delete($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
 				}

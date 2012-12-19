@@ -85,13 +85,16 @@ $canInstall = True;
 $reqMessges = array();
 $rbm = installer_t("required but missing");
 
-// Step 0: check for a mismatch in directory ownership
-$uid = array();
-$uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
-$uid['{id_run}'] = getmyuid();
-if ($uid['{id_own}'] != $uid['{id_run}']) {
-	$canInstall = False;
-	$reqMessages[] = strtr(installer_t("Directory ownership mismatch. PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}. Please check your web server configuration, or contact the system administrator or hosting provider."), $uid);
+// Step 0: check for a mismatch in directory ownership. Skip this step on Windows; 
+// there's no reliable way on Windows to get the UID of the actual running process.
+if (function_exists('posix_geteuid')) {
+	$uid = array();
+	$uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
+	$uid['{id_run}'] = posix_geteuid();
+	if ($uid['{id_own}'] != $uid['{id_run}']) {
+		$canInstall = False;
+		$reqMessages[] = strtr(installer_t("Directory ownership mismatch. PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}. Please check your web server configuration or contact the system administrator or hosting provider."), $uid);
+	}
 }
 if (!version_compare(PHP_VERSION, "5.3.0", ">=")) {
 	$canInstall = False;
@@ -104,7 +107,7 @@ if (($message = checkServerVar()) !== '') {
 if (!class_exists('Reflection', false)) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://php.net/manual/class.reflectionclass.php">PHP reflection class</a>: ' . $rbm;
-} else {
+} else if(extension_loaded("pcre")) {
 	$pcreReflector = new ReflectionExtension("pcre");
 	ob_start();
 	$pcreReflector->info();
@@ -117,8 +120,7 @@ if (!class_exists('Reflection', false)) {
 		$canInstall = False;
 		$reqMessages[] = strtr(installer_t("The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required."),array('{thisVer}'=>$thisVer,'{reqVer}'=>$reqVer));
 	}
-}
-if (!extension_loaded("pcre")) {
+} else {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.pcre.php">PCRE extension</a>: ' . $rbm;
 }
@@ -142,6 +144,10 @@ if (!extension_loaded("mbstring")) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: ' . $rbm;
 }
+if(!ini_get('allow_url_fopen')) {
+	$canInstall = False;
+	$reqMessages[] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. Software updates will not work.');
+}
 
 if ($standalone)
 	echo '<div style="width: 680px; border:1px solid #DDD; margin: 25px auto 25px auto; padding: 20px;font-family:sans-serif;">';
@@ -152,7 +158,7 @@ if (!$canInstall) {
 	foreach ($reqMessages as $message) {
 		echo "<li>$message</li>";
 	}
-	echo "</ul>" . installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/index.php?title=Installation">The X2CRM Installation Guide</a>.</div><br />';
+	echo "</ul>" . installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/index.php?title=Installation#Installing_Without_All_Requirements:_What_Won.27t_Work">"Installing Without All Requirements: What Won\'t Work"</a> in the X2CRM Installation Guide.</div><br />';
 } else if($standalone)
 	echo '<div style="width: 100%; text-align:center;"><h1>'.installer_t('This webserver can run X2CRM!').'</h1></div>';
 

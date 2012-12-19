@@ -252,7 +252,7 @@ class X2GridView extends CGridView {
 					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):$data->assignedTo';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
-					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data["'.$columnName.'"])';
+					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->formatDateTime($data["'.$columnName.'"],"medium")';
 				} elseif($this->allFields[$columnName]->type=='link') {
 					$newColumn['value'] = 'X2Model::getModelLink($data->'.$columnName.',"'.ucfirst($this->allFields[$columnName]->linkType).'")';
 					$newColumn['type'] = 'raw';

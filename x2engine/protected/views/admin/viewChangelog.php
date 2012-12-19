@@ -45,7 +45,7 @@
         'template'=> '<h2>Changelog</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
-    'dataProvider'=>$dataProvider,
+    'dataProvider'=>$model->search(),
     'filter'=>$model,
     'afterAjaxUpdate'=>'refreshQtipHistory',
 	'columns'=>array(

@@ -124,10 +124,10 @@ $form=$this->beginWidget('CActiveForm', array(
 			),
 		)); ?>
 	</div>
-	<div class="row">
+	<?php /*<div class="row">
 		<?php echo $form->checkBox($model,'enableFullWidth'); ?> 
 		<?php echo $form->labelEx($model,'enableFullWidth',array('style'=>'display:inline;')); ?>
-	</div>
+	</div> */ ?>
 	<br>
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('id'=>'save-changes','class'=>'x2-button')); ?>
@@ -138,7 +138,7 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row">
 		<h3><?php echo Yii::t('profile','Upload a Background'); ?></h3>
 		<?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
-		<?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
+		<?php echo CHtml::dropDownList('visibility','public',array('1'=>Yii::t('actions','Public'),'-'=>Yii::t('actions','Private'))); ?>
 		<?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
 		<?php echo CHtml::hiddenField('associationType', 'bg'); ?>
 		<?php echo CHtml::fileField('upload','',array('id'=>'backgroundImg','onchange'=>"checkName();")); ?>
@@ -147,6 +147,57 @@ $form=$this->beginWidget('CActiveForm', array(
 	</div>
 </div>
 
+<div class="form">
+    <div class="row">
+        <h3><?php   echo Yii::t('profile','Unhide Tags'); ?></h3>
+        <?php   foreach($allTags as &$tag) {
+                    echo '<span class="tag unhide" tag-name="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).' </span>';
+                } 
+        ?>
+    </div>
+</div>
+
+<style>
+.tag{
+	-moz-border-radius:4px;
+	-o-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border-style:solid;
+	border-width:1px;
+	border-color:gray;
+	margin:2px 2px;
+	display:block;
+	float:left;
+	padding:2px;
+	background-color:#f0f0f0;
+}
+.tag a {
+	text-decoration:none;
+	color:black;
+}
+
+</style>
+<script>
+    $('.unhide').mouseenter(function(){
+        var tag=$(this).attr('tag-name');
+        var elem=$(this);
+        var content='<span class="hide-link-span"><a href="#" class="hide-link" style="color:#06C;">[+]</a></span>';
+        $(content).hide().delay(500).appendTo($(this)).fadeIn(500);
+        $('.hide-link').click(function(e){
+           e.preventDefault();
+           $.ajax({
+              url:'<?php echo CHtml::normalizeUrl(array('/profile/unhideTag')); ?>'+'?tag='+tag,
+              success:function(){
+                  $(elem).closest('.tag').fadeOut(500);
+              }
+           });
+           
+        });
+    }).mouseleave(function(){
+        $('.hide-link-span').remove();
+    });
+</script>
 
 
 

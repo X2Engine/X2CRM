@@ -56,12 +56,11 @@ class History extends X2Widget {
 			'comments'=>'Comments',
 			'workflow'=>'Workflow',
 			'attachments'=>'Attachments',
+			'marketing'=>'Marketing',
 		);
 		
 		if(isset($_GET['history']) && array_key_exists($_GET['history'],$historyTabs))
 			$this->historyType = $_GET['history'];
-	
-		
 		
 		foreach($historyTabs as $type => &$label) {
 			if($type == $this->historyType)
@@ -90,11 +89,12 @@ class History extends X2Widget {
 			'workflow'=>' AND type="workflow"',
 			'comments'=>' AND type="note"',
 			'attachments'=>' AND type="attachment"',
+			'marketing'=>' AND type IN ("email","webactivity","weblead","email_staged","email_opened","email_clicked","email_unsubscribed")',
 		);
 
 		return new CActiveDataProvider('Actions',array(
 			'criteria'=>array(
-				'order'=>'GREATEST(createDate, IFNULL(completeDate,0), IFNULL(dueDate,0)) DESC',
+				'order'=>'GREATEST(createDate, IFNULL(completeDate,0), IFNULL(dueDate,0), IFNULL(lastUpdated,0)) DESC',
 				'condition'=>'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'" 
 					AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
 			)

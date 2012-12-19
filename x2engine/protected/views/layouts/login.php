@@ -45,26 +45,12 @@ mb_regex_encoding('UTF-8');
 Yii::app()->params->profile = ProfileChild::model()->findByPk(1);	// use the admin's profile since the user hasn't logged in
 $jsVersion = '?'.Yii::app()->params->buildDate;
 
-// jQuery and jQuery UI libraries
-Yii::app()->clientScript->registerCoreScript('jquery');
-Yii::app()->clientScript->registerCoreScript('jquery.ui');
-
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/layout.js'.$jsVersion);
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/backgroundImage.js'.$jsVersion);
-
 // blueprint CSS framework
 $themeURL = Yii::app()->theme->getBaseUrl();
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/screen.css'.$jsVersion,'screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css'.$jsVersion,'print');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css'.$jsVersion,'screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css'.$jsVersion,'screen, projection');
-
-Yii::app()->clientScript->registerScript('checkImages',"
-$(document).ready(function() {
-	$('#main-menu-icon, #footer-logo, #footer-logo img').css({'display':'inline','visibility':'visible','z-index':'2147483647'});
-           
-});
-",CClientScript::POS_END);
 
 
 $backgroundImg = '';
@@ -83,16 +69,7 @@ foreach($checkFiles as $key=>$value) {
 $theme2Css = '';
 if($checkResult)
 	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
-	
-if (!empty(Yii::app()->params->profile->pageOpacity)) {
-	$defaultOpacity = Yii::app()->params->profile->pageOpacity / 100;
-	Yii::app()->clientScript->registerScript('loadPageOpacity',"
-		$(document).ready(function() {
-			$('#page').fadeTo(0,".$defaultOpacity.");
-		});
-	",CClientScript::POS_HEAD);
-}
-	
+
 // check for background image, use it if one is set
 if(empty(Yii::app()->params->profile->backgroundImg))
 	$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/defaultBg.jpg','',array('id'=>'bg'));
@@ -126,7 +103,6 @@ if(!empty(Yii::app()->params->profile->menuTextColor))
 
 
 Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
-
 Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
 	

@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,17 +55,17 @@ return array (
 'Created By'=>'Aangemaakt Door',
 'Notes'=>'Notities',
 'Products'=>'Producten',
-'Expected Close Date'=>'Verwacht Sluit Datum',
+'Expected Close Date'=>'Verwachte Sluit Datum',
 
-'Sales Stage'=>'Verkoop Stages',
+'Sales Stage'=>'Sales Stage',
 'Existing Products'=>'Bestaande Producten',
-'Lead Source'=>'Lead Bron',
+'Lead Source'=>'hoofd Bron',
 'Description'=>'Omschrijving',
 'Notes/Terms'=>'Notities/Voorwaarden',
 'Hold Control or Command key to select multiple items.'=>'Hou de Control of Command toets in om meer items te selecteren',
 
 'Draft'=>'Klad',
-'Pending'=>'In Behandeling',
+'Pending'=>'In behandeling',
 'Issued'=>'Aangevraagd',
 
 'Won'=>'Gewonnen',
@@ -88,22 +88,20 @@ return array (
 'Delete Quote'=>'Verwijder Offerte',
 'Manage Quotes'=>'Beheer Offertes',
 'Create Quote'=>'Maak Offerte',
-'New Quote'=>'Nieuw Quote',
-'Expires'=>'Verloopt',
 
-'Add a User'=>'Voeg een Gebruiker Toe',
-'Add a Contact'=>'Voeg een Contact Toe',
-'Remove a User'=>'Verwijder een Gebruiker',
+'Add a User'=>'Voeg een Gebruiker toe',
+'Add a Contact'=>'Voeg een Contact toe',
+'Remove a User'=>'Verwijder een gebruiker',
 'Remove a Contact'=>'Verwijder een Contact',
 'Share Quote'=>'Deel een Offerte',
-'Print'=>'Afdrukken',
+'Print'=>'Print',
 'Print Quote'=>'Print Offerte',
 
 // Quotes Titles
 'Quotes'=>'Offertes',
 'Quote'=>'Offerte',
 'Quote:'=>'Offerte:',
-'Update Quote: {name}'=>'Werk Offerte Bij: {name}',
+'Update Quote: {name}'=>'Werk Offerte bij: {name}',
 'Print Options'=>'Print Opties',
 
 // Misc Text
@@ -111,9 +109,8 @@ return array (
 'Please select the contacts you wish to add.'=>'Selecteer de contacten die je wil toevoegen',
 'Please select the users you wish to remove.'=>'Selecteer de gebruikers die je wil verwijderen.',
 'Please select the contacts you wish to remove.'=>'Selecteer de contacten die je wil verwijderen',
-'Quote Record Details'=>'Citeren Record Details',
+'Quote Record Details'=>'Offerte Record Details',
 'Include Logo'=>'Voeg Logo Toe',
 'Basic Information'=>'Basis Informatie',
-'Opportunities'=>'Kansen',
-'Subscribe'=>'Abonneren',
+'Sales'=>'Verkoop',
 );

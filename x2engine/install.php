@@ -346,24 +346,20 @@ $timezones = array(
 					progressList = $('<ul>');
 					progressList.insertAfter(messageHeader);
 				}
-				if (thisStage != 'dummy_data' || form.find('#dummy_data').is(':checked')) {
-					$.ajax({
-						url:'initialize.php?stage='+thisStage,
-						type:'POST',
-						data:formData,
-						dataType:'json'
-					}).done(function(data) {
-						progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
-						if(!data.failed)
-							installStage(stagesRemaining,formData,form,nDone+1,data);
-						else
-							box.find('img').remove();
-					}).fail(function(jqXHR,textStatus) {
-						alert('An unexpected internal server error occurred during installation: '+textStatus+' '+jqXHR.status);
-					});
-				} else { // Skip insertion of sample data and don't increment nDone because nothing is being done at this point
-					installStage(stagesRemaining,formData,form,nDone,responseData);
-				}
+				$.ajax({
+					url:'initialize.php?stage='+thisStage,
+					type:'POST',
+					data:formData,
+					dataType:'json'
+				}).done(function(data) {
+					progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
+					if(!data.failed)
+						installStage(stagesRemaining,formData,form,nDone+1,data);
+					else
+						box.find('img').remove();
+				}).fail(function(jqXHR,textStatus) {
+					alert('An unexpected internal server error occurred during installation: '+textStatus+' '+jqXHR.status);
+				});
 			}
 		} else {
 			// Submit the form, mark as complete.
@@ -407,21 +403,20 @@ $timezones = array(
 			type: "POST",
 			url: "initialize.php",
 			data: data,
+			dataType:'json',
 			beforeSend: function() {
 				$('#response-box').html('<img src="<?php echo $themeURL; ?>/images/loading.gif">');
-			},
-			success: function(response) {
-				var message = '';
-				var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
-				var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
-				if(response.indexOf('DB_OK') > -1)
-					message = okImage + '<?php echo addslashes(installer_t('Connection OK!')); ?>';
-				if(response.indexOf('DB_CONNECTION_FAILED') > -1)
-					message = notOkImage + '<?php echo addslashes(installer_t('Could not connect to host.')); ?>';
-				if(response.indexOf('DB_COULD_NOT_SELECT') > -1)
-					message = notOkImage + '<?php echo addslashes(installer_t('Could not select database.')); ?>';
-				$('#response-box').html(message);
 			}
+		}).done(function(r) {
+			var message = '';
+			var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
+			var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
+			if (r.errors || r.globalError || r.failed) {
+				message =  notOkImage + '<span class="error">'+r.message+'</span>';
+			} else {
+				message = okImage + r.message;
+			}
+			$('#response-box').html(message);
 		});
 	}
 
@@ -487,7 +482,7 @@ $timezones = array(
 			    ?>
 			</select>
 		    </div>
-		    <div class="row"><label for="dummy_data"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='dummy_data' id="dummy_data" value='1' checked="checked" <?php getField('data', ''); ?> /><br /><br /></div>
+		    <div class="row"><label for="dummy_data"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='dummy_data' id="dummy_data" value='1' <?php getField('data', ''); ?> /><br /><br /></div>
 		    <div class="row"><label for="adminPass"><?php echo installer_t('Admin Password'); ?></label><input type="password" name="adminPass" id="adminPass" /></div>
 		    <div class="row"><label for="adminPass2"><?php echo installer_t('Confirm Password'); ?></label><input type="password" name="adminPass2" id="adminPass2" /></div>
 		    <div class="row"><label for="adminEmail"><?php echo installer_t('Administrator Email'); ?></label><input type="text" name="adminEmail" id="adminEmail" value="<?php getField('adminEmail', ''); ?>" /></div>

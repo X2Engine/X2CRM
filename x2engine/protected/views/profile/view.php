@@ -80,7 +80,7 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 		else
 			echo "This user does not allow posting on their feed.";
 		if($model->allowPost==1) {
-			echo $form->dropDownList($feed,'private',array(0=>Yii::t('actions','Public'),1=>Yii::t('actions','Private')));
+			echo $form->dropDownList($feed,'visibility',array(1=>Yii::t('actions','Public'),0=>Yii::t('actions','Private')));
 			echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
 			echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','type'=>'button','onclick'=>"$('#attachments').toggle();return false;"));
 		}

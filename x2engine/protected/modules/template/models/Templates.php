@@ -61,6 +61,11 @@ class Templates extends X2Model {
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/templates'
+			),
+            'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
 			)
 		);
 	}

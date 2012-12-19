@@ -48,13 +48,13 @@ return array (
 'Last Updated'=>'Última Actualización',
 'Updated By'=>'Actualizado Por',
 
-'Data fields'=>'Campos de dtos',
+'Data fields'=>'Campos de datos',
 'Show'=>'Mostrar',
 'Hide'=>'Ocultar',
 'Module Title'=>'Título de Módulo',
 'The name for your new module'=>'El nombre para su nuevo módulo',
 'Item Name'=>'Nobre de Item',
-'(Optional) What to call individual records, e.g. "Create new X"'=>'(Opcional) Qué llamar registros individuales, por ejemplo, "crear nuevo X"',
+'(Optional) What to call individual records, e.g. "Create new X"'=>'(Opcional) Cómo llamar registros individuales, por ejemplo, "crear nuevo X"',
 'DB Table Name'=>'Nombre de Tabla de BD',
 'Optional (alphanumeric only, must start with a letter)'=>'Opcional (sólo alfanumérico, debe comenzar con una letra)',
 
@@ -75,7 +75,7 @@ return array (
 'Manage {X}'=>'Manejar {X}',
 
 // Errors
-'Invalid table name'=>'Nombre de mesa no válido',
+'Invalid table name'=>'Nombre de tabla no válido',
 'A module with that title already exists'=>'Un módulo con ese título ya existe',
 
 // Misc

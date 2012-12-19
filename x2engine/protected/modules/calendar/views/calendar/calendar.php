@@ -706,7 +706,7 @@ function toggleCalendarSourceGoogleFeed(calendarId, on, googleFeed) {
 // filter calendar actions
 function toggleCalendarFilter(filterName, on) {
 	$.post('<?php echo $saveCheckedCalendarFilter; ?>', {Filter: filterName, Checked: on})
-		.success(function() { $('#calendar').fullCalendar('refetchEvents'); } );
+		.done(function() { $('#calendar').fullCalendar('refetchEvents'); } );
 }
 
 // remove id's so we can create another dialog

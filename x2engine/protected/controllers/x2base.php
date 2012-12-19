@@ -45,71 +45,70 @@
  * @package X2CRM.controllers
  */
 abstract class x2base extends X2Controller {
-    /*
-     * Class design:
-     * Basic create method (mostly overridden, but should have basic functionality to avoid using Gii
-     * Index method: Ability to pass a data provider to filter properly
-     * Delete method -> unviersal.
-     * Basic user permissions (access rules)
-     * Update method -> Similar to create
-     * View method -> Similar to index
-     */
+	/*
+	 * Class design:
+	 * Basic create method (mostly overridden, but should have basic functionality to avoid using Gii
+	 * Index method: Ability to pass a data provider to filter properly
+	 * Delete method -> unviersal.
+	 * Basic user permissions (access rules)
+	 * Update method -> Similar to create
+	 * View method -> Similar to index
+	 */
 
-    /**
-     * @var string the default layout for the controller view. Defaults to '//layouts/column1',
-     * meaning using a single column layout. See 'protected/views/layouts/column1.php'.
-     */
-    public $layout = '//layouts/column3';
+	/**
+	 * @var string the default layout for the controller view. Defaults to '//layouts/column1',
+	 * meaning using a single column layout. See 'protected/views/layouts/column1.php'.
+	 */
+	public $layout = '//layouts/column3';
 
-    /**
-     * @var array context menu items. This property will be assigned to {@link CMenu::items}.
-     */
-    public $menu = array();
+	/**
+	 * @var array context menu items. This property will be assigned to {@link CMenu::items}.
+	 */
+	public $menu = array();
 
-    /**
-     * @var array the breadcrumbs of the current page. The value of this property will
-     * be assigned to {@link CBreadcrumbs::links}. Please refer to {@link CBreadcrumbs::links}
-     * for more details on how to specify this property.
-     */
-    public $breadcrumbs = array();
-    public $portlets = array(); // This is the array of widgets on the sidebar.
-    public $modelClass = 'Admin';
-    public $actionMenu = array();
+	/**
+	 * @var array the breadcrumbs of the current page. The value of this property will
+	 * be assigned to {@link CBreadcrumbs::links}. Please refer to {@link CBreadcrumbs::links}
+	 * for more details on how to specify this property.
+	 */
+	public $breadcrumbs = array();
+	public $portlets = array(); // This is the array of widgets on the sidebar.
+	public $modelClass = 'Admin';
+	public $actionMenu = array();
 
-    /**
-     * @return array action filters
-     */
-    public function filters() {
-        return array(
-            //'accessControl', // perform access control for CRUD operations
-            'setPortlets', // performs widget ordering and show/hide on each page
-        );
-    }
+	/**
+	 * @return array action filters
+	 */
+	public function filters() {
+		return array(
+			//'accessControl', // perform access control for CRUD operations
+			'setPortlets', // performs widget ordering and show/hide on each page
+		);
+	}
 
-    protected function beforeAction($action = null) {
-        $auth = Yii::app()->authManager;
-        $params = array();
+	protected function beforeAction($action = null) {
+		$auth = Yii::app()->authManager;
+		$params = array();
 		$action = $this->getAction()->getId();
-		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions');
+		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','addComment');
 
-        if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest) {
-            if (method_exists($this, 'loadModel')) {
-                $model = $this->loadModel($_GET['id']);
-                if($model!==null && $model->hasAttribute('assignedTo')) {
-                    $params['assignedTo'] = $model->assignedTo;
-                }
-            }
-        }
-        $actionAccess = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
-        $authItem = $auth->getAuthItem($actionAccess);
-        if (Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin') {
-            return true;
-        }elseif(Yii::app()->user->isGuest){
-            $this->redirect($this->createUrl('/site/login'));
-        }else{
-            throw new CHttpException(403, 'You are not authorized to perform this action.');
-        }
-    }
+		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest) {
+			if (method_exists($this, 'loadModel')) {
+				$model = $this->loadModel($_GET['id']);
+				if($model!==null && $model->hasAttribute('assignedTo')) {
+					$params['assignedTo'] = $model->assignedTo;
+				}
+			}
+		}
+		$actionAccess = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
+		$authItem = $auth->getAuthItem($actionAccess);
+		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
+			return true;
+		elseif(Yii::app()->user->isGuest)
+			$this->redirect($this->createUrl('/site/login'));
+		else
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+	}
 
     /**
      * Specifies the access control rules.
@@ -230,7 +229,7 @@ abstract class x2base extends X2Controller {
         $view = false;
         $edit = false;
         // if we're the admin, visibility is public, there is no visibility/assignedTo, or it's directly assigned to the user, then we're done
-        if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo') || $model->assignedTo == 'Anyone' || $model->assignedTo == Yii::app()->user->getName()) {
+        if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
 
             $edit = true;
         } elseif (!$model->hasAttribute('visibility') || $model->visibility == 1) {
@@ -311,7 +310,7 @@ abstract class x2base extends X2Controller {
 
 		return new CActiveDataProvider('Actions',array(
 			'criteria'=>array(
-				'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
+				'order'=>'GREATEST(createDate, IFNULL(completeDate,0), IFNULL(dueDate,0), IFNULL(lastUpdated,0)) DESC',
 				'condition'=>'associationId='.$model->id.' AND associationType="'.$type.'" '.$filters[$history].' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
 			)
 		));
@@ -418,7 +417,13 @@ abstract class x2base extends X2Controller {
      * between MySQL/PHP line breaks and HTML line breaks.
      */
     public static function convertLineBreaks($text, $allowDouble = true, $allowUnlimited = false) {
-
+        
+        if(preg_match("/<br \/>/",$text)){
+            $text = preg_replace("/<\/b>/","</b><br />",$text,1);
+            $text = preg_replace("/\s<b>/","<br /><b>",$text,1);
+            return $text;
+        }
+        
         $text = mb_ereg_replace("\r\n", "\n", $text);  //convert microsoft's stupid CRLF to just LF
 
         if (!$allowUnlimited)
@@ -630,8 +635,8 @@ abstract class x2base extends X2Controller {
                     $fieldName = $field->fieldName;
                     if (isset($model->$fieldName) && $model->$fieldName != "") {
                         if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-								(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $model->$fieldName . "') 
-								OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $model->$fieldName . "')"))) {
+								(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:fieldname) 
+								OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:fieldname)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':fieldname'=>$model->$fieldName)))) {
 
                             $rel = new Relationships;
                             $rel->firstType = $name;
@@ -656,8 +661,8 @@ abstract class x2base extends X2Controller {
                                 }
                                 if (isset($oldRel)) {
                                     $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-									(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $oldRel->id . "') 
-									OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $oldRel->id . "')");
+									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid) 
+									OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
                                     if (isset($lookup)) {
                                         $lookup->delete();
                                     }
@@ -681,8 +686,8 @@ abstract class x2base extends X2Controller {
                         }
                         if (isset($oldRel)) {
                             $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-									(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $oldRel->id . "') 
-									OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $oldRel->id . "')");
+									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid) 
+									OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
                             if (isset($lookup)) {
                                 $lookup->delete();
                             }
@@ -802,28 +807,30 @@ abstract class x2base extends X2Controller {
                 preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
                 $matches = $matches[0];
                 foreach ($matches as $match) {
-                    $tag = new Tags;
-                    $tag->type = $type;
-                    $tag->taggedBy = Yii::app()->user->getName();
-                    $tag->type = $type;
-                    //cut out leading whitespace
-                    $tag->tag = trim($match);
-                    if ($model instanceof Contacts)
-                        $tag->itemName = $model->firstName . " " . $model->lastName;
-                    else if ($model instanceof Actions)
-                        $tag->itemName = $model->actionDescription;
-                    else if ($model instanceof Docs)
-                        $tag->itemName = $model->title;
-                    else
-                        $tag->itemName = $model->name;
-                    if (!isset($model->id)) {
-                        $model->save();
-                    }
-                    $tag->itemId = $model->id;
-                    $tag->timestamp = time();
-                    //save tags including # sign
-                    if ($tag->save()) {
+                    if(!preg_match('/\&(^|\s|)#(\w\w+);/',$match)){
+                        $tag = new Tags;
+                        $tag->type = $type;
+                        $tag->taggedBy = Yii::app()->user->getName();
+                        $tag->type = $type;
+                        //cut out leading whitespace
+                        $tag->tag = trim($match);
+                        if ($model instanceof Contacts)
+                            $tag->itemName = $model->firstName . " " . $model->lastName;
+                        else if ($model instanceof Actions)
+                            $tag->itemName = $model->actionDescription;
+                        else if ($model instanceof Docs)
+                            $tag->itemName = $model->title;
+                        else
+                            $tag->itemName = $model->name;
+                        if (!isset($model->id)) {
+                            $model->save();
+                        }
+                        $tag->itemId = $model->id;
+                        $tag->timestamp = time();
+                        //save tags including # sign
+                        if ($tag->save()) {
 
+                        }
                     }
                 }
             }
@@ -974,7 +981,7 @@ abstract class x2base extends X2Controller {
     }
 
     public static function cleanUpSessions() {
-        Session::model()->deleteAll('lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
+        CActiveRecord::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
     }
 
     public function getPhpMailer() {
@@ -1209,12 +1216,24 @@ abstract class x2base extends X2Controller {
      * @return string
      */
     function getRealIp() {
-        if (!empty($_SERVER['HTTP_CLIENT_IP']))
-            return $_SERVER['HTTP_CLIENT_IP'];
-        else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        else
-            return $_SERVER['REMOTE_ADDR'];
+		foreach(array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR'
+		) as $var) {
+			if(array_key_exists($var,$_SERVER)){
+				foreach(explode(',',$_SERVER[$var]) as $ip) {
+					$ip = trim($ip);
+					if(filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false)
+						return $ip;
+				}
+			}
+		}
+		return false;
     }
     
     
@@ -1267,6 +1286,8 @@ abstract class x2base extends X2Controller {
             if (Yii::app()->language == 'en')
                 if ($width == 'medium')
                     return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'), $timestamp);
+                elseif($width=='short')
+                    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'), $timestamp);
                 else
                     return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $timestamp);
             else

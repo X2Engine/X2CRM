@@ -62,21 +62,46 @@ $("#Campaign_content").parent()
 
 if(window.emailEditor)
 	window.emailEditor.destroy(true);
-window.emailEditor = createCKEditor("Campaign_content",{tabIndex:5,insertableAttributes:x2.insertableAttributes});
+window.emailEditor = createCKEditor("Campaign_content",{
+	tabIndex:5,
+	insertableAttributes:x2.insertableAttributes,
+	fullPage:true
+},function(){
+	window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
+});
 	
 setupEmailAttachments("campaign-attachments");
 
 $("#campaign-attachments-wrapper").qtip({content: "Drag files from the Media Widget here."});
 
-',CClientScript::POS_READY);
 
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'campaign-form',
-	'enableAjaxValidation'=>false,
-	'htmlOptions'=>array('onsubmit'=>'editor.post();')
+$("#Campaign_templateDropdown").change(function() {
+	var template = $(this).val();
+	if(template != "0") {
+		
+		$.ajax({
+			url:yii.baseUrl+"/index.php/docs/fullView/"+template,
+			type:"GET",
+			success:function(data) {
+				window.emailEditor.setData(data);
+				window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
+			}
+		});
+	}
+});',CClientScript::POS_READY);
+
+$this->renderPartial('application.components.views._form', array(
+	'model'=>$model,
+	'users'=>User::getNames(),
+	'form'=>$form,
+	'modelName'=>'Campaign',
+	'specialFields'=>array(
+		'template'=>CHtml::activeDropDownList($model,'template',array('0'=>Yii::t('docs','Custom Message')) + DocChild::getEmailTemplates(),array(
+			'title'=>$model->getAttributeLabel('template'),
+			'id'=>'Campaign_templateDropdown'
+		))
+	)
 ));
-
-$this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>User::getNames(),'form'=>$form, 'modelName'=>'Campaign'));
 ?>
 
 <h2><?php echo Yii::t('app','Attachments'); ?></h2>
@@ -111,5 +136,3 @@ $this->renderPartial('application.components.views._form', array('model'=>$model
 <div class="row buttons">
 	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24)); ?>
 </div>
-
-<?php $this->endWidget(); ?>

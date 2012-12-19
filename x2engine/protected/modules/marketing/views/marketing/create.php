@@ -45,8 +45,17 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
+	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
+));
+
+$form = $this->beginWidget('CActiveForm', array(
+	'id'=>'campaign-form',
+	'enableAjaxValidation'=>false
 ));
 ?>
+<h2><?php echo Yii::t('marketing','Create Campaign'); ?>
+	<?php echo CHtml::submitButton(Yii::t('app','Create'),array('class'=>'x2-button highlight right')); ?></h2>
+<?php
+$this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign','form'=>$form));
 
-<h2><?php echo Yii::t('marketing','Create Campaign'); ?></h2>
-<?php echo $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign')); ?>
+$this->endWidget();

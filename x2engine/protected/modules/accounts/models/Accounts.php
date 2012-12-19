@@ -257,7 +257,7 @@ class Accounts extends X2Model {
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
-
+        
 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
                 foreach($fields as $field){
                     $fieldName=$field->fieldName;

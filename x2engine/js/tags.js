@@ -66,6 +66,21 @@ $(function() {
 			$('#x2-tag-list').appendTag(ui.draggable.context);
 		}
 	});
+    
+    $('#x2-inline-tags-filter').droppable({ // allow tags to be dropped into inline tags widget
+		accept: '.x2-tag',
+		activeClass: 'x2-state-active',
+		hoverClass: 'x2-state-hover',
+		drop: function(event, ui) { // add a tag to this model		
+            if($('#x2-tag-list-filter').text()=='Drop a tag here to filter map results.'){
+                $('#x2-tag-list-filter').html('');
+            }
+			$('#x2-tag-list-filter').appendTagFilter(ui.draggable.context);
+            $('.link-disable a').click(function(e){
+                e.preventDefault();
+            });
+		}
+	});
 	
 	// allow tags to be dropped into the publisher
 	// don't highlight the publisher,
@@ -80,6 +95,10 @@ $(function() {
 	
 	// activate remove buttons ([x]) for already created tags
 	$('.delete-tag').click(function(event) { return removeHandler(event); });
+    $('.filter').click(function(event) { return removeHandlerFilter(event); });
+    $('.link-disable a').click(function(e){
+        e.preventDefault();
+    });
 	
 	// indicate new tags can be created
 	// (after user starts creating a new tag, call lockCreateTag until they are done creating the new tag)
@@ -127,6 +146,23 @@ $.fn.appendTag = function(tag) {
 		    }
 		});
 	});
+	
+	return $(this);
+}
+
+$.fn.appendTagFilter = function(tag) {
+	
+	$(this).each(function() {
+		// span holds remove button and tag link
+		var span = $('<span>', {
+		    'class': 'tag link-disable'
+		});
+		
+		var parent = $(this);
+        parent.append(span);
+        span.hide().appendRemoveFilter().appendTagLink(tag).fadeIn('slow');
+	});
+    
 	
 	return $(this);
 }
@@ -182,6 +218,21 @@ $.fn.appendRemove = function() {
 	return $(this);
 }
 
+$.fn.appendRemoveFilter = function() {
+	$(this).each(function() {
+		var remove = $('<span>', {
+			'class': 'delete-tag filter',
+			'html': '[x] '
+		});
+		
+		$(this).append(remove);
+		
+		remove.click( function(event) { return (removeHandlerFilter(event)); } );
+	});
+	
+	return $(this);
+}
+
 // handler to remove a tag
 // this handler is attached to the remove ([x]) button and removes
 // the tag and all the elements inside it (the remove button and the tag link)
@@ -208,6 +259,29 @@ function removeHandler(event) {
 	    	});
 	    }
 	});
+	
+	return false; // prevent click from propagating (to x2-inline-tags)
+}
+
+function removeHandlerFilter(event) {
+	var remove = $(event.target);
+	var tag = remove.next('a'); // tag link
+	tag = tag[0];
+	var parent = remove.parent(); // parent is the span that holds the remove button and the link tag
+	var width = parent.width();
+	if(parent.children('input').length > 0) { // fix for if we remove a new tag before it's done being created
+		parent.fadeOut(function() { parent.empty().remove(); });
+    	unlockCreateTag(); // we're done with this tag, so a let another get created
+    	
+		return false;
+	}
+    parent.animate({opacity: 0}, function() {
+	    		parent.css('width', width + 'px');
+	    		parent.empty();
+	    		parent.animate({width: 'toggle'}, function() {
+	    			$(this).remove();
+	    		});
+        });
 	
 	return false; // prevent click from propagating (to x2-inline-tags)
 }

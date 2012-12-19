@@ -130,6 +130,17 @@ class Media extends X2Model {
 		return (bool)preg_match('/\.(jpg|gif|png|bmp|jpeg|jpe)$/i',$this->fileName);
 	}
 	
+	/**
+	 * Return true if $filename has an image extension. Image extensions include:
+	 * jpg, gif, png, bmp, jpeg, jpe
+	 *
+	 * @param $filename the file name that has the extension
+	 * @return true if $filename has an image extension, false otherwise
+	 */
+	public static function isImageExt($filename) {
+		return (bool)preg_match('/\.(jpg|gif|png|bmp|jpeg|jpe)$/i',$filename);
+	}
+	
 	// return an img tag of this file
 	// return '' if file is not an image
 	public function getImage() {
@@ -154,6 +165,19 @@ class Media extends X2Model {
 		return null;
 	}
 	
+	public static function getFilePath($uploadedBy, $fileName) {
+		$path = "uploads/media/{$uploadedBy}/{$fileName}"; // try new format
+		if(file_exists($path))
+			return $path;
+		else {
+			$path = "uploads/{$fileName}"; // try old format
+			if(file_exists($path))
+				return $path;
+		}
+		
+		return null;
+	}
+	
 	// get a url to a file
 	// return null if file doesn't exist
 	public function getUrl() {
@@ -163,10 +187,24 @@ class Media extends X2Model {
 		return null;
 	}
 	
+	public static function getFileUrl($path) {
+		if($path) // ensure file exists
+			return Yii::app()->request->baseUrl . "/$path";
+		
+		return null;
+	}
+	
 	// get the full url (including e.g. example.com) to a file
 	// return null if file doesn't exist
 	public function getFullUrl() {
 		if($path = $this->getPath()) // ensure file exists
+			return Yii::app()->getBaseUrl(true) . "/$path";
+		
+		return null;
+	}
+	
+	public static function getFullFileUrl($path) {
+		if($path) // ensure file exists
 			return Yii::app()->getBaseUrl(true) . "/$path";
 		
 		return null;

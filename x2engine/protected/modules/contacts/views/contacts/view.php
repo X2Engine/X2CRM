@@ -171,8 +171,11 @@ Yii::app()->clientScript->registerScript('create-model', "
 
 <?php
 $insertableAttributes = array();
-foreach($model->attributeLabels() as $fieldName => $label)
-	$insertableAttributes[$label] = $model->renderAttribute($fieldName,false);
+foreach($model->attributeLabels() as $fieldName => $label) {
+	$attr = trim($model->renderAttribute($fieldName,false));
+	if($attr !== '')
+		$insertableAttributes[$label] = $attr;
+}
 
 // echo CJSON::encode($insertableAttributes);
 // var_dump($insertableAttributes);

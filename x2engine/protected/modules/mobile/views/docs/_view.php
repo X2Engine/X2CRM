@@ -41,11 +41,11 @@
 <br />
 <div class="view">
 
-	<b><?php echo CHtml::encode("Title"); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->title),$this->createUrl('docs/view?id='.$data->id)); ?>
+	<b><?php echo Yii::t('docs','Title'); ?>:</b>
+	<?php echo CHtml::link(CHtml::encode($data->name),$this->createUrl('docs/view?id='.$data->id)); ?>
 	<br />
 	
-	<b><?php echo CHtml::encode("Created By"); ?>:</b>
+	<b><?php echo Yii::t('docs','Created By'); ?>:</b>
 	<?php 
         $user=User::model()->findByAttributes(array('username'=>$data->createdBy));
         echo CHtml::encode($user->firstName." ".$user->lastName); ?>

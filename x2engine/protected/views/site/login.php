@@ -40,18 +40,17 @@
 
 $this->pageTitle=Yii::app()->name . ' - Login';
 
-Yii::app()->clientScript->registerScript('loginFocus',"
-$('#LoginForm_username').focus();
-",CClientScript::POS_READY);
+Yii::app()->clientScript->registerScript('loginFocus',
+	'window.onload = function() { document.getElementById("LoginForm_username").focus(); }',
+CClientScript::POS_HEAD);
 ?>
-
-
 <div id="login-box">
 <?php $form=$this->beginWidget('CActiveForm', array(
 	// 'id'=>'login-form',
-	'enableClientValidation'=>true,
+	'enableClientValidation'=>false,
+	'enableAjaxValidation'=>false,
 	'clientOptions'=>array(
-		'validateOnSubmit'=>true,
+		'validateOnSubmit'=>false,
 	),
 ));
 	?><!--<h2><?php echo Yii::t('app','Welcome to {appName}.',array('{appName}'=>Yii::app()->name)); ?></h2>-->
@@ -60,17 +59,17 @@ $('#LoginForm_username').focus();
 		<div class="cell">
 			<?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png','X2Engine',array('id'=>'login-logo','width'=>74,'height'=>84)); ?>
 		</div>
-		<div class="cell">
+		<div class="cell" style="margin:0;width:230px;">
 		
 			<?php echo $form->label($model,'username'); ?>
-			<?php echo $form->textField($model,'username'); ?>
+			<?php echo $form->textField($model,'username',array('autofocus'=>'autofocus')); ?>
 			<?php //echo $form->error($model,'username'); ?>
 
 			<?php echo $form->label($model,'password',array('style'=>'margin-top:5px;')); ?>
 			<?php echo $form->passwordField($model,'password'); ?>
 			<?php echo $form->error($model,'password'); ?>
 			<?php if($model->useCaptcha && CCaptcha::checkRequirements()) { ?>
-			<div class="row">
+			<div class="row" style="margin-top:5px;">
 				<?php
 				// CHtml::$errorCss = 'error';
 				// CHtml::$errorSummaryCss = 'error';
@@ -102,7 +101,7 @@ $('#LoginForm_username').focus();
 			</div>
 		</div>
 	</div>
-	<div class="row" style="margin-top:10px;text-align:center;">
+	<div class="row" id="login-links" style="margin-top:10px;text-align:center;">
 		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app','Login with Google'),
 				(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
 				((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 

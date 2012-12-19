@@ -40,10 +40,10 @@
 
 include("protected/modules/templates/templatesConfig.php");
 
-$this->actionMenu = array(
+$this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName']))),
-);
+));
 ?>
 <h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2>
 

@@ -15,6 +15,7 @@ CREATE TABLE x2_users (
 	backgroundInfo			TEXT,
 	emailAddress			VARCHAR(100)	NOT NULL,
 	status					TINYINT			NOT NULL,
+    temporary               TINYINT         DEFAULT 0,
 	lastUpdated				VARCHAR(30),
 	updatedBy				VARCHAR(20),
 	recentItems				VARCHAR(100),
@@ -26,6 +27,7 @@ CREATE TABLE x2_users (
 	calendarEditPermission	TEXT,
 	calendarFilter			TEXT,
 	setCalendarPermissions	TINYINT,
+    inviteKey               VARCHAR(16),
 
 	UNIQUE(username, emailAddress),
 	INDEX (username)

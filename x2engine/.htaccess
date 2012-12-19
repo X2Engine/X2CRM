@@ -4,9 +4,13 @@
 
 RewriteEngine on
 
+# special case for the favicon
+RewriteRule favicon\.ico$ images/favicon.ico
+
 # if a directory or a file exists, use it directly
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !favicon\.ico$|sitemap\.xml$|crossdomain\.xml$
 
 # otherwise forward it to index.php
 RewriteRule . index.php

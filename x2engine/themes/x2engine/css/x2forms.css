@@ -304,6 +304,7 @@ div.x2-layout.editMode td {border:1px dashed #f00;border-width:1px 1px 1px 0;}
 div.x2-layout.editMode .formSectionHeader {
 	width:100%;
 	background:#fff;
+	float:none;
 }
 div.x2-layout.editMode .formSectionHeader a {
 	display:inline;
@@ -478,13 +479,13 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 	font-size:12px;
 	font-weight:normal;
 }
-#editorFieldList label.emailIcon	{background:url(../images/formEditor/email_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.phoneIcon	{background:url(../images/formEditor/phone_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.booleanIcon	{background:url(../images/formEditor/boolean_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.dropdownIcon	{background:url(../images/formEditor/dropdown_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.dateIcon		{background:url(../images/formEditor/date_icon.gif)		2px	0px no-repeat transparent;}
-#editorFieldList label.textIcon		{background:url(../images/formEditor/text_icon.gif)		2px	0px no-repeat transparent;}
-#editorFieldList label.varcharIcon	{background:url(../images/formEditor/varchar_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.emailIcon, 		ul.fieldlist li label.emailIcon	{background:url(../images/formEditor/email_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.phoneIcon, 		ul.fieldlist li label.phoneIcon	{background:url(../images/formEditor/phone_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.booleanIcon, 	ul.fieldlist li label.booleanIcon	{background:url(../images/formEditor/boolean_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.dropdownIcon, 	ul.fieldlist li label.dropdownIcon	{background:url(../images/formEditor/dropdown_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.dateIcon, 		ul.fieldlist li label.dateIcon		{background:url(../images/formEditor/date_icon.gif)		2px	0px no-repeat transparent;}
+#editorFieldList label.textIcon, 		ul.fieldlist li label.textIcon		{background:url(../images/formEditor/text_icon.gif)		2px	0px no-repeat transparent;}
+#editorFieldList label.varcharIcon, 	ul.fieldlist li label.varcharIcon	{background:url(../images/formEditor/varchar_icon.gif)	2px 0px no-repeat transparent;}
 
 
 /* Tab Order Mode */

@@ -39,21 +39,45 @@
  ********************************************************************************/
 
 $justMeUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'justMe'));
-$allUsersUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'allUsers'));
+$allUsersUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'allUsers'));?><span style="float:left"><?php
 echo CHtml::ajaxLink(Yii::t('app','Just Me'), $justMeUrl,array('success'=>'function(response) { $("#myTags").show(); $("#allTags").hide(); } '))." | ".CHtml::ajaxLink(Yii::t('app','All Users'), $allUsersUrl,array('success'=>'function() { $("#allTags").show(); $("#myTags").hide(); }'))."<br />";
-?> <br>
+?></span><span style="float:right"><a id="tag-hint" href="#" style="text-decoration:none;">[?]</a></span> <br><br>
 <div id="myTags" <?php echo ($showAllUsers? 'style="display:none;"' : ''); ?>>
 <?php
 foreach($myTags as &$tag) {
-	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
+	echo '<span class="tag" title="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
 }
 ?>
 </div>
 
-<div id="allTags" <?php echo ($showAllUsers? '' : 'style="display:none;"'); ?>>
+<div id="allTags"  <?php echo ($showAllUsers? '' : 'style="display:none;"'); ?>>
 <?php
 foreach($allTags as &$tag) {
-	echo '<span class="tag">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
+	echo '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).' </span>';
 }
 ?>
 </div>
+<script>
+    $('.hide').mouseenter(function(e){
+        e.preventDefault();
+        var tag=$(this).attr('tag-name');
+        var elem=$(this);
+        var content='<span style="position:absolute;right:1px;top:1px;;background-color:#F0F0F0;" class="hide-link-span"><a href="#" class="hide-link" style="color:#06C;">[x]</a></span>';
+        $(content).hide().delay(500).appendTo($(this)).fadeIn(500);
+        $('.hide-link').click(function(e){
+           e.preventDefault();
+           $.ajax({
+              url:'<?php echo CHtml::normalizeUrl(array('/profile/hideTag')); ?>'+'?tag='+tag,
+              success:function(){
+                  $(elem).closest('.tag').fadeOut(500);
+              }
+           });
+        });
+    }).mouseleave(function(){
+        $('.hide-link-span').remove();
+    });
+    $('#tag-hint').qtip({
+       position:{'my':'top right','at':'bottom left'}, 
+       content:'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'
+    });
+</script>

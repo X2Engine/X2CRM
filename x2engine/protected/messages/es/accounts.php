@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,52 +40,101 @@
 
 return array (
 // Account Attributes
+
 'ID'=>'ID',
+
 'Name'=>'Nombre',
+
 'Website'=>'Sitio Web',
+
 'Type'=>'Tipo',
+
 'Revenue'=>'Ingresos Anuales',
+
 'Phone'=>'Teléfono',
-'Symbol'=>'Símbolo',
+
+'Symbol'=>'Clave en Bolsa',
+
 'Employees'=>'Empleados',
+
 'Assigned To'=>'Asignado A',
+
 'Create Date'=>'Fecha de Creación',
+
 'Associated Contacts'=>'Contactos Asociados',
+
 'Description'=>'Descripción',
+
 'Last Updated'=>'Última Actualización',
+
 'Updated By'=>'Actualizado Por',
+
 'None'=>'Ninguno',
 'Contacts'=>'Contactos',
+
 'Basic Information'=>'Información Básica',
+
 'Additional Information'=>'Información Adicional',
 
+
+
 // Accounts Actions
-'Accounts List'=>'Lista De Cuentas',
+
+'Accounts List'=>'Lista de Cuentas',
+
+'All Accounts'=>'Todas las Cuentas',
 'Create Account'=>'Crear Una Cuenta',
+'Edit Account'=>'Editar Cuenta',
 'View Account'=>'Ver Cuenta',
+
 'Update Account'=>'Actualizar Cuenta',
+
 'Delete Account'=>'Eliminar Cuenta',
+
 'Add a User'=>'Añadir un Usuario',
-'Add a Contact'=>'Añadir n Contacto',
+
+'Add a Contact'=>'Añadir Contacto',
+
 'Remove a User'=>'Quitar un Usuario',
+
 'Remove a Contact'=>'Quitar un Contacto',
-'Share Account'=>'Compartir esta Cuenta',
+
+'Share Account'=>'Compartir Cuenta',
+
 'Create'=>'Crear',
+
 'View'=>'Ver',
+
 'Update'=>'Actualizar',
+
 'Delete'=>'Borrar',
+
 'Update Account:'=>'Actualización de la Cuenta:',
+
 'Share Opportunity'=>'Compartir Oportunidad',
 
+
+
 // Accounts Titles
+
 'Accounts'=>'Cuentas',
+
 'Manage Accounts'=>'Administrar Cuentas',
+
 'Update Account: {name}'=>'Actualizar la Cuenta: {nombre}',
+
 'Account:'=>'Cuenta:',
 
+
+
 // Misc
+
 'Please click any new users you wish to add.'=>'Por favor, seleccione todos los usuarios nuevos que desea añadir.',
+
 'Please click any new users you wish to remove.'=>'Por favor, haga clic en cualquier usuario nuevo que desea eliminar.',
-'Account Record Details'=>'Detalles de la Cuenta Registro',
-'Account Record'=>'Cuenta Registro',
+
+'Account Record Details'=>'Detalles del Registro de la Cuenta',
+
+'Account Record'=>'Registro de la Cuenta',
+
 );

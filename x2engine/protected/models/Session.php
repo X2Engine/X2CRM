@@ -72,7 +72,8 @@ class Session extends CActiveRecord {
 		// will receive user inputs.
 		return array(
 			array('lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('user', 'length', 'max'=>250),
+			array('id, IP', 'length', 'max'=>40),
+			array('user', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, user, lastUpdated', 'safe', 'on'=>'search'),
@@ -85,8 +86,7 @@ class Session extends CActiveRecord {
 	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-		return array(
-		);
+		return array();
 	}
 
 	/**
@@ -94,7 +94,7 @@ class Session extends CActiveRecord {
 	 */
 	public function attributeLabels() {
 		return array(
-			'id' => Yii::t('sessions','ID'),
+			'id' => Yii::t('sessions','Sesesion ID'),
 			'user' => Yii::t('sessions','User'),
 			'lastUpdated' => Yii::t('sessions','Last Updated'),
 			'IP' => Yii::t('sessions','IP Address'),
@@ -114,7 +114,9 @@ class Session extends CActiveRecord {
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('user',$this->user,true);
+		$criteria->compare('IP',$this->IP,true);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
+		$criteria->compare('status',$this->status);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

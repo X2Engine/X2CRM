@@ -10,4 +10,4 @@ foreach(Roles::model()->findAll() as $role){
 }
 ?>
 <h1><?php echo Yii::t('users','Create User'); ?></h1>
-<?php echo $this->renderPartial('_form', array('model'=>new User, 'roles'=>$roles, 'groups'=>$groups,'selectedGroups'=>array(),'selectedRoles'=>array(),'flag'=>true)); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$user, 'roles'=>$roles, 'groups'=>$groups,'selectedGroups'=>array(),'selectedRoles'=>array(),'flag'=>true)); ?>

@@ -45,6 +45,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
+	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
 ));
 
 Yii::app()->clientScript->registerScript('search', "

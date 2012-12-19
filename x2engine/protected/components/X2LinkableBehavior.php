@@ -93,6 +93,16 @@ class X2LinkableBehavior extends CModelBehavior {
 	}
 
 	/**
+	 * @return string a link to the model view, or just the name if no ID is set
+	 */
+	public function createLink() {
+		if(isset($this->owner->id))
+			return $this->getLink();
+		else
+			return $this->owner->name;
+    }
+	
+	/**
 	 * Accessor method for $autoCompleteSource
 	 * 
 	 * @return string $autoCompleteSource

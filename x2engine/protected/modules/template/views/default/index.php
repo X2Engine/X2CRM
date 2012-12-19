@@ -39,10 +39,10 @@
  ********************************************************************************/
 include("protected/modules/templates/templatesConfig.php");
 
-$this->actionMenu = array(
+$this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
-);
+));
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

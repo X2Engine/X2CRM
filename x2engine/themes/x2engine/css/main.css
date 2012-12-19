@@ -1172,12 +1172,12 @@ body.yii-t dt.yii-t {cursor:help;background:rgba(255,0,0,0.5);}
 	float: right;
 }
 
-#widget_MediaBox .media-item a, #x2-tag-list .tag a {
+#widget_MediaBox .media-item a, #x2-tag-list .tag a,  #x2-tag-list-filter .tag a{
 	text-decoration: none;
 	color: black;
 }
 
-#widget_MediaBox .media-item, #x2-tag-list .tag {
+#widget_MediaBox .media-item, #x2-tag-list .tag, #x2-tag-list-filter .tag{
 	-moz-border-radius:4px;
 	-o-border-radius:4px;
 	-webkit-border-radius:4px;

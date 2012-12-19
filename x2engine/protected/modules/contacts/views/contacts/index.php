@@ -46,6 +46,8 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
     array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
+    array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
+    array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
 );
 
 $heading = '';

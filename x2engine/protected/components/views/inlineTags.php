@@ -37,6 +37,25 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+
+if($filter){?>
+<b><?php echo Yii::t('app', 'Tags'); ?></b>
+<div id="x2-inline-tags-filter" class="form">
+	
+    <?php if(is_array($tags) && count($tags)>0){
+        echo "<div id='x2-tag-list-filter'>";
+        foreach($tags as $tag) {
+            echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span> '.CHtml::link($tag,'#').'</span>';
+        }
+        echo "</div>";
+    }else{ ?>
+	<div id="x2-tag-list-filter" style="min-height:15px;">Drop a tag here to filter map results.</div>
+<?php } ?>
+</div>    
+
+
+<?php 
+}else{
 ?>
 
 <div id="x2-inline-tags" class="form">
@@ -65,4 +84,6 @@ $(function() {
 	$('#x2-inline-tags').data('type', '$type');
 	$('#x2-inline-tags').data('id', $id);	
 });",CClientScript::POS_HEAD);
+
+}
 ?>

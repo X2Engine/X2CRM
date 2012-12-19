@@ -73,6 +73,14 @@ class ServicesController extends x2base {
 			),
 		);
 	}
+	
+	public function behaviors() {
+		return array(
+			'ServiceRoutingBehavior'=>array(
+				'class'=>'ServiceRoutingBehavior'
+			)
+		);
+	}
 
 	/**
 	 * Displays a particular model.
@@ -311,6 +319,11 @@ class ServicesController extends x2base {
 	 * Create a web lead form with a custom style
 	 */
 	public function actionCreateWebForm() {
+		if(file_exists(__DIR__ . '/pro/actionCreateWebForm.php')) {
+			include(__DIR__ . '/pro/actionCreateWebForm.php');
+			return;
+		}
+	
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			if (empty($_POST['name'])) {
 				echo json_encode(array('errors'=>array('name'=>Yii::t('marketing','Name cannot be blank.'))));
@@ -347,27 +360,32 @@ class ServicesController extends x2base {
 				echo json_encode(array('errors'=>$model->getErrors()));
 			}
 		} else {
-            if(Yii::app()->user->getName()!='admin'){
-            $condition = 'AND visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+			if(Yii::app()->user->getName()!='admin') {
+				$condition = ' AND visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+				/* x2temp */
+				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+				if(!empty($groupLinks))
+					$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-            }else{
-                $condition="";
-            }
+				$condition .= ' OR (visibility=2 AND assignedTo IN 
+					(SELECT username FROM x2_group_to_user WHERE groupId IN
+					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+			} else {
+				$condition='';
+			}
 			//this get request is for weblead type only, marketing/weblist/view supplies the form that posts for weblist type
-			$forms = WebForm::model()->findAll('type="serviceCase" '.$condition);
+			$forms = WebForm::model()->findAll('type="serviceCase"'.$condition);
 			$this->render('createWebForm', array('forms'=>$forms));
 		}
 	}
 	
 	
 	public function actionWebForm() {
+		if(file_exists(__DIR__ . '/pro/actionWebForm.php')) {
+			include(__DIR__ . '/pro/actionWebForm.php');
+			return;
+		}
+	
 		if (isset($_POST['Services'])) {			
 			$firstName = $_POST['Services']['firstName'];
 			$lastName = $_POST['Services']['lastName'];
@@ -388,8 +406,6 @@ class ServicesController extends x2base {
 			
 			$model->subject = Yii::t('services', 'Web Form Case entered by {name}', array(
 				'{name}'=>$fullName,
-		//		'{phone}'=>$phone,
-		//		'{email}'=>$email
 			));
 			
 			$model->description = $description;
@@ -399,7 +415,7 @@ class ServicesController extends x2base {
 			$model->status = Yii::t('services', 'New');
 			$model->mainIssue = Yii::t('services', 'General Request');
 			$model->subIssue = Yii::t('services', 'Other');
-			$model->assignedTo = "Anyone";
+			$model->assignedTo = $this->getNextAssignee();
 			$now = time();
 			$model->createDate = $now;
 			$model->lastUpdated = $now;
@@ -507,87 +523,6 @@ class ServicesController extends x2base {
 			
 			$this->renderPartial('webFormSubmit', array('caseNumber'=>$model->id));
 			
-			/*
-			$model = new Contacts;
-			$oldAttributes = $model->getAttributes();
-			$model->setX2Fields($_POST['Contacts']);
-			$now = time();
-
-			//require email field, check format
-			if (preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$model->email) == 0) {
-				$this->renderPartial('webleadSubmit', array('error'=>Yii::t('contacts','Invalid Email Address')));
-				return;
-			}
-
-			//use the submitted info to create an action
-			$action = new Actions;
-			$action->actionDescription = Yii::t('contacts','Web Lead') ."\n\n". Yii::t('contacts','Name') .': '. $model->firstName ." ". $model->lastName 
-			                            ."\n". Yii::t('contacts','Email') .": ". $model->email ."\n". Yii::t('contacts','Phone') .": ". $model->phone 
-			                            ."\n". Yii::t('contacts','Background Info') .": ". $model->backgroundInfo;
-
-			//find any existing contacts with the same contact info
-			$criteria = new CDbCriteria();
-			$criteria->compare('email', $model->email, false, "OR");
-			if (!empty($model->phone)) {
-				$criteria->compare('phone', $model->phone, false, "OR");
-				$criteria->compare('phone2', $model->phone, false, "OR");
-			}
-			$duplicates = $model->findAll($criteria);
-
-			if (count($duplicates) > 0) {
-				//use existing record, update background info
-				$backgroundInfo = $model->backgroundInfo;
-				$model = $duplicates[0];
-				$model->backgroundInfo .= "\n". $backgroundInfo;
-				$model->save();
-			} else {
-				//create new record
-				$model->assignedTo = $this->getNextAssignee();
-				$model->visibility = 1;
-				$model->createDate = $now;
-				$model->lastUpdated = $now;
-				$model->updatedBy = 'admin';
-				$this->create($model, $oldAttributes, 1);
-				//TODO: upload profile picture url from webleadfb
-			}
-
-			// add tags
-			if(!empty($_POST['tags'])) {
-				$taglist = explode(',', $_POST['tags']);
-				if($taglist !== false) {
-					foreach($taglist as &$tag) {
-						if($tag === '')
-							continue;
-                        if(substr($tag,0,1)!='#')
-                            $tag="#".$tag;
-						$tagModel = new Tags;
-						$tagModel->taggedBy = 'API';
-						$tagModel->timestamp = time();
-						$tagModel->type = 'Contacts';
-						$tagModel->itemId = $model->id;
-						$tagModel->tag = $tag;
-						$tagModel->itemName = $model->name;
-						$tagModel->save();
-					}
-				}
-			}
-
-			// create action
-			$action->type = 'note';
-			$action->assignedTo = $model->assignedTo;
-			$action->visibility = '1';
-			$action->associationType = 'contacts';
-			$action->associationId = $model->id;
-			$action->associationName = $model->name;
-			$action->createDate = $now;
-			$action->lastUpdated = $now;
-			$action->completeDate = $now;
-			$action->complete= 'Yes';
-			$action->updatedBy = 'admin';
-			$action->save();
-
-			$this->renderPartial('webleadSubmit');
-			*/
 		} else {
 			//sanitize get params
 			$whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');

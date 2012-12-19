@@ -203,7 +203,7 @@ class InlineEmailAction extends CAction {
 									}
 								}
 							} else
-								$action->actionDescription = CHtml::link($template->title,array('/docs/'.$template->id));
+								$action->actionDescription = CHtml::link($template->name,array('/docs/'.$template->id));
 							
 							if($action->save()) {
 								$track = new TrackEmail;

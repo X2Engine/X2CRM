@@ -47,25 +47,33 @@
  */
 class ApiController extends x2base {
 
-    /**
-     * @var string The model that the API is currently being used with.
-     */
-    public $modelClass = "";
+	/**
+	 * @var string The model that the API is currently being used with.
+	 */
+	public $modelClass = "";
 
-    /**
-     * Default response format either 'json' or 'xml'
-     */
-    private $format = 'json';
+	/**
+	 * Default response format either 'json' or 'xml'
+	 */
+	private $format = 'json';
 
-    /**
-     * @return array action filters
-     */
-    public function filters() {
-        return array();
-    }
+	/**
+	 * @return array action filters
+	 */
+	public function filters() {
+		return array();
+	}
 
-	
-	
+	public function actions() {
+		if(class_exists('WebListenerAction'))
+			return array(
+				'webListener' => array(
+					'class' => 'WebListenerAction',
+				),
+			);
+		return array();
+	}
+
 	/* 
 	public function actionCreate2() {
         if(!isset($_POST['authUser'],$_POST['authPassword'])) {
@@ -761,7 +769,7 @@ class ApiController extends x2base {
      * @param integer $status
      * @return string 
      */
-    private function _getStatusCodeMessage($status) {
+    protected function _getStatusCodeMessage($status) {
         // these could be stored in a .ini file and loaded
         // via parse_ini_file()... however, this will suffice
         // for an example
@@ -777,7 +785,4 @@ class ApiController extends x2base {
         );
         return (isset($codes[$status])) ? $codes[$status] : '';
     }
-
 }
-
-?>

@@ -163,22 +163,6 @@ if(!empty($model->status)) {
 			'onclick'=>'window.inlineEmailEditor.updateElement();',
 		)
 	);
-	echo CHtml::ajaxSubmitButton(
-		Yii::t('app','Preview'),
-		array('inlineEmail','ajax'=>1,'preview'=>1),
-		array(
-			'beforeSend'=>"function() { $('#email-sending-icon').show(); }",
-			'replace'=>'#inline-email-form',
-			'complete'=>"function(response) { $('#email-sending-icon').hide(); setupInlineEmailForm(); return false; }",
-		),
-		array(
-			'id'=>'preview-email-button',
-			'class'=>'x2-button',
-			'name'=>'InlineEmail[submit]',
-			'onclick'=>'window.inlineEmailEditor.updateElement();',
-		)
-	);
-	
 	
 	// if(is_file(__DIR__.'/inlineEmailForm_pro.php'))
 		// include('inlineEmailForm_pro.php');

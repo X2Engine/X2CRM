@@ -188,12 +188,12 @@
 	font-weight: bold;
 	color: 					#fff;
 	text-shadow: 0 -1px 1px #145072;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#579100), to(#497A00)); /* Saf4+, Chrome */
-	background-image: -webkit-linear-gradient(top, #579100, #497A00); /* Chrome 10+, Saf5.1+ */
-	background-image:    -moz-linear-gradient(top, #579100, #497A00); /* FF3.6 */
-	background-image:     -ms-linear-gradient(top, #579100, #497A00); /* IE10 */
-	background-image:      -o-linear-gradient(top, #579100, #497A00); /* Opera 11.10+ */
-	background-image:         linear-gradient(top, #579100, #497A00);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#417DCD), to(#3D70B4)); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient(top, #417DCD, #3D70B4); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient(top, #417DCD, #3D70B4); /* FF3.6 */
+	background-image:     -ms-linear-gradient(top, #417DCD, #3D70B4); /* IE10 */
+	background-image:      -o-linear-gradient(top, #417DCD, #3D70B4); /* Opera 11.10+ */
+	background-image:         linear-gradient(top, #417DCD, #3D70B4);
 }
 .ui-btn-up-b a.ui-link-inherit {
 	color: 					#fff;

@@ -64,7 +64,7 @@ $('.search-form form').submit(function(){
     if(isset($_GET['offset'])){
         $offset=$_GET['offset'];
     }else
-        $offset=6;
+        $offset='first day of this week';
 ?>
 <h2><?php echo Yii::t('users','Manage Users'); ?></h2>
 <div class="search-form" style="display:none">
@@ -79,9 +79,9 @@ $('.search-form form').submit(function(){
 	'template'=> '<div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('admin','clearFilters'=>1)). ' | '
-		.CHtml::link(Yii::t('app','Records Today'),array('admin','offset'=>0)). ' | '
-		.CHtml::link(Yii::t('app','Records This Week'),array('admin','offset'=>6)). ' | '
-		.CHtml::link(Yii::t('app','Records This Month'),array('admin','offset'=>29)). ' | '
+		.CHtml::link(Yii::t('app','Records Today'),array('admin','offset'=>'0:00')). ' | '
+		.CHtml::link(Yii::t('app','Records This Week'),array('admin','offset'=>'first day of this week')). ' | '
+		.CHtml::link(Yii::t('app','Records This Month'),array('admin','offset'=>'first day of this month')). ' | '
 		.X2GridView::getFilterHint()
 		.'{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
@@ -102,7 +102,7 @@ $('.search-form form').submit(function(){
                 ),
                 array(
                     'header'=>'<b>Records Updated</b>',
-                    'value'=>'count(Changelog::model()->findAllBySql("SELECT * FROM x2_changelog WHERE changedBy=\"$data->username\" AND timestamp > '.mktime('0','0','0',date('m'),date('d')-$offset).'"))',
+                    'value'=>'(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
                     'type'=>'raw',
                 ),
 		'emailAddress',
@@ -115,3 +115,14 @@ $('.search-form form').submit(function(){
 	),
 ));
 ?>
+<?php if($count > 0){ ?>
+<br />
+<h2><?php echo "Invited Users";?></h2>
+<div class="form">
+<b><?php echo "$count user(s) have been invited but have not yet completed registration."; ?></b>
+<br /><br />
+<?php echo "To delete all users who have not completed their invite, click the button below." ?>
+<br /><br />
+<?php echo CHtml::link('Delete Unregistered','#',array('class'=>'x2-button','submit'=>'deleteTemporary','confirm'=>'Are you sure you want to delete these users?')); ?>
+</div>
+<?php } ?>

@@ -101,6 +101,9 @@ class Contacts extends X2Model {
 	 */
 	public function getCityAddress() {
 		$address = '';
+        if(!empty($this->address)){
+            $address.=$this->address." ";
+        }
 		if(!empty($this->city))
 			$address .= $this->city . ', ';
 		
@@ -117,15 +120,18 @@ class Contacts extends X2Model {
 	}
 	
 	public static function getNames() {
-        $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+	
+		$criteria = $this->getAccessCriteria();
+	
+        // $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+		// /* x2temp */
+		// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+		// if(!empty($groupLinks))
+			// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		// $condition .= 'OR (visibility=2 AND assignedTo IN 
+			// (SELECT username FROM x2_group_to_user WHERE groupId IN
+				// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		$contactArray = CActiveRecord::model('Contacts')->findAll($condition);
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
@@ -183,44 +189,23 @@ class Contacts extends X2Model {
 		}
 		return $mailingList;
 	}
-
-	/**
-	 * Returns a CDbCriteria containing the default query criteria for this model
-	 */
-	public static function defaultCriteria() {
-		$criteria = new CDbCriteria;
-        if(Yii::app()->user->getName()!='admin'){
-            $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-            $criteria->addCondition($condition);
-        }
-		//$criteria->order = 'lastUpdated DESC';
-		return $criteria;
-	}
 	
 	public function searchAll() {
-		$criteria=new CDbCriteria;
-		$condition = 'visibility="1" OR assignedTo="Anyone" OR assignedTo="'.Yii::app()->user->getName().'"';
-		$parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
-		/* x2temp */
-		$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-		if(!empty($groupLinks))
-			$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+		$criteria = new CDbCriteria;
+		// $condition = 'visibility="1" OR assignedTo="Anyone" OR assignedTo="'.Yii::app()->user->getName().'"';
+		// $parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 
-		$condition .= 'OR (visibility=2 AND assignedTo IN 
-			(SELECT username FROM x2_group_to_user WHERE groupId IN
-				(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		/* end x2temp */
-        if(Yii::app()->user->getName()!='admin')
-            $parameters['condition']=$condition;
-		$criteria->scopes=array('findAll'=>array($parameters));
+		// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+		// if(!empty($groupLinks))
+			// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+		// $condition .= ' OR (visibility=2 AND assignedTo IN 
+			// (SELECT username FROM x2_group_to_user WHERE groupId IN
+			// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+
+        // if(Yii::app()->user->getName()!='admin' && !Yii::app()->user->checkAccess('AdminIndex'))
+            // $parameters['condition']=$condition;
+		// $criteria->scopes=array('findAll'=>array($parameters));
 				
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
 			
@@ -246,12 +231,17 @@ class Contacts extends X2Model {
 	}
 
 	public function searchMyContacts() {
-		$criteria=new CDbCriteria;
-		$condition = 'assignedTo="'.Yii::app()->user->getName().'"';
-		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$criteria = new CDbCriteria;
 
-		$parameters['condition']=$condition;
-		$criteria->scopes=array('findAll'=>array($parameters));
+		$accessLevel = Yii::app()->user->checkAccess('ContactsViewPrivate')? 1 : 0;
+			
+		$criteria->addCondition($this->searchAccessConditions($accessLevel));
+
+		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
+		// $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+
+		// $parameters['condition']=$condition;
+		// $criteria->scopes=array('findAll'=>array($parameters));
 		
 		return $this->searchBase($criteria);
 	}
@@ -269,16 +259,26 @@ class Contacts extends X2Model {
 	
 	
 	public function search() {
-		$criteria=new CDbCriteria;
-		$condition = 'assignedTo="'.Yii::app()->user->getName().'"';
-			$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
-			/* x2temp */
-			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-			if(!empty($groupLinks))
-				$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-			/* end x2temp */
-		$parameters['condition']=$condition;
-		$criteria->scopes=array('findAll'=>array($parameters));
+		$criteria = new CDbCriteria;
+		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
+		// $parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		/* x2temp */
+
+		// if(Yii::app()->user->checkAccess('AdminIndex'))
+			// $accessLevel = 3;
+		// elseif(Yii::app()->user->checkAccess('ContactsView'))
+			// $accessLevel = 2;
+		// elseif(Yii::app()->user->checkAccess('ContactsViewPrivate'))
+			// $accessLevel = 1;
+			
+		// $condition = Yii::app()->user->searchAccessConditions($accessLevel);
+
+		// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+		// if(!empty($groupLinks))
+			// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+		/* end x2temp */
+		// $parameters['condition'] = $condition;
+		// $criteria->scopes=array('findAll'=>array($parameters));
 		
 		return $this->searchBase($criteria);
 	}
@@ -289,11 +289,9 @@ class Contacts extends X2Model {
 	}
 
 	public function searchAccount($id) {
-		$criteria=new CDbCriteria;
-		$condition = "company='$id'";
-		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
-		$parameters['condition']=$condition;
-		$criteria->scopes=array('findAll'=>array($parameters));
+		$criteria = new CDbCriteria;
+		$criteria->compare('company',$id);
+		
 		return $this->searchBase($criteria);
 	}
 
@@ -307,7 +305,10 @@ class Contacts extends X2Model {
 		if(isset($list)) {
 			$search = $list->queryCriteria();
 				
-			$search->compare('name',$this->name,true);
+				
+			$this->compareAttributes($search);
+				
+			/* $search->compare('name',$this->name,true);
 			$search->compare('firstName',$this->firstName,true);
 			$search->compare('lastName',$this->lastName,true);
 			$search->compare('title',$this->title,true);
@@ -334,13 +335,11 @@ class Contacts extends X2Model {
 			$search->compare('leadSource',$this->leadSource,true);
 			$search->compare('rating',$this->rating);
 			$search->compare('doNotCall',$this->doNotCall);
-			$search->compare('doNotEmail',$this->doNotEmail);
-            
+			$search->compare('doNotEmail',$this->doNotEmail); */
 
 			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,
 				'sort'=>array(
-
 					'defaultOrder'=>'lastUpdated DESC'	// true = ASC
 				),
 				'pagination'=>array(
@@ -348,52 +347,46 @@ class Contacts extends X2Model {
 				),
 			));
 			
-		} else {
-			//if list is not working, return all contacts
-			return new SmartDataProvider('Contacts',array(
-				'sort'=>array(
-					'defaultOrder'=>'lastUpdated DESC',
-				),
-				'pagination'=>array(
-					'pageSize'=>ProfileChild::getResultsPerPage(),
-				),
-			));
+		} else {	//if list is not working, return all contacts
+			return $this->searchBase();
 		}
 	}
 	
-	
-	public function searchBase($criteria) {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Contacts'));
-		foreach($fields as $field){
-			$fieldName=$field->fieldName;
-			switch($field->type){
-				case 'boolean':
-					$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-					break;
-				case 'link':
-					$criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
-					$criteria->compare($field->fieldName,$this->$fieldName, true, 'OR');
-					break;
-				case 'assignment':
-					$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-					break;
-				default:
-					$criteria->compare($field->fieldName,$this->$fieldName,true);
-			}
-			
-		}
-		 
-		$criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true, 'OR');
-		//$criteria->order = 'lastUpdated DESC';
+	/**
+	 * Base search method for all data providers.
+	 * Sets up record-level security checks.
+	 * 
+	 * @param CDbCriteria $criteria starting criteria for this search
+	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
+	 */
+	public function searchBase($criteria=null) {
+		if($criteria === null)
+			$criteria = $this->getAccessCriteria();
+		else
+			$criteria->mergeWith($this->getAccessCriteria());
 
-		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'lastUpdated DESC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
+		return parent::searchBase($criteria);
+	}
+	
+	/**
+	 * Generates a random tracking key and guarantees uniqueness
+	 * @return String $key a unique random tracking key
+	 */
+	public static function getNewTrackingKey() {
+	
+		$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		
+		// try up to 100 times to guess a unique key
+		for($i=0; $i<100; $i++) {
+			$key = '';
+			for($j=0; $j<32; $j++)	// generate a random 32 char alphanumeric string
+				$key .= substr($chars,rand(0,strlen($chars)-1), 1);
+		
+			if(CActiveRecord::model('Contacts')->exists('trackingKey="'.$key.'"'))	// check if this key is already used
+				continue;
+			else
+				return $key;
+		}
+		return null;
 	}
 }

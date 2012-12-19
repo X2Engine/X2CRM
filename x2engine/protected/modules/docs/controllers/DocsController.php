@@ -79,7 +79,7 @@ class DocsController extends x2base {
 	}
 
 	public function actionGetItems(){
-		$sql = 'SELECT id, title as value FROM x2_docs WHERE title LIKE :qterm ORDER BY title ASC';
+		$sql = 'SELECT id, name as value FROM x2_docs WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = '%'.$_GET['term'].'%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -100,23 +100,34 @@ class DocsController extends x2base {
 	 */
 	public function actionView($id) {
 		$model = DocChild::model()->findByPk($id);
-        if(isset($model)){
-            $permissions=explode(", ",$model->editPermissions);
-            if(in_array(Yii::app()->user->getName(),$permissions))
-                $editFlag=true;
-            else
-                $editFlag=false;
-        }
-        //echo $model->visibility;exit;
-        if (!isset($model) || 
-               !(($model->visibility==1 || 
-                ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || 
-                Yii::app()->user->checkAccess('AdminIndex')|| $editFlag))
-            $this->redirect(array('docs/index'));
+		if(isset($model)){
+			$permissions=explode(", ",$model->editPermissions);
+			if(in_array(Yii::app()->user->getName(),$permissions))
+				$editFlag=true;
+			else
+				$editFlag=false;
+		}
+		//echo $model->visibility;exit;
+		if (!isset($model) || 
+			   !(($model->visibility==1 || 
+				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || 
+				Yii::app()->user->checkAccess('AdminIndex')|| $editFlag))
+			$this->redirect(array('docs/index'));
 
-        $this->render('view', array(
-            'model' => $model,
-        ));
+		$this->render('view', array(
+			'model' => $model,
+		));
+	}
+
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionFullView($id) {
+	
+		$model = $this->loadModel($id);
+	
+		echo $model->text;
 	}
 
 	/**
@@ -166,15 +177,15 @@ class DocsController extends x2base {
 		unset($users['admin']);
 		unset($users[Yii::app()->user->getName()]);
 		$model = new DocChild;
-
+		$model->type = 'email';
+		
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['DocChild'])) {
 			$temp=$model->attributes;
 			$model->attributes=$_POST['DocChild'];
-			$model->type = 'email';
-
+            $model->visibility=$_POST['DocChild']['visibility'];
 			$model->editPermissions = '';
 			// $arr=$model->editPermissions;
 			// if(isset($arr))

@@ -140,21 +140,25 @@ class Notification extends CActiveRecord {
 	
 	
 	public function getMessage() {
-        
+		
 		if(empty($this->modelId) || empty($this->modelType))	// skip if there is no association
 			$record = null;
 		else {
 			if(class_exists($this->modelType))
 				$record = CActiveRecord::model($this->modelType)->findByPk($this->modelId);
 			else
-				return $this->modelType;
+				return 'Error: unkown record <b>'.$this->modelType.'</b>';
+			if($record === null) {
+				$this->delete();
+				return null;
+			}
 		}
 		
 		if(!isset($record) && $this->type!='lead_failure'){
 			// return var_dump($this->attributes);
 			return null;
         }
-		$passive = $this->createdBy == 'API' || empty($this->createdBy);
+		$passive = $this->createdBy === 'API' || empty($this->createdBy);
         
 		switch($this->type) {
             
@@ -245,18 +249,27 @@ class Notification extends CActiveRecord {
 				return Yii::t('app','{user} replied on {link}',array('{user}'=>User::getUserLinks($this->createdBy),'{link}'=>$record->getLink()));
 
 			case 'voip_call':
-				
 				return Yii::t('app','Incoming call from <b>{phone}</b> ({record})',array('{record}'=>$record->getLink(),'{phone}'=>$this->value));
-			
+
+			case 'weblead':
+				return Yii::t('app','New web lead: {link}.',array('{link}'=>$record->getLink()));
+
+			case 'webactivity':
+				if($record instanceof Actions) {
+					if($link = $record->getAssociationLink())
+						return Yii::t('app','{name} is currently on {url}',array('{name}'=>$link,'{url}'=>$record->actionDescription));
+				} elseif($record instanceof Contacts) {
+					return Yii::t('app','{name} is currently on your website.',array('{name}'=>$record->getLink()));
+				}
+				return null;
 			case 'escalateCase':
-			
 				return Yii::t('app', '{user} escalated a Service Case to you: {record}', array(
 					'{user}'=>User::getUserLinks($this->createdBy),
 					'{record}'=>$record->createLink(),
 				));
 			
 			default:
-				return null;
+				return 'Error: unkown type <b>'.$this->type.'</b>';
 
 		}
 	}

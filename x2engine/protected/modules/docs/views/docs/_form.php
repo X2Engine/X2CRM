@@ -45,9 +45,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 
 
-$autosaveUrl = $this->createUrl('autosave') . '?id=' . $model->id;
-// autosave code
-Yii::app()->clientScript->registerScript('doc-editor','
+$autosaveUrl = $this->createUrl('autosave').'?id='.$model->id;
+
+$js = '';
+
+if($model->type==='email') {
+	$insertableAttributes = array();
+	foreach(CActiveRecord::model('Contacts')->attributeLabels() as $fieldName => $label)
+		$insertableAttributes[$label] = '{'.$fieldName.'}';
+		
+	$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).';';
+}
+
+$js .='
 var typingTimer;
 
 function autosave() {
@@ -60,21 +70,24 @@ function autosave() {
 
 if(window.docEditor)
 	window.docEditor.destroy(true);
-window.docEditor = createCKEditor("input",{toolbar:"Full",height:600},function() {
+window.docEditor = createCKEditor("input",{
+	'.($model->type==='email'? 'insertableAttributes:x2.insertableAttributes,' : '').'
+	// toolbar:"Full",
+	fullPage:true,
+	height:600
+}'.($model->isNewRecord? '' : ',setupAutosave').');
+function setupAutosave() {
 	if($.browser.msie)
 		return;
-
 	// save after 1.5 seconds when the user is done typing
 	window.docEditor.document.on("keyup",function() {
 		clearTimeout(typingTimer);
 		typingTimer = setTimeout(autosave, 1500);
 	});
-	
 	window.docEditor.document.on("keydown",function(){ clearTimeout(typingTimer); });
-});
-',CClientScript::POS_READY);
+}';
 
-
+Yii::app()->clientScript->registerScript('doc-editor',$js,CClientScript::POS_READY);
 
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'docs-form',
@@ -84,9 +97,9 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row">
 		<div class="cell">
 			<?php echo $form->errorSummary($model); ?>
-			<?php echo $form->label($model,'title'); ?>
-			<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
-			<?php echo $form->error($model,'title'); ?>
+			<?php echo $form->label($model,'name'); ?>
+			<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>100)); ?>
+			<?php echo $form->error($model,'name'); ?>
 		</div>
 		<div class="cell">
 			<?php echo $form->label($model,'visibility'); ?>

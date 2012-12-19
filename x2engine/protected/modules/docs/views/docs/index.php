@@ -77,8 +77,8 @@ $('.search-form form').submit(function(){
 	'filter'=>$model,
 	'columns'=>array(
 		array(
-			'name'=>'title',
-			'value'=>'CHtml::link($data->title,array("view","id"=>$data->id))',
+			'name'=>'name',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'30%'),
 		),
@@ -121,7 +121,7 @@ $('.search-form form').submit(function(){
 	'viewName'=>'docs',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'title'=>204,
+		'name'=>204,
 		'createDate'=>98,
 		'lastUpdated'=>94,
 		'createdBy'=>89,
@@ -130,8 +130,8 @@ $('.search-form form').submit(function(){
 	'specialColumns'=>array(
 		array(
 			'header'=>Yii::t('docs','Title'),
-			'name'=>'title',
-			'value'=>'CHtml::link($data->title,array("view","id"=>$data->id))',
+			'name'=>'name',
+			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		array(

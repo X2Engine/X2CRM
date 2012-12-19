@@ -123,19 +123,21 @@ class Campaign extends X2Model {
 	 * @return Campaign
 	 */
 	public static function load($id) {
-		$condition = '';
-		if(Yii::app()->user->getName() != 'admin') {
-			$condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
-				/* x2temp */
-				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-				if(!empty($groupLinks))
-					$condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
+		// $condition = '';
+		// if(Yii::app()->user->getName() != 'admin') {
+			// $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
+				// /* x2temp */
+				// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+				// if(!empty($groupLinks))
+					// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
-					(SELECT username FROM x2_group_to_user WHERE groupId IN
-						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		}
-		return CActiveRecord::model('Campaign')->with('list')->findByPk((int)$id, $condition);
+				// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+					// (SELECT username FROM x2_group_to_user WHERE groupId IN
+						// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		// }
+		
+		$model = CActiveRecord::model('Campaign');
+		return $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
 	}
 
 	/**
@@ -160,5 +162,25 @@ class Campaign extends X2Model {
         if(Yii::app()->user->getName()!='admin')
             $criteria->addCondition($condition);
 		return $this->searchBase($criteria);
+	}
+	
+	/**
+	 * Returns a CDbCriteria containing record-level access conditions.
+	 * @return CDbCriteria
+	 */
+	public function getAccessCriteria() {
+		$criteria = new CDbCriteria;
+		
+		$accessLevel = 0;
+		if(Yii::app()->user->checkAccess('MarketingAdmin'))
+			$accessLevel = 3;
+		elseif(Yii::app()->user->checkAccess('MarketingView'))
+			$accessLevel = 2;
+		elseif(Yii::app()->user->checkAccess('MarketingViewPrivate'))
+			$accessLevel = 1;
+			
+		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+
+		return $criteria;
 	}
 }

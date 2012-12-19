@@ -63,7 +63,7 @@ return array (
 'Background Image'=>'Imagen de Fondo',
 'Start Page'=>'Página de Inicio',
 'Results Per Page'=>'Resultados Por Página',
-'Show Social Media'=>'Mostrar Medios Social',
+'Show Social Media'=>'Mostrar Medios Sociales',
 'Upload a Background'=>'Subir un Fondo',
 
 // Profile Actions
@@ -82,9 +82,9 @@ return array (
 'Feed'=>'Suministro de Noticias',
 'Social'=>'Social',
 'Reply'=>'Responder',
-'A larger Chat Box'=>'Una Charla más grande Caja',
-'A blog-like discussion forum'=>'Un estilo blog foro de discusión',
+'A larger Chat Box'=>'Caja de Chat más grande',
+'A blog-like discussion forum'=>'Foro de discusión estilo Blog',
 
 // Misc
-'This user does not allow posting on their feed.'=>'Este usuario no permite la publicación en su alimentación.',
+'This user does not allow posting on their feed.'=>'Este usuario no permite la publicación en su perfil.',
 );

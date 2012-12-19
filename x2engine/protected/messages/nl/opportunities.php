@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 return array (
-// Opportunities Attributes
+// Sales Attributes
 'ID'=>'ID',
 'Assigned To'=>'Toegewezen Aan',
 'Name'=>'Naam',
@@ -47,7 +47,7 @@ return array (
 'Contacts'=>'Contacten',
 'Quote Amount'=>'Offerte Hoeveelheid',
 'Sales Stage'=>'Verkoop Stage',
-'Expected Close Date'=>'Verwachte Sluitingsdatum',
+'Expected Close Date'=>'Verwachte sluitingsdatum',
 'Probability'=>'Waarschijnlijkheid',
 'Lead Source'=>'Lead Bron',
 'Description'=>'Omschrijving',
@@ -62,44 +62,31 @@ return array (
 'Cold Call'=>'Cold Call',
 'E-Mail'=>'Email',
 'Store'=>'Winkel',
-'Other Info'=>'Overige Info',
-'Basic Information'=>'Basisinformatie',
-'None'=>'Geen',
-'Google'=>'Google',
-'Facebook'=>'Facebook',
-'Walk In'=>'Liep In',
 
-// Opportunities Actions
-'Opportunities List'=>'kansen Lijst',
-'Create Opportunity'=>'Creëren Kansen',
-'View Opportunity'=>'Bekijk Kansen',
-'Update Opportunity'=>'Werk Kansen',
-'Delete Opportunity'=>'Verwijder Kansen',
-'Manage Opportunities'=>'Beheer Kansen',
-'Create'=>'Creëren',
-'View'=>'Zien',
-'Update'=>'Bijwerken',
-'Update Opportunity:'=>'Werk Kansen:',
+// Sales Actions
+'Sales List'=>'Verkoop Lijst',
+'Create Sale'=>'Maak Verkoop Aan',
+'View Sale'=>'Bekijk Verkoop',
+'Update Sale'=>'Werk Verkoop Bij',
+'Delete Sale'=>'Verwijder verkoop',
+'Manage Sales'=>'Beheer Verkopen',
 
-'Add A User'=>'Voeg een Gebruiker Toe',
-'Add A Contact'=>'Voeg een Contact Toe',
-'Remove A User'=>'Verwijder een Gebruiker',
-'Remove A Contact'=>'Verwijder een Contact',
-'Share Opportunity'=>'Delen Kansen',
-'Delete'=>'Verwijder',
-'Add'=>'Toevoegen',
-'Remove'=>'Verwijderen',
+'Add a User'=>'Voeg een gebruiker toe',
+'Add a Contact'=>'Voeg een Contact toe',
+'Remove a User'=>'Verwijder een Gebruiker',
+'Remove a Contact'=>'Verwijder een Contact',
+'Share Sale'=>'Deel Verkoop',
 
-// Opportunities Titles
-'Opportunities'=>'Kansen',
-'Opportunity'=>'Kans',
-'Opportunity:'=>'Kans:',
-'Update Opportunity: {name}'=>'Werk Kans: {naam}',
+// Sales Titles
+'Sales'=>'Verkopen',
+'Sale'=>'Verkoop',
+'Sale:'=>'Verkoop:',
+'Update Sale: {name}'=>'Werk Verkoop bij: {name}',
 
 // Misc Text
 'Please click any new users you wish to add.'=>'Click een gebruiker die je wil toevoegen.',
 'Please select the contacts you wish to add.'=>'Selecter een contact die je wil toevoegen.',
 'Please select the users you wish to remove.'=>'Selecteer de gebruikers die je wil verwijderen.',
 'Please select the contacts you wish to remove.'=>'Selecteer de gebruikers die je wil verwijderen',
-'Opportunity Record Details'=>'Kans Document Details',
+'Sale Record Details'=>'Verkoop Record Details',
 );

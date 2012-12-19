@@ -516,7 +516,7 @@ class WorkflowController extends x2base {
 			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo='".Yii::app()->user->getName()."')")
 			->getText();
 		
-		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0)")->queryScalar();
+		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString")->queryScalar();
 
 		$contactsDataProvider = new CSqlDataProvider($contactsSql,array(
 			// 'criteria'=>$criteria,
@@ -536,10 +536,10 @@ class WorkflowController extends x2base {
 			->select('x2_opportunities.*')
 			->from('x2_opportunities')
 			->join('x2_actions','x2_opportunities.id = x2_actions.associationId')
-			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='opportunities' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0)")
+			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='opportunities' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString")
 			->getText();
 		
-		$opportunitiesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='opportunities' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0)")->queryScalar();
+		$opportunitiesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='opportunities' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString")->queryScalar();
 
 		$opportunitiesDataProvider = new CSqlDataProvider($opportunitiesSql,array(
 			// 'criteria'=>$criteria,
@@ -570,33 +570,36 @@ class WorkflowController extends x2base {
 			'columns'=>array(
 				//'id',
 				array(
-					'name'=>'lastName',
+					'name'=>'name',
 					'header'=>Yii::t('contacts','Name'),
-					'value'=>'CHtml::link($data["firstName"]." ".$data["lastName"],array("/contacts/contacts/view","id"=>$data["id"]))',
+					'value'=>'CHtml::link($data["name"],array("/contacts/contacts/view","id"=>$data["id"]))',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'30%')
 				),
 				array(
-					'name'=>'phone',
-					'header'=>Yii::t('contacts','Work Phone'),
+					'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('dealvalue'),
+					'name'=>'dealvalue',
+					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["dealvalue"],Yii::app()->params->currency)',
+					'type'=>'raw',
 				),
 				array(
-					'name'=>'createDate',
-					'header'=>Yii::t('contacts','Create Date'),
-					'value'=>'date("Y-m-d",$data["createDate"])',
+                    'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('dealstatus'),
+					'name'=>'dealstatus',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'15%')
 				),
 						array(
-					'name'=>'lastUpdated',
-					'header'=>Yii::t('contacts','Last Updated'),
-					'value'=>'date("Y-m-d",$data["lastUpdated"])',
+					'name'=>'expectedCloseDate',
+					'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('expectedCloseDate'),
+					'value'=>'Yii::app()->controller->formatDate($data["lastUpdated"])',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'15%')
 				),
 				array(
-					'name'=>'leadSource',
-					'header'=>Yii::t('contacts','Lead Source'),
+					'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('assignedTo'),
+					'name'=>'assignedTo',
+					'value'=>'empty($data["assignedTo"])?Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
+					'type'=>'raw',
 				),
 				
 			),
@@ -641,7 +644,7 @@ class WorkflowController extends x2base {
 				array(
 					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('expectedCloseDate'),
 					'name'=>'expectedCloseDate',
-					'value'=>'empty($data->expectedCloseDate)?"":date("Y-m-d",$data["expectedCloseDate"])',
+					'value'=>'Yii::app()->controller->formatDate($data["expectedCloseDate"])',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'13%'),
 				),
@@ -649,7 +652,7 @@ class WorkflowController extends x2base {
 				array(
 					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('assignedTo'),
 					'name'=>'assignedTo',
-					'value'=>'empty($data["assignedTo"])?Yii::t("app","Anyone"):$data["assignedTo"]',
+					'value'=>'empty($data["assignedTo"])?Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
 					'type'=>'raw',
 				),
 				
@@ -658,12 +661,89 @@ class WorkflowController extends x2base {
 		
 		}
 	}
+    
+    public function actionGetStageValue($workflowId,$stageId,$user){
+        $models=array(
+            new Contacts,
+            new Opportunity
+        );
+        $totalValue=0;
+        $projectedValue=0;
+        $currentAmount=0;
+        $count=0;
+        foreach($models as $model){
+            $dateRange=$this->getDateRange();
+            if(!empty($user)){
+                $userString=" AND x2_actions.assignedTo='$user' ";
+            }else{
+                $userString="";
+            }
+            $attributeConditions='x2_actions.createDate BETWEEN :date1 AND :date2
+                AND x2_actions.type="workflow" AND x2_actions.workflowId="'.$workflowId.'"
+                AND x2_actions.associationType=:associationType
+                AND x2_actions.stageNumber="'.$stageId.'" '.$userString.'
+                AND x2_actions.complete!="Yes" AND (x2_actions.completeDate IS NULL OR x2_actions.completeDate=0)';
+            $attributeParams=array(
+                ':date1'=>$dateRange['start'],
+                ':date2'=>$dateRange['end'],
+                ':associationType'=>get_class($model)=="Contacts"?"Contacts":"Opportunities",
+            );
+            if($model->hasAttribute('dealvalue')){
+                $valueField="dealvalue";
+            }elseif($model->hasAttribute('quoteAmount')){
+                $valueField='quoteAmount';
+            }
+            if($model->hasAttribute('rating')){
+                $probability='((rating*20)/100)';
+            }elseif($model->hasAttribute('probability')){
+                $probability='probability/100';
+            }
+            $valueString="";
+            if(isset($valueField)){
+                $valueString.=", SUM($valueField), SUM($valueField*$probability)";
+            }
+            $totalRecords=Yii::app()->db->createCommand()
+                    ->select("COUNT(*)".$valueString)
+                    ->from($model->tableName())
+                    ->join('x2_actions','x2_actions.associationId='.$model->tableName().'.id')
+                    ->where($attributeConditions,$attributeParams)
+                    ->queryRow();
+            if($model->hasAttribute('dealstatus')){
+                $status='dealstatus';
+            }elseif($model->hasAttribute('salesStage')){
+                $status='salesStage';
+            }
+            if(isset($valueField)){
+                $currentValue=Yii::app()->db->createCommand()
+                        ->select('SUM('.$valueField.')')
+                        ->from($model->tableName())
+                        ->join('x2_actions','x2_actions.associationId='.$model->tableName().'.id')
+                        ->where($attributeConditions.' AND '.$status.'="Won"',$attributeParams)
+                        ->queryRow();
+            }
+            if(isset($valueField)){
+                $totalValue+=$totalRecords["SUM($valueField)"];
+                $projectedValue+=$totalRecords["SUM($valueField*$probability)"];
+                $currentAmount+=$currentValue["SUM($valueField)"];
+                $count+=$totalRecords['COUNT(*)'];
+            }
+        }
+        $htmlString="
+                <h3>Data Summary</h3>
+                <b>Total Records:</b> $count<br />
+                <b>Total Value:</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
+                <b>Projected Value:</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
+                <b>Current Value:</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
+            ";
+        echo $htmlString;
+    }
 	
 	private function updateWorkflowChangelog(&$action,$changeType) {
 	
 		// die(var_dump($action));
 		$changelog = new Changelog;
-		$changelog->type = ucfirst($action->associationType);
+        $type=$action->associationType=='opportunities'?"Opportunity":ucfirst($action->associationType);
+		$changelog->type = $type;
 		$changelog->itemId = $action->associationId;
 
 		$changelog->changedBy = Yii::app()->user->getName();
@@ -674,13 +754,16 @@ class WorkflowController extends x2base {
 		
 		$stageText = Yii::t('workflow','<b>Stage {n}: {stageName}</b> in <b>{workflowName}</b>',array('{n}'=>$action->stageNumber,'{stageName}'=>$stageName,'{workflowName}'=>$workflowName));
 		
-		if($changeType == 'start')
-			$changelog->changed = Yii::t('workflow','<u>STARTED</u> {stage}',array('{stage}'=>$stageText));
-		elseif($changeType == 'complete')
-			$changelog->changed = Yii::t('workflow','<u>COMPLETED</u> {stage}',array('{stage}'=>$stageText));
-		elseif($changeType == 'revert')
-			$changelog->changed = Yii::t('workflow','<u>REVERTED</u> {stage}',array('{stage}'=>$stageText));
-		else
+		if($changeType == 'start'){
+            $changelog->oldValue='';
+            $changelog->newValue='Workflow Stage Started: '.$stageName;
+        }elseif($changeType == 'complete'){
+			$changelog->oldValue='';
+            $changelog->newValue='Workflow Stage Completed: '.$stageName;
+        }elseif($changeType == 'revert'){
+			$changelog->oldValue='';
+            $changelog->newValue='Workflow Stage Reverted: '.$stageName;
+        }else
 			return;
 
 		$changelog->save();

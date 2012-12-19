@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 return array (
-// Quotes Attributes
+// Quote Attributes
 'ID'=>'ID',
 'Status'=>'Estado',
 'Name'=>'Nombre',
@@ -56,64 +56,74 @@ return array (
 'Notes'=>'Notas',
 'Products'=>'Productos',
 'Expected Close Date'=>'Fecha Prevista para Cerrar',
-
+'Probability'=>'Probabilidad',
+//
 'Sales Stage'=>'Etapa de Venta',
 'Existing Products'=>'Productos Existentes',
 'Lead Source'=>'Procedencia',
 'Description'=>'Descripción',
 'Notes/Terms'=>'Notas/Condiciones',
 'Hold Control or Command key to select multiple items.'=>'Sostenga Control o la tecla Comando para seleccionar varios elementos.',
-
+//
 'Draft'=>'Borrador',
 'Pending'=>'Pendiente',
+'Won'=>'Ganado',
 'Issued'=>'Emitido',
-
-'Won'=>'Ganó',
-
-'Working'=>'En El Progreso',
+'Presented'=>'Presentado',
+'Sales'=>'Ventas',
+'Basic Information'=>'Información Básica',
+//
+'Working'=>'En Progreso',
 'Lost'=>'Perdido',
-
+//
 'Website'=>'Sitio Web',
 'Cold Call'=>'Llamada en Frío',
 'E-Mail'=>'E-Mail',
 'Store'=>'Tienda',
-
 // Quotes Actions
-'Quotes List'=>'Cita Lista',
-'Create'=>'Crear',
-'View Quote'=>'Ver Cotización',
-'Update'=>'Actualizar',
-'Delete'=>'Borrar',
-'Manage'=>'Gestionar',
-'Delete Quote'=>'Eliminar Cita',
-'Manage Quotes'=>'Gestión de Citas',
-'Create Quote'=>'Crear Cita',
-'New Quote'=>'Citar Nueva',
+'Quotes List'=>'Lista de Cotizaciones',
+'Create'=>'Crear Cotización',
+'View'=>'Ver Cotización',
+'Update'=>'Actualizar Cotización',
+'Delete'=>'Borrar Cotización',
+'Manage'=>'Gestionar Cotización',
+'Delete Quote'=>'Eliminar Cotizaciones',
+'Manage Quotes'=>'Gestión de Cotizaciones',
+'Create Quote'=>'Crear Cotizaciones',
+'New Quote'=>'Nueva Cotización',
 'Expires'=>'Expira',
-
 'Add a User'=>'Agregar un Usuario',
 'Add a Contact'=>'Agregar un Contacto',
 'Remove a User'=>'Eliminar un Usuario',
 'Remove a Contact'=>'Eliminar un Contacto',
-'Share Quote'=>'Compartir Cita',
+'Share Quote'=>'Compartir Cotización',
 'Print'=>'Imprimir',
-'Print Quote'=>'Imprimir Cita',
-
+'Print Quote'=>'Imprimir Cotización',
+'Create Opportunity'=>'Crear Venta',
 // Quotes Titles
-'Quotes'=>'Comillas',
-'Quote'=>'Citar',
-'Quote:'=>'Cita:',
-'Update Quote: {name}'=>'Actualizar Cita: {name}',
+'Quotes'=>'Cotizaciones',
+'Quote'=>'Cotizar',
+'Quote:'=>'Cotización:',
+'Update Quote: {name}'=>'Actualizar Cotización: {name}',
 'Print Options'=>'Opciones de Impresión',
-
 // Misc Text
 'Please click any new users you wish to add.'=>'Por favor, haga clic en cualquier usuario nuevo que desee agregar.',
 'Please select the contacts you wish to add.'=>'Por favor, seleccione los contactos que desee añadir.',
 'Please select the users you wish to remove.'=>'Por favor, seleccione los usuarios que desea eliminar.',
 'Please select the contacts you wish to remove.'=>'Por favor, seleccione los contactos que desea eliminar.',
-'Quote Record Details'=>'Cita Detalles del Registro',
+'Quote Record Details'=>'Detalles del Registro de Cotización',
 'Include Logo'=>'Incluir el Logotipo',
 'Basic Information'=>'Información Básica',
 'Opportunities'=>'Venta',
 'Subscribe'=>'Suscribir',
+'Name'=>'Nombre',
+'Contacts'=>'Contactos',
+'Notes'=>'Notas',
+'Products'=>'Productos',
+'Status'=>'Estado',
+'Locked'=>'Bloqueado',
+'Expiration Date'=>'Fecha de Expiración',
+'Account'=>'Cuenta',
+'Probability'=>'Probabilidad',
+'Assigned To'=>'Asignado A',
 );

@@ -96,6 +96,10 @@ $formSettings = ProfileChild::getFormSettings($modelName);
 if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 
 $fieldPermissions = array();
+
+if(!isset($specialFields))
+	$specialFields = array();
+
 if(!empty(Yii::app()->params->roles)) {
 	$rolePermissions = Yii::app()->db->createCommand()
 		->select('fieldId, permission')
@@ -191,11 +195,14 @@ foreach($layoutData['sections'] as &$section) {
 									echo '<div class="formInputBox" style="width:'.$item['width'].'px;height:'.$item['height'].';">';
 									$default=$model->$fieldName==$field->attributeLabel;
 									
-									echo $model->renderInput($fieldName,array(
-										'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-										'disabled'=>$item['readOnly']? 'disabled' : null,
-									));
-
+									if(isset($specialFields[$fieldName])) {
+										echo $specialFields[$fieldName];
+									} else {
+										echo $model->renderInput($fieldName,array(
+											'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+											'disabled'=>$item['readOnly']? 'disabled' : null,
+										));
+									}
 								}
 
 							}

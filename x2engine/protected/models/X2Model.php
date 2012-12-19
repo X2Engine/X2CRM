@@ -48,11 +48,9 @@ Yii::import('application.components.X2LinkableBehavior');
  * @package X2CRM.models
  */
 abstract class X2Model extends CActiveRecord {
-
-
-    /**
-     * List of mapping between module names/associationType values and model class names
-     */
+	/**
+	 * List of mapping between module names/associationType values and model class names
+	 */
 	public static $associationModels = array(
 		'actions'=>'Actions',
 		'contacts'=>'Contacts',
@@ -70,29 +68,24 @@ abstract class X2Model extends CActiveRecord {
 		'' => ''
 	);
 
-    protected static $_fields; // one copy of fields for all instances of this model
+	protected static $_fields; // one copy of fields for all instances of this model
 
-    /**
-     * Queries and caches field objects for the model.
-     * 
-     * This method obtains the fields defined for the model in 
-     * <tt>x2_fields</tt> and makes them avaialble for later usage to ensure 
-     * that the query does not need to be performed again. The vields are stored
-     * as both static attributes of the model and and as Yii cache objects.
-     */
-    protected function queryFields() {
-		// $t0 = microtime(true);
+	/**
+	 * Queries and caches field objects for the model.
+	 * 
+	 * This method obtains the fields defined for the model in 
+	 * <tt>x2_fields</tt> and makes them avaialble for later usage to ensure 
+	 * that the query does not need to be performed again. The vields are stored
+	 * as both static attributes of the model and and as Yii cache objects.
+	 */
+	protected function queryFields() {
 		$key = $this->tableName();
 
 		if(!isset(self::$_fields[$key])) { // only look up fields if they haven't already been looked up
 			self::$_fields[$key] = Yii::app()->cache->get('fields_' . $key); // check the app cache for the data
 			if(self::$_fields[$key] === false) { // if the cache is empty, look up the fields
-			// if(get_class($this) === 'Product' || get_class($this) === 'Quote')
-				// self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => get_class($this) . 's'));
-			// else
-				self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => get_class($this),'isVirtual'=>0)); //Yii::app()->db->createCommand()->select('*')->from('x2_fields')->where('modelName="'.get_class($this).'"')->queryAll();
-
-			Yii::app()->cache->set('fields_' . $key, self::$_fields[$key], 0); // cache the data
+				self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => get_class($this),'isVirtual'=>0));
+				Yii::app()->cache->set('fields_' . $key, self::$_fields[$key], 0); // cache the data
 			}
 		}
     }
@@ -126,17 +119,10 @@ abstract class X2Model extends CActiveRecord {
 		}
     }
 
-    /**
-     * Returns a CDbCriteria containing the default query criteria for this model
-     */
-    public static function defaultCriteria() {
-		return new CDbCriteria;
-    }
-
-    /**
-     * Returns a list of behaviors that this model should behave as.
-     * @return array the behavior configurations (behavior name=>behavior configuration)
-     */
+	/**
+	 * Returns a list of behaviors that this model should behave as.
+	 * @return array the behavior configurations (behavior name=>behavior configuration)
+	 */
     public function behaviors() {
 		return array(
 			'X2LinkableBehavior' => array(
@@ -330,6 +316,7 @@ abstract class X2Model extends CActiveRecord {
 				} else {
 					return Yii::app()->controller->widget('CStarRating', array(
 						'model' => $this,
+                        'name'=>str_replace(' ','-',addslashes($this->name).'-'.$this->id.'-rating-'.$field->fieldName),
 						'attribute' => $field->fieldName,
 						'readOnly' => true,
 						'minRating' => 1, //minimal valuez
@@ -575,6 +562,58 @@ abstract class X2Model extends CActiveRecord {
 								$(this).val(ui.item.value);
 								return false;
 							}',
+						'create' => 
+							$field->linkType == 'Contacts'?
+								'js:function(event, ui) {
+									$(this).data( "autocomplete" )._renderItem = function( ul, item ) {
+										var label = "<a style=\"line-height: 1;\">" + item.label;
+										
+										label += "<span style=\"font-size: 0.6em;\">";
+										
+										// add email if defined
+										if(item.email) {
+											label += "<br>";
+											label += item.email;
+										}
+										
+										if(item.city || item.state || item.country || item.email) {
+										    label += "<br>";
+										
+											if(item.email) {
+											
+											}
+											
+										    if(item.city) {
+										    	label += item.city;
+										    }
+										    
+										    if(item.state) {
+										    	if(item.city) {
+										    		label += ", ";
+										    	}
+										    	label += item.state;
+										    }
+										    
+										    if(item.country) {
+										    	if(item.city || item.state) {
+										    		label += ", ";
+										    	}
+										    	label += item.country;
+										    }
+										}
+										
+										label += "<br>" + item.assignedTo;
+										label += "</span>";
+										label += "</a>";
+										
+        							    return $( "<li>" )
+        							        .data( "item.autocomplete", item )
+        							        .append( label )
+        							        .appendTo( ul );
+        							};	
+								}'
+							:
+								"",
 						),
 						'htmlOptions' => array_merge(array(
 						'title' => $field->attributeLabel,
@@ -601,91 +640,99 @@ abstract class X2Model extends CActiveRecord {
 
 			case 'assignment':
 
-			$group = is_numeric($this->$fieldName);
-			// if(is_numeric($this->assignedTo)){
-			// $group=true;
-			// $groups=Groups::getNames();
-			// }else{
-			// $group=false;
-			// }
-			if(empty($this->$fieldName))
-				$this->$fieldName = Yii::app()->user->getName();
-			return CHtml::activeDropDownList($this, $fieldName, $group ? Groups::getNames() : User::getNames(), array_merge(array(
-						// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-						// 'disabled'=>$item['readOnly']? 'disabled' : null,
-						'title' => $field->attributeLabel,
-						'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
-						'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
-						), $htmlOptions))
-				/* x2temp */
-				. '<div class="checkboxWrapper">'
-				. CHtml::checkBox('group', $group, array_merge(array(
-					// array(
+				$group = is_numeric($this->$fieldName);
+				// if(is_numeric($this->assignedTo)){
+				// $group=true;
+				// $groups=Groups::getNames();
+				// }else{
+				// $group=false;
+				// }
+				if(is_array($this[$fieldName]))
+					$this[$fieldName] = implode(', ',$this[$fieldName]);
+				
+				if(empty($this->$fieldName))
+					$this->$fieldName = Yii::app()->user->getName();
+				return CHtml::activeDropDownList($this, $fieldName, $group ? Groups::getNames() : User::getNames(), array_merge(array(
 					// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 					// 'disabled'=>$item['readOnly']? 'disabled' : null,
 					'title' => $field->attributeLabel,
-					'id' => $field->modelName . '_' . $fieldName . '_groupCheckbox',
-					'ajax' => array(
-						'type' => 'POST', //request type
-						'url' => Yii::app()->controller->createUrl('/groups/getGroups'), //url to call.
-						'update' => '#' . $field->modelName . '_' . $fieldName . '_assignedToDropdown', //selector to update
-						'data' => 'js:{checked: $(this).attr("checked")=="checked", field:"'.$this->$fieldName.'"}',
-						'complete' => 'function(){
-							if($("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").attr("checked")!="checked"){
-								$("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").attr("checked","checked");
-								$("#' . $field->modelName . '_' . $fieldName . '_visibility option[value=\'2\']").remove();
-							}else{
-								$("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").removeAttr("checked");
-								$("#' . $field->modelName . '_' . $fieldName . '_visibility").append(
-									$("<option></option>").val("2").html("User\'s Groups")
-								);
-							}
-						}')
-					), array_merge($htmlOptions,array('style'=>'margin-left:10px;'))))
-				.'<label for="group" class="groupLabel">' . Yii::t('app', 'Group?') . '</label></div>';
-			/* end x2temp */
-
-			// case 'association':
-			// if($field->linkType!='multiple') {
-			// return CHtml::activeDropDownList($this, $fieldName, $contacts,array_merge(array(
-			// 'title'=>$field->attributeLabel,
-			// ),$htmlOptions));
-			// } else {
-			// return CHtml::activeListBox($this, $fieldName, $contacts,array_merge(array(
-			// 'title'=>$field->attributeLabel,
-			// 'multiple'=>'multiple',
-			// ),$htmlOptions));
-			// }
-			case 'optionalAssignment': // optional assignment for users (can be left blank)
-			
-			$users = User::getNames();
-			unset($users['Anyone']);
-			
-			return CHtml::activeDropDownList($this, $fieldName, $users, array_merge(array(
+					'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
+					'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
+					), $htmlOptions))
+					/* x2temp */
+					. '<div class="checkboxWrapper">'
+					. CHtml::checkBox('group', $group, array_merge(array(
+						// array(
 						// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 						// 'disabled'=>$item['readOnly']? 'disabled' : null,
 						'title' => $field->attributeLabel,
-						'empty' => Yii::t('app', ""),
-						), $htmlOptions));
+						'id' => $field->modelName . '_' . $fieldName . '_groupCheckbox',
+						'ajax' => array(
+							'type' => 'POST', //request type
+							'url' => Yii::app()->controller->createUrl('/groups/getGroups'), //url to call.
+							'update' => '#' . $field->modelName . '_' . $fieldName . '_assignedToDropdown', //selector to update
+							'data' => 'js:{checked: $(this).attr("checked")=="checked", field:"'.$this->$fieldName.'"}',
+							'complete' => 'function(){
+								if($("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").attr("checked")!="checked"){
+									$("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").attr("checked","checked");
+									$("#' . $field->modelName . '_' . $fieldName . '_visibility option[value=\'2\']").remove();
+								}else{
+									$("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").removeAttr("checked");
+									$("#' . $field->modelName . '_' . $fieldName . '_visibility").append(
+										$("<option></option>").val("2").html("User\'s Groups")
+									);
+								}
+							}')
+						), array_merge($htmlOptions,array('style'=>'margin-left:10px;'))))
+					.'<label for="group" class="groupLabel">' . Yii::t('app', 'Group?') . '</label></div>';
+				/* end x2temp */
+
+				// case 'association':
+				// if($field->linkType!='multiple') {
+				// return CHtml::activeDropDownList($this, $fieldName, $contacts,array_merge(array(
+				// 'title'=>$field->attributeLabel,
+				// ),$htmlOptions));
+				// } else {
+				// return CHtml::activeListBox($this, $fieldName, $contacts,array_merge(array(
+				// 'title'=>$field->attributeLabel,
+				// 'multiple'=>'multiple',
+				// ),$htmlOptions));
+				// }
+			case 'optionalAssignment': // optional assignment for users (can be left blank)
+			
+				$users = User::getNames();
+				unset($users['Anyone']);
+				
+				return CHtml::activeDropDownList($this, $fieldName, $users, array_merge(array(
+					// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+					// 'disabled'=>$item['readOnly']? 'disabled' : null,
+					'title' => $field->attributeLabel,
+					'empty' => Yii::t('app', ""),
+					), $htmlOptions));
 			
 			case 'visibility':
-			return CHtml::activeDropDownList($this, $field->fieldName, array(1 => 'Public', 0 => 'Private', 2 => 'User\'s Groups'), array_merge(array(
-				'title' => $field->attributeLabel,
-				'id' => $field->modelName . "_visibility",
-				), $htmlOptions));
+				return CHtml::activeDropDownList($this, $field->fieldName, array(1 => 'Public', 0 => 'Private', 2 => 'User\'s Groups'), array_merge(array(
+					'title' => $field->attributeLabel,
+					'id' => $field->modelName . "_visibility",
+					), $htmlOptions));
 
-			// 'varchar', 'email', 'url', 'int', 'float', 'currency', 'phone'
+				// 'varchar', 'email', 'url', 'int', 'float', 'currency', 'phone'
+			// case 'int':
+				// return CHtml::activeNumberField($this, $field->fieldNamearray_merge(array(
+					// 'title' => $field->attributeLabel,
+				// ), $htmlOptions));
+			
 			default:
-			return CHtml::activeTextField($this, $field->fieldName, array_merge(array(
-				'title' => $field->attributeLabel,
+				return CHtml::activeTextField($this, $field->fieldName, array_merge(array(
+					'title' => $field->attributeLabel,
 				), $htmlOptions));
 
-			// array(
-			// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-			// 'disabled'=>$item['readOnly']? 'disabled' : null,
-			// 'title'=>$field->attributeLabel,
-			// 'style'=>$default?'color:#aaa;':null,
-			// ));
+				// array(
+				// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+				// 'disabled'=>$item['readOnly']? 'disabled' : null,
+				// 'title'=>$field->attributeLabel,
+				// 'style'=>$default?'color:#aaa;':null,
+				// ));
 		}
 	}
 
@@ -720,14 +767,14 @@ abstract class X2Model extends CActiveRecord {
 
 				if(!empty($value)) {
 					$linkId = isset($data[$fieldName . '_id'])? $data[$fieldName . '_id'] : false;
-					
+					$linkModel = CActiveRecord::model($modelType)->findByPk($linkId);
 					// if the ID is sent, try to load the model
-					if(ctype_digit($linkId) && $linkModel = CActiveRecord::model($modelType)->findByPk($linkId)) {
-						if($linkModel->name === $value)			// if the model exists, make sure the name matches 
-							$value = $linkId;					// and use the ID as the field value if it does
+					if(ctype_digit($linkId) && isset($linkModel) && $linkModel->name === $value) {		// if the model exists, make sure the name matches 
+                        $value = $linkId;					// and use the ID as the field value if it does
 					} else {
+                        $linkModel = CActiveRecord::model($modelType)->findByAttributes(array('name'=>$value));
 						// otherwise, if the field is a string, try to find the ID based on the name
-						if($linkModel = CActiveRecord::model($modelType)->findByAttributes(array('name'=>$value))) {	// look in name field
+						if(isset($linkModel)) {	// look in name field
 							$value = $linkModel->id;
 						} elseif($modelType === 'Contacts') {	// if it's a contact, we can also try firstName + lastName
 							$fullName = explode(' ', $value);
@@ -761,7 +808,7 @@ abstract class X2Model extends CActiveRecord {
 				'pageSize' => ProfileChild::getResultsPerPage(),
 			),
 			'criteria' => $criteria,
-			));
+		));
     }
 
     public function compareAttributes(&$criteria) {
@@ -782,24 +829,10 @@ abstract class X2Model extends CActiveRecord {
 				break;
 			case 'phone':
 			// $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
-
-
 			default:
 				$criteria->compare($fieldName, $this->$fieldName, true);
 			}
 		}
-
-		// if(get_class($this) == 'Contacts')
-		// $criteria->compare('CONCAT(firstName," ",lastName)', $this->name,true);
-		// return new SmartDataProvider(get_class($this), array(
-		// 'sort'=>array(
-		// 'defaultOrder'=>'createDate DESC',
-		// ),
-		// 'pagination'=>array(
-		// 'pageSize'=>ProfileChild::getResultsPerPage(),
-		// ),
-		// 'criteria'=>$criteria,
-		// ));
     }
 
     protected function compareLookup($linkType, $value) {
@@ -820,9 +853,9 @@ abstract class X2Model extends CActiveRecord {
 			return empty($linkIds) ? -1 : $linkIds;
 		}
 		return -1;
-    }
+	}
 
-    protected function compareBoolean($data) {
+	protected function compareBoolean($data) {
 		if(is_null($data))
 			return null;
 
@@ -836,13 +869,97 @@ abstract class X2Model extends CActiveRecord {
 		$groupIds = Yii::app()->db->createCommand()->select('id')->from('x2_groups')->where(array('like', 'name', "%$data%"))->queryColumn();
 
 		return (count($groupIds) + count($userNames) == 0) ? -1 : $userNames + $groupIds;
-    }
+	}
 
-    public function createLink() {
-		if(isset($this->id))
-			return $this->getLink();
+	/**
+	 * Attempts to load the model with the given ID, if the current 
+	 * user passes authentication checks. Throws an exception if not.
+	 * @param Integer $d The ID of the model to load
+	 * @return mixed The model object
+	 */
+/* 	public static function load($modelName,$id) {
+		$model = CActiveRecord::model($modelName)->findByPk($id);
+		if($model === null)
+			throw new CHttpException(404, Yii::t('app', 'Sorry, this record doesn\'t seem to exist.'));
+
+			
+			
+		$authItem = ucfirst(Yii::app()->controller->id).ucfirst(Yii::app()->controller->action->id);
+		
+		// $authItem = ucfirst(Yii::app()->controller->id).'ViewPrivate';
+	
+		$result = Yii::app()->user->checkAccess($authItem);
+			
+		if($model->hasAttribute('visibility') && $model->hasAttribute('assignedTo')) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
+		
+		return $model;
+	} */
+
+	/**
+	 * Returns a CDbCriteria containing record-level access conditions.
+	 * @return CDbCriteria
+	 */
+	public function getAccessCriteria() {
+		$criteria = new CDbCriteria;
+		
+		$accessLevel = $this->getAccessLevel();
+			
+		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+
+		return $criteria;
+	}
+
+	/**
+	 * Returns a number from 0 to 3 representing the current user's access level using the Yii auth manager
+	 * Assumes authItem naming scheme like "ContactsViewPrivate", etc.
+	 * This method probably ought to overridden, as there is no reliable way to determine the module a model "belongs" to.
+	 * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
+	 */
+	public function getAccessLevel() {
+	
+		$module = ucfirst(get_class($this));
+		
+		if(Yii::app()->user->checkAccess($module.'Admin'))
+			return 3;
+		elseif(Yii::app()->user->checkAccess($module.'View'))
+			return 2;
+		elseif(Yii::app()->user->checkAccess($module.'ViewPrivate'))
+			return 1;
 		else
-			return $this->name;
-    }
+			return 0;
+	}
 
+	/**
+	 * Generates SQL condition to filter out records the user doesn't have permission to see.
+	 * This method is used by the 'accessControl' filter.
+	 * @param Integer $accessLevel The user's access level. 0=no access, 1=own records, 2=public records, 3=full access
+	 * @param Boolean $useVisibility Whether to consider the model's visibility setting
+	 * @param String $user The username to use in these checks (defaults to current user)
+	 * @return String The SQL conditions
+	 */
+	public static function getAccessConditions($accessLevel,$useVisibility=true,$user=null) {
+		if($user===null)
+			$user = Yii::app()->user->getName();
+			
+		if($accessLevel === 2 && $useVisibility===false)	// level 2 access only works if we consider visibility,
+			$accessLevel = 3;								// so upgrade to full access
+		
+		switch($accessLevel) {
+			case 3:		// user can view everything
+				return 'TRUE';
+			case 1:		// user can view records they (or one of their groups) own
+				return 't.assignedTo="'.$user.'"
+					OR t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")';
+			case 2:		// user can view any public (shared) record
+				return 't.visibility=1
+					OR t.assignedTo="'.$user.'"
+					OR t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")
+					OR (t.visibility=2 AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.$user.'"))';
+			default:
+			case 0:		// can't view anything
+				return 'FALSE';
+		}
+	}
 }

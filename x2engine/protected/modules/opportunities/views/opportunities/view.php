@@ -89,7 +89,7 @@ $form = $this->beginWidget('CActiveForm', array(
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Opportunity'));
 $this->endWidget();
 
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'opportunities'));
+$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'opportunity'));
 
 // render workflow box
 // $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'opportunities','currentWorkflow'=>$currentWorkflow));
