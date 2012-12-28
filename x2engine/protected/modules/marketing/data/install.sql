@@ -74,8 +74,8 @@ VALUES
 ("Campaign",		"content",				"Content",				0,		0,	"text",			0,			0,		NULL,			0,		0,			""),
 ("Campaign",		"complete",				"Complete",				0,		0,	"boolean",		0,			1,		NULL,			0,		0,			""),
 ("Campaign",		"visibility",			"Visibility",			0,		0,	"visibility",	1,			0,		NULL,			0,		0,			""),
-("Campaign",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
-("Campaign",		"launchDate",			"Launch Date",			0,		0,	"date",			0,			0,		NULL,			0,		0,			""),
-("Campaign",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
-("Campaign",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Campaign",		"createDate",			"Create Date",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
+("Campaign",		"launchDate",			"Launch Date",			0,		0,	"dateTime",		0,			0,		NULL,			0,		0,			""),
+("Campaign",		"lastUpdated",			"Last Updated",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
+("Campaign",		"lastActivity",			"Last Activity",		0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Campaign",		"updatedBy",			"Updated By",			0,		0,	"assignment",	0,			1,		NULL,			0,		0,			"");

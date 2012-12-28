@@ -233,9 +233,9 @@ class Contacts extends X2Model {
 	public function searchMyContacts() {
 		$criteria = new CDbCriteria;
 
-		$accessLevel = Yii::app()->user->checkAccess('ContactsViewPrivate')? 1 : 0;
-			
-		$criteria->addCondition($this->searchAccessConditions($accessLevel));
+		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
+		
+		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
 
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
 		// $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
@@ -248,7 +248,11 @@ class Contacts extends X2Model {
 
 	public function searchNewContacts() {
 		$criteria=new CDbCriteria;
-		$condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
+		// $condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
+		$condition = 'createDate > '.mktime(0,0,0);
+		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
+		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+		
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 
 		$parameters['condition']=$condition;

@@ -35,8 +35,8 @@ VALUES
 ("Opportunity",		"leadSource",			"Lead Source",			0,		0,	"dropdown",		0,			0,		"4",			0,		0,			""),
 ("Opportunity",		"description",			"Description",			0,		0,	"text",			0,			0,		NULL,			1,		0,			"Medium"),
 ("Opportunity",		"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		"multiple",		0,		0,			""),
-("Opportunity",		"createDate",			"Create Date",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Opportunity",		"createDate",			"Create Date",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Opportunity",		"associatedContacts",	"Contacts",				0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
-("Opportunity",		"lastUpdated",			"Last Updated",			0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
-("Opportunity",		"lastActivity",			"Last Activity",		0,		0,	"date",			0,			1,		NULL,			0,		0,			""),
+("Opportunity",		"lastUpdated",			"Last Updated",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
+("Opportunity",		"lastActivity",			"Last Activity",		0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Opportunity",		"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			"");

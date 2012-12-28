@@ -65,27 +65,24 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 	$file_ext = strtolower($file->getExtension());	// extension is the last part
 	$fileURL = Yii::app()->request->baseUrl.'/uploads/media/'. $model->uploadedBy . '/'.urlencode($model->fileName);
 	if(in_array($file_ext,$legal_extensions))
-		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'height: 100%; display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
+		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
 
 } else if (file_exists("uploads/{$model->fileName}")) {
 	$fileURL = Yii::app()->request->baseUrl.'/uploads/'.urlencode($model->fileName);
 	if(in_array($file_ext,$legal_extensions))
-		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'height: 100%; display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
+		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
 }
 ?>
 
-<table>
-	<tr>
 		<?php if(!empty($fileView)) { ?>
-			<td style="width: 32%;">
-				<div class="formItem" style="height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
+			<div style="float: left; margin-right: 5px;">
+				<div class="formItem" style="line-height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
 					<?php echo $fileView; ?>
 				</div>
-			</td>
+				<?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
+			</div>
 		<?php } ?>
-		
-		<td style="vertical-align: top;">
-		
+				
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
 			
 				<div class="formSection showSection">
@@ -186,14 +183,15 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 			</div>
 
 		
-		</td>
 	
-	</tr>
-</table>
 
-<?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button')); ?>
 </div>
-<div class="history half-width">
+<style>
+.half-width {
+    clear: none !important;
+}
+</style>
+<div class="history half-width" style="clear: both;">
 <?php $this->widget('Publisher',
 	array(
 		'associationType'=>'media',

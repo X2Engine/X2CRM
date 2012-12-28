@@ -68,6 +68,10 @@ class LeadRoutingBehavior extends CBehavior {
 			return $this->roundRobin();
 		} elseif ($type == "customRoundRobin") {
 			$arr = $_POST;
+			// for new lead capture form:
+			//     "Contacts" maps to an array of fields, check if this array exists and has fields, if so, set arr
+			if(isset($arr['Contacts']) && is_array($arr['Contacts']) && count($arr['Contacts']) > 0)
+				$arr = $arr['Contacts'];
 			$users = $this->getRoutingRules($arr);
 			if (!empty($users) && is_array($users) && count($users)>1) {
 				$rrId = $users[count($users) - 1];

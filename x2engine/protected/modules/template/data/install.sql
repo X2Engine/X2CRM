@@ -22,7 +22,7 @@ VALUES
 ("Templates",	"name",				"Name",					0,		"varchar"		0,			0,			NULL,		0,			0,			"High"		),
 ("Templates",	"assignedTo",		"Assigned To",			0,		"assignment"	0,			0,			NULL,		0,			0,			""			),
 ("Templates",	"description",		"Description",			0,		"text"			0,			0,			NULL,		0,			0,			"Medium"	),
-("Templates",	"createDate",		"Create Date",			0,		"date"			0,			0,			NULL,		0,			0,			""			),
-("Templates",	"lastUpdated",		"Last Updated",			0,		"date"			0,			0,			NULL,		0,			0,			""			),
-("Templates",	"lastActivity",		"Last Activity",		0,		"date"			0,			0,			NULL,		0,			0,			""			),
+("Templates",	"createDate",		"Create Date",			0,		"dateTime"		0,			0,			NULL,		0,			0,			""			),
+("Templates",	"lastUpdated",		"Last Updated",			0,		"dateTime"		0,			0,			NULL,		0,			0,			""			),
+("Templates",	"lastActivity",		"Last Activity",		0,		"dateTime"		0,			0,			NULL,		0,			0,			""			),
 ("Templates",	"updatedBy",		"Updated By",			0,		"assignment"	0,			0,			NULL,		0,			0,			""			);

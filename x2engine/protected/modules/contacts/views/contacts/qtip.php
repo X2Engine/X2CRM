@@ -44,15 +44,22 @@
 <?php 
 if(isset($_GET['fields'])){
     $fields=$_GET['fields'];
-    if(count($fields)>0 && $fields[0]!='link'){
+    if(count($fields)>0){
         $attrLabels=$contact->attributeLabels();
         foreach($fields as $field){
             if($contact->hasAttribute($field)){
                 echo Yii::t('contacts', $attrLabels[$field]).": <strong> ".$contact->$field."</strong><br />";
+            }else{
+                if($field=='link'){
+                    echo CHtml::link(Yii::t('contacts','Link to Record'),$this->createUrl('view',array('id'=>$contact->id)),array('style'=>'text-decoration:none;'))."<br />";
+                }elseif($field=='directions'){
+                    if(!empty(Yii::app()->params->admin->corporateAddress))
+                        echo CHtml::link(Yii::t('contacts','Directions from Corporate'),'#',array('style'=>'text-decoration:none;','id'=>'corporate-directions','class'=>'directions'))."<br />";
+                    if(!empty(Yii::app()->params->profile->address))
+                        echo CHtml::link(Yii::t('contacts','Directions from Personal Address'),'#',array('style'=>'text-decoration:none;','id'=>'personal-directions','class'=>'directions'));             
+                }
             }
         }
-    }else{
-        echo CHtml::link(Yii::t('contacts','Link to Record'),$this->createUrl('view',array('id'=>$contact->id)),array('style'=>'text-decoration:none;'));
     }
 }else{
 ?>

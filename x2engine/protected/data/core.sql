@@ -82,7 +82,8 @@ CREATE TABLE x2_admin(
 	srrId						INT				DEFAULT 0,
 	sgrrId						INT				DEFAULT 0,
 	serviceDistribution			varchar(255),
-	serviceOnlineOnly			TINYINT
+	serviceOnlineOnly			TINYINT,
+    corporateAddress            TEXT
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -295,6 +296,7 @@ CREATE TABLE x2_profile(
 	tagsShowAllUsers		TINYINT,
 	hideCasesWithStatus		TEXT,
     hiddenTags              TEXT,
+    address                 TEXT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

@@ -43,7 +43,7 @@ if($filter){?>
 <div id="x2-inline-tags-filter" class="form">
 	
     <?php if(is_array($tags) && count($tags)>0){
-        echo "<div id='x2-tag-list-filter'>";
+        echo "<div id='x2-tag-list-filter' style='min-height:15px;'>";
         foreach($tags as $tag) {
             echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span> '.CHtml::link($tag,'#').'</span>';
         }

@@ -242,7 +242,7 @@ if($inlineForm){
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
 				'dateFormat'=>( (isset($this->controller))? $this->controller->formatDatePicker('medium') : $this->formatDatePicker('medium') ),
-				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formattimePicker() ),
+				'timeFormat'=>( (isset($this->controller))? $this->controller->formatTimePicker() : $this->formatTimePicker() ),
 				'ampm'=>( (isset($this->controller))? $this->controller->formatAMPM() : $this->formatAMPM() ),
 				'changeMonth'=>true,
 				'changeYear'=>true

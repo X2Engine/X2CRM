@@ -858,36 +858,26 @@ class SiteController extends x2base {
 	 */
 	public function actionLogin() {
 		$this->layout = '//layouts/login';
-
+		
 		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
 			$this->redirect(Yii::app()->homeUrl);
 			return;
 		}
-
+		
 		$model = new LoginForm;
 		$model->useCaptcha = false;
-
+		
 		if(isset($_POST['LoginForm'])) {
 			$model->attributes = $_POST['LoginForm'];	// get user input data
-
+			
 			x2base::cleanUpSessions();
 			
 			$ip = $this->getRealIp();
-
+			
 			// increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
 			Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1, lastUpdated=:time WHERE user=:name AND IP=:ip AND status BETWEEN -2 AND 0')
 				->bindValues(array(':time'=>time(),':name'=>$model->username,':ip'=>$ip))
 				->execute();
-			
-			// foreach($localSessions as $session) {
-				// $session->lastUpdated = time();
-				// if($session->status < 1 && $session->status > -3)
-					// $session->status -= 1;
-				// else
-					// $session->status = -1;
-				
-				// $session->update(array('status'));
-			// }
 			
 			$activeUser = Yii::app()->db->createCommand()	// see if this is an actual, active user
 				->select('username')
@@ -902,7 +892,7 @@ class SiteController extends x2base {
 				$model->addError('password',Yii::t('app','Incorrect username or password.'));
 			} else {
 				$model->username = $activeUser;
-
+				
 				if(isset($_SESSION['sessionId']))
 					$sessionId = $_SESSION['sessionId'];
 				else

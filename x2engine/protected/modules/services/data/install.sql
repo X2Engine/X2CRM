@@ -30,8 +30,8 @@ INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,			modified,	custom,	type,					required,	readOnly,	linkType,   	searchable,	isVirtual,	relevance)
 VALUES
 ("Services",		"id",					"Case",					0,			0, 		"varchar",				0, 			0, 			NULL,			1,			0,			""			),
-("Services",		"createDate",			"Create Date",			0,			0, 		"date",					0, 			1, 			NULL,			0,			0,			""			),
-("Services",		"lastUpdated",			"Last Updated",			0,			0, 		"date",					0, 			1, 			NULL,			0,			0,			""			),
+("Services",		"createDate",			"Create Date",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			""			),
+("Services",		"lastUpdated",			"Last Updated",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			""			),
 ("Services",		"updatedBy",			"Updated By",			0,			0, 		"varchar",				0, 			1, 			NULL,			0,			0,			""			),
 ("Services",		"description",			"Description",			0,			0, 		"text",					0, 			0, 			NULL,			1,			0,			"Medium" 	),
 ("Services",		"contactId",			"Contact",				0,			0, 		"link",					1, 			0, 			'Contacts', 	0,			0,			""			),
@@ -45,5 +45,5 @@ VALUES
 ("Services",		"subIssue",				"Sub Issue",			0,			0, 		"dropdown",				0, 			0, 			'12', 			0,			0,			""			),
 ("Services",		"origin",				"Case Origin",			0,			0, 		"dropdown",				0, 			0, 			'13', 			0,			0,			""			),
 ("Services",		"escalatedTo",			"Escalated To",			0,			0, 		"optionalAssignment",	0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"lastActivity",			"Last Activity",		0,			0, 		"date",					0, 			0, 			NULL, 			0,			0,			""			),
+("Services",		"lastActivity",			"Last Activity",		0,			0, 		"dateTime",				0, 			0, 			NULL, 			0,			0,			""			),
 ("Services",		"parentCase",			"Parent Case",			0,			0, 		"link",					0, 			0, 			'Services', 	1,			0,			""			);

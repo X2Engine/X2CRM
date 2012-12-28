@@ -267,7 +267,7 @@ class AdminController extends Controller {
 	 */
 	public function filterClearAuthCache($filterChain) {
 		// Check for existence of authCache object (for backwards compatibility)
-		if (property_exists(Yii::app(), 'authCache')) {
+		if(Yii::app()->hasComponent('authCache')) {
 			$authCache = Yii::app()->authCache;
 			if (isset($authCache))
 				$authCache->clear();
@@ -1089,6 +1089,7 @@ class AdminController extends Controller {
             // $admin->ignoreUpdates = 1;
 
             $admin->attributes = $_POST['Admin'];
+            $admin->corporateAddress=$_POST['Admin']['corporateAddress'];
             $admin->timeout *= 60; //convert from minutes to seconds
 
 
@@ -1249,6 +1250,9 @@ class AdminController extends Controller {
                 case "date":
                     $fieldType = "BIGINT";
                     break;
+                case "dateTime":
+                    $fieldType = "BIGINT";
+                    break;
                 case "currency":
                     $fieldType = "FLOAT";
                     break;
@@ -1357,6 +1361,9 @@ class AdminController extends Controller {
                         $fieldType = "TEXT";
                         break;
                     case "date":
+                        $fieldType = "BIGINT";
+                        break;
+                    case "dateTime":
                         $fieldType = "BIGINT";
                         break;
                     case "currency":
@@ -1977,7 +1984,7 @@ class AdminController extends Controller {
      * zip files can be imported into other X2 installations. 
      */
     public function actionExportModule() {
-
+        $dlFlag=false;
         if (isset($_POST['name'])) {
             $moduleName = strtolower($_POST['name']);
 
@@ -2017,32 +2024,32 @@ class AdminController extends Controller {
                 }
             }
 
-            $db = Yii::app()->file->set("protected/modules/$moduleName/sqlData.sql");
-            $db->create();
-            $db->setContents($sql);
+			$db = Yii::app()->file->set("protected/modules/$moduleName/sqlData.sql");
+			$db->create();
+			$db->setContents($sql);
 
-            if (file_exists($moduleName . ".zip")) {
-                unlink($moduleName . ".zip");
-            }
+			if (file_exists($moduleName . ".zip")) {
+				unlink($moduleName . ".zip");
+			}
 
             $zip = Yii::app()->zip;
             $zip->makeZip('protected/modules/' . $moduleName, $moduleName . ".zip");
-            $finalFile = Yii::app()->file->set($moduleName . ".zip");
-            $finalFile->download();
-            $this->redirect('exportModule');
+            $dlFlag=true;
         }
 
-        $arr = array();
+		$arr = array();
 
-        $modules = Modules::model()->findAll();
-        foreach ($modules as $module) {
-            if ($module->custom) {
-                $arr[$module->name] = $module->title;
-            }
-        }
+		$modules = Modules::model()->findAll();
+		foreach ($modules as $module) {
+			if ($module->custom) {
+				$arr[$module->name] = $module->title;
+			}
+		}
 
         $this->render('exportModules', array(
             'modules' => $arr,
+            'dlFlag'=>$dlFlag?:false,
+            'file'=>$dlFlag?strtolower($_POST['name']):''
         ));
     }
 
@@ -2540,8 +2547,10 @@ class AdminController extends Controller {
     }
 
     public function actionDownloadData($file) {
-        $file = Yii::app()->file->set($file);
-        $file->send();
+        if(!preg_match('/\.\./',$file)){
+            $file = Yii::app()->file->set($file);
+            $file->send();
+        }
     }
     
     public function actionRollbackStage($model,$stage,$importId){

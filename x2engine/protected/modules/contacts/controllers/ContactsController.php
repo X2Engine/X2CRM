@@ -141,13 +141,13 @@ class ContactsController extends x2base {
 		if(isset($this->portlets['GoogleMaps']))
 			$this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
-		if ($this->checkPermissions($contact,'view')) {
+		if($this->checkPermissions($contact,'view')) {
 		
 			if(isset($_COOKIE['vcr-list'])){
 				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
             }
 		
-			if ($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)) {
+			if($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)) {
 				$criteria = new CDbCriteria();
 				$criteria->compare('CONCAT(firstName," ",lastName)', $contact->firstName . " " . $contact->lastName, false, "OR");
 				if(!empty($contact->email))
@@ -167,7 +167,7 @@ class ContactsController extends x2base {
                 }
 
 				$duplicates = Contacts::model()->findAll($criteria);
-				if (count($duplicates) > 0) {
+				if(count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
 						'newRecord' => $contact,
 						'duplicates' => $duplicates,
@@ -198,7 +198,7 @@ class ContactsController extends x2base {
 		if(isset($this->portlets['GoogleMaps']))
 			$this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
-		if ($this->checkPermissions($contact,'view')) {
+		if($this->checkPermissions($contact,'view')) {
 		
 			if(isset($_COOKIE['vcr-list']))
 				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
@@ -388,6 +388,7 @@ class ContactsController extends x2base {
             'tags'=>(isset($_POST['params']['tags']) && isset($tags) || isset($params['tags']))?isset($tags)?$tags:$params['tags']:array(),
             'zoom'=>isset($zoom)?$zoom:null,
             'mapFlag'=>isset($map)?'true':'false',
+            'noHeatMap'=>isset($_GET['noHeatMap']) && $_GET['noHeatMap']?true:false,
         ));
     }
     
@@ -417,10 +418,26 @@ class ContactsController extends x2base {
     }
     
     public function actionSavedMaps(){
-        $dataProvider=new CActiveDataProvider('Maps');
+        if(Yii::app()->user->checkAccess('ContactsAdmin')){
+            $dataProvider=new CActiveDataProvider('Maps');
+        }else{
+            $dataProvider = new CActiveDataProvider('Maps', array(
+                'criteria' => array(
+                    'condition' => 'owner="'.Yii::app()->user->getName().'"',
+                )
+            ));
+        }
         $this->render('savedMaps',array(
             'dataProvider'=>$dataProvider,
         ));
+    }
+    
+    public function actionDeleteMap($id){
+        $map=Maps::model()->findByPk($id);
+		if (isset($map) && ($map->owner==Yii::app()->user->getName() || Yii::app()->user->checkAccess('ContactsAdmin')) && Yii::app()->request->isPostRequest) {
+			$map->delete();
+		}
+        $this->redirect('savedMaps');
     }
     
     public function actionUpdateLocation($contactId, $lat, $lon){
@@ -458,25 +475,25 @@ class ContactsController extends x2base {
 		$errors = array();
 		$status = array();
 		$email = array();
-		if (isset($_POST['email'], $_POST['body'])) {
+		if(isset($_POST['email'], $_POST['body'])) {
 
 			$subject = Yii::t('contacts', 'Contact Record Details');
 			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
 			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
-			if ($email['to'] === false)
+			if($email['to'] === false)
 				$errors[] = 'email';
-			if (empty($body))
+			if(empty($body))
 				$errors[] = 'body';
 
-			if (empty($errors))
+			if(empty($errors))
 				$status = $this->sendUserEmail($email, $subject, $body);
 
-			if (array_search('200', $status)) {
+			if(array_search('200', $status)) {
 				$this->redirect(array('view', 'id' => $model->id));
 				return;
 			}
-			if ($email['to'] === false)
+			if($email['to'] === false)
 				$email = $_POST['email'];
 			else
 				$email = $this->mailingListToString($email['to']);
@@ -498,15 +515,15 @@ class ContactsController extends x2base {
 		$model->lastUpdated = time();
         if(empty($model->visibility) && $model->visibility!=0)
             $model->visibility=1;
-		if ($api == 0) {
+		if($api == 0) {
 			parent::create($model, $oldAttributes, $api);
 		} else {
 			$lookupFields = Fields::model()->findAllByAttributes(array('modelName' => 'Contacts', 'type' => 'link'));
-			foreach ($lookupFields as $field) {
+			foreach($lookupFields as $field) {
 				$fieldName = $field->fieldName;
-				if (isset($model->$fieldName)) {
+				if(isset($model->$fieldName)) {
 					$lookup = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
-					if (isset($lookup))
+					if(isset($lookup))
 						$model->$fieldName = $lookup->id;
 				}
 			}
@@ -515,18 +532,18 @@ class ContactsController extends x2base {
 	}
 
 	public function actionIgnoreDuplicates() {
-		if (isset($_POST['data'])) {
+		if(isset($_POST['data'])) {
 
 			$arr = json_decode($_POST['data'], true);
-			if ($_POST['ref'] != 'view') {
-				if ($_POST['ref'] == 'create')
+			if($_POST['ref'] != 'view') {
+				if($_POST['ref'] == 'create')
 					$model = new Contacts;
 				else {
 					$id = $arr['id'];
 					$model = Contacts::model()->findByPk($id);
 				}
 				$temp = $model->attributes;
-				foreach ($arr as $key => $value) {
+				foreach($arr as $key => $value) {
 					$model->$key = $value;
 				}
 			} else {
@@ -534,130 +551,130 @@ class ContactsController extends x2base {
 				$model = CActiveRecord::model('Contacts')->findByPk($id);
 			}
 			$model->dupeCheck = 1;
-			if ($_POST['ref'] == 'create') {
+			if($_POST['ref'] == 'create') {
 				$this->create($model, $temp, 1);
 			} elseif ($_POST['ref'] == 'update') {
 				$this->update($model, $temp, 1);
 			} else {
 				$model->save();
 			}
-            $action=$_POST['action'];
-            if(!is_null($action)){
-                $criteria = new CDbCriteria();
-                if(!empty($model->firstName) && !empty($model->lastName))
-                    $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
+			$action=$_POST['action'];
+			if(!is_null($action)){
+				$criteria = new CDbCriteria();
+				if(!empty($model->firstName) && !empty($model->lastName))
+					$criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
 				if(!empty($model->email))
-                    $criteria->compare('email', $model->email, false, "OR");
+					$criteria->compare('email', $model->email, false, "OR");
 				$criteria->compare('id', "<>" . $model->id, false, "AND");
-                if(Yii::app()->user->getName()!='admin'){
-                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
-                    /* x2temp */
-                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                    if(!empty($groupLinks))
-                        $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+				if(Yii::app()->user->getName()!='admin'){
+					$condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+					/* x2temp */
+					$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+					if(!empty($groupLinks))
+						$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-                    $condition .= 'OR (visibility=2 AND assignedTo IN 
-                        (SELECT username FROM x2_group_to_user WHERE groupId IN
-                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-                    $criteria->addCondition($condition);
-                }
+					$condition .= 'OR (visibility=2 AND assignedTo IN 
+						(SELECT username FROM x2_group_to_user WHERE groupId IN
+							(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+					$criteria->addCondition($condition);
+				}
 
-                if($action=='hideAll'){
-                    $duplicates = Contacts::model()->findAll($criteria);
-                    foreach($duplicates as $duplicate){
-                        $duplicate->dupeCheck=1;
-                        $duplicate->assignedTo='Anyone';
-                        $duplicate->visibility=0;
-                        $duplicate->save();
-                        $notif = new Notification;
-                        $notif->user = 'admin';
-                        $notif->createdBy = Yii::app()->user->getName();
-                        $notif->createDate = time();
-                        $notif->type = 'dup_discard';
-                        $notif->modelType = 'Contacts';
-                        $notif->modelId = $duplicate->id;
-                        $notif->save();
-                    }
-                }elseif($action=='deleteAll'){
-                    Contacts::model()->deleteAll($criteria);
-                }
-            }
+				if($action=='hideAll'){
+					$duplicates = Contacts::model()->findAll($criteria);
+					foreach($duplicates as $duplicate){
+						$duplicate->dupeCheck=1;
+						$duplicate->assignedTo='Anyone';
+						$duplicate->visibility=0;
+						$duplicate->save();
+						$notif = new Notification;
+						$notif->user = 'admin';
+						$notif->createdBy = Yii::app()->user->getName();
+						$notif->createDate = time();
+						$notif->type = 'dup_discard';
+						$notif->modelType = 'Contacts';
+						$notif->modelId = $duplicate->id;
+						$notif->save();
+					}
+				}elseif($action=='deleteAll'){
+					Contacts::model()->deleteAll($criteria);
+				}
+			}
 			echo $model->id;
 		}
 	}
 
 	public function actionDiscardNew() {
 		if(isset($_POST['id']) && isset($_POST['newId'])) {
-            $ref=$_POST['ref'];
-            $action=$_POST['action'];
-            $oldId=$_POST['id'];
-            if($ref=='create' && is_null($action)){
-                echo $_POST['id'];
-                return;
-            }elseif($ref=='create'){
-                $oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
-                if(isset($oldRecord)){
-                    Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
-                    Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
-                    if($action=='hideThis'){
-                        $oldRecord->dupeCheck=1;
-                        $oldRecord->assignedTo='Anyone';
-                        $oldRecord->visibility=0;
-                        $oldRecord->save();
-                        $notif = new Notification;
-                        $notif->user = 'admin';
-                        $notif->createdBy = Yii::app()->user->getName();
-                        $notif->createDate = time();
-                        $notif->type = 'dup_discard';
-                        $notif->modelType = 'Contacts';
-                        $notif->modelId = $oldId;
-                        $notif->save();
-                        echo $_POST['id'];
-                        return;
-                    }elseif($action=='deleteThis'){
-                        $oldRecord->delete();
-                        echo $_POST['id'];
-                        return;
-                    }
-                }
-            }else{
-                $newId=$_POST['newId'];
-                $oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
-                $newRecord=Contacts::model()->findByPk($_POST['newId']);
-                $newRecord->dupeCheck=1;
-                $newRecord->save();
-                if(is_null($action)){
-                    $newRecord->delete();
-                    echo $oldId;
-                    return;
-                }else{
-                    if(isset($oldRecord)){
-                         
-                        if($action=='hideThis'){
-                            $oldRecord->dupeCheck=1;
-                            $oldRecord->assignedTo='Anyone';
-                            $oldRecord->visibility=0;
-                            $oldRecord->save();
-                            $notif = new Notification;
-                            $notif->user = 'admin';
-                            $notif->createdBy = Yii::app()->user->getName();
-                            $notif->createDate = time();
-                            $notif->type = 'dup_discard';
-                            $notif->modelType = 'Contacts';
-                            $notif->modelId = $oldId;
-                            $notif->save();
-                        }elseif($action=='deleteThis'){
-                            Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
-                            Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
-                            Tags::model()->deleteAllByAttributes(array('type'=>'Contacts','itemId'=>$oldRecord->id));
-                            Actions::model()->deleteAllByAttributes(array('associationType'=>'Contacts','associationId'=>$oldRecord->id));
-                            $oldRecord->delete();
-                        }
-                    }
+			$ref=$_POST['ref'];
+			$action=$_POST['action'];
+			$oldId=$_POST['id'];
+			if($ref=='create' && is_null($action)){
+				echo $_POST['id'];
+				return;
+			}elseif($ref=='create'){
+				$oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
+				if(isset($oldRecord)){
+					Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
+					Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
+					if($action=='hideThis'){
+						$oldRecord->dupeCheck=1;
+						$oldRecord->assignedTo='Anyone';
+						$oldRecord->visibility=0;
+						$oldRecord->save();
+						$notif = new Notification;
+						$notif->user = 'admin';
+						$notif->createdBy = Yii::app()->user->getName();
+						$notif->createDate = time();
+						$notif->type = 'dup_discard';
+						$notif->modelType = 'Contacts';
+						$notif->modelId = $oldId;
+						$notif->save();
+						echo $_POST['id'];
+						return;
+					}elseif($action=='deleteThis'){
+						$oldRecord->delete();
+						echo $_POST['id'];
+						return;
+					}
+				}
+			}else{
+				$newId=$_POST['newId'];
+				$oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
+				$newRecord=Contacts::model()->findByPk($_POST['newId']);
+				$newRecord->dupeCheck=1;
+				$newRecord->save();
+				if(is_null($action)){
+					$newRecord->delete();
+					echo $oldId;
+					return;
+				}else{
+					if(isset($oldRecord)){
+						 
+						if($action=='hideThis'){
+							$oldRecord->dupeCheck=1;
+							$oldRecord->assignedTo='Anyone';
+							$oldRecord->visibility=0;
+							$oldRecord->save();
+							$notif = new Notification;
+							$notif->user = 'admin';
+							$notif->createdBy = Yii::app()->user->getName();
+							$notif->createDate = time();
+							$notif->type = 'dup_discard';
+							$notif->modelType = 'Contacts';
+							$notif->modelId = $oldId;
+							$notif->save();
+						}elseif($action=='deleteThis'){
+							Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
+							Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
+							Tags::model()->deleteAllByAttributes(array('type'=>'Contacts','itemId'=>$oldRecord->id));
+							Actions::model()->deleteAllByAttributes(array('associationType'=>'Contacts','associationId'=>$oldRecord->id));
+							$oldRecord->delete();
+						}
+					}
 
-                    echo $_POST['newId'];
-                }
-            }
+					echo $_POST['newId'];
+				}
+			}
 		}
 	}
  
@@ -672,84 +689,84 @@ class ContactsController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if (isset($_POST['Contacts'])) {
-            $oldAttributes=$model->attributes;
+		if(isset($_POST['Contacts'])) {
+			$oldAttributes=$model->attributes;
 			$model->setX2Fields($_POST['Contacts']);
 
 			$criteria = new CDbCriteria();
-            if(!empty($model->firstName) && !empty($model->lastName))
-                $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
+			if(!empty($model->firstName) && !empty($model->lastName))
+				$criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
 			if(!empty($model->email))
-                $criteria->compare('email', $model->email, false, "OR");
-            if(Yii::app()->user->getName()!='admin'){
-                $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
-                /* x2temp */
-                $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                if(!empty($groupLinks))
-                    $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+				$criteria->compare('email', $model->email, false, "OR");
+			if(Yii::app()->user->getName()!='admin'){
+				$condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+				/* x2temp */
+				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+				if(!empty($groupLinks))
+					$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-                $condition .= 'OR (visibility=2 AND assignedTo IN 
-                    (SELECT username FROM x2_group_to_user WHERE groupId IN
-                        (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-                $criteria->addCondition($condition);
-            }
+				$condition .= 'OR (visibility=2 AND assignedTo IN 
+					(SELECT username FROM x2_group_to_user WHERE groupId IN
+						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+				$criteria->addCondition($condition);
+			}
 
 			if(isset($_POST['x2ajax'])) {
-			    if($this->create($model,$oldAttributes, '1')) { // success creating account?
-			    	$primaryAccountLink = '';
-			    	$newPhone = '';
-			    	$newWebsite = '';
-			    	if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
-			    		Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Contacts', $model->id);
-			    		
-			    		if($_POST['ModelName'] == 'Accounts') {
-			    			$account = Accounts::model()->findByPk($_POST['ModelId']);
-			    			if($account) {
-			    				$changed = false;
-			    				if(isset($model->website) && (!isset($account->website) || $account->website == "")) {
-			    					$account->website = $model->website;
-			    					$newWebsite = $account->website;
-			    					$changed = true;
-			    				}
-			    				if(isset($model->phone) && (!isset($account->phone) || $account->phone == "")) {
-			    					$account->phone = $model->phone;
-			    					$newPhone = $account->phone;
-			    					$changed = true;
-			    				}
-			    				
-			    				if($changed)
-			    					$account->update();
-			    			}
-			    		} else if($_POST['ModelName'] == 'Opportunity') {
-			    			$opportunity = Opportunity::model()->findByPk($_POST['ModelId']);
-			    			if($opportunity) {
-			    				if(isset($model->company) && $model->company != '' && (!isset($opportunity->accountName) || $opportunity->accountName == '')) {
-			    					$opportunity->accountName = $model->company;
-			    					$opportunity->update();
-			    					$primaryAccountLink = $model->createLink();
-			    				}
-			    			}
-			    		}
-			    		
-			    	}
+				if($this->create($model,$oldAttributes, '1')) { // success creating account?
+					$primaryAccountLink = '';
+					$newPhone = '';
+					$newWebsite = '';
+					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
+						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Contacts', $model->id);
+						
+						if($_POST['ModelName'] == 'Accounts') {
+							$account = Accounts::model()->findByPk($_POST['ModelId']);
+							if($account) {
+								$changed = false;
+								if(isset($model->website) && (!isset($account->website) || $account->website == "")) {
+									$account->website = $model->website;
+									$newWebsite = $account->website;
+									$changed = true;
+								}
+								if(isset($model->phone) && (!isset($account->phone) || $account->phone == "")) {
+									$account->phone = $model->phone;
+									$newPhone = $account->phone;
+									$changed = true;
+								}
+								
+								if($changed)
+									$account->update();
+							}
+						} else if($_POST['ModelName'] == 'Opportunity') {
+							$opportunity = Opportunity::model()->findByPk($_POST['ModelId']);
+							if($opportunity) {
+								if(isset($model->company) && $model->company != '' && (!isset($opportunity->accountName) || $opportunity->accountName == '')) {
+									$opportunity->accountName = $model->company;
+									$opportunity->update();
+									$primaryAccountLink = $model->createLink();
+								}
+							}
+						}
+						
+					}
 			
-			    	echo json_encode(
-			    		array(
-			    			'status'=>'success',
-			    			'name'=>$model->name,
-			    			'id'=>$model->id,
-			    			'primaryAccountLink'=>$primaryAccountLink,
-			    			'newWebsite'=>$newWebsite,
-			    			'newPhone'=>$newPhone,
-			    		)
-			    	);
-			    	Yii::app()->end();
-			    } else {
-			    	$x2ajaxCreateError = true;
-			    }
+					echo json_encode(
+						array(
+							'status'=>'success',
+							'name'=>$model->name,
+							'id'=>$model->id,
+							'primaryAccountLink'=>$primaryAccountLink,
+							'newWebsite'=>$newWebsite,
+							'newPhone'=>$newPhone,
+						)
+					);
+					Yii::app()->end();
+				} else {
+					$x2ajaxCreateError = true;
+				}
 			} else {
 				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
-				if (count($duplicates) > 0) {
+				if(count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
 						'newRecord' => $model,
 						'duplicates' => $duplicates,
@@ -762,7 +779,7 @@ class ContactsController extends x2base {
 			}
 		}
 		
-		if ($renderFlag) {
+		if($renderFlag) {
 		
 			if(isset($_POST['x2ajax'])) {
 				Yii::app()->clientScript->scriptMap['*.js'] = false;
@@ -800,30 +817,30 @@ class ContactsController extends x2base {
 		// Yii::app()->end();
 		// }
 		// collect user input data
-		if (isset($_POST['Contacts'])) {
+		if(isset($_POST['Contacts'])) {
 			// clear values that haven't been changed from the default
-			foreach ($_POST['Contacts'] as $name => &$value) {
-				if ($value == $model->getAttributeLabel($name))
+			foreach($_POST['Contacts'] as $name => &$value) {
+				if($value == $model->getAttributeLabel($name))
 					$value = '';
 			}
-			foreach ($_POST as $key => $arr) {
+			foreach($_POST as $key => $arr) {
 				$pieces = explode("_", $key);
-				if (isset($pieces[0]) && $pieces[0] == 'autoselect') {
+				if(isset($pieces[0]) && $pieces[0] == 'autoselect') {
 					$newKey = $pieces[1];
-					if (isset($_POST[$newKey . "_id"]) && $_POST[$newKey . "_id"] != "") {
+					if(isset($_POST[$newKey . "_id"]) && $_POST[$newKey . "_id"] != "") {
 						$val = $_POST[$newKey . "_id"];
 					} else {
 						$field = Fields::model()->findByAttributes(array('fieldName' => $newKey));
-						if (isset($field)) {
+						if(isset($field)) {
 							$type = ucfirst($field->linkType);
-							if ($type != "Contacts") {
+							if($type != "Contacts") {
 								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
 							} else {
 								$names = explode(" ", $arr);
-								if (count($names) > 1)
+								if(count($names) > 1)
 									$lookupModel = CActiveRecord::model('Contacts')->findByAttributes(array('firstName' => $names[0], 'lastName' => $names[1]));
 							}
-							if (isset($lookupModel))
+							if(isset($lookupModel))
 								$val = $lookupModel->id;
 							else
 								$val = $arr;
@@ -833,11 +850,11 @@ class ContactsController extends x2base {
 				}
 			}
 			$temp = $model->attributes;
-			foreach (array_keys($model->attributes) as $field) {
-				if (isset($_POST['Contacts'][$field])) {
+			foreach(array_keys($model->attributes) as $field) {
+				if(isset($_POST['Contacts'][$field])) {
 					$model->$field = $_POST['Contacts'][$field];
 					$fieldData = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $field));
-					if ($fieldData->type == 'assignment' && $fieldData->linkType == 'multiple') {
+					if($fieldData->type == 'assignment' && $fieldData->linkType == 'multiple') {
 						$model->$field = Accounts::parseUsers($model->$field);
 					} elseif ($fieldData->type == 'date') {
 						$model->$field = strtotime($model->$field);
@@ -850,7 +867,7 @@ class ContactsController extends x2base {
 			$changes = $this->calculateChanges($temp, $model->attributes, $model);
 			$model = $this->updateChangelog($model, 'Create');
 			$model->createDate = time();
-			if ($model->save()) {
+			if($model->save()) {
 				$this->renderPartial('application.components.views.quickContact', array());
 			} //else print_r($model->getErrors());
 		}
@@ -860,7 +877,7 @@ class ContactsController extends x2base {
 	// Updates a contact record
 	public function update($model, $oldAttributes, $api) {
         
-		if ($api == 0)
+		if($api == 0)
 			parent::update($model, $oldAttributes, $api);
 		else
 			return parent::update($model, $oldAttributes, $api);
@@ -872,11 +889,11 @@ class ContactsController extends x2base {
 		$users = User::getNames();
 		$accounts = Accounts::getNames();
 
-		if (isset($_POST['Contacts'])) {
+		if(isset($_POST['Contacts'])) {
 			$oldAttributes = $model->attributes;
 
 			$model->setX2Fields($_POST['Contacts']);
-			if ($model->dupeCheck != '1') {
+			if($model->dupeCheck != '1') {
 				$criteria = new CDbCriteria();
                 if(!empty($model->firstName) && !empty($model->lastName))
                     $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
@@ -897,7 +914,7 @@ class ContactsController extends x2base {
                 }
 
 				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
-				if (count($duplicates) > 0) {
+				if(count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
 						'newRecord' => $model,
 						'duplicates' => $duplicates,
@@ -1020,7 +1037,7 @@ class ContactsController extends x2base {
 	public function actionList($id=null) {
 		$list = X2List::load($id);
 
-		if (!isset($list)) {
+		if(!isset($list)) {
 			Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
 			$this->redirect(array('lists'));
 		}
@@ -1039,11 +1056,11 @@ class ContactsController extends x2base {
 	}
 
 	public function actionCreateListFromSelection() {
-		if (isset($_POST['gvSelection'], $_POST['listName'], $_POST['modelName'])
+		if(isset($_POST['gvSelection'], $_POST['listName'], $_POST['modelName'])
 				&& !empty($_POST['gvSelection']) && is_array($_POST['gvSelection']) && $_POST['listName'] != '' && class_exists($_POST['modelName'])) {
 
-			foreach ($_POST['gvSelection'] as &$contactId) {
-				if (!ctype_digit($contactId))
+			foreach($_POST['gvSelection'] as &$contactId) {
+				if(!ctype_digit($contactId))
 					throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
 			}
 
@@ -1058,20 +1075,20 @@ class ContactsController extends x2base {
 
 			$itemModel = CActiveRecord::model($_POST['modelName']);
 
-			if ($list->save()) { // if the list is valid save it so we can get the ID
+			if($list->save()) { // if the list is valid save it so we can get the ID
 				$count = 0;
-				foreach ($_POST['gvSelection'] as &$itemId) {
+				foreach($_POST['gvSelection'] as &$itemId) {
 
-					if ($itemModel->exists('id="' . $itemId . '"')) { // check if contact exists
+					if($itemModel->exists('id="' . $itemId . '"')) { // check if contact exists
 						$item = new X2ListItem;
 						$item->contactId = $itemId;
 						$item->listId = $list->id;
-						if ($item->save()) // add all the things!
+						if($item->save()) // add all the things!
 							$count++;
 					}
 				}
 				$list->count = $count;
-				if ($list->save())
+				if($list->save())
 					echo $this->createUrl('/contacts/list/' . $list->id);
 			}
 		}
@@ -1098,38 +1115,38 @@ class ContactsController extends x2base {
 			'notList' => Yii::t('contacts', 'not in list'),
 		);
 
-		if (isset($_POST['X2List'])) {
+		if(isset($_POST['X2List'])) {
 
 			$list->attributes = $_POST['X2List'];
 			$list->modelName = 'Contacts';
 			$list->createDate = time();
 			$list->lastUpdated = time();
 
-			if ($list->type == 'dynamic')
+			if($list->type == 'dynamic')
 				$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
 
-			if (isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
+			if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
 
 				$attributes = &$_POST['X2List']['attribute'];
 				$comparisons = &$_POST['X2List']['comparison'];
 				$values = &$_POST['X2List']['value'];
 
-				if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
+				if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
 
 					$list->attributes = $_POST['X2List'];
 					$list->modelName = 'Contacts';
 
 					$list->lastUpdated = time();
 
-					if ($list->save()) {
+					if($list->save()) {
 
 						X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete old criteria
 
 						for ($i = 0; $i < count($attributes); $i++) { // create new criteria
-							if ((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
+							if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
 									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
                                 $fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
-                                if($fieldRef->type=='link'){
+                                if(isset($fieldRef) && $fieldRef->type=='link'){
                                     $lookup=CActiveRecord::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
                                     if(isset($lookup))
                                         $values[$i]=$lookup->id;
@@ -1150,7 +1167,7 @@ class ContactsController extends x2base {
 			}
 		}
 
-		if (empty($criteriaModels)) {
+		if(empty($criteriaModels)) {
 			$default = new X2ListCriterion;
 			$default->value = '';
 			$default->attribute = '';
@@ -1175,10 +1192,10 @@ class ContactsController extends x2base {
 	public function actionUpdateList($id) {
 		$list = X2List::model()->findByPk($id);
 
-		if (!isset($list))
+		if(!isset($list))
 			throw new CHttpException(400, Yii::t('app', 'This list cannot be found.'));
 
-		if (!$this->editPermissions($list))
+		if(!$this->editPermissions($list))
 			throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
 
 		$contactModel = new Contacts;
@@ -1195,34 +1212,34 @@ class ContactsController extends x2base {
 			'notList' => Yii::t('contacts', 'not in list'),
 		);
 
-		if ($list->type == 'dynamic') {
+		if($list->type == 'dynamic') {
 			$criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
 
-			if (isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
+			if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
 
 				$attributes = &$_POST['X2List']['attribute'];
 				$comparisons = &$_POST['X2List']['comparison'];
 				$values = &$_POST['X2List']['value'];
 
-				if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
+				if(count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
 
 					$list->attributes = $_POST['X2List'];
 					$list->modelName = 'Contacts';
 					$list->lastUpdated = time();
 
-					if ($list->save()) {
+					if($list->save()) {
 
 						X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete old criteria
 
 						for ($i = 0; $i < count($attributes); $i++) { // create new criteria
-							if ((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
+							if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
 									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
-                                $fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
-                                if($fieldRef->type=='link'){
-                                    $lookup=CActiveRecord::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
-                                    if(isset($lookup))
-                                        $values[$i]=$lookup->id;
-                                }
+								$fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
+								if($fieldRef->type=='link'){
+									$lookup=CActiveRecord::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
+									if(isset($lookup))
+										$values[$i]=$lookup->id;
+								}
 								$criterion = new X2ListCriterion;
 								$criterion->listId = $list->id;
 								$criterion->type = 'attribute';
@@ -1237,7 +1254,7 @@ class ContactsController extends x2base {
 				}
 			}
 		} else { //static or campaign lists
-			if (isset($_POST['X2List'])) {
+			if(isset($_POST['X2List'])) {
 				$list->attributes = $_POST['X2List'];
 				$list->modelName = 'Contacts';
 				$list->lastUpdated = time();
@@ -1246,7 +1263,7 @@ class ContactsController extends x2base {
 			}
 		}
 
-		if (empty($criteriaModels)) {
+		if(empty($criteriaModels)) {
 			$default = new X2ListCriterion;
 			$default->value = '';
 			$default->attribute = '';
@@ -1269,25 +1286,32 @@ class ContactsController extends x2base {
 	}
 
 	public function actionAddToList() {
-
-		if (isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
-
-			foreach ($_POST['gvSelection'] as &$contactId)
-				if (!ctype_digit($contactId))
+		
+		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
+			
+			foreach($_POST['gvSelection'] as &$contactId)
+				if(!ctype_digit($contactId))
 					throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
-
+			
 			$list = X2List::model()->findByPk($_POST['listId']);
-
+			
 			// check permissions
-			if (isset($list) && $list->type == 'static' && $this->checkPermissions($list, 'edit')) {
-
-				$count = 0;
-				foreach ($_POST['gvSelection'] as &$contactId) {
+			if(isset($list) && $list->type == 'static' && $this->checkPermissions($list, 'edit')) {
+				
+				// find out if any of these IDs are already in this list
+				$existingIds = Yii::app()->db->createCommand()
+					->select('contactId')
+					->from('x2_list_items')
+					->where('listId='.$list->id.' AND contactId IN('.implode(',',$_POST['gvSelection']).')')
+					->queryColumn();
+				
+				foreach($_POST['gvSelection'] as &$contactId) {
+					if(in_array($contactId,$existingIds))
+						continue;
 					$listItem = new X2ListItem();
 					$listItem->listId = $list->id;
 					$listItem->contactId = $contactId;
-					if ($listItem->save())
-						$count++;
+					$listItem->save();
 				}
 				$list->count = X2ListItem::model()->countByAttributes(array('listId' => $list->id));
 				$list->save();
@@ -1300,16 +1324,16 @@ class ContactsController extends x2base {
 	// Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like','name',"%$value%"))->queryColumn();
 	public function actionRemoveFromList() {
 
-		if (isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
+		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
 
-			foreach ($_POST['gvSelection'] as $contactId)
-				if (!ctype_digit($contactId))
+			foreach($_POST['gvSelection'] as $contactId)
+				if(!ctype_digit($contactId))
 					throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
 
 			$list = X2List::model()->findByPk($_POST['listId']);
 
 			// check permissions
-			if (isset($list) && $list->type == 'static' && $this->checkPermissions($list, 'edit')) {
+			if(isset($list) && $list->type == 'static' && $this->checkPermissions($list, 'edit')) {
 				X2ListItem::model()->deleteAllByAttributes(array('listId' => $list->id), 'contactId IN (' . implode(',', $_POST['gvSelection']) . ')'); // delete all the things!
 
 				$list->count = X2ListItem::model()->countByAttributes(array('listId' => $list->id));
@@ -1324,12 +1348,12 @@ class ContactsController extends x2base {
 
 		$id = isset($_GET['id']) ? $_GET['id'] : 'all';
 
-		if (is_numeric($id))
+		if(is_numeric($id))
 			$list = CActiveRecord::model('X2List')->findByPk($id);
-		if (isset($list)) {
+		if(isset($list)) {
 
 			// check permissions
-			if ($this->checkPermissions($list, 'edit')) {
+			if($this->checkPermissions($list, 'edit')) {
 				X2ListItem::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete all the things!
 				$list->delete();
 			} else
@@ -1341,8 +1365,8 @@ class ContactsController extends x2base {
 	public function actionExportList($id) {
 
 		$list = CActiveRecord::model('X2List')->findByPk($id);
-		if (isset($list)) {
-			if (!$this->checkPermissions($list, 'view')) // check permissions
+		if(isset($list)) {
+			if(!$this->checkPermissions($list, 'view')) // check permissions
 				throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
 		} else
 			throw new CHttpException(404, Yii::t('app', 'The requested list does not exist.'));
@@ -1362,7 +1386,7 @@ class ContactsController extends x2base {
 		$selectedColumns = array();
 		$columns = array();
 
-		if ($gvSettings === null) {
+		if($gvSettings === null) {
 			$selectedColumns = array(// default columns
 				'firstName',
 				'lastName',
@@ -1376,20 +1400,20 @@ class ContactsController extends x2base {
 			$selectedColumns = array_keys($gvSettings);
 		}
 
-		foreach ($selectedColumns as &$colName) {
+		foreach($selectedColumns as &$colName) {
 
-			if ($colName == 'tags') {
+			if($colName == 'tags') {
 				$columns[$colName]['label'] = Yii::t('app', 'Tags');
 				$columns[$colName]['type'] = 'tags';
 			} elseif ($colName == 'name') {
 				$columns[$colName]['label'] = Yii::t('contacts', 'Name');
 				$columns[$colName]['type'] = 'name';
 			} else {
-				if (array_key_exists($colName, $allFields)) {
+				if(array_key_exists($colName, $allFields)) {
 
 					$columns[$colName]['label'] = $allFields[$colName]['attributeLabel'];
 
-					if (in_array($colName, array('annualRevenue', 'quoteAmount')))
+					if(in_array($colName, array('annualRevenue', 'quoteAmount')))
 						$columns[$colName]['type'] = 'currency';
 					else
 						$columns[$colName]['type'] = $allFields[$colName]['type'];
@@ -1405,7 +1429,7 @@ class ContactsController extends x2base {
 
 		// output column labels for the first line
 		$columnLabels = array();
-		foreach ($columns as $colName => &$field)
+		foreach($columns as $colName => &$field)
 			$columnLabels[] = $field['label'];
 		unset($field);
 
@@ -1415,13 +1439,13 @@ class ContactsController extends x2base {
 			$dataProvider->pagination->currentPage = $i;
 
 			$dataSet = $dataProvider->getData(true);
-			foreach ($dataSet as &$model) {
+			foreach($dataSet as &$model) {
 
 				$row = array();
 
-				foreach ($columns as $fieldName => &$field) {
+				foreach($columns as $fieldName => &$field) {
 
-					if ($field['type'] == 'tags') {
+					if($field['type'] == 'tags') {
 						$row[] = Tags::getTags('Contacts', $model->id, 10);
 					} elseif ($field['type'] == 'date') {
 						$row[] = date('Y-m-d H:i:s', $model->$fieldName);
@@ -1438,18 +1462,18 @@ class ContactsController extends x2base {
 								break;
 						}
 					} elseif ($field['type'] == 'link') {
-						if (is_numeric($model->$fieldName)) {
+						if(is_numeric($model->$fieldName)) {
 							$className = ucfirst($field['linkType']);
-							if (class_exists($className)) {
+							if(class_exists($className)) {
 								$lookupModel = CActiveRecord::model($className)->findByPk($model->$fieldName);
-								if (isset($lookupModel))
+								if(isset($lookupModel))
 									$row[] = $lookupModel->name;
 							}
 						} else {
 							$row[] = $model->$fieldName;
 						}
 					} elseif ($field['type'] == 'currency') {
-						if ($model instanceof Product) // products have their own currency
+						if($model instanceof Product) // products have their own currency
 							$row[] = Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, $model->currency);
 						elseif (!empty($model->$fieldName))
 							$row[] = Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, Yii::app()->params['currency']);
@@ -1473,7 +1497,7 @@ class ContactsController extends x2base {
 	}
 
 //	public function actionImportContacts() {
-//		if (isset($_FILES['contacts'])) {
+//		if(isset($_FILES['contacts'])) {
 //
 //			$temp = CUploadedFile::getInstanceByName('contacts');
 //			$temp->saveAs('contacts.csv');
@@ -1513,421 +1537,421 @@ class ContactsController extends x2base {
 //			$model->zipcode = $this->stripquotes($pieces[13]);
 //			$model->country = $this->stripquotes($pieces[14]);
 //
-//			if ($model->save()) {
+//			if($model->save()) {
 //			   
 //			}
 //		}
 //		unlink($file);
 //		$this->redirect('index');
 //	}
-    
-    
+	
+	
 
-    public function actionImportExcel() {
-        function createImportMap($attributes,$meta){
-            $originalAttributes=$attributes;
-            $attributes=array_map('strtolower',$attributes);
-            $processedMeta=array_map('strtolower',$meta);
-            $processedMeta=preg_replace('/[\W|_]/','',$processedMeta);
-            $labels=Contacts::model()->attributeLabels();
-            $labels=array_map('strtolower',$labels);
-            $labels=preg_replace('/[\W|_]/','',$labels);
-            foreach($meta as $metaVal){
-                $originalMetaVal=$metaVal;
-                $metaVal=strtolower(preg_replace('/[\W|_]/','',$metaVal));
-                if(in_array($metaVal,$attributes)){
-                    $attrKey=array_search($metaVal,$attributes);
-                    $_SESSION['importMap'][$originalAttributes[$attrKey]]=$originalMetaVal;
-                }elseif(in_array($metaVal,$labels)){
-                    $attrKey=array_search($metaVal,$labels);
-                    $_SESSION['importMap'][$attrKey]=$originalMetaVal;
-                }elseif(count(preg_grep("/\b$metaVal/i",$attributes))>0){
-                    $keys=array_keys(preg_grep("/\b$metaVal/i",$attributes));
-                    $attrKey=$keys[0];
-                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
-                        $_SESSION['importMap'][$originalAttributes[$attrKey]]=$originalMetaVal;
-                }elseif(count(preg_grep("/\b$metaVal/i",$labels))>0){
-                    $keys=array_keys(preg_grep("/\b$metaVal/i",$labels));
-                    $attrKey=$keys[0];
-                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
-                        $_SESSION['importMap'][$attrKey]=$originalMetaVal;
-                }
-            }
-            foreach($originalAttributes as $attribute){
-                if(in_array($attribute,$processedMeta)){
-                    $metaKey=array_search($attribute,$processedMeta);
-                    $_SESSION['importMap'][$attribute]=$meta[$metaKey];
-                }elseif(count(preg_grep("/\b$attribute/i",$processedMeta))>0){
-                    $matches=preg_grep("/\b$attribute/i",$processedMeta);
-                    $metaKeys=array_keys($matches);
-                    $metaValue=$meta[$metaKeys[0]];
-                    if(!isset($_SESSION['importMap'][$attribute]))
-                        $_SESSION['importMap'][$attribute]=$metaValue;
-                }
-            }
-            
-        }
-		if (isset($_FILES['contacts'])) {
+	public function actionImportExcel() {
+		function createImportMap($attributes,$meta){
+			$originalAttributes=$attributes;
+			$attributes=array_map('strtolower',$attributes);
+			$processedMeta=array_map('strtolower',$meta);
+			$processedMeta=preg_replace('/[\W|_]/','',$processedMeta);
+			$labels=Contacts::model()->attributeLabels();
+			$labels=array_map('strtolower',$labels);
+			$labels=preg_replace('/[\W|_]/','',$labels);
+			foreach($meta as $metaVal){
+				$originalMetaVal=$metaVal;
+				$metaVal=strtolower(preg_replace('/[\W|_]/','',$metaVal));
+				if(in_array($metaVal,$attributes)){
+					$attrKey=array_search($metaVal,$attributes);
+					$_SESSION['importMap'][$originalAttributes[$attrKey]]=$originalMetaVal;
+				}elseif(in_array($metaVal,$labels)){
+					$attrKey=array_search($metaVal,$labels);
+					$_SESSION['importMap'][$attrKey]=$originalMetaVal;
+				}elseif(count(preg_grep("/\b$metaVal/i",$attributes))>0){
+					$keys=array_keys(preg_grep("/\b$metaVal/i",$attributes));
+					$attrKey=$keys[0];
+					if(!isset($_SESSION['importMap'][$originalMetaVal]))
+						$_SESSION['importMap'][$originalAttributes[$attrKey]]=$originalMetaVal;
+				}elseif(count(preg_grep("/\b$metaVal/i",$labels))>0){
+					$keys=array_keys(preg_grep("/\b$metaVal/i",$labels));
+					$attrKey=$keys[0];
+					if(!isset($_SESSION['importMap'][$originalMetaVal]))
+						$_SESSION['importMap'][$attrKey]=$originalMetaVal;
+				}
+			}
+			foreach($originalAttributes as $attribute){
+				if(in_array($attribute,$processedMeta)){
+					$metaKey=array_search($attribute,$processedMeta);
+					$_SESSION['importMap'][$attribute]=$meta[$metaKey];
+				}elseif(count(preg_grep("/\b$attribute/i",$processedMeta))>0){
+					$matches=preg_grep("/\b$attribute/i",$processedMeta);
+					$metaKeys=array_keys($matches);
+					$metaValue=$meta[$metaKeys[0]];
+					if(!isset($_SESSION['importMap'][$attribute]))
+						$_SESSION['importMap'][$attribute]=$metaValue;
+				}
+			}
+			
+		}
+		if(isset($_FILES['contacts'])) {
 			$temp = CUploadedFile::getInstanceByName('contacts');
 			$temp->saveAs('contacts.csv');
-            
-            $fp=fopen('contacts.csv','r+');
-            $meta=fgetcsv($fp);
-            while ("" === end($meta)) {
-                array_pop($meta);
-            }
-            if(count($meta)==1){
-                $version=$meta[0];
-                $meta=fgetcsv($fp);
-            }
-            $_SESSION['offset']=ftell($fp);
-            $_SESSION['metaData']=$meta;
-            $failedContacts=fopen('failedContacts.csv','w+');
-            fputcsv($failedContacts,$meta);
-            fclose($failedContacts);
-            $x2attributes=array_keys(CActiveRecord::model('Contacts')->attributes);
-            while(""===end($x2attributes)){
-                array_pop($x2attributes);
-            }
-            $_SESSION['importMap']=array();
-            $_SESSION['fields']=CActiveRecord::model('Contacts')->getFields(true);
-            $_SESSION['x2attributes']=$x2attributes;
-            
-            createImportMap($x2attributes,$meta);
-            
-            $importMap=$_SESSION['importMap'];
-            $importMap=array_flip($importMap);
-            $sampleRecords=array();
-            for($i=0;$i<5;$i++){
-                if($sampleRecord=fgetcsv($fp)){
-                    if(count($sampleRecord)>count($meta)){
-                        while ("" === end($sampleRecord)) {
-                            array_pop($sampleRecord);
-                        }
-                    }
-                    if(count($sampleRecord)<count($meta)){
-                        while(count($sampleRecord)!=count($meta)){
-                            array_push($sampleRecord,"");
-                        }
-                    }
-                    $sampleRecord=array_combine($meta,$sampleRecord);
-                    $sampleRecords[]=$sampleRecord;
-                }
-            }
-            fclose($fp);
-            $this->render('processContacts',array(
-                'attributes'=>$x2attributes,
-                'meta'=>$meta,
-                'fields'=>$_SESSION['fields'],
-                'sampleRecords'=>$sampleRecords,
-                'importMap'=>$importMap,
-            ));
+			
+			$fp=fopen('contacts.csv','r+');
+			$meta=fgetcsv($fp);
+			while ("" === end($meta)) {
+				array_pop($meta);
+			}
+			if(count($meta)==1){
+				$version=$meta[0];
+				$meta=fgetcsv($fp);
+			}
+			$_SESSION['offset']=ftell($fp);
+			$_SESSION['metaData']=$meta;
+			$failedContacts=fopen('failedContacts.csv','w+');
+			fputcsv($failedContacts,$meta);
+			fclose($failedContacts);
+			$x2attributes=array_keys(CActiveRecord::model('Contacts')->attributes);
+			while(""===end($x2attributes)){
+				array_pop($x2attributes);
+			}
+			$_SESSION['importMap']=array();
+			$_SESSION['fields']=CActiveRecord::model('Contacts')->getFields(true);
+			$_SESSION['x2attributes']=$x2attributes;
+			
+			createImportMap($x2attributes,$meta);
+			
+			$importMap=$_SESSION['importMap'];
+			$importMap=array_flip($importMap);
+			$sampleRecords=array();
+			for($i=0;$i<5;$i++){
+				if($sampleRecord=fgetcsv($fp)){
+					if(count($sampleRecord)>count($meta)){
+						while ("" === end($sampleRecord)) {
+							array_pop($sampleRecord);
+						}
+					}
+					if(count($sampleRecord)<count($meta)){
+						while(count($sampleRecord)!=count($meta)){
+							array_push($sampleRecord,"");
+						}
+					}
+					$sampleRecord=array_combine($meta,$sampleRecord);
+					$sampleRecords[]=$sampleRecord;
+				}
+			}
+			fclose($fp);
+			$this->render('processContacts',array(
+				'attributes'=>$x2attributes,
+				'meta'=>$meta,
+				'fields'=>$_SESSION['fields'],
+				'sampleRecords'=>$sampleRecords,
+				'importMap'=>$importMap,
+			));
 		}else{
-            $this->render('importExcel');
-        }
+			$this->render('importExcel');
+		}
 	}
-    
-    public function actionPrepareImport(){
-        if(isset($_POST['attributes']) && isset($_POST['keys'])){
-            $keys=$_POST['keys'];
-            $attributes=$_POST['attributes'];
-            $_SESSION['tags']=array();
-            if(isset($_POST['tags']) && !empty($_POST['tags'])){
-                $tags=explode(',',$_POST['tags']);
-                foreach($tags as $tag){
-                    if(substr($tag,0,1)!="#")
-                        $tag="#".$tag;
-                    $_SESSION['tags'][]=$tag;
-                }
-            }
-            $_SESSION['override']=array();
-            if(isset($_POST['forcedAttributes']) && isset($_POST['forcedValues'])){
-                $override=array_combine($_POST['forcedAttributes'],$_POST['forcedValues']);
-                $_SESSION['override']=$override;
-            }
-            $_SESSION['comment']="";
-            if(isset($_POST['comment']) && !empty($_POST['comment'])){
-                $_SESSION['comment']=$_POST['comment'];
-            }
-            $_SESSION['leadRouting']=0;
-            if(isset($_POST['routing']) && $_POST['routing']==1){
-                $_SESSION['leadRouting']=1;
-            }
-            $criteria=new CDbCriteria;
-            $criteria->order="importId DESC";
-            $criteria->limit=1;
-            $import=Imports::model()->find($criteria);
-            if(isset($import)){
-                $_SESSION['importId']=$import->importId+1;
-            }else{
-                $_SESSION['importId']=1;
-            }
-            $_SESSION['createRecords']=$_POST['createRecords']=="checked"?"1":"0";
-            $_SESSION['imported']=0;
-            $_SESSION['failed']=0;
-            $_SESSION['created']=array();
-            $importMap=array_combine($keys,$attributes);
-            foreach($importMap as $key=>&$value){
-                $key=$this->deCamelCase($key);
-                $key=preg_replace('/\[W|_]/',' ',$key);
-                $key=mb_convert_case($key,MB_CASE_TITLE,"UTF-8");
-                $key=preg_replace('/\W/','',$key);
-                if($value=='createNew'){
-                    $fieldLookup=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$key));
-                    if(isset($fieldLookup)){
-                        echo "2 ".$key;
-                        break;
-                    }else{
-                        $columnName=strtolower($key);
-                        $field=new Fields;
-                        $field->modelName="Contacts";
-                        $field->type="varchar";
-                        $field->fieldName=$columnName;
-                        $field->required=0;
-                        $field->searchable=1;
-                        $field->relevance="Medium";
-                        $field->custom=1;
-                        $field->modified=1;
-                        $field->attributeLabel=$field->generateAttributeLabel($key);
-                        if($field->save()){
-                            $fieldType="VARCHAR(250)";
-                            $sql = "ALTER TABLE x2_contacts ADD COLUMN $columnName $fieldType";
-                            $command = Yii::app()->db->createCommand($sql);
-                            $result = $command->query();
-                            $value=$columnName;
-                        }
-                    }
-                }
-            }
-            $_SESSION['importMap']=$importMap;
-            $cache = Yii::app()->cache;
-            if (isset($cache)){
-                $cache->flush();
-            }
-        }
-    }
-    
-    public function actionCleanUpImport(){
-        unset($_SESSION['tags']);
-        unset($_SESSION['override']);
-        unset($_SESSION['comment']);
-        unset($_SESSION['leadRouting']);
-        unset($_SESSION['createRecords']);
-        unset($_SESSION['imported']);
-        unset($_SESSION['failed']);
-        unset($_SESSION['created']);
-        unset($_SESSION['importMap']);
-        unset($_SESSION['offset']);
-        unset($_SESSION['metaData']);
-        unset($_SESSION['fields']);
-        unset($_SESSION['x2attributes']);
-        if(file_exists('contacts.csv')){
-            unlink('contacts.csv');
-        }
-    }
-    
+	
+	public function actionPrepareImport(){
+		if(isset($_POST['attributes']) && isset($_POST['keys'])){
+			$keys=$_POST['keys'];
+			$attributes=$_POST['attributes'];
+			$_SESSION['tags']=array();
+			if(isset($_POST['tags']) && !empty($_POST['tags'])){
+				$tags=explode(',',$_POST['tags']);
+				foreach($tags as $tag){
+					if(substr($tag,0,1)!="#")
+						$tag="#".$tag;
+					$_SESSION['tags'][]=$tag;
+				}
+			}
+			$_SESSION['override']=array();
+			if(isset($_POST['forcedAttributes']) && isset($_POST['forcedValues'])){
+				$override=array_combine($_POST['forcedAttributes'],$_POST['forcedValues']);
+				$_SESSION['override']=$override;
+			}
+			$_SESSION['comment']="";
+			if(isset($_POST['comment']) && !empty($_POST['comment'])){
+				$_SESSION['comment']=$_POST['comment'];
+			}
+			$_SESSION['leadRouting']=0;
+			if(isset($_POST['routing']) && $_POST['routing']==1){
+				$_SESSION['leadRouting']=1;
+			}
+			$criteria=new CDbCriteria;
+			$criteria->order="importId DESC";
+			$criteria->limit=1;
+			$import=Imports::model()->find($criteria);
+			if(isset($import)){
+				$_SESSION['importId']=$import->importId+1;
+			}else{
+				$_SESSION['importId']=1;
+			}
+			$_SESSION['createRecords']=$_POST['createRecords']=="checked"?"1":"0";
+			$_SESSION['imported']=0;
+			$_SESSION['failed']=0;
+			$_SESSION['created']=array();
+			$importMap=array_combine($keys,$attributes);
+			foreach($importMap as $key=>&$value){
+				$key=$this->deCamelCase($key);
+				$key=preg_replace('/\[W|_]/',' ',$key);
+				$key=mb_convert_case($key,MB_CASE_TITLE,"UTF-8");
+				$key=preg_replace('/\W/','',$key);
+				if($value=='createNew'){
+					$fieldLookup=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$key));
+					if(isset($fieldLookup)){
+						echo "2 ".$key;
+						break;
+					}else{
+						$columnName=strtolower($key);
+						$field=new Fields;
+						$field->modelName="Contacts";
+						$field->type="varchar";
+						$field->fieldName=$columnName;
+						$field->required=0;
+						$field->searchable=1;
+						$field->relevance="Medium";
+						$field->custom=1;
+						$field->modified=1;
+						$field->attributeLabel=$field->generateAttributeLabel($key);
+						if($field->save()){
+							$fieldType="VARCHAR(250)";
+							$sql = "ALTER TABLE x2_contacts ADD COLUMN $columnName $fieldType";
+							$command = Yii::app()->db->createCommand($sql);
+							$result = $command->query();
+							$value=$columnName;
+						}
+					}
+				}
+			}
+			$_SESSION['importMap']=$importMap;
+			$cache = Yii::app()->cache;
+			if (isset($cache)){
+				$cache->flush();
+			}
+		}
+	}
+	
+	public function actionCleanUpImport(){
+		unset($_SESSION['tags']);
+		unset($_SESSION['override']);
+		unset($_SESSION['comment']);
+		unset($_SESSION['leadRouting']);
+		unset($_SESSION['createRecords']);
+		unset($_SESSION['imported']);
+		unset($_SESSION['failed']);
+		unset($_SESSION['created']);
+		unset($_SESSION['importMap']);
+		unset($_SESSION['offset']);
+		unset($_SESSION['metaData']);
+		unset($_SESSION['fields']);
+		unset($_SESSION['x2attributes']);
+		if(file_exists('contacts.csv')){
+			unlink('contacts.csv');
+		}
+	}
+	
 	public function actionImportRecords() {
-        if(isset($_POST['count']) && file_exists('contacts.csv')){
-            $count=$_POST['count'];
-            $metaData = $_SESSION['metaData'];
-            $importMap = $_SESSION['importMap'];
-            $fp = fopen('contacts.csv', 'r+');
-            fseek($fp, $_SESSION['offset']);
-            for($i=0;$i<$count;$i++){
-                $arr = fgetcsv($fp);
-                if ($arr !== false && !is_null($arr)){
-                    if(count($arr)>count($metaData)){
-                        while ("" === end($arr)) {
-                            array_pop($arr);
-                        }
-                    }
-                    if(count($arr)<count($metaData)){
-                        while(count($arr)!=count($metaData)){
-                            array_push($arr,"");
-                        }
-                    }
-                    unset($_POST);
-                    $relationships=array();
-                    $importAttributes=array_combine($metaData,$arr);
-                    $model=new Contacts;
-                    foreach($metaData as $attribute){
-                        if($model->hasAttribute($importMap[$attribute])){
-                            $fieldRecord=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$importMap[$attribute]));
-                            switch($fieldRecord->type){
-                                case "link":
-                                    $className=ucfirst($fieldRecord->linkType);
-                                    if(is_numeric($importAttributes[$attribute])){
-                                        $model->$importMap[$attribute]=$importAttributes[$attribute];
-                                        $relationship=new Relationships;
-                                        $relationship->firstType='Contacts';
-                                        $relationship->secondType=$className;
-                                        $relationship->secondId=$importAttributes[$attribute];
-                                        $relationships[]=$relationship;
-                                    }else{
-                                        $lookup=CActiveRecord::model(ucfirst($fieldRecord->linkType))->findByAttributes(array('name'=>$importAttributes[$attribute]));
-                                        if(isset($lookup)){
-                                            $model->$importMap[$attribute]=$lookup->id;
-                                            $relationship=new Relationships;
-                                            $relationship->firstType='Contacts';
-                                            $relationship->secondType=$className;
-                                            $relationship->secondId=$lookup->id;
-                                            $relationships[]=$relationship;
-                                        }elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords']==1){
-                                            $className=ucfirst($fieldRecord->linkType);
-                                            if(class_exists($className)){
-                                                $lookup = new $className;
-                                                $lookup->name=$importAttributes[$attribute];
-                                                if($lookup->hasAttribute('visibility')){
-                                                    $lookup->visibility=1;
-                                                }
-                                                if($lookup->hasAttribute('description')){
-                                                    $lookup->description="Generated by Contacts import.";
-                                                }
-                                                if($lookup->hasAttribute('createDate')){
-                                                    $lookup->createDate=time();
-                                                }
-                                                if($lookup->save()){
-                                                    if(isset($_SESSION['created'][$className])){
-                                                        $_SESSION['created'][$className]++;
-                                                    }else{
-                                                        $_SESSION['created'][$className]=1;
-                                                    }
-                                                    $model->$importMap[$attribute]=$lookup->id;
-                                                    $relationship=new Relationships;
-                                                    $relationship->firstType='Contacts';
-                                                    $relationship->secondType=$className;
-                                                    $relationship->secondId=$lookup->id;
-                                                    $relationships[]=$relationship;
-                                                }
-                                            }
-                                        }else{
-                                            $model->$importMap[$attribute]=$importAttributes[$attribute];
-                                        }
-                                    }
-                                    break;
-                                case "date":
-                                    if(is_numeric($importAttributes[$attribute])){
-                                        $model->$importMap[$attribute]=$importAttributes[$attribute];
-                                    }elseif(strtotime($importAttributes[$attribute])!==false){
-                                        $model->$importMap[$attribute]=strtotime($importAttributes[$attribute]);
-                                    }else{
-                                    }
-                                    break;
-                                default:
-                                    $model->$importMap[$attribute]=$importAttributes[$attribute];
-                            }
-                            
-                            $_POST[$importMap[$attribute]]=$model->$importMap[$attribute];
-                        }
-                    }
-                    if(empty($model->visibility) && ($model->visibility!==0 || $model->visibility!=="0"))
-                        $model->visibility=1;
-                    if(empty($model->createDate)){
-                        $model->createDate=time();
-                    }
-                    if(empty($model->lastUpdated)){
-                        $model->lastUpdated=time();
-                    }
-                    if(empty($model->lastActivity)){
-                        $model->lastActivity=time();
-                    }
-                    if($_SESSION['leadRouting']==1){
-                        $assignee = $this->getNextAssignee();
-                        if ($assignee == "Anyone")
-                            $assignee = "";
-                        $model->assignedTo=$assignee;
-                    }
-                    foreach($_SESSION['override'] as $attr=>$val){
-                        $model->$attr=$val;
-                    }
-                    if($model->validate()){
-                        if(!empty($model->id)){
-                            $lookup=Contacts::model()->findByPk($model->id);
-                            if(isset($lookup)){
-                                Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$lookup->id));
-                                Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$lookup->id));
-                                $lookup->delete();
-                                unset($lookup);
-                            }
-                        }
-                        if($model->save()){
-                            $importLink=new Imports;
-                            $importLink->modelType="Contacts";
-                            $importLink->modelId=$model->id;
-                            $importLink->importId=$_SESSION['importId'];
-                            $importLink->timestamp=time();
-                            $importLink->save();
-                            $_SESSION['imported']++;
-                            foreach($relationships as $relationship){
-                                $relationship->firstId=$model->id;
-                                if($relationship->save()){
-                                    $importLink=new Imports;
-                                    $importLink->modelType=$relationship->secondType;
-                                    $importLink->modelId=$relationship->secondId;
-                                    $importLink->importId=$_SESSION['importId'];
-                                    $importLink->timestamp=time();
-                                    $importLink->save(); 
-                                }
-                            }
-                            foreach($_SESSION['tags'] as $tag){
-                                $tagModel = new Tags;
-                                $tagModel->taggedBy = 'Import';
-                                $tagModel->timestamp = time();
-                                $tagModel->type = 'Contacts';
-                                $tagModel->itemId = $model->id;
-                                $tagModel->tag = $tag;
-                                $tagModel->itemName = $model->name;
-                                $tagModel->save();
-                            }
-                            if(!empty($_SESSION['comment'])){
-                                $action=new Actions;
-                                $action->associationType="Contacts";
-                                $action->associationId=$model->id;
-                                $action->actionDescription=$_SESSION['comment'];
-                                $action->createDate=time();
-                                $action->updatedBy=Yii::app()->user->getName();
-                                $action->lastUpdated=time();
-                                $action->complete="Yes";
-                                $action->completeDate=time();
-                                $action->completedBy=Yii::app()->user->getName();
-                                $action->type="note";
-                                $action->visibility=1;
-                                $action->reminder="No";
-                                $action->priority="Low";
-                                if($action->save()){
-                                    $importLink=new Imports;
-                                    $importLink->modelType="Actions";
-                                    $importLink->modelId=$action->id;
-                                    $importLink->importId=$_SESSION['importId'];
-                                    $importLink->timestamp=time();
-                                    $importLink->save();
-                                }
-                            }
-                        }
-                    }else{
-                        $failedContacts=fopen('failedContacts.csv','a+');
-                        fputcsv($failedContacts,$arr);
-                        fclose($failedContacts);
-                        $_SESSION['failed']++;
-                    }
-                }else{
-                    echo json_encode(array(
-                        '1',
-                        $_SESSION['imported'],
-                        $_SESSION['failed'],
-                        json_encode($_SESSION['created']),
-                    ));
-                    return;
-                }
-            }
-            $_SESSION['offset']=ftell($fp);
-            echo json_encode(array(
-                '0',
-                $_SESSION['imported'],
-                $_SESSION['failed'],
-                json_encode($_SESSION['created']),
-            ));
-        }
+		if(isset($_POST['count']) && file_exists('contacts.csv')){
+			$count=$_POST['count'];
+			$metaData = $_SESSION['metaData'];
+			$importMap = $_SESSION['importMap'];
+			$fp = fopen('contacts.csv', 'r+');
+			fseek($fp, $_SESSION['offset']);
+			for($i=0;$i<$count;$i++){
+				$arr = fgetcsv($fp);
+				if ($arr !== false && !is_null($arr)){
+					if(count($arr)>count($metaData)){
+						while ("" === end($arr)) {
+							array_pop($arr);
+						}
+					}
+					if(count($arr)<count($metaData)){
+						while(count($arr)!=count($metaData)){
+							array_push($arr,"");
+						}
+					}
+					unset($_POST);
+					$relationships=array();
+					$importAttributes=array_combine($metaData,$arr);
+					$model=new Contacts;
+					foreach($metaData as $attribute){
+						if($model->hasAttribute($importMap[$attribute])){
+							$fieldRecord=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$importMap[$attribute]));
+							switch($fieldRecord->type){
+								case "link":
+									$className=ucfirst($fieldRecord->linkType);
+									if(is_numeric($importAttributes[$attribute])){
+										$model->$importMap[$attribute]=$importAttributes[$attribute];
+										$relationship=new Relationships;
+										$relationship->firstType='Contacts';
+										$relationship->secondType=$className;
+										$relationship->secondId=$importAttributes[$attribute];
+										$relationships[]=$relationship;
+									}else{
+										$lookup=CActiveRecord::model(ucfirst($fieldRecord->linkType))->findByAttributes(array('name'=>$importAttributes[$attribute]));
+										if(isset($lookup)){
+											$model->$importMap[$attribute]=$lookup->id;
+											$relationship=new Relationships;
+											$relationship->firstType='Contacts';
+											$relationship->secondType=$className;
+											$relationship->secondId=$lookup->id;
+											$relationships[]=$relationship;
+										}elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords']==1){
+											$className=ucfirst($fieldRecord->linkType);
+											if(class_exists($className)){
+												$lookup = new $className;
+												$lookup->name=$importAttributes[$attribute];
+												if($lookup->hasAttribute('visibility')){
+													$lookup->visibility=1;
+												}
+												if($lookup->hasAttribute('description')){
+													$lookup->description="Generated by Contacts import.";
+												}
+												if($lookup->hasAttribute('createDate')){
+													$lookup->createDate=time();
+												}
+												if($lookup->save()){
+													if(isset($_SESSION['created'][$className])){
+														$_SESSION['created'][$className]++;
+													}else{
+														$_SESSION['created'][$className]=1;
+													}
+													$model->$importMap[$attribute]=$lookup->id;
+													$relationship=new Relationships;
+													$relationship->firstType='Contacts';
+													$relationship->secondType=$className;
+													$relationship->secondId=$lookup->id;
+													$relationships[]=$relationship;
+												}
+											}
+										}else{
+											$model->$importMap[$attribute]=$importAttributes[$attribute];
+										}
+									}
+									break;
+								case "date":
+									if(is_numeric($importAttributes[$attribute])){
+										$model->$importMap[$attribute]=$importAttributes[$attribute];
+									}elseif(strtotime($importAttributes[$attribute])!==false){
+										$model->$importMap[$attribute]=strtotime($importAttributes[$attribute]);
+									}else{
+									}
+									break;
+								default:
+									$model->$importMap[$attribute]=$importAttributes[$attribute];
+							}
+							
+							$_POST[$importMap[$attribute]]=$model->$importMap[$attribute];
+						}
+					}
+					if(empty($model->visibility) && ($model->visibility!==0 || $model->visibility!=="0"))
+						$model->visibility=1;
+					if(empty($model->createDate)){
+						$model->createDate=time();
+					}
+					if(empty($model->lastUpdated)){
+						$model->lastUpdated=time();
+					}
+					if(empty($model->lastActivity)){
+						$model->lastActivity=time();
+					}
+					if($_SESSION['leadRouting']==1){
+						$assignee = $this->getNextAssignee();
+						if ($assignee == "Anyone")
+							$assignee = "";
+						$model->assignedTo=$assignee;
+					}
+					foreach($_SESSION['override'] as $attr=>$val){
+						$model->$attr=$val;
+					}
+					if($model->validate()){
+						if(!empty($model->id)){
+							$lookup=Contacts::model()->findByPk($model->id);
+							if(isset($lookup)){
+								Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$lookup->id));
+								Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$lookup->id));
+								$lookup->delete();
+								unset($lookup);
+							}
+						}
+						if($model->save()){
+							$importLink=new Imports;
+							$importLink->modelType="Contacts";
+							$importLink->modelId=$model->id;
+							$importLink->importId=$_SESSION['importId'];
+							$importLink->timestamp=time();
+							$importLink->save();
+							$_SESSION['imported']++;
+							foreach($relationships as $relationship){
+								$relationship->firstId=$model->id;
+								if($relationship->save()){
+									$importLink=new Imports;
+									$importLink->modelType=$relationship->secondType;
+									$importLink->modelId=$relationship->secondId;
+									$importLink->importId=$_SESSION['importId'];
+									$importLink->timestamp=time();
+									$importLink->save(); 
+								}
+							}
+							foreach($_SESSION['tags'] as $tag){
+								$tagModel = new Tags;
+								$tagModel->taggedBy = 'Import';
+								$tagModel->timestamp = time();
+								$tagModel->type = 'Contacts';
+								$tagModel->itemId = $model->id;
+								$tagModel->tag = $tag;
+								$tagModel->itemName = $model->name;
+								$tagModel->save();
+							}
+							if(!empty($_SESSION['comment'])){
+								$action=new Actions;
+								$action->associationType="Contacts";
+								$action->associationId=$model->id;
+								$action->actionDescription=$_SESSION['comment'];
+								$action->createDate=time();
+								$action->updatedBy=Yii::app()->user->getName();
+								$action->lastUpdated=time();
+								$action->complete="Yes";
+								$action->completeDate=time();
+								$action->completedBy=Yii::app()->user->getName();
+								$action->type="note";
+								$action->visibility=1;
+								$action->reminder="No";
+								$action->priority="Low";
+								if($action->save()){
+									$importLink=new Imports;
+									$importLink->modelType="Actions";
+									$importLink->modelId=$action->id;
+									$importLink->importId=$_SESSION['importId'];
+									$importLink->timestamp=time();
+									$importLink->save();
+								}
+							}
+						}
+					}else{
+						$failedContacts=fopen('failedContacts.csv','a+');
+						fputcsv($failedContacts,$arr);
+						fclose($failedContacts);
+						$_SESSION['failed']++;
+					}
+				}else{
+					echo json_encode(array(
+						'1',
+						$_SESSION['imported'],
+						$_SESSION['failed'],
+						json_encode($_SESSION['created']),
+					));
+					return;
+				}
+			}
+			$_SESSION['offset']=ftell($fp);
+			echo json_encode(array(
+				'0',
+				$_SESSION['imported'],
+				$_SESSION['failed'],
+				json_encode($_SESSION['created']),
+			));
+		}
 	}
 
 	public function actionExport() {
@@ -1940,13 +1964,13 @@ class ContactsController extends x2base {
 		ini_set('memory_limit', -1);
 		$contacts = CActiveRecord::model('Contacts')->findAll();
 		$list = array(array_keys($contacts[0]->attributes));
-		foreach ($contacts as $contact) {
+		foreach($contacts as $contact) {
 			$list[] = $contact->attributes;
 		}
 		$file = 'file.csv';
 		$fp = fopen($file, 'w+');
 
-		foreach ($list as $fields) {
+		foreach($list as $fields) {
 			fputcsv($fp, $fields);
 		}
 
@@ -1968,12 +1992,12 @@ class ContactsController extends x2base {
 
 	public function actionDelete($id) {
 		$model = $this->loadModel($id);
-		if (Yii::app()->request->isPostRequest) {
+		if(Yii::app()->request->isPostRequest) {
 			$dataProvider = new CActiveDataProvider('Actions', array(
 						'criteria' => array('condition' => 'associationId=' . $id . ' AND associationType=\'contacts\'')));
 
 			$actions = $dataProvider->getData();
-			foreach ($actions as $action) {
+			foreach($actions as $action) {
 				$action->delete();
 			}
 			$this->cleanUpTags($model);
@@ -1983,23 +2007,23 @@ class ContactsController extends x2base {
 			throw new CHttpException(400, Yii::t('app', 'Invalid request. Please do not repeat this request again.'));
 
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if (!isset($_GET['ajax']))
+		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
 	public function actionSubscribe() {
-		if (isset($_POST['ContactId']) && isset($_POST['Checked'])) {
+		if(isset($_POST['ContactId']) && isset($_POST['Checked'])) {
 			$id = $_POST['ContactId'];
 
 			$checked = json_decode($_POST['Checked']);
 
-			if ($checked) { // user wants to subscribe to this contact
+			if($checked) { // user wants to subscribe to this contact
 				$result = Yii::app()->db->createCommand()
 						->select()
 						->from('x2_subscribe_contacts')
 						->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $id, 'user_id' => Yii::app()->user->id))
 						->queryAll();
-				if (empty($result)) { // ensure user isn't already subscribed to this contact
+				if(empty($result)) { // ensure user isn't already subscribed to this contact
 					Yii::app()->db->createCommand()->insert('x2_subscribe_contacts', array('contact_id' => $id, 'user_id' => Yii::app()->user->id));
 				}
 			} else { // user wants to unsubscribe to this contact
@@ -2008,7 +2032,7 @@ class ContactsController extends x2base {
 						->from('x2_subscribe_contacts')
 						->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $id, 'user_id' => Yii::app()->user->id))
 						->queryAll();
-				if (!empty($result)) { // ensure user is subscribed before unsubscribing
+				if(!empty($result)) { // ensure user is subscribed before unsubscribing
 					Yii::app()->db->createCommand()->delete('x2_subscribe_contacts', array('contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $id, ':user_id' => Yii::app()->user->id));
 				}
 			}
@@ -2020,25 +2044,25 @@ class ContactsController extends x2base {
 
 		$this->renderPartial('qtip', array('contact' => $contact));
 	}
-    
-    public function actionCleanFailedLeads(){
-        $file = 'failed_leads.csv';
+	
+	public function actionCleanFailedLeads(){
+		$file = 'failed_leads.csv';
 
-        if (file_exists($file)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename='.basename($file));
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            ob_clean();
-            flush();
-            readfile($file);
-            unlink($file);
-        }
-    }
+		if (file_exists($file)) {
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename='.basename($file));
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+			ob_clean();
+			flush();
+			readfile($file);
+			unlink($file);
+		}
+	}
 	
 	
 	public function actionWeblead() {
@@ -2048,14 +2072,14 @@ class ContactsController extends x2base {
 			return;
 		}
 		
-		if (isset($_POST['Contacts'])) {
+		if(isset($_POST['Contacts'])) {
 			$model = new Contacts;
 			$oldAttributes = $model->getAttributes();
 			$model->setX2Fields($_POST['Contacts']);
 			$now = time();
 
 			//require email field, check format
-			if (preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$model->email) == 0) {
+			if(preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$model->email) == 0) {
 				$this->renderPartial('webleadSubmit', array('error'=>Yii::t('contacts','Invalid Email Address')));
 				return;
 			}
@@ -2069,13 +2093,13 @@ class ContactsController extends x2base {
 			//find any existing contacts with the same contact info
 			$criteria = new CDbCriteria();
 			$criteria->compare('email', $model->email, false, "OR");
-			if (!empty($model->phone)) {
+			if(!empty($model->phone)) {
 				$criteria->compare('phone', $model->phone, false, "OR");
 				$criteria->compare('phone2', $model->phone, false, "OR");
 			}
 			$duplicates = $model->findAll($criteria);
 
-			if (count($duplicates) > 0) {
+			if(count($duplicates) > 0) {
 				//use existing record, update background info
 				$backgroundInfo = $model->backgroundInfo;
 				$model = $duplicates[0];

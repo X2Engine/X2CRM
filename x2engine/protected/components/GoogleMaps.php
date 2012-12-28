@@ -84,7 +84,8 @@ class GoogleMaps extends X2Widget {
 						map: window.map,
 						position: results[0].geometry.location
 					});
-                    var content=\'<span><a href="'.CHtml::normalizeUrl('googleMaps?contactId='.$_GET['id']).'">View on Large Map</a></span>\'
+                    var content=\'<span><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">View on Large Map</a>\
+                        <br /><br /><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">View on Heat Map</a></span>\';
                     var infowindow = new google.maps.InfoWindow({
                                 content:content
                             });

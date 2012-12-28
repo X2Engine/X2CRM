@@ -86,7 +86,7 @@ $this->pageTitle = Yii::app()->name . ' - Home';
         'items' => $menuItems
     ));
     //render user menu items if logged in
-    if (!($isGuest || $isAdmin)) {
+    if (!$isGuest) {
         $this->widget('MenuList', array(
             'id' => 'user-menu',
             'items' => $userMenu

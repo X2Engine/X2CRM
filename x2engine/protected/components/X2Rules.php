@@ -60,6 +60,7 @@ class X2Rules {
 
 			Event										Parameters															Response Variables
 			-------------------------------------------------------------------------------------------------------------------------------------------
+			Record - view								model type, model attributes										record, user
 			Record - field change						model type, model attributes, fieldName, comparison type/value		record, old attributes, user
 			Record - edit								model type, model attributes, user									record, user
 			Record - create action						model type, model attributes, user									record, user

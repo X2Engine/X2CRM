@@ -111,6 +111,12 @@
 		<?php echo $form->textArea($model,'notes',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'notes'); ?>
 	</div>
+    
+    <div class="row">
+		<?php echo $form->labelEx($model,'address'); ?>
+		<?php echo $form->textArea($model,'address',array('rows'=>6, 'cols'=>50)); ?>
+		<?php echo $form->error($model,'address'); ?>
+	</div>
 
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>

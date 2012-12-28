@@ -115,7 +115,9 @@ abstract class X2Model extends CActiveRecord {
 			$temp = $phoneCheck->number;
 			return "(" . substr($temp, 0, 3) . ") " . substr($temp, 3, 3) . "-" . substr($temp, 6, 4);
 		} else {
-			return CActiveRecord::model($class)->findByPk($id)->$field;
+			$record=CActiveRecord::model($class)->findByPk($id);
+            if(isset($record))
+                return $record->$field;
 		}
     }
 
@@ -306,9 +308,17 @@ abstract class X2Model extends CActiveRecord {
 				if(empty($this->$fieldName))
 					return ' ';
 				elseif(is_numeric($this->$fieldName))
+					return Yii::app()->controller->formatLongDate($this->$fieldName);
+				else
+					return $this->$fieldName;
+            case 'dateTime':
+				if(empty($this->$fieldName))
+					return ' ';
+				elseif(is_numeric($this->$fieldName))
 					return Actions::formatCompleteDate($this->$fieldName);
 				else
 					return $this->$fieldName;
+
 
 			case 'rating':
 				if($textOnly) {
@@ -316,7 +326,7 @@ abstract class X2Model extends CActiveRecord {
 				} else {
 					return Yii::app()->controller->widget('CStarRating', array(
 						'model' => $this,
-                        'name'=>str_replace(' ','-',addslashes($this->name).'-'.$this->id.'-rating-'.$field->fieldName),
+                        'name'=>str_replace(' ','-',get_class($this).'-'.$this->id.'-rating-'.$field->fieldName),
 						'attribute' => $field->fieldName,
 						'readOnly' => true,
 						'minRating' => 1, //minimal valuez
@@ -480,6 +490,25 @@ abstract class X2Model extends CActiveRecord {
 						'mode' => 'date', //use "time","date" or "datetime" (default)
 						'options' => array(// jquery options
 							'dateFormat' => Yii::app()->controller->formatDatePicker(),
+							'changeMonth' => true,
+							'changeYear' => true,
+						),
+						'htmlOptions' => array_merge(array(
+							'title' => $field->attributeLabel,
+						),$htmlOptions),
+						'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+					),true);
+            case 'dateTime':
+				$this->$fieldName = Yii::app()->controller->formatDateTime($this->$fieldName);
+				Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+				return Yii::app()->controller->widget('CJuiDateTimePicker',
+					array(
+						'model' => $this, //Model object
+						'attribute' => $field->fieldName, //attribute name
+						'mode' => 'datetime', //use "time","date" or "datetime" (default)
+						'options' => array(// jquery options
+							'dateFormat' => Yii::app()->controller->formatDatePicker(),
+                            'timeFormat' => Yii::app()->controller->formatTimePicker(),
 							'changeMonth' => true,
 							'changeYear' => true,
 						),
@@ -762,7 +791,12 @@ abstract class X2Model extends CActiveRecord {
 				if($value === false)
                     $value = null;
 					
-			} elseif($_field->type == 'link' && !empty($_field->linkType)) {
+			}elseif($_field->type=='dateTime'){
+                $value = Yii::app()->controller->parseDateTime($value);
+				if($value === false)
+                    $value = null;
+                
+            }elseif($_field->type == 'link' && !empty($_field->linkType)) {
 				$modelType = ucfirst($_field->linkType);
 
 				if(!empty($value)) {

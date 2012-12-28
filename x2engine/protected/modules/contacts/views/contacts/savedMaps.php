@@ -58,7 +58,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<h2>Saved Maps</h2><div class="title-bar">'
 		.'{summary}</div>{items}{pager}',
-	'dataProvider'=>$dataProvider,
+	'dataProvider'=>$dataProvider, 
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	// 'columns'=>$columns,
@@ -84,6 +84,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'header'=>Yii::t('contacts','Center Coordinates'),
             'type'=>'raw',
             'value'=>'"(".$data->centerLat.", ".$data->centerLng.")"'
+        ),
+        array(
+            'header'=>'Delete Map',
+            'type'=>'raw',
+            'value'=>'CHtml::link("Delete","#",array("submit"=>"deleteMap?id=".$data->id,"confirm"=>"Are you sure you want to delete this map?"))',
         ),
         
     ),

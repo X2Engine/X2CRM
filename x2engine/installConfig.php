@@ -9,6 +9,7 @@ $lang = '';
 $timezone = 'UTC';
 $adminEmail = '';
 $adminPassword = 'admin';
+$adminUsername = 'admin';
 $dummyData = 0;
 $webLeadUrl = '';
 $unique_id = 'none';

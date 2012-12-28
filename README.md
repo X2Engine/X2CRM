@@ -1,6 +1,7 @@
-# X2CRM 2.5 Changelog #
-12/18/2012
+# X2CRM 2.5.2 Changelog #
+12/28/2012
 
+Changes for 2.5:
 * New web tracking system (Professional edition)
 	* Track using a simple embed code on your website
 	* Real time notifications when a contact visits the website
@@ -19,9 +20,14 @@
 * Much more complete sample data
 * Improved page load time on most pages
 * New login page
+New in 2.5.2:
+* Several bug fixes to v2.5 and the now-defunct release 2.5.1, including but not limited to:
+	* Incorrect order/offset in VCR control navigation
+	* Missing attribute errors when editing app settings and user profiles
+	* Miscellaneous errors in the contacts view
 
 # Introduction #
-Welcome to  X2CRM v2.5!
+Welcome to  X2CRM v2.5.2!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

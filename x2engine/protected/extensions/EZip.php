@@ -1,4 +1,4 @@
-<?
+<?php
 class EZip extends CApplicationComponent {
 	public function infosZip ($src, $data=true){
         if (($zip = zip_open(realpath($src))))

@@ -90,7 +90,7 @@ abstract class x2base extends X2Controller {
 		$auth = Yii::app()->authManager;
 		$params = array();
 		$action = $this->getAction()->getId();
-		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','addComment');
+		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','addComment','deletePost');
 
 		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest) {
 			if (method_exists($this, 'loadModel')) {
@@ -1211,11 +1211,11 @@ abstract class x2base extends X2Controller {
         $filterChain->run();
     }
 
-    /**
-     * Obtain the IP address of the current web client.
-     * @return string
-     */
-    function getRealIp() {
+	/**
+	 * Obtain the IP address of the current web client.
+	 * @return string
+	 */
+	function getRealIp() {
 		foreach(array(
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
@@ -1234,9 +1234,8 @@ abstract class x2base extends X2Controller {
 			}
 		}
 		return false;
-    }
-    
-    
+	}
+
 
     // This function needs to be made in your extensions of the class with similar code. 
     // Replace "Opportunities" with the Model being used.

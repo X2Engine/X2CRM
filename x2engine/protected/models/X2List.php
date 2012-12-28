@@ -335,6 +335,77 @@ class X2List extends CActiveRecord {
 	}
 
 	/**
+	 * Generates an array of links for the VCR controls based on the specified dataprovider and current ID
+	 * @param CActiveDataProvider $dataProvider the data provider of the most recent gridview
+	 * @param Integer $id the ID of the current record
+	 * @return Array array of VCR links and stats
+	 */
+	public static function getVcrLinks(&$dataProvider,$modelId) {
+		$criteria = $dataProvider->criteria;
+		
+		$tableSchema = CActiveRecord::model($dataProvider->modelClass)->getTableSchema();
+		if($tableSchema === null)
+			return false;
+		
+		// for the first query we only care about the record's ID
+		$criteria->select = 'id';
+		$searchConditions = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->getText();
+        $table=$tableSchema->name;
+        $condition=$criteria->condition;
+        $order=$criteria->order;
+        $criteriaString="";
+        if(!empty($condition)){
+            $criteriaString.=" WHERE ".$condition;
+        }
+        if(!empty($order)){
+            $criteriaString.=" ORDER BY ".$order;
+        }
+		// figure out which row the current record is (0-indexed), using whatever crazy filters and sorts were on last gridview
+		$rowNumber = Yii::app()->db->createCommand(
+			'SELECT r-1  FROM (SELECT *,@rownum:=@rownum + 1 AS r FROM '.$table.' t, (SELECT @rownum:=0) r '.$criteriaString.') d WHERE d.id='.$modelId
+		);
+        $rowNumber->params=$criteria->params;
+        $rowNumber=$rowNumber->queryScalar();
+		
+		if($rowNumber === false) {	// the specified record isn't in this list
+			return false;
+		} else {
+			
+			$criteria->select = '*';	// need to select everything to be sure ORDER BY will work
+			
+			if($rowNumber == 0) {	// if we're on the first row, get 2 items, otherwise get 3
+				$criteria->offset = 0;
+				$criteria->limit = 2;
+				$vcrIndex = 0;
+			} else {
+				$criteria->offset = $rowNumber - 1;
+				$criteria->limit = 3;
+				$vcrIndex = 1;		// index of current record in $vcrModels
+			}
+			
+			$vcrModels = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->queryAll();
+			$count = $dataProvider->getTotalItemCount();
+			
+			$vcrData = array();
+			$vcrData['index'] = $rowNumber + 1;
+			$vcrData['count'] = $dataProvider->getTotalItemCount();
+			
+			if($vcrIndex > 0)		// there's a record before the current one
+				$vcrData['prev'] = '<li class="prev">'.CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button')).'</li>';
+			else
+				$vcrData['prev'] = '<li class="prev">'.CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
+			
+			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
+				$vcrData['next'] = '<li class="next">'.CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button')).'</li>';
+			else
+				$vcrData['next'] = '<li class="next">'.CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
+
+			return $vcrData;
+		}
+		
+	}
+
+	/**
 	 * Returns an array data provider for all models in the list,
 	 * including the list_item status columns
 	 * @return CSqlDataProvider

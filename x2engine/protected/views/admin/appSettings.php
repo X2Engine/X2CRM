@@ -125,6 +125,11 @@ $('#timeout').change(function() {
 	<?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?>
 	<?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
     </div><br>
+    <div class="form">
+        <?php echo $form->labelEx($model,'corporateAddress'); ?>
+        <?php echo Yii::t('admin','Enter your corporate address to enable directions on the Google Maps widget.') ?>
+        <?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress','style'=>'height:100px;')); ?> 
+    </div>
 
     <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
     <?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n"; ?>

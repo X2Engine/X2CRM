@@ -270,8 +270,8 @@ return array(
 			'username' => $user,
 			'password' => $pass,
 			'charset' => 'utf8',
-			'enableProfiling'=>true,
-            'enableParamLogging' => true,
+			// 'enableProfiling'=>true,
+            // 'enableParamLogging' => true,
 			'schemaCachingDuration'=>84600
 		),
 		'authManager'=>array(

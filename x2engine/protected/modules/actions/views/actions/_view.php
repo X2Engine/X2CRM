@@ -143,7 +143,7 @@ if(empty($data->type)) {
 				}
 			}
 			if ($data->type != 'workflow'){
-				echo $data->type!='attachment'?' '.CHtml::link('['.Yii::t('actions','Update').']',array('/actions/actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
+				echo $data->type!='attachment'?' '.CHtml::link('['.Yii::t('actions','Edit').']',array('/actions/actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
 				echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
 			}
 			?>

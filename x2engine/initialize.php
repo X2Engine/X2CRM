@@ -63,6 +63,7 @@ $confKeys = array(
 	'currency',
 	'currency2',
 	'language',
+	'adminUsername',
 	'adminEmail',
 	'adminPass',
 	'adminPass2',
@@ -93,6 +94,7 @@ $returnKeys = array(
 	'currency',
 	'currency2',
 	'language',
+	'adminUsername',
 	'adminEmail',
 	'dummy_data',
 	'receiveUpdates',
@@ -103,6 +105,7 @@ $returnKeys = array(
 // and be present in protected/data/config.sql
 $dbKeys = array(
 	'adminEmail',
+	'adminUsername',
 	'adminPass',
 	'apiKey',
 	'currency',
@@ -113,7 +116,7 @@ $dbKeys = array(
 	'language',
 	'timezone'
 );
-// Values gathered for statistical purposes:
+// Values gathered for statistical/anonymous survey purposes:
 $sendArgs = array(
 	'language',
 	'currency',
@@ -537,7 +540,18 @@ function installModule($module, $respond = True) {
  */
 function installStage($stage) {
 	global $editions, $silent, $dbo, $config, $dbConfig, $stageLabels, $response, $write, $X2Config, $enabledModules,$dateFields,$noDelPat;
+	
 	if ($stage == 'validate') {
+		if ($config['dummy_data'] == 1 && $config['adminUsername'] != 'admin')
+			addValidationError('adminUsername','Cannot change administrator username if installing with sample data.');
+		else {
+			if (empty($config['adminUsername']))
+				addValidationError('adminUsername', 'Admin username cannot be blank.');
+			elseif (is_int(strpos($config['adminUsername'], "'")))
+				addValidationError('adminUsername', 'Admin username cannot contain apostrophes');
+			elseif (preg_match('/^\d+$/', $config['adminUsername']))
+				addValidationError('adminUsername', 'Admin username must contain at least one non-numeric character.');
+		}
 		if (empty($config['adminEmail']) || !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i', $config['adminEmail']))
 			addValidationError('adminEmail', 'Please enter a valid email address.');
 		if ($_POST['adminPass'] == '')

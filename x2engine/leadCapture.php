@@ -70,7 +70,7 @@ if($ccResult!="No Item found with specified attributes."){
 		$oldInfo=substr($oldInfo[1],1,-1);
 		$pieces=explode(":",$pieces[0]);
 		$id=substr($pieces[1],1,-1);
-		$newInfo=$oldInfo."\n\n".$info;
+		$newInfo=$oldInfo."\n\n".$_POST['backgroundInfo'];
 		 
 		$ccUrl = 'http://'.$url.'/index.php/api/update/model/Contacts/id/'.$id;
 		$ccSession = curl_init($ccUrl);

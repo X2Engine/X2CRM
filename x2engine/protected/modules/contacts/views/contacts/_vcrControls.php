@@ -39,15 +39,17 @@
  ********************************************************************************/
 
 $listId = Yii::app()->user->getState('vcr-list');
-if (empty($listId)) $listId = 'index';
+if(empty($listId))
+	$listId = 'index';
+
 $vcrControls = array();
 $searchModel = new Contacts('search');
 
 //listId should be either a number (for a list), 'index', or 'admin'
 //convert numbers to list/# for uniform url path
-if (is_numeric($listId)) 
-	$path = 'list/' . $listId;
-else
+if(is_numeric($listId)){
+	$path = $this->createUrl('list',array('id'=>$listId));
+}else
 	$path = $listId;
 
 //try to get the saved sort and filters from the session if applicable
@@ -60,82 +62,59 @@ $order = preg_replace('/\.desc$/', ' DESC', $order);
 
 //look up all ids of the list we are currently viewing
 //find position of model in the list
-if (is_numeric($listId)) {
+
+
+// decide which data provider to use
+if(is_numeric($listId)) {
 	$list = CActiveRecord::model('X2List')->findByPk($listId);
 	$listLink = CHtml::link($list->name,$path);
-	$dataProvider = $searchModel->searchList($listId);
-	$criteria = $dataProvider->criteria;
-	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
-	if (!empty($order)) $criteria->order = $order;
-	$tableSchema = Contacts::model()->getTableSchema();
-	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
-	$thisIndex = current(array_keys($ids, $model->id));
+	$vcrDataProvider = $searchModel->searchList($listId);
+} elseif($listId=='myContacts') {
+	$listLink = CHtml::link(Yii::t('contacts','My Contacts'),array('/contacts/'.$path));
+	$vcrDataProvider = $searchModel->searchMyContacts();
+} elseif($listId=='newContacts') {
+	$listLink = CHtml::link(Yii::t('contacts','New Contacts'),array('/contacts/'.$path));
+	$vcrDataProvider = $searchModel->searchNewContacts();
+} else {
+	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));	// default to All Contacts
+	$vcrDataProvider = $searchModel->searchAll();
 }
-if($listId=='myContacts'){
-    $listLink = CHtml::link(Yii::t('contacts','My Contacts'),$path);
-	$dataProvider = $searchModel->searchMyContacts();
-	$criteria = $dataProvider->criteria;
-	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
-	if (!empty($order)) $criteria->order = $order;
-	$tableSchema = Contacts::model()->getTableSchema();
-    $criteria->compare('assignedTo',Yii::app()->user->getName());
-	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
-	$thisIndex = current(array_keys($ids, $model->id));
-}
-if($listId=='newContacts'){
-    $listLink = CHtml::link(Yii::t('contacts','New Contacts'),$path);
-	$dataProvider = $searchModel->searchNewContacts();
-	$criteria = $dataProvider->criteria;
-	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
-	if (!empty($order)) $criteria->order = $order;
-	$tableSchema = Contacts::model()->getTableSchema();
-    $criteria->compare('assignedTo',Yii::app()->user->getName());
-    $criteria->compare('createDate','>'.mktime(0,0,0));
-	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
-	$thisIndex = current(array_keys($ids, $model->id));
-}
- 
-//if no list, or model is not in specified list
-//use default all contacts list
-if ((!is_numeric($listId) || $thisIndex === false) && $listId!='myContacts' && $listId!='newContacts') {
-	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),$path);
-	$dataProvider = $searchModel->searchAll();
-	$criteria = $dataProvider->criteria;
-	if (empty($order)) $order = $dataProvider->sort->getOrderBy();
-	if (!empty($order)) $criteria->order = $order;
-	$tableSchema = Contacts::model()->getTableSchema();
-	$ids = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema, $criteria)->select('id')->queryColumn();
-	$thisIndex = current(array_keys($ids, $model->id));
+if(empty($order))
+	$order = $vcrDataProvider->sort->getOrderBy();
+if(!empty($order))
+	$vcrDataProvider->criteria->order = $order;
+
+// run SQL to get VCR links
+$vcrData = X2List::getVcrLinks($vcrDataProvider,$model->id);
+
+// if this contact isn't on the list, default to All Contacts (unless we already tried that)
+if($vcrData === false && $listId !== 'index') {
+	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));
+	$vcrDataProvider = $searchModel->searchAll();
+	
+	if(empty($order))
+		$order = $vcrDataProvider->sort->getOrderBy();
+	if(!empty($order))
+		$vcrDataProvider->criteria->order = $order;
+    
+	
+	$vcrData = X2List::getVcrLinks($vcrDataProvider,$model->id);
 }
 
-//back to where we came from button
-// $vcrControls['back'] = '<li class="back">'.CHtml::link(Yii::t('app','Back'),array($path),array('class'=>'x2-button')).'</li>';
+if(is_array($vcrData) && count($vcrData)) {
 
-if ($thisIndex !== false) {
-	if ($thisIndex > 0) {
-		// $vcrControls['first'] = '<li class="first">'.CHtml::link('<<', array("view","id"=>$ids[0]), array('class'=>'x2-button')).'</li>';
-		$vcrControls['prev'] = '<li class="prev">'.CHtml::link('<',array("view","id"=>$ids[$thisIndex-1]), array('class'=>'x2-button')).'</li>';
-	} else {
-		//same looking buttons but disabled
-		// $vcrControls['first'] = '<li class="first">'.CHtml::link('<<','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
-		$vcrControls['prev'] = '<li class="prev">'.CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
-	}
-	if ($thisIndex < count($ids)-1) {
-		$vcrControls['next'] = '<li class="next">'.CHtml::link('>', array("view","id"=>$ids[$thisIndex+1]), array('class'=>'x2-button')).'</li>';
-		// $vcrControls['last'] = '<li class="last">'.CHtml::link('>>', array("view","id"=>$ids[count($ids)-1]), array('class'=>'x2-button')).'</li>';
-	} else {
-		//same looking buttons but disabled
-		$vcrControls['next'] = '<li class="next">'.CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
-		// $vcrControls['last'] = '<li class="last">'.CHtml::link('>>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
-	}
-}
+	// if(isset($vcrData['prev']))
+		// $vcrControls['prev'] = $vcrData['prev'];
+	// if(isset($vcrData['next']))
+		// $vcrControls['next'] = $vcrData['next'];
 ?>
-
-<?php if (count($vcrControls) > 0) { ?>
-	<div class="vcrPager">
-		<div class="summary">
+<div class="vcrPager">
+	<div class="summary">
 		<?php if(isset($listLink)) echo $listLink; ?>
-		<b><?php echo $thisIndex+1; ?></b> of <b><?php echo count($ids); ?></b></div>
-		<?php echo CHtml::tag('ul',array('class'=>'vcrPager'),implode("\n",$vcrControls)); ?>
+		<?php echo Yii::t('app','<b>{m}</b> of <b>{n}</b>',array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])); ?>
 	</div>
-<?php } ?>
+	<?php echo CHtml::tag('ul',array('class'=>'vcrPager'),$vcrData['prev']."\n".$vcrData['next']); ?>
+</div>
+<?php
+
+}

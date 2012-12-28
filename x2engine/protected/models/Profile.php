@@ -438,7 +438,9 @@ class Profile extends CActiveRecord {
 					
 					$event = new Google_Event();
 					$event->setSummary($summary);
-					
+					if(empty($action->dueDate)){
+                        $action->dueDate=time();
+                    }
 					if($action->allDay) {
 						$start = new Google_EventDateTime();
 						$start->setDate(date('Y-m-d', $action->dueDate));

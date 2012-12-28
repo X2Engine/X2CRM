@@ -169,233 +169,218 @@ class SiteController extends MobileController {
 	}
 	
 
-    /**
-     * This is the default 'index' action that is invoked
-     * when an action is not explicitly requested by users.
-     */
-    public function actionIndex() {
-        $user = Yii::app()->user;
-        if ($user == null || $user->isGuest)
+	/**
+	 * This is the default 'index' action that is invoked
+	 * when an action is not explicitly requested by users.
+	 */
+	public function actionIndex() {
+		$user = Yii::app()->user;
+		if ($user == null || $user->isGuest)
 //            $this->render('index');
-            $this->redirect($this->createUrl('site/login/'));
-        else
-            $this->redirect($this->createUrl('site/home/'));
-    }
-    
-    public function actionMore(){
-        $user = Yii::app()->user;
-        if ($user == null || $user->isGuest)
-//            $this->render('index');
-            $this->redirect($this->createUrl('site/login/'));
-        else
-            $this->redirect($this->createUrl('site/home2/'));
-    }
-
-    /**
-     * This is the action to handle external exceptions.
-     */
-    public function actionError() {
-        if ($error = Yii::app()->errorHandler->error) {
-            if (Yii::app()->request->isAjaxRequest)
-                echo $error['message'];
-            else
-                $this->render('error', $error);
-        }
-    }
-
-    /**
-     * Displays the contact page
-     */
-    public function actionContact() {
-
-        $model = new ContactForm;
-        if (isset($_POST['ContactForm'])) {
-            $model->attributes = $_POST['ContactForm'];
-            if ($model->validate()) {
-                $headers = "From: {$model->email}\r\nReply-To: {$model->email}";
-                mail(Yii::app()->params['adminEmail'], $model->subject, $model->body, $headers);
-                Yii::app()->user->setFlash('contact', 'Thank you for contacting us. We will respond to you as soon as possible.');
-                $this->refresh();
-            }
-        }
-        $this->render('contact', array('model' => $model));
-    }
-    
-    function getRealIp() {
-		if (!empty($_SERVER['HTTP_CLIENT_IP']))
-			return $_SERVER['HTTP_CLIENT_IP'];
-		else if(!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+			$this->redirect($this->createUrl('site/login/'));
 		else
-			return $_SERVER['REMOTE_ADDR'];
+			$this->redirect($this->createUrl('site/home/'));
+	}
+	
+	public function actionMore(){
+		$user = Yii::app()->user;
+		if ($user == null || $user->isGuest)
+//            $this->render('index');
+			$this->redirect($this->createUrl('site/login/'));
+		else
+			$this->redirect($this->createUrl('site/home2/'));
 	}
 
-    /**
-     * Displays the login page
-     */
-    public function actionLogin() {
-
-        $this->dataUrl = $this->createUrl('site/login/');
-        $this->pageId = 'site-login';
-        $model = new LoginForm;
-        $model->useCaptcha = false;
-
-        // if it is ajax validation request
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'login-form') {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
-        }
-
-          // collect user input data
-        if (isset($_POST['LoginForm'])) {
-            $model->attributes = $_POST['LoginForm'];
- 			$activeCheck=User::model()->findByAttributes(array('username'=>$model->username));
-                        if(isset($activeCheck)){
-                            $model->username=$activeCheck->username;
-                        }
-			if(isset($activeCheck) && $activeCheck->status=='1')
-				$activeCheck=true;
+	/**
+	 * This is the action to handle external exceptions.
+	 */
+	public function actionError() {
+		if ($error = Yii::app()->errorHandler->error) {
+			if (Yii::app()->request->isAjaxRequest)
+				echo $error['message'];
 			else
-				$activeCheck=false;
+				$this->render('error', $error);
+		}
+	}
 
-			$ip = $this->getRealIp();
+	/**
+	 * Displays the contact page
+	 */
+	public function actionContact() {
 
-			$session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$model->username,'IP'=>$ip));
-			x2base::cleanUpSessions();
-			if(isset($session)) {
-				var_dump($session->status);
-				$session->lastUpdated = time();
+		$model = new ContactForm;
+		if (isset($_POST['ContactForm'])) {
+			$model->attributes = $_POST['ContactForm'];
+			if ($model->validate()) {
+				$headers = "From: {$model->email}\r\nReply-To: {$model->email}";
+				mail(Yii::app()->params['adminEmail'], $model->subject, $model->body, $headers);
+				Yii::app()->user->setFlash('contact', 'Thank you for contacting us. We will respond to you as soon as possible.');
+				$this->refresh();
+			}
+		}
+		$this->render('contact', array('model' => $model));
+	}
 
-				if($session->status < 1) {
-					if($session->status > -3)
-						$session->status -= 1;
-				} else {
-					$session->status = -1;
+	/**
+	 * Obtain the IP address of the current web client.
+	 * @return string
+	 */
+	function getRealIp() {
+		foreach(array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR'
+		) as $var) {
+			if(array_key_exists($var,$_SERVER)){
+				foreach(explode(',',$_SERVER[$var]) as $ip) {
+					$ip = trim($ip);
+					if(filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false)
+						return $ip;
 				}
-				if($session->status < -1)
-					$model->useCaptcha = true;
-				if($session->status < -2)
-					$model->setScenario('loginWithCaptcha');
-			} else { 
-				$session = new Session;
-				$session->user = $model->username;
-				$session->lastUpdated = time();
-				$session->status = 1;
-				$session->IP = $ip;
 			}
+		}
+		return false;
+	}
 
-            // validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login()) {
-				$user = User::model()->findByPk(Yii::app()->user->getId());
-				$user->login = time();
-				$user->save();
-				if($user->username=='admin'){
-					if(ini_get('allow_url_fopen') == 1) {
-						$context = stream_context_create(array(
-							'http' => array('timeout' => 2)		// set request timeout in seconds
-						));
-						$updateSources = array(
-							'http://x2planet.com/updates/versionCheck.php',
-							'http://x2base.com/updates/versionCheck.php'
-						);
-						$newVersion = '';
-						
-						foreach($updateSources as $url) {
-							$sourceVersion = @file_get_contents($url,0,$context);
-							if($sourceVersion !== false) {
-								$newVersion = $sourceVersion;
-								break;
-							}
-						}
-						if(empty($newVersion))
-							$newVersion = Yii::app()->params->version;
-						/* 
-						// check X2Planet for updates
-						$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
-						if($x2planetVersion !== false)
-							$newVersion = $x2planetVersion;
-						else {
-							// try X2Base if that didn't work
-							$x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
-							if($x2baseVersion !== false)
-								$newVersion=$x2baseVersion;
-							else
-								$newVersion=Yii::app()->params->version;
-						} */
-						$unique_id = Yii::app()->db->createCommand("SELECT `unique_id` FROM `x2_admin`")->queryScalar();
-						if(version_compare($newVersion,Yii::app()->params->version) > 0 && $unique_id !='none' && $unique_id != Null) {	// if the latest version is newer than our version
-							Yii::app()->session['versionCheck']=false;
-							Yii::app()->session['newVersion']=$newVersion;
-						}
-						else
-							Yii::app()->session['versionCheck']=true;
-					}
-					else
-						Yii::app()->session['versionCheck']=true;
-				} else
-					Yii::app()->session['versionCheck']=true;
+	/**
+	 * Displays the login page
+	 */
+	public function actionLogin() {
+		
+		$this->dataUrl = $this->createUrl('site/login/');
+		$this->pageId = 'site-login';
+		$model = new LoginForm;
+		$model->useCaptcha = false;
+		
+		// if it is ajax validation request
+		if (isset($_POST['ajax']) && $_POST['ajax'] === 'login-form') {
+			echo CActiveForm::validate($model);
+			Yii::app()->end();
+		}
+		
+		  // collect user input data
+		if(isset($_POST['LoginForm'])) {
+			$model->attributes = $_POST['LoginForm'];	// get user input data
+			
+			x2base::cleanUpSessions();
+			
+			$ip = $this->getRealIp();
+			
+			// increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
+			Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1, lastUpdated=:time WHERE user=:name AND IP=:ip AND status BETWEEN -2 AND 0')
+				->bindValues(array(':time'=>time(),':name'=>$model->username,':ip'=>$ip))
+				->execute();
+			
+			$activeUser = Yii::app()->db->createCommand()	// see if this is an actual, active user
+				->select('username')
+				->from('x2_users')
+				->where('username=:name AND status=1',array(':name'=>$model->username))
+				->limit(1)
+				->queryScalar();	// get the correctly capitalized username
+				
+			if($activeUser === false) {
+				$model->verifyCode = '';	// clear captcha code
+				$model->addError('username',Yii::t('app','Incorrect username or password.'));
+				$model->addError('password',Yii::t('app','Incorrect username or password.'));
+			} else {
+				$model->username = $activeUser;
+				
+				if(isset($_SESSION['sessionId']))
+					$sessionId = $_SESSION['sessionId'];
+				else
+					$sessionId = $_SESSION['sessionId'] = session_id();
 					
-				Yii::app()->session['loginTime']=time();
-                                $session->status=1;
-				$session->save();
-
-				$cookie = new CHttpCookie('x2mobilebrowser', 'true'); // create cookie
-				$cookie->expire = time() + 31104000; // expires in 1 year
-				Yii::app()->request->cookies['x2mobilebrowser'] = $cookie; // save cookie
-				$this->redirect($this->createUrl('site/home/'));
-			} else if($activeCheck) {
-				$session->save();
-				$model->verifyCode = '';
+				$session = CActiveRecord::model('Session')->findByPk($sessionId);
+				
+				// if this client has already tried to log in, increment their attempt count
+				if($session === null) {
+					$session = new Session;
+					$session->id = $sessionId;
+					$session->user = $model->username;
+					$session->lastUpdated = time();
+					$session->status = 0;
+					$session->IP = $ip;
+				} else {
+					$session->lastUpdated = time();
+					if($session->status < -1)
+						$model->useCaptcha = true;
+					if($session->status < -2)
+						$model->setScenario('loginWithCaptcha');
+				}
+				
+				if($model->validate() && $model->login()) {		// user successfully logged in
+					$user = User::model()->findByPk(Yii::app()->user->getId());
+					$user->login = time();
+					$user->save();
+					
+					Yii::app()->session['versionCheck'] = true;	// no checking for updates, we're on a dang phone here
+					
+					$session->status = 1;
+					$session->save();
+					
+					$cookie = new CHttpCookie('x2mobilebrowser', 'true'); // create cookie
+					$cookie->expire = time() + 31104000; // expires in 1 year
+					Yii::app()->request->cookies['x2mobilebrowser'] = $cookie; // save cookie
+					$this->redirect($this->createUrl('site/home/'));
+						
+				} else {	// login failed
+					$model->verifyCode = '';	// clear captcha code
+					$session->save();
+				}
 			}
-        }
-        // display the login form
-        $this->render('login', array('model' => $model));
-    }
+		}
+		// display the login form
+		$this->render('login', array('model' => $model));
+	}
 
-    /**
-     * Displays the home page
-     */
-    public function actionHome() {
-        // display the home page
-        $this->dataUrl = $this->createUrl('site/home/');
-        $this->pageId = 'site-home';
-        $this->render('home', array());
-    }
-    
-    public function actionHome2() {
-        // display the home page
-        $this->dataUrl = $this->createUrl('site/home2/');
-        $this->pageId = 'site-home2';
-        $this->render('home2', array());
-    }
-    
-    public function actionPeople() {
-        // display the home page
-        $this->dataUrl = $this->createUrl('site/people/');
-        $this->pageId = 'site-people';
-        
-        $users = User::model()->findAll();
-        
-        $this->render('peopleList', array('users' => $users));
-    }
-    
-    public function actionProfile($id) {
-        // display the home page
-        $this->dataUrl = $this->createUrl("site/profile/$id");
-        $this->pageId = 'site-profile';
-        
-        $user = User::model()->findByPk($id);
-        
-        $this->render('profile', array('user' => $user));
-    }
+	/**
+	 * Displays the home page
+	 */
+	public function actionHome() {
+		// display the home page
+		$this->dataUrl = $this->createUrl('site/home/');
+		$this->pageId = 'site-home';
+		$this->render('home', array());
+	}
+	
+	public function actionHome2() {
+		// display the home page
+		$this->dataUrl = $this->createUrl('site/home2/');
+		$this->pageId = 'site-home2';
+		$this->render('home2', array());
+	}
+	
+	public function actionPeople() {
+		// display the home page
+		$this->dataUrl = $this->createUrl('site/people/');
+		$this->pageId = 'site-people';
+		
+		$users = User::model()->findAll();
+		
+		$this->render('peopleList', array('users' => $users));
+	}
+	
+	public function actionProfile($id) {
+		// display the home page
+		$this->dataUrl = $this->createUrl("site/profile/$id");
+		$this->pageId = 'site-profile';
+		
+		$user = User::model()->findByPk($id);
+		
+		$this->render('profile', array('user' => $user));
+	}
 
-    /**
-     * Logs out the current user and redirect to homepage.
-     */
-    public function actionLogout() {
-        $user = Yii::app()->user;
-        Yii::app()->user->logout();
-        $this->redirect($this->createUrl('site/login/'));
-    }
+	/**
+	 * Logs out the current user and redirect to homepage.
+	 */
+	public function actionLogout() {
+		$user = Yii::app()->user;
+		Yii::app()->user->logout();
+		$this->redirect($this->createUrl('site/login/'));
+	}
 
 }

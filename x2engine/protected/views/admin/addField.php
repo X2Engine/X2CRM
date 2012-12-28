@@ -96,6 +96,7 @@
             'varchar' => 'Single Line Text',
             'text' => 'Multiple Line Text Area',
             'date' => 'Date',
+            'dateTime'=>'Date/Time',
             'dropdown' => 'Dropdown',
             'int' => 'Number',
             'email' => 'E-Mail',

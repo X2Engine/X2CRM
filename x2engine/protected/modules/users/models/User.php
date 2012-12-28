@@ -335,7 +335,7 @@ class User extends CActiveRecord {
 		$criteria->compare('topContacts',$this->topContacts,true);
 		$criteria->compare('lastLogin',$this->lastLogin);
 		$criteria->compare('login',$this->login);
-        $criteria->compare('temporary',0);
+        $criteria->addCondition('(temporary=0 OR temporary IS NULL)');
 
 		return new SmartDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

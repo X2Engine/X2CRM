@@ -50,3 +50,15 @@
 	<br /><br />
 	<input type="submit" value="<?php echo Yii::t('admin','Export');?>" />
 </form>
+<?php 
+if($dlFlag){
+
+echo "<br />";
+echo CHtml::link("Download Module",Yii::app()->request->baseUrl.'/'.$file.'.zip',array('id'=>'download-link','class'=>'x2-button'));
+}
+
+?>
+
+<script>
+
+</script>
