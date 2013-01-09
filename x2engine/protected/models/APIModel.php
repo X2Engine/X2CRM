@@ -58,7 +58,6 @@ class APIModel {
         $ccUrl = 'http://'.$this->_baseUrl.'/index.php/api/create/model/Contacts'; 
         $ccSession = curl_init($ccUrl);
         curl_setopt($ccSession,CURLOPT_POST,1);
-        curl_setopt($ccSession, CURLOPT_USERPWD, 'x3engine:x3dev!!123%%');
         curl_setopt($ccSession,CURLOPT_POSTFIELDS,array_merge(array('apiKey'=>$this->_apiKey,'userKey'=>$this->_userKey),$attributes));
         curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
         $ccResult = curl_exec($ccSession);
