@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -55,6 +55,10 @@ return array (
 'Last Updated'=>'laatst bijgewerkt',
 'Updated By'=>'Bijgewerkt door',
 'None'=>'Geen',
+'Contacts'=>'Contacten',
+'Basic Information'=>'Basisinformatie',
+'Additional Information'=>'Aanvullende Informatie',
+'Last Activity'=>'Laatste Activiteit',
 
 // Accounts Actions
 'Accounts List'=>'Account Lijst',
@@ -67,6 +71,14 @@ return array (
 'Remove a User'=>'Een gebruiker verwijderen',
 'Remove a Contact'=>'Een contact verwijderen',
 'Share Account'=>'Account Delen',
+'Create'=>'Creëren',
+'View'=>'Zien',
+'Update'=>'Bijwerken',
+'Delete'=>'Verwijder',
+'Update Account:'=>'Werk Account:',
+'Share Opportunity'=>'Delen Opportunity',
+'All Accounts'=>'Alle Accounts',
+'Edit Account'=>'Account Bewerken',
 
 // Accounts Titles
 'Accounts'=>'Accounts',
@@ -79,4 +91,6 @@ return array (
 'Please click any new users you wish to remove.'=>'Click op de gebruikers die je wil verwijderen.',
 'Account Record Details'=>'Account Record Details',
 'Account Record'=>'Account Record',
+'Create a new Opportunity associated with this Account.'=>'Maak een nieuwe Opportunity in verband met deze account.',
+'Create a new Contact associated with this Account.'=>'Maak een nieuwe contactpersoon in verband met deze account.',
 );

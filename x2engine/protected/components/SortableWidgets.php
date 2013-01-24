@@ -87,24 +87,26 @@ class SortableWidgets extends CJuiWidget
 		");
 		Yii::app()->clientScript->registerScript('toggleWidgetState',"
 			function toggleWidgetState(widget,state) {
-				$.ajax({
-					url: '" . CHtml::normalizeUrl(array('/site/widgetState')) . "',
-					type: 'GET',
-					data: 'widget='+widget+'&state='+state,
-					success: function(response) {
-						if(response=='success') {
-							var link = $('#widget_'+widget+' .portlet-minimize a');
-							var newLink = (link.html()=='[+]')? '[&ndash;]' : '[+]';			// toggle link between [+] and [-]
-							link.html(newLink);
-
-							// slide widget open or closed
-							$('#widget_'+widget+' .portlet-content').toggle('blind',{},200,function() {
-								if(widget == 'GoogleMaps' && $(this).is(':visible'))	// for google maps, trigger a resize event
-									google.maps.event.trigger(window.map,'resize');
-							});
+				if($('#widget_' + widget).hasClass('ui-sortable-helper') == false) {
+					$.ajax({
+						url: '" . CHtml::normalizeUrl(array('/site/widgetState')) . "',
+						type: 'GET',
+						data: 'widget='+widget+'&state='+state,
+						success: function(response) {
+							if(response=='success') {
+								var link = $('#widget_'+widget+' .portlet-minimize a.portlet-minimize-button');
+								var newLink = (link.html()=='[+]')? '[&ndash;]' : '[+]';			// toggle link between [+] and [-]
+								link.html(newLink);
+					
+								// slide widget open or closed
+								$('#widget_'+widget+' .portlet-content').toggle('blind',{},200,function() {
+									if(widget == 'GoogleMaps' && $(this).is(':visible'))	// for google maps, trigger a resize event
+										google.maps.event.trigger(window.map,'resize');
+								});
+							}
 						}
-					}
-				});
+					});
+				}
 				
 			}
 		",CClientScript::POS_HEAD);
@@ -122,28 +124,36 @@ class SortableWidgets extends CJuiWidget
 
 		$widgetHideList = array();
 		
+		$layout = Yii::app()->params->profile->getLayout();
+		
+		
 		foreach($this->portlets as $class=>$properties) {
-			$visible = ($properties['visibility'] == '1');
-			
-			if(!$visible)
-				$widgetHideList[] = '#widget_'.$class;
-			
-			$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;"));
-			// $t0 = microtime(true);
-			// for($i=0;$i<100;$i++)
-				$widget = $this->widget($class,$properties['params'],true);
-			
-			// $t1 = microtime(true);
-			if(!empty($widget)) {
-				$this->beginWidget('zii.widgets.CPortlet',array(
-					'title'=>Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
-					'id'=>$properties['id']
-				));
-				echo $widget;
-				$this->endWidget();
-				// echo ($t1-$t0);
-			} else {
-				echo '<div ',CHtml::renderAttributes(array('style'=>'display;none;','id'=>$properties['id'])),'></div>';
+		
+			if(!in_array($class, array_keys($layout['hiddenRight']))) { // show widget if it isn't hidden
+				$visible = ($properties['visibility'] == '1');
+				
+				if(!$visible)
+					$widgetHideList[] = '#widget_'.$class;
+				
+				$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('class'=>'portlet-minimize-button', /*'onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;" */ ))
+								. ' ' . CHtml::link('['.Yii::t('app','Hide').']','#',array('onclick'=>"$('#widget_$class').hideWidgetRight(); return false;"));
+
+				// $t0 = microtime(true);
+				// for($i=0;$i<100;$i++)
+					$widget = $this->widget($class,$properties['params'],true);
+				
+				// $t1 = microtime(true);
+				if(!empty($widget)) {
+					$this->beginWidget('zii.widgets.CPortlet',array(
+						'title'=>'<div onclick="toggleWidgetState(\''.$class.'\','.($visible? 0 : 1).'); return false;" style="cursor:pointer;">'.Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div></div>',
+						'id'=>$properties['id']
+					));
+					echo $widget;
+					$this->endWidget();
+					// echo ($t1-$t0);
+				} else {
+					echo '<div ',CHtml::renderAttributes(array('style'=>'display;none;','id'=>$properties['id'])),'></div>';
+				}
 			}
 		}
 		

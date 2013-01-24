@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,6 +82,11 @@ return array (
 'Manage Users'=>'ユーザーの管理',
 'Social Feed'=>'社会のフィード',
 'Preferences'=>'プ',
+'Reports'=>'レポート',
+'Activity'=>'活動',
+'Service'=>'サービス',
+'Go Invisible'=>'インビジブル行く',
+'Go Visible'=>'可視行く',
 // // 
 // // Search Bar
 'X2Engine CRM Groupware'=>'グループウェアのシーアールエムのX2Engine',
@@ -94,6 +99,8 @@ return array (
 // // Footer
 'All Rights Reserved.'=>'すべての内容は著作権を有します。',
 'Generated in {time} seconds.'=>'{time}秒で生成',
+'About'=>'約',
+'The Program is provided AS IS, without warranty.'=>'プログラムは、保証なしで、提供されるものです。',
 // // 
 // // Widgets
 'My Actions'=>'私のアクション',
@@ -110,6 +117,7 @@ return array (
 'Top Sites'=>'トップサイト',
 'Media'=>'メディア',
 'Current time in'=>'の現在の時刻',
+'Hide'=>'隠す',
 // // 
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
@@ -197,7 +205,7 @@ return array (
 'Delete'=>'削除',
 'Group?'=>'グループ？',
 'Check box'=>'チェック·ボックス',
-'results per page'=>' ページごとの結果',
+'results per page'=>'ページごとの結果',
 'Public'=>'公共',
 'Tags'=>'タグ',
 'Template:'=>'テンプレート:',
@@ -216,6 +224,30 @@ return array (
 'results per page.'=>'ページごとの結果。',
 'Displaying {start}-{end} of {count} result(s).'=>'{start}表示 - {end} {count}が結果（S）の。',
 'Marketing Dashboard'=>'マーケティングダッシュボード',
+'You'=>'あなた',
+'Quick Create'=>'クイック作成',
+'Create a Contact, Account, and Opportunity.'=>'連絡先、アカウント、および機会を作成します。',
+'<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<B>ヒント：</ b>を微調整する、検索にフィルタ値を使用して、次の比較演算子を使用することができます。',
+'less than'=>'以下',
+'less than or equal to'=>'より小さいか等しい',
+'greater than'=>'越える',
+'greater than or equal to'=>'より大きいか等しい',
+'equal to'=>'に等しい',
+'not equal to'=>'等しくない',
+' results per page'=>' ページごとの結果',
+'Add to list:'=>'リストに追加：',
+'<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </ b>に<b>の{count} </ b>に',
+'Relationships'=>'関係',
+'Associate Account'=>'准アカウント',
+'Associate Opportunity'=>'准商談',
+'Associate Contact'=>'連絡先を関連付ける',
+'Contact Attributes'=>'属性の問い合わせ',
+'CC:'=>'CC：',
+'BCC:'=>'BCC：',
+'What should the map be named?'=>'マップはどのような名前を付けることでしょうか？',
+'Record not found.'=>'記録が見つかりません。',
+'Saving...'=>'省エネ...',
+'Module'=>'モジュール',
 // // 
 // // Misc Actions
 'Submit'=>'提出する',
@@ -263,4 +295,88 @@ return array (
 'How to use Gii'=>'GIIを使用する方法',
 'How to add a database field'=>'データベースのフィールドを追加する方法',
 // // 
+// // Activity Feed
+
+'Activity Feed'=>'アクティビティフィード',
+// // Filter Headers
+'Visibility'=>'視認性',
+'Relevant Users'=>'関連したユーザー',
+'Event Types'=>'イベントの種類',
+'Social Subtypes'=>'社会的なサブタイプ',
+'Options'=>'オプション',
+'Set Default'=>'デフォルトを設定',
+'Apply Filters'=>'フィルタを適用',
+// // Filter Text
+'Social Post'=>'ソーシャルポスト',
+'Announcement'=>'発表',
+'Product Info'=>'製品情報',
+'Competitive Info'=>'競争力のある情報',
+'Confidential'=>'秘密の',
+// // Event Types
+'Social Posts'=>'社会的な投稿',
+'Records Created'=>'レコードが作成',
+'Records Deleted'=>'レコードが削除された',
+'Action Reminders'=>'アクションリマインダ',
+'Actions Completed'=>'アクションが完了しました',
+'Calendar Events'=>'カレンダーイベント',
+'Cases Escalated'=>'ケースがエスカレート',
+'Emails Opened'=>'電子メールは、開かれた',
+'Emails Sent'=>'電子メールが送信され',
+'Notifications'=>'通知',
+'Webleads Created'=>'Webが作成リード',
+'Web Activity'=>'ウェブ·アクティビティ',
+'Workflow Complete'=>'完全なワークフロー',
+'Workflow Reverted'=>'ワークフローは差し戻し',
+'Workflow Started'=>'ワークフローが開始',
+// // Event Text
+'created a new {actionLink} associated with the contact {contactLink}'=>'連絡先に関連付けられた新しい{actionLink}を作成{contactLink}',
+'created a new {modelName}, {modelLink}'=>'新しい{modelName}、{modelLink}を作成',
+'created a new {modelName}, {deletionText}. It has been deleted.'=>'新しい{modelName}、{deletionText}を作成しました。それが削除されました。',
+'created a new {modelName}, but it could not be found.'=>'新しい{modelName}作成しましたが、それが見つかりませんでした。',
+'A new web lead has come in: {modelLink}'=>'新しいWebリードが入って来ました：{modelLink}',
+'A new web lead has come in: {deletionText}. It has been deleted.'=>'新しいWebリードが入って来ました：{deletionText}。それが削除されました。',
+'A new web lead has come in, but it could not be found.'=>'新しいWebリードが入って来ましたが、それが見つかりませんでした。',
+'deleted a {modelType}, {text}'=>'削除{modelType}、{text}',
+'started the workflow stage "{stage}" for the {modelName} {modelLink}'=>'{modelName} {modelLink}のワークフローステージ "{stage}" を開始しました',
+'started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'{modelName} のワークフロー·ステージ {modelLink} を開始しましたが、ワークフロー·ステージが見つかりませんでした。',
+'started a workflow stage, but the associated {modelName} was not found.'=>'ワークフロー·ステージを開始しますが、関連は {modelName} は見つかりませんでした。',
+'started a workflow stage, but the workflow record could not be found.'=>'ワークフロー·ステージを開始しましたが、ワークフローのレコードが見つかりませんでした。',
+'completed the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'{modelName} {modelLink}のワークフローステージ "{stageName}" が完成',
+'completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'{modelName} {modelLink}のワークフローの段階を完了したが、ワークフロー·ステージが見つかりませんでした。',
+'completed a workflow stage, but the associated {modelName} was not found.'=>'ワークフローの段階を完了したが、関連するは{modelName}が見つかりませんでした。',
+'completed a workflow stage, but the workflow record could not be found.'=>'ワークフローの段階を完了したが、ワークフローのレコードが見つかりませんでした。',
+'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'{modelName} {modelLink}のワークフローステージ "{stageName}" を元に戻す',
+'reverted a workflow stage, but the associated {modelName} was not found.'=>'ワークフローステージを元に戻しますが、関連は{modelName}は見つかりませんでした。',
+'reverted a workflow stage, but the workflow record could not be found.'=>'ワークフローステージを元に戻しますが、ワークフローのレコードが見つかりませんでした。',
+'sent an email to the {transModelName} {modelLink}'=>'{transModelName} {modelLink} に電子メールを送信',
+'sent an email to a {transModelName}, but that record has been deleted.'=>'{transModelName}に電子メールを送ったが、そのレコードは削除されました。',
+'sent an email to a {transModelName}, but that record could not be found.'=>'{transModelName}に電子メールを送ったが、そのレコードは見つかりませんでした。',
+' has opened an email!'=>' 電子メールをオープンしました！',
+'A contact has opened an email, but that contact cannot be found.'=>'連絡先は電子メールを開いたが、その連絡先を見つけることができません。',
+'is currently on your website!'=>'あなたのウェブサイト上で現在です！',
+'A contact was on your website, but that contact cannot be found.'=>'連絡先はあなたのウェブサイトにあったが、その連絡先を見つけることができません。',
+'escalated service case {modelLink} to {userLink}'=>'にエスカレートサービスケース {modelLink} {userLink}',
+'escalated a service case but that case could not be found.'=>'サービスケースをエスカレートさせますが、その場合は見つかりませんでした。',
+'{calendarText} event: {actionDescription}'=>'{calendarText}イベント：{actionDescription}',
+'{calendarText} event: event not found.'=>'{calendarText}イベント：イベントが見つかりません。',
+'Reminder! The following action is due now: {transModelLink}'=>'リマインダー！次のアクションは今のためです：{transModelLink}',
+'An action is due now, but the record could not be found.'=>'アクションが原因ですが、レコードが見つかりませんでした。',
+'completed the following action: {actionDescription}'=>'{actionDescription}：次のアクションを完了',
+'completed an action, but the record could not be found.'=>'アクションを完了したが、レコードは見つかりませんでした。',
+// // Model Names
+'action'=>'アクション',
+'contact'=>'連絡',
+'account'=>'アカウント',
+'opportunity'=>'機会',
+'marketing campaign'=>'販売キャンペーン',
+
+// // Misc. Text
+'Minimize Posts'=>'投稿を最小限に抑える',
+'Restore Posts'=>'投稿を復元',
+'My Groups'=>'私のグループ',
+'Show/add comments'=>'コメントを追加する/隠す',
+'Hide comments'=>'コメントを隠す',
+'Broadcast Event'=>'イベントをブロードキャスト',
+'Cancel Broadcast'=>'放送をキャンセル',
+'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'イベントをブロードキャストすると、アクティビティフィードにあなたのイベントを表示するすべてのユーザーにそれが見えるようになります - タイプにかかわらず、フィルタの。',
 );

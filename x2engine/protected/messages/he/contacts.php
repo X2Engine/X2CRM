@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'קוד האימות',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'זהות',
 'First Name'=>'שם פרטי',
 'Name'=>'שם',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'להוביל סוג',
 'Other'=>'אחר',
 'Close Date'=>'סגור תאריך',
+'Expected Close Date'=>'תאריך הסגירה צפויה',
 'Interest'=>'אינטרס',
 'Deal Value'=>'ערך העסקה',
 'Lead Status'=>'להוביל מצב',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'נדחה',
 'Tags'=>'תגיות',
 'Associated Contacts'=>'אנשי קשר כלולים',
-
-// List Attributes
+'Duplicate Check'=>'בדקו שכפל',
+'Last Activity'=>'הפעילות האחרונה',
+'Timezone'=>'אזור זמן',
+'Web Tracking Key'=>'מפתח אינטרנט מעקב',
+// // 
+// // List Attributes
 'Owner'=>'בעלים',
 'Description'=>'תאור',
 'Logic Type'=>'ההיגיון סוג',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'משתמשים',
 'Dynamic'=>'דינמי',
 'Static'=>'סטטי',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'רשימה',
 'Type'=>'סוג',
 'Attribute'=>'תכונה',
 'Comparison'=>'השוואה',
 'Value'=>'ערך',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'שווה',
 'greater than'=>'יותר מ',
 'less than'=>'פחות מ',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'לא ריקה',
 'contains'=>'מכיל',
 'does not contain'=>'אינו מכיל',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'{name} שהוקצתה',
 'Social Networks'=>'רשתות חברתיות',
 'Detail View'=>'תצוגת פרטים',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'או',
 'User'=>'משתמש',
 'Leads'=>'מוביל',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b>{m} </b> של <b> {n} </b>',
+'Create a new Opportunity associated with this Contact.'=>'יצירת הזדמנויות חדשות המשויכות לאיש קשר זה.',
+'Create a new Account associated with this Contact.'=>'צור חשבון חדש קשורים בקשר זה.',
+'Create a new Service Case associated with this Contact.'=>'יצירת תיק שירות חדש המשויך לאיש קשר זה.',
+'Link to Record'=>'קישור להקלט',
+'Contact Attributes'=>'צור תכונות',
+// // 
+// // Contacts Actions
 'My Contacts'=>'אנשי הקשר שלי',
 'New Contacts'=>'אנשי הקשר החדש',
 'All Contacts'=>'כל אנשי הקשר',
 'Create Contact'=>'צור קשר',
 'View Contact'=>'הצג את צור',
 'Update Contact'=>'עדכון צור',
+'Edit Contact'=>'ערוך צורו',
 'Update Contact:'=>':עדכון צור',
 'Delete Contact'=>'מחק צור',
 'Contact Lists'=>'צור רשימות',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'הירשם',
 'View List'=>'צפו ברשימה',
 'Share Action'=>'לשתף פעולה זה',
-
-// Contacts Titles
+'Import Contacts'=>'יבוא אנשי קשר',
+'Contact Map'=>'צור מפה',
+'Saved Maps'=>'מפות שנשמרו',
+// // 
+// // Contacts Titles
 'Contacts'=>'אנשי קשר',
 'Manage Contacts'=>'ניהול אנשי קשר',
 'Contact:'=>'איש קשר:',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'ייבוא ​​מ-Outlook',
 'Import from Template'=>'ייבוא ​​מ תבנית',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'כדי לייבא את אנשי הקשר שלך מהתבנית, מלא את קובץ התבנית שלנו. לאחר מכן, להעלות את הקובץ כאן על ידי שימוש בטופס הבא.',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'כדי לייבא את אנשי הקשר מ-Outlook, אנא 1 ליצור קובץ CSV (פורמט DOS) על ידי פתיחת Outlook וייצוא של אנשי הקשר. לאחר מכן, להעלות את הקובץ כאן על ידי שימוש בטופס הבא.',
 'Upload File'=>'העלאת קבצים',
 'Contact Record Details'=>'פרטי התקשרות שיא',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'הירשם',
 'The information for {name} has changed.'=>'מידע עבור {name} השתנה.',
 'Receive email updates every time information for {name} changes'=>'קבל עדכוני דוא"ל כל הזמן מידע על שינויים {name}',
 'Unsubscribe'=>'ביטול מנוי',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'אינטרנט ליצירת קשר',
 'Invalid Email Address'=>'כתובת דוא"ל לא חוקית',
 'Default list for email list signups'=>'רשימת ברירת מחדל עבור רשימת רשמות דוא"ל',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'תודה לך על התעניינותך!',
 'Someone will be in touch shortly.'=>'מישהו יהיה איתך בקשר בקרוב.',
 'Enter any additional information or questions regarding your interest here.'=>'זן כל מידע או שאלות נוספים לגבי העניין שלך כאן.',
+
+// // Map Translations
+'Map Filters'=>'מסנני מפה',
+'Clear Marker'=>'סמן ברור',
+'Drop a tag here to filter map results.'=>'זרוק תג כאן כדי לסנן תוצאות המפה.',
+'Save Map'=>'שמור מפה',
+'View on Large Map'=>'צפו במפה גדולה',
+'View on Heat Map'=>'צפו במפת חום',
+'Center Coordinates'=>'מרכז קואורדינטות',
+'Delete Map'=>'מחק מפה',
+'Map Name'=>'שם מפה',
+'Map Owner'=>'בעלי מפה',
+'Zoom Level'=>'רמת זום',
+'Parameters'=>'פרמטרים',
+'Center Latitude'=>'Latitude המרכז',
+'Center Longitude'=>'מרכז אורך',
+'Contact'=>'ליצור קשר עם',
 );

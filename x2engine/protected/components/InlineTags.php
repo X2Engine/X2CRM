@@ -50,7 +50,6 @@ class InlineTags extends X2Widget {
     public $tags=array();
 
 	public function init() {
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() .'/js/tags.js');
 		parent::init();
 	}
 

@@ -43,7 +43,7 @@
  */
 class CalendarController extends x2base {
 
-	public $modelClass = 'Calendar';
+	public $modelClass = 'X2Calendar';
 	public $calendarUsers = null; // list of users for choosing whose calendar to view
 	public $groupCalendars = null;
 	public $sharedCalendars = null; // list of shared calendars to view/hide

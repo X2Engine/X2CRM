@@ -66,10 +66,13 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
 	->registerScriptFile($baseUrl.'/js/publisher.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/media.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/x2forms.js'.$jsVersion)
+    ->registerScriptFile($baseUrl.'/js/tags.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion);
+	->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/widgets.js'.$jsVersion);
+
 
 if(Yii::app()->session['translate'])
 	$cs->registerScriptFile($baseUrl.'/js/translator.js'.$jsVersion);
@@ -268,7 +271,7 @@ if(isset($session)){
 }
 $userMenu = array(
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin')?true:null, 'visible'=>$isAdmin),
-	array('label' => Yii::t('app','Social'),'url' => array('/profile/index')),
+	array('label' => Yii::t('app','Activity'),'url' => array('/site/whatsNew')),
 
 	array('label' => Yii::t('app','Users'),'url' => array('/users/admin'),'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Users'),'url' => array('/profile/profiles'),'visible'=>!$isAdmin),
@@ -276,6 +279,7 @@ $userMenu = array(
 	array('label' => $searchbarHtml,'itemOptions'=>array('id'=>'search-bar','class'=>'special')),
 	array('label'=>CHtml::link('<span>'.$notifCount.'</span>','#',array('id'=>'main-menu-notif','style'=>'z-index:999;')),'itemOptions'=>array('class'=>'special')),
 	array('label'=>CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button')),'itemOptions'=>array('class'=>'search-bar special')),
+	array('label'=>CHtml::link('<span style="margin-left: 3px; margin-right: 3px;">w'. Yii::app()->params->profile->getWidgetMenu() .'</span>', '#', array('id'=>'widget-menu-wrapper', 'class'=>'x2-button', 'title'=>'hidden widgets', 'style'=>'margin-top: 6px;')), 'itemOptions'=>array('class'=>'search-bar special')),
 	array('label'=>CHtml::image($avatar,'',array('height'=>25,'width'=>25)).Yii::app()->user->getName(),
 		'itemOptions'=>array('id'=>'profile-dropdown','class'=>'dropdown'),
 		'items' => array(

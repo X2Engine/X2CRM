@@ -4,7 +4,7 @@ CREATE TABLE x2_actions	(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	assignedTo				VARCHAR(20),
 	calendarId				INT,
-	actionDescription		text NOT NULL,
+	actionDescription		text,
 	visibility				INT				NOT NULL,
 	associationId			INT				NOT NULL,
 	associationType			VARCHAR(20),

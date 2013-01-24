@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -77,11 +77,16 @@ return array (
 'Products'=>'Produits',
 'Workflow'=>'Flux de Travail',
 'Groups'=>'Groupes',
-'Notifications'=>'Alertes',
+'Notifications'=>'Notifications',
 'Charts'=>'Graphiques',
 'Manage Users'=>'Gérer les Utilisateurs',
 'Social Feed'=>'RSS Sociale',
 'Preferences'=>'Préférences',
+'Reports'=>'Rapports',
+'Activity'=>'Activité',
+'Service'=>'Service',
+'Go Invisible'=>'Aller Invisible',
+'Go Visible'=>'Aller Visible',
 // // 
 // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
@@ -94,6 +99,8 @@ return array (
 // // Footer
 'All Rights Reserved.'=>'Tous Droits Réservés.',
 'Generated in {time} seconds.'=>'Généré dans {time} secondes',
+'About'=>'Sur',
+'The Program is provided AS IS, without warranty.'=>'Le programme est fourni TEL QUEL, sans garantie.',
 // // 
 // // Widgets
 'My Actions'=>'Mes Actions',
@@ -110,6 +117,7 @@ return array (
 'Top Sites'=>'Meilleurs Sites',
 'Media'=>'Médias',
 'Current time in'=>'L\'heure à',
+'Hide'=>'Cacher',
 // // 
 'Total Action|Total Actions'=>'Total Action|Total des Actiona',
 'Unfinished Action|Unfinished Actions'=>'Action Inachevée | Actions Inachevé',
@@ -197,7 +205,7 @@ return array (
 'Delete'=>'Effacer',
 'Group?'=>'Groupe?',
 'Check box'=>'Case à cocher',
-'results per page'=>' résultats par page',
+'results per page'=>'résultats par page',
 'Public'=>'Public',
 'Tags'=>'Balises',
 'Template:'=>'Modèle:',
@@ -216,6 +224,30 @@ return array (
 'results per page.'=>'Résultats par Page.',
 'Displaying {start}-{end} of {count} result(s).'=>'Affichage de {start} - {end} de {count} résultat (s).',
 'Marketing Dashboard'=>'Tableau de Bord Marketing',
+'You'=>'Vous',
+'Quick Create'=>'Création Rapide',
+'Create a Contact, Account, and Opportunity.'=>'Créer un contact, compte, et les possibilités.',
+'<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b> Conseil: </ b> Vous pouvez utiliser les opérateurs de comparaison suivants avec les valeurs de filtre pour affiner votre recherche.',
+'less than'=>'moins que',
+'less than or equal to'=>'inférieur ou égal à',
+'greater than'=>'supérieure à',
+'greater than or equal to'=>'supérieure ou égale à',
+'equal to'=>'égal à',
+'not equal to'=>'pas égal à',
+' results per page'=>' résultats par page',
+'Add to list:'=>'Ajouter à la liste:',
+'<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </ b> de <b> {count} </ b>',
+'Relationships'=>'Relations',
+'Associate Account'=>'Compte Associé',
+'Associate Opportunity'=>'Opportunity Associé',
+'Associate Contact'=>'Associer Contacter',
+'Contact Attributes'=>'Contactez Attributs',
+'CC:'=>'CC:',
+'BCC:'=>'BCC:',
+'What should the map be named?'=>'Quelle devrait être la carte nommer?',
+'Record not found.'=>'Notez introuvable.',
+'Saving...'=>'Sauvegarde en cours ...',
+'Module'=>'Module',
 // // 
 // // Misc Actions
 'Submit'=>'Soumettre',
@@ -263,4 +295,88 @@ return array (
 'How to use Gii'=>'Comment utiliser Gii',
 'How to add a database field'=>'Comment ajouter un champ de base de données',
 // // 
+// // Activity Feed
+
+'Activity Feed'=>'Flux d\'activité',
+// // Filter Headers
+'Visibility'=>'Visibilité',
+'Relevant Users'=>'Les Utilisateurs Concernés',
+'Event Types'=>'Types d\'événement',
+'Social Subtypes'=>'Les sous-types sociaux',
+'Options'=>'Options de',
+'Set Default'=>'Définir par Défaut',
+'Apply Filters'=>'Appliquer les Filtres',
+// // Filter Text
+'Social Post'=>'Message Sociale',
+'Announcement'=>'Annonce',
+'Product Info'=>'Renseignements sur le Produit',
+'Competitive Info'=>'Infos Concurrentiel',
+'Confidential'=>'Confidentiel',
+// // Event Types
+'Social Posts'=>'Messages Sociales',
+'Records Created'=>'Création des Dossiers',
+'Records Deleted'=>'Enregistrements Supprimés',
+'Action Reminders'=>'Rappels d\'Action',
+'Actions Completed'=>'Actions Terminé',
+'Calendar Events'=>'Calendrier des événements',
+'Cases Escalated'=>'Escalade des Cas',
+'Emails Opened'=>'Ouvert Emails',
+'Emails Sent'=>'E-mails Envoyés',
+'Notifications'=>'Notifications',
+'Webleads Created'=>'Création Web Leads',
+'Web Activity'=>'Activité Web',
+'Workflow Complete'=>'Flux de travail complet',
+'Workflow Reverted'=>'Reverted de workflow',
+'Workflow Started'=>'Flux de travail commencés',
+// // Event Text
+'created a new {actionLink} associated with the contact {contactLink}'=>'créé un nouveau {actionLink} associé au contact {contactLink}',
+'created a new {modelName}, {modelLink}'=>'a créé une nouvelle {modelName}, {modelLink}',
+'created a new {modelName}, {deletionText}. It has been deleted.'=>'a créé une nouvelle {modelName}, {deletionText}. Il a été supprimée.',
+'created a new {modelName}, but it could not be found.'=>'créé un nouveau {modelName}, mais il n\'a pu être trouvée.',
+'A new web lead has come in: {modelLink}'=>'Un nouveau site web plomb est venu dans: {modelLink}',
+'A new web lead has come in: {deletionText}. It has been deleted.'=>'Un nouveau site web plomb est venu dans: {deletionText}. Il a été supprimée.',
+'A new web lead has come in, but it could not be found.'=>'Un nouveau site web plomb est entré, mais il n\'a pu être trouvée.',
+'deleted a {modelType}, {text}'=>'supprimé un {modelType}, {text}',
+'started the workflow stage "{stage}" for the {modelName} {modelLink}'=>'commencé l\'étape du workflow "{stage}" pour la {modelName} {modelLink}',
+'started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'a commencé une étape de workflow pour la {modelName} {modelLink}, mais l\'étape du workflow n\'a pu être trouvée.',
+'started a workflow stage, but the associated {modelName} was not found.'=>'a commencé une étape du workflow, mais l\'associé {modelName} n\'a pas été trouvé.',
+'started a workflow stage, but the workflow record could not be found.'=>'a commencé une étape du workflow, mais le dossier de workflow n\'a pu être trouvée.',
+'completed the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'terminé l\'étape de flux de travail  "{stageName}" pour la {modelName} {modelLink}',
+'completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'complété une étape de workflow pour la {modelName} {modelLink}, mais l\'étape du workflow n\'a pu être trouvée.',
+'completed a workflow stage, but the associated {modelName} was not found.'=>'terminé une étape du workflow, mais l\'associé {modelName} n\'a pas été trouvé.',
+'completed a workflow stage, but the workflow record could not be found.'=>'terminé une étape du workflow, mais l\'enregistrement de flux de travail n\'a pu être trouvée.',
+'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'est revenue au stade de workflow "{stageName}" pour la {modelName} {modelLink}',
+'reverted a workflow stage, but the associated {modelName} was not found.'=>'revenue une étape du workflow, mais l\'associé {modelName} n\'a pas été trouvé.',
+'reverted a workflow stage, but the workflow record could not be found.'=>'revenue une étape du workflow, mais le dossier de workflow n\'a pu être trouvée.',
+'sent an email to the {transModelName} {modelLink}'=>'envoyé un courriel à l\'{transModelName} {modelLink}',
+'sent an email to a {transModelName}, but that record has been deleted.'=>'a envoyé un courriel à un {transModelName}, mais que le dossier a été supprimé.',
+'sent an email to a {transModelName}, but that record could not be found.'=>'a envoyé un courriel à un {transModelName}, mais ce record n\'a pu être trouvée.',
+' has opened an email!'=>' a ouvert un e-mail!',
+'A contact has opened an email, but that contact cannot be found.'=>'Un contact a ouvert un e-mail, mais ce contact ne peut pas être trouvé.',
+'is currently on your website!'=>'est actuellement sur ​​votre site!',
+'A contact was on your website, but that contact cannot be found.'=>'Un contact a été sur votre site, mais ce contact ne peut pas être trouvé.',
+'escalated service case {modelLink} to {userLink}'=>'cas, le service escalade {modelLink} à {userLink}',
+'escalated a service case but that case could not be found.'=>'un cas dégénéré de service, mais ce cas n\'a pu être trouvée.',
+'{calendarText} event: {actionDescription}'=>'{calendarText} événement: {actionDescription}',
+'{calendarText} event: event not found.'=>'{calendarText} événement: événement introuvable.',
+'Reminder! The following action is due now: {transModelLink}'=>'Rappel! L\'action suivante est due à présent: {transModelLink}',
+'An action is due now, but the record could not be found.'=>'Une action est due à présent, mais le dossier n\'a pu être trouvée.',
+'completed the following action: {actionDescription}'=>'terminé l\'action suivante: {actionDescription}',
+'completed an action, but the record could not be found.'=>'complété d\'une action, mais le dossier n\'a pu être trouvée.',
+// // Model Names
+'action'=>'action',
+'contact'=>'contacter',
+'account'=>'compte',
+'opportunity'=>'occasion',
+'marketing campaign'=>'campagne de marketing',
+
+// // Misc. Text
+'Minimize Posts'=>'Minimiser les Messages',
+'Restore Posts'=>'Restaurer les messages',
+'My Groups'=>'Mes Groupes',
+'Show/add comments'=>'Afficher / Ajouter des commentaires',
+'Hide comments'=>'Cacher les commentaires',
+'Broadcast Event'=>'Diffusion de l\'événement',
+'Cancel Broadcast'=>'Annuler Diffusion',
+'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'La diffusion d\'un événement, il sera visible par tout utilisateur qui affiche vos événements sur le flux d\'activité - indépendamment de filtres de type.',
 );

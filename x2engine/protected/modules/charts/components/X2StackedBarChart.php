@@ -81,7 +81,7 @@ class X2StackedBarChart extends X2ChartWidget {
 					'padMin' => 0
 				)
 			),
-			'seriesColors'=> array('#417DCD', '#6AEA3B', '#FFF440', '#FFB740', '#EF3C5C', '#7434AC', '#2C83A0', '#9DE93A', '#FFE63F', '#FFA33F', '#D8357D', '#6137AE'),
+			'seriesColors'=> array('#1D4C8C', '#45B41D', '#CEC415', '#CA8613', '#BC0D2C', '#5A1992', '#156A86', '#69B10A', '#C6B019', '#C87010', '#AB074F', '#3D1783'),
 			'grid' => array(
 			    'background'=> '#FFFFFF',
 			    'borderColor'=> '#000000',
@@ -115,18 +115,18 @@ class X2StackedBarChart extends X2ChartWidget {
 				if ($skipNull)
 					continue;
 				else
-					$xval = Yii::t('dashboard', 'Unknown');
+					$xval = Yii::t('charts', 'Unknown');
 			}
 			$xval1 = $val[1];
 			if (!isset($xval1) || strlen($xval1) == 0) {
 				if ($skipNull)
 					continue;
 				else
-					$xval1 = Yii::t('dashboard', 'Unknown');
+					$xval1 = Yii::t('charts', 'Unknown');
 			}
 
 			if (isset($oldx) && $oldx != $xval && $otherTotal > 0) {
-				$this->storeValue($oldx, Yii::t('dashboard', 'Other'), $otherTotal);
+				$this->storeValue($oldx, Yii::t('charts', 'Other'), $otherTotal);
 				$otherTotal = 0;
 			}
 			$yval = 0 + $val[2];
@@ -139,7 +139,7 @@ class X2StackedBarChart extends X2ChartWidget {
 			$oldx1 = $xval1;
 		}
 		if (isset($oldx1) && $otherTotal > 0) {
-			$this->storeValue($oldx, Yii::t('dashboard', 'Other'), $otherTotal);
+			$this->storeValue($oldx, Yii::t('charts', 'Other'), $otherTotal);
 		}
 		foreach ($this->plotSeries as $val) {
 			$tmpa = CMap::mergeArray($this->plotTicks, $this->plotData[$val]);

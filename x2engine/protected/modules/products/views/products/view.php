@@ -56,7 +56,10 @@ $this->actionMenu = $this->formatMenu(array(
 </div>
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Product')); ?>
 
+<div class="form">
+	<b><?php echo Yii::t('app', 'Tags'); ?></b>
 <?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Product')); ?>
+</div>
 
 <?php $this->widget('Attachments',array('associationType'=>'products','associationId'=>$model->id)); ?>
 </div>

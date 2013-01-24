@@ -38,7 +38,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/framework/yii.php';
 // remove the following lines when in production mode

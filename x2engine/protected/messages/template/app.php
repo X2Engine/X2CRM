@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,6 +82,11 @@ return array (
 'Manage Users'=>'',
 'Social Feed'=>'',
 'Preferences'=>'',
+'Reports'=>'',
+'Activity'=>'',
+'Service'=>'',
+'Go Invisible'=>'',
+'Go Visible'=>'',
 // // 
 // // Search Bar
 'X2Engine CRM Groupware'=>'',
@@ -94,6 +99,8 @@ return array (
 // // Footer
 'All Rights Reserved.'=>'',
 'Generated in {time} seconds.'=>'',
+'About'=>'',
+'The Program is provided AS IS, without warranty.'=>'',
 // // 
 // // Widgets
 'My Actions'=>'',
@@ -110,6 +117,7 @@ return array (
 'Top Sites'=>'',
 'Media'=>'',
 'Current time in'=>'',
+'Hide'=>'',
 // // 
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
@@ -216,6 +224,30 @@ return array (
 'results per page.'=>'',
 'Displaying {start}-{end} of {count} result(s).'=>'',
 'Marketing Dashboard'=>'',
+'You'=>'',
+'Quick Create'=>'',
+'Create a Contact, Account, and Opportunity.'=>'',
+'<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'',
+'less than'=>'',
+'less than or equal to'=>'',
+'greater than'=>'',
+'greater than or equal to'=>'',
+'equal to'=>'',
+'not equal to'=>'',
+' results per page'=>'',
+'Add to list:'=>'',
+'<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'',
+'Relationships'=>'',
+'Associate Account'=>'',
+'Associate Opportunity'=>'',
+'Associate Contact'=>'',
+'Contact Attributes'=>'',
+'CC:'=>'',
+'BCC:'=>'',
+'What should the map be named?'=>'',
+'Record not found.'=>'',
+'Saving...'=>'',
+'Module'=>'',
 // // 
 // // Misc Actions
 'Submit'=>'',
@@ -263,4 +295,88 @@ return array (
 'How to use Gii'=>'',
 'How to add a database field'=>'',
 // // 
+// // Activity Feed
+
+'Activity Feed'=>'',
+// // Filter Headers
+'Visibility'=>'',
+'Relevant Users'=>'',
+'Event Types'=>'',
+'Social Subtypes'=>'',
+'Options'=>'',
+'Set Default'=>'',
+'Apply Filters'=>'',
+// // Filter Text
+'Social Post'=>'',
+'Announcement'=>'',
+'Product Info'=>'',
+'Competitive Info'=>'',
+'Confidential'=>'',
+// // Event Types
+'Social Posts'=>'',
+'Records Created'=>'',
+'Records Deleted'=>'',
+'Action Reminders'=>'',
+'Actions Completed'=>'',
+'Calendar Events'=>'',
+'Cases Escalated'=>'',
+'Emails Opened'=>'',
+'Emails Sent'=>'',
+'Notifications'=>'',
+'Webleads Created'=>'',
+'Web Activity'=>'',
+'Workflow Complete'=>'',
+'Workflow Reverted'=>'',
+'Workflow Started'=>'',
+// // Event Text
+'created a new {actionLink} associated with the contact {contactLink}'=>'',
+'created a new {modelName}, {modelLink}'=>'',
+'created a new {modelName}, {deletionText}. It has been deleted.'=>'',
+'created a new {modelName}, but it could not be found.'=>'',
+'A new web lead has come in: {modelLink}'=>'',
+'A new web lead has come in: {deletionText}. It has been deleted.'=>'',
+'A new web lead has come in, but it could not be found.'=>'',
+'deleted a {modelType}, {text}'=>'',
+'started the workflow stage "{stage}" for the {modelName} {modelLink}'=>'',
+'started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'',
+'started a workflow stage, but the associated {modelName} was not found.'=>'',
+'started a workflow stage, but the workflow record could not be found.'=>'',
+'completed the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'',
+'completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'',
+'completed a workflow stage, but the associated {modelName} was not found.'=>'',
+'completed a workflow stage, but the workflow record could not be found.'=>'',
+'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'',
+'reverted a workflow stage, but the associated {modelName} was not found.'=>'',
+'reverted a workflow stage, but the workflow record could not be found.'=>'',
+'sent an email to the {transModelName} {modelLink}'=>'',
+'sent an email to a {transModelName}, but that record has been deleted.'=>'',
+'sent an email to a {transModelName}, but that record could not be found.'=>'',
+' has opened an email!'=>'',
+'A contact has opened an email, but that contact cannot be found.'=>'',
+'is currently on your website!'=>'',
+'A contact was on your website, but that contact cannot be found.'=>'',
+'escalated service case {modelLink} to {userLink}'=>'',
+'escalated a service case but that case could not be found.'=>'',
+'{calendarText} event: {actionDescription}'=>'',
+'{calendarText} event: event not found.'=>'',
+'Reminder! The following action is due now: {transModelLink}'=>'',
+'An action is due now, but the record could not be found.'=>'',
+'completed the following action: {actionDescription}'=>'',
+'completed an action, but the record could not be found.'=>'',
+// // Model Names
+'action'=>'',
+'contact'=>'',
+'account'=>'',
+'opportunity'=>'',
+'marketing campaign'=>'',
+
+// // Misc. Text
+'Minimize Posts'=>'',
+'Restore Posts'=>'',
+'My Groups'=>'',
+'Show/add comments'=>'',
+'Hide comments'=>'',
+'Broadcast Event'=>'',
+'Cancel Broadcast'=>'',
+'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'',
 );

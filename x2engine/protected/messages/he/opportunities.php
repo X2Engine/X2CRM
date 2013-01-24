@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,6 +68,7 @@ return array (
 'Google'=>'Google',
 'Facebook'=>'Facebook',
 'Walk In'=>'נכנס',
+'Last Activity'=>'הפעילות האחרונה',
 
 // Opportunities Actions
 'Opportunities List'=>'רשימת המכירות',
@@ -80,6 +81,7 @@ return array (
 'View'=>'לצפות',
 'Update'=>'לעדכן',
 'Update Opportunity:'=>':עדכן מכירה',
+'Edit Opportunity'=>'ערוך הזדמנות',
 
 'Add A User'=>'הוספת משתמש',
 'Add A Contact'=>'הוספת איש קשר',
@@ -102,4 +104,6 @@ return array (
 'Please select the users you wish to remove.'=>'בחר את המשתמשים שברצונך להסיר.',
 'Please select the contacts you wish to remove.'=>'אנא בחר את אנשי הקשר שברצונך להסיר.',
 'Opportunity Record Details'=>'שיא מכירה פרטי',
+'Create a new Contact associated with this Opportunity.'=>'יצירת איש קשר חדש הקשור בהזדמנות זו.',
+'Create a new Account associated with this Opportunity.'=>'צור חשבון חדש קשורים בהזדמנות זו.',
 );

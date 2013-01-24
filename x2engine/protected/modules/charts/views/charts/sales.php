@@ -40,14 +40,14 @@
 ?>
 <?php
 $this->actionMenu = $this->formatMenu(array(
-	array('label' => Yii::t('dashboard', 'Lead Volume'), 'url' => array('leadVolume')),
-	// array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
-	// array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
-	// array('label' => Yii::t('dashboard', 'Lead Sources'), 'url' => array('leadSources')),
-	// array('label' => Yii::t('dashboard', 'Workflow'), 'url' => array('workflow')),
-	array('label' => Yii::t('dashboard', 'Marketing'), 'url' => array('marketing')),
-	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
-	array('label' => Yii::t('dashboard', 'Opportunities'))
+	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
+	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
+	// array('label' => Yii::t('charts', 'Lead Performance'), 'url' => array('leadPerformance')),
+	// array('label' => Yii::t('charts', 'Lead Sources'), 'url' => array('leadSources')),
+	// array('label' => Yii::t('charts', 'Workflow'), 'url' => array('workflow')),
+	array('label' => Yii::t('charts', 'Marketing'), 'url' => array('marketing')),
+	array('label' => Yii::t('charts', 'Pipeline'), 'url' => array('pipeline')),
+	array('label' => Yii::t('charts', 'Opportunities'))
 ));
 ?>
 
@@ -75,15 +75,15 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('dashboard', 'Select leads received in the last&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select leads received in the last&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->radioButtonList($model, 'dateRange', array(
-					10 => Yii::t('dashboard', '10 days'),
-					30 => Yii::t('dashboard', '30 days'),
-					60 => Yii::t('dashboard', '60 days'),
-					90 => Yii::t('dashboard', '90 days'),
-					120 => Yii::t('dashboard', '120 days'),
-					360 => Yii::t('dashboard', '360 days')
+					10 => Yii::t('charts', '10 days'),
+					30 => Yii::t('charts', '30 days'),
+					60 => Yii::t('charts', '60 days'),
+					90 => Yii::t('charts', '90 days'),
+					120 => Yii::t('charts', '120 days'),
+					360 => Yii::t('charts', '360 days')
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
@@ -96,13 +96,13 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dealStatus', array('label' => Yii::t('dashboard', 'Select deals with status&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'dealStatus', array('label' => Yii::t('charts', 'Select deals with status&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->radioButtonList($model, 'dealStatus', array(
-					'Pending' => Yii::t('dashboard', 'Pending'),
-					'Won' => Yii::t('dashboard', 'Won'),
-					'Lost' => Yii::t('dashboard', 'Lost'),
-					'0' => Yii::t('dashboard', 'Any')
+					'Pending' => Yii::t('charts', 'Pending'),
+					'Won' => Yii::t('charts', 'Won'),
+					'Lost' => Yii::t('charts', 'Lost'),
+					'0' => Yii::t('charts', 'Any')
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
@@ -115,7 +115,7 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('dashboard', 'Select deals assigned to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('charts', 'Select deals assigned to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->dropDownList($model, 'assignedTo', array_merge(array('0' => 'All'), Groups::getNames(), User::getNames()));
 				?>
@@ -138,10 +138,10 @@ $this->actionMenu = $this->formatMenu(array(
 			),
 			'filters' => $filters,
 			'chartOptions' => array(
-				'title' => Yii::t('dashboard', 'Deal Value'),
+				'title' => Yii::t('charts', 'Deal Value'),
 				'axes' => array(
-					'xaxis' => array('label' => Yii::t('dashboard', 'Date Closing')),
-					'yaxis' => array('label' => Yii::t('dashboard', 'Value'),
+					'xaxis' => array('label' => Yii::t('charts', 'Date Closing')),
+					'yaxis' => array('label' => Yii::t('charts', 'Value'),
 						'tickOptions' => array(
 							'formatString' => '$%d'
 						)

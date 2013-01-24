@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,8 @@ return array (
 'Physical Mail'=>'通常の郵便',
 'Email Template'=>'メールテンプレート',
 'Update Campaign'=>'キャンペーンを更新',
+'Last Activity'=>'最後の活動',
+'Template'=>'テンプレート',
 
 // Menu
 'All Campaigns'=>'すべてのキャンペーン',
@@ -73,6 +75,7 @@ return array (
 'Newsletters'=>'ニュースレター',
 'Create Newsletter'=>'ニュースレターを作成する',
 'Create Web Form'=>'Webフォームを作成する',
+'Web Tracker'=>'ウェブトラッカー',
 
 // Launching
 'The campaign has already been launched.'=>'キャンペーンは既に開始された。',

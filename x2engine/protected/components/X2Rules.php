@@ -60,14 +60,19 @@ class X2Rules {
 
 			Event										Parameters															Response Variables
 			-------------------------------------------------------------------------------------------------------------------------------------------
-			Record - view								model type, model attributes										record, user
-			Record - field change						model type, model attributes, fieldName, comparison type/value		record, old attributes, user
-			Record - edit								model type, model attributes, user									record, user
-			Record - create action						model type, model attributes, user									record, user
-			Record - complete action					model type, model attributes, user									record, user
-			Record - create								model type, model attributes, user									record, user
-			Record - delete								model type, model attributes, user									record, user
-			Record - inactive (no edits, actions, etc)	model type, model attributes, user, duration						record, last activity, user
+			
+			
+			Record Activity								model type, filters, list
+			---------------								
+			View										model type, model attributes										record, user
+			Field change								model type, model attributes, fieldName, comparison type/value		record, old attributes, user
+			Edit										model type, model attributes, user									record, user
+			Create action								model type, model attributes, user									record, user
+			Complete action								model type, model attributes, user									record, user
+			Create										model type, model attributes, user									record, user
+			Delete										model type, model attributes, user									record, user
+			Inactive (no edits, actions, etc)			model type, model attributes, user, duration						record, last activity, user
+			Tags (added, removed)
 								
 			Workflow - start							workflowId, stage number, user										record, action, user
 			Workflow - complete							workflowId, stage number, user										record, action, user
@@ -80,6 +85,7 @@ class X2Rules {
 			
 			Weblead										model type, lead source, model attributes							record, lead source
 			Web activity								model attributes, campaign, 
+			
 
 		Conditions *
 		
@@ -109,7 +115,9 @@ class X2Rules {
 			-------------------------------------------------------------------------------------------------------------------------------------------
 			Email										to, from, subject, body
 
-			Notification								user, message
+			Create Event								type (automatic, custom), text (optional), user (optional), create notification?
+			
+			Reminder									text, timestamp (creates an event)
 
 			Create Action								assignedTo, type, dueDate, priority, description
 
@@ -121,12 +129,15 @@ class X2Rules {
 
 			Undo workflow stage							workflow, stage number
 				
-				
 			Create Record								type, all attributes
 			
 			Create/Remove Tags							tags
 			
 			Request URL (for APIs)						url, GET and POST variables
+			
+			Add to List (static only)					list name
+			
+			Remove from List							list name
 
 		
 		
@@ -140,7 +151,59 @@ class X2Rules {
 				
 				
 				
+		Tables:
+		
+		
+			CREATE TABLE x2_flows(
+				id						INT				AUTO_INCREMENT PRIMARY KEY,
+				active					TINYINT			NOT NULL DEFAULT 1,
+				name					VARCHAR(100)	NOT NULL,
+				createDate				BIGINT			NOT NULL
+			) ENGINE InnoDB  COLLATE = utf8_general_ci;
+			
+			CREATE TABLE x2_flow_items(
+				id						INT				AUTO_INCREMENT PRIMARY KEY,
+				flowId					INT				NOT NULL,
+				type					VARCHAR(20)		NOT NULL,
+				parent					INT				NOT NULL,
 				
+				FOREIGN KEY (flowId) REFERENCES x2_flows(id) ON UPDATE CASCADE ON DELETE CASCADE
+				
+			) ENGINE InnoDB  COLLATE = utf8_general_ci;
+			
+			CREATE TABLE x2_flow_conditions(
+				id						INT				AUTO_INCREMENT PRIMARY KEY,
+				flowId					INT				NOT NULL,
+				itemId					INT				NOT NULL,
+				type					VARCHAR(20)		NOT NULL,
+				
+				
+				
+				FOREIGN KEY (flowId) REFERENCES x2_flows(id) ON UPDATE CASCADE ON DELETE CASCADE,
+				FOREIGN KEY (itemId) REFERENCES x2_items(id) ON UPDATE CASCADE ON DELETE CASCADE
+				
+			) ENGINE InnoDB  COLLATE = utf8_general_ci;
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			places to check for triggers:
+			
+			
+			X2Model::create()
+			X2Model::calculateChanges()			field change, reassignment, 
+			
+			ActionsController::actionComplete
+			ActionsController::actionUncomplete
+			ActionsController::actionUncomplete
+			
+			
+			
 			
 			
 			
@@ -151,5 +214,61 @@ class X2Rules {
 			
 		 */
 	}
+	
+	public static function parseVariables($str,$vars=array(),$modelClass=null,$modelId=null) {
+	
+		
+		$message = str_replace('\\\\', '\\\\\\', $message);
+		$message = str_replace('$', '\\$', $message);
+		
+		$str = preg_replace('/{content}/u','<!--BeginMsg-->'.$message.'<!--EndMsg-->',$str);
+		$str = preg_replace('/{signature}/u','<!--BeginSig-->'.$signature.'<!--EndSig-->',$str);
+		
+		
+		// if there is a model name/id available, look it up and use its attributes
+		if(isset($modelClass, $modelId)) {
+			$model = CActiveRecord::model($modelClass)->findByPk($modelId);
+			
+			if($model !== null) {
+			
+				$matches = array();
+				preg_match_all('/{\w+}/',$str,$matches);	// find all the things
+				
+				if(isset($matches[0])) {					// loop through the things
+					foreach($matches[0] as $match) {
+						$match = substr($match,1,-1);	// remove { and }
+						
+						if($model->hasAttribute($match)) {
+							$value = $model->renderAttribute($match,false,true);	// get the correctly formatted attribute
+							$str = preg_replace('/{'.$match.'}/',$value,$str);
+						}
+					}
+				}
+			}
+		}
+		
+		return;
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public function parseValues($string,$model,$textOnly=false) {
+		
+		
+		// $string
+		
+		
+		
+	}
+	
+	
 }
 ?>

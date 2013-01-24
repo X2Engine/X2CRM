@@ -311,7 +311,14 @@ class MarketingController extends x2base {
 				Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
 				$this->redirect(array('index'));
 			}
-	
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
 			$list = $model->list;
 			if(isset($list) && $list->type == "campaign")
 				$list->delete();
@@ -579,12 +586,13 @@ class MarketingController extends x2base {
 		//setup campaign email settings
 		try {
 			$phpMail = $this->getPhpMailer();
-			try {
-				//lookup current user's email address
-				$fromEmail = Yii::app()->params->profile->emailAddress;
-				$fromName = Yii::app()->params->profile->fullName;
-			} catch (Exception $e) {
-				//use site defaults otherwise
+			
+			// lookup campaign owner's email address
+			$profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$campaign->createdBy));
+			if($profile !== null) {
+				$fromEmail = $profile->emailAddress;
+				$fromName = $profile->fullName;
+			} else {	//use site defaults otherwise
 				$fromEmail = Yii::app()->params->admin->emailFromAddr;
 				$fromName = Yii::app()->params->admin->emailFromName;
 			}
@@ -662,7 +670,7 @@ class MarketingController extends x2base {
 					$emailBody .= $unsubText;
 				}
 
-				$emailBody = x2base::convertUrls($emailBody, false);
+				// $emailBody = x2base::convertUrls($emailBody, false);
 				
 				/* disable this for now
 				//replace existing links with tracking links
@@ -688,8 +696,13 @@ class MarketingController extends x2base {
 						
 						$contact = new Contacts();
 						$contact->setAttributes($recipient);	
+
 						if($contact->hasAttribute($match)) {
-							$value = $contact->renderAttribute($match, false, true);	// get the correctly formatted attribute
+							if($match === 'trackingKey')
+								$value = $uniqueId;		// use the campaign key for this, not the general key
+							else
+								$value = $contact->renderAttribute($match, false, true);	// get the correctly formatted attribute
+								
 							$emailBody = preg_replace('/{'.$match.'}/', $value, $emailBody);
 						}
 					}
@@ -939,7 +952,10 @@ class MarketingController extends x2base {
 			$action->associationName = $item->contact->name;
 			$action->visibility = $item->contact->visibility;
 			$action->assignedTo = $item->contact->assignedTo;
-			
+			$event=new Events;
+            $event->level=2;
+            $event->associationId=$action->associationId;
+            $event->associationType='Contacts';
 			if($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
 				$notif = new Notification;
 				$notif->user = $action->assignedTo;
@@ -1018,6 +1034,11 @@ class MarketingController extends x2base {
 			$action->type = 'email_opened';
 			$action->save();
 			// create notification
+            if(isset($event)){
+                $event->user=$item->contact->assignedTo;
+                $event->type='email_opened';
+                $event->save();
+            }
 			if(isset($notif)) {
 				$notif->type = 'email_opened';
 				$notif->save();
@@ -1040,6 +1061,11 @@ class MarketingController extends x2base {
 			$action->type = 'email_clicked';
 			$action->save();
 			// create notification
+            if(isset($event)){
+                $event->level=3;
+                $event->type='email_clicked';
+                $event->save();
+            }
 			if(isset($notif)) {
 				$notif->type = 'email_clicked';
 				$notif->save();

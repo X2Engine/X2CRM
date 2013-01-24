@@ -85,17 +85,19 @@ abstract class x2base extends X2Controller {
 			'setPortlets', // performs widget ordering and show/hide on each page
 		);
 	}
-
+	
 	protected function beforeAction($action = null) {
 		$auth = Yii::app()->authManager;
 		$params = array();
 		$action = $this->getAction()->getId();
-		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','addComment','deletePost');
-
-		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest) {
-			if (method_exists($this, 'loadModel')) {
+		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
+        if(class_exists($this->modelClass)){
+            $model=CActiveRecord::model($this->modelClass);
+        }
+		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
+			if ($model->hasAttribute('assignedTo') && method_exists($this, 'loadModel')) {
 				$model = $this->loadModel($_GET['id']);
-				if($model!==null && $model->hasAttribute('assignedTo')) {
+				if($model!==null) {
 					$params['assignedTo'] = $model->assignedTo;
 				}
 			}
@@ -518,9 +520,7 @@ abstract class x2base extends X2Controller {
         // Make sure all links open in new window, and have http:// if missing
         $text = preg_replace(
                 array('/<a([^>]+)target=("[^"]+"|\'[^\']\'|[^\s]+)([^>]+)/i',
-            '/<a([^>]+)>/i',
             '/<a([^>]+href="?\'?)(www\.|ftp\.)/i'), array('<a\\1\\3',
-            '<a\\1 target="_blank">',
             '<a\\1http://\\2'), $text
         );
 
@@ -551,6 +551,8 @@ abstract class x2base extends X2Controller {
     public function create($model, $oldAttributes, $api) {
         $name = $this->modelClass;
         $model->createDate = time();
+        if($model->hasAttribute('lastUpdated'))
+            $model->lastUpdated=time();
 		if($model->hasAttribute('lastActivity'))
 			$model->lastActivity = time();
 		
@@ -581,6 +583,15 @@ abstract class x2base extends X2Controller {
             }
             $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
             $this->updateChangelog($model, $changes);
+            $event=new Events;
+            $event->level=2;
+            $event->associationType=$name;
+            $event->associationId=$model->id;
+            $event->user=Yii::app()->user->getName();
+            $event->type='record_create';
+            if(!$model instanceof Contacts || $api==0){ // Event creation already handled by web lead.
+                $event->save(); 
+            }
             if ($model->hasAttribute('assignedTo')) {
                 if (!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
 
@@ -594,17 +605,29 @@ abstract class x2base extends X2Controller {
                     $notif->save();
                 }
             }
-            if ($model instanceof Actions && $api == 0) {
-                if (isset($_GET['inline']) || $model->type == 'note')
-                    if ($model->associationType == 'product' || $model->associationType == 'products')
-                        $this->redirect(array('/products/products/view', 'id' => $model->associationId));
-                    //TODO: avoid such hackery
-                    else if ($model->associationType == 'Campaign')
-                        $this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
+            if ($model instanceof Actions) {
+                if(empty($model->type)){
+                    $event=new Events;
+                    $event->timestamp=$model->dueDate;
+                    $event->level=1;
+                    $event->type='action_reminder';
+                    $event->associationType="Actions";
+                    $event->associationId=$model->id;
+                    $event->user=$model->assignedTo;
+                    $event->save();
+                }
+                if($api==0){
+                    if (isset($_GET['inline']) || $model->type == 'note')
+                        if ($model->associationType == 'product' || $model->associationType == 'products')
+                            $this->redirect(array('/products/products/view', 'id' => $model->associationId));
+                        //TODO: avoid such hackery
+                        else if ($model->associationType == 'Campaign')
+                            $this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
+                        else
+                            $this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
                     else
-                        $this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
-                else
-                    $this->redirect(array('view', 'id' => $model->id));
+                        $this->redirect(array('view', 'id' => $model->id));
+                }
             } else if ($api == 0) {
                 $this->redirect(array('view', 'id' => $model->id));
             } else {
@@ -629,6 +652,43 @@ abstract class x2base extends X2Controller {
         $changes = $this->calculateChanges($temp, $model->attributes, $model);
         $model = $this->updateChangelog($model, $changes);
         if ($model->save()) {
+        	if( $model instanceof Contacts) {
+        		// send subscribe emails if anyone has subscribed to this contact
+        		$result = Yii::app()->db->createCommand()
+						->select()
+						->from('x2_subscribe_contacts')
+						->where("contact_id={$model->id}")
+						->queryAll();
+				
+				$datetime = $this->formatLongDateTime(time());
+				$modelLink = CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/' . $model->id));
+				$subject = "X2CRM: {$model->name} updated";
+				$message = "Hello,<br>\n<br>\n";
+				$message .= "You are receiving this email because you are subscribed to changes made to the contact $modelLink in X2CRM. ";
+				$message .= "The following changes were made on $datetime:<br>\n<br>\n";
+				
+				foreach($changes as $attribute=>$change) {
+					if($attribute != 'lastActivity') {
+						$old = $change['old'] == ''? '-----' : $change['old'];
+						$new = $change['new'] == ''? '-----' : $change['new'];
+						$label = $model->getAttributeLabel($attribute);
+						$message .= "$label: $old => $new<br>\n";
+					}
+				}
+				
+				$message .="<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
+				
+				$adminProfile = Profile::model()->findByPk(1);
+				foreach($result as $subscription) {
+					$profile = Profile::model()->findByPk($subscription['user_id']);
+					if($profile && $profile->emailAddress && $adminProfile && $adminProfile->emailAddress) {
+						$to = array($profile->fullName, $profile->emailAddress);
+						$from = array('name'=> $adminProfile->fullName, 'address'=>$adminProfile->emailAddress);
+						$this->sendUserEmail($to, $subject, $message, null, $from);
+					}
+				}
+				
+        	}
             if (!($model instanceof Actions)) {
                 $fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
                 foreach ($fields as $field) {
@@ -862,7 +922,12 @@ abstract class x2base extends X2Controller {
 
                         if ($criteria->type == 'notification') {
                             foreach ($users as $user) {
-
+                                $event=new Events;
+                                $event->level=1;
+                                $event->user=$user;
+                                $event->associationType='Notifications';
+                                $event->type='notif';
+                                
                                 $notif = new Notification;
                                 $notif->type = 'change';
                                 $notif->fieldName = $keys[$i];
@@ -880,7 +945,10 @@ abstract class x2base extends X2Controller {
                                 $notif->createdBy = Yii::app()->user->name;
                                 $notif->createDate = time();
 
-                                $notif->save();
+                                if($notif->save()){
+                                    $event->associationId=$notif->id;
+                                    $event->save();
+                                }
                             }
                         } elseif ($criteria->type == 'action') {
                             $users = explode(", ", $criteria->users);
@@ -911,13 +979,22 @@ abstract class x2base extends X2Controller {
                             $model->assignedTo = $criteria->users;
 
                             if ($model->save()) {
+                                $event=new Events;
+                                $event->type='notif';
+                                $event->level=1;
+                                $event->user=$model->assignedTo;
+                                $event->associationType='Notifications';
+                                
                                 $notif = new Notification;
                                 $notif->user = $model->assignedTo;
                                 $notif->createDate = time();
                                 $notif->type = 'assignment';
                                 $notif->modelType = $this->modelClass;
                                 $notif->modelId = $new['id'];
-                                $notif->save();
+                                if($notif->save()){
+                                    $event->associationId=$notif->id;
+                                    $event->save();
+                                }
                             }
                         }
                     }
@@ -1052,7 +1129,7 @@ abstract class x2base extends X2Controller {
         throw new Exception($message);
     }
 
-	/**
+    /**
 	 *	send an email from x2
 	 *
 	 *	@param addresses
@@ -1368,6 +1445,15 @@ abstract class x2base extends X2Controller {
             return '';
         else
             return Yii::app()->dateFormatter->formatDateTime($timestamp, 'long', 'short');
+    }
+    
+    function formatFeedTimestamp($timestamp){
+        if(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)==Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),time())){
+            $str=Yii::t('app','Today').' '.Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
+        }else{
+            $str=Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)." ".Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
+        }
+        return $str;
     }
 
     /**

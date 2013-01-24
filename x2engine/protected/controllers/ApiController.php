@@ -213,10 +213,28 @@ class ApiController extends x2base {
 			$this->_sendResponse(403, "Invalid user credentials.");
 		}
     } */
-	
-	
-	
-	
+
+	public function actionCheckPermissions($action, $username, $api=0){
+        $auth=Yii::app()->authManager;
+        $item=$auth->getAuthItem($action);
+        $authenticated=$auth->getAuthItem('DefaultRole');
+        if(isset($item) && $username!='admin'){
+            $access=$authenticated->checkAccess($action);
+            $userId=User::model()->findByAttributes(array('username'=>$username))->id;
+            $roles=RoleToUser::model()->findAllByAttributes(array('userId'=>$userId));
+            foreach($roles as $role){
+                $access=$access || $auth->checkAccess($action, $role->roleId);
+            }
+        }else{
+            $access=true;
+        }
+        if($api==1){
+            $access=$access?"true":"false";
+            $this->_sendResponse('200',$access);
+        }else{
+            return $access;
+        }
+    }
 	
 	
 	
@@ -232,134 +250,138 @@ class ApiController extends x2base {
      * 'authUser' and 'authPassword' for the request to be authenticated.
      */
     public function actionCreate() {
-        if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
-            $username = $_POST['authUser'];
-            $password = $_POST['authPassword'];
-            $apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
-            if (isset($apiUser)) {
-                switch ($_GET['model']) {
-                    // Get an instance of the respective model
-                    case 'Contacts':
-                        $model = new Contacts;
-                        $this->modelClass = "Contacts";
-                        $temp = $model->attributes;
-                        break;
-                    case 'Actions':
-                        $model = new Actions;
-                        $this->modelClass = "Actions";
-                        $temp = $model->attributes;
-                        break;
-                    case 'Accounts':
-                        $model = new Accounts;
-                        $this->modelClass = "Accounts";
-                        $temp = $model->attributes;
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
-                }
-                
-                $model->setX2Fields($_POST);
-                
+        if (isset($_POST['userKey']) && isset($_POST['user'])) {
+            $userKey = $_POST['userKey'];
+            $user = $_POST['user'];
+            $userRecord=User::model()->findByAttributes(array('username'=>$user,'userKey'=>$userKey));
+            if (isset($userRecord)){
+                if($this->actionCheckPermissions($_GET['model'].'Create',$user,0)){
+                    switch ($_GET['model']) {
+                        // Get an instance of the respective model
+                        case 'Contacts':
+                            $model = new Contacts;
+                            $this->modelClass = "Contacts";
+                            $temp = $model->attributes;
+                            break;
+                        case 'Actions':
+                            $model = new Actions;
+                            $this->modelClass = "Actions";
+                            $temp = $model->attributes;
+                            break;
+                        case 'Accounts':
+                            $model = new Accounts;
+                            $this->modelClass = "Accounts";
+                            $temp = $model->attributes;
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
 
-                switch ($_GET['model']) {
-                    case 'Contacts':
-                        
-                        Yii::import("application.modules.contacts.controllers.ContactsController");
-                        $controller = new ContactsController('ContactsController');
-                        if ($controller->create($model, $temp, '1')) {
-                            $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->firstName . " " . $model->lastName));
-                        } else {
-                            // Errors occurred
-                            $msg = "<h1>Error</h1>";
-                            $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
-                            $msg .= "<ul>";
-                            foreach ($model->errors as $attribute => $attr_errors) {
-                                $msg .= "<li>Attribute: $attribute</li>";
+                    $model->setX2Fields($_POST);
+
+
+                    switch ($_GET['model']) {
+                        case 'Contacts':
+
+                            Yii::import("application.modules.contacts.controllers.ContactsController");
+                            $controller = new ContactsController('ContactsController');
+                            if ($controller->create($model, $temp, '1')) {
+                                $this->_sendResponse(200, json_encode($model->attributes));
+                            } else {
+                                // Errors occurred
+                                $msg = "<h1>Error</h1>";
+                                $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error){
-                                    $msg .= "<li>$attr_error</li>";
+                                foreach ($model->errors as $attribute => $attr_errors) {
+                                    $msg .= "<li>Attribute: $attribute</li>";
+                                    $msg .= "<ul>";
+                                    foreach ($attr_errors as $attr_error){
+                                        $msg .= "<li>$attr_error</li>";
+                                    }
+                                    $msg .= "</ul>";
                                 }
                                 $msg .= "</ul>";
+                                $notif=new Notification;
+                                $notif->user='admin';
+                                $notif->type='lead_failure';
+                                $notif->createdBy='API';
+                                $notif->createDate = time();
+                                $notif->save();
+
+                                $to=Yii::app()->params->admin->webLeadEmail;
+                                $subject="Web Lead Failure";
+                                $phpMail = $this->getPhpMailer();
+                                $fromEmail = Yii::app()->params->admin->emailFromAddr;
+                                $fromName = Yii::app()->params->admin->emailFromName;
+                                $phpMail->AddReplyTo($fromEmail, $fromName);
+                                $phpMail->SetFrom($fromEmail, $fromName);
+                                $phpMail->Subject = $subject;
+                                $phpMail->AddAddress($to, 'X2CRM Administrator');
+                                $phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
+                                $phpMail->Send();
+
+                                $attributes=$model->attributes;
+                                ksort($attributes);
+                                if(file_exists('failed_leads.csv')){
+                                    $fp=fopen('failed_leads.csv',"a+");
+                                    fputcsv($fp,$attributes);
+                                }else{
+                                    $fp=fopen('failed_leads.csv',"a+");
+                                    fputcsv($fp,array_keys($attributes));
+                                    fputcsv($fp,$attributes);
+                                }
+                                $this->_sendResponse(500, $msg);
                             }
-                            $msg .= "</ul>";
-                            $notif=new Notification;
-                            $notif->user='admin';
-                            $notif->type='lead_failure';
-                            $notif->createdBy='API';
-                            $notif->createDate = time();
-                            $notif->save();
-                            
-                            $to=Yii::app()->params->admin->webLeadEmail;
-                            $subject="Web Lead Failure";
-                            $phpMail = $this->getPhpMailer();
-                            $fromEmail = Yii::app()->params->admin->emailFromAddr;
-                            $fromName = Yii::app()->params->admin->emailFromName;
-                            $phpMail->AddReplyTo($fromEmail, $fromName);
-                            $phpMail->SetFrom($fromEmail, $fromName);
-                            $phpMail->Subject = $subject;
-                            $phpMail->AddAddress($to, 'X2CRM Administrator');
-                            $phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
-                            $phpMail->Send();
-                            
-                            $attributes=$model->attributes;
-                            ksort($attributes);
-                            if(file_exists('failed_leads.csv')){
-                                $fp=fopen('failed_leads.csv',"a+");
-                                fputcsv($fp,$attributes);
-                            }else{
-                                $fp=fopen('failed_leads.csv',"a+");
-                                fputcsv($fp,array_keys($attributes));
-                                fputcsv($fp,$attributes);
-                            }
-                            $this->_sendResponse(500, $msg);
-                        }
-                        break;
-                    case 'Accounts':
-                        Yii::import("application.modules.accounts.controllers.AccountsController");
-                        $controller = new AccountsController('AccountsController');
-                        if ($controller->create($model, $temp, '1')) {
-                            $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->name));
-                        } else {
-                            // Errors occurred
-                            $msg = "<h1>Error</h1>";
-                            $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
-                            $msg .= "<ul>";
-                            foreach ($model->errors as $attribute => $attr_errors) {
-                                $msg .= "<li>Attribute: $attribute</li>";
+                            break;
+                        case 'Accounts':
+                            Yii::import("application.modules.accounts.controllers.AccountsController");
+                            $controller = new AccountsController('AccountsController');
+                            if ($controller->create($model, $temp, '1')) {
+                                $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $_GET['model'], $model->name));
+                            } else {
+                                // Errors occurred
+                                $msg = "<h1>Error</h1>";
+                                $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error)
-                                    $msg .= "<li>$attr_error</li>";
+                                foreach ($model->errors as $attribute => $attr_errors) {
+                                    $msg .= "<li>Attribute: $attribute</li>";
+                                    $msg .= "<ul>";
+                                    foreach ($attr_errors as $attr_error)
+                                        $msg .= "<li>$attr_error</li>";
+                                    $msg .= "</ul>";
+                                }
                                 $msg .= "</ul>";
+                                $this->_sendResponse(500, $msg);
                             }
-                            $msg .= "</ul>";
-                            $this->_sendResponse(500, $msg);
-                        }
-                        break;
-                    case 'Actions':
-                        Yii::import("application.modules.actions.controllers.ActionsController");
-                        $controller = new ActionsController('ActionsController');
-                        if ($controller->create($model, $temp, '1')) {
-                            $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with description <b>%s</b>', $_GET['model'], $model->actionDescription));
-                        } else {
-                            // Errors occurred
-                            $msg = "<h1>Error</h1>";
-                            $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
-                            $msg .= "<ul>";
-                            foreach ($model->errors as $attribute => $attr_errors) {
-                                $msg .= "<li>Attribute: $attribute</li>";
+                            break;
+                        case 'Actions':
+                            Yii::import("application.modules.actions.controllers.ActionsController");
+                            $controller = new ActionsController('ActionsController');
+                            if ($controller->create($model, $temp, '1')) {
+                                $this->_sendResponse(200, sprintf('Model <b>%s</b> was created with description <b>%s</b>', $_GET['model'], $model->actionDescription));
+                            } else {
+                                // Errors occurred
+                                $msg = "<h1>Error</h1>";
+                                $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error)
-                                    $msg .= "<li>$attr_error</li>";
+                                foreach ($model->errors as $attribute => $attr_errors) {
+                                    $msg .= "<li>Attribute: $attribute</li>";
+                                    $msg .= "<ul>";
+                                    foreach ($attr_errors as $attr_error)
+                                        $msg .= "<li>$attr_error</li>";
+                                    $msg .= "</ul>";
+                                }
                                 $msg .= "</ul>";
+                                $this->_sendResponse(500, $msg);
                             }
-                            $msg .= "</ul>";
-                            $this->_sendResponse(500, $msg);
-                        }
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
+                }else{
+                    $this->_sendResponse(403, "This user does not have permission to create model: <b>".$_GET['model']."</b>.");
                 }
             } else {
                 $this->_sendResponse(403, "Invalid user credentials.");
@@ -383,113 +405,111 @@ class ApiController extends x2base {
      * with 'authUser' and 'authPassword' just as in create.
      */
     public function actionUpdate() {
-        if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
-            $username = $_POST['authUser'];
-            $password = $_POST['authPassword'];
-            $apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
-            if (isset($apiUser)) {
-                switch ($_GET['model']) {
-                    // Find respective model
-                    case 'Contacts':
-                        $model = CActiveRecord::model('Contacts')->findByPk($_GET['id']);
-                        $this->modelClass = "Contacts";
-                        $temp = $model->attributes;
-                        break;
-                    case 'Actions':
-                        $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
-                        $this->modelClass = "Actions";
-                        $temp = $model->attributes;
-                        break;
-                    case 'Accounts':
-                        $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
-                        $this->modelClass = "Accounts";
-                        $temp = $model->attributes;
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf('Error: Mode <b>update</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
-                }
-                // Did we find the requested model? If not, raise an error
-                if (is_null($model))
-                    $this->_sendResponse(400, sprintf("Error: Didn't find any model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_GET['id']));
+        if (isset($_POST['userKey']) && isset($_POST['user'])) {
+            $userKey = $_POST['userKey'];
+            $user = $_POST['user'];
+            $userRecord=User::model()->findByAttributes(array('username'=>$user,'userKey'=>$userKey));
+            if (isset($userRecord)){
+                if($this->actionCheckPermissions($_GET['model'].'Update',$user,0)){
+                    switch ($_GET['model']) {
+                        // Find respective model
+                        case 'Contacts':
+                            $model = CActiveRecord::model('Contacts')->findByPk($_POST['id']);
+                            $this->modelClass = "Contacts";
+                            $temp = $model->attributes;
+                            break;
+                        case 'Actions':
+                            $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
+                            $this->modelClass = "Actions";
+                            $temp = $model->attributes;
+                            break;
+                        case 'Accounts':
+                            $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
+                            $this->modelClass = "Accounts";
+                            $temp = $model->attributes;
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf('Error: Mode <b>update</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
+                    // Did we find the requested model? If not, raise an error
+                    if (is_null($model))
+                        $this->_sendResponse(400, sprintf("Error: Didn't find any model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_GET['id']));
 
-                // Try to assign PUT parameters to attributes
-                foreach ($_POST as $var => $value) {
-                    // Does the model have this attribute? If not raise an error
-                    if ($model->hasAttribute($var))
-                        $model->$var = $value;
-                    else
-                        $this->_sendResponse(500, sprintf('Parameter <b>%s</b> is not allowed for model <b>%s</b>', $var, $_GET['model']));
-                }
-                // Try to save the model
-                switch ($_GET['model']) {
-                    // Get an instance of the respective model
-                    case 'Contacts':
-                        Yii::import("application.modules.contacts.controllers.ContactsController");
-                        $controller = new ContactsController('ContactsController');
-                        if ($controller->create($model, $temp, '1')) {
-                            $this->_sendResponse(200, sprintf('Model <b>%s</b> was updated with name <b>%s</b>', $_GET['model'], $model->firstName . " " . $model->lastName));
-                        } else {
-                            // Errors occurred
-                            $msg = "<h1>Error</h1>";
-                            $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
-                            $msg .= "<ul>";
-                            foreach ($model->errors as $attribute => $attr_errors) {
-                                $msg .= "<li>Attribute: $attribute</li>";
+                    $model->setX2Fields($_POST);
+
+                    // Try to save the model
+                    switch ($_GET['model']) {
+                        // Get an instance of the respective model
+                        case 'Contacts':
+                            Yii::import("application.modules.contacts.controllers.ContactsController");
+                            $controller = new ContactsController('ContactsController');
+                            if ($controller->update($model, $temp, '1')) {
+                                $this->_sendResponse(200, json_encode($model->attributes));
+                            } else {
+                                // Errors occurred
+                                $msg = "<h1>Error</h1>";
+                                $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error)
-                                    $msg .= "<li>$attr_error</li>";
+                                foreach ($model->errors as $attribute => $attr_errors) {
+                                    $msg .= "<li>Attribute: $attribute</li>";
+                                    $msg .= "<ul>";
+                                    foreach ($attr_errors as $attr_error)
+                                        $msg .= "<li>$attr_error</li>";
+                                    $msg .= "</ul>";
+                                }
                                 $msg .= "</ul>";
+                                $this->_sendResponse(500, $msg);
                             }
-                            $msg .= "</ul>";
-                            $this->_sendResponse(500, $msg);
-                        }
-                        break;
-                    case 'Accounts':
-                        Yii::import("application.modules.accounts.controllers.AccountsController");
-                        $controller = new AccountsController('AccountsController');
-                        if ($controller->update($model, $temp, '1')) {
-                            $this->_sendResponse(200, sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.', $_GET['model'], $model->id));
-                        } else {
-                            // Errors occurred
-                            $msg = "<h1>Error</h1>";
-                            $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
-                            $msg .= "<ul>";
-                            foreach ($model->errors as $attribute => $attr_errors) {
-                                $msg .= "<li>Attribute: $attribute</li>";
+                            break;
+                        case 'Accounts':
+                            Yii::import("application.modules.accounts.controllers.AccountsController");
+                            $controller = new AccountsController('AccountsController');
+                            if ($controller->update($model, $temp, '1')) {
+                                $this->_sendResponse(200, 1);
+                            } else {
+                                // Errors occurred
+                                $msg = "<h1>Error</h1>";
+                                $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error)
-                                    $msg .= "<li>$attr_error</li>";
+                                foreach ($model->errors as $attribute => $attr_errors) {
+                                    $msg .= "<li>Attribute: $attribute</li>";
+                                    $msg .= "<ul>";
+                                    foreach ($attr_errors as $attr_error)
+                                        $msg .= "<li>$attr_error</li>";
+                                    $msg .= "</ul>";
+                                }
                                 $msg .= "</ul>";
+                                $this->_sendResponse(500, $msg);
                             }
-                            $msg .= "</ul>";
-                            $this->_sendResponse(500, $msg);
-                        }
-                        break;
-                    case 'Actions':
-                        Yii::import("application.modules.actions.controllers.ActionsController");
-                        $controller = new ActionsController('ActionsController');
-                        if ($controller->update($model, $temp, '1')) {
-                            $this->_sendResponse(200, sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.', $_GET['model'], $model->id));
-                        } else {
-                            // Errors occurred
-                            $msg = "<h1>Error</h1>";
-                            $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
-                            $msg .= "<ul>";
-                            foreach ($model->errors as $attribute => $attr_errors) {
-                                $msg .= "<li>Attribute: $attribute</li>";
+                            break;
+                        case 'Actions':
+                            Yii::import("application.modules.actions.controllers.ActionsController");
+                            $controller = new ActionsController('ActionsController');
+                            if ($controller->update($model, $temp, '1')) {
+                                $this->_sendResponse(200, sprintf('Model <b>%s</b> with ID <b>%s</b> was updated.', $_GET['model'], $model->id));
+                            } else {
+                                // Errors occurred
+                                $msg = "<h1>Error</h1>";
+                                $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
                                 $msg .= "<ul>";
-                                foreach ($attr_errors as $attr_error)
-                                    $msg .= "<li>$attr_error</li>";
+                                foreach ($model->errors as $attribute => $attr_errors) {
+                                    $msg .= "<li>Attribute: $attribute</li>";
+                                    $msg .= "<ul>";
+                                    foreach ($attr_errors as $attr_error)
+                                        $msg .= "<li>$attr_error</li>";
+                                    $msg .= "</ul>";
+                                }
                                 $msg .= "</ul>";
+                                $this->_sendResponse(500, $msg);
                             }
-                            $msg .= "</ul>";
-                            $this->_sendResponse(500, $msg);
-                        }
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
+                }else{
+                    $this->_sendResponse(403, "This user does not have permission to update model: <b>".$_GET['model']."</b>.");
                 }
             } else {
                 $this->_sendResponse(403, "Invalid user credentials.");
@@ -564,40 +584,75 @@ class ApiController extends x2base {
      * Include 'authUser' and 'authPassword' just like in create and update.
      */
     public function actionView() {
-        if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
-            $username = $_POST['authUser'];
-            $password = $_POST['authPassword'];
-            $apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
-            if (isset($apiUser)) {
-                if (!isset($_GET['id']))
-                    $this->_sendResponse(500, 'Error: Parameter <b>id</b> is missing');
+        if (isset($_POST['userKey']) && isset($_POST['user'])) {
+            $userKey = $_POST['userKey'];
+            $user = $_POST['user'];
+            $userRecord=User::model()->findByAttributes(array('username'=>$user,'userKey'=>$userKey));
+            if (isset($userRecord)){
+                if($this->actionCheckPermissions($_GET['model'].'View',$user,0)){
+                    if (!isset($_GET['id']))
+                        $this->_sendResponse(500, 'Error: Parameter <b>id</b> is missing');
 
-                switch ($_GET['model']) {
-                    // Find respective model    
-                    case 'Contacts':
-                        $model = CActiveRecord::model('Contacts')->findByPk($_GET['id']);
-                        break;
-                    case 'Actions':
-                        $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
-                        break;
-                    case 'Accounts':
-                        $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf(
-                                        'Mode <b>view</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
+                    switch ($_GET['model']) {
+                        // Find respective model    
+                        case 'Contacts':
+                            $model = CActiveRecord::model('Contacts')->findByPk($_GET['id']);
+                            break;
+                        case 'Actions':
+                            $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
+                            break;
+                        case 'Accounts':
+                            $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf(
+                                            'Mode <b>view</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
+                    // Did we find the requested model? If not, raise an error
+                    if (is_null($model))
+                        $this->_sendResponse(404, 'No Item found with id ' . $_GET['id']);
+                    else
+                        $this->_sendResponse(200, CJSON::encode($model->attributes));
+                }else{
+                    $this->_sendResponse(403, "This user does not have permission to view model: <b>".$_GET['model']."</b>.");
                 }
-                // Did we find the requested model? If not, raise an error
-                if (is_null($model))
-                    $this->_sendResponse(404, 'No Item found with id ' . $_GET['id']);
-                else
-                    $this->_sendResponse(200, CJSON::encode($model->attributes));
             }else {
                 $this->_sendResponse(403, "Invalid user credentials.");
             }
         } else {
             $this->_sendResponse(403, "No credentials provided.");
+        }
+    }
+    
+    public function actionList(){
+        if (isset($_POST['userKey']) && isset($_POST['user'])) {
+            $userKey = $_POST['userKey'];
+            $user = $_POST['user'];
+            $userRecord=User::model()->findByAttributes(array('username'=>$user,'userKey'=>$userKey));
+            if (isset($userRecord)){
+                if($this->actionCheckPermissions('ContactsList',$user,0)){
+                    $accessLevel=$this->getAccessLevel('Contacts',$user);
+                    $listId=$_POST['id'];
+                    $list=X2List::model()->findByPk($listId);
+                    if(isset($list)){
+                        //$list=X2List::load($listId);
+                    }else{
+                        $list=X2List::model()->findByAttributes(array('name'=>$listId));
+                        if(isset($list)){
+                            $listId=$list->id;
+                            //$list=X2List::load($listId);
+                        }else{
+                            $this->_sendResponse(404,'No list found with id: '.$_POST['id']);
+                        }
+                    }
+                    $model=new Contacts('search');
+                    $dataProvider=$model->searchList($listId,10);
+                    $data=$dataProvider->getData();
+                    printR($dataProvider,true);
+                    $this->_sendResponse(200,json_encode($data));
+                }
+            }
         }
     }
 
@@ -613,33 +668,32 @@ class ApiController extends x2base {
      * 'authUser' and 'authPassword' are required.
      */
     public function actionLookup() {
-        if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
-            $username = $_POST['authUser'];
-            $password = $_POST['authPassword'];
-            $apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
-            if (isset($apiUser)) {
-                switch ($_GET['model']) {
-                    // Find respective model    
-                    case 'Contacts':
-                        $attributes = array();
-                        if (isset($_GET['firstName']))
-                            $attributes['firstName'] = $_GET['firstName'];
-                        if (isset($_GET['lastName']))
-                            $attributes['lastName'] = $_GET['lastName'];
-                        if (isset($_GET['email']))
-                            $attributes['email'] = $_GET['email'];
-                        $model = CActiveRecord::model('Contacts')->findByAttributes($attributes);
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf(
-                                        'Mode <b>view</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
+        if (isset($_POST['userKey']) && isset($_POST['user'])) {
+            $userKey = $_POST['userKey'];
+            $user = $_POST['user'];
+            unset($_POST['user']);
+            unset($_POST['userKey']);
+            $userRecord=User::model()->findByAttributes(array('username'=>$user,'userKey'=>$userKey));
+            if (isset($userRecord)){
+                if($this->actionCheckPermissions($_GET['model'].'View',$user,0)){
+                    switch ($_GET['model']) {
+                        // Find respective model    
+                        case 'Contacts':
+                            $model = CActiveRecord::model('Contacts')->findByAttributes($_POST);
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf(
+                                            'Mode <b>view</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
+                    // Did we find the requested model? If not, raise an error
+                    if (is_null($model))
+                        $this->_sendResponse(404, 'No Item found with specified attributes.');
+                    else
+                        $this->_sendResponse(200, CJSON::encode($model->attributes));
+                }else{
+                    $this->_sendResponse(403, "This user does not have permission to view model: <b>".$_GET['model']."</b>.");
                 }
-                // Did we find the requested model? If not, raise an error
-                if (is_null($model))
-                    $this->_sendResponse(404, 'No Item found with specified attributes.');
-                else
-                    $this->_sendResponse(200, CJSON::encode($model->attributes));
             }else {
                 $this->_sendResponse(403, "Invalid user credentials.");
             }
@@ -657,36 +711,40 @@ class ApiController extends x2base {
      * 'authUser' and 'authPassword' are required
      */
     public function actionDelete() {
-        if (isset($_POST['authUser']) && isset($_POST['authPassword'])) {
-            $username = $_POST['authUser'];
-            $password = $_POST['authPassword'];
-            $apiUser = User::model()->findByAttributes(array('username' => $username, 'password' => $password));
-            if (isset($apiUser)) {
-                switch ($_GET['model']) {
-                    // Load the respective model
-                    case 'Contacts':
-                        $model = CActiveRecord::model('Contacts')->findByPk($_GET['id']);
-                        break;
-                    case 'Actions':
-                        $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
-                        break;
-                    case 'Accounts':
-                        $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
-                        break;
-                    default:
-                        $this->_sendResponse(501, sprintf('Error: Mode <b>delete</b> is not implemented for model <b>%s</b>', $_GET['model']));
-                        exit;
-                }
-                // Was a model found? If not, raise an error
-                if (is_null($model))
-                    $this->_sendResponse(400, sprintf("Error: Didn't find any model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_GET['id']));
+        if (isset($_POST['userKey']) && isset($_POST['user'])) {
+            $userKey = $_POST['userKey'];
+            $user = $_POST['user'];
+            $userRecord=User::model()->findByAttributes(array('username'=>$user,'userKey'=>$userKey));
+            if (isset($userRecord)){
+                if($this->actionCheckPermissions($_GET['model'].'Delete',$user,0)){
+                    switch ($_GET['model']) {
+                        // Load the respective model
+                        case 'Contacts':
+                            $model = CActiveRecord::model('Contacts')->findByPk($_POST['id']);
+                            break;
+                        case 'Actions':
+                            $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
+                            break;
+                        case 'Accounts':
+                            $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
+                            break;
+                        default:
+                            $this->_sendResponse(501, sprintf('Error: Mode <b>delete</b> is not implemented for model <b>%s</b>', $_GET['model']));
+                            exit;
+                    }
+                    // Was a model found? If not, raise an error
+                    if (is_null($model))
+                        $this->_sendResponse(400, sprintf("Error: Didn't find any model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_POST['id']));
 
-                // Delete the model
-                $num = $model->delete();
-                if ($num > 0)
-                    $this->_sendResponse(200, sprintf("Model <b>%s</b> with ID <b>%s</b> has been deleted.", $_GET['model'], $_GET['id']));
-                else
-                    $this->_sendResponse(500, sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_GET['id']));
+                    // Delete the model
+                    $num = $model->delete();
+                    if ($num > 0)
+                        $this->_sendResponse(200, 1);
+                    else
+                        $this->_sendResponse(500, sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_POST['id']));
+                }else{
+                    $this->_sendResponse(403, "This user does not have permission to delete model: <b>".$_GET['model']."</b>.");
+                }
             }else {
                 $this->_sendResponse(403, "Invalid user credentials.");
             }

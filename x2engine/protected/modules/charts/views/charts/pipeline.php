@@ -40,14 +40,14 @@
 ?>
 <?php
 $this->actionMenu = $this->formatMenu(array(
-	array('label' => Yii::t('dashboard', 'Lead Volume'), 'url' => array('leadVolume')),
-	// array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
-	// array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
-	// array('label' => Yii::t('dashboard', 'Lead Sources'), 'url' => array('leadSources')),
-	// array('label' => Yii::t('dashboard', 'Workflow'), 'url' => array('workflow')),
-	array('label' => Yii::t('dashboard', 'Marketing'), 'url' => array('marketing')),
-	array('label' => Yii::t('dashboard', 'Pipeline')),
-	array('label' => Yii::t('dashboard', 'Opportunities'), 'url' => array('sales')),
+	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
+	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
+	// array('label' => Yii::t('charts', 'Lead Performance'), 'url' => array('leadPerformance')),
+	// array('label' => Yii::t('charts', 'Lead Sources'), 'url' => array('leadSources')),
+	// array('label' => Yii::t('charts', 'Workflow'), 'url' => array('workflow')),
+	array('label' => Yii::t('charts', 'Marketing'), 'url' => array('marketing')),
+	array('label' => Yii::t('charts', 'Pipeline')),
+	array('label' => Yii::t('charts', 'Opportunities'), 'url' => array('sales')),
 ));
 ?>
 
@@ -67,7 +67,7 @@ $this->actionMenu = $this->formatMenu(array(
 	$filters = array(
 		"closeDate > unix_timestamp()",
 		"closeDate < (unix_timestamp() + ($range*24*3600))",
-		"dealstatus = 'Pending'",
+		"dealstatus = 'Working'",
 		"((visibility = 0 AND assignedTo='$userName') OR (visibility = 1
 		) OR (visibility = 2 and assignedTo='$userName'))"
 	);
@@ -79,16 +79,16 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('dashboard', 'Select deals closing in&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select deals closing in&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->radioButtonList($model, 'dateRange', array(
-					5 => Yii::t('dashboard', '5 days'),
-					10 => Yii::t('dashboard', '10 days'),
-					15 => Yii::t('dashboard', '15 days'),
-					20 => Yii::t('dashboard', '20 days'),
-					30 => Yii::t('dashboard', '30 days'),
-					60 => Yii::t('dashboard', '60 days'),
-					90 => Yii::t('dashboard', '90 days')
+					5 => Yii::t('charts', '5 days'),
+					10 => Yii::t('charts', '10 days'),
+					15 => Yii::t('charts', '15 days'),
+					20 => Yii::t('charts', '20 days'),
+					30 => Yii::t('charts', '30 days'),
+					60 => Yii::t('charts', '60 days'),
+					90 => Yii::t('charts', '90 days')
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
@@ -101,16 +101,16 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'confidence', array('label' => Yii::t('dashboard', 'Limit to confidence is&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'confidence', array('label' => Yii::t('charts', 'Limit to confidence is&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->radioButtonList($model, 'confidence', array(
-					-1 => Yii::t('dashboard', 'Any'),
-					0 => Yii::t('dashboard', 'None'),
-					1 => Yii::t('dashboard', 'Low'),
-					2 => Yii::t('dashboard', 'Growing'),
-					3 => Yii::t('dashboard', 'Forecast'),
-					4 => Yii::t('dashboard', 'Committed'),
-					5 => Yii::t('dashboard', 'In The Bag')
+					-1 => Yii::t('charts', 'Any'),
+					0 => Yii::t('charts', 'None'),
+					1 => Yii::t('charts', 'Low'),
+					2 => Yii::t('charts', 'Growing'),
+					3 => Yii::t('charts', 'Forecast'),
+					4 => Yii::t('charts', 'Committed'),
+					5 => Yii::t('charts', 'In The Bag')
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
@@ -123,13 +123,13 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'limitTo', array('label' => Yii::t('dashboard', 'Limit selected deals to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'limitTo', array('label' => Yii::t('charts', 'Limit selected deals to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->radioButtonList($model, 'limitTo', array(
-					1 => Yii::t('dashboard', 'Smallest'),
-					3 => Yii::t('dashboard', 'Largest'),
-					2 => Yii::t('dashboard', 'Others'),
-					0 => Yii::t('dashboard', 'All')
+					1 => Yii::t('charts', 'Smallest'),
+					3 => Yii::t('charts', 'Largest'),
+					2 => Yii::t('charts', 'Others'),
+					0 => Yii::t('charts', 'All')
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
@@ -142,7 +142,7 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('dashboard', 'Select deals assigned to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('charts', 'Select deals assigned to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->dropDownList($model, 'assignedTo', array_merge(array('0' => 'All'), Groups::getNames(), User::getNames()));
 				?>
@@ -168,16 +168,16 @@ $this->actionMenu = $this->formatMenu(array(
 			),
 			'filters' => $filters,
 			'chartOptions' => array(
-				'title' => Yii::t('dashboard', 'Deals'),
+				'title' => Yii::t('charts', 'Deals'),
 				'axes' => array(
 					'yaxis' => array(
-						'label'=>Yii::t('dashboard','Value'),
+						'label'=>Yii::t('charts','Value'),
 						'tickOptions' => array(
 							'formatString'=>'$%d'
 						)
 					),
 					'xaxis' => array(
-						'label'=>Yii::t('dashboard','Days To Close'),
+						'label'=>Yii::t('charts','Days To Close'),
 					)
 				)
 			)

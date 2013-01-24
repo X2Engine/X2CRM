@@ -126,13 +126,12 @@ if($startHidden == false) {
 }
 ?>
 
-<div id="relationships-form" style="text-align: center;<?php echo ($hideRelationships? ' display: none;' : ''); ?>">
-	<div class="form">
+<div id="relationships-form" style="text-align: center;<?php //echo ($hideRelationships? ' display: none;' : ''); ?>">
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>"opportunities-grid",
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('opportunities','Relationships').'</h2><div class="title-bar">'
+	'template'=> '<div class="title-bar">'
 		.'{summary}</div>{items}{pager}',
 	'afterAjaxUpdate'=>'js: function(id, data) { refreshQtip(); }',
 	'dataProvider'=>$relationshipsDataProvider,
@@ -141,15 +140,15 @@ if($startHidden == false) {
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Name'),
 			'value'=>'($data->firstType=="'.$modelName.'" && $data->firstId=="'.$model->id.'")?
-                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):"Record not found."):
-                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : strtolower($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):"Record not found.")',
+                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found.")):
+                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : strtolower($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found."))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
 		array(
 			'name'=>'secondType',
 			'header'=>Yii::t("contacts",'Type'),
-			'value'=>"(\$data->firstType==\"$modelName\" && \$data->firstId==\"{$model->id}\")?\$data->secondType:\$data->firstType",
+			'value'=>"(\$data->firstType==\"$modelName\" && \$data->firstId==\"{$model->id}\")?Yii::t('app',\$data->secondType):Yii::t('app',\$data->firstType)",
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
@@ -157,8 +156,8 @@ if($startHidden == false) {
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Assigned To'),
 			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
-                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?UserChild::getUserLinks(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->assignedTo):"Record not found."):
-                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?UserChild::getUserLinks(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->assignedTo):"Record not found.")',
+                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?UserChild::getUserLinks(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
+                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?UserChild::getUserLinks(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
@@ -346,5 +345,4 @@ echo CHtml::ajaxButton(
 <?php } ?>
 
 	</div>
-</div>
 

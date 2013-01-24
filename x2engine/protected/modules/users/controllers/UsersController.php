@@ -113,7 +113,7 @@ class UsersController extends x2base {
 			$model->attributes=$_POST['User'];
 			//$this->updateChangelog($model);
 			$model->password = md5($model->password);
-
+            $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
 			$profile=new ProfileChild;
 			$profile->fullName=$model->firstName." ".$model->lastName;
 			$profile->username=$model->username;
@@ -171,7 +171,7 @@ class UsersController extends x2base {
                         $model->status=1;
                         //$this->updateChangelog($model);
                         $model->password = md5($model->password);
-
+                        $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
                         $profile=new ProfileChild;
                         $profile->fullName=$model->firstName." ".$model->lastName;
                         $profile->username=$model->username;
@@ -238,7 +238,9 @@ class UsersController extends x2base {
                         $model->password = md5($model->password);
                     else
                         $model->password=$temp;
-                    
+                    if(empty($model->userKey)){
+                        $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
+                    }
                     if($model->save()){
                         if($old['username']!=$model->username){
                             $fieldRecords=Fields::model()->findAllByAttributes(array('fieldName'=>'assignedTo'));

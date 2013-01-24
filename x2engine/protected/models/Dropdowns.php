@@ -138,7 +138,6 @@ class Dropdowns extends CActiveRecord {
 			foreach($dropdowns as $key => &$value)
 				$value = Yii::t($module,$value);
 
-			natcasesort($dropdowns);
 		}
 		return $dropdowns;
 	}

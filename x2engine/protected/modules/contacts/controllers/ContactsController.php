@@ -202,13 +202,13 @@ class ContactsController extends x2base {
 		
 			if(isset($_COOKIE['vcr-list']))
 				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
-            
-            User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
-            parent::view($contact, 'contacts');
+			
+			User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
+			parent::view($contact, 'contacts');
 			
 		} else
 			$this->redirect('index');
-    }
+	}
 
 	/**
 	 * Displays the a model's relationships with other models.
@@ -1963,15 +1963,11 @@ class ContactsController extends x2base {
 	protected function exportToTemplate() {
 		ini_set('memory_limit', -1);
 		$contacts = CActiveRecord::model('Contacts')->findAll();
-		$list = array(array_keys($contacts[0]->attributes));
-		foreach($contacts as $contact) {
-			$list[] = $contact->attributes;
-		}
-		$file = 'file.csv';
+        $file = 'contact_export.csv';
 		$fp = fopen($file, 'w+');
-
-		foreach($list as $fields) {
-			fputcsv($fp, $fields);
+        fputcsv($fp,array_keys($contacts[0]->attributes));
+		foreach($contacts as $contact) {
+			fputcsv($fp, $contact->attributes);
 		}
 
 		fclose($fp);
@@ -1993,13 +1989,15 @@ class ContactsController extends x2base {
 	public function actionDelete($id) {
 		$model = $this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
-			$dataProvider = new CActiveDataProvider('Actions', array(
-						'criteria' => array('condition' => 'associationId=' . $id . ' AND associationType=\'contacts\'')));
-
-			$actions = $dataProvider->getData();
-			foreach($actions as $action) {
-				$action->delete();
-			}
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
+            Actions::model()->deleteAll('associationId=' . $id . ' AND associationType=\'contacts\'');
 			$this->cleanUpTags($model);
 			$model->delete();
 		}
@@ -2150,6 +2148,33 @@ class ContactsController extends x2base {
 			$action->complete= 'Yes';
 			$action->updatedBy = 'admin';
 			$action->save();
+            
+            $event=new Events;
+            $event->level=2;
+            $event->associationType='Contacts';
+            $event->associationId=$model->id;
+            $event->user=$model->assignedTo;
+            $event->type='weblead_create';
+            $event->save();
+            if($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
+                $notif = new Notification;
+                $notif->user = $model->assignedTo;
+                $notif->createdBy = 'API';
+                $notif->createDate = time();
+                $notif->type = 'weblead';
+                $notif->modelType = 'Contacts';
+                $notif->modelId = $model->id;
+                $notif->save();
+
+                $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
+
+                if($profile && $profile->emailAddress) {
+                    $subject = Yii::t('marketing', 'New Web Lead');
+                    $message = Yii::t('marketing', 'A new web lead has been assigned to you: ') . CHtml::link($model->firstName . ' ' . $model->lastName ,array('/contacts/contacts/view','id'=>$model->id)) . '.';
+                    $address = array('', $profile->emailAddress);
+                    $status = $this->sendUserEmail($address, $subject, $message);
+                }
+            }
 
 			$this->renderPartial('webleadSubmit');
 		} else {

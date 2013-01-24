@@ -49,17 +49,16 @@ if($filter){?>
         }
         echo "</div>";
     }else{ ?>
-	<div id="x2-tag-list-filter" style="min-height:15px;">Drop a tag here to filter map results.</div>
+	<div id="x2-tag-list-filter" title="<?php echo Yii::t('contacts','Drop a tag here to filter map results.');?>" style="min-height:15px;"><?php echo Yii::t('contacts','Drop a tag here to filter map results.');?></div>
 <?php } ?>
 </div>    
-
+<script>initTags();</script>
 
 <?php 
 }else{
 ?>
 
-<div id="x2-inline-tags" class="form">
-	<b><?php echo Yii::t('app', 'Tags'); ?></b>
+<div id="x2-inline-tags">
 	<div id="x2-tag-list">
 		<?php foreach($tags as $tag) {
 			echo '<span class="tag"><span class="delete-tag">[x]</span> '.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'')).'</span>';
@@ -78,6 +77,7 @@ $id = $model->id;
 Yii::app()->clientScript->registerScript('tags-list', "
 $(function() {
 
+	initTags();
 	$('#x2-inline-tags').data('appendTagUrl', '$appendTag');
 	$('#x2-inline-tags').data('removeTagUrl', '$removeTag');
 	$('#x2-inline-tags').data('searchUrl', '$searchUrl');

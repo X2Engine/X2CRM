@@ -70,7 +70,7 @@ class SmartDataProvider extends CActiveDataProvider {
 		$key = $this->getId()!='' ? $this->getId().'_page' : 'page';
 		if(!empty($_GET[$key])){
 			Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
-		} else if (!empty($_GET["ajax"])){
+		} elseif(!empty($_GET["ajax"])){
 			// page 1 passes no page number, just an ajax flag
 			Yii::app()->user->setState($statePrefix . $key, 1);
 		} else {
@@ -87,13 +87,53 @@ class SmartDataProvider extends CActiveDataProvider {
 	 * @return CPagination the pagination object. If this is false, it means the pagination is disabled.
 	 */
 	public function getPagination() {
-		if($this->_pagination===null)
-		{
+		if($this->_pagination===null) {
 			//$this->_pagination=new CPagination;
 			$this->_pagination=new RememberPagination;
 			if(($id=$this->getId())!='')
 				$this->_pagination->pageVar=$id.'_page';
 		}
 		return $this->_pagination;
+	}
+	
+	/**
+	 * Fetches the data from the persistent data storage.
+	 * 
+	 * Modified to always sort by id DESC as well as the chosen sort
+	 * @return array list of data items
+	 */
+	protected function fetchData() {
+		$criteria=clone $this->getCriteria();
+
+		if(($pagination=$this->getPagination())!==false) {
+			$pagination->setItemCount($this->getTotalItemCount());
+			$pagination->applyLimit($criteria);
+		}
+
+		$baseCriteria=$this->model->getDbCriteria(false);
+
+		if(($sort=$this->getSort())!==false) {
+			// set model criteria so that CSort can use its table alias setting
+			if($baseCriteria!==null) {
+				$c=clone $baseCriteria;
+				$c->mergeWith($criteria);
+				$this->model->setDbCriteria($c);
+			} else
+				$this->model->setDbCriteria($criteria);
+			$sort->applyOrder($criteria);
+		}
+		
+		$orderBy = $criteria->order;
+		if(!preg_match('/\bid\b/',$orderBy)) {
+			if(!empty($orderBy))
+				$orderBy .= ',';
+			$orderBy .= 'id DESC';
+			$criteria->order = $orderBy;
+		}
+
+		$this->model->setDbCriteria($baseCriteria!==null ? clone $baseCriteria : null);
+		$data=$this->model->findAll($criteria);
+		$this->model->setDbCriteria($baseCriteria);  // restore original criteria
+		return $data;
 	}
 }

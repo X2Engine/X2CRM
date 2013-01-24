@@ -166,7 +166,8 @@ $tblsWhere['opensource'] = array(
 	'x2_media' => 'id>11',
 	'x2_profile' => 'id>2',
 	'x2_users' => 'id>2',
-	'x2_social' => 'id>1'
+	'x2_social' => 'id>1',
+	'x2_forwarded_email_patterns' => 'groupName NOT IN ("AppleMail1","GMail1","Outlook1","Unknown1")'
 );
 
 /**
@@ -262,7 +263,7 @@ foreach ($allTbls as $edition => $tbls) {
 						continue;
 				}
 				$output = array();
-				$tblCommand = "$command $tbl" . ($where !== true ? " --where='" . addslashes($where) . "' " : ' ');
+				$tblCommand = "$command $tbl" . ($where !== true ? " --where='" . $where . "' " : ' ');
 				exec($tblCommand, $output);
 				foreach ($output as $line) {
 					if (!preg_match($lPat, $line)) {
@@ -313,7 +314,7 @@ if($dummy_data) {
 	foreach($allSql as $edition=>$sqls)
 		foreach($sqls as $sql)
 			$allOut[] = $sql;
-	file_put_countents($out,implode("\n",$allOut));
+	file_put_contents($out,implode("\n",$allOut));
 	
 }
 

@@ -87,7 +87,7 @@ class X2LineChart extends X2ChartWidget {
 		foreach ($data as $val) {
 			$xval = $val[0];
 			if (!isset($xval) || strlen($xval) == 0)
-				$xval = Yii::t('dashboard', 'None');
+				$xval = Yii::t('charts', 'None');
 			$yval = 0 + $val[1];
 			if ($yval < $otherThreshold) {
 				$otherTotal = $otherTotal + $yval;
@@ -99,7 +99,7 @@ class X2LineChart extends X2ChartWidget {
 		}
 		if ($otherTotal > 0) {
 			$plotData[$i] = $otherTotal;
-			$this->plotTicks[$i] = Yii::t('dashboard', 'Other');
+			$this->plotTicks[$i] = Yii::t('charts', 'Other');
 		}
 
 		$cs = Yii::app()->clientScript;

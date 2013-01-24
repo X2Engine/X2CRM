@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -100,6 +100,7 @@ return array (
 'All'=>'すべて',
 'Delete'=>'削除',
 'Overdue'=>'期限を過ぎた',
+'Edit Action'=>'アクションの編集',
 
 // Actions Titles
 'Manage Actions'=>'アクションの管理',
@@ -119,6 +120,7 @@ return array (
 'Create'=>'作る',
 'New Event'=>'新しいイベント',
 'Call:'=>'呼び出し：',
+'Comment'=>'コメント',
 
 
 // Misc
@@ -139,6 +141,7 @@ return array (
 'View'=>'見る',
 'Overdue {time}'=>'{time}で延滞',
 'Due {date}'=>'{date}に起因',
+'Please enter a description.'=>'説明を入力してください。',
 
 // Create Action Types
 'None'=>'なし',

@@ -59,7 +59,7 @@ class Contacts extends X2Model {
 	 * @return string the associated database table name
 	 */
 	public function tableName() { return 'x2_contacts'; }
-
+	
 	public function behaviors() {
 		return array(
 			'X2LinkableBehavior'=>array(

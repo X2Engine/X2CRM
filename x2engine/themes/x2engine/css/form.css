@@ -453,6 +453,22 @@ div.form .background-row a.delete-link {
 	text-decoration:underline;
 }
 
+.admin-screen h2 {
+	background-repeat:no-repeat;
+	background-position:middle left;
+	background-color:transparent;
+	padding-left:55px;
+	line-height:48px;
+}
+.admin-screen h2#admin-email {background-image:url(../images/admin_email.png);}
+.admin-screen h2#admin-settings {background-image:url(../images/admin_settings.png);}
+.admin-screen h2#admin-studio {background-image:url(../images/admin_studio.png);}
+.admin-screen h2#admin-support {background-image:url(../images/admin_support.png);}
+.admin-screen h2#admin-users {background-image:url(../images/admin_users.png);}
+.admin-screen h2#admin-utilities {background-image:url(../images/admin_utilities.png);}
+.admin-screen h2#admin-workflow {background-image:url(../images/admin_workflow.png);}
+
+
 #inline-email-form label {
 	width:80px;
 }

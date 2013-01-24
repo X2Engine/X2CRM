@@ -77,7 +77,7 @@ class WorkflowStage extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('workflowId, requirePrevious', 'numerical', 'integerOnly'=>true),
+			array('workflowId, stageNumber, requirePrevious', 'numerical', 'integerOnly'=>true),
 			array('requireComment', 'boolean'),
 			array('conversionRate, value', 'type', 'type'=>'float'),
 			array('conversionRate', 'numerical', 'max'=>100, 'min'=>0),

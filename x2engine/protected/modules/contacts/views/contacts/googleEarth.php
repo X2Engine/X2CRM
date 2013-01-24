@@ -298,14 +298,14 @@ $('#save-button').click(function(e){
     ?>
     <div class="row">
         <div class="cell">
-            <h2>Map Filters</h2>
+            <h2><?php echo Yii::t('contacts','Map Filters');?></h2>
             <?php if(!empty($contactId)) { ?>
-                <a href="#" id="hide-marker-link" style="text-decoration:none;">Clear Marker</a>
+                <a href="#" id="hide-marker-link" style="text-decoration:none;"><?php echo Yii::t('contacts','Clear Marker');?></a>
             <?php } ?>
         </div>
         
         <div class="cell">
-            <label>Assigned To</label>
+            <label><?php echo Yii::t('contacts','Assigned To'); ?></label>
             <?php echo CHtml::dropDownList('params[assignedTo]',$assignment,array_merge(array(''=>'All'),User::getNames())); ?>
         </div>
         
@@ -315,10 +315,10 @@ $('#save-button').click(function(e){
         </div>
         
         <div class="cell">
-            <?php echo CHtml::submitButton(Yii::t('dashboard', 'Go'), array('class' => 'x2-button', 'style' => 'margin-top:13px;')); ?>
+            <?php echo CHtml::submitButton(Yii::t('charts', 'Go'), array('class' => 'x2-button', 'style' => 'margin-top:13px;')); ?>
         </div>
         <div class="cell" style="float:right;">
-            <?php echo CHtml::link('Save Map','#',array('class'=>'x2-button','id'=>'save-button','style'=>'margin-top:12.5px;')); ?>
+            <?php echo CHtml::link(Yii::t('contacts','Save Map'),'#',array('class'=>'x2-button','id'=>'save-button','style'=>'margin-top:12.5px;')); ?>
         </div>
     </div>
     <div class="row">

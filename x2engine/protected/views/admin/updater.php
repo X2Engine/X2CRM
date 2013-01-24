@@ -296,7 +296,7 @@ Yii::app()->clientScript->registerScript("updater","$('#update-button').click(fu
 
 <?php if (!in_array($scenario, array('message','error'))): ?>
 <div id="updates-control"<?php echo $scenario == 'upgrade'?' style="display:none"':'';?>>
-<a href="#" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br /><br />
+<a href="#" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br />(note: you will need to disable pop-up blocking on this page before continuing)<br /><br />
 <div id="update-status" style="">
 <div id="progress-bar" style="width:300px;height:30px;border-style:solid;border-width:2px;">
     <div id="progress"><div id="progress-text" style="height:30px;width:300px;text-align:center;font-weight:bold;font-size:15px;">0%</div></div>

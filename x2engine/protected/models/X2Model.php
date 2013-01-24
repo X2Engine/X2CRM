@@ -162,6 +162,7 @@ abstract class X2Model extends CActiveRecord {
 			$this->onAfterSave(new CEvent($this));
 	}
 
+
 	/**
 	 * Generates validation rules for custom fields
 	 * @return array validation rules for model attributes.
@@ -226,8 +227,17 @@ abstract class X2Model extends CActiveRecord {
 
 		$labels = array();
 
-		foreach(self::$_fields[$this->tableName()] as &$_field)
-			$labels[$_field->fieldName] = Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+		foreach(self::$_fields[$this->tableName()] as &$_field){
+            if(get_class($this)=="Opportunity"){
+                $labels[$_field->fieldName] = Yii::t('opportunities', $_field->attributeLabel);
+            }elseif(get_class($this)=="Quote"){
+                $labels[$_field->fieldName] = Yii::t('quotes', $_field->attributeLabel);
+            }elseif(get_class($this)=="Product"){
+                $labels[$_field->fieldName] = Yii::t('products', $_field->attributeLabel);
+            }else{
+                $labels[$_field->fieldName] = Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+            }
+        }
 
 		return $labels;
     }
@@ -249,8 +259,18 @@ abstract class X2Model extends CActiveRecord {
 
 		// don't call attributeLabels(), just look in self::$_fields
 		foreach(self::$_fields[$this->tableName()] as &$_field) {
-			if($_field->fieldName == $attribute)
-				return Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+			if($_field->fieldName == $attribute){
+                if(get_class($this)=="Opportunity"){
+                    return Yii::t('opportunities', $_field->attributeLabel);
+                }elseif(get_class($this)=="Quote"){
+                    return Yii::t('quotes', $_field->attributeLabel);
+                }elseif(get_class($this)=="Product"){
+                    return Yii::t('products', $_field->attributeLabel);
+                }else{
+                    return Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+                }
+				
+            }
 		}
 		// original Yii code
 		if(strpos($attribute, '.') !== false) {
@@ -443,7 +463,7 @@ abstract class X2Model extends CActiveRecord {
 					return empty($this->$fieldName) ? "&nbsp;" : Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, Yii::app()->params['currency']);
 
 			case 'dropdown':
-				return Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName);
+				return empty($this->$fieldName)?"":Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName);
 				
 			case 'parentCase':
 				return Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName);
@@ -508,7 +528,7 @@ abstract class X2Model extends CActiveRecord {
 						'mode' => 'datetime', //use "time","date" or "datetime" (default)
 						'options' => array(// jquery options
 							'dateFormat' => Yii::app()->controller->formatDatePicker(),
-                            'timeFormat' => Yii::app()->controller->formatTimePicker(),
+							'timeFormat' => Yii::app()->controller->formatTimePicker(),
 							'changeMonth' => true,
 							'changeYear' => true,
 						),
@@ -774,12 +794,11 @@ abstract class X2Model extends CActiveRecord {
 
 		foreach(self::$_fields[$this->tableName()] as &$_field) {	// loop through fields to deal with special types
 			$fieldName = $_field->fieldName;
-
+            
 			if($_field->readOnly || !isset($data[$fieldName]))		// skip fields that are read-only or haven't been set
 				continue;
 			
 			$value = $data[$fieldName];
-
 			if($value == $this->getAttributeLabel($fieldName)) // eliminate placeholder values
 				$value = '';
 
@@ -819,10 +838,18 @@ abstract class X2Model extends CActiveRecord {
 						}
 					}
 				}
-			}
+			}elseif($_field->type=='int' || $_field->type=='float'){
+                if($value==''){
+                    $value=null;
+                }
+            }
+            
 			// if(is_array($value))
 				// die($fieldName);
-			$this->$fieldName = trim($value);
+            if(!empty($this->$fieldName) && !is_bool($this->$fieldName)){
+                $this->$fieldName = trim($value);
+            }else
+                $this->$fieldName=$value;
 		}
 	}
 
@@ -836,7 +863,7 @@ abstract class X2Model extends CActiveRecord {
 
 		return new SmartDataProvider(get_class($this),array(
 			'sort' => array(
-				'defaultOrder' => 'lastUpdated DESC',
+				'defaultOrder' => 'lastUpdated DESC, id DESC',
 			),
 			'pagination' => array(
 				'pageSize' => ProfileChild::getResultsPerPage(),
@@ -940,7 +967,7 @@ abstract class X2Model extends CActiveRecord {
 		
 		$accessLevel = $this->getAccessLevel();
 			
-		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+		$criteria->addCondition(X2Model::getAccessConditions($accessLevel),'AND');
 
 		return $criteria;
 	}

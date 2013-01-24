@@ -11,7 +11,7 @@
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright ï¿½ 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,11 +39,36 @@
  ********************************************************************************/
 
 // change the following paths if necessary
-$yii=dirname(__FILE__).'/../framework/yii.php';
-$config=dirname(__FILE__).'/protected/config/test.php';
-
-// remove the following line when in production mode
+$yii=dirname(__FILE__).'/framework/yii.php';
+// remove the following lines when in production mode
 defined('YII_DEBUG') or define('YII_DEBUG',true);
+// specify how many levels of call stack should be shown in each log message
+defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
 
 require_once($yii);
-Yii::createWebApplication($config)->run();
+Yii::$enableIncludePath = false;
+Yii::registerAutoloader(array('Yii','x2_autoload'));
+if (!empty($_SERVER['REMOTE_ADDR'])) {
+	$matches = array();
+	preg_match('/(.+)index.php/', $_SERVER["REQUEST_URI"], $matches);
+
+	$filename = 'install.php';
+
+	if (file_exists($filename)) {
+		header('Location: ' . $matches[1] . $filename);
+		exit();
+	}
+	$config=dirname(__FILE__).'/protected/config/test.php';
+	Yii::createWebApplication($config)->run();
+} else {
+	// Command line entry script
+	$config=dirname(__FILE__).'/protected/config/console.php';
+	Yii::createConsoleApplication($config)->run();
+}
+
+function printR($obj, $die=false){
+    echo "<pre>" . print_r($obj, true) . "</pre>";
+    if($die){
+        die();
+    }
+}

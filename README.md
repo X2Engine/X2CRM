@@ -1,33 +1,30 @@
-# X2CRM 2.5.2 Changelog #
-12/28/2012
+# X2CRM 2.7 Changelog #
+1/23/2013
 
-Changes for 2.5:
-* New web tracking system (Professional edition)
-	* Track using a simple embed code on your website
-	* Real time notifications when a contact visits the website
-* New large Google Maps page with heatmap and tag-based filtering
-* You can now hide tags
+Changes for 2.7:
+
+* New Activity Feed
+	* See all the activity on X2CRM in one place
+	* Updates in real time
+	* Infinite scrolling
+	* Filter by users/groups and event type
+	* Social posts/comments are now integrated
+	* Action reminders
+	* Social posts can now be edited
+* Enhancements to web tracker (Professional edition)
+	* Campaign emails now support tracking links
+* Widget/layout enhancements
+	* Widgets can now be completely turned on/off
+	* Content widgets (Tags, Relationships, etc) can be toggled and rearranged
+	* New widget menu in top bar 
+* Lots of new icons
 * Numerous bug fixes
-* Duplicate checker - major usability improvements
-* New web form designer (Professional edition)
-	* Contact lead capture
-	* Service request form
-	* Save multiple forms
-	* Fully customizable fields
-* Charts and reports - UI enhancements
-* Notifications - improved behavior and stability
-* Translations - new Dutch and Spanish packs
-* Much more complete sample data
-* Improved page load time on most pages
-* New login page
-New in 2.5.2:
-* Several bug fixes to v2.5 and the now-defunct release 2.5.1, including but not limited to:
-	* Incorrect order/offset in VCR control navigation
-	* Missing attribute errors when editing app settings and user profiles
-	* Miscellaneous errors in the contacts view
+* Campaign email list improved
+* Updated translations
+
 
 # Introduction #
-Welcome to  X2CRM v2.5.2!
+Welcome to  X2CRM v2.7!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

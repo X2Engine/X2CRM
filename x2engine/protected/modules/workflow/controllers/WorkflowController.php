@@ -250,7 +250,7 @@ class WorkflowController extends x2base {
 		
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 		
-			if(isset($workflowStatus[$stage])) {
+			if(isset($workflowStatus['stages'][$stage])) {
 				$model = CActiveRecord::model('Actions')->findByAttributes(array(
 					'associationId'=>$modelId,
 					'associationType'=>$type,
@@ -263,8 +263,8 @@ class WorkflowController extends x2base {
 					$model->completedBy = Yii::app()->user->name;
 				
 				$editable = true;	// default is full permission for everybody
-				if(!empty($workflowStatus[$stage]['roles']))	// if roles are specified, check if user has any of them
-					$editable = count(array_intersect(Yii::app()->params->roles,$workflowStatus[$stage]['roles'])) > 0;
+				if(!empty($workflowStatus['stages'][$stage]['roles']))	// if roles are specified, check if user has any of them
+					$editable = count(array_intersect(Yii::app()->params->roles,$workflowStatus['stages'][$stage]['roles'])) > 0;
 
 				// if the workflow backdate window isn't unlimited, check if the window has passed
 				if(Yii::app()->params->admin->workflowBackdateWindow > 0 && (time() - $model->completeDate) > Yii::app()->params->admin->workflowBackdateWindow)
@@ -325,8 +325,8 @@ class WorkflowController extends x2base {
 
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 			// die(var_dump($workflowStatus));
-			if((!isset($workflowStatus[$stageNumber]['createDate']) || $workflowStatus[$stageNumber]['createDate'] == 0) 
-				&& (!isset($workflowStatus[$stageNumber]['completeDate']) || $workflowStatus[$stageNumber]['completeDate'] == 0)) {
+			if((!isset($workflowStatus['stages'][$stageNumber]['createDate']) || $workflowStatus['stages'][$stageNumber]['createDate'] == 0) 
+				&& (!isset($workflowStatus['stages'][$stageNumber]['completeDate']) || $workflowStatus['stages'][$stageNumber]['completeDate'] == 0)) {
 				
 				$action = new Actions('workflow');
 				$action->associationId = $modelId;
@@ -341,9 +341,18 @@ class WorkflowController extends x2base {
 				$action->workflowId = (int)$workflowId;
 				$action->stageNumber = (int)$stageNumber;
 				$action->save();
-                $contact=Contacts::model()->findByPk($modelId);
-                $contact->lastActivity=time();
-                $contact->save();
+                $event=new Events;
+                $event->level=3;
+                $event->type='workflow_start';
+                $event->user=Yii::app()->user->getName();
+                $event->associationType='Actions';
+                $event->associationId=$action->id;
+                $event->save();
+				$contact = Contacts::model()->findByPk($modelId);
+				if(isset($contact)) {
+					$contact->lastActivity = time();
+					$contact->update(array('lastActivity'));
+				}
 				// die(var_dump($action->getErrors()));
 				// die(var_dump($action->rules()));
 				
@@ -361,22 +370,22 @@ class WorkflowController extends x2base {
 		$comment = trim($comment);
 	
 		$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-		$stageCount = count($workflowStatus)-1;
+		$stageCount = count($workflowStatus['stages']);
 		
-		$stage = &$workflowStatus[$stageNumber];
+		$stage = &$workflowStatus['stages'][$stageNumber];
 		
 		if(isset($stage['createDate']) && empty($stage['completeDate'])) {
 		
 			$previousCheck = true;
-			if($workflowStatus[$stageNumber]['requirePrevious'] == 1) {	// check if all stages before this one are complete
+			if($workflowStatus['stages'][$stageNumber]['requirePrevious'] == 1) {	// check if all stages before this one are complete
 				for($i=1; $i<$stageNumber; $i++) {
-					if(empty($workflowStatus[$i]['complete'])) {
+					if(empty($workflowStatus['stages'][$i]['complete'])) {
 						$previousCheck = false;
 						break;
 					}
 				}
-			} else if($workflowStatus[$stageNumber]['requirePrevious'] < 0) {		// or just check if the specified stage is complete
-				if(empty($workflowStatus[ -1*$workflowStatus[$stageNumber]['requirePrevious'] ]['complete']))
+			} else if($workflowStatus['stages'][$stageNumber]['requirePrevious'] < 0) {		// or just check if the specified stage is complete
+				if(empty($workflowStatus['stages'][ -1*$workflowStatus['stages'][$stageNumber]['requirePrevious'] ]['complete']))
 					$previousCheck = false;
 			}
 			// is this stage is OK to complete? if a comment is required, then is $comment empty?
@@ -400,15 +409,22 @@ class WorkflowController extends x2base {
 				// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
 				$actionModels[0]->actionDescription = $comment;
 				$actionModels[0]->save();
+                $event=new Events;
+                $event->level=3;
+                $event->type='workflow_complete';
+                $event->associationType='Actions';
+                $event->user=Yii::app()->user->getName();
+                $event->associationId=$actionModels[0]->id;
+                $event->save();
 				
 				$this->updateWorkflowChangelog($actionModels[0],'complete');
 				
-				for($i=0; $i<=$stageCount; $i++) {
-					if($i != $stageNumber && empty($workflowStatus[$i]['completeDate']) && !empty($workflowStatus[$i]['createDate']))
+				for($i=1; $i<=$stageCount; $i++) {
+					if($i != $stageNumber && empty($workflowStatus['stages'][$i]['completeDate']) && !empty($workflowStatus['stages'][$i]['createDate']))
 						break;
 				
 				
-					if(empty($workflowStatus[$i]['createDate'])) {
+					if(empty($workflowStatus['stages'][$i]['createDate'])) {
 						$nextAction = new Actions('workflow');					// start the next one (unless there is already one)
 						$nextAction->associationId = $modelId;
 						$nextAction->associationType = $type;
@@ -421,6 +437,13 @@ class WorkflowController extends x2base {
 						$nextAction->stageNumber = $i;
 						// $nextAction->actionDescription = $comment;
 						$nextAction->save();
+                        $event=new Events;
+                        $event->level=3;
+                        $event->type='workflow_start';
+                        $event->associationType='Actions';
+                        $event->user=Yii::app()->user->getName();
+                        $event->associationId=$nextAction->id;
+                        $event->save();
 						
 						$this->updateWorkflowChangelog($nextAction,'start');
 						
@@ -445,9 +468,9 @@ class WorkflowController extends x2base {
 		if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
 
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-			$stageCount = count($workflowStatus)-1;
+			$stageCount = count($workflowStatus['stages']);
 			
-			if(isset($workflowStatus[$stageNumber]['createDate'])) {
+			if(isset($workflowStatus['stages'][$stageNumber]['createDate'])) {
 
 				// find selected stage (and duplicates)
 				$actions = CActiveRecord::model('Actions')->findAllByAttributes(
@@ -459,13 +482,22 @@ class WorkflowController extends x2base {
 				for($i=1;$i<count($actions);$i++)		// delete all but the most recent one
 					$actions[$i]->delete();
 
-				if($workflowStatus[$stageNumber]['complete']) {		// the stage is complete, so just set it to 'started'
+				if($workflowStatus['stages'][$stageNumber]['complete']) {		// the stage is complete, so just set it to 'started'
 					$actions[0]->setScenario('workflow');
 					$actions[0]->complete = 'No';
 					$actions[0]->completeDate = null;
 					$actions[0]->completedBy = '';
 					$actions[0]->actionDescription = '';	// original completion note no longer applies
 					$actions[0]->save();
+                    
+                    $event=new Events;
+                    $event->level=3;
+                    $event->type='workflow_revert';
+                    $event->user=Yii::app()->user->getName();
+                    $event->associationType='Actions';
+                    $event->associationId=$actions[0]->id;
+                    $event->save();
+                    
 					
 					$this->updateWorkflowChangelog($actions[0],'revert');
 					
@@ -590,7 +622,7 @@ class WorkflowController extends x2base {
 				),
 						array(
 					'name'=>'expectedCloseDate',
-					'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('expectedCloseDate'),
+					'header'=>Yii::t('contacts','Expected Close Date'),
 					'value'=>'Yii::app()->controller->formatDate($data["lastUpdated"])',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'15%')
@@ -729,11 +761,11 @@ class WorkflowController extends x2base {
             }
         }
         $htmlString="
-                <h3>Data Summary</h3>
-                <b>Total Records:</b> $count<br />
-                <b>Total Value:</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
-                <b>Projected Value:</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
-                <b>Current Value:</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
+                <h3>".Yii::t('charts','Data Summary')."</h3>
+                <b>".Yii::t('charts','Total Records:')."</b> $count<br />
+                <b>".Yii::t('charts','Total Value:')."</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
+                <b>".Yii::t('charts','Projected Value:')."</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
+                <b>".Yii::t('charts','Current Value:')."</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
             ";
         echo $htmlString;
     }

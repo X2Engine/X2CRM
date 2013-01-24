@@ -83,7 +83,9 @@ CREATE TABLE x2_admin(
 	sgrrId						INT				DEFAULT 0,
 	serviceDistribution			varchar(255),
 	serviceOnlineOnly			TINYINT,
-    corporateAddress            TEXT
+    corporateAddress            TEXT,
+    eventDeletionTime           INT,
+    eventDeletionTypes          TEXT
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -205,6 +207,7 @@ CREATE TABLE x2_list_items (
 	clicked					INT				UNSIGNED NOT NULL DEFAULT 0,
 	unsubscribed			INT				UNSIGNED NOT NULL DEFAULT 0,
 	INDEX (listId),
+	INDEX (uniqueId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE utf8_general_ci;
 /*&*/
@@ -237,6 +240,32 @@ CREATE TABLE x2_notifications(
 	createdBy				VARCHAR(20),
 	viewed					TINYINT			DEFAULT 0,
 	createDate				BIGINT
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_events;
+/*&*/
+CREATE TABLE x2_events( 
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	type					VARCHAR(250),
+    subtype                 VARCHAR(250),
+    level                   INT,
+    visibility              TINYINT             DEFAULT 1,
+    text                    TEXT,
+	associationType			VARCHAR(250),
+	associationId			INT,
+	user					VARCHAR(250),
+	timestamp				BIGINT,
+    lastUpdated             BIGINT,
+    important               TINYINT             DEFAULT 0
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_events_data;
+/*&*/
+CREATE TABLE x2_events_data( 
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	type					VARCHAR(250),
+    count                   INT,
+	user					VARCHAR(250)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_phone_numbers;
@@ -297,6 +326,8 @@ CREATE TABLE x2_profile(
 	hideCasesWithStatus		TEXT,
     hiddenTags              TEXT,
     address                 TEXT,
+    defaultFeedFilters      TEXT,
+    layout					TEXT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

@@ -52,7 +52,7 @@ $this->actionMenu = $this->formatMenu(array(
 	'template'=>'{summary}{items}{pager}',
 	'dataProvider' => $model->search(),
 	'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).') . '<br />'
-		. '<div class="form" style="border:none; margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+		. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
 		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 		    	'ajax' => array(
 		    		'url' => $this->createUrl('/profile/setResultsPerPage'),
@@ -76,7 +76,7 @@ $this->actionMenu = $this->formatMenu(array(
 			'name' => 'uploadedBy',
 			'header' => Yii::t('media','Uploaded By'),
 			'type' => 'raw',
-			'value' => 'CHtml::encode($data["uploadedBy"])'
+			'value' => 'User::getUserLinks($data["uploadedBy"])'
 		),
 		array(
 			'name' => 'associationType',

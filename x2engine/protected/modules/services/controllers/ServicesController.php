@@ -110,14 +110,22 @@ class ServicesController extends x2base {
 		     	$model->name = $model->id;
 		     	$model->update();
 				if($model->escalatedTo != '') {
-				    $notif = new Notification;
-				    $notif->user = $model->escalatedTo;
-				    $notif->createDate = time();
-				    $notif->createdBy = Yii::app()->user->name;
-				    $notif->type = 'escalateCase';
-				    $notif->modelType = $this->modelClass;
-				    $notif->modelId = $model->id;
-				    $notif->save();
+                    $event=new Events;
+                    $event->type='case_escalated';
+                    $event->level=2;
+                    $event->user=Yii::app()->user->getName();
+                    $event->associationType=$this->modelClass;
+                    $event->associationId=$model->id;
+                    if($event->save()){
+                        $notif = new Notification;
+                        $notif->user = $model->escalatedTo;
+                        $notif->createDate = time();
+                        $notif->createdBy = Yii::app()->user->name;
+                        $notif->type = 'escalateCase';
+                        $notif->modelType = $this->modelClass;
+                        $notif->modelId = $model->id;
+                        $notif->save();
+                    }
 				}
 
 		     	$this->redirect(array('view', 'id' => $model->id));
@@ -207,14 +215,22 @@ class ServicesController extends x2base {
 		$ret = parent::update($model,$oldAttributes,'1');
 		
 		if($model->escalatedTo != '' && $model->escalatedTo != $oldAttributes['escalatedTo']) {
-			$notif = new Notification;
-			$notif->user = $model->escalatedTo;
-			$notif->createDate = time();
-			$notif->createdBy = Yii::app()->user->name;
-			$notif->type = 'escalateCase';
-			$notif->modelType = $this->modelClass;
-			$notif->modelId = $model->id;
-			$notif->save();
+            $event=new Events;
+            $event->type='case_escalated';
+            $event->level=2;
+            $event->user=Yii::app()->user->getName();
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            if($event->save()){
+                $notif = new Notification;
+                $notif->user = $model->escalatedTo;
+                $notif->createDate = time();
+                $notif->createdBy = Yii::app()->user->name;
+                $notif->type = 'escalateCase';
+                $notif->modelType = $this->modelClass;
+                $notif->modelId = $model->id;
+                $notif->save();
+            }
 		}
 		
 		if($api==0)
@@ -278,16 +294,16 @@ class ServicesController extends x2base {
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
-			$dataProvider=new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-					'condition'=>'associationId='.$id.' AND associationType=\'services\'',
-			)));
-
-			$actions=$dataProvider->getData();
-			foreach($actions as $action){
-				$action->delete();
-			}
-                        $this->cleanUpTags($model);
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
+            Actions::model()->deleteAll('associationId='.$id.' AND associationType=\'services\'');
+			$this->cleanUpTags($model);
 			$model->delete();
 		} else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');

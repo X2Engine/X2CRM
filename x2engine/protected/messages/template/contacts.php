@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'',
 'First Name'=>'',
 'Name'=>'',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'',
 'Other'=>'',
 'Close Date'=>'',
+'Expected Close Date'=>'',
 'Interest'=>'',
 'Deal Value'=>'',
 'Lead Status'=>'',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'',
 'Tags'=>'',
 'Associated Contacts'=>'',
-
-// List Attributes
+'Duplicate Check'=>'',
+'Last Activity'=>'',
+'Timezone'=>'',
+'Web Tracking Key'=>'',
+// // 
+// // List Attributes
 'Owner'=>'',
 'Description'=>'',
 'Logic Type'=>'',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'',
 'Dynamic'=>'',
 'Static'=>'',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'',
 'Type'=>'',
 'Attribute'=>'',
 'Comparison'=>'',
 'Value'=>'',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'',
 'greater than'=>'',
 'less than'=>'',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'',
 'contains'=>'',
 'does not contain'=>'',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'',
 'Social Networks'=>'',
 'Detail View'=>'',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'',
 'User'=>'',
 'Leads'=>'',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'',
+'Create a new Opportunity associated with this Contact.'=>'',
+'Create a new Account associated with this Contact.'=>'',
+'Create a new Service Case associated with this Contact.'=>'',
+'Link to Record'=>'',
+'Contact Attributes'=>'',
+// // 
+// // Contacts Actions
 'My Contacts'=>'',
 'New Contacts'=>'',
 'All Contacts'=>'',
 'Create Contact'=>'',
 'View Contact'=>'',
 'Update Contact'=>'',
+'Edit Contact'=>'',
 'Update Contact:'=>'',
 'Delete Contact'=>'',
 'Contact Lists'=>'',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'',
 'View List'=>'',
 'Share Action'=>'',
-
-// Contacts Titles
+'Import Contacts'=>'',
+'Contact Map'=>'',
+'Saved Maps'=>'',
+// // 
+// // Contacts Titles
 'Contacts'=>'',
 'Manage Contacts'=>'',
 'Contact:'=>'',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'',
 'Import from Template'=>'',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'',
 'Upload File'=>'',
 'Contact Record Details'=>'',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'',
 'The information for {name} has changed.'=>'',
 'Receive email updates every time information for {name} changes'=>'',
 'Unsubscribe'=>'',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'',
 'Invalid Email Address'=>'',
 'Default list for email list signups'=>'',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'',
 'Someone will be in touch shortly.'=>'',
 'Enter any additional information or questions regarding your interest here.'=>'',
+
+// // Map Translations
+'Map Filters'=>'',
+'Clear Marker'=>'',
+'Drop a tag here to filter map results.'=>'',
+'Save Map'=>'',
+'View on Large Map'=>'',
+'View on Heat Map'=>'',
+'Center Coordinates'=>'',
+'Delete Map'=>'',
+'Map Name'=>'',
+'Map Owner'=>'',
+'Zoom Level'=>'',
+'Parameters'=>'',
+'Center Latitude'=>'',
+'Center Longitude'=>'',
+'Contact'=>'',
 );

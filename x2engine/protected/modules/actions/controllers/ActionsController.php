@@ -97,7 +97,7 @@ class ActionsController extends x2base {
 				//$associationName = Yii::t('app','None');
 			
 			
-			if ($action->assignedTo==Yii::app()->user->getName() || $action->visibility==1 || $action->assignedTo=='Anyone') {
+			if ($this->checkPermissions($action, 'view')) {
 				User::addRecentItem('t',$id,Yii::app()->user->getId());	//add action to user's recent item list
 				$this->render('view',array(
 					'model'=>$this->loadModel($id),
@@ -109,6 +109,11 @@ class ActionsController extends x2base {
 		} else
 			$this->redirect('index');
 	}
+    
+    public function actionViewEmail($id){
+        $action=CActiveRecord::model('Actions')->findByPk($id);
+        echo $action->actionDescription;
+    }
 	
 	public function actionShareAction($id){
 		
@@ -201,17 +206,17 @@ class ActionsController extends x2base {
 			$model->associationId=0;
 		//if($model->
 
-            $model->createDate = time();	// created now, full datetime
-            //$model->associationId=$_POST['Actions']['associationId'];
-			if(!is_numeric($model->dueDate)){
-				$dueDate = $this->parseDateTime($model->dueDate);
-				$model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
-			}
+        $model->createDate = time();	// created now, full datetime
+        //$model->associationId=$_POST['Actions']['associationId'];
+        if(!is_numeric($model->dueDate)){
+            $dueDate = $this->parseDateTime($model->dueDate);
+            $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
+        }
 
 		//if($type=='none')
 		//	$model->associationId=0;
 		//$model->associationType=$type;
-
+        
 		$association = $this->getAssociation($model->associationType,$model->associationId);
 
 		if($association != null) {
@@ -256,9 +261,9 @@ class ActionsController extends x2base {
 			}
 		}
 		
-		if($api==0)
+		if($api==0){
 			parent::create($model,$oldAttributes,$api);
-		else
+        }else
 			return parent::create($model,$oldAttributes,$api);
 	}
 
@@ -337,9 +342,17 @@ class ActionsController extends x2base {
 			$model->dueDate = $this->parseDateTime($model->dueDate);
 			
 			if($_POST['SelectedTab'] == 'new-event') {
+                $event=new Events;
+                $event->type='calendar_event';
+                $event->level=2;
+                $event->associationType='Actions';
+                $event->timestamp=$model->dueDate;
 				$model->type = 'event';
-				if($model->completeDate)
+				if($model->completeDate){
 					$model->completeDate = $this->parseDateTime($model->completeDate);
+                }else{
+                    $model->completeDate=$model->dueDate;
+                }
 			} else {
 				$model->completeDate = null;
 			}
@@ -364,6 +377,12 @@ class ActionsController extends x2base {
 				$model->associationName = ucfirst($model->associationType);
 	
 			if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment') {
+                $event=new Events;
+                $event->level=3;
+                $event->associationType='Actions';
+                $event->type='record_create';
+                $event->user=Yii::app()->user->getName();
+                
 				$model->createDate = time();
 				$model->dueDate = time();
 				$model->completeDate = time();
@@ -381,45 +400,45 @@ class ActionsController extends x2base {
 			$name = $this->modelClass;
 			$model->createDate=time();
 			if($model->save()) { // action saved to database *
-			    $fields=Fields::model()->findAllByAttributes(array('modelName'=>$name,'type'=>'link'));
-			    foreach($fields as $field) {
-			        $fieldName=$field->fieldName;
-			        if(isset($model->$fieldName) && is_numeric($model->$fieldName)) {
-			        	if(is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-			        				(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$model->$fieldName."') 
-			        				OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$model->$fieldName."')"))) {
-			        		$rel=new Relationships;
-			        		$rel->firstType=$name;
-			        		$rel->secondType=ucfirst($field->linkType);
-			        		$rel->firstId=$model->id; 
-			        		$rel->secondId=$model->$fieldName;
-			        		if($rel->save()) {
-			        			$lookup=Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-			        					(firstType='$name' AND firstId='$model->id' AND secondType='".ucfirst($field->linkType)."' AND secondId='".$oldAttributes[$fieldName]."') 
-			        					OR (secondType='$name' AND secondId='$model->id' AND firstType='".ucfirst($field->linkType)."' AND firstId='".$oldAttributes[$fieldName]."')");
-			        			if(isset($lookup)) {
-			        				$lookup->delete();
-			        			}
-			        		}
-			        	}
-			        }
-			    }
-			
+                if(isset($event)){
+                    $event->associationId=$model->id;
+                    $event->save();
+                }
+                if(empty($model->type)){
+                    $event2=new Events;
+                    $event2->level=2;
+                    $event2->associationType='Actions';
+                    $event2->associationId=$model->id;
+                    $event2->user=Yii::app()->user->getName();
+                    $event2->type='record_create';
+                    $event2->save();
+                    
+                    $event=new Events;
+                    $event->level=1;
+                    $event->associationType='Actions';
+                    $event->associationId=$model->id;
+                    $event->type='action_reminder';
+                    $event->user=$model->assignedTo;
+                    $event->timestamp=$model->dueDate;
+                    $event->save();
+                    
+                    
+                }
 			    // notify other user (if not assigned to logged in user)
 			    $changes = $this->calculateChanges($temp, $model->attributes, $model);
 			    $this->updateChangelog($model,$changes);
-			    if($model->hasAttribute('assignedTo')) {
-			        if($model->assignedTo != Yii::app()->user->getName()) {
-			        	$notif = new Notification;
-			        	$notif->user = $model->assignedTo;
-			        	$notif->createdBy = Yii::app()->user->getName();
-			        	$notif->createDate = time();
-			        	$notif->type = 'create';
-			        	$notif->modelType = $name;
-			        	$notif->modelId = $model->id;
-			        	$notif->save();
-			        }
-			    }
+                
+                
+                if($model->assignedTo != Yii::app()->user->getName()){
+                    $notif = new Notification;
+                    $notif->user = $model->assignedTo;
+                    $notif->createdBy = Yii::app()->user->getName();
+                    $notif->createDate = time();
+                    $notif->type = 'create';
+                    $notif->modelType = $name;
+                    $notif->modelId = $model->id;
+                    $notif->save();
+                }
 			    
 			    
 			    // Google Calendar Sync
@@ -647,6 +666,15 @@ class ActionsController extends x2base {
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest){
 			$this->cleanUpTags($model);
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
+            Events::model()->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$id,'type'=>'action_reminder'));
             
  			if(!is_numeric($model->assignedTo)) { // assigned to user
 				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo)); 
@@ -688,27 +716,9 @@ class ActionsController extends x2base {
 			$model=$this->updateChangelog($model,'Completed');
 			$model->save();
 			Actions::completeAction($id);
+            
+            $this->completeNotification('admin',$model->id);
 
-			// if(Yii::app()->user->getName() != $model->assignedTo && $model->assignedTo!='Anyone' && !empty($model->assignedTo) ) {
-				// $notif = new Notification;
-				// $notif->type = 'action_complete';
-				// $notif->modelType = 'Actions';
-				// $notif->modelId = $model->id;
-				// $notif->user = $model->assignedTo;
-				// $notif->createDate = time();
-				// $notif->save();
-			// }
-			if($model->assignedTo != 'admin')		// don't want to make 2 notifications now
-				$this->completeNotification('admin',$model->id);
-
-			// $notif = new Notifications;
-			// $notif->record="Actions:$model->id";
-			// $profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-			// $notif->text=$profile->fullName." completed an action.";
-			// $notif->user='admin';
-			// $notif->createDate=time();
-			// $notif->viewed=0;
-			// $notif->save();
 
 			$createNew = isset($_GET['createNew']) || ((isset($_POST['submit']) && ($_POST['submit']=='completeNew')));
 			$redirect = isset($_GET['redirect']) || $createNew;
@@ -782,6 +792,16 @@ class ActionsController extends x2base {
 					$note->actionDescription .= $this->formatLongDateTime($action->createDate) . ".\n\n";
 					$note->actionDescription .= $action->actionDescription;
 					if($note->save()) {
+                        $event=new Events;
+                        $event->type='email_opened';
+                        $contact=CActiveRecord::model('Contacts')->findByPk($action->associationId);
+                        if(isset($contact)){
+                            $event->user=$contact->assignedTo;
+                        }
+                        $event->level=3;
+                        $event->associationType='Contacts';
+                        $event->associationId=$note->associationId;
+                        $event->save();
 						$track->opened = $now;
 						$track->update();
 					}
@@ -875,7 +895,19 @@ class ActionsController extends x2base {
 	}
 	
 	protected function completeNotification($user,$id) {
-		if($user != Yii::app()->user->getName() && $user != 'Anyone' && !empty($user)) {
+        $eventRecord=Events::model()->findByAttributes(array('associationType'=>'Actions','associationId'=>$id,'type'=>'action_reminder'));
+        if(isset($eventRecord)){
+            if($eventRecord->timestamp>time()){
+                $eventRecord->delete();
+            }
+        }
+        $event=new Events;
+        $event->level=2;
+        $event->type="action_complete";
+        $event->associationType="Actions";
+        $event->user=Yii::app()->user->getName();
+        $event->associationId=$id;
+		if($event->save() && $user != Yii::app()->user->getName() && $user != 'Anyone' && !empty($user)) {
 			$notif = new Notification;
 			$notif->type = 'action_complete';
 			$notif->modelType = 'Actions';

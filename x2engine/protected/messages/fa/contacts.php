@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'کد امنیتی',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'شناسه',
 'First Name'=>'نام',
 'Name'=>'نام',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'نوع معرف',
 'Other'=>'سایر',
 'Close Date'=>'تاریخ بستن',
+'Expected Close Date'=>'انتظار می رود تاریخ عضویت بستن',
 'Interest'=>'علایق',
 'Deal Value'=>'ارزش معامله',
 'Lead Status'=>'وضعیت معرف',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'مطرود',
 'Tags'=>'برچسب ها',
 'Associated Contacts'=>'مخابرات آسوشیتد',
-
-// List Attributes
+'Duplicate Check'=>'Duplicate یا کپی چک کنید',
+'Last Activity'=>'تاریخ و زمان آخرین فعالیت درسایت',
+'Timezone'=>'منطقه زمانی',
+'Web Tracking Key'=>'ردیابی وب کلید',
+// // 
+// // List Attributes
 'Owner'=>'مالک',
 'Description'=>'شرح',
 'Logic Type'=>'نوع منطق',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'کاربران',
 'Dynamic'=>'پویا',
 'Static'=>'ایستا',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'فهرست',
 'Type'=>'نوع',
 'Attribute'=>'صفت',
 'Comparison'=>'مقایسه',
 'Value'=>'ارزش',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'برابر با',
 'greater than'=>'بزرگتر از',
 'less than'=>'کمتر از',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'خالی نیست',
 'contains'=>'شامل',
 'does not contain'=>'شامل نمی شود',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'{name} مرتبط با',
 'Social Networks'=>'شبکه های اجتماعی',
 'Detail View'=>'نمایش جزییات',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'یا',
 'User'=>'کاربر',
 'Leads'=>'فرصت های',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> از <b> {n} </b>',
+'Create a new Opportunity associated with this Contact.'=>'ایجاد فرصت های جدید مرتبط با این تماس.',
+'Create a new Account associated with this Contact.'=>'ایجاد یک حساب جدید در ارتباط با تماس با ما.',
+'Create a new Service Case associated with this Contact.'=>'ایجاد یک مورد سرویس های جدید مرتبط با این تماس.',
+'Link to Record'=>'پیوند به ضبط',
+'Contact Attributes'=>'تماس با صفات',
+// // 
+// // Contacts Actions
 'My Contacts'=>'تماسهای من',
 'New Contacts'=>'مخاطبین جدید',
 'All Contacts'=>'همه تماسها',
 'Create Contact'=>'تماس جدید',
 'View Contact'=>'نمایش تماس',
 'Update Contact'=>'بروزرسانی تماس',
+'Edit Contact'=>'ویرایش تماس',
 'Update Contact:'=>':بروزرسانی تماس',
 'Delete Contact'=>'حذف تماس',
 'Contact Lists'=>'تماس با ما لیست',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'اشتراک در',
 'View List'=>'مشاهده لیست',
 'Share Action'=>'اقدام به اشتراک بگذارید',
-
-// Contacts Titles
+'Import Contacts'=>'مخابرات واردات',
+'Contact Map'=>'نقشه',
+'Saved Maps'=>'ذخیره نقشه ها',
+// // 
+// // Contacts Titles
 'Contacts'=>'تماسها',
 'Manage Contacts'=>'مدیریت تماسها',
 'Contact:'=>':تماس',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'Outlook واردات از',
 'Import from Template'=>'در یافت از پیش نویس',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'.برای دریافت از پیش نویس، لطفا ابتدا پیش نویس ما را پر کنید. سپس آن را توسط فرم زیر بارگزاری کنید',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'برای وارد کردن مخاطبین خود را از Outlook، لطفا ابتدا ایجاد یک فایل CSV (فرمت DOS) با باز کردن چشم انداز و صادرات از تماس با ما. سپس، آپلود فایل در اینجا با استفاده از فرم زیر وارد نمایید.',
 'Upload File'=>'ارسال فایل',
 'Contact Record Details'=>'ارتباط رکورد',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'اشتراک در',
 'The information for {name} has changed.'=>'{نام} تغییر کرده است.',
 'Receive email updates every time information for {name} changes'=>'دریافت به روز رسانی های ایمیل هر زمان {نام} تغییرات',
 'Unsubscribe'=>'عضویت لغو عضویت',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'سرب وب سایت',
 'Invalid Email Address'=>'آدرس ایمیل نامعتبر است',
 'Default list for email list signups'=>'لیست پیش فرض برای یو پی اس لیست ورود به سیستم ایمیل',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'با تشکر از شما برای منافع خود را!',
 'Someone will be in touch shortly.'=>'کسی در تماس باشد به زودی.',
 'Enter any additional information or questions regarding your interest here.'=>'هر گونه اطلاعات اضافی و یا سوال در مورد علاقه خود را در اینجا وارد کنید.',
+
+// // Map Translations
+'Map Filters'=>'فیلترها نقشه',
+'Clear Marker'=>'نشانگر شفاف',
+'Drop a tag here to filter map results.'=>'رها کردن برچسب در اینجا برای فیلتر کردن نتایج نقشه.',
+'Save Map'=>'ذخیره نقشه',
+'View on Large Map'=>'نمایش بر روی نقشه بزرگ',
+'View on Heat Map'=>'نمایش بر روی نقشه حرارتی',
+'Center Coordinates'=>'مرکز مختصات',
+'Delete Map'=>'حذف نقشه',
+'Map Name'=>'نام نقشه',
+'Map Owner'=>'مالک نقشه',
+'Zoom Level'=>'سطح زوم',
+'Parameters'=>'پارامترهای',
+'Center Latitude'=>'طول و عرض مرکز',
+'Center Longitude'=>'طول و عرض جغرافیایی مرکز',
+'Contact'=>'تماس',
 );

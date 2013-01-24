@@ -270,8 +270,8 @@ return array(
 			'username' => $user,
 			'password' => $pass,
 			'charset' => 'utf8',
-			// 'enableProfiling'=>true,
-            // 'enableParamLogging' => true,
+			//'enableProfiling'=>true,
+            //'enableParamLogging' => true,
 			'schemaCachingDuration'=>84600
 		),
 		'authManager'=>array(
@@ -295,28 +295,27 @@ return array(
 			'password' => ' ',
 			'charset' => 'utf8',
 		),*/
-		// 'messages'=>array(
-			// 'forceTranslation'=>true,
-			// 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
-		// ),
+//		 'messages'=>array(
+//			 'forceTranslation'=>true,
+//			 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
+//		 ),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
 			'errorAction'=>'site/error',
 		),
-        'log'=>array(
-            'class'=>'CLogRouter',
-//            'routes'=>array(
-//                    // …
-//                    array(
-//                        'class'=>'application.extensions.DbProfileLogRoute',
-//                        'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
-//                        'slowQueryMin' => 0.01, // Minimum time for the query to be slow
-//                    ),
-//            ),
-        ),
-		//'log'=>array(
-			//'class'=>'CLogRouter',
-			//'routes'=>array(
+	   'log'=>array(
+		   'class'=>'CLogRouter',
+		   'routes'=>array(
+				   // array(
+					   // 'class'=>'application.extensions.DbProfileLogRoute',
+					   // 'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
+					   // 'slowQueryMin' => 0.01, // Minimum time for the query to be slow
+				   // ),
+		   ),
+	   ),
+//		'log'=>array(
+//			'class'=>'CLogRouter',
+//			'routes'=>array(
 				// array(
 					// 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
 					// 'ipFilters'=>array('127.0.0.1'),
@@ -331,13 +330,13 @@ return array(
 				// ),
 				// uncomment the following to show log messages on web pages
 				
-				 // array(
-					// 'class'=>'CWebLogRoute',
-						// 'categories' => 'translations',
-						// 'levels' => 'missing',
-				 // ),
-			//),
-		//),
+//				  array(
+//					 'class'=>'CWebLogRoute',
+//						 'categories' => 'translations',
+//						 'levels' => 'missing',
+//				  ),
+//			),
+//		),
 		'cache'=>array(
 			'class'=>'system.caching.CFileCache',
 			// 'servers'=>array(

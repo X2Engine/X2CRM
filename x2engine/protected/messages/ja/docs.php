@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,6 +50,8 @@ return array (
 'Create Date'=>'作成日',
 'Edit Permissions'=>'権限を編集',
 'Doc Type'=>'文書のタイプ',
+'Subject'=>'件名',
+'Visibility'=>'視認性',
 
 // Labels
 'Doc'=>'ドク',
@@ -67,6 +69,7 @@ return array (
 'List Docs'=>'ドクのリスト',
 'Create Docs'=>'ドクを作る',
 'View Doc'=>'ドクを見る',
+'View'=>'表示',
 'Edit Doc'=>'ドクの編集',
 'Delete Doc'=>'ドクを削除する',
 'Export Doc'=>'ドクをエクスポートする',
@@ -75,5 +78,10 @@ return array (
 'Export'=>'エクスポート',
 'Create'=>'作る',
 'Create Email'=>'電子メールを作成します。',
+'Create Doc'=>'文書を作成します',
 'Create Document'=>'文書を作成します',
+'Create Email Template'=>'メールテンプレートの作成',
+
+// // Misc Text
+'Are you sure you want to delete this item?'=>'あなたは、この項目を削除してもよろしいですか？',
 );

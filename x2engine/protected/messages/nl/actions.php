@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -70,6 +70,7 @@ return array (
 'Color'=>'Kleur',
 'Start Date'=>'Begin Datum',
 'End Date'=>'Eind Datum',
+'User\'s Group'=>'Gebruikers Groep',
 
 // Colors
 'Blue'=>'Blauw',
@@ -82,7 +83,7 @@ return array (
 'All Actions'=>'Alle Acties',
 'Create Lead'=>'Lead Aanmaken',
 'Create Action'=>'Actie Aanmaken',
-'View Action'=>'Actie bekijken',
+'View Action'=>'Bekijk Actie',
 'Update Action'=>'Actie Bijwerken',
 'Complete Action'=>'Actie Afronden',
 'Complete + New Action'=>'Afgerond + Nieuwe Actie',
@@ -92,6 +93,14 @@ return array (
 'New Action'=>'Nieuwe Actie',
 'New Comment'=>'Nieuw Commentaar',
 'Publisher'=>'Publicator',
+'Update'=>'Bijwerken',
+'Complete Selected'=>'Compleet Geselecteerde',
+'Uncomplete Selected'=>'Onvolledig Geselecteerde',
+'Show Actions'=>'Toon Acties',
+'All'=>'Alle',
+'Delete'=>'Verwijder',
+'Overdue'=>'Achterstallig',
+'Edit Action'=>'Actie Bewerken',
 
 // Actions Titles
 'Manage Actions'=>'Beheer Acties',
@@ -110,6 +119,8 @@ return array (
 'Share Action'=>'Deel Actie',
 'Create'=>'Aanmaken',
 'New Event'=>'Nieuw Evenement',
+'Call:'=>'Bel:',
+'Comment'=>'Commentaar',
 
 
 // Misc
@@ -130,6 +141,7 @@ return array (
 'View'=>'Bekijk',
 'Overdue {time}'=>'Te laat {time}',
 'Due {date}'=>'Einddatum',
+'Please enter a description.'=>'Geef een beschrijving.',
 
 // Create Action Types
 'None'=>'Geen',
@@ -137,7 +149,7 @@ return array (
 'Account'=>'Account',
 'Project'=>'Project',
 'Case'=>'Zaak',
-'Sale'=>'Verkoop',
+'Opportunity'=>'Kans',
 
 // Action Reminder Email
 'No one'=>'Niemand',

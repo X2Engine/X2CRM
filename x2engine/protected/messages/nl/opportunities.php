@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +39,7 @@
  ********************************************************************************/
 
 return array (
-// Sales Attributes
+// Opportunities Attributes
 'ID'=>'ID',
 'Assigned To'=>'Toegewezen Aan',
 'Name'=>'Naam',
@@ -62,31 +62,48 @@ return array (
 'Cold Call'=>'Cold Call',
 'E-Mail'=>'Email',
 'Store'=>'Winkel',
+'Other Info'=>'',
+'Basic Information'=>'',
+'None'=>'',
+'Google'=>'',
+'Facebook'=>'',
+'Walk In'=>'',
+'Last Activity'=>'Laatste Activiteit',
 
-// Sales Actions
-'Sales List'=>'Verkoop Lijst',
-'Create Sale'=>'Maak Verkoop Aan',
-'View Sale'=>'Bekijk Verkoop',
-'Update Sale'=>'Werk Verkoop Bij',
-'Delete Sale'=>'Verwijder verkoop',
-'Manage Sales'=>'Beheer Verkopen',
+// Opportunities Actions
+'Opportunities List'=>'',
+'Create Opportunity'=>'',
+'View Opportunity'=>'',
+'Update Opportunity'=>'',
+'Delete Opportunity'=>'',
+'Manage Opportunities'=>'',
+'Create'=>'',
+'View'=>'',
+'Update'=>'',
+'Update Opportunity:'=>'',
+'Edit Opportunity'=>'Bewerk Opportunity',
 
-'Add a User'=>'Voeg een gebruiker toe',
-'Add a Contact'=>'Voeg een Contact toe',
-'Remove a User'=>'Verwijder een Gebruiker',
-'Remove a Contact'=>'Verwijder een Contact',
-'Share Sale'=>'Deel Verkoop',
+'Add A User'=>'',
+'Add A Contact'=>'',
+'Remove A User'=>'',
+'Remove A Contact'=>'',
+'Share Opportunity'=>'',
+'Delete'=>'',
+'Add'=>'',
+'Remove'=>'',
 
-// Sales Titles
-'Sales'=>'Verkopen',
-'Sale'=>'Verkoop',
-'Sale:'=>'Verkoop:',
-'Update Sale: {name}'=>'Werk Verkoop bij: {name}',
+// Opportunities Titles
+'Opportunities'=>'',
+'Opportunity'=>'',
+'Opportunity:'=>'',
+'Update Opportunity: {name}'=>'',
 
 // Misc Text
 'Please click any new users you wish to add.'=>'Click een gebruiker die je wil toevoegen.',
 'Please select the contacts you wish to add.'=>'Selecter een contact die je wil toevoegen.',
 'Please select the users you wish to remove.'=>'Selecteer de gebruikers die je wil verwijderen.',
 'Please select the contacts you wish to remove.'=>'Selecteer de gebruikers die je wil verwijderen',
-'Sale Record Details'=>'Verkoop Record Details',
+'Opportunity Record Details'=>'',
+'Create a new Contact associated with this Opportunity.'=>'Maak een nieuwe contactpersoon in verband met deze kans.',
+'Create a new Account associated with this Opportunity.'=>'Maak een nieuwe account geassocieerd met deze kans.',
 );

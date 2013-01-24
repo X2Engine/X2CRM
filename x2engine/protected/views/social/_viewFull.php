@@ -48,7 +48,7 @@ $(document).ready(function() {
 
 $authorRecord = CActiveRecord::model('User')->findByAttributes(array('username'=>$data->user));
 $author = $authorRecord->name; //firstName.' '.$authorRecord->lastName;
-$commentDataProvider=new CActiveDataProvider('Social', array(
+$commentDataProvider=new CActiveDataProvider('Events', array(
 	'criteria'=>array(
 		'order'=>'timestamp ASC',
 		'condition'=>"type='comment' AND associationId=$data->id",
@@ -73,7 +73,7 @@ $commentDataProvider=new CActiveDataProvider('Social', array(
 	}
 	?>
 	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,$data->associationId); ?> <span class="comment-age"><?php echo x2base::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
-	<?php echo MediaChild::attachmentSocialText($data->data,true,true); ?><br />
+	<?php echo MediaChild::attachmentSocialText($data->text,true,true); ?><br />
 	<?php 
 	if(count($commentDataProvider->getData())>0){
 		$this->widget('zii.widgets.CListView', array(

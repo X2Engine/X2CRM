@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -100,6 +100,7 @@ return array (
 'All'=>'所有',
 'Delete'=>'删除',
 'Overdue'=>'过期的',
+'Edit Action'=>'编辑动作',
 
 // Actions Titles
 'Manage Actions'=>'管理任务',
@@ -119,6 +120,7 @@ return array (
 'Create'=>'创建',
 'New Event'=>'新事件',
 'Call:'=>'请致电：',
+'Comment'=>'评论',
 
 
 // Misc
@@ -139,6 +141,7 @@ return array (
 'View'=>'查看',
 'Overdue {time}'=>'逾期{time}',
 'Due {date}'=>'{date}到期',
+'Please enter a description.'=>'请输入一个描述。',
 
 // Create Action Types
 'None'=>'没有',

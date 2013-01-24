@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'Codice di Verifica',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'ID',
 'First Name'=>'Nome',
 'Name'=>'Nome',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'Opportunity Type',
 'Other'=>'Altro',
 'Close Date'=>'Chiudere Data',
+'Expected Close Date'=>'Data di Chiusura Prevista',
 'Interest'=>'Interesse',
 'Deal Value'=>'Deal Valore',
 'Lead Status'=>'Opportunità di Stato',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'Rifiutato',
 'Tags'=>'Tag',
 'Associated Contacts'=>'Contatti Associati',
-
-// List Attributes
+'Duplicate Check'=>'Duplica Controllare',
+'Last Activity'=>'Ultima Attività',
+'Timezone'=>'Fuso Orario',
+'Web Tracking Key'=>'Web controllo sulle principali',
+// // 
+// // List Attributes
 'Owner'=>'Proprietario',
 'Description'=>'Descrizione',
 'Logic Type'=>'Tipo di Logic',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'Membri',
 'Dynamic'=>'Dinamico',
 'Static'=>'Statico',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'Lista',
 'Type'=>'Tipo',
 'Attribute'=>'Attributo',
 'Comparison'=>'Confronto',
 'Value'=>'Valore',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'è uguale',
 'greater than'=>'maggiore',
 'less than'=>'meno',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'non è vuota',
 'contains'=>'contiene',
 'does not contain'=>'non contiene',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'Assegnato a {name}',
 'Social Networks'=>'Reti Sociali',
 'Detail View'=>'Vedi Dettaglio',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'O',
 'User'=>'Utente',
 'Leads'=>'Porta',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> di <b> {n} </b>',
+'Create a new Opportunity associated with this Contact.'=>'Creare una nuova opportunità associato a questo contatto.',
+'Create a new Account associated with this Contact.'=>'Crea un nuovo account associato a questo contatto.',
+'Create a new Service Case associated with this Contact.'=>'Creazione di un caso nuovo servizio associato a questo contatto.',
+'Link to Record'=>'Link al Record',
+'Contact Attributes'=>'Contatti Attributi',
+// // 
+// // Contacts Actions
 'My Contacts'=>'I Miei Contatti',
 'New Contacts'=>'Nuovi Contatti',
 'All Contacts'=>'Tutti I Contatti',
 'Create Contact'=>'Crea Contatto',
 'View Contact'=>'Visualizza Contatto',
 'Update Contact'=>'Aggiornamento Contatto',
+'Edit Contact'=>'Modifica di un Contatto',
 'Update Contact:'=>'Aggiornamento Contatto',
 'Delete Contact'=>'Elimina Contatto',
 'Contact Lists'=>'Contatti Liste',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'Abbonarsi',
 'View List'=>'Visualizza Elenco',
 'Share Action'=>'Condividi Azione',
-
-// Contacts Titles
+'Import Contacts'=>'Importa Contatti',
+'Contact Map'=>'Contatti Mappa',
+'Saved Maps'=>'Mappe Salvate',
+// // 
+// // Contacts Titles
 'Contacts'=>'Contatti',
 'Manage Contacts'=>'Gestione dei Contatti',
 'Contact:'=>'Contatto:',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'Importa contatti da Outlook',
 'Import from Template'=>'Importa Contatti da Modello',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Per importare i contatti dal modello, si prega di compilare il file di modello. Poi, caricare il file qui utilizzando il modulo sottostante.',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Per importare i contatti da Outlook, per prima cosa creare un file CSV (formato DOS) aprendo prospettive ed esportando i contatti. Poi, caricare il file qui utilizzando il modulo sottostante.',
 'Upload File'=>'Carica File',
 'Contact Record Details'=>'Contatti Record',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'Abbonarsi',
 'The information for {name} has changed.'=>'Le informazioni per {name} è cambiato.',
 'Receive email updates every time information for {name} changes'=>'Ricevi aggiornamenti via email per ogni scambio di informazioni Tempo {name}',
 'Unsubscribe'=>'Cancellati',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'Web Piombo',
 'Invalid Email Address'=>'Indirizzo E-mail Non Valido',
 'Default list for email list signups'=>'Lista predefinita per iscrizioni mailing list',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'Grazie per il vostro interesse!',
 'Someone will be in touch shortly.'=>'Qualcuno sarà contatteremo al più presto.',
 'Enter any additional information or questions regarding your interest here.'=>'Immettere eventuali informazioni aggiuntive o domande riguardanti il ​​vostro interesse qui.',
+
+// // Map Translations
+'Map Filters'=>'Mappa Filtri',
+'Clear Marker'=>'Cancella Marker',
+'Drop a tag here to filter map results.'=>'Eliminare un tag qui per filtrare i risultati delle mappe.',
+'Save Map'=>'Salva Mappa',
+'View on Large Map'=>'Visualizza sulla mappa di grandi dimensioni',
+'View on Heat Map'=>'Visualizza sulla Mappa di Calore',
+'Center Coordinates'=>'Le Coordinate del Centro',
+'Delete Map'=>'Elimina Mappa',
+'Map Name'=>'Mappa Nome',
+'Map Owner'=>'Mappa del Proprietario',
+'Zoom Level'=>'Livello dello Zoom',
+'Parameters'=>'Parametri',
+'Center Latitude'=>'Centro Latitudine',
+'Center Longitude'=>'Centro Longitudine',
+'Contact'=>'Contatto',
 );

@@ -77,7 +77,7 @@ $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 <div class="record-title">
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo Yii::t('opportunities','Opportunity:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a></h2>
+<h2><?php echo Yii::t('opportunities','Opportunity:'); ?> <b><?php echo $model->name; ?></b> <a class="x2-button" href="update/<?php echo $model->id;?>"><?php echo Yii::t('app','Edit');?></a></h2>
 </div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
@@ -89,16 +89,18 @@ $form = $this->beginWidget('CActiveForm', array(
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Opportunity'));
 $this->endWidget();
 
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'opportunity'));
+$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'opportunity'));
+
+// $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'opportunity'));
 
 // render workflow box
 // $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'opportunities','currentWorkflow'=>$currentWorkflow));
-$this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'opportunities','currentWorkflow'=>$currentWorkflow));
+// $this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'opportunities','currentWorkflow'=>$currentWorkflow));
 ?>
 <?php $this->widget('Attachments',array('associationType'=>'opportunities','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php
-$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Opportunity'));
+//$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Opportunity'));
 
 $linkModel = CActiveRecord::model('Accounts')->findByPk($model->accountName);
 if (isset($linkModel))
@@ -108,8 +110,8 @@ else
 $createContactUrl = $this->createUrl('/contacts/create');
 $createAccountUrl = $this->createUrl('/accounts/create');
 $assignedTo = json_encode($model->assignedTo);
-$contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact associated with this Opportunity.'));
-$accountsTooltip = json_encode(Yii::t('contacts', 'Create a new Account associated with this Opportunity.'));
+$contactTooltip = json_encode(Yii::t('opportunities', 'Create a new Contact associated with this Opportunity.'));
+$accountsTooltip = json_encode(Yii::t('opportunities', 'Create a new Account associated with this Opportunity.'));
 
 Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {

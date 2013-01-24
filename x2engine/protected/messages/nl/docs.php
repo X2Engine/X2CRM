@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,6 +50,8 @@ return array (
 'Create Date'=>'Maken Datum Aan',
 'Edit Permissions'=>'Bewerk Permissies',
 'Doc Type'=>'Doc Type',
+'Subject'=>'Onderwerp',
+'Visibility'=>'Zichtbaarheid',
 
 // Labels
 'Doc'=>'Doc',
@@ -61,11 +63,13 @@ return array (
 'Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'=>'Kies de gebruiker die permissie hebben om het document te bewerken. Gebruik Control + Click om meerdere gebruikers te (de)selecteren.',
 'Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.'=>'Rechts klikken op de link hier onder, en kies "opslaan als" om het document te downloaden! Links klikken opent het document in print view.',
 'Uploaded Documents'=>'',
+'Custom Message'=>'',
 
 // Doc Navbar
 'List Docs'=>'Doc Lijst',
 'Create Docs'=>'Maak Docs Aan',
 'View Doc'=>'Bekijk Doc',
+'View'=>'Zien',
 'Edit Doc'=>'Bewerk Doc',
 'Delete Doc'=>'Verwijder Doc',
 'Export Doc'=>'Exporteer Doc',
@@ -74,4 +78,10 @@ return array (
 'Export'=>'Exporteer',
 'Create'=>'Aanmaken',
 'Create Email'=>'Email Aanmaken',
+'Create Doc'=>'',
+'Create Document'=>'Maak Document',
+'Create Email Template'=>'Maak E-mail sjabloon',
+
+// // Misc Text
+'Are you sure you want to delete this item?'=>'Weet je zeker dat je dit item wilt verwijderen?',
 );

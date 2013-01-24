@@ -59,7 +59,7 @@ class X2PieChart extends X2ChartWidget {
 				)
 			),
 			'legend' => array('show' => true, 'location' => 'e', 'placement' => 'outsideGrid'),
-			'seriesColors'=> array('#417DCD', '#6AEA3B', '#FFF440', '#FFB740', '#EF3C5C', '#7434AC', '#2C83A0', '#9DE93A', '#FFE63F', '#FFA33F', '#D8357D', '#6137AE'),
+			'seriesColors'=> array('#1D4C8C', '#45B41D', '#CEC415', '#CA8613', '#BC0D2C', '#5A1992', '#156A86', '#69B10A', '#C6B019', '#C87010', '#AB074F', '#3D1783'),
 			'grid' => array(
 			    'background'=> '#FFFFFF',
 			    'borderColor'=> '#000000',
@@ -90,7 +90,7 @@ class X2PieChart extends X2ChartWidget {
 				if ($skipNull)
 					continue;
 				else
-					$xval = Yii::t('dashboard', 'Unknown');
+					$xval = Yii::t('charts', 'Unknown');
 				}
 			$yval = 0 + $val[1];
 			if ($yval < $otherThreshold) {
@@ -101,7 +101,7 @@ class X2PieChart extends X2ChartWidget {
 			}
 		}
 		if ($otherTotal > 0) {
-			$plotData[$i] = array(Yii::t('dashboard', 'Other'), $otherTotal);
+			$plotData[$i] = array(Yii::t('charts', 'Other'), $otherTotal);
 		}
 
 		$cs = Yii::app()->clientScript;

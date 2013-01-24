@@ -104,7 +104,7 @@ class X2BubbleChart extends X2ChartWidget {
 				if ($skipNull)
 					continue;
 				else
-					$xval = Yii::t('dashboard', 'Unknown');
+					$xval = Yii::t('charts', 'Unknown');
 			}
 			$rval = 0 + $val['rval'];
 			$rlab = $val['rlab'];

@@ -68,7 +68,7 @@ if(isset($_GET['fields'])){
 <?php /* Contact Info */ ?>
 <?php if(isset($contact->email) || isset($contact->website)) { ?>
 	<?php if(isset($contact->email) && $contact->email != "") { ?>
-		<?php echo Yii::t('contacts', 'Email: '); ?> <strong><?php echo $contact->email; ?></strong><br />
+		<?php echo Yii::t('contacts', 'Email').": "; ?> <strong><?php echo $contact->email; ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->website) && $contact->website != "") { ?>

@@ -72,4 +72,4 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	),
 ));
 ?><br>
-<?php echo CHtml::link(Yii::t('admin','Delete All'),'#',array('class'=>'x2-button', 'submit'=>'deleteTag?tag=all','confirm'=>'Are you sure you want to delete all tags?')) ?>
+<?php echo CHtml::link(Yii::t('admin','Delete All'),'#',array('class'=>'x2-button', 'submit'=>'deleteTag?tag=all','confirm'=>'Are you sure you want to delete all tags?')); ?>

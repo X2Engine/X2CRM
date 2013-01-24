@@ -70,7 +70,7 @@
 					<?php echo $form->label($model,'dueDate', array('id'=>'due-date-label')); ?>
 					
 					<?php // label for New Event ?>
-					<?php echo CHtml::label(Yii::t('Actions', 'Start Date'), 'Actions_dueDate', array('id'=>'start-date-label', 'style'=>'display: none;')); ?>
+					<?php echo CHtml::label(Yii::t('actions', 'Start Date'), 'Actions_dueDate', array('id'=>'start-date-label', 'style'=>'display: none;')); ?>
 			
 					<?php
 					$model->dueDate = $this->controller->formatDateEndOfDay(time());	//default to tomorow for new actions
@@ -90,7 +90,7 @@
 						'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
 					));
 					
-					echo CHtml::label(Yii::t('Actions', 'End Date'), 'Actions_completeDate', array('id'=>'end-date-label', 'style'=>'display: none;'));
+					echo CHtml::label(Yii::t('actions', 'End Date'), 'Actions_completeDate', array('id'=>'end-date-label', 'style'=>'display: none;'));
 					
 					$model->dueDate = $this->controller->formatDateTime(time());
 					Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
@@ -186,7 +186,7 @@
 			array(
 				'beforeSend'=>"function() {
 					if($('#Actions_actionDescription').val() == '') {
-						alert('". Yii::t('Actions', 'Please enter a description.') ."');
+						alert('". Yii::t('actions', 'Please enter a description.') ."');
 						return false;
 					} else {
 						// show saving... icon

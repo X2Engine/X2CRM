@@ -54,7 +54,6 @@ $form=$this->beginWidget('CActiveForm', array(
 <?php echo $form->labelEx($admin,'leadDistribution'); ?>
 <?php echo $form->dropDownList($admin,'leadDistribution',array(
     ''=>'Free For All',
-    'evenDistro'=>'Even Distribution',
     'trueRoundRobin'=>'Round Robin',
     'customRoundRobin'=>'Custom Round Robin',
     'singleUser'=>'Single User'

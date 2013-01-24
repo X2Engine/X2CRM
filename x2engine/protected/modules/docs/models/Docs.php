@@ -67,6 +67,11 @@ class Docs extends CActiveRecord {
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/docs',
 			),
+            'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			)
 		);
 	}
 
@@ -138,8 +143,14 @@ class Docs extends CActiveRecord {
 		$criteria->compare('lastUpdated',$this->lastUpdated);
 		$criteria->compare('editPermissions',$this->editPermissions,true);
 
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
+		return new SmartDataProvider(get_class($this),array(
+			'sort' => array(
+				'defaultOrder' => 'lastUpdated DESC, id DESC',
+			),
+			'pagination' => array(
+				'pageSize' => ProfileChild::getResultsPerPage(),
+			),
+			'criteria' => $criteria,
 		));
 	}
 }

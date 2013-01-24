@@ -86,9 +86,6 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
 			
 				<div class="formSection showSection">
-					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('media', 'Association'); ?></span>
-					</div>
 					<div class="tableWrapper">
 						<table>
 							<tbody>
@@ -115,11 +112,20 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 													<?php 
 														if(!empty($model->associationId) && is_numeric($model->associationId)) {
 															$className = ucfirst($model->associationType);
-															if(class_exists($className, false))
+                                                            switch($className){
+                                                                case "Products":
+                                                                    $className="Product";
+                                                                    break;
+                                                                case "Quotes":
+                                                                    $className="Quote";
+                                                                    break;
+                                                            }
+															if(class_exists($className))
 																$linkModel = CActiveRecord::model($className)->findByPk($model->associationId);
-															if(isset($linkModel))
-																echo $linkModel->name;
-															else
+															if(isset($linkModel)){
+                                                                echo CHtml::link($linkModel->name, array('/'.$model->associationType.'/'.$model->associationId));
+																//echo $linkModel->name;
+                                                            }else
 																echo '';
 														} else {
 															echo '';
@@ -137,9 +143,6 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				</div>
 				
 				<div class="formSection showSection">
-					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('media', 'Permission'); ?></span>
-					</div>
 					<div class="tableWrapper">
 						<table>
 							<tbody>
@@ -160,15 +163,13 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				</div>
 				
 				<div class="formSection showSection">
-					<div class="formSectionHeader">
-						<span class="sectionTitle"><?php echo Yii::t('media', 'Description'); ?></span>
-					</div>
 					<div class="tableWrapper">
 						<table>
 							<tbody>
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
+                                            <label><?php echo Yii::t('media', 'Description'); ?></label>
 											<div class="formInputBox" style="width: 550px; height: auto;">
 												<?php echo $model->description; ?>
 											</div>
@@ -181,6 +182,9 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 					</div>
 				</div>
 			</div>
+<?php
+if(empty($fileView))
+    echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
 
 		
 	

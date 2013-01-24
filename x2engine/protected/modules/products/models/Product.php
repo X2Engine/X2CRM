@@ -65,26 +65,12 @@ class Product extends X2Model {
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/products'
+			),
+            'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
 			)
-		);
-	}
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('name', 'required'),
-			array('price', 'required'),
-			array('createDate, lastUpdated, inventory', 'numerical', 'integerOnly'=>true),
-			array('price', 'numerical', 'integerOnly'=>false),
-			array('updatedBy', 'length', 'max'=>40),
-			array('name', 'length', 'max'=>255),
-			array('description', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, description, createDate, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
 		);
 	}
 

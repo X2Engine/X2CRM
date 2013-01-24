@@ -183,7 +183,12 @@ class QuotesController extends x2base {
 		
 		    $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 		    $this->updateChangelog($model,$changes);
-		    if($model->assignedTo!=Yii::app()->user->getName()){
+            $event=new Events;
+            $event->level=2;
+            $event->associationType=$name;
+            $event->associationId=$model->id;
+            $event->type='record_create';
+		    if($event->save() && $model->assignedTo!=Yii::app()->user->getName()){
 			
 				$notif = new Notification;
 				$notif->user = $model->assignedTo;
@@ -515,13 +520,9 @@ class QuotesController extends x2base {
 	    $model->lastUpdated = time();
 	    $model->updatedBy = Yii::app()->user->name;
 	    
-	    if($model->expectedCloseDate!=""){
-	            $model->expectedCloseDate=strtotime($model->expectedCloseDate);
-	    }
-	    
 	    $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
 	    $model = $this->updateChangelog($model,$changes);
-	
+        
 	    if($model->save()) {
 	    	
 	    	// update contacts
@@ -664,7 +665,6 @@ class QuotesController extends x2base {
 			} else {
 				$products = array();
 			}
-			
         	$this->updateQuote($model, $temp, $products);
 
 		}
@@ -1035,6 +1035,14 @@ class QuotesController extends x2base {
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
 			
 			// delete associated actions
 			Actions::model()->deleteAllByAttributes(array('associationId'=>$id, 'associationType'=>'quotes'));

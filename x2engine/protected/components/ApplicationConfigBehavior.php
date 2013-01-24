@@ -76,7 +76,7 @@ class ApplicationConfigBehavior extends CBehavior {
 				if (!isset($timezone))
 					$timezone = 'UTC';
 				date_default_timezone_set($timezone);
-
+                Yii::import('application.models.X2Model');
 				// Yii::import('application.models.*');
 				// foreach(scandir('protected/modules') as $module){
 				// if(file_exists('protected/modules/'.$module.'/register.php'))
@@ -184,16 +184,13 @@ class ApplicationConfigBehavior extends CBehavior {
 				$this->owner->params->edition = 'opensource';
 		}
 		
-		
 		setlocale(LC_ALL, 'en_US.UTF-8');
-
 		
 		$datePickerFormat = Yii::app()->locale->getDateFormat('short'); // translate Yii date format to jquery
 		$datePickerFormat = str_replace('yy', 'y', $datePickerFormat);
 		$datePickerFormat = str_replace('MM', 'mm', $datePickerFormat);
 		$datePickerFormat = str_replace('M', 'm', $datePickerFormat);
-
-
+		
 		// set base path and theme path globals for JS
 		if(!$cli)
 			Yii::app()->clientScript->registerScript('setParams','
@@ -201,7 +198,8 @@ class ApplicationConfigBehavior extends CBehavior {
 				baseUrl: "'.Yii::app()->baseUrl.'",
 				themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
 				language: "'.(Yii::app()->language == 'en'? '' : Yii::app()->getLanguage()).'",
-				datePickerFormat: "'.$datePickerFormat.'"
+				datePickerFormat: "'.$datePickerFormat.'",
+				timePickerFormat: "'.Yii::app()->formatTimePicker().'"
 			},
 			x2 = {},
 			notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';

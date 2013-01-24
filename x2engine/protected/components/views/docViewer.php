@@ -112,6 +112,9 @@ $('#docview-box-outer').resizable({
 			 Height: { docboxHeight: parseInt($('#docview-box').css('height')) }
 			});
 	},
+});
+$(document).on('submit','#docview-input',function(e){
+    e.preventDefault();
 });"
 );
 ?>

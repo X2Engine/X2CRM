@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'認証コード',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'番号',
 'First Name'=>'名前',
 'Name'=>'名前',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'機会の種類',
 'Other'=>'その他',
 'Close Date'=>'日付を閉じる',
+'Expected Close Date'=>'予想クローズ日',
 'Interest'=>'関心',
 'Deal Value'=>'取引値',
 'Lead Status'=>'機会のステータス',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'却下された',
 'Tags'=>'タグ',
 'Associated Contacts'=>'関連付けられている連絡先',
-
-// List Attributes
+'Duplicate Check'=>'重複チェック',
+'Last Activity'=>'最後の活動',
+'Timezone'=>'タイムゾーン',
+'Web Tracking Key'=>'ウェブ追跡キー',
+// // 
+// // List Attributes
 'Owner'=>'所有者',
 'Description'=>'説明',
 'Logic Type'=>'ロジックタイプ',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'メンバー',
 'Dynamic'=>'ダイナミック',
 'Static'=>'静的',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'リスト',
 'Type'=>'タイプ',
 'Attribute'=>'属性',
 'Comparison'=>'比較',
 'Value'=>'値',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'等しい',
 'greater than'=>'よりも大きい',
 'less than'=>'以下',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'空ではありません',
 'contains'=>'含まれています',
 'does not contain'=>'が含まれていません',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'{name} に割り当て',
 'Social Networks'=>'ネットワーク',
 'Detail View'=>'詳細ビュー',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'又は',
 'User'=>'ユーザー',
 'Leads'=>'リード',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b>{m}</b>は、<b>の{n} </b>に',
+'Create a new Opportunity associated with this Contact.'=>'この連絡先に関連付けられた新しい機会を作成します。',
+'Create a new Account associated with this Contact.'=>'この連絡先に関連付けられた新しいアカウントを作成します。',
+'Create a new Service Case associated with this Contact.'=>'この連絡先に関連付けられている新しいサービスケースを作成します。',
+'Link to Record'=>'レコードへのリンク',
+'Contact Attributes'=>'属性の問い合わせ',
+// // 
+// // Contacts Actions
 'My Contacts'=>'私のコンタクト',
 'New Contacts'=>'新しい連絡先',
 'All Contacts'=>'すべてのコンタクト',
 'Create Contact'=>'コンタクトを作る',
 'View Contact'=>'コンタクトを見る',
 'Update Contact'=>'コンタクトを更新する',
+'Edit Contact'=>'連絡先を編集',
 'Update Contact:'=>'コンタクトを更新する',
 'Delete Contact'=>'コンタクトを削除する',
 'Contact Lists'=>'リストお問い合わせ',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'購読する',
 'View List'=>'一覧を見る',
 'Share Action'=>'共有アクション',
-
-// Contacts Titles
+'Import Contacts'=>'連絡先のインポート',
+'Contact Map'=>'マップお問い合わせ',
+'Saved Maps'=>'保存されているマップ',
+// // 
+// // Contacts Titles
 'Contacts'=>'コンタクト',
 'Manage Contacts'=>'コンタクトの管理',
 'Contact:'=>'コンタクト:',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'Outlookから連絡先のインポート',
 'Import from Template'=>'テンプレートから連絡先のインポート',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'テンプレートからコンタクトをインポートするには、当社のテンプレートファイルに必要事項を記入してください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Outlookからコンタクトをインポートするには、Outlookを開き、連絡先をエクスポートしてCSVファイル（DOS形式）を作成するには、まずしてください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
 'Upload File'=>'ファイルのアップロード',
 'Contact Record Details'=>'コンタクトのレコードの詳細',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'購読する',
 'The information for {name} has changed.'=>'{name}のための情報が変更されました。',
 'Receive email updates every time information for {name} changes'=>'たびに情報交換{name}の電子メールの更新を受信',
 'Unsubscribe'=>'退会',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'ウェブ接触',
 'Invalid Email Address'=>'無効なメールアドレス',
 'Default list for email list signups'=>'電子メールリストの申し込みのためのデフォルトのリスト',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'あなたの興味をありがとう！',
 'Someone will be in touch shortly.'=>'誰かがすぐに連絡させていただきます。',
 'Enter any additional information or questions regarding your interest here.'=>'ここにあなたの興味に関する任意の追加情報やご質問を入力してください。',
+
+// // Map Translations
+'Map Filters'=>'マップ·フィルター',
+'Clear Marker'=>'明確なマーカー',
+'Drop a tag here to filter map results.'=>'マップの結果をフィルタリングするためにここでは、タグを削除します。',
+'Save Map'=>'マップの保存',
+'View on Large Map'=>'大きな地図で見る',
+'View on Heat Map'=>'ヒートマップで表示',
+'Center Coordinates'=>'中心座標',
+'Delete Map'=>'マップを削除します',
+'Map Name'=>'マップ名',
+'Map Owner'=>'マップの所有者',
+'Zoom Level'=>'ズームレベル',
+'Parameters'=>'パラメータ',
+'Center Latitude'=>'中心の緯度',
+'Center Longitude'=>'中心の経度',
+'Contact'=>'連絡',
 );

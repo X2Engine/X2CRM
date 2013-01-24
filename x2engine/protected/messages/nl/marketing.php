@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -40,6 +40,8 @@
 
 return array (
 // Campaign model
+'Campaign'=>'',
+'Campaigns'=>'',
 'ID'=>'ID',
 'Master Campaign ID'=>'Hoofd Campagne ID',
 'Name'=>'Naam',
@@ -58,6 +60,22 @@ return array (
 'Last Updated'=>'Laatst Bijgewerkt',
 'Updated By'=>'Bijgewerkt Door',
 'None'=>'Geen',
+'Basic Info'=>'',
+'Email'=>'',
+'Call List'=>'',
+'Physical Mail'=>'',
+'Email Template'=>'',
+'Update Campaign'=>'',
+'Last Activity'=>'Laatste Activiteit',
+'Template'=>'Sjabloon',
+
+// Menu
+'All Campaigns'=>'',
+'Create Campaign'=>'',
+'Newsletters'=>'',
+'Create Newsletter'=>'',
+'Create Web Form'=>'',
+'Web Tracker'=>'Web Tracker',
 
 // Launching
 'The campaign has already been launched.'=>'De Campagne is al gelanceerd',
@@ -71,6 +89,11 @@ return array (
 'Campaign launched'=>'Campagne gelanceerd',
 'Campaign paused'=>'Campagne gepausseerd',
 'Campaign resumed'=>'Campagne Hervat',
+'Sent'=>'',
+'Opened'=>'',
+'Clicked'=>'',
+'Unsubscribed'=>'',
+'Status'=>'',
 
 // Mailing
 'The email sending limit has been reached.'=>'Email verzend limiet is bereikt.',
@@ -83,6 +106,7 @@ return array (
 'Attempting to send email'=>'Poging om email te verzenden',
 'Unsendable email'=>'Onverzendbare email',
 'Blank email addresses'=>'Lege email adressen',
+'Duplicate Email Address'=>'',
 '\'Do Not Email\' contacts'=>'\'niet mailen\' contacten',
 'Data errors'=>'Data Fouten',
 'Batch completed, sending again in'=>'Batch afgerond, opnieuw verzenden over',
@@ -93,6 +117,15 @@ return array (
 'Contacts for tag'=>'Contacten voor tag',
 'Mailing for tag'=>'Mailing voor tag',
 'Could not create mailing'=>'Kon mailing niet aanmaken',
+'You have been unsubscribed'=>'',
+'Contact has unsubscribed'=>'',
+'\'Do Not Email\' has been set'=>'',
+'has unsubscribed'=>'',
+'Contact has opened the email'=>'',
+'has opened the email'=>'',
+'Contact has clicked a link'=>'',
+'has clicked a link'=>'',
+'To stop receiving these messages, click here'=>'',
 
 // WebForm model
 'Model Name'=>'Model Naam',
@@ -102,6 +135,7 @@ return array (
 
 // Web Lead Form creator
 'Name cannot be blank.'=>'Naam kan niet leeg zijn',
+'Name cannot be'=>'',
 'Web Lead Form'=>'Web Lead Formulier',
 'Create a public form to receive new contacts.'=>'Maak een publiek formulier om nieuw contacten te ontvangen',
 'If no lead routing has been configured, all new contacts will be assigned to "Anyone".'=>'Als er geen hoofd routing is ingesteld, zullen alle nieuwe contact toegewezen worden aan "anyone"',

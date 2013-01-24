@@ -40,14 +40,14 @@
 ?>
 <?php
 $this->actionMenu = $this->formatMenu(array(
-	array('label' => Yii::t('dashboard', 'Lead Volume'), 'url' => array('leadVolume')),
-	// array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
-	// array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
-	// array('label' => Yii::t('dashboard', 'Lead Sources'), 'url' => array('leadSources')),
-	// array('label' => Yii::t('dashboard', 'Workflow'), 'url' => array('workflow')),
-	array('label' => Yii::t('dashboard', 'Marketing')),
-	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
-	array('label' => Yii::t('dashboard', 'Opportunities'), 'url' => array('sales'))
+	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
+	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
+	// array('label' => Yii::t('charts', 'Lead Performance'), 'url' => array('leadPerformance')),
+	// array('label' => Yii::t('charts', 'Lead Sources'), 'url' => array('leadSources')),
+	// array('label' => Yii::t('charts', 'Workflow'), 'url' => array('workflow')),
+	array('label' => Yii::t('charts', 'Marketing')),
+	array('label' => Yii::t('charts', 'Pipeline'), 'url' => array('pipeline')),
+	array('label' => Yii::t('charts', 'Opportunities'), 'url' => array('sales'))
 ));
 ?>
 
@@ -68,15 +68,15 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('dashboard', 'Select leads received in the last &nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select leads received in the last &nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
 				<?php
 				echo $form->radioButtonList($model, 'dateRange', array(
-					10 => Yii::t('dashboard', '10 days'),
-					30 => Yii::t('dashboard', '30 days'),
-					60 => Yii::t('dashboard', '60 days'),
-					90 => Yii::t('dashboard', '90 days'),
-					120 => Yii::t('dashboard', '120 days'),
-					360 => Yii::t('dashboard', '360 days')
+					10 => Yii::t('charts', '10 days'),
+					30 => Yii::t('charts', '30 days'),
+					60 => Yii::t('charts', '60 days'),
+					90 => Yii::t('charts', '90 days'),
+					120 => Yii::t('charts', '120 days'),
+					360 => Yii::t('charts', '360 days')
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
@@ -98,7 +98,7 @@ $this->actionMenu = $this->formatMenu(array(
 					'x-axis' => array('column' => 'leadSource')),
 				'filters' => $filters,
 				'chartOptions' => array(
-					'title' => Yii::t('dashboard', 'Lead Source'),
+					'title' => Yii::t('charts', 'Lead Source'),
 					'legend' => array('show' => true, 'location' => 'ne', 'placement' => 'insideGrid')
 				)
 					));
@@ -114,7 +114,7 @@ $this->actionMenu = $this->formatMenu(array(
 				),
 				'filters' => $filters,
 				'chartOptions' => array(
-					'title' => Yii::t('dashboard', 'Lead Type'),
+					'title' => Yii::t('charts', 'Lead Type'),
 					'legend' => array('show' => true, 'location' => 'ne', 'placement' => 'insideGrid')
 				)
 			));
@@ -133,10 +133,10 @@ $this->actionMenu = $this->formatMenu(array(
 			),
 			'filters' => $filters,
 			'chartOptions' => array(
-				'title' => Yii::t('dashboard', 'Lead Distribution and Status'),
+				'title' => Yii::t('charts', 'Lead Distribution and Status'),
 				'axes' => array(
-					'xaxis' => array('label' => Yii::t('dashboard', 'Assigned To')),
-					'yaxis' => array('label' => Yii::t('dashboard', 'Count'))
+					'xaxis' => array('label' => Yii::t('charts', 'Assigned To')),
+					'yaxis' => array('label' => Yii::t('charts', 'Count'))
 				)
 			)
 		));
@@ -155,10 +155,10 @@ $this->actionMenu = $this->formatMenu(array(
 			),
 			'filters' => $filters,
 			'chartOptions' => array(
-				'title' => Yii::t('dashboard', 'Lead Conversion'),
+				'title' => Yii::t('charts', 'Lead Conversion'),
 				'axes' => array(
-					'xaxis' => array('label' => Yii::t('dashboard', 'Lead Received')),
-					'yaxis' => array('label' => Yii::t('dashboard', 'Count'))
+					'xaxis' => array('label' => Yii::t('charts', 'Lead Received')),
+					'yaxis' => array('label' => Yii::t('charts', 'Count'))
 				)
 			)
 		));

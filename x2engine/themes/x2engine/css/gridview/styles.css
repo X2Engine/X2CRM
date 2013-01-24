@@ -214,6 +214,8 @@ ul.column-selector input {
 	background:#eef0ff;
 	font-weight:bold;
 }
+.grid-view table.items td a {text-decoration:none;}
+.grid-view table.items td a:hover {text-decoration:underline;}
 
 .grid-view table.items tr.selected {
 }

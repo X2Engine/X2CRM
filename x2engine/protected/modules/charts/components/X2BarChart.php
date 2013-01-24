@@ -93,7 +93,7 @@ class X2BarChart extends X2ChartWidget {
 				if ($skipNull)
 					continue;
 				else
-					$xval = Yii::t('dashboard', 'Unknown');
+					$xval = Yii::t('charts', 'Unknown');
 				}
 			$yval = 0 + $val[1];
 			if ($yval < $otherThreshold) {

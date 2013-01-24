@@ -43,7 +43,20 @@ $('#contacts-form input, #contacts-form select, #contacts-form textarea').change
 	$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
 });
 ";
-Yii::app()->clientScript->registerScript('highlightSaveContact',$js,CClientScript::POS_READY);
+$assets = Yii::app()->getAssetManager()->publish(
+	Yii::getPathOfAlias('application.extensions.CJuiDateTimePicker').DIRECTORY_SEPARATOR.'assets'
+);
+$cs = Yii::app()->getClientScript();
+$cs->registerScript('highlightSaveContact',$js,CClientScript::POS_READY);
+$cs->registerCssFile($assets.'/jquery-ui-timepicker-addon.css');
+$cs->registerScriptFile($assets.'/jquery-ui-timepicker-addon.js',CClientScript::POS_END);
+
+// $cs->registerScript(__CLASS__, 	$this->defaultOptions?'jQuery.{$this->mode}picker.setDefaults('.CJavaScript::encode($this->defaultOptions).');':'');
+// $cs->registerScript(__CLASS__.'#'.$id, $js);
+
+
+
+
 
 $fieldTypes = array();
 $fieldLinkTypes = array();
@@ -231,31 +244,41 @@ function isNumber(n) {
 function createValueCell(field) {
 	var input;
 	var hidden;
+	// console.debug(fieldTypes[field]);
 	switch(fieldTypes[field]) {
-		case 'varchar':
-		case 'email':
-		case 'url':
-		case 'text':
-		case 'currency':
-		case 'rating':
-			//text field
-			input = $('<input size=\"30\" type=\"text\" value=\"\">');
-			input.attr('name', 'X2List[value][]');
-			break;
 		case 'date':
 			//calendar widget following http://jqueryui.com/demos/datepicker
-			input = $('<input size=\"30\" type=\"text\" value=\"\">');
-			input.attr('name', 'X2List[value][]');
-			input.datepicker({
+			input = $(document.createElement('input')).attr({
+				size:'30',
+				type:'text',
+				value:'',
+				name:'X2List[value][]'
+			}).datepicker({
 				//these button options aren't working as expected
 				//showOn: 'both',
 				//buttonImage: baseUrl + '/images/flags/ja.png',
 				//buttonImageOnly: true,
 				constrainInput: false,
 				showOtherMonths: true,
-				selectOtherMonths: true
+				selectOtherMonths: true,
+				dateFormat:yii.datePickerFormat
 			});
-			input.datepicker('option', 'dateFormat', 'yy-mm-dd');
+			break;
+		case 'dateTime':
+			input = $(document.createElement('input')).attr({
+				size:'30',
+				type:'text',
+				value:'',
+				name:'X2List[value][]'
+			}).datetimepicker({
+				constrainInput: false,
+				showOtherMonths: true,
+				selectOtherMonths: true,
+				dateFormat:yii.datePickerFormat,
+				timeFormat:yii.timePickerFormat,
+				minDate:null,
+				maxDate:null
+			});
 			break;
 		case 'boolean':
 		case 'visibility':
@@ -330,6 +353,7 @@ function createValueCell(field) {
 			break;
 		case 'dropdown':
 		case 'assignment':
+		case 'optionalAssignment':
 			//we maintain a hidden field along with the multiselect to hold a comma
 			//separated list of the multiselect values, in order to post them as one field
 			hidden = $('<input type="hidden">');
@@ -346,10 +370,21 @@ function createValueCell(field) {
 				input.val($(this).val().split(','));
 			});
 			break;
+		case 'varchar':
+		case 'email':
+		case 'url':
+		case 'text':
+		case 'currency':
+		case 'rating':
+		default:
+			//text field
+			input = $('<input size=\"30\" type=\"text\" value=\"\">');
+			input.attr('name', 'X2List[value][]');
+			break;
 	}
 	//prevent false positive, multiselect widgets show the top choice as being selected though nothing 
 	//actually gets posted without user interaction, set val to blank to unselect
-	input.val('');
+	$(input).val('');
 	var div = $(document.createElement('div'));
 	div.attr('class', 'cell');
 	var label = $('<label for=\"X2List[value][]\">Value</label>');

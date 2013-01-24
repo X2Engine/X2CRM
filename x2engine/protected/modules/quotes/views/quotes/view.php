@@ -195,11 +195,13 @@ $this->renderPartial('_detailView',
 );
 */
 $this->endWidget();
-
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Quote'));
 ?>
 
-<br /><br />
+<div class="form">
+	<b><?php echo Yii::t('app', 'Tags'); ?></b>
+	<?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Quote')); ?>
+</div>
+
 <?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
 </div>
 <div class="history half-width">

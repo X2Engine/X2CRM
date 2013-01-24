@@ -111,7 +111,7 @@ $fullname = Yii::app()->params->profile->fullName;
 				->from('x2_profile')
 				->queryAll();
 		
-	//	$admin = Yii::app()->user->checkAccess('AdminIndex');
+		$admin = Yii::app()->user->checkAccess('AdminIndex');
 		 ?>
 
 		<?php foreach($users as $user) { ?>

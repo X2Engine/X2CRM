@@ -56,7 +56,7 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','View')),
     array('label'=>Yii::t('contacts','Edit Contact'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('contacts','Share Contact'),'url'=>array('shareContact','id'=>$model->id)),
-	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
+//	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
     array('label'=>Yii::t('contacts','Delete Contact'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
@@ -69,17 +69,17 @@ $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 $serviceModule = Modules::model()->findByAttributes(array('name'=>'services'));
 
 if($accountModule->visible) {
-	$createAccountButton = 	array(array('label'=>Yii::t('contacts','Create Account'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-account')));
+	$createAccountButton = 	array(array('label'=>Yii::t('accounts','Create Account'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-account')));
 	array_splice($menuItems, 6, 0, $createAccountButton);
 }
 
 if($opportunityModule->visible) {
-	$createAccountButton = 	array(array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
+	$createAccountButton = 	array(array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
 	array_splice($menuItems, 6, 0, $createAccountButton);
 }
 
 if($serviceModule->visible) {
-	$createCaseButton = array(array('label'=>Yii::t('contacts','Create Case'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-case')));
+	$createCaseButton = array(array('label'=>Yii::t('services','Create Case'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-case')));
 	array_splice($menuItems, 6, 0, $createCaseButton);
 }
 
@@ -88,11 +88,16 @@ if($opportunityModule->visible && $accountModule->visible)
 
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 
+$modelType = json_encode("Contacts");
+$modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('subscribe', "
 $(function() {
 	$('body').data('subscribed', ". json_encode($subscribed) .");
-	$('body').data('subscribeText', '". Yii::t('contacts', 'Subscribe') ."');
-	$('body').data('unsubscribeText', '". Yii::t('contacts', 'Unsubscribe') ."');
+	$('body').data('subscribeText', ". json_encode(Yii::t('contacts', 'Subscribe')) .");
+	$('body').data('unsubscribeText', ". json_encode(Yii::t('contacts', 'Unsubscribe')) .");
+	$('body').data('modelType', $modelType);
+	$('body').data('modelId', $modelId);
+	
 	
 	$('.x2-subscribe-button').qtip();
 });
@@ -110,7 +115,8 @@ function subscribe(link) {
 
 ",CClientScript::POS_HEAD);
 
-
+// widget layout
+$layout = Yii::app()->params->profile->getLayout();
 ?>
 <div id="main-column" class="half-width">
 <div class="record-title" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/contacts.png);">
@@ -119,25 +125,33 @@ function subscribe(link) {
 
 
 <?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
-<h2><b><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></b> 
-<?php echo CHtml::link('<span></span>','#',array('class'=>'x2-button email right','onclick'=>'toggleEmailForm(); return false;'));
+<h2><b><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></b>
+<?php /*
+<a class="x2-button right widget-menu-button" onclick="$('#widget-menu').addClass('visible'); return false;" href="#">
+<?php/*	<span class="widget-menu-button">Widgets</span>
+	<ul id="widget-menu">
+		<?php foreach($layout['hidden'] as $name=>$widget) { ?>
+				<li><span class="x2-widget-menu-item" id="<?php echo $name; ?>"><?php echo $widget['title']; ?></span></li>
+		<?php } ?>
+		<?php foreach($layout['hiddenRight'] as $name=>$widget) { ?>
+				<li><span class="x2-widget-menu-item right" id="<?php echo $name; ?>"><?php echo $widget['title']; ?></span></li>
+		<?php } ?>
+	</ul> 
+</a>
+<?php */
+echo CHtml::link('<span></span>','#',array('class'=>'x2-button email right','onclick'=>'toggleEmailForm(); return false;'));
 if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
 	echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right'));
 ?>
 </h2>
 </div>
 
-<?php
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
+<?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts')); ?>
 
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'contacts'));
+<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'contacts')); ?>
 
-$this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
-// render workflow box
-// $this->renderPartial('application.components.views._workflow',array('model'=>$model,'modelName'=>'contacts','currentWorkflow'=>$currentWorkflow));
-?>
 <?php
-$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'contacts'));
+//$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'contacts'));
 
 $linkModel = CActiveRecord::model('Accounts')->findByPk($model->company);
 if (isset($linkModel))

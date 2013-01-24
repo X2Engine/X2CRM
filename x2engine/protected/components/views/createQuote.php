@@ -68,7 +68,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 ?>
 
 <?php echo CHtml::button(
-	Yii::t('quotess', 'New Quote'), 
+	Yii::t('quotes', 'New Quote'), 
 	array('id'=>'show-new-quote-button', 'onclick'=>'toggleNewQuote();', 'class'=>'x2-button')
 ); ?>
 

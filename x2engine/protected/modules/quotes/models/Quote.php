@@ -61,26 +61,6 @@ class Quote extends X2Model {
 	}
 
 	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('name', 'required'),
-			array('probability', 'numerical', 'integerOnly'=>true),
-			array('name', 'length', 'max'=>40),
-			array('accountName', 'length', 'max'=>100),
-			array('salesStage, expectedCloseDate, updatedBy', 'length', 'max'=>20),
-			array('leadSource', 'length', 'max'=>10),
-			array('description, assignedTo, associatedContacts', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, accountName, salesStage, expectedCloseDate, probability, leadSource, description, assignedTo, createDate, associatedContacts, lastUpdated, updatedBy', 'safe', 'on'=>'search'),
-		);
-	}
-
-	/**
 	 * @return array relational rules.
 	 */
 	public function relations() {

@@ -144,6 +144,7 @@ $this->widget('InlineEmailForm',
 			//'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
 			'subject'=>$model->subject,
 			'message'=>$model->content,
+			// 'template'=>'campaign',
 			// 'redirect'=>'contacts/'.$model->id,
 			'modelName'=>'Campaign',
 			'modelId'=>$model->id,
@@ -155,12 +156,44 @@ $this->widget('InlineEmailForm',
 
 <h2><?php echo Yii::t('app','Attachments'); ?></h2>
 
+
+<?php // find out if attachments are minimized
+$showAttachments = true;
+$formSettings = Profile::getFormSettings('campaign');
+$layout = FormLayout::model()->findByAttributes(array('model'=>'Campaign','defaultView'=>1));
+if(isset($layout)) {
+	$layoutData = json_decode($layout->layout,true);
+	$count = count($layoutData['sections']);
+	if(isset($formSettings[$count])) {
+		$showAttachments = $formSettings[$count];
+	}
+}
+
+// if the campaign has been launched, hide all collapsables
+if($model->launchDate) {
+
+Yii::app()->clientScript->registerScript('hide-all-collapsables',"
+$(function() {
+	$('.formSection.collapsible').each(function() {
+		if($(this).hasClass('showSection')) {
+			$(this).removeClass('showSection');
+			$(this).find('.tableWrapper').css('display', 'none');
+		}
+	});
+});
+");
+}
+?>
+
 <div id="campaign-attachments-wrapper" class="x2-layout form-view">
-<div class="formSection showSection">
+<div class="formSection collapsible <?php echo $showAttachments? 'showSection' : ''; ?>">
 	<div class="formSectionHeader">
+		<a href="javascript:void(0)" class="formSectionHide">[–]</a>
+		<a href="javascript:void(0)" class="formSectionShow">[+]</a>
 		<span class="sectionTitle"><?php echo Yii::t('app','Attachments'); ?></span>
 	</div>
-	<div id="campaign-attachments" class="tableWrapper" style="min-height: 100px; padding: 5px;">
+	<div id="campaign-attachments" class="tableWrapper" style="padding: 5px; <?php echo $showAttachments? '' : 'display: none;'; ?>">
+		<div style="min-height: 100px;">
 		<?php $attachments = $model->attachments; ?>
 		<?php if($attachments) { ?>
 			<?php foreach($attachments as $attachment) { ?>
@@ -172,10 +205,14 @@ $this->widget('InlineEmailForm',
 				<?php } ?>
 			<?php } ?>
 		<?php } ?>
+		</div>
 	</div>
 </div>
 </div>
-<?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Campaign')); ?>
+<div class="form">
+	<b><?php echo Yii::t('app', 'Tags'); ?></b>
+	<?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'Campaign')); ?>
+</div>
 <?php if($model->launchDate && $model->active && !$model->complete && $model->type == 'Email') { ?>
 <div id="mailer-status" class="wide form" style="max-height: 150px; margin-top:13px;">
 </div>
@@ -282,7 +319,20 @@ if(isset($contactList)) {
 	$this->widget('zii.widgets.grid.CGridView', array(
 		'id'=>'contacts-grid',
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-		'dataProvider'=>$contactList->campaignDataProvider(20),
+		'template'=>'{summary}{items}{pager}',
+		'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).')
+			. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+			    	'ajax' => array(
+			    		'url' => $this->createUrl('/profile/setResultsPerPage'),
+			    		'complete' => "function(response) { $.fn.yiiGridView.update('contacts-grid', {data: {'id_page': 1}}) }",
+			    		'data' => "js: {results: $(this).val()}",
+			    	),
+			    	'style' => 'margin: 0;',
+			    ))
+			. ' </div>'
+			. Yii::t('app', 'results per page.'),
+		'dataProvider'=>$contactList->campaignDataProvider(Profile::getResultsPerPage()),
 		'columns'=>$displayColumns,
 	));
 }

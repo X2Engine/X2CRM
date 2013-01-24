@@ -57,7 +57,7 @@ var textsize;
 
 
 // init inline tags widget javascript
-$(function() {
+function initTags() {
 	$('#x2-inline-tags').droppable({ // allow tags to be dropped into inline tags widget
 		accept: '.x2-tag',
 		activeClass: 'x2-state-active',
@@ -72,7 +72,7 @@ $(function() {
 		activeClass: 'x2-state-active',
 		hoverClass: 'x2-state-hover',
 		drop: function(event, ui) { // add a tag to this model		
-            if($('#x2-tag-list-filter').text()=='Drop a tag here to filter map results.'){
+            if($('#x2-tag-list-filter').text()==$('#x2-tag-list-filter').attr('title')){
                 $('#x2-tag-list-filter').html('');
             }
 			$('#x2-tag-list-filter').appendTagFilter(ui.draggable.context);
@@ -120,7 +120,7 @@ $(function() {
         height: 'auto',
         width: 'auto'
     });
-});
+}
 
 
 // append a tag to an element (presumably a span representing a list of tags)

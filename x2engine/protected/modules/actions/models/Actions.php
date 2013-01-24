@@ -240,49 +240,51 @@ class Actions extends X2Model {
 	
 	public function search() {
 		$criteria=new CDbCriteria;
-		$parameters=array('condition'=>"(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo='' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
-		$criteria->scopes=array('findAll'=>array($parameters));
-		
+        $parameters=array('condition'=>"(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo='' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND dueDate <= '".mktime(23,59,59)."'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+        $criteria->scopes=array('findAll'=>array($parameters));
 		return $this->searchBase($criteria);
 	}
 
 	public function searchComplete() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"completedBy='".Yii::app()->user->getName()."' AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
-		$criteria->scopes=array('findAll'=>array($parameters));
-
+        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
+            $parameters=array("condition"=>"completedBy='".Yii::app()->user->getName()."' AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
+            $criteria->scopes=array('findAll'=>array($parameters));
+        }
 		return $this->searchBase($criteria);
 	}
 
 	public function searchAll() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."'))",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
-		$criteria->scopes=array('findAll'=>array($parameters));
-
+        $parameters=array("condition"=>"(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."'))",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+        $criteria->scopes=array('findAll'=>array($parameters));
 		return $this->searchBase($criteria);
 	}
 	
 	public function searchGroup() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"visibility='1' AND complete!='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
-		$criteria->scopes=array('findAll'=>array($parameters));
-
+        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
+            $parameters=array("condition"=>"(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND complete!='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+            $criteria->scopes=array('findAll'=>array($parameters));
+        }
 		return $this->searchBase($criteria);
 	}
 	
 	public function searchAllGroup() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"visibility='1'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
-		$criteria->scopes=array('findAll'=>array($parameters));
-
+        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
+            $parameters=array("condition"=>"(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."'))",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+            $criteria->scopes=array('findAll'=>array($parameters));
+        }
 		return $this->searchBase($criteria);
 	}
 
 	public function searchAllComplete() {
 		$criteria=new CDbCriteria;
-		$parameters=array("condition"=>"visibility='1' AND complete='Yes'","limit"=>ceil(ProfileChild::getResultsPerPage()/2));
-		$criteria->scopes=array('findAll'=>array($parameters));
-
+        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
+            $parameters=array("condition"=>"(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND complete='Yes'",'limit'=>ceil(ProfileChild::getResultsPerPage()/2));
+            $criteria->scopes=array('findAll'=>array($parameters));
+        }
 		return $this->searchBase($criteria);
 	}
 

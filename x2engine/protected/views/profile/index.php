@@ -98,6 +98,7 @@ $socialTabs = array(
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,
 	'itemView'=>'../social/_viewFull', 
+    
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
 	'template'=>'<div class="social-tabs" style="float:left;">'.implode(' | ',array_values($socialTabs)).' || '.implode(' | ',array_values($subtypes)).'</div> {summary}{items}{pager}',
 )); ?>

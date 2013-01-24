@@ -80,7 +80,12 @@ function setupAutosave() {
 	if($.browser.msie)
 		return;
 	// save after 1.5 seconds when the user is done typing
-	window.docEditor.document.on("keyup",function() {
+	
+	window.docEditor.document.on("keyup",function(e) {
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(autosave, 1500);
+	});
+	window.docEditor.on("saveSnapshot",function(e) {
 		clearTimeout(typingTimer);
 		typingTimer = setTimeout(autosave, 1500);
 	});
@@ -103,7 +108,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		</div>
 		<div class="cell">
 			<?php echo $form->label($model,'visibility'); ?>
-			<?php echo $form->dropDownList($model,'visibility',array(1=>'Public',0=>'Private')); ?>
+			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'))); ?>
 			<?php echo $form->error($model,'visibility'); ?>
 		</div>
 	</div>

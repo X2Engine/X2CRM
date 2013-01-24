@@ -335,6 +335,7 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 #profile-dropdown {
 	padding:0;
 	margin-left:-5px;
+	z-index: 1;
 }
 #profile-dropdown span {
 	height:auto;
@@ -571,7 +572,7 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 #sidebar-left {width:150px;padding:0 0 10px 0;position:relative;}	/* Left sidebar */
 #sidebar-left.fixed{position:fixed;top:5px;}
 
-#sidebar-left {
+.sidebar-left {
 	border-radius:			4px;
 	-moz-border-radius:		4px;
 	-webkit-border-radius:	4px;
@@ -581,7 +582,7 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 	box-shadow:				0 1px 6px rgba(0,0,0,0.5);
 }
 
-#sidebar-left *, #main-menu-bar a, #main-menu-bar span, #main-menu-bar img {
+.sidebar-left *, #main-menu-bar a, #main-menu-bar span, #main-menu-bar img {
 	-webkit-touch-callout:	none;
 	-webkit-user-select:	none;
 	-khtml-user-select:		none;
@@ -589,7 +590,7 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 	-ms-user-select:		none;
 	user-select:			none;
 }
-#sidebar-left #recent-items a, #sidebar-left #top-contacts-list a, #main-menu-bar #notif-box * {
+.sidebar-left #recent-items a, #sidebar-left #top-contacts-list a, #main-menu-bar #notif-box * {
 	-webkit-touch-callout:	text;
 	-webkit-user-select:	text;
 	-khtml-user-select:		text;
@@ -715,4 +716,70 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 
 .x2-hint {
 	color: #06C;
+}
+
+#widget-menu {
+	list-style:none;
+	margin:0;
+	padding:0;
+	display:block;
+	
+	visibility:hidden;
+	position:absolute;
+	z-index:1000;
+	background:#f6f6f6;
+	/* border:1px solid #666; */
+	top:42px;
+	/* margin-top:6px; */
+	padding:2px;
+	border-radius:			4px;
+	-moz-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	-o-border-radius:		4px;
+	-moz-box-shadow:		0 3px 15px 2px rgba(0,0,0,0.5 );
+	-webkit-box-shadow:		0 3px 15px 2px rgba(0,0,0,0.5);
+	box-shadow:				0 3px 15px 2px rgba(0,0,0,0.5);
+}
+
+#widget-menu.visible {
+	visibility: visible;
+}
+
+span.x2-widget-menu-item.ui-draggable {
+	padding: 0 10px;
+}
+
+#widget-menu li span.x2-widget-menu-item {
+	font-weight: normal;
+	color: #000;
+	font-size: 15px;
+	line-height: 24px;
+	text-shadow: none;
+}
+
+.x2-widget-menu-item.ui-draggable-dragging {
+	background: white;
+	border: 1px solid #CCC;
+	-moz-border-radius:		4px;
+	-o-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	border-radius:			4px;
+}
+
+#content-widgets {
+	padding-bottom: 10px;
+}
+
+.x2widget-header {
+	cursor: pointer;
+}
+
+.x2widget-menu-divider {
+	border-top: 1px solid #CCC;
+	margin: 2px 5px;
+	height: 0px;
+}
+
+#x2-tag-list {
+	min-height: 25px;
 }

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,6 +50,8 @@ return array (
 'Create Date'=>'创建日期',
 'Edit Permissions'=>'编辑权限',
 'Doc Type'=>'文件类型',
+'Subject'=>'主题',
+'Visibility'=>'能见度',
 
 // Labels
 'Doc'=>'文件',
@@ -67,6 +69,7 @@ return array (
 'List Docs'=>'列出文件',
 'Create Docs'=>'创建文件',
 'View Doc'=>'查看文件',
+'View'=>'看',
 'Edit Doc'=>'编辑文件',
 'Delete Doc'=>'删除文件',
 'Export Doc'=>'输出文件',
@@ -75,5 +78,10 @@ return array (
 'Export'=>'输出',
 'Create'=>'创建',
 'Create Email'=>'创建电子邮件',
+'Create Doc'=>'创建文档',
 'Create Document'=>'创建文档',
+'Create Email Template'=>'创建电子邮件模板',
+
+// // Misc Text
+'Are you sure you want to delete this item?'=>'你确定要删除这个项目吗？',
 );

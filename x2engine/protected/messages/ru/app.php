@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,6 +82,11 @@ return array (
 'Manage Users'=>'Управление пользователями',
 'Social Feed'=>'Социальная поток',
 'Preferences'=>'Предпочтения',
+'Reports'=>'Отчеты',
+'Activity'=>'деятельность',
+'Service'=>'обслуживание',
+'Go Invisible'=>'Перейти Невидимый',
+'Go Visible'=>'Перейти Видимые',
 // // 
 // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
@@ -94,6 +99,8 @@ return array (
 // // Footer
 'All Rights Reserved.'=>'Все права защищены.',
 'Generated in {time} seconds.'=>'Сгенерировано за {time} секунд',
+'About'=>'о',
+'The Program is provided AS IS, without warranty.'=>'Программа поставляется как есть, без гарантии.',
 // // 
 // // Widgets
 'My Actions'=>'Мои действия',
@@ -110,6 +117,7 @@ return array (
 'Top Sites'=>'Лучшие сайты',
 'Media'=>'средства массовой информации',
 'Current time in'=>'Точное время в',
+'Hide'=>'скрывать',
 // // 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
@@ -197,7 +205,7 @@ return array (
 'Delete'=>'удалять',
 'Group?'=>'Группа?',
 'Check box'=>'Флажок',
-'results per page'=>' результатов на странице',
+'results per page'=>'результатов на странице',
 'Public'=>'общественность',
 'Tags'=>'Теги',
 'Template:'=>'шаблон:',
@@ -216,6 +224,30 @@ return array (
 'results per page.'=>'результатов на странице.',
 'Displaying {start}-{end} of {count} result(s).'=>'Показано {start} - {end} из {count} результат (ы).',
 'Marketing Dashboard'=>'маркетинговые приборной панели',
+'You'=>'вы',
+'Quick Create'=>'Быстрый Создать',
+'Create a Contact, Account, and Opportunity.'=>'Создать контакт, счета, и возможность.',
+'<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b> Совет: </ b> Вы можете использовать следующие операторы сравнения с фильтром значений для тонкой настройки вашего поиска.',
+'less than'=>'меньше, чем',
+'less than or equal to'=>'меньше или равно',
+'greater than'=>'больше',
+'greater than or equal to'=>'больше или равно',
+'equal to'=>'равно',
+'not equal to'=>'не равны',
+' results per page'=>' результатов на странице',
+'Add to list:'=>'Добавить в список:',
+'<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </ B> из <b> {count} </ b>',
+'Relationships'=>'Отношения',
+'Associate Account'=>'Ассоциированный счета',
+'Associate Opportunity'=>'Ассоциированный возможностей',
+'Associate Contact'=>'Свяжите Связаться',
+'Contact Attributes'=>'Связаться с Атрибуты',
+'CC:'=>'CC:',
+'BCC:'=>'BCC:',
+'What should the map be named?'=>'Что должно быть названы карту?',
+'Record not found.'=>'Запись не найдена.',
+'Saving...'=>'Сохранение ...',
+'Module'=>'модуль',
 // // 
 // // Misc Actions
 'Submit'=>'подавать',
@@ -263,4 +295,88 @@ return array (
 'How to use Gii'=>'Как использовать Gii',
 'How to add a database field'=>'Как добавить поля базы данных',
 // // 
+// // Activity Feed
+
+'Activity Feed'=>'Лента новостей',
+// // Filter Headers
+'Visibility'=>'видимость',
+'Relevant Users'=>'Соответствующие пользователей',
+'Event Types'=>'Типы событий',
+'Social Subtypes'=>'Социальная Подтипы',
+'Options'=>'опции',
+'Set Default'=>'Установить по умолчанию',
+'Apply Filters'=>'Применить фильтры',
+// // Filter Text
+'Social Post'=>'Социальная сообщение',
+'Announcement'=>'объявление',
+'Product Info'=>'Информация о продукте',
+'Competitive Info'=>'Конкурентная информация',
+'Confidential'=>'конфиденциальный',
+// // Event Types
+'Social Posts'=>'Социальная сообщения',
+'Records Created'=>'записей, созданных',
+'Records Deleted'=>'удаленных записей',
+'Action Reminders'=>'Действие Напоминания',
+'Actions Completed'=>'Действия Завершен',
+'Calendar Events'=>'Календарь событий',
+'Cases Escalated'=>'случаи обострилась',
+'Emails Opened'=>'Письма открытия',
+'Emails Sent'=>'письма, отправленные',
+'Notifications'=>'Уведомления',
+'Webleads Created'=>'Web ведет созданных',
+'Web Activity'=>'веб-активность',
+'Workflow Complete'=>'Полный рабочий процесс',
+'Workflow Reverted'=>'Рабочий процесс Возвращено',
+'Workflow Started'=>'Рабочий процесс работы',
+// // Event Text
+'created a new {actionLink} associated with the contact {contactLink}'=>'создан новый {actionLink} связанных с контактом {contactLink}',
+'created a new {modelName}, {modelLink}'=>'создан новый {modelName}, {modelLink}',
+'created a new {modelName}, {deletionText}. It has been deleted.'=>'создан новый {modelName}, {deletionText}. Она была удалена.',
+'created a new {modelName}, but it could not be found.'=>'создан новый {modelName}, но она не может быть найдено.',
+'A new web lead has come in: {modelLink}'=>'Новый ведущий веб пришло в: {modelLink}',
+'A new web lead has come in: {deletionText}. It has been deleted.'=>'Новый ведущий веб пришло в: {deletionText}. Она была удалена.',
+'A new web lead has come in, but it could not be found.'=>'Новый ведущий веб пришел в, но оно не может быть найдено.',
+'deleted a {modelType}, {text}'=>'удалить {modelType}, {text}',
+'started the workflow stage "{stage}" for the {modelName} {modelLink}'=>'начался этап рабочего процесса "{stage}" для  {modelName} {modelLink} ',
+'started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'начался этап рабочего процесса для {modelName} {modelLink}, но рабочий процесс этапе не может быть найдено.',
+'started a workflow stage, but the associated {modelName} was not found.'=>'начался рабочий этап, но связанный {modelName} не был найден.',
+'started a workflow stage, but the workflow record could not be found.'=>'начался этап рабочего процесса, но рабочий процесс записи не может быть найдено.',
+'completed the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'завершил рабочий этап "{stageName}" для {modelName} {modelLink}',
+'completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'завершил рабочий этап для {modelName} {modelLink}, но рабочий процесс этапе не может быть найдено.',
+'completed a workflow stage, but the associated {modelName} was not found.'=>'завершил рабочий этап, но связанный {modelName} не был найден.',
+'completed a workflow stage, but the workflow record could not be found.'=>'завершил рабочий этап, но рабочий процесс записи не может быть найдено.',
+'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'вернулись рабочий процесс этапе "{stageName}" для {modelName} {modelLink}',
+'reverted a workflow stage, but the associated {modelName} was not found.'=>'вернулись рабочий этап, но связанный {modelName} не был найден.',
+'reverted a workflow stage, but the workflow record could not be found.'=>'вернулись рабочий этап, но рабочий процесс записи не может быть найдено.',
+'sent an email to the {transModelName} {modelLink}'=>'направил письмо {transModelName} {modelLink}',
+'sent an email to a {transModelName}, but that record has been deleted.'=>'направил письмо {transModelName}, но запись была удалена.',
+'sent an email to a {transModelName}, but that record could not be found.'=>'направил письмо {transModelName}, но запись не может быть найдено.',
+' has opened an email!'=>' открыла электронную почту!',
+'A contact has opened an email, but that contact cannot be found.'=>'Контакт открыл электронную почту, но контакта не может быть найдено.',
+'is currently on your website!'=>'В настоящее время на вашем сайте!',
+'A contact was on your website, but that contact cannot be found.'=>'Контакт был на вашем сайте, но контакта не может быть найдено.',
+'escalated service case {modelLink} to {userLink}'=>'эскалация случае услуга {modelLink} до {userLink}',
+'escalated a service case but that case could not be found.'=>'эскалация службе случай, но это дела не может быть найден.',
+'{calendarText} event: {actionDescription}'=>'{calendarText} событие: {actionDescription}',
+'{calendarText} event: event not found.'=>'{calendarText} события: событие не найдено.',
+'Reminder! The following action is due now: {transModelLink}'=>'Напоминания! Следующее действие которого обусловлено сейчас: {transModelLink}',
+'An action is due now, but the record could not be found.'=>'Действие которого обусловлено сейчас, но запись не может быть найдено.',
+'completed the following action: {actionDescription}'=>'выполнить следующие действия: {actionDescription}',
+'completed an action, but the record could not be found.'=>'завершены действия, но запись не может быть найдено.',
+// // Model Names
+'action'=>'действие',
+'contact'=>'связаться',
+'account'=>'счет',
+'opportunity'=>'возможность',
+'marketing campaign'=>'маркетинговая кампания',
+
+// // Misc. Text
+'Minimize Posts'=>'Свернуть сообщения',
+'Restore Posts'=>'Восстановление сообщения',
+'My Groups'=>'Мои группы',
+'Show/add comments'=>'Показать / добавить комментарий',
+'Hide comments'=>'Скрыть комментарии',
+'Broadcast Event'=>'Трансляция события',
+'Cancel Broadcast'=>'Отмена трансляции',
+'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'Трансляция мероприятия сделать ее видимой для любого пользователя просмотре событий на деятельность корма - независимо от типа фильтра.',
 );

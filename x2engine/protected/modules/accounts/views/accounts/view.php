@@ -48,7 +48,7 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>Yii::t('app','Attach a File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
+	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 );
 
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
@@ -60,7 +60,7 @@ if($contactModule->visible) {
 }
 
 if($opportunityModule->visible) {
-	$createOpportunityButton = 	array(array('label'=>Yii::t('contacts','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
+	$createOpportunityButton = 	array(array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
 	array_splice($menuItems, 6, 0, $createOpportunityButton);
 }
 
@@ -90,12 +90,15 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 
 $this->endWidget();
 
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'accounts'));
+$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'accounts'));
+
+
+//$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'accounts'));
 ?>
 
 <?php $this->widget('Attachments',array('associationType'=>'accounts','associationId'=>$model->id,'startHidden'=>true)); ?>
 <?php
-$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Accounts'));
+//$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Accounts'));
 
 $createContactUrl = $this->createUrl('/contacts/create');
 $createOpportunityUrl = $this->createUrl('/opportunities/create');
@@ -103,8 +106,8 @@ $accountName = json_encode($model->name);
 $assignedTo = json_encode($model->assignedTo);
 $phone = json_encode($model->phone);
 $website = json_encode($model->website);
-$opportunityTooltip = json_encode(Yii::t('contacts', 'Create a new Opportunity associated with this Account.'));
-$contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact associated with this Account.'));
+$opportunityTooltip = json_encode(Yii::t('accounts', 'Create a new Opportunity associated with this Account.'));
+$contactTooltip = json_encode(Yii::t('accounts', 'Create a new Contact associated with this Account.'));
 
 Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {

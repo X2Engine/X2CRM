@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -68,6 +68,7 @@ return array (
 'Google'=>'Google',
 'Facebook'=>'Facebook',
 'Walk In'=>'で歩いた',
+'Last Activity'=>'最後の活動',
 
 // Opportunities Actions
 'Opportunities List'=>'セールスのリスト',
@@ -80,6 +81,7 @@ return array (
 'View'=>'表示',
 'Update'=>'更新',
 'Update Opportunity:'=>'セールを更新する:',
+'Edit Opportunity'=>'商談を編集',
 
 'Add A User'=>'ユーザの追加',
 'Add A Contact'=>'コンタクトの追加',
@@ -102,4 +104,6 @@ return array (
 'Please select the users you wish to remove.'=>'削除したいすべての新規ユーザをクリックしてください。',
 'Please select the contacts you wish to remove.'=>'削除したいすべての新規コンタクトをクリックしてください。',
 'Opportunity Record Details'=>'セールスのレコードの詳細',
+'Create a new Contact associated with this Opportunity.'=>'この機会に関連付けられている新しい連絡先を作成します。',
+'Create a new Account associated with this Opportunity.'=>'この機会に関連付けられた新しいアカウントを作成します。',
 );

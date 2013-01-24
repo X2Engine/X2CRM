@@ -622,16 +622,18 @@ class OpportunitiesController extends x2base {
 
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);
+        
 		if(Yii::app()->request->isPostRequest) {
-			$dataProvider=new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-				'condition'=>'associationId='.$id.' AND associationType=\'opportunities\'',
-			)));
-			$actions=$dataProvider->getData();
-			foreach($actions as $action){
-				$action->delete();
-			}
-                        $this->cleanUpTags($model);
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
+            Actions::model()->deleteAll('associationId='.$id.' AND associationType=\'opportunities\'');
+            $this->cleanUpTags($model);
 			$model->delete();
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));

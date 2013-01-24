@@ -76,9 +76,9 @@ class MediaChild extends Media {
 			if($fileExists == false)
 				return $str . $data[0] . ' ' . Yii::t('media','(deleted)');
 
-			if($makeLink)
-			    $str .= $media->getMediaLink();
-			else
+			if($makeLink){
+			    $str .= $media->getMediaLink() ." | " . CHtml::link('[Download]',array('/media/download/'.$media->id));
+            }else
 			    $str .= $data[0];
 
 			if($makeImage && $media->isImage())	// to render an image, first check file extension

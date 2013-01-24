@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'Код подтверждения',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'ID',
 'First Name'=>'имя',
 'Name'=>'имя',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'Возможность Тип',
 'Other'=>'другой',
 'Close Date'=>'Дата закрытия',
+'Expected Close Date'=>'Ожидаемая Дата закрытия',
 'Interest'=>'интерес',
 'Deal Value'=>'Стоимость сделки',
 'Lead Status'=>'Возможность статус',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'Отклонен',
 'Tags'=>'Теги',
 'Associated Contacts'=>'связанная Контакты',
-
-// List Attributes
+'Duplicate Check'=>'дубликат Проверить',
+'Last Activity'=>'Последняя активность',
+'Timezone'=>'Часовой пояс',
+'Web Tracking Key'=>'Web отслеживания ключевых',
+// // 
+// // List Attributes
 'Owner'=>'владелец',
 'Description'=>'описание',
 'Logic Type'=>'Логика типа',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'Пользователи',
 'Dynamic'=>'динамический',
 'Static'=>'статический',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'список',
 'Type'=>'тип',
 'Attribute'=>'атрибут',
 'Comparison'=>'сравнение',
 'Value'=>'значение',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'равно',
 'greater than'=>'больше',
 'less than'=>'меньше, чем',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'не пустой',
 'contains'=>'содержит',
 'does not contain'=>'не содержит',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'Назначена {name}',
 'Social Networks'=>'Социальных сетей',
 'Detail View'=>'Детальный просмотр',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'ИЛИ',
 'User'=>'пользователь',
 'Leads'=>'Объявления',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b> {n} </b> из <b> {n} </b>',
+'Create a new Opportunity associated with this Contact.'=>'Создаем новые возможности, связанные с этим контактом.',
+'Create a new Account associated with this Contact.'=>'Создать новую учетную запись, связанные с этим контактом.',
+'Create a new Service Case associated with this Contact.'=>'Создайте новый корпус службы, связанные с этим контактом.',
+'Link to Record'=>'Ссылка на запись',
+'Contact Attributes'=>'Связаться с Атрибуты',
+// // 
+// // Contacts Actions
 'My Contacts'=>'Мои контакты',
 'New Contacts'=>'Новые контакты',
 'All Contacts'=>'Все контакты',
 'Create Contact'=>'Создать контакт',
 'View Contact'=>'Посмотреть Контакт',
 'Update Contact'=>'Обновление контакта',
+'Edit Contact'=>'Изменить контакт',
 'Update Contact:'=>'Обновление контакта',
 'Delete Contact'=>'Удалить контакт',
 'Contact Lists'=>'Связаться списки',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'подписать',
 'View List'=>'Просмотр списка',
 'Share Action'=>'Поделиться действий',
-
-// Contacts Titles
+'Import Contacts'=>'Импортировать контакты',
+'Contact Map'=>'Контакты Карта',
+'Saved Maps'=>'Сохранено Карты',
+// // 
+// // Contacts Titles
 'Contacts'=>'связи',
 'Manage Contacts'=>'Управление контактами',
 'Contact:'=>'контакт:',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'Импорт из Outlook',
 'Import from Template'=>'Импорт контактов из шаблона',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Чтобы импортировать контакты из шаблона, пожалуйста, заполните наш файл шаблона. Затем загрузите файл здесь, используя форму ниже.',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Чтобы импортировать контакты из Outlook, пожалуйста сначала создать файл CSV (DOS формата), открывая перспективу и экспорт контактов. Затем загрузите файл здесь, используя форму ниже.',
 'Upload File'=>'Загрузить файл',
 'Contact Record Details'=>'Контакты Запись Подробнее',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'подписать',
 'The information for {name} has changed.'=>'Информация для {name} изменилась.',
 'Receive email updates every time information for {name} changes'=>'Получение обновлений по электронной почте для каждого обмена информацией время {name}',
 'Unsubscribe'=>'Отменить',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'веб-контакт',
 'Invalid Email Address'=>'Неверный адрес электронной почты',
 'Default list for email list signups'=>'Список по умолчанию для электронной почты регистраций список',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'Спасибо за ваш интерес!',
 'Someone will be in touch shortly.'=>'Кто-то будет на связи в ближайшее время.',
 'Enter any additional information or questions regarding your interest here.'=>'Введите любую дополнительную информацию или вопросы относительно вашего интереса.',
+
+// // Map Translations
+'Map Filters'=>'Фильтры карты',
+'Clear Marker'=>'Ясно маркера',
+'Drop a tag here to filter map results.'=>'Оставьте теги здесь, чтобы фильтровать карту результатов.',
+'Save Map'=>'Сохранить карту',
+'View on Large Map'=>'Вид на Большой Карта',
+'View on Heat Map'=>'Посмотреть на карте тепла',
+'Center Coordinates'=>'Координаты центра',
+'Delete Map'=>'Очистить карту',
+'Map Name'=>'Имя карты',
+'Map Owner'=>'Владелец карты',
+'Zoom Level'=>'Увеличить уровень',
+'Parameters'=>'Параметры',
+'Center Latitude'=>'центр Latitude',
+'Center Longitude'=>'центр Долгота',
+'Contact'=>'связаться',
 );

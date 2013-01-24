@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,8 @@ return array (
 'Physical Mail'=>'Correo Físico',
 'Email Template'=>'Plantilla para Correo Electrónico',
 'Update Campaign'=>'Actualización de la Campaña',
+'Last Activity'=>'Entro por última vez',
+'Template'=>'Plantilla',
 
 // Menu
 'All Campaigns'=>'Todas las Campañas',
@@ -73,6 +75,7 @@ return array (
 'Newsletters'=>'Boletines',
 'Create Newsletter'=>'Crear Boletines',
 'Create Web Form'=>'Crear Formularios Web',
+'Web Tracker'=>'Web Tracker',
 
 // Launching
 'The campaign has already been launched.'=>'La ya campaña ha sido lanzada.',
@@ -160,7 +163,4 @@ return array (
 'Saved Forms'=>'Formas Guardadas',
 'Settings'=>'Configuración',
 'Preview'=>'Pre-visualizar',
-'Service Cases Web Form'=>'Formulario Web para Casos de Servicio',
-'Create a public form to receive new services cases. When the form is submitted, a new service case will be created, and the case # will be sent to the email address provided in the form.'=>'Crea un formulario público para recibir casos de servicio. Cuando la forma es enviada, sera creado un nuevo caso de servicio y el # de caso sera enviado al correo electronico sumnistrado en la forma',
-
 );

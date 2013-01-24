@@ -57,10 +57,10 @@ function hideWorkflow() {
 $(function() {\n"
 .($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
 ."});",CClientScript::POS_HEAD);
+}
 Yii::app()->clientScript->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
-}
 
 $layoutData = Yii::app()->cache->get('form_'.$modelName);	// check the app cache for the data
 $fields = array();

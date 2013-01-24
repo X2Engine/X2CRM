@@ -77,8 +77,9 @@ return array(
 		'file'=>array(
 			'class'=>'application.extensions.CFile',
 		),
-		// uncomment the following to enable URLs in path-format
-		
+		'fixture'=>array(
+            'class'=>'system.test.CDbFixtureManager',
+        ),
 		'urlManager'=>array(
 			'urlFormat'=>'path',
             'urlRuleClass'=>'X2UrlRule',

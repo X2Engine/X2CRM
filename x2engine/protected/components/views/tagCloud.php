@@ -63,7 +63,7 @@ foreach($allTags as &$tag) {
         var tag=$(this).attr('tag-name');
         var elem=$(this);
         var content='<span style="position:absolute;right:1px;top:1px;;background-color:#F0F0F0;" class="hide-link-span"><a href="#" class="hide-link" style="color:#06C;">[x]</a></span>';
-        $(content).hide().delay(500).appendTo($(this)).fadeIn(500);
+        $(content).hide().delay(1500).appendTo($(this)).fadeIn(500);
         $('.hide-link').click(function(e){
            e.preventDefault();
            $.ajax({

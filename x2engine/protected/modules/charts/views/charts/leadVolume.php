@@ -40,14 +40,14 @@
 ?>
 <?php
 $this->actionMenu = $this->formatMenu(array(
-	array('label' => Yii::t('dashboard', 'Lead Volume')),
-	// array('label' => Yii::t('dashboard', 'Lead Activity'), 'url' => array('leadActivity')),
-	// array('label' => Yii::t('dashboard', 'Lead Performance'), 'url' => array('leadPerformance')),
-	// array('label' => Yii::t('dashboard', 'Lead Sources'), 'url' => array('leadSources')),
-	// array('label' => Yii::t('dashboard', 'Workflow'), 'url' => array('workflow')),
-	array('label' => Yii::t('dashboard', 'Marketing'), 'url' => array('marketing')),
-	array('label' => Yii::t('dashboard', 'Pipeline'), 'url' => array('pipeline')),
-	array('label' => Yii::t('dashboard', 'Opportunities'), 'url' => array('sales')),
+	array('label' => Yii::t('charts', 'Lead Volume')),
+	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
+	// array('label' => Yii::t('charts', 'Lead Performance'), 'url' => array('leadPerformance')),
+	// array('label' => Yii::t('charts', 'Lead Sources'), 'url' => array('leadSources')),
+	// array('label' => Yii::t('charts', 'Workflow'), 'url' => array('workflow')),
+	array('label' => Yii::t('charts', 'Marketing'), 'url' => array('marketing')),
+	array('label' => Yii::t('charts', 'Pipeline'), 'url' => array('pipeline')),
+	array('label' => Yii::t('charts', 'Opportunities'), 'url' => array('sales')),
 ));
 Yii::app()->clientScript->registerScript('leadVolume',"
 	$('#startDate,#endDate').change(function() {
@@ -56,7 +56,7 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 ",CClientScript::POS_READY);
 ?>
 <div class="form">
-	<h2><?php echo Yii::t('dashboard', 'Lead Volume'); ?></h2>
+	<h2><?php echo Yii::t('charts', 'Lead Volume'); ?></h2>
 
 	<?php
 	$form = $this->beginWidget('CActiveForm', array(
@@ -76,7 +76,7 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 	?>
 	<div class="row">
 		<div class="cell">
-			<?php echo CHtml::label(Yii::t('dashboard', 'Start Date'),'startDate'); ?>
+			<?php echo CHtml::label(Yii::t('charts', 'Start Date'),'startDate'); ?>
 			<?php
 			Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 			
@@ -98,7 +98,7 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 			?>
 		</div>
 		<div class="cell">
-			<?php echo CHtml::label(Yii::t('dashboard', 'End Date'),'startDate'); ?>
+			<?php echo CHtml::label(Yii::t('charts', 'End Date'),'startDate'); ?>
 			<?php
 			$this->widget('CJuiDateTimePicker',array(
 				'name'=>'end',
@@ -114,24 +114,24 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 			?>
 		</div>
 		<div class="cell">
-			<?php echo CHtml::label(Yii::t('dashboard', 'Date Range'),'range'); ?>
+			<?php echo CHtml::label(Yii::t('charts', 'Date Range'),'range'); ?>
 			<?php
 			echo CHtml::dropDownList('range',$dateRange['range'],array(
-				'custom'=>Yii::t('dashboard','Custom'),
-				'thisWeek'=>Yii::t('dashboard','This Week'),
-				'thisMonth'=>Yii::t('dashboard','This Month'),
-				'lastWeek'=>Yii::t('dashboard','Last Week'),
-				'lastMonth'=>Yii::t('dashboard','Last Month'),
-				// 'lastQuarter'=>Yii::t('dashboard','Last Quarter'),
-				'thisYear'=>Yii::t('dashboard','This Year'),
-				'lastYear'=>Yii::t('dashboard','Last Year'),
+				'custom'=>Yii::t('charts','Custom'),
+				'thisWeek'=>Yii::t('charts','This Week'),
+				'thisMonth'=>Yii::t('charts','This Month'),
+				'lastWeek'=>Yii::t('charts','Last Week'),
+				'lastMonth'=>Yii::t('charts','Last Month'),
+				// 'lastQuarter'=>Yii::t('charts','Last Quarter'),
+				'thisYear'=>Yii::t('charts','This Year'),
+				'lastYear'=>Yii::t('charts','Last Year'),
 				
 			),array('id'=>'dateRange'));
 			?>
 		</div>
 		<div class="cell">
 			<?php
-			echo CHtml::submitButton(Yii::t('dashboard','Go'),array('class'=>'x2-button','style'=>'margin-top:13px;'));
+			echo CHtml::submitButton(Yii::t('charts','Go'),array('class'=>'x2-button','style'=>'margin-top:13px;'));
 
 			?>
 		</div>
@@ -145,7 +145,7 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 			'id'=>'lead-activity-grid',
 			'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 			'template'=> '{items}{pager}',
-			// 'template'=> '<h2>'.Yii::t('dashboard','Lead Activity').'</h2><div class="title-bar">'
+			// 'template'=> '<h2>'.Yii::t('charts','Lead Activity').'</h2><div class="title-bar">'
 				// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 				// .CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 				// .CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))

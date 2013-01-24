@@ -74,7 +74,7 @@ class AccountsController extends x2base {
 		);
 	}
         
-        public function actionGetItems(){
+    public function actionGetItems(){
 		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'].'%';
@@ -386,7 +386,6 @@ class AccountsController extends x2base {
 			$model->attributes=$_POST['Accounts'];  
 			$arr=$_POST['Accounts']['assignedTo'];
 
-			
 			foreach($arr as $id=>$user){
 				unset($pieces[$user]);
 			}
@@ -431,16 +430,16 @@ class AccountsController extends x2base {
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
-			$dataProvider=new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-					'condition'=>'associationId='.$id.' AND associationType=\'account\'',
-			)));
-
-			$actions=$dataProvider->getData();
-			foreach($actions as $action){
-				$action->delete();
-			}
-                        $this->cleanUpTags($model);
+            $event=new Events;
+            $event->type='record_deleted';
+            $event->level=2;
+            $event->associationType=$this->modelClass;
+            $event->associationId=$model->id;
+            $event->text=$model->name;
+            $event->user=Yii::app()->user->getName();
+            $event->save();
+            Actions::model()->deleteAll('associationId='.$id.' AND associationType=\'account\'');
+            $this->cleanUpTags($model);
 			$model->delete();
 		} else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');

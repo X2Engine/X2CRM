@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'验证码',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'编号',
 'First Name'=>'名字',
 'Name'=>'名称',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'机会型',
 'Other'=>'其他',
 'Close Date'=>'关闭日期',
+'Expected Close Date'=>'预计关闭日期',
 'Interest'=>'兴趣',
 'Deal Value'=>'这笔交易的价值',
 'Lead Status'=>'机会状态',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'拒绝',
 'Tags'=>'标签',
 'Associated Contacts'=>'相关联的联系人',
-
-// List Attributes
+'Duplicate Check'=>'重复检查',
+'Last Activity'=>'最近活动',
+'Timezone'=>'时区',
+'Web Tracking Key'=>'网络跟踪重点',
+// // 
+// // List Attributes
 'Owner'=>'业主',
 'Description'=>'描述',
 'Logic Type'=>'逻辑类型',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'成员',
 'Dynamic'=>'动态',
 'Static'=>'静止',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'表',
 'Type'=>'类型',
 'Attribute'=>'属性',
 'Comparison'=>'比较',
 'Value'=>'值',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'等于',
 'greater than'=>'大于',
 'less than'=>'小于',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'不空',
 'contains'=>'包含',
 'does not contain'=>'不包含',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'分配给 {name}',
 'Social Networks'=>'社会网络',
 'Detail View'=>'详细查看',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'或',
 'User'=>'用户',
 'Leads'=>'信息',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b>{m}</b> 的第 <b>{n}</b>',
+'Create a new Opportunity associated with this Contact.'=>'创建一个新的机会与这个联络人。',
+'Create a new Account associated with this Contact.'=>'创建一个新的帐户，与这个联络人。',
+'Create a new Service Case associated with this Contact.'=>'创建一个新的服务案例与这个联络人。',
+'Link to Record'=>'链接记录',
+'Contact Attributes'=>'联系人属性',
+// // 
+// // Contacts Actions
 'My Contacts'=>'我的联系人',
 'New Contacts'=>'新的联系人',
 'All Contacts'=>'所有联系人',
 'Create Contact'=>'创建联系人',
 'View Contact'=>'查看联系人',
 'Update Contact'=>'更新联系人',
+'Edit Contact'=>'编辑联络人',
 'Update Contact:'=>'更新联系人',
 'Delete Contact'=>'删除联系人',
 'Contact Lists'=>'联系人列表',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'订阅',
 'View List'=>'查看列表',
 'Share Action'=>'分享行动',
-
-// Contacts Titles
+'Import Contacts'=>'导入联系人',
+'Contact Map'=>'联系方式电子地图',
+'Saved Maps'=>'储存的地图',
+// // 
+// // Contacts Titles
 'Contacts'=>'联系人',
 'Manage Contacts'=>'管理联系人',
 'Contact:'=>'联系方式：',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'从Outlook中输入联系人',
 'Import from Template'=>'从模板中输入联系人',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'如果想要从模板中输入您的联系人，请填写我们的模板文件。然后使用下面的表格以上传文件。\', \'The template file can be found here:\'=>\'模板文件可以在这里找到：',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'若要从Outlook中输入您的联系人，请首先创建一个CSV文件（DOS格式）打开Outlook和输出联系人。然后使用下面的表格以上传文件。',
 'Upload File'=>'上传文件',
 'Contact Record Details'=>'联系人的详细档案',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'订阅',
 'The information for {name} has changed.'=>'{name}的信息已更改。',
 'Receive email updates every time information for {name} changes'=>'收到电子邮件更新，每一次信息交换{name}',
 'Unsubscribe'=>'退订',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'网络接触',
 'Invalid Email Address'=>'电子邮件地址无效',
 'Default list for email list signups'=>'默认列表邮件列表注册',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'感谢您的关注！',
 'Someone will be in touch shortly.'=>'有人会联系你的不久。',
 'Enter any additional information or questions regarding your interest here.'=>'输入任何附加信息或问题的兴趣。',
+
+// // Map Translations
+'Map Filters'=>'地图过滤器',
+'Clear Marker'=>'清除标记',
+'Drop a tag here to filter map results.'=>'在这里掉落的标签，过滤效果图。',
+'Save Map'=>'保存地图',
+'View on Large Map'=>'查看大图',
+'View on Heat Map'=>'热图',
+'Center Coordinates'=>'中心坐标',
+'Delete Map'=>'删除地图',
+'Map Name'=>'地图名称',
+'Map Owner'=>'地图拥有人',
+'Zoom Level'=>'缩放级别',
+'Parameters'=>'参数',
+'Center Latitude'=>'中心纬度',
+'Center Longitude'=>'中心经度',
+'Contact'=>'联系',
 );

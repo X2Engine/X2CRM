@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,6 +50,8 @@ return array (
 'Create Date'=>'יצירת תאריך',
 'Edit Permissions'=>'עריכת הרשאות',
 'Doc Type'=>'דוק סוג',
+'Subject'=>'נושא',
+'Visibility'=>'ראות',
 
 // Labels
 'Doc'=>'דוק',
@@ -67,6 +69,7 @@ return array (
 'List Docs'=>'רשימת מסמכים',
 'Create Docs'=>'יצירת מסמכים',
 'View Doc'=>'צפה דוק',
+'View'=>'לצפות',
 'Edit Doc'=>'לשנות את המסמך',
 'Delete Doc'=>'מחק דוק',
 'Export Doc'=>'ייצוא דוק',
@@ -75,5 +78,10 @@ return array (
 'Export'=>'יצוא',
 'Create'=>'ליצור',
 'Create Email'=>'צור דוא"ל',
+'Create Doc'=>'צור מסמך',
 'Create Document'=>'צור מסמך',
+'Create Email Template'=>'יצירת תבנית דואר אלקטרונית',
+
+// // Misc Text
+'Are you sure you want to delete this item?'=>'האם אתה בטוח שברצונך למחוק פריט זה?',
 );

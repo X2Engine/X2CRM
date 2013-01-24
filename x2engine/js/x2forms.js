@@ -69,6 +69,14 @@ $(function() {
 	// set up x2 helper tooltips
 	$('.x2-hint').qtip();
 	$('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
+	
+	/*
+	$(window).resize(function() {
+		$('#sidebar-right').height($(window).height() - 79);
+		$('#sidebar-left-container').height($(window).height() - 79);
+		$('#content').height($(window).height() - 79);
+	});
+	*/
 });
 
 

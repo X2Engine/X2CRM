@@ -72,7 +72,7 @@ class SiteController extends x2base {
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
 					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact',
                     'viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
-                    'whatsNew','toggleVisibility','page'),
+                    'whatsNew','toggleVisibility','page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget','publishPost','getEvents','loadComments','loadPosts','addComment','flagPost'),
 				'users'=>array('@'),
 			),
 			 array('allow',
@@ -133,63 +133,375 @@ class SiteController extends x2base {
 	public function actionWhatsNew(){
 		
 		if(!Yii::app()->user->isGuest){
-            $user = User::model()->findByPk(Yii::app()->user->getId());
-			$lastLogin = $user->lastLogin;
-            $criteria = new CDbCriteria();
-            $condition = "lastUpdated > $lastLogin";
-            $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()),'order'=>'lastUpdated DESC');
-            $parameters['condition']=$condition;
-            $contactsCriteria=$criteria;
-            $criteria->scopes=array('findAll'=>array($parameters));
-            $opportunities = CActiveRecord::model('Opportunity')->findAll($criteria);
-			$accounts = CActiveRecord::model('Accounts')->findAll($criteria);
-            if(Yii::app()->user->getName()!='admin'){
-                $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
-                /* x2temp */
-                $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                if(!empty($groupLinks))
-                    $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-
-                $condition .= 'OR (visibility=2 AND assignedTo IN 
-                    (SELECT username FROM x2_group_to_user WHERE groupId IN
-                        (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-                $contactsCriteria->addCondition($condition);
+            if(!Yii::app()->request->isAjaxRequest){
+                $_SESSION['lastDate']=0;
+                unset($_SESSION['lastEventId']);
             }
             
-            $actionsCriteria=$contactsCriteria;
-            $contactsCriteria->scopes=array('findAll'=>array($parameters));
-            $contacts = CActiveRecord::model('Contacts')->findAll($contactsCriteria);
-            $actionParams=$parameters;
-            $actionParams['condition']="lastUpdated > $lastLogin AND type!='workflow'";
-            $actionsCriteria->scopes=array('findAll'=>array($actionParams));
-			$actions = CActiveRecord::model('Actions')->findAll($actionsCriteria);
-			
-
-			$arr = array_merge($contacts,$actions,$opportunities,$accounts);
-
-			$records = Record::convert($arr);
-
-			$dataProvider=new CArrayDataProvider($records,array(
-				'id'=>'id',
-				'pagination'=>array(
-					'pageSize'=>ProfileChild::getResultsPerPage(),
-				),
-				'sort'=>array(
-					'attributes'=>array(
-						 'lastUpdated', 'name',
-					),
-				),
-			));
-
+            $dateRange=Yii::app()->params->admin->eventDeletionTime;
+            if(!empty($dateRange)){
+                $dateRange=$dateRange*24*60*60;
+                $deletionTypes=json_decode(Yii::app()->params->admin->eventDeletionTypes,true);
+                if(!empty($deletionTypes)){
+                    $deletionTypes="('".implode("','",$deletionTypes)."')";
+                    $time=time()-$dateRange;
+                    $events=CActiveRecord::model('Events')->findAll('timestamp < '.$time.' AND type IN '.$deletionTypes);
+                    foreach($events as $event){
+                        $event->delete();
+                    }
+                }
+            }
+            unset($_SESSION['feed-condition']);
+            if(isset(Yii::app()->params->profile->defaultFeedFilters)){
+                $_SESSION['filters']=json_decode(Yii::app()->params->profile->defaultFeedFilters,true);
+            }
+            if((isset($_GET['filters']) && $_GET['filters']) || isset($_SESSION['filters'])){
+                if(isset($_GET['filters'])){
+                    unset($_SESSION['filters']);
+                    $filters=$_GET;
+                }else{
+                    $filters=$_SESSION['filters'];
+                    function implodeFilters($n){
+                        return implode(",",$n);
+                    }
+                    $func="implodeFilters";
+                    $filters=array_map($func,$filters);
+                    $filters['default']=false;
+                }
+                unset($filters['filters']);
+                $visibility=$filters['visibility'];
+                $visibility=str_replace('Public','1',$visibility);
+                $visibility=str_replace('Private','0',$visibility);
+                $visibilityFilter=explode(",",$visibility);
+                if(!Yii::app()->user->checkAccess('AdminIndex')){
+                    $visibilityCondition=" AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."' OR visibility=1)";
+                }else{
+                    $visibilityCondition="";
+                }
+                if($visibility!=""){
+                    $visibilityCondition.=" AND visibility NOT IN (".$visibility.")";
+                }else{
+                    $visibilityFilter=array();
+                }
+                
+                $users=$filters['users'];
+                if($users!=""){
+                    $users=explode(",",$users);
+                    $userFilter=$users;
+                    $users='"'.implode('","',$users).'"';
+                    if($users!="")
+                        $userCondition=" AND (user NOT IN (".$users.")";
+                    else
+                        $userCondition="(";
+                    if(strpos($users,'Anyone')===false){
+                        $userCondition.=" OR user IS NULL)";
+                    }else{
+                        $userCondition.=")";
+                    }
+                }else{
+                    $userCondition="";
+                    $userFilter=array();
+                }
+                
+                $types=$filters['types'];
+                if($types!=""){
+                    $types=explode(",",$types);
+                    $typeFilter=$types;
+                    $types='"'.implode('","',$types).'"';
+                    $typeCondition=" AND (type NOT IN (".$types.") OR important=1)";
+                }else{
+                    $typeCondition="";
+                    $typeFilter=array();
+                }
+                $subtypes=$filters['subtypes'];
+                if(strpos($types,"feed")===false && $subtypes!=""){
+                    $subtypes=explode(",",$subtypes);
+                    $subtypeFilter=$subtypes;
+                    $subtypes='"'.implode('","',$subtypes).'"';
+                    if($subtypes!="")
+                        $subtypeCondition=" AND (type!='feed' OR subtype NOT IN (".$subtypes.") OR important=1)";
+                    else
+                        $subtypeCondition="";
+                }else{
+                    $subtypeCondition="";
+                    $subtypeFilter=array();
+                }
+                $default=$filters['default'];
+                $_SESSION['filters']=array(
+                    'visibility'=>$visibilityFilter,
+                    'users'=>$userFilter,
+                    'types'=>$typeFilter,
+                    'subtypes'=>$subtypeFilter
+                );
+                if($default=='true'){
+                    Yii::app()->params->profile->defaultFeedFilters=json_encode($_SESSION['filters']);
+                    Yii::app()->params->profile->save();
+                }
+                $condition="type!='comment'".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
+                $_SESSION['feed-condition']=$condition;
+            }else{
+                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."')";
+            }
+            $condition.= " AND timestamp <= ".time();
+            if(!isset($_SESSION['lastEventId'])){
+                $lastId=Yii::app()->db->createCommand()
+                        ->select('MAX(id)')
+                        ->from('x2_events')
+                        ->where($condition)
+                        ->order('timestamp DESC, id DESC')
+                        ->limit(1)
+                        ->queryScalar();
+                $_SESSION['lastEventId']=$lastId;
+            }else{
+                $lastId=$_SESSION['lastEventId'];
+            }
+            if(!isset($_SESSION['lastEventTimestamp'])){
+                $lastTimestamp=Yii::app()->db->createCommand()
+                        ->select('MAX(timestamp)')
+                        ->from('x2_events')
+                        ->where($condition)
+                        ->order('timestamp DESC, id DESC')
+                        ->limit(1)
+                        ->queryScalar();
+                $_SESSION['lastEventTimestamp']=$lastTimestamp;
+            }else{
+                $lastTimestamp=$_SESSION['lastEventTimestamp'];
+            }
+            if(isset($_SESSION['lastEventId'])){
+                $condition.=" AND id <= ".$_SESSION['lastEventId'];
+            }
+            $total=Events::model()->count();
+            $pages = new CPagination($total);
+            $pages->pageSize = 20;
+            $dataProvider=new CActiveDataProvider('Events',array(
+                'criteria'=>array(
+                    'condition'=>$condition,
+                    'order'=>'timestamp DESC, id DESC',
+                ),
+                'pagination'=>$pages,
+            ));
+            $data=$dataProvider->getData();
+            if(isset($data[count($data)-1]))
+                $firstId=$data[count($data)-1]->id;
+            else
+                $firstId=0;
+            $users=User::getNames();
 			$this->render('whatsNew',array(
-				'records'=>$records,
 				'dataProvider'=>$dataProvider,
+                'users'=>$users,
+                'lastEventId'=>!empty($lastId)?$lastId:0,
+                'firstEventId'=>!empty($firstId)?$firstId:0,
 			));
 		}
 		else{
 			$this->redirect('login');
 		}
 	}
+    
+   
+    
+    public function actionGetEvents($lastEventId){
+        
+        $criteria=new CDbCriteria();
+        $lastEvent=CActiveRecord::model('Events')->findByPk($lastEventId);
+        $maxTimestamp=Yii::app()->db->createCommand()
+                        ->select('MAX(timestamp)')
+                        ->from('x2_events')
+                        ->where('timestamp < '.time())
+                        ->order('timestamp DESC, id DESC')
+                        ->limit(1)
+                        ->queryScalar();
+        if(isset($lastEvent) && (isset($_SESSION['lastEventTimestamp']) && $maxTimestamp > $_SESSION['lastEventTimestamp'])){
+            $timestampCriteria=" OR timestamp > ".$_SESSION['lastEventTimestamp'];
+            $_SESSION['lastEventTimestamp']=$maxTimestamp;
+        }else{
+            $timestampCriteria="";
+        }
+        $parameters=array('order'=>'timestamp DESC, id DESC');
+        $condition=isset($_SESSION['feed-condition'])?$_SESSION['feed-condition']." AND (id > ".$lastEventId." $timestampCriteria)":'(id > '.$lastEventId.' '.$timestampCriteria.') AND type!="comment"';
+        $condition.= " AND timestamp <= ".time();
+        $parameters['condition']=$condition;
+        $criteria->scopes=array('findAll'=>array($parameters));
+        $events=CActiveRecord::model('Events')->findAll($criteria);
+        $eventData="";
+        $newLastEventId=null;
+        foreach($events as $event){
+            if($event instanceof Events){
+                if(is_null($newLastEventId) || $event->id > $newLastEventId){
+                    $newLastEventId=$event->id;
+                }
+                $eventData.=$this->renderPartial('application.views.site._viewEvent',array('data'=>$event,'noDateBreak'=>true),true);
+            }
+        }
+        if(is_null($newLastEventId)){
+            $newLastEventId=$lastEventId;
+        }
+        $commentCriteria=new CDbCriteria();
+        $condition="type='comment' AND timestamp <=".time()." AND id > ".$lastEventId;
+        $parameters=array('order'=>'id ASC');
+        $parameters['condition']=$condition;
+        $commentCriteria->scopes=array('findAll'=>array($parameters));
+        $comments=CActiveRecord::model('Events')->findAll($commentCriteria);
+        $commentCounts=array();
+        $lastCommentId=$lastEventId;
+        foreach($comments as $comment){
+            $parentPost=CActiveRecord::model('Events')->findByPk($comment->associationId);
+            if(isset($parentPost) && !isset($commentCounts[$parentPost->id])){
+                $commentCounts[$parentPost->id]=count($parentPost->children);
+            }
+            $lastCommentId=$comment->id;
+        }
+        
+        echo CJSON::encode(array(
+            $newLastEventId,
+            $newLastEventId!=$lastEventId?$eventData:'',
+            $commentCounts,
+            $lastCommentId,
+            $_SESSION['lastEventTimestamp'],
+        ));
+    }
+    
+    public function actionAddComment(){
+        if(isset($_POST['id']) && isset($_POST['text']) && $_POST['text']!=''){
+            $id=$_POST['id'];
+            $comment=$_POST['text'];
+            $postModel = Events::model()->findByPk($id);
+
+            if($postModel === null)
+                throw new CHttpException(404,Yii::t('app','The requested post does not exist.'));
+
+            $commentModel = new Events;
+            $commentModel->text = $comment;
+            $commentModel->user = Yii::app()->user->name;
+            $commentModel->type = 'comment';
+            $commentModel->associationId = $postModel->id;
+            $commentModel->associationType='Events';
+            $commentModel->timestamp = time();
+
+            if($commentModel->save()) {
+                $commentCount=CActiveRecord::model('Events')->countByAttributes(array(
+                    'type'=>'comment',
+                    'associationType'=>'Events',
+                    'associationId'=>$postModel->id,
+                ));
+                $postModel->lastUpdated = time();
+                $postModel->save();
+
+                $profileUser = Yii::app()->db->createCommand()
+                        ->select('username')
+                        ->from('x2_users')
+                        ->where('id=:id',array(':id'=>$postModel->associationId))
+                        ->queryScalar();
+
+
+                // notify the owner of the feed containing the post you commented on (unless that person is you)
+                if($postModel->associationId != Yii::app()->user->getId()) {
+                    $postNotif = new Notification;
+                    $postNotif->type = 'social_comment';
+                    $postNotif->createdBy = $commentModel->user;
+                    $postNotif->modelType = 'Profile';
+                    $postNotif->modelId = $postModel->associationId;
+
+                    // look up the username of the owner of the feed
+                    $postNotif->user = $profileUser;
+
+                    $postNotif->createDate = time();
+                    $postNotif->save();
+                }
+                // now notify the person whose post you commented on (unless they're the same person as the first notification)
+                if($profileUser != $postModel->user && $postModel->user != Yii::app()->user->name) {
+                    $commentNotif = new Notification;
+                    $commentNotif->type = 'social_comment';
+                    $commentNotif->createdBy = $commentModel->user;
+                    $commentNotif->modelType = 'Profile';
+                    $commentNotif->modelId = $postModel->associationId;
+
+                    $commentNotif->user = $postModel->user;
+
+                    $commentNotif->createDate = time();
+                    $commentNotif->save();
+                }
+            }
+            echo $commentCount;
+        }else{
+            echo "";
+        }
+    }
+    
+    public function actionPublishPost(){
+        $post = new Events;
+		// $user = $this->loadModel($id);
+		if(isset($_POST['text']) && $_POST['text']!=Yii::t('app','Enter text here...')){
+			$post->text = $_POST['text'];
+			$post->visibility = $_POST['visibility'];
+			if(isset($_POST['associationId']))
+				$post->associationId = $_POST['associationId'];
+			//$soc->attributes = $_POST['Social'];
+			//die(var_dump($_POST['Social']));
+			$post->user = Yii::app()->user->getName();
+			$post->type = 'feed';
+            $post->subtype=$_POST['subtype'];
+			$post->lastUpdated = time();
+			$post->timestamp = time();
+			if($post->save()){
+				if(!empty($post->associationId) && $post->associationId != Yii::app()->user->getId()) {
+				
+					$notif = new Notification;
+					
+					$notif->type = 'social_post';
+					$notif->createdBy = $post->user;
+					$notif->modelType = 'Profile';
+					$notif->modelId = $post->associationId;
+
+					$notif->user = Yii::app()->db->createCommand()
+						->select('username')
+						->from('x2_users')
+						->where('id=:id',array(':id'=>$post->associationId))
+						->queryScalar();
+					
+					// $prof = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
+					// $notif->text = "$prof->fullName posted on your profile.";
+					// $notif->record = "profile:$prof->id";
+					// $notif->viewed = 0;
+					$notif->createDate = time();
+					// $subject=CActiveRecord::model('ProfileChild')->findByPk($id);
+					// $notif->user = $subject->username;
+					$notif->save();
+				}
+			}
+			
+		}
+    }
+    
+    public function actionLoadComments($id){
+        $commentDataProvider=new CActiveDataProvider('Events', array(
+            'criteria'=>array(
+                'order'=>'timestamp ASC',
+                'condition'=>"type='comment' AND associationType='Events' AND associationId=$id",
+        )));
+        $this->widget('zii.widgets.CListView', array(
+                'dataProvider'=>$commentDataProvider,
+                'itemView'=>'../social/_view',
+                'template'=>'&nbsp;{items}',
+                'id'=>$id.'-comments',
+        ));
+    }
+    
+    public function actionFlagPost(){
+        if(isset($_GET['id']) && isset($_GET['attr'])){
+            $id=$_GET['id'];
+            $important=$_GET['attr'];
+            $event=CActiveRecord::model('Events')->findByPk($id);
+            if(isset($event)){
+                if($important=='important'){
+                    $event->important=1;
+                }else{
+                    $event->important=0;
+                }
+                $event->save();
+            }
+        }
+    }
 
 	/**
 	 * Displays message of the day.
@@ -580,16 +892,17 @@ class SiteController extends x2base {
 
 				}
 				if($model->associationType=='feed') {
-					$soc = new Social;
+					$soc = new Events;
 					$soc->user = Yii::app()->user->getName();
-					$soc->data = Yii::t('app','Attached file: ').
+					$soc->text = Yii::t('app','Attached file: ').
 					$soc->type = 'feed';
 					$soc->timestamp = time();
 					$soc->lastUpdated = time();
 					$soc->associationId = $model->associationId;
-					$soc->data = $model->getMediaLink();
+                    $soc->associationType='Media';
+					$soc->text = $model->getMediaLink();
 					if($soc->save()) {
-							$this->redirect(array('profile/'.$model->associationId));
+							$this->redirect('index');
 					} else {
 							unlink('uploads/'.$name);
 					}
@@ -1439,4 +1752,131 @@ class SiteController extends x2base {
 		}
 		$this->redirect($_GET['redirect']);
 	}
+	
+    /**
+     *  Remove a widget from the page and put it in the widgets menu
+     *
+     */
+    function actionHideWidget() {
+    	if(isset($_POST['name'])) {
+    		$name = $_POST['name'];
+    		
+    		$layout = Yii::app()->params->profile->getLayout();
+    		
+    		// the widget could be in any of the blocks in the page, so check all of them
+    		foreach($layout as $b=>&$block) {
+    			if(isset($block[$name])) {
+    				if($b == 'right') {
+    					$layout['hiddenRight'][$name] = $block[$name];
+    				} else {
+    			    	$layout['hidden'][$name] = $block[$name];
+    			    }
+    			    unset($block[$name]);
+    			    Yii::app()->params->profile->saveLayout($layout);
+    			    break;
+    			}
+    		}
+    		
+    		// make a list of hidden widgets, using <li>, to send back to the browser
+    		$list = "";
+    		foreach($layout['hidden'] as $name=>$widget) {
+    			$list .= "<li><span class=\"x2-widget-menu-item\" id=\"$name\">{$widget['title']}</span></li>";
+    		}
+    		foreach($layout['hiddenRight'] as $name=>$widget) {
+    			$list .= "<li><span class=\"x2-widget-menu-item right\" id=\"$name\">{$widget['title']}</span></li>";
+    		}
+    		
+    		echo Yii::app()->params->profile->getWidgetMenu();
+    	}
+    }
+ 
+    
+	function actionShowWidget() {
+		if(isset($_POST['name']) && isset($_POST['block'])) { // ensure we have the params we need
+			$name = $_POST['name'];
+			$block = $_POST['block'];
+			
+			if(isset($_POST['modelType']) && isset($_POST['modelId'])) {
+				$modelType = $_POST['modelType'];
+				$modelId = $_POST['modelId'];
+			}
+			
+    		$layout = Yii::app()->params->profile->getLayout();
+    		
+    		if($block == 'right') { // x2temp: remove when $layout['hiddenRight'] is merged into $layout['hidden']
+    			
+    			foreach($layout['hiddenRight'] as $key=>$widget) {
+    				if($key == $name) {
+    					$widget['minimize'] = false; // un-minimize widgets when we show them
+    					$layout[$block][$key] = $widget;
+    					unset($layout['hiddenRight'][$key]);
+    					Yii::app()->params->profile->saveLayout($layout);
+    					Yii::app()->session['fullscreen'] = false; // we just added a widget to the right sidebar, so turn off fullscreen mode
+    				//	Yii::app()->clientScript->scriptMap['*.js'] = false;
+					//	$this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
+				
+    					break;
+    				}
+    			}
+    			
+    		} else {
+    		
+    			foreach($layout['hidden'] as $key=>$widget) {
+    				if($key == $name) {
+    					$widget['minimize'] = false; // un-minimize widgets when we show them
+    					$layout[$block][$key] = $widget;
+    					unset($layout['hidden'][$key]);
+    					Yii::app()->params->profile->saveLayout($layout);
+    					Yii::app()->clientScript->scriptMap['*.js'] = false;
+						$this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
+				
+    					break;
+    				}
+    			}
+    		}
+
+		}
+	}
+	
+	function actionReorderWidgets() {	
+		if(isset($_POST['x2widget']) && isset($_POST['x2widget'])) {
+			$widgets = $_POST['x2widget']; // list of widgets
+			$block = $_POST['block']; // left, right, or center
+			
+			$layout = Yii::app()->params->profile->getLayout();
+			
+			$newOrder = array();
+			
+			foreach($widgets as $name) {
+				foreach($layout[$block] as $key=>$widget) {
+					if($key == $name) {
+						$newOrder[$key] = $widget;
+					}
+				}
+			}
+			
+			$layout[$block] = $newOrder;
+			Yii::app()->params->profile->saveLayout($layout);
+		}
+	}
+	
+	function actionMinimizeWidget() {
+		if(isset($_POST['name']) && isset($_POST['minimize'])) {
+			$name = $_POST['name'];
+			$minimize = json_decode($_POST['minimize']);
+    		$layout = Yii::app()->params->profile->getLayout();
+    		
+    		// the widget could be in any of the blocks in the page, so check all of them
+    		foreach($layout as &$block) {
+    		    foreach($block as $key=>&$widget) {
+    		    	if($key == $name) {
+    		    		$widget['minimize'] = $minimize;
+    		    		Yii::app()->params->profile->saveLayout($layout);
+    		    		break 2;
+    		    	}
+    		    }
+			}
+		}
+	}
+	
 }

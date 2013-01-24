@@ -80,7 +80,7 @@ $hideIntro = CHtml::link('Hide Intro', '#', array('onclick'=>"hideIntro();","cla
 if (!($hINT)){
 ?>
 <div class="intro"><?php echo $hideIntro; ?>
-<h2><center><?php echo Yii::t('dashboard','Widget Dashboard'); ?></center></h2>
+<h2><center><?php echo Yii::t('charts','Widget Dashboard'); ?></center></h2>
 <?php echo Yii::t('app','<center><p>Below you see a physical listing of your widgets. Please re-order and re-size them until you are satisfied.</br>The alterations you make to this page <b>DO NOT</b> change the default listing on the right side of your screen.</p></center>');?>
 </div>
 <?php 

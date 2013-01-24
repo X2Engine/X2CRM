@@ -65,6 +65,21 @@ if(empty($data->type)) {
 } else
 	$type = $data->type;
 
+if($type == 'workflow') {
+
+	$workflowRecord = CActiveRecord::model('Workflow')->findByPk($data->workflowId);
+	$stageRecords = CActiveRecord::model('WorkflowStage')->findAllByAttributes(
+		array('workflowId'=>$data->workflowId),
+		new CDbCriteria(array('order'=>'id ASC'))
+	);
+	
+	// see if this stage even exists; if not, delete this junk
+	if($workflowRecord === null || $data->stageNumber < 1 || $data->stageNumber > count($stageRecords)) {
+		$data->delete();
+		return;
+	}
+}
+
 // if($type == 'call') {
 	// $type = 'note';
 	// $data->type = 'note';
@@ -104,10 +119,6 @@ if(empty($data->type)) {
 				//echo Actions::parseStatus($data->dueDate);
 		} elseif ($data->type == 'workflow') {
 			// $actionData = explode(':',$data->actionDescription);
-			
-			$workflowRecord = CActiveRecord::model('Workflow')->findByPk($data->workflowId);
-			$stageRecords = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$data->workflowId),new CDbCriteria(array('order'=>'id ASC')));
-			
 			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
 		} elseif($data->type == 'email') {
 			echo Yii::t('actions','Email Message:').' '.Actions::formatCompleteDate($data->completeDate);
@@ -143,7 +154,7 @@ if(empty($data->type)) {
 				}
 			}
 			if ($data->type != 'workflow'){
-				echo $data->type!='attachment'?' '.CHtml::link('['.Yii::t('actions','Edit').']',array('/actions/actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
+				echo $data->type!='attachment'?' '.CHtml::link('['.Yii::t('app','Edit').']',array('/actions/actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
 				echo ' '.CHtml::link('[x]','#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
 			}
 			?>
@@ -168,7 +179,21 @@ if(empty($data->type)) {
 			if(!empty($data->actionDescription))
 				echo $data->actionDescription,'<br>';
 			echo date('Y-m-d H:i:s',$data->completeDate);
-		} else
+		}elseif($type=='email' || $type=='emailOpened'){ 
+            preg_match('/^<b>(.*?)<\/b>(.*)/mis',$data->actionDescription,$matches);
+            if(!empty($matches)) {
+                $subject = $matches[1];
+				$body = $matches[2];
+			} else {
+                $subject = "No subject found";
+				$body = "(Error displaying email)";
+			}
+            if($type=='emailOpened'){
+                echo "Contact has opened the following email:<br />";
+            }
+            echo '<strong>'.$subject.'</strong> '.$body;
+			echo '<br /><br />'.CHtml::link('[View email]',array('actions/view','id'=>$data->id),array('target'=>'_blank'));
+        }else
 			echo Yii::app()->controller->convertUrls(($data->actionDescription));	// convert LF and CRLF to <br />
 		?>
 	</div>

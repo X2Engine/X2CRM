@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -50,6 +50,8 @@ return array (
 'Create Date'=>'تاریخ ایجاد',
 'Edit Permissions'=>'ویرایش دسترسی ها',
 'Doc Type'=>'نوع سند',
+'Subject'=>'موضوع',
+'Visibility'=>'دید',
 
 // Labels
 'Doc'=>'سند',
@@ -67,6 +69,7 @@ return array (
 'List Docs'=>'فهرست مستندات',
 'Create Docs'=>'ایجاد مستندات',
 'View Doc'=>'نمایش مستندات',
+'View'=>'دیدن',
 'Edit Doc'=>'ویرایش مستندات',
 'Delete Doc'=>'حذف مستندات',
 'Export Doc'=>'ارسال مستندات',
@@ -75,5 +78,10 @@ return array (
 'Export'=>'ارسال',
 'Create'=>'جدید',
 'Create Email'=>'ای-نامه جدید',
+'Create Doc'=>'ایجاد سند',
 'Create Document'=>'ایجاد سند',
+'Create Email Template'=>'ایجاد قالب ایمیل',
+
+// // Misc Text
+'Are you sure you want to delete this item?'=>'آیا شما مطمئن هستید که شما می خواهید به حذف این مورد؟',
 );

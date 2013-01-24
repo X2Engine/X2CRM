@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -100,6 +100,7 @@ return array (
 'All'=>'Tutti',
 'Delete'=>'Cancellare',
 'Overdue'=>'In Ritardo',
+'Edit Action'=>'Modifica Azione',
 
 // Actions Titles
 'Manage Actions'=>'Gestire le Azioni',
@@ -119,6 +120,7 @@ return array (
 'Create'=>'Creare',
 'New Event'=>'Un Nuovo Evento',
 'Call:'=>'Chiama:',
+'Comment'=>'Commento',
 
 
 // Misc
@@ -139,6 +141,7 @@ return array (
 'View'=>'Vista',
 'Overdue {time}'=>'Scadute {time}',
 'Due {date}'=>'Causa {date}',
+'Please enter a description.'=>'Si prega di inserire una descrizione.',
 
 // Create Action Types
 'None'=>'Nessuno',

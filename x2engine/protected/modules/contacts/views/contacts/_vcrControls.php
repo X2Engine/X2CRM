@@ -38,9 +38,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
+
 $listId = Yii::app()->user->getState('vcr-list');
 if(empty($listId))
 	$listId = 'index';
+
+Yii::app()->clientScript->registerScript('vcrListCookie', "
+// $('#content').on('mouseup','#contacts-grid a',function(e) {
+	// document.cookie = 'vcr-list=".$listId."; expires=0; path=/';
+// });
+",CClientScript::POS_READY);
 
 $vcrControls = array();
 $searchModel = new Contacts('search');
@@ -48,7 +55,7 @@ $searchModel = new Contacts('search');
 //listId should be either a number (for a list), 'index', or 'admin'
 //convert numbers to list/# for uniform url path
 if(is_numeric($listId)){
-	$path = $this->createUrl('list',array('id'=>$listId));
+	$path = 'list/' . $listId;
 }else
 	$path = $listId;
 
@@ -67,8 +74,13 @@ $order = preg_replace('/\.desc$/', ' DESC', $order);
 // decide which data provider to use
 if(is_numeric($listId)) {
 	$list = CActiveRecord::model('X2List')->findByPk($listId);
-	$listLink = CHtml::link($list->name,$path);
-	$vcrDataProvider = $searchModel->searchList($listId);
+    if(isset($list)){
+        $listLink = CHtml::link($list->name,array('/contacts/'.$path));
+        $vcrDataProvider = $searchModel->searchList($listId);
+    }else{
+        $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));	// default to All Contacts
+        $vcrDataProvider = $searchModel->searchAll();
+    }
 } elseif($listId=='myContacts') {
 	$listLink = CHtml::link(Yii::t('contacts','My Contacts'),array('/contacts/'.$path));
 	$vcrDataProvider = $searchModel->searchMyContacts();
@@ -111,7 +123,7 @@ if(is_array($vcrData) && count($vcrData)) {
 <div class="vcrPager">
 	<div class="summary">
 		<?php if(isset($listLink)) echo $listLink; ?>
-		<?php echo Yii::t('app','<b>{m}</b> of <b>{n}</b>',array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])); ?>
+		<?php echo Yii::t('contacts','<b>{m}</b> of <b>{n}</b>',array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])); ?>
 	</div>
 	<?php echo CHtml::tag('ul',array('class'=>'vcrPager'),$vcrData['prev']."\n".$vcrData['next']); ?>
 </div>

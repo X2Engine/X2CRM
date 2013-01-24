@@ -42,7 +42,7 @@ class Yii extends YiiBase {
 	 * @return X2WebApplication
 	 */
 	public static function createWebApplication($config=null) {
-		require('protected/components/X2WebApplication.php');
+		require(realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'protected/components/X2WebApplication.php'));
 		return parent::createApplication('X2WebApplication',$config);
 	}
 

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -66,6 +66,8 @@ return array (
 'Physical Mail'=>'实物邮件',
 'Email Template'=>'电子邮件模板',
 'Update Campaign'=>'更新广告',
+'Last Activity'=>'最近活动',
+'Template'=>'模板',
 
 // Menu
 'All Campaigns'=>'所有广告活动',
@@ -73,6 +75,7 @@ return array (
 'Newsletters'=>'通讯',
 'Create Newsletter'=>'创建通讯',
 'Create Web Form'=>'创建Web窗体',
+'Web Tracker'=>'网络跟踪',
 
 // Launching
 'The campaign has already been launched.'=>'该活动已经启动。',

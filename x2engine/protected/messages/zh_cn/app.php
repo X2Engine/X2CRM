@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,6 +82,11 @@ return array (
 'Manage Users'=>'管理用户',
 'Social Feed'=>'社会反馈',
 'Preferences'=>'首选项',
+'Reports'=>'报告',
+'Activity'=>'活动',
+'Service'=>'服务',
+'Go Invisible'=>'去无形',
+'Go Visible'=>'转到可见',
 // // 
 // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine的CRM组件',
@@ -94,6 +99,8 @@ return array (
 // // Footer
 'All Rights Reserved.'=>'保留所有权利。',
 'Generated in {time} seconds.'=>'{time}秒产生',
+'About'=>'关于',
+'The Program is provided AS IS, without warranty.'=>'该计划是按原样提供，没有任何保证。',
 // // 
 // // Widgets
 'My Actions'=>'我的任务',
@@ -110,6 +117,7 @@ return array (
 'Top Sites'=>'热门网站',
 'Media'=>'媒体',
 'Current time in'=>'当前时间在',
+'Hide'=>'隐藏',
 // // 
 'Total Action|Total Actions'=>'所有任务|所有的任务',
 'Unfinished Action|Unfinished Actions'=>'未完成的任务|未完成的任务',
@@ -197,7 +205,7 @@ return array (
 'Delete'=>'删除',
 'Group?'=>'集团？',
 'Check box'=>'复选框',
-'results per page'=>' 结果每页',
+'results per page'=>'结果每页',
 'Public'=>'公众',
 'Tags'=>'标签',
 'Template:'=>'模板:',
@@ -214,8 +222,32 @@ return array (
 'View'=>'看',
 'Update'=>'更新',
 'results per page.'=>'每页的结果。',
-'Displaying {start}-{end} of {count} result(s).'=>'显示{start} - {end}{count}的结果。',
+'Displaying {start}-{end} of {count} result(s).'=>'显示 {start} - {end} {count} 的结果。',
 'Marketing Dashboard'=>'营销仪表盘',
+'You'=>'您',
+'Quick Create'=>'快速创建',
+'Create a Contact, Account, and Opportunity.'=>'创建联系人，帐户和机会。',
+'<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b>提示：</ b>您可以使用下面的过滤器值的比较运算符来微调您的搜索。',
+'less than'=>'小于',
+'less than or equal to'=>'小于或等于',
+'greater than'=>'大于',
+'greater than or equal to'=>'大于或等于',
+'equal to'=>'等于',
+'not equal to'=>'不等于',
+' results per page'=>' 结果每页',
+'Add to list:'=>'添加到列表：',
+'<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end}</ b><b> {count} </ b>',
+'Relationships'=>'关系',
+'Associate Account'=>'关联帐户',
+'Associate Opportunity'=>'合作机会',
+'Associate Contact'=>'关联联系',
+'Contact Attributes'=>'联系人属性',
+'CC:'=>'CC：',
+'BCC:'=>'BCC：',
+'What should the map be named?'=>'地图被命名为？',
+'Record not found.'=>'没有找到记录。',
+'Saving...'=>'保存...',
+'Module'=>'模',
 // // 
 // // Misc Actions
 'Submit'=>'提交',
@@ -263,4 +295,88 @@ return array (
 'How to use Gii'=>'如何使用Gii',
 'How to add a database field'=>'如何添加一个数据库字段',
 // // 
+// // Activity Feed
+
+'Activity Feed'=>'活动供稿',
+// // Filter Headers
+'Visibility'=>'能见度',
+'Relevant Users'=>'有关用户',
+'Event Types'=>'事件类型',
+'Social Subtypes'=>'社会亚型',
+'Options'=>'选项',
+'Set Default'=>'设置默认',
+'Apply Filters'=>'应用过滤器',
+// // Filter Text
+'Social Post'=>'社会后',
+'Announcement'=>'公告',
+'Product Info'=>'产品信息',
+'Competitive Info'=>'竞争性信息',
+'Confidential'=>'机密',
+// // Event Types
+'Social Posts'=>'社会帖子',
+'Records Created'=>'创建记录',
+'Records Deleted'=>'删除记录',
+'Action Reminders'=>'操作提示',
+'Actions Completed'=>'动作完成',
+'Calendar Events'=>'日历事件',
+'Cases Escalated'=>'案件升级',
+'Emails Opened'=>'电子邮件开业',
+'Emails Sent'=>'发送的电子邮件',
+'Notifications'=>'通知',
+'Webleads Created'=>'网络信息创建',
+'Web Activity'=>'Web活动',
+'Workflow Complete'=>'工作流完成',
+'Workflow Reverted'=>'工作流程复归',
+'Workflow Started'=>'工作流程开始',
+// // Event Text
+'created a new {actionLink} associated with the contact {contactLink}'=>'创建一个新的{actionLink} {contactLink}',
+'created a new {modelName}, {modelLink}'=>'创建一个新的{modelName}，{modelLink}',
+'created a new {modelName}, {deletionText}. It has been deleted.'=>'创建一个新的{modelName}，的{deletionText}。它已被删除。',
+'created a new {modelName}, but it could not be found.'=>'创建一个新的{modelName}，但它不能被发现。',
+'A new web lead has come in: {modelLink}'=>'一个新的网络了带头作用：{modelLink}',
+'A new web lead has come in: {deletionText}. It has been deleted.'=>'一个新的网络了带头作用：的{deletionText}。它已被删除。',
+'A new web lead has come in, but it could not be found.'=>'一个新的网络了带头作用，但它不能被发现。',
+'deleted a {modelType}, {text}'=>'删除了的{modelType}，{text}',
+'started the workflow stage "{stage}" for the {modelName} {modelLink}'=>'启动工作流阶段 “{stage}” 的的{modelName}{modelLink}',
+'started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'开始了工作流程阶段的 {modelName} 的 {modelLink}，但找不到工作流程的阶段。',
+'started a workflow stage, but the associated {modelName} was not found.'=>'开始了工作流的阶段，但相关的 {modelName} 未找到。',
+'started a workflow stage, but the workflow record could not be found.'=>'开始了工作流的阶段，但找不到工作流程的记录。',
+'completed the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'完成工作流阶段 “{stageName}” {modelName} {modelLink}',
+'completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'完成了的工作流程阶段的 {modelName} 的 {modelLink} ，但找不到工作流程的阶段。',
+'completed a workflow stage, but the associated {modelName} was not found.'=>'完成了工作流的阶段，但相关的{modelName}未找到。',
+'completed a workflow stage, but the workflow record could not be found.'=>'完成了工作流的阶段，但找不到工作流程的记录。',
+'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'恢复工作流阶段 “{stageName}” {modelName} {modelLink}',
+'reverted a workflow stage, but the associated {modelName} was not found.'=>'恢复工作流阶段，但相关的{modelName}未找到。',
+'reverted a workflow stage, but the workflow record could not be found.'=>'恢复工作流阶段，但找不到工作流程的记录。',
+'sent an email to the {transModelName} {modelLink}'=>'发送电子邮件至{transModelName} {modelLink}',
+'sent an email to a {transModelName}, but that record has been deleted.'=>'{transModelName}发送了一封电子邮件，但该记录已被删除。',
+'sent an email to a {transModelName}, but that record could not be found.'=>'{transModelName}发送了一封电子邮件，但找不到该记录。',
+' has opened an email!'=>' 打开一封电子邮件！',
+'A contact has opened an email, but that contact cannot be found.'=>'打开联系人有电子邮件，但无法找到该联系人。',
+'is currently on your website!'=>'目前在您的网站！',
+'A contact was on your website, but that contact cannot be found.'=>'一个接触的时间是在您的网站，但无法找到该联系人。',
+'escalated service case {modelLink} to {userLink}'=>'升级服务的情况下的 {modelLink} {userLink}',
+'escalated a service case but that case could not be found.'=>'升级服务的情况，但这种情况下，不能被发现。',
+'{calendarText} event: {actionDescription}'=>'事件的{calendarText} {actionDescription}',
+'{calendarText} event: event not found.'=>'的{calendarText}事件：事件没有被发现。',
+'Reminder! The following action is due now: {transModelLink}'=>'提醒！采取以下行动：{transModelLink}',
+'An action is due now, but the record could not be found.'=>'一个动作是现在，但记录不能被发现。',
+'completed the following action: {actionDescription}'=>'完成以下动作：{actionDescription}',
+'completed an action, but the record could not be found.'=>'完成了动作，但记录不能被发现。',
+// // Model Names
+'action'=>'行动',
+'contact'=>'联系',
+'account'=>'帐户',
+'opportunity'=>'机会',
+'marketing campaign'=>'营销活动',
+
+// // Misc. Text
+'Minimize Posts'=>'最小帖子',
+'Restore Posts'=>'恢复帖子',
+'My Groups'=>'我的群组',
+'Show/add comments'=>'显示/添加评论',
+'Hide comments'=>'隐藏评论',
+'Broadcast Event'=>'广播事件',
+'Cancel Broadcast'=>'取消广',
+'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'广播事件将使其可见 - 无论任何用户观看您的活动的活动饲料类型的过滤器。',
 );

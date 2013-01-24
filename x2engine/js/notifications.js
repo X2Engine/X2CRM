@@ -163,6 +163,8 @@ $(function() {
 				getUpdates(true);	// check for notifs but don't update other windows
 			else if(masterId == windowId)
 				getUpdates();	// check for notifs
+			else
+				notifTimeout = setTimeout(checkMasterId,notifUpdateInterval);	// leave the AJAX to the master window, but keep an eye on him
 		}
 		
 		checkMasterId(true);	// always get updates on startup, because the master 

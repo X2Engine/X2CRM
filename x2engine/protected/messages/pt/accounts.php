@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -58,6 +58,7 @@ return array (
 'Contacts'=>'Contactos',
 'Basic Information'=>'Informações Básicas',
 'Additional Information'=>'Informações Adicionais',
+'Last Activity'=>'Última Atividade',
 
 // Accounts Actions
 'Accounts List'=>'Lista De Contas',
@@ -76,6 +77,8 @@ return array (
 'Delete'=>'Excluir',
 'Update Account:'=>'Atualize conta:',
 'Share Opportunity'=>'Oportunidade Compartilhar',
+'All Accounts'=>'Todas as Contas',
+'Edit Account'=>'Editar Conta',
 
 // Accounts Titles
 'Accounts'=>'Contas',
@@ -88,4 +91,6 @@ return array (
 'Please click any new users you wish to remove.'=>'Por favor, clique em qualquer novo usuário que deseja remover.',
 'Account Record Details'=>'Gravar Detalhes da Conta',
 'Account Record'=>'Grave Conta',
+'Create a new Opportunity associated with this Account.'=>'Criar uma nova oportunidade associado a esta conta.',
+'Create a new Contact associated with this Account.'=>'Criar um novo contato associado a esta conta.',
 );

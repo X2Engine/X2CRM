@@ -49,6 +49,8 @@ CREATE TABLE x2_web_forms(
 	updatedBy				VARCHAR(20)		NOT NULL,
 	createDate				BIGINT	 		NOT NULL,
 	lastUpdated				BIGINT	 		NOT NULL,
+	userEmailTemplate		INT,
+	webleadEmailTemplate	INT,
 	
 	PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;

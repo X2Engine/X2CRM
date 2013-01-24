@@ -125,8 +125,10 @@ class Roles extends CActiveRecord {
 	 * @return Array array of roleIds
 	 */
 	public static function getUserRoles($userId,$cache=true) {
+		$cacheVar = 'user_roles_'.$userId;
+	
 		// check the app cache for user's roles
-		if($cache === true && ($userRoles = Yii::app()->cache->get('user_roles')) !== false) {
+		if($cache === true && ($userRoles = Yii::app()->cache->get($cacheVar)) !== false) {
 			if(isset($userRoles[$userId]))
 				return $userRoles[$userId];
 		} else {
@@ -148,7 +150,7 @@ class Roles extends CActiveRecord {
 		$userRoles[$userId] = array_unique($userRoles + $groupRoles);  // combine all the roles, remove duplicates
 
 		if($cache === true)
-			Yii::app()->cache->set('user_roles',$userRoles,259200); // cache user groups for 3 days
+			Yii::app()->cache->set($cacheVar,$userRoles,259200); // cache user groups for 3 days
 
 		return $userRoles[$userId];
 	}

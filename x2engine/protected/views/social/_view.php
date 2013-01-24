@@ -41,15 +41,15 @@
 $authorRecord = User::model()->findByAttributes(array('username'=>$data->user));
 $author = $authorRecord->firstName.' '.$authorRecord->lastName;
 ?>
-<div class="view">
+<div class="view top-level">
 	<div class="deleteButton">
 		<?php 
-		$parent=Social::model()->findByPk($data->associationId);
+		$parent=Events::model()->findByPk($data->associationId);
 		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex'))
-			echo CHtml::link('[x]',array('deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
+			echo CHtml::link('[x]',array('profile/deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
-	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)); ?> <span class="comment-age"><?php echo x2base::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
-	<?php echo $this->convertUrls(CHtml::encode($data->data)); ?>
+	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)); ?> <span class="comment-age"><?php echo $this->formatFeedTimestamp($data->timestamp); ?></span><br />
+	<?php echo $data->text; ?>
 </div>
 
 

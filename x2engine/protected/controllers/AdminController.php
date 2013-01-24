@@ -151,7 +151,7 @@ class AdminController extends Controller {
         return array(
             //'accessControl',
             'clearCache',
-			'clearAuthCache'
+			// 'clearAuthCache'
         );
     }
 
@@ -267,11 +267,13 @@ class AdminController extends Controller {
 	 */
 	public function filterClearAuthCache($filterChain) {
 		// Check for existence of authCache object (for backwards compatibility)
-		if(Yii::app()->hasComponent('authCache')) {
-			$authCache = Yii::app()->authCache;
-			if (isset($authCache))
-				$authCache->clear();
-		}
+        if(!is_null(Yii::app()->db->getSchema()->getTable('x2_auth_cache'))){
+            if(Yii::app()->hasComponent('authCache')) {
+                $authCache = Yii::app()->authCache;
+                if (isset($authCache))
+                    $authCache->clear();
+            }
+        }
 		$filterChain->run();
 		
 	}
@@ -878,11 +880,7 @@ class AdminController extends Controller {
      * Settings" page of the Admin tab. 
      */
     public function actionToggleUpdater() {
-
-        $admin = AdminChild::model()->findByPk(1);
-        $admin->ignoreUpdates ? $admin->ignoreUpdates = 0 : $admin->ignoreUpdates = 1;
-        $admin->save();
-        $this->redirect('index');
+        $this->redirect('updaterSettings');
     }
 
     /**
@@ -1099,6 +1097,23 @@ class AdminController extends Controller {
         }
         $admin->timeout = ceil($admin->timeout / 60);
         $this->render('appSettings', array(
+            'model' => $admin,
+        ));
+    }
+    
+    public function actionActivitySettings() {
+
+        $admin = &Yii::app()->params->admin;
+        $admin->eventDeletionTypes=json_decode($admin->eventDeletionTypes,true);
+        if (isset($_POST['Admin'])) {
+
+            $admin->eventDeletionTime = $_POST['Admin']['eventDeletionTime'];
+            $admin->eventDeletionTypes=json_encode($_POST['Admin']['eventDeletionTypes']);
+            if ($admin->save()) {
+                $this->redirect('activitySettings');
+            }
+        }
+        $this->render('activitySettings', array(
             'model' => $admin,
         ));
     }
@@ -1710,134 +1725,92 @@ class AdminController extends Controller {
         // die('hello:'.var_dump($_POST));
     }
 
-    /**
-     * Creates a new custom module.
-     * 
-     * This method allows for the creation of admin defined modules to use in the
-     * software. These modules are more basic in functionality than most other X2
-     * modules, but are fully customizable from the studio. 
-     */
-    public function actionCreateModule() {
+	/**
+	 * Creates a new custom module.
+	 * 
+	 * This method allows for the creation of admin defined modules to use in the
+	 * software. These modules are more basic in functionality than most other X2
+	 * modules, but are fully customizable from the studio. 
+	 */
+	public function actionCreateModule() {
+		
+		$errors = array();
+		
+		if(isset($_POST['moduleName'])) {
+			
+			$title = trim($_POST['title']);
+			$recordName = trim($_POST['recordName']);
+			
+			$moduleName = trim($_POST['moduleName']);
+			
+			if(preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName))   // are there any non-alphanumeric or _ chars?
+				$errors[] = Yii::t('module', 'Invalid table name'); //$this->redirect('createModule');									// or non-alpha characters at the beginning?
+			
+			if($moduleName == '')  // we will attempt to use the title
+				$moduleName = $title; // as the backend name, if possible
+			
+			if($recordName == '')  // use title for record name 
+				$recordName = $title; // if none is provided
+			
+			$trans = include('protected/data/transliteration.php');
+			
+			$moduleName = strtolower(strtr($moduleName,$trans));  // replace characters with their A-Z equivalent, if possible
+			
+			$moduleName = preg_replace('/\W/', '', $moduleName); // now remove all remaining non-alphanumeric or _ chars
+			
+			$moduleName = preg_replace('/^[0-9_]+/', '', $moduleName); // remove any numbers or _ from the beginning
+			
+			
+			if($moduleName == '')        // if there is nothing left of moduleName at this point,
+				$moduleName = 'module' . substr(time(), 5);  // just generate a random one
+				
+				
+			if(!is_null(Modules::model()->findByAttributes(array('title' => $title))) || !is_null(Modules::model()->findByAttributes(array('name' => $moduleName))))
+				$errors[] = Yii::t('module', 'A module with that name already exists');
+			if(empty($errors)) {
+				try {
+					$this->createSkeletonDirectories($moduleName);
+					$this->writeConfig($title,$moduleName,$recordName);
+					$this->createNewTable($moduleName);
+				} catch(Exception $e) {
+					die($e->getMessage());
+				}
+				
+				$moduleRecord = new Modules;
+				$moduleRecord->name = $moduleName;
+				$moduleRecord->title = $title;
+				$moduleRecord->custom = 1;
+				$moduleRecord->visible = 1;
+				$moduleRecord->editable = $_POST['editable'];
+				$moduleRecord->adminOnly = $_POST['adminOnly'];
+				$moduleRecord->searchable = $_POST['searchable'];
+				$moduleRecord->toggleable = 1;
+				$moduleRecord->menuPosition = Modules::model()->count();
+				$moduleRecord->save();
+				$auth = Yii::app()->authManager;
+				$auth->createOperation(ucfirst($moduleName) . 'Index');
+				$auth->addItemChild('authenticated', ucfirst($moduleName) . 'Index');
+				$auth->createOperation(ucfirst($moduleName) . 'Admin');
+				$auth->addItemChild('admin', ucfirst($moduleName) . 'Admin');
+				$this->redirect(array('/' . $moduleName . '/index'));
+			}
+		}
 
-        $errors = array();
+		$this->render('createModule', array('errors' => $errors));
+	}
 
-        if (isset($_POST['moduleName'])) {
-
-            $title = trim($_POST['title']);
-            $recordName = trim($_POST['recordName']);
-
-            $moduleName = trim($_POST['moduleName']);
-
-            if (preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName))   // are there any non-alphanumeric or _ chars?
-                $errors[] = Yii::t('module', 'Invalid table name'); //$this->redirect('createModule');									// or non-alpha characters at the beginning?
-
-            if ($moduleName == '')  // we will attempt to use the title
-                $moduleName = $title; // as the backend name, if possible
-
-            if ($recordName == '')  // use title for record name 
-                $recordName = $title; // if none is provided
-
-            $trans = array(
-                'Š' => 'S', 'š' => 's', '�?' => 'Dj', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', '�?' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
-                'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', '�?' => 'I', 'Î' => 'I',
-                '�?' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
-                'Û' => 'U', 'Ü' => 'U', '�?' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
-                'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
-                'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
-                'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f'
-            );
-
-            $moduleName = strtolower(strtr($moduleName, $trans));  // replace characters with their A-Z equivalent, if possible
-
-            $moduleName = preg_replace('/\W/', '', $moduleName); // now remove all remaining non-alphanumeric or _ chars
-
-            $moduleName = preg_replace('/^[0-9_]+/', '', $moduleName); // remove any numbers or _ from the beginning
-
-
-
-            if ($moduleName == '')        // if there is nothing left of moduleName at this point,
-                $moduleName = 'module' . substr(time(), 5);  // just generate a random one
-
-
-            if (!is_null(Modules::model()->findByAttributes(array('title' => $title))) || !is_null(Modules::model()->findByAttributes(array('name' => $moduleName))))
-                $errors[] = Yii::t('module', 'A module with that name already exists');
-            if (empty($errors)) {
-
-                $this->writeConfig($title, $moduleName, $recordName);
-                $this->createNewTable($moduleName);
-
-                $this->createSkeletonDirectories($moduleName);
-
-                $moduleRecord = new Modules;
-                $moduleRecord->name = $moduleName;
-                $moduleRecord->title = $title;
-                $moduleRecord->custom = 1;
-                $moduleRecord->visible = 1;
-                $moduleRecord->editable = $_POST['editable'];
-                $moduleRecord->adminOnly = $_POST['adminOnly'];
-                $moduleRecord->searchable = $_POST['searchable'];
-                $moduleRecord->toggleable = 1;
-                $moduleRecord->menuPosition = Modules::model()->count();
-                $moduleRecord->save();
-                $auth = Yii::app()->authManager;
-                $auth->createOperation(ucfirst($moduleName) . 'Index');
-                $auth->addItemChild('authenticated', ucfirst($moduleName) . 'Index');
-                $auth->createOperation(ucfirst($moduleName) . 'Admin');
-                $auth->addItemChild('admin', ucfirst($moduleName) . 'Admin');
-                $this->redirect(array('/' . $moduleName . '/index'));
-            }
-        }
-
-        $this->render('createModule', array('errors' => $errors));
-    }
-
-    /**
-     * Create module config file
-     * 
-     * This is called by {@link AdminController::actionCreateModule} in the process
-     * of creating a new module.  This writes a config file for the module to use.
-     * 
-     * @param string $title The display title of the module
-     * @param string $moduleName The actual name of the module
-     * @param string $recordName What to call the records of this module
-     */
-    private function writeConfig($title, $moduleName, $recordName) {
-
-        $templateFolder = Yii::app()->file->set('protected/modules/template/');
-        $templateFolder->copy($moduleName);
-
-        $module = Yii::app()->file->set('protected/modules/template/TemplatesModule.php');
-        $module->copy('protected/modules/' . $moduleName . '/TemplatesModule.php');
-
-
-        $configFile = Yii::app()->file->set('protected/modules/template/templatesConfig.php', true);
-        $configFile->copy('protected/modules/' . $moduleName . '/' . $moduleName . 'Config.php');
-
-        $configFile = Yii::app()->file->set('protected/modules/' . $moduleName . '/' . $moduleName . 'Config.php', true);
-
-        $str = "<?php
-\$moduleConfig = array(
-	'title'=>'" . addslashes($title) . "',
-	'moduleName'=>'" . addslashes($moduleName) . "',
-	'recordName'=>'" . addslashes($recordName) . "',
-);
-?>";
-
-        $configFile->setContents($str);
-    }
-
-    /**
-     * Creates a table for a new module
-     * 
-     * This method is called by {@link AdminController::actionCreateModule} as part
-     * of creating a new module.  This creates the table for the new module as well
-     * as creating records in the x2_fields table for use in the studio.
-     * 
-     * @param string $moduleName The name of the module being created
-     */
-    private function createNewTable($moduleName) {
-        $moduleTitle = ucfirst($moduleName);
-        $sqlList = array("CREATE TABLE x2_" . $moduleName . "(
+	/**
+	 * Creates a table for a new module
+	 * 
+	 * This method is called by {@link AdminController::actionCreateModule} as part
+	 * of creating a new module.  This creates the table for the new module as well
+	 * as creating records in the x2_fields table for use in the studio.
+	 * 
+	 * @param string $moduleName The name of the module being created
+	 */
+	private function createNewTable($moduleName) {
+		$moduleTitle = ucfirst($moduleName);
+		$sqlList = array("CREATE TABLE x2_" . $moduleName . "(
 			id INT NOT NULL AUTO_INCREMENT primary key,
 			assignedTo VARCHAR(250),
 			name VARCHAR(250) NOT NULL,
@@ -1846,135 +1819,184 @@ class AdminController extends Controller {
 			lastUpdated INT,
 			updatedBy VARCHAR(250)
 			)",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
-        foreach ($sqlList as $sql) {
-            $command = Yii::app()->db->createCommand($sql);
-            $command->execute();
-        }
-    }
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
+			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
+		foreach($sqlList as $sql) {
+			$command = Yii::app()->db->createCommand($sql);
+			$command->execute();
+		}
+	}
 
-    /**
-     * Create file system for a custom module
-     * 
-     * This method is called by {@link AdminController::actionCreateModule} as a
-     * part of creating a new module.  This method copies all the proper files to
-     * their new directories, renames them, and replaces the contents to fit the
-     * new module name.
-     * 
-     * @param string $moduleName The name of the moduel being created
-     */
-    private function createSkeletonDirectories($moduleName) {
+	/**
+	 * Create file system for a custom module
+	 * 
+	 * This method is called by {@link AdminController::actionCreateModule} as a
+	 * part of creating a new module.  This method copies all the proper files to
+	 * their new directories, renames them, and replaces the contents to fit the
+	 * new module name.
+	 * 
+	 * @param string $moduleName The name of the moduel being created
+	 */
+	private function createSkeletonDirectories($moduleName) {
 
-        $errors = array();
+		$errors = array();
+		
+		$templateFolderPath = 'protected/modules/template/';
+		$moduleFolderPath = 'protected/modules/'.$moduleName.'/';
+		
+		$moduleFolder = Yii::app()->file->set($moduleFolderPath);
+		if(!$moduleFolder->exists && $moduleFolder->createDir() === false)
+			throw new Exception('Error creating module folder "'.$moduleFolderPath.'".');
+		
+		if(Yii::app()->file->set($templateFolderPath)->copy($moduleName) === false)
+			throw new Exception('Error copying Template folder "'.$templateFolderPath.'".');
+		
+		// list of files to process
+		$fileNames = array(
+			'register.php',
+			'templatesConfig.php',
+			'TemplatesModule.php',
+			'controllers/DefaultController.php',
+			'data/install.sql',
+			'data/uninstall.sql',
+			'models/Templates.php',
+			'views/default/_search.php',
+			'views/default/_view.php',
+			'views/default/admin.php',
+			'views/default/create.php',
+			'views/default/index.php',
+			'views/default/update.php',
+			'views/default/view.php',
+		);
+		
+		foreach($fileNames as $fileName) {
+			// calculate proper file name
+			$fileName = $moduleFolderPath . $fileName;
+			
+			$file = Yii::app()->file->set($fileName);
+			if(!$file->exists)
+				throw new Exception('Unable to find template file "'.$fileName.'".');
+				
+			// rename files
+			$newFileName = str_replace(array('templates','Templates'),array($moduleName,ucfirst($moduleName)),$file->filename);
+			if($file->setFileName($newFileName) === false)
+				throw new Exception('Error renaming template file "'.$fileName.'" to "'.$newFileName.'".');
+			
+			// chmod($file->filename, 0755);
+			// $file->setPermissions(0755);
+			
+			// replace "template", "Templates", etc within the file
+			$contents = $file->getContents();
+			$contents = str_replace(array('templates','Templates'),array($moduleName,ucfirst($moduleName)),$contents);
+			
+			if($file->setContents($contents) === false)
+				throw new Exception('Error modifying template file "'.$newFileName.'".');
+		}
+	}
 
+	/**
+	 * Create module config file
+	 * 
+	 * This is called by {@link AdminController::actionCreateModule} in the process
+	 * of creating a new module.  This writes a config file for the module to use.
+	 * 
+	 * @param string $title The display title of the module
+	 * @param string $moduleName The actual name of the module
+	 * @param string $recordName What to call the records of this module
+	 */
+	private function writeConfig($title,$moduleName,$recordName) {
+	
+		$configFilePath = 'protected/modules/'.$moduleName.'/'.$moduleName.'Config.php';
+		$configFile = Yii::app()->file->set($configFilePath,true);
+		
+		$contents = str_replace(
+			array(
+				'{title}',
+				'{moduleName}',
+				'{recordName}',
+			),
+			array(
+				addslashes($title),
+				addslashes($moduleName),
+				addslashes($recordName),
+			),
+			$configFile->getContents()
+		);
+		
+		if($configFile->setContents($contents) === false)
+			throw new Exception('Error writing to config file "'.$configFilePath.'".');
+	}
 
-        $fileNames = array(
-            'protected/modules/' . $moduleName . '/views/default/_search.php',
-            'protected/modules/' . $moduleName . '/views/default/_view.php',
-            'protected/modules/' . $moduleName . '/views/default/admin.php',
-            'protected/modules/' . $moduleName . '/views/default/create.php',
-            'protected/modules/' . $moduleName . '/views/default/index.php',
-            'protected/modules/' . $moduleName . '/views/default/update.php',
-            'protected/modules/' . $moduleName . '/views/default/view.php',
-            'protected/modules/' . $moduleName . '/models/Templates.php',
-            'protected/modules/' . $moduleName . '/controllers/DefaultController.php',
-            'protected/modules/' . $moduleName . '/register.php',
-            'protected/modules/' . $moduleName . '/TemplatesModule.php',
-            'protected/modules/' . $moduleName . '/data/uninstall.sql',
-            'protected/modules/' . $moduleName . '/data/install.sql',
-        );
-        foreach ($fileNames as $fileName) {
-            $templateFile = Yii::app()->file->set($fileName);
-            if (!$templateFile->exists) {
-                $errors[] = Yii::t('module', 'Template file {filename} could not be found');
-                break;
-            } else {
-                chmod($fileName, 0755);
-                $contents = $templateFile->getContents();
-                $contents = preg_replace('/templates/', $moduleName, $contents);   // write moduleName into view files
-                $contents = preg_replace('/Templates/', ucfirst($moduleName), $contents);
+	/**
+	 * Deletes a custom module.
+	 * 
+	 * This method deletes an admin created module from the system.  All files are 
+	 * deleted as well as the table associated with it. 
+	 */
+	public function actionDeleteModule() {
 
-                $newFileName = preg_replace('/templates/', $moduleName, $templateFile->filename);
-                $newFileName = preg_replace('/template/', $moduleName, $templateFile->filename); // replace 'template' with
-                $newFileName = preg_replace('/Templates/', ucfirst($moduleName), $newFileName); // module name for new files
-                $templateFile->setFileName($newFileName);
-                $templateFile->setContents($contents);
-            }
-        }
-        //rename('protected/modules/' . $moduleName . '/views/templates',"protected/modules/$moduleName/views/$moduleName");
-    }
+		if (isset($_POST['name'])) {
+			$moduleName = $_POST['name'];
+			$module = Modules::model()->findByPk($moduleName);
+			$moduleName = $module->name;
+			if (isset($module)) {
+				if ($module->name != 'document' && $module->delete()) {
+					$config = include('protected/modules/' . $moduleName . '/register.php');
+					$uninstall = $config['uninstall'];
+					if (isset($config['version'])) {
+						foreach ($uninstall as $sql) {
+							// New convention:
+							// If element is a string, treat as a path to an SQL script file.
+							// Otherwise, if array, treat as a list of SQL commands to run.
+							$sqlComm = $sql;
+							if (is_string($sql)) {
+								if (file_exists($sql)) {
+									$sqlComm = explode('/*&*/', file_get_contents($sql));
+								}
+							}
+							foreach ($sqlComm as $sqlLine) {
+								$query = Yii::app()->db->createCommand($sqlLine);
+								$query->execute();
+							}
+						}
+					} else {
+						// The old way, for backwards compatibility:
+						foreach ($uninstall as $sql) {
+							$query = Yii::app()->db->createCommand($sql);
+							$query->execute();
+						}
+					}
+					$fields = Fields::model()->findAllByAttributes(array('modelName' => $moduleName));
+					foreach ($fields as $field) {
+						$field->delete();
+					}
+					$auth = Yii::app()->authManager;
+					$auth->removeAuthItem(ucfirst($moduleName) . 'Index');
+					$auth->removeAuthItem(ucfirst($moduleName) . 'Admin');
 
-    /**
-     * Deletes a custom module.
-     * 
-     * This method deletes an admin created module from the system.  All files are 
-     * deleted as well as the table associated with it. 
-     */
-    public function actionDeleteModule() {
+					$this->rrmdir('protected/modules/' . $moduleName);
+				} else {
+					$module->delete();
+				}
+			}
+			$this->redirect(array('admin/index'));
+		}
 
-        if (isset($_POST['name'])) {
-            $moduleName = $_POST['name'];
-            $module = Modules::model()->findByPk($moduleName);
-            $moduleName = $module->name;
-            if (isset($module)) {
-                if ($module->name != 'document' && $module->delete()) {
-                    $config = include('protected/modules/' . $moduleName . '/register.php');
-                    $uninstall = $config['uninstall'];
-                    if (isset($config['version'])) {
-                        foreach ($uninstall as $sql) {
-                            // New convention:
-                            // If element is a string, treat as a path to an SQL script file.
-                            // Otherwise, if array, treat as a list of SQL commands to run.
-                            $sqlComm = $sql;
-                            if (is_string($sql)) {
-                                if (file_exists($sql)) {
-                                    $sqlComm = explode('/*&*/', file_get_contents($sql));
-                                }
-                            }
-                            foreach ($sqlComm as $sqlLine) {
-                                $query = Yii::app()->db->createCommand($sqlLine);
-                                $query->execute();
-                            }
-                        }
-                    } else {
-                        // The old way, for backwards compatibility:
-                        foreach ($uninstall as $sql) {
-                            $query = Yii::app()->db->createCommand($sql);
-                            $query->execute();
-                        }
-                    }
-                    $fields = Fields::model()->findAllByAttributes(array('modelName' => $moduleName));
-                    foreach ($fields as $field) {
-                        $field->delete();
-                    }
-                    $auth = Yii::app()->authManager;
-                    $auth->removeAuthItem(ucfirst($moduleName) . 'Index');
-                    $auth->removeAuthItem(ucfirst($moduleName) . 'Admin');
+		$arr = array();
+		$modules = Modules::model()->findAllByAttributes(array('toggleable' => 1));
+		foreach ($modules as $item) {
+			$arr[$item->id] = $item->title;
+		}
 
-                    $this->rrmdir('protected/modules/' . $moduleName);
-                } else {
-                    $module->delete();
-                }
-            }
-            $this->redirect(array('admin/index'));
-        }
-
-        $arr = array();
-        $modules = Modules::model()->findAllByAttributes(array('toggleable' => 1));
-        foreach ($modules as $item) {
-            $arr[$item->id] = $item->title;
-        }
-
-        $this->render('deleteModule', array(
-            'modules' => $arr,
-        ));
-    }
+		$this->render('deleteModule', array(
+			'modules' => $arr,
+		));
+	}
 
     /**
      * Export a custom module.
@@ -3345,4 +3367,78 @@ class AdminController extends Controller {
 		$message .= ' You can fix this by downloading the missing files from Github or SourceForge and uploading them to your web server at the specified paths, or by trying your request to the Admin console again.';
 		throw new CHttpException(500, $message);
 	}
+	
+	
+	public function actionAuthGraph() {
+		
+		if(!Yii::app()->user->checkAccess('AdminIndex'))
+			return;
+		
+		$allTasks = array();
+		
+		$authGraph = array();
+			
+		$taskNames = Yii::app()->db->createCommand()
+			->select('name')
+			->from('x2_auth_item')
+			->where('type=1')
+			->queryColumn();
+		
+		foreach($taskNames as $task) {
+			$children = Yii::app()->db->createCommand()
+				->select('child')
+				->from('x2_auth_item_child')
+				->where('parent=:parent',array(':parent'=>$task))
+				->queryColumn();
+				
+			foreach($children as $child)
+				$allTasks[$task][$child] = array();
+		}
+		
+		$bizruleTasks = Yii::app()->db->createCommand()
+			->select('name')
+			->from('x2_auth_item')
+			->where('bizrule IS NOT NULL')
+			->queryColumn();
+		
+		function buildGraph($task,&$allTasks,&$authGraph) {
+			
+			if(!isset($allTasks[$task]) || empty($allTasks[$task])) {
+				return array();
+			} else {
+				$children = array();
+				
+				foreach(array_keys($allTasks[$task]) as $child) {
+					
+					if(isset($authGraph[$child]) && $authGraph[$child] === false)
+						continue;
+					
+					$childGraph = buildGraph($child,$allTasks,$authGraph);
+					
+					$children[$child] = $childGraph;
+					$authGraph[$child] = false;	// this is a child task, remove it from the top level
+				}
+				return $children;
+			}
+		}
+
+		foreach(array_keys($allTasks) as $task)
+			$authGraph[$task] = buildGraph($task,$allTasks,$authGraph);
+			
+		foreach(array_keys($authGraph) as $key) {
+			if(empty($authGraph[$key]))
+				unset($authGraph[$key]);
+		}
+		
+		$this->render('authGraph',array('authGraph'=>$authGraph,'bizruleTasks'=>$bizruleTasks));
+	
+	}
+	
+	public function actionFlowDesigner() {
+		if(Yii::app()->user->getName() !== 'admin')
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		$this->render('flowEditor');
+	
+	}
+	
 }

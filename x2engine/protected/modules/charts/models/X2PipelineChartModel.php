@@ -76,10 +76,10 @@ class X2PipelineChartModel extends CModel {
 	 */
 	public function attributeLabels() {
 		return array(
-			'dateRange' => Yii::t('dashboard', 'Date Range'),
-			'assignedTo' => Yii::t('dashboard', 'Assigned To'),
-			'limitTo' => Yii::t('dashboard', 'Limit To'),
-			'confidence' => Yii::t('dashboard', 'Confidence')
+			'dateRange' => Yii::t('charts', 'Date Range'),
+			'assignedTo' => Yii::t('charts', 'Assigned To'),
+			'limitTo' => Yii::t('charts', 'Limit To'),
+			'confidence' => Yii::t('charts', 'Confidence')
 		);
 	}
 

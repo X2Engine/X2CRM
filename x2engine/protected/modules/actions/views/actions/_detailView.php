@@ -74,6 +74,14 @@ if($model->type=='note' || $model->type=='attachment') {
 </table>
 
 <?php
+} elseif($model->type=='email' || $model->type=='emailOpened') {?>
+<table class="details">
+	<tr>
+		<td colspan="3" class="text-field">
+			<iframe style="width:100%;height:600px" src="actions/viewEmail/<?php echo $model->id ?>"></iframe>
+		</td>
+	</tr>
+<?php
 } else {
 ?>
 <table class="details">

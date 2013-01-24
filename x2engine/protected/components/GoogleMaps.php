@@ -69,7 +69,7 @@ class GoogleMaps extends X2Widget {
 			geocoder.geocode( {"address": "'.addslashes($this->location).'"}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
                     $.ajax({
-                        url:"updateLocation",
+                        url:"'.Yii::app()->controller->createUrl('/contacts/updateLocation').'",
                         type:"GET",
                         data:{contactId:'.$_GET['id'].',lat:results[0].geometry.location.lat(),lon:results[0].geometry.location.lng()},
                     });
@@ -84,8 +84,8 @@ class GoogleMaps extends X2Widget {
 						map: window.map,
 						position: results[0].geometry.location
 					});
-                    var content=\'<span><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">View on Large Map</a>\
-                        <br /><br /><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">View on Heat Map</a></span>\';
+                    var content=\'<span><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">'.Yii::t('contacts','View on Large Map').'</a>\
+                        <br /><br /><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">'.Yii::t('contacts','View on Heat Map').'</a></span>\';
                     var infowindow = new google.maps.InfoWindow({
                                 content:content
                             });

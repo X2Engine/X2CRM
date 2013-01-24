@@ -380,7 +380,7 @@ $timezones = array(
 	
 	function changeLang(lang) {
 		window.location=('install.php?language='+lang);
-	} 
+	}
 	$(function() {
 		$('#db-test-button').click(testDB);
 		
@@ -389,6 +389,13 @@ $timezones = array(
 				$('#currency2').fadeIn(300);
 			else
 				$('#currency2').fadeOut(300);
+		});
+
+		$('#test_db').change(function() {
+			if($('#test_db').is(':checked'))
+				$('#test_db_notice').fadeIn(300);
+			else
+				$('#test_db_notice').fadeOut(300);
 		});
 
 <?php if (!empty($errorMessages)): // Add error class to fields that failed validation ?>
@@ -427,7 +434,7 @@ $timezones = array(
 	<div id="installer-box">
 	    <noscript><h3><span id="noscript-error"><?php echo installer_t('This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'); ?></span></h3></noscript>
 	    <img src="themes/x2engine/images/x2engine_crm_white.png" alt="X2Engine" id="installer-logo">
-	    <h2><?php echo installer_t('Installation Page'); ?></h2>
+	    <h2 id="title"><?php echo installer_t('Installation Page'); ?></h2>
 
 
 
@@ -482,11 +489,24 @@ $timezones = array(
 			    ?>
 			</select>
 		    </div>
-		    <div class="row"><label for="dummy_data"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='dummy_data' id="dummy_data" value='1' <?php getField('data', ''); ?> /><br /><br /></div>
+		    <div class="row"><label for="dummy_data"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='dummy_data' id="dummy_data" value='1' <?php echo getField('dummy_data',0,true)?' checked=1':''; ?> /><br /><br /></div>
 		    <div class="row"><label for="adminUsername"><?php echo installer_t('Admin Username'); ?></label><input type="text" name="adminUsername" id="adminUsername" value="<?php getField('adminUsername', 'admin'); ?>" /></div>
 			<div class="row"><label for="adminPass"><?php echo installer_t('Admin Password'); ?></label><input type="password" name="adminPass" id="adminPass" /></div>
 		    <div class="row"><label for="adminPass2"><?php echo installer_t('Confirm Password'); ?></label><input type="password" name="adminPass2" id="adminPass2" /></div>
 		    <div class="row"><label for="adminEmail"><?php echo installer_t('Administrator Email'); ?></label><input type="text" name="adminEmail" id="adminEmail" value="<?php getField('adminEmail', ''); ?>" /></div>
+			<h2><?php echo installer_t('Visible Modules'); ?></h2><hr>
+			<div id="menu_items" class="row">
+				<?php echo installer_t('Choose which modules will be visible in the main menu. Any of these can be re-enabled after installation if necessary.'); ?><br /><br />
+				<?php 
+				$modules = require_once(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php');
+				$disabledByDefault = array('products','quotes');
+				foreach($modules as $moduleName): 
+					$item = "menu_$moduleName"; ?>
+					<div class="checkbox-grid-cell">
+					<label for="<?php echo $item ?>"><?php echo function_exists('ucfirst')?ucfirst($moduleName):$moduleName; ?></label><input type="checkbox" name="<?php echo $item ?>" id="<?php echo $item; ?>" value="1"<?php echo getField($item,1,!in_array($moduleName,$disabledByDefault))?' checked=1':''; ?> />
+					</div>
+				<?php endforeach; ?> 
+			</div>
 
 		    <h2><?php echo installer_t('Database Connection Info'); ?></h2><hr>
 <?php echo installer_t('This release only supports MySQL. Please create a database before installing.'); ?><br /><br />
@@ -496,10 +516,20 @@ $timezones = array(
 			<div class="row"><label for="dbName"><?php echo installer_t('Database Name'); ?></label><input type="text" name="dbName" id="dbName" value="<?php getField('dbName', 'x2engine'); ?>" /></div>
 			<div class="row"><label for="dbUser"><?php echo installer_t('Username'); ?></label><input type="text" name="dbUser" id="dbUser" value="<?php getField('dbUser', 'root'); ?>" /></div>
 			<div class="row"><label for="dbPass"><?php echo installer_t('Password'); ?></label><input type="password" name="dbPass" id="dbPass" /></div>
+			<div class="row"><label for="test_db"><?php echo installer_t('Testing database'); ?></label><input type='checkbox' name='test_db' id="test_db" value='1' <?php echo getField('test_db',0,true)?' checked=1':''; ?> /> </div>
+			<div class="row" id="test_db_notice" style="display:none;padding-bottom:20px;">
+				Enable this only if reinstalling on a separate database for automated testing. <em>Do not</em> use the same database for testing and production.
+				<br /><br />
+				To set up the configuration for web testing, ensure the following URL correctly resolves to index-test.php on this server:
+			<br />
+			<label for="test_url"><?php echo installer_t('Test base URL'); ?></label><input type="text" name='test_url' id="test_url" value="<?php getField('test_url', 'http://'.rtrim($_SERVER['SERVER_NAME']. $_SERVER['REQUEST_URI'],'install.php').'index-test.php'); ?>" />
+			</div>
 		    </div>
 		    <div id="db-test-box"><input type="button" id="db-test-button" class="x2-button" value="<?php echo installer_t('Test Connection'); ?>" />
 			<div id="response-box"><?php echo $dbStatus; ?></div>
 		    </div>
+			
+<div></div>
 
 		    <br /><br /><br />
 

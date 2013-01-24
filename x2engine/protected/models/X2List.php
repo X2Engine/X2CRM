@@ -187,7 +187,7 @@ class X2List extends CActiveRecord {
 	 * @return CDbCriteria Criteria to retrieve all models in the list
 	 */
 	public function queryCriteria() {
-		$search = CActiveRecord::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
+		$search = new CDbCriteria;
 
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
@@ -200,6 +200,7 @@ class X2List extends CActiveRecord {
 					if ($field->fieldName == $criterion->attribute) {
 						switch($field->type) {
 							case 'date': 
+							case 'dateTime':
 								if (ctype_digit($criterion->value) || (substr($criterion->value, 0, 1)=='-' && ctype_digit(substr($criterion->value, 1))))
 									$criterion->value = (int)$criterion->value;
 								else
@@ -210,7 +211,7 @@ class X2List extends CActiveRecord {
 								if (!ctype_digit($criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
 							case 'boolean': 
 							case 'visibility':
-								$criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true','True'))? 1 : 0; break;
+								$criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
 						}
 						break;
 					}
@@ -307,7 +308,12 @@ class X2List extends CActiveRecord {
                     // (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
         // if(Yii::app()->user->getName()!='admin')
             // $search->addCondition($condition);
-		return $search;
+			
+		
+		$accessCriteria = CActiveRecord::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
+		$accessCriteria->mergeWith($search,'AND');
+		
+		return $accessCriteria;
 	}
 
 	/**
@@ -341,31 +347,39 @@ class X2List extends CActiveRecord {
 	 * @return Array array of VCR links and stats
 	 */
 	public static function getVcrLinks(&$dataProvider,$modelId) {
+	
+	
 		$criteria = $dataProvider->criteria;
 		
 		$tableSchema = CActiveRecord::model($dataProvider->modelClass)->getTableSchema();
 		if($tableSchema === null)
 			return false;
 		
-		// for the first query we only care about the record's ID
-		$criteria->select = 'id';
+		// for the first query, find the current ID's row number in the list
+		$criteria->select = 't.id';
+		
+		foreach(explode(',',$criteria->order) as $token) {		// we also need any columns that are being used in the sort
+			$token = preg_replace('/\s|asc|desc/i','',$token);	// so loop through $criteria->order and extract them
+			if($token !== '' && $token !== 'id')
+				$criteria->select .= ',t.'.$token;
+		}
+		
+		// always include "id DESC" in sorting (for order consistency with SmartDataProvider)
+		if(!preg_match('/\bid\b/',$criteria->order)) {
+			if(!empty($criteria->order))
+				$criteria->order .= ',';
+			$criteria->order .= 'id DESC';
+		}
+		
+		// get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
 		$searchConditions = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->getText();
-        $table=$tableSchema->name;
-        $condition=$criteria->condition;
-        $order=$criteria->order;
-        $criteriaString="";
-        if(!empty($condition)){
-            $criteriaString.=" WHERE ".$condition;
-        }
-        if(!empty($order)){
-            $criteriaString.=" ORDER BY ".$order;
-        }
-		// figure out which row the current record is (0-indexed), using whatever crazy filters and sorts were on last gridview
-		$rowNumber = Yii::app()->db->createCommand(
-			'SELECT r-1  FROM (SELECT *,@rownum:=@rownum + 1 AS r FROM '.$table.' t, (SELECT @rownum:=0) r '.$criteriaString.') d WHERE d.id='.$modelId
+		
+		$rowNumberQuery = Yii::app()->db->createCommand(
+			'SELECT r-1 FROM (SELECT *,@rownum:=@rownum + 1 AS r FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 WHERE t2.id='.$modelId
 		);
-        $rowNumber->params=$criteria->params;
-        $rowNumber=$rowNumber->queryScalar();
+		// attach params from $criteria to this query
+		$rowNumberQuery->params = $criteria->params;
+		$rowNumber = $rowNumberQuery->queryScalar();
 		
 		if($rowNumber === false) {	// the specified record isn't in this list
 			return false;
@@ -402,7 +416,6 @@ class X2List extends CActiveRecord {
 
 			return $vcrData;
 		}
-		
 	}
 
 	/**

@@ -591,4 +591,144 @@ class Profile extends CActiveRecord {
 		
 		}
 	}
+	
+    /**
+     * Initis a layout for viewing a module. The layout is a set of associative arrays
+     * with the following format:
+     * array ( 
+     * 'left'=> array()
+     *  'content' => array(
+     *    'widget1'=> array(
+     *      'name' => 'widget name',
+     *    )
+     *  )
+     * 'right' => array()
+     * )
+     *
+     * The layout should be json encoded and saved in the layout column of the user's profile.
+     * 
+     * @return array
+     */
+    function initLayout() {
+    	return array(
+    		'left' => array(),
+    		'center' => array(
+    			'InlineTags' => array(
+    				'title' => 'Tags',
+    				'minimize' => false,
+    			),
+    			'WorkflowStageDetails' => array(
+    				'title' => 'Workflow',
+    				'minimize' => false,
+    			),
+    			'InlineRelationships' => array(
+    				'title' => 'Relationships',
+    				'minimize' => false,
+    			),
+    		),
+    		'right' => array(
+    			'ActionMenu' => array(
+    				'title' => 'My Actions',
+    				'minimize' => false,
+    			),
+    			'ChatBox' => array(
+    				'title' => 'Chat',
+    				'minimize' => false,
+    			),
+    			'GoogleMaps' => array(
+    				'title' => 'Google Map',
+    				'minimize' => false,
+    			),
+    			'OnlineUsers' => array(
+    				'title' => 'Active Users',
+    				'minimize' => false,
+    			),
+    			'TagCloud' => array(
+    				'title' => 'Tag Cloud',
+    				'minimize' => false,
+    			),
+    			'TimeZone' => array(
+    				'title' => 'Time Zone',
+    				'minimize' => false,
+    			),
+    			'MessageBox' => array(
+    				'title' => 'Message Board',
+    				'minimize' => false,
+    			),
+    			'QuickContact' => array(
+    				'title' => 'Quick Contact',
+    				'minimize' => false,
+    			),
+    			'NoteBox' => array(
+    				'title' => 'Note Pad',
+    				'minimize' => false,
+    			),
+    			'MediaBox' => array(
+    				'title' => 'Media',
+    				'minimize' => false,
+    			),
+    			'DocViewer' => array(
+    				'title' => 'Doc Viewer',
+    				'minimize' => false,
+    			),
+    			'TopSites' => array(
+    				'title' => 'Top Sites',
+    				'minimize' => false,
+    			)
+    		),
+    		'hidden' => array(),
+    		'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere
+    	);
+    }
+    
+    /**
+     * Returns the layout for the user's widgets as an associative array.
+     * 
+     * @return array
+     */
+    public function getLayout() {
+		$layout = Yii::app()->params->profile->layout;
+		
+		if(!$layout) { // layout hasn't been initialized?
+			$layout = $this->initLayout(); // initilize layout
+			Yii::app()->params->profile->layout = json_encode($layout);
+			Yii::app()->params->profile->update();
+		} else {
+			$layout = json_decode($layout, true); // json to associative array
+		}
+		
+		return $layout;
+    }
+    
+    /**
+     *  Returns an html list of hidden widgets used in the Widget Menu
+     *
+     */
+    public function getWidgetMenu() {
+    	$layout = $this->getLayout();
+
+		$menu = '<ul id="widget-menu">';
+		foreach($layout['hidden'] as $name=>$widget) {
+				$menu .= '<li><span class="x2-widget-menu-item" id="'.$name.'">'.$widget['title'].'</span></li>';
+		}
+		if(!empty($layout['hidden']) && !empty($layout['hiddenRight'])) {
+			$menu .= '<li class="x2widget-menu-divider"></li>';
+		}
+		foreach($layout['hiddenRight'] as $name=>$widget) {
+				$menu .= '<li><span class="x2-widget-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
+		}
+		$menu .= '</ul>';
+		
+		return $menu;
+    }
+    
+    /**
+     * Saves a layout to the user's profile as a json string
+     *
+     * @param array $layout
+     */
+    public function saveLayout($layout) {
+    	$this->layout = json_encode($layout);
+    	$this->update();
+    }
 }

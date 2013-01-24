@@ -64,8 +64,8 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
 	array('label'=>Yii::t('app','View')),
-	array('label'=>Yii::t('app','Edit Workflow'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
-	array('label'=>Yii::t('app','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('workflow','Edit Workflow'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('workflow','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
 ));
 
 ?>
@@ -80,7 +80,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 </div>
 
 <div class="form" style="clear:none;">
-	<h2><?php echo Yii::t('dashboard', 'Workflow Status'); ?></h2>
+	<h2><?php echo Yii::t('workflow', 'Workflow Status'); ?></h2>
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'action'=>'view',
 		'id'=>'dateRangeForm',
@@ -92,7 +92,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 	)); ?>
 	<div class="row">
 		<div class="cell">
-			<?php echo CHtml::label(Yii::t('dashboard', 'Start Date'),'startDate'); ?>
+			<?php echo CHtml::label(Yii::t('charts', 'Start Date'),'startDate'); ?>
 			<?php
 			Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 			
@@ -116,7 +116,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 			?>
 		</div>
 		<div class="cell">
-			<?php echo CHtml::label(Yii::t('dashboard', 'End Date'),'startDate'); ?>
+			<?php echo CHtml::label(Yii::t('charts', 'End Date'),'startDate'); ?>
 			<?php
 			$this->widget('CJuiDateTimePicker',array(
 				'name'=>'end',
@@ -134,18 +134,18 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 			?>
 		</div>
 		<div class="cell">
-			<?php echo CHtml::label(Yii::t('dashboard', 'Date Range'),'range'); ?>
+			<?php echo CHtml::label(Yii::t('charts', 'Date Range'),'range'); ?>
 			<?php
 			echo CHtml::dropDownList('range',$dateRange['range'],array(
-				'custom'=>Yii::t('dashboard','Custom'),
-				'thisWeek'=>Yii::t('dashboard','This Week'),
-				'thisMonth'=>Yii::t('dashboard','This Month'),
-				'lastWeek'=>Yii::t('dashboard','Last Week'),
-				'lastMonth'=>Yii::t('dashboard','Last Month'),
-				// 'lastQuarter'=>Yii::t('dashboard','Last Quarter'),
-				'thisYear'=>Yii::t('dashboard','This Year'),
-				'lastYear'=>Yii::t('dashboard','Last Year'),
-								'all'=>Yii::t('dashboard','All Time'),
+				'custom'=>Yii::t('charts','Custom'),
+				'thisWeek'=>Yii::t('charts','This Week'),
+				'thisMonth'=>Yii::t('charts','This Month'),
+				'lastWeek'=>Yii::t('charts','Last Week'),
+				'lastMonth'=>Yii::t('charts','Last Month'),
+				// 'lastQuarter'=>Yii::t('charts','Last Quarter'),
+				'thisYear'=>Yii::t('charts','This Year'),
+				'lastYear'=>Yii::t('charts','Last Year'),
+								'all'=>Yii::t('charts','All Time'),
 				
 			),array('id'=>'dateRange'));
 			?>
@@ -154,11 +154,11 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 	<div class="row">
         <div class="cell">
             <?php echo CHtml::label(Yii::t('workflow','User'), 'users');?>
-            <?php echo CHtml::dropDownList('users',$user,array_merge(array(''=>'All'),User::getNames())); ?>
+            <?php echo CHtml::dropDownList('users',$user,array_merge(array(''=>Yii::t('app','All')),User::getNames())); ?>
         </div>
         <?php echo CHtml::hiddenField('id',$model->id); ?>
 		<div class="cell">
-			<?php echo CHtml::submitButton(Yii::t('dashboard','Go'),array('name'=>'','class'=>'x2-button','style'=>'margin-top:13px;')); ?>
+			<?php echo CHtml::submitButton(Yii::t('charts','Go'),array('name'=>'','class'=>'x2-button','style'=>'margin-top:13px;')); ?>
 		</div>
 	</div>
 	<?php $this->endWidget();?>

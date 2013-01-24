@@ -94,7 +94,7 @@ class History extends X2Widget {
 
 		return new CActiveDataProvider('Actions',array(
 			'criteria'=>array(
-				'order'=>'GREATEST(createDate, IFNULL(completeDate,0), IFNULL(dueDate,0), IFNULL(lastUpdated,0)) DESC',
+				'order'=>'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
 				'condition'=>'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'" 
 					AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
 			)

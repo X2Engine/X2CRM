@@ -190,6 +190,8 @@ $(function() {
 		var $clicked = $(e.target);
 		if(!$clicked.parents().is('.dropdown'))
 			$('.dropdown ul').removeClass('open');
+		if(!$clicked.is('.widget-menu-button'))
+			$('#widget-menu').removeClass('visible');
 	});
 	
 	// Yii CWebLogRoute display

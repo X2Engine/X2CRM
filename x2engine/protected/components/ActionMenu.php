@@ -56,21 +56,14 @@ class ActionMenu extends X2Widget {
 	 * Creates the widget. 
 	 */
 	public function run() {
-		$total = Actions::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(),'type'=>null));
-		$total = count($total);
+		$total = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(),'type'=>null));
 
-		$temp = Actions::model()->findAllByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No','type'=>null));
-		$unfinished = count($temp);
+		$unfinished = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No','type'=>null));
 
-		$overdue = 0;
-		foreach ($temp as $action) {
-			if ($action->dueDate < time() ) {
-				$overdue++;
-			}
-		}
+		$overdue = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No','type'=>null),'dueDate < '.time());
 
-		$complete = Actions::model()->findAllByAttributes(array('completedBy' => Yii::app()->user->getName(), 'complete' => 'Yes','type'=>null));
-		$complete = count($complete);
+		$complete = Actions::model()->countByAttributes(array('completedBy' => Yii::app()->user->getName(), 'complete' => 'Yes','type'=>null));
+
 
 		$this->render('actionMenu', array(
 			'total' => $total,

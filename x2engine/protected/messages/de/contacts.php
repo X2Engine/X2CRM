@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'Kartenprüfnummer',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'ID',
 'First Name'=>'Vorname',
 'Name'=>'Name',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'Gelegenheit Typ',
 'Other'=>'Andere',
 'Close Date'=>'Schließen Datum',
+'Expected Close Date'=>'Erwartete Close Datum',
 'Interest'=>'Zinsen',
 'Deal Value'=>'Transaktionswert',
 'Lead Status'=>'Chance-Status',
@@ -113,8 +114,12 @@ return array (
 'Rejected'=>'Abgelehnt',
 'Tags'=>'Tags',
 'Associated Contacts'=>'Assoziierte Kontakte',
-
-// List Attributes
+'Duplicate Check'=>'Dublettenabgleich',
+'Last Activity'=>'Letzte Aktivität',
+'Timezone'=>'Zeitzone',
+'Web Tracking Key'=>'Web-Tracking Key',
+// // 
+// // List Attributes
 'Owner'=>'Besitzer',
 'Description'=>'Beschreibung',
 'Logic Type'=>'Logiktyp',
@@ -122,15 +127,15 @@ return array (
 'Members'=>'Mitglieder',
 'Dynamic'=>'Dynamisch',
 'Static'=>'Statisch',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'Liste',
 'Type'=>'Typ',
 'Attribute'=>'Attribut',
 'Comparison'=>'Vergleich',
 'Value'=>'Wert',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'gleichen',
 'greater than'=>'größer als',
 'less than'=>'weniger als',
@@ -141,8 +146,8 @@ return array (
 'not empty'=>'nicht leer',
 'contains'=>'enthält',
 'does not contain'=>'enthält keine',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'Zugeordnet zu {name}',
 'Social Networks'=>'Sozialen Netzwerken',
 'Detail View'=>'Detailansicht',
@@ -154,14 +159,21 @@ return array (
 'OR'=>'ODER',
 'User'=>'Benutzer',
 'Leads'=>'Führt',
-
-// Contacts Actions
+'<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> von <b> {n} </b>',
+'Create a new Opportunity associated with this Contact.'=>'Erstellen Sie eine neue Chance mit diesem Kontakt zugeordnet.',
+'Create a new Account associated with this Contact.'=>'Erstellen Sie ein neues Konto mit diesem Kontakt zugeordnet.',
+'Create a new Service Case associated with this Contact.'=>'Erstellen Sie ein neues Service Case mit diesem Kontakt zugeordnet.',
+'Link to Record'=>'Link zu Zeichnen',
+'Contact Attributes'=>'Kontakt Attributes',
+// // 
+// // Contacts Actions
 'My Contacts'=>'Meine Kontakte',
 'New Contacts'=>'Neue Kontakte',
 'All Contacts'=>'Alle Kontakte',
 'Create Contact'=>'Kontakt Erstellen',
 'View Contact'=>'Kontakt Anzeigen',
 'Update Contact'=>'Kontakt Aktualisieren',
+'Edit Contact'=>'Kontakt Bearbeiten',
 'Update Contact:'=>'Kontakt Aktualisieren:',
 'Delete Contact'=>'Kontakt Löschen',
 'Contact Lists'=>'Kontakt Lists',
@@ -183,13 +195,16 @@ return array (
 'Subscribe'=>'Zeichnen',
 'View List'=>'Liste Anzeigen',
 'Share Action'=>'Anteil Aktion',
-
-// Contacts Titles
+'Import Contacts'=>'Kontakte Importieren',
+'Contact Map'=>'Kontakt Karte',
+'Saved Maps'=>'Gespeichert Karten',
+// // 
+// // Contacts Titles
 'Contacts'=>'Kontakte',
 'Manage Contacts'=>'Verwalten von Kontakten',
 'Contact:'=>'Kontakt:',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'Import von Kontakten aus Outlook',
 'Import from Template'=>'Import von Kontakten aus Vorlage',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Importieren Sie Ihre Kontakte aus der Vorlage. So füllen Sie bitte unsere Vorlage aus. Dann laden Sie die Datei hier mit dem Formular runter.',
@@ -199,14 +214,14 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Importieren Sie Ihre Kontakte aus Outlook. So erstellen Sie zuerst eine CSV-Datei (DOS-Format), indem Sie in Outlook Ihre Kontakte exportieren. Dann laden Sie die Datei hier mit dem Formular hoch.',
 'Upload File'=>'Upload File',
 'Contact Record Details'=>'Kontaktblatt Details',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'Zeichnen',
 'The information for {name} has changed.'=>'Die Information für {name} hat sich geändert.',
 'Receive email updates every time information for {name} changes'=>'Erhalte Job-Emails jedes Mal Informationen für {name} Änderungen',
 'Unsubscribe'=>'Abmelden',
-
-// Web Lead
+// // 
+// // Web Lead
 'Web Lead'=>'Web Blei',
 'Invalid Email Address'=>'Ungültige E-Mail-Adresse',
 'Default list for email list signups'=>'Standard für E-Mail-Liste Anmeldungen',
@@ -218,4 +233,21 @@ return array (
 'Thank you for your interest!'=>'Vielen Dank für Ihr Interesse!',
 'Someone will be in touch shortly.'=>'Jemand wird in Verbindung Kürze.',
 'Enter any additional information or questions regarding your interest here.'=>'Geben Sie weitere Informationen oder Fragen zu Ihrem Interesse.',
+
+// // Map Translations
+'Map Filters'=>'Map-Filter',
+'Clear Marker'=>'Marker Löschen',
+'Drop a tag here to filter map results.'=>'Werfen Sie einen Tag hier um die Karte zu filtern.',
+'Save Map'=>'Speichern Karte',
+'View on Large Map'=>'Blick auf Große Karte',
+'View on Heat Map'=>'Blick auf Heat Map',
+'Center Coordinates'=>'Zentrum Koordiniert',
+'Delete Map'=>'Karte Löschen',
+'Map Name'=>'Karte Name',
+'Map Owner'=>'Karte Owner',
+'Zoom Level'=>'Zoomlevel',
+'Parameters'=>'Parameter',
+'Center Latitude'=>'Zentrum Breitengrad',
+'Center Longitude'=>'Zentrum Longitude',
+'Contact'=>'Kontakt',
 );

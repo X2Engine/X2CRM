@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -82,7 +82,11 @@ return array (
 'Manage Users'=>'Administrar Usuarios',
 'Social Feed'=>'Canal Social',
 'Preferences'=>'Preferencias',
+'Reports'=>'Informes',
+'Activity'=>'Actividad',
 'Service'=>'Servicio',
+'Go Invisible'=>'Ir Invisible',
+'Go Visible'=>'Ir Visible',
 // // 
 // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine Sistema CRM',
@@ -95,6 +99,8 @@ return array (
 // // Footer
 'All Rights Reserved.'=>'Todos los Derechos Reservados.',
 'Generated in {time} seconds.'=>'Generada en {time} segundos',
+'About'=>'Sobre',
+'The Program is provided AS IS, without warranty.'=>'El Programa se proporciona TAL CUAL, sin garantía.',
 // // 
 // // Widgets
 'My Actions'=>'Mis Acciones',
@@ -111,6 +117,7 @@ return array (
 'Top Sites'=>'Webs Favoritas',
 'Media'=>'Archivos',
 'Current time in'=>'Hora en',
+'Hide'=>'Ocultar',
 // // 
 'Total Action|Total Actions'=>'Total Acción | Acciones Totales',
 'Unfinished Action|Unfinished Actions'=>'Accion Pendiente|Acciones Pendientes',
@@ -198,6 +205,7 @@ return array (
 'Delete'=>'Borrar',
 'Group?'=>'Grupo?',
 'Check box'=>'Marque la casilla',
+'results per page'=>'resultados por página',
 'Public'=>'Público',
 'Tags'=>'Etiquetas',
 'Template:'=>'Plantilla:',
@@ -216,6 +224,30 @@ return array (
 'results per page.'=>'Resultados por Página.',
 'Displaying {start}-{end} of {count} result(s).'=>'Desplegando {start} - {end} de {count} resultado (s).',
 'Marketing Dashboard'=>'Panel de Mercadotecnia',
+'You'=>'Usted',
+'Quick Create'=>'Creación Rápida',
+'Create a Contact, Account, and Opportunity.'=>'Crear un contacto, cuenta, y Opportunity.',
+'<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b> Consejo: </ b> Puede utilizar los siguientes operadores de comparación con valores de filtro para afinar la búsqueda.',
+'less than'=>'menos que',
+'less than or equal to'=>'menos de o igual a',
+'greater than'=>'más que',
+'greater than or equal to'=>'mayor o igual a',
+'equal to'=>'igual a',
+'not equal to'=>'no es igual a',
+' results per page'=>' resultados por página',
+'Add to list:'=>'Agregar a la lista:',
+'<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </ b> de <b> {count} </ b>',
+'Relationships'=>'Relaciones',
+'Associate Account'=>'Cuenta Asociada',
+'Associate Opportunity'=>'Oportunidad Asociado',
+'Associate Contact'=>'Asociado Contacto',
+'Contact Attributes'=>'Póngase en Contacto con Atributos',
+'CC:'=>'CC:',
+'BCC:'=>'BCC:',
+'What should the map be named?'=>'¿Cuál debe ser nombrado el mapa?',
+'Record not found.'=>'Registre No encontrado.',
+'Saving...'=>'Guardando ...',
+'Module'=>'Módulo',
 // // 
 // // Misc Actions
 'Submit'=>'Entregar',
@@ -240,8 +272,6 @@ return array (
 'New List'=>'Nueva Lista',
 'Add'=>'Añadir',
 'Remove'=>'Quitar',
-'Quick Create'=>'Captura Rápida',
-'Attach a File/Photo'=>'Adjuntar Archivo/Foto',
 // // 
 // // Timestamps
 'Just now'=>'En este momento',
@@ -265,4 +295,88 @@ return array (
 'How to use Gii'=>'Cómo utilizar Gii',
 'How to add a database field'=>'Cómo agregar un campo de base de datos',
 // // 
+// // Activity Feed
+
+'Activity Feed'=>'Actividad RSS',
+// // Filter Headers
+'Visibility'=>'Visibilidad',
+'Relevant Users'=>'Los Usuarios Relevantes',
+'Event Types'=>'Tipos de Eventos',
+'Social Subtypes'=>'Subtipos Sociales',
+'Options'=>'Opciones',
+'Set Default'=>'Ajuste por Defecto',
+'Apply Filters'=>'Aplicar Filtros',
+// // Filter Text
+'Social Post'=>'Mensaje Social',
+'Announcement'=>'Anuncio',
+'Product Info'=>'Información del Producto',
+'Competitive Info'=>'Información Competitiva',
+'Confidential'=>'Confidencial',
+// // Event Types
+'Social Posts'=>'Mensajes Sociales',
+'Records Created'=>'Los Registros Creados',
+'Records Deleted'=>'Los Registros Borrados',
+'Action Reminders'=>'Recordatorios de Acción',
+'Actions Completed'=>'Acciones Completadas',
+'Calendar Events'=>'Calendario de Eventos',
+'Cases Escalated'=>'Casos Escalado',
+'Emails Opened'=>'Emails Abierto',
+'Emails Sent'=>'Los correos electrónicos enviados',
+'Notifications'=>'Notificaciones',
+'Webleads Created'=>'Creado Web Leads',
+'Web Activity'=>'Actividad Web',
+'Workflow Complete'=>'Flujo de trabajo completo',
+'Workflow Reverted'=>'Workflow Revertidos',
+'Workflow Started'=>'Flujo de trabajo creados',
+// // Event Text
+'created a new {actionLink} associated with the contact {contactLink}'=>'creado un nuevo {actionLink} asociado con el contacto {contactLink}',
+'created a new {modelName}, {modelLink}'=>'creado un nuevo {modelName}, {modelLink}',
+'created a new {modelName}, {deletionText}. It has been deleted.'=>'creado un nuevo {modelName}, {deletionText}. Se ha eliminado.',
+'created a new {modelName}, but it could not be found.'=>'creado un nuevo {modelName}, pero no se pudo encontrar.',
+'A new web lead has come in: {modelLink}'=>'Una ventaja de la nueva web ha venido en: {modelLink}',
+'A new web lead has come in: {deletionText}. It has been deleted.'=>'Una ventaja de la nueva web ha venido en: {deletionText}. Se ha eliminado.',
+'A new web lead has come in, but it could not be found.'=>'Una ventaja de la nueva web ha entrado, pero no se pudo encontrar.',
+'deleted a {modelType}, {text}'=>'borrado un {modelType}, {text}',
+'started the workflow stage "{stage}" for the {modelName} {modelLink}'=>'comenzó la etapa de flujo de trabajo "{stage}" para el {modelName} {modelLink}',
+'started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'comenzó una etapa de flujo de trabajo para la {modelName} {modelLink}, pero la etapa de flujo de trabajo no se pudo encontrar.',
+'started a workflow stage, but the associated {modelName} was not found.'=>'comenzó una etapa de flujo de trabajo, pero el asociado {modelName} no fue encontrada.',
+'started a workflow stage, but the workflow record could not be found.'=>'comenzó una etapa de flujo de trabajo, pero el registro de flujo de trabajo no se pudo encontrar.',
+'completed the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'completado la etapa de flujo de trabajo "{stageName}" para la {modelName} {modelLink}',
+'completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.'=>'completado una etapa de flujo de trabajo para la {modelName} {modelLink}, pero la etapa de flujo de trabajo no se pudo encontrar.',
+'completed a workflow stage, but the associated {modelName} was not found.'=>'completado una etapa de flujo de trabajo, pero el asociado {modelName} no fue encontrada.',
+'completed a workflow stage, but the workflow record could not be found.'=>'completado una etapa de flujo de trabajo, pero el registro de flujo de trabajo no se pudo encontrar.',
+'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}'=>'revirtió la etapa de flujo de trabajo "{stageName}" para la {modelName} {modelLink}',
+'reverted a workflow stage, but the associated {modelName} was not found.'=>'revirtió una etapa de flujo de trabajo, pero el asociado {modelName} no fue encontrada.',
+'reverted a workflow stage, but the workflow record could not be found.'=>'revirtió una etapa de flujo de trabajo, pero el registro de flujo de trabajo no se pudo encontrar.',
+'sent an email to the {transModelName} {modelLink}'=>'envió un correo electrónico a la {transModelName} {modelLink}',
+'sent an email to a {transModelName}, but that record has been deleted.'=>'envió un correo electrónico a un {transModelName}, pero ese registro se ha eliminado.',
+'sent an email to a {transModelName}, but that record could not be found.'=>'envió un correo electrónico a un {transModelName}, pero ese registro no se pudo encontrar.',
+' has opened an email!'=>' ha abierto un correo electrónico!',
+'A contact has opened an email, but that contact cannot be found.'=>'Un contacto se ha abierto un correo electrónico, sino que el contacto no se puede encontrar.',
+'is currently on your website!'=>'se encuentra actualmente en su sitio web!',
+'A contact was on your website, but that contact cannot be found.'=>'Un contacto estaba en su sitio web, sino que el contacto no se puede encontrar.',
+'escalated service case {modelLink} to {userLink}'=>'caso de servicio escalada {modelLink} a {userLink}',
+'escalated a service case but that case could not be found.'=>'escaló un caso de servicio pero ese caso no se pudo encontrar.',
+'{calendarText} event: {actionDescription}'=>'{calendarText} evento: {actionDescription}',
+'{calendarText} event: event not found.'=>'{calendarText} evento: evento no se encuentra.',
+'Reminder! The following action is due now: {transModelLink}'=>'Recordatorio! La siguiente acción se debe ahora: {transModelLink}',
+'An action is due now, but the record could not be found.'=>'Una acción es por ahora, pero el registro no se pudo encontrar.',
+'completed the following action: {actionDescription}'=>'completado la acción siguiente: {actionDescription}',
+'completed an action, but the record could not be found.'=>'completado una acción, pero el registro no se pudo encontrar.',
+// // Model Names
+'action'=>'acción',
+'contact'=>'contacto',
+'account'=>'cuenta',
+'opportunity'=>'oportunidad',
+'marketing campaign'=>'de campañas de marketing',
+
+// // Misc. Text
+'Minimize Posts'=>'Minimizar Mensajes',
+'Restore Posts'=>'Restaurar Mensajes',
+'My Groups'=>'Mis Grupos',
+'Show/add comments'=>'Mostrar / agregar comentarios',
+'Hide comments'=>'Esconder Comentarios',
+'Broadcast Event'=>'Difusión del evento',
+'Cancel Broadcast'=>'Cancelar Broadcast',
+'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'Transmitir un evento hará que sea visible para cualquier usuario que está viendo sus eventos en el feed de actividad - independientemente de los filtros de tipo.',
 );

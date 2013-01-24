@@ -107,11 +107,17 @@ if($model->contactId) {
 		$this->renderPartial('application.modules.contacts.views.contacts._detailViewMini',array('model'=>$contact, 'serviceModel'=>$model));
 	}
 }
-
-$this->widget('InlineTags', array('model'=>$model, 'modelName'=>'services'));
-
-$this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'services','currentWorkflow'=>$currentWorkflow));
 ?>
+
+<div class="form">
+	<b><?php echo Yii::t('app', 'Tags'); ?></b>
+	<?php $this->widget('InlineTags', array('model'=>$model, 'modelName'=>'services')); ?>
+</div>
+
+<div class="form">
+	<b><?php echo Yii::t('workflow', 'Workflow'); ?></b>
+	<?php $this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'services','currentWorkflow'=>$currentWorkflow)); ?>
+</div>
 
 <?php $this->widget('Attachments',array('associationType'=>'services','associationId'=>$model->id,'startHidden'=>true)); ?>
 

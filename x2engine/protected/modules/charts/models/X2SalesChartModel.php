@@ -75,9 +75,9 @@ class X2SalesChartModel extends CModel
 	public function attributeLabels()
 	{
 		return array(
-			'assignedTo' => Yii::t('dashboard','Assigned To'),
-			'dateRange' => Yii::t('dashboard','Date Range'),
-			'dealStatus' => Yii::t('dashboard','Deal Status')
+			'assignedTo' => Yii::t('charts','Assigned To'),
+			'dateRange' => Yii::t('charts','Date Range'),
+			'dealStatus' => Yii::t('charts','Deal Status')
 		);
 	}
 

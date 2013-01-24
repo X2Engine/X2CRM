@@ -56,8 +56,8 @@ ALTER TABLE x2_profile CHANGE `language` language varchar(40) DEFAULT '{language
 /*&*/
 ALTER TABLE x2_admin CHANGE `emailFromAddr` emailFromAddr varchar(255) NOT NULL DEFAULT '{bulkEmail}';
 /*&*/
-INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) 
-        VALUES ('web','admin','admin','{adminPass}','{adminEmail}','1', '0');
+INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin, userKey) 
+        VALUES ('web','admin','admin','{adminPass}','{adminEmail}','1', '0', '{adminUserKey}');
 /*&*/
 INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) 
         VALUES ('API','User','api','{apiKey}','{adminEmail}' ,'0', '0');
@@ -70,7 +70,7 @@ INSERT INTO x2_profile (fullName, username, officePhone, emailAddress, status)
 /*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/
-INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage) VALUES (
+INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage,eventDeletionTime,eventDeletionTypes) VALUES (
 	'3600',
 	'{adminEmail}',
 	'{bulkEmail}',
@@ -83,7 +83,9 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 	'{adminEmail}',
 	'Tech Support',
 	'Tech Support',
-	'Hello {first} {last},\n\nJust wanted to check in with you about the support case you created. It is number {case}. We will get back to you as soon as possible.'
+	'Hello {first} {last},\n\nJust wanted to check in with you about the support case you created. It is number {case}. We will get back to you as soon as possible.',
+    7,
+    '["record_create","record_deleted","action_reminder","action_complete","calendar_event","case_escalated","email_opened","email_sent","notif","weblead_create","web_activity","workflow_complete","workflow_revert","workflow_start"]'
 );
 /*&*/
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',
@@ -94,3 +96,7 @@ UPDATE `x2_auth_item` SET `bizrule`="return Yii::app()->user->name === '{adminUs
 UPDATE `x2_users` SET `username`='{adminUsername}' WHERE `username`='admin';
 /*&*/
 UPDATE `x2_profile` SET `username`='{adminUsername}' WHERE `username`='admin';
+/*&*/
+UPDATE `x2_modules` SET `visible`=0
+/*&*/
+UPDATE `x2_modules` SET `visible`=1 WHERE `name` IN {visibleModules}

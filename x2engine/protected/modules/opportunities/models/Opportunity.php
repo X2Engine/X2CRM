@@ -159,7 +159,7 @@ class Opportunity extends X2Model {
 		if(isset($data)){
 			foreach($data as $item){
 				if(isset($item)){
-					if($item instanceof Users)
+					if($item instanceof User)
 						$temp[$item->username]=$item->firstName.' '.$item->lastName;
 					else
 						$temp[$item->id]=$item->name;

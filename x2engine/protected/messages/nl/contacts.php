@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// Contact Form Attributes
+// // Contact Form Attributes
 'Verification Code'=>'Verificatie Code',
-// Contact Attributes
+// // Contact Attributes
 'ID'=>'ID',
 'First Name'=>'Voornaam',
 'Name'=>'Naam',
@@ -89,6 +89,7 @@ return array (
 'Lead Type'=>'Lead Soort',
 'Other'=>'Anders',
 'Close Date'=>'Sluit Datum',
+'Expected Close Date'=>'Verwachte Sluiten Datum',
 'Interest'=>'Intresse',
 'Deal Value'=>'Verkoop Waarde',
 'Lead Status'=>'Lead Status',
@@ -96,8 +97,29 @@ return array (
 'Deal Status'=>'Verkoop Status',
 'Do Not Call'=>'Niet Bellen',
 'Do Not Email'=>'Niet Mailen',
-
-// List Attributes
+'Sales &amp; Marketing'=>'Verkoop &amp; Marketing',
+'In Person'=>'In Person',
+'Accepted'=>'Aanvaard',
+'Lost'=>'Verloren',
+'None'=>'Geen',
+'Web'=>'Web',
+'Assigned'=>'Toegewezen',
+'Won'=>'Won',
+'E-Mail'=>'E-Mail',
+'Google'=>'Google',
+'Walk In'=>'Walk In',
+'Unassigned'=>'Niet Toegewezen',
+'Working'=>'Werkzaam',
+'Dead'=>'Dood',
+'Rejected'=>'Verworpen',
+'Tags'=>'Tags',
+'Associated Contacts'=>'Gekoppelde Contacten',
+'Duplicate Check'=>'Dubbele Controleren',
+'Last Activity'=>'Laatste Activiteit',
+'Timezone'=>'Tijdzone',
+'Web Tracking Key'=>'Web Tracking Key',
+// // 
+// // List Attributes
 'Owner'=>'Eigenaar',
 'Description'=>'Omschrijving',
 'Logic Type'=>'Logische Soort',
@@ -105,15 +127,15 @@ return array (
 'Members'=>'Leden',
 'Dynamic'=>'Dynamisch',
 'Static'=>'Statisch',
-
-// List Criteria Attributes
+// // 
+// // List Criteria Attributes
 'List'=>'Lijst',
 'Type'=>'Soort',
 'Attribute'=>'Eigenschap',
 'Comparison'=>'Vergelijking',
 'Value'=>'Waarde',
-
-// List Criteria Comparitors
+// // 
+// // List Criteria Comparitors
 'equals'=>'Gelijk aan',
 'greater than'=>'Groter dan',
 'less than'=>'Kleiner dan',
@@ -124,24 +146,37 @@ return array (
 'not empty'=>'Niet leeg',
 'contains'=>'Bevat',
 'does not contain'=>'Bevat niet',
-
-// Misc
+// // 
+// // Misc
 'Assigned to {name}'=>'Toegewezen aan {name}',
 'Social Networks'=>'Sociale netwerken',
 'Detail View'=>'Detail View',
 'Simple View'=>'Eenvoudige View',
 'Contact Info'=>'Contact Info',
-'Sales &amp; Marketing'=>'Verkoop &amp; Marketing',
+'Opportunities &amp; Marketing'=>'Kansen &amp; Marketing',
 'Social Media'=>'Sociale Media',
-
-// Contacts Actions
+'AND'=>'EN',
+'OR'=>'OF',
+'User'=>'Gebruiker',
+'Leads'=>'Leads',
+'<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> van <b> {n} </b>',
+'Create a new Opportunity associated with this Contact.'=>'Maak een nieuwe Opportunity in verband met deze contactpersoon.',
+'Create a new Account associated with this Contact.'=>'Maak een nieuwe account is gekoppeld aan deze persoon.',
+'Create a new Service Case associated with this Contact.'=>'Maak een nieuwe dienst zaak in verband met deze contactpersoon.',
+'Link to Record'=>'Link naar Record',
+'Contact Attributes'=>'Contact Attributen',
+// // 
+// // Contacts Actions
 'My Contacts'=>'Mijn Contacten',
 'New Contacts'=>'Nieuwe Contacten',
 'All Contacts'=>'Alle Contacten',
 'Create Contact'=>'Contact Aanmaken',
 'View Contact'=>'Bekijk Contact',
 'Update Contact'=>'Contact Bijwerken',
+'Edit Contact'=>'Contact Bewerken',
+'Update Contact:'=>'Werk Contact:',
 'Delete Contact'=>'Contact Verwijderen',
+'Contact Lists'=>'Contact lijsten',
 'Create Lead'=>'Lead Aanmaken',
 'Share Contact'=>'Deel Contact',
 'Create'=>'Aanmaken',
@@ -150,19 +185,26 @@ return array (
 'View'=>'Bekijk',
 'Share'=>'Deel',
 'Update'=>'Bijwerken',
-'View Sales'=>'Bekijk Verkoop',
+'View Opportunities'=>'Bekijk kansen',
 'Delete'=>'Verwijder',
 'Show All'=>'Toon Alles',
 'Hide All'=>'Verberg Alles',
 'Show'=>'Toon',
 'Hide'=>'Verberg',
-
-// Contacts Titles
+'View Relationships'=>'Bekijk Relaties',
+'Subscribe'=>'Aanmelden',
+'View List'=>'Bekijk Lijst',
+'Share Action'=>'Deel Actie',
+'Import Contacts'=>'Contactpersonen Importeren',
+'Contact Map'=>'Contact Kaart',
+'Saved Maps'=>'Opgeslagen Kaarten',
+// // 
+// // Contacts Titles
 'Contacts'=>'Contacten',
 'Manage Contacts'=>'Beheer Contacten',
 'Contact:'=>'Contact:',
-
-// Import from Outlook
+// // 
+// // Import from Outlook
 'Import from Outlook'=>'Importeer uit Outlook',
 'Import from Template'=>'Importeer uit Template',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Om je contacten te importeren met ons template bestand, vul het template bestand in. Daarna kun je het uploaden met het onderstaande formulier.',
@@ -172,9 +214,40 @@ return array (
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Om je contact uit outlook te importeren, vul eerst het CSV bestand (DOS format) door outlook te openen en de contacten te exporteren. Vervolgens het bestand uploaden met het onderstaande formulier.',
 'Upload File'=>'Bestand Uploaden',
 'Contact Record Details'=>'Contact Record Details',
-
-// Subscribe
+// // 
+// // Subscribe
 'Subscribe'=>'Aanmelden',
 'The information for {name} has changed.'=>'De informatie van {name} is bijgewerkt',
 'Receive email updates every time information for {name} changes'=>'Ontvang email updates iedere keer als de informatie van {name} is bijgewerkt.',
+'Unsubscribe'=>'Afmelden',
+// // 
+// // Web Lead
+'Web Lead'=>'Web Lead',
+'Invalid Email Address'=>'Ongeldig e-mailadres',
+'Default list for email list signups'=>'Standaard lijst voor e-maillijst aanmeldingen',
+'This request cannot be made at this time.'=>'Dit verzoek kan niet worden gedaan op dit moment.',
+'Newsletter Signup'=>'Aanmelden voor nieuwsbrief',
+'Could not sign up'=>'Kan niet aanmelden',
+'We\'re Sorry!'=>'Het spijt ons!',
+'Thank You!'=>'Bedankt!',
+'Thank you for your interest!'=>'Dank u voor uw belangstelling!',
+'Someone will be in touch shortly.'=>'Iemand zal binnenkort contact met u op.',
+'Enter any additional information or questions regarding your interest here.'=>'Voer eventuele aanvullende informatie of vragen over uw interesse.',
+
+// // Map Translations
+'Map Filters'=>'Map Filters',
+'Clear Marker'=>'Clear Marker',
+'Drop a tag here to filter map results.'=>'Hier vallen een tag toe in de kaart resultaten te filteren.',
+'Save Map'=>'Opslaan Kaart',
+'View on Large Map'=>'Uitzicht op Grote Kaart',
+'View on Heat Map'=>'Bekijk op Heat Map',
+'Center Coordinates'=>'Center Coördinaten',
+'Delete Map'=>'Verwijder Kaart',
+'Map Name'=>'Kaart Naam',
+'Map Owner'=>'Map Eigenaar',
+'Zoom Level'=>'Zoomniveau',
+'Parameters'=>'Parameters',
+'Center Latitude'=>'Center Latitude',
+'Center Longitude'=>'Center Lengtegraad',
+'Contact'=>'Contact',
 );

@@ -43,6 +43,9 @@ body {
 		background-attachment:fixed;
 		background-size:cover; */
 }
+h2 {clear:left; }
+h2#title {clear:none;}
+
 #installer-box {
 	width:600px;
 	/* background:url(../images/installer_stripes.png) left center no-repeat #87a155; */
@@ -155,4 +158,11 @@ body {
 	margin-left: auto;
 	margin-right: auto;
 	padding: 15px 40px;
+}
+
+div#menu_items > div.checkbox-grid-cell {
+	display: inline-block;
+}
+div#menu_items > div.checkbox-grid-cell > label {
+	width: 100px !important;
 }

@@ -104,12 +104,12 @@ class NotificationsController extends CController {
 				$this->convertUrls($messages[$i]['data'])
 			);
 		}
-
+        
 		if(!empty($notifications) || !empty($chatMessages)) {
 			echo CJSON::encode(array(
 				'notifCount'=>$notifCount,
 				'notifData'=>$notifications,
-				'chatData'=>$chatMessages
+				'chatData'=>$chatMessages,
 			));
 		}
 	}
@@ -467,4 +467,13 @@ class NotificationsController extends CController {
 
 		return $text;
 	}
+    
+    function formatFeedTimestamp($timestamp){
+        if(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)==Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),time())){
+            $str=Yii::t('app','Today').' '.Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
+        }else{
+            $str=Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)." ".Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
+        }
+        return $str;
+    }
 }

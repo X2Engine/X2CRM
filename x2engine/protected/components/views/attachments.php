@@ -68,7 +68,7 @@ function checkName(el, sbm) {
 		el.value = '';
 		$(sbm).attr('disabled','disabled');
 		
-		var filenameError = '".Yii::t('app','"{X}" is not an allowed filetype.')."';
+		var filenameError = ".json_encode(Yii::t('app','"{X}" is not an allowed filetype.')).";
 		alert(filenameError.replace('{X}',ar_ext));
 	}
 }

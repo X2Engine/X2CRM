@@ -57,7 +57,7 @@ class ProfileController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword', 'setResultsPerPage','hideTag','unhideTag'),
+				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword', 'setResultsPerPage','hideTag','unhideTag', 'resetWidgets','updatePost'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -107,14 +107,32 @@ class ProfileController extends x2base {
         }
     }
 
+    public function actionUpdatePost($id){
+        $post=Events::model()->findByPk($id);
+        if(isset($_POST['Events'])){
+            $post->text=$_POST['Events']['text'];
+            $post->save();
+            $this->redirect(array('site/whatsNew'));
+        }
+        $commentDataProvider=new CActiveDataProvider('Events', array(
+            'criteria'=>array(
+                'order'=>'timestamp ASC',
+                'condition'=>"type='comment' AND associationType='Events' AND associationId=$id",
+        )));
+        $this->render('updatePost',array(
+            'model'=>$post,
+            'commentDataProvider'=>$commentDataProvider
+        ));
+    }
+    
 	/**
 	 * Deletes a post in the public feed for the current user.
 	 * @param integer $id 
 	 */
 	public function actionDeletePost($id) {
-		$post = Social::model()->findByPk($id);
+		$post = Events::model()->findByPk($id);
 		if($post->type=='comment') {
-			$postParent = Social::model()->findByPk($post->associationId);
+			$postParent = CActiveRecord::model('Events')->findByPk($post->associationId);
 			$user=ProfileChild::model()->findByPk($postParent->associationId);
 		} else
 			$user=ProfileChild::model()->findByPk($post->associationId);
@@ -122,17 +140,11 @@ class ProfileController extends x2base {
 			if($postParent->associationId==Yii::app()->user->getId())
 				$post->delete();
 		}
-		if($post->user==Yii::app()->user->getName() || $post->associationId==Yii::app()->user->getId()) {
+		if($post->user==Yii::app()->user->getName() || $post->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')) {
 			if($post->delete()) {
 			}
 		}
-		if(isset($_GET['redirect'])) {
-			if($_GET['redirect']=="view")
-				$this->redirect(array('view','id'=>$user->id));
-			if($_GET['redirect']=="index")
-				$this->redirect(array('index'));
-		} else
-			$this->redirect(array('index'));
+			$this->redirect(array('site/whatsNew'));
 	}
 
 	/**
@@ -141,7 +153,7 @@ class ProfileController extends x2base {
 	 */
 	public function actionView($id) {
 
-		$dataProvider=new CActiveDataProvider('Social', array(
+		$dataProvider=new CActiveDataProvider('Events', array(
 			'criteria'=>array(
 				'order'=>'timestamp DESC',
 				'condition'=>"type='feed' AND associationId=$id AND (visibility=1 OR associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."')",
@@ -371,18 +383,18 @@ class ProfileController extends x2base {
 	 * @param integer $id ID of the user.
 	 */
 	public function actionAddPost($id,$redirect) {
-		$post = new Social;
+		$post = new Events;
 		// $user = $this->loadModel($id);
-		if(isset($_POST['Social']) && $_POST['Social']['data']!=Yii::t('app','Enter text here...')){
-			$post->data = $_POST['Social']['data'];
-			$post->visibility = $_POST['Social']['visibility'];
-			if(isset($_POST['Social']['associationId']))
-				$post->associationId = $_POST['Social']['associationId'];
+		if(isset($_POST['Events']) && $_POST['Events']['text']!=Yii::t('app','Enter text here...')){
+			$post->text = $_POST['Events']['text'];
+			$post->visibility = $_POST['Events']['visibility'];
+			if(isset($_POST['Events']['associationId']))
+				$post->associationId = $_POST['Events']['associationId'];
 			//$soc->attributes = $_POST['Social'];
 			//die(var_dump($_POST['Social']));
 			$post->user = Yii::app()->user->getName();
 			$post->type = 'feed';
-            $post->subtype=$_POST['Social']['subtype'];
+            $post->subtype=$_POST['Events']['subtype'];
 			$post->lastUpdated = time();
 			$post->timestamp = time();
 			if(!isset($post->associationId) || $post->associationId==0)
@@ -418,7 +430,7 @@ class ProfileController extends x2base {
 		if($redirect=="view")
 			$this->redirect(array('view','id'=>$id));
 		else
-			$this->redirect(array('index'));
+			$this->redirect(array('site/whatsNew'));
 	}
 	
 	/** 
@@ -436,11 +448,12 @@ class ProfileController extends x2base {
 		if($postModel === null)
 			throw new CHttpException(404,Yii::t('app','The requested post does not exist.'));
 
-		$commentModel = new Social;
-		$commentModel->data = $comment;
+		$commentModel = new Events;
+		$commentModel->text = $comment;
 		$commentModel->user = Yii::app()->user->name;
 		$commentModel->type = 'comment';
 		$commentModel->associationId = $postModel->id;
+        $commentModel->associationType='Events';
 		$commentModel->timestamp = time();
 		
 		if($commentModel->save()) {
@@ -519,7 +532,7 @@ class ProfileController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-        $condition="type='feed'";
+        $condition="TRUE";
         if(isset($_GET['filter'])){
             $filter=$_GET['filter'];
             if($filter=='all'){
@@ -545,7 +558,6 @@ class ProfileController extends x2base {
             $subtype='all';
         }
         $subtypes=json_decode(Dropdowns::model()->findByPk(14)->options,true);
-        $linksArray=array();
         foreach($subtypes as $key=>$value){
             $links[$key]=$subtype==$value?$value:CHtml::link($value,'index?filter='.$filter.'&subtype='.$value);
         }
@@ -739,5 +751,14 @@ class ProfileController extends x2base {
 	public function actionSetResultsPerPage($results) {
 		Yii::app()->params->profile->resultsPerPage = $results;
 		Yii::app()->params->profile->save();
+	}
+	
+	public function actionResetWidgets($id) {
+		$model = $this->loadModel($id);
+		
+		$model->layout = json_encode($model->initLayout());
+		$model->update();
+		
+		$this->redirect(array('view','id'=>$id));
 	}
 }

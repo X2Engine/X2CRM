@@ -249,7 +249,7 @@ class X2GridView extends CGridView {
 					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
 				} else if($columnName == 'assignedTo') {
-					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):$data->assignedTo';
+					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):User::getUserLinks($data->assignedTo)';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->controller->formatLongDate($data["'.$columnName.'"])';
@@ -426,9 +426,12 @@ class X2GridView extends CGridView {
 
 		
 		if($this->ajax) {
-		
+			// remove any external JS and CSS files
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
 			Yii::app()->clientScript->scriptMap['*.css'] = false;
+			// remove JS for gridview checkboxes and delete buttons (these events use jQuery.on() and shouldn't be reapplied)
+			Yii::app()->clientScript->registerScript('CButtonColumn#C_gvControls',null);
+			Yii::app()->clientScript->registerScript('CCheckBoxColumn#C_gvCheckbox',null);
 
 			$output = '';
 			Yii::app()->getClientScript()->renderBodyEnd($output);

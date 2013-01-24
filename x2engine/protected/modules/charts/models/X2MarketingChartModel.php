@@ -72,7 +72,7 @@ class X2MarketingChartModel extends CModel
 	public function attributeLabels()
 	{
 		return array(
-			'dateRange' => Yii::t('dashboard','Date Range')
+			'dateRange' => Yii::t('charts','Date Range')
 		);
 	}
 

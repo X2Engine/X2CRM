@@ -40,101 +40,57 @@
 
 return array (
 // Account Attributes
-
 'ID'=>'ID',
-
 'Name'=>'Nombre',
-
 'Website'=>'Sitio Web',
-
 'Type'=>'Tipo',
-
 'Revenue'=>'Ingresos Anuales',
-
 'Phone'=>'Teléfono',
-
 'Symbol'=>'Clave en Bolsa',
-
 'Employees'=>'Empleados',
-
 'Assigned To'=>'Asignado A',
-
 'Create Date'=>'Fecha de Creación',
-
 'Associated Contacts'=>'Contactos Asociados',
-
 'Description'=>'Descripción',
-
 'Last Updated'=>'Última Actualización',
-
 'Updated By'=>'Actualizado Por',
-
 'None'=>'Ninguno',
 'Contacts'=>'Contactos',
-
 'Basic Information'=>'Información Básica',
-
 'Additional Information'=>'Información Adicional',
-
-
+'Last Activity'=>'Entro por última vez',
 
 // Accounts Actions
-
 'Accounts List'=>'Lista de Cuentas',
-
-'All Accounts'=>'Todas las Cuentas',
 'Create Account'=>'Crear Una Cuenta',
-'Edit Account'=>'Editar Cuenta',
 'View Account'=>'Ver Cuenta',
-
 'Update Account'=>'Actualizar Cuenta',
-
 'Delete Account'=>'Eliminar Cuenta',
-
 'Add a User'=>'Añadir un Usuario',
-
 'Add a Contact'=>'Añadir Contacto',
-
 'Remove a User'=>'Quitar un Usuario',
-
 'Remove a Contact'=>'Quitar un Contacto',
-
 'Share Account'=>'Compartir Cuenta',
-
 'Create'=>'Crear',
-
 'View'=>'Ver',
-
 'Update'=>'Actualizar',
-
 'Delete'=>'Borrar',
-
 'Update Account:'=>'Actualización de la Cuenta:',
-
 'Share Opportunity'=>'Compartir Oportunidad',
-
-
+'All Accounts'=>'Todas las Cuentas',
+'Edit Account'=>'Editar Cuenta',
 
 // Accounts Titles
-
 'Accounts'=>'Cuentas',
-
 'Manage Accounts'=>'Administrar Cuentas',
-
 'Update Account: {name}'=>'Actualizar la Cuenta: {nombre}',
-
 'Account:'=>'Cuenta:',
 
-
-
 // Misc
-
 'Please click any new users you wish to add.'=>'Por favor, seleccione todos los usuarios nuevos que desea añadir.',
-
 'Please click any new users you wish to remove.'=>'Por favor, haga clic en cualquier usuario nuevo que desea eliminar.',
-
 'Account Record Details'=>'Detalles del Registro de la Cuenta',
-
 'Account Record'=>'Registro de la Cuenta',
-
+'Create a new Opportunity associated with this Account.'=>'Crea una nueva oportunidad asociado a esta cuenta.',
+'Create a new Contact associated with this Account.'=>'Crear un nuevo contacto asociado a esta cuenta.',
 );

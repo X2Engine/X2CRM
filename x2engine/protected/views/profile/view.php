@@ -44,7 +44,8 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile')),
 	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
-	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId()))
+	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
+	array('label'=>Yii::t('profile','Reset Widgets'),'url'=>array('resetWidgets','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId()))
 );
 
 Yii::app()->clientScript->registerScript('highlightButton','
@@ -64,9 +65,9 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 <?php //echo CHtml::mailto(Yii::t('profile','Send E-Mail'),$model->emailAddress,array('class'=>'x2-button')); ?>
 
 <div class="form">
-	<?php $feed=new Social; 
+	<?php $feed=new Events; 
 	
-	$feed->data = Yii::t('app','Enter text here...');
+	$feed->text = Yii::t('app','Enter text here...');
 
 	$form = $this->beginWidget('CActiveForm', array(
 	'id'=>'feed-form',
@@ -76,7 +77,7 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 	<div class="float-row">
 		<?php
 		if($model->allowPost==1)
-			echo $form->textArea($feed,'data',array('style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
+			echo $form->textArea($feed,'text',array('style'=>'width:558px;height:50px;color:#aaa;display:block;clear:both;'));
 		else
 			echo "This user does not allow posting on their feed.";
 		if($model->allowPost==1) {

@@ -39,16 +39,16 @@
  ********************************************************************************/
 ?>
 <div class="form">
-	<?php $feed=new Social; ?>
+	<?php $feed=new Events; ?>
 	<?php $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'feed-form',
 	'enableAjaxValidation'=>false,
-	'action'=>array('addPost','id'=>Yii::app()->user->getId()),
+	'action'=>array('profile/addPost','id'=>Yii::app()->user->getId()),
 	
 	)); ?>	
 	<div class="float-row">
 		<?php
-		$feed->data = Yii::t('app','Enter text here...');
+		$feed->text = Yii::t('app','Enter text here...');
 		echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;'));
 		echo $form->dropDownList($feed,'associationId',$users);
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button'));

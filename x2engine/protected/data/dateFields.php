@@ -4,11 +4,14 @@
 return array(
 	'x2_accounts' => array('createDate', 'lastUpdated', 'lastActivity'),
 	'x2_actions' => array('createDate','completeDate','lastUpdated'),
-	'x2_campaigns' => array('createDate','lastUpdated','lastActivity'),
+	'x2_campaigns' => array('launchDate','createDate','lastUpdated','lastActivity'),
 	'x2_changelog' => array('timestamp'),
 	'x2_contacts' => array('lastUpdated','lastActivity','leadDate','createDate','closedate'),
 	'x2_docs' => array('createDate','lastUpdated'),
+	'x2_events' => array('timestamp','lastUpdated'),
+	'x2_imports' => array('timestamp'),
 	'x2_lists' => array('createDate','lastUpdated'),
+	'x2_media' => array('createDate','lastUpdated'),
 	'x2_notifications' => array('createDate'),
 	'x2_opportunities' => array('expectedCloseDate','createDate','lastUpdated','lastActivity'),
 	'x2_products' => array('createDate','lastUpdated','lastActivity'),
@@ -17,6 +20,7 @@ return array(
 	'x2_quotes_products' => array('createDate','lastUpdated','lastActivity'),
 	'x2_services' => array('createDate','lastUpdated','lastactivity'),
 	'x2_tags' => array('timestamp'),
-	'x2_users' => array('lastUpdated')
+	'x2_urls' => array('timestamp'),
+	'x2_users' => array('lastUpdated'),
 );
 ?>

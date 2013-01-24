@@ -1,4 +1,5 @@
 <?php
+
 /* * *******************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
@@ -49,13 +50,14 @@
  */
 $standalone = False;
 
-if(!function_exists('installer_t')) {
+if (!function_exists('installer_t')) {
 	$standalone = True;
+	// Declare the function since the script is not being used from within the installer
 	function installer_t($msg) {
-		return $msg;		
+		return $msg;
 	}
-}
 
+}
 
 function checkServerVar() {
 	global $thisFile;
@@ -85,8 +87,9 @@ $canInstall = True;
 $reqMessges = array();
 $rbm = installer_t("required but missing");
 
-// Step 0: check for a mismatch in directory ownership. Skip this step on Windows; 
-// there's no reliable way on Windows to get the UID of the actual running process.
+// Step 0: check for a mismatch in directory ownership. Skip this step on Windows 
+// and systems where posix functions are unavailable; in such cases there's no 
+// reliable way to get the UID of the actual running process.
 if (function_exists('posix_geteuid')) {
 	$uid = array();
 	$uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
@@ -107,18 +110,18 @@ if (($message = checkServerVar()) !== '') {
 if (!class_exists('Reflection', false)) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://php.net/manual/class.reflectionclass.php">PHP reflection class</a>: ' . $rbm;
-} else if(extension_loaded("pcre")) {
+} else if (extension_loaded("pcre")) {
 	$pcreReflector = new ReflectionExtension("pcre");
 	ob_start();
 	$pcreReflector->info();
 	$pcreInfo = ob_get_clean();
 	$matches = array();
-	preg_match("/([\d\.]+) \d{4,}-\d{1,2}-\d{1,2}/",$pcreInfo,$matches);
+	preg_match("/([\d\.]+) \d{4,}-\d{1,2}-\d{1,2}/", $pcreInfo, $matches);
 	$thisVer = $matches[1];
 	$reqVer = '7.4';
-	if(version_compare($thisVer,$reqVer) < 0) {
+	if (version_compare($thisVer, $reqVer) < 0) {
 		$canInstall = False;
-		$reqMessages[] = strtr(installer_t("The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required."),array('{thisVer}'=>$thisVer,'{reqVer}'=>$reqVer));
+		$reqMessages[] = strtr(installer_t("The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required."), array('{thisVer}' => $thisVer, '{reqVer}' => $reqVer));
 	}
 } else {
 	$canInstall = False;
@@ -144,7 +147,7 @@ if (!extension_loaded("mbstring")) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: ' . $rbm;
 }
-if(!ini_get('allow_url_fopen')) {
+if (!ini_get('allow_url_fopen')) {
 	$canInstall = False;
 	$reqMessages[] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. Software updates will not work.');
 }
@@ -158,11 +161,11 @@ if (!$canInstall) {
 	foreach ($reqMessages as $message) {
 		echo "<li>$message</li>";
 	}
-	echo "</ul>" . installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/index.php?title=Installation#Installing_Without_All_Requirements:_What_Won.27t_Work">"Installing Without All Requirements: What Won\'t Work"</a> in the X2CRM Installation Guide.</div><br />';
-} else if($standalone)
-	echo '<div style="width: 100%; text-align:center;"><h1>'.installer_t('This webserver can run X2CRM!').'</h1></div>';
+	echo "</ul>" . installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/wiki/Installation#Installing_Without_All_Requirements:_What_Won.27t_Work">"Installing Without All Requirements: What Won\'t Work"</a> in the X2CRM Installation Guide.</div><br />';
+} else if ($standalone)
+	echo '<div style="width: 100%; text-align:center;"><h1>' . installer_t('This webserver can run X2CRM!') . '</h1></div>';
 
-if($standalone) {
+if ($standalone) {
 	phpinfo();
 	echo '</div>';
 }

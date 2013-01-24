@@ -85,6 +85,7 @@ class Notification extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+            'event'=>array(self::HAS_ONE,'Events','associationId','condition'=>'associationType="Notifications"'),
 		);
 	}
 
@@ -186,7 +187,7 @@ class Notification extends CActiveRecord {
 						'{field}'=>$record->getAttributeLabel($this->fieldName),
 						'{value}'=>$record->renderAttribute($this->fieldName,true,true),
 						'{record}'=>$record->getLink(),
-						'{user}'=>User::getUserLinks($this->createdBy)
+						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
 					));
 				
 				} else {
@@ -197,7 +198,7 @@ class Notification extends CActiveRecord {
 						'{field}'=>$record->getAttributeLabel($this->fieldName),
 						'{value}'=>$record->renderAttribute($this->fieldName,true,true),
 						'{record}'=>$record->getLink(),
-						'{user}'=>User::getUserLinks($this->createdBy)
+						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
 					));
 				
 				

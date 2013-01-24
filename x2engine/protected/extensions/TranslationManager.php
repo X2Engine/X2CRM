@@ -244,7 +244,9 @@ function googleTranslate(object) {
 	var message = $(object).closest('tr').find('.source input').val();
 	var lang = $(object).html();
 	if(lang == 'zh_cn')
-		lang = 'zh-CN'; 	
+		lang = 'zh-CN'; 
+    if(lang == 'he')
+        lang = 'iw';
 	var url = 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message);
 	// $('#googleTranslate').attr('src',url);
 
