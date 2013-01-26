@@ -83,9 +83,9 @@
 			<?php echo $form->labelEx($model,'emailUseSignature'); ?>
 			<?php echo $form->dropDownList($model,'emailUseSignature',array(
 				'none'=>Yii::t('admin','None'),
-				'user'=>Yii::t('admin','Use my signature'),
+				'user'=>Yii::t('profile','Use my signature'),
 				// 'group'=>Yii::t('admin','Use group signature'),
-				'admin'=>Yii::t('admin','Use default'),
+				'admin'=>Yii::t('profile','Use default'),
 			),array('disabled'=>($userChoice? null : 'disabled'))); ?>
 			<?php echo $form->error($model,'emailUseSignature'); ?>
 		</div>

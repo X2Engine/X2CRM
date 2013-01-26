@@ -51,6 +51,7 @@ Yii::app()->session['alertUpdate']=false;
 }
 
 $baseUrl = Yii::app()->getBaseUrl();
+$scriptUrl = Yii::app()->request->scriptUrl;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $cs = Yii::app()->clientScript;
@@ -114,7 +115,12 @@ $notifUrl = $this->createUrl('/site/checkNotifications');
 	// $(document).ready(updateNotifications());	//update on page load
 // ",CClientScript::POS_HEAD); 
 } */
-
+if(Yii::app()->params->profile->language=='he' || Yii::app()->params->profile->language=='fa'){
+    $cs->registerCss('rtl-language','
+        body {
+            text-align:right;
+        }');
+}
 $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
@@ -207,7 +213,7 @@ if($isGuest) {
 			$page=DocChild::model()->findByAttributes(array('name'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
 			if(isset($page)){
 				$id=$page->id;
-				$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/docs/'.$id.'?static=true'),'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/docs/'.$id.'?static=true'?true:null);
+				$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/docs/'.$id.'?static=true'),'active'=>Yii::app()->request->requestUri==$scriptUrl.'/docs/'.$id.'?static=true'?true:null);
 			}
 		}
 	}
@@ -261,14 +267,7 @@ if(!empty(Yii::app()->params->profile->avatar))
 else
 	$avatar = Yii::app()->request->baseUrl.'/uploads/default.jpg';
 
-
-
-$session=Session::model()->findByAttributes(array('user'=>Yii::app()->user->getName(),'IP'=>$this->getRealIp()));
-if(isset($session)){
-    $sessionStatus=$session->status;
-}else{
-    $sessionStatus=0;
-}
+$widgetsImageUrl = $themeUrl . '/images/admin_settings.png';
 $userMenu = array(
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Activity'),'url' => array('/site/whatsNew')),
@@ -279,7 +278,7 @@ $userMenu = array(
 	array('label' => $searchbarHtml,'itemOptions'=>array('id'=>'search-bar','class'=>'special')),
 	array('label'=>CHtml::link('<span>'.$notifCount.'</span>','#',array('id'=>'main-menu-notif','style'=>'z-index:999;')),'itemOptions'=>array('class'=>'special')),
 	array('label'=>CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button')),'itemOptions'=>array('class'=>'search-bar special')),
-	array('label'=>CHtml::link('<span style="margin-left: 3px; margin-right: 3px;">w'. Yii::app()->params->profile->getWidgetMenu() .'</span>', '#', array('id'=>'widget-menu-wrapper', 'class'=>'x2-button', 'title'=>'hidden widgets', 'style'=>'margin-top: 6px;')), 'itemOptions'=>array('class'=>'search-bar special')),
+	array('label'=>CHtml::link('<span style="line-height: 15px; margin-left: 3px; margin-right: 3px;"><img style="height: 22px;" src="'.$widgetsImageUrl.'">'. Yii::app()->params->profile->getWidgetMenu() .'</span>', '#', array('id'=>'widget-menu-wrapper', 'class'=>'x2-button', 'title'=>'hidden widgets', 'style'=>'margin-top: 6px;')), 'itemOptions'=>array('class'=>'search-bar special')),
 	array('label'=>CHtml::image($avatar,'',array('height'=>25,'width'=>25)).Yii::app()->user->getName(),
 		'itemOptions'=>array('id'=>'profile-dropdown','class'=>'dropdown'),
 		'items' => array(
@@ -288,15 +287,15 @@ $userMenu = array(
 			array('label' => Yii::t('app','Preferences'),'url' => array('/profile/settings')),
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
 			array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
-            array('label' => ($sessionStatus==1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
+            array('label' => (Yii::app()->params->sessionStatus == 1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
 	// array(
 		// 'label'=>'',
 		// 'itemOptions'=>array(
-			// 'class'=>'special leadrouting-indicator'.($sessionStatus==1? ' visible' : ''),
-			// 'title'=>($sessionStatus==1? Yii::t('app','Visible to lead routing') : Yii::t('app','Visible to lead routing'))
+			// 'class'=>'special leadrouting-indicator'.(Yii::app()->params->sessionStatus == 1? ' visible' : ''),
+			// 'title'=>(Yii::app()->params->sessionStatus == 1? Yii::t('app','Visible to lead routing') : Yii::t('app','Visible to lead routing'))
 		// )
 	// ),
 );
@@ -410,7 +409,7 @@ $userMenu = array(
 <div id="footer">
 <div class="width-constraint">
 	<div id="footer-logos">
-		<a href="<?php echo $baseUrl.'/index.php/x2touch'; ?>">
+		<a href="<?php echo $scriptUrl.'/x2touch'; ?>">
 			<?php echo CHtml::image($themeUrl.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
 			<?php echo CHtml::link(
 				CHtml::image($themeUrl.'/images/x2footer.png','', array('id'=>'x2crm-logo')),

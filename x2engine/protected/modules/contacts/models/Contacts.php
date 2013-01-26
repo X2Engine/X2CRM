@@ -77,11 +77,11 @@ class Contacts extends X2Model {
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations() {
+/*	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array();
-	}
+	} */
 
 	public function afterFind() {
 		$this->name = $this->firstName.' '.$this->lastName;

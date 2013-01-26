@@ -39,6 +39,8 @@
  ********************************************************************************/
 
 /**
+ *  Calendar lets you create calendar events, view actions from other modules, and sync to google calendar.
+ *
  * @package X2CRM.modules.calendar.controllers 
  */
 class CalendarController extends x2base {

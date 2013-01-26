@@ -72,7 +72,8 @@ class SiteController extends x2base {
 				'getNotes','getURLs','addSite','deleteMessage','fullscreen','pageOpacity','widgetState','widgetOrder','saveGridviewSettings','saveFormSettings',
 					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact',
                     'viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
-                    'whatsNew','toggleVisibility','page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget','publishPost','getEvents','loadComments','loadPosts','addComment','flagPost'),
+                    'whatsNew','toggleVisibility','page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget','publishPost','getEvents','loadComments',
+                    'loadPosts','addComment','flagPost','sendErrorReport','minimizePosts'),
 				'users'=>array('@'),
 			),
 			 array('allow',
@@ -123,6 +124,19 @@ class SiteController extends x2base {
 //		}
 //		$filterChain->run();
 //	}
+    
+    public function actionSendErrorReport(){
+        if(isset($_POST['report'])){
+            $errorReport=$_POST['report'];
+            $ccUrl="http://www.x2software.com/receiveErrorReport.php";
+            $ccSession = curl_init($ccUrl);
+            curl_setopt($ccSession,CURLOPT_POST,1);
+            curl_setopt($ccSession,CURLOPT_POSTFIELDS,array('errorReport'=>$errorReport));
+            curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
+            $ccResult = curl_exec($ccSession);
+            curl_close($ccSession);
+        }
+    }
 	
 	/**
 	 * Default landing page action for the web application.
@@ -500,6 +514,19 @@ class SiteController extends x2base {
                 }
                 $event->save();
             }
+        }
+    }
+    
+    public function actionMinimizePosts(){
+        if(isset($_GET['minimize'])){
+            $profile=Yii::app()->params->profile;
+            if($_GET['minimize']=='minimize'){
+                $profile->minimizeFeed=1;
+            }else{
+                $profile->minimizeFeed=0;
+            }
+            echo $_GET['minimize']==true;
+            $profile->save();
         }
     }
 
@@ -902,11 +929,11 @@ class SiteController extends x2base {
                     $soc->associationType='Media';
 					$soc->text = $model->getMediaLink();
 					if($soc->save()) {
-							$this->redirect('index');
+							$this->redirect('whatsNew');
 					} else {
 							unlink('uploads/'.$name);
 					}
-					$this->redirect(array($model->associationType.'/'.$model->associationId));
+					$this->redirect(array('site/whatsNew'));
 
 				} else if($model->associationType=='bg' || $model->associationType=='bg-private') {
 
@@ -1040,7 +1067,7 @@ class SiteController extends x2base {
 			$this->redirect(array('/site/login'));
 		else {
 			$profile = CActiveRecord::model('profile')->findByPk(Yii::app()->user->getId());
-			if($profile->username=='admin'){
+			if(Yii::app()->user->checkAccess('AdminIndex')){
 				$admin = &Yii::app()->params->admin;
 				if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()))
 					Yii::app()->session['alertUpdate']=true;
@@ -1065,7 +1092,7 @@ class SiteController extends x2base {
 					$page=DocChild::model()->findByAttributes(array('title'=>ucfirst($profile->startPage)));
 					if(isset($page)) {
 						$id=$page->id;
-						$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/admin/viewPage/'.$id),'active'=>Yii::app()->request->requestUri==Yii::app()->request->baseUrl.'/index.php/admin/viewPage/'.$id?true:null);
+						$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/admin/viewPage/'.$id),'active'=>Yii::app()->request->requestUri==Yii::app()->request->scriptUrl.'/admin/viewPage/'.$id?true:null);
 				
 					} else {
 					$this->redirect(array('site/whatsNew'));
@@ -1076,7 +1103,46 @@ class SiteController extends x2base {
 			
 	}
         
-         
+    function phpinfo_array($return=false){
+        ob_start(); 
+        phpinfo(-1);
+
+        $pi = preg_replace(
+        array('#^.*<body>(.*)</body>.*$#ms', '#<h2>PHP License</h2>.*$#ms',
+        '#<h1>Configuration</h1>#',  "#\r?\n#", "#</(h1|h2|h3|tr)>#", '# +<#',
+        "#[ \t]+#", '#&nbsp;#', '#  +#', '# class=".*?"#', '%&#039;%',
+        '#<tr>(?:.*?)" src="(?:.*?)=(.*?)" alt="PHP Logo" /></a>'
+        .'<h1>PHP Version (.*?)</h1>(?:\n+?)</td></tr>#',
+        '#<h1><a href="(?:.*?)\?=(.*?)">PHP Credits</a></h1>#',
+        '#<tr>(?:.*?)" src="(?:.*?)=(.*?)"(?:.*?)Zend Engine (.*?),(?:.*?)</tr>#',
+        "# +#", '#<tr>#', '#</tr>#'),
+        array('$1', '', '', '', '</$1>' . "\n", '<', ' ', ' ', ' ', '', ' ',
+        '<h2>PHP Configuration</h2>'."\n".'<tr><td>PHP Version</td><td>$2</td></tr>'.
+        "\n".'<tr><td>PHP Egg</td><td>$1</td></tr>',
+        '<tr><td>PHP Credits Egg</td><td>$1</td></tr>',
+        '<tr><td>Zend Engine</td><td>$2</td></tr>' . "\n" .
+        '<tr><td>Zend Egg</td><td>$1</td></tr>', ' ', '%S%', '%E%'),
+        ob_get_clean());
+
+        $sections = explode('<h2>', strip_tags($pi, '<h2><th><td>'));
+        unset($sections[0]);
+
+        $pi = array();
+        foreach($sections as $section){
+        $n = substr($section, 0, strpos($section, '</h2>'));
+        preg_match_all(
+        '#%S%(?:<td>(.*?)</td>)?(?:<td>(.*?)</td>)?(?:<td>(.*?)</td>)?%E%#',
+            $section, $askapache, PREG_SET_ORDER);
+        foreach($askapache as $m)
+			if(is_array($m) && count($m)==4) {
+				if(empty($p[$n]))
+					$p[$n] = array();
+				$pi[$n][$m[1]]=(!isset($m[3])||$m[2]==$m[3])?$m[2]:array_slice($m,2);
+			}
+        }
+
+        return ($return === false) ? print_r($pi) : $pi;
+    }     
 
 	/**
 	 * Error printing.
@@ -1084,11 +1150,79 @@ class SiteController extends x2base {
 	 * This is the action to handle external exceptions.
 	 */
 	public function actionError() { 
+        function var_dump_to_string($var){
+            $output = "<pre>";
+            _var_dump_to_string($var,$output);
+            $output .= "</pre>";
+            return $output;
+        }
+
+        function _var_dump_to_string($var,&$output,$prefix=""){
+            foreach($var as $key=>$value){
+                if(is_array($value)){
+                    $output.= $prefix.$key.": \n";
+                    _var_dump_to_string($value,$output,"  ".$prefix);
+                } else{
+                    $output.= $prefix.$key.": ".$value."\n";
+                }
+            }
+        }
+        
 		if($error=Yii::app()->errorHandler->error) {
 			if(Yii::app()->request->isAjaxRequest)
 				echo $error['message'];
-			else
-				$this->render('error', $error);
+			else{
+                if($error['code']=='404'){
+                     $request=Yii::app()->request->requestUri;
+                     if(preg_match('/opportunity/',$request)){
+                         $request=preg_replace('/opportunity/','opportunities',$request);
+                         $this->redirect($request);
+                     }
+                }
+				if($error['code'] == '403') {
+					$this->render('errorDisplay',$error);
+					Yii::app()->end();
+				}
+                $request=Yii::app()->request->requestUri;
+                $info=$this->phpinfo_array(true);
+                $referer=$_SERVER['HTTP_REFERER'];
+                $get=var_dump_to_string($_GET);
+                $post=var_dump_to_string($_POST);
+                $phpversion=phpversion();
+                $x2version=Yii::app()->params->version;
+                unset($error['traces']);
+                
+                $phpInfoErrorReport=base64_encode(serialize(array_merge($error,array(
+                    'request'=>$request,
+                    'phpinfo'=>$info,
+                    'referer'=>$referer,
+                    'get'=>$get,
+                    'post'=>$post,
+                    'phpversion'=>$phpversion,
+                    'x2version'=>$x2version,
+                ))));
+                
+                $errorReport=base64_encode(serialize(array_merge($error,array(
+                    'request'=>$request,
+                    'referer'=>$referer,
+                    'get'=>$get,
+                    'post'=>$post,
+                    'phpversion'=>$phpversion,
+                    'x2version'=>$x2version,
+                ))));
+                
+				$this->render('error', array_merge($error,array(
+                    'request'=>$request,
+                    'info'=>$info,
+                    'referer'=>$referer,
+                    'get'=>$get,
+                    'post'=>$post,
+                    'phpversion'=>$phpversion,
+                    'x2version'=>$x2version,
+                    'errorReport'=>$errorReport,
+                    'phpInfoErrorReport'=>$phpInfoErrorReport,
+                )));
+            }
 		}
 	}
 
@@ -1230,7 +1364,7 @@ class SiteController extends x2base {
 				}
 				
 				if($model->validate() && $model->login()) {		// user successfully logged in
-					if($model->username === 'admin')
+					if(Yii::app()->user->checkAccess('AdminIndex'))
 						$this->checkUpdates();			// check for updates if admin
 					else
 						Yii::app()->session['versionCheck'] = true;	// ...or don't

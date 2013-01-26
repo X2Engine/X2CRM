@@ -110,21 +110,22 @@ class ApplicationConfigBehavior extends CBehavior {
 		
 		
 		$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$uname));
-		$session = Session::model()->findByPk($sessionId);
+		$session = CActiveRecord::model('Session')->findByPk($sessionId);
 
 		
 		if($notGuest && !$cli) {
-			if(isset($session)) {
+			if($session !== null) {
 				if($session->lastUpdated + $this->owner->params->admin->timeout < time()) {
 					$session->delete();
 					$this->owner->user->logout();
-				} elseif($this->owner->request->getPathInfo() != 'site/checkNotifications') {
+				} else {
 					$session->lastUpdated = time();
-					$session->save();
+					$session->update(array('lastUpdated'));
+					
+					$this->owner->params->sessionStatus = $session->status;
 				}
 			} else {
 				$this->owner->user->logout();
-				// $this->redirect(Yii::app()->controller->createUrl('site/logout'));
 			}
 			
 			
@@ -196,6 +197,7 @@ class ApplicationConfigBehavior extends CBehavior {
 			Yii::app()->clientScript->registerScript('setParams','
 			var	yii = {
 				baseUrl: "'.Yii::app()->baseUrl.'",
+				scriptUrl: "'.Yii::app()->request->scriptUrl.'",
 				themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
 				language: "'.(Yii::app()->language == 'en'? '' : Yii::app()->getLanguage()).'",
 				datePickerFormat: "'.$datePickerFormat.'",

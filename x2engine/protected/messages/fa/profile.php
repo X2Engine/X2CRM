@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -65,6 +65,25 @@ return array (
 'Results Per Page'=>'تعداد نتایج در هر صفحه',
 'Show Social Media'=>'نمایش چند رسانه ای های اجتماعی',
 'Upload a Background'=>'بارگزاری پس زمینه',
+'Avatar'=>'آواتار ها',
+'Widget Order'=>'ترتیب عناصر صفحه',
+'Widget Settings'=>'تنظیمات ویجت',
+'Page Opacity'=>'تاری صفحه',
+'Show Detail View'=>'نمایش جزئیات',
+'Show Workflow'=>'نمایش گردش کار',
+'Gridview Settings'=>'تنظیمات GridView متصل شده',
+'Form Settings'=>'تنظیمات فرم',
+'Email Signature'=>'امضا به ایمیل',
+'My Signature'=>'امضای من',
+'Enable Full Width Layout'=>'فعال کردن طرح بندی عرض کامل',
+'Google ID'=>'گوگل ID',
+'Signature'=>'امضا',
+'Address'=>'نشانی',
+'Use my signature'=>'استفاده از امضای من',
+'Use default'=>'استفاده از پیش فرض',
+'Old Password'=>'رمز عبور',
+'New Password'=>'کلمه ی عبور جدید',
+'Confirm New Password'=>'تکرار رمز عبور جدید',
 
 // Profile Actions
 'View Profile'=>'مشاهده پروفایل',
@@ -73,10 +92,14 @@ return array (
 'Social Feed'=>'خوراک اجتماعی',
 'People'=>'افراد',
 'Change Personal Settings'=>'تغییر مشخصات فردی',
+'Change Password'=>'تغییر رمز ورود',
+'Reset Widgets'=>'تنظیم مجدد ابزارک',
 
 // Profile Titles
 'Profile:'=>':پروفایل',
 'Update Your Profile'=>'بروز رسانی پروفایل',
+'Unhide Tags'=>'برچسب ها آشکار',
+'Change Password Form'=>'تغییر رمز عبور',
 
 // Social
 'Feed'=>'اشتراک خبری',

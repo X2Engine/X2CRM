@@ -40,6 +40,7 @@
 
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Quotes List'),'url'=>array('index')),
+	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
 	array('label'=>Yii::t('quotes','Create')),
 ));
 ?>

@@ -74,7 +74,7 @@ foreach($itemModel->getFields() as $field) {
 			$fieldOptions[$field->fieldName] = User::getNames() + Groups::getNames();
 			break;
 		case 'link':
-			$fieldOptions[$field->fieldName] = Yii::app()->baseUrl .'/index.php'. CActiveRecord::model($field->linkType)->autoCompleteSource;
+			$fieldOptions[$field->fieldName] = Yii::app()->request->scriptUrl. CActiveRecord::model($field->linkType)->autoCompleteSource;
 			break;
 	}
 }

@@ -239,8 +239,12 @@ class MediaController extends x2base {
 	 */
 	public function actionIndex() {
 		$model=new Media('search');
-		if(isset($_GET['Media']))
-			$model->attributes=$_GET['Media'];
+		if(isset($_GET['Media'])){
+            foreach($_GET['Media'] as $key=>$value){
+                if($model->hasAttribute($key))
+                    $model->$key=$value;
+            }
+        }
 		$this->render('index',array(
 			'model'=>$model,
 		));

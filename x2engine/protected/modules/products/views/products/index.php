@@ -70,6 +70,7 @@ function trimText($text) {
 )); ?>
 </div><!-- search-form -->
 <?php 
+	$canDelete = Yii::app()->user->checkAccess('AdminIndex');
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'product-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -107,6 +108,11 @@ function trimText($text) {
 		array(
 			'header'=>Yii::t('products', 'Tools'),
 			'class'=>'CButtonColumn',
+			'buttons' => array(
+				'delete' => array(
+					'visible' => ($canDelete?'true':'false'),
+				),
+			),
 		),
 	),
 )); ?>

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -65,6 +65,25 @@ return array (
 'Results Per Page'=>'תוצאות בכל עמוד',
 'Show Social Media'=>'הצג מדיה חברתית',
 'Upload a Background'=>'טען רקע',
+'Avatar'=>'גלגול',
+'Widget Order'=>'סדר יישומון',
+'Widget Settings'=>'הגדרות יישומון',
+'Page Opacity'=>'אטימות עמוד',
+'Show Detail View'=>'צג תצוגת פרטים',
+'Show Workflow'=>'צג זרימת עבודה',
+'Gridview Settings'=>'הגדרות Gridview',
+'Form Settings'=>'הגדרות טופס',
+'Email Signature'=>'חתימת דואר אלקטרוני',
+'My Signature'=>'החתימה שלי',
+'Enable Full Width Layout'=>'אפשר פריסת רוחב מלאה',
+'Google ID'=>'גוגל מזהה',
+'Signature'=>'חתימה',
+'Address'=>'כתובת',
+'Use my signature'=>'השתמש בחתימה שלי',
+'Use default'=>'השתמש בברירת מחדל',
+'Old Password'=>'סיסמא ישנה',
+'New Password'=>'סיסמא חדשה',
+'Confirm New Password'=>'אשר את הסיסמה חדשה',
 
 // Profile Actions
 'View Profile'=>'צפה בפרופיל',
@@ -73,10 +92,14 @@ return array (
 'Social Feed'=>'חברתי ההזנה',
 'People'=>'אנשים',
 'Change Personal Settings'=>'שינוי הגדרות אישיות',
+'Change Password'=>'שינוי סיסמא',
+'Reset Widgets'=>'איפוס יישומונים',
 
 // Profile Titles
 'Profile:'=>'פרופיל:',
 'Update Your Profile'=>'עדכן את הפרופיל שלך',
+'Unhide Tags'=>'תגיות הסתרה',
+'Change Password Form'=>'שינוי טופס סיסמא',
 
 // Social
 'Feed'=>'ערוץ חדשות',

@@ -86,8 +86,8 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Invite Users'),array('/users/inviteUsers')); ?><br><?php echo Yii::t('admin','Send invitation emails to create X2Engine accounts');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Roles'),'manageRoles'); ?><br><?php echo Yii::t('admin','Create and manage user roles');?></div>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('groups','Groups'),array('/groups/index')); ?><br><?php echo Yii::t('admin','Create and manage user groups');?></div>
-	</div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('app','Groups'),array('/groups/index')); ?><br><?php echo Yii::t('admin','Create and manage user groups');?></div>
+	</div><br>
     <div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Sessions'),array('manageSessions')); ?><br><?php echo Yii::t('admin','Manage user sessions.');?></div>
 	</div>
@@ -171,7 +171,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Form Editor'),'editor'); ?><br><?php echo Yii::t('admin','Drag and drop editor for forms.');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Delete a module or Page'),'deleteModule'); ?><br><?php echo Yii::t('admin','Remove a custom module or page');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import a module'),'importModule'); ?><br><?php echo Yii::t('admin','Import a .zip of a module');?></div>  
-	</div>
+	</div><br />
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export a module'),'exportModule'); ?><br><?php echo Yii::t('admin','Export one of your custom modules to a .zip');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rename a module'),'renameModules'); ?><br><?php echo Yii::t('admin','Change module titles on top bar');?></div>

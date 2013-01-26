@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'Editar Workflow',
 'Delete Workflow'=>'Eliminar Flujo de Trabajo',
 'Workflow Status'=>'Estado de Flujo de Trabajo',
+'Any stage'=>'Cualquier etapa',
 );

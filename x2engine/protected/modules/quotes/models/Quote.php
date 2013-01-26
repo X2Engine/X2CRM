@@ -297,6 +297,16 @@ class Quote extends X2Model {
 		$criteria=new CDbCriteria;
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
+		$criteria->addCondition("type!='invoice'");
+
+		return $this->searchBase($criteria);
+	}
+	
+	public function searchInvoice() {
+		$criteria=new CDbCriteria;
+		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$criteria->scopes=array('findAll'=>array($parameters));
+		$criteria->addCondition("type='invoice'");
 
 		return $this->searchBase($criteria);
 	}

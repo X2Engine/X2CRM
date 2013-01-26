@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -65,6 +65,25 @@ return array (
 'Results Per Page'=>'每页显示的结果数',
 'Show Social Media'=>'显示社交媒体',
 'Upload a Background'=>'上传背景',
+'Avatar'=>'头像',
+'Widget Order'=>'小工具订购',
+'Widget Settings'=>'Widget的设置',
+'Page Opacity'=>'页不透明度',
+'Show Detail View'=>'显示详细信息视图',
+'Show Workflow'=>'显示工作流程',
+'Gridview Settings'=>'GridView的设置',
+'Form Settings'=>'表格设置',
+'Email Signature'=>'电子邮件签名',
+'My Signature'=>'我的签名',
+'Enable Full Width Layout'=>'启用全宽度的布局',
+'Google ID'=>'谷歌ID',
+'Signature'=>'签名',
+'Address'=>'地址',
+'Use my signature'=>'使用我的签名',
+'Use default'=>'使用默认值',
+'Old Password'=>'旧密码',
+'New Password'=>'新密码',
+'Confirm New Password'=>'确认新密码',
 
 // Profile Actions
 'View Profile'=>'查看个人资料',
@@ -73,10 +92,14 @@ return array (
 'Social Feed'=>'社交动态',
 'People'=>'用户',
 'Change Personal Settings'=>'更改个人设置',
+'Change Password'=>'更改密码',
+'Reset Widgets'=>'重设窗口小部件',
 
 // Profile Titles
 'Profile:'=>'个人资料：',
 'Update Your Profile'=>'更新您的个人资料',
+'Unhide Tags'=>'取消隐藏标签',
+'Change Password Form'=>'更改密码表单',
 
 // Social
 'Feed'=>'新闻提要',

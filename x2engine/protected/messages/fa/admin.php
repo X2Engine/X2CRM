@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -139,6 +139,24 @@ return array (
 'Customize fields for the modules.'=>'زمینه را برای ماژول سفارشی.',
 'Manage dropdowns for custom fields.'=>'مدیریت رها کردن منو در زمینه های سفارشی.',
 'Drag and drop editor for forms.'=>'کشیدن و رها کردن ویرایشگر برای فرم.',
+'About X2EngineCRM'=>'درباره X2EngineCRM',
+'Support'=>'پشتیبانی',
+'X2Engine'=>'X2Engine',
+'X2Community'=>'X2Community',
+'Yii Framework'=>'Yii چارچوب',
+'Edit Access Rules'=>'ویرایش قوانین دسترسی',
+'Change access rules for roles'=>'تغییر قوانین برای دسترسی به نقش',
+'Manage Sessions'=>'مدیریت جلسات',
+'Manage user sessions.'=>'مدیریت جلسات کاربر.',
+'Web Lead Capture and Opportunity Workflows'=>'وب ضبط سرب و گردش فرصت',
+'Service Case Web Form'=>'فرم خدمات مورد وب سایت',
+'Create a public form to receive new service cases.'=>'ایجاد یک فرم عمومی برای دریافت موارد سرویس های جدید.',
+'Set Service Case Distribution'=>'مجموعه خدمات توزیع مورد',
+'Change how service cases are distributed.'=>'تغییر موارد خدمات توزیع شده است.',
+'System Settings'=>'تنظیمات سیستم',
+'Configure session timeout and chat poll rate.'=>'پیکربندی ایست جلسه و چت نرخ نظرسنجی.',
+'Updater Settings'=>'تنظیمات Updater را',
+'Configure automatic updates and registration.'=>'پیکربندی به روز رسانی خودکار و ثبت نام.',
 // // 
 // // Modules
 // // Text

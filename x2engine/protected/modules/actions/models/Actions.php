@@ -135,7 +135,7 @@ class Actions extends X2Model {
 		return $this->actionDescription;
 	}
 	
-	public function getLink($length = 0) {
+	public function getLink($length = 30) {
 	
 		$text = $this->owner->name;
 		if($length && strlen($text) > $length)

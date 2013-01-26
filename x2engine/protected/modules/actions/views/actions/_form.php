@@ -192,22 +192,23 @@ if($inlineForm){
 			
 			$linkModel = X2Model::$associationModels[$actionModel->associationType];
 			
-			
-			$linkSource = $this->createUrl(CActiveRecord::model($linkModel)->autoCompleteSource);
-			echo $form->label($actionModel,'associationName');
-			$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-				'name'=>'auto_select',
-				'value'=>$actionModel->associationName,
-				'source' => $linkSource,
-				'options'=>array(
-					'minLength'=>'2',
-					'select'=>'js:function( event, ui ) {
-						$("#'.CHtml::activeId($actionModel,'associationId').'").val(ui.item.id);
-						$(this).val(ui.item.value);
-						return false;
-					}',
-				),
-			));
+			if(class_exists($linkModel)){
+                $linkSource = $this->createUrl(CActiveRecord::model($linkModel)->autoCompleteSource);
+                echo $form->label($actionModel,'associationName');
+                $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                    'name'=>'auto_select',
+                    'value'=>$actionModel->associationName,
+                    'source' => $linkSource,
+                    'options'=>array(
+                        'minLength'=>'2',
+                        'select'=>'js:function( event, ui ) {
+                            $("#'.CHtml::activeId($actionModel,'associationId').'").val(ui.item.id);
+                            $(this).val(ui.item.value);
+                            return false;
+                        }',
+                    ),
+                ));
+            }
 		}
 		//echo $form->error($actionModel,'associationName');
 		?>

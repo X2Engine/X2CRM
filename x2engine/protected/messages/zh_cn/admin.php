@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -139,6 +139,24 @@ return array (
 'Customize fields for the modules.'=>'自定义字段的模块。',
 'Manage dropdowns for custom fields.'=>'管理自定义字段的下拉菜单中。',
 'Drag and drop editor for forms.'=>'拖放编辑器的形式。',
+'About X2EngineCRM'=>'关于X2EngineCRM',
+'Support'=>'支持',
+'X2Engine'=>'X2Engine',
+'X2Community'=>'X2Community',
+'Yii Framework'=>'Yii框架',
+'Edit Access Rules'=>'编辑访问规则',
+'Change access rules for roles'=>'更改为角色的访问规则',
+'Manage Sessions'=>'管理会议',
+'Manage user sessions.'=>'管理用户会话。',
+'Web Lead Capture and Opportunity Workflows'=>'网站提前捕获和机遇的工作流程',
+'Service Case Web Form'=>'服务案例Web窗体',
+'Create a public form to receive new service cases.'=>'创建一个公共的形式来接收新的服务案例。',
+'Set Service Case Distribution'=>'设置服务案例分布',
+'Change how service cases are distributed.'=>'更改服务的情况下，如何分配。',
+'System Settings'=>'系统设置',
+'Configure session timeout and chat poll rate.'=>'配置会话超时和聊天的投票率。',
+'Updater Settings'=>'更新设置',
+'Configure automatic updates and registration.'=>'配置自动更新和注册。',
 // // 
 // // Modules
 // // Text

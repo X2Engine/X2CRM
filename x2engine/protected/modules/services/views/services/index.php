@@ -112,6 +112,12 @@ $this->widget('application.components.X2GridView', array(
 			'type'=>'raw',
 			'value'=>'CHtml::link($data->id, array("view","id"=>$data->id))',
 		),
+		'account'=>array(
+			'name'=>'account',
+			'header'=>Yii::t('accounts', 'Account'),
+			'type'=>'raw',
+			'value'=>'$data->contacts? ($data->contacts->accounts ? $data->contacts->accounts->getLink() : "") : ""'
+		), 
 /*		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('services','Name'),

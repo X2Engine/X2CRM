@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'Bewerken Workflow',
 'Delete Workflow'=>'Verwijder Workflow',
 'Workflow Status'=>'Workflow Status',
+'Any stage'=>'Elke fase',
 );

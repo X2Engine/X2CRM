@@ -182,7 +182,9 @@ CREATE TABLE x2_lists (
 	visibility				INT NOT NULL	DEFAULT 1,
 	count					INT UNSIGNED	NOT NULL DEFAULT 0,
 	createDate				BIGINT			NOT NULL,
-	lastUpdated				BIGINT			NOT NULL
+	lastUpdated				BIGINT			NOT NULL,
+	INDEX(assignedTo),
+	INDEX(type)
 ) ENGINE InnoDB COLLATE utf8_general_ci;
 /*&*/
 CREATE TABLE x2_list_criteria (
@@ -309,7 +311,6 @@ CREATE TABLE x2_profile(
 	startPage				VARCHAR(30)		NULL,
 	showSocialMedia			TINYINT			NOT NULL DEFAULT 0,
 	showDetailView			TINYINT			NOT NULL DEFAULT 1,
-	showWorkflow			TINYINT			NOT NULL DEFAULT 1,
 	gridviewSettings		TEXT,
 	formSettings			TEXT,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
@@ -328,6 +329,7 @@ CREATE TABLE x2_profile(
     address                 TEXT,
     defaultFeedFilters      TEXT,
     layout					TEXT,
+    minimizeFeed            INT             DEFAULT 0,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'Редактировать рабочий процесс',
 'Delete Workflow'=>'Удалить рабочий процесс',
 'Workflow Status'=>'рабочий процесс статус',
+'Any stage'=>'Любой этап',
 );

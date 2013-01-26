@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost/" />
+<title>NewContactAndAccount</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">NewContactAndAccount</td></tr>
+</thead><tbody>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@id='Contacts_firstName'])[2]</td>
+	<td>TestInterface</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@id='Contacts_lastName'])[2]</td>
+	<td>TestUI</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_title</td>
+	<td>CEO</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@id='Contacts_phone'])[2]</td>
+	<td>123-456-7890</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_phone2</td>
+	<td>098-765-4321</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=Contacts_doNotCall</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=span.create-account</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>css=form#accounts-form</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Accounts_type</td>
+	<td>Test</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Accounts_website</td>
+	<td>test.com</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>id=Accounts_assignedTo_assignedToDropdown</td>
+	<td>label=Anyone</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Accounts_description</td>
+	<td>Test%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Accounts_name</td>
+	<td>TestAccountForContact</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=form#accounts-form input.x2-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>css=form#accounts-form</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>id=Contacts_company</td>
+	<td>TestAccountFor</td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>TestAccountForContact</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=//a[.=&quot;TestAccountForContact&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=Contacts_leadDate</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=16</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_interest</td>
+	<td>interest%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_dealvalue</td>
+	<td>12345</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=Contacts_closedate</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=17</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#Contacts_leadscore_3 &gt; a[title=&quot;4&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#Contacts_rating_4 &gt; a[title=&quot;5&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=Contacts_dealstatus</td>
+	<td>label=Working</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_address</td>
+	<td>%123% 3rd Ave.</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_website</td>
+	<td>testui.test.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_state</td>
+	<td>PN</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_zipcode</td>
+	<td>12345</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_country</td>
+	<td>USA</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_city</td>
+	<td>Somewhere%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_address2</td>
+	<td>addr2%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_backgroundInfo</td>
+	<td>Backgroundinfo%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_skype</td>
+	<td>Skype%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_linkedin</td>
+	<td>Linkedin%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_twitter</td>
+	<td>Twitter%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_facebook</td>
+	<td>Facebook%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_googleplus</td>
+	<td>Googleplus%123%</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_otherUrl</td>
+	<td>Other%123%</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>id=Accounts_assignedTo_assignedToDropdown</td>
+	<td>label=Sales Rep</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Contacts_priority</td>
+	<td>1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=Contacts_doNotEmail</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=save-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Testinterface Testui</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>CEO</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>TestAccountForContact</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>(123) 456-7890</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>(098) 765-4321</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testui.test.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>css=#Contacts_doNotCall_field input[type=&quot;checkbox&quot;]</td>
+	<td>on</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>css=#Contacts_doNotEmail_field input[type=&quot;checkbox&quot;]</td>
+	<td>on</td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>interest%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>$12,345.00</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>17,</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>16,</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>%123% 3rd Ave.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>PN</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>addr2%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>12345</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Somewhere%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>USA</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Backgroundinfo%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Skype%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Other%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Googleplus%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Facebook%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Twitter%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Linkedin%123%</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>css=div#relationships-form a:contains(&quot;TestAccountForContact&quot;)</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

@@ -39,6 +39,12 @@
  ********************************************************************************/
 
 /**
+ * Track service/support cases among contacts.
+ *
+ * Every Service Case must be associated with a contact. It's possible to
+ * create a service case from a contacts view via ajax by clicking the
+ * "Create Case" button. (the new case is associated with the contact).
+ *
  * @package X2CRM.modules.services.controllers 
  */
 class ServicesController extends x2base { 
@@ -135,6 +141,13 @@ class ServicesController extends x2base {
 		}
 	}
 
+	/**
+	 * Create a new Service Case
+	 *
+	 * This action can be called normally (by clicking the Create button in Service module)
+	 * or it can be called via ajax by clicking the "Create Case" button in a contact view.
+	 *
+	 */
 	public function actionCreate() {
 		$model=new Services;
 		$users=User::getNames();
@@ -151,13 +164,15 @@ class ServicesController extends x2base {
 				$value = '';
 			}
 			$model->setX2Fields($_POST['Services']);
+			
 			if($model->contactId != '' && !is_numeric($model->contactId)) // make sure an existing contact is associated with this case, otherwise don't create it
 				$model->addError('contactId', Yii::t('services', 'Contact does not exist'));
-			if(isset($_POST['x2ajax'])) {
+			
+			if(isset($_POST['x2ajax'])) { // we're creating a case with "Create Case" button in contacts view
 				if($this->create($model,$temp, '1')) { // success creating case?
-		     		$model->name = $model->id;
+		     		$model->name = $model->id; // every model needs a name field to work with X2GridView and a few other places, for service cases the id of the case is the name
 		     		$model->update();
-					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
+					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) { // we are creating this case from within a contact, so set up a relationship with the contact
 						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Services', $model->id);
 					}
 
@@ -167,14 +182,13 @@ class ServicesController extends x2base {
 							'name'=>$model->name,
 							'id'=>$model->id,
 						)
-					);
-					Yii::app()->end();
+					); // ajax response
+					Yii::app()->end(); // we're done
 				} else {
-					$x2ajaxCreateError = true;
+					$x2ajaxCreateError = true; // used at the bottom of this function to return an error via ajax
 				}
 			} else {
 				$this->create($model,$temp, '0');
-	//			var_dump($model->errors);
 			}
 		}
 		
@@ -187,29 +201,30 @@ class ServicesController extends x2base {
 			$model->impact = "3 - Moderate";
 		}
 				
-		if(isset($_POST['x2ajax'])) {
-			Yii::app()->clientScript->scriptMap['*.js'] = false;
+		if(isset($_POST['x2ajax'])) { // we're creating a case with "Create Case" button in contacts view
+			Yii::app()->clientScript->scriptMap['*.js'] = false; // don't return javascript files in ajax response (that kills things)
 			Yii::app()->clientScript->scriptMap['*.css'] = false;
-			if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true) {
+			if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true) { // user entered bad via ajax?
 				$page = $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'services'), true, true);
-				echo json_encode(
+				echo json_encode( // return the form with errors and a status indicating there are errors
 					array(
 						'status'=>'userError',
 						'page'=>$page,
 					)
 				);
-			} else {
+			} else { // return the create form via ajax
 				$this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'services'), false, true);
 			}
 		} else {
-			$this->render('create',array(
+			$this->render('create',array( // normal (non-ajax) create
 				'model'=>$model,
 				'users'=>$users,
 			));
 		}
 
 	}
-        
+    
+    
 	public function update($model, $oldAttributes,$api){
 		
 		$ret = parent::update($model,$oldAttributes,'1');
@@ -260,8 +275,10 @@ class ServicesController extends x2base {
 			  $value = null;
 			}
 			$model->setX2Fields($_POST['Services']);
+			
 			if($model->contactId != '' && !is_numeric($model->contactId)) // make sure an existing contact is associated with this case, otherwise don't create it
 				$model->addError('contactId', Yii::t('services', 'Contact does not exist'));
+			
 			$this->update($model,$temp,'0');
 		}
 
@@ -333,6 +350,11 @@ class ServicesController extends x2base {
 	
 	/**
 	 * Create a web lead form with a custom style
+	 *
+	 * Currently web forms have all options passed as GET parameters. Saved web forms
+	 * are saved to the table x2_web_forms. Saving, retrieving, and updating a web form
+	 * all happens in this function. Someday this should be updated to be it's own module.
+	 *
 	 */
 	public function actionCreateWebForm() {
 		if(file_exists(__DIR__ . '/pro/actionCreateWebForm.php')) {
@@ -340,13 +362,15 @@ class ServicesController extends x2base {
 			return;
 		}
 	
-		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') { // save a web form
 			if (empty($_POST['name'])) {
 				echo json_encode(array('errors'=>array('name'=>Yii::t('marketing','Name cannot be blank.'))));
 				return;
 			}
 
 			$type = 'serviceCase';
+			
+			// check if we are updating an existing web form
 			$model = WebForm::model()->findByAttributes(array('name'=>$_POST['name'], 'type'=>$type));
 			if (!isset($model)) {
 				$model = new WebForm;
@@ -390,19 +414,25 @@ class ServicesController extends x2base {
 				$condition='';
 			}
 			//this get request is for weblead type only, marketing/weblist/view supplies the form that posts for weblist type
-			$forms = WebForm::model()->findAll('type="serviceCase"'.$condition);
+			$forms = WebForm::model()->findAll('type="serviceCase"'.$condition); // get service web forms (other option is 'weblead' used by marketing module)
 			$this->render('createWebForm', array('forms'=>$forms));
 		}
 	}
 	
 	
+	/**
+	 * Display a service web form
+	 *
+	 * This is used by an iframe to display a web form from an external webpage.
+	 *
+	 */
 	public function actionWebForm() {
 		if(file_exists(__DIR__ . '/pro/actionWebForm.php')) {
 			include(__DIR__ . '/pro/actionWebForm.php');
 			return;
 		}
 	
-		if (isset($_POST['Services'])) {			
+		if (isset($_POST['Services'])) { // web form submitted
 			$firstName = $_POST['Services']['firstName'];
 			$lastName = $_POST['Services']['lastName'];
 			$fullName = $firstName . ' ' . $lastName;

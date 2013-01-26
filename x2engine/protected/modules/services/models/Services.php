@@ -46,6 +46,9 @@ Yii::import('application.models.X2Model');
  * @package X2CRM.modules.services.models
  */
 class Services extends X2Model {
+	
+	public $account;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Services the static model class
@@ -76,12 +79,14 @@ class Services extends X2Model {
 		);
 	}
 
+
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations() {
+/*	public function relations() {
 		return array();
 	}
+*/
 
 	public function search() {
 		// Warning: Please modify the following code to remove attributes that
@@ -169,8 +174,28 @@ class Services extends X2Model {
                 }
 
 		
+		$criteria->together = true;
+	//	$criteria->with = array('contacts.accounts');
+		// field 'account' is not in x2_services table,
+		// it is declared at the top of this class and is used
+		// by X2GridView to search the account name associated
+		// with the contact associated with this service case.
+		// Adding the field 'account' to the table x2_services will
+		// cause an SQL error in this function
+		if(isset($_GET['Services']['account'])) { 
+			$criteria->compare('accounts.name', $_GET['Services']['account'], true);
+		}
+	
 		$dataProvider=new SmartDataProvider(get_class($this), array(
-			'sort'=>array('defaultOrder'=>'id ASC'),
+			'sort'=>array(
+				'defaultOrder'=>'assignedTo ASC', // `t` is an SQL placeholder for x2_services, this prevents an SQL error caused by 3 ambiguous 'id' fields in the SQL query: one each from x2_services, x2_contacts, and x2_accounts
+		/*		'attributes'=>array(
+					'account'=>array( // let's us sort by account name
+						'asc'=>'accounts.name',
+						'desc'=>'accounts.name DESC',
+					), 
+				), */
+			),
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),

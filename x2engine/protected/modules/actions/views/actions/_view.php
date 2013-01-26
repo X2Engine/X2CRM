@@ -183,7 +183,7 @@ if($type == 'workflow') {
             preg_match('/^<b>(.*?)<\/b>(.*)/mis',$data->actionDescription,$matches);
             if(!empty($matches)) {
                 $subject = $matches[1];
-				$body = $matches[2];
+				$body = '';
 			} else {
                 $subject = "No subject found";
 				$body = "(Error displaying email)";

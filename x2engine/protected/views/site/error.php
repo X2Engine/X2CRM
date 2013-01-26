@@ -41,7 +41,63 @@
 $errorTitle = Yii::t('app','Error {code}',array('{code}'=>$code));
 $this->pageTitle=Yii::app()->name . ' - ' . $errorTitle;
 ?>
-<h2><?php echo $errorTitle; ?></h2>
-<div class="error">
-<?php echo CHtml::encode($message); ?>
+<h1><?php echo Yii::t('app','Oops!'); ?></h1>
+<div class="form" style="width:600px;">
+    It looks like the application ran into an unexpected error.
+    <br><br>
+    We apologize for
+    the inconvenience and would like to do our best to fix this issue.  If you would like to make a post on our 
+    forums we can actively interact with you in getting this resolved.  If not, simply sending the error report
+    helps us immensely and will only improve the quality of the software.
+    
+    Thanks!
 </div>
+<h2>Send Error Report</h2>
+<div id="error-form" class="form" style="width:600px;">
+    Here's a quick list of what will be included in the report:<br><br>
+    <b>Error Code:</b> <?php echo $code; ?><br>
+    <b>Error Message:</b> <?php echo CHtml::encode($message);?><br>
+    <b>Stack Trace: </b> <a href="#" id="toggle-trace" style="text-decoration:none;">[click to toggle display]</a><br><div id="stack-trace" style="display:none;"><?php echo $trace;?></div>
+    <b>X2CRM Version: </b> <?php echo $x2version; ?><br>
+    <b>PHP Version: </b> <?php echo $phpversion;?><br><br>
+    <label><span >Include phpinfo()? (optional, but recommended) <a href="#" class="x2-hint" title="Detailed server and PHP configuration information that is very hepful for debugging purposes.  However, it can contain sensitive information about your server's configuration, and it is not required to be sent with the report.  We do however, highly recommend it.">[?]</a></span></label>
+    <?php echo CHtml::checkBox('phpinfo',true); ?><br><br>
+    <b>Please Note: </b>Any information in the $_GET or $_POST arrays included with the request will
+    also be sent with the report.
+</div>
+<a href="#" id="error-report-link" class="x2-button highlight">Send Error Report</a>
+<span id="loading-text" style="display:none;"><img src="<?php echo Yii::app()->theme->getBaseUrl(); ?>/images/loading.gif" />Sending...</span>
+<span id="sent-text" style="display:none;color:green;">Bug report sent!</span>
+
+<script>
+    var errorReport="<?php echo $errorReport; ?>";
+    var phpInfoErrorReport="<?php echo $phpInfoErrorReport; ?>";
+    $('#toggle-trace').click(function(e){
+        e.preventDefault();
+        $('#stack-trace').toggle();
+        if($('#stack-trace').is(":visible")){
+            $('#error-form').css({'width':'95%'});
+        }else{
+            $('#error-form').css({'width':'600px'});
+        }
+    });
+    $('#error-report-link').click(function(e){
+        e.preventDefault();
+        if($('#phpinfo').attr('checked')=='checked'){
+            data=phpInfoErrorReport;
+        }else{
+            data=errorReport;
+        }
+        $('#error-report-link').hide();
+        $('#loading-text').show();
+        $.ajax({
+            url:'<?php echo $this->createUrl('site/sendErrorReport'); ?>',
+            type:'POST',
+            data:{'report':data},
+            success:function(){
+                $('#loading-text').hide();
+                $('#sent-text').show();
+            }
+        });
+    });
+</script>

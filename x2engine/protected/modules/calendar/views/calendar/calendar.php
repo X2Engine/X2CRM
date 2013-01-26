@@ -232,6 +232,14 @@ foreach($googleCalendars as $calendarId) {
 // Yii::app()->clientScript->registerScript('initCalendar', "
 ?>
 <script type="text/javascript">
+
+/**************************************************************
+ *                                                            *
+ *                       Declare Calendar                     *
+ *                                                            *
+ *                                                            *
+ **************************************************************/
+
 $(function() {
 	$('#calendar').fullCalendar({
 		theme: true,
@@ -248,7 +256,7 @@ $(function() {
 			if(event.associationType == 'contacts')
 				element.attr('title', event.associationName);
 		},
-		dayClick: function(date, allDay, jsEvent, view) {
+		dayClick: function(date, allDay, jsEvent, view) { // Day Clicked!! Scroll to Publisher and set date to the day that was clicked
 
 			var scrollPublisher = $('#tabs').offset().top + $('#tabs').height() + 5 - $(window).height(); // value of window's scrollbar to make publisher visible
 			if($(window).scrollTop() < scrollPublisher) {
@@ -300,7 +308,7 @@ $(function() {
 			}
 
 		},
-		eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
+		eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) { // drop onto a different day
 			if(event.source.source == 'google') // moving event from Google Calendar
 				$.post('<?php echo $moveGoogleEvent; ?>?calendarId=' + event.source.calendarId, {EventId: event.id, dayChange: dayDelta, minuteChange: minuteDelta, isAllDay: allDay});
 			else
@@ -312,7 +320,7 @@ $(function() {
 			else
 				$.post('<?php echo $resizeAction; ?>', {id: event.id, dayChange: dayDelta, minuteChange: minuteDelta});
 		},
-		eventClick: function(event) { // event was clicked
+		eventClick: function(event) { // Event Click! Pop up a dialog with info about the event
 		
 			if(event.source.type == 'googleFeed')
 				return;

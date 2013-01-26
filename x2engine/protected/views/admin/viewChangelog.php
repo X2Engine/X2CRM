@@ -59,8 +59,8 @@
 			'name'=>'type',
 			'header'=>Yii::t('admin','Record'),
 			'value'=>'
-				!is_null(CActiveRecord::model($data->type)->findByPk($data->itemId))?
-				($data->type!="Actions"?CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId)):
+				(class_exists($data->type) && !is_null(CActiveRecord::model($data->type)->findByPk($data->itemId)))?
+				($data->type!="Actions"?($data->type=="Opportunity"?CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl("opportunities/".$data->itemId)):CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
 					CHtml::link("Action",Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
 				"RECORD DELETED"',
 			'type'=>'raw',

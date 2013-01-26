@@ -188,7 +188,7 @@ class ActionsController extends x2base {
 				$subject=Yii::t('actions','Action Reminder:');
 				$body=Yii::t('actions',"Reminder, the following action is due today: \n Description: {description}\n Type: {type}.\n Associations: {name}.\nLink to the action: ",
 					array('{description}'=>$action->actionDescription,'{type}'=>$type,'{name}'=>$name))
-					.'http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl.'/index.php/actions/'.$action->id;
+					.'http://'.Yii::app()->request->getServerName().Yii::app()->request->scriptUrl.'/actions/'.$action->id;
 				$headers='From: '.Yii::app()->params['adminEmail'];
 
 				if($action->associationType!='none')

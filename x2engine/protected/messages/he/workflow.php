@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'עריכת זרימת עבודה',
 'Delete Workflow'=>'מחק את זרימת עבודה',
 'Workflow Status'=>'מצב זרימת עבודה',
+'Any stage'=>'כל שלב',
 );

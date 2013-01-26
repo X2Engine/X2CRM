@@ -71,6 +71,11 @@ class Media extends X2Model {
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/media',
 				'autoCompleteSource'=>null
+			),
+			'ERememberFiltersBehavior' => array(
+				'class' => 'application.components.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
 			)
 		);
 	}

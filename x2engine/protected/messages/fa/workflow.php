@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'ویرایش گردش کار',
 'Delete Workflow'=>'حذف گردش کار',
 'Workflow Status'=>'وضعیت گردش کار',
+'Any stage'=>'هر مرحله',
 );

@@ -120,6 +120,20 @@ abstract class X2Model extends CActiveRecord {
                 return $record->$field;
 		}
     }
+    
+	public function relations() {
+		$fields = $this->getFields();
+		
+		$relations = array();
+		
+		foreach($fields as $field) {
+			if($field->type == "link") {
+				$relations[strtolower($field->linkType)] = array(self::BELONGS_TO, $field->linkType, $field->fieldName);
+			}
+		}
+				
+		return $relations;
+    }
 
 	/**
 	 * Returns a list of behaviors that this model should behave as.
@@ -917,14 +931,14 @@ abstract class X2Model extends CActiveRecord {
 	}
 
 	protected function compareBoolean($data) {
-		if(is_null($data))
+		if(is_null($data) || $data=='')
 			return null;
 
 		return in_array(mb_strtolower(trim($data)), array(0, 'f', 'false', Yii::t('actions','No'))) ? 0 : 1;  // default to true unless recognized as false
     }
 
     protected function compareAssignment($data) {
-		if(is_null($data))
+		if(is_null($data) || $data=='')
 			return null;
 		$userNames = Yii::app()->db->createCommand()->select('username')->from('x2_users')->where(array('like', 'CONCAT(firstName," ",lastName)', "%$data%"))->queryColumn();
 		$groupIds = Yii::app()->db->createCommand()->select('id')->from('x2_groups')->where(array('like', 'name', "%$data%"))->queryColumn();

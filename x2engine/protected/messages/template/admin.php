@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -139,6 +139,24 @@ return array (
 'Customize fields for the modules.'=>'',
 'Manage dropdowns for custom fields.'=>'',
 'Drag and drop editor for forms.'=>'',
+'About X2EngineCRM'=>'',
+'Support'=>'',
+'X2Engine'=>'',
+'X2Community'=>'',
+'Yii Framework'=>'',
+'Edit Access Rules'=>'',
+'Change access rules for roles'=>'',
+'Manage Sessions'=>'',
+'Manage user sessions.'=>'',
+'Web Lead Capture and Opportunity Workflows'=>'',
+'Service Case Web Form'=>'',
+'Create a public form to receive new service cases.'=>'',
+'Set Service Case Distribution'=>'',
+'Change how service cases are distributed.'=>'',
+'System Settings'=>'',
+'Configure session timeout and chat poll rate.'=>'',
+'Updater Settings'=>'',
+'Configure automatic updates and registration.'=>'',
 // // 
 // // Modules
 // // Text

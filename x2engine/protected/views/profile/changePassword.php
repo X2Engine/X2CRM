@@ -51,22 +51,22 @@ $this->actionMenu = array(
 echo CHtml::form();
 ?>
 <div class="form">
-	<h2><?php echo Yii::t('app','Change Password Form'); ?></h2>
+	<h2><?php echo Yii::t('profile','Change Password Form'); ?></h2>
 	<div class="row" style="margin-bottom:10px;">
 		<div class="cell">
-			<label><?php echo Yii::t('app','Old Password'); ?></label>
+			<label><?php echo Yii::t('profile','Old Password'); ?></label>
 			<?php echo CHtml::passwordField('oldPassword');?> 
 		</div>
 	</div>
 	<div class="row">
 		<div class="cell">
-		<label><?php echo Yii::t('app','New Password'); ?></label>
+		<label><?php echo Yii::t('profile','New Password'); ?></label>
 			<?php echo CHtml::passwordField('newPassword','',array('id'=>'newPassword'));?> 
 		</div>
 	</div>
 	<div class="row">
 		<div class="cell">
-		<label><?php echo Yii::t('app','Confirm New Password'); ?></label>
+		<label><?php echo Yii::t('profile','Confirm New Password'); ?></label>
 			<?php echo CHtml::passwordField('newPassword2','',array('id'=>'newPassword2'));?> 
 		</div>
 	</div>

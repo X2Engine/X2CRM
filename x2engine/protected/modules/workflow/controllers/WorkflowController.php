@@ -762,10 +762,10 @@ class WorkflowController extends x2base {
         }
         $htmlString="
                 <h3>".Yii::t('charts','Data Summary')."</h3>
-                <b>".Yii::t('charts','Total Records:')."</b> $count<br />
-                <b>".Yii::t('charts','Total Value:')."</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
-                <b>".Yii::t('charts','Projected Value:')."</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
-                <b>".Yii::t('charts','Current Value:')."</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
+                <b>".Yii::t('charts','Total Records').":</b> $count<br />
+                <b>".Yii::t('charts','Total Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
+                <b>".Yii::t('charts','Projected Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
+                <b>".Yii::t('charts','Current Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
             ";
         echo $htmlString;
     }

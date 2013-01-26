@@ -242,7 +242,10 @@ class ProductsController extends x2base {
 	{
 		if(Yii::app()->request->isPostRequest)
 		{
-            $event=new Events;
+			$model=$this->loadModel($id);
+                        $this->cleanUpTags($model);
+                        $model->delete();
+			$event=new Events();
             $event->type='record_deleted';
             $event->level=2;
             $event->associationType=$this->modelClass;
@@ -251,9 +254,7 @@ class ProductsController extends x2base {
             $event->user=Yii::app()->user->getName();
             $event->save();
 			// we only allow deletion via POST request
-			$model=$this->loadModel($id);
-                        $this->cleanUpTags($model);
-                        $model->delete();
+
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))

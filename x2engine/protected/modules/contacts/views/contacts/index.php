@@ -134,7 +134,7 @@ function refreshQtip() {
 				content: {
 					text: "'.addslashes(Yii::t('app','loading...')).'",
 					ajax: {
-						url: yii.baseUrl+"/index.php/contacts/qtip",
+						url: yii.scriptUrl+"/contacts/qtip",
 						data: { id: contactId[0] },
 						method: "get",
 					}

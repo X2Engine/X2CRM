@@ -39,13 +39,17 @@
  ********************************************************************************/
 
 /**
- * Class for creating quotes from a view page.
+ *  Class for creating quotes from a contact view.
+ *  
+ *  This is used for creating, updating, deleting, duplicating
+ *  a quote or invoice from the contact view page. It makes heavy use of
+ *  javascript and ajax calls to the QuotesController.
  * 
  * @package X2CRM.components 
  */
 class InlineQuotes extends X2Widget {
 
-	public $contactId;
+	public $contactId; // quotes displayed here are associated with this contact
 
 	public $errors = array();
 	public $startHidden = false;
@@ -60,7 +64,8 @@ class InlineQuotes extends X2Widget {
 		Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() .'/css/inlinequotes.css');
 
 		// register (lots of) javascript
-		
+		// toggleQuotes() - show/hide the quotes form in the contact view
+		// sendQuoteEmail(quote) - fill the inline email form with some info about a quote: name, table of products, description
 		Yii::app()->clientScript->registerScript('toggleQuotes',
 			($this->startHidden? "$(document).ready(function() { $('#quotes-form').hide();
 			 });\n" : '')
@@ -100,13 +105,11 @@ class InlineQuotes extends X2Widget {
 		}
 		
 		var sendingQuote = false;
-		function sendQuoteEmail(quote) {
+		function sendQuoteEmail(quote) {  // fill the inline email form with some info about a quote: name, table of products, description
 			var notes = ".'"\n"'." + quote['notes']['label'] + ".'"\n"'." + quote['notes']['notes'] + ".'"\n"'.";
 			toggleEmailForm();
 			window.inlineEmailEditor.setData('' + quote['name'] + quote['products'] + notes);
-			var value = $('#email-template option:contains(\"Quote\")').val();
-			$('#email-template').val(value);
-			$('#InlineEmail_subject').val('Quote');
+			$('#InlineEmail_subject').val(quote['subject']);
 			$('#email-template').change();
 		    sendingQuote = true; // stop quote mini-module from stealing focus away from email
 		}
@@ -139,6 +142,10 @@ var currencyTable = {
 	'INR': 'hi-IN',
 	'BRL': 'pt-BR',
 };
+
+/*** Product Table Functions ***/
+// these functions are used to manipulate the table of products associated
+// with a quote. They are used when creating or updating a quote.
 
 function removeProduct(object) {
 	$(object).closest('tr').remove();
@@ -450,8 +457,7 @@ function duplicateQuote(quote) {
 			// $productNames[$product->id] = $product->name;
 		// }	
 		
-		$quotes = Quote::model()->findAllByAttributes(array('associatedContacts'=>$this->contactId));
-		
+		$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));
 		foreach($quotes as $quote) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
 			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
@@ -510,6 +516,61 @@ function duplicateQuote(quote) {
 			// 'productNames'=>$productNames,
 	//		'showNewQuote'=>$showNewQuote,
 		));
+		
+		echo '<br /><br />';
+		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Invoices') .'</span>';
+		echo '<br /><br />';
+		
+		$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND type='invoice'", array(':associatedContacts'=>$this->contactId));
+		
+		foreach($quotes as $quote) {
+			$products = Product::model()->findAll(array('select'=>'id, name, price'));
+			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
+			
+			// find associated products and their quantities
+			$quotesProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
+			$orders = array(); // array of product-quantity pairs
+			$total = 0; // total price for the quote
+			foreach($quotesProducts as $qp) {
+		    	$price = $qp->price * $qp->quantity;
+		    	if($qp->adjustmentType == 'percent') {
+		    	    $price += $price * ($qp->adjustment / 100);
+		    	    $qp->adjustment = "{$qp->adjustment}%";
+		    	} else {
+		    		$price += $qp->adjustment;
+		    	}
+				$orders[] = array(
+		    		'name' => $qp->name,
+					'id' => $qp->productId,
+			    	'unit' => $qp->price,
+					'quantity'=> $qp->quantity,
+					'adjustment' => $qp->adjustment,
+					'price' => $price,
+				);
+				$order = end($orders);
+				$total += $order['price'];
+			}
+			
+			$dataProvider = new CArrayDataProvider($orders, array(
+				'keyField'=>'name',
+				'sort'=>array(
+					'attributes'=>array('name', 'unit', 'quantity', 'price'),
+				),
+				'pagination'=>array('pageSize'=>false),
+				
+			));
+			$newProductId = "new_product_" . $quote->id;
+			$this->render('viewQuotes', array(
+				'quote'=>$quote,
+				'contactId'=>$this->contactId,
+				'dataProvider'=>$dataProvider,
+				'products'=>$products,
+				// 'productNames'=>$productNames,
+				'orders'=>$quoteProducts,
+				'total'=>$total,
+			));
+		}
+
 		
 		echo "</div>";		
 		echo "</div>";

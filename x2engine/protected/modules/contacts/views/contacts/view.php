@@ -60,7 +60,7 @@ $menuItems = array(
     array('label'=>Yii::t('contacts','Delete Contact'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
-	array('label'=>Yii::t('quotes','Quotes'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
+	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
 	array('label'=>Yii::t('quotes',($subscribed? 'Unsubscribe' : 'Subscribe' )), 'url'=>'#', 'linkOptions'=>array('class'=>'x2-subscribe-button', 'onclick'=>'return subscribe($(this));', 'title'=>Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}'=>$model->firstName.' '.$model->lastName)))),
 );
 
@@ -153,6 +153,19 @@ if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
 <?php
 //$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'contacts'));
 
+
+/*** Begin Create Related models ***/
+
+// bellow is the javascript code that is executed when clicking:
+//		"Create Opportunity"
+//		"Create Account"
+//		"Create Case"
+// It creates a new model with a relationship to this contact. The creation is
+// done via ajax calls to each models actionCreate method.
+// the full javascript functions can be found in relationships.js
+
+// urls, contact info, etc, is json encoded and then added as parameters to the
+// javascript function that calls ajax to create the new model
 $linkModel = CActiveRecord::model('Accounts')->findByPk($model->company);
 if (isset($linkModel))
 	$accountName = json_encode($linkModel->name);
@@ -180,7 +193,10 @@ Yii::app()->clientScript->registerScript('create-model', "
 		$('#create-case').initCreateCaseDialog('$createCaseUrl', 'Contacts', {$model->id}, $contactName, $assignedTo, $caseTooltip);
 	});
 ");
+//*** End Create Related models ***/
 ?>
+
+
 <?php $this->widget('Attachments',array('associationType'=>'contacts','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php

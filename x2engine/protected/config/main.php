@@ -64,15 +64,11 @@ return array(
 		// 'application.components.*',
 		// 'application.components.ERememberFiltersBehavior',
 		// 'application.components.EButtonColumnWithClearFilters',
-		
-		
 	),
-
 	'modules'=>array(
 		// 'gii'=>$gii,
 		'mobile',
 	),
-
 	'behaviors' => array('ApplicationConfigBehavior'),
 
 	// application components
@@ -89,30 +85,29 @@ return array(
 		
 		'urlManager'=>array(
 			'urlFormat'=>'path',
-            'urlRuleClass'=>'X2UrlRule',
+			'urlRuleClass'=>'X2UrlRule',
 			'showScriptName'=>!isset($_SERVER['HTTP_MOD_REWRITE']),
 			'rules'=>array(
-                
-                
-                '<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
+				'<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
 				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
-                
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<id:\d+>'=>'<module>/<module>/view',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>'=>'<module>/<module>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>/<id:\d+>'=>'<module>/<module>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<id:\d+>'=>'<module>/<module>/view',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
-                
-                '<module:\w+>/<id:\d+>'=>'<module>/default/view',
+				
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<id:\d+>'=>'<module>/<module>/view',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>'=>'<module>/<module>/<action>',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>/<id:\d+>'=>'<module>/<module>/<action>',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<id:\d+>'=>'<module>/<module>/view',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
+				
+				'<module:\w+>/<id:\d+>'=>'<module>/default/view',
 				'<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
 				'<module:\w+>/<action:\w+>/<id:\d+>'=>'<module>/default/<action>',
 				'<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
 				'<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
-			
 				
-                /*
+				'x2touch'=>'mobile/site/home', 
+				
+				/*
 				// special HTTP methods for API
 				array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
 				array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'POST'),
@@ -121,8 +116,6 @@ return array(
 				array('api/voip', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
 				
 				// 'gii/<controller>'=>'gii/<controller>',
-			
-				
 
 				'contacts/<id:\d+>'							=>	'contacts/contacts/view',
 				'contacts/<action:\w+>'						=>	'contacts/contacts/<action>',
@@ -228,27 +221,21 @@ return array(
 				'reports/reports/<id:\d+>'                  =>	'reports/reports/view',
 				'reports/reports/<action:\w+>'              =>	'reports/reports/<action>',
 				'reports/reports/<action:\w+>/<id:\d+>'     =>	'reports/reports/<action>',
-	
-	
+				
 				// 'mobile/<id:\d+>'							=>	'mobile/workflow/view',
 				// 'mobile/<action:\w+>'						=>	'mobile/workflow/<action>',
 				// 'mobile/<action:\w+>/<id:\d+>'			=>	'mobile/workflow/<action>',
 				// 'mobile/workflow/<id:\d+>'				=>	'mobile/workflow/view',
 				// 'mobile/workflow/<action:\w+>'			=>	'mobile/workflow/<action>',
 				// 'mobile/workflow/<action:\w+>/<id:\d+>'	=>	'mobile/workflow/<action>',
-	
-	
+				
 				// module/action -> assume DefaultController (module/default/action) unless there are 3 tokens (module/controller/action)
 				
-
 				// old type
 				// '<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				// '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				// '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 				*/
-				
-
-				'x2touch'=>'mobile/site/home', 
 			),
 		),
 		'zip'=>array(
@@ -257,21 +244,17 @@ return array(
 		'session' => array (
 			'timeout' => 3600,
 		),
-		/*
-		'db'=>array(
-			'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
-		),
-		*/
-		// uncomment the following to use a MySQL database
-
+		// 'db'=>array(
+			// 'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
+		// ),
 		'db'=>array(
 			'connectionString' => "mysql:host=$host;dbname=$dbname",
 			'emulatePrepare' => true,
 			'username' => $user,
 			'password' => $pass,
 			'charset' => 'utf8',
-			//'enableProfiling'=>true,
-            //'enableParamLogging' => true,
+			// 'enableProfiling'=>true,
+            // 'enableParamLogging' => true,
 			'schemaCachingDuration'=>84600
 		),
 		'authManager'=>array(
@@ -285,74 +268,42 @@ return array(
 		// 'clientScript'=>array(
 			// 'class' => 'X2ClientScript',
 		// ),
-		
-		
-		
-		/*array(
-			'connectionString' => 'mysql:host=localhost;dbname=test',
-			'emulatePrepare' => true,
-			'username' => 'root',
-			'password' => ' ',
-			'charset' => 'utf8',
-		),*/
-//		 'messages'=>array(
-//			 'forceTranslation'=>true,
-//			 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
-//		 ),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
 			'errorAction'=>'site/error',
 		),
-	   'log'=>array(
-		   'class'=>'CLogRouter',
-		   'routes'=>array(
-				   // array(
-					   // 'class'=>'application.extensions.DbProfileLogRoute',
-					   // 'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
-					   // 'slowQueryMin' => 0.01, // Minimum time for the query to be slow
-				   // ),
-		   ),
-	   ),
-//		'log'=>array(
-//			'class'=>'CLogRouter',
-//			'routes'=>array(
+		'log'=>array(
+			'class'=>'CLogRouter',
+			'routes'=>array(
 				// array(
 					// 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
 					// 'ipFilters'=>array('127.0.0.1'),
 				// ),
 				// array(
-					// 'class'=>'CFileLogRoute',
-					// 'levels'=>'info',
-					// 'categories' => 'translations',
-					// 'logFile'=>'translations.log',
-					// 'categories' => 'system.db.*',
-					
+					// 'class'=>'application.extensions.DbProfileLogRoute',
+					// 'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
+					// 'slowQueryMin' => 0.01, // Minimum time for the query to be slow
 				// ),
-				// uncomment the following to show log messages on web pages
-				
-//				  array(
-//					 'class'=>'CWebLogRoute',
-//						 'categories' => 'translations',
-//						 'levels' => 'missing',
-//				  ),
-//			),
-//		),
+				// array(
+					// 'class'=>'CWebLogRoute',
+					// 'categories' => 'translations',
+					// 'levels' => 'missing',
+				// ),
+			),
+		),
+		// 'messages'=>array(
+			// 'forceTranslation'=>true,
+			// 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
+		// ),
+		
 		'cache'=>array(
 			'class'=>'system.caching.CFileCache',
-			// 'servers'=>array(
-				// array('host'=>'server1', 'port'=>11211, 'weight'=>60),
-				// array('host'=>'server2', 'port'=>11211, 'weight'=>40),
-			// ),
 		),
 		'authCache'=>array(
 			'class'=>'application.components.X2AuthCache',
 			'connectionID'=>'db',
 			'tableName'=>'x2_auth_cache',
 			// 'autoCreateCacheTable'=>false,
-			// 'servers'=>array(
-				// array('host'=>'server1', 'port'=>11211, 'weight'=>60),
-				// array('host'=>'server2', 'port'=>11211, 'weight'=>40),
-			// ),
 		),
 	),
 
@@ -365,6 +316,7 @@ return array(
 		'profile'=>null,
 		'roles'=>array(),
 		'groups'=>array(),
+		'sessionStatus'=>0,
 		'logo'=>"uploads/logos/yourlogohere.png",
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
 		'trueWebRoot'=>substr(__DIR__,0,-17), 

@@ -100,7 +100,7 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 <?php 
 $this->endWidget();
 
-if($model->contactId) {
+if($model->contactId) { // every service case should have a contact associated with it
 	$contact = Contacts::model()->findByPk($model->contactId);
 	if($contact) { // if associated contact exists, display mini contact view
 		echo '<h2>'.Yii::t('actions','Contact Info').'</h2>';

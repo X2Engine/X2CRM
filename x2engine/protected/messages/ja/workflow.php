@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'編集ワークフロー',
 'Delete Workflow'=>'ワークフローを削除',
 'Workflow Status'=>'ワークフローの状態',
+'Any stage'=>'どの段階',
 );

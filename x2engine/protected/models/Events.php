@@ -138,9 +138,15 @@ class Events extends CActiveRecord
                                     array('{actionLink}'=>CHtml::link($this->parseModelName($this->associationType),Yii::app()->controller->createUrl('/actions/view?id='.$this->associationId)),
                                         '{contactLink}'=>X2Model::getModelLink($action->associationId,ucfirst($action->associationType))));
                         }else{
-                            $text=$authorText.Yii::t('app',"created a new {modelName}, {modelLink}",
+                            if(!empty($authorText)){
+                                $text=$authorText.Yii::t('app',"created a new {modelName}, {modelLink}",
                                     array('{modelName}'=>$this->parseModelName($this->associationType),
                                           '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)));
+                            }else{
+                                $text=Yii::t('app',"A new {modelName}, {modelLink}, has been created.",
+                                    array('{modelName}'=>$this->parseModelName($this->associationType),
+                                          '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)));
+                            }
                         }
                    }else{
                         $deletionEvent=CActiveRecord::model('Events')->findByAttributes(array('type'=>'record_deleted','associationType'=>$this->associationType,'associationId'=>$this->associationId));

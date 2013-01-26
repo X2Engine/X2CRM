@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -139,6 +139,24 @@ return array (
 'Customize fields for the modules.'=>'モジュール用のフィールドをカスタマイズします。',
 'Manage dropdowns for custom fields.'=>'カスタムフィールドのドロップダウンリストを管理します。',
 'Drag and drop editor for forms.'=>'フォームのエディタにドラッグアンドドロップします。',
+'About X2EngineCRM'=>'X2EngineCRMについて',
+'Support'=>'サポート',
+'X2Engine'=>'X2Engine',
+'X2Community'=>'X2Community',
+'Yii Framework'=>'Yiiフレームワーク',
+'Edit Access Rules'=>'アクセスルールを編集します。',
+'Change access rules for roles'=>'ロールのアクセスルールを変更',
+'Manage Sessions'=>'セッションの管理',
+'Manage user sessions.'=>'ユーザセッションを管理します。',
+'Web Lead Capture and Opportunity Workflows'=>'のWebリードキャプチャと商談のワークフロー',
+'Service Case Web Form'=>'サービスケースWebフォーム',
+'Create a public form to receive new service cases.'=>'新しいサービスの例を受信するパブリックフォームを作成します。',
+'Set Service Case Distribution'=>'サービスケース分布を設定',
+'Change how service cases are distributed.'=>'サービスの例がどのように分散されるか変更します。',
+'System Settings'=>'システム設定',
+'Configure session timeout and chat poll rate.'=>'セッションのタイムアウトを設定すると、ポーリングレートをチャット。',
+'Updater Settings'=>'アップデータ設定',
+'Configure automatic updates and registration.'=>'自動更新や登録を設定します。',
 // // 
 // // Modules
 // // Text

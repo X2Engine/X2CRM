@@ -40,9 +40,9 @@
 
 $attributeLabels = $model->attributeLabels();
 
-$showSocialMedia = Yii::app()->params->profile->showSocialMedia;
+// $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
-$showWorkflow = Yii::app()->params->profile->showWorkflow;
+// $showWorkflow = Yii::app()->params->profile->showWorkflow;
 if($modelName=='contacts' || $modelName=='opportunities'){
 
 Yii::app()->clientScript->registerScript('toggleWorkflow', "
@@ -54,10 +54,12 @@ function hideWorkflow() {
 	$('tr#workflow-row').hide();
 	$('tr#workflow-toggle').show();
 }
-$(function() {\n"
-.($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
-."});",CClientScript::POS_HEAD);
+",CClientScript::POS_HEAD);
 }
+// $(function() {\n"
+// .($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
+// ."});",CClientScript::POS_HEAD);
+
 Yii::app()->clientScript->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);

@@ -40,6 +40,7 @@
 $authParams['assignedTo'] = $model->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
+	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
 	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('quotes','View'), 'url'=>array('view', 'id'=>$model->id)),
 	array('label'=>Yii::t('quotes','Update')),
@@ -48,7 +49,7 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2 style="margin-bottom:0;"><?php echo Yii::t('quotes','Update Quote: {name}',array('{name}'=>$model->name)); ?> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>
+<h2 style="margin-bottom:0;"><?php echo ( $model->type == 'invoice'? Yii::t('quotes','Update Invoice: {name}',array('{name}'=>$model->name)) : Yii::t('quotes','Update Quote: {name}',array('{name}'=>$model->name)) ); ?> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>
 
 <?php 
 /*
@@ -78,6 +79,56 @@ echo $this->renderPartial('application.components.views._form',
 		'isQuickCreate'=>true, // let us create the CActiveForm in this file
 	)
 );
+
+if($model->type == 'invoice') { ?>
+	<div class="x2-layout form-view" style="margin-bottom: 0;">
+	
+	    <div class="formSection showSection">
+	    	<div class="formSectionHeader">
+	    		<span class="sectionTitle" title="Invoice"><?php echo Yii::t('quotes', 'Invoice'); ?></span>
+	    	</div>
+	    	<div class="tableWrapper">
+	    		<table>
+	    			<tbody>
+	    				<tr class="formSectionRow">
+	    					<td style="width: 300px">
+	    						<div class="formItem leftLabel">
+	    							<label><?php echo Yii::t('media', 'Invoice Status'); ?></label>
+	    							<div class="formInputBox" style="width: 150px; height: auto;">
+	    								<?php echo $model->renderInput('invoiceStatus'); ?>
+	    							</div>
+	    						</div>
+	    						<div class="formItem leftLabel">
+	    							<label><?php echo Yii::t('media', 'Invoice Created'); ?></label>
+	    							<div class="formInputBox" style="width: 150px; height: auto;">
+	    								<?php echo $model->renderInput('invoiceCreateDate'); ?>
+	    							</div>
+	    						</div>
+	    					</td>
+	    					<td style="width: 300px">
+	    						<div class="formItem leftLabel">
+	    							<label><?php echo Yii::t('media', 'Invoice Issued'); ?></label>
+	    							<div class="formInputBox" style="width: 150px; height: auto;">
+	    								<?php echo $model->renderInput('invoiceIssuedDate'); ?>
+	    							</div>
+	    						</div>
+	    						<div class="formItem leftLabel">
+	    							<label><?php echo Yii::t('media', 'Invoice Payed'); ?></label>
+	    							<div class="formInputBox" style="width: 150px; height: auto;">
+	    								<?php echo $model->renderInput('invoicePayedDate'); ?>
+	    							</div>
+	    						</div>
+	    					</td>
+	    				</tr>
+	    			</tbody>
+	    		</table>
+	    	</div>
+	    </div>
+	    </div>
+	    
+	</div>
+	<br />
+<?php }
 
 echo $this->renderPartial('productTable',
 	array(

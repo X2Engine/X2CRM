@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -139,6 +139,24 @@ return array (
 'Customize fields for the modules.'=>'התאמה אישית של שדות עבור מודולים.',
 'Manage dropdowns for custom fields.'=>'נהל dropdowns עבור שדות מותאמים אישית.',
 'Drag and drop editor for forms.'=>'גרור ושחררת עורך עבור טפסים.',
+'About X2EngineCRM'=>'אודות X2EngineCRM',
+'Support'=>'תמיכה',
+'X2Engine'=>'X2Engine',
+'X2Community'=>'X2Community',
+'Yii Framework'=>'Yii Framework',
+'Edit Access Rules'=>'עריכת כללי גישה',
+'Change access rules for roles'=>'שינוי כללי גישה לתפקידים',
+'Manage Sessions'=>'ניהול הפעלות',
+'Manage user sessions.'=>'ניהול הפעלות משתמש.',
+'Web Lead Capture and Opportunity Workflows'=>'לכידת עופרת אינטרנט וזרימות עבודת הזדמנות',
+'Service Case Web Form'=>'טופס אינטרנט קייס שירות',
+'Create a public form to receive new service cases.'=>'יצירת טופס הציבור לקבל מקרי שירות חדשים.',
+'Set Service Case Distribution'=>'הגדר התפלגות תיק שירות',
+'Change how service cases are distributed.'=>'שינוי אופן מקרי שירות מופצים.',
+'System Settings'=>'הגדרות מערכת',
+'Configure session timeout and chat poll rate.'=>'להגדיר זמן קצוב להפעלה ולשוחח שיעור סקר.',
+'Updater Settings'=>'הגדרות Updater',
+'Configure automatic updates and registration.'=>'הגדרת עדכונים והרשמה אוטומטיים.',
 // // 
 // // Modules
 // // Text

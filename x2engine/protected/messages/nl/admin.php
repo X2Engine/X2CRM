@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright © 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -39,15 +39,15 @@
  ********************************************************************************/
 
 return array (
-
-// Index
-// Titles
+// // 
+// // Index
+// // Titles
 'Utilities'=>'Gereedschap',
 'X2Studio'=>'X2Studie',
 'Support & Documentation'=>'Ondersteuning en Documentatie',
 'Contact Us'=>'Neem contact op',
-
-// Links
+// // 
+// // Links
 'Admin Profile'=>'Beheerder Profiel',
 'Admin Account Settings'=>'Beheerder Account Instellingen',
 'User Management'=>'Gebruikers beheer',
@@ -69,8 +69,30 @@ return array (
 'Gii - A Code Generation Module'=>'Gii -  een code generation module',
 'X2Translate'=>'X2Vertaler',
 'Add, remove and update message translations in the X2Contacts language packs.'=>'Toevoegen, verwijderen en bijwerken bericht vertalingen in het X2Contacten talen Pakketen',
-
-// Text
+'Tutorial Videos'=>'',
+'Phone Support'=>'',
+'Manage Roles'=>'',
+'Set Lead Distribution'=>'',
+'Add Custom Lead Rules'=>'',
+'Workflow Settings'=>'',
+'Manage Notification Criteria'=>'',
+'General Settings'=>'',
+'Google Integration'=>'',
+'Email Settings'=>'',
+'Create Email Campaign'=>'',
+'Manage Campaigns'=>'',
+'Import Contacts'=>'',
+'Export Contacts'=>'',
+'Import All Data'=>'',
+'View User Changelog'=>'',
+'Create a Module'=>'',
+'Manage Fields'=>'',
+'Dropdown Editor'=>'',
+'Form Editor'=>'',
+'Create Workflow'=>'',
+'Manage Workflows'=>'',
+// // 
+// // Text
 'Administrator profile'=>'Beheerder profiel',
 'UI theme settings / background image'=>'Thema instellingen /  achtergrond afbeelding',
 'Add and manage users'=>'Toevoegen en beheer gebruikers',
@@ -95,8 +117,49 @@ return array (
 'Yii Open Source web framework'=>'Yii Open Source web framework',
 'Show'=>'Toon',
 'Hide'=>'Verberg',
-// Modules
-// Text
+'Send invitation emails to create X2Engine accounts'=>'',
+'Create and manage user roles'=>'',
+'Create and manage user groups'=>'',
+'Create a public form to receive new contacts'=>'',
+'Change how new web leads are distributed.'=>'',
+'Manage rules for the "Custom Round Robin" lead distribution setting.'=>'',
+'Create a workflow for your sales process'=>'',
+'Change advanced workflow settings'=>'',
+'Manage what events will trigger user notifications.'=>'',
+'Configure automatic updates, session timeout and chat poll rate.'=>'',
+'Enter your google app settings for Calendar/Google login'=>'',
+'Configure X2Engine\'s email settings'=>'',
+'Create an email marketing campaign'=>'',
+'Manage your marketing campaigns'=>'',
+'Import contacts using a CSV template'=>'',
+'Export contacts to a CSV file'=>'',
+'Export all data (useful for making backups)'=>'',
+'Import from a global export file'=>'',
+'View a log of everything that has been changed'=>'',
+'Customize fields for the modules.'=>'',
+'Manage dropdowns for custom fields.'=>'',
+'Drag and drop editor for forms.'=>'',
+'About X2EngineCRM'=>'Over X2EngineCRM',
+'Support'=>'Ondersteunen',
+'X2Engine'=>'X2Engine',
+'X2Community'=>'X2Community',
+'Yii Framework'=>'Yii Framework',
+'Edit Access Rules'=>'Bewerk Access Rules',
+'Change access rules for roles'=>'Wijzig toegangsregels voor rollen',
+'Manage Sessions'=>'Sessies Beheren',
+'Manage user sessions.'=>'Beheer gebruikerssessies.',
+'Web Lead Capture and Opportunity Workflows'=>'Web Lead Capture en Opportunity Workflows',
+'Service Case Web Form'=>'Dienst Case Web Form',
+'Create a public form to receive new service cases.'=>'Maak een publiek formulier om nieuwe koffers te ontvangen.',
+'Set Service Case Distribution'=>'Stel Koffer Distributie',
+'Change how service cases are distributed.'=>'De manier wijzigen waarop koffers worden verdeeld.',
+'System Settings'=>'Systeeminstellingen',
+'Configure session timeout and chat poll rate.'=>'Configureer sessie time-out en chat poll tarief.',
+'Updater Settings'=>'Updater-instellingen',
+'Configure automatic updates and registration.'=>'Automatische updates configureren en registratie.',
+// // 
+// // Modules
+// // Text
 'Rearrange Main Menu Items'=>'Indelen hoofd menu items',
 'Add, remove and reorder modules:'=>'Toevoegen, verwijdern en herindelen modules',
 'Select Email Criteria'=>'Selecteerd Email Criteria',
@@ -116,9 +179,9 @@ return array (
 'Export'=>'Exporteer',
 'Rename A Module'=>'Hernoem een Module',
 'You can rename a module by selecting a module and typing the new name below.'=>'Je kunt een module hernoemen door deze te selecteren en hier onder de naam te typen',
-
-// Import/Export
-// Text
+// // 
+// // Import/Export
+// // Text
 'Export All Data'=>'Exporteer alle gegevens',
 'Please click the link below to download data.'=>'Click de link hier onder om te downloaden',
 'Import Data from Template'=>'Importeer data van template',
@@ -134,8 +197,8 @@ return array (
 'To upload your logo for display next to the search bar, please  upload the file here using the form below.'=>'Om je logo te uploaden voor naast de zoek balk, gebruik het formulier hier onder.',
 'Create Page'=>'Pagina aanmaken',
 'X2Engine Inc. is the company behind X2Contacts - a high-performance contact management web application. X2Engine can offer to your organization professional support and training on X2Contacts.  Please fill out the form below to contact us.'=>'X2Engine Inc. is het bedrijf achter X2Contacts - een snelle contacten beheer web applicatie. X2Engine kan proffesionele ondersteuning en training aanbieden voor X2Contacts. Vul het formulier hier onder in om contact met ons op te nemen.',
-
-// Email Config
+// // 
+// // Email Config
 'Email Server Configuration'=>'Email server instellingen',
 'Ready to send email? We need some information about your mail server.'=>'Klaar om email te versturen? We hebben wat informatie nodig over je mail server.',
 'Outbound Email Server'=>'Uitgaande Email Server',

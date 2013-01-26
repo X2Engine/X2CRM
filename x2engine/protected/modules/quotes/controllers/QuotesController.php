@@ -39,6 +39,16 @@
  ********************************************************************************/
 
 /**
+ *  The Quotes module lets user's send people a quote with a list of products. Quotes can be converted to invoices.
+ *
+ *  Quotes can be created, updated, deleted, and converted into invoices from the contacts view. The code
+ *  for that is in the file components/InlineQuotes.php and is heavily based on ajax calls to this controller.
+ *  This controller includes functions actionQuickCreate, actionQuickDelete, and actionQuickUpdate which should be called via
+ *  ajax. Those functions then call the components/InlineQuotes.php which returns a list of quotes to the client browser
+ *  that made the ajax call. The function actionConvertToInvoice handles both ajax and non-ajax calls. If called via ajax,
+ *  it will return the list of quotes for the contact id passed in the ajax call.
+ *
+ *
  * @package X2CRM.modules.quotes.controllers 
  */
 class QuotesController extends x2base {
@@ -52,7 +62,7 @@ class QuotesController extends x2base {
 				'users'=>array('*'), 
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index', 'view', 'create', 'quickCreate', 'update', 'quickUpdate', 'search', 'addUser', 'addContact', 'removeUser', 'removeContact', 'saveChanges', 'print', 'delete', 'quickDelete', 'addProduct', 'deleteProduct', 'shareQuote'),
+				'actions'=>array('index', 'view', 'create', 'quickCreate', 'update', 'quickUpdate', 'search', 'addUser', 'addContact', 'removeUser', 'removeContact', 'saveChanges', 'print', 'delete', 'quickDelete', 'addProduct', 'deleteProduct', 'shareQuote', 'convertToInvoice', 'indexInvoice'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -81,6 +91,7 @@ class QuotesController extends x2base {
 	public function actionView($id) {
 		$type = 'quotes';
 		$model = $this->loadModel($id);
+		$contactId = $model->associatedContacts;
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 				
 		// find associated products and their quantities
@@ -116,7 +127,7 @@ class QuotesController extends x2base {
 		    
 		));
 
-		parent::view($model, $type, array('dataProvider'=>$dataProvider, 'total'=>$total));
+		parent::view($model, $type, array('dataProvider'=>$dataProvider, 'total'=>$total, 'contactId'=>$contactId));
 	}
 	
 	public function actionShareQuote($id){
@@ -357,47 +368,11 @@ class QuotesController extends x2base {
 	public function actionQuickCreate() {
 		
 		if(isset($_POST['Quote'])) {
-                    foreach($_POST as $key=>$arr){
-                            $pieces=explode("_",$key);
-                            if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-                                $newKey=$pieces[1];
-                                if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-                                    $val=$_POST[$newKey."_id"];
-                                }else{
-                                    $field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-                                    if(isset($field)){
-                                        $type=ucfirst($field->linkType);
-                                        if($type!="Contacts"){
-                                            eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-                                        }else{
-                                            $names=explode(" ",$arr);
-                                            $lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-                                        }
-                                        if(isset($lookupModel))
-                                            $val=$lookupModel->id;
-                                        else
-                                            $val=$arr;
-                                    }
-                                }
-                                $model->$newKey=$val;
-                            }
-                        }
-//			$this->render('test', array('model'=>$_POST));
 			$model = new Quote;
-            $oldAttributes=$model->attributes;
-        	foreach(array_keys($model->attributes) as $field){
-                            if(isset($_POST['Quote'][$field])){
-                                $model->$field=$_POST['Quote'][$field];
-                                $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Quote','fieldName'=>$field));
-                                if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
-                                }elseif($fieldData->type=='date'){
-                                    $model->$field=$this->parseDate($model->$field);
-                                }
-                                
-                            }
-                        }
-				    	
+			
+            $oldAttributes = $model->attributes;
+			$model->setX2Fields($_POST['Quote']);
+			
 			$contacts = $_POST['associatedContacts']; // get contacts
 			$contact = CActiveRecord::model('Contacts')->findByPk($contacts[0]);
 			$model->associatedContacts = $contact->id;
@@ -681,6 +656,7 @@ class QuotesController extends x2base {
 		));
 	}
 	
+	// called from the quotes mini module in contacts view
 	public function actionQuickUpdate($id) {
 		$model = $this->loadModel($id);
 
@@ -803,7 +779,13 @@ class QuotesController extends x2base {
 		}
 	}
 	
-	
+	/**
+	 *  Print a quote.
+	 *
+	 *  First, display a page for print options, then when that page is submitted,
+	 *  display a printer friendly quotes or invoice page.
+	 *
+	 */
 	public function actionPrint($id) {
 		$model = $this->loadModel($id);
 		
@@ -1004,6 +986,19 @@ class QuotesController extends x2base {
 		$model=new Quote('search');
 		$this->render('index', array('model'=>$model));
 	}
+	
+	/**
+	 * Lists all models.
+	 *
+	 *  This is a separate list for invoices. An invoice is a quote
+	 *  with field type='invoice'. The only difference is that when listing,
+	 *  printing, or emailing an invoice, we call it an invoice instead of a
+	 *  quote.
+	 */
+	public function actionIndexInvoice() {
+		$model=new Quote('searchInvoice');
+		$this->render('indexInvoice', array('model'=>$model));
+	}
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
@@ -1137,6 +1132,54 @@ class QuotesController extends x2base {
 				$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
 			}
 		}
+	}
+	
+	/**
+	 *  Convert the Quote into an Invoice
+	 *  An invoice is a quote with field type='invoice'. The only difference is that 
+	 *  when listing, printing, or emailing an invoice, we call it an invoice instead
+	 *  of a quote.
+	 *
+	 *  @param $id id of the quote to convert to invoice
+	 *
+	 */
+	public function actionConvertToInvoice($id) {
+		$model=$this->loadModel($id); // get model
+		
+		// convert to invoice
+		$model->type = 'invoice';
+		$model->invoiceCreateDate = time();
+				
+		// set invoice status to the top choice in the invoice status drop down
+		$field = $model->getField('invoiceStatus'); 
+		if($field) {
+			$dropDownId = $field->linkType;
+			if($dropDownId) {
+				$dropdowns = Dropdowns::getItems($field->linkType);
+				if($dropdowns) {
+					reset($dropdowns);
+					$status = key($dropdowns);
+					if($status) {
+						$model->invoiceStatus = $status;
+					}
+				}
+			}
+		}
+		
+		$model->update();
+		
+		if(isset($_GET['contactId'])) { // ajax request from a contact view, don't reload page, instead return a list of quotes for this contact
+			if(isset($_GET['contactId'])) {
+				$contact = CActiveRecord::model('Contacts')->findByPk($_GET['contactId']);
+				if($contact) {
+					Yii::app()->clientScript->scriptMap['*.js'] = false;
+					$this->renderPartial('quoteFormWrapper', array('model'=>$contact), false, true);
+					return;
+				}
+			}
+		}
+		
+		$this->redirect(array('view','id'=>$model->id)); // view quote
 	}
 		
 	// delete a product from a quote

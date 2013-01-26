@@ -285,7 +285,7 @@ $(function() {
 		
 		$.ajax({
 			type: 'GET',
-			url: yii.baseUrl+'/index.php/notifications/delete',
+			url: yii.scriptUrl+'/notifications/delete',
 			data: {
 				id:notifId,
 				getNext:getNextNotif,
@@ -323,7 +323,7 @@ $(function() {
 	$('#chat-submit').click(function() {
 		$.ajax({
 			type:'POST',
-			url:yii.baseUrl+'/index.php/site/newMessage',
+			url:yii.scriptUrl+'/site/newMessage',
 			data:$(this).closest('form').serialize()
 		}).done(function(response) {
 			$('#chat-message').val('');
@@ -352,7 +352,7 @@ $(function() {
 	function getUpdates(firstCall) {
 		$.ajax({
 			type: 'GET',
-			url: yii.baseUrl+'/index.php/notifications/get',
+			url: yii.scriptUrl+'/notifications/get',
 			data: {
 				lastNotifId:lastNotifId,
 				lastChatId:lastChatId
@@ -417,7 +417,7 @@ $(function() {
 			if(notifIds.length) {
 				$.ajax({
 					type: 'GET',
-					url: yii.baseUrl+'/index.php/notifications/markViewed',
+					url: yii.scriptUrl+'/notifications/markViewed',
 					data: encodeURI(notifIds.join('&'))
 				});
 			}
@@ -555,7 +555,7 @@ $(function() {
 			var path = window.location.href.split(yii.baseUrl);
 			if(path.length > 1) {
 				originalPath = path[1];
-				window.location.href = path[0] + yii.baseUrl + "/index.php/site/login?redirect="+encodeURIComponent(originalPath);
+				window.location.href = path[0] + yii.scriptUrl + "/site/login?redirect="+encodeURIComponent(originalPath);
 			}
 		};
 	});

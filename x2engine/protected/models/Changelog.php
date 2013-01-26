@@ -114,7 +114,7 @@ class Changelog extends CActiveRecord
 	{
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
-
+        
 		$criteria=new CDbCriteria;
         $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
@@ -122,7 +122,9 @@ class Changelog extends CActiveRecord
 		$criteria->compare('type',$this->type,true);
 		$criteria->compare('itemId',$this->itemId);
 		$criteria->compare('changedBy',$this->changedBy,true);
-		$criteria->compare('changed',$this->changed,true);
+		$criteria->compare('fieldName',$this->fieldName,true);
+        $criteria->compare('oldValue',$this->oldValue,true);
+        $criteria->compare('newValue',$this->newValue,true);
 		$criteria->compare('timestamp',$this->timestamp);
 
 		return new SmartDataProvider(get_class($this), array(

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -65,6 +65,25 @@ return array (
 'Results Per Page'=>'Результатов на страницу',
 'Show Social Media'=>'Показать социальных медиа',
 'Upload a Background'=>'Загрузить фон',
+'Avatar'=>'Аватар',
+'Widget Order'=>'Виджет Заказать',
+'Widget Settings'=>'Виджет настройки',
+'Page Opacity'=>'Page Opacity',
+'Show Detail View'=>'Показать Детальный просмотр',
+'Show Workflow'=>'Показать рабочий процесс',
+'Gridview Settings'=>'Gridview Настройки',
+'Form Settings'=>'Параметры формы',
+'Email Signature'=>'E-mail Подпись',
+'My Signature'=>'Моя подпись',
+'Enable Full Width Layout'=>'Включить полный макет ширина',
+'Google ID'=>'Google ID',
+'Signature'=>'подпись',
+'Address'=>'адрес',
+'Use my signature'=>'Используйте свою подпись',
+'Use default'=>'Использовать по умолчанию',
+'Old Password'=>'Старый пароль',
+'New Password'=>'Новый пароль',
+'Confirm New Password'=>'Подтвердите новый пароль',
 
 // Profile Actions
 'View Profile'=>'Просмотр профиля',
@@ -73,10 +92,14 @@ return array (
 'Social Feed'=>'Социальный поток',
 'People'=>'люди',
 'Change Personal Settings'=>'Изменение абонентских установок',
+'Change Password'=>'Изменить пароль',
+'Reset Widgets'=>'Сброс Виджеты',
 
 // Profile Titles
 'Profile:'=>'Профиль:',
 'Update Your Profile'=>'Обновить профиль',
+'Unhide Tags'=>'Отобразить метки',
+'Change Password Form'=>'Форму для смены пароля',
 
 // Social
 'Feed'=>'лента новостей',

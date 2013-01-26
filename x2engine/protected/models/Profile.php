@@ -84,7 +84,7 @@ class Profile extends CActiveRecord {
 		return array(
 			array('fullName, username, status', 'required'),
 			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity', 'numerical', 'integerOnly'=>true),
-			array('enableFullWidth,showWorkflow,showSocialMedia,showDetailView','boolean'),
+			array('enableFullWidth,showSocialMedia,showDetailView','boolean'),	//,showWorkflow
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
 			array('emailUseSignature', 'length', 'max'=>10),
 			array('startPage', 'length', 'max'=>30),
@@ -141,13 +141,14 @@ class Profile extends CActiveRecord {
 			'startPage'=>Yii::t('profile','Start Page'),
 			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
 			'showDetailView'=>Yii::t('profile','Show Detail View'),
-			'showWorkflow'=>Yii::t('profile','Show Workflow'),
+			// 'showWorkflow'=>Yii::t('profile','Show Workflow'),
 			'gridviewSettings'=>Yii::t('profile','Gridview Settings'),
 			'formSettings'=>Yii::t('profile','Form Settings'),
-			'emailUseSignature' => Yii::t('admin','Email Signature'),
-			'emailSignature' => Yii::t('admin','My Signature'),
+			'emailUseSignature' => Yii::t('profile','Email Signature'),
+			'emailSignature' => Yii::t('profile','My Signature'),
 			'enableFullWidth'=>Yii::t('profile','Enable Full Width Layout'),
 			'googleId'=>Yii::t('profile','Google ID'),
+            'address'=>Yii::t('profile','Address'),
 		);
 	}
 

@@ -140,8 +140,8 @@ if($startHidden == false) {
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Name'),
 			'value'=>'($data->firstType=="'.$modelName.'" && $data->firstId=="'.$model->id.'")?
-                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found.")):
-                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : strtolower($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found."))',
+                            ((class_exists($data->secondType) && !is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId)))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found.")):
+                            ((class_exists($data->firstType) && !is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId)))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : strtolower($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found."))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
@@ -156,8 +156,8 @@ if($startHidden == false) {
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Assigned To'),
 			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
-                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?UserChild::getUserLinks(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
-                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?UserChild::getUserLinks(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
+                            ((class_exists($data->secondType) && !is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId)))?UserChild::getUserLinks(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
+                            ((class_exists($data->firstType) && !is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId)))?UserChild::getUserLinks(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),

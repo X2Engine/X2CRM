@@ -798,7 +798,7 @@ abstract class x2base extends X2Controller {
      */
     public function actionSearch() {
         $term = $_GET['term'];
-        $this->redirect(Yii::app()->request->baseUrl . '/index.php/search/search?term=' . $term);
+        $this->redirect(Yii::app()->request->scriptUrl . '/search/search?term=' . $term);
     }
 
     /**
@@ -1276,15 +1276,17 @@ abstract class x2base extends X2Controller {
      * @param CFilterChain $filterChain 
      */
     public function filterSetPortlets($filterChain) {
-        $themeURL = Yii::app()->theme->getBaseUrl();
+		if (!Yii::app()->user->isGuest) {
+			$themeURL = Yii::app()->theme->getBaseUrl();
 
-        if ($this->action->id != 'webLead' && $this->action->id != 'login' && $this->action->id!='googleLogin')
-            Yii::app()->clientScript->registerScript('logos', 'var _0xa525=["\x6C\x65\x6E\x67\x74\x68","\x23\x6D\x61\x69\x6E\x2D\x6D\x65\x6E\x75\x2D\x69\x63\x6F\x6E","\x23\x78\x32\x74\x6F\x75\x63\x68\x2D\x6C\x6F\x67\x6F","\x23\x78\x32\x63\x72\x6D\x2D\x6C\x6F\x67\x6F","\x68\x72\x65\x66","\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72","\x61","\x50\x6C\x65\x61\x73\x65\x20\x70\x75\x74\x20\x74\x68\x65\x20\x6C\x6F\x67\x6F\x20\x62\x61\x63\x6B","\x73\x72\x63","\x61\x74\x74\x72","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x66\x6F\x6F\x74\x65\x72\x2E\x70\x6E\x67","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x74\x6F\x75\x63\x68\x2E\x70\x6E\x67","\x6C\x6F\x61\x64"];$(window)[_0xa525[12]](function (){if((!$(_0xa525[1])[_0xa525[0]])||(!$(_0xa525[2])[_0xa525[0]])||(!$(_0xa525[3])[_0xa525[0]])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;var _0x3addx1=$(_0xa525[2])[_0xa525[9]](_0xa525[8]);var _0x3addx2=$(_0xa525[3])[_0xa525[9]](_0xa525[8]);if(_0x3addx2!=("$themeURL"+_0xa525[10])||_0x3addx1!=("$themeURL"+_0xa525[11])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;} );');
-        $this->portlets = Profile::getWidgets();
-        // foreach($widgets as $key=>$value) {
-        // $options = ProfileChild::parseWidget($value,$key);
-        // $this->portlets[$key] = $options;
-        // }
+			if ($this->action->id != 'webLead' && $this->action->id != 'login' && $this->action->id != 'googleLogin')
+				Yii::app()->clientScript->registerScript('logos', 'var _0xa525=["\x6C\x65\x6E\x67\x74\x68","\x23\x6D\x61\x69\x6E\x2D\x6D\x65\x6E\x75\x2D\x69\x63\x6F\x6E","\x23\x78\x32\x74\x6F\x75\x63\x68\x2D\x6C\x6F\x67\x6F","\x23\x78\x32\x63\x72\x6D\x2D\x6C\x6F\x67\x6F","\x68\x72\x65\x66","\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72","\x61","\x50\x6C\x65\x61\x73\x65\x20\x70\x75\x74\x20\x74\x68\x65\x20\x6C\x6F\x67\x6F\x20\x62\x61\x63\x6B","\x73\x72\x63","\x61\x74\x74\x72","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x66\x6F\x6F\x74\x65\x72\x2E\x70\x6E\x67","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x74\x6F\x75\x63\x68\x2E\x70\x6E\x67","\x6C\x6F\x61\x64"];$(window)[_0xa525[12]](function (){if((!$(_0xa525[1])[_0xa525[0]])||(!$(_0xa525[2])[_0xa525[0]])||(!$(_0xa525[3])[_0xa525[0]])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;var _0x3addx1=$(_0xa525[2])[_0xa525[9]](_0xa525[8]);var _0x3addx2=$(_0xa525[3])[_0xa525[9]](_0xa525[8]);if(_0x3addx2!=("$themeURL"+_0xa525[10])||_0x3addx1!=("$themeURL"+_0xa525[11])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;} );');
+			$this->portlets = Profile::getWidgets();
+			// foreach($widgets as $key=>$value) {
+			// $options = ProfileChild::parseWidget($value,$key);
+			// $this->portlets[$key] = $options;
+			// }
+		}
         $filterChain->run();
     }
 

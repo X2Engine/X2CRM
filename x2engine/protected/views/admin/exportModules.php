@@ -45,7 +45,7 @@
 <form name="exportModule" action="exportModule" method="POST">
 	<br />
 	<select name="name">
-		<?php foreach($modules as $module) echo "<option value='$module'>$module</option>"; ?>
+		<?php foreach($modules as $name=>$module) echo "<option value='$name'>$module</option>"; ?>
 	</select>
 	<br /><br />
 	<input type="submit" value="<?php echo Yii::t('admin','Export');?>" />

@@ -174,7 +174,7 @@ function setupInlineEmailForm() {
 					return false;
 				},
 				'type':'POST',
-				'url':yii.baseUrl+'/index.php/contacts/inlineEmail?ajax=1&preview=1',
+				'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&preview=1',
 				'data':jQuery(this).parents("form").serialize(),
 				'success':function(html){
 					jQuery("#inline-email-form").replaceWith(html)

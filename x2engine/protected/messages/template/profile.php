@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -65,6 +65,25 @@ return array (
 'Results Per Page'=>'',
 'Show Social Media'=>'',
 'Upload a Background'=>'',
+'Avatar'=>'',
+'Widget Order'=>'',
+'Widget Settings'=>'',
+'Page Opacity'=>'',
+'Show Detail View'=>'',
+'Show Workflow'=>'',
+'Gridview Settings'=>'',
+'Form Settings'=>'',
+'Email Signature'=>'',
+'My Signature'=>'',
+'Enable Full Width Layout'=>'',
+'Google ID'=>'',
+'Signature'=>'',
+'Address'=>'',
+'Use my signature'=>'',
+'Use default'=>'',
+'Old Password'=>'',
+'New Password'=>'',
+'Confirm New Password'=>'',
 
 // Profile Actions
 'View Profile'=>'',
@@ -73,10 +92,14 @@ return array (
 'Social Feed'=>'',
 'People'=>'',
 'Change Personal Settings'=>'',
+'Change Password'=>'',
+'Reset Widgets'=>'',
 
 // Profile Titles
 'Profile:'=>'',
 'Update Your Profile'=>'',
+'Unhide Tags'=>'',
+'Change Password Form'=>'',
 
 // Social
 'Feed'=>'',

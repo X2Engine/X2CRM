@@ -129,7 +129,7 @@ $(document).ready(function() {
 // js to change background image
 function setBackground(filename){
 	$.ajax({
-		url: yii.baseUrl+'/index.php/profile/setBackground',
+		url: yii.scriptUrl+'/profile/setBackground',
 		type: 'post',
 		data: 'name='+filename,
 		success: function(response) {
@@ -149,7 +149,7 @@ function setBackground(filename){
 }
 function deleteBackground(id,filename) {
 	$.ajax({
-		url: yii.baseUrl+'/index.php/profile/deleteBackground',
+		url: yii.scriptUrl+'/profile/deleteBackground',
 		type: 'get',
 		data: 'id='+id,
 		success: function(response) {

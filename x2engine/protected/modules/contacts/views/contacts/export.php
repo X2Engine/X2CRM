@@ -55,6 +55,6 @@ $this->actionMenu = $this->formatMenu(array(
 <script>
 $('#download-link').click(function(e) {
     e.preventDefault();  //stop the browser from following
-    window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>'file.csv')); ?>';
+    window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>'contact_export.csv')); ?>';
 });</script>
 </html>

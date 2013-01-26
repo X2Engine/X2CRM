@@ -165,7 +165,7 @@ class Notification extends CActiveRecord {
             
 			case 'action_complete':
 				if($passive)
-					return Yii::t('actions','Action completed: {action}',array('{action}'=>$record->getLink(30)));
+					return Yii::t('actions','Action completed: {action}',array('{action}'=>$record->getLink()));
 				else
 					return Yii::t('actions','{user} completed an action: {action}',array('{user}'=>User::getUserLinks($record->completedBy),'{action}'=>$record->getLink(20)));
 

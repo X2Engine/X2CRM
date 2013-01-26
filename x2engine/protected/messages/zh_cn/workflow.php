@@ -77,4 +77,5 @@ return array (
 'Edit Workflow'=>'编辑工作流程',
 'Delete Workflow'=>'删除工作流',
 'Workflow Status'=>'工作流状态',
+'Any stage'=>'任何阶段',
 );

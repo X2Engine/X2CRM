@@ -102,7 +102,7 @@ $emailName = "<br />
 		<tr>
 			<td><b>{$quote->name}</b></td>
 			<td style=\"text-align:right;font-weight:bold;\">
-				<span>Quote # {$quote->id}</span><br />
+				<span>". ( $quote->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) ." # {$quote->id}</span><br />
 				<span>".date("F d, Y", time())."</span>
 			</td>
 		</tr>
@@ -119,7 +119,7 @@ else
 	$emailNotes['label'] = '<b>'. Yii::t('quotes', $attributeLabel['description']) .'</b><br />';
 $emailNotes['notes'] = $quote->description .'<br /><br />';
 
-$jsEmailMessage = array('name'=>$emailName, 'products'=>$emailProducts, 'notes'=>$emailNotes);
+$jsEmailMessage = array('name'=>$emailName, 'products'=>$emailProducts, 'notes'=>$emailNotes, 'subject'=>( $quote->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) );
 $jsEmailMessage = json_encode($jsEmailMessage); // encode for javascript
 
 $emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail($jsEmailMessage)"));
@@ -161,6 +161,24 @@ $jsDuplicateQuote .= ' }';
 $duplicateButton = CHtml::link('['. Yii::t('products', 'Duplicate') .']', 'javascript:void(0);', array('onClick'=>"duplicateQuote($jsDuplicateQuote)"));
 
 /*** End Duplicate Quote ***/
+
+
+/*** Begin Convert to Invoice ***/
+
+$convertToIncoieButton = '';
+
+if($quote->type != 'invoice') {
+	$convertToIncoieButton = CHtml::ajaxLink(
+	'['. Yii::t('quotes', 'Invoice') .']', 
+	Yii::app()->createUrl('/quotes/quotes/convertToInvoice', array('id'=>$quote->id, 'contactId'=>$contactId)),
+	     array(
+	     	'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
+	     	'complete'=>"function(response) { $.fn.yiiListView.update('history'); }",
+	     ),
+	     array('id'=>"convert-to-invoice-quote-{$quote->id}", 'title'=> Yii::t('quotes', 'Convert To Invoice'), 'live'=>false)
+	);
+}
+
 ?>
 
 <?php /*** Begin Quote Details ***/ ?>
@@ -187,6 +205,7 @@ $duplicateButton = CHtml::link('['. Yii::t('products', 'Duplicate') .']', 'javas
 				<?php echo $emailButton; ?>
 				<?php echo $printButton; ?>
 				<?php echo $duplicateButton; ?>
+				<?php echo $convertToIncoieButton; ?>
 			</td>
 		</tr>
 		<tr>

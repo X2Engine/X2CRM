@@ -73,6 +73,23 @@ class AdminController extends Controller {
             ),
         );
     }
+    
+    public function actionCalculateTranslationRedundancy(){
+        $files=scandir('protected/messages/template');
+        $languageList=array();
+        foreach($files as $file){
+            if($file!='.' && $file!='..')
+                $languageList[$file]=array_keys(include("protected/messages/template/$file"));
+        }
+        $keys=array_keys($languageList);
+        for($i=0;$i<count($languageList);$i++){
+            for($j=$i+1;$j<count($languageList);$j++){
+                $intersect=array_intersect($languageList[$keys[$i]],$languageList[$keys[$j]]);
+                $unique=(count($languageList[$keys[$i]])-count($intersect)) + (count($languageList[$keys[$j]])-count($intersect));
+                echo "For ".$keys[$i]." to ".$keys[$j]." ".round(count($intersect)/$unique*100,2)."% items identical.<br />";
+            }
+        }
+    }
 
     /**
      * View the main admin menu
@@ -914,7 +931,13 @@ class AdminController extends Controller {
     public function actionViewChangelog() {
 
         $model = new Changelog('search');
-
+        if(isset($_GET['Changelog'])){
+            foreach($_GET['Changelog'] as $field=>$value){
+                if($model->hasAttribute($field)){
+                    $model->$field=$value;
+                }
+            }
+        }
         $this->render('viewChangelog', array(
             'model' => $model,
         ));
@@ -2091,18 +2114,22 @@ class AdminController extends Controller {
             $zip = Yii::app()->zip;
             $zip->extractZip("$moduleName.zip", 'protected/modules/');
 
-            $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
-            if (isset($admin)) {
-                if ($admin->menuOrder != "") {
-                    $admin->menuOrder.=":" . ucfirst($moduleName);
-                    $admin->menuVisibility.=":1";
-                    $admin->menuNicknames.=":" . ucfirst($moduleName);
-                } else {
-                    $admin->menuOrder = ucfirst($moduleName);
-                    $admin->menuVisibility = "1";
-                    $admin->menuNicknames = ucfirst($moduleName);
+            $regPath = "protected/modules/$moduleName/register.php";
+            $regFile = realpath($regPath);
+            if ($regFile) {
+                $install = require_once($regFile);
+                foreach ($install['install'] as $sql) {
+                    $sqlComm = $sql;
+                    if (is_string($sql)) {
+                        if (file_exists($sql)) {
+                            $sqlComm = explode('/*&*/', file_get_contents($sql));
+                        }
+                    }
+                    foreach ($sqlComm as $sqlLine) {
+                        $command=Yii::app()->db->createCommand($sqlLine);
+                        $command->execute();
+                    }
                 }
-                $admin->save();
             }
 
 
@@ -2868,22 +2895,10 @@ class AdminController extends Controller {
 		
 		if ($updaterCheck && $versionTest) {
 			if ($updaterCheck != $updaterVersion) {
-				// Download the new updater so that update can proceed as usual;
-				$updaterFiles = array(
-					"protected/controllers/AdminController.php",
-					"protected/views/admin/updater.php",
-					"protected/components/UpdaterBehavior.php"
-					);
-				foreach($updaterFiles as $file) {
-					$this->ccopy("http://x2planet.com/updates/x2engine/$file", $file);
-				}
-				// Write the new updater version into the configuration; else 
-				// the app will get stuck in a loop
-				$this->regenerateConfig(Null, $updaterCheck, Null);
-				$this->redirect('updater');
+				$this->updateUpdater($updaterCheck,'updater');
 			}
 
-			if ($version !== $versionTest) {
+			if (version_compare($version,$versionTest)<0) {
 				// Fetch update data from the server:
 				$admin = Yii::app()->params->admin;
 				$unique_id = 'none';
@@ -2954,21 +2969,34 @@ class AdminController extends Controller {
 	public function actionUpgrader() {
 		$thisVersion = Yii::app()->params->version;
 		$currentVersion = @file_get_contents('http://x2planet.com/installs/updates/versionCheck');
-		if ($thisVersion == $currentVersion) {
-			$this->render('updater',array(
+		if (version_compare($thisVersion, $currentVersion) < 0) {
+			$this->render('updater', array(
+				'scenario' => 'error',
+				'message' => 'Update required',
+				'longMessage' => "Before upgrading, you must update to the latest version ($currentVersion). " . CHtml::link(Yii::t('app', 'Update'), 'updater', array('class' => 'x2-button'))
+			));
+		} else {
+			include('protected/config/X2Config.php');
+
+			$context = stream_context_create(array(
+				'http' => array(
+					'timeout' => 15  // Timeout in seconds
+					)));
+
+			// Check to see if the updater has changed:
+			$updaterCheck = @file_get_contents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
+
+			if ($updaterCheck != $updaterVersion) {
+				$this->updateUpdater($updaterCheck, 'upgrader');
+			}
+			$this->render('updater', array(
 				'scenario' => 'upgrade',
-				'version'=> $thisVersion,
+				'version' => $thisVersion,
 				'unique_id' => '',
 				'url' => 'x2planet',
 				'newVersion' => $currentVersion,
 				'updaterCheck' => '',
 				'edition' => Yii::app()->params->admin->edition
-			));
-		} else {
-			$this->render('updater', array(
-				'scenario' => 'error',
-				'message' => 'Update required',
-				'longMessage' => "Before upgrading, you must update to the latest version ($currentVersion). " . CHtml::link(Yii::t('app', 'Update'), 'updater', array('class' => 'x2-button'))
 			));
 		}
 	}
@@ -3088,24 +3116,21 @@ class AdminController extends Controller {
         $this->copyFile("temp");
 		$sqlRun = array();
         if (isset($_POST['sqlList'])) {
+			$pdo = Yii::app()->db->pdoInstance;
             $sql = $_POST['sqlList'];
             foreach ($sql as $query) {
                 if ($query != "") {
 					try {
-						$command = Yii::app()->db->createCommand($query);
+						$command = $pdo->prepare($query);
 						$result = $command->execute();
-						$sqlRun[] = $query;
-					} catch (CDbException $e) {
-						$message = 'A database change failed to apply. ';
-						if (count($sqlRun)) {
-							$message .= count($sqlRun).' changes were applied prior to this failure:<ol>';
-							foreach ($sqlRun as $sqlStatemt)
-								$message .= '<li>' . CHtml::encode($sqlStatemt) . '</li>';
-							$message .= '</ol> Please save the above list. <br /><br />';
+						if($result !== false)
+							$sqlRun[] = $query;
+						else {
+							$errorInfo = $command->errorInfo();
+							$this->sqlError($sqlRun,'('.$errorInfo[0].') '.$errorInfo[2]);
 						}
-						$message .= " The error message given was: ".CHtml::encode($e->getMessage());
-						$message .= '<br /><br /> Update failed.';
-						$this->respond($message,true,false,true);
+					} catch (PDOException $e) {
+						$this->sqlError($sqlRun,$e->getMessage());
 					}
                 }
             }
@@ -3441,4 +3466,47 @@ class AdminController extends Controller {
 	
 	}
 	
+	/**
+	 * Exits, returning SQL error messages
+	 * 
+	 * @param type $sqlRun
+	 * @param type $errorMessage 
+	 */
+	public function sqlError($sqlRun, $errorMessage = null) {
+		$message = 'A database change failed to apply. ';
+		if (count($sqlRun)) {
+			$message .= count($sqlRun) . ' changes were applied prior to this failure:<ol>';
+			foreach ($sqlRun as $sqlStatemt)
+				$message .= '<li>' . CHtml::encode($sqlStatemt) . '</li>';
+			$message .= '</ol> Please save the above list. <br /><br />';
+		}
+		if ($errorMessage !== null) {
+			$message .= " The error message given was: " . CHtml::encode($errorMessage);
+		}
+
+		$message .= '<br /><br /> Update failed.';
+		$this->respond($message, true, false, true);
+	}
+	
+	/**
+	 * Download the new updater so that update can proceed as usual
+	 * 
+	 * @param type $updaterCheck
+	 * @param type $redirect 
+	 */
+	public function updateUpdater($updaterCheck,$redirect) {
+		
+		$updaterFiles = array(
+			"protected/controllers/AdminController.php",
+			"protected/views/admin/updater.php",
+			"protected/components/UpdaterBehavior.php"
+		);
+		foreach ($updaterFiles as $file) {
+			$this->ccopy("http://x2planet.com/updates/x2engine/$file", $file);
+		}
+		// Write the new updater version into the configuration; else 
+		// the app will get stuck in a loop
+		$this->regenerateConfig(Null, $updaterCheck, Null);
+		$this->redirect($redirect);
+	}
 }

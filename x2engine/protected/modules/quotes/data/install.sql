@@ -19,7 +19,12 @@ CREATE TABLE x2_quotes(
 	expirationDate			BIGINT,
 	status					VARCHAR(20),
 	currency				VARCHAR(40),
-	locked					TINYINT
+	locked					TINYINT,
+	type					VARCHAR(20),
+	invoiceStatus			VARCHAR(40),
+	invoiceCreateDate		BIGINT,
+	invoiceIssuedDate		BIGINT,
+	invoicePayedDate		BIGINT
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
 CREATE TABLE x2_quotes_products( 
@@ -68,4 +73,8 @@ VALUES
 ("Quote",			"expirationDate",		"Expiration Date",		0,		0,	"date",			0,			0,		NULL,			0,		0,			""),
 ("Quote",			"existingProducts",		"Existing Products",	0,		0,	"varchar",		0,			0,		NULL,			0,		1,			""),
 ("Quote",			"products",				"Products",				0,		0,	"varchar",		0,			0,		NULL,			0,		1,			""),
-("Quote",			"locked",				"Locked",				0,		0,	"boolean",		0,			0,		NULL,			0,		0,			"");
+("Quote",			"locked",				"Locked",				0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
+('Quote', 			'invoiceStatus', 		'Status', 				0, 		0, 'dropdown', 		0, 			0, 		'15', 			0, 		0,			""),
+('Quote', 			'invoiceCreateDate', 	'Invoice Created', 		0, 		0, 'date', 			0, 			0, 		NULL, 			0, 		0,			""),
+('Quote', 			'invoiceIssuedDate', 	'Invoice Issued', 		0, 		0, 'date', 			0, 			0, 		NULL, 			0, 		0,			""),
+('Quote', 			'invoicePayedDate', 	'Invoice Payed', 		0, 		0, 'date', 			0, 			0, 		NULL, 			0, 		0,			"");

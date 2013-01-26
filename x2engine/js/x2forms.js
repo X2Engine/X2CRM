@@ -98,7 +98,7 @@ function saveFormSections() {
 	});
 	var formSettings = '['+formSectionStatus.join(',')+']';
 	$.ajax({
-		url: yii.baseUrl+'/index.php/site/saveFormSettings',
+		url: yii.scriptUrl+'/site/saveFormSettings',
 		type: 'GET',
 		data: 'formName='+window.formName+'&formSettings='+encodeURI(formSettings)
 	});

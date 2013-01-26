@@ -73,13 +73,13 @@ class UserIdentity extends CUserIdentity {
 				$this->_id = $user->id;
 				//$this->setState('lastLoginTime', $user->lastLoginTime); //not yet set up
 				
-				if($isMD5 && version_compare(phpversion(),'5.3') == 1) {	// regenerate a more secure hash and nonce
+				if(version_compare(PHP_VERSION,'5.3') >= 0) {	// regenerate a more secure hash and nonce
 					$nonce = '';
 					for($i = 0; $i<16; $i++)	// generate a random 16 character nonce with the Mersenne Twister
 						$nonce .= substr('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./', mt_rand(0, 63), 1); 
 
 					$user->password = substr(crypt($this->password,'$5$rounds=32678$'.$nonce),16);
-					$user->save();
+					$user->update(array('password'));
 				}
 				
 			} else {
@@ -94,14 +94,3 @@ class UserIdentity extends CUserIdentity {
 		return $this->_id;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

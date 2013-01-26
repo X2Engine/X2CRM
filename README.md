@@ -1,7 +1,5 @@
-# X2CRM 2.7 Changelog #
-1/23/2013
-
-Changes for 2.7:
+# X2CRM 2.7.1 Changelog #
+1/25/2013
 
 * New Activity Feed
 	* See all the activity on X2CRM in one place
@@ -22,9 +20,14 @@ Changes for 2.7:
 * Campaign email list improved
 * Updated translations
 
+New in 2.7.1
+* Added an easy to use bug reporting tool
+* Activity feed now remembers minimized posts
+* Several bug fixes
+
 
 # Introduction #
-Welcome to  X2CRM v2.7!
+Welcome to  X2CRM v2.7.1!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

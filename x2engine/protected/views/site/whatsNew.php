@@ -108,22 +108,37 @@ function commentSubmit(id){
 }
 function minimizePosts(){
     $.each($(".event-text"),function(){
-        if($(this).html().length>250){
+        if($(this).html().length>200){
+            var text=this;
             var oldText=$(this).html();
-            $(this).html($(this).html().slice(0,250)).after("<span class=\'elipsis\'>...</span>");
-            oldText="<span class=\'old-text\' style=\'display:none;\'>"+oldText+"</span>";
-            $(this).after(oldText);
+            $.ajax({
+                url:"minimizePosts",
+                type:"GET",
+                data:{"minimize":"minimize"},
+                success:function(){
+                    $(text).html($(text).html().slice(0,200)).after("<span class=\'elipsis\'>...</span>");
+                    oldText="<span class=\'old-text\' style=\'display:none;\'>"+oldText+"</span>";
+                    $(text).after(oldText);
+                }
+            });
         }else{
         
         }
     });
 }
-var minimize=false;
+var minimize='.(Yii::app()->params->profile->minimizeFeed==1?'true':'false').';
 function restorePosts(){
-    $(".elipsis").remove();
-    $.each($(".old-text"),function(){
-        var event=$(this).prev(".event-text");
-        $(event).html($(this).html());
+    $.ajax({
+        url:"minimizePosts",
+        type:"GET",
+        data:{"minimize":"restore"},
+        success:function(){
+            $(".elipsis").remove();
+            $.each($(".old-text"),function(){
+                var event=$(this).prev(".event-text");
+                $(event).html($(this).html());
+            });
+        }
     });
 }
 $(document).on("click","#min-posts",function(e){
@@ -148,6 +163,11 @@ $(document).on("click","#clear-filters-link",function(e){
     var str2=pieces[0];
     pieces2=str2.split("#");
     window.location=pieces2[0]+"?filters=true&visibility=&users=&types=&subtypes=&default=false";
+});
+$(document).ready(function(){
+    if(minimize==true){
+        $("#min-posts").click();
+    }
 });
 var username="'.Yii::app()->user->getName().'";
 var usergroups="'.$usersGroups.'";

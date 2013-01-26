@@ -58,33 +58,34 @@ class X2Rules {
 			
 			Example 2: record_inactive, attributes = (('dealValue', '>', '20000'), ('account','not_empty')), duration = '5 days'
 
-			Event										Parameters															Response Variables
+			Description									type			Parameters															Response Variables
 			-------------------------------------------------------------------------------------------------------------------------------------------
 			
 			
-			Record Activity								model type, filters, list
-			---------------								
-			View										model type, model attributes										record, user
-			Field change								model type, model attributes, fieldName, comparison type/value		record, old attributes, user
-			Edit										model type, model attributes, user									record, user
-			Create action								model type, model attributes, user									record, user
-			Complete action								model type, model attributes, user									record, user
-			Create										model type, model attributes, user									record, user
-			Delete										model type, model attributes, user									record, user
-			Inactive (no edits, actions, etc)			model type, model attributes, user, duration						record, last activity, user
-			Tags (added, removed)
-								
-			Workflow - start							workflowId, stage number, user										record, action, user
-			Workflow - complete							workflowId, stage number, user										record, action, user
-			Workflow - start stage						workflowId, stage number, user										record, action, user
-			Workflow - complete stage					workflowId, stage number, user										record, action, user
-			Workflow - undo stage						workflowId, stage number, user										record, action, user
-
-			Generic action - complete							
-			Generic action - uncomplete							
-			
-			Weblead										model type, lead source, model attributes							record, lead source
-			Web activity								model attributes, campaign, 
+			Record Activity													model type, filters, list
+			---------------													
+			View								record_view					model type, model attributes										record, user
+			Field change						record_field				model type, model attributes, fieldName, comparison type/value		record, old attributes, user
+			Edit								record_update				model type, model attributes, user									record, user
+			Create action						record_action_create		model type, model attributes, user									record, user
+			Complete action						record_action_complete		model type, model attributes, user									record, user
+			Create								record_create				model type, model attributes, user									record, user
+			Delete								record_delete				model type, model attributes, user									record, user
+			Inactive (no edits, actions, etc)	record_inactive				model type, model attributes, user, duration						record, last activity, user
+			Tags (added, removed)				record_tag_add	
+												record_tag_remove	
+													
+			Workflow - start					workflow_start				workflowId, stage number, user										record, action, user
+			Workflow - complete					workflow_complete			workflowId, stage number, user										record, action, user
+			Workflow - start stage				workflow_stage_start		workflowId, stage number, user										record, action, user
+			Workflow - complete stage			workflow_stage_complete		workflowId, stage number, user										record, action, user
+			Workflow - undo stage				workflow_stage_undo			workflowId, stage number, user										record, action, user
+				
+			Generic action - complete			
+			Generic action - uncomplete			
+							
+			Weblead															model type, lead source, model attributes							record, lead source
+			Web activity													model attributes, campaign, 
 			
 
 		Conditions *
@@ -111,33 +112,33 @@ class X2Rules {
 		Actions
 		
 		
-			Action										Parameters (can use response variables)
+			Action														Parameters (can use response variables)
 			-------------------------------------------------------------------------------------------------------------------------------------------
-			Email										to, from, subject, body
+			Email														to, from, subject, body
 
-			Create Event								type (automatic, custom), text (optional), user (optional), create notification?
+			Create Event												type (automatic, custom), text (optional), user (optional), create notification?
 			
-			Reminder									text, timestamp (creates an event)
+			Reminder													text, timestamp (creates an event)
 
-			Create Action								assignedTo, type, dueDate, priority, description
-
-			Change Field								attribute, value
-
-			Start workflow stage						workflow, stage number
-
-			Complete workflow stage						workflow, stage number
-
-			Undo workflow stage							workflow, stage number
+			Create Action												assignedTo, type, dueDate, priority, description
 				
-			Create Record								type, all attributes
-			
-			Create/Remove Tags							tags
-			
-			Request URL (for APIs)						url, GET and POST variables
-			
-			Add to List (static only)					list name
-			
-			Remove from List							list name
+			Change Field												attribute, value
+				
+			Start workflow stage										workflow, stage number
+				
+			Complete workflow stage										workflow, stage number
+				
+			Undo workflow stage											workflow, stage number
+								
+			Create Record												type, all attributes
+							
+			Create/Remove Tags											tags
+							
+			Request URL (for APIs)										url, GET and POST variables
+							
+			Add to List (static only)									list name
+							
+			Remove from List											list name
 
 		
 		
@@ -146,6 +147,17 @@ class X2Rules {
 			Example: when 
 			
 			record_inactive(attributes={},duration='1 day') => notification (user="{record.assignedTo}",message="{record.linkTo} has been inactive for {{now}-{lastActivity}}"
+				
+				
+				
+				
+		Variables:
+		
+			
+				
+				
+				
+				
 				
 				
 				
@@ -164,7 +176,8 @@ class X2Rules {
 			CREATE TABLE x2_flow_items(
 				id						INT				AUTO_INCREMENT PRIMARY KEY,
 				flowId					INT				NOT NULL,
-				type					VARCHAR(20)		NOT NULL,
+				active					TINYINT			NOT NULL DEFAULT 1,
+				type					VARCHAR(40)		NOT NULL,
 				parent					INT				NOT NULL,
 				
 				FOREIGN KEY (flowId) REFERENCES x2_flows(id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -175,7 +188,8 @@ class X2Rules {
 				id						INT				AUTO_INCREMENT PRIMARY KEY,
 				flowId					INT				NOT NULL,
 				itemId					INT				NOT NULL,
-				type					VARCHAR(20)		NOT NULL,
+				type					VARCHAR(40)		NOT NULL,
+				value					VARCHAR(250)	NULL,
 				
 				
 				
@@ -198,9 +212,8 @@ class X2Rules {
 			X2Model::create()
 			X2Model::calculateChanges()			field change, reassignment, 
 			
-			ActionsController::actionComplete
-			ActionsController::actionUncomplete
-			ActionsController::actionUncomplete
+			ActionsController::actionComplete()
+			ActionsController::actionUncomplete()
 			
 			
 			
@@ -247,7 +260,7 @@ class X2Rules {
 			}
 		}
 		
-		return;
+		// return
 	
 	}
 	

@@ -6,12 +6,12 @@
  * 
  * X2Engine Inc.
  * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * Scotts Valley, California 95067 USA
  * 
  * Company website: http://www.x2engine.com 
  * Community and support website: http://www.x2community.com 
  * 
- * Copyright � 2011-2012 by X2Engine Inc. www.X2Engine.com
+ * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -139,6 +139,24 @@ return array (
 'Customize fields for the modules.'=>'Personalizzare i campi per i moduli.',
 'Manage dropdowns for custom fields.'=>'Gestione menu di scorrimento per i campi personalizzati.',
 'Drag and drop editor for forms.'=>'trascinare e rilasciare editor per le forme.',
+'About X2EngineCRM'=>'Chi X2EngineCRM',
+'Support'=>'Sostegno',
+'X2Engine'=>'X2Engine',
+'X2Community'=>'X2Community',
+'Yii Framework'=>'Yii Framework',
+'Edit Access Rules'=>'Modifica Regole di Accesso',
+'Change access rules for roles'=>'Modificare le regole di accesso per i ruoli',
+'Manage Sessions'=>'Gestione Sessioni',
+'Manage user sessions.'=>'Gestire le sessioni utente.',
+'Web Lead Capture and Opportunity Workflows'=>'Web Capture Piombo e flussi di lavoro Opportunità',
+'Service Case Web Form'=>'Servizio Caso Web Form',
+'Create a public form to receive new service cases.'=>'Creare un modulo pubblico di ricevere nuovi casi di servizio.',
+'Set Service Case Distribution'=>'Impostare causa Distribution Service',
+'Change how service cases are distributed.'=>'Modificare la modalità di casi di servizio sono distribuiti.',
+'System Settings'=>'Impostazioni di Sistema',
+'Configure session timeout and chat poll rate.'=>'Configurazione timeout della sessione e chattare tasso di sondaggio.',
+'Updater Settings'=>'Updater Impostazioni',
+'Configure automatic updates and registration.'=>'Configurare gli aggiornamenti automatici e la registrazione.',
 // // 
 // // Modules
 // // Text

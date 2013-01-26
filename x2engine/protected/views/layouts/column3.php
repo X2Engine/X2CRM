@@ -157,7 +157,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                 $this->endWidget();
             }
 
-            if(isset($this->modelClass) && $this->modelClass == 'Calendar') {
+            if(isset($this->modelClass) && $this->modelClass == 'X2Calendar') {
+            	
                 $user = UserChild::model()->findByPk(Yii::app()->user->getId());
                 $showCalendars = json_decode($user->showCalendars, true);
     //			$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
