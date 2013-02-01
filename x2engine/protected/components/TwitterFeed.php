@@ -61,7 +61,7 @@ class TwitterFeed extends X2Widget {
 			&& Yii::app()->controller->action->id=='view'	// must be viewing it
 			&& isset($actionParams['id'])) {				// must have an actual ID value
 
-			$currentRecord = CActiveRecord::model('Contacts')->findByPk($actionParams['id']);
+			$currentRecord = X2Model::model('Contacts')->findByPk($actionParams['id']);
 			if(!empty($currentRecord->twitter))
 				$twitter = $currentRecord->twitter;
 		}

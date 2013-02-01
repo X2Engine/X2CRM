@@ -47,12 +47,9 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','Web Lead Form')),
 ));
 ?>
-
-<div class="span-12">
-
-<h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2>
-<?php echo Yii::t('marketing','Create a public form to receive new contacts.') .' '. Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?><br/><br/>
-
+<div class="page-title"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
+<div class="form">
+<?php echo Yii::t('marketing','Create a public form to receive new contacts.'),'<br>',Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?>
+</div>
 <?php $this->renderPartial('_webleadForm', array('forms'=>$forms)); ?>
 
-</div>

@@ -65,6 +65,57 @@ class Publisher extends X2Widget {
 			$model->assignedTo = $this->assignedTo;
 		else
 			$model->assignedTo = Yii::app()->user->getName();
+        
+        Yii::app()->clientScript->registerScript('loadEmails',"
+            function loadEmail(id){
+                var frame='<iframe style=\"width:99%;height:99%\" src=\"".Yii::app()->controller->createUrl('/actions/viewEmail/')."?id='+id+'\"></iframe>';
+                if(typeof x2ViewEmailDialog != 'undefined') {
+                    if($(x2ViewEmailDialog).is(':hidden')){
+                        $(x2ViewEmailDialog).remove();
+                        
+                    }else{
+                        return;
+                    }
+                }
+
+                x2ViewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
+
+                x2ViewEmailDialog.dialog({
+                    title: 'View Email', 
+                    autoOpen: false,
+                    resizable: true,
+                    width: '650px',
+                    show: 'fade'
+                });
+                jQuery('body')
+                    .bind('click', function(e) {
+                        if(jQuery('#x2-view-email-dialog').dialog('isOpen')
+                            && !jQuery(e.target).is('.ui-dialog, a')
+                            && !jQuery(e.target).closest('.ui-dialog').length
+                        ) {
+                            jQuery('#x2-view-email-dialog').dialog('close');
+                        }
+                    });
+
+                x2ViewEmailDialog.data('inactive', true); 
+                if(x2ViewEmailDialog.data('inactive')) {
+                    x2ViewEmailDialog.append(frame);
+                    x2ViewEmailDialog.dialog('open').height('400px');
+					x2ViewEmailDialog.data('inactive', false);
+                } else {
+                    x2ViewEmailDialog.dialog('open');
+                }
+            }
+            $(document).on('ready',function(){
+                var t;
+                $('.email-frame').mouseenter(function(){
+                    var id=$(this).attr('id');
+                    t=setTimeout(function(){loadEmail(id)},500);
+                }).mouseleave(function(){
+                    clearTimeout(t);
+                });
+            });
+        ",CClientScript::POS_HEAD);
 		
 		$this->render($this->halfWidth? 'publisherHalfWidth':'publisher',
 			array(

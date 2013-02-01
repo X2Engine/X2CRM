@@ -37,7 +37,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h3>Edit Dropdown</h3>
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Edit Dropdown'); ?></h2></div>
 <div class="form">
 <?php
 $list=Dropdowns::model()->findAll();

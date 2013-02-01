@@ -50,7 +50,14 @@ $this->actionMenu = $this->formatMenu(array(
 ),$authParams);
 
 ?>
-<h2><?php echo ($model->associationType=='none')? Yii::t('actions','Action') : Yii::t('actions','Action').': <b>'.$model->associationName.'</b>'; ?></h2>
+<div class="page-title">
+	<h2><?php
+	if($model->associationType=='none')
+		echo Yii::t('actions','Action');
+	else
+		echo '<span class="no-bold">',Yii::t('actions','Action'),':</span> '.$model->associationName; ?>
+	</h2>
+</div>
 <?php
 $this->renderPartial('_detailView',array('model'=>$model));
 
@@ -103,7 +110,7 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 
 if($model->associationId!=0 && !is_null($associationModel)) {
 	if($model->associationType=='contacts') { 
-		echo '<h2>'.Yii::t('actions','Contact Info').'</h2>';
+		echo '<div class="page-title"><h2>'.Yii::t('actions','Contact Info').'</h2></div>';
 		$this->renderPartial('application.modules.contacts.views.contacts._detailViewMini',array('model'=>$associationModel,'actionModel'=>$model));
 	}
 	

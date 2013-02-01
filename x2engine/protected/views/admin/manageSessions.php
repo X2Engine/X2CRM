@@ -43,8 +43,9 @@
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'sessions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('admin','Active Sessions').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Active Sessions').'</h2><div class="title-bar">'
+		.'{summary}</div></div>{items}{pager}',
+	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		'user',

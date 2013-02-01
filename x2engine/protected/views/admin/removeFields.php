@@ -38,18 +38,22 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h3>Remove A Custom Field</h3>
-This form will allow you to remove any custom fields you have added.<br /> <b><span style="color:red;">ALL DATA IN DELETED FIELDS WILL BE LOST.</span></b>
+<div class="page-title"><h2><?php echo Yii::t('admin','Remove A Custom Field'); ?></h2></div>
+<div class="form">
+<?php echo Yii::t('admin','This form will allow you to remove any custom fields you have added.'); ?>
+<br>
+<b style="color:red;"><?php echo Yii::t('admin','ALL DATA IN DELETED FIELDS WILL BE LOST.'); ?></b>
 <form name="removeFields" action="removeField" method="POST">
-	<br />
+	<br>
 	<select name="field">
             <option value="">Select A Field</option>
 		<?php foreach($fields as $id=>$field){
-            $fieldRecord=CActiveRecord::model('Fields')->findByPk($id);
+            $fieldRecord=X2Model::model('Fields')->findByPk($id);
             if(isset($fieldRecord))
                 echo "<option value='$id'>$fieldRecord->modelName - $field</option>";
         }  ?>
 	</select>
-	<br /><br />
+	<br><br>
 	<input class="x2-button" type="submit" value="<?php echo Yii::t('admin','Delete');?>" />
 </form>
+</div>

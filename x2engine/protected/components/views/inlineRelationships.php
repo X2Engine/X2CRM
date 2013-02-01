@@ -140,8 +140,8 @@ if($startHidden == false) {
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Name'),
 			'value'=>'($data->firstType=="'.$modelName.'" && $data->firstId=="'.$model->id.'")?
-                            ((class_exists($data->secondType) && !is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId)))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found.")):
-                            ((class_exists($data->firstType) && !is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId)))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : strtolower($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found."))',
+                            ((class_exists($data->secondType) && !is_null(X2Model::model($data->secondType)->findByPk($data->secondId)))?CHtml::link(X2Model::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : strtolower($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found.")):
+                            ((class_exists($data->firstType) && !is_null(X2Model::model($data->firstType)->findByPk($data->firstId)))?CHtml::link(X2Model::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : strtolower($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found."))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
@@ -156,8 +156,8 @@ if($startHidden == false) {
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Assigned To'),
 			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
-                            ((class_exists($data->secondType) && !is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId)))?UserChild::getUserLinks(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
-                            ((class_exists($data->firstType) && !is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId)))?UserChild::getUserLinks(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
+                            ((class_exists($data->secondType) && !is_null(X2Model::model($data->secondType)->findByPk($data->secondId)))?UserChild::getUserLinks(X2Model::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
+                            ((class_exists($data->firstType) && !is_null(X2Model::model($data->firstType)->findByPk($data->firstId)))?UserChild::getUserLinks(X2Model::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
@@ -171,7 +171,7 @@ if($startHidden == false) {
 		<div style="width: 200px; margin: 0 auto;">
 			<input type="hidden" id="Relationships_Contacts_id">
 			<?php
-				$staticLinkModel = CActiveRecord::model('Contacts');
+				$staticLinkModel = X2Model::model('Contacts');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 					'name'=>'Relationships_Actions',
 					'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
@@ -229,7 +229,7 @@ if($startHidden == false) {
 		<div style="width: 200px; margin: 0 auto;">
 			<input type="hidden" id="Relationships_Accounts_id">
 			<?php
-				$staticLinkModel = CActiveRecord::model('Accounts');
+				$staticLinkModel = X2Model::model('Accounts');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 					'name'=>'Relationships_Actions',
 					'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
@@ -289,7 +289,7 @@ if($startHidden == false) {
 <div style="width: 200px; margin: 0 auto;">
 <input type="hidden" id="Relationships_Opportunity_id">
 <?php
-	$staticLinkModel = CActiveRecord::model('Opportunity');
+	$staticLinkModel = X2Model::model('Opportunity');
 	$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 		'name'=>'Relationships_Actions',
 		'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),

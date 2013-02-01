@@ -41,11 +41,12 @@
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $tags,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=>'<h2>'.Yii::t('app','Search Results')
+	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2>'
 		.CHtml::link(Yii::t('marketing','Email These Contacts'),
 			CHtml::normalizeUrl(array('/marketing/createFromTag')).'?tag='.urlencode($term),
-			array('class'=>'x2-button','style'=>'margin-bottom:2px;'))
-		.'</h2>{summary}{items}{pager}',
+			array('class'=>'x2-button left','style'=>'margin-bottom:2px;'))
+		.'<div class="title-bar">{summary}</div></div>{items}{pager}',
+	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'columns' => array(
 		array(
 			'name' => Yii::t('app','Record'),

@@ -89,7 +89,7 @@ class Groups extends X2Model {
 		
 		return $groupNames;
 		
-		// $groupArray = CActiveRecord::model('Groups')->findAll();
+		// $groupArray = X2Model::model('Groups')->findAll();
 		// $names = array();
 		// foreach ($groupArray as $group) {
 			// $names[$group->id] = $group->name;

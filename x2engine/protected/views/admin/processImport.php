@@ -38,18 +38,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h2><?php echo Yii::t('admin','Import Data from Template'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Import Data from Template'); ?></h2></div>
 <?php echo Yii::t('admin','To import your data a CSV file, please  upload the file here using the form below.'); ?>
-<br /><br />
+<br><br>
 <?php echo Yii::t('admin','This import has a very specific style of data formatting required to be used. To get a better example of the formatting, export a set of data and look at how it is formatted.  A brief description is also provided here.'); ?>
-<br /><br />
+<br><br>
 <?php echo Yii::t('admin','The first cell of the CSV should be the version from which data was exported.  If it is a fresh set of data or was not exported, use the current version.');?>
-<br /><br />
+<br><br>
 <?php echo Yii::t('admin','Each record type should have a set of column names as metadata with the type of record (e.g. "Contacts" or "Accounts" at the end.  Each record should also have the record type as the last column.'); ?>
-<br /><br />
+<br><br>
 <h2><?php echo Yii::t('admin','Process Import Data'); ?></h2>
 <?php echo CHtml::link("Click Here!","#",array('id'=>'process-link','class'=>'x2-button'));?>
-<br /><br />
+<br><br>
 <h3><?php echo Yii::t('admin','Models Imported'); ?></h3>
 <div id="status-box" style="color:green">
     
@@ -89,7 +89,7 @@
                         if(overwriten[index]==undefined){
                             overwriten[index]=0;
                         }
-                        str=str+value+" <b>"+index+"</b> successfully imported ("+overwriten[index]+" overwriten).<br />";
+                        str=str+value+" <b>"+index+"</b> successfully imported ("+overwriten[index]+" overwriten).<br>";
                     });
                     $('#status-box').html(str);
                     failures=data[3];
@@ -100,7 +100,7 @@
                     var ofStr="";
                     $.each(overwriteFailures,function(index,value){
                        if(overwriteFailures[index]>0){
-                           ofStr=ofStr+value+" <b>"+index+"</b> records were unable to be overwriten.<br />";
+                           ofStr=ofStr+value+" <b>"+index+"</b> records were unable to be overwriten.<br>";
                        } 
                     });
                     $('#overwrite-failure-box').html(ofStr);
@@ -113,7 +113,7 @@
                         if(overwriten[index]==undefined){
                             overwriten[index]=0;
                         }
-                        str=str+value+" <b>"+index+"</b> successfully imported ("+overwriten[index]+" overwriten).<br />";
+                        str=str+value+" <b>"+index+"</b> successfully imported ("+overwriten[index]+" overwriten).<br>";
                     });
                     failures=data[3];
                     if(failures > 0){
@@ -128,7 +128,7 @@
                     var ofStr="";
                     $.each(overwriteFailures,function(index,value){
                        if(overwriteFailures[index]>0){
-                           ofStr=ofStr+value+" <b>"+index+"</b> records were unable to be overwriten.<br />";
+                           ofStr=ofStr+value+" <b>"+index+"</b> records were unable to be overwriten.<br>";
                        } 
                     });
                     $('#overwrite-failure-box').html(ofStr);

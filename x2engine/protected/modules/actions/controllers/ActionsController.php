@@ -111,7 +111,7 @@ class ActionsController extends x2base {
 	}
     
     public function actionViewEmail($id){
-        $action=CActiveRecord::model('Actions')->findByPk($id);
+        $action=X2Model::model('Actions')->findByPk($id);
         echo $action->actionDescription;
     }
 	
@@ -175,7 +175,7 @@ class ActionsController extends x2base {
 			if($action->reminder=='Yes') {
 
 				if($action->associationId!=0) {
-					$contact=CActiveRecord::model('Contacts')->findByPk($action->associationId);
+					$contact=X2Model::model('Contacts')->findByPk($action->associationId);
 					$name=$contact->firstName.' '.$contact->lastName;
 				} else
 					$name=Yii::t('actions','No one');
@@ -345,6 +345,7 @@ class ActionsController extends x2base {
                 $event=new Events;
                 $event->type='calendar_event';
                 $event->level=2;
+                $event->visibility=$model->visibility;
                 $event->associationType='Actions';
                 $event->timestamp=$model->dueDate;
 				$model->type = 'event';
@@ -382,6 +383,7 @@ class ActionsController extends x2base {
                 $event->associationType='Actions';
                 $event->type='record_create';
                 $event->user=Yii::app()->user->getName();
+                $event->visibility=$model->visibility;
                 
 				$model->createDate = time();
 				$model->dueDate = time();
@@ -409,6 +411,7 @@ class ActionsController extends x2base {
                     $event2->level=2;
                     $event2->associationType='Actions';
                     $event2->associationId=$model->id;
+                    $event2->visibility=$model->visibility;
                     $event2->user=Yii::app()->user->getName();
                     $event2->type='record_create';
                     $event2->save();
@@ -418,6 +421,7 @@ class ActionsController extends x2base {
                     $event->associationType='Actions';
                     $event->associationId=$model->id;
                     $event->type='action_reminder';
+                    $event->visibility=$model->visibility;
                     $event->user=$model->assignedTo;
                     $event->timestamp=$model->dueDate;
                     $event->save();
@@ -499,7 +503,12 @@ class ActionsController extends x2base {
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id) {
+	public function actionUpdate() {
+        if(isset($_GET['id'])){
+            $id=$_GET['id'];
+        }else{
+            throw new CHttpException('No action ID provided.',400);
+        }
 		$model=$this->loadModel($id);
 		$users=User::getNames();
 
@@ -509,6 +518,13 @@ class ActionsController extends x2base {
 		if(isset($_POST['Actions'])) {
 			$oldAttributes = $model->attributes;
 			$model->setX2Fields($_POST['Actions']);
+            if($model->dueDate!=$oldAttributes['dueDate']){
+                $event=X2Model::model('Events')->findByAttributes(array('type'=>'action_reminder','associationType'=>'Actions','associationId'=>$model->id));
+                if(isset($event)){
+                    $event->timestamp=$model->dueDate;
+                    $event->save();
+                }
+            }
 			
 			// foreach($model->attributes as $field=>$value){
 				// if(isset($_POST['Actions'][$field])){
@@ -519,7 +535,16 @@ class ActionsController extends x2base {
 			
 			$this->update($model,$oldAttributes,'0');
 		}
-
+        if(isset($_GET['param'])) {
+			$pieces=explode(';',$_GET['param']);
+			$pieces2=explode(':',$pieces[1]);
+			$type=$pieces2[0];
+			$id=$pieces2[1];
+            $model->associationType=$type;
+            $model->associationId=$id;
+            $model->associationName="";
+		}
+        
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
@@ -672,6 +697,7 @@ class ActionsController extends x2base {
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;
+            $event->visibility=$model->visibility;
             $event->user=Yii::app()->user->getName();
             $event->save();
             Events::model()->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$id,'type'=>'action_reminder'));
@@ -710,7 +736,7 @@ class ActionsController extends x2base {
 		
 		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || $inGroup || Yii::app()->user->checkAccess('AdminIndex')) {
 			
-			if(isset($_POST['note']))
+			if(isset($_POST['note']) && !empty($_POST['note']))
 				$model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
 				
 			$model=$this->updateChangelog($model,'Completed');
@@ -789,18 +815,24 @@ class ActionsController extends x2base {
 					$note->visibility = $action->visibility;
 					$note->assignedTo = $action->assignedTo;
 					$note->actionDescription = Yii::t('marketing','Contact has opened the email sent on ');
-					$note->actionDescription .= $this->formatLongDateTime($action->createDate) . ".\n\n";
+					$note->actionDescription .= $this->formatLongDateTime($action->createDate) . "<br>";
 					$note->actionDescription .= $action->actionDescription;
 					if($note->save()) {
                         $event=new Events;
                         $event->type='email_opened';
-                        $contact=CActiveRecord::model('Contacts')->findByPk($action->associationId);
+                        $contact=X2Model::model('Contacts')->findByPk($action->associationId);
                         if(isset($contact)){
                             $event->user=$contact->assignedTo;
                         }
                         $event->level=3;
                         $event->associationType='Contacts';
                         $event->associationId=$note->associationId;
+                        if($action->associationType=='services'){
+                            $case=X2Model::model('Services')->findByPk($action->associationId);
+                            if(isset($case) && is_numeric($case->contactId)){
+                                $event->associationId=$case->contactId;
+                            }
+                        }
                         $event->save();
 						$track->opened = $now;
 						$track->update();
@@ -901,9 +933,11 @@ class ActionsController extends x2base {
                 $eventRecord->delete();
             }
         }
+        $model=X2Model::model('Actions')->findByPk($id);
         $event=new Events;
         $event->level=2;
         $event->type="action_complete";
+        $event->visibility=$model->visibility;
         $event->associationType="Actions";
         $event->user=Yii::app()->user->getName();
         $event->associationId=$id;

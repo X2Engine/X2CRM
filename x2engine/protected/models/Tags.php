@@ -165,7 +165,7 @@ class Tags extends CActiveRecord
 		
 		$links = array();
 		foreach($tags as &$tag) {
-			$links[] = CHtml::link($tag->tag,array('search/search','term'=>$tag->tag));
+			$links[] = CHtml::link($tag->tag,array('/search/search','term'=>$tag->tag));
 		}
 		if(!empty($limit) && $tagCount > $limit)
 			$links[] = '...';

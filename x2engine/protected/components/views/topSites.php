@@ -60,9 +60,9 @@ $siteContainerFixHeight = 250;
 <div id="sites-box" style="height:<?php echo $topsitesHeight;?>px">
 <?php
 $echoSTR = "<table><tr><th>".Yii::t('app',"Title")."</th><th>".Yii::t('app',"Link")."</th></tr>";
-foreach($data as $entry)
-	$echoSTR .=  "<tr><td>".$entry['title']."</td><td><a href='".$entry['url']."'>".Yii::t('app',"Link")."</a></td></tr>";
-
+foreach($data as $entry){
+	$echoSTR .=  "<tr><td>".$entry['title']."</td><td>".CHtml::link(Yii::t('app',"Link"),$entry['url'])."</td></tr>";
+}
 $echoSTR .= "</table>";
 echo $echoSTR;
 ?>

@@ -45,7 +45,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckedi
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 
 $insertableAttributes = array();
-foreach(CActiveRecord::model('Contacts')->attributeLabels() as $fieldName => $label)
+foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
 	$insertableAttributes[$label] = '{'.$fieldName.'}';
 
 Yii::app()->clientScript->registerScript('editorSetup','

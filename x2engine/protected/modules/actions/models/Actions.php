@@ -139,7 +139,7 @@ class Actions extends X2Model {
 	
 		$text = $this->owner->name;
 		if($length && strlen($text) > $length)
-			$text = substr($text,0,$length).'...';
+			$text = CHtml::encode(substr($text,0,$length).'...');
 		return CHtml::link($text,array($this->viewRoute.'/'.$this->owner->id));
 	}
 	
@@ -215,15 +215,15 @@ class Actions extends X2Model {
 
 		if(!(empty($ownerType) || empty($ownerId))) {	// both ID and type must be set
 			if($ownerType=='projects')
-				return CActiveRecord::model('ProjectChild')->findByPk($ownerId);
+				return X2Model::model('ProjectChild')->findByPk($ownerId);
 			if($ownerType=='contacts')
-				return CActiveRecord::model('Contacts')->findByPk($ownerId);
+				return X2Model::model('Contacts')->findByPk($ownerId);
 			if($ownerType=='accounts')
-				return CActiveRecord::model('Accounts')->findByPk($ownerId);
+				return X2Model::model('Accounts')->findByPk($ownerId);
 			if($ownerType=='cases')
-				return CActiveRecord::model('CaseChild')->findByPk($ownerId);
+				return X2Model::model('CaseChild')->findByPk($ownerId);
 			if($ownerType=='opportunities')
-				return CActiveRecord::model('Opportunity')->findByPk($ownerId);
+				return X2Model::model('Opportunity')->findByPk($ownerId);
 		}
 		return false;	// either the type is unkown, or there simply is no owner
 	}

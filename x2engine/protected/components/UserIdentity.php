@@ -51,7 +51,7 @@ class UserIdentity extends CUserIdentity {
 	private $_name;
 
 	public function authenticate($google=false) {
-		$user = CActiveRecord::model('User')->findByAttributes(array('username' => $this->username));
+		$user = X2Model::model('User')->findByAttributes(array('username' => $this->username));
 
 		if(isset($user))
 			$this->username = $user->username;

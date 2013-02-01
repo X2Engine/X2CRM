@@ -54,15 +54,15 @@ $('#timeout').change(function() {
 
 ?>
 <div class="span-16">
-    <h2><?php echo Yii::t('admin', 'Activity Feed Settings'); ?></h2>
-    <?php
-    $form = $this->beginWidget('CActiveForm', array(
+	<div class="page-title"><h2><?php echo Yii::t('admin', 'Activity Feed Settings'); ?></h2></div>
+	<?php
+	$form = $this->beginWidget('CActiveForm', array(
 	'id' => 'settings-form',
 	'enableAjaxValidation' => false,
 	    ));
-    ?>
-    
-    <div class="form">
+	?>
+	
+	<div class="form">
 	<?php
 	echo $form->labelEx($model, 'eventDeletionTime')."<br /><br />";
 	echo $form->dropDownList($model,'eventDeletionTime',array(1=>'1 day',7=>'7 days',30=>'30 days', 0=>'Do not delete'));

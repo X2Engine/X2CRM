@@ -54,15 +54,13 @@ $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 
 ?>
 <div id="main-column" class="half-width">
-<div class="record-title">
-<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-
-<h2><?php echo Yii::t('services','Case:'); ?> <b><?php echo CHtml::encode($model->id); ?></b> 
-<?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){ ?>
-    <a class="x2-button" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><?php echo Yii::t('app','Edit');?></a>
-<?php //} ?>
-</h2>
+<div class="page-title">
+<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+	<h2><?php echo Yii::t('services','Case {n}',array('{n}'=>$model->id)); ?></h2>
+	<?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){ ?>
+	<a class="x2-button right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><?php echo Yii::t('app','Edit');?></a>
+	<?php //} ?>
 </div>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'services-form',

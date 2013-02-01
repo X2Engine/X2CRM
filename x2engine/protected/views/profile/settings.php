@@ -47,8 +47,8 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
 );
 ?>
+<div class="page-title"><h2><?php echo Yii::t('profile','Change Personal Settings'); ?></h2></div>
 
-<h2><?php echo Yii::t('profile','Change Personal Settings'); ?></h2>
 
 <?php echo $this->renderPartial('_settings',
 	array(

@@ -37,8 +37,9 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h2>Manage Criteria</h2>
-Manage notification criteria.
+
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Manage Notification Criteria'); ?></h2></div>
 
 <?php
 
@@ -71,20 +72,19 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	),
 ));
 ?>
-<br />
-
-<h2><?php echo Yii::t('admin','Add Criteria for Notifications');?></h2>
-<?php echo Yii::t('admin',"To add a condition which will trigger notifications, please fill out the form below.");?><br /><br />
+<br>
+<div class="page-title"><h2><?php echo Yii::t('admin','Add Criteria for Notifications');?></h2></div>
 
 
 <div class="form">
+<?php echo Yii::t('admin',"To add a condition which will trigger notifications, please fill out the form below.");?><br><br>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'criteria-form',
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
+	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
 
 
 	<div class="row">

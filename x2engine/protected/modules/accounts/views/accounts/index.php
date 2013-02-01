@@ -73,12 +73,12 @@ $('.search-form form').submit(function(){
 $this->widget('application.components.X2GridView', array(
 	'id'=>'accounts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('accounts','Accounts').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title"><h2>'.Yii::t('accounts','Accounts').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
 		.X2GridView::getFilterHint()
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,

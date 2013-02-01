@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h1><?php echo Yii::t('admin','Delete A Module');?></h1>
+<div class="page-title"><h2><?php echo Yii::t('admin','Delete A Module');?></h2></div>
 
 <?php echo Yii::t('admin','Please select a model to delete.  WARNING: This operation cannot be undone, be very careful.');?> 
 

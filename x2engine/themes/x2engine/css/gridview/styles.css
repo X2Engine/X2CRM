@@ -78,8 +78,10 @@ ul.column-selector input {
 
 
 .grid-view  .title-bar {
+	/* margin-top:3px; */
 	display:block;
-	padding-top:4px;
+	/* padding-top:4px; */
+	overflow:auto;
 }
 .grid-view h3, .grid-view h2 {
 	float:left;

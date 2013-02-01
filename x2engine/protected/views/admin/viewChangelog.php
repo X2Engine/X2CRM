@@ -42,9 +42,10 @@
     $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'changelog-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template'=> '<h2>Changelog</h2><div class="title-bar">'
+        'template'=> '<div class="page-title"><h2>Changelog</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
+	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
     'dataProvider'=>$model->search(),
     'filter'=>$model,
     'afterAjaxUpdate'=>'refreshQtipHistory',
@@ -59,8 +60,8 @@
 			'name'=>'type',
 			'header'=>Yii::t('admin','Record'),
 			'value'=>'
-				(class_exists($data->type) && !is_null(CActiveRecord::model($data->type)->findByPk($data->itemId)))?
-				($data->type!="Actions"?($data->type=="Opportunity"?CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl("opportunities/".$data->itemId)):CHtml::link(CActiveRecord::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
+				(class_exists($data->type) && !is_null(X2Model::model($data->type)->findByPk($data->itemId)))?
+				($data->type!="Actions"?($data->type=="Opportunity"?CHtml::link(X2Model::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl("opportunities/".$data->itemId)):CHtml::link(X2Model::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
 					CHtml::link("Action",Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
 				"RECORD DELETED"',
 			'type'=>'raw',

@@ -49,18 +49,20 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('actions','Delete Action'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ),$authParams);
 ?>
+<div class="page-title">
+
 <h2><?php
 	if($model->type == 'event') {
 		if($model->associationType=='none')
 			echo Yii::t('actions','Update Event');
 		else
-			echo Yii::t('actions','Update Event:').' <b>'.$model->associationName.'</b>';
+			echo '<span class="no-bold">',Yii::t('actions','Update Event:'),'</span> ',$model->associationName;
 	} else {
 		if($model->associationType=='none')
 			echo Yii::t('actions','Update Action');
 		else
-			echo Yii::t('actions','Update Action:').' <b>'.$model->associationName.'</b>';
+			echo '<span class="no-bold">',Yii::t('actions','Update Action:'),'</span> ',$model->associationName;
 	}
 ?></h2>
-
+</div>
 <?php echo $this->renderPartial('_form', array('actionModel'=>$model, 'users'=>$users)); ?>

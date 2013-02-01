@@ -81,12 +81,12 @@ if($field) {
 $this->widget('application.components.X2GridView', array(
 	'id'=>'services-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('services','Service Cases').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title"><h2>'.Yii::t('services','Service Cases').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
 		.X2GridView::getFilterHint()
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$model->searchWithStatusFilter(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -116,7 +116,7 @@ $this->widget('application.components.X2GridView', array(
 			'name'=>'account',
 			'header'=>Yii::t('accounts', 'Account'),
 			'type'=>'raw',
-			'value'=>'$data->contacts? ($data->contacts->accounts ? $data->contacts->accounts->getLink() : "") : ""'
+			'value'=>'$data->contacts? (isset($data->contacts->accounts) ? $data->contacts->accounts->getLink() : "") : ""'
 		), 
 /*		'name'=>array(
 			'name'=>'name',

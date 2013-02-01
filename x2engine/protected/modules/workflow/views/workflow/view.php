@@ -69,8 +69,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-
-<h2><?php echo Yii::t('workflow','Workflow:'); ?> <b><?php echo $model->name; ?></b></h2>
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('workflow','Workflow:'); ?></span> <?php echo $model->name; ?></h2></div>
 <div style="margin-bottom:30px;width:300px;float:left;">
 <?php
 
@@ -176,7 +175,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	// 'id'=>'docs-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '{items}{pager}',
-	'dataProvider'=>CActiveRecord::model('WorkflowStage')->search($model->id),
+	'dataProvider'=>X2Model::model('WorkflowStage')->search($model->id),
 	// 'filter'=>$model,
 	'columns'=>array(
 		array(

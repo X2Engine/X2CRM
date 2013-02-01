@@ -39,6 +39,7 @@
  * ****************************************************************************** */
 ?>
 <?php
+require_once("protected/modules/charts/chartsConfig.php");
 $this->actionMenu = $this->formatMenu(array(
 	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
 	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
@@ -154,7 +155,7 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-center-large">
 		<?php
 		$this->widget('X2BubbleChart', array(
-			'model' => 'x2_bi_leads',
+			'model' => $sqlView,
 			'options' => array(
 				'other-threshold' => 2,
 				'statistic' => 'none',

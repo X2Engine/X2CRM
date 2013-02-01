@@ -44,13 +44,12 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Create')),
 ));
 ?>
-<h2><?php echo Yii::t('quotes','Create Quote'); ?></h2>
-
+<div class="page-title"><h2><?php echo Yii::t('quotes','Create Quote'); ?></h2></div>
 
 <?php 
 $form=$this->beginWidget('CActiveForm', array(
-   'id'=>'quotes-form',
-   'enableAjaxValidation'=>false,
+	'id'=>'quotes-form',
+	'enableAjaxValidation'=>false,
 ));
 	
 echo $this->renderPartial('application.components.views._form', 
@@ -85,4 +84,3 @@ echo $this->renderPartial('_form',
 	)
 ); 
 */
-?>

@@ -81,14 +81,13 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
         'users'=>User::getNames(),
 )); */ ?> 
 </div><!-- search-form -->
-<h2><?php echo $heading; ?></h2>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'lists-grid',
 	'enableSorting'=>false,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'htmlOptions'=>array('class'=>'grid-view contact-lists'),
-	'template'=> '{summary}{items}{pager}',
+	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$contactLists,
 	// 'filter'=>$model,
 	'columns'=>array(

@@ -44,14 +44,19 @@ $menuItems = array(
 	array('label'=>Yii::t('docs','Create Email'),'url'=>array('createEmail')),
 );
 
-if($this->route=='docs/docs/createEmail') {
-	unset($menuItems[2]['url']);
-	echo '<h2>'.Yii::t('docs','Create Email Template')."</h2>\n";
-} else {
-	unset($menuItems[1]['url']);
-	echo '<h2>'.Yii::t('docs','Create Document')."</h2>\n";
-}
+?>
+<div class="page-title"><h2><?php
+	if($this->route=='docs/docs/createEmail') {
+		unset($menuItems[2]['url']);
+		echo Yii::t('docs','Create Email Template');
+	} else {
+		unset($menuItems[1]['url']);
+		echo Yii::t('docs','Create Document');
+	}
+	?></h2>
+</div>
 
+<?php
 $this->actionMenu = $this->formatMenu($menuItems);
 
 echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users));

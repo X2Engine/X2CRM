@@ -67,8 +67,8 @@ if(empty($data->type)) {
 
 if($type == 'workflow') {
 
-	$workflowRecord = CActiveRecord::model('Workflow')->findByPk($data->workflowId);
-	$stageRecords = CActiveRecord::model('WorkflowStage')->findAllByAttributes(
+	$workflowRecord = X2Model::model('Workflow')->findByPk($data->workflowId);
+	$stageRecords = X2Model::model('WorkflowStage')->findAllByAttributes(
 		array('workflowId'=>$data->workflowId),
 		new CDbCriteria(array('order'=>'id ASC'))
 	);
@@ -180,7 +180,7 @@ if($type == 'workflow') {
 				echo $data->actionDescription,'<br>';
 			echo date('Y-m-d H:i:s',$data->completeDate);
 		}elseif($type=='email' || $type=='emailOpened'){ 
-            preg_match('/^<b>(.*?)<\/b>(.*)/mis',$data->actionDescription,$matches);
+            preg_match('/<b>(.*?)<\/b>(.*)/mis',$data->actionDescription,$matches);
             if(!empty($matches)) {
                 $subject = $matches[1];
 				$body = '';
@@ -192,9 +192,9 @@ if($type == 'workflow') {
                 echo "Contact has opened the following email:<br />";
             }
             echo '<strong>'.$subject.'</strong> '.$body;
-			echo '<br /><br />'.CHtml::link('[View email]',array('actions/view','id'=>$data->id),array('target'=>'_blank'));
+			echo '<br /><br />'.CHtml::link('[View email]','#',array('onclick'=>'return false;','id'=>$data->id,'class'=>'email-frame'));
         }else
-			echo Yii::app()->controller->convertUrls(($data->actionDescription));	// convert LF and CRLF to <br />
+			echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription));	// convert LF and CRLF to <br />
 		?>
 	</div>
 	<div class="footer">
@@ -218,3 +218,6 @@ if($type == 'workflow') {
 	</div>
 
 </div>
+<script>
+    
+</script>

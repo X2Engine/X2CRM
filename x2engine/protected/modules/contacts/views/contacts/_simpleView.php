@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-$attributeLabels = CActiveRecord::model('Contacts')->attributeLabels();
+$attributeLabels = X2Model::model('Contacts')->attributeLabels();
 $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 Yii::app()->clientScript->registerScript('detailVewFields', "
@@ -111,7 +111,7 @@ function humanUrl($url) {
 					echo ', ';
 				
 				if(!empty($model->accountId) && $model->accountId!=0) {
-					$accountModel = CActiveRecord::model('Accounts')->findByPk($model->accountId);
+					$accountModel = X2Model::model('Accounts')->findByPk($model->accountId);
 					if($accountModel != null)
 						echo CHtml::link($accountModel->name,array('accounts/view','id'=>$accountModel->id))."<br />\n";
 				} else if(!empty($model->company))
@@ -208,7 +208,7 @@ function humanUrl($url) {
 		if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
 			//$assignedUser = $users[$model->assignedTo];
 			
-			$assignedUser = CActiveRecord::model('User')->findByAttributes(array('username'=>$model->assignedTo));
+			$assignedUser = X2Model::model('User')->findByAttributes(array('username'=>$model->assignedTo));
 			$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
 		} else
 			//echo $form->label($model,'assignedTo');
@@ -262,7 +262,7 @@ function humanUrl($url) {
 			if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
 				//$assignedUser = $users[$model->assignedTo];
 				
-				$assignedUser = CActiveRecord::model('User')->findByAttributes(array('username'=>$model->assignedTo));
+				$assignedUser = X2Model::model('User')->findByAttributes(array('username'=>$model->assignedTo));
 				$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
 			} else
 				//echo $form->label($model,'assignedTo');
@@ -276,7 +276,7 @@ function humanUrl($url) {
 			<?php
 			// if(empty($model->company)) {
 			if(!empty($model->accountId)) {
-				$accountModel = CActiveRecord::model('Accounts')->findByPk($model->accountId);
+				$accountModel = X2Model::model('Accounts')->findByPk($model->accountId);
 				if($accountModel != null)
 					echo $accountModel->name . ' ' . CHtml::link('['.Yii::t('accounts','account').']',array('accounts/view','id'=>$accountModel->id))."<br />\n";
 			} else if(!empty($model->company))

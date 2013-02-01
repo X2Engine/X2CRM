@@ -414,17 +414,17 @@ class ApiController extends x2base {
                     switch ($_GET['model']) {
                         // Find respective model
                         case 'Contacts':
-                            $model = CActiveRecord::model('Contacts')->findByPk($_POST['id']);
+                            $model = X2Model::model('Contacts')->findByPk($_POST['id']);
                             $this->modelClass = "Contacts";
                             $temp = $model->attributes;
                             break;
                         case 'Actions':
-                            $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
+                            $model = X2Model::model('Actions')->findByPk($_GET['id']);
                             $this->modelClass = "Actions";
                             $temp = $model->attributes;
                             break;
                         case 'Accounts':
-                            $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
+                            $model = X2Model::model('Accounts')->findByPk($_GET['id']);
                             $this->modelClass = "Accounts";
                             $temp = $model->attributes;
                             break;
@@ -545,7 +545,7 @@ class ApiController extends x2base {
             $matches = array();
             if (preg_match('/\d{10,}/', $_GET['data'], $matches)) {
 
-                $search = CActiveRecord::model('Contacts')->findByAttributes(array('phone' => $matches[0]));
+                $search = X2Model::model('Contacts')->findByAttributes(array('phone' => $matches[0]));
                 if (isset($search)) {
 
                     $notif = new Notification;
@@ -596,13 +596,13 @@ class ApiController extends x2base {
                     switch ($_GET['model']) {
                         // Find respective model    
                         case 'Contacts':
-                            $model = CActiveRecord::model('Contacts')->findByPk($_GET['id']);
+                            $model = X2Model::model('Contacts')->findByPk($_GET['id']);
                             break;
                         case 'Actions':
-                            $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
+                            $model = X2Model::model('Actions')->findByPk($_GET['id']);
                             break;
                         case 'Accounts':
-                            $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
+                            $model = X2Model::model('Accounts')->findByPk($_GET['id']);
                             break;
                         default:
                             $this->_sendResponse(501, sprintf(
@@ -679,7 +679,7 @@ class ApiController extends x2base {
                     switch ($_GET['model']) {
                         // Find respective model    
                         case 'Contacts':
-                            $model = CActiveRecord::model('Contacts')->findByAttributes($_POST);
+                            $model = X2Model::model('Contacts')->findByAttributes($_POST);
                             break;
                         default:
                             $this->_sendResponse(501, sprintf(
@@ -720,13 +720,13 @@ class ApiController extends x2base {
                     switch ($_GET['model']) {
                         // Load the respective model
                         case 'Contacts':
-                            $model = CActiveRecord::model('Contacts')->findByPk($_POST['id']);
+                            $model = X2Model::model('Contacts')->findByPk($_POST['id']);
                             break;
                         case 'Actions':
-                            $model = CActiveRecord::model('Actions')->findByPk($_GET['id']);
+                            $model = X2Model::model('Actions')->findByPk($_GET['id']);
                             break;
                         case 'Accounts':
-                            $model = CActiveRecord::model('Accounts')->findByPk($_GET['id']);
+                            $model = X2Model::model('Accounts')->findByPk($_GET['id']);
                             break;
                         default:
                             $this->_sendResponse(501, sprintf('Error: Mode <b>delete</b> is not implemented for model <b>%s</b>', $_GET['model']));

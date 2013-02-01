@@ -187,7 +187,7 @@ class ContactsController extends x2base {
     
     public function actionRevisions($id, $timestamp){
         $contact = $this->loadModel($id);
-        $changes=CActiveRecord::model('Changelog')->findAll('type="Contacts" AND itemId="'.$contact->id.'" AND timestamp > '.$timestamp.' ORDER BY timestamp DESC');
+        $changes=X2Model::model('Changelog')->findAll('type="Contacts" AND itemId="'.$contact->id.'" AND timestamp > '.$timestamp.' ORDER BY timestamp DESC');
 		foreach($changes as $change){
             $fieldName=$change->fieldName;
             if($contact->hasAttribute($fieldName) && $fieldName!='id')
@@ -356,7 +356,7 @@ class ContactsController extends x2base {
             }
         }
         if(isset($contactId)){
-            $location=CActiveRecord::model('Locations')->findByAttributes(array('contactId'=>$contactId));
+            $location=X2Model::model('Locations')->findByAttributes(array('contactId'=>$contactId));
             if(isset($location)){
                 $loc=array("lat"=>$location->lat,"lng"=>$location->lon);
                 $markerLoc=array("lat"=>$location->lat,"lng"=>$location->lon);
@@ -522,7 +522,7 @@ class ContactsController extends x2base {
 			foreach($lookupFields as $field) {
 				$fieldName = $field->fieldName;
 				if(isset($model->$fieldName)) {
-					$lookup = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
+					$lookup = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
 					if(isset($lookup))
 						$model->$fieldName = $lookup->id;
 				}
@@ -548,7 +548,7 @@ class ContactsController extends x2base {
 				}
 			} else {
 				$id = $arr['id'];
-				$model = CActiveRecord::model('Contacts')->findByPk($id);
+				$model = X2Model::model('Contacts')->findByPk($id);
 			}
 			$model->dupeCheck = 1;
 			if($_POST['ref'] == 'create') {
@@ -612,7 +612,7 @@ class ContactsController extends x2base {
 				echo $_POST['id'];
 				return;
 			}elseif($ref=='create'){
-				$oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
+				$oldRecord=X2Model::model('Contacts')->findByPk($oldId);
 				if(isset($oldRecord)){
 					Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
 					Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
@@ -639,7 +639,7 @@ class ContactsController extends x2base {
 				}
 			}else{
 				$newId=$_POST['newId'];
-				$oldRecord=CActiveRecord::model('Contacts')->findByPk($oldId);
+				$oldRecord=X2Model::model('Contacts')->findByPk($oldId);
 				$newRecord=Contacts::model()->findByPk($_POST['newId']);
 				$newRecord->dupeCheck=1;
 				$newRecord->save();
@@ -765,17 +765,21 @@ class ContactsController extends x2base {
 					$x2ajaxCreateError = true;
 				}
 			} else {
-				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
-				if(count($duplicates) > 0) {
-					$this->render('duplicateCheck', array(
-						'newRecord' => $model,
-						'duplicates' => $duplicates,
-						'ref' => 'create'
-					));
-					$renderFlag = false;
-				} else {
-					$this->create($model, $oldAttributes, '0');
-				}
+                if(!empty($criteria->condition)){
+                    $duplicates = X2Model::model('Contacts')->findAll($criteria);
+                    if(count($duplicates) > 0) {
+                        $this->render('duplicateCheck', array(
+                            'newRecord' => $model,
+                            'duplicates' => $duplicates,
+                            'ref' => 'create'
+                        ));
+                        $renderFlag = false;
+                    }else{
+                        $this->create($model, $oldAttributes, '0');
+                    }
+                } else {
+                    $this->create($model, $oldAttributes, '0');
+                }
 			}
 		}
 		
@@ -838,7 +842,7 @@ class ContactsController extends x2base {
 							} else {
 								$names = explode(" ", $arr);
 								if(count($names) > 1)
-									$lookupModel = CActiveRecord::model('Contacts')->findByAttributes(array('firstName' => $names[0], 'lastName' => $names[1]));
+									$lookupModel = X2Model::model('Contacts')->findByAttributes(array('firstName' => $names[0], 'lastName' => $names[1]));
 							}
 							if(isset($lookupModel))
 								$val = $lookupModel->id;
@@ -913,7 +917,7 @@ class ContactsController extends x2base {
                     $criteria->addCondition($condition);
                 }
 
-				$duplicates = CActiveRecord::model('Contacts')->findAll($criteria);
+				$duplicates = X2Model::model('Contacts')->findAll($criteria);
 				if(count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
 						'newRecord' => $model,
@@ -960,9 +964,9 @@ class ContactsController extends x2base {
 			'criteria' => $criteria
 		));
 
-		$totalContacts = CActiveRecord::model('Contacts')->count();
-		$totalMyContacts = CActiveRecord::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '"');
-		$totalNewContacts = CActiveRecord::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '" AND createDate >= ' . mktime(0, 0, 0));
+		$totalContacts = X2Model::model('Contacts')->count();
+		$totalMyContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '"');
+		$totalNewContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '" AND createDate >= ' . mktime(0, 0, 0));
 
 		$allContacts = new X2List;
 		$allContacts->attributes = array(
@@ -1073,7 +1077,7 @@ class ContactsController extends x2base {
 			$list->createDate = time();
 			$list->lastUpdated = time();
 
-			$itemModel = CActiveRecord::model($_POST['modelName']);
+			$itemModel = X2Model::model($_POST['modelName']);
 
 			if($list->save()) { // if the list is valid save it so we can get the ID
 				$count = 0;
@@ -1147,7 +1151,7 @@ class ContactsController extends x2base {
 									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
                                 $fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
                                 if(isset($fieldRef) && $fieldRef->type=='link'){
-                                    $lookup=CActiveRecord::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
+                                    $lookup=X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
                                     if(isset($lookup))
                                         $values[$i]=$lookup->id;
                                 }
@@ -1236,7 +1240,7 @@ class ContactsController extends x2base {
 									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
 								$fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
 								if($fieldRef->type=='link'){
-									$lookup=CActiveRecord::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
+									$lookup=X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
 									if(isset($lookup))
 										$values[$i]=$lookup->id;
 								}
@@ -1349,7 +1353,7 @@ class ContactsController extends x2base {
 		$id = isset($_GET['id']) ? $_GET['id'] : 'all';
 
 		if(is_numeric($id))
-			$list = CActiveRecord::model('X2List')->findByPk($id);
+			$list = X2Model::model('X2List')->findByPk($id);
 		if(isset($list)) {
 
 			// check permissions
@@ -1364,7 +1368,7 @@ class ContactsController extends x2base {
 
 	public function actionExportList($id) {
 
-		$list = CActiveRecord::model('X2List')->findByPk($id);
+		$list = X2Model::model('X2List')->findByPk($id);
 		if(isset($list)) {
 			if(!$this->checkPermissions($list, 'view')) // check permissions
 				throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
@@ -1373,13 +1377,13 @@ class ContactsController extends x2base {
 
 
 
-		$dataProvider = CActiveRecord::model('Contacts')->searchList($id); // get the list
+		$dataProvider = X2Model::model('Contacts')->searchList($id); // get the list
 
 		$totalItemCount = $dataProvider->getTotalItemCount();
 		$dataProvider->pagination->itemCount = $totalItemCount;
 		$dataProvider->pagination->pageSize = 1000;  // process list in blocks of 1000
 
-		$allFields = CActiveRecord::model('Contacts')->getFields(true); // get associative array of fields
+		$allFields = X2Model::model('Contacts')->getFields(true); // get associative array of fields
 
 		$gvSettings = ProfileChild::getGridviewSettings('contacts_list' . $id);
 
@@ -1448,7 +1452,7 @@ class ContactsController extends x2base {
 					if($field['type'] == 'tags') {
 						$row[] = Tags::getTags('Contacts', $model->id, 10);
 					} elseif ($field['type'] == 'date') {
-						$row[] = date('Y-m-d H:i:s', $model->$fieldName);
+						$row[] = date('c', $model->$fieldName);
 					} elseif ($field['type'] == 'visibility') {
 						switch ($model->$fieldName) {
 							case '1':
@@ -1465,7 +1469,7 @@ class ContactsController extends x2base {
 						if(is_numeric($model->$fieldName)) {
 							$className = ucfirst($field['linkType']);
 							if(class_exists($className)) {
-								$lookupModel = CActiveRecord::model($className)->findByPk($model->$fieldName);
+								$lookupModel = X2Model::model($className)->findByPk($model->$fieldName);
 								if(isset($lookupModel))
 									$row[] = $lookupModel->name;
 							}
@@ -1603,18 +1607,21 @@ class ContactsController extends x2base {
 			if(count($meta)==1){
 				$version=$meta[0];
 				$meta=fgetcsv($fp);
+                while ("" === end($meta)) {
+                    array_pop($meta);
+                }
 			}
 			$_SESSION['offset']=ftell($fp);
 			$_SESSION['metaData']=$meta;
 			$failedContacts=fopen('failedContacts.csv','w+');
 			fputcsv($failedContacts,$meta);
 			fclose($failedContacts);
-			$x2attributes=array_keys(CActiveRecord::model('Contacts')->attributes);
+			$x2attributes=array_keys(X2Model::model('Contacts')->attributes);
 			while(""===end($x2attributes)){
 				array_pop($x2attributes);
 			}
 			$_SESSION['importMap']=array();
-			$_SESSION['fields']=CActiveRecord::model('Contacts')->getFields(true);
+			$_SESSION['fields']=X2Model::model('Contacts')->getFields(true);
 			$_SESSION['x2attributes']=$x2attributes;
 			
 			createImportMap($x2attributes,$meta);
@@ -1625,14 +1632,10 @@ class ContactsController extends x2base {
 			for($i=0;$i<5;$i++){
 				if($sampleRecord=fgetcsv($fp)){
 					if(count($sampleRecord)>count($meta)){
-						while ("" === end($sampleRecord)) {
-							array_pop($sampleRecord);
-						}
+						$sampleRecord=array_slice($sampleRecord,0,count($meta));
 					}
 					if(count($sampleRecord)<count($meta)){
-						while(count($sampleRecord)!=count($meta)){
-							array_push($sampleRecord,"");
-						}
+						$sampleRecord=array_pad($sampleRecord,count($meta),null);
 					}
 					$sampleRecord=array_combine($meta,$sampleRecord);
 					$sampleRecords[]=$sampleRecord;
@@ -1761,14 +1764,10 @@ class ContactsController extends x2base {
 				$arr = fgetcsv($fp);
 				if ($arr !== false && !is_null($arr)){
 					if(count($arr)>count($metaData)){
-						while ("" === end($arr)) {
-							array_pop($arr);
-						}
+						$arr=array_slice($arr,0,count($metaData));
 					}
 					if(count($arr)<count($metaData)){
-						while(count($arr)!=count($metaData)){
-							array_push($arr,"");
-						}
+						$arr=array_pad($arr,count($metaData),null);
 					}
 					unset($_POST);
 					$relationships=array();
@@ -1788,7 +1787,7 @@ class ContactsController extends x2base {
 										$relationship->secondId=$importAttributes[$attribute];
 										$relationships[]=$relationship;
 									}else{
-										$lookup=CActiveRecord::model(ucfirst($fieldRecord->linkType))->findByAttributes(array('name'=>$importAttributes[$attribute]));
+										$lookup=X2Model::model(ucfirst($fieldRecord->linkType))->findByAttributes(array('name'=>$importAttributes[$attribute]));
 										if(isset($lookup)){
 											$model->$importMap[$attribute]=$lookup->id;
 											$relationship=new Relationships;
@@ -1962,14 +1961,33 @@ class ContactsController extends x2base {
 
 	protected function exportToTemplate() {
 		ini_set('memory_limit', -1);
-		$contacts = CActiveRecord::model('Contacts')->findAll();
+		$contacts = X2Model::model('Contacts')->findAll();
         $file = 'contact_export.csv';
 		$fp = fopen($file, 'w+');
-        fputcsv($fp,array_keys($contacts[0]->attributes));
-		foreach($contacts as $contact) {
-			fputcsv($fp, $contact->attributes);
-		}
+        if(!empty($contacts) && !empty($contacts[0]) && is_array($contacts[0]->attributes)){
+            fputcsv($fp,array_keys($contacts[0]->attributes));
+            $fields=X2Model::model('Contacts')->getFields();
+            foreach($contacts as $contact) {
+                foreach($fields as $field){
+                    $fieldName=$field->fieldName;
+                    if($field->type=='date' || $field->type=='dateTime'){
+                        $contact->$fieldName=date("c",$contact->$fieldName);
+                    }elseif($field->type=='link'){
+                        try{
+                            $linkModel=X2Model::model($field->linkType)->findByPk($contact->$fieldName);
+                            if(isset($linkModel) && $linkModel->hasAttribute('name')){
+                                $contact->$fieldName=$linkModel->name;
+                            }
+                        }catch(Exception $e){
 
+                        }
+                    }elseif($fieldName=='visibility'){
+                        $contact->$fieldName=$contact->$fieldName==1?'Public':'Private';
+                    }
+                }
+                fputcsv($fp, $contact->attributes);
+            }
+        }
 		fclose($fp);
 	}
 
@@ -1980,7 +1998,7 @@ class ContactsController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model = CActiveRecord::model('Contacts')->findByPk((int) $id);
+		$model = X2Model::model('Contacts')->findByPk((int) $id);
 		if($model === null)
 			throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
 		return $model;

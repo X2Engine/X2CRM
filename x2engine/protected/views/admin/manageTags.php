@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h2><?php echo Yii::t('admin','Tag Manager'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Tag Manager'); ?></h2></div>
 <div style="width:600px;" class="form">
     <?php echo Yii::t('admin',"This is a list of all tags currently used within the app."); ?><br />
     <?php echo Yii::t('admin',"To delete a tag, click the delete link in the grid below.  This will remove any relationship between that tag and records, but textual references to the tag will be preserved.") ?><br /><br />
@@ -49,8 +49,8 @@
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'tags-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('admin','Tags').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Tags').'</h2><div class="title-bar">'
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
         array(
@@ -62,7 +62,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'header'=>'# of Records',
             'type'=>'raw',
-            'value'=>"CActiveRecord::model('Tags')->countByAttributes(array('tag'=>\$data->tag))"
+            'value'=>"X2Model::model('Tags')->countByAttributes(array('tag'=>\$data->tag))"
         ),
         array(
             'header'=>'Delete Tag',

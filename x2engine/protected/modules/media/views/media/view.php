@@ -47,7 +47,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 <div id="main-column" class="half-width">
-<div class="record-title"><h2><?php echo Yii::t('media','File: '); ?><b><?php echo $model->fileName; ?></b></h2></div>
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
 <?php 
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
@@ -121,7 +121,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
                                                                     break;
                                                             }
 															if(class_exists($className))
-																$linkModel = CActiveRecord::model($className)->findByPk($model->associationId);
+																$linkModel = X2Model::model($className)->findByPk($model->associationId);
 															if(isset($linkModel)){
                                                                 echo CHtml::link($linkModel->name, array('/'.$model->associationType.'/'.$model->associationId));
 																//echo $linkModel->name;

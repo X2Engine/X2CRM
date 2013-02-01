@@ -37,9 +37,11 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h2><?php echo Yii::t('admin','Modified Fields'); ?></h2>
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Modified Fields'); ?></h2></div>
+<div class="form">
 <?php echo Yii::t('admin','This page has a list of all fields that have been modified, and allows you to add or remove your own fields, as well as customizing the pre-set fields.'); ?>
-<br><br>
+</div>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'fields-grid',

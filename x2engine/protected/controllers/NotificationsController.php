@@ -71,38 +71,36 @@ class NotificationsController extends CController {
 
 		
 		if(count($notifications))
-			$notifCount = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
+			$notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
 		
 		$chatMessages = array();
-		$lastChatId = 0;
-		if(isset($_GET['lastChatId']) && is_numeric($_GET['lastChatId']))	// if the client specifies the last message ID received,
-			$lastChatId = $_GET['lastChatId'];								// only send newer messages
-
-		
-		$messages = Yii::app()->db->createCommand()
-			->select('x2_social.id,x2_social.user,x2_social.timestamp,x2_social.data,x2_users.id AS userId')
-			->from('x2_social')
-			->where('x2_social.type="chat" AND x2_social.timestamp > :time AND x2_social.id > :lastId')
-			->join('x2_users','x2_social.user=x2_users.username AND x2_users.status=1')
-			->order('x2_social.id DESC')
-			->limit(10)
-			->bindValues(array(':time'=>mktime(0,0,0),':lastId'=>$lastChatId))
-			->queryAll();
-			// die(var_dump($messages));
-			
-			
-		for($i=count($messages)-1; $i>-1; --$i) {
-			if($messages[$i]['userId'] == Yii::app()->user->getId())
-				$userLink = '<span class="my-username">'.$messages[$i]['user'].'</span>';
-			else
-				$userLink = CHtml::link($messages[$i]['user'],array('profile/view','id'=>$messages[$i]['userId']),array('class'=>'username'));
-			
-			$chatMessages[] = array(
-				$messages[$i]['id'],
-				date('g:i:s A',$messages[$i]['timestamp']),
-				$userLink,
-				$this->convertUrls($messages[$i]['data'])
-			);
+		$lastEventId = 0;
+        $lastTimestamp=0;
+		if(isset($_GET['lastEventId']) && is_numeric($_GET['lastEventId'])){	// if the client specifies the last message ID received,
+			$lastEventId = $_GET['lastEventId'];                                // only send newer messages
+        }
+        if(isset($_GET['lastTimestamp']) && is_numeric($_GET['lastTimestamp'])){
+            $lastTimestamp=$_GET['lastTimestamp'];
+        }
+        Yii::import('application.models.Events');
+        $result=Events::getEvents($lastEventId,$lastTimestamp);
+        $events=$result['events'];
+        if($lastEventId==0){
+            $i=19;
+        }else{
+            $i=count($events)-1;
+        }
+		for($i; $i>-1; --$i) {
+            if(isset($events[$i])){
+                $userLink = '<span class="widget-event">'.$events[$i]->user.'</span>';
+                $chatMessages[] = array(
+                    (int)$events[$i]->id,
+                    (int)$events[$i]->timestamp,
+                    $userLink,
+                    $events[$i]->getText(true),
+                    $this->formatFeedTimestamp($events[$i]->timestamp)
+                );
+            }
 		}
         
 		if(!empty($notifications) || !empty($chatMessages)) {
@@ -150,7 +148,7 @@ class NotificationsController extends CController {
 		}
 
 		
-		$notifModels = CActiveRecord::model('Notification')->findAll($criteria);
+		$notifModels = X2Model::model('Notification')->findAll($criteria);
 		
 		foreach($notifModels as &$model) {
 			$msg = $model->getMessage();
@@ -176,7 +174,7 @@ class NotificationsController extends CController {
 				$_GET['id'] = array($_GET['id']);
 				
 			foreach($_GET['id'] as &$id) {
-				$notif = CActiveRecord::model('Notification')->findByPk($id);
+				$notif = X2Model::model('Notification')->findByPk($id);
 				if(isset($notif) && $notif->user == Yii::app()->user->name) {
 					$notif->viewed = 1;
 					$notif->update();
@@ -194,7 +192,7 @@ class NotificationsController extends CController {
 		if(!isset($_GET['lastNotifId']))
 			$_GET['lastNotifId'] = 0;
 	
-		$model = CActiveRecord::model('Notification')->findByPk($id);
+		$model = X2Model::model('Notification')->findByPk($id);
 		if(isset($model) && $model->user = Yii::app()->user->name)
 			$model->delete();
 			
@@ -206,7 +204,7 @@ class NotificationsController extends CController {
 	 * Clear all notifications.
 	 */
 	public function actionDeleteAll() {
-		CActiveRecord::model('Notification')->deleteAllByAttributes(array('user'=>Yii::app()->user->name));
+		X2Model::model('Notification')->deleteAllByAttributes(array('user'=>Yii::app()->user->name));
 		$this->redirect(array('/site/viewNotifications'));
 	}
 
@@ -215,7 +213,7 @@ class NotificationsController extends CController {
 		Yii::import('application.models.Notifications');
 		Yii::import('application.models.NotificationChild');
 		
-		$list=CActiveRecord::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
+		$list=X2Model::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
 		if(count($list)>0){
 			echo json_encode(count($list));
 		}else{
@@ -240,7 +238,7 @@ class NotificationsController extends CController {
 		
 			$opacity = round(100*$opacity);
 			
-			// $profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+			// $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			Yii::app()->params->profile->pageOpacity = $opacity;
 			if(Yii::app()->params->profile->save()){

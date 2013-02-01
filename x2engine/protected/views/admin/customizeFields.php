@@ -37,11 +37,11 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h3><?php echo Yii::t('admin','Customize Fields'); ?></h3>
+?><div class="page-title"><h2><?php echo Yii::t('admin','Customize Fields'); ?></h2></div>
+<div class="form">
 <div style="width:600px">
 <?php echo Yii::t('admin','This form will allow you to rename or show/hide any field on any customizable module.  Changing the type of a default field is <b>strongly</b> discouraged.'); ?><br><br>
-</div>
-<div class="form">
+
 	<?php $form=$this->beginWidget('CActiveForm', array(
 		'id'=>'criteria-form',
 		'enableAjaxValidation'=>false,
@@ -52,7 +52,7 @@
 		<?php echo $form->labelEx($model,'modelName'); ?>
 		<?php 
 			$modelList = array();
-			foreach(CActiveRecord::model('Modules')->findAllByAttributes(array('editable'=>true)) as $module) {
+			foreach(X2Model::model('Modules')->findAllByAttributes(array('editable'=>true)) as $module) {
 				if(array_key_exists($module->name,X2Model::$associationModels))
 					$modelName = X2Model::$associationModels[$module->name];
 				else
@@ -133,14 +133,14 @@
         </div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($model,'required');?>
 		<?php echo $form->checkBox($model,'required',array('id'=>'required'));?>
+		<?php echo $form->labelEx($model,'required',array('style'=>'display:inline;'));?>
 		<?php echo $form->error($model,'required');?>
 	</div>
         
         <div class="row">
-            <?php echo $form->labelEx($model,'searchable');?>
             <?php echo $form->checkBox($model,'searchable',array('id'=>'searchable-custom','onclick'=>'$("#relevance_box_custom").toggle();'));?>
+            <?php echo $form->labelEx($model,'searchable',array('style'=>'display:inline;'));?>
             <?php echo $form->error($model,'searchable');?>
         </div>
         
@@ -149,9 +149,10 @@
             <?php echo $form->dropDownList($model,'relevance',array('Low'=>'Low',"Medium"=>"Medium","High"=>"High"),array("id"=>"relevance-custom",'options'=>array('Medium'=>array('selected'=>true)))); ?>
             <?php echo $form->error($model,'relevance'); ?> 
         </div>
-	
+	<br>
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Save'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
+	</div>
 	</div>
 <?php $this->endWidget(); ?>
 </div>

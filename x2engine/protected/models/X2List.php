@@ -179,7 +179,7 @@ class X2List extends CActiveRecord {
 		// } else {
 			// $condition='';
 		// }
-		return self::model()->with('listItems')->findByPk((int)$id,CActiveRecord::model('Contacts')->getAccessCriteria());
+		return self::model()->with('listItems')->findByPk((int)$id,X2Model::model('Contacts')->getAccessCriteria());
 	}
 
 	/**
@@ -191,12 +191,12 @@ class X2List extends CActiveRecord {
 
 		if($this->type == 'dynamic') {
 			$logicMode = $this->logicType;
-			$criteria = CActiveRecord::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
+			$criteria = X2Model::model('X2ListCriterion')->findAllByAttributes(array('listId'=>$this->id,'type'=>'attribute'));
 			foreach ($criteria as $criterion) {
 				//if this criterion is for a date field, we perform its comparisons differently
 				$dateType = false;
 				//for each field in a model, make sure the criterion is in the same format
-				foreach (CActiveRecord::model($this->modelName)->fields as $field) {
+				foreach (X2Model::model($this->modelName)->fields as $field) {
 					if ($field->fieldName == $criterion->attribute) {
 						switch($field->type) {
 							case 'date': 
@@ -310,7 +310,7 @@ class X2List extends CActiveRecord {
             // $search->addCondition($condition);
 			
 		
-		$accessCriteria = CActiveRecord::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
+		$accessCriteria = X2Model::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
 		$accessCriteria->mergeWith($search,'AND');
 		
 		return $accessCriteria;
@@ -321,7 +321,7 @@ class X2List extends CActiveRecord {
 	 * @return CDbCommand Command to retrieve all records in the list
 	 */
 	public function queryCommand() {
-		$tableSchema = CActiveRecord::model($this->modelName)->getTableSchema();
+		$tableSchema = X2Model::model($this->modelName)->getTableSchema();
 		return $this->getCommandBuilder()->createFindCommand($tableSchema, $this->queryCriteria());
 	}
 
@@ -351,7 +351,7 @@ class X2List extends CActiveRecord {
 	
 		$criteria = $dataProvider->criteria;
 		
-		$tableSchema = CActiveRecord::model($dataProvider->modelClass)->getTableSchema();
+		$tableSchema = X2Model::model($dataProvider->modelClass)->getTableSchema();
 		if($tableSchema === null)
 			return false;
 		
@@ -404,7 +404,7 @@ class X2List extends CActiveRecord {
 			$vcrData['index'] = $rowNumber + 1;
 			$vcrData['count'] = $dataProvider->getTotalItemCount();
 			
-			if($vcrIndex > 0)		// there's a record before the current one
+			/* if($vcrIndex > 0)		// there's a record before the current one
 				$vcrData['prev'] = '<li class="prev">'.CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button')).'</li>';
 			else
 				$vcrData['prev'] = '<li class="prev">'.CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
@@ -413,6 +413,16 @@ class X2List extends CActiveRecord {
 				$vcrData['next'] = '<li class="next">'.CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button')).'</li>';
 			else
 				$vcrData['next'] = '<li class="next">'.CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
+			*/
+			if($vcrIndex > 0)		// there's a record before the current one
+				$vcrData['prev'] = CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
+			else
+				$vcrData['prev'] = CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled'));
+			
+			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
+				$vcrData['next'] = CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
+			else
+				$vcrData['next'] = CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled'));
 
 			return $vcrData;
 		}
@@ -424,11 +434,11 @@ class X2List extends CActiveRecord {
 	 * @return CSqlDataProvider
 	 */
 	public function statusDataProvider($pageSize=null) {
-		$tbl = CActiveRecord::model($this->modelName)->tableName();
+		$tbl = X2Model::model($this->modelName)->tableName();
 		$lstTbl = X2ListItem::model()->tableName();
 		if ($this->type == 'dynamic') {
 			$criteria = $this->queryCriteria();
-			$count = CActiveRecord::model($this->modelName)->count($criteria);
+			$count = X2Model::model($this->modelName)->count($criteria);
 			$sql = $this->getCommandBuilder()->createFindCommand($tbl, $criteria)->getText();
 			$params = $criteria->params;
 		} else { //static type lists
@@ -457,12 +467,12 @@ class X2List extends CActiveRecord {
 	 */
 	public function campaignDataProvider($pageSize=null) {
 
-		$conditions = CActiveRecord::model('Campaign')->getAccessCriteria()->condition;
+		$conditions = X2Model::model('Campaign')->getAccessCriteria()->condition;
 
 		$count = Yii::app()->db->createCommand()
 			->select('COUNT(*)')
 			->from(X2ListItem::model()->tableName().' as list')
-			->leftJoin(CActiveRecord::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
+			->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
 			->where('list.listId=:listId AND '.$conditions,array(':listId'=>$this->id))
 			->queryScalar();
 
@@ -471,7 +481,7 @@ class X2List extends CActiveRecord {
 		$sql = Yii::app()->db->createCommand()
 			->select('list.*, t.*')
 			->from(X2ListItem::model()->tableName().' as list')
-			->leftJoin(CActiveRecord::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
+			->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
 			->where('list.listId=:listId AND '.$conditions)
 			->getText();
 			

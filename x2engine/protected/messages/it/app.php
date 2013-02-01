@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'Italiano',
-// // Login
+// // // Login
 'Please log in to continue:'=>'Effettua il login per continuare:',
 'Username'=>'Nome Utente',
 'Password'=>'Password',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'Benvenuto in {appName}.',
 'Verification Code'=>'Codice di Verifica',
 'Login with Google'=>'Accesso con Google',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'Calendario',
 'Actions'=>'Azioni',
 'Contacts'=>'Contatti',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'Servizio',
 'Go Invisible'=>'Vai Invisibile',
 'Go Visible'=>'Vai Visibile',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
 'Go'=>'Andare',
 'Contact'=>'Contatto',
 'Action'=>'Azione',
 'Contact + Action'=>'Contatto + Azione',
 'Search for contact, action, deal...'=>'Ricerca di contatto, azione, affare ...',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'Tutti i Diritti Riservati.',
 'Generated in {time} seconds.'=>'Generato in {time} secondi',
 'About'=>'Circa',
 'The Program is provided AS IS, without warranty.'=>'Il programma è fornito così com\'è, senza alcuna garanzia.',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'Le Mie Azioni',
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Contatto Veloce',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'Media',
 'Current time in'=>'Ora attuale in',
 'Hide'=>'Nascondere',
-// // 
+// // // 
 'Total Action|Total Actions'=>'Totale Azione | Azioni Totali',
 'Unfinished Action|Unfinished Actions'=>'Incompiuta Azione | Azioni Incompiuta',
 'Overdue Action|Overdue Actions'=>'Scadute Azione | Azioni Scadute',
 'Completed Action|Completed Actions'=>'Azione Completato | Azioni Completate',
-// // 
+// // // 
 'Message Board'=>'Forum',
 'Please enter a message of the day!'=>'Si prega di inserire un messaggio del giorno!',
 'Edit Message'=>'Modifica Messaggio',
-// // 
+// // // 
 'Note Pad'=>'Appunti',
 'Feel free to enter some notes!'=>'Sentitevi liberi di inserire alcune note!',
-// // 
+// // // 
 'Top Contacts'=>'Contatti Top',
 'Add {name}'=>'Aggiungi {name}',
-// // 
+// // // 
 'Enter Title'=>'Inserire il Titolo',
 'Title'=>'Titolo',
 'Title:'=>'Titolo:',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'Collegamento:',
 'Add Site'=>'Aggiungi Sito',
 'Example'=>'Esempio',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'Corpo del Messaggio',
 'Enter text here...'=>'Inserisci il testo qui ...',
 'Send'=>'Inviare',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'Per:',
 'Subject:'=>'Oggetto:',
 'Message:'=>'Messaggio:',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'E-mail Inviata!',
 'Preview'=>'Anteprima',
 'Attachments'=>'Allegati',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'Aggiungi Commento',
 'Create Action'=>'Creare Azione',
 'Add a comment...'=>'Aggiungi un commento ...',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'Domani',
 'Comments'=>'Commenti',
 'Post'=>'Posta',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'Ricerca Avanzata',
 'Clear Filters'=>'Filtri Chiaro',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Si può opzionalmente inserire un operatore di confronto (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>o <b>=</b>) all\'inizio di ciascuno dei vostri valori di ricerca per specificare come il confronto dovrebbe essere fatto.',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'Record non trovato.',
 'Saving...'=>'Salvataggio in corso ...',
 'Module'=>'Modulo',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'Deselezionare Filtri',
+'Check Filters'=>'Controllare i Filtri',
+'Show/Hide All Comments'=>'Mostra / Nascondi tutti i Commenti',
+'{n} rows'=>'{n} righe',
+// // // 
+// // // Misc Actions
 'Submit'=>'Presentare',
 'Save'=>'Memorizzare',
 'Cancel'=>'Annullare',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'Nuovo Elenco',
 'Add'=>'Aggiungere',
 'Remove'=>'Rimuovere',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'Proprio ora',
 '{n} minutes ago'=>'{n} minuti fa',
 '{n} hours ago'=>'{n} ore fa',
 '{n} days ago'=>'{n} giorni fa',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'Errore durante la creazione nota!',
 'Invalid request. Please do not repeat this request again.'=>'Non valida richiesta. Si prega di non ripetere questa richiesta nuovamente.',
 'The requested page does not exist.'=>'La pagina richiesta non esiste.',
 'Please fix the following errors:'=>'Correggi i seguenti errori:',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'Strumenti di Amministrazione',
 'Welcome to the administration tool set.'=>'Benvenuti al set di strumenti di amministrazione.',
 'Links'=>'Links',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'Invia e-mail di massa',
 'How to use Gii'=>'Come utilizzare Gii',
 'How to add a database field'=>'Come aggiungere un campo di database',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'Feed Attività',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'Visibilità',
 'Relevant Users'=>'Utenti Rilevanti',
 'Event Types'=>'Tipi di Eventi',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'Opzioni',
 'Set Default'=>'Imposta Predefinito',
 'Apply Filters'=>'Applica Filtri',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'Messaggio Sociale',
 'Announcement'=>'Annuncio',
 'Product Info'=>'Informazioni sul Prodotto',
 'Competitive Info'=>'Info Competitive',
 'Confidential'=>'Riservato',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'Messaggi Sociali',
 'Records Created'=>'Creato Records',
 'Records Deleted'=>'I record cancellati',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'Flusso di lavoro completo',
 'Workflow Reverted'=>'Flusso di lavoro Ripristinata',
 'Workflow Started'=>'Flusso di lavoro iniziato',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'creato un nuovo {actionLink} associato al contatto {contactLink}',
 'created a new {modelName}, {modelLink}'=>'creato un nuovo {modelName}, {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'creato un nuovo {modelName}, {deletionText}. E \'stato eliminato.',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'L\'azione è dovuta ora, ma il record non è stato trovato.',
 'completed the following action: {actionDescription}'=>'completato le seguenti azioni: {actionDescription}',
 'completed an action, but the record could not be found.'=>'completato l\'azione, ma il record non è stato trovato.',
-// // Model Names
+// // // Model Names
 'action'=>'azione',
 'contact'=>'contatto',
 'account'=>'conto',
 'opportunity'=>'opportunità',
 'marketing campaign'=>'campagna di marketing',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'Riduci Messaggi',
 'Restore Posts'=>'Ripristinare Messaggi',
 'My Groups'=>'I miei gruppi',

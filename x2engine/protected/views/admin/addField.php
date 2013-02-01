@@ -38,12 +38,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 ?>
-
-<h3><?php echo Yii::t('admin', "Add A Custom Field"); ?></h3>
-<?php echo Yii::t('admin', "This form allows you to add custom fields to models."); ?>
-<div><br /></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', "Add A Custom Field"); ?></h2></div>
 <div class="form">
-
+<?php echo Yii::t('admin', "This form allows you to add custom fields to models."); ?>
+<br><br>
     <?php
     $form = $this->beginWidget('CActiveForm', array(
     'id' => 'field-form',
@@ -59,7 +57,7 @@
         <?php echo $form->labelEx($model, 'modelName'); ?>
         <?php
         $modelList = array();
-        foreach (CActiveRecord::model('Modules')->findAllByAttributes(array('editable' => true)) as $module) {
+        foreach (X2Model::model('Modules')->findAllByAttributes(array('editable' => true)) as $module) {
             if (array_key_exists($module->name, X2Model::$associationModels))
                 $modelName = X2Model::$associationModels[$module->name];
             else
@@ -73,17 +71,17 @@
     </div>
 
     <div class="row">
-        <br /><div><?php echo Yii::t('admin', 'Field Name <b>MUST</b> be of the format: wordWordWord. i.e. firstName'); ?>
-            <br /><?php echo Yii::t('admin', 'The first letter must be lowercase and each following word should have its first letter capitalized.'); ?>
-            <br />No spaces are allowed.</div><br />
+        <br><div><?php echo Yii::t('admin', 'Field Name <b>MUST</b> be of the format: wordWordWord. i.e. firstName'); ?>
+            <br><?php echo Yii::t('admin', 'The first letter must be lowercase and each following word should have its first letter capitalized.'); ?>
+            <br>No spaces are allowed.</div><br>
         <?php echo $form->labelEx($model, 'fieldName'); ?>
 <?php echo $form->textField($model, 'fieldName'); ?>
 <?php echo $form->error($model, 'fieldName'); ?>
     </div>
 
     <div class="row">
-        <br /><div>Attribute Label is what you want the field to be displayed as. <br />
-            So for the field firstName, the label should probably be First Name</div><Br />
+        <br><div>Attribute Label is what you want the field to be displayed as. <br>
+            So for the field firstName, the label should probably be First Name</div><br>
         <?php echo $form->labelEx($model, 'attributeLabel'); ?>
 <?php echo $form->textField($model, 'attributeLabel'); ?>
 <?php echo $form->error($model, 'attributeLabel'); ?>

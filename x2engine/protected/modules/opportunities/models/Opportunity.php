@@ -108,7 +108,7 @@ class Opportunity extends X2Model {
 
 	public static function getOpportunityLinks($accountId) {
 
-		$allOpportunities = CActiveRecord::model('Opportunity')->findAllByAttributes(array('accountName'=>$accountId));
+		$allOpportunities = X2Model::model('Opportunity')->findAllByAttributes(array('accountName'=>$accountId));
 
 		$links = array();
 		foreach($allOpportunities as $model) {
@@ -174,7 +174,7 @@ class Opportunity extends X2Model {
 		
 		foreach($arr as $id){
 			if($id!='')
-				$data[]=CActiveRecord::model('Contacts')->findByPk($id);
+				$data[]=X2Model::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
 		

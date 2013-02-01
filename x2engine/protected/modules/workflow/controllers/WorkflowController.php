@@ -251,7 +251,7 @@ class WorkflowController extends x2base {
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 		
 			if(isset($workflowStatus['stages'][$stage])) {
-				$model = CActiveRecord::model('Actions')->findByAttributes(array(
+				$model = X2Model::model('Actions')->findByAttributes(array(
 					'associationId'=>$modelId,
 					'associationType'=>$type,
 					'type'=>'workflow',
@@ -294,7 +294,7 @@ class WorkflowController extends x2base {
 	
 	public function actionUpdateStageDetails($id) {
 
-		$model = CActiveRecord::model('Actions')->findByPk($id);
+		$model = X2Model::model('Actions')->findByPk($id);
 		if(isset($model, $_POST['Actions'])) {
 			$model->setScenario('workflow');
 
@@ -393,7 +393,7 @@ class WorkflowController extends x2base {
 			
 			
 				// find selected stage (and duplicates)
-				$actionModels = CActiveRecord::model('Actions')->findAllByAttributes(
+				$actionModels = X2Model::model('Actions')->findAllByAttributes(
 					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
@@ -473,7 +473,7 @@ class WorkflowController extends x2base {
 			if(isset($workflowStatus['stages'][$stageNumber]['createDate'])) {
 
 				// find selected stage (and duplicates)
-				$actions = CActiveRecord::model('Actions')->findAllByAttributes(
+				$actions = X2Model::model('Actions')->findAllByAttributes(
 					array('associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow','workflowId'=>$workflowId,'stageNumber'=>$stageNumber),
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
@@ -502,13 +502,13 @@ class WorkflowController extends x2base {
 					$this->updateWorkflowChangelog($actions[0],'revert');
 					
 					// delete all incomplete stages after this one
-					// CActiveRecord::model('Actions')->deleteAll(new CDbCriteria(
+					// X2Model::model('Actions')->deleteAll(new CDbCriteria(
 						// array('condition'=>"associationId=$modelId AND associationType='$type' AND type='workflow' AND workflowId=$workflowId AND stageNumber > $stageNumber AND (completeDate IS NULL OR completeDate=0)")
 					// ));
 					
 					
 				} else {	// the stage is already incomplete, so delete it and all subsequent stages
-					$subsequentActions = CActiveRecord::model('Actions')->findAll(new CDbCriteria(
+					$subsequentActions = X2Model::model('Actions')->findAll(new CDbCriteria(
 						array('condition'=>"associationId=$modelId AND associationType='$type' AND type='workflow' AND workflowId=$workflowId AND stageNumber >= $stageNumber")
 					));
 					foreach($subsequentActions as &$action) {
@@ -533,7 +533,7 @@ class WorkflowController extends x2base {
         }
 		// $contactIds = Yii::app()->db->createCommand()->select('contactId')->from('x2_list_items')->where('x2_list_items.listId='.$id)->queryColumn();
 		// die(var_dump($contactIds));
-		// $search = CActiveRecord::model('ContactChild')->findAllByPk($contactIds);
+		// $search = X2Model::model('ContactChild')->findAllByPk($contactIds);
 		// return $search;
 		
 		if(!is_numeric($workflowId) || !is_numeric($stage))
@@ -596,7 +596,7 @@ class WorkflowController extends x2base {
 				// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 				// .CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listId,'clearFilters'=>1))
 				.'{summary}</div>{items}{pager}',
-			'dataProvider'=>$contactsDataProvider, //CActiveRecord::model('ContactChild')->searchList($listId),
+			'dataProvider'=>$contactsDataProvider, //X2Model::model('ContactChild')->searchList($listId),
 			'enableSorting'=>false,
 			// 'filter'=>$model,
 			'columns'=>array(
@@ -609,13 +609,13 @@ class WorkflowController extends x2base {
 					'htmlOptions'=>array('width'=>'30%')
 				),
 				array(
-					'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('dealvalue'),
+					'header'=>X2Model::model('Contacts')->getAttributeLabel('dealvalue'),
 					'name'=>'dealvalue',
 					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["dealvalue"],Yii::app()->params->currency)',
 					'type'=>'raw',
 				),
 				array(
-                    'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('dealstatus'),
+                    'header'=>X2Model::model('Contacts')->getAttributeLabel('dealstatus'),
 					'name'=>'dealstatus',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'15%')
@@ -628,7 +628,7 @@ class WorkflowController extends x2base {
 					'htmlOptions'=>array('width'=>'15%')
 				),
 				array(
-					'header'=>CActiveRecord::model('Contacts')->getAttributeLabel('assignedTo'),
+					'header'=>X2Model::model('Contacts')->getAttributeLabel('assignedTo'),
 					'name'=>'assignedTo',
 					'value'=>'empty($data["assignedTo"])?Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
 					'type'=>'raw',
@@ -648,12 +648,12 @@ class WorkflowController extends x2base {
 				// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 				// .CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listId,'clearFilters'=>1))
 				.'{summary}</div>{items}{pager}',
-			'dataProvider'=>$opportunitiesDataProvider, //CActiveRecord::model('ContactChild')->searchList($listId),
+			'dataProvider'=>$opportunitiesDataProvider, //X2Model::model('ContactChild')->searchList($listId),
 			// 'filter'=>$model,
 			'columns'=>array(
 				//'id',
 				array(
-					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('name'),
+					'header'=>X2Model::model('Opportunity')->getAttributeLabel('name'),
 					'name'=>'name',
 					'value'=>'CHtml::link($data["name"],array("/opportunities/opportunities/view","id"=>$data["id"]))',
 					'type'=>'raw',
@@ -661,20 +661,20 @@ class WorkflowController extends x2base {
 				),
 				//'description',
 				array(
-					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('quoteAmount'),
+					'header'=>X2Model::model('Opportunity')->getAttributeLabel('quoteAmount'),
 					'name'=>'quoteAmount',
 					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["quoteAmount"],Yii::app()->params->currency)',
 					'type'=>'raw',
 				),
 				array(
-					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('salesStage'),
+					'header'=>X2Model::model('Opportunity')->getAttributeLabel('salesStage'),
 					'name'=>'salesStage',
 					'value'=>'Yii::t("opportunities",$data["salesStage"])',
 					'type'=>'raw',
 				),
 				
 				array(
-					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('expectedCloseDate'),
+					'header'=>X2Model::model('Opportunity')->getAttributeLabel('expectedCloseDate'),
 					'name'=>'expectedCloseDate',
 					'value'=>'Yii::app()->controller->formatDate($data["expectedCloseDate"])',
 					'type'=>'raw',
@@ -682,7 +682,7 @@ class WorkflowController extends x2base {
 				),
 				// 'probability',
 				array(
-					'header'=>CActiveRecord::model('Opportunity')->getAttributeLabel('assignedTo'),
+					'header'=>X2Model::model('Opportunity')->getAttributeLabel('assignedTo'),
 					'name'=>'assignedTo',
 					'value'=>'empty($data["assignedTo"])?Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
 					'type'=>'raw',

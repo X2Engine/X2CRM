@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 ?>
-<h2>Registered Modules</h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Registered Modules'); ?></h2></div>
 <?php 
 echo "<table>";
 foreach($registeredModules as $module){
@@ -18,7 +18,7 @@ foreach($registeredModules as $module){
 echo "</table>";
 ?>
 <br />
-<h2>Available Modules</h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Available Modules'); ?></h2></div>
 <?php 
 echo "<table>";
 foreach($modules as $module){

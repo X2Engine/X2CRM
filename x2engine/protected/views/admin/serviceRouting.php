@@ -39,11 +39,11 @@
  ********************************************************************************/
 
 ?>
-<div class="span-12">
-<h2><?php echo Yii::t('admin','Set Service Routing Options'); ?></h2>
-<?php echo Yii::t('admin','Change how service cases are assigned to users.'); ?>
-<br /><br />
+<div class="span-16">
+<div class="page-title"><h2><?php echo Yii::t('admin','Set Service Routing Options'); ?></h2></div>
 <div class="form">
+<?php echo Yii::t('admin','Change how service cases are assigned to users.'); ?>
+<br><br>
 <?php
 $form=$this->beginWidget('CActiveForm', array(
 		'id'=>'service-form',
@@ -78,19 +78,20 @@ $form=$this->beginWidget('CActiveForm', array(
 
 <?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?></div>
-
-<b>Free For All</b><br />
-Assigns all web leads to "Anyone" and users can re-assign to themselves.<br /><br />
-<b>Even Distribution</b><br />
-Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br /><br />
-<b>Round Robin</b><br />
-Assigns leads to each user going through the list one by one. <br /><br />
-<b>Single User</b><br />
+<div class="form">
+<b>Free For All</b><br>
+Assigns all web leads to "Anyone" and users can re-assign to themselves.<br><br>
+<b>Even Distribution</b><br>
+Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br><br>
+<b>Round Robin</b><br>
+Assigns leads to each user going through the list one by one. <br><br>
+<b>Single User</b><br>
 The Single User option will assign all leads to the specified user.
-<br /><br /><br />
-<b>Online Only</b><br />
+<br><br><br>
+<b>Online Only</b><br>
 This option will filter your routing rule so that leads only go to a subset of the users who are logged in.  
 i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads
+</div>
 </div>
 <script>
     $('#service-source-select').change(function(){

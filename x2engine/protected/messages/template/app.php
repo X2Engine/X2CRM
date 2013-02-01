@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'Template',
-// // Login
+// // // Login
 'Please log in to continue:'=>'',
 'Username'=>'',
 'Password'=>'',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'',
 'Verification Code'=>'',
 'Login with Google'=>'',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'',
 'Actions'=>'',
 'Contacts'=>'',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'',
 'Go Invisible'=>'',
 'Go Visible'=>'',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'',
 'Go'=>'',
 'Contact'=>'',
 'Action'=>'',
 'Contact + Action'=>'',
 'Search for contact, action, deal...'=>'',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'',
 'Generated in {time} seconds.'=>'',
 'About'=>'',
 'The Program is provided AS IS, without warranty.'=>'',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'',
 'Twitter Feed'=>'',
 'Quick Contact'=>'',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'',
 'Current time in'=>'',
 'Hide'=>'',
-// // 
+// // // 
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
 'Overdue Action|Overdue Actions'=>'',
 'Completed Action|Completed Actions'=>'',
-// // 
+// // // 
 'Message Board'=>'',
 'Please enter a message of the day!'=>'',
 'Edit Message'=>'',
-// // 
+// // // 
 'Note Pad'=>'',
 'Feel free to enter some notes!'=>'',
-// // 
+// // // 
 'Top Contacts'=>'',
 'Add {name}'=>'',
-// // 
+// // // 
 'Enter Title'=>'',
 'Title'=>'',
 'Title:'=>'',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'',
 'Add Site'=>'',
 'Example'=>'',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'',
 'Enter text here...'=>'',
 'Send'=>'',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'',
 'Subject:'=>'',
 'Message:'=>'',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'',
 'Preview'=>'',
 'Attachments'=>'',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'',
 'Create Action'=>'',
 'Add a comment...'=>'',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'',
 'Comments'=>'',
 'Post'=>'',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'',
 'Clear Filters'=>'',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'',
 'Saving...'=>'',
 'Module'=>'',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'',
+'Check Filters'=>'',
+'Show/Hide All Comments'=>'',
+'{n} rows'=>'',
+// // // 
+// // // Misc Actions
 'Submit'=>'',
 'Save'=>'',
 'Cancel'=>'',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'',
 'Add'=>'',
 'Remove'=>'',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'',
 '{n} minutes ago'=>'',
 '{n} hours ago'=>'',
 '{n} days ago'=>'',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'',
 'Invalid request. Please do not repeat this request again.'=>'',
 'The requested page does not exist.'=>'',
 'Please fix the following errors:'=>'',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'',
 'Welcome to the administration tool set.'=>'',
 'Links'=>'',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'',
 'How to use Gii'=>'',
 'How to add a database field'=>'',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'',
 'Relevant Users'=>'',
 'Event Types'=>'',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'',
 'Set Default'=>'',
 'Apply Filters'=>'',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'',
 'Announcement'=>'',
 'Product Info'=>'',
 'Competitive Info'=>'',
 'Confidential'=>'',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'',
 'Records Created'=>'',
 'Records Deleted'=>'',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'',
 'Workflow Reverted'=>'',
 'Workflow Started'=>'',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'',
 'created a new {modelName}, {modelLink}'=>'',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'',
 'completed the following action: {actionDescription}'=>'',
 'completed an action, but the record could not be found.'=>'',
-// // Model Names
+// // // Model Names
 'action'=>'',
 'contact'=>'',
 'account'=>'',
 'opportunity'=>'',
 'marketing campaign'=>'',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'',
 'Restore Posts'=>'',
 'My Groups'=>'',

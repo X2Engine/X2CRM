@@ -50,7 +50,7 @@ Yii::$enableIncludePath = false;
 Yii::registerAutoloader(array('Yii','x2_autoload'));
 if (!empty($_SERVER['REMOTE_ADDR'])) {
 	$matches = array();
-	preg_match('/(.+)index.php/', $_SERVER["REQUEST_URI"], $matches);
+	preg_match('/(.+)index-test.php/', $_SERVER["REQUEST_URI"], $matches);
 
 	$filename = 'install.php';
 

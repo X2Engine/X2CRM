@@ -37,11 +37,12 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h3>Add Exception</h3>
-<div style="width:600px">
-    <?php echo Yii::t('admin','Adding an exception will alter a Role\'s behavior while the contact is on a particular workflow stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.') ?>
-</div>
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Add Exception'); ?></h2></div>
 <div class="form">
+<div style="width:500px">
+    <?php echo Yii::t('admin','Adding an exception will alter a Role\'s behavior while the contact is on a particular workflow stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.') ?>
+</div><br>
 <?php
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
 //Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
@@ -66,7 +67,7 @@ foreach($list as $role){
         'action'=>'roleException',
 )); ?>
 
-        <label>Workflow</label>
+        <label><?php echo Yii::t('admin','Workflow'); ?></label>
         <?php echo CHtml::dropDownList('workflow','',$workflows,array(
         'empty'=>'Select a workflow',
                 'ajax' => array(
@@ -77,7 +78,7 @@ foreach($list as $role){
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
                 //leave out the data key to pass all form values through
                 ))); ?>
-        <label>Workflow Stage</label>
+        <label><?php echo Yii::t('admin','Workflow Stage'); ?></label>
         <?php echo CHtml::dropDownList('workflowStages','',array(),array('id'=>'workflowStages','empty'=>'Select a workflow first'));?>
         <div class="row">
             <label>Role Name</label>

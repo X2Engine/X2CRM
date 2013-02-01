@@ -132,7 +132,7 @@ class ProfileController extends x2base {
 	public function actionDeletePost($id) {
 		$post = Events::model()->findByPk($id);
 		if($post->type=='comment') {
-			$postParent = CActiveRecord::model('Events')->findByPk($post->associationId);
+			$postParent = X2Model::model('Events')->findByPk($post->associationId);
 			$user=ProfileChild::model()->findByPk($postParent->associationId);
 		} else
 			$user=ProfileChild::model()->findByPk($post->associationId);
@@ -328,7 +328,7 @@ class ProfileController extends x2base {
 	public function actionSetBackground() {
 		if(isset($_POST['name'])) {
 
-			$profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+			$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			$profile->backgroundImg = $_POST['name'];
 
@@ -346,10 +346,10 @@ class ProfileController extends x2base {
 	 */
 	public function actionDeleteBackground($id) {
 
-		$image = CActiveRecord::model('MediaChild')->findByPk($id);
+		$image = X2Model::model('MediaChild')->findByPk($id);
 		if($image->associationId == Yii::app()->user->getId() && ($image->associationType=='bg' || $image->associationType=='bg-private')) {
 			
-			$profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+			$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			if($profile->backgroundImg == $image->fileName) {	// if this BG is currently in use, clear user's background image setting
 				$profile->backgroundImg = '';
@@ -415,12 +415,12 @@ class ProfileController extends x2base {
 						->where('id=:id',array(':id'=>$post->associationId))
 						->queryScalar();
 					
-					// $prof = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
+					// $prof = X2Model::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
 					// $notif->text = "$prof->fullName posted on your profile.";
 					// $notif->record = "profile:$prof->id";
 					// $notif->viewed = 0;
 					$notif->createDate = time();
-					// $subject=CActiveRecord::model('ProfileChild')->findByPk($id);
+					// $subject=X2Model::model('ProfileChild')->findByPk($id);
 					// $notif->user = $subject->username;
 					$notif->save();
 				}
@@ -497,19 +497,19 @@ class ProfileController extends x2base {
 			}
 
 			// $notif=new Notifications;
-			// $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
+			// $prof=X2Model::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
 			// $notif->text="$prof->fullName added a comment to a post.";
 			// $notif->record="profile:$model->associationId";
 			// $notif->viewed=0;
 			// $notif->createDate=time();
-			// $subject=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
+			// $subject=X2Model::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
 			// $notif->user=$subject->username;
 			// if($notif->user!=Yii::app()->user->getName())
 				// $notif->save();
 			
 			// $notif=new Notifications;
-			// $prof=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
-			// $subject=CActiveRecord::model('ProfileChild')->findByPk($post->associationId);
+			// $prof=X2Model::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
+			// $subject=X2Model::model('ProfileChild')->findByPk($post->associationId);
 			// $notif->text="$prof->fullName added a comment to a post.";
 			// $notif->record="profile:$model->associationId";
 			// $notif->viewed=0;
@@ -532,48 +532,7 @@ class ProfileController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-        $condition="TRUE";
-        if(isset($_GET['filter'])){
-            $filter=$_GET['filter'];
-            if($filter=='all'){
-                if(!Yii::app()->user->checkAccess('AdminIndex'))
-                    $condition.=" AND (visibility=1 OR (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."'))";
-            }elseif($filter=='public'){
-                $condition.=" AND (visibility=1)";
-            }elseif($filter=='private'){
-                $condition.=" AND (visibility!=1 AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."'))";
-            }else{
-                $condition.=" AND (visibility=1 OR associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."')";
-            }
-        }else{
-            if(!Yii::app()->user->checkAccess('AdminIndex'))
-                $condition.=" AND (visibility=1 OR (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."'))";
-            $filter='all';
-        }
-        if(isset($_GET['subtype'])){
-            $subtype=$_GET['subtype'];
-            if($subtype!='all')
-                $condition.=" AND subtype='$subtype'";
-        }else{
-            $subtype='all';
-        }
-        $subtypes=json_decode(Dropdowns::model()->findByPk(14)->options,true);
-        foreach($subtypes as $key=>$value){
-            $links[$key]=$subtype==$value?$value:CHtml::link($value,'index?filter='.$filter.'&subtype='.$value);
-        }
-        $subtypes=array_merge(array('all'=>$subtype=='all'?'All':CHtml::link('All','index?filter='.$filter.'&subtype=all')),$links);
-		$dataProvider=new CActiveDataProvider('Social',array(
-			'criteria'=>array(
-				'condition'=>$condition,
-				'order'=>'lastUpdated DESC'
-			),
-		));
-		$users=User::getProfiles();
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-			'users'=>$users,
-            'subtypes'=>$subtypes,
-		));
+        $this->redirect(array('/site/whatsNew'));
 	}
 	
 	/**

@@ -47,14 +47,14 @@ $this->actionMenu = $this->formatMenu(array(
 $heading=Yii::t('media','Media & File Library');
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id' => 'media-grid',
-	'template'=>'<h2>'.$heading.'</h2><div class="title-bar">'
+	'template'=>'<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.X2GridView::getFilterHint()
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider' => $model->search(),
-	'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).')
-		. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
+		. '<div class="form no-border" style="display:inline;"> '
 		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 		    	'ajax' => array(
 		    		'url' => $this->createUrl('/profile/setResultsPerPage'),

@@ -38,7 +38,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h3>Delete A Role</h3>
+<div class="page-title"><h2><?php echo Yii::t('admin','Delete A Role'); ?></h2></div>
 <br /> <span style="color:red;"><b>WARNING:</b> this operation is not reversible, all users will have this role removed from them.</span>
 <form name="deleteRoles" action="deleteRole" method="POST">
 	<br />

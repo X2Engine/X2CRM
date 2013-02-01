@@ -107,7 +107,7 @@ $relationships = Relationships::model()->findAllByAttributes(
 );
 $associatedContacts = array();
 foreach($relationships as $relationship) {
-	$contact = CActiveRecord::model('Contacts')->findByPk($relationship->secondId);
+	$contact = X2Model::model('Contacts')->findByPk($relationship->secondId);
 	$associatedContacts[] = CHtml::link($contact->name, array('/contacts/view', 'id'=>$contact->id));
 }
 $associatedContacts = implode(', ', $associatedContacts);

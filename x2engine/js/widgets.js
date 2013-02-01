@@ -53,15 +53,6 @@
 
 // init inline tags widget javascript
 $(function() {
-	
-	$('#widget-menu-wrapper').click(function() {
-		if($('#widget-menu li').length != 0) {
-			$('#widget-menu').addClass('visible');
-		}
-		
-		return false;
-	});
-	
 	$('#content-widgets').droppable({ // allow widgets to be dropped into content widgets list
 		accept: '.x2-widget-menu-item',
 		activeClass: 'x2-state-active',

@@ -159,7 +159,7 @@ class SiteController extends x2base {
                 if(!empty($deletionTypes)){
                     $deletionTypes="('".implode("','",$deletionTypes)."')";
                     $time=time()-$dateRange;
-                    $events=CActiveRecord::model('Events')->findAll('timestamp < '.$time.' AND type IN '.$deletionTypes);
+                    $events=X2Model::model('Events')->findAll('timestamp < '.$time.' AND type IN '.$deletionTypes);
                     foreach($events as $event){
                         $event->delete();
                     }
@@ -251,10 +251,10 @@ class SiteController extends x2base {
                     Yii::app()->params->profile->defaultFeedFilters=json_encode($_SESSION['filters']);
                     Yii::app()->params->profile->save();
                 }
-                $condition="type!='comment'".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
+                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."')".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
                 $_SESSION['feed-condition']=$condition;
             }else{
-                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."')";
+                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (visibility=1 OR user='".Yii::app()->user->getName()."' OR associationId='".Yii::app()->user->getId()."')";
             }
             $condition.= " AND timestamp <= ".time();
             if(!isset($_SESSION['lastEventId'])){
@@ -269,17 +269,15 @@ class SiteController extends x2base {
             }else{
                 $lastId=$_SESSION['lastEventId'];
             }
-            if(!isset($_SESSION['lastEventTimestamp'])){
-                $lastTimestamp=Yii::app()->db->createCommand()
-                        ->select('MAX(timestamp)')
-                        ->from('x2_events')
-                        ->where($condition)
-                        ->order('timestamp DESC, id DESC')
-                        ->limit(1)
-                        ->queryScalar();
-                $_SESSION['lastEventTimestamp']=$lastTimestamp;
-            }else{
-                $lastTimestamp=$_SESSION['lastEventTimestamp'];
+            $lastTimestamp=Yii::app()->db->createCommand()
+                    ->select('MAX(timestamp)')
+                    ->from('x2_events')
+                    ->where($condition)
+                    ->order('timestamp DESC, id DESC')
+                    ->limit(1)
+                    ->queryScalar();
+            if(empty($lastTimestamp)){
+                $lastTimestamp=0;
             }
             if(isset($_SESSION['lastEventId'])){
                 $condition.=" AND id <= ".$_SESSION['lastEventId'];
@@ -299,12 +297,13 @@ class SiteController extends x2base {
                 $firstId=$data[count($data)-1]->id;
             else
                 $firstId=0;
-            $users=User::getNames();
+            $users=User::getUserIds();
 			$this->render('whatsNew',array(
 				'dataProvider'=>$dataProvider,
                 'users'=>$users,
                 'lastEventId'=>!empty($lastId)?$lastId:0,
                 'firstEventId'=>!empty($firstId)?$firstId:0,
+                'lastTimestamp'=>$lastTimestamp
 			));
 		}
 		else{
@@ -314,52 +313,34 @@ class SiteController extends x2base {
     
    
     
-    public function actionGetEvents($lastEventId){
+    public function actionGetEvents($lastEventId, $lastTimestamp){
         
-        $criteria=new CDbCriteria();
-        $lastEvent=CActiveRecord::model('Events')->findByPk($lastEventId);
-        $maxTimestamp=Yii::app()->db->createCommand()
-                        ->select('MAX(timestamp)')
-                        ->from('x2_events')
-                        ->where('timestamp < '.time())
-                        ->order('timestamp DESC, id DESC')
-                        ->limit(1)
-                        ->queryScalar();
-        if(isset($lastEvent) && (isset($_SESSION['lastEventTimestamp']) && $maxTimestamp > $_SESSION['lastEventTimestamp'])){
-            $timestampCriteria=" OR timestamp > ".$_SESSION['lastEventTimestamp'];
-            $_SESSION['lastEventTimestamp']=$maxTimestamp;
-        }else{
-            $timestampCriteria="";
-        }
-        $parameters=array('order'=>'timestamp DESC, id DESC');
-        $condition=isset($_SESSION['feed-condition'])?$_SESSION['feed-condition']." AND (id > ".$lastEventId." $timestampCriteria)":'(id > '.$lastEventId.' '.$timestampCriteria.') AND type!="comment"';
-        $condition.= " AND timestamp <= ".time();
-        $parameters['condition']=$condition;
-        $criteria->scopes=array('findAll'=>array($parameters));
-        $events=CActiveRecord::model('Events')->findAll($criteria);
+        $result=Events::getEvents($lastEventId,$lastTimestamp);
+        $events=$result['events'];
         $eventData="";
-        $newLastEventId=null;
+        $newLastEventId=$lastEventId;
+        $newLastTimestamp=$lastTimestamp;
         foreach($events as $event){
             if($event instanceof Events){
-                if(is_null($newLastEventId) || $event->id > $newLastEventId){
+                if($event->id > $newLastEventId){
                     $newLastEventId=$event->id;
+                }
+                if($event->timestamp > $newLastTimestamp){
+                    $newLastTimestamp=$event->timestamp;
                 }
                 $eventData.=$this->renderPartial('application.views.site._viewEvent',array('data'=>$event,'noDateBreak'=>true),true);
             }
-        }
-        if(is_null($newLastEventId)){
-            $newLastEventId=$lastEventId;
         }
         $commentCriteria=new CDbCriteria();
         $condition="type='comment' AND timestamp <=".time()." AND id > ".$lastEventId;
         $parameters=array('order'=>'id ASC');
         $parameters['condition']=$condition;
         $commentCriteria->scopes=array('findAll'=>array($parameters));
-        $comments=CActiveRecord::model('Events')->findAll($commentCriteria);
+        $comments=X2Model::model('Events')->findAll($commentCriteria);
         $commentCounts=array();
         $lastCommentId=$lastEventId;
         foreach($comments as $comment){
-            $parentPost=CActiveRecord::model('Events')->findByPk($comment->associationId);
+            $parentPost=X2Model::model('Events')->findByPk($comment->associationId);
             if(isset($parentPost) && !isset($commentCounts[$parentPost->id])){
                 $commentCounts[$parentPost->id]=count($parentPost->children);
             }
@@ -371,7 +352,7 @@ class SiteController extends x2base {
             $newLastEventId!=$lastEventId?$eventData:'',
             $commentCounts,
             $lastCommentId,
-            $_SESSION['lastEventTimestamp'],
+            $newLastTimestamp,
         ));
     }
     
@@ -393,7 +374,7 @@ class SiteController extends x2base {
             $commentModel->timestamp = time();
 
             if($commentModel->save()) {
-                $commentCount=CActiveRecord::model('Events')->countByAttributes(array(
+                $commentCount=X2Model::model('Events')->countByAttributes(array(
                     'type'=>'comment',
                     'associationType'=>'Events',
                     'associationId'=>$postModel->id,
@@ -473,12 +454,12 @@ class SiteController extends x2base {
 						->where('id=:id',array(':id'=>$post->associationId))
 						->queryScalar();
 					
-					// $prof = CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
+					// $prof = X2Model::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
 					// $notif->text = "$prof->fullName posted on your profile.";
 					// $notif->record = "profile:$prof->id";
 					// $notif->viewed = 0;
 					$notif->createDate = time();
-					// $subject=CActiveRecord::model('ProfileChild')->findByPk($id);
+					// $subject=X2Model::model('ProfileChild')->findByPk($id);
 					// $notif->user = $subject->username;
 					$notif->save();
 				}
@@ -505,7 +486,7 @@ class SiteController extends x2base {
         if(isset($_GET['id']) && isset($_GET['attr'])){
             $id=$_GET['id'];
             $important=$_GET['attr'];
-            $event=CActiveRecord::model('Events')->findByPk($id);
+            $event=X2Model::model('Events')->findByPk($id);
             if(isset($event)){
                 if($important=='important'){
                     $event->important=1;
@@ -651,7 +632,10 @@ class SiteController extends x2base {
 		$res ='<table><tr><th>Title</th><th>Link</th></tr>';
 		if($content){
 			foreach($content as $entry){
-				$res .= '<tr><td>'.$entry->title."</td><td><a href='".$entry->url."'>LINK</a></td></tr>";
+                if(strpos($entry->url,'http://')===false){
+                    $entry->url="http://".$entry->url;
+                }
+				$res .= '<tr><td>'.$entry->title."</td><td>".CHtml::link(Yii::t('app','Link'),$entry->url)."</td></tr>";
 			}
 		}else {
 			$res .= "<tr><td>Example</td><td><a href='.'>LINK</a></td></tr>";
@@ -693,7 +677,7 @@ class SiteController extends x2base {
 		
 			$opacity = round(100*$opacity);
 			
-			// $profile = CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+			// $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			Yii::app()->params->profile->pageOpacity = $opacity;
 			if(Yii::app()->params->profile->save()){
@@ -937,7 +921,7 @@ class SiteController extends x2base {
 
 				} else if($model->associationType=='bg' || $model->associationType=='bg-private') {
 
-					$profile=CActiveRecord::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+					$profile=X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 					$profile->backgroundImg = $name;
 					$profile->save();
 					$this->redirect(array('profile/settings','id'=>Yii::app()->user->getId()));
@@ -1066,7 +1050,7 @@ class SiteController extends x2base {
 		if(Yii::app()->user->isGuest)
 			$this->redirect(array('/site/login'));
 		else {
-			$profile = CActiveRecord::model('profile')->findByPk(Yii::app()->user->getId());
+			$profile = X2Model::model('profile')->findByPk(Yii::app()->user->getId());
 			if(Yii::app()->user->checkAccess('AdminIndex')){
 				$admin = &Yii::app()->params->admin;
 				if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()))
@@ -1186,11 +1170,16 @@ class SiteController extends x2base {
                 $request=Yii::app()->request->requestUri;
                 $info=$this->phpinfo_array(true);
                 $referer=$_SERVER['HTTP_REFERER'];
+                if(!empty(Yii::app()->params->admin->emailFromAddr))
+                    $email=Yii::app()->params->admin->emailFromAddr;
+                else
+                    $email="";
                 $get=var_dump_to_string($_GET);
                 $post=var_dump_to_string($_POST);
                 $phpversion=phpversion();
                 $x2version=Yii::app()->params->version;
                 unset($error['traces']);
+                $error['trace']=CHtml::encode($error['trace']);
                 
                 $phpInfoErrorReport=base64_encode(serialize(array_merge($error,array(
                     'request'=>$request,
@@ -1200,6 +1189,7 @@ class SiteController extends x2base {
                     'post'=>$post,
                     'phpversion'=>$phpversion,
                     'x2version'=>$x2version,
+                    'email'=>$email,
                 ))));
                 
                 $errorReport=base64_encode(serialize(array_merge($error,array(
@@ -1209,6 +1199,7 @@ class SiteController extends x2base {
                     'post'=>$post,
                     'phpversion'=>$phpversion,
                     'x2version'=>$x2version,
+                    'email'=>$email,
                 ))));
                 
 				$this->render('error', array_merge($error,array(
@@ -1268,7 +1259,7 @@ class SiteController extends x2base {
 		);
 		
 		if(array_key_exists($type,$classes) && $id != 0)
-			return CActiveRecord::model($classes[$type])->findByPk($id);
+			return X2Model::model($classes[$type])->findByPk($id);
 		else
 			return null;
 	}
@@ -1345,7 +1336,7 @@ class SiteController extends x2base {
 				else
 					$sessionId = $_SESSION['sessionId'] = session_id();
 					
-				$session = CActiveRecord::model('Session')->findByPk($sessionId);
+				$session = X2Model::model('Session')->findByPk($sessionId);
 				
 				// if this client has already tried to log in, increment their attempt count
 				if($session === null) {
@@ -1446,7 +1437,7 @@ class SiteController extends x2base {
 					else
 						$sessionId = $_SESSION['sessionId'] = session_id();
 					
-					$session = CActiveRecord::model('Session')->findByPk($sessionId);
+					$session = X2Model::model('Session')->findByPk($sessionId);
 				
 					// if this client has already tried to log in, increment their attempt count
 					if($session === null) {
@@ -1460,7 +1451,7 @@ class SiteController extends x2base {
 						$session->lastUpdated = time();
 					}
 					// x2base::cleanUpSessions();
-					// $session = CActiveRecord::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
+					// $session = X2Model::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
 					// if(isset($session)) {
 						// $session->lastUpdated = time();
 					// } else {
@@ -1522,12 +1513,12 @@ class SiteController extends x2base {
 			$value = $_POST['Tag'];
 			
 			if($type == 'Quotes' || $type == 'Products') // fix for products and quotes
-				$model = CActiveRecord::model(rtrim($type, 's'))->findByPk($id);
+				$model = X2Model::model(rtrim($type, 's'))->findByPk($id);
 			elseif($type == 'Opportunities'){
-				$model = CActiveRecord::model('Opportunity')->findByPk($id);
+				$model = X2Model::model('Opportunity')->findByPk($id);
                 $type="Opportunity";
             }else
-				$model = CActiveRecord::model($type)->findByPk($id);
+				$model = X2Model::model($type)->findByPk($id);
 			if($model) {
 				
 				// check for duplicate tag
@@ -1574,11 +1565,11 @@ class SiteController extends x2base {
 			$id = $_POST['Id'];
 			$value = $_POST['Tag'];
 			if($type == 'Quotes' || $type == 'Products') // fix for products and quotes
-				$model = CActiveRecord::model(rtrim($type, 's'))->findByPk($id);
+				$model = X2Model::model(rtrim($type, 's'))->findByPk($id);
 			elseif($type == 'Opportunities')
-				$model = CActiveRecord::model('Opportunity')->findByPk($id);
+				$model = X2Model::model('Opportunity')->findByPk($id);
 			else
-				$model = CActiveRecord::model($type)->findByPk($id);
+				$model = X2Model::model($type)->findByPk($id);
 			if($model) {
 				
 				// make sure tag exists
@@ -1738,7 +1729,7 @@ class SiteController extends x2base {
 			foreach ($lookupFields as $field) {
 				$fieldName = $field->fieldName;
 				if (isset($model->$fieldName)) {
-					$lookup = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
+					$lookup = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
 					if (isset($lookup))
 						$model->$fieldName = $lookup->id;
 				}
@@ -1843,7 +1834,7 @@ class SiteController extends x2base {
 	 * Needs to be called by a cronjob.
 	 */
 	// public function actionCron() {
-		// $emails = CActiveRecord::model('Actions')->findByAttributes(array(
+		// $emails = X2Model::model('Actions')->findByAttributes(array(
 			// 'type'=>'email_staged',
 			// 'dueDate'=>'<'.time(),
 			// 'complete'=>'No'
@@ -1860,9 +1851,9 @@ class SiteController extends x2base {
 			$user->save();
 			
 			if(isset($_SESSION['sessionId']))
-				CActiveRecord::model('Session')->deleteByPk($_SESSION['sessionId']);
+				X2Model::model('Session')->deleteByPk($_SESSION['sessionId']);
 			else
-				CActiveRecord::model('Session')->deleteAllByAttributes(array('IP'=>$this->getRealIp()));
+				X2Model::model('Session')->deleteAllByAttributes(array('IP'=>$this->getRealIp()));
 				
 			// $session = Session::model()->findByAttributes(array('user'=>$user->username));
 			// $session = Session::model()->deleteAllByAttributes(array('user'=>$user->username));

@@ -56,8 +56,8 @@ $this->actionMenu = $this->formatMenu($menuItems);
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'maps-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('contacts','Saved Maps').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('contacts','Saved Maps').'</h2><div class="title-bar">'
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$dataProvider, 
 	// 'enableSorting'=>false,
 	// 'model'=>$model,

@@ -79,7 +79,7 @@ class InlineEmailForm extends X2Widget {
 		// var_dump($this->insertableAttributes);
 		if($this->insertableAttributes !== null) { // && !empty($this->model->attributes['modelName'])) {
 			// $this->insertableAttributes = array(
-				// Yii::t('contacts','Contact Attributes')=>CActiveRecord::model($this->model->attributes['modelName'])->attributeLabels()
+				// Yii::t('contacts','Contact Attributes')=>X2Model::model($this->model->attributes['modelName'])->attributeLabels()
 			// );
 			Yii::app()->clientScript->registerScript('setInsertableAttributes',
 				'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';',

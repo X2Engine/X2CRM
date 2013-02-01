@@ -73,7 +73,7 @@ $order = preg_replace('/\.desc$/', ' DESC', $order);
 
 // decide which data provider to use
 if(is_numeric($listId)) {
-	$list = CActiveRecord::model('X2List')->findByPk($listId);
+	$list = X2Model::model('X2List')->findByPk($listId);
     if(isset($list)){
         $listLink = CHtml::link($list->name,array('/contacts/'.$path));
         $vcrDataProvider = $searchModel->searchList($listId);
@@ -115,17 +115,20 @@ if($vcrData === false && $listId !== 'index') {
 
 if(is_array($vcrData) && count($vcrData)) {
 
-	// if(isset($vcrData['prev']))
-		// $vcrControls['prev'] = $vcrData['prev'];
-	// if(isset($vcrData['next']))
-		// $vcrControls['next'] = $vcrData['next'];
+	
 ?>
 <div class="vcrPager">
 	<div class="summary">
 		<?php if(isset($listLink)) echo $listLink; ?>
 		<?php echo Yii::t('contacts','<b>{m}</b> of <b>{n}</b>',array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])); ?>
 	</div>
-	<?php echo CHtml::tag('ul',array('class'=>'vcrPager'),$vcrData['prev']."\n".$vcrData['next']); ?>
+	<?php
+	//echo CHtml::tag('ul',array('class'=>'vcrPager'),$vcrData['prev']."\n".$vcrData['next']);
+	if(isset($vcrData['prev']))
+		echo $vcrData['prev'];
+	if(isset($vcrData['next']))
+		echo $vcrData['next'];
+	?>
 </div>
 <?php
 

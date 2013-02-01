@@ -104,26 +104,24 @@ $this->actionMenu[] = array('label'=>($model->type == 'invoice'? Yii::t('quotes'
 
 ?>
 <div id="main-column" class="half-width">
-<div class="record-title">
-<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2><?php echo ( $model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?> <b><?php echo $model->name; ?></b>
+<div class="page-title">
+<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name; ?></h2>
 
 <?php if($model->locked) { ?>
 	<?php if($strict && Yii::app()->user->name != 'admin') { ?>
-		<a class="x2-button" href="#" onClick="dialogStrictLock();">Edit</a>
+		<a class="x2-button right" href="#" onClick="dialogStrictLock();"><?php echo Yii::t('app','Edit'); ?></a>
 	<?php } else { ?>
-		<a class="x2-button" href="#" onClick="dialogLock();">Edit</a>
+		<a class="x2-button right" href="#" onClick="dialogLock();"><?php echo Yii::t('app','Edit'); ?></a>
 	<?php } ?>
 <?php } else { ?>
-	<a class="x2-button" href="update/<?php echo $model->id;?>">Edit</a>
+	<a class="x2-button right" href="update/<?php echo $model->id;?>"><?php echo Yii::t('app','Edit'); ?></a>
 <?php } ?>
 
 <?php if($model->type != 'invoice') { ?>
-	<a class="x2-button" href="convertToInvoice/<?php echo $model->id;?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
+	<a class="x2-button right" href="convertToInvoice/<?php echo $model->id;?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
 <?php } ?>
-
-</h2>
 </div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
@@ -132,12 +130,9 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 
-
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Quote'));
 
-?>
-
-<?php if($model->type == 'invoice') { ?>
+if($model->type == 'invoice') { ?>
 	<div class="x2-layout form-view" style="margin-bottom: 0;">
 	
 	    <div class="formSection showSection">

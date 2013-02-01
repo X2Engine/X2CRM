@@ -20,4 +20,5 @@ $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTOR
 // configuration)
 $test_db = 0;
 $test_url = '';
+$installType = 'Silent';
 ?>

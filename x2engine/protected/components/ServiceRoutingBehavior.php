@@ -42,7 +42,7 @@
 class ServiceRoutingBehavior extends CBehavior {
 
 	public function cleanUpSessions() {
-		CActiveRecord::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
+		X2Model::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
 	}
 
 	/**
@@ -88,7 +88,7 @@ class ServiceRoutingBehavior extends CBehavior {
 		$this->cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users = CActiveRecord::model('User')->findAll();
+		$users = X2Model::model('User')->findAll();
 		foreach ($users as $user) {
 			$usernames[] = $user->username;
 		}
@@ -105,7 +105,7 @@ class ServiceRoutingBehavior extends CBehavior {
 		$numbers = array();
 		foreach ($users as $user) {
 			if ($user != 'admin' && $user!='api') {
-				$actions = CActiveRecord::model('Actions')->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
+				$actions = X2Model::model('Actions')->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
 				if (isset($actions))
 					$numbers[$user] = count($actions);
 				else
@@ -132,7 +132,7 @@ class ServiceRoutingBehavior extends CBehavior {
 		$this->cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users = CActiveRecord::model('User')->findAll();
+		$users = X2Model::model('User')->findAll();
 		foreach ($users as $userRecord) {
 			//exclude admin from candidates
 			if ($userRecord->username != 'admin' && $userRecord->username!='api') $usernames[] = $userRecord->username;

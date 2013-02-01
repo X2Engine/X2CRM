@@ -49,7 +49,7 @@
 class LeadRoutingBehavior extends CBehavior {
 
 	public function cleanUpSessions() {
-		CActiveRecord::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
+		X2Model::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
 	}
 
 	/**
@@ -103,7 +103,7 @@ class LeadRoutingBehavior extends CBehavior {
 		$this->cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users = CActiveRecord::model('User')->findAll();
+		$users = X2Model::model('User')->findAll();
 		foreach ($users as $user) {
 			$usernames[] = $user->username;
 		}
@@ -120,7 +120,7 @@ class LeadRoutingBehavior extends CBehavior {
 		$numbers = array();
 		foreach ($users as $user) {
 			if ($user != 'admin' && $user!='api') {
-				$actions = CActiveRecord::model('Actions')->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
+				$actions = X2Model::model('Actions')->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
 				if (isset($actions))
 					$numbers[$user] = count($actions);
 				else
@@ -147,7 +147,7 @@ class LeadRoutingBehavior extends CBehavior {
 		$this->cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
-		$users = CActiveRecord::model('User')->findAll();
+		$users = X2Model::model('User')->findAll();
 		foreach ($users as $userRecord) {
 			//exclude admin from candidates
 			if ($userRecord->username != 'admin' && $userRecord->username!='api') $usernames[] = $userRecord->username;
@@ -202,7 +202,7 @@ class LeadRoutingBehavior extends CBehavior {
 		$sessions = Session::getOnlineUsers();
         $criteria=new CDbCriteria;
         $criteria->order="priority ASC";
-		$rules = CActiveRecord::model('LeadRouting')->findAll($criteria);
+		$rules = X2Model::model('LeadRouting')->findAll($criteria);
 		foreach ($rules as $rule) {
 			$arr = LeadRouting::parseCriteria($rule->criteria);
 			$flagArr = array();

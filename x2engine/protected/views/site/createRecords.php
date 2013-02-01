@@ -44,14 +44,13 @@ $form=$this->beginWidget('CActiveForm', array(
    'id'=>'create-records-form',
    'enableAjaxValidation'=>false,
 )); ?>
-
-<h2><?php echo Yii::t('quotes','Contact'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('quotes','Contact'); ?></h2></div>
 <?php $this->renderPartial('application.components.views._form', array('model'=>$contact, 'users'=>$users,'modelName'=>'contacts', 'form'=>$form, 'isQuickCreate'=>true, 'hideAccount'=>true)); ?>
 
-<h2><?php echo Yii::t('quotes','Account'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('quotes','Account'); ?></h2></div>
 <?php $this->renderPartial('application.components.views._form', array('model'=>$account, 'users'=>$users,'modelName'=>'accounts', 'form'=>$form, 'isQuickCreate'=>true)); ?>
 
-<h2><?php echo Yii::t('quotes','Opportunity'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('quotes','Opportunity'); ?></h2></div>
 <?php $this->renderPartial('application.components.views._form', array('model'=>$opportunity, 'users'=>$users,'modelName'=>'Opportunity', 'form'=>$form, 'isQuickCreate'=>true, 'hideAccount'=>true)); ?>
 
 <div class="row buttons">

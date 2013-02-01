@@ -92,6 +92,7 @@ return array(
 				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
 				
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>'=>'<module>/<module>/index',
 				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<id:\d+>'=>'<module>/<module>/view',
 				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>'=>'<module>/<module>/<action>',
 				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>/<id:\d+>'=>'<module>/<module>/<action>',
@@ -326,7 +327,7 @@ return array(
 			'QuickContact'=>'Quick Contact',
 			'GoogleMaps'=>'Google Map',
 			//'TwitterFeed'=>'Twitter Feed',
-			'ChatBox'=>'Chat',
+			'ChatBox'=>'Activity Feed',
 			'NoteBox'=>'Note Pad',
 			'ActionMenu'=>'My Actions',
 			'TagCloud'=>'Tag Cloud',

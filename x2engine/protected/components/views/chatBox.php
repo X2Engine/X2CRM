@@ -92,31 +92,8 @@ $chatContainerFixHeight = $chatContainerHeight + 5;
 
 <div id="chat-container-fix" style="height:<?php echo $chatContainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->
 	<div id="chat-container" style="height:<?php echo $chatContainerHeight; ?>px;">									<!--this is the resizable for this widget-->
-		<div id="chat-box-container" style="height:<?php echo $chatboxContainerHeight; ?>px; margin-bottom: 5px;">	<!--resizable for chatbox-->
-			<div id="chat-box" style="height:<?php echo $chatboxHeight; ?>px;"></div>
-		</div>
-		<?php echo CHtml::beginForm(); ?>
-		<div class="textarea-container">
-			<div id="chat-message-container" style="height:<?php echo $chatmessageContainerHeight; ?>px;">	<!--resizable for chat messages-->
-				<?php echo CHtml::textArea('chat-message','', array('style'=>'height:'.$chatmessageHeight.'px;')); ?>
-			</div>
-			<?php
-			echo CHtml::submitButton(
-				Yii::t('app','Send'),
-				/* array('/site/newMessage'),
-				array(
-					'update'=>'#chat-box',
-					'success'=>"function(response) {
-						//updateChat();
-						$('#chat-message').val(''); //".Yii::t('app','Enter text here...')."');
-						// $('#chat-message').css('color','#aaa');
-						// toggleText($('#chat-message').get());
-					}",
-				), */
-				array('id'=>'chat-submit','class'=>'x2-button')
-			);
-			?>
-			<?php echo CHtml::endForm(); ?>
+		<div id="chat-box-container" style="height:<?php echo $chatContainerHeight; ?>px; margin-bottom: 5px;">	<!--resizable for chatbox-->
+			<div id="chat-box" style="height:<?php echo $chatContainerHeight; ?>px;"></div>
 		</div>
 	</div>
 </div>

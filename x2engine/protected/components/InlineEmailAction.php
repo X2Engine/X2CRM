@@ -83,7 +83,7 @@ class InlineEmailAction extends CAction {
 				if(empty($signature))
 					$signature = Yii::app()->params->profile->getSignature(true);	// load default signature if empty
 			
-				$template = CActiveRecord::model('Docs')->findByPk($this->model->template);
+				$template = X2Model::model('Docs')->findByPk($this->model->template);
 				if(isset($template)) {
 					$this->model->message = str_replace('\\\\', '\\\\\\', $this->model->message);
 					$this->model->message = str_replace('$', '\\$', $this->model->message);
@@ -91,12 +91,12 @@ class InlineEmailAction extends CAction {
 					$emailBody = preg_replace('/{signature}/u','<!--BeginSig-->'.$signature.'<!--EndSig-->',$emailBody);
 					
 					// check if subject is empty, or is from another template
-					if(empty($this->model->subject) || CActiveRecord::model('Docs')->countByAttributes(array('type'=>'email','subject'=>$this->model->subject)))
+					if(empty($this->model->subject) || X2Model::model('Docs')->countByAttributes(array('type'=>'email','subject'=>$this->model->subject)))
 						$this->model->subject = $template->subject;
 					
 					// if there is a model name/id available, look it up and use its attributes
 					if(isset($this->model->modelName, $this->model->modelId)) {
-						$targetModel = CActiveRecord::model($this->model->modelName)->findByPk($this->model->modelId);
+						$targetModel = X2Model::model($this->model->modelName)->findByPk($this->model->modelId);
 						if(isset($targetModel)) {
 						
 							$matches = array();
@@ -160,7 +160,7 @@ class InlineEmailAction extends CAction {
 				if(in_array('200',$this->model->status) || $stageEmail) {
 					
 					foreach($this->model->mailingList['to'] as &$target) {
-						$model = CActiveRecord::model(ucwords($this->model->modelName))->findByPk($this->model->modelId);
+						$model = X2Model::model(ucwords($this->model->modelName))->findByPk($this->model->modelId);
 						if(isset($model)) {
                             if($model->hasAttribute('lastActivity')){
                                 $model->lastActivity=time();
@@ -194,7 +194,7 @@ class InlineEmailAction extends CAction {
 							}
 
 							if($template == null) {
-								$action->actionDescription = '<b>'.$this->model->subject."</b>\n\n".$this->model->message;
+								$action->actionDescription = '<b>'.$this->model->subject."</b><br><br>".$this->model->message;
 								if(isset($attachments)) {
 									$action->actionDescription .= "\n\n";
 									$action->actionDescription .= '<b>'. Yii::t('media', 'Attachments:') . "</b>\n";

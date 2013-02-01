@@ -56,8 +56,9 @@ class GroupsController extends x2base {
 	 */
 	public function filters() {
 		return array(
-			'clearGroupsCache - view, index'	// clear the cache, unless we're doing a read-only operation here
-		);
+			'clearGroupsCache - view, index',	// clear the cache, unless we're doing a read-only operation here
+            'setPortlets',
+        );
 	}
 
 	/**
@@ -183,7 +184,7 @@ class GroupsController extends x2base {
 			foreach($links as $link) {
 				$link->delete();
 			}
-			$contacts=CActiveRecord::model('Contacts')->findAllByAttributes(array('assignedTo'=>$id));
+			$contacts=X2Model::model('Contacts')->findAllByAttributes(array('assignedTo'=>$id));
 			foreach($contacts as $contact) {
 				$contact->assignedTo='Anyone';
 				$contact->save();

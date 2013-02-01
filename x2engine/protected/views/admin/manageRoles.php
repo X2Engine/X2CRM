@@ -51,20 +51,21 @@ Yii::app()->clientScript->registerCss('multiselectCss',"
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('accounts','Role List').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('accounts','Role List').'</h2><div class="title-bar">'
+		.'{summary}</div></div>{items}{pager}',
+		'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		'name',
 	),
 )); ?>
-<br />
+<br>
 <a href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Add Role</a>
 <a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Delete Role</a>
 <a href="#" onclick="$('#editRole').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#exception').hide();" class="x2-button">Edit Role</a>
 <a href="#" onclick="$('#exception').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button">Add Exception</a>
-<br />
-<br />
+<br>
+<br>
 <div id="addRole" style="display:none;">
 <?php $this->renderPartial('roleEditor',array(
     'model'=>$model,

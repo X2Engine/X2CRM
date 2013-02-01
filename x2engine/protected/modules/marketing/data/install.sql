@@ -17,7 +17,7 @@ CREATE TABLE x2_campaigns (
 	complete				TINYINT 		DEFAULT 0,
 	visibility				INT				NOT NULL,
 	createDate				BIGINT	 		NOT NULL,
-	launchDate				BIGINT	 		NOT NULL,
+	launchDate				BIGINT,
 	lastUpdated				BIGINT	 		NOT NULL,
 	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20),

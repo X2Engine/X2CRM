@@ -119,31 +119,16 @@ function subscribe(link) {
 $layout = Yii::app()->params->profile->getLayout();
 ?>
 <div id="main-column" class="half-width">
-<div class="record-title" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/contacts.png);">
-<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<div class="page-title icon fixed" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/contacts.png);">
+	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 
-
-<?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
-<h2><b><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></b>
-<?php /*
-<a class="x2-button right widget-menu-button" onclick="$('#widget-menu').addClass('visible'); return false;" href="#">
-<?php/*	<span class="widget-menu-button">Widgets</span>
-	<ul id="widget-menu">
-		<?php foreach($layout['hidden'] as $name=>$widget) { ?>
-				<li><span class="x2-widget-menu-item" id="<?php echo $name; ?>"><?php echo $widget['title']; ?></span></li>
-		<?php } ?>
-		<?php foreach($layout['hiddenRight'] as $name=>$widget) { ?>
-				<li><span class="x2-widget-menu-item right" id="<?php echo $name; ?>"><?php echo $widget['title']; ?></span></li>
-		<?php } ?>
-	</ul> 
-</a>
-<?php */
-echo CHtml::link('<span></span>','#',array('class'=>'x2-button email right','onclick'=>'toggleEmailForm(); return false;'));
-if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
-	echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right'));
-?>
-</h2>
+	<h2><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></h2>
+	<?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
+	<?php echo CHtml::link('<span></span>','#',array('class'=>'x2-button email right','onclick'=>'toggleEmailForm(); return false;'));
+	if(Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
+		echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right'));
+	?>
 </div>
 
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts')); ?>
@@ -166,7 +151,7 @@ if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
 
 // urls, contact info, etc, is json encoded and then added as parameters to the
 // javascript function that calls ajax to create the new model
-$linkModel = CActiveRecord::model('Accounts')->findByPk($model->company);
+$linkModel = X2Model::model('Accounts')->findByPk($model->company);
 if (isset($linkModel))
 	$accountName = json_encode($linkModel->name);
 else

@@ -216,6 +216,12 @@ class X2Rules {
 			ActionsController::actionUncomplete()
 			
 			
+			SiteController::actionLogin()
+			SiteController::actionLogout()
+			
+			ApiController::actionWebLead()
+			
+			
 			
 			
 			
@@ -227,6 +233,23 @@ class X2Rules {
 			
 		 */
 	}
+	
+	
+	public static function getRules($trigger) {
+	
+		
+		// CActiveRecord::model('
+		
+	
+	
+	
+	
+	
+	
+	}
+	
+	
+	
 	
 	public static function parseVariables($str,$vars=array(),$modelClass=null,$modelId=null) {
 	
@@ -240,7 +263,7 @@ class X2Rules {
 		
 		// if there is a model name/id available, look it up and use its attributes
 		if(isset($modelClass, $modelId)) {
-			$model = CActiveRecord::model($modelClass)->findByPk($modelId);
+			$model = X2Model::model($modelClass)->findByPk($modelId);
 			
 			if($model !== null) {
 			

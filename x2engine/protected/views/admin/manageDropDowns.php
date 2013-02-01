@@ -37,9 +37,10 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h2><?php echo Yii::t('admin','Dropdown List');?></h2>
-<div style="width:600px;"><?php echo Yii::t('admin','Manage all dropdowns.  These can be linked to fields via Field Management.  Any default dropdowns can also be edited here to change the available options throughout the application.  Deleting default dropdowns may cause issues with pre-existing forms.') ?>
-</div><br /><br />
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Dropdown List'); ?></h2></div>
+<div style="width:600px;" class="form"><?php echo Yii::t('admin','Manage all dropdowns.  These can be linked to fields via Field Management.  Any default dropdowns can also be edited here to change the available options throughout the application.  Deleting default dropdowns may cause issues with pre-existing forms.') ?>
+</div>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'fields-grid',
@@ -58,12 +59,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		*/
 	),
 )); ?>
-<br />
-<a href="#" onclick="$('#createDropdown').toggle();$('#deleteDropdown').hide();$('#editDropdown').hide();" class="x2-button">Create Dropdown</a>
-<a href="#" onclick="$('#deleteDropdown').toggle();$('#createDropdown').hide();$('#editDropdown').hide();" class="x2-button">Delete Dropdown</a>
-<a href="#" onclick="$('#editDropdown').toggle();$('#createDropdown').hide();$('#deleteDropdown').hide();" class="x2-button">Edit Dropdown</a>
-<br />
-<br />
+<br>
+<a href="#" onclick="$('#createDropdown').toggle();$('#deleteDropdown').hide();$('#editDropdown').hide();" class="x2-button"><?php echo Yii::t('admin','Create Dropdown'); ?></a>
+<a href="#" onclick="$('#deleteDropdown').toggle();$('#createDropdown').hide();$('#editDropdown').hide();" class="x2-button"><?php echo Yii::t('admin','Delete Dropdown'); ?></a>
+<a href="#" onclick="$('#editDropdown').toggle();$('#createDropdown').hide();$('#deleteDropdown').hide();" class="x2-button"><?php echo Yii::t('admin','Edit Dropdown'); ?></a>
+<br>
+<br>
 <div id="createDropdown" style="display:none;">
 <?php $this->renderPartial('dropDownEditor',array(
     'model'=>$model,

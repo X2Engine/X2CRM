@@ -51,7 +51,7 @@
 class AdminController extends Controller {
 
     public $portlets = array();
-    public $layout = '//layouts/main';
+    public $layout = '//layouts/column1';
 	
 	public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior');
 
@@ -371,9 +371,9 @@ class AdminController extends Controller {
         if(!empty($tag)){
             if($tag!='all'){
                 $tag="#".$tag;
-                CActiveRecord::model('Tags')->deleteAllByAttributes(array('tag'=>$tag));
+                X2Model::model('Tags')->deleteAllByAttributes(array('tag'=>$tag));
             }else{
-                CActiveRecord::model('Tags')->deleteAll();
+                X2Model::model('Tags')->deleteAll();
             }
         }
         $this->redirect('manageTags');
@@ -1033,7 +1033,7 @@ class AdminController extends Controller {
             $type = $_POST['Fields']['modelName'];
 
         if (isset($type)) {
-            foreach (CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field) {
+            foreach (X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field) {
 
                 if (isset($_POST['Criteria']))
                     $data[$field->fieldName] = $field->attributeLabel;
@@ -1079,7 +1079,7 @@ class AdminController extends Controller {
      */
     public function actionSetChatPoll() {
 
-        $admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
+        $admin = &Yii::app()->params->admin; //X2Model::model('Admin')->findByPk(1);
         if (isset($_POST['Admin'])) {
             $timeout = $_POST['Admin']['chatPollTime'];
 
@@ -1238,7 +1238,7 @@ class AdminController extends Controller {
      */
     public function actionEmailSetup() {
 
-        $admin = &Yii::app()->params->admin; //CActiveRecord::model('Admin')->findByPk(1);
+        $admin = &Yii::app()->params->admin; //X2Model::model('Admin')->findByPk(1);
         if (isset($_POST['Admin'])) {
             $admin->attributes = $_POST['Admin'];
 
@@ -1311,7 +1311,7 @@ class AdminController extends Controller {
                     $model->linkType = ucfirst($linkType);
                 }
             }
-            $tableName = CActiveRecord::model($model->modelName)->tableName();
+            $tableName = X2Model::model($model->modelName)->tableName();
             $field=$model->fieldName;
             if (preg_match("/\s/", $field)) {
                 
@@ -1327,7 +1327,7 @@ class AdminController extends Controller {
     }
     
     public function actionValidateField($fieldName, $modelName){
-        $field=CActiveRecord::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>$fieldName));
+        $field=X2Model::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>$fieldName));
         if(isset($field)){
             echo "1";
         }else{
@@ -1347,7 +1347,7 @@ class AdminController extends Controller {
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
             $fieldName = strtolower($field->fieldName);
-            $tableName = CActiveRecord::model($field->modelName)->tableName();
+            $tableName = X2Model::model($field->modelName)->tableName();
             if ($field->delete()) {
                 $sql = "ALTER TABLE $tableName DROP COLUMN $fieldName";
                 $command = Yii::app()->db->createCommand($sql);
@@ -1367,7 +1367,7 @@ class AdminController extends Controller {
     public function actionCustomizeFields() {
 
         if (isset($_POST['Fields'])) {
-            $fieldModel = CActiveRecord::model('Fields')->findByPk($_POST['Fields']['id']);
+            $fieldModel = X2Model::model('Fields')->findByPk($_POST['Fields']['id']);
             $oldType = $fieldModel->type;
             $fieldModel->attributes = $_POST['Fields'];
             $fieldModel->type = $_POST['Fields']['type'];
@@ -1412,7 +1412,7 @@ class AdminController extends Controller {
                         break;
                 }
             }
-            $tableName = CActiveRecord::model($fieldModel->modelName)->tableName();
+            $tableName = X2Model::model($fieldModel->modelName)->tableName();
             $fieldModel->modified = 1;
             $fieldName=$fieldModel->fieldName;
             (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $fieldModel->required = 1 : $fieldModel->required = 0;
@@ -1438,7 +1438,7 @@ class AdminController extends Controller {
     public function actionGetFieldData() {
 
         if (isset($_POST['Fields']['id'])) {
-            $fieldModel = CActiveRecord::model('Fields')->findByPk($_POST['Fields']['id']);
+            $fieldModel = X2Model::model('Fields')->findByPk($_POST['Fields']['id']);
             $temparr = $fieldModel->attributes;
             if (!empty($fieldModel->linkType)) {
                 $type = $fieldModel->type;
@@ -2368,12 +2368,12 @@ class AdminController extends Controller {
 
         $dropdowns = $dataProvider->getData();
         foreach ($dropdowns as $dropdown) {
-            $temp = json_decode($dropdown->options);
-            $str = "";
-            foreach ($temp as $item) {
-                $str.=$item . ", ";
+            $temp = json_decode($dropdown->options,true);
+            if(is_array($temp)){
+                $str=implode(", ",$temp);
+            }else{
+                $str=$dropdown->options;
             }
-            $str = substr($str, 0, -2);
             $dropdown->options = $str;
         }
         $dataProvider->setData($dropdowns);
@@ -2534,7 +2534,7 @@ class AdminController extends Controller {
             $controller = new $controllerName($controllerName);
             $model = $controller->modelClass;
             if (class_exists($model)) {
-                $recordCount = CActiveRecord::model($model)->count();
+                $recordCount = X2Model::model($model)->count();
                 if ($recordCount > 0) {
                     $modelList[$model] = array('name' => $module->title, 'count' => $recordCount);
                 }
@@ -2563,7 +2563,7 @@ class AdminController extends Controller {
             ini_set('memory_limit', -1);
             $file = 'data.csv';
             $fp = fopen($file, 'a+');
-            $tempModel = CActiveRecord::model($model);
+            $tempModel = X2Model::model($model);
             $meta = array_keys($tempModel->attributes);
             $meta[] = $model;
             if ($page == 0)
@@ -2616,7 +2616,7 @@ class AdminController extends Controller {
                 INNER JOIN
                 x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
                 WHERE b.modelType='$model' AND b.importId='$importId'",
-            "records"=>"DELETE a FROM ".CActiveRecord::model($model)->tableName()." a
+            "records"=>"DELETE a FROM ".X2Model::model($model)->tableName()." a
                 INNER JOIN
                 x2_imports b ON b.modelId=a.id
                 WHERE b.modelType='$model' AND b.importId='$importId'",
@@ -2778,7 +2778,7 @@ class AdminController extends Controller {
                                 $model->$key = $value;
                             }
                         }
-                        $lookup = CActiveRecord::model($modelType)->findByPk($model->id);
+                        $lookup = X2Model::model($modelType)->findByPk($model->id);
                         $lookupFlag = isset($lookup);
                         if($model->validate() || $modelType=="User"){
                             $saveFlag=true;
@@ -2799,7 +2799,7 @@ class AdminController extends Controller {
                                         fputcsv($failedImport, $tempMeta);
                                     }
                                     $attr = $model->attributes;
-                                    $tempAttributes = CActiveRecord::model($modelType)->attributes;
+                                    $tempAttributes = X2Model::model($modelType)->attributes;
                                     $attr = array_merge($tempAttributes, $attr);
                                     $attr[] = $modelType;
                                     fputcsv($failedImport, $attr);
@@ -2832,7 +2832,7 @@ class AdminController extends Controller {
                                 fputcsv($failedImport, $tempMeta);
                             }
                             $attr = $model->attributes;
-                            $tempAttributes = CActiveRecord::model($modelType)->attributes;
+                            $tempAttributes = X2Model::model($modelType)->attributes;
                             $attr = array_merge($tempAttributes, $attr);
                             $attr[] = $modelType;
                             fputcsv($failedImport, $attr);
@@ -3035,6 +3035,7 @@ class AdminController extends Controller {
      * This method controls the update interval setting for the application.
      */
     public function actionUpdaterSettings() {
+		// $this->layout = '//layouts/column1';
         $admin = &Yii::app()->params->admin;
         if (isset($_POST['Admin'])) {
             $admin->setAttributes($_POST['Admin']);

@@ -65,10 +65,10 @@ $this->actionMenu = $this->formatMenu(array(
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'profiles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('profile','People').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title"><h2>'.Yii::t('profile','People').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(

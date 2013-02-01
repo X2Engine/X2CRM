@@ -48,10 +48,10 @@ $form = $this->beginWidget('CActiveForm', array(
 	'method'=>'POST',
 ));
 
-$model->firstName = CActiveRecord::model('Contacts')->getAttributeLabel('firstName');
-$model->lastName = CActiveRecord::model('Contacts')->getAttributeLabel('lastName');
-$model->phone = CActiveRecord::model('Contacts')->getAttributeLabel('phone');
-$model->email = CActiveRecord::model('Contacts')->getAttributeLabel('email');
+$model->firstName = X2Model::model('Contacts')->getAttributeLabel('firstName');
+$model->lastName = X2Model::model('Contacts')->getAttributeLabel('lastName');
+$model->phone = X2Model::model('Contacts')->getAttributeLabel('phone');
+$model->email = X2Model::model('Contacts')->getAttributeLabel('email');
 
 ?>
 <div class="form thin">

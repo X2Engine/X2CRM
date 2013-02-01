@@ -42,13 +42,12 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>'Manage Groups'),
 	array('label'=>'Create Group', 'url'=>array('create')),
 ));
-?>
 
-<?php $this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('groups','Groups').'</h2><div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('groups','Groups').'</h2><div class="title-bar">'
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		array(
@@ -56,7 +55,7 @@ $this->actionMenu = $this->formatMenu(array(
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
-                array(
+		array(
 			'name'=>'users',
 			'value'=>'count(GroupToUser::model()->findAllByAttributes(array("groupId"=>$data->id)))',
 			'type'=>'raw',

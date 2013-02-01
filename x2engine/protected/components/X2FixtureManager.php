@@ -42,9 +42,7 @@
 Yii::import('system.test.CDbFixtureManager');
 
 /**
- * Description of X2FixtureManager
- *
- * @author Demitri Morgan
+ * @package X2CRM.components
  */
 class X2FixtureManager extends CDbFixtureManager {
 
@@ -58,8 +56,7 @@ class X2FixtureManager extends CDbFixtureManager {
 		if (is_file($initFile)) {
 			$tbl_data = require($initFile);
 			if (is_array($tbl_data)) {
-				Yii::app()->db->createCommand()->delete($tableName);
-				Yii::app()->db->createCommand("ALTER TABLE $tableName AUTO_INCREMENT=1")->execute();
+				Yii::app()->db->createCommand()->truncateTable($tableName);
 				foreach ($tbl_data as $rec)
 					Yii::app()->db->createCommand()->insert($tableName, $rec);
 			}

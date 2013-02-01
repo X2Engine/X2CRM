@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'Русский',
-// // Login
+// // // Login
 'Please log in to continue:'=>'Пожалуйста, войдите для продолжения:',
 'Username'=>'имя пользователя',
 'Password'=>'пароль',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'Добро пожаловать в {appName}.',
 'Verification Code'=>'Код проверки',
 'Login with Google'=>'Войти с Google',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'календарь',
 'Actions'=>'Действия',
 'Contacts'=>'связи',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'обслуживание',
 'Go Invisible'=>'Перейти Невидимый',
 'Go Visible'=>'Перейти Видимые',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
 'Go'=>'идти',
 'Contact'=>'контакт',
 'Action'=>'действие',
 'Contact + Action'=>'Контакт + Действие',
 'Search for contact, action, deal...'=>'Поиск контакта, действие, сделка ...',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'Все права защищены.',
 'Generated in {time} seconds.'=>'Сгенерировано за {time} секунд',
 'About'=>'о',
 'The Program is provided AS IS, without warranty.'=>'Программа поставляется как есть, без гарантии.',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'Мои действия',
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Быстрый контакт',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'средства массовой информации',
 'Current time in'=>'Точное время в',
 'Hide'=>'скрывать',
-// // 
+// // // 
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
 'Overdue Action|Overdue Actions'=>'Просроченные Действие | Просроченная Действия',
 'Completed Action|Completed Actions'=>'Завершено Действие | завершенных действий',
-// // 
+// // // 
 'Message Board'=>'Форум',
 'Please enter a message of the day!'=>'Пожалуйста, введите сообщение дня!',
 'Edit Message'=>'Изменить сообщение',
-// // 
+// // // 
 'Note Pad'=>'Блокнот',
 'Feel free to enter some notes!'=>'Не стесняйтесь ввести некоторые ноты!',
-// // 
+// // // 
 'Top Contacts'=>'Топ Контакты',
 'Add {name}'=>'Добавьте {name}',
-// // 
+// // // 
 'Enter Title'=>'Введите название',
 'Title'=>'название',
 'Title:'=>'Название:',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'Ссылка:',
 'Add Site'=>'Добавить сайт',
 'Example'=>'пример',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'Тело сообщения',
 'Enter text here...'=>'Введите текст здесь ...',
 'Send'=>'послать',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'Кому:',
 'Subject:'=>'Тема:',
 'Message:'=>'сообщение:',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'Отправки сообщения!',
 'Preview'=>'предварительный просмотр',
 'Attachments'=>'Вложения',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'Добавить комментарий',
 'Create Action'=>'Создать действия',
 'Add a comment...'=>'Добавить комментарий ...',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'завтра',
 'Comments'=>'Комментарии',
 'Post'=>'пост',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'Расширенный поиск',
 'Clear Filters'=>'Очистить фильтры',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Можно ввести оператор сравнения (<b> <</ B>, <b> <= </ B>, <b>> </ B>, <b>> = </ B>, <b> <> </ B> или <b> = </ B>) в начале каждого из ваших ценностей поиска, чтобы указать, как сравнение должно быть сделано.',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'Запись не найдена.',
 'Saving...'=>'Сохранение ...',
 'Module'=>'модуль',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'Снимите фильтры',
+'Check Filters'=>'Проверьте фильтры',
+'Show/Hide All Comments'=>'Показать / Скрыть все комментарии',
+'{n} rows'=>'{п} строк',
+// // // 
+// // // Misc Actions
 'Submit'=>'подавать',
 'Save'=>'сохранять',
 'Cancel'=>'отменить',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'Новый список',
 'Add'=>'добавлять',
 'Remove'=>'удаление',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'сейчас',
 '{n} minutes ago'=>'{п} минут назад',
 '{n} hours ago'=>'{п} часов назад',
 '{n} days ago'=>'{п} дней назад',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'Ошибка при создании Внимание!',
 'Invalid request. Please do not repeat this request again.'=>'Неверный запрос. Пожалуйста, не повторяйте эту просьбу еще раз.',
 'The requested page does not exist.'=>'Запрошенная страница не существует.',
 'Please fix the following errors:'=>'Пожалуйста, исправьте следующие ошибки:',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'Средства администрирования',
 'Welcome to the administration tool set.'=>'Добро пожаловать в наборе инструментов управления.',
 'Links'=>'связи',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'Отправить массовой электронной почте',
 'How to use Gii'=>'Как использовать Gii',
 'How to add a database field'=>'Как добавить поля базы данных',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'Лента новостей',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'видимость',
 'Relevant Users'=>'Соответствующие пользователей',
 'Event Types'=>'Типы событий',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'опции',
 'Set Default'=>'Установить по умолчанию',
 'Apply Filters'=>'Применить фильтры',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'Социальная сообщение',
 'Announcement'=>'объявление',
 'Product Info'=>'Информация о продукте',
 'Competitive Info'=>'Конкурентная информация',
 'Confidential'=>'конфиденциальный',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'Социальная сообщения',
 'Records Created'=>'записей, созданных',
 'Records Deleted'=>'удаленных записей',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'Полный рабочий процесс',
 'Workflow Reverted'=>'Рабочий процесс Возвращено',
 'Workflow Started'=>'Рабочий процесс работы',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'создан новый {actionLink} связанных с контактом {contactLink}',
 'created a new {modelName}, {modelLink}'=>'создан новый {modelName}, {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'создан новый {modelName}, {deletionText}. Она была удалена.',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'Действие которого обусловлено сейчас, но запись не может быть найдено.',
 'completed the following action: {actionDescription}'=>'выполнить следующие действия: {actionDescription}',
 'completed an action, but the record could not be found.'=>'завершены действия, но запись не может быть найдено.',
-// // Model Names
+// // // Model Names
 'action'=>'действие',
 'contact'=>'связаться',
 'account'=>'счет',
 'opportunity'=>'возможность',
 'marketing campaign'=>'маркетинговая кампания',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'Свернуть сообщения',
 'Restore Posts'=>'Восстановление сообщения',
 'My Groups'=>'Мои группы',

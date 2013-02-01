@@ -58,8 +58,10 @@ $form = $this->beginWidget('CActiveForm', array(
 	'enableAjaxValidation'=>false
 ));
 ?>
-<h2><?php echo Yii::t('marketing','Update Campaign'); ?>: <b><?php echo $model->name; ?></b>
-	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button highlight right')); ?></h2>
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
+	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button highlight right')); ?>
+</div>
 <?php
 $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign','form'=>$form));
 

@@ -39,6 +39,7 @@
  * ****************************************************************************** */
 ?>
 <?php
+require_once("protected/modules/charts/chartsConfig.php");
 $this->actionMenu = $this->formatMenu(array(
 	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
 	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
@@ -92,7 +93,7 @@ $this->actionMenu = $this->formatMenu(array(
 			<?php
 			$range = $model->dateRange;
 			$chart1 = $this->widget('X2PieChart', array(
-				'model' => 'x2_bi_leads',
+				'model' => $sqlView,
 				'options' => array(
 					'other-threshold' => 3,
 					'x-axis' => array('column' => 'leadSource')),
@@ -107,7 +108,7 @@ $this->actionMenu = $this->formatMenu(array(
 		<div class="x2-chart-container-right">
 			<?php
 			$this->widget('X2PieChart', array(
-				'model' => 'x2_bi_leads',
+				'model' => $sqlView,
 				'options' => array(
 					'other-threshold' => 1,
 					'x-axis' => array('column' => 'leadType')
@@ -125,7 +126,7 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-center-large">
 		<?php
 		$this->widget('X2StackedBarChart', array(
-			'model' => 'x2_bi_leads',
+			'model' => $sqlView,
 			'options' => array(
 				'other-threshold' => 2,
 				'x-axis' => array('column' => 'assignedToName'),
@@ -146,7 +147,7 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-center-large">
 		<?php
 		$this->widget('X2StackedBarChart', array(
-			'model' => 'x2_bi_leads',
+			'model' => $sqlView,
 			'options' => array(
 				'other-threshold' => 0,
 				'orderby' => 'leadDate asc',

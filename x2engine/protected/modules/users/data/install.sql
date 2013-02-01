@@ -2,10 +2,10 @@ DROP TABLE IF EXISTS x2_users;
 /*&*/
 CREATE TABLE x2_users (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	firstName				VARCHAR(20)		NOT NULL,
-	lastName				VARCHAR(40)		NOT NULL,
-	username				VARCHAR(20)		NOT NULL,
-	password				VARCHAR(100)	NOT NULL,
+	firstName				VARCHAR(20),
+	lastName				VARCHAR(40),
+	username				VARCHAR(20),
+	password				VARCHAR(100),
 	title					VARCHAR(50),
 	department				VARCHAR(40),
 	officePhone				VARCHAR(40),

@@ -71,7 +71,7 @@ $fields = array();
 if(method_exists($model,'getFields')) {
 	$fields = $model->getFields(true);
 } else {
-	foreach(CActiveRecord::model('Fields')->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
+	foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
 		$fields[$fieldModel->fieldName] = $fieldModel;
 }
 if($layoutData === false) {

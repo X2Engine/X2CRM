@@ -71,15 +71,14 @@ $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 
 ?>
 <div id="main-column" class="half-width">
-<div class="record-title">
-<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<div class="page-title">
+	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 
-<h2><?php echo Yii::t('accounts','Account:'); ?> <b><?php echo CHtml::encode($model->name); ?></b> 
-<?php if(Yii::app()->user->checkAccess('AccountsUpdate',$authParams)){ ?>
-    <a class="x2-button" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><?php echo Yii::t('app','Edit');?></a>
-<?php } ?>
-</h2>
+	<h2><span class="no-bold"><?php echo Yii::t('accounts','Account:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
+	<?php if(Yii::app()->user->checkAccess('AccountsUpdate',$authParams)){ ?>
+		<a class="x2-button right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><?php echo Yii::t('app','Edit');?></a>
+	<?php } ?>
 </div>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'accounts-form',

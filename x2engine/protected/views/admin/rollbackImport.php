@@ -38,11 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h2>Import List</h2>
-<div style="width:600px;" class="form">
-    <?php echo Yii::t('admin',"To rollback an import, find it on the list below and press the 'Rollback' button.");?>
-    <br /><br />
-    <?php echo Yii::t('admin',"This will delete all records created by that particular import, as well as any generated records and all tags and actions associated with these records.  This operation cannot be reversed.") ?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Import List');?></h2></div>
+<div class="form">
+<div style="width:500px;">
+    <?php echo Yii::t('admin','To rollback an import, find it on the list below and press the \'Rollback\' button.');?>
+    <br><br>
+    <?php echo Yii::t('admin','This will delete all records created by that particular import, as well as any generated records and all tags and actions associated with these records.  This operation cannot be reversed.') ?>
+</div>
 </div>
 <?php
 if(!empty($dataProvider)){
@@ -50,11 +52,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
         'id' => 'lead-activity-grid',
         'baseScriptUrl' => Yii::app()->request->baseUrl . '/themes/' . Yii::app()->theme->name . '/css/gridview',
         'template' => '{items}{pager}',
-        'template'=> '<h2>'.Yii::t('admin','Import Manager').'</h2><div class="title-bar">'
+        'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Import Manager').'</h2><div class="title-bar">'
          //.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
         //.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
         //.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
-         .'{summary}</div>{items}{pager}',
+         .'{summary}</div></div>{items}{pager}',
+		 'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
         'dataProvider' => $dataProvider,
         'enableSorting'=>true,
         'enablePagination' => true,
@@ -90,11 +93,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 <div class="form" style="width:600px;">
     <?php echo Yii::t('admin','To begin the rollback, click the button below and wait for the completion message.'); ?>
-    <br /><br />
+    <br><br>
     <?php echo Yii::t('admin','Import ID: '); ?><strong><?php echo $_GET['importId'];?></strong>
-    <br />
+    <br>
     <?php echo Yii::t('admin','Records to be Deleted: '); ?><strong><?php echo $count; ?></strong>
-    <br /><br />
+    <br><br>
     <?php echo CHtml::link('Begin Rollback','#',array('id'=>'rollback-link','class'=>'x2-button'));?>
 </div>
 <div class="form" style="width:600px;color:green;display:none;" id="status-box">
@@ -119,7 +122,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             data:{model:models[model],stage:stages[stage],importId:importId},
             success:function(data){
                 if(stages[stage]=='import'){
-                    $('#status-box').append("<br />"+data+" <b>"+models[model]+"</b> successfully removed.");
+                    $('#status-box').append("<br>"+data+" <b>"+models[model]+"</b> successfully removed.");
                 }
                 if(model<models.length){
                     if(stage<stages.length-1){
@@ -128,12 +131,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
                         if(model!=models.length-1){
                             rollbackStage(model+1,0);
                         }else{
-                            $('#status-box').append("<br /><br /><b>Rollback Complete</b>");
+                            $('#status-box').append("<br><br><b>Rollback Complete</b>");
                             alert("Done!");
                         }
                     }
                 }else{
-                    $('#status-box').append("<br /><br /><b>Rollback Complete</b>");
+                    $('#status-box').append("<br><br><b>Rollback Complete</b>");
                     alert("Done!");
                 }
             }

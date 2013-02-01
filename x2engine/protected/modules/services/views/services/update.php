@@ -47,10 +47,12 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
 ),$authParams);
 ?>
-<?php echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<h2 style="margin-bottom:0;"><?php echo Yii::t('services','Update Case:'); ?> <b><?php echo $model->id; ?></b> <a class="x2-button" href="javascript:void(0);" onclick="$('#save-button').click();">Save</a></h2>
-
+<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
+<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>: </span>	<?php echo Yii::t('services','Case {n}',array('{n}'=>$model->id)); ?></h2>
+	<a class="x2-button right highlight" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>
+</div>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users, 'modelName'=>'services')); ?>
 
 <?php

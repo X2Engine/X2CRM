@@ -56,8 +56,9 @@ if(array_search($user,$pieces)!=false || $user==$model->editPermissions || $user
 	
 $this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'));
 ?>
-
-<h1><?php echo Yii::t('docs','Export Doc');?></h1>
-
+<div class="page-title"><h2><?php echo Yii::t('docs','Export Doc');?></h2></div>
+<div class="form"><div class="span-10">
 <?php echo Yii::t('docs','Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.');?><br /><br />
 <?php echo $link; ?>
+</div>
+</div>

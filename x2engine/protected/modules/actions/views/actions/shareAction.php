@@ -55,7 +55,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
-<h2><?php echo Yii::t('actions','Share Action');?></h2>
+<div class="page-title"><h2><?php echo Yii::t('actions','Share Action');?></h2></div>
 <?php
 if(!empty($status)) {
 	$index = array_search('200',$status);

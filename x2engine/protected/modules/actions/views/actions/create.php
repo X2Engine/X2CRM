@@ -45,5 +45,5 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('actions','Create Action')), 
 ));
 ?>
-<h2><?php echo Yii::t('actions','Create Action'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('actions','Create Action'); ?></h2></div>
 <?php echo $this->renderPartial('_form', array('actionModel'=>$model, 'users'=>$users)); ?>

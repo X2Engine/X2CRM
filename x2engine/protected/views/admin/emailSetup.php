@@ -77,11 +77,11 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo',"
 	
 ",CClientScript::POS_READY);
 ?>
-<div class="span-14">
-<h2><?php echo Yii::t('admin','Email Server Configuration'); ?></h2>
+<div class="span-16">
+<div class="page-title"><h2><?php echo Yii::t('admin','Email Server Configuration'); ?></h2></div>
+<div class="form">
 <?php echo Yii::t('admin','Ready to send email? We need some information about your mail server.'); ?>
 <br><br>
-<div class="form">
 <?php
 $form=$this->beginWidget('CActiveForm', array(
 		'id'=>'email-setup',

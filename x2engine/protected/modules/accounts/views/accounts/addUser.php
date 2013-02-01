@@ -61,8 +61,9 @@ $this->actionMenu = $this->formatMenu($menuItems,$authParams);
 
 
 ?>
-
-<h2><?php echo Yii::t('accounts','Update Account:'); ?> <b><?php echo $model->name; ?></b></h2>
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('accounts','Update:'); ?></span> <?php echo $model->name; ?></h2>
+</div>
 
 <div class="form">
 
@@ -79,7 +80,7 @@ echo ($action=='Remove')?Yii::t('accounts','Please click any new users you wish 
 </div>
 
 <div class="row buttons">
-	<?php echo CHtml::submitButton(Yii::t('app',$action),array('class'=>'x2-button')); ?>
+	<?php echo CHtml::submitButton(Yii::t('app',$action),array('class'=>'x2-button highlight')); ?>
 </div>
 
 <?php $this->endWidget(); ?>

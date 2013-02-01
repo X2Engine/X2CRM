@@ -72,10 +72,24 @@ class ApplicationConfigBehavior extends CBehavior {
         $cli = $this->owner->params->isCli;
 		if (!$cli) {
 			if ($this->owner->request->getPathInfo() == 'notifications/get') { // skip all the loading if this is a chat/notification update
-				$timezone = $this->owner->db->createCommand()->select('timeZone')->from('x2_profile')->where('id=1')->queryScalar(); // set the timezone to the admin's
-				if (!isset($timezone))
+                Yii::import('application.components.X2WebUser');
+                $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
+                if(isset($profData)){
+                    if(isset($profData['timeZone'])){
+                        $timezone=$profData['timeZone'];
+                    }
+                    if(isset($profData['language'])){
+                        $language=$profData['language'];
+                    }else{
+                        
+                    }
+                }
+                if (!isset($timezone))
 					$timezone = 'UTC';
+                if(!isset($language))
+                    $language='en';
 				date_default_timezone_set($timezone);
+                $this->owner->language=$language;
                 Yii::import('application.models.X2Model');
 				// Yii::import('application.models.*');
 				// foreach(scandir('protected/modules') as $module){
@@ -98,7 +112,7 @@ class ApplicationConfigBehavior extends CBehavior {
 
 		// $this->owner->messages->forceTranslation = true;
 		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
-		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
+		$this->owner->params->admin = X2Model::model('Admin')->findByPk(1);
 		$notGuest = True;
 		$uname = 'admin';
 		if (!$cli) {
@@ -109,8 +123,8 @@ class ApplicationConfigBehavior extends CBehavior {
 		$sessionId = isset($_SESSION['sessionId'])? $_SESSION['sessionId'] : session_id();
 		
 		
-		$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$uname));
-		$session = CActiveRecord::model('Session')->findByPk($sessionId);
+		$this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username'=>$uname));
+		$session = X2Model::model('Session')->findByPk($sessionId);
 
 		
 		if($notGuest && !$cli) {

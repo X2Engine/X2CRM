@@ -47,11 +47,11 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Change Password'),'visible'=>($model->id==Yii::app()->user->getId())),
 );
-
-echo CHtml::form();
 ?>
+<div class="page-title"><h2><?php echo Yii::t('profile','Change Password Form'); ?></h2></div>
+<?php echo CHtml::form(); ?>
 <div class="form">
-	<h2><?php echo Yii::t('profile','Change Password Form'); ?></h2>
+	
 	<div class="row" style="margin-bottom:10px;">
 		<div class="cell">
 			<label><?php echo Yii::t('profile','Old Password'); ?></label>
@@ -75,7 +75,7 @@ echo CHtml::form();
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('id'=>'save-changes','class'=>'x2-button')); ?>
 	</div>
 </div>
-
+</form>
 <script>
 	$('form').submit(function() {
 		var newPass=$('#newPassword').val();

@@ -7,7 +7,7 @@ Yii::import('application.modules.actions.models.Actions');
  * 
  * @package X2CRM.tests.functional.modules.contacts
  */
-class NewContactTest extends WebTestCase {
+class NewContactTest extends X2WebTestCase {
 
 	public $fixtures = array(
 		'contacts' => 'Contacts',

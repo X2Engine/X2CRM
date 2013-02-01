@@ -55,7 +55,7 @@ $this->actionMenu = $this->formatMenu($menuItems);
 
 
 ?>
-<h2><?php echo Yii::t('contacts','Create List'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('contacts','Create List'); ?></h2></div>
 
 <?php 
 echo $this->renderPartial('_listForm', array(

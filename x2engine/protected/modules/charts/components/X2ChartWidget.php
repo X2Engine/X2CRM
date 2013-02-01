@@ -39,15 +39,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ****************************************************************************** */
 
-/*
- *
-  create or replace view x2engine.x2_bi_leads as select id, leadSource, leadType, assignedTo, interest, closeDate, rating from x2engine.x2_contacts
-  where not (assignedTo > 0)
-  union
-  select a.id, a.leadSource, a.leadType, b.name as assignedTo, a.interest, a.closeDate, a.rating from x2engine.x2_contacts a, x2engine.x2_groups b
-  where a.assignedTo > 0 and b.id = a.assignedTo;
- */
-
 /**
  * @package X2CRM.modules.charts.components 
  */

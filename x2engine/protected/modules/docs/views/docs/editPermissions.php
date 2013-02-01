@@ -60,13 +60,18 @@ $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'docs-form',
 	'enableAjaxValidation'=>false,
 ));?>
-<h2><?php echo Yii::t('docs','Edit Doc Permissions');?></h2>
-<?php echo Yii::t('docs','Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.');?>
-	<div class="form" id="doc-form"><br /><?php
-	echo $form->label($model,'editPermissions');
-	echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
-	echo $form->error($model,'editPermissions');
-	echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button'));
-	?></div><?php
-	$this->endWidget();
-?>
+<div class="page-title"><h2><?php echo Yii::t('docs','Edit Doc Permissions');?></h2></div>
+<div class="form">
+	<div class="row" style="width:500px;">
+		<?php echo Yii::t('docs','Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'); ?>
+	</div><br>
+	<div class="row"><?php
+		echo $form->label($model,'editPermissions');
+		echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
+		echo $form->error($model,'editPermissions'); ?>
+	</div>
+	<div class="row">
+		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button')); ?>
+	</div>
+</div>
+<?php $this->endWidget();

@@ -8,7 +8,7 @@ CREATE TABLE `x2_services` (
 	description			TEXT,
 	contactId			varchar(250),
 	assignedTo			TEXT,
-	name				VARCHAR(40)		NOT NULL,
+	name				VARCHAR(40),
 	impact				VARCHAR(40),
 	status				VARCHAR(40),
 	subject				TEXT,

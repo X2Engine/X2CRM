@@ -43,6 +43,5 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('opportunities','Create')),
 ));
 ?>
-<h2><?php echo Yii::t('opportunities','Create Opportunity'); ?></h2>
-
+<div class="page-title"><h2><?php echo Yii::t('opportunities','Create Opportunity'); ?></h2></div>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'Opportunity')); ?>

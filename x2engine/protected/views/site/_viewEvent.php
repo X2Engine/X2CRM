@@ -37,7 +37,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-$profile=CActiveRecord::model('Profile')->findByAttributes(array('username'=>$data->user));
+$profile=X2Model::model('Profile')->findByAttributes(array('username'=>$data->user));
 if(isset($profile) && !empty($profile->avatar)){
 	$avatar = Yii::app()->request->baseUrl.'/'.$profile->avatar;
 }elseif(isset($profile)){
@@ -47,7 +47,7 @@ if(isset($profile) && !empty($profile->avatar)){
 }
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $imgUrl=$themeUrl."/images/eventIcons/".$data->type.".png";
-$authorRecord = CActiveRecord::model('User')->findByAttributes(array('username'=>$data->user));
+$authorRecord = X2Model::model('User')->findByAttributes(array('username'=>$data->user));
 if(isset($authorRecord)){
     if(Yii::app()->user->getName()==$data->user){
         $author=Yii::t('app','You');
@@ -57,7 +57,7 @@ if(isset($authorRecord)){
 }else{
     $author='';
 }
-$commentCount=CActiveRecord::model('Events')->countByAttributes(array(
+$commentCount=X2Model::model('Events')->countByAttributes(array(
     'type'=>'comment',
     'associationType'=>'Events',
     'associationId'=>$data->id,
@@ -92,7 +92,7 @@ $commentCount=CActiveRecord::model('Events')->countByAttributes(array(
     <span class="event-text">
 	<?php
     if($data->associationType=='Media'){
-        $authorRecord = CActiveRecord::model('User')->findByAttributes(array('username'=>$data->user));
+        $authorRecord = X2Model::model('User')->findByAttributes(array('username'=>$data->user));
                 if(Yii::app()->user->getName()==$data->user){
                     $author=Yii::t('app','You');
                 }else{
@@ -132,7 +132,8 @@ $commentCount=CActiveRecord::model('Events')->countByAttributes(array(
     <div id="<?php echo $data->id ?>-comment-box" class="comment-box" style="display:none;clear:both;">
             <div id="<?php echo $data->id ?>-comments" ></div>
             <?php
-            echo "<div style='margin-left:10px'>";
+            echo "<div style='margin-left:10px;margin-top:5px;'>".CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/images/plus.gif')." ".Yii::t('app',"Add Comment"),'#',array('onclick'=>'$(this).toggle();$("#'.$data->id.'-comment-form").show();return false;'))."</div>";
+            echo "<div style='margin-left:10px;display:none;' id='".$data->id."-comment-form'>";
             echo CHtml::beginForm(
                 '',
                 'get',
@@ -141,7 +142,7 @@ $commentCount=CActiveRecord::model('Events')->countByAttributes(array(
                     'onsubmit'=>'commentSubmit('.$data->id.');return false;'
                 ));
             echo CHtml::textArea($data->id.'-comment','',array('class'=>'comment-textbox'));
-            echo CHtml::submitButton(Yii::t('app','Add Comment'),array('class'=>'x2-button comment-submit'));
+            echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button comment-submit'));
             echo CHtml::endForm();
 	
             echo "</div>";

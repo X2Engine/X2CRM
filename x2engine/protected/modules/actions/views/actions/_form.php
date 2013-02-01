@@ -178,7 +178,14 @@ if($inlineForm){
 				//Style: CController::createUrl('currentController/methodToCall')
 				'update'=>'#', //selector to update
 				'success'=>'function(data){
-						window.location="?param='.Yii::app()->user->getName().';"+data+":0";
+                        var str=window.location+"";
+                        var loc=str.split("?");
+                        if(loc.length>1){
+                            var loc2=loc[1].split("&");
+                            window.location="?"+loc2[0]+"&param='.Yii::app()->user->getName().';"+data+":0";
+                        }else{
+                            window.location="&param='.Yii::app()->user->getName().';"+data+":0";
+                        }
 					}'
 				)
 			)
@@ -193,7 +200,7 @@ if($inlineForm){
 			$linkModel = X2Model::$associationModels[$actionModel->associationType];
 			
 			if(class_exists($linkModel)){
-                $linkSource = $this->createUrl(CActiveRecord::model($linkModel)->autoCompleteSource);
+                $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
                 echo $form->label($actionModel,'associationName');
                 $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
                     'name'=>'auto_select',

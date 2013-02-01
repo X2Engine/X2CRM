@@ -146,7 +146,7 @@ class Notification extends CActiveRecord {
 			$record = null;
 		else {
 			if(class_exists($this->modelType))
-				$record = CActiveRecord::model($this->modelType)->findByPk($this->modelId);
+				$record = X2Model::model($this->modelType)->findByPk($this->modelId);
 			else
 				return 'Error: unkown record <b>'.$this->modelType.'</b>';
 			if($record === null) {

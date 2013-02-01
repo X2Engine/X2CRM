@@ -60,19 +60,16 @@ $(document).ready(function() {
 ",CClientScript::POS_HEAD);
 ?>
 
-<div class="form">
-
+<div class="page-title"><h2><?php echo Yii::t('admin','Rearrange Main Menu Items'); ?></h2></div>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'manage-modules',
 	'enableAjaxValidation'=>false,
 )); 
 ?>
-<h2><?php echo Yii::t('admin','Rearrange Main Menu Items'); ?></h2>
+<div class="form">
 <?php echo Yii::t('admin','Add, remove and reorder modules:'); ?>
 <br><br>
-
 <?php
-
 echo CHtml::hiddenField('formSubmit','1');
 echo CHtml::dropDownList('menuItems[]',$selectedItems,$menuItems,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
 ?>
@@ -80,8 +77,8 @@ echo CHtml::dropDownList('menuItems[]',$selectedItems,$menuItems,array('class'=>
 <div class="row buttons">
 	<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>
 </div>
-<?php $this->endWidget(); ?>
 </div>
+<?php $this->endWidget(); ?>
 
 
 

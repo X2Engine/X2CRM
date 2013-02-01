@@ -273,8 +273,17 @@ class DocsController extends x2base {
 				$model->attributes=$_POST['DocChild'];
                 $model->visibility=$_POST['DocChild']['visibility'];
 				$model=$this->updateChangeLog($model,'Edited');
-				if($model->save())
+				if($model->save()){
+                    $event=new Events;
+                    $event->associationType="Docs";
+                    $event->associationId=$model->id;
+                    $event->type="doc_update";
+                    $event->level=2;
+                    $event->user=Yii::app()->user->getName();
+                    $event->visibility=$model->visibility;
+                    $event->save();
 					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));
+                }
 			}
 
 			$this->render('update',array(
@@ -328,7 +337,7 @@ class DocsController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model = CActiveRecord::model('DocChild')->findByPk((int)$id);
+		$model = X2Model::model('DocChild')->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

@@ -196,7 +196,7 @@ class Profile extends CActiveRecord {
 		$adminRule = Yii::app()->params->admin->emailUseSignature;
 		$userRule = $this->emailUseSignature;
 		
-		$userModel = CActiveRecord::model('User')->findByPk($this->id);
+		$userModel = X2Model::model('User')->findByPk($this->id);
 		$signature = '';
 		
 		switch($adminRule) {
@@ -249,14 +249,13 @@ class Profile extends CActiveRecord {
 	
 	public static function getPossibleResultsPerPage() {
 		return array(
-			5=>'5',
-			10=>'10',
-			15=>'15',
-			20=>'20',
-			25=>'25',
-			30=>'30',
-			50=>'50',
-			100=>'100',
+			10	=>	Yii::t('app','{n} rows',array('{n}'=>'10')),
+			20	=>	Yii::t('app','{n} rows',array('{n}'=>'20')),
+			30	=>	Yii::t('app','{n} rows',array('{n}'=>'30')),
+			40	=>	Yii::t('app','{n} rows',array('{n}'=>'40')),
+			50	=>	Yii::t('app','{n} rows',array('{n}'=>'50')),
+			75	=>	Yii::t('app','{n} rows',array('{n}'=>'75')),
+			100	=>	Yii::t('app','{n} rows',array('{n}'=>'100')),
 		);
 	}
 	
@@ -319,6 +318,9 @@ class Profile extends CActiveRecord {
 			return array();
 		// $model = ProfileChild::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 		$model = Yii::app()->params->profile;
+        if(!isset($model)){
+            $model = Profile::model()->findByPk(Yii::app()->user->getId());
+        }
 		
 		$registeredWidgets = array_keys(Yii::app()->params->registeredWidgets);
 		

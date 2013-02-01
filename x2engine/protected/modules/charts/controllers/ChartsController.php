@@ -126,7 +126,7 @@ class ChartsController extends x2base {
 			for($i=0;$i<$size=count($data);$i++) {
 				$total += $data[$i]['count'];
 				if(is_numeric($data[$i]['id'])) {
-					$group = CActiveRecord::model('Groups')->findByPk($data[$i]['id']);
+					$group = X2Model::model('Groups')->findByPk($data[$i]['id']);
 					if(isset($group))
 						$data[$i]['name'] = $group->createLink();
 					else

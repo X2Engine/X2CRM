@@ -127,7 +127,7 @@ class MarketingController extends x2base {
 		}
 	
 		if($model->template != 0) {
-			$template = CActiveRecord::model('Docs')->findByPk($model->template);
+			$template = X2Model::model('Docs')->findByPk($model->template);
 			if(isset($template))
 				$model->content = $template->text;
 		}
@@ -289,7 +289,7 @@ class MarketingController extends x2base {
 		}
 		// load the template into the content field
 		if($model->template != 0) {
-			$template = CActiveRecord::model('Docs')->findByPk($model->template);
+			$template = X2Model::model('Docs')->findByPk($model->template);
 			if(isset($template))
 				$model->content = $template->text;
 		}
@@ -342,6 +342,10 @@ class MarketingController extends x2base {
 		$model=new Campaign('search');
 		$this->render('index', array('model'=>$model));
 	}
+    
+    public function actionAdmin(){
+        $this->redirect('index');
+    }
 
 
 	/**
@@ -359,7 +363,7 @@ class MarketingController extends x2base {
 		$campaign = $this->loadModel($id);
 		// check if there's a template, and load that into the content field
 		if($campaign->template != 0) {
-			$template = CActiveRecord::model('Docs')->findByPk($campaign->template);
+			$template = X2Model::model('Docs')->findByPk($campaign->template);
 			if(isset($template))
 				$campaign->content = $template->text;
 		}
@@ -385,7 +389,7 @@ class MarketingController extends x2base {
 			$this->redirect(array('view', 'id'=>$id));
 		}
 
-		if(($campaign->list->type == 'dynamic' && CActiveRecord::model($campaign->list->modelName)->count($campaign->list->queryCriteria()) < 1)
+		if(($campaign->list->type == 'dynamic' && X2Model::model($campaign->list->modelName)->count($campaign->list->queryCriteria()) < 1)
 			|| ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)) {
 			Yii::app()->user->setFlash('error', Yii::t('marketing','The contact list is empty.'));
 			$this->redirect(array('view', 'id'=>$id));
@@ -516,7 +520,7 @@ class MarketingController extends x2base {
 					$criteria = $campaign->list->queryCriteria();
 					$criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
 					         ->addCondition('t.email IS NULL OR t.email=""');
-					$blankEmail = CActiveRecord::model('Contacts')->count($criteria);*/
+					$blankEmail = X2Model::model('Contacts')->count($criteria);*/
 
 					//count the number of contacts who don't want email 
 					$sql = 'SELECT COUNT(*) FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id WHERE t.listId=:listId '
@@ -527,7 +531,7 @@ class MarketingController extends x2base {
 					$criteria = $campaign->list->queryCriteria();
 					$criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
 					         ->addCondition('t.doNotEmail=1');
-					$doNotEmail = CActiveRecord::model('Contacts')->count($criteria);*/
+					$doNotEmail = X2Model::model('Contacts')->count($criteria);*/
 
 					$errorCount = count($errors); 
 
@@ -588,7 +592,7 @@ class MarketingController extends x2base {
 			$phpMail = $this->getPhpMailer();
 			
 			// lookup campaign owner's email address
-			$profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$campaign->createdBy));
+			$profile = X2Model::model('Profile')->findByAttributes(array('username'=>$campaign->createdBy));
 			if($profile !== null) {
 				$fromEmail = $profile->emailAddress;
 				$fromName = $profile->fullName;
@@ -773,7 +777,7 @@ class MarketingController extends x2base {
 		$criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
 		         ->addCondition('t.email IS NOT NULL')->addCondition('t.email!=""')
 		         ->addCondition('t.doNotEmail=0');
-		$contacts = CActiveRecord::model('Contacts')->findAll($criteria);
+		$contacts = X2Model::model('Contacts')->findAll($criteria);
 
 		//setup campaign email settings
 		try {

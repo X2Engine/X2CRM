@@ -222,7 +222,7 @@ class Quote extends X2Model {
 
 	public static function getQuotesLinks($accountId) {
 
-		$quotesList = CActiveRecord::model('Quote')->findAllByAttributes(array('accountName'=>$accountId));
+		$quotesList = X2Model::model('Quote')->findAllByAttributes(array('accountName'=>$accountId));
 		// $quotesList = $this->model()->findAllByAttributes(array('accountId'),'=',array($accountId));
 		
 		$links = array();
@@ -283,7 +283,7 @@ class Quote extends X2Model {
 		
 		foreach($arr as $id){
 			if($id!='')
-				$data[]=CActiveRecord::model('Contacts')->findByPk($id);
+				$data[]=X2Model::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
 		
@@ -297,7 +297,7 @@ class Quote extends X2Model {
 		$criteria=new CDbCriteria;
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
-		$criteria->addCondition("type!='invoice'");
+		$criteria->addCondition("type!='invoice' OR type IS NULL");
 
 		return $this->searchBase($criteria);
 	}

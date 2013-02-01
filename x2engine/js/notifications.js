@@ -132,7 +132,8 @@ $(function() {
 		// notifUpdateInterval = 1500,
 		notifViewTimeout,
 		lastNotifId = 0,
-		lastChatId = 0;
+		lastEventId = 0;
+        lastTimestamp = 0;
 
 		iwcMode = $.jStorage.storageAvailable(),
 		windowId = +new Date()+Math.floor(Math.random()*1000),	// generate ID from timestamp and random number
@@ -355,7 +356,8 @@ $(function() {
 			url: yii.scriptUrl+'/notifications/get',
 			data: {
 				lastNotifId:lastNotifId,
-				lastChatId:lastChatId
+				lastEventId:lastEventId,
+                lastTimestamp:lastTimestamp
 			}
 		}).done(function (response) {
 		
@@ -370,7 +372,7 @@ $(function() {
 			try {
 				var data = $.parseJSON(response);
 
-				if(data.notifData) {
+				if(data.notifData.length) {
 					notifCount = data.notifCount;
 					addNotifications(data.notifData,false);		// add new notifications to the notif box (prepend)
 					
@@ -525,16 +527,18 @@ $(function() {
 		var scrollToBottom = $('#chat-box').prop('scrollTop') >= $('#chat-box').prop('scrollHeight') - $('#chat-box').height();
 		
 		for (var i in messages) {
-			// console.debug(messages[i][0]);
-			if(messages[i].length != 4 || messages[i][0] <= lastChatId)	// skip messages we already have
+            //console.debug(messages[i][0]);
+			if(messages[i].length != 5)	// skip messages we already have
 				continue;
 		
-			lastChatId = messages[i][0];	// update the latest message ID received
-			
+            if(messages[i][0] > lastEventId)
+                lastEventId = messages[i][0];
+            if(messages[i][1] > lastTimestamp)
+                lastTimestamp = messages[i][1];
+            
 			var msgHtml = '<div class="message">';
-			msgHtml += messages[i][2];
-			msgHtml += '<span class="chat-timestamp"> ('+messages[i][1]+')</span>';
-			msgHtml += ': '+messages[i][3]+'</div>';
+			msgHtml += messages[i][3]+' <span class="comment-age">('+messages[i][4]+')</span>'+
+            '</div>';
 			
 			
 			$('#chat-box').append(msgHtml);	// add new messages to chat window

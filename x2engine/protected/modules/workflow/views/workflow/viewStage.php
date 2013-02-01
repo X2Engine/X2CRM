@@ -61,8 +61,7 @@ $this->menu=array(
 	array('label'=>Yii::t('app','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
 );
 ?>
-
-<h2><?php echo Yii::t('workflow','Workflow:'); ?> <b><?php echo $model->name; ?></b></h2>
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('workflow','Workflow:'); ?></span><?php echo $model->name; ?></h2></div>
 <div style="clear:both;overflow:auto;margin-bottom:10px;">
 <?php
 

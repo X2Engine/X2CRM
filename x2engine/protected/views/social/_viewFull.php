@@ -46,8 +46,12 @@ $(document).ready(function() {
 });
 ",CClientScript::POS_HEAD);
 
-$authorRecord = CActiveRecord::model('User')->findByAttributes(array('username'=>$data->user));
-$author = $authorRecord->name; //firstName.' '.$authorRecord->lastName;
+$authorRecord = X2Model::model('User')->findByAttributes(array('username'=>$data->user));
+if(isset($authorRecord)){
+    $author = $authorRecord->name;
+}else{
+    $author="";
+}
 $commentDataProvider=new CActiveDataProvider('Events', array(
 	'criteria'=>array(
 		'order'=>'timestamp ASC',

@@ -46,7 +46,9 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>'Delete Group', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ));
 ?>
-
-<h2><?php echo Yii::t('groups','Group:'); ?> <b><?php echo $model->name; ?></b></h2>
-
-<?php $this->renderPartial('_view',array('data'=>$model,'users'=>$users)) ?>
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('groups','Group:'); ?></span> <?php echo $model->name; ?></h2>
+</div>
+<div class="form" style="min-height:300px;">
+<?php $this->renderPartial('_view',array('data'=>$model,'users'=>$users)); ?>
+</div>

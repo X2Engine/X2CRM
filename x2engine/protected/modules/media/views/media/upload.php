@@ -43,9 +43,9 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('media', 'Upload')),
 ));
 ?>
-
-<h2><?php echo Yii::t('media','Upload Media File: '); ?><b><?php echo $model->fileName; ?></b></h2>
-
+<div class="page-title">
+<h2><?php echo Yii::t('media','Upload Media File'); ?></h2>
+</div>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
    'id'=>'media-form',
@@ -118,7 +118,7 @@ $this->actionMenu = $this->formatMenu(array(
 									<?php
 									
 										// contacts association auto-complete
-										$linkSource = $this->createUrl(CActiveRecord::model('Contacts')->autoCompleteSource);
+										$linkSource = $this->createUrl(X2Model::model('Contacts')->autoCompleteSource);
 										$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 											'name'=>'auto_select',
 											'source' => $linkSource,
@@ -137,7 +137,7 @@ $this->actionMenu = $this->formatMenu(array(
 										));
 										
 										// accounts association auto-complete
-										$linkSource = $this->createUrl(CActiveRecord::model('Accounts')->autoCompleteSource);
+										$linkSource = $this->createUrl(X2Model::model('Accounts')->autoCompleteSource);
 										$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 											'name'=>'auto_select',
 											'source' => $linkSource,
@@ -156,7 +156,7 @@ $this->actionMenu = $this->formatMenu(array(
 										));
 										
 										// opportunities association auto-complete
-										$linkSource = $this->createUrl(CActiveRecord::model('Opportunity')->autoCompleteSource);
+										$linkSource = $this->createUrl(X2Model::model('Opportunity')->autoCompleteSource);
 										$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 											'name'=>'auto_select',
 											'source' => $linkSource,

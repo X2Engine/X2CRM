@@ -107,7 +107,7 @@ class DocChild extends Docs {
                     (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
             $criteria->addCondition($condition);
         }
-		$templates = CActiveRecord::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
+		$templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
 		foreach($templates as &$template)
 			$templateLinks[$template->id] = $template->name;
 		natcasesort($templateLinks);

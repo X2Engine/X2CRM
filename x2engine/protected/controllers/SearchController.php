@@ -252,7 +252,7 @@ class SearchController extends x2base {
                         }
                     }
                 }
-                if(Yii::app()->user->getName()!='admin' && CActiveRecord::model($type)->hasAttribute('visibility') && CActiveRecord::model($type)->hasAttribute('assignedTo')){
+                if(Yii::app()->user->getName()!='admin' && X2Model::model($type)->hasAttribute('visibility') && X2Model::model($type)->hasAttribute('assignedTo')){
                     $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
                     /* x2temp */
                     $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -264,7 +264,7 @@ class SearchController extends x2base {
                             (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
                     $criteria->addCondition($condition);
                 }
-                $arr = CActiveRecord::model($type)->findAll($criteria);
+                $arr = X2Model::model($type)->findAll($criteria);
                 $comparisons[$type] = $temp;
                 $other[$type] = $arr;
             }

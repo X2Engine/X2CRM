@@ -46,7 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('app','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
-
-<h2><?php echo Yii::t('workflow','Edit Workflow:'); ?> <b><?php echo $model->name; ?></b></h2>
-
+<div class="page-title">
+<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
+</div>
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

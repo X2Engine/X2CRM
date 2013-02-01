@@ -74,17 +74,16 @@ if($model->type=='note' || $model->type=='attachment') {
 </table>
 
 <?php
-} elseif($model->type=='email' || $model->type=='emailOpened') {?>
-<table class="details">
-	<tr>
-		<td colspan="3" class="text-field">
-			<iframe style="width:100%;height:600px" src="actions/viewEmail/<?php echo $model->id ?>"></iframe>
-		</td>
-	</tr>
-<?php
 } else {
 ?>
 <table class="details">
+    <?php if($model->type=='email' || $model->type=='emailOpened') { ?>
+        <tr>
+            <td colspan="6" class="text-field">
+                <iframe style="width:100%;height:600px" src="actions/viewEmail/<?php echo $model->id ?>"></iframe>
+            </td>
+        </tr>
+    <?php } else { ?>
 	<tr>
 		<td class="label" width="20%">
 			<?php echo $attributeLabels['actionDescription']; ?>
@@ -93,6 +92,7 @@ if($model->type=='note' || $model->type=='attachment') {
 			<?php echo $this->convertUrls(CHtml::encode($model->actionDescription)); ?>
 		</td>
 	</tr>
+    <?php } ?>
 <?php
 if ($model->associationType!="none") {
 ?>
@@ -104,8 +104,9 @@ if ($model->associationType!="none") {
 			<?php echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId)); ?>
 		</td>
 	</tr>
-	<tr>
+	
 <?php } ?>
+    <tr>
 		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
 		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : User::getUserLinks($model->assignedTo); ?></td>
 		<td class="label" width="20%"><?php echo $attributeLabels['dueDate']; ?>

@@ -69,10 +69,10 @@ $('.search-form form').submit(function(){
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'docs-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.Yii::t('docs','Documents').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title"><h2>'.Yii::t('docs','Documents').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(

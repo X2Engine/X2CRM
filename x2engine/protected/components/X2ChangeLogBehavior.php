@@ -176,7 +176,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 								$notif->save();
 
 						/* 		$notif=new Notifications;
-								$profile=CActiveRecord::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
+								$profile=X2Model::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
 								if($criteria->comparisonOperator=="="){
 									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
 								}else if($criteria->comparisonOperator==">"){
@@ -213,7 +213,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 								$action->visibility=1;
 								$action->associationType=strtolower($this->modelClass);
 								$action->associationId=$new['id'];
-								$model=CActiveRecord::model($this->modelClass)->findByPk($new['id']);
+								$model=X2Model::model($this->modelClass)->findByPk($new['id']);
 								$action->associationName=$model->name;
 								$action->save();
 							}

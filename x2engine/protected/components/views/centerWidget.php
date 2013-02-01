@@ -41,7 +41,7 @@
 // check if we need to load a model
 if(!isset($model) && isset($modelType) && isset($modelId)) {
 	// didn't get passed a model, but we have the modelType and modelId, so load the model
-	$model = CActiveRecord::model($modelType)->findByPk($modelId);
+	$model = X2Model::model($modelType)->findByPk($modelId);
 }
 
 $relationshipCount = ""; // only used in InlineRelationships title; shows the number of relationships

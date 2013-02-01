@@ -42,15 +42,6 @@
 $this->layout = '//layouts/column1';
 $this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','About');
 ?>
-<div id="about-map">
-<a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+309+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">
-<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png',''); ?>
-<img src="http://maps.googleapis.com/maps/api/staticmap?sensor=false&size=260x300&markers=|36.972164,-122.025898&hl=en&center=37.4,-122.1&zoom=8">
-
-
-</a>
-X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.
-</div>
 <?php
 $logo = Yii::app()->baseUrl.'/images/x2engine_crm.png';
 if(Yii::app()->params->edition==='pro')
@@ -59,7 +50,7 @@ echo CHtml::image($logo,'',array('class'=>'left'));
 Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion').html($().jquery);",CClientScript::POS_READY);
 ?>
 
-<div class="prepend-1 span-10">
+<div class="form left" style="margin-left:10px;width:500px;clear:none;">
 	<b>Version <?php echo Yii::app()->params->version;?><br>
 	<?php if(Yii::app()->params->edition==='pro') echo 'Professional Edition'; ?></b><br>
 	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.<br><br>
@@ -71,9 +62,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	else
 		echo Yii::t('app','X2Engine is a Customer Relationship Management application designed by John Roberts.');
 	?>
-
 	<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?>
-
 	<div id="about-intro">
 		<b style="display:block;margin-bottom:8px;">Headquarters</b>
 		University Town Center<br>
@@ -81,8 +70,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		Suite 309<br>
 		Santa Cruz, California 95060<br>
 		USA<br>
-	
-	
 		<b><?php echo Yii::t('app','Core engineering team:');?></b>
 		<ul>
 		<li>Jake Houser</li>
@@ -92,8 +79,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<li>John Mendonca</li>
 		</ul>
 	</div>
-
-
 	<div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a><br><br></div>
 	<div id="about-legal">
 		Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty.
@@ -158,7 +143,13 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<a href="http://www.jstorage.info/static/license.txt" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
 	</div>
 </div>
-<br>
+<div id="about-map">
+<a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+309+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">
+<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png',''); ?>
+<img src="http://maps.googleapis.com/maps/api/staticmap?sensor=false&size=260x300&markers=|36.972164,-122.025898&hl=en&center=37.4,-122.1&zoom=8">
+</a>
+X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.
+</div>
 
 
 

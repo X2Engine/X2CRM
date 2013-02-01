@@ -41,7 +41,7 @@
 $errorTitle = Yii::t('app','Error {code}',array('{code}'=>$code));
 $this->pageTitle=Yii::app()->name . ' - ' . $errorTitle;
 ?>
-<h1><?php echo Yii::t('app','Oops!'); ?></h1>
+<h1 style="font-weight:bold;color:#f00;"><?php echo Yii::t('app','Oops!'); ?></h1>
 <div class="form" style="width:600px;">
     It looks like the application ran into an unexpected error.
     <br><br>

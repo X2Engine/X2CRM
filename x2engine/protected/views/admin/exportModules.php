@@ -38,27 +38,28 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h1><?php echo Yii::t('admin','Export A Module');?></h1>
-
+<div class="page-title"><h2><?php echo Yii::t('admin','Export A Module');?></h2></div>
+<div class="form">
 <?php echo Yii::t('admin','Please select a model to export.');?>
 
 <form name="exportModule" action="exportModule" method="POST">
-	<br />
+	<br>
 	<select name="name">
-		<?php foreach($modules as $name=>$module) echo "<option value='$name'>$module</option>"; ?>
+		<?php
+		if(empty($modules))
+			echo '<option value="" disabled="disabled">---</option>';
+		
+		foreach($modules as $name=>$module)
+			echo "<option value='$name'>$module</option>";
+		?>
 	</select>
-	<br /><br />
-	<input type="submit" value="<?php echo Yii::t('admin','Export');?>" />
+	<br><br>
+	<input type="submit" class="x2-button" value="<?php echo Yii::t('admin','Export');?>" />
 </form>
 <?php 
 if($dlFlag){
-
-echo "<br />";
-echo CHtml::link("Download Module",Yii::app()->request->baseUrl.'/'.$file.'.zip',array('id'=>'download-link','class'=>'x2-button'));
+	echo "<br>";
+	echo CHtml::link("Download Module",Yii::app()->request->baseUrl.'/'.$file.'.zip',array('id'=>'download-link','class'=>'x2-button'));
 }
-
 ?>
-
-<script>
-
-</script>
+</div>

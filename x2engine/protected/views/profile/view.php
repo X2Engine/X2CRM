@@ -58,9 +58,9 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 	});
 ',CClientScript::POS_READY);
 ?>
-
-<h2><?php echo Yii::t('profile','Profile:'); ?> <b><?php echo $model->fullName; ?></b></h2>
-
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('profile','Profile:'); ?> </span><?php echo $model->fullName; ?></h2>
+</div>
 <?php $this->renderPartial('_detailView',array('model'=>$model)); ?>
 <?php //echo CHtml::mailto(Yii::t('profile','Send E-Mail'),$model->emailAddress,array('class'=>'x2-button')); ?>
 

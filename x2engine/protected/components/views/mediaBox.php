@@ -50,7 +50,7 @@ $username = Yii::app()->params->profile->username;
 $fullname = Yii::app()->params->profile->fullName;
 ?>
 
-<div id="media-library-widget-wrapper">
+<div id="media-library-widget-wrapper" style="width:99%">
 <div id="media-library-widget-container">
 
 		<?php
@@ -115,7 +115,7 @@ $fullname = Yii::app()->params->profile->fullName;
 		 ?>
 
 		<?php foreach($users as $user) { ?>
-    		<?php //$userMediaItems = CActiveRecord::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
+    		<?php //$userMediaItems = X2Model::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
     		<?php $userMediaItems = Yii::app()->db->createCommand()
 				->select('id, uploadedBy, fileName, description, private')
 				->where('uploadedBy=:username', array(':username'=>$user['username']))

@@ -59,7 +59,6 @@ $(function() {
 
 	var historyMode = -1;		// 0 underneath record
 	var newHistoryMode = 0;		// 1 side of record
-						
 
 	// move all moreMenu items into the main menu so we can get the correct display widths
 	$moreMenu.children().insertBefore($moreMenuLi);
@@ -95,20 +94,12 @@ $(function() {
 		if(pageMode != newPageMode) {
 		
 			pageMode = newPageMode;
-			// console.debug(pageMode);
 			
 			if(pageMode == 0) {
-				// $pageWidthDivs.css({'width':'','margin-left':'auto','margin-right':'auto'});
 				$pageBodyDiv.addClass('no-widgets');
 			} else {
 				 if(!window.fullscreen)
 					$pageBodyDiv.removeClass('no-widgets');
-				/*if(pageMode == 1)
-					// $pageWidthDivs.css({'width':'940px'});
-					$pageWidthDivs.css({'width':'940px','margin-left':'auto','margin-right':'auto'});
-				else if(pageMode == 2)
-					// $pageWidthDivs.css({'width':'auto'});
-					$pageWidthDivs.css({'width':'auto','margin-left':'40px','margin-right':'40px'}); */
 			}
 		}
 		
@@ -124,14 +115,6 @@ $(function() {
 			else
 				$('#main-column, .history').removeClass('half-width');
 		}
-		
-		/* if($('.x2-layout').width() < 600) {
-			$('#main-column, .history').removeClass('half-width');
-			// console.debug($('.x2-layout').width());
-		} else {
-			$('#main-column, .history').addClass('half-width');
-
-		} */
 
 		// calculate number of elements to show in the main menu
 		var visibleItems = 0;
@@ -166,8 +149,7 @@ $(function() {
 			$moreMenuLi.show();
 	});
 
-	// force layout calculations on pageload
-	$(window).resize();
+	
 
 	
 	// $('img').mousedown(function(e) {
@@ -178,10 +160,17 @@ $(function() {
 	
 	
 	// toggle dropdown menus
-	$(".dropdown span").mousedown(function() {
+	$(".dropdown span").mousedown(function() {	
 		var $dropdown = $(this).siblings('ul');	// the menu to be opened
 		$dropdown.toggleClass('open');
 		$('.dropdown ul').not($dropdown).removeClass('open');	// close all other menus
+		return false;
+	});
+	
+	// toggle widget menu
+	$('#widget-button').click(function() {
+		if($('#widget-menu li').length != 0)
+			$('#widget-menu').toggle();
 		return false;
 	});
 
@@ -190,8 +179,8 @@ $(function() {
 		var $clicked = $(e.target);
 		if(!$clicked.parents().is('.dropdown'))
 			$('.dropdown ul').removeClass('open');
-		if(!$clicked.is('.widget-menu-button'))
-			$('#widget-menu').removeClass('visible');
+		if(!$clicked.is('#widget-button'))
+			$('#widget-menu').hide();
 	});
 	
 	// Yii CWebLogRoute display
@@ -257,6 +246,23 @@ $(function() {
 		});
 	} */
 	
+	// make the record title the same width as the main column
+	var pageTitle = $(".page-title.fixed").first();
+	var pageTitleWidth = pageTitle.next();
+	var mainColumn = pageTitle.parent();
+	
+	if(pageTitle.length) {
+		$(window).resize(function(e) {
+			pageTitle.width(pageTitleWidth.width()-48);
+			mainColumn.css('margin-top',(pageTitle.height()+6)+'px');
+		});
+	}
+	
+	
+	
+	
+	// force layout calculations on pageload
+	$(window).resize();
 });
 
 

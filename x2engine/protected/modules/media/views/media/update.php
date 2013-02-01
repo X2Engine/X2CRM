@@ -46,9 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('media', 'Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
 ));
 ?>
-
-<h2><?php echo Yii::t('media','Update File: '); ?><b><?php echo $model->fileName; ?></b></h2>
-
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
    'id'=>'media-form',
@@ -130,7 +128,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php
 												
 													// contacts association auto-complete
-													$linkSource = $this->createUrl(CActiveRecord::model('Contacts')->autoCompleteSource);
+													$linkSource = $this->createUrl(X2Model::model('Contacts')->autoCompleteSource);
 													$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 														'name'=>'auto_select',
 														'source' => $linkSource,
@@ -149,7 +147,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 													));
 													
 													// accounts association auto-complete
-													$linkSource = $this->createUrl(CActiveRecord::model('Accounts')->autoCompleteSource);
+													$linkSource = $this->createUrl(X2Model::model('Accounts')->autoCompleteSource);
 													$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 														'name'=>'auto_select',
 														'source' => $linkSource,
@@ -168,7 +166,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 													));
 													
 													// opportunities association auto-complete
-													$linkSource = $this->createUrl(CActiveRecord::model('Opportunity')->autoCompleteSource);
+													$linkSource = $this->createUrl(X2Model::model('Opportunity')->autoCompleteSource);
 													$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 														'name'=>'auto_select',
 														'source' => $linkSource,

@@ -51,7 +51,7 @@ $js = '';
 
 if($model->type==='email') {
 	$insertableAttributes = array();
-	foreach(CActiveRecord::model('Contacts')->attributeLabels() as $fieldName => $label)
+	foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
 		$insertableAttributes[$label] = '{'.$fieldName.'}';
 		
 	$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).';';
@@ -111,6 +111,9 @@ $form=$this->beginWidget('CActiveForm', array(
 			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'))); ?>
 			<?php echo $form->error($model,'visibility'); ?>
 		</div>
+		<div class="cell right">
+			<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
+		</div>
 	</div>
 	<div class="row">
         <?php if($this->action->id=='createEmail' || ($this->action->id=='update' && $model->type=='email')){ ?>
@@ -124,13 +127,11 @@ $form=$this->beginWidget('CActiveForm', array(
 				echo Yii::t('Docs', 'Saved at') ." $date";
 			} ?>
 		</span>
-		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
-	</div><?php if($this->route=='docs/createEmail'): ?>
+	</div><?php if($this->route=='docs/createEmail') { ?>
 	<div class="row">
 		<?php echo Yii::t('docs','<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
-	</div><?php endif; ?>
-
-	<div class="row">
+	</div><?php } ?>
+	<div class="row" style="margin-top:5px;">
 		<?php 
 		if($model->isNewRecord && isset($users)){
 			echo $form->label($model,'editPermissions');

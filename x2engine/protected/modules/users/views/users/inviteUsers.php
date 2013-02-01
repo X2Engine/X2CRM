@@ -12,10 +12,13 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('users','Invite Users')),
 ));
 ?>
-<h2><?php echo Yii::t('users','Invite Users to X2CRM'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('users','Invite Users to X2CRM'); ?></h2></div>
+
+<form method="POST">
+<div class="form">
 <h2><?php echo Yii::t('users','Instructions'); ?></h2>
 <?php echo Yii::t('users','Please enter a list of e-mails separated by commas.'); ?>
-<form method="POST">
-	<textarea name="emails" style="width:600px;height:150px;"></textarea>
-	<input type="submit" value="Submit" />
+	<div class="row"><textarea name="emails" style="width:600px;height:150px;"></textarea></div>
+	<div class="row"><input type="submit" value="Submit" class="x2-button"></div>
+</div>
 </form>

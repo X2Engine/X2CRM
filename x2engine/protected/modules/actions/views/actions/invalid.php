@@ -38,5 +38,5 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h1><?php echo Yii::t('actions','That action is not assigned to you.'); ?></h1>
+<div class="page-title"><h2><?php echo Yii::t('actions','That action is not assigned to you.'); ?></h2></div>
 <?php echo CHtml::link(Yii::t('app','Click here to return to where you were'),Yii::app()->user->returnUrl.'/actions/viewAll/'); ?>

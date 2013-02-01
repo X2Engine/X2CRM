@@ -92,7 +92,7 @@ abstract class x2base extends X2Controller {
 		$action = $this->getAction()->getId();
 		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
         if(class_exists($this->modelClass)){
-            $model=CActiveRecord::model($this->modelClass);
+            $model=X2Model::model($this->modelClass);
         }
 		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
 			if ($model->hasAttribute('assignedTo') && method_exists($this, 'loadModel')) {
@@ -106,9 +106,9 @@ abstract class x2base extends X2Controller {
 		$authItem = $auth->getAuthItem($actionAccess);
 		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
 			return true;
-		elseif(Yii::app()->user->isGuest)
+		elseif(Yii::app()->user->isGuest){
 			$this->redirect($this->createUrl('/site/login'));
-		else
+        }else
 			throw new CHttpException(403, 'You are not authorized to perform this action.');
 	}
 
@@ -326,7 +326,7 @@ abstract class x2base extends X2Controller {
      * @return int 
      */
     public function getCurrentWorkflow($id, $type) {
-        $currentWorkflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
+        $currentWorkflowActions = X2Model::model('Actions')->findAllByAttributes(
                 array('associationType' => $type, 'associationId' => $id, 'type' => 'workflow'), new CDbCriteria(array('condition' => 'completeDate = 0 OR completeDate IS NULL', 'order' => 'createDate DESC'))
         );
         if (count($currentWorkflowActions)) { // are there any?
@@ -337,7 +337,7 @@ abstract class x2base extends X2Controller {
             // $currentWorkflow = 0;
             $currentWorkflow = $currentWorkflowActions[0]->workflowId;
         } else {       // if not, then check for completed stages
-            $completedWorkflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
+            $completedWorkflowActions = X2Model::model('Actions')->findAllByAttributes(
                     array('associationType' => $type, 'associationId' => $id, 'type' => 'workflow'), new CDbCriteria(array('order' => 'createDate DESC'))
             );
             if (count($completedWorkflowActions)) { // are there any?
@@ -350,7 +350,7 @@ abstract class x2base extends X2Controller {
             } else
                 $currentWorkflow = 0;
         }
-        //$default = CActiveRecord::model('Workflow')->findByPk(1);
+        //$default = X2Model::model('Workflow')->findByPk(1);
         //if(isset($default))
         //		$currentWorkflow = 1;
 
@@ -366,7 +366,7 @@ abstract class x2base extends X2Controller {
      */
     protected function getAssociationModel($type, $id) {
         if (array_key_exists($type, X2Model::$associationModels) && $id != 0)
-            return CActiveRecord::model(X2Model::$associationModels[$type])->findByPk($id);
+            return X2Model::model(X2Model::$associationModels[$type])->findByPk($id);
         else
             return null;
     }
@@ -538,7 +538,7 @@ abstract class x2base extends X2Controller {
 
     // Deletes a note action
     public function actionDeleteNote($id) {
-        $note = CActiveRecord::model('Actions')->findByPk($id);
+        $note = X2Model::model('Actions')->findByPk($id);
         if ($note->delete()) {
             $this->redirect(array('view', 'id' => $note->associationId));
         }
@@ -549,7 +549,7 @@ abstract class x2base extends X2Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function create($model, $oldAttributes, $api) {
-        $name = $this->modelClass;
+        $name = get_class($model);
         $model->createDate = time();
         if($model->hasAttribute('lastUpdated'))
             $model->lastUpdated=time();
@@ -584,6 +584,9 @@ abstract class x2base extends X2Controller {
             $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
             $this->updateChangelog($model, $changes);
             $event=new Events;
+            if($model->hasAttribute('visibility')){
+                $event->visibility=$model->visibility;
+            }
             $event->level=2;
             $event->associationType=$name;
             $event->associationId=$model->id;
@@ -609,6 +612,7 @@ abstract class x2base extends X2Controller {
                 if(empty($model->type)){
                     $event=new Events;
                     $event->timestamp=$model->dueDate;
+                    $event->visibility=$model->visibility;
                     $event->level=1;
                     $event->type='action_reminder';
                     $event->associationType="Actions";
@@ -706,17 +710,17 @@ abstract class x2base extends X2Controller {
                             if ($rel->save()) {
                                 if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
                                     if (is_numeric($oldAttributes[$fieldName]))
-                                        $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+                                        $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
                                     else
-                                        $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
+                                        $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
                                 }
                                 else {
                                     $pieces = explode(" ", $oldAttributes[$fieldName]);
                                     if (count($pieces) > 1) {
                                         if (is_numeric($oldAttributes[$fieldName]))
-                                            $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+                                            $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
                                         else
-                                            $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
+                                            $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
                                     }
                                 }
                                 if (isset($oldRel)) {
@@ -732,16 +736,16 @@ abstract class x2base extends X2Controller {
                     } elseif ($model->$fieldName == "") {
                         if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
                             if (is_numeric($oldAttributes[$fieldName]))
-                                $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+                                $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
                             else
-                                $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
+                                $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
                         }else {
                             $pieces = explode(" ", $oldAttributes[$fieldName]);
                             if (count($pieces) > 1) {
                                 if (is_numeric($oldAttributes[$fieldName]))
-                                    $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+                                    $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
                                 else
-                                    $oldRel = CActiveRecord::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
+                                    $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
                             }
                         }
                         if (isset($oldRel)) {
@@ -971,7 +975,7 @@ abstract class x2base extends X2Controller {
                                 $action->visibility = 1;
                                 $action->associationType = strtolower($this->modelClass);
                                 $action->associationId = $new['id'];
-                                $model = CActiveRecord::model($this->modelClass)->findByPk($new['id']);
+                                $model = X2Model::model($this->modelClass)->findByPk($new['id']);
                                 $action->associationName = $model->name;
                                 $action->save();
                             }
@@ -1058,7 +1062,7 @@ abstract class x2base extends X2Controller {
     }
 
     public static function cleanUpSessions() {
-        CActiveRecord::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
+        X2Model::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
     }
 
     public function getPhpMailer() {
@@ -1140,7 +1144,7 @@ abstract class x2base extends X2Controller {
 	 */
     public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null) {
 
-        $user = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
+        $user = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
         $phpMail = $this->getPhpMailer();
 

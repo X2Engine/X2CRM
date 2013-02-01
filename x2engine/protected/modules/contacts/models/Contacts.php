@@ -132,7 +132,7 @@ class Contacts extends X2Model {
 		// $condition .= 'OR (visibility=2 AND assignedTo IN 
 			// (SELECT username FROM x2_group_to_user WHERE groupId IN
 				// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		$contactArray = CActiveRecord::model('Contacts')->findAll($condition);
+		$contactArray = X2Model::model('Contacts')->findAll($condition);
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
 			$first = $user->firstName;
@@ -148,7 +148,7 @@ class Contacts extends X2Model {
 	 *	@return $names An array of strings containing the names of contacts.
 	 */
 	public static function getAllNames() {
-		$contactArray = CActiveRecord::model('Contacts')->findAll($condition='visibility=1');
+		$contactArray = X2Model::model('Contacts')->findAll($condition='visibility=1');
 		$names=array(0=>'None');
 		foreach($contactArray as $user){
 			$first = $user->firstName;
@@ -166,7 +166,7 @@ class Contacts extends X2Model {
 		$links = array();
 		foreach($contacts as &$id){
 			if($id !=0 ) {
-				$model = CActiveRecord::model('Contacts')->findByPk($id);
+				$model = X2Model::model('Contacts')->findByPk($id);
 				$links[] = CHtml::link($model->name,array('/contacts/contacts/view','id'=>$id));
 				//$links.=$link.', ';
 				
@@ -180,7 +180,7 @@ class Contacts extends X2Model {
 		
 		$mailingList=array();
 		
-		$arr=CActiveRecord::model('Contacts')->findAll();
+		$arr=X2Model::model('Contacts')->findAll();
 		foreach($arr as $contact){
 			$i=preg_match("/$criteria/i",$contact->backgroundInfo);
 			if($i>=1){
@@ -386,7 +386,7 @@ class Contacts extends X2Model {
 			for($j=0; $j<32; $j++)	// generate a random 32 char alphanumeric string
 				$key .= substr($chars,rand(0,strlen($chars)-1), 1);
 		
-			if(CActiveRecord::model('Contacts')->exists('trackingKey="'.$key.'"'))	// check if this key is already used
+			if(X2Model::model('Contacts')->exists('trackingKey="'.$key.'"'))	// check if this key is already used
 				continue;
 			else
 				return $key;

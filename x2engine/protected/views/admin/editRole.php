@@ -38,7 +38,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-?><h3>Edit Role</h3>
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Edit Role'); ?></h2></div>
 <div class="form">
 <?php
 

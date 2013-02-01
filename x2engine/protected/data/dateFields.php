@@ -3,7 +3,7 @@
 // and hence need to be adjusted after insertion
 return array(
 	'x2_accounts' => array('createDate', 'lastUpdated', 'lastActivity'),
-	'x2_actions' => array('createDate','completeDate','lastUpdated'),
+	'x2_actions' => array('createDate','completeDate','lastUpdated','dueDate'),
 	'x2_campaigns' => array('launchDate','createDate','lastUpdated','lastActivity'),
 	'x2_changelog' => array('timestamp'),
 	'x2_contacts' => array('lastUpdated','lastActivity','leadDate','createDate','closedate'),

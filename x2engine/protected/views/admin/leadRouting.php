@@ -39,10 +39,10 @@
  ********************************************************************************/
 
 ?>
-<div class="span-12">
-<h2><?php echo Yii::t('admin','Set Lead Routing Options'); ?></h2>
+<div class="span-16">
+<div class="page-title"><h2><?php echo Yii::t('admin','Set Lead Routing Options'); ?></h2></div>
 <?php echo Yii::t('admin','Change how web leads are assigned to users.'); ?>
-<br /><br />
+<br><br>
 <div class="form">
 <?php
 $form=$this->beginWidget('CActiveForm', array(
@@ -72,22 +72,23 @@ $form=$this->beginWidget('CActiveForm', array(
 
 <?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?></div>
-
-<b>Free For All</b><br />
-Assigns all web leads to "Anyone" and users can re-assign to themselves.<br /><br />
-<b>Even Distribution</b><br />
-Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br /><br />
-<b>Round Robin</b><br />
-Assigns leads to each user going through the list one by one. <br /><br />
-<b>Custom Round Robin</b><br />
+<div class="form">
+<b>Free For All</b><br>
+Assigns all web leads to "Anyone" and users can re-assign to themselves.<br><br>
+<b>Even Distribution</b><br>
+Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br><br>
+<b>Round Robin</b><br>
+Assigns leads to each user going through the list one by one. <br><br>
+<b>Custom Round Robin</b><br>
 Same as above but allows you to set custom rules.  i.e. if a contact comes in with a specific value, it will be distributed to a group of users you specify.
-This option will not work unless you create custom rules.<br /><br />
-<b>Single User</b><br />
+This option will not work unless you create custom rules.<br><br>
+<b>Single User</b><br>
 The Single User option will assign all leads to the specified user.
-<br /><br /><br />
-<b>Online Only</b><br />
+<br><br><br>
+<b>Online Only</b><br>
 This option will filter your routing rule so that leads only go to a subset of the users who are logged in.  
 i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads
+</div>
 </div>
 <script>
     $('#lead-source-select').change(function(){

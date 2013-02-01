@@ -57,7 +57,7 @@ $(window).load(function(){
 });
 ");
 ?>
-<div id="content-fullscreen" class="span-22">
+<div id="content-fullscreen" class="span-24">
 	<!-- content -->
 	<?php echo $content; ?>
 </div>

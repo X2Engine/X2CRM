@@ -129,7 +129,7 @@ class X2GridView extends CGridView {
 			if(isset($columnData['header']))
 				$this->specialColumnNames[$columnName] = $columnData['header'];
 			else
-				$this->specialColumnNames[$columnName] = CActiveRecord::model($this->modelName)->getAttributeLabel($columnName);
+				$this->specialColumnNames[$columnName] = X2Model::model($this->modelName)->getAttributeLabel($columnName);
 		}
 		
 		// start allFieldNames with the special fields
@@ -144,7 +144,7 @@ class X2GridView extends CGridView {
 
 		// load fields from DB
 		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
-		$fields = CActiveRecord::model($this->modelName)->getFields();
+		$fields = X2Model::model($this->modelName)->getFields();
 		foreach($fields as $field){
 			$this->allFields[$field->fieldName] = $field;
 		}
@@ -156,7 +156,7 @@ class X2GridView extends CGridView {
 		
 
 		foreach($this->allFields as $fieldName=>&$field) {
-			$this->allFieldNames[$fieldName] = CActiveRecord::model($this->modelName)->getAttributeLabel($field->fieldName);
+			$this->allFieldNames[$fieldName] = X2Model::model($this->modelName)->getAttributeLabel($field->fieldName);
 		}
 		
 		
@@ -242,7 +242,7 @@ class X2GridView extends CGridView {
 
 				$newColumn['name'] = $columnName;
 				$newColumn['id'] = 'C_'.$columnName;
-				$newColumn['header'] = CActiveRecord::model($this->modelName)->getAttributeLabel($columnName);
+				$newColumn['header'] = X2Model::model($this->modelName)->getAttributeLabel($columnName);
 				$newColumn['headerHtmlOptions'] = array('colWidth'=>$width);
 				
 				if($isCurrency) {
@@ -380,11 +380,10 @@ class X2GridView extends CGridView {
 							});
 						}",
 						'data' => 'js: {results: $(this).val()}',
-					),
-					'style' => 'margin:0 0 2px 0;',
+					)
 				))
-			. ' </div>'
-			. Yii::t('app', ' results per page');
+			. ' </div>';
+			// . Yii::t('app', ' results per page');
 
 			
 			

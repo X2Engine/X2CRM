@@ -112,7 +112,7 @@ else
 
 ?>
 <div class="span-16">
-<h2><?php echo Yii::t('admin','Workflow Settings'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Workflow Settings'); ?></h2></div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'settings-form',
@@ -168,12 +168,12 @@ $form = $this->beginWidget('CActiveForm', array(
 		<label for="backdateReassignment" style="display:inline"><?php echo Yii::t('admin', 'Backdate reassignment'); ?></label><br>
 		<?php echo Yii::t('admin','Users can change who a workflow stage was completed by.'); ?>
 		</p>
+	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','style'=>'margin-left:0;'))."\n";?>
 	</div>
 
 
 	
 	
-	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','style'=>'margin-left:0;'))."\n";?>
 	<?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?>
 </div>

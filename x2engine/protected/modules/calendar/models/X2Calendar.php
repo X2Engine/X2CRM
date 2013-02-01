@@ -81,7 +81,7 @@ class X2Calendar extends CActiveRecord
 	
 	public static function getViewableUserCalendarNames() {
 		$order = 'desc';
-		$userArray = CActiveRecord::model('User')->findAll();
+		$userArray = X2Model::model('User')->findAll();
 		$names = array('Anyone' => 'Anyone');
 		foreach ($userArray as $user) {
 			if(in_array(Yii::app()->user->name, explode(',', $user->calendarViewPermission)) || 
@@ -100,7 +100,7 @@ class X2Calendar extends CActiveRecord
 	
 	public static function getEditableUserCalendarNames() {
 		$order = 'desc';
-		$userArray = CActiveRecord::model('User')->findAll();
+		$userArray = X2Model::model('User')->findAll();
 		$names = array('Anyone' => 'Anyone');
 		foreach ($userArray as $user) {
 			if(in_array(Yii::app()->user->name, explode(',', $user->calendarEditPermission)) || 

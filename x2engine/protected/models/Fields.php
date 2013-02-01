@@ -137,9 +137,9 @@ class Fields extends CActiveRecord {
 	 */
 	public static function getLinkId($type,$name) {
 		if(strtolower($type) == 'contacts')
-			$model = CActiveRecord::model('Contacts')->find('CONCAT(firstName," ",lastName)=:name',array(':name'=>$name));
+			$model = X2Model::model('Contacts')->find('CONCAT(firstName," ",lastName)=:name',array(':name'=>$name));
 		else
-			$model = CActiveRecord::model(ucfirst($type))->findByAttributes(array('name'=>$name));
+			$model = X2Model::model(ucfirst($type))->findByAttributes(array('name'=>$name));
 		if(isset($model))
 			return $model->name;
 		else

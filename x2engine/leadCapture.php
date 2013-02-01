@@ -73,7 +73,7 @@ if($ccResult!="No Item found with specified attributes."){
 		 
 		$ccUrl = 'http://'.$url.'/index.php/api/update/model/Contacts/id/'.$id;
 		$ccSession = curl_init($ccUrl);
-		$data=array('backgroundInfo'=>$newInfo,'username'=>$user, 'userKey'=>$userKey); 
+		$data=array('backgroundInfo'=>$newInfo,'user'=>$user, 'userKey'=>$userKey); 
 		curl_setopt($ccSession,CURLOPT_POST,1);
 		curl_setopt($ccSession,CURLOPT_POSTFIELDS,$data);
 		curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);

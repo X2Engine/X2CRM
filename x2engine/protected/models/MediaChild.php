@@ -105,7 +105,7 @@ class MediaChild extends Media {
 		if(preg_match('/^<a href=".+media\/view\/([0-9]+)">.+<\/a>$/i',$str,$matches)) {
 			if(count($matches) == 2 && is_numeric($matches[1])) {
 			
-				$media = CActiveRecord::model('MediaChild')->findByPk($matches[1]);
+				$media = X2Model::model('MediaChild')->findByPk($matches[1]);
 				if(isset($media)) {
 					$str = Yii::t('media','File:') . ' ';
 					

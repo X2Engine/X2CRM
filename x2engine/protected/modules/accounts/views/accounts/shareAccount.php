@@ -55,7 +55,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
-<h2><?php echo Yii::t('accounts','Share Account');?>: <b><?php echo $model->name; ?></b></h2>
+<div class="page-title">
+<h2><span class="no-bold"><?php echo Yii::t('app','Share:');?></span> <?php echo $model->name; ?></h2>
+</div>
+
 <?php
 if(!empty($status)) {
 	$index = array_search('200',$status);
@@ -84,7 +87,9 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 ?>
-<h2><?php echo Yii::t('accounts','Account:'); ?> <b><?php echo $model->name; ?></b></h2>
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('accounts','Account:'); ?></span> <?php echo $model->name; ?></h2>
+</div>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'accounts','form'=>$form)); 
 $this->endWidget(); ?>

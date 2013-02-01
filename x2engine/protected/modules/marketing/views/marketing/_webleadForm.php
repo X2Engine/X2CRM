@@ -238,11 +238,10 @@ $(function() {
 </script>
 
 <div class="form">
-
-<div class="cell">
+<div class="row">
 	<h4><?php echo Yii::t('marketing','Embed Code') .':'; ?></h4>
-	<textarea id="embedcode"><?php echo $embedcode; ?></textarea>
-	<?php echo Yii::t('marketing','Copy and paste this code into your website to include the web lead form.'); ?><br /><br />
+	<textarea id="embedcode"><?php echo $embedcode; ?></textarea><br>
+	<?php echo Yii::t('marketing','Copy and paste this code into your website to include the web lead form.'); ?><br><br>
 </div>
 
 <div style="margin-bottom: 1em;">

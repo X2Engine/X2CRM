@@ -94,28 +94,33 @@ foreach($users as $user)
     	
 $viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission(Yii::app()->user->id);
 $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()->user->id);
-
-echo "<h2>" . Yii::t('calendar', 'View Permission') . "</h2>";
-echo Yii::t('calendar', "These users can view your calendar.");
-echo CHtml::listBox('view-permission', $viewPermission, $names, array(
-    'class'=>'user-permission',
-    'multiple'=>'multiple',
-    'onChange'=>'giveSaveButtonFocus();',
-));
-echo "<br>\n";
-
-echo "<h2>" . Yii::t('calendar', 'Edit Permission') . "</h2>";
-echo Yii::t('calendar', "These users can edit your calendar.");
-echo CHtml::listBox('edit-permission', $editPermission, $names, array(
-    'class'=>'user-permission',
-    'multiple'=>'multiple',
-    'onChange'=>'giveSaveButtonFocus();',
-));
-
-echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button', 'name'=>'save-button', 'tabindex'=>24))."\n";
-echo "	</div>\n";
-
-$this->endWidget();
-
 ?>
+<div class="page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
+<div class="form">
+	<?php echo Yii::t('calendar', 'These users can view your calendar.'); ?>
+	<?php
+	echo CHtml::listBox('view-permission', $viewPermission, $names, array(
+		'class'=>'user-permission',
+		'multiple'=>'multiple',
+		'onChange'=>'giveSaveButtonFocus();',
+	));
+	?>
+	<br>
+</div>
+<div class="page-title"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
+<div class="form">
+	<?php echo Yii::t('calendar', 'These users can edit your calendar.'); ?>
+	<?php
+	echo CHtml::listBox('edit-permission', $editPermission, $names, array(
+		'class'=>'user-permission',
+		'multiple'=>'multiple',
+		'onChange'=>'giveSaveButtonFocus();',
+	));
+	?>
+	<br>
+	<div class="row buttons">
+		<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button', 'name'=>'save-button', 'tabindex'=>24)); ?>
+	</div>
+</div>
+<?php
+$this->endWidget();

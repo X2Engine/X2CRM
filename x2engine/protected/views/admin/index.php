@@ -40,20 +40,17 @@
 
 $admin = &Yii::app()->params->admin;
 ?>
-<h1><?php echo Yii::t('app','Administration Tools'); ?> 
-<?php echo CHtml::link(Yii::t('admin','About X2EngineCRM'),array('/site/page?view=about'),array('style'=>'position:relative;bottom:5px;','class'=>'x2-button')); ?>
-</h1>
-<?php echo Yii::t('app','Welcome to the administration tool set.'); ?>
-<br>
+<div class="span-20 admin-screen">
+<div class="page-title">
+	<h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
+	<?php echo CHtml::link(Yii::t('admin','About X2EngineCRM'),array('/site/page?view=about'),array('class'=>'x2-button right')); ?>
+</div>
+
+<?php //echo Yii::t('app','Welcome to the administration tool set.'); ?>
 <?php
 if($admin->updateInterval == -1)
 	echo Yii::t('admin','Automatic updates are currently disabled.').' '.CHtml::link(Yii::t('app','Enable Updates'),array('toggleUpdater'));
-// else
-	
 
-	?>
-
-<?php
 if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()) && !in_array($admin->unique_id,array('none',Null))) {
 	echo '<span style="color:red;">';
 	echo Yii::t('app','A new version is available! Click here to update to version {version}',array(
@@ -62,8 +59,6 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	echo "</span>\n";
 }
 ?>
-<br>
-<div class="span-20 admin-screen">
 <div class="form">
 	<h2 id="admin-support"><?php echo Yii::t('admin','Support'); ?></h2>
 	<div class="row">
@@ -138,7 +133,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<h2 id="admin-email"><?php echo Yii::t('admin','Email Configuration'); ?></h2>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Settings'),'emailSetup'); ?><br><?php echo Yii::t('admin','Configure X2Engine\'s email settings');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Email Campaign'),array('/marketing/create')); ?><br><?php echo Yii::t('admin','Create an email marketing campaign');?></div>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Campaigns'),array('/marketing/admin')); ?><br><?php echo Yii::t('admin','Manage your marketing campaigns');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Campaigns'),array('/marketing/index')); ?><br><?php echo Yii::t('admin','Manage your marketing campaigns');?></div>
 	</div>
 </div>
 <div class="form">

@@ -108,19 +108,10 @@ $(document).ready(function() {
 
 $cs ->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
-/* if($this->getModule()!='mobile'){
-$notifUrl = $this->createUrl('/site/checkNotifications');
-// $cs->registerScript('updateNotificationJs', "
-        // notifUrl='".$this->createUrl('/site/checkNotifications')."'
-	// $(document).ready(updateNotifications());	//update on page load
-// ",CClientScript::POS_HEAD); 
-} */
-if(Yii::app()->params->profile->language=='he' || Yii::app()->params->profile->language=='fa'){
-    $cs->registerCss('rtl-language','
-        body {
-            text-align:right;
-        }');
-}
+
+if(Yii::app()->params->profile->language=='he' || Yii::app()->params->profile->language=='fa')
+	$cs->registerCss('rtl-language','body{text-align:right;}');
+
 $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
@@ -251,7 +242,7 @@ array_unshift($menuItems,array(
 ));
 
 
-$notifCount = CActiveRecord::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->getName()));
+$notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->getName()));
 
 $searchbarHtml = CHtml::beginForm(array('/search/search'),'get')
 	.'<button class="x2-button black" type="submit"><span></span></button>'
@@ -278,7 +269,13 @@ $userMenu = array(
 	array('label' => $searchbarHtml,'itemOptions'=>array('id'=>'search-bar','class'=>'special')),
 	array('label'=>CHtml::link('<span>'.$notifCount.'</span>','#',array('id'=>'main-menu-notif','style'=>'z-index:999;')),'itemOptions'=>array('class'=>'special')),
 	array('label'=>CHtml::link('<span>&nbsp;</span>','#',array('class'=>'x2-button','id'=>'fullscreen-button')),'itemOptions'=>array('class'=>'search-bar special')),
-	array('label'=>CHtml::link('<span style="line-height: 15px; margin-left: 3px; margin-right: 3px;"><img style="height: 22px;" src="'.$widgetsImageUrl.'">'. Yii::app()->params->profile->getWidgetMenu() .'</span>', '#', array('id'=>'widget-menu-wrapper', 'class'=>'x2-button', 'title'=>'hidden widgets', 'style'=>'margin-top: 6px;')), 'itemOptions'=>array('class'=>'search-bar special')),
+	array('label'=>CHtml::link('<div class="widget-icon"></div>','#',array(
+			'id'=>'widget-button',
+			'class'=>'x2-button',
+			'title'=>'hidden widgets'
+		)).Yii::app()->params->profile->getWidgetMenu(),
+		'itemOptions'=>array('class'=>'search-bar special'
+	)),
 	array('label'=>CHtml::image($avatar,'',array('height'=>25,'width'=>25)).Yii::app()->user->getName(),
 		'itemOptions'=>array('id'=>'profile-dropdown','class'=>'dropdown'),
 		'items' => array(
@@ -287,7 +284,7 @@ $userMenu = array(
 			array('label' => Yii::t('app','Preferences'),'url' => array('/profile/settings')),
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
 			array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
-            array('label' => (Yii::app()->params->sessionStatus == 1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
+			array('label' => (Yii::app()->params->sessionStatus == 1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),

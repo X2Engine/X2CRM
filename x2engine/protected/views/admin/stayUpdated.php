@@ -64,11 +64,11 @@
 	else:
 		$mandatoryFields = array('unique_id', 'firstName', 'lastName', 'email');
 		if (in_array($form->config['unique_id'],array(Null,'none'))) {
-			echo $form->message['registrationSubtext'] . '<br /><br />';
+			echo $form->message['registrationSubtext'] . '<br><br>';
 			$form->textFields($mandatoryFields);
-			echo '<br />'.$form->message['registrationPostText'].': <a href="http://www.x2engine.com/contact/">x2engine.com</a><br /><br />';
+			echo '<br>'.$form->message['registrationPostText'].': <a href="http://www.x2engine.com/contact/">x2engine.com</a><br><br>';
 		} else {
-			echo $form->message['registrationSuccess'] . '<br /><br />';
+			echo $form->message['registrationSuccess'] . '<br><br>';
 			$form->hiddenFields($mandatoryFields);
 		}
 		echo '<input type="checkbox" style="display:none" value="1"'.($form->config['receiveUpdates'] ? ' checked="checked"' : Null).' name="receiveUpdates" id="receiveUpdates" />';
@@ -83,7 +83,7 @@
 		<div class="row">
 			<label for="requestContact"><?php echo $form->label['requestContact']; ?></label><input type='checkbox' name='data' value='1' name="requestContact" id="requestContact" />
 		</div><!-- .row -->
-		<br /><?php echo $form->message['intro']; ?><br /><br />
+		<br><?php echo $form->message['intro']; ?><br><br>
 		<?php $form->textFields($form->os ? array('firstName', 'lastName', 'email', 'phone', 'company', 'position') : array('phone', 'company', 'position')); ?>
 		<div class="row">
 			<label for="source"><?php echo $form->label['source']; ?></label>
@@ -254,7 +254,7 @@
 	</script>
 	
 <?php else: ?>
-	<span><?php echo $form->os ? $form->message['already'] : $form->message['registrationSuccess']; ?></span><br /><br />
+	<span><?php echo $form->os ? $form->message['already'] : $form->message['registrationSuccess']; ?></span><br><br>
 	
 <?php endif;
 if ($form->os || !in_array($form->config['unique_id'],array('none',Null))): ?>

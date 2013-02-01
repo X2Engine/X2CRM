@@ -85,6 +85,7 @@ $confKeys = array(
 	'visibleModules',
 	'webLeadUrl',
 	'x2_version',
+	'type',
 );
 // Values that are safe to return in the configuration (in $_GET) in the case
 // that the user visits initialize.php before installing or is not using JavaScript
@@ -130,7 +131,8 @@ $sendArgs = array(
 	'GD_support',
 	'user_agent',
 	'timezone',
-	'unique_id'
+	'unique_id',
+	'type'
 );
 // Old or inconsistent variable names in installConfig.php and the config file(s)
 $confMap = array(
@@ -146,6 +148,7 @@ $confMap = array(
 	'dummyData' => 'dummy_data',
 	'appName' => 'app',
 	'version' => 'x2_version',
+	'installType' => 'type',
 );
 
 /**
@@ -295,10 +298,11 @@ function installConfig() {
 	} else
 		RIP('Error: Installer config file not found.');
 	
-	// Collect configuration values from the configuration file
+	// Collect configuration values from the configuration file(s)
 	foreach ($confKeys as $name)
 		if(isset(${$name}))
 			$config[$name] = ${$name};
+	// If they're set in installConfig.php, override:
 	foreach ($confMap as $name2 => $name1)
 		if (isset(${$name2}))
 			$config[$name1] = ${$name2};
@@ -523,7 +527,7 @@ function installStage($stage) {
 				$filename = 'protected/config/X2Config-test.php';
 				if (!empty($config['test_url'])) {
 					$webTestConfigFile = dirname(__FILE__) . implode(DIRECTORY_SEPARATOR, array('', 'protected', 'tests', '')) . 'WebTestConfig.php';
-					$webTestConfig = "<?php define('TEST_BASE_URL','{$config['test_url']}'); ?>";
+					$webTestConfig = "<?php define('TEST_BASE_URL','{$config['test_url']}/'); ?>";
 					file_put_contents($webTestConfigFile, $webTestConfig);
 				}
 			} else
@@ -603,7 +607,7 @@ function installStage($stage) {
 						$timeDiff = $time - (int) trim($dateGen);
 						foreach ($dateFields as $table => $fields) {
 							foreach ($fields as $field) {
-								$dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL");
+								$dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL AND `$field`!=0 AND `$field`!=''");
 							}
 							// Fix timestamps that are in the future.
 							/*
@@ -691,10 +695,13 @@ if ($silent) {
 	$config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
 	$config['webLeadUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 }
+if(!in_array($config['type'],array('Silent','Bitnami','Testing'))) // Special installation types
+	$config['type'] = $config['test_db']==1?'Testing':($silent ? 'Silent' : 'On Premise');
 $config['GD_support'] = function_exists('gd_info') ? '1' : '0';
 $config['user_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 $config['php_version'] = phpversion();
 $config['db_type'] = 'MySQL';
+
 
 // Determine whether we're setting up a test database
 if($config['test_db']) {
@@ -822,10 +829,9 @@ if (!$complete || $silent) {
 		$errors[] = 'MySQL Error: ' . $sqlError;
 	outputErrors();
 	respond('Installation complete.');
-	if($silent && function_exists('curl_init')) {
+	if($silent && function_exists('curl_init') && $config['type']!='Testing') {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];
-			$stats['type'] = 'Silent';
 		}
 		$ch = curl_init('http://x2planet.com/installs/registry/activity?'.http_build_query($stats));
 		curl_setopt($ch,CURLOPT_POST,0);

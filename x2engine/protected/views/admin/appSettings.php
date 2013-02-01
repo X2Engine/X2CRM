@@ -54,9 +54,9 @@ $('#timeout').change(function() {
 
 ?>
 <div class="span-16">
-    <h2><?php echo Yii::t('admin', 'General Settings'); ?></h2>
-    <?php
-    $form = $this->beginWidget('CActiveForm', array(
+	<div class="page-title"><h2><?php echo Yii::t('admin', 'General Settings'); ?></h2></div>
+	<?php
+	$form = $this->beginWidget('CActiveForm', array(
 	'id' => 'settings-form',
 	'enableAjaxValidation' => false,
 	    ));
@@ -119,12 +119,12 @@ $('#timeout').change(function() {
 	echo $form->textField($model, 'timeout', array('id' => 'timeout'));
 	?>
 	<br>
-	<?php echo Yii::t('admin', 'Set user session expiration time (in minutes). Default is 60.'); ?><br />
-	<br />
+	<?php echo Yii::t('admin', 'Set user session expiration time (in minutes). Default is 60.'); ?><br>
+	<br>
 
 	<?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?>
 	<?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
-    </div><br>
+    </div>
     <div class="form">
         <?php echo $form->labelEx($model,'corporateAddress'); ?>
         <?php echo Yii::t('admin','Enter your corporate address to enable directions on the Google Maps widget.') ?>

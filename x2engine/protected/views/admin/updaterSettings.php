@@ -38,9 +38,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
  ?>
-<div class="span-16">
-	<div class="form">
-		<h2><?php echo Yii::t('admin', 'Updater Settings'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Updater Settings'); ?></h2></div>
+<div class="form">
+	<div class="span-16">
 		<?php
 		$form = $this->beginWidget('CActiveForm', array(
 			'id' => 'settings-form',

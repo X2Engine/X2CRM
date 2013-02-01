@@ -60,6 +60,13 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 		else
 			$("#save-button").addClass("highlight");
 	});
+
+if($(":checkbox:checked").length > ($(":checkbox").length)/2){
+    checkedFlag=true;
+}else{
+    checkedFlag=false;
+    $("#toggle-filters-link").html("Check Filters");
+}
 ',CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('activity-feed','
 function updateComments(id){
@@ -141,6 +148,18 @@ function restorePosts(){
         }
     });
 }
+var checkedFlag;
+$(document).on("click","#toggle-filters-link",function(e){
+    e.preventDefault();
+    checkedFlag=!checkedFlag;
+    if(checkedFlag){
+        $(this).html("'.Yii::t('app',"Uncheck Filters").'");
+        $(".filter-checkbox").attr("checked","checked");
+    }else{
+        $(this).html("'.Yii::t('app',"Check Filters").'");
+        $(".filter-checkbox").attr("checked",null);
+    }
+});
 $(document).on("click","#min-posts",function(e){
     e.preventDefault();
     minimizePosts();
@@ -194,6 +213,16 @@ $(document).on("click","#my-groups-filter",function(e){
         pieces2=str2.split("#");
         window.location=pieces2[0]+"?filters=true&visibility=&users="+usergroups+"&types=&subtypes=&default=false";
 });
+var commentFlag=false;
+$(document).on("click","#toggle-all-comments",function(e){
+    e.preventDefault();
+    commentFlag=!commentFlag;
+    if(commentFlag){
+        $(".comment-link").click();
+    }else{
+        $(".comment-hide-link").click();
+    }
+});
 ',CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('update-event-list','
 
@@ -209,16 +238,16 @@ $(document).on("click",".comment-link",function(e){
             $("#"+id+"-comments").html(data);
             $(".empty").parent().hide();
             $("#"+id+"-comment-box").slideDown(400);
-            $(link).toggle();
-            $(link).next().toggle();
+            $(link).hide();
+            $(link).next().show();
         }
     });
 });
 
 $(document).on("click",".comment-hide-link",function(e){
     e.preventDefault();
-    $(this).toggle();
-    $(this).prev().toggle();
+    $(this).hide();
+    $(this).prev().show();
     var pieces=$(this).prev().attr("id").split("-");
     var id=pieces[0];
     $("#"+id+"-comment-box").slideUp(400);
@@ -258,11 +287,12 @@ $(document).on("click",".unimportant-link",function(e){
 });
 
     var lastEventId='.$lastEventId.';
+    var lastTimestamp='.$lastTimestamp.';
     function updateFeed(){
         $.ajax({
             url:"getEvents",
             type:"GET",
-            data:{lastEventId:lastEventId},
+            data:{lastEventId:lastEventId, lastTimestamp:lastTimestamp},
             success:function(data){
                 data=JSON.parse(data);
                 lastEventId=data[0];
@@ -310,9 +340,11 @@ $(document).on("click",".delete-link",function(e){
 echo "<div id='menu-links'>";
 echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button'));
 echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button'));
+echo " ".CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button'));
 echo " ".CHtml::link(Yii::t('app','Clear Filters'),'#',array('id'=>'clear-filters-link','class'=>'x2-button'));
 echo " ".CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button'));
 echo " ".CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button'));
+echo " ".CHtml::link(Yii::t('app','Show/Hide All Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button'));
 
 echo "</div>";
 ?>
@@ -367,6 +399,9 @@ $this->widget('zii.widgets.CListView', array(
                         'onRenderComplete'=>'js:function(){
                             if(minimize){
                                 minimizePosts();
+                            }
+                            if(commentFlag){
+                                $(".comment-link").click();
                             }
                         }'
                     ),

@@ -52,18 +52,18 @@ $('#timeout').change(function() {
 });
 ",CClientScript::POS_READY);
 ?>
-<div class="span-16">
-<h2><?php echo Yii::t('admin','Google Integration'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Google Integration'); ?></h2></div>
+<div class="form">
+<div style="width:500px;">
 <?php
 $form=$this->beginWidget('CActiveForm', array(
 		'id'=>'settings-form',
 		'enableAjaxValidation'=>false,
 	));
 ?>
-	<div class="form">
-		<?php echo $form->labelEx($model,'googleIntegration'); ?>
 		<?php echo $form->checkbox($model, 'googleIntegration'); ?>
-	
+		<?php echo $form->labelEx($model,'googleIntegration',array('style'=>'display:inline;')); ?>
+		<br><br>
 		<?php echo $form->labelEx($model,'googleClientId'); ?>
 		<?php echo $form->textField($model,'googleClientId', array('size'=>75)); ?>
 		
@@ -73,21 +73,24 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->labelEx($model,'googleAPIKey'); ?>
 		<?php echo $form->textField($model,'googleAPIKey', array('size'=>75)); ?>
 		
-		<br /><br />
+		<br><br>
 		
 		<?php echo Yii::t('admin','Google integration allows users to link their calendars on x2crm with Google Calendars as well as log in with their Google IDs.'); ?>
-		<br /><br />
+		<br><br>
 
 		<?php echo Yii::t('admin', 'You will need to create a google app in order to use google integration.'); ?>
 		<?php echo Yii::t('admin','You can find your Client ID, Client Secret, and API Key on your '); ?>
 		<?php echo CHtml::link(Yii::t('admin', 'google console'), 'http://code.google.com/apis/console'); ?>.
 		<?php echo Yii::t('admin', 'Also, the following link needs to be added to your app\'s Redirect URIs:'); ?>
-		<br /><br />
-		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/create'); ?>
-		<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/site/googleLogin'); ?>
-	</div>
-	
+		<br><br>
+<textarea style="padding:5px; height:40px;line-height:20px;width:400px;" disabled="disabled">
+<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/create'); ?>
+
+<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/site/googleLogin'); ?>
+</textarea>
+		<br><br>
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button'))."\n";?>
 	<?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?>
+</div>
 </div>

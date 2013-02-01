@@ -47,11 +47,10 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','View')),
 ));
 ?>
-<h1><span style="color:red">This record may be a duplicate!</span></h1><br />
-<h2><u>You Entered</u><br />
+<div class="page-title"></div>
+<h1><span style="color:#f00;font-weight:bold;"><?php echo Yii::t('app','This record may be a duplicate!'); ?></span></h1>
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('app','You Entered:'); ?></span> <?php echo $newRecord->firstName,' ',$newRecord->lastName; ?></h2></div>
 <?php
-
-echo $newRecord->firstName." ".$newRecord->lastName;
 if (Yii::app()->user->checkAccess('ContactsUpdate',$authParams) && $ref!='create')
 	echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$newRecord->id)),array('class'=>'x2-button'));
 echo "</h2>";
@@ -97,11 +96,13 @@ if(Yii::app()->user->checkAccess('ContactsDelete')){
 }
 ?>
 <div style="clear:both;"></div>
-<br />
-<h2><u>Possible Matches</u></h2>
+<br>
 <?php
 foreach($duplicates as $duplicate){
-	echo "<div id=".$duplicate->firstName."-".$duplicate->lastName."><br /><h2>".$duplicate->firstName." ".$duplicate->lastName."</h2>";
+	echo '<div id="'.$duplicate->firstName.'-'.$duplicate->lastName.'">';
+	echo '<div class="page-title"><h2><span class="no-bold">',Yii::t('app','Possible Match:'),'</span> ';
+	echo $duplicate->firstName,' ',$duplicate->lastName,'</h2></div>';
+	
 	$this->renderPartial('application.components.views._detailView',array('model'=>$duplicate,'modelName'=>'contacts'));
     echo "<span style='float:left'>";
     echo CHtml::ajaxButton("Discard New Record",$this->createUrl('/contacts/discardNew'),array(
@@ -142,5 +143,5 @@ foreach($duplicates as $duplicate){
         ));
         echo "</span></div>";
     }
-    echo "<br /><br />";
+    echo "<br><br>";
 }

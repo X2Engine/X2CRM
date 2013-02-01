@@ -75,9 +75,9 @@ foreach($groups as $group){
 }
 /* end x2temp */
 ?>
-<h3>Add Role</h3>
+<div class="page-title"><h2><?php echo Yii::t('admin','Add Role'); ?></h2></div>
 <div style="width:600px">
-    <?php echo Yii::t('admin',"Roles allow you to control which fields are editable on a record and by whom.  To add a role, enter the name, a list of users, and a list of fields they are allowed to view or edit.  Any field not included will be assumed to be unavailable to users of that Role.") ?>
+    <?php echo Yii::t('admin','Roles allow you to control which fields are editable on a record and by whom.  To add a role, enter the name, a list of users, and a list of fields they are allowed to view or edit.  Any field not included will be assumed to be unavailable to users of that Role.') ?>
 </div>
 <div class="form">
 
@@ -97,20 +97,20 @@ foreach($groups as $group){
         <?php echo $form->dropDownList($model,'users',$users,array('class'=>'multiselect','multiple'=>'multiple','size'=>7)); ?>
         <?php echo $form->error($model,'users'); ?>
 
-    <label>View Permissions</label>
+    <label><?php echo Yii::t('admin','View Permissions'); ?></label>
     <?php
     echo CHtml::dropDownList('viewPermissions[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
     ?>
 
-<br />
+<br>
 
-    <label>Edit Permissions</label>
+    <label><?php echo Yii::t('admin','Edit Permissions'); ?></label>
     <?php
     echo CHtml::dropDownList('editPermissions[]',$selected,$unselected,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
     ?>
 </div>
 
-<br />
+<br>
 <div class="row buttons">
 	<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>
 </div>

@@ -47,7 +47,7 @@ $this->actionMenu = $this->formatMenu(array(
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'template'=> '<h2>'.Yii::t('workflow','Workflows').'</h2><div class="title-bar">{summary}</div>{items}',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('workflow','Workflows').'</h2><div class="title-bar">{summary}</div></div>{items}',
 	'enableSorting'=>false,
 	'columns'=>array(
 		array(
@@ -58,7 +58,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			'name'=>'Stages',
-			'value'=>'CActiveRecord::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
+			'value'=>'X2Model::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
 			'type'=>'raw',
 		),
 	),

@@ -57,16 +57,14 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
+
+if(isset($_GET['offset']))
+	$offset=$_GET['offset'];
+else
+	$offset='first day of this week';
 ?>
 
-<?php 
 
-    if(isset($_GET['offset'])){
-        $offset=$_GET['offset'];
-    }else
-        $offset='first day of this week';
-?>
-<h2><?php echo Yii::t('users','Manage Users'); ?></h2>
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
 	'model'=>$model,
@@ -76,14 +74,14 @@ $('.search-form form').submit(function(){
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'users-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview/',
-	'template'=> '<div class="title-bar">'
+	'template'=> '<div class="page-title"><h2>'.Yii::t('users','Manage Users').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('admin','clearFilters'=>1)). ' | '
-		.CHtml::link(Yii::t('app','Records Today'),array('admin','offset'=>'0:00')). ' | '
-		.CHtml::link(Yii::t('app','Records This Week'),array('admin','offset'=>'first day of this week')). ' | '
-		.CHtml::link(Yii::t('app','Records This Month'),array('admin','offset'=>'first day of this month')). ' | '
+		.CHtml::link(Yii::t('app','Today'),array('admin','offset'=>'0:00')). ' | '
+		.CHtml::link(Yii::t('app','This Week'),array('admin','offset'=>'first day of this week')). ' | '
+		.CHtml::link(Yii::t('app','This Month'),array('admin','offset'=>'first day of this month')). ' | '
 		.X2GridView::getFilterHint()
-		.'{summary}</div>{items}{pager}',
+		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(

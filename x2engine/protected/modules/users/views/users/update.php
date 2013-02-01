@@ -51,7 +51,7 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 
 <?php $model->password=''; ?>
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->firstName,' ',$model->lastName; ?></h2></div>
 
-<h1><?php echo Yii::t('users','Update User: {name}',array('{name}'=>$model->firstName.' '.$model->lastName)); ?></h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model, 'groups'=>$groups, 'roles'=>$roles,'selectedGroups'=>$selectedGroups,'selectedRoles'=>$selectedRoles,)); ?>

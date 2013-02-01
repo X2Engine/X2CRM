@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'Nederlands',
-// // Login
+// // // Login
 'Please log in to continue:'=>'Log in om verder te gaan',
 'Username'=>'Gebruikersnaam',
 'Password'=>'Wachtwoord',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'Welkom bij {appName}.',
 'Verification Code'=>'Verificatie Code',
 'Login with Google'=>'Login met Google',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'Kalender',
 'Actions'=>'Acties',
 'Contacts'=>'Contacten',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'Dienst',
 'Go Invisible'=>'Ga Invisible',
 'Go Visible'=>'Ga Zichtbare',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
 'Go'=>'Ga',
 'Contact'=>'Contacten',
 'Action'=>'Actie',
 'Contact + Action'=>'Contacten + Acties',
 'Search for contact, action, deal...'=>'Zoek naar Contacten, Acties, Verkopen',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'Alle rechten gereserveerd',
 'Generated in {time} seconds.'=>'Gegenereerd in {time} seconds',
 'About'=>'Over',
 'The Program is provided AS IS, without warranty.'=>'Het programma wordt aangeboden als IS, zonder garantie.',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'Mijn Acties',
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Snel Contact',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'Media',
 'Current time in'=>'Huidige tijd in',
 'Hide'=>'Verschuilen',
-// // 
+// // // 
 'Total Action|Total Actions'=>'Totaal Actie|Totaal Acties',
 'Unfinished Action|Unfinished Actions'=>'Niet afgeronde Actie|Niet afgeronde Acties',
 'Overdue Action|Overdue Actions'=>'Te late Actie| Te late Acties',
 'Completed Action|Completed Actions'=>'Afgeronde Actie|Afgeronde Acties',
-// // 
+// // // 
 'Message Board'=>'Berichten Bord',
 'Please enter a message of the day!'=>'Voer een bericht van de dag in!',
 'Edit Message'=>'Bewerk bericht',
-// // 
+// // // 
 'Note Pad'=>'Notitie Blok',
 'Feel free to enter some notes!'=>'Voer gerust een notitie in!',
-// // 
+// // // 
 'Top Contacts'=>'Top Contacten',
 'Add {name}'=>'Voeg {name} Toe',
-// // 
+// // // 
 'Enter Title'=>'Voer titel in',
 'Title'=>'Titel',
 'Title:'=>'Titel:',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'Link:',
 'Add Site'=>'Voeg Site Toe',
 'Example'=>'Voorbeeld',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'Bericht Tekst',
 'Enter text here...'=>'Voer text hier in...',
 'Send'=>'Verstuur',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'Aan:',
 'Subject:'=>'Onderwerp:',
 'Message:'=>'Bericht:',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'Email Verstuurd',
 'Preview'=>'Voorbeeld',
 'Attachments'=>'Toebehoren',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'Commentaar toevoegen',
 'Create Action'=>'Actie Aanmaken',
 'Add a comment...'=>'Commentaar toevoegen...',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'Morgen',
 'Comments'=>'Commentaar',
 'Post'=>'Plaatsen',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'Geavanceerd Zoeken',
 'Clear Filters'=>'Reset Filters',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Je kunt optioneel een vergwlijkings operator toevoegen (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) aan het begin van ieder zoekwoord om te specificeren hoe de vergelijking zou moeten gebeuren.',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'Record niet gevonden.',
 'Saving...'=>'Opslaan ...',
 'Module'=>'Module',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'Haal het vinkje weg Filters',
+'Check Filters'=>'Controleer Filters',
+'Show/Hide All Comments'=>'Weergeven / verbergen Alle Reacties',
+'{n} rows'=>'{n} rijen',
+// // // 
+// // // Misc Actions
 'Submit'=>'Voorleggen',
 'Save'=>'Besparen',
 'Cancel'=>'Annuleren',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'Nieuwe Lijst',
 'Add'=>'Toevoegen',
 'Remove'=>'Verwijderen',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'Daarnet',
 '{n} minutes ago'=>'{n} minuten geleden',
 '{n} hours ago'=>'{n} uur geleden',
 '{n} days ago'=>'{n} dagen geleden',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'Fout bij het aanmaken noot!',
 'Invalid request. Please do not repeat this request again.'=>'Ongeldig verzoek. Gelieve niet herhalen dit verzoek.',
 'The requested page does not exist.'=>'De door u opgevraagde pagina bestaat niet.',
 'Please fix the following errors:'=>'Please fix de volgende fouten:',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'Administration Tools',
 'Welcome to the administration tool set.'=>'Welkom bij de administratie tool set.',
 'Links'=>'Links',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'Stuur Massa E-mail',
 'How to use Gii'=>'Hoe wordt Gii gebruiken',
 'How to add a database field'=>'Hoe kan ik een database veld toe te voegen',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'Activiteit Feed',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'Zichtbaarheid',
 'Relevant Users'=>'Relevante Gebruikers',
 'Event Types'=>'Soorten Gebeurtenissen',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'Opties',
 'Set Default'=>'Set Default',
 'Apply Filters'=>'Filters Toepassen',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'Sociale Bericht',
 'Announcement'=>'Aankondiging',
 'Product Info'=>'Product Info',
 'Competitive Info'=>'Concurrerende Info',
 'Confidential'=>'Vertrouwelijk',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'Sociale Berichten',
 'Records Created'=>'Records Gemaakt',
 'Records Deleted'=>'Records Verwijderd',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'Workflow Compleet',
 'Workflow Reverted'=>'Workflow Reverted',
 'Workflow Started'=>'Workflow Gestart',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'een nieuwe {actionLink} die bij het contact {contactLink}',
 'created a new {modelName}, {modelLink}'=>'een nieuwe {modelname}, {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'een nieuwe {modelName}, {deletionText}. Het is verwijderd.',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'Een actie is te wijten nu, maar het record kon niet worden gevonden.',
 'completed the following action: {actionDescription}'=>'voltooide de volgende actie: {actionDescription}',
 'completed an action, but the record could not be found.'=>'voltooide een actie, maar het record kon niet worden gevonden.',
-// // Model Names
+// // // Model Names
 'action'=>'actie',
 'contact'=>'contact',
 'account'=>'rekening',
 'opportunity'=>'kans',
 'marketing campaign'=>'marketing campagne',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'Minimaliseer Berichten',
 'Restore Posts'=>'Herstel Berichten',
 'My Groups'=>'Mijn groepen',

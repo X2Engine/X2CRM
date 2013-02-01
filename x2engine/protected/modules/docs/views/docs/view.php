@@ -46,6 +46,10 @@ $(window).resize(function() {
 	$("#docIframe").height($("#docIframe").height(650).contents().height());
 });
 ',CClientScript::POS_READY);
+?>
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
+
+<?php
 $perm=$model->editPermissions;
 $pieces=explode(", ",$perm);
 echo CHtml::link(Yii::t('docs','Export'),array('/docs/docs/exportToHtml','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
@@ -53,5 +57,6 @@ if(Yii::app()->user->checkAccess('DocsUpdate') && (Yii::app()->user->checkAccess
     echo CHtml::link(Yii::t('docs','Edit Doc'),array('/docs/docs/update','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
 echo "<br>\n";
 ?>
+</div>
 <iframe src="<?php echo $this->createUrl('/docs/docs/fullView/'.$model->id); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
 

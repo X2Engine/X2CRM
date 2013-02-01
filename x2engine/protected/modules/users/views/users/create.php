@@ -45,6 +45,5 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),
 ));
 ?>
-
-<h1><?php echo Yii::t('users','Create User'); ?></h1>
+<div class="page-title"><h2><?php echo Yii::t('users','Create User'); ?></h2></div>
 <?php echo $this->renderPartial('_form', array('model'=>$model, 'roles'=>$roles, 'groups'=>$groups,'selectedGroups'=>$selectedGroups,'selectedRoles'=>$selectedRoles,)); ?>

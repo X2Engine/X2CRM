@@ -50,8 +50,7 @@ $this->actionMenu = $this->formatMenu(array(
 ),$authParams);
 ?>
 
-<h2><?php echo Yii::t('quotes','Update Quote:'); ?> <b><?php echo $model->name; ?></b></h2>
-
+<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name; ?></h2></div>
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(

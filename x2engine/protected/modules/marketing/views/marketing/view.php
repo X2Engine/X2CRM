@@ -61,14 +61,11 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 <div id="main-column" class="half-width">
-<div class="record-title">
-<h2><?php echo Yii::t('marketing', 'Campaign'); ?>: <b><?php echo $model->name; ?></b>
-
-<?php if(Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
-	<a class="x2-button right" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
-<?php } ?>
-
-</h2>
+<div class="page-title">
+	<h2><span class="no-bold"><?php echo Yii::t('marketing', 'Campaign'); ?>:</span> <?php echo $model->name; ?></h2>
+	<?php if(Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
+		<a class="x2-button right" href="<?php echo $this->createUrl('update/'.$model->id);?>"><?php echo Yii::t('app','Edit');?></a>
+	<?php } ?>
 </div>
 <?php
 foreach(Yii::app()->user->getFlashes() as $key => $message) {

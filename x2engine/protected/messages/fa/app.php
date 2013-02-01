@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'فارسی',
-// // Login
+// // // Login
 'Please log in to continue:'=>'لطفا برای ادامه وارد شوید',
 'Username'=>'نام کاربر',
 'Password'=>'گذر واژه',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'.{appName}به انجمن خوش آمدید',
 'Verification Code'=>'کد تأیید',
 'Login with Google'=>'ورود به سیستم با گوگل',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'تقویم',
 'Actions'=>'اقدامات',
 'Contacts'=>'تماس ها',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'سرویس',
 'Go Invisible'=>'رفتن به حالت نامرئی',
 'Go Visible'=>'برو مرئی',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM گروه افزار',
 'Go'=>'برو',
 'Contact'=>'تماس',
 'Action'=>'حرکت',
 'Contact + Action'=>'تماس + اقدام',
 'Search for contact, action, deal...'=>'پرس وجو برای تماس، اقدام، قرارداد و ...',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'تمام حقوق محفوظ.',
 'Generated in {time} seconds.'=>'ثانیه. {time} ساخته شده در',
 'About'=>'در حدود',
 'The Program is provided AS IS, without warranty.'=>'این برنامه به عنوان است، بدون ضمانت ارائه شده است.',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'اقدامات من',
 'Twitter Feed'=>'خوراک توییتر',
 'Quick Contact'=>'ارتباط سریع',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'رسانه ها',
 'Current time in'=>'زمان کنونی در',
 'Hide'=>'پنهان کردن',
-// // 
+// // // 
 'Total Action|Total Actions'=>'تمام اقدام| تمام اقدامات',
 'Unfinished Action|Unfinished Actions'=>'اقدام ناتمام|اقدامات ناتمام',
 'Overdue Action|Overdue Actions'=>'اقدام عقب افتاده|اقدامات عقب افتاده',
 'Completed Action|Completed Actions'=>'اقدام کامل شد|اقدامات کامل شدند',
-// // 
+// // // 
 'Message Board'=>'تابلو اعلانات',
 'Please enter a message of the day!'=>'پیام روز را وارد کنید!',
 'Edit Message'=>'ویرایش پیام',
-// // 
+// // // 
 'Note Pad'=>'دفتر یادداشت',
 'Feel free to enter some notes!'=>'با احساس راحتی یادداشت وارد کنید!',
-// // 
+// // // 
 'Top Contacts'=>'تماس های برتر',
 'Add {name}'=>'اضافه کردن {name}',
-// // 
+// // // 
 'Enter Title'=>'عنوان را وارد کنید',
 'Title'=>'عنوان',
 'Title:'=>'عنوان:',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'پیوند:',
 'Add Site'=>'اضافه کردن پایگاه ',
 'Example'=>'مثال',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'متن  پیام',
 'Enter text here...'=>'اینجا متن را وارد کنید...',
 'Send'=>'ارسال',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'به:',
 'Subject:'=>'موضوع:',
 'Message:'=>'پیام:',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'ای-نامه ارسال شد!',
 'Preview'=>'پیش دید',
 'Attachments'=>'فایل های پیوست',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'ایجاد نظر',
 'Create Action'=>'ایجاد اقدام',
 'Add a comment...'=>'ایجاد یک نظر...',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'فردا',
 'Comments'=>'نظر',
 'Post'=>'پست',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'پرس و جوی پیشرفته',
 'Clear Filters'=>'پاک کردن شرایط',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'عملکرد مقایسه',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'ضبط یافت نشد.',
 'Saving...'=>'صرفه جویی در ...',
 'Module'=>'واحد',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'لغو انتخاب فیلترها',
+'Check Filters'=>'بررسی کنید فیلترها',
+'Show/Hide All Comments'=>'نمایش / عدم نمایش همه نظرات',
+'{n} rows'=>'{n} ردیف',
+// // // 
+// // // Misc Actions
 'Submit'=>'ارائه دادن',
 'Save'=>'ذخیره',
 'Cancel'=>'لغو کردن',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'لیست جدید',
 'Add'=>'اضافه کردن',
 'Remove'=>'برداشتن',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'هم اکنون',
 '{n} minutes ago'=>'دقیقه قبل {n}',
 '{n} hours ago'=>'ساعت قبل {n}',
 '{n} days ago'=>'روز قبل {n}',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'خطا در ایجاد توجه کنید!',
 'Invalid request. Please do not repeat this request again.'=>'نامعتبر درخواست. لطفا این درخواست را دوباره تکرار نمی کنید.',
 'The requested page does not exist.'=>'صفحه درخواست شده وجود ندارد.',
 'Please fix the following errors:'=>':لطفا خطاهای زیر را حل کنید',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'ابزار مدیریت',
 'Welcome to the administration tool set.'=>'به دولت مجموعه ابزار خوش آمدید.',
 'Links'=>'کلیدهای',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'ارسال ایمیل به جرم',
 'How to use Gii'=>'چگونه به استفاده از گروه II',
 'How to add a database field'=>'چگونه برای اضافه کردن یک فیلد پایگاه داده',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'خوراک فعالیت',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'دید',
 'Relevant Users'=>'کاربران مربوطه',
 'Event Types'=>'انواع رویداد',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'گزینه ها',
 'Set Default'=>'تنظیم پیش فرض',
 'Apply Filters'=>'اعمال فیلترها',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'ارسال های اجتماعی',
 'Announcement'=>'خبر',
 'Product Info'=>'اطلاعات فروشگاه',
 'Competitive Info'=>'اطلاعات رقابتی',
 'Confidential'=>'محرمانه',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'نوشته ها اجتماعی',
 'Records Created'=>'سوابق ایجاد شده',
 'Records Deleted'=>'سوابق حذف شده',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'گردش کار کامل',
 'Workflow Reverted'=>'گردش کار واگردانی',
 'Workflow Started'=>'گردش کار آغاز شده',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'ایجاد جدید {actionLink} در ارتباط با مخاطب {contactLink}',
 'created a new {modelName}, {modelLink}'=>'ایجاد جدید {modelName}، {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'ایجاد جدید {modelName}، {deletionText}. حذف شده است.',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'یک عمل است که به علت در حال حاضر، اما این رکورد می تواند یافت نمی شود.',
 'completed the following action: {actionDescription}'=>'تکمیل زیر عمل: {actionDescription}',
 'completed an action, but the record could not be found.'=>'به اتمام عمل، اما این رکورد می تواند یافت نمی شود.',
-// // Model Names
+// // // Model Names
 'action'=>'اقدام',
 'contact'=>'تماس',
 'account'=>'حساب',
 'opportunity'=>'فرصت',
 'marketing campaign'=>'کمپین بازاریابی',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'به حداقل رساندن نوشته ها',
 'Restore Posts'=>'بازگرداندن نوشته ها',
 'My Groups'=>'گروه های من',

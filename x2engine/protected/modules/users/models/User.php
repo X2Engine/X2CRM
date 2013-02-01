@@ -86,6 +86,7 @@ class User extends CActiveRecord {
 			array('lastName, department, officePhone, cellPhone, homePhone', 'length', 'max'=>40),
 			array('password, address, emailAddress, recentItems, topContacts', 'length', 'max'=>100),
 			array('lastUpdated', 'length', 'max'=>30),
+			array('userKey','length','max'=>32,'min'=>3),
 			array('backgroundInfo', 'safe'),
 			array('username','unique','allowEmpty'=>false),
 			array('username','match','pattern'=>'/^\d+$/','not'=>true), // No numeric usernames. That will break association with groups.
@@ -159,7 +160,7 @@ class User extends CActiveRecord {
 	}
 
 	public static function getProfiles(){
-		$arr=CActiveRecord::model('User')->findAll('status="1"');
+		$arr=X2Model::model('User')->findAll('status="1"');
 		$names=array('0'=>Yii::t('app','All'));
 		foreach($arr as $user){
 			$names[$user->id]=$user->firstName." ".$user->lastName;
@@ -168,14 +169,14 @@ class User extends CActiveRecord {
 	}
 
 	public static function getTopContacts() {
-		$userRecord = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
+		$userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
 		//get array of IDs
 		$topContactIds = empty($userRecord->topContacts)? array() : explode(',',$userRecord->topContacts);
 		$topContacts = array();
 		//get record for each ID
 		foreach($topContactIds as $contactId) {
-			$record = CActiveRecord::model('Contacts')->findByPk($contactId);
+			$record = X2Model::model('Contacts')->findByPk($contactId);
 			if (!is_null($record))	//only include contact if the contact ID exists
 				$topContacts[] = $record;
 		}
@@ -183,7 +184,7 @@ class User extends CActiveRecord {
 	}
 	
 	public static function getRecentItems() {
-		$userRecord = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
+		$userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
 		//get array of type-ID pairs
 		$recentItemsTemp = empty($userRecord->recentItems)? array() : explode(',',$userRecord->recentItems);
@@ -195,11 +196,11 @@ class User extends CActiveRecord {
 			$itemId = strtok('-');
 
 			if($itemType=='c') {
-				$record = CActiveRecord::model('Contacts')->findByPk($itemId);
+				$record = X2Model::model('Contacts')->findByPk($itemId);
 				if (!is_null($record))	//only include contact if the contact ID exists
 					array_push($recentItems,array('type'=>$itemType,'model'=>$record));
 			} else if($itemType=='t') {
-				$record = CActiveRecord::model('Actions')->findByPk($itemId);
+				$record = X2Model::model('Actions')->findByPk($itemId);
 				if (!is_null($record))	//only include action if the action ID exists
 					array_push($recentItems,array('type'=>$itemType,'model'=>$record));
 			}
@@ -211,7 +212,7 @@ class User extends CActiveRecord {
 		if ($type=='c' || $type=='t') {	//only proceed if a valid type is given
 			$newItem = $type.'-'.$itemId;
 
-			$userRecord = CActiveRecord::model('User')->findByPk($userId);
+			$userRecord = X2Model::model('User')->findByPk($userId);
 			//create an empty array if recentItems is empty
 			$recentItems = ($userRecord->recentItems=='')? array() : explode(',',$userRecord->recentItems);
 			$existingEntry = array_search($newItem,$recentItems);	//check for a pre-existing entry
@@ -262,7 +263,7 @@ class User extends CActiveRecord {
 				if(isset($group))
 					$links[] = $makeLinks? CHtml::link($group->name,array('/groups/groups/view','id'=>$group->id)) : $group->name;
 			} else {
-				$model = CActiveRecord::model('User')->findByAttributes(array('username'=>$user));
+				$model = X2Model::model('User')->findByAttributes(array('username'=>$user));
 				if(isset($model))
 					$links[] = $makeLinks? CHtml::link($model->name,array('/profile/view','id'=>$model->id)) : $model->name;
 			}
@@ -304,6 +305,7 @@ class User extends CActiveRecord {
 			'updatedBy'=>Yii::t('users','Updated By'),
 			'recentItems'=>Yii::t('users','Recent Items'),
 			'topContacts'=>Yii::t('users','Top Contacts'),
+			'userKey' => Yii::t('users','API Key'),
 		);
 	}
 

@@ -158,7 +158,7 @@ class UsersController extends x2base {
 	}
 	
 	public function actionCreateAccount(){
-		$this->layout='//layouts/main';
+		$this->layout='//layouts/login';
 		if(isset($_GET['key'])){
 			$key=$_GET['key'];
 			$user=User::model()->findByAttributes(array('inviteKey'=>$key));
@@ -254,14 +254,14 @@ class UsersController extends x2base {
                                 if($modelName=='Products')
                                     $modelName='Product';
                                 if(empty($type)){
-                                    $list=CActiveRecord::model($modelName)->findAllByAttributes(array('assignedTo'=>$old['username']));
+                                    $list=X2Model::model($modelName)->findAllByAttributes(array('assignedTo'=>$old['username']));
                                     foreach($list as $item){
                                         $item->assignedTo=$model->username;
                                         $item->save();
                                     }
                                 }else{
-                                    $list=CActiveRecord::model($modelName)->findAllBySql(
-                                            "SELECT * FROM ".CActiveRecord::model($modelName)->tableName()
+                                    $list=X2Model::model($modelName)->findAllBySql(
+                                            "SELECT * FROM ".X2Model::model($modelName)->tableName()
                                             ." WHERE assignedTo LIKE '%".$old['username']."%'");
                                     foreach($list as $item){
                                         $assignedTo=explode(", ",$item->assignedTo);

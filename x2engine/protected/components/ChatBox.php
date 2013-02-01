@@ -51,7 +51,9 @@ class ChatBox extends X2Widget {
 	}
 
 	public function run() {
-		$this->render('chatBox',array()); //array(
+        if(Yii::app()->controller->action->getId()!='whatsNew'){
+            $this->render('chatBox',array());
+        }
 	}
 }
 ?>

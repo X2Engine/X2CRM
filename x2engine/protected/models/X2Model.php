@@ -69,6 +69,14 @@ abstract class X2Model extends CActiveRecord {
 	);
 
 	protected static $_fields; // one copy of fields for all instances of this model
+    
+    public static function model($className='CActiveRecord'){
+        if(class_exists($className)){
+            return parent::model($className);
+        }else{
+            throw new CHttpException(500,'Class: '.$className." not found.");
+        }
+    }
 
 	/**
 	 * Queries and caches field objects for the model.
@@ -84,7 +92,7 @@ abstract class X2Model extends CActiveRecord {
 		if(!isset(self::$_fields[$key])) { // only look up fields if they haven't already been looked up
 			self::$_fields[$key] = Yii::app()->cache->get('fields_' . $key); // check the app cache for the data
 			if(self::$_fields[$key] === false) { // if the cache is empty, look up the fields
-				self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => get_class($this),'isVirtual'=>0));
+				self::$_fields[$key] = X2Model::model('Fields')->findAllByAttributes(array('modelName' => get_class($this),'isVirtual'=>0));
 				Yii::app()->cache->set('fields_' . $key, self::$_fields[$key], 0); // cache the data
 			}
 		}
@@ -99,8 +107,8 @@ abstract class X2Model extends CActiveRecord {
      */
     public static function getModelLink($id, $class) {
 
-		$model = CActiveRecord::model($class)->findByPk($id);
-		if(isset($model))
+		$model = X2Model::model($class)->findByPk($id);
+		if(isset($model) && !is_null($model->asa('X2LinkableBehavior')))
 			return $model->getLink();
 		// return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
 		elseif(is_numeric($id))
@@ -115,7 +123,7 @@ abstract class X2Model extends CActiveRecord {
 			$temp = $phoneCheck->number;
 			return "(" . substr($temp, 0, 3) . ") " . substr($temp, 3, 3) . "-" . substr($temp, 6, 4);
 		} else {
-			$record=CActiveRecord::model($class)->findByPk($id);
+			$record=X2Model::model($class)->findByPk($id);
             if(isset($record))
                 return $record->$field;
 		}
@@ -131,7 +139,7 @@ abstract class X2Model extends CActiveRecord {
 				$relations[strtolower($field->linkType)] = array(self::BELONGS_TO, $field->linkType, $field->fieldName);
 			}
 		}
-				
+        
 		return $relations;
     }
 
@@ -159,7 +167,7 @@ abstract class X2Model extends CActiveRecord {
 		}
 
 		if(count($numbers)) // if there are any phone fields, clear out any pre-existing entries in x2_phone_numbers
-			CActiveRecord::model('PhoneNumber')->deleteAllByAttributes(array('modelId' => $this->id, 'modelType' => get_class($this)));
+			X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId' => $this->id, 'modelType' => get_class($this)));
 
 		foreach($numbers as $field => $number) { // create new entries in x2_phone_numbers
 			if($number !== '') {
@@ -294,7 +302,7 @@ abstract class X2Model extends CActiveRecord {
 			foreach($segs as $seg) {
 			$relations = $model->getMetaData()->relations;
 			if(isset($relations[$seg]))
-				$model = CActiveRecord::model($relations[$seg]->className);
+				$model = X2Model::model($relations[$seg]->className);
 			else
 				break;
 			}
@@ -458,7 +466,7 @@ abstract class X2Model extends CActiveRecord {
 				if(!empty($this->$fieldName) && is_numeric($this->$fieldName)) {
 					$className = ucfirst($field->linkType);
 					if(class_exists($className))
-						$linkModel = CActiveRecord::model($className)->findByPk($this->$fieldName);
+						$linkModel = X2Model::model($className)->findByPk($this->$fieldName);
 					if(isset($linkModel))
 						return $makeLinks ? $linkModel->createLink() : $linkModel->name;
 					else
@@ -583,7 +591,7 @@ abstract class X2Model extends CActiveRecord {
 				if(class_exists($field->linkType)) {
 					// if the field is an ID, look up the actual name
 					if(isset($this->$fieldName) && ctype_digit($this->$fieldName)) {
-						$linkModel = CActiveRecord::model($field->linkType)->findByPk($this->$fieldName);
+						$linkModel = X2Model::model($field->linkType)->findByPk($this->$fieldName);
 						if(isset($linkModel)) {
 							$this->$fieldName = $linkModel->name;
 							$linkId = $linkModel->id;
@@ -591,7 +599,7 @@ abstract class X2Model extends CActiveRecord {
 							$this->$fieldName = '';
 						}
 					}
-					$staticLinkModel = CActiveRecord::model($field->linkType);
+					$staticLinkModel = X2Model::model($field->linkType);
 
 					if(array_key_exists('X2LinkableBehavior',$staticLinkModel->behaviors()))
 						$linkSource = Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource);
@@ -834,18 +842,18 @@ abstract class X2Model extends CActiveRecord {
 
 				if(!empty($value)) {
 					$linkId = isset($data[$fieldName . '_id'])? $data[$fieldName . '_id'] : false;
-					$linkModel = CActiveRecord::model($modelType)->findByPk($linkId);
+					$linkModel = X2Model::model($modelType)->findByPk($linkId);
 					// if the ID is sent, try to load the model
 					if(ctype_digit($linkId) && isset($linkModel) && $linkModel->name === $value) {		// if the model exists, make sure the name matches 
                         $value = $linkId;					// and use the ID as the field value if it does
 					} else {
-                        $linkModel = CActiveRecord::model($modelType)->findByAttributes(array('name'=>$value));
+                        $linkModel = X2Model::model($modelType)->findByAttributes(array('name'=>$value));
 						// otherwise, if the field is a string, try to find the ID based on the name
 						if(isset($linkModel)) {	// look in name field
 							$value = $linkModel->id;
 						} elseif($modelType === 'Contacts') {	// if it's a contact, we can also try firstName + lastName
 							$fullName = explode(' ', $value);
-							if(count($fullName) === 2 && $linkModel = CActiveRecord::model('Contacts')->findByAttributes(array(
+							if(count($fullName) === 2 && $linkModel = X2Model::model('Contacts')->findByAttributes(array(
 								'firstName'=>$fullName[0],
 								'lastName'=>$fullName[1])))
 								$value = $linkModel->id;
@@ -953,7 +961,7 @@ abstract class X2Model extends CActiveRecord {
 	 * @return mixed The model object
 	 */
 /* 	public static function load($modelName,$id) {
-		$model = CActiveRecord::model($modelName)->findByPk($id);
+		$model = X2Model::model($modelName)->findByPk($id);
 		if($model === null)
 			throw new CHttpException(404, Yii::t('app', 'Sorry, this record doesn\'t seem to exist.'));
 

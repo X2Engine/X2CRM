@@ -39,7 +39,7 @@
  ********************************************************************************/
 echo Yii::t('admin','Utilities');
 ?>
-<h2><?php echo Yii::t('admin','Error Logs'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Error Logs'); ?></h2></div>
 
 <?php
 Yii::getLogger()->getLogs('','translations');

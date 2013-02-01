@@ -71,8 +71,8 @@ $this->actionMenu = $this->formatMenu(array(
 			'name'=>'name',
                         'header'=>Yii::t("contacts",'Record'),
 			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
-                            (!is_null(CActiveRecord::model($data->secondType)->findByPk($data->secondId))?CHtml::link(CActiveRecord::model($data->secondType)->findByPk($data->secondId)->name,array("/".strtolower($data->secondType)."/".strtolower($data->secondType)."/view/id/".$data->secondId)):"Record not found."):
-                            (!is_null(CActiveRecord::model($data->firstType)->findByPk($data->firstId))?CHtml::link(CActiveRecord::model($data->firstType)->findByPk($data->firstId)->name,array("/".strtolower($data->firstType)."/".strtolower($data->firstType)."/view/id/".$data->firstId)):"Record not found.")',
+                            (!is_null(X2Model::model($data->secondType)->findByPk($data->secondId))?CHtml::link(X2Model::model($data->secondType)->findByPk($data->secondId)->name,array("/".strtolower($data->secondType)."/".strtolower($data->secondType)."/view/id/".$data->secondId)):"Record not found."):
+                            (!is_null(X2Model::model($data->firstType)->findByPk($data->firstId))?CHtml::link(X2Model::model($data->firstType)->findByPk($data->firstId)->name,array("/".strtolower($data->firstType)."/".strtolower($data->firstType)."/view/id/".$data->firstId)):"Record not found.")',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),

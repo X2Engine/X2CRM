@@ -48,7 +48,5 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('app','Create')),
 ));
 ?>
-
-<h2><?php echo Yii::t('workflow','Create Workflow'); ?></h2>
-
+<div class="page-title"><h2><?php echo Yii::t('workflow','Create Workflow'); ?></h2></div>
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

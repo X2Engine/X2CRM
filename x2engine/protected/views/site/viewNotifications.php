@@ -38,20 +38,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 
-
-
-// $this->widget('')
-echo CHtml::link(Yii::t('app','Clear All'),'#',array(
-	'class'=>'x2-button right',
-	'submit'=>array('/notifications/deleteAll'),
-	'confirm'=>Yii::t('app','Permanently delete all notifications?'
-)));
-
-
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'dataProvider'=>$dataProvider,
+	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Notifications').'</h2>'
+		.CHtml::link(Yii::t('app','Clear All'),'#',array(
+			'class'=>'x2-button right',
+			'submit'=>array('/notifications/deleteAll'),
+			'confirm'=>Yii::t('app','Permanently delete all notifications?'
+		)))
+		.'<div class="title-bar right">{summary}</div></div>{items}{pager}',
 	'columns'=>array(
 		array(
 			// 'name'=>'text',

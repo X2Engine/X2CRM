@@ -62,21 +62,29 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="120.16826"
-     inkscape:cy="273.62804"
+     inkscape:zoom="5.6568543"
+     inkscape:cx="390.84779"
+     inkscape:cy="368.91206"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="false"
+     showgrid="true"
      inkscape:window-width="1232"
      inkscape:window-height="785"
-     inkscape:window-x="199"
-     inkscape:window-y="142"
+     inkscape:window-x="186"
+     inkscape:window-y="55"
      inkscape:window-maximized="0"
-     inkscape:snap-grids="true">
+     inkscape:snap-grids="true"
+     inkscape:snap-global="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-to-guides="true"
+     inkscape:object-paths="true">
     <inkscape:grid
        type="xygrid"
-       id="grid3790" />
+       id="grid3790"
+       empspacing="4"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -356,5 +364,111 @@
        inkscape:export-xdpi="88.831116"
        inkscape:export-ydpi="88.831116"
        style="stroke:#ef6c3e;stroke-opacity:1;fill:none;fill-opacity:1" />
+    <image
+       y="712.36218"
+       x="375"
+       id="image3285"
+       xlink:href="data:image/png;base64,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 "
+       height="34"
+       width="75" />
+    <rect
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       id="rect3292"
+       width="24"
+       height="18"
+       x="331.91162"
+       y="-742.36218"
+       transform="scale(1,-1)"
+       ry="2.4000001" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 331.91161,727.34656 9,6.01562 3,1.99665 3,-1.99665 9,-6.01562 m 0,12.03125 -9,-6.01563 -3,2.00521 -3,-2.00521 -9,6.01563"
+       id="path4065"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccc" />
+    <path
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       d="m 334.40625,696.36218 c -1.22548,0 -2.22507,0.91027 -2.375,2.09375 l 0.375,0.25 8.875,5.96875 a 0.750075,0.750075 0 0 1 0.125,0.0625 l 2.59375,1.71875 2.5625,-1.71875 0.125,-0.0625 8.875,-5.96875 0.40625,-0.25 c -0.14921,-1.18428 -1.14896,-2.09375 -2.375,-2.09375 l -19.1875,0 z m -2.40625,3.875 0,10.21875 7.625,-5.09375 -7.625,-5.125 z m 24,0 -7.65625,5.125 7.65625,5.09375 0,-10.21875 z m -15,6.03125 -8.59375,5.71875 -0.375,0.28125 c 0.14993,1.18348 1.14952,2.09375 2.375,2.09375 l 19.1875,0 c 1.22604,0 2.22579,-0.90947 2.375,-2.09375 l -0.40625,-0.28125 -8.5625,-5.71875 -2.59375,1.71875 a 0.750075,0.750075 0 0 1 -0.125,0.0625 0.750075,0.750075 0 0 1 -0.0625,0.0312 0.750075,0.750075 0 0 1 -0.15625,0.0312 0.750075,0.750075 0 0 1 -0.0625,0 0.750075,0.750075 0 0 1 -0.0625,0 0.750075,0.750075 0 0 1 -0.15625,-0.0312 0.750075,0.750075 0 0 1 -0.0625,-0.0312 0.750075,0.750075 0 0 1 -0.0625,-0.0312 0.750075,0.750075 0 0 1 -0.0312,0 0.750075,0.750075 0 0 1 -0.0625,-0.0312 l -2.5625,-1.71875 z"
+       id="rect3292-1"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\email-button.png"
+       inkscape:export-xdpi="88"
+       inkscape:export-ydpi="88" />
+    <rect
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       id="rect3292-9"
+       width="26"
+       height="18"
+       x="332"
+       y="-690.36218"
+       ry="2.4000001"
+       transform="scale(1,-1)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.07249045;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 332.03624,675.38281 9.72282,5.97937 3.24094,1.98462 3.24093,-1.98462 9.72282,-5.97937 m 0,11.95875 -9.72282,-5.97938 -3.24093,1.99313 -3.24094,-1.99313 -9.72282,5.97938"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccc"
+       id="path3274" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       d="m 334.40625,650.36218 c -1.12961,0 -2.05452,0.76473 -2.3125,1.8125 l 0.5,0.3125 9.53125,5.875 0.1875,0.0937 2.6875,1.65625 2.6875,-1.65625 0.1875,-0.0937 9.53125,-5.875 0.5,-0.3125 c -0.25798,-1.04777 -1.18289,-1.8125 -2.3125,-1.8125 l -21.1875,0 z m -2.40625,4.1875 0,9.59375 7.78125,-4.78125 L 332,654.54968 z m 26,0 -7.78125,4.8125 7.78125,4.78125 0,-9.59375 z m -16.25,6.03125 -9.15625,5.625 -0.5,0.3125 c 0.25798,1.04777 1.18289,1.84375 2.3125,1.84375 l 21.1875,0 c 1.12961,0 2.05452,-0.79598 2.3125,-1.84375 l -0.5,-0.3125 -9.15625,-5.625 -0.0312,0 -2.6875,1.65625 a 1.0363489,1.0363489 0 0 1 -0.0937,0.0312 1.0363489,1.0363489 0 0 1 -0.28125,0.0937 1.0363489,1.0363489 0 0 1 -0.0937,0 1.0363489,1.0363489 0 0 1 -0.125,0 1.0363489,1.0363489 0 0 1 -0.1875,-0.0312 1.0363489,1.0363489 0 0 1 -0.1875,-0.0625 1.0363489,1.0363489 0 0 1 -0.0937,-0.0312 l -2.6875,-1.65625 -0.0312,0 z"
+       id="rect3292-9-8"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\email-button2.png"
+       inkscape:export-xdpi="88"
+       inkscape:export-ydpi="88" />
+    <rect
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       id="rect3292-9-1"
+       width="26"
+       height="18"
+       x="372"
+       y="-690.36218"
+       ry="2.4000001"
+       transform="scale(1,-1)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 372.10693,675.38282 9.72282,5.97937 3.24094,1.98462 3.24093,-1.98462 9.72282,-5.97937"
+       id="path3085"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 405.64137,690.21656 -15.42802,-10.35438 m -10.28533,0 c -5.14267,3.45146 -10.28535,6.90292 -15.42802,10.35438"
+       id="path3274-7"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       d="m 374.40625,648.36218 c -1.12961,0 -2.05452,0.76473 -2.3125,1.8125 l 0.53125,0.34375 9.71875,5.96875 2.71875,1.6875 2.71875,-1.6875 9.71875,-5.96875 0.4375,-0.25 c -0.22306,-1.09561 -1.18035,-1.90625 -2.34375,-1.90625 l -21.1875,0 z m -2.40625,4.125 0,7.46875 5.8125,-3.90625 -5.8125,-3.5625 z m 26,0.0937 -5.65625,3.46875 5.65625,3.8125 0,-7.28125 z m -18.3125,4.625 -7.6875,5.1875 0,1.5625 c 0,1.3296 1.07665,2.40625 2.40625,2.40625 l 21.1875,0 c 1.3296,0 2.40625,-1.07665 2.40625,-2.40625 l 0,-1.6875 -7.53125,-5.0625 -1.625,1 -3.25,1.96875 a 1.0001,1.0001 0 0 1 -1.03125,0 l -3.25,-1.96875 -1.625,-1 z"
+       id="rect3292-9-1-0" />
+    <rect
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       id="rect3292-9-1-7"
+       width="26"
+       height="18"
+       x="416"
+       y="-690.36218"
+       ry="2.4000001"
+       transform="scale(1,-1)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 416.10693,676.38282 9.72282,5.97937 3.24094,1.98462 3.24093,-1.98462 9.72282,-5.97937"
+       id="path3085"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 449.64137,691.21656 -15.42802,-10.35438 m -10.28533,0 c -5.14267,3.45146 -10.28535,6.90292 -15.42802,10.35438"
+       id="path3274-7"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       d="m 418.40625,648.36218 c -1.3296,0 -2.40625,1.0454 -2.40625,2.375 l 0,0.375 0.625,0.40625 9.71875,5.96875 2.71875,1.6875 2.71875,-1.6875 9.71875,-5.96875 0.5,-0.3125 0,-0.46875 c 0,-1.3296 -1.07665,-2.375 -2.40625,-2.375 l -21.1875,0 z m -2.40625,5.125 0,7.46875 5.8125,-3.90625 -5.8125,-3.5625 z m 26,0.0937 -5.65625,3.46875 5.65625,3.8125 0,-7.28125 z m -18.3125,4.625 -7.6875,5.1875 0,0.5625 c 0,1.3296 1.07665,2.40625 2.40625,2.40625 l 21.1875,0 c 1.3296,0 2.40625,-1.07665 2.40625,-2.40625 l 0,-0.6875 -7.53125,-5.0625 -1.625,1 -3.25,1.96875 a 1.0001,1.0001 0 0 1 -1.03125,0 l -3.25,-1.96875 -1.625,-1 z"
+       id="rect3292-9-1-1"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\email-button.png"
+       inkscape:export-xdpi="88"
+       inkscape:export-ydpi="88" />
   </g>
 </svg>

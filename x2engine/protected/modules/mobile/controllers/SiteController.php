@@ -294,7 +294,7 @@ class SiteController extends MobileController {
 				else
 					$sessionId = $_SESSION['sessionId'] = session_id();
 					
-				$session = CActiveRecord::model('Session')->findByPk($sessionId);
+				$session = X2Model::model('Session')->findByPk($sessionId);
 				
 				// if this client has already tried to log in, increment their attempt count
 				if($session === null) {

@@ -50,10 +50,10 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <h2><?php echo Yii::t('contacts','Import Contacts from Outlook'); ?></h2>
 <?php echo Yii::t('contacts','To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'); ?>
-<br /><br />
+<br><br>
 
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <?php echo CHtml::form('importContacts','post',array('enctype'=>'multipart/form-data')); ?>
-<?php echo CHtml::fileField('contacts', '', array('id'=>'contacts')); ?> <br /><br />
+<?php echo CHtml::fileField('contacts', '', array('id'=>'contacts')); ?> <br><br>
 <?php echo CHtml::submitButton(Yii::t('app','Submit')); ?> 
 <?php echo CHtml::endForm(); ?> 

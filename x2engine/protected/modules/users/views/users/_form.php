@@ -76,7 +76,7 @@ $(document).ready(function() {
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'lastName'); ?>
-		<?php echo $form->textField($model,'lastName',array('size'=>40,'maxlength'=>40)); ?>
+		<?php echo $form->textField($model,'lastName',array('size'=>20,'maxlength'=>40)); ?>
 		<?php echo $form->error($model,'lastName'); ?>
 	</div>
 
@@ -92,6 +92,12 @@ $(document).ready(function() {
 		<?php echo $form->labelEx($model,'password'); ?>
 		<?php echo $form->passwordField($model,'password',array('size'=>20,'maxlength'=>20)); ?>
 		<?php echo $form->error($model,'password'); ?>
+	</div>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model,'userKey'); ?>
+		<?php echo $form->textField($model,'userKey',array('size'=>20,'maxlength'=>30)); ?>
+		<?php echo $form->error($model,'userKey'); ?>
 	</div>
 
 	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
@@ -130,7 +136,7 @@ $(document).ready(function() {
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'address'); ?>
-		<?php echo $form->textField($model,'address',array('size'=>60,'maxlength'=>100)); ?>
+		<?php echo $form->textField($model,'address',array('size'=>20,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'address'); ?>
 	</div>
 
@@ -144,7 +150,7 @@ $(document).ready(function() {
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'emailAddress'); ?>
-		<?php echo $form->textField($model,'emailAddress',array('size'=>40,'maxlength'=>40,'disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
+		<?php echo $form->textField($model,'emailAddress',array('size'=>20,'maxlength'=>40,'disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
 		<?php echo $form->error($model,'emailAddress'); ?>
 	</div>
 

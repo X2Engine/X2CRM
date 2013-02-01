@@ -186,7 +186,7 @@ class Accounts extends X2Model {
 		
 		foreach($arr as $id){
 			if($id!='')
-				$data[]=CActiveRecord::model('Contacts')->findByPk($id);
+				$data[]=X2Model::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
 		
@@ -205,7 +205,7 @@ class Accounts extends X2Model {
 		$criteria->addCondition(array("accountId=''"),'OR');
 		
 		
-		$contactRecords = CActiveRecord::model('Contacts')->findAll($criteria);
+		$contactRecords = X2Model::model('Contacts')->findAll($criteria);
 		foreach($contactRecords as $record)
 			$availableContacts[$record->id] = $record->name;
 
@@ -215,7 +215,7 @@ class Accounts extends X2Model {
 	
 	public static function getContacts($accountId) {
 		$contacts = array();
-		$contactRecords = CActiveRecord::model('Contacts')->findAllByAttributes(array('accountId'=>$accountId));
+		$contactRecords = X2Model::model('Contacts')->findAllByAttributes(array('accountId'=>$accountId));
 		if(!isset($contactRecords))
 			return array();
 		
@@ -227,13 +227,13 @@ class Accounts extends X2Model {
 	
 	public static function setContacts($contactIds,$accountId) {
 	
-		$account = CActiveRecord::model('Accounts')->findByPk($accountId);
+		$account = X2Model::model('Accounts')->findByPk($accountId);
 		
 		if(!isset($account))
 			return false;
 		
 		// get all contacts currently associated
-		$oldContacts = CActiveRecord::model('Contacts')->findAllByAttributes(array('accountId'=>$accountId));
+		$oldContacts = X2Model::model('Contacts')->findAllByAttributes(array('accountId'=>$accountId));
 		foreach($oldContacts as $contact) {
 			if(!in_array($contact->id,$contactIds)) {
 				$contact->accountId = 0;
@@ -244,7 +244,7 @@ class Accounts extends X2Model {
 		
 		// now set association for all contacts in the list
 		foreach($contactIds as $id) {
-			$contactRecord = CActiveRecord::model('Contacts')->findByPk($id);
+			$contactRecord = X2Model::model('Contacts')->findByPk($id);
 			$contactRecord->accountId = $account->id;
 			$contactRecord->company = $account->name;
 			$contactRecord->save();

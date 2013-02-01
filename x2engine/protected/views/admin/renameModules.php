@@ -38,13 +38,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h2><?php echo Yii::t('admin','Rename A Module'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Rename A Module'); ?></h2></div>
+<div class="form">
 <?php echo Yii::t('admin','You can rename a module by selecting a module and typing the new name below.'); ?>
-<br /><br />
+<br><br>
 
-<h3><?php echo Yii::t('admin','Rename A Module'); ?></h3>
+<h2><?php echo Yii::t('admin','Rename A Module'); ?></h2>
 <?php echo CHtml::form('renameModules','post',array('enctype'=>'multipart/form-data')); ?>
-<?php echo CHtml::dropDownList('module', '', $modules); ?> <br /><br />
+<?php echo CHtml::dropDownList('module', '', $modules); ?> <br><br>
 <?php echo CHtml::textField('name'); ?>
 <?php echo CHtml::submitButton(Yii::t('app','Submit')); ?> 
-<?php echo CHtml::endForm(); ?> 
+<?php echo CHtml::endForm(); ?> </div>

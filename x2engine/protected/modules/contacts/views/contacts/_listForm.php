@@ -74,7 +74,7 @@ foreach($itemModel->getFields() as $field) {
 			$fieldOptions[$field->fieldName] = User::getNames() + Groups::getNames();
 			break;
 		case 'link':
-			$fieldOptions[$field->fieldName] = Yii::app()->request->scriptUrl. CActiveRecord::model($field->linkType)->autoCompleteSource;
+			$fieldOptions[$field->fieldName] = Yii::app()->request->scriptUrl. X2Model::model($field->linkType)->autoCompleteSource;
 			break;
 	}
 }
@@ -104,7 +104,7 @@ foreach ($criteriaModels as $criterion) {
 	$attr = $criterion->getAttributes();
 	//for any link types, look up the name belonging to the id
 	if (isset($fieldTypes[$attr['attribute']]) && $fieldTypes[$attr['attribute']] == 'link') {
-		$record = CActiveRecord::model(ucfirst($fieldLinkTypes[$attr['attribute']]))->findByPk($attr['value']);
+		$record = X2Model::model(ucfirst($fieldLinkTypes[$attr['attribute']]))->findByPk($attr['value']);
 		if (isset($record) && isset($record->name)) $attr['name'] = $record->name;
 	}
 	$criteriaAttr[] = $attr;

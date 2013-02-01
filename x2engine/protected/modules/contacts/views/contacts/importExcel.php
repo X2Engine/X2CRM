@@ -48,28 +48,42 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<h2><?php echo Yii::t('contacts','Import Contacts from Template'); ?></h2>
-<div id="info-box" style="width:600px;" class="form">
+<div class="page-title"><h2><?php echo Yii::t('contacts','Import Contacts from Template'); ?></h2></div>
+<div class="form">
+<div id="info-box" style="width:600px;">
 <?php echo Yii::t('contacts','To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'); ?>
-<br /><br />
+<br><br>
 <?php echo Yii::t('contacts','The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'); ?>
-<br /><br />
+<br><br>
 <?php echo Yii::t('contacts','If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'); ?>
 
-<br /><br /><?php echo Yii::t('contacts','Example');?> <a href="#" id="example-link">[+]</a>
+<br><br><?php echo Yii::t('contacts','Example');?> <a href="#" id="example-link">[+]</a>
 <div id="example-box" style="display:none;"><img src="<?php echo Yii::app()->getBaseUrl()."/images/examplecsv.png" ?>"/></div>
-<br /><br />
+<br><br>
 </div>
-<h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <div class="form" style="width:600px;">
-<?php echo CHtml::form('importExcel','post',array('enctype'=>'multipart/form-data')); ?>
-<?php echo CHtml::fileField('contacts', '', array('id'=>'contacts')); ?> <br /><br />
+<h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
+<?php echo CHtml::form('importExcel','post',array('enctype'=>'multipart/form-data','id'=>'importExcel')); ?>
+<?php echo CHtml::fileField('contacts', '', array('id'=>'contacts')); ?> <br>
+<i><?php echo Yii::t('app','Allowed filetypes: .csv'); ?> </i>
+<br><br>
 <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?> 
 <?php echo CHtml::endForm(); ?> 
+</div>
 </div>
 <script>
     $('#example-link').click(function(){
        $('#example-box').toggle(); 
+    });
+    $(document).on('submit','#importExcel',function(){
+        var fileName=$("#contacts").val();
+        var pieces=fileName.split('.');
+        var ext=pieces[pieces.length-1];
+        if(ext!='csv'){
+            $("#contacts").val("");
+            alert("File must be a .csv file.");
+            return false;
+        }
     });
 </script>
     

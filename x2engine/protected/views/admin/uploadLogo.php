@@ -38,12 +38,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
 ?>
-<h2><?php echo Yii::t('admin','Upload Your Logo'); ?></h2>
+<div class="page-title"><h2><?php echo Yii::t('admin','Upload Your Logo'); ?></h2></div>
+<div class="form">
 <?php echo Yii::t('admin','To upload your logo for display next to the search bar, please  upload the file here using the form below.'); ?>
-<br /><br />
-
+<br><br>
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <?php echo CHtml::form('uploadLogo','post',array('enctype'=>'multipart/form-data')); ?>
-<?php echo CHtml::fileField('logo-upload', ''); ?> <br /><br />
-<?php echo CHtml::submitButton(Yii::t('app','Submit')); ?> 
+<?php echo CHtml::fileField('logo-upload', ''); ?><br><br>
+<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?> 
 <?php echo CHtml::endForm(); ?> 
+</div>

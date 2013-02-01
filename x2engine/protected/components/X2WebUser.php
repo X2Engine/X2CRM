@@ -68,7 +68,7 @@ class X2WebUser extends CWebUser{
 				break;
 		}
 
-		// $test = CActiveRecord::model('Contacts')->findAllByAttributes(array('company'=>2));
+		// $test = X2Model::model('Contacts')->findAllByAttributes(array('company'=>2));
 		// $GLOBALS['accessCount'] = isset($GLOBALS['accessCount'])? $GLOBALS['accessCount']+1 : 1;
 
 		// $roles=RoleToUser::model()->findAllByAttributes(array('userId'=>$this->getId()));

@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'עברית',
-// // Login
+// // // Login
 'Please log in to continue:'=>'נא להתחבר כדי להמשיך:',
 'Username'=>'שם משתמש',
 'Password'=>'סיסמה',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'.{appName}ברוכים הבאים ל',
 'Verification Code'=>'קוד אימות',
 'Login with Google'=>'כניסה עם גוגל',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'לוח שנה',
 'Actions'=>'פעולות',
 'Contacts'=>'אנשי קשר',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'שרות',
 'Go Invisible'=>'עבור הבלתי נראית',
 'Go Visible'=>'עבור גלוי',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'X2Engine קשרי לקוחות קבוצת התוכנה',
 'Go'=>'ללכת',
 'Contact'=>'ליצור קשר',
 'Action'=>'פעולה',
 'Contact + Action'=>'צור פעולה',
 'Search for contact, action, deal...'=>'חיפוש, מגע פעולה וכו \', מציאה',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'כל הזכויות שמורות.',
 'Generated in {time} seconds.'=>'שנוצר בתוך שניות {זמן ההמתנה',
 'About'=>'על',
 'The Program is provided AS IS, without warranty.'=>'התכנית מסופקת AS IS, ללא אחריות.',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'פעולות שלי',
 'Twitter Feed'=>'רשימת בטוויטר',
 'Quick Contact'=>'יצירת קשר מהיר',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'כלי תקשורת',
 'Current time in'=>'בזמן נוכחי',
 'Hide'=>'להסתיר',
-// // 
+// // // 
 'Total Action|Total Actions'=>'סה"כ פעולה | פעולות סך הכל',
 'Unfinished Action|Unfinished Actions'=>'פעולה לא גמור | פעולות שלא נשלמו',
 'Overdue Action|Overdue Actions'=>'פעולה איחור | פעולות איחור',
 'Completed Action|Completed Actions'=>'פעולה השלים | פעולות שהושלמו',
-// // 
+// // // 
 'Message Board'=>'פורום',
 'Please enter a message of the day!'=>'אנא הכנס מסר של היום!',
 'Edit Message'=>'ערוך הודעה',
-// // 
+// // // 
 'Note Pad'=>'פנקס רשימות',
 'Feel free to enter some notes!'=>'אתה מוזמן להיכנס כמה הערות!',
-// // 
+// // // 
 'Top Contacts'=>'אנשי הקשר הפופולריים ביותר',
 'Add {name}'=>'{name} הוסף',
-// // 
+// // // 
 'Enter Title'=>'הזן כותרת',
 'Title'=>'כותרת',
 'Title:'=>'כותרת:',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'קישור:',
 'Add Site'=>'הוסף אתר',
 'Example'=>'דוגמה',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'הודעה גוף',
 'Enter text here...'=>'הזן את הטקסט כאן ...',
 'Send'=>'לשלוח',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'עד:',
 'Subject:'=>'נושא ההודעה:',
 'Message:'=>'הודעה:',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'מייל נשלח!',
 'Preview'=>'תצוגה מקדימה',
 'Attachments'=>'קבצים מצורפים',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'הוסף תגובה',
 'Create Action'=>'יצירת פעולה',
 'Add a comment...'=>'הוסף ביקורת ...',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'מחר',
 'Comments'=>'תגובות',
 'Post'=>'להציב',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'חיפוש מתקדם',
 'Clear Filters'=>'ניקוי מסננים',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'ייתכן לחלופין להיכנס אופרטור השוואה (<b> << / b>, <b> <= </ b>, <b>> </ b>, <b>> = </ b>, <b> <> </ b> או <b> = </ b>) בתחילת כל ערכי החיפוש שלך כדי לציין כיצד יש לעשות השוואה.',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'הקלט לא נמצא.',
 'Saving...'=>'שומר ...',
 'Module'=>'מודול',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'בטל מסננים',
+'Check Filters'=>'בדקו מסננים',
+'Show/Hide All Comments'=>'צג / סתר כל התגובות',
+'{n} rows'=>'שורות {n}',
+// // // 
+// // // Misc Actions
 'Submit'=>'להגיש',
 'Save'=>'להציל',
 'Cancel'=>'לבטל',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'רשימה חדשה',
 'Add'=>'להוסיף',
 'Remove'=>'להסיר',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'זה עתה',
 '{n} minutes ago'=>'{n} דקות',
 '{n} hours ago'=>'שעתי {n} לפני',
 '{n} days ago'=>'{n} ימים לפני',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'שגיאה ביצירת לב!',
 'Invalid request. Please do not repeat this request again.'=>'בקשה לא חוקי. נא לא לחזור על בקשה זו שוב.',
 'The requested page does not exist.'=>'הדף המבוקש לא קיים.',
 'Please fix the following errors:'=>':אנא תקן את השגיאות הבאות',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'כלי לניהול',
 'Welcome to the administration tool set.'=>'ברוכים באים לסט כלי הניהול.',
 'Links'=>'קישורים',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'שלח המוני בדואר אלקטרוני',
 'How to use Gii'=>'כיצד להשתמש Gii',
 'How to add a database field'=>'כיצד להוסיף שדה במסד נתונים',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'עדכון פעילות',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'ראות',
 'Relevant Users'=>'משתמשים רלוונטיים',
 'Event Types'=>'סוגי אירועים',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'אפשרויות',
 'Set Default'=>'הגדרת ברירת מחדל',
 'Apply Filters'=>'החל מסננים',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'הודעת חברה',
 'Announcement'=>'הכרזה',
 'Product Info'=>'מידע על מוצר',
 'Competitive Info'=>'מידע תחרותי',
 'Confidential'=>'סודי',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'הודעות חברתיות',
 'Records Created'=>'רשומות שנוצרו',
 'Records Deleted'=>'רשומים שנמחק',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'זרימת עבודה מלאה',
 'Workflow Reverted'=>'זרימת העבודה שוחזרה',
 'Workflow Started'=>'זרימת העבודה',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'נוצר {actionLink} חדש קשור בקשר {contactLink}',
 'created a new {modelName}, {modelLink}'=>'נוצר חדש {modelName}, {modelLink} ',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'נוצר {modelName}  חדש, {deletionText}. זה נמחק.',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'פעולה נובעת עכשיו, אבל השיא לא נמצא.',
 'completed the following action: {actionDescription}'=>'השלים את הפעולה הבאה: {actionDescription}',
 'completed an action, but the record could not be found.'=>'השלים פעולה, אבל השיא לא נמצא.',
-// // Model Names
+// // // Model Names
 'action'=>'פעולה',
 'contact'=>'ליצור קשר עם',
 'account'=>'חשבון',
 'opportunity'=>'הזדמנות',
 'marketing campaign'=>'קמפיין שיווק',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'מזער הודעות',
 'Restore Posts'=>'שחזור הודעות',
 'My Groups'=>'הקבוצות שלי',

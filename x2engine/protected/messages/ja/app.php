@@ -39,9 +39,9 @@
  ********************************************************************************/
 
 return array (
-// // Language Name
+// // // Language Name
 'languageName'=>'日本語',
-// // Login
+// // // Login
 'Please log in to continue:'=>'続行するにはログインしてください。',
 'Username'=>'ユーザ名',
 'Password'=>'パスワード',
@@ -50,8 +50,8 @@ return array (
 'Welcome to {appName}.'=>'へようこそ{appName}。',
 'Verification Code'=>'認証コード',
 'Login with Google'=>'Googleにログイン',
-// // 
-// // Main Menu
+// // // 
+// // // Main Menu
 'Calendar'=>'カレンダ',
 'Actions'=>'アクション',
 'Contacts'=>'コンタクト',
@@ -87,22 +87,22 @@ return array (
 'Service'=>'サービス',
 'Go Invisible'=>'インビジブル行く',
 'Go Visible'=>'可視行く',
-// // 
-// // Search Bar
+// // // 
+// // // Search Bar
 'X2Engine CRM Groupware'=>'グループウェアのシーアールエムのX2Engine',
 'Go'=>'検索',
 'Contact'=>'コンタクト',
 'Action'=>'アクション',
 'Contact + Action'=>'コンタクト+アクション',
 'Search for contact, action, deal...'=>'コンタクト、アクション、取引のための検索...',
-// // 
-// // Footer
+// // // 
+// // // Footer
 'All Rights Reserved.'=>'すべての内容は著作権を有します。',
 'Generated in {time} seconds.'=>'{time}秒で生成',
 'About'=>'約',
 'The Program is provided AS IS, without warranty.'=>'プログラムは、保証なしで、提供されるものです。',
-// // 
-// // Widgets
+// // // 
+// // // Widgets
 'My Actions'=>'私のアクション',
 'Twitter Feed'=>'Twitterのフィード',
 'Quick Contact'=>'クイックコンタクト',
@@ -118,22 +118,22 @@ return array (
 'Media'=>'メディア',
 'Current time in'=>'の現在の時刻',
 'Hide'=>'隠す',
-// // 
+// // // 
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
 'Overdue Action|Overdue Actions'=>'延滞アクション|期限超過アクション',
 'Completed Action|Completed Actions'=>'完了したアクション|完了したアクション',
-// // 
+// // // 
 'Message Board'=>'メッセージボード',
 'Please enter a message of the day!'=>'毎日のメッセージを入力してください！',
 'Edit Message'=>'メッセージを編集する',
-// // 
+// // // 
 'Note Pad'=>'メモ帳',
 'Feel free to enter some notes!'=>'いくつかの音符を入力して自由に感じる！',
-// // 
+// // // 
 'Top Contacts'=>'最高のコンタクト',
 'Add {name}'=>'{name}を追加する。',
-// // 
+// // // 
 'Enter Title'=>'タイトルを入力します。',
 'Title'=>'タイトル',
 'Title:'=>'タイトル：',
@@ -141,13 +141,13 @@ return array (
 'Link:'=>'リンク：',
 'Add Site'=>'サイトを追加',
 'Example'=>'例',
-// // 
-// // Chat
+// // // 
+// // // Chat
 'Message Body'=>'メッセージ本文',
 'Enter text here...'=>'ここにテキストを入力してください...',
 'Send'=>'送信',
-// // 
-// // Email Form
+// // // 
+// // // Email Form
 'To:'=>'へ：',
 'Subject:'=>'件名：',
 'Message:'=>'メッセージ：',
@@ -155,8 +155,8 @@ return array (
 'Email Sent!'=>'メールを送信しました！',
 'Preview'=>'プレビュー',
 'Attachments'=>'添付ファイル',
-// // 
-// // Comments
+// // // 
+// // // Comments
 'Add Comment'=>'コメントを追加',
 'Create Action'=>'アクションを作る。',
 'Add a comment...'=>'コメントを追加...',
@@ -165,8 +165,8 @@ return array (
 'Tomorrow'=>'明日',
 'Comments'=>'コメント',
 'Post'=>'投稿',
-// // 
-// // Misc
+// // // 
+// // // Misc
 'Advanced Search'=>'高度な検索',
 'Clear Filters'=>'フィルタをクリア',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'必要に応じて、比較が行われる方法を指定する検索値のそれぞれの先頭に比較演算子（<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>, <b>=</b>）を入力することができます。',
@@ -248,8 +248,12 @@ return array (
 'Record not found.'=>'記録が見つかりません。',
 'Saving...'=>'省エネ...',
 'Module'=>'モジュール',
-// // 
-// // Misc Actions
+'Uncheck Filters'=>'フィルタのチェックを外し',
+'Check Filters'=>'フィルタのチェック',
+'Show/Hide All Comments'=>'すべてのコメントを表示/非表示',
+'{n} rows'=>'{n}は行',
+// // // 
+// // // Misc Actions
 'Submit'=>'提出する',
 'Save'=>'貯める',
 'Cancel'=>'キャンセル',
@@ -272,20 +276,20 @@ return array (
 'New List'=>'新規リスト',
 'Add'=>'加える',
 'Remove'=>'削除する',
-// // 
-// // Timestamps
+// // // 
+// // // Timestamps
 'Just now'=>'たった今',
 '{n} minutes ago'=>'{n}分前',
 '{n} hours ago'=>'{n}時間前',
 '{n} days ago'=>'{n}日前',
-// // 
-// // Errors
+// // // 
+// // // Errors
 'Error creating note!'=>'エラーがノートを作成！',
 'Invalid request. Please do not repeat this request again.'=>'無効な要求です。再びこの要求を繰り返してはいけない。',
 'The requested page does not exist.'=>'要求されたページは存在しません。',
 'Please fix the following errors:'=>'次のエラーを修正してください：',
-// // 
-// // Admin Page
+// // // 
+// // // Admin Page
 'Administration Tools'=>'管理ツール',
 'Welcome to the administration tool set.'=>'管理ツールセットへようこそ。',
 'Links'=>'リンクス',
@@ -294,11 +298,11 @@ return array (
 'Send Mass E-mail'=>'大量の電子メールを送信',
 'How to use Gii'=>'GIIを使用する方法',
 'How to add a database field'=>'データベースのフィールドを追加する方法',
+// // // 
+// // // Activity Feed
 // // 
-// // Activity Feed
-
 'Activity Feed'=>'アクティビティフィード',
-// // Filter Headers
+// // // Filter Headers
 'Visibility'=>'視認性',
 'Relevant Users'=>'関連したユーザー',
 'Event Types'=>'イベントの種類',
@@ -306,13 +310,13 @@ return array (
 'Options'=>'オプション',
 'Set Default'=>'デフォルトを設定',
 'Apply Filters'=>'フィルタを適用',
-// // Filter Text
+// // // Filter Text
 'Social Post'=>'ソーシャルポスト',
 'Announcement'=>'発表',
 'Product Info'=>'製品情報',
 'Competitive Info'=>'競争力のある情報',
 'Confidential'=>'秘密の',
-// // Event Types
+// // // Event Types
 'Social Posts'=>'社会的な投稿',
 'Records Created'=>'レコードが作成',
 'Records Deleted'=>'レコードが削除された',
@@ -328,7 +332,7 @@ return array (
 'Workflow Complete'=>'完全なワークフロー',
 'Workflow Reverted'=>'ワークフローは差し戻し',
 'Workflow Started'=>'ワークフローが開始',
-// // Event Text
+// // // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'連絡先に関連付けられた新しい{actionLink}を作成{contactLink}',
 'created a new {modelName}, {modelLink}'=>'新しい{modelName}、{modelLink}を作成',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'新しい{modelName}、{deletionText}を作成しました。それが削除されました。',
@@ -363,14 +367,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'アクションが原因ですが、レコードが見つかりませんでした。',
 'completed the following action: {actionDescription}'=>'{actionDescription}：次のアクションを完了',
 'completed an action, but the record could not be found.'=>'アクションを完了したが、レコードは見つかりませんでした。',
-// // Model Names
+// // // Model Names
 'action'=>'アクション',
 'contact'=>'連絡',
 'account'=>'アカウント',
 'opportunity'=>'機会',
 'marketing campaign'=>'販売キャンペーン',
-
-// // Misc. Text
+// // 
+// // // Misc. Text
 'Minimize Posts'=>'投稿を最小限に抑える',
 'Restore Posts'=>'投稿を復元',
 'My Groups'=>'私のグループ',

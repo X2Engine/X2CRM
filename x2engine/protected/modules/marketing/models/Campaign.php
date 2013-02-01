@@ -107,7 +107,7 @@ class Campaign extends X2Model {
 			foreach($segs as $seg) {
 				$relations=$model->getMetaData()->relations;
 				if(isset($relations[$seg]))
-					$model=CActiveRecord::model($relations[$seg]->className);
+					$model=X2Model::model($relations[$seg]->className);
 				else
 					break;
 			}
@@ -136,7 +136,7 @@ class Campaign extends X2Model {
 						// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		// }
 		
-		$model = CActiveRecord::model('Campaign');
+		$model = X2Model::model('Campaign');
 		return $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
 	}
 

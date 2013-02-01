@@ -37,12 +37,13 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-?><h2><?php echo Yii::t('admin','Manage Lead Routing'); ?></h2>
+?><div class="page-title"><h2><?php echo Yii::t('admin','Manage Lead Routing'); ?></h2></div>
+<div class="form">
 <?php echo Yii::t('admin','Manage routing criteria. This setting is only required if lead distribution is set to "Custom Round Robin"'); ?>
- 
+ </div>
 <?php
 $str="<select name=\"Values[field][]\">";
-foreach(CActiveRecord::model('Contacts')->attributeLabels() as $field=>$label){
+foreach(X2Model::model('Contacts')->attributeLabels() as $field=>$label){
     $str.="<option value=\"$field\">$label</option>";
 }
 $str.="</select>"; 
@@ -113,10 +114,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 ));
 ?>
 <br>
-
-<h2><?php echo Yii::t('admin','Add Criteria for Lead Routing'); ?></h2>
-<?php echo Yii::t('admin','To add a condition which will affect how leads are distributed, please fill out the form below.'); ?><br><br>
-
+<div class="page-title"><h2><?php echo Yii::t('admin','Add Criteria for Lead Routing'); ?></h2></div>
+<div class="form">
+<?php echo Yii::t('admin','To add a condition which will affect how leads are distributed, please fill out the form below.'); ?>
+</div>
 
 <div class="form">
 
@@ -131,7 +132,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         <label>Criteria</label>
         <ul>
         <li>
-            <?php echo CHtml::dropDownList('Values[field][]','',CActiveRecord::model('Contacts')->attributeLabels()); ?>
+            <?php echo CHtml::dropDownList('Values[field][]','',X2Model::model('Contacts')->attributeLabels()); ?>
             <select name="Values[comparison][]">
                     <option value="<">Less Than</option>
                     <option value=">">Greater Than</option>

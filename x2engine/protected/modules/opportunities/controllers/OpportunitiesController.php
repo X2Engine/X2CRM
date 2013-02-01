@@ -201,7 +201,7 @@ class OpportunitiesController extends x2base {
 								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
 							}else{
 								$names=explode(" ",$arr);
-								$lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+								$lookupModel=X2Model::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
 							}
 							if(isset($lookupModel))
 								$val=$lookupModel->id;
@@ -366,7 +366,7 @@ class OpportunitiesController extends x2base {
 								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
 							}else{
 								$names=explode(" ",$arr);
-								$lookupModel=CActiveRecord::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
+								$lookupModel=X2Model::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
 							}
 							if(isset($lookupModel))
 								$val=$lookupModel->id;
@@ -564,7 +564,7 @@ class OpportunitiesController extends x2base {
 			
 			
 			foreach($arr as $id=>$contact) {
-				$rel=CActiveRecord::model('Relationships')->findByAttributes(array('firstType'=>'Contacts','firstId'=>$contact,'secondType'=>'Opportunity','secondId'=>$model->id));
+				$rel=X2Model::model('Relationships')->findByAttributes(array('firstType'=>'Contacts','firstId'=>$contact,'secondType'=>'Opportunity','secondId'=>$model->id));
 				if(isset($rel))
 					$rel->delete();
 				unset($pieces[$contact]);
@@ -600,7 +600,7 @@ class OpportunitiesController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model = CActiveRecord::model('Opportunity')->findByPk((int)$id);
+		$model = X2Model::model('Opportunity')->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
 		return $model;

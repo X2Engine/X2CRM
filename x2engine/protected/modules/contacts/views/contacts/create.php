@@ -53,7 +53,9 @@ if($opportunityModule->visible && $accountModule->visible)
 $this->actionMenu = $this->formatMenu($menuItems);
 
 ?>
-<h2><?php echo Yii::t('contacts','Create Contact'); ?></h2> 
+<div class="page-title">
+	<h2><?php echo Yii::t('contacts','Create Contact'); ?></h2>
+</div>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>
 
 <?php

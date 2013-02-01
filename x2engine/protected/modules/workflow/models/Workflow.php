@@ -111,7 +111,7 @@ class Workflow extends CActiveRecord {
 	}
 
 	public static function getList() {
-		$workflows = CActiveRecord::model('Workflow')->findAll();
+		$workflows = X2Model::model('Workflow')->findAll();
 		$list = array(0=>Yii::t('app','None'));
 		foreach ($workflows as $model)
 			$list[$model->id] = $model->name;
@@ -125,7 +125,7 @@ class Workflow extends CActiveRecord {
 			'stages'=>array()
 		);
 		
-		$workflowStages = CActiveRecord::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$workflowId),new CDbCriteria(array('order'=>'id ASC')));
+		$workflowStages = X2Model::model('WorkflowStage')->findAllByAttributes(array('workflowId'=>$workflowId),new CDbCriteria(array('order'=>'id ASC')));
 		
 		// $workflowStatus[] = $workflowId;
 		foreach($workflowStages as &$stage) {	// load all WorkflowStage names into workflowStatus
@@ -140,7 +140,7 @@ class Workflow extends CActiveRecord {
 		$workflowActions = array();
 		
 		if(!empty($modelId)) {
-			$workflowActions = CActiveRecord::model('Actions')->findAllByAttributes(
+			$workflowActions = X2Model::model('Actions')->findAllByAttributes(
 				array('associationId'=>$modelId,'associationType'=>$modelType,'type'=>'workflow','workflowId'=>$workflowId),
 				new CDbCriteria(array('order'=>'createDate ASC'))
 			);
@@ -365,12 +365,12 @@ class Workflow extends CActiveRecord {
 			);
 			$width = round($startingWidth + $widthStep*$i);
 
-			$contacts = CActiveRecord::model('Actions')->countByAttributes(
+			$contacts = X2Model::model('Actions')->countByAttributes(
 				array('type'=>'workflow','workflowId'=>$workflowStatus['id'],'stageNumber'=>$i),
 				new CDbCriteria(array('condition'=>"complete != 'Yes' $userString AND (completeDate IS NULL OR completeDate = 0) AND createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']))
 			);
 			
-			// $opportunities = CActiveRecord::model('Actions')->countByAttributes(
+			// $opportunities = X2Model::model('Actions')->countByAttributes(
 				// array('type'=>'workflow','associationType'=>'opportunities','actionDescription'=>$workflowStatus['id'].':'.$i),
 				// new CDbCriteria(array('condition'=>"complete != 'Yes' OR completeDate IS NULL OR completeDate = 0"))
 			// );
