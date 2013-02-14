@@ -5,7 +5,7 @@
 * New theme and background settings
 * New manual bug reporting tool
 * Added some icons
-* Email dropbox now creates events (Pofessional edition)
+* Email dropbox now creates events (Professional edition)
 * Google Analytics integration for monitoring X2CRM usage
 
 # Introduction #
