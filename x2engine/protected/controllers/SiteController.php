@@ -73,7 +73,7 @@ class SiteController extends x2base {
 					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','error','contact',
                     'viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
                     'whatsNew','toggleVisibility','page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget','publishPost','getEvents','loadComments',
-                    'loadPosts','addComment','flagPost','sendErrorReport','minimizePosts'),
+                    'loadPosts','addComment','flagPost','sendErrorReport','minimizePosts','bugReport','deleteRelationship'),
 				'users'=>array('@'),
 			),
 			 array('allow',
@@ -128,9 +128,18 @@ class SiteController extends x2base {
     public function actionSendErrorReport(){
         if(isset($_POST['report'])){
             $errorReport=$_POST['report'];
+            if(isset($_POST['bugDescription'])){
+                $errorReport=unserialize(base64_decode($_POST['report']));
+                $errorReport['bugDescription']=$_POST['bugDescription'];
+                if(isset($_POST['email'])){
+                    $errorReport['email']=$_POST['email'];
+                }
+                $errorReport=base64_encode(serialize($errorReport));
+            }
             $ccUrl="http://www.x2software.com/receiveErrorReport.php";
             $ccSession = curl_init($ccUrl);
             curl_setopt($ccSession,CURLOPT_POST,1);
+            curl_setopt($ccSession, CURLOPT_HTTPHEADER, array('Accept-Charset: UTF-8;'));
             curl_setopt($ccSession,CURLOPT_POSTFIELDS,array('errorReport'=>$errorReport));
             curl_setopt($ccSession,CURLOPT_RETURNTRANSFER,1);
             $ccResult = curl_exec($ccSession);
@@ -251,10 +260,10 @@ class SiteController extends x2base {
                     Yii::app()->params->profile->defaultFeedFilters=json_encode($_SESSION['filters']);
                     Yii::app()->params->profile->save();
                 }
-                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."')".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
+                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."')".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
                 $_SESSION['feed-condition']=$condition;
             }else{
-                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (visibility=1 OR user='".Yii::app()->user->getName()."' OR associationId='".Yii::app()->user->getId()."')";
+                $condition="type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."') AND (visibility=1 OR user='".Yii::app()->user->getName()."' OR associationId='".Yii::app()->user->getId()."')";
             }
             $condition.= " AND timestamp <= ".time();
             if(!isset($_SESSION['lastEventId'])){
@@ -659,9 +668,22 @@ class SiteController extends x2base {
 	 */
 	public function actionFullscreen() {
 		Yii::app()->session['fullscreen'] = (isset($_GET['fs']) && $_GET['fs'] == 1);
+        $profile=Yii::app()->params->profile;
+        $profile->fullscreen=(isset($_GET['fs']) && $_GET['fs'] == 1);
+        $profile->save();
 		// echo var_dump(Yii::app()->session['fullscreen']);
 		echo 'Success';
 	}
+    
+    public function actionDeleteRelationship($id){
+        $rel=X2Model::model('Relationships')->findByPk($id);
+        if(isset($rel)){
+            $rel->delete();
+        }
+        if(isset($_GET['redirect'])){
+            $this->redirect($this->createUrl($_GET['redirect']));
+        }
+    }
 	
 	/**
 	 * Sets the page opacity for the current web user.
@@ -888,7 +910,7 @@ class SiteController extends x2base {
 				$name=$newName;
 			}
 			$username = Yii::app()->user->name;
-			if($this->ccopy($temp->getTempName(),"uploads/media/$username/$name")) {
+			if(FileUtil::ccopy($temp->getTempName(),"uploads/media/$username/$name")) {
 				if(isset($_POST['associationId']))
 					$model->associationId = $_POST['associationId'];
 				if(isset($_POST['associationType']))
@@ -1216,6 +1238,37 @@ class SiteController extends x2base {
             }
 		}
 	}
+    
+    public function actionBugReport(){
+        
+        $info=$this->phpinfo_array(true);
+        if(!empty(Yii::app()->params->admin->emailFromAddr))
+            $email=Yii::app()->params->admin->emailFromAddr;
+        else
+            $email="";
+        $phpversion=phpversion();
+        $x2version=Yii::app()->params->version;
+
+        $phpInfoErrorReport=base64_encode(serialize(array(
+            'phpinfo'=>$info,
+            'phpversion'=>$phpversion,
+            'x2version'=>$x2version,
+            'adminEmail'=>$email,
+        )));
+
+        $errorReport=base64_encode(serialize(array(
+            'phpversion'=>$phpversion,
+            'x2version'=>$x2version,
+            'adminEmail'=>$email,
+        )));
+        
+        $this->render('bugReport',array(
+            'phpInfoErrorReport'=>$phpInfoErrorReport,
+            'errorReport'=>$errorReport,
+            'x2version'=>$x2version,
+            'phpversion'=>$phpversion,
+        ));
+    }
 
 
 	/**

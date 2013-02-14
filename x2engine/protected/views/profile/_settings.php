@@ -89,14 +89,24 @@ $form=$this->beginWidget('CActiveForm', array(
 		<div class="row">
 			<?php echo $form->labelEx($model,'backgroundColor'); ?>
 			<?php echo $form->textField($model,'backgroundColor',array('id'=>'backgroundColor')); ?>
-		</div><?php /*
+		</div>
 		<div class="row">
 			<?php echo $form->labelEx($model,'menuBgColor'); ?>
 			<?php echo $form->textField($model,'menuBgColor',array('id'=>'menuBgColor')); ?>
-		</div>*/ ?>
+		</div>
 		<div class="row">
 			<?php echo $form->labelEx($model,'menuTextColor'); ?>
 			<?php echo $form->textField($model,'menuTextColor',array('id'=>'menuTextColor')); ?>
+		</div>
+		<div class="row">
+			<?php echo $form->labelEx($model,'backgroundTiling'); ?>
+			<?php echo $form->dropDownList($model,'backgroundTiling',array(
+				'repeat-x'=>Yii::t('app','Tile Horizontally'),
+				'repeat-y'=>Yii::t('app','Tile Vertically'),
+				'repeat'=>Yii::t('app','Tile'),
+				'center'=>Yii::t('app','Center'),
+				'stretch'=>Yii::t('app','Stretch'),
+			),array('id'=>'backgroundTiling')); ?>
 		</div>
 	</div>
 	<div class="cell">

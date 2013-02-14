@@ -72,11 +72,12 @@ class Admin extends CActiveRecord
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),
 			array('currency', 'length', 'max'=>3),
 			array('emailUseAuth, emailUseSignature', 'length', 'max'=>10),
-			array('emailType, emailSecurity', 'length', 'max'=>20),
+			array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max'=>20),
 			array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max'=>255),
 			// array('emailSignature', 'length', 'max'=>512),
 			array('emailSignature', 'length', 'max'=>512),
 			array('quoteStrictLock, workflowBackdateReassignment', 'boolean'),
+			array('gaTracking_internal,gaTracking_public','match','pattern'=>"/'/",'not'=>true,'message'=>Yii::t('admin','Invalid property ID')),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			// array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -127,6 +128,8 @@ class Admin extends CActiveRecord
 			'serviceCaseFromEmailAddress' => Yii::t('admin','Sender Email Address'),
 			'serviceCaseEmailSubject' => Yii::t('admin', 'Subject'),
 			'serviceCaseEmailMessage' => Yii::t('admin', 'Email Message'),
+			'gaTracking_public' => Yii::t('admin','Google Analytics Property ID (public)'),
+			'gaTracking_internal' => Yii::t('admin','Google Analytics Property ID (internal)'),
 		);
 	}
 

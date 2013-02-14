@@ -377,6 +377,28 @@ class Events extends CActiveRecord
                     '{docLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)
                 ));
                 break;
+			case 'email_from':
+				if(class_exists($this->associationType)){
+                    if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId))>0){
+                        $text=$authorText.Yii::t('app', "received an email from a {transModelName}, {modelLink}",array(
+							'{transModelName}'=>$this->parseModelName($this->associationType),
+                            '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)
+                        ));
+                    }else{
+                        $deletionEvent=X2Model::model('Events')->findByAttributes(array('type'=>'record_deleted','associationType'=>$this->associationType,'associationId'=>$this->associationId));
+                        if(isset($deletionEvent)){
+                            $text=$authorText.Yii::t('app',"received an email from a {transModelName}, but that record has been deleted.",array(
+                                '{transModelName}'=>$this->parseModelName($this->associationType)
+                            ));
+                        }else{
+                            $text=$authorText.Yii::t('app',"received an email from a {transModelName}, but that record could not be found.",array(
+                                '{transModelName}'=>$this->parseModelName($this->associationType)
+                            ));
+                        }
+                     }
+                }
+				
+				break;
             default:
                 $text=$authorText.$this->text;
                 break;
@@ -437,6 +459,9 @@ class Events extends CActiveRecord
             case 'doc_update':
                 $type="Doc Updates";
                 break;
+			case 'email_from':
+				$type = 'Email Received';
+				break;
             default:
                 break;
         }
@@ -452,7 +477,7 @@ class Events extends CActiveRecord
         }
         $criteria=new CDbCriteria();
         $parameters=array('order'=>'timestamp DESC, id DESC');
-        $condition=isset($_SESSION['feed-condition'])?$_SESSION['feed-condition']." AND timestamp < $maxTimestamp AND (type!='action_reminder' OR user='$user') AND (id > $id OR timestamp > $timestamp)":'(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND type!="comment"'." AND (type!='action_reminder' OR user='$user') AND (visibility=1 OR associationId='".Yii::app()->user->getId()."' OR user='".Yii::app()->user->getName()."')";
+        $condition=isset($_SESSION['feed-condition'])?$_SESSION['feed-condition']." AND timestamp < $maxTimestamp AND (type!='action_reminder' OR user='$user')  AND (type!='notif' OR user='$user') AND (id > $id OR timestamp > $timestamp)":'(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND type!="comment"'." AND (type!='action_reminder' OR user='$user') AND (type!='notif' OR user='".Yii::app()->user->getName()."') AND (visibility=1 OR associationId='".Yii::app()->user->getId()."' OR user='".Yii::app()->user->getName()."')";
         $parameters['condition']=$condition;
         $criteria->scopes=array('findAll'=>array($parameters));
         $events=X2Model::model('Events')->findAll($criteria);
@@ -499,7 +524,6 @@ class Events extends CActiveRecord
 		return array(
 			'id' => Yii::t('admin','ID'),
 			'type' => Yii::t('admin','Type'),
-			'level' => Yii::t('admin','Level of Detail'),
 			'text' => Yii::t('admin','Text'),
 			'associationType' => Yii::t('admin','Association Type'),
             'associationId' => Yii::t('admin','Association ID'),

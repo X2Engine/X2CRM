@@ -80,6 +80,10 @@ class WorkflowController extends x2base {
 			'dataProvider'=>$dataProvider,
 		));
 	}
+    
+    public function actionAdmin(){
+        $this->redirect('index');
+    }
 
 	// Displays workflow table/funnel diagram
 	public function actionViewStage($id,$stage) {
@@ -228,7 +232,7 @@ class WorkflowController extends x2base {
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -342,7 +346,6 @@ class WorkflowController extends x2base {
 				$action->stageNumber = (int)$stageNumber;
 				$action->save();
                 $event=new Events;
-                $event->level=3;
                 $event->type='workflow_start';
                 $event->user=Yii::app()->user->getName();
                 $event->associationType='Actions';
@@ -410,7 +413,6 @@ class WorkflowController extends x2base {
 				$actionModels[0]->actionDescription = $comment;
 				$actionModels[0]->save();
                 $event=new Events;
-                $event->level=3;
                 $event->type='workflow_complete';
                 $event->associationType='Actions';
                 $event->user=Yii::app()->user->getName();
@@ -438,7 +440,6 @@ class WorkflowController extends x2base {
 						// $nextAction->actionDescription = $comment;
 						$nextAction->save();
                         $event=new Events;
-                        $event->level=3;
                         $event->type='workflow_start';
                         $event->associationType='Actions';
                         $event->user=Yii::app()->user->getName();
@@ -491,7 +492,6 @@ class WorkflowController extends x2base {
 					$actions[0]->save();
                     
                     $event=new Events;
-                    $event->level=3;
                     $event->type='workflow_revert';
                     $event->user=Yii::app()->user->getName();
                     $event->associationType='Actions';

@@ -58,7 +58,7 @@ $(document).ready(function() {
 			// highlightSave();
 		}
 	});
-/* 	$('#menuBgColor').modcoder_excolor({
+ 	$('#menuBgColor').modcoder_excolor({
 		hue_bar : 3,
 		hue_slider : 5,
 		border_color : '#aaa',
@@ -68,12 +68,13 @@ $(document).ready(function() {
 		background_color : '#f0f0f0',
 		backlight : false,
 		callback_on_ok : function() {
-			var text = $('#menuBgColor').val();
-			$('#menuBgColor').val(text.substring(1,7));
-			$('#header').css('background-color',text);
-			highlightSave();
+			$('#menuBgColor').change();
+			// var text = $('#menuBgColor').val();
+			// $('#menuBgColor').val(text.substring(1,7));
+			// $('#header').css('background-color',text);
+			// highlightSave();
 		}
-	}); */
+	});
 	$('#menuTextColor').modcoder_excolor({
 		hue_bar : 3,
 		hue_slider : 5,
@@ -95,57 +96,88 @@ $(document).ready(function() {
 	$('#backgroundColor').change(function() {
 		var text = $('#backgroundColor').val();
 		if(text == '') {
-			$('#header').css('background-color','').addClass('defaultBg').css('background-image','');
+			$('body').css('background-color','#efeee8');
 		} else {
 			$('#backgroundColor').val(text.substring(1,7));
-			$('#header').removeClass('defaultBg').css('background-color',text);
+			$('body').css('background-color',text);
 		}
 		highlightSave();
 		
 	});
-	$('#menuTextColor').change(function() {
-		var text = $('#menuTextColor').val();
-		if(text == '')
-			$('#main-menu-bar a, #main-menu-bar span').css('color','#fff');
-		else {
-			$('#menuTextColor').val(text.substring(1,7));
-			$('#main-menu-bar a, #main-menu-bar span').css('color',text);
+	$('#menuBgColor').change(function() {
+		var text = $('#menuBgColor').val();
+		if(text == '') {
+			$('#header').css('background-color','').addClass('defaultBg');
+		} else {
+			$('#menuBgColor').val(text.substring(1,7));
+			$('#header').removeClass('defaultBg').css('background-color',text);
 		}
 		highlightSave();
 	});
-	
-	
+	$('#menuTextColor').change(function() {
+		var text = $('#menuTextColor').val();
+		if(text == '')
+			$('ul.main-menu > li > a, ul.main-menu > li > span').css('color','#fff');
+		else {
+			$('#menuTextColor').val(text.substring(1,7));
+			$('ul.main-menu > li > a, ul.main-menu > li > span').css('color',text);
+		}
+		highlightSave();
+	});
+
+	$('#backgroundTiling').change(function() {
+		var val = $(this).val();
+		var noBorders = false;
+		switch(val) {
+			case 'repeat-x':
+			case 'repeat-y':
+			case 'repeat':
+				$("body").css({"background-attachment":"","background-size":"","background-position":"","background-repeat":val});
+				break;
+			case 'center':
+				$("body").css({"background-attachment":"","background-size":"","background-repeat":"no-repeat","background-position":"center center"});
+				break;
+			case 'stretch':
+				$("body").css({"background-attachment":"fixed","background-size":"cover","background-position":"","background-repeat":""});
+				noBorders = true;
+				break;
+		}
+		$("body").toggleClass("no-borders",noBorders);
+		
+		highlightSave();
+	});
 	
 	$('#ProfileChild_enableFullWidth').change(function() {
 		window.enableFullWidth = $(this).is(':checked');
 		$(window).resize();
 		highlightSave();
 	});
-	
-	
-	
+
 });
 
 // js to change background image
-function setBackground(filename){
+function setBackground(filename) {
 	$.ajax({
 		url: yii.scriptUrl+'/profile/setBackground',
 		type: 'post',
-		data: 'name='+filename,
-		success: function(response) {
-			if(response=='success') {
-				if(filename=='') {
-					if($('#backgroundColor').val() == '')
-						$('#header').addClass('defaultBg').css('background-image','');
-					else
-						$('#header').css('background-image','none');
-				} else {
-					$('#header').removeClass('defaultBg').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')');
-					// $(window).trigger('resize');
-				}
-			}
-		}
+		data: 'name='+filename
 	});
+		// success: function(response) {
+			// if(response=='success') {
+		if(filename=='') {
+			// if($('#backgroundColor').val() == '')
+				// $('#header').addClass('defaultBg').css('background-image','');
+				// $('body').css('background-image','');
+			// else
+				$('body').css('background-image','none').removeClass("no-borders");
+		} else {
+			// $('#header').removeClass('defaultBg').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')');
+			$('body').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')').toggleClass("no-borders",($('#backgroundTiling').val() == 'stretch'));
+			$(window).trigger('resize');
+		}
+			// }
+		// }
+	// });
 }
 function deleteBackground(id,filename) {
 	$.ajax({

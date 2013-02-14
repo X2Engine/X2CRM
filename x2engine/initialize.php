@@ -45,6 +45,8 @@
 $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent', $argv));
 // Response object for AJAX-driven installation
 $response = array();
+// Whether a response is already in progress
+$responding = false;
 // Configuration values passed to PDOStatement::execute for parameter binding
 $dbConfig = array();
 // All configuration values, including statistics
@@ -158,7 +160,8 @@ $confMap = array(
  * @param $error The error, if any
  */
 function respond($message, $error = Null) {
-	global $response, $silent;
+	global $response, $silent, $responding;
+	$responding = true;
 	if ($error)
 		$response['globalError'] = $error;
 	if ($silent) {
@@ -194,7 +197,7 @@ function RIP($message) {
  * @param type $fi
  * @param type $ln 
  */
-function respondWithError($no, $st, $fi=Null, $ln=Null) {
+function respondWithError($no, $st, $fi = Null, $ln = Null) {
 	RIP("PHP Error [$no]: $st ($fi, L$ln)");
 }
 
@@ -204,11 +207,30 @@ function respondWithError($no, $st, $fi=Null, $ln=Null) {
  * @param Exception $exception
  */
 function respondWithException($exception) {
-	RIP("Uncaught exception with message: ".$exception->getMessage());
+	RIP("Uncaught exception with message: " . $exception->getMessage());
+}
+
+/**
+ * Shutdown function for fatal errors
+ * 
+ * @global boolean $responding 
+ */
+function respondFatalErrorMessage() {
+	global $responding;
+	$error = error_get_last();
+	if ($error != null && !$responding) {
+		$errno = $error["type"];
+		$errfile = $error["file"];
+		$errline = $error["line"];
+		$errstr = $error["message"];
+		RIP("PHP ".($errno==E_PARSE?'parse':'fatal')." error [$errno]: $errstr in $errfile L$errline");
+	}
 }
 
 set_error_handler('respondWithError');
 set_exception_handler('respondWithException');
+register_shutdown_function('respondFatalErrorMessage');
+ini_set('display_errors',0);
 
 // Test the connection and exit:
 if (isset($_POST['testDb'])) {
@@ -219,38 +241,38 @@ if (isset($_POST['testDb'])) {
 	} catch (PDOException $e) {
 		RIP(installer_t('Could not connect to host or select database.'));
 	}
-	
+
 	// Now test creating a table:
 	try {
 		$con->exec("CREATE TABLE IF NOT EXISTS `x2_test_table` (
 			    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			    `a` varchar(10) NOT NULL,
 			    PRIMARY KEY (`id`))");
-	} catch(PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot create tables'));
+	} catch (PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot create tables'));
 	}
 
 	// Test inserting data:
 	try {
 		$con->exec("INSERT INTO `x2_test_table` VALUES (1,'a')");
-	} catch(PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot insert data'));
+	} catch (PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot insert data'));
 	}
-	
+
 	// Test deleting data:
 	try {
 		$con->exec("DELETE FROM `x2_test_table`");
-	} catch(PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot delete data'));
+	} catch (PDOException $e) {
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot delete data'));
 	}
-	
+
 	// Test removing the table:
 	try {
 		$con->exec("DROP TABLE `x2_test_table`");
 	} catch (PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}',array('{db}'=>$_POST['dbName'],'{u}'=>$_POST['dbUser'])).'; '.installer_t('cannot drop tables'));
+		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot drop tables'));
 	}
-	
+
 	respond(installer_t("Connection successful!"));
 }
 
@@ -275,8 +297,8 @@ function baseConfig() {
 				$config[$name1] = ${$name2};
 			}
 		}
-		foreach($confKeys as $name) {
-			if(isset(${$name})) {
+		foreach ($confKeys as $name) {
+			if (isset(${$name})) {
 				$config[$name] = ${$name};
 			}
 		}
@@ -292,15 +314,15 @@ function baseConfig() {
  * @global array $confMap 
  */
 function installConfig() {
-	global $config, $confMap,$confKeys;
+	global $config, $confMap, $confKeys;
 	if (file_exists('installConfig.php')) {
 		require('installConfig.php');
 	} else
 		RIP('Error: Installer config file not found.');
-	
+
 	// Collect configuration values from the configuration file(s)
 	foreach ($confKeys as $name)
-		if(isset(${$name}))
+		if (isset(${$name}))
 			$config[$name] = ${$name};
 	// If they're set in installConfig.php, override:
 	foreach ($confMap as $name2 => $name1)
@@ -311,6 +333,7 @@ function installConfig() {
 /*
  * Translation function
  */
+
 function installer_t($str) { // translates by looking up string in install.php language file
 	global $installMessages;
 	if (isset($installMessages[$str]) && $installMessages[$str] != '')  // if the chosen language is available
@@ -388,32 +411,6 @@ function addValidationError($attr, $error) {
 }
 
 /**
- * Delete files
- */
-$donotDelete = array('.', '..', '.htaccess');
-$noDelPat = '/('.implode('|',array_map(function($b){return str_replace('.','\.',$b);},$donotDelete)).')$/';
-/**
- * Recursively remove a directory.
- * 
- * @global string $noDelPat
- * @param type $path 
- */
-function rrmdir($path) {
-	global $noDelPat;
-	if (!preg_match($noDelPat, $path)) {
-		if (is_dir($path)) {
-			$objects = scandir($path);
-			foreach ($objects as $object)
-				if (!preg_match($noDelPat, $object))
-					rrmdir($path . DIRECTORY_SEPARATOR . $object);
-			reset($objects);
-			rmdir($path);
-		} else
-			unlink($path);
-	}
-}
-
-/**
  * Installs a named module
  * 
  * @global PDO $dbo
@@ -451,7 +448,7 @@ function installModule($module, $respond = True) {
 		if ($respond)
 			respond(installer_tr('Module "{module}" installed.', array('{module}' => $moduleName)));
 	} else {
-		RIP(installer_tr('Failed to install module "{module}"; could not find configuration file at {path}.', array('{module}'=>$moduleName,'{path}'=>$regPath)));
+		RIP(installer_tr('Failed to install module "{module}"; could not find configuration file at {path}.', array('{module}' => $moduleName, '{path}' => $regPath)));
 	}
 }
 
@@ -461,7 +458,7 @@ function installModule($module, $respond = True) {
  * @param $stage The named stage of installation.
  */
 function installStage($stage) {
-	global $editions, $dbConfig, $dbKeys, $dateFields, $enabledModules, $dbo, $config, $confMap, $noDelPat, $response, $silent, $stageLabels, $write;
+	global $editions, $dbConfig, $dbKeys, $dateFields, $enabledModules, $dbo, $config, $confMap, $response, $silent, $stageLabels, $write;
 
 	switch ($stage) {
 		case 'validate':
@@ -629,16 +626,10 @@ function installStage($stage) {
 			} else {
 				// This is the dummy data stage, and we need to clear out all unneeded files.
 				$stageLabels[$stage] = sprintf($stageLabels[$stage], 'remove');
-				if (($paths = @require_once(realpath('protected/data/dummy_data_files.php'))) && $config['test_db']) {
+				if (($paths = @require_once(realpath('protected/data/dummy_data_files.php'))) && !$config['test_db']) {
 					foreach ($paths as $pathClear) {
 						if ($path = realpath($pathClear)) {
-							if (is_dir($path)) {
-								foreach (scandir($path) as $subPath)
-									if (!preg_match($noDelPat, $path))
-										rrmdir($path . DIRECTORY_SEPARATOR . $subPath);
-							} else {
-								unlink($path);
-							}
+							FileUtil::rrmdir($path, '/\.htaccess$/');
 						}
 					}
 				}
@@ -648,6 +639,9 @@ function installStage($stage) {
 	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize')
 		respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
+
+include('protected/components/FileUtil.php');
+
 
 //////////////////////////////////
 // Load Installer Configuration //
@@ -689,14 +683,14 @@ if ($silent) {
 	if (empty($config['currency']))
 		$config['currency'] = 'USD';
 	// Checkbox fields
-	foreach (array('dummy_data', 'receiveUpdates','test_db') as $checkbox) {
+	foreach (array('dummy_data', 'receiveUpdates', 'test_db') as $checkbox) {
 		$config[$checkbox] = (isset($_POST[$checkbox]) && $_POST[$checkbox] == 1) ? 1 : 0;
 	}
 	$config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
 	$config['webLeadUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 }
-if(!in_array($config['type'],array('Silent','Bitnami','Testing'))) // Special installation types
-	$config['type'] = $config['test_db']==1?'Testing':($silent ? 'Silent' : 'On Premise');
+if (!in_array($config['type'], array('Silent', 'Bitnami', 'Testing'))) // Special installation types
+	$config['type'] = $config['test_db'] == 1 ? 'Testing' : ($silent ? 'Silent' : 'On Premise');
 $config['GD_support'] = function_exists('gd_info') ? '1' : '0';
 $config['user_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 $config['php_version'] = phpversion();
@@ -704,21 +698,21 @@ $config['db_type'] = 'MySQL';
 
 
 // Determine whether we're setting up a test database
-if($config['test_db']) {
-	if(!isset($config['test_url']))
+if ($config['test_db']) {
+	if (!isset($config['test_url']))
 		$config['test_url'] = null;
 }
 
 // Determine which modules are designated visible
-if(empty($config['visibleModules'])) { // Web install. Determine based on $_POST fields
+if (empty($config['visibleModules'])) { // Web install. Determine based on $_POST fields
 	$config['visibleModules'] = array();
-	foreach($enabledModules as $moduleName) {
-		if(isset($_POST["menu_$moduleName"]))
+	foreach ($enabledModules as $moduleName) {
+		if (isset($_POST["menu_$moduleName"]))
 			$config['visibleModules'][] = $moduleName;
 	}
-	$config['visibleModules'] = "('".implode("','",$config['visibleModules'])."')";
+	$config['visibleModules'] = "('" . implode("','", $config['visibleModules']) . "')";
 } else { // Silent install. Modules should be in a comma-delineated list.
-	$config['visibleModules'] = "('".implode("','",explode(',',$config['visibleModules']))."')";
+	$config['visibleModules'] = "('" . implode("','", explode(',', $config['visibleModules'])) . "')";
 }
 
 
@@ -735,7 +729,6 @@ if (!empty($_POST['edition'])) {
 //////////////////////////////
 // Post-configuration tasks //
 //////////////////////////////
-
 // Generate API Key
 $config['adminUserKey'] = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
 
@@ -758,7 +751,7 @@ date_default_timezone_set($config['timezone']);
 // Email address for sending
 if (!empty($config['adminEmail']))
 	$config['bulkEmail'] = $config['adminEmail'];
-else if(isset($_SERVER['HTTP_HOST']))
+else if (isset($_SERVER['HTTP_HOST']))
 	$config['bulkEmail'] = 'contact@' . preg_replace('/^www\./', '', $_SERVER['HTTP_HOST']);
 else
 	$config['bulkEmail'] = 'contact@localhost';
@@ -818,7 +811,7 @@ if (!$complete)
 // Install everything all at once:
 if (($silent || !isset($_GET['stage'])) && !$complete) {
 	// Install core schema/data, modules, and configure:
-	foreach (array('core', 'RBAC', 'timezoneData', 'module','config','dummy_data','finalize') as $component)
+	foreach (array('core', 'RBAC', 'timezoneData', 'module', 'config', 'dummy_data', 'finalize') as $component)
 		installStage($component);
 } else if (isset($_GET['stage'])) {
 	installStage($_GET['stage']);
@@ -829,13 +822,13 @@ if (!$complete || $silent) {
 		$errors[] = 'MySQL Error: ' . $sqlError;
 	outputErrors();
 	respond('Installation complete.');
-	if($silent && function_exists('curl_init') && $config['type']!='Testing') {
+	if ($silent && function_exists('curl_init') && $config['type'] != 'Testing') {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];
 		}
-		$ch = curl_init('http://x2planet.com/installs/registry/activity?'.http_build_query($stats));
-		curl_setopt($ch,CURLOPT_POST,0);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		$ch = curl_init('http://x2planet.com/installs/registry/activity?' . http_build_query($stats));
+		curl_setopt($ch, CURLOPT_POST, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$gif = curl_exec($ch);
 	}
 }
@@ -887,7 +880,7 @@ if (!$silent && $complete):
 						<li><?php echo installer_t('Set location'); ?></li>
 						<li><?php echo installer_t('Explore the app'); ?></li>
 					</ul>
-					<h3><a class="x2-button" href="index<?php echo ($config['test_db']?'-test':''); ?>.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
+					<h3><a class="x2-button" href="index<?php echo ($config['test_db'] ? '-test' : ''); ?>.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
 					<?php echo installer_t('X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'); ?><br /><br />
 				</div>
 				<a href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a><br /><br />
@@ -896,9 +889,9 @@ if (!$silent && $complete):
 					<!--<img src="images/x2engine_big.png">-->
 					Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 					<?php echo installer_t('All Rights Reserved.'); ?>
-					<?php if(!$config['test_db']): ?>
-					<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
-					<?php endif; ?>
+					<?php if (!$config['test_db']): ?>
+						<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
+						<?php endif; ?>
 				</div>
 			</div>
 		</body>
@@ -906,7 +899,7 @@ if (!$silent && $complete):
 	<?php
 endif;
 // Delete install files
-foreach(array('install.php','installConfig.php','requirements.php','initialize_pro.php') as $file) 
+foreach (array('install.php', 'installConfig.php', 'requirements.php', 'initialize_pro.php') as $file)
 	if (file_exists($file))
 		unlink($file);
 // Delete self

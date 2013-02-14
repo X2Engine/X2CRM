@@ -58,14 +58,14 @@ class X2Rules {
 			
 			Example 2: record_inactive, attributes = (('dealValue', '>', '20000'), ('account','not_empty')), duration = '5 days'
 
-			Description									type			Parameters															Response Variables
+			Description							type						Parameters															Response Variables
 			-------------------------------------------------------------------------------------------------------------------------------------------
 			
 			
 			Record Activity													model type, filters, list
 			---------------													
 			View								record_view					model type, model attributes										record, user
-			Field change						record_field				model type, model attributes, fieldName, comparison type/value		record, old attributes, user
+			Field change						record_field_change			model type, model attributes, fieldName, comparison type/value		record, old attributes, user
 			Edit								record_update				model type, model attributes, user									record, user
 			Create action						record_action_create		model type, model attributes, user									record, user
 			Complete action						record_action_complete		model type, model attributes, user									record, user
@@ -84,18 +84,18 @@ class X2Rules {
 			Generic action - complete			
 			Generic action - uncomplete			
 							
-			Weblead															model type, lead source, model attributes							record, lead source
-			Web activity													model attributes, campaign, 
+			Weblead								weblead						model type, lead source, model attributes							record, lead source
+			Web activity						record_webtracker			model attributes, campaign, 
 			
 
-		Conditions *
+		Parameters:
 		
-			Record attribute (=, <, >, <>, in list, not in list, empty, not empty, contains)
-			Linked record attribute (eg. a contact's account has > 30 employees)
-			Current user
+			model type
+			model attributes (=, <, >, <>, in list, not in list, empty, not empty, contains)
+			linked model attributes
 			Current time (day of week, hours, etc)
 			Current time in record's timezone
-			Is user X logged in
+			Is user X active
 			Workflow status (in workflow X, started stage Y, completed Y, completed all)
 			
 			* Any condition parameter can be a variable from the record
@@ -112,33 +112,22 @@ class X2Rules {
 		Actions
 		
 		
-			Action														Parameters (can use response variables)
+			Action								type									Parameters (can use response variables)
 			-------------------------------------------------------------------------------------------------------------------------------------------
-			Email														to, from, subject, body
-
-			Create Event												type (automatic, custom), text (optional), user (optional), create notification?
-			
-			Reminder													text, timestamp (creates an event)
-
-			Create Action												assignedTo, type, dueDate, priority, description
-				
-			Change Field												attribute, value
-				
-			Start workflow stage										workflow, stage number
-				
-			Complete workflow stage										workflow, stage number
-				
-			Undo workflow stage											workflow, stage number
-								
-			Create Record												type, all attributes
-							
-			Create/Remove Tags											tags
-							
-			Request URL (for APIs)										url, GET and POST variables
-							
-			Add to List (static only)									list name
-							
-			Remove from List											list name
+			Email								email								to, from, subject, body
+			Create Event						new_event							type (automatic, custom), text (optional), user (optional), create notification?
+			Reminder							reminder							text, timestamp (creates an event)
+			Create Action						new_action							assignedTo, type, dueDate, priority, description
+			Change Field						field_change						attribute, value
+			Start workflow stage				workflow_start						workflow, stage number(s)
+			Complete workflow stage				workflow_complete					workflow, stage number(s)
+			Undo workflow stage					workflow_revert						workflow, stage number(s)
+			Create Record						new_record							type, all attributes
+			Create/Remove Tags					add_tag								tags
+												remove_tag
+			Request URL (for APIs)				API_call							url, GET and POST variables
+			Add to List (static only)			list_add							list name
+			Remove from List					list_remove							list name
 
 		
 		
@@ -170,7 +159,8 @@ class X2Rules {
 				id						INT				AUTO_INCREMENT PRIMARY KEY,
 				active					TINYINT			NOT NULL DEFAULT 1,
 				name					VARCHAR(100)	NOT NULL,
-				createDate				BIGINT			NOT NULL
+				createDate				BIGINT			NOT NULL,
+				lastUpdated				BIGINT			NOT NULL
 			) ENGINE InnoDB  COLLATE = utf8_general_ci;
 			
 			CREATE TABLE x2_flow_items(
@@ -184,27 +174,23 @@ class X2Rules {
 				
 			) ENGINE InnoDB  COLLATE = utf8_general_ci;
 			
-			CREATE TABLE x2_flow_conditions(
+			CREATE TABLE x2_flow_params(
 				id						INT				AUTO_INCREMENT PRIMARY KEY,
 				flowId					INT				NOT NULL,
 				itemId					INT				NOT NULL,
 				type					VARCHAR(40)		NOT NULL,
-				value					VARCHAR(250)	NULL,
-				
-				
+				attribute				VARCHAR(100)	NULL,
+				operator				VARCHAR(40)		NULL,
+				value					VARCHAR(500)	NULL,
 				
 				FOREIGN KEY (flowId) REFERENCES x2_flows(id) ON UPDATE CASCADE ON DELETE CASCADE,
-				FOREIGN KEY (itemId) REFERENCES x2_items(id) ON UPDATE CASCADE ON DELETE CASCADE
+				FOREIGN KEY (itemId) REFERENCES x2_flow_items(id) ON UPDATE CASCADE ON DELETE CASCADE
 				
 			) ENGINE InnoDB  COLLATE = utf8_general_ci;
 			
 			
 			
-			
-			
-			
-			
-			
+
 			
 			places to check for triggers:
 			
@@ -220,18 +206,22 @@ class X2Rules {
 			SiteController::actionLogout()
 			
 			ApiController::actionWebLead()
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
 		 */
+		 
+		// $flow = new X2Flow;
+		// $flow->active = true;
+		// $flow->name = 'testFlow';
+		// if($flow->save()) {
+		
+			// $flowItem = new X2FlowItem;
+			// $flowItem->flowId = $flow->id;
+			// $flowItem->type = 'record_update';
+			// $flowItem->active = true;
+			// $flowItem->save();
+		// }
+		// $flowParam = new X2FlowParam;
+		// $flowParam->
 	}
 	
 	
@@ -247,64 +237,6 @@ class X2Rules {
 	
 	
 	}
-	
-	
-	
-	
-	public static function parseVariables($str,$vars=array(),$modelClass=null,$modelId=null) {
-	
-		
-		$message = str_replace('\\\\', '\\\\\\', $message);
-		$message = str_replace('$', '\\$', $message);
-		
-		$str = preg_replace('/{content}/u','<!--BeginMsg-->'.$message.'<!--EndMsg-->',$str);
-		$str = preg_replace('/{signature}/u','<!--BeginSig-->'.$signature.'<!--EndSig-->',$str);
-		
-		
-		// if there is a model name/id available, look it up and use its attributes
-		if(isset($modelClass, $modelId)) {
-			$model = X2Model::model($modelClass)->findByPk($modelId);
-			
-			if($model !== null) {
-			
-				$matches = array();
-				preg_match_all('/{\w+}/',$str,$matches);	// find all the things
-				
-				if(isset($matches[0])) {					// loop through the things
-					foreach($matches[0] as $match) {
-						$match = substr($match,1,-1);	// remove { and }
-						
-						if($model->hasAttribute($match)) {
-							$value = $model->renderAttribute($match,false,true);	// get the correctly formatted attribute
-							$str = preg_replace('/{'.$match.'}/',$value,$str);
-						}
-					}
-				}
-			}
-		}
-		
-		// return
-	
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public function parseValues($string,$model,$textOnly=false) {
-		
-		
-		// $string
-		
-		
-		
-	}
-	
-	
+
 }
 ?>

@@ -56,34 +56,7 @@ class UpdaterBehavior extends CBehavior {
 		file_put_contents('protected/config/X2Config.php', $config);
 	}
 	
-	/**
-     * Copies a file. 
-     * 
-     * If the local filesystem directory to where the file will be copied does 
-     * not exist yet, it will be created automatically.
-     * 
-     * @param string $filepath The source file
-     * @param strint $file The destination path.
-     * @return boolean 
-     */
-    function ccopy($filepath, $file) {
-
-        $pieces = explode('/', $file);
-        unset($pieces[count($pieces)]);
-        for ($i = 0; $i < count($pieces); $i++) {
-            $str = "";
-            for ($j = 0; $j < $i; $j++) {
-                $str.=$pieces[$j] . '/';
-            }
-
-            if (!is_dir($str) && $str != "") {
-                mkdir($str);
-            }
-        }
-        return copy($filepath, $file);
-    }
-	
-	function respond($message,$error=false,$console=false,$fatal=false) {
+	public function respond($message,$error=false,$console=false,$fatal=false) {
 		if(!$console)
 			header("Content-type: application/json");
 		$response = array();
@@ -100,7 +73,7 @@ class UpdaterBehavior extends CBehavior {
 	}
 	
     /**
-     * Wrapper for {@link ccopy}
+     * Wrapper for {@link FileUtil::ccopy}
      * 
      * Recursively copyies a directory if the specified.
      * @param string $file The starting point, whether file or directory.
@@ -115,7 +88,7 @@ class UpdaterBehavior extends CBehavior {
                     }
                 }
             } else {
-                $this->ccopy("$file", substr($file, 5));
+                FileUtil::ccopy("$file", substr($file, 5));
             }
         }
     }

@@ -344,7 +344,6 @@ class ActionsController extends x2base {
 			if($_POST['SelectedTab'] == 'new-event') {
                 $event=new Events;
                 $event->type='calendar_event';
-                $event->level=2;
                 $event->visibility=$model->visibility;
                 $event->associationType='Actions';
                 $event->timestamp=$model->dueDate;
@@ -379,7 +378,6 @@ class ActionsController extends x2base {
 	
 			if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment') {
                 $event=new Events;
-                $event->level=3;
                 $event->associationType='Actions';
                 $event->type='record_create';
                 $event->user=Yii::app()->user->getName();
@@ -408,7 +406,6 @@ class ActionsController extends x2base {
                 }
                 if(empty($model->type)){
                     $event2=new Events;
-                    $event2->level=2;
                     $event2->associationType='Actions';
                     $event2->associationId=$model->id;
                     $event2->visibility=$model->visibility;
@@ -417,7 +414,6 @@ class ActionsController extends x2base {
                     $event2->save();
                     
                     $event=new Events;
-                    $event->level=1;
                     $event->associationType='Actions';
                     $event->associationId=$model->id;
                     $event->type='action_reminder';
@@ -562,8 +558,11 @@ class ActionsController extends x2base {
 			}
 			
             $model->dueDate = $this->parseDateTime($model->dueDate);
-			if($model->completeDate)
+			if($model->completeDate){
 				$model->completeDate = $this->parseDateTime($model->completeDate);
+            }elseif(empty($model->completeDate)){
+                $model->completeDate=$model->dueDate;
+            }
 
 			$changes = $this->calculateChanges($temp, $model->attributes, $model);
 			$model = $this->updateChangelog($model,$changes);
@@ -693,7 +692,6 @@ class ActionsController extends x2base {
 			$this->cleanUpTags($model);
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;
@@ -824,7 +822,6 @@ class ActionsController extends x2base {
                         if(isset($contact)){
                             $event->user=$contact->assignedTo;
                         }
-                        $event->level=3;
                         $event->associationType='Contacts';
                         $event->associationId=$note->associationId;
                         if($action->associationType=='services'){
@@ -935,7 +932,6 @@ class ActionsController extends x2base {
         }
         $model=X2Model::model('Actions')->findByPk($id);
         $event=new Events;
-        $event->level=2;
         $event->type="action_complete";
         $event->visibility=$model->visibility;
         $event->associationType="Actions";

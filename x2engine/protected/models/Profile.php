@@ -86,7 +86,7 @@ class Profile extends CActiveRecord {
 			array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity', 'numerical', 'integerOnly'=>true),
 			array('enableFullWidth,showSocialMedia,showDetailView','boolean'),	//,showWorkflow
 			array('backgroundColor, menuBgColor, menuTextColor', 'length', 'max'=>6),
-			array('emailUseSignature', 'length', 'max'=>10),
+			array('backgroundTiling,emailUseSignature', 'length', 'max'=>10),
 			array('startPage', 'length', 'max'=>30),
 			array('fullName', 'length', 'max'=>60),
 			array('username, updatedBy', 'length', 'max'=>20),
@@ -137,6 +137,7 @@ class Profile extends CActiveRecord {
 			'menuBgColor'=>Yii::t('profile','Menu Color'),
 			'menuTextColor'=>Yii::t('profile','Menu Text Color'),
 			'backgroundColor'=>Yii::t('profile','Background Color'),
+			'backgroundTiling'=>Yii::t('profile','Background Tiling'),
 			'pageOpacity'=>Yii::t('profile','Page Opacity'),
 			'startPage'=>Yii::t('profile','Start Page'),
 			'showSocialMedia'=>Yii::t('profile','Show Social Media'),
@@ -369,7 +370,7 @@ class Profile extends CActiveRecord {
 		if(Yii::app()->params->profile->widgetSettings == null) { // if widget settings haven't been set, give them default values
 			$widgetSettings = array(
 				'ChatBox'=>array(
-					'chatboxHeight'=>200,
+					'chatboxHeight'=>300,
 					'chatmessageHeight'=>50,
 				),
 				'NoteBox'=>array(

@@ -49,6 +49,8 @@ if (empty($type)) $type = 'weblead';
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
+<?php $this->renderGaCode('public'); ?> 
+
 
 <style type="text/css">
 html {
@@ -168,7 +170,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('email'); ?>: *</b><br /> <input style="width:170px;" type="text" id="email" name="Contacts[email]" /><br /></div>
 	<?php if ($type == 'weblead') { ?>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('phone'); ?>:</b><br /> <input style="width:170px;" type="text" id="phone" name="Contacts[phone]" /><br /></div>
-	<div class="row"><b>Interest:</b><br /> <textarea style="height:100px;width:170px;font-family:arial;font-size:10px;" id="backgroundInfo" name="Contacts[backgroundInfo]" onfocus="clearText(this);"><?php echo Yii::t('contacts','Enter any additional information or questions regarding your interest here.'); ?></textarea><br /></div>
+	<div class="row"><b><?php echo Yii::t('contacts','Interest');?>:</b><br /> <textarea style="height:100px;width:170px;font-family:arial;font-size:10px;" id="backgroundInfo" name="Contacts[backgroundInfo]" onfocus="clearText(this);"><?php echo Yii::t('contacts','Enter any additional information or questions regarding your interest here.'); ?></textarea><br /></div>
 	<?php } ?>
 	<?php foreach ($_GET as $key=>$value) { ?>
 		<input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />

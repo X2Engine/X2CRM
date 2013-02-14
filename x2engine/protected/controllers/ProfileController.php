@@ -443,7 +443,7 @@ class ProfileController extends x2base {
 		
 		// if(isset($_GET['comment'],$_GET['id'])) {
 
-		$postModel = Social::model()->findByPk($id);
+		$postModel = Events::model()->findByPk($id);
 		
 		if($postModel === null)
 			throw new CHttpException(404,Yii::t('app','The requested post does not exist.'));

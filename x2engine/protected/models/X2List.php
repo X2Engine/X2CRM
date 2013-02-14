@@ -186,7 +186,7 @@ class X2List extends CActiveRecord {
 	 * Returns a CDbCriteria to retrieve all models specified by the list
 	 * @return CDbCriteria Criteria to retrieve all models in the list
 	 */
-	public function queryCriteria() {
+	public function queryCriteria($useAccessRules=true) {
 		$search = new CDbCriteria;
 
 		if($this->type == 'dynamic') {
@@ -309,11 +309,14 @@ class X2List extends CActiveRecord {
         // if(Yii::app()->user->getName()!='admin')
             // $search->addCondition($condition);
 			
-		
-		$accessCriteria = X2Model::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
-		$accessCriteria->mergeWith($search,'AND');
-		
-		return $accessCriteria;
+		if($useAccessRules) {
+			$accessCriteria = X2Model::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
+			$accessCriteria->mergeWith($search,'AND');
+			
+			return $accessCriteria;
+		} else {
+			return $search;
+		}
 	}
 
 	/**

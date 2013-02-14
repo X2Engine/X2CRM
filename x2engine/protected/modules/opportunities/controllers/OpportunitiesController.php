@@ -473,7 +473,7 @@ class OpportunitiesController extends x2base {
 			$users[$group->id]=$group->name;
 
 		$contacts=Contacts::getAllNames();
-                unset($contacts['0']);
+        unset($contacts['0']);
 		$model=$this->loadModel($id);
 
 		$contacts=Opportunity::editContactArray($contacts, $model);
@@ -483,7 +483,7 @@ class OpportunitiesController extends x2base {
 
 		if(isset($_POST['Opportunity'])) {
 			$temp=$model->associatedContacts; 
-                        $tempArr=$model->attributes;
+            $tempArr=$model->attributes;
 			$model->attributes=$_POST['Opportunity'];  
 			$arr=$_POST['Opportunity']['associatedContacts'];
 			foreach($arr as $contactId) {
@@ -494,12 +494,8 @@ class OpportunitiesController extends x2base {
 				$rel->secondId=$model->id;
 				$rel->save();
 			}
-
-			$model->associatedContacts=Opportunity::parseContacts($arr);
-			$temp.=" ".$model->associatedContacts;
-			$model->associatedContacts=$temp;
-                        $changes=$this->calculateChanges($tempArr,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+            $changes=$this->calculateChanges($tempArr,$model->attributes, $model);
+            $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -535,8 +531,8 @@ class OpportunitiesController extends x2base {
 			$temp=Opportunity::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+            $changes=$this->calculateChanges($temp,$model->attributes, $model);
+            $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -551,9 +547,14 @@ class OpportunitiesController extends x2base {
 	public function actionRemoveContact($id) {
 
 		$model=$this->loadModel($id);
-		$pieces=explode(" ",$model->associatedContacts);
-		$pieces=Opportunity::editContactsInverse($pieces);
-
+		$rels=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','secondType'=>'Opportunity','secondId'=>$id));
+        $pieces=array();
+        foreach($rels as $relationship){
+            $contact=X2Model::model('Contacts')->findByPk($relationship->firstId);
+            if(isset($contact)){
+                $pieces[$relationship->firstId]=$contact->name;
+            }
+        }
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
@@ -569,12 +570,8 @@ class OpportunitiesController extends x2base {
 					$rel->delete();
 				unset($pieces[$contact]);
 			}
-			
-			$temp2=Opportunity::parseContactsTwo($pieces);
-
-			$model->associatedContacts=$temp2;
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+            $changes=$this->calculateChanges($temp,$model->attributes);
+            $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -626,7 +623,6 @@ class OpportunitiesController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;

@@ -60,7 +60,7 @@ $productTableInit = "$(function() {\n";
 foreach($orders as $order) {
 	if($order->adjustmentType == 'percent')
 		$order->adjustment = "'{$order->adjustment}%'";
-	$productTableInit .= "	addFilledProduct({$quote->id}, {$order->productId}, {$order->price}, {$order->quantity}, {$order->adjustment}, '{$quote->currency}', $productNames, $prices);\n";
+	$productTableInit .= "	addFilledProduct({$quote->id}, {$order->productId}, {$order->price}, {$order->quantity}, ".(!empty($order->adjustment)?$order->adjustment:0).", '{$quote->currency}', $productNames, $prices);\n";
 }
 $productTableInit .= "	$('#quote-update-{$quote->id}').hide();\n";
 $productTableInit .= "});\n";
@@ -342,7 +342,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			<td><?php echo $quote->createdBy; ?></td>
 			<td><?php echo $quote->updatedBy; ?></td>
 			<td>
-					<?php echo $form->dropDownList($quote,'status', Quote::statusList()); ?>
+					<?php echo $form->dropDownList($quote, 'status', Quote::statusList()); ?>
 					<?php echo $form->error($quote,'status'); ?>
 					<span style="padding-left: 5px;">
 						<?php echo Yii::t('quotes', $attributeLabel['locked']); ?>

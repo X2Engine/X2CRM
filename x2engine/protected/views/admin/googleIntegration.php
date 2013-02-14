@@ -84,7 +84,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo Yii::t('admin', 'Also, the following link needs to be added to your app\'s Redirect URIs:'); ?>
 		<br><br>
 <textarea style="padding:5px; height:40px;line-height:20px;width:400px;" disabled="disabled">
-<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/create'); ?>
+<?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/syncActionsToGoogleCalendar'); ?>
 
 <?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/site/googleLogin'); ?>
 </textarea>

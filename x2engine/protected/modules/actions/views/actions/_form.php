@@ -182,9 +182,13 @@ if($inlineForm){
                         var loc=str.split("?");
                         if(loc.length>1){
                             var loc2=loc[1].split("&");
-                            window.location="?"+loc2[0]+"&param='.Yii::app()->user->getName().';"+data+":0";
+                            if(loc2.length>1){
+                                window.location="?"+loc2[0]+"&param='.Yii::app()->user->getName().';"+data+":0";
+                            }else{
+                                window.location="?param='.Yii::app()->user->getName().';"+data+":0";
+                            }  
                         }else{
-                            window.location="&param='.Yii::app()->user->getName().';"+data+":0";
+                            window.location="?param='.Yii::app()->user->getName().';"+data+":0";
                         }
 					}'
 				)

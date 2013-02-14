@@ -54,10 +54,10 @@ class ServicesController extends x2base {
 
 	public function accessRules() {
 		return array(
-                        array('allow',
-                            'actions'=>array('getItems','webForm'),
-                            'users'=>array('*'), 
-                        ),
+			array('allow',
+				'actions'=>array('getItems','webForm'),
+				'users'=>array('*'), 
+			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','update','search','saveChanges','delete','inlineEmail','createWebForm', 'statusFilter'),
 				'users'=>array('@'),
@@ -81,11 +81,11 @@ class ServicesController extends x2base {
 	}
 	
 	public function behaviors() {
-		return array(
-			'ServiceRoutingBehavior'=>array(
-				'class'=>'ServiceRoutingBehavior'
-			)
-		);
+		return array_merge(parent::behaviors(), array(
+					'ServiceRoutingBehavior' => array(
+						'class' => 'ServiceRoutingBehavior'
+					)
+				));
 	}
 
 	/**
@@ -118,7 +118,6 @@ class ServicesController extends x2base {
 				if($model->escalatedTo != '') {
                     $event=new Events;
                     $event->type='case_escalated';
-                    $event->level=2;
                     $event->user=Yii::app()->user->getName();
                     $event->associationType=$this->modelClass;
                     $event->associationId=$model->id;
@@ -232,7 +231,6 @@ class ServicesController extends x2base {
 		if($model->escalatedTo != '' && $model->escalatedTo != $oldAttributes['escalatedTo']) {
             $event=new Events;
             $event->type='case_escalated';
-            $event->level=2;
             $event->user=Yii::app()->user->getName();
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
@@ -313,7 +311,6 @@ class ServicesController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;
@@ -588,28 +585,48 @@ class ServicesController extends x2base {
 	 *
 	 */
 	public function actionStatusFilter() {
-	//	var_dump($_POST);
-		$checked = CJSON::decode($_POST['checked']);
-		$status = $_POST['status'];
+	
+		if(isset($_POST['all'])) {	// show all the things!!
+			Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode(array());	// hide none
+			Yii::app()->params->profile->update(array('hideCasesWithStatus'));
+			
+		} elseif(isset($_POST['none'])) {	// hide all the things!!!!11
+			$statuses = array();
+			
+			$dropdownId = Yii::app()->db->createCommand()	// get the ID of the statuses dropdown via fields table
+				->select('linkType')
+				->from('x2_fields')
+				->where('modelName="Services" AND fieldName="status" AND type="dropdown"')
+				->queryScalar();
+			if($dropdownId !== null)
+				$statuses = Dropdowns::getItems($dropdownId);	// get the actual statuses
+			
+			Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($statuses);
+			Yii::app()->params->profile->update(array('hideCasesWithStatus'));
+			
+		} elseif(isset($_POST['checked'])) {
 		
-		var_dump($checked);
-		var_dump($status);
-		
-		$hideStatuses = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
-		if(!$hideStatuses) {
-			$hideStatuses = array();
+			$checked = CJSON::decode($_POST['checked']);
+			$status = isset($_POST['status'])? $_POST['status'] : false;
+			
+			// var_dump($checked);
+			// var_dump($status);
+			
+			$hideStatuses = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
+			if($hideStatuses === null || !is_array($hideStatuses))
+				$hideStatuses = array();
+			
+			// var_dump($checked);
+			// var_dump(in_array($status, $hideStatuses));
+			if($checked && ($key = array_search($status, $hideStatuses)) !== false) { // if we want to show the status, and it's not being shown
+				unset($hideStatuses[$key]); // show status
+			} else if(!$checked && !in_array($status, $hideStatuses)) { // if we want to hide the status, and it's not being hidden
+				$hideStatuses[] = $status;
+			}
+			
+			Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($hideStatuses);
+			Yii::app()->params->profile->update(array('hideCasesWithStatus'));
 		}
-		
-		var_dump($checked);
-		var_dump(in_array($status, $hideStatuses));
-		if($checked && ($key = array_search($status, $hideStatuses)) !== false) { // if we want to show the status, and it's not being shown
-			unset($hideStatuses[$key]); // show status
-		} else if(!$checked && !in_array($status, $hideStatuses)) { // if we want to hide the status, and it's not being hidden
-			$hideStatuses[] = $status;
-		}
-		
-		Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($hideStatuses);
-		Yii::app()->params->profile->update();
 	}
 
 

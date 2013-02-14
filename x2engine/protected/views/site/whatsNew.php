@@ -286,8 +286,8 @@ $(document).on("click",".unimportant-link",function(e){
     $(link).prev().toggle();
 });
 
-    var lastEventId='.$lastEventId.';
-    var lastTimestamp='.$lastTimestamp.';
+    var lastEventId='.(!empty($lastEventId)?$lastEventId:0).';
+    var lastTimestamp='.(!empty($lastTimestamp)?$lastTimestamp:0).';
     function updateFeed(){
         $.ajax({
             url:"getEvents",
@@ -335,19 +335,19 @@ $(document).on("click",".delete-link",function(e){
 
 ?>
 
-<div style="float:left;"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2></div>
-<?php 
-echo "<div id='menu-links'>";
-echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button'));
-echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button'));
-echo " ".CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button'));
-echo " ".CHtml::link(Yii::t('app','Clear Filters'),'#',array('id'=>'clear-filters-link','class'=>'x2-button'));
-echo " ".CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button'));
-echo " ".CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button'));
-echo " ".CHtml::link(Yii::t('app','Show/Hide All Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button'));
-
-echo "</div>";
-?>
+<div class="page-title icon" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/Activity_Feed.png);"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
+	<div id="menu-links" class="title-bar">
+		<?php 
+        echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
+        echo CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button right'));
+		echo CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button right'));
+        echo CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button right'));
+        echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
+        echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button right'));
+        
+		?>
+	</div>
+</div>
 <div class="form" id="post-form" style="clear:both">
 	<?php $feed=new Events; ?>
 	<?php $form = $this->beginWidget('CActiveForm', array(
@@ -370,7 +370,7 @@ echo "</div>";
         function translateOptions($item){
             return Yii::t('app',$item);
         }
-        echo $form->dropDownList($feed,'subtype',array_map('translateOptions',json_decode(Dropdowns::model()->findByPk(14)->options,true)));
+        echo $form->dropDownList($feed,'subtype',array_map('translateOptions',json_decode(Dropdowns::model()->findByPk(113)->options,true)));
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
 		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();"));
 		echo "</div>";

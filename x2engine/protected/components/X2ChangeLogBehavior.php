@@ -54,7 +54,7 @@
 class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
 
-	private $_oldAttributes = array();
+	protected $_oldAttributes = array();
 
 	public function attach($owner) {
 		parent::attach($owner);
@@ -64,6 +64,12 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	}
 
 	public function afterSave($event) {
+		$this->doStuff();
+	}
+	
+	public function doStuff() {
+	
+	
 		if ($this->owner->isNewRecord) {
 
 			// $log=new ActiveRecordLog;
@@ -87,8 +93,8 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			$oldattributes = $this->getOldAttributes();
 
 			// compare old and new
-			foreach ($newattributes as $name => $value) {
-				if (!empty($oldattributes)) {
+			foreach($newattributes as $name => $value) {
+				if(!empty($oldattributes)) {
 					$old = $oldattributes[$name];
 				} else {
 					$old = '';
@@ -134,127 +140,225 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
 	
 	
-	protected function calculateChanges(){
-		
-		
-		
+	protected function calculateChanges($old, $new, &$model = null) {
 	
 	
-		$arr=array();
-		$keys=array_keys($new);
-		for($i=0;$i<count($keys);$i++){
-			if($old[$keys[$i]]!=$new[$keys[$i]]){
-				$arr[$keys[$i]]=$new[$keys[$i]];
-				$allCriteria=Criteria::model()->findAllByAttributes(array('modelType'=>$this->modelClass,'modelField'=>$keys[$i]));
-				foreach($allCriteria as $criteria){
-					if(($criteria->comparisonOperator=="=" && $new[$keys[$i]]==$criteria->modelValue)
-								|| ($criteria->comparisonOperator==">" && $new[$keys[$i]]>=$criteria->modelValue)
-								|| ($criteria->comparisonOperator=="<" && $new[$keys[$i]]<=$criteria->modelValue)
-								|| ($criteria->comparisonOperator=="change" && $new[$keys[$i]]!=$old[$keys[$i]])){
-								
-						$users = explode(", ",$criteria->users);
-								
-						if($criteria->type=='notification') {
-							foreach($users as $user) {
+		if($this->isNewRecord) {
+		
+		
+		} else {
+			
+			
+			$flowItems = CActiveRecord::model('X2FlowItem')->with('flowParams')->findAllBySql('type IN("record_field_change","record_update")');
 
+		}
+	
+		// "record_tag_add","record_tag_remove"
+	
+	
+	
+	
+		$arr = array();
+		$keys = array_keys($new);
+		for ($i = 0; $i < count($keys); $i++) {
+			if ($old[$keys[$i]] != $new[$keys[$i]]) {
+				$arr[$keys[$i]] = $new[$keys[$i]];
+				$allCriteria = Criteria::model()->findAllByAttributes(array('modelType' => $this->modelClass, 'modelField' => $keys[$i]));
+				foreach ($allCriteria as $criteria) {
+					if (($criteria->comparisonOperator == "=" && $new[$keys[$i]] == $criteria->modelValue)
+							|| ($criteria->comparisonOperator == ">" && $new[$keys[$i]] >= $criteria->modelValue)
+							|| ($criteria->comparisonOperator == "<" && $new[$keys[$i]] <= $criteria->modelValue)
+							|| ($criteria->comparisonOperator == "change" && $new[$keys[$i]] != $old[$keys[$i]])) {
+
+						$users = explode(", ", $criteria->users);
+
+						if ($criteria->type == 'notification') {
+							foreach ($users as $user) {
+								$event=new Events;
+								$event->level=1;
+								$event->user=$user;
+								$event->associationType='Notifications';
+								$event->type='notif';
+								
 								$notif = new Notification;
 								$notif->type = 'change';
 								$notif->fieldName = $keys[$i];
-								
-								if($criteria->comparisonOperator == 'change') {
-									$notif->comparison = 'change';				// if the criteria is just 'changed'
-									$notif->value = $new[$keys[$i]];			// record the new value
+								$notif->modelType = get_class($model);
+								$notif->modelId = $model->id;
+
+								if ($criteria->comparisonOperator == 'change') {
+									$notif->comparison = 'change';    // if the criteria is just 'changed'
+									$notif->value = $new[$keys[$i]];   // record the new value
 								} else {
-									$notif->comparison = $criteria->comparisonOperator;		// otherwise record the operator type
-									$notif->value = substr($criteria->modelValue,0,250);	// and the comparison value
+									$notif->comparison = $criteria->comparisonOperator;  // otherwise record the operator type
+									$notif->value = substr($criteria->modelValue, 0, 250); // and the comparison value
 								}
 								$notif->user = $user;
-								$notif->createdBy = Yii::app()->user->getName();
+								$notif->createdBy = Yii::app()->user->name;
 								$notif->createDate = time();
-								$notif->viewed=0;
-								$notif->record=$this->modelClass.":".$new['id'];
-								$notif->save();
 
-						/* 		$notif=new Notifications;
-								$profile=X2Model::model('ProfileChild')->findByAttributes(array('username'=>Yii::app()->user->getName()));
-								if($criteria->comparisonOperator=="="){
-									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator==">"){
-									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator=="<"){
-									$notif->text="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator=="change"){
-									$notif->text="A record of type ".$this->modelClass." has had its $criteria->modelField field changed from ".$old[$keys[$i]]." to ".$new[$keys[$i]]." by ".Yii::app()->user->getName();
+								if($notif->save()){
+									$event->associationId=$notif->id;
+									$event->save();
 								}
-								$notif->user=$user;
-								$notif->createDate=time();
-								$notif->viewed=0;
-								$notif->record=$this->modelClass.":".$new['id'];
-								$notif->save(); */
 							}
-						} else if($criteria->type=='action') {
-							$users=explode(", ",$criteria->users);
-							foreach($users as $user){
-								$action=new Actions;
-								$action->assignedTo=$user;
-								if($criteria->comparisonOperator=="="){
-									$action->actionDescription="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator==">"){
-									$action->actionDescription="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator=="<"){
-									$action->actionDescription="A record of type ".$this->modelClass." has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue"." by ".Yii::app()->user->getName();
-								}else if($criteria->comparisonOperator=="change"){
-									$action->actionDescription="A record of type ".$this->modelClass." has had its $criteria->modelField field changed from ".$old[$keys[$i]]." to ".$new[$keys[$i]]." by ".Yii::app()->user->getName();
+						} elseif ($criteria->type == 'action') {
+							$users = explode(", ", $criteria->users);
+							foreach ($users as $user) {
+								$action = new Actions;
+								$action->assignedTo = $user;
+								if ($criteria->comparisonOperator == "=") {
+									$action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+								} else if ($criteria->comparisonOperator == ">") {
+									$action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+								} else if ($criteria->comparisonOperator == "<") {
+									$action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+								} else if ($criteria->comparisonOperator == "change") {
+									$action->actionDescription = "A record of type " . $this->modelClass . " has had its $criteria->modelField field changed from " . $old[$keys[$i]] . " to " . $new[$keys[$i]] . " by " . Yii::app()->user->getName();
 								}
-								$action->dueDate=mktime('23','59','59');
-								$action->createDate=time();
-								$action->lastUpdated=time();
-								$action->updatedBy='admin';
-								$action->visibility=1;
-								$action->associationType=strtolower($this->modelClass);
-								$action->associationId=$new['id'];
-								$model=X2Model::model($this->modelClass)->findByPk($new['id']);
-								$action->associationName=$model->name;
+								$action->dueDate = mktime('23', '59', '59');
+								$action->createDate = time();
+								$action->lastUpdated = time();
+								$action->updatedBy = 'admin';
+								$action->visibility = 1;
+								$action->associationType = strtolower($this->modelClass);
+								$action->associationId = $new['id'];
+								$model = X2Model::model($this->modelClass)->findByPk($new['id']);
+								$action->associationName = $model->name;
 								$action->save();
 							}
-						} else if($criteria->type=='assignment') {
+						} elseif ($criteria->type == 'assignment') {
 							$model->assignedTo = $criteria->users;
-							$model->save();
-							
-							$notif = new Notification;
-							$notif->user = $model->assignedTo;
-							$notif->createdBy = Yii::app()->user->getName();
-							$notif->createDate = time();
-							$notif->type = 'assignment';
-							$notif->modelType = $this->modelClass;
-							$notif->modelId = $new['id'];
-							$notif->save();
 
-							// $notif=new Notifications;  
-							// $notif->text="A record of type ".$this->modelClass." has been re-assigned to you.";
-							// $notif->user=$model->assignedTo;
-							// $notif->createDate=time();
-							// $notif->viewed=0;
-							// $notif->record=$this->modelClass.":".$new['id'];
-							// $notif->save();
-						} 
+							if ($model->save()) {
+								$event=new Events;
+								$event->type='notif';
+								$event->level=1;
+								$event->user=$model->assignedTo;
+								$event->associationType='Notifications';
+								
+								$notif = new Notification;
+								$notif->user = $model->assignedTo;
+								$notif->createDate = time();
+								$notif->type = 'assignment';
+								$notif->modelType = $this->modelClass;
+								$notif->modelId = $new['id'];
+								if($notif->save()){
+									$event->associationId=$notif->id;
+									$event->save();
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-		$str='';
-		foreach($arr as $key=>$item){
-				$str.="<b>$key</b> <u>FROM:</u> $old[$key] <u>TO:</u> $item <br />";
+		$changes=array();
+		foreach ($arr as $key => $item) {
+			if(is_array($old[$key]))
+				$old[$key] = implode(', ',$old[$key]);
+			$changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
 		}
-		return $str;
+		return $changes;
 	}
 	
 	
 	
 	
-	
-	
-	
-	
+	/**
+	 * Sets the lastUpdated and updatedBy fields to reflect recent changes.
+	 * @param type $model The model to be updated
+	 * @return type $model The model with modified attributes
+	 */
+	protected function updateChangelog($model, $changes) {
+		$model->lastUpdated = time();
+		$model->updatedBy = Yii::app()->user->getName();
+		$model->save();
+		$type = get_class($model);
+		if(is_array($changes)){
+			foreach($changes as $field=>$array){
+				$changelog = new Changelog;
+				$changelog->type = $type;
+				if (!isset($model->id)) {
+					if ($model->save()) {
 
+					}
+				}
+				$changelog->itemId = $model->id;
+				$changelog->changedBy = Yii::app()->user->getName();
+				$changelog->fieldName = $field;
+				$changelog->oldValue=$array['old'];
+				$changelog->newValue=$array['new'];
+				$changelog->timestamp = time();
+
+				if ($changelog->save()) {
+
+				}
+			}
+		}
+		
+		if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
+			if ($changes != "" && !is_array($changes)) {
+				$pieces = explode("<br />", $change);
+				foreach ($pieces as $piece) {
+					$newPieces = explode("TO:", $piece);
+					$forDeletion = $newPieces[0];
+					if (isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
+						$changes[] = $newPieces[1];
+					}
+
+					preg_match_all('/(^|\s|)#(\w\w+)/', $forDeletion, $deleteMatches);
+					$deleteMatches = $deleteMatches[0];
+					foreach ($deleteMatches as $match) {
+						$oldTag = Tags::model()->findByAttributes(array('tag' => substr($match, 1), 'type' => $type, 'itemId' => $model->id));
+						if (isset($oldTag))
+							$oldTag->delete();
+					}
+				}
+			}
+		}else if ($changes == 'Create' || $changes == 'Edited') {
+			if ($model instanceof Contacts)
+				$change = $model->backgroundInfo;
+			else if ($model instanceof Actions)
+				$change = $model->actionDescription;
+			else if ($model instanceof Docs)
+				$change = $model->text;
+			else
+				$change = $model->name;
+		}
+		if(is_array($changes)){
+			foreach ($changes as $field=>$array) {
+				preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
+				$matches = $matches[0];
+				foreach ($matches as $match) {
+					if(!preg_match('/\&(^|\s|)#(\w\w+);/',$match)){
+						$tag = new Tags;
+						$tag->type = $type;
+						$tag->taggedBy = Yii::app()->user->getName();
+						$tag->type = $type;
+						//cut out leading whitespace
+						$tag->tag = trim($match);
+						if ($model instanceof Contacts)
+							$tag->itemName = $model->firstName . " " . $model->lastName;
+						else if ($model instanceof Actions)
+							$tag->itemName = $model->actionDescription;
+						else if ($model instanceof Docs)
+							$tag->itemName = $model->title;
+						else
+							$tag->itemName = $model->name;
+						if (!isset($model->id)) {
+							$model->save();
+						}
+						$tag->itemId = $model->id;
+						$tag->timestamp = time();
+						//save tags including # sign
+						if ($tag->save()) {
+
+						}
+					}
+				}
+			}
+		}
+		return $model;
+	}
 }

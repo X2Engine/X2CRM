@@ -56,32 +56,42 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.<br><br>
 	<?php
 	if(Yii::app()->params->edition==='opensource')
-		echo Yii::t('app','X2Engine is an open source Customer Relationship Management application designed by John Roberts and licensed under the {link}.',array(
+		echo Yii::t('app','X2Engine is an open source Customer Relationship Management application <br>designed by John Roberts and licensed under the {link}.',array(
 			'{link}'=>CHtml::link(Yii::t('app','BSD License'),Yii::app()->getBaseUrl().'/LICENSE.txt')
 		));
 	else
-		echo Yii::t('app','X2Engine is a Customer Relationship Management application designed by John Roberts.');
+		echo Yii::t('app','X2Engine is a Customer Relationship Management application <br>designed by John Roberts.');
 	?>
-	<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?>
+	<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?><br><br>
+	<div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a></div>
 	<div id="about-intro">
-		<b style="display:block;margin-bottom:8px;">Headquarters</b>
-		University Town Center<br>
-		1101 Pacific Avenue<br>
-		Suite 309<br>
-		Santa Cruz, California 95060<br>
-		USA<br>
-		<b><?php echo Yii::t('app','Core engineering team:');?></b>
+		<h4><?php echo Yii::t('app','Address');?></h4>
 		<ul>
+		<li>X2Engine Inc.</li>
+		<li>PO Box 66752</li>
+		<li>Scotts Valley, California 95067</li>
+		<li>USA</li>
+		<li><a href="http://www.x2engine.com/">www.x2engine.com</a></li>
+		</ul>
+		<h4><?php echo Yii::t('app','Core team');?></h4>
+		<ul>
+		<li>John Roberts</li>
 		<li>Jake Houser</li>
 		<li>Matthew Pearson</li>
-		<li>DJ Visbal</li>
 		<li>Demitri Morgan</li>
+		</ul>
+		<h4><?php echo Yii::t('app','Contributors');?></h4>
+		<ul>
+		<li>DJ Visbal</li>
 		<li>John Mendonca</li>
+		<li>Haley Sedam</li>
+		<li>Andrew Hoffman</li>
+		<li>Zach Louden</li>
+		<li>Steve Lance</li>
 		</ul>
 	</div>
-	<div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a><br><br></div>
 	<div id="about-legal">
-		Copyright © 2011 X2Engine Inc. The Program is provided AS IS, without warranty.
+		Copyright © 2013 X2Engine Inc. The Program is provided AS IS, without warranty.
 		<?php if(Yii::app()->params->edition==='opensource') echo 'Licensed under the ',CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),'.'; ?>
 	</div>
 	<br><hr>
@@ -89,58 +99,65 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<!--<div class="about-list" style="height:450px;width:auto;overflow-y:scroll;border:1px solid #ddd;padding:10px;"></div>
 		<hr>-->
 		<h4><?php echo Yii::t('about','Version Info'); ?></h4>
-		X2Engine: <?php echo Yii::app()->params->version;?><br>
-		<!--<?php echo Yii::t('about','Build'); ?>: 1234<br>-->
-		Yii: <?php echo Yii::getVersion(); ?><br>
-		jQuery: <span id="jqueryVersion"></span><br>
-		PHP: <?php echo phpversion(); ?><br><br>
-		<!--jQuery Mobile: 1.0b2<br>-->
+		<ul>
+			<li>X2Engine: <?php echo Yii::app()->params->version;?></li>
+			<!--<?php echo Yii::t('about','Build'); ?>: 1234<br>-->
+			<li>Yii: <?php echo Yii::getVersion(); ?></li>
+			<li>jQuery: <span id="jqueryVersion"></span></li>
+			<li>PHP: <?php echo phpversion(); ?></li>
+			<!--jQuery Mobile: 1.0b2<br>-->
+		</ul>
 		<h4><?php echo Yii::t('about','Code Base'); ?></h4>
-		GitHub: <a href="https://github.com/X2Engine/X2Engine" target="_blank">https://github.com/X2Engine/X2Engine</a><br>
-		Google Code: <a href="http://code.google.com/p/x2engine/" target="_blank">http://code.google.com/p/x2engine/</a><br>
-		SourceForge: <a href="https://sourceforge.net/projects/x2engine/" target="_blank">https://sourceforge.net/projects/x2engine/</a><br>
-		<!--BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a><br>--><br>
+		<ul>
+			<li>GitHub: <a href="https://github.com/X2Engine/X2Engine" target="_blank">https://github.com/X2Engine/X2Engine</a></li>
+			<li>Google Code: <a href="http://code.google.com/p/x2engine/" target="_blank">http://code.google.com/p/x2engine/</a></li>
+			<li>SourceForge: <a href="https://sourceforge.net/projects/x2engine/" target="_blank">https://sourceforge.net/projects/x2engine/</a></li>
+			<!--BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a></li>-->
+		</ul>
+		
 		<h4><?php echo Yii::t('about','Plugins/Extensions'); ?></h4>
-		Google API PHP Client:
-		<a href="http://code.google.com/p/google-api-php-client/" target="_blank"><?php echo Yii::t('about','Project'); ?></a>
-		<a href="http://www.apache.org/licenses/" target="_blank" class="no-underline" title="Apache License 2.0">[Apache]</a><br>
-		Modernizr:
-		<a href="http://http://modernizr.com" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://modernizr.com/license/" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
-		ExColor:
-		<a href="http://modcoder.org" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://modcoder.org/?page=license" target="_blank" class="no-underline" title="License">[License]</a><br>
-		Dragtable:
-		<a href="http://jebaird.com/blog/dragtable-jquery-ui-widget-re-arrange-table-columns-drag-drop" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-		colResizable: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-		formatCurrency: <a href="http://code.google.com/p/jquery-formatcurrency/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
-		phpMailer: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
-		FullCalendar: <a href="http://arshaw.com/fullcalendar/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-		<!--JS SHA-256: <a href="http://www.webtoolkit.info/javascript-sha256.html" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.webtoolkit.info/license" target="_blank" class="no-underline" title="License">[License]</a><br>-->
-		CKEditor: <a href="http://www.ckeditor.com/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a><br>
-		CFile Class:
-		<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
-		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-		EZip Class:
-		<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
-		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-		CSaveRelationsBehavior Class:
-		<a href="http://www.yiiframework.com/extension/save-relations-ar-behavior/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
-		<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
-		ERememberFiltersBehavior Class:
-		<a href="http://www.yiiframework.com/extension/remember-filters-gridview/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
-		<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a><br>
-		qTip2: <a href="http://craigsworks.com/projects/qtip2/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
-		jStorage: <a href="http://www.jstorage.info/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-		<a href="http://www.jstorage.info/static/license.txt" target="_blank" class="no-underline" title="MIT License">[MIT]</a><br>
+		<ul>
+			<li>Google API PHP Client:
+				<a href="http://code.google.com/p/google-api-php-client/" target="_blank"><?php echo Yii::t('about','Project'); ?></a>
+				<a href="http://www.apache.org/licenses/" target="_blank" class="no-underline" title="Apache License 2.0">[Apache]</a></li>
+			<li>Modernizr:
+				<a href="http://http://modernizr.com" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://modernizr.com/license/" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a></li>
+			<li>ExColor:
+				<a href="http://modcoder.org" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://modcoder.org/?page=license" target="_blank" class="no-underline" title="License">[License]</a></li>
+			<li>Dragtable:
+				<a href="http://jebaird.com/blog/dragtable-jquery-ui-widget-re-arrange-table-columns-drag-drop" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<li>colResizable: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<li>formatCurrency: <a href="http://code.google.com/p/jquery-formatcurrency/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a></li>
+			<li>phpMailer: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a></li>
+			<li>FullCalendar: <a href="http://arshaw.com/fullcalendar/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<!--<li>JS SHA-256: <a href="http://www.webtoolkit.info/javascript-sha256.html" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.webtoolkit.info/license" target="_blank" class="no-underline" title="License">[License]</a></li>-->
+			<li>CKEditor: <a href="http://www.ckeditor.com/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a></li>
+			<li>CFile Class:
+				<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<li>EZip Class:
+				<a href="http://www.yiiframework.com/extension/cfile" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<li>CSaveRelationsBehavior Class:
+				<a href="http://www.yiiframework.com/extension/save-relations-ar-behavior/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+				<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a></li>
+			<li>ERememberFiltersBehavior Class:
+				<a href="http://www.yiiframework.com/extension/remember-filters-gridview/" target="_blank"><?php echo Yii::t('about','Yii Extension'); ?></a>
+				<a href="http://www.opensource.org/licenses/BSD-3-Clause" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a></li>
+			<li>qTip2: <a href="http://craigsworks.com/projects/qtip2/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<li>jStorage: <a href="http://www.jstorage.info/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.jstorage.info/static/license.txt" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+		</ul>
 	</div>
 </div>
 <div id="about-map">

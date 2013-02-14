@@ -278,7 +278,6 @@ class DocsController extends x2base {
                     $event->associationType="Docs";
                     $event->associationId=$model->id;
                     $event->type="doc_update";
-                    $event->level=2;
                     $event->user=Yii::app()->user->getName();
                     $event->visibility=$model->visibility;
                     $event->save();

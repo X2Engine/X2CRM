@@ -45,7 +45,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','View'), 'url'=>array('view', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Edit Opportunity')),
 	array('label'=>Yii::t('opportunities','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),

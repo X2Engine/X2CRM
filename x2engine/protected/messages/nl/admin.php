@@ -128,7 +128,7 @@ return array (
 'Manage what events will trigger user notifications.'=>'',
 'Configure automatic updates, session timeout and chat poll rate.'=>'',
 'Enter your google app settings for Calendar/Google login'=>'',
-'Configure X2Engine\'s email settings'=>'',
+'Configure X2Engine\'s email settings'=>'Configureer de e-mailinstellingen X2Engine\'s',
 'Create an email marketing campaign'=>'',
 'Manage your marketing campaigns'=>'',
 'Import contacts using a CSV template'=>'',

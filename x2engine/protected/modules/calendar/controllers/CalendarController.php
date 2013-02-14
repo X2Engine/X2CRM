@@ -886,7 +886,13 @@ class CalendarController extends x2base {
 			if(isset($profile))
 				$profile->updateGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar
 			
-			$action->save();
+			if($action->save()){
+                $event=X2Model::model('Events')->findByAttributes(array('associationType'=>'Actions','associationId'=>$action->id));
+                if(isset($event)){
+                    $event->timestamp=$action->dueDate;
+                    $event->save();
+                }
+            }
 		}
 	}
 	

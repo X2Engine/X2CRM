@@ -313,7 +313,6 @@ class MarketingController extends x2base {
 			}
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;
@@ -957,7 +956,6 @@ class MarketingController extends x2base {
 			$action->visibility = $item->contact->visibility;
 			$action->assignedTo = $item->contact->assignedTo;
 			$event=new Events;
-            $event->level=2;
             $event->associationId=$action->associationId;
             $event->associationType='Contacts';
 			if($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
@@ -1066,7 +1064,6 @@ class MarketingController extends x2base {
 			$action->save();
 			// create notification
             if(isset($event)){
-                $event->level=3;
                 $event->type='email_clicked';
                 $event->save();
             }

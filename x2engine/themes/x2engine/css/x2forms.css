@@ -273,6 +273,11 @@ div.x2-layout .formItem .placeholder {color:#aaa;}
 div.x2-layout .formInputBox input {margin:0;padding:2px;}
 div.x2-layout .formInputBox input[type="text"] {width:100%;}
 div.x2-layout .formInputBox textarea {height:100%;resize:none;padding:2px;}
+div.x2-layout .formInputBox select {width:100%;}
+
+div.x2-layout .tableWrapper .grid-view table.items {clear:none;margin-top:0;}
+div.x2-layout .tableWrapper .grid-view table.items {border:none;}
+
 
 div.x2-layout div.error label,div.x2-layout label.error,div.x2-layout span.error {color:#C00;}
 div.x2-layout div.error input,div.x2-layout div.error textarea,div.x2-layout div.error select,div.x2-layout input.error,div.x2-layout textarea.error,div.x2-layout select.error {

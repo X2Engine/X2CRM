@@ -145,7 +145,7 @@ class SortableWidgets extends CJuiWidget
 				// $t1 = microtime(true);
 				if(!empty($widget)) {
 					$this->beginWidget('zii.widgets.CPortlet',array(
-						'title'=>'<div onclick="toggleWidgetState(\''.$class.'\','.($visible? 0 : 1).'); return false;" style="cursor:pointer;">'.Yii::t('app',Yii::app()->params->registeredWidgets[$class]) . '<div class="portlet-minimize">'.$minimizeLink.'</div></div>',
+						'title'=>'<div>'.($class=='ChatBox'?CHtml::link(Yii::t('app','Activity Feed'),array('/site/whatsNew'),array('style'=>'text-decoration:none')):Yii::t('app',Yii::app()->params->registeredWidgets[$class])) . '<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
 						'id'=>$properties['id']
 					));
 					echo $widget;

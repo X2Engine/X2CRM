@@ -73,6 +73,7 @@ a.x2-button, input.x2-button, button.x2-button { /* , a.search-button */
 	line-height:24px;
 	font-weight:bold;
 	text-decoration:none;
+	text-align:center;
 	text-shadow:0 1px 0 #fff;
 	-webkit-appearance:none;
 	-moz-box-shadow:	inset 0 1px 0 0 #fff;
@@ -194,6 +195,37 @@ a.x2-button span.add-button {padding:0 0 0 16px;background:url(../images/plus.gi
 	background: -ms-linear-gradient(top, #222222 0%,#444444 100%);
 	background: linear-gradient(top, #222222 0%,#444444 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#444444',GradientType=0 );
+}
+.x2-button-group .x2-button {
+	border-radius:			0;
+	-moz-border-radius:		0;
+	-webkit-border-radius:	0;
+	-o-border-radius:		0;
+	margin:5px 0;
+	border-right-width:0;
+}
+.x2-button-group .x2-button:only-child {
+	border-radius:			3px;
+	-moz-border-radius:		3px;
+	-webkit-border-radius:	3px;
+	-o-border-radius:		3px;
+	margin:5px;
+	border-right-width:1px;
+}
+.x2-button-group .x2-button:first-child {
+	border-radius:			3px 0 0 3px;
+	-moz-border-radius:		3px 0 0 3px;
+	-webkit-border-radius:	3px 0 0 3px;
+	-o-border-radius:		3px 0 0 3px;
+	margin-right:0;
+}
+.x2-button-group .x2-button:last-child {
+	border-radius:			0 3px 3px 0;
+	-moz-border-radius:		0 3px 3px 0;
+	-webkit-border-radius:	0 3px 3px 0;
+	-o-border-radius:		0 3px 3px 0;
+	margin-left:0;
+	border-right-width:1px;
 }
 
 .x2-link {
@@ -959,11 +991,12 @@ div.workflow-status {display:block;float:left;line-height:20px;height:24px;width
 .action.list-view .icon.complete {		background-image:url(../images/action_complete.png); }
 .action.list-view .icon.workflow {		background-image:url(../images/action_workflow.png); }
 .action.list-view .icon.email {			background-image:url(../images/action_email.png); }
-.action.list-view .icon.emailOpened {			background-image:url(../images/action_email_opened.png); }
+.action.list-view .icon.emailOpened {	background-image:url(../images/action_email_opened.png); }
 .action.list-view .icon.note {			background-image:url(../images/action_comment.png); }
 .action.list-view .icon.call {			background-image:url(../images/action_call.png); }
 .action.list-view .icon.marketing {		background-image:url(../images/action_marketing.png); }
 .action.list-view .icon.event {			background-image:url(../images/action_event.png); }
+.action.list-view .icon.emailFrom {		background-image:url(../images/action_email.png);}
 
 
 .action.list-view .items span.empty {padding:10px;display:block;}
@@ -978,26 +1011,6 @@ img.attachment-img {
 	margin:5px;
 	display:block;
 	max-width:250px;
-}
-#footer a {color:#175CA3;}
-#footer a:hover {color:#8dbff2;}
-#footer-logos {
-	display:block;
-	width:300px;
-	margin:0 auto 0 auto;
-}
-#login-page #footer {
-	
-	color:#333;
-}
-#footer .hr {
-	border-top:1px solid rgba(0,0,0,0.1);
-	border-bottom:1px solid rgba(255,255,255,0.25);
-	clear:both;
-	float:none;
-	width:100%;
-	height:0px;
-	margin:0 0 1em;
 }
 #logo {
 	margin-left:1px;
@@ -1061,10 +1074,11 @@ div.contact-lists table.items tbody tr:last-child td {font-weight:bold;}
 /* #modcoder_colorpicker {z-index:3;} */
 #profile {float:left;width:300px;}
 
-#about-intro {margin:10px 0;width:450px;font-size:12px;}
-#about-intro b {display:block;margin:10px 0 5px 0;}
-#about-intro ul {list-style-type:none;padding-left:0;margin:0;color:#666;}
-#about-credits {font-size:11px;}
+#about-intro {margin:10px 0;width:450px;}
+#about-intro li {font-size:12px;}
+#about-intro ul, #about-credits ul {list-style-type:none;padding-left:0;margin:0 0 10px 10px;color:#666;}
+#about-intro h4, #about-credits h4 {line-height:1em;margin:3px 0;}
+#about-credits li {font-size:11px;}
 #about-credits .no-underline {text-decoration:none;}
 #about-legal {clear:both;font-size:10px;color:#999;}
 #about-map img {

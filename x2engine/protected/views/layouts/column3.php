@@ -95,7 +95,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			echo '<div class="form no-border" style="text-align:center;">';
 			echo CHtml::dropDownList('show-actions', $this->showActions,
 				array(
-					'uncomplete'=>Yii::t('actions', 'Uncomplete'),
+					'uncomplete'=>Yii::t('actions', 'Incomplete'),
 					'complete'=>Yii::t('actions', 'Complete'),
 					'all'=>Yii::t('actions', 'All'),
 				),
@@ -127,9 +127,13 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 
 			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
 			$i = 1;
+			
 			foreach($this->serviceCaseStatuses as $status) {
+			
+				$checked = !in_array($status, $hideStatus);
+				
 				echo "<li>\n";
-				echo CHtml::checkBox("service-case-status-filter-$i", !in_array($status, $hideStatus),
+				echo CHtml::checkBox("service-case-status-filter-$i",$checked,
 					array(
 						'id'=>"service-case-status-filter-$i",
 		//		    	'onChange'=>"toggleUserCalendarSource(this.name, this.checked, $editable);", // add or remove user's actions to calendar if checked/unchecked
@@ -154,6 +158,32 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				$i++;
 			}
 			echo "</ul>\n";
+			echo '<div class="x2-button-group">';
+			echo CHtml::link(Yii::t('app','All'),'javascript:void(0);',array('id'=>'checkAllServiceFilters','class'=>'x2-button','style'=>'width:48px;',
+				'ajax'=>array(
+					'type' => 'POST', //request type
+					'url' => Yii::app()->controller->createUrl('/services/statusFilter'), //url to call
+					'success' => 'function(response) {
+						$.fn.yiiGridView.update("services-grid");
+						$("#service-case-status-filter li input").attr("checked","checked");
+					}',
+					'data' => 'js:{all:1}',
+				)
+			));
+			echo CHtml::link(Yii::t('app','None'),'javascript:void(0);',array('id'=>'uncheckAllServiceFilters','class'=>'x2-button','style'=>'width:47px;',
+				'ajax'=>array(
+					'type' => 'POST', //request type
+					'url' => Yii::app()->controller->createUrl('/services/statusFilter'), //url to call
+					'success' => 'function(response) {
+						$.fn.yiiGridView.update("services-grid");
+						$("#service-case-status-filter li input").removeAttr("checked");
+					}',
+					'data' => 'js:{none:1}',
+				)
+			));
+			echo '</div>';
+			
+			
 			$this->endWidget();
 		}
 
@@ -303,7 +333,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				'1'=>'Public',
 				'0'=>'Private',
 			);
-			$socialSubtypes=json_decode(Dropdowns::model()->findByPk(14)->options,true);
+			$socialSubtypes=json_decode(Dropdowns::model()->findByPk(113)->options,true);
 			$users=User::getNames();
 			$eventTypeList=Yii::app()->db->createCommand()
 					->select('type')

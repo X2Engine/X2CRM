@@ -76,7 +76,7 @@ class X2PieChart extends X2ChartWidget {
 	}
 
 	public function renderItems($data = array()) {
-
+        
 		$id = $this->getId();
 		$otherThreshold = $this->options['other-threshold'];
 		$skipNull = $this->options['skip-null'];
@@ -103,7 +103,7 @@ class X2PieChart extends X2ChartWidget {
 		if ($otherTotal > 0) {
 			$plotData[$i] = array(Yii::t('charts', 'Other'), $otherTotal);
 		}
-
+        
 		$cs = Yii::app()->clientScript;
 		$id = $this->htmlOptions['id'];
 		$chartVals = CJavaScript::encode(array($plotData));
@@ -114,8 +114,9 @@ class X2PieChart extends X2ChartWidget {
 		$jsChartOptions = CJavaScript::encode($this->chartOptions);
 		$jsChartOptions = str_replace("'jquery.jqplot.PieRenderer'", "$.jqplot.PieRenderer", $jsChartOptions);
 		$cmd = "$.jqplot('$id', $chartVals, $jsChartOptions)";
-                if(count($plotData)!=0)
-		$cs->registerScript($id, $cmd, CClientScript::POS_LOAD);
+        if(count($plotData)!=0){
+            $cs->registerScript($id, $cmd, CClientScript::POS_LOAD);
+        }
 	}
 
 }

@@ -48,6 +48,7 @@ Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
+<?php $this->renderGaCode('public'); ?> 
 
 <style type="text/css">
 html {

@@ -39,6 +39,9 @@
  * ****************************************************************************** */
 Yii::import('application.models.*');
 
+/**
+ * @package X2CRM.tests.unit.models 
+ */
 class EventsTest extends CDbTestCase {
     
     public $fixtures=array(

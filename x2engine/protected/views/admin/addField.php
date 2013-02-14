@@ -164,7 +164,7 @@
                         validationFlag=true;
                         $('#field-form').submit();
                     }else{
-                        alert("That model & field name combination is already in use.");
+                        alert(data);
                         return false;
                     }
                 }

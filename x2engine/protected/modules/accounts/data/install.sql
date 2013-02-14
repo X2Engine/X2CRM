@@ -35,7 +35,6 @@ VALUES
 ("Accounts",		"employees",			"Employees",			0,		0,	"int",			0,			0,		NULL,			0,		0,			""),
 ("Accounts",		"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		"multiple",	 	0,		0,			""),
 ("Accounts",		"createDate",			"Create Date",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
-("Accounts",		"associatedContacts",	"Contacts",				0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Accounts",		"description",			"Description",			0,		0,	"text",			0,			0,		NULL,			1,		0,			"Medium"),
 ("Accounts",		"lastUpdated",			"Last Updated",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Accounts",		"lastActivity",			"Last Activity",		0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),

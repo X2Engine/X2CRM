@@ -69,7 +69,7 @@ VALUES
 ("Campaign",		"listId",				"Contact List",			0,		0,	"link",			0,			0,		"X2List",		0,		0,			""),
 ("Campaign",		"active",				"Active",				0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
 ("Campaign",		"description",			"Description",			0,		0,	"text",			0,			0,		NULL,			1,		0,			"Medium"),
-("Campaign",		"type",					"Type",					0,		0,	"dropdown",		0,			0,		8,				0,		0,			""),
+("Campaign",		"type",					"Type",					0,		0,	"dropdown",		0,			0,		"107",			0,		0,			""),
 ("Campaign",		"template",				"Template",				0,		0,	"link",			0,			0,		"Docs",			0,		0,			""),
 ("Campaign",		"cost",					"Cost",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Campaign",		"subject",				"Subject",				0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),

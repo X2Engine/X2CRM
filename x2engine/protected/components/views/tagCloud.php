@@ -45,7 +45,7 @@ echo CHtml::ajaxLink(Yii::t('app','Just Me'), $justMeUrl,array('success'=>'funct
 <div id="myTags" <?php echo ($showAllUsers? 'style="display:none;"' : ''); ?>>
 <?php
 foreach($myTags as &$tag) {
-	echo '<span class="tag" title="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
+	echo '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
 }
 ?>
 </div>

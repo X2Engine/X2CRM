@@ -48,9 +48,6 @@ $admin = &Yii::app()->params->admin;
 
 <?php //echo Yii::t('app','Welcome to the administration tool set.'); ?>
 <?php
-if($admin->updateInterval == -1)
-	echo Yii::t('admin','Automatic updates are currently disabled.').' '.CHtml::link(Yii::t('app','Enable Updates'),array('toggleUpdater'));
-
 if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()) && !in_array($admin->unique_id,array('none',Null))) {
 	echo '<span style="color:red;">';
 	echo Yii::t('app','A new version is available! Click here to update to version {version}',array(
@@ -118,7 +115,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Toggle default logo'),'toggleDefaultLogo'); ?><br><?php echo Yii::t('admin','Change logo back to X2Contacts');?></div>
 	</div><br>
 	<div class="row">
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br><?php echo Yii::t('admin','Upload your own logo. 30x200 pixel image.');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),'uploadLogo'); ?><br><?php echo Yii::t('admin','Upload your own logo. 30px height image.');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2CRM'),'updater'); ?><br><?php echo Yii::t('admin','The X2CRM remote update utility.');?></div>
 		<?php if (isset(Yii::app()->params->admin->edition)): ?>
 		<?php if(in_array(Yii::app()->params->admin->edition,array('opensource',Null))): ?>
@@ -174,5 +171,8 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 </div>
 </div>
 <br><br>
-
-
+<style>
+    .cell a{
+        text-decoration:none;
+    }
+</style>

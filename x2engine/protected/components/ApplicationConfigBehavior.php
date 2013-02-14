@@ -125,8 +125,11 @@ class ApplicationConfigBehavior extends CBehavior {
 		
 		$this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username'=>$uname));
 		$session = X2Model::model('Session')->findByPk($sessionId);
-
-		
+        if(isset($this->owner->params->profile)){
+            $_SESSION['fullscreen']=$this->owner->params->profile->fullscreen;
+        }
+        
+        
 		if($notGuest && !$cli) {
 			if($session !== null) {
 				if($session->lastUpdated + $this->owner->params->admin->timeout < time()) {
@@ -147,6 +150,10 @@ class ApplicationConfigBehavior extends CBehavior {
 			if(!is_null($userId)) {
 				$this->owner->params->groups = Groups::getUserGroups($userId);
 				$this->owner->params->roles = Roles::getUserRoles($userId);
+				
+				$this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex',$userId);
+				
+				
 			}
 		}
 		

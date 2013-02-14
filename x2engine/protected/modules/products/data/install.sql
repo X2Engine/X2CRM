@@ -23,8 +23,8 @@ INSERT INTO `x2_modules`
 INSERT INTO x2_fields
 (modelName,		fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES
-("Product",		"currency",				"Currency",				0,		0,	"dropdown",		0,			0,		"2",			0,		0,			""),
-("Product",		"status",				"Status",				0,		0,	"dropdown",		0,			0,		"1",			0,		0,			""),
+("Product",		"currency",				"Currency",				0,		0,	"dropdown",		0,			0,		"101",			0,		0,			""),
+("Product",		"status",				"Status",				0,		0,	"dropdown",		0,			0,		"100",			0,		0,			""),
 ("Product",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Product",		"name",					"Name",					0,		0,	"varchar",		0,			0,		NULL,			1,		0,			"High"),
 ("Product",		"type",					"Type",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),

@@ -145,8 +145,25 @@ class X2GridView extends CGridView {
 		// load fields from DB
 		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
 		$fields = X2Model::model($this->modelName)->getFields();
-		foreach($fields as $field){
-			$this->allFields[$field->fieldName] = $field;
+		
+		$fieldPermissions = array();
+		if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
+			$rolePermissions = Yii::app()->db->createCommand()
+				->select('fieldId, permission')
+				->from('x2_role_to_permission')
+				->join('x2_fields','x2_fields.modelName="'.$this->modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
+				->queryAll();
+			// var_dump($rolePermissions);
+
+			foreach($rolePermissions as &$permission) {
+				if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
+					$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
+			}
+		}
+		
+		foreach($fields as $field) {
+			if(!isset($fieldPermissions[$field->id]) || $fieldPermissions[$field->id] > 0)
+				$this->allFields[$field->fieldName] = $field;
 		}
 		
 		// add tags column if specified

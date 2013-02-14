@@ -39,7 +39,7 @@
  ********************************************************************************/
 ?>
 
-<h2><?php echo $contact->firstName . ' ' . $contact->lastName; ?></h2>
+<h2><?php echo $contact->name; ?></h2>
 
 <?php 
 if(isset($_GET['fields'])){

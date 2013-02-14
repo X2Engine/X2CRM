@@ -84,7 +84,7 @@ function checkServerVar() {
 }
 
 $canInstall = True;
-$reqMessges = array();
+$reqMessages = array();
 $rbm = installer_t("required but missing");
 
 // Step 0: check for a mismatch in directory ownership. Skip this step on Windows 
@@ -127,13 +127,25 @@ if (!class_exists('Reflection', false)) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.pcre.php">PCRE extension</a>: ' . $rbm;
 }
+if(!extension_loaded('json')) {
+	$canInstall = False;
+	$reqMessages[] = '<a href="http://www.php.net/manual/function.json-decode.php">json extension</a>: '.$rbm;
+}
 if (!extension_loaded("SPL")) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.spl.php">SPL</a>: ' . $rbm;
 }
 if (!extension_loaded("curl")) {
-	$canInstall = False;
-	$reqMessages[] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: ' . $rbm;
+	$curlMissingIssues = array(
+		installer_t('Time zone widget will not work'),
+		installer_t('Contact views may be inaccessible'),
+		installer_t('Google integration will not work'),
+		installer_t('Built-in error reporter will not work')
+	);
+	$reqMessages[] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: ' . $rbm.'. '.installer_t('This will result in the following issues:').'<ul><li>'.implode('</li><li>',$curlMissingIssues).'</li></ul>';
+}
+if(!extension_loaded('zip')) {
+	$reqMessages[] = '<a href="http://php.net/manual/book.zip.php">Zip</a>: '. $rbm.'. '.installer_t('This will result in the inability to import and export custom modules.');
 }
 if (!extension_loaded('pdo_mysql')) {
 	$canInstall = False;
@@ -157,13 +169,24 @@ if ($standalone)
 
 if (!$canInstall) {
 	echo '<div style="color:red"><div style="width: 100%; text-align:center;"><h1>' . installer_t('Cannot install X2CRM') . "</h1></div>\n";
-	echo "<strong>" . installer_t('Unfortunately, your server does not meet the minimum system requirements for installation') . "</strong><br />\n<ul>";
+	echo "<strong>" . installer_t('Unfortunately, your server does not meet the minimum system requirements for installation') . "</strong><br />";
+} else if (count($reqMessages)) {
+	echo '<div style="width: 100%; text-align:center;"><h1>'.installer_t('Note the following:').'</h1></div>';
+} else if ($standalone) {
+	echo '<div style="width: 100%; text-align:center;"><h1>' . installer_t('This webserver can run X2CRM!') . '</h1></div>';
+}
+
+if(count($reqMessages)>0) {
+	echo "\n<ul>";
 	foreach ($reqMessages as $message) {
 		echo "<li>$message</li>";
 	}
-	echo "</ul>" . installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/wiki/Installation#Installing_Without_All_Requirements:_What_Won.27t_Work">"Installing Without All Requirements: What Won\'t Work"</a> in the X2CRM Installation Guide.</div><br />';
-} else if ($standalone)
-	echo '<div style="width: 100%; text-align:center;"><h1>' . installer_t('This webserver can run X2CRM!') . '</h1></div>';
+	echo "</ul>\n";
+	if(!$canInstall)
+		echo "</div>";
+	echo installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/wiki/Installation#Installing_Without_All_Requirements:_What_Won.27t_Work">"Installing Without All Requirements: What Won\'t Work"</a> in the X2CRM Installation Guide.';
+	echo '<br /><br />';
+}
 
 if ($standalone) {
 	phpinfo();

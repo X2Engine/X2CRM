@@ -94,7 +94,7 @@ $attributeLabels = $model->attributeLabels();
 		<td class="label" width="20%"><?php echo $attributeLabels['fullName']; ?></td>
 		<td><b><?php echo CHtml::encode($model->fullName); ?></b></td>
 		<td rowspan="8" width="15%" style="text-align:center;">
-			<span class="file-wrapper">
+			<span class="file-wrap3per">
 			<?php
 			// getimagesize()
 			
@@ -122,7 +122,7 @@ $attributeLabels = $model->attributeLabels();
 			<?php if($model->username == Yii::app()->user->getName()) {
 				echo CHtml::form('uploadPhoto/'.$model->id,'post',array('enctype'=>'multipart/form-data', 'id'=>'photo-form'));
 				echo CHtml::fileField('photo','',array('id'=>'photo','onchange'=>"checkPictureExt(this, '#avatarSubmit')")).'<br />';
-				echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'avatarSubmit','disabled'=>'disabled'),array('class'=>'x2-button'));
+				// echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'avatarSubmit','disabled'=>'disabled'),array('class'=>'x2-button'));
 				echo CHtml::endForm();
 			} ?>
 			<?php /*<button type="submit" class="x2-button" name="photo-submit"><?php echo Yii::t('profile', 'Choose Picture'); ?></button> */ ?>

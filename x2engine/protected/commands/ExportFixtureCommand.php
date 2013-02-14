@@ -112,11 +112,11 @@ class ExportFixtureCommand extends CConsoleCommand {
 		$fileName = $tableName . ($type == 'i' ? '.init' : '') . '.php';
 		$filePath = $this->fixtureDir . '/' . $tableName . ($type == 'i' ? '.init' : '') . '.php';
 
-		if (file_exists(Realpath::fmt($filePath))) {
+		if (file_exists(FileUtil::rpath($filePath))) {
 			if ($writeCond == 'r') {
 				$i = 0;
 				$backup = $filePath;
-				while (file_exists(Realpath::fmt($backup))) {
+				while (file_exists(FileUtil::rpath($backup))) {
 					$backup = "$filePath.$i";
 					$i++;
 				}

@@ -69,12 +69,12 @@ VALUES
 ("Quote",			"lastUpdated",			"Last Updated",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Quote",			"lastActivity",			"Last Activity",		0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Quote",			"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			""),
-("Quote",			"status",				"Status",				0,		0,	"dropdown",		0,			0,		"7",			0,		0,			""),
+("Quote",			"status",				"Status",				0,		0,	"dropdown",		0,			0,		"106",			0,		0,			""),
 ("Quote",			"expirationDate",		"Expiration Date",		0,		0,	"date",			0,			0,		NULL,			0,		0,			""),
 ("Quote",			"existingProducts",		"Existing Products",	0,		0,	"varchar",		0,			0,		NULL,			0,		1,			""),
 ("Quote",			"products",				"Products",				0,		0,	"varchar",		0,			0,		NULL,			0,		1,			""),
 ("Quote",			"locked",				"Locked",				0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
-('Quote', 			'invoiceStatus', 		'Status', 				0, 		0, 'dropdown', 		0, 			0, 		'15', 			0, 		0,			""),
-('Quote', 			'invoiceCreateDate', 	'Invoice Created', 		0, 		0, 'date', 			0, 			0, 		NULL, 			0, 		0,			""),
-('Quote', 			'invoiceIssuedDate', 	'Invoice Issued', 		0, 		0, 'date', 			0, 			0, 		NULL, 			0, 		0,			""),
-('Quote', 			'invoicePayedDate', 	'Invoice Payed', 		0, 		0, 'date', 			0, 			0, 		NULL, 			0, 		0,			"");
+("Quote", 			"invoiceStatus", 		"Status", 				0, 		0,	"dropdown", 	0, 			0, 		"114", 			0, 		0,			""),
+("Quote", 			"invoiceCreateDate", 	"Invoice Created", 		0, 		0,	"date", 		0, 			0, 		NULL, 			0, 		0,			""),
+("Quote", 			"invoiceIssuedDate", 	"Invoice Issued", 		0, 		0,	"date", 		0, 			0, 		NULL, 			0, 		0,			""),
+("Quote", 			"invoicePayedDate", 	"Invoice Payed", 		0, 		0,	"date", 		0, 			0, 		NULL, 			0, 		0,			"");

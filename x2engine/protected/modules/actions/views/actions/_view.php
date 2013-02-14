@@ -120,8 +120,10 @@ if($type == 'workflow') {
 		} elseif ($data->type == 'workflow') {
 			// $actionData = explode(':',$data->actionDescription);
 			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
-		} elseif($data->type == 'email') {
+		} elseif(in_array($data->type,array('email','emailFrom'))) {
 			echo Yii::t('actions','Email Message:').' '.Actions::formatCompleteDate($data->completeDate);
+		} elseif($data->type == 'quotes') {
+			echo Yii::t('actions','Quote:').' '.Actions::formatCompleteDate($data->createDate);
 		} elseif($data->type == 'emailOpened') {
 			echo Yii::t('actions', 'Email Opened:'). ' '.Actions::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'webactivity') {
@@ -179,7 +181,7 @@ if($type == 'workflow') {
 			if(!empty($data->actionDescription))
 				echo $data->actionDescription,'<br>';
 			echo date('Y-m-d H:i:s',$data->completeDate);
-		}elseif($type=='email' || $type=='emailOpened'){ 
+		} elseif(in_array($data->type,array('email','emailFrom')) || $type=='emailOpened') { 
             preg_match('/<b>(.*?)<\/b>(.*)/mis',$data->actionDescription,$matches);
             if(!empty($matches)) {
                 $subject = $matches[1];
@@ -193,7 +195,9 @@ if($type == 'workflow') {
             }
             echo '<strong>'.$subject.'</strong> '.$body;
 			echo '<br /><br />'.CHtml::link('[View email]','#',array('onclick'=>'return false;','id'=>$data->id,'class'=>'email-frame'));
-        }else
+        } elseif($data->type == 'quotes') {
+			echo CHtml::link('[View quote]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));
+		} else 
 			echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription));	// convert LF and CRLF to <br />
 		?>
 	</div>
@@ -211,8 +215,8 @@ if($type == 'workflow') {
 		// echo ' '.Actions::formatDate($data->completeDate);
 	} else if($data->type == 'attachment' && $data->completedBy!='Email') {
 		echo Yii::t('media','Uploaded by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
-	} else if($data->type == 'email' && $data->completedBy!='Email') {
-		echo Yii::t('media','Sent by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
+	} else if(in_array($data->type,array('email','emailFrom')) && $data->completedBy!='Email') {
+		echo Yii::t('media',($data->type=='email'?'Sent by {name}':'Sent to {name}'),array('{name}'=>User::getUserLinks($data->completedBy)));
 	}
 	?>
 	</div>

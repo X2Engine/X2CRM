@@ -98,7 +98,7 @@ class Quote extends X2Model {
 	public static function statusList() {
 		$field = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'status'));
 		$dropdown = Dropdowns::model()->findByPk($field->linkType);
-		return json_decode($dropdown->options);
+		return json_decode($dropdown->options,true);
 		
 		/*
 		return array(
@@ -331,17 +331,12 @@ class Quote extends X2Model {
 		if($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
         
-        $this->compareAttributes($criteria);
-		
-		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'createDate ASC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
+        if($criteria === null)
+			$criteria = $this->getAccessCriteria();
+		else
+			$criteria->mergeWith($this->getAccessCriteria());
+
+		return parent::searchBase($criteria);
 	}
 	
 	

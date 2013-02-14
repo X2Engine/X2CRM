@@ -208,7 +208,6 @@ class InlineEmailAction extends CAction {
 							if($action->save()) {
                                 $event=new Events;
                                 $event->type='email_sent';
-                                $event->level=3;
                                 $event->user=Yii::app()->user->getName();
                                 $event->associationType=$this->model->modelName;
                                 $event->associationId=$model->id;

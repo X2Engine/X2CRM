@@ -100,7 +100,7 @@ $fieldPermissions = array();
 if(!isset($specialFields))
 	$specialFields = array();
 
-if(!empty(Yii::app()->params->roles)) {
+if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
 	$rolePermissions = Yii::app()->db->createCommand()
 		->select('fieldId, permission')
 		->from('x2_role_to_permission')

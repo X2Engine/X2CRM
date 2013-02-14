@@ -444,7 +444,10 @@ $timezones = array(
 	    <div class="wide form" id="install-form">
 		<?php 
 		$thisFile = __FILE__;
-		require_once('requirements.php'); 
+		if(file_exists('requirements.php'))
+			require_once('requirements.php'); 
+		else
+			echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
 		?>
 		<form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
 		    <h2><?php echo installer_t('X2CRM Application Info'); ?></h2><hr>

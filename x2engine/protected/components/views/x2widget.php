@@ -37,8 +37,11 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
-$params = array('model'=>$model, 'modelName'=>strtolower($modelType));
+if(!is_null($model) && property_exists($name,'model')){
+    $params = array('model'=>$model, 'modelName'=>strtolower($modelType));
+}else{
+    $params=array();
+}
 
 if($name == 'WorkflowStageDetails') { // workflow has an extra param
 	if(isset($this->controller)) {

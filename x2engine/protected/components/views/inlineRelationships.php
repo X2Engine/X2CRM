@@ -155,10 +155,17 @@ if($startHidden == false) {
         array(
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Assigned To'),
-			'value'=>'($data->firstType=="Contacts" && $data->firstId=="'.$model->id.'")?
+			'value'=>'($data->firstType=="'.$modelName.'" && $data->firstId=="'.$model->id.'")?
                             ((class_exists($data->secondType) && !is_null(X2Model::model($data->secondType)->findByPk($data->secondId)))?UserChild::getUserLinks(X2Model::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
                             ((class_exists($data->firstType) && !is_null(X2Model::model($data->firstType)->findByPk($data->firstId)))?UserChild::getUserLinks(X2Model::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
 			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'40%'),
+		),
+        array(
+			'name'=>'deletion',
+			'header'=>Yii::t("contacts",'Delete'),
+			'value'=>"CHtml::link('Delete','#',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?id='.\$data->id.'&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
+            'type'=>'raw',
 			'htmlOptions'=>array('width'=>'40%'),
 		),
 	),

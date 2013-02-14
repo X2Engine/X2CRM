@@ -1,37 +1,15 @@
-# X2CRM 2.7.2 Changelog #
-2/01/2013
+# X2CRM 2.8 Changelog #
+2/13/2013
 
-* New Activity Feed
-	* See all the activity on X2CRM in one place
-	* Updates in real time
-	* Infinite scrolling
-	* Filter by users/groups and event type
-	* Social posts/comments are now integrated
-	* Action reminders
-	* Social posts can now be edited
-* Enhancements to web tracker (Professional edition)
-	* Campaign emails now support tracking links
-* Widget/layout enhancements
-	* Widgets can now be completely turned on/off
-	* Content widgets (Tags, Relationships, etc) can be toggled and rearranged
-	* New widget menu in top bar 
-* Lots of new icons
-* Numerous bug fixes
-* Campaign email list improved
-* Updated translations
-
-New in 2.7.2
-* New UI look and feel, improved UI consistency
-* Numerous bug fixes
-
-New in 2.7.1
-* Added an easy to use bug reporting tool
-* Activity feed now remembers minimized posts
-* Several bug fixes
-
+* Dozens of bug fixes - thanks everyone for reporting bugs using the new bug reporting tool!
+* New theme and background settings
+* New manual bug reporting tool
+* Added some icons
+* Email dropbox now creates events (Pofessional edition)
+* Google Analytics integration for monitoring X2CRM usage
 
 # Introduction #
-Welcome to  X2CRM v2.7.2!
+Welcome to  X2CRM v2.8!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

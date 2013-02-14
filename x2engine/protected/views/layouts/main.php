@@ -129,32 +129,16 @@ $theme2Css = '';
 if($checkResult)
 	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
 
-
-// if(!empty(Yii::app()->params->profile->backgroundColor))
-	// $themeCss .= 'body {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
-
-$headerBgClass = '';
-
-if(empty(Yii::app()->params->profile->backgroundImg) && empty(Yii::app()->params->profile->backgroundColor)) {
-	$headerBgClass = 'defaultBg';
-} else
-	$themeCss .= '#header {background-image:url('.$baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg.");}\n";
-
-	
 // check for background image, use it if one is set
-if(empty(Yii::app()->params->profile->backgroundImg))
-	$backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
-else
-	$backgroundImg = CHtml::image($baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
+// if(empty(Yii::app()->params->profile->backgroundImg))
+	// $backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
+// else
+	// $backgroundImg = CHtml::image($baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
 
-if(!empty(Yii::app()->params->profile->backgroundColor))
-	$themeCss .= '#header {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
-
-if(!empty(Yii::app()->params->profile->menuTextColor))
-	$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.Yii::app()->params->profile->menuTextColor.";}\n";
-
-
-$cs->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
+$cs->registerCss('applyTheme',
+	'ul.main-menu > li > a, ul.main-menu > li > span {color:#'.Yii::app()->params->profile->menuTextColor.';}',
+	'screen',
+	CClientScript::POS_HEAD);
 
 $cs->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
@@ -283,7 +267,8 @@ $userMenu = array(
 			array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications')),
 			array('label' => Yii::t('app','Preferences'),'url' => array('/profile/settings')),
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
-			array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
+            array('label' => Yii::t('app','Report A Bug'),'url' => array('/site/bugReport')),
+            array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
 			array('label' => (Yii::app()->params->sessionStatus == 1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
@@ -316,11 +301,45 @@ $userMenu = array(
 <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ie.css" media="screen, projection">
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
+<?php $this->renderGaCode('internal'); ?> 
+
 </head>
-<body class="<?php echo $headerBgClass; ?>">
+<body style="<?php
+	$noBorders = false;
+	if(!empty(Yii::app()->params->profile->backgroundColor))
+		echo 'background-color:#'.Yii::app()->params->profile->backgroundColor.';';
+
+	if(!empty(Yii::app()->params->profile->backgroundImg)) {
+	
+		if(file_exists('uploads/'.Yii::app()->params->profile->backgroundImg))
+			echo 'background-image:url('.$baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg.');';
+		else
+			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.Yii::app()->params->profile->backgroundImg.');';
+	
+		switch($bgTiling = Yii::app()->params->profile->backgroundTiling) {
+			case 'repeat-x':
+			case 'repeat-y':
+			case 'repeat':
+				echo 'background-repeat:'.$bgTiling.';';
+				break;
+			case 'center':
+				echo 'background-repeat:no-repeat;background-position:center center;';
+				break;
+			case 'stretch':
+			default:
+				echo 'background-attachment:fixed;background-size:cover;';
+				$noBorders = true;
+		}
+	}
+?>"<?php if($noBorders) echo ' class="no-borders"'; ?>>
 <?php //echo $backgroundImg; ?>
 <!--<div id="header-body-container">-->
-<div id="header" class="<?php echo $headerBgClass; ?>">
+<div id="header" <?php
+	if(empty(Yii::app()->params->profile->menuBgColor))
+		echo 'class="defaultBg"';
+	else
+		echo 'style="background-color:#'.Yii::app()->params->profile->menuBgColor.';"';
+?>>
 <div id="header-inner">
 	<div id="main-menu-bar">
 		<div class="width-constraint">
@@ -403,8 +422,8 @@ $userMenu = array(
 </div>
 
 
-<div id="footer">
-<div class="width-constraint">
+<div id="footer"<?php //if(empty(Yii::app()->params->profile->backgroundImg)) echo ' class="defaultBg"'; ?>>
+<!--<div class="width-constraint">-->
 	<div id="footer-logos">
 		<a href="<?php echo $scriptUrl.'/x2touch'; ?>">
 			<?php echo CHtml::image($themeUrl.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
@@ -451,7 +470,7 @@ $userMenu = array(
 	echo round($peak_memory/pow(1024,($memory_log=floor(log($peak_memory,1024)))),2).' '.$memory_units[$memory_log];
 	?>
 	<br>
-	</div>
+<!--</div>-->
 </div>
 <?php if(Yii::app()->session['translate']) echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>'; ?>
 </body>

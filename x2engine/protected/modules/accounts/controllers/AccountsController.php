@@ -432,7 +432,6 @@ class AccountsController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;

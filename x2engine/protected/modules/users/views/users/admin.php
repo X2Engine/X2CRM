@@ -82,27 +82,44 @@ else
 		.CHtml::link(Yii::t('app','This Month'),array('admin','offset'=>'first day of this month')). ' | '
 		.X2GridView::getFilterHint()
 		.'{summary}</div></div>{items}{pager}',
+		'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
+			. '<div class="form no-border" style="display:inline;"> '
+			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+					'ajax' => array(
+						'url' => $this->createUrl('/profile/setResultsPerPage'),
+						'data' => 'js:{results:$(this).val()}',
+						'complete' => 'function(response) { $.fn.yiiGridView.update("users-grid"); }',
+					),
+					'style' => 'margin: 0;',
+				))
+			. ' </div>',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
 		array(
-                    'name'=>'username',
-                    'value'=>'CHtml::link($data->username,$data->id)',
-                    'type'=>'raw',
-                ),
+			'name'=>'username',
+			'value'=>'CHtml::link($data->username,$data->id)',
+			'type'=>'raw',
+		),
                 'firstName',
 		'lastName',
 		array(
-                    'name'=>'login',
-                    'header'=>'Last Login',
-                    'value'=>'date("Y-m-d",$data->login)',
-                    'type'=>'raw',
-                ),
-                array(
-                    'header'=>'<b>Records Updated</b>',
-                    'value'=>'(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
-                    'type'=>'raw',
-                ),
+			'name'=>'login',
+			'header'=>'Last Login',
+			'value'=>'$data->login?date("Y-m-d",$data->login):"n/a"',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>'<b>Records Updated</b>',
+			'value'=>'(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
+			'type'=>'raw',
+		),
+		array(
+			'header'=>Yii::t('app','Active'),
+			'value'=>'$data->status? Yii::t("app","Yes") : Yii::t("app","No")',
+			'type'=>'raw',
+			'headerHtmlOptions'=>array('style'=>'width:60px;')	
+		),
 		'emailAddress',
 		//'cellPhone',
 		//'homePhone',

@@ -95,7 +95,11 @@ class Opportunity extends X2Model {
 	}
 
 	public static function parseContacts($contactArray){
-		return implode(' ',$contactArray);
+        if(is_array($contactArray)){
+            return implode(' ',$contactArray);
+        }else{
+            return $contactArray;
+        }
 	}
 
 	public static function parseContactsTwo($arr){
@@ -119,13 +123,19 @@ class Opportunity extends X2Model {
 
 	public static function editContactArray($arr, $model) {
 
-		$pieces=explode(" ",$model->associatedContacts);
+        $rels=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','secondType'=>'Opportunity','secondId'=>$model->id));
+        $pieces=array();
+        foreach($rels as $relationship){
+            $contact=X2Model::model('Contacts')->findByPk($relationship->firstId);
+            if(isset($contact)){
+                $pieces[$relationship->firstId]=$contact->name;
+            }
+        }
 		unset($arr[0]);
-
-		foreach($pieces as $contact){
-			if(array_key_exists($contact,$arr)){
-				unset($arr[$contact]);
-			}
+		foreach($pieces as $id=>$contact){
+			if(isset($arr[$id])){
+                unset($arr[$id]);
+            }
 		}
 		
 		return $arr;
@@ -199,36 +209,20 @@ class Opportunity extends X2Model {
 		return $this->searchBase($criteria);
 	}
 	
-	public function searchBase($criteria) {
+	/**
+	 * Base search method for all data providers.
+	 * Sets up record-level security checks.
+	 * 
+	 * @param CDbCriteria $criteria starting criteria for this search
+	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
+	 */
+	public function searchBase($criteria=null) {
+		if($criteria === null)
+			$criteria = $this->getAccessCriteria();
+		else
+			$criteria->mergeWith($this->getAccessCriteria());
 
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Opportunity'));
-			foreach($fields as $field){
-				$fieldName=$field->fieldName;
-				switch($field->type){
-					case 'boolean':
-						$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-						break;
-					case 'link':
-						$criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-						break;
-					case 'assignment':
-						$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-						break;
-					default:
-						$criteria->compare($field->fieldName,$this->$fieldName,true);
-				}
-				
-			}
-		
-		return new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'createDate ASC',
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
+		return parent::searchBase($criteria);
 	}
         
  

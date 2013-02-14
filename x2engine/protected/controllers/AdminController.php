@@ -53,7 +53,17 @@ class AdminController extends Controller {
     public $portlets = array();
     public $layout = '//layouts/column1';
 	
-	public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior');
+	/**
+	 * Behavior classes used
+	 * @var array
+	 */
+	public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior','CommonControllerBehavior');
+	
+	/**
+	 * Miscellaneous component classes that the controller depends on
+	 * @var type 
+	 */
+	public static $dependencies = array('FileUtil');
 
     /**
      * A list of actions to include.
@@ -90,6 +100,48 @@ class AdminController extends Controller {
             }
         }
     }
+    
+    public function actionFindMissingPermissions(){
+        $controllers=array(
+            'AdminController'=>'application.controllers.AdminController',
+            'AccountsController'=>'application.modules.accounts.controllers.AccountsController',
+            'ActionsController'=>'application.modules.actions.controllers.ActionsController',
+            'CalendarController'=>'application.modules.calendar.controllers.CalendarController',
+            'ChartsController'=>'application.modules.charts.controllers.ChartsController',
+            'ContactsController'=>'application.modules.contacts.controllers.ContactsController',
+            'DocsController'=>'application.modules.docs.controllers.DocsController',
+            'GroupsController'=>'application.modules.groups.controllers.GroupsController',
+            'MarketingController'=>'application.modules.marketing.controllers.MarketingController',
+            'WeblistController'=>'application.modules.marketing.controllers.WeblistController',
+            'MediaController'=>'application.modules.media.controllers.MediaController',
+            'OpportunitiesController'=>'application.modules.opportunities.controllers.OpportunitiesController',
+            'ProductsController'=>'application.modules.products.controllers.ProductsController',
+            'QuotesController'=>'application.modules.quotes.controllers.QuotesController',
+            'ReportsController'=>'application.modules.reports.controllers.ReportsController',
+            'ServicesController'=>'application.modules.services.controllers.ServicesController',
+            'UsersController'=>'application.modules.users.controllers.UsersController',
+            'WorkflowController'=>'application.modules.workflow.controllers.WorkflowControllers',
+        );
+        $missingPermissions=array();
+        $auth=Yii::app()->authManager;
+        foreach($controllers as $class=>$controller){
+            Yii::import($controller);
+            $methods=get_class_methods($class);
+            $arr=explode('Controller',$class);
+            $name=$arr[0];
+            if(is_array($methods)){
+                foreach($methods as $method){
+                    if(strpos($method,'action')===0 && $method!='actions'){
+                        $method=$name.substr($method,6);
+                        $authItem = $auth->getAuthItem($method);
+                        if(is_null($authItem))
+                            $missingPermissions[]=$method;
+                    }
+                }
+            }
+        }
+        printR($missingPermissions);
+    }
 
     /**
      * View the main admin menu
@@ -117,6 +169,7 @@ class AdminController extends Controller {
         if (Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->user->checkAccess('AdminIndex')) {
             return true;
         } elseif (Yii::app()->user->isGuest) {
+			Yii::app()->user->returnUrl = Yii::app()->request->requestUrl;
             $this->redirect($this->createUrl('/site/login'));
         } else {
             throw new CHttpException(403, 'You are not authorized to perform this action.');
@@ -131,7 +184,7 @@ class AdminController extends Controller {
      * and up to date information can be found on the X2Engine website.
      * 
      * @param type $guide Which how to guide to access.
-     */
+     
     public function actionHowTo($guide) {
         if ($guide == 'gii')
             $this->render('howToGii');
@@ -139,20 +192,7 @@ class AdminController extends Controller {
             $this->render('howToModel');
         else
             $this->redirect('index');
-    }
-
-    /**
-     * Obtain the IP address of the current web client.
-     * @return string
-     */
-    function getRealIp() {
-        if (!empty($_SERVER['HTTP_CLIENT_IP']))
-            return $_SERVER['HTTP_CLIENT_IP'];
-        else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        else
-            return $_SERVER['REMOTE_ADDR'];
-    }
+    }*/
 
     /**
      * Filters to be used by the controller.
@@ -168,12 +208,12 @@ class AdminController extends Controller {
         return array(
             //'accessControl',
             'clearCache',
-			// 'clearAuthCache'
+			'clearAuthCache'
         );
     }
 
     /**
-     * A list of behaviors for the controller to use.
+     * A list of behaviors for the controller to use; downloads missing files if any.
      * 
      * {@link LeadRoutingBehavior} is used to consolidate code for lead routing rules.
      * As such, it has been moved to an external file.  This file includes LeadRoutingBehavior
@@ -181,16 +221,18 @@ class AdminController extends Controller {
      * for more information on behaviors.
 	 * {@link UpdaterBehavior} is a centralized, re-usable behavior class for code
 	 * pertaining to the updater.
+	 * {@link CommonControllerBehavior} is for methods shared between x2base and Admin controller
      * 
      * @return array An array of behaviors to implement. 
      */
     public function behaviors() {
-		set_error_handler('AdminController::missingBehaviorError');
-		$missingBehaviors = array();
+		set_error_handler('AdminController::missingClassesError');
+		$missingClasses = array();
 		$behaviors = array();
 		$maxTries = 3;
 		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine';
-		foreach (self::$behaviorClasses as $class) {
+		$files = array_merge( array_fill_keys( self::$behaviorClasses, 'behavior'), array_fill_keys(self::$dependencies,'dependency'));
+		foreach ($files as $class=>$type) {
 			// First try to download from the X2Engine update server...
 			$path = "protected/components/$class.php";
 			if (!file_exists($path)) {
@@ -209,15 +251,17 @@ class AdminController extends Controller {
 				}
 				// Mark the file as a failed download. An exception will be thrown.
 				if ($i == 5) {
-					$missingBehaviors[$class] = $path;
+					$missingClasses[$class] = $path;
 				}
 			}
-			$behaviors[$class] = array(
-				'class' => $class
-			);
+			if ($type == 'behavior') {
+				$behaviors[$class] = array(
+					'class' => $class
+				);
+			}
 		}
-		if(count($missingBehaviors))
-			self::missingBehaviorError(null,null);
+		if(count($missingClasses))
+			self::missingClassesError(null,null);
 		restore_error_handler();
         return $behaviors;
     }
@@ -302,10 +346,10 @@ class AdminController extends Controller {
      * This method used to render a page to search for contacts to send out a 
      * mass mailing list to. The Marketing module has replaced this functionality
      * and is significantly more useful. 
-     */
+     
     public function actionSearchContact() {
         $this->render('searchContactInfo');
-    }
+    }*/
 
     /**
      * @deprecated
@@ -313,7 +357,7 @@ class AdminController extends Controller {
      *  
      * This method would be accessed when the {@link AdminController::actionSearchContact}
      * action had data posted in the form on the page.  It would 
-     */
+     
     public function actionSendEmail() {
         $criteria = $_POST['searchTerm'];
 
@@ -323,7 +367,7 @@ class AdminController extends Controller {
             'criteria' => $criteria,
             'mailingList' => $mailingList,
         ));
-    }
+    }*/
 
     /**
      * @deprecated
@@ -332,7 +376,7 @@ class AdminController extends Controller {
      * This method links with the previous two deprecated methods to send out emails
      * after a contact list has been made and confirmed.  It has been replaced
      * by the Marketing module. 
-     */
+     
     public function actionMail() {
         $subject = $_POST['subject'];
         $body = $_POST['body'];
@@ -350,7 +394,7 @@ class AdminController extends Controller {
             'mailingList' => $mailingList,
             'criteria' => $criteria,
         ));
-    }
+    }*/
     
     public function actionManageTags(){
         $dataProvider=new CActiveDataProvider('Tags',array(
@@ -695,7 +739,7 @@ class AdminController extends Controller {
                 $this->redirect('manageRoles');
             $stage = $_POST['workflowStages'];
             if (isset($stage) && !empty($stage))
-                $stageName = WorkflowStage::model()->findByPk($stage)->name;
+                $stageName = X2Model::model('WorkflowStage')->findByAttributes(array('workflowId'=>$workflow,'stageNumber'=>$stage))->name;
             else
                 $this->redirect('manageRoles');
             $viewPermissions = $_POST['viewPermissions'];
@@ -895,11 +939,11 @@ class AdminController extends Controller {
      * This function formerly toggled whether or not to notify the admin of any
      * new updates to X2CRM.  This has been replaced with an option in the "Updater
      * Settings" page of the Admin tab. 
-     */
+     
     public function actionToggleUpdater() {
         $this->redirect('updaterSettings');
-    }
-
+    }*/
+    
     /**
      * @deprecated
      * A deprecated method for contacting X2Engine Inc.
@@ -907,7 +951,7 @@ class AdminController extends Controller {
      * This method has been replaced with a form on our website, and is no longer
      * linked to anywhere on the application.  If you wish to get in contact with us,
      * please visit www.x2engine.com 
-     */
+     
     public function actionContactUs() {
 
         if (isset($_POST['email'])) {
@@ -920,7 +964,7 @@ class AdminController extends Controller {
         }
 
         $this->render('contactUs');
-    }
+    }*/
 
     /**
      * Render the changelog.
@@ -1051,7 +1095,7 @@ class AdminController extends Controller {
      * 
      * This method formerly controlled the user session timeout settings for the 
      * software.  This setting is now controlled by the "General Settings" page.
-     */
+     
     public function actionSetTimeout() {
 
         $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
@@ -1068,7 +1112,7 @@ class AdminController extends Controller {
         $this->render('setTimeout', array(
             'admin' => $admin,
         ));
-    }
+    }*/
 
     /**
      * @deprecated
@@ -1076,7 +1120,7 @@ class AdminController extends Controller {
      * 
      * This method formerly controlled the configuration of chat polling requests.
      * This timeout is now set by the "General Settings" page.
-     */
+     
     public function actionSetChatPoll() {
 
         $admin = &Yii::app()->params->admin; //X2Model::model('Admin')->findByPk(1);
@@ -1093,7 +1137,7 @@ class AdminController extends Controller {
         $this->render('setChatPoll', array(
             'admin' => $admin,
         ));
-    }
+    }*/
 
     /**
      * Control chat polling and session timeout.
@@ -1108,9 +1152,20 @@ class AdminController extends Controller {
 
             // if(!isset($_POST['Admin']['ignoreUpdates']))
             // $admin->ignoreUpdates = 1;
-
+            $oldFormat=$admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            $admin->corporateAddress=$_POST['Admin']['corporateAddress'];
+            foreach($_POST['Admin'] as $attribute=>$value){
+                if($admin->hasAttribute($attribute)){
+                    $admin->$attribute=$value;
+                }
+            }
+            if($oldFormat!=$admin->contactNameFormat){
+                if($admin->contactNameFormat=='lastName, firstName'){
+                    $command=Yii::app()->db->createCommand()->setText('UPDATE x2_contacts SET name=CONCAT(lastName,", ",firstName)')->execute();
+                }elseif($admin->contactNameFormat=='firstName lastName'){
+                    $command=Yii::app()->db->createCommand()->setText('UPDATE x2_contacts SET name=CONCAT(firstName," ",lastName)')->execute();
+                }
+            }
             $admin->timeout *= 60; //convert from minutes to seconds
 
 
@@ -1314,12 +1369,17 @@ class AdminController extends Controller {
             $tableName = X2Model::model($model->modelName)->tableName();
             $field=$model->fieldName;
             if (preg_match("/\s/", $field)) {
-                
+
             } else {
                 if ($model->save()) {
                     $sql = "ALTER TABLE $tableName ADD COLUMN $field $fieldType";
                     $command = Yii::app()->db->createCommand($sql);
-                    $result = $command->query();
+                    try{
+                        $result = $command->query();
+                    }catch(CDbException $e){
+                        $model->delete();
+                    }   
+
                 }
             }
             $this->redirect('manageFields');
@@ -1327,11 +1387,21 @@ class AdminController extends Controller {
     }
     
     public function actionValidateField($fieldName, $modelName){
-        $field=X2Model::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>$fieldName));
-        if(isset($field)){
-            echo "1";
+        function in_arrayi($needle, $haystack) {
+            return in_array(strtolower($needle), array_map('strtolower', $haystack));
+        }
+        $reservedWords=include('protected/data/mysqlReservedWords.php');
+        if(in_arrayi($fieldName,$reservedWords)){
+            echo Yii::t('admin','This field is a MySQL reserved word.  Choose a different field name.');
+        }elseif(preg_match('/\W/', $fieldName) || preg_match('/^[^a-zA-Z]+/', $fieldName)){
+            echo Yii::t('admin','Field names can only contain alphanumeric characters.');
         }else{
-            echo "0";
+            $field=X2Model::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>$fieldName));
+            if(isset($field)){
+                echo Yii::t('admin',"That model & field name combination is already in use.");
+            }else{
+                echo "0";
+            }
         }
     }
 
@@ -1689,10 +1759,11 @@ class AdminController extends Controller {
             $temp = CUploadedFile::getInstanceByName('logo-upload');
             $name = $temp->getName();
             $temp->saveAs('uploads/logos/' . $name);
-            $admin = ProfileChild::model()->findByAttributes(array('username' => 'admin'));
+            $admin = ProfileChild::model()->findByPk(1);
             $logo = Media::model()->findByAttributes(array('associationId' => $admin->id, 'associationType' => 'logo'));
             if (isset($logo)) {
-                unlink($logo->fileName);
+                if(file_exists($logo->fileName))
+                    unlink($logo->fileName);
                 $logo->delete();
             }
 
@@ -1715,7 +1786,7 @@ class AdminController extends Controller {
      */
     public function actionToggleDefaultLogo() {
 
-        $adminProf = ProfileChild::model()->findByAttributes(array('username' => 'admin'));
+        $adminProf = ProfileChild::model()->findByPk(1);
         $logo = Media::model()->findByAttributes(array('associationId' => $adminProf->id, 'associationType' => 'logo'));
         if (!isset($logo)) {
 
@@ -1728,7 +1799,7 @@ class AdminController extends Controller {
             if ($logo->save()) {
                 
             }
-        } else {
+        } else if($logo->fileName!='uploads/logos/yourlogohere.png') {
             $logo->delete();
         }
         $this->redirect(array('index'));
@@ -2529,14 +2600,16 @@ class AdminController extends Controller {
         $modules = Modules::model()->findAll();
         foreach ($modules as $module) {
             $name = ucfirst($module->name);
-            $controllerName = $name . 'Controller';
-            Yii::import("application.modules.$module->name.controllers.$controllerName");
-            $controller = new $controllerName($controllerName);
-            $model = $controller->modelClass;
-            if (class_exists($model)) {
-                $recordCount = X2Model::model($model)->count();
-                if ($recordCount > 0) {
-                    $modelList[$model] = array('name' => $module->title, 'count' => $recordCount);
+            if($name!='Document'){
+                $controllerName = $name . 'Controller';
+                Yii::import("application.modules.$module->name.controllers.$controllerName");
+                $controller = new $controllerName($controllerName);
+                $model = $controller->modelClass;
+                if (class_exists($model)) {
+                    $recordCount = X2Model::model($model)->count();
+                    if ($recordCount > 0) {
+                        $modelList[$model] = array('name' => $module->title, 'count' => $recordCount);
+                    }
                 }
             }
         }
@@ -3060,7 +3133,7 @@ class AdminController extends Controller {
 			if ($url == 'x2planet') {
 				$i = 0;
 				if ($file != "") {
-					while (!$this->ccopy("http://$url.com/$route/$file", "temp/" . $file) && $i < 5) {
+					while (!FileUtil::ccopy("http://$url.com/$route/$file", "temp/" . $file) && $i < 5) {
 						$i++;
 					}
 				}
@@ -3096,7 +3169,7 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * Deprecated method to run SQL as part of the update. 
-     */
+     
     public function actionSql() {
         if (isset($_POST['sql'])) {
             $sql = $_POST['sql'];
@@ -3104,7 +3177,7 @@ class AdminController extends Controller {
             $result = $command->execute();
             $this->_sendResponse('200', 'SQL Executed Successfully');
         }
-    }
+    }*/
 
     /**
      * Finalizes the update
@@ -3180,25 +3253,6 @@ class AdminController extends Controller {
 	}
 
     /**
-     * Recursively removes a directory.
-     * @param string $dir 
-     */
-    function rrmdir($dir) {
-        if (is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach ($objects as $object) {
-                if ($object != "." && $object != "..") {
-                    if (filetype($dir . "/" . $object) == "dir")
-                        $this->rrmdir($dir . "/" . $object); else
-                        unlink($dir . "/" . $object);
-                }
-            }
-            reset($objects);
-            rmdir($dir);
-        }
-    }
-
-    /**
      * Saves a backup copy of a list of files.
      * @param array $fileList
      */
@@ -3207,7 +3261,7 @@ class AdminController extends Controller {
             mkdir('backup');
         foreach ($fileList as $file) {
             if ($file != "" && file_exists($file)) {
-                $this->ccopy($file, 'backup/' . $file);
+                FileUtil::ccopy($file, 'backup/' . $file);
             }
         }
     }
@@ -3317,10 +3371,10 @@ class AdminController extends Controller {
 
     /**
      * View the changelogs.
-     */
+     
     public function actionViewLogs() {
         $this->render('viewLogs');
-    }
+    }*/
 
     /**
      * Improved version of array_search that allows for regex searching
@@ -3381,16 +3435,16 @@ class AdminController extends Controller {
 	 * @param type $ln
 	 * @throws CHttpException 
 	 */
-	public static function missingBehaviorError($no,$st,$fi=Null,$ln=Null) {
+	public static function missingClassesError($no,$st,$fi=Null,$ln=Null) {
 		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine';
-		$message = "One or more behaviors of AdminController are missing and could not be automatically retrieved. The behaviors are: ";
+		$message = "One or more dependencies of AdminController are missing and could not be automatically retrieved. The classes are: ";
 		$behaviorPaths = array();
 		foreach (self::$behaviorClasses as $class) {
 			$behaviorPaths[] = "protected/components/$class.php";
 		}
 		$message .= implode(', ',$behaviorPaths);
 		$message .= '; this error is due to PHP\'s "copy" function failing during an update, which could be caused either by a server misconfiguration or a faltering connection to the internet.';
-		$message .= ' You can fix this by downloading the missing files from Github or SourceForge and uploading them to your web server at the specified paths, or by trying your request to the Admin console again.';
+		$message .= ' You can fix this by manually downloading the missing files from Github or SourceForge and uploading them to your web server at the specified paths, or by trying your request to the Admin controller again.';
 		throw new CHttpException(500, $message);
 	}
 	
@@ -3493,21 +3547,31 @@ class AdminController extends Controller {
 	 * Download the new updater so that update can proceed as usual
 	 * 
 	 * @param type $updaterCheck
-	 * @param type $redirect 
+	 * @param type $redirect
 	 */
 	public function updateUpdater($updaterCheck,$redirect) {
 		
 		$updaterFiles = array(
-			"protected/controllers/AdminController.php",
-			"protected/views/admin/updater.php",
-			"protected/components/UpdaterBehavior.php"
+			"controllers/AdminController.php",
+			"views/admin/updater.php",
+			"components/UpdaterBehavior.php",
+			"components/FileUtil.php"
 		);
+		
 		foreach ($updaterFiles as $file) {
-			$this->ccopy("http://x2planet.com/updates/x2engine/$file", $file);
+			copy("http://x2planet.com/updates/x2engine/protected/$file", Yii::app()->basePath."/$file");
 		}
 		// Write the new updater version into the configuration; else 
 		// the app will get stuck in a loop
 		$this->regenerateConfig(Null, $updaterCheck, Null);
 		$this->redirect($redirect);
+	}
+	
+	/**
+	 * Wrapper for FileUtil
+	 * @param type $path 
+	 */
+	public function rrmdir($path) {
+		FileUtil::rrmdir($path);
 	}
 }

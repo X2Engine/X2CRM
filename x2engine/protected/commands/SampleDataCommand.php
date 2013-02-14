@@ -125,7 +125,7 @@ class SampleDataCommand extends CConsoleCommand {
 		/* if ($dummy_data) { */
 		// Export current app's data as "dummy" (usage example) data
 		$lPat.='|(?:UN)?LOCK TABLES)/';
-		$out = Realpath::fmt(Yii::app()->basePath . '/data/dummy_data%s.sql');
+		$out = FileUtil::rpath(Yii::app()->basePath . '/data/dummy_data%s.sql');
 		/* } else {
 		  $lPat .= ')/';
 		  $out = $argv[1];

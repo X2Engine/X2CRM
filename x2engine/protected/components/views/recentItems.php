@@ -73,7 +73,7 @@ foreach($recentItems as $item) {
 
 	} else if ($item['type']=='c') {	//item is a contact
 
-		$link = '<strong>'.$item['model']->firstName.' '.$item['model']->lastName.'</strong><br />'.$item['model']->phone;
+		$link = '<strong>'.$item['model']->name.'</strong><br />'.$item['model']->phone;
 		echo CHtml::link($link,array('/contacts/'.$item['model']->id));
 
 	}

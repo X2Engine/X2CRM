@@ -1,6 +1,5 @@
 <?php
-
-/* * *******************************************************************************
+/*********************************************************************************
  * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
  * the following BSD License.
  * http://www.opensource.org/licenses/BSD-3-Clause
@@ -37,7 +36,7 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ****************************************************************************** */
+ ********************************************************************************/
 
 
 Yii::import('application.components.X2LinkableBehavior');
@@ -69,6 +68,8 @@ abstract class X2Model extends CActiveRecord {
 	);
 
 	protected static $_fields; // one copy of fields for all instances of this model
+	
+	protected static $_linkedModels;	// cache for models loaded for link field attributes (used by automation system)
     
     public static function model($className='CActiveRecord'){
         if(class_exists($className)){
@@ -150,7 +151,10 @@ abstract class X2Model extends CActiveRecord {
     public function behaviors() {
 		return array(
 			'X2LinkableBehavior' => array(
-			'class' => 'X2LinkableBehavior',
+				'class' => 'X2LinkableBehavior',
+			),
+			'X2ChangeLogBehavior' => array(
+				'class' => 'X2ChangeLogBehavior',
 			)
 		);
     }
@@ -238,61 +242,131 @@ abstract class X2Model extends CActiveRecord {
 		);
 	}
 
-    /**
-     * Returns custom attribute values defined in x2_fields
-     * @return array customized attribute labels (name=>label)
-     * @see generateAttributeLabel
-     */
-    public function attributeLabels() {
+	
+	/**
+	 * Returns the named attribute value.
+	 * Recognizes linked attributes and looks them up with {@link getLinkedAttribute()}
+	 * @param string $name the attribute name
+	 * @return mixed the attribute value. Null if the attribute is not set or does not exist.
+	 * @see hasAttribute
+	 */
+	public function getAttribute($name) {
+		$nameParts = explode('.',$name);	// check for a linked attribute (eg. "account.assignedTo")
+		if(count($nameParts) === 2)
+			return $this->getLinkedAttribute($nameParts[0],$nameParts[0]);
+		else
+			return parent::getAttribute($name);
+	}
+
+	/**
+	 * Looks up a linked attribute by loading the linked model and calling getAttribute() on it.
+	 * @param string $linkField the attribute of $this linking to the external model
+	 * @param string $attribute the attribute of the external model
+	 * @return mixed the attribute value. Null if the attribute is not set or does not exist.
+	 */
+	public function getLinkedAttribute($linkField,$attribute) {
+		if(null !== $model = $this->getLinkedModel($linkField))
+			return $model->getAttribute($attribute);
+		return null;
+	}
+
+	/**
+	 * Looks up a linked attribute by loading the linked model and calling getAttribute() on it.
+	 * @param string $linkField the attribute of $this linking to the external model
+	 * @param string $attribute the attribute of the external model
+	 * @return mixed the properly formatted attribute value. Null if the attribute is not set or does not exist.
+	 * @see getLinkedAttribute
+	 */
+	public function renderLinkedAttribute($linkField,$attribute) {
+		if(null !== $model = $this->getLinkedModel($linkField))
+			return $model->renderAttribute($attribute);
+		return null;
+	}
+
+	/**
+	 * Looks up an external model referenced in a link field.
+	 * Caches loaded models in X2Model::$_linkedModels
+	 * @param string $linkField the attribute of $this linking to the external model
+	 * @return mixed the active record. Null if the attribute is not set or does not exist.
+	 */
+	public function getLinkedModel($linkField) {
+		$id = $this->getAttribute($linkField);
+		
+		if(ctype_digit($id)) {
+			$field = $this->getField($linkField);
+			
+			if($field !== null && $field->type === 'link') {
+				$modelClass = $field->linkType;
+				
+				// try to look up the linked model
+				if(!isset(self::$_linkedModels[$modelClass][$id])) {
+					self::$_linkedModels[$modelClass][$id] = X2Model::model($modelClass)->findByPk($id);
+					if(self::$_linkedModels[$modelClass][$id] === null)		// if it doesn't exist, set it to false in the cache 
+						self::$_linkedModels[$modelClass][$id] = false;		// so isset() returns false and we can skip this next time
+				}
+				
+				if(self::$_linkedModels[$modelClass][$id] !== false)
+					return self::$_linkedModels[$modelClass][$id];		// success!
+			}
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * Returns custom attribute values defined in x2_fields
+	 * @return array customized attribute labels (name=>label)
+	 * @see generateAttributeLabel
+	 */
+	public function attributeLabels() {
 
 		$this->queryFields();
 
 		$labels = array();
 
 		foreach(self::$_fields[$this->tableName()] as &$_field){
-            if(get_class($this)=="Opportunity"){
-                $labels[$_field->fieldName] = Yii::t('opportunities', $_field->attributeLabel);
-            }elseif(get_class($this)=="Quote"){
-                $labels[$_field->fieldName] = Yii::t('quotes', $_field->attributeLabel);
-            }elseif(get_class($this)=="Product"){
-                $labels[$_field->fieldName] = Yii::t('products', $_field->attributeLabel);
-            }else{
-                $labels[$_field->fieldName] = Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
-            }
-        }
+			if(get_class($this)=="Opportunity"){
+				$labels[$_field->fieldName] = Yii::t('opportunities', $_field->attributeLabel);
+			}elseif(get_class($this)=="Quote"){
+				$labels[$_field->fieldName] = Yii::t('quotes', $_field->attributeLabel);
+			}elseif(get_class($this)=="Product"){
+				$labels[$_field->fieldName] = Yii::t('products', $_field->attributeLabel);
+			}else{
+				$labels[$_field->fieldName] = Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+			}
+		}
 
 		return $labels;
     }
 
-    /**
-     * Returns the text label for the specified attribute.
-     * This method overrides the parent implementation by supporting
-     * returning the label defined in relational object.
-     * In particular, if the attribute name is in the form of "post.author.name",
-     * then this method will derive the label from the "author" relation's "name" attribute.
-     * @param string $attribute the attribute name
-     * @return string the attribute label
-     * @see generateAttributeLabel
-     * @since 1.1.4
-     */
+	/**
+	 * Returns the text label for the specified attribute.
+	 * This method overrides the parent implementation by supporting
+	 * returning the label defined in relational object.
+	 * In particular, if the attribute name is in the form of "post.author.name",
+	 * then this method will derive the label from the "author" relation's "name" attribute.
+	 * @param string $attribute the attribute name
+	 * @return string the attribute label
+	 * @see generateAttributeLabel
+	 * @since 1.1.4
+	 */
     public function getAttributeLabel($attribute) {
-
 		$this->queryFields();
 
 		// don't call attributeLabels(), just look in self::$_fields
 		foreach(self::$_fields[$this->tableName()] as &$_field) {
 			if($_field->fieldName == $attribute){
-                if(get_class($this)=="Opportunity"){
-                    return Yii::t('opportunities', $_field->attributeLabel);
-                }elseif(get_class($this)=="Quote"){
-                    return Yii::t('quotes', $_field->attributeLabel);
-                }elseif(get_class($this)=="Product"){
-                    return Yii::t('products', $_field->attributeLabel);
-                }else{
-                    return Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
-                }
+				if(get_class($this)=="Opportunity"){
+					return Yii::t('opportunities', $_field->attributeLabel);
+				}elseif(get_class($this)=="Quote"){
+					return Yii::t('quotes', $_field->attributeLabel);
+				}elseif(get_class($this)=="Product"){
+					return Yii::t('products', $_field->attributeLabel);
+				}else{
+					return Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+				}
 				
-            }
+			}
 		}
 		// original Yii code
 		if(strpos($attribute, '.') !== false) {
@@ -353,14 +427,13 @@ abstract class X2Model extends CActiveRecord {
 					return Yii::app()->controller->formatLongDate($this->$fieldName);
 				else
 					return $this->$fieldName;
-            case 'dateTime':
+			case 'dateTime':
 				if(empty($this->$fieldName))
 					return ' ';
 				elseif(is_numeric($this->$fieldName))
 					return Actions::formatCompleteDate($this->$fieldName);
 				else
 					return $this->$fieldName;
-
 
 			case 'rating':
 				if($textOnly) {
@@ -860,15 +933,17 @@ abstract class X2Model extends CActiveRecord {
 						}
 					}
 				}
-			}elseif($_field->type=='int' || $_field->type=='float'){
-                if($value==''){
+			}elseif($_field->type=='int' || $_field->type=='float' || $_field->type=='currency'){
+                if(is_string($value)){
+                    $value=null;
+                }
+                if(empty($value) && $value!==0){
                     $value=null;
                 }
             }
-            
 			// if(is_array($value))
 				// die($fieldName);
-            if(!empty($this->$fieldName) && !is_bool($this->$fieldName)){
+            if(!empty($value) && !is_bool($value)){
                 $this->$fieldName = trim($value);
             }else
                 $this->$fieldName=$value;
@@ -988,8 +1063,14 @@ abstract class X2Model extends CActiveRecord {
 		$criteria = new CDbCriteria;
 		
 		$accessLevel = $this->getAccessLevel();
-			
-		$criteria->addCondition(X2Model::getAccessConditions($accessLevel),'AND');
+        
+        if($this->hasAttribute('visibility')){
+            $visFlag=true;
+        }else{
+            $visFlag=false;
+        }
+        
+		$criteria->addCondition(X2Model::getAccessConditions($accessLevel,$visFlag),'AND');
 
 		return $criteria;
 	}
@@ -1001,14 +1082,18 @@ abstract class X2Model extends CActiveRecord {
 	 * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
 	 */
 	public function getAccessLevel() {
-	
-		$module = ucfirst(get_class($this));
-		
+        
+        if(!is_null($this->baseRoute)){
+            $module = ucfirst(substr($this->baseRoute,1));
+        }else{
+            $module = ucfirst(get_class($this));
+        }
+        
 		if(Yii::app()->user->checkAccess($module.'Admin'))
 			return 3;
 		elseif(Yii::app()->user->checkAccess($module.'View'))
 			return 2;
-		elseif(Yii::app()->user->checkAccess($module.'ViewPrivate'))
+		elseif(Yii::app()->user->checkAccess($module.'PrivateReadOnlyAccess'))
 			return 1;
 		else
 			return 0;

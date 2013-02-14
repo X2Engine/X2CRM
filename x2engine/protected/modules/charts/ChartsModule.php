@@ -74,7 +74,7 @@ class ChartsModule extends CWebModule {
 				 'basePath' => $this->getBasePath(),
 				 'baseUrl' => $this->assetsUrl,
 				 'js' => array(
-					 YII_DEBUG ? 'js/jquery.js' : 'js/jquery.min.js'
+					 'js/jquery.js'
 				 )
 			 ),
 			'jquerysparkline' => array(
@@ -84,7 +84,7 @@ class ChartsModule extends CWebModule {
 					'css/charts.css'
 				),
 				'js' => array(
-					YII_DEBUG ? 'js/splunk/jquery.sparkline.js' : 'js/splunk/jquery.sparkline.min.js'
+					'js/splunk/jquery.sparkline.js'
 				),
 				'depends' => array('jquery'),
 			),
@@ -92,11 +92,11 @@ class ChartsModule extends CWebModule {
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,
 				'css' => array(
-					YII_DEBUG ? 'js/jqplot/jquery.jqplot.css' : 'js/jqplot/jquery.jqplot.min.css',
+					'js/jqplot/jquery.jqplot.css',
 					'css/charts.css'
 				),
 				'js' => array(
-					YII_DEBUG ? 'js/jqplot/jquery.jqplot.js' : 'js/jqplot/jquery.jqplot.min.js',
+					'js/jqplot/jquery.jqplot.js'
 				),
 				'depends' => array('jquery'),
 			),
@@ -104,9 +104,9 @@ class ChartsModule extends CWebModule {
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,
 				'js' => array(
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.canvasTextRenderer.js' : 'js/jqplot/plugins/jqplot.canvasTextRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.categoryAxisRenderer.js' : 'js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.js' : 'js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js'
+					'js/jqplot/plugins/jqplot.canvasTextRenderer.js',
+					'js/jqplot/plugins/jqplot.categoryAxisRenderer.js',
+					'js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.js'
 				),
 				'depends' => array('jqplot'),
 			),
@@ -114,7 +114,7 @@ class ChartsModule extends CWebModule {
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,
 				'js' => array(
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.pieRenderer.js' : 'js/jqplot/plugins/jqplot.pieRenderer.min.js',
+					'js/jqplot/plugins/jqplot.pieRenderer.js',
 				),
 				'depends' => array('jqplot'),
 			),
@@ -122,7 +122,7 @@ class ChartsModule extends CWebModule {
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,
 				'js' => array(
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.bubbleRenderer.js' : 'js/jqplot/plugins/jqplot.bubbleRenderer.min.js',
+					'js/jqplot/plugins/jqplot.bubbleRenderer.js',
 				),
 				'depends' => array('jqplot'),
 			),
@@ -130,7 +130,7 @@ class ChartsModule extends CWebModule {
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,
 				'js' => array(
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.funnelRenderer.js' : 'js/jqplot/plugins/jqplot.funnelRenderer.min.js',
+					'js/jqplot/plugins/jqplot.funnelRenderer.js',
 				),
 				'depends' => array('jqplot'),
 			),
@@ -138,12 +138,12 @@ class ChartsModule extends CWebModule {
 				'basePath' => $this->getBasePath(),
 				'baseUrl' => $this->assetsUrl,
 				'js' => array(
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.barRenderer.js' : 'js/jqplot/plugins/jqplot.barRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.canvasTextRenderer.js' : 'js/jqplot/plugins/jqplot.canvasTextRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.categoryAxisRenderer.js' : 'js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.canvasAxisTickRenderer.js' : 'js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.dateAxisRenderer.js' : 'js/jqplot/plugins/jqplot.dateAxisRenderer.min.js',
-					YII_DEBUG ? 'js/jqplot/plugins/jqplot.pointLabels.js' : 'js/jqplot/plugins/jqplot.pointLabels.min.js',
+					'js/jqplot/plugins/jqplot.barRenderer.js',
+					'js/jqplot/plugins/jqplot.canvasTextRenderer.js',
+					'js/jqplot/plugins/jqplot.categoryAxisRenderer.js',
+					'js/jqplot/plugins/jqplot.canvasAxisTickRenderer.js',
+					'js/jqplot/plugins/jqplot.dateAxisRenderer.js',
+					'js/jqplot/plugins/jqplot.pointLabels.js',
 				),
 				'depends' => array('jqplot'),
 			)

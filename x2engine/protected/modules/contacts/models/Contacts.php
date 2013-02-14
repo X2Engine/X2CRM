@@ -84,7 +84,20 @@ class Contacts extends X2Model {
 	} */
 
 	public function afterFind() {
-		$this->name = $this->firstName.' '.$this->lastName;
+        if(isset(Yii::app()->params->admin)){
+            $admin=Yii::app()->params->admin;
+            if(!empty($admin->contactNameFormat)){
+                $str=$admin->contactNameFormat;
+                $str=str_replace('firstName',$this->firstName,$str);
+                $str=str_replace('lastName',$this->lastName,$str);
+            }else{
+                $str=$this->firstName.' '.$this->lastName;
+            }
+            if($admin->properCaseNames){
+                $str=$this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
+            }
+            $this->name = $str;
+        }
 	}
 	
 	
@@ -92,7 +105,20 @@ class Contacts extends X2Model {
 	 * Sets the name field (full name)
 	 */
 	public function beforeSave() {
-		$this->name = $this->firstName.' '.$this->lastName;
+		if(isset(Yii::app()->params->admin)){
+            $admin=Yii::app()->params->admin;
+            if(!empty($admin->contactNameFormat)){
+                $str=$admin->contactNameFormat;
+                $str=str_replace('firstName',$this->firstName,$str);
+                $str=str_replace('lastName',$this->lastName,$str);
+            }else{
+                $str=$this->firstName.' '.$this->lastName;
+            }
+            if($admin->properCaseNames){
+                $str=$this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
+            }
+            $this->name = $str;
+        }
 		return true;
 	}	
 	
@@ -393,4 +419,48 @@ class Contacts extends X2Model {
 		}
 		return null;
 	}
+    
+    function ucwords_specific ($string, $delimiters = '', $encoding = NULL) 
+    { 
+        
+        if ($encoding === NULL) { $encoding = mb_internal_encoding();} 
+
+        if (is_string($delimiters)) 
+        { 
+            $delimiters =  str_split( str_replace(' ', '', $delimiters)); 
+        } 
+
+        $delimiters_pattern1 = array(); 
+        $delimiters_replace1 = array(); 
+        $delimiters_pattern2 = array(); 
+        $delimiters_replace2 = array(); 
+        foreach ($delimiters as $delimiter) 
+        { 
+            $ucDelimiter=$delimiter;
+            $delimiter=strtolower($delimiter);
+            $uniqid = uniqid(); 
+            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/'; 
+            $delimiters_replace1[]   = $delimiter.$uniqid.' '; 
+            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/'; 
+            $delimiters_replace2[]   = $ucDelimiter; 
+            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/'; 
+            $delimiters_cleanup_pattern1[]   = $delimiter; 
+        } 
+        $return_string = mb_strtolower($string, $encoding); 
+        //$return_string = $string; 
+        $return_string = preg_replace($delimiters_pattern1, $delimiters_replace1, $return_string);
+
+        $words = explode(' ', $return_string); 
+        
+        foreach ($words as $index => $word) 
+        { 
+            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding); 
+        } 
+        $return_string = implode(' ', $words); 
+        
+        $return_string = preg_replace($delimiters_pattern2, $delimiters_replace2, $return_string);
+        $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
+
+        return $return_string; 
+    }
 }

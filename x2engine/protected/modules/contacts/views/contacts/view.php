@@ -39,7 +39,9 @@
  ********************************************************************************/
 $this->setPageTitle(empty($model->name)?$model->firstName." ".$model->lastName:$model->name);
 
-
+Yii::app()->clientScript->registerScript('hints','
+    $(".hint").qtip();
+');
 // find out if we are subscribed to this contact
 $result = Yii::app()->db->createCommand()
 	->select()
@@ -123,11 +125,14 @@ $layout = Yii::app()->params->profile->getLayout();
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 
-	<h2><?php echo $this->ucwords_specific($model->name,array('-',"'"),'UTF-8'); ?></h2>
+	<h2><?php echo $model->name; ?></h2>
 	<?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
 	<?php echo CHtml::link('<span></span>','#',array('class'=>'x2-button email right','onclick'=>'toggleEmailForm(); return false;'));
-	if(Yii::app()->user->checkAccess('ContactsUpdate',$authParams))
+	if(Yii::app()->user->checkAccess('ContactsUpdate',$authParams)){
 		echo CHtml::link(Yii::t('app','Edit'),$this->createUrl('update',array('id'=>$model->id)),array('class'=>'x2-button right'));
+        if(!empty($model->company) && is_numeric($model->company))
+            echo CHtml::link(Yii::t('app','Sync with Account'),'#',array('class'=>'x2-button right hint','id'=>$model->id.'-account-sync','title'=>Yii::t('contacts','Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'),'submit'=>array('syncAccount','id'=>$model->id),'confirm'=>'Are you sure you want to overwrite this record\'s fields with relevant Account data?'));
+    }
 	?>
 </div>
 

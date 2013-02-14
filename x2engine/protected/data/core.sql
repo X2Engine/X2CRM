@@ -85,7 +85,11 @@ CREATE TABLE x2_admin(
 	serviceOnlineOnly			TINYINT,
     corporateAddress            TEXT,
     eventDeletionTime           INT,
-    eventDeletionTypes          TEXT
+    eventDeletionTypes          TEXT,
+    properCaseNames             INT             DEFAULT 1,
+    contactNameFormat           VARCHAR(255),
+	gaTracking_public			VARCHAR(20) NULL,
+	gaTracking_internal			VARCHAR(20) NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -307,6 +311,7 @@ CREATE TABLE x2_profile(
 	menuBgColor				VARCHAR(6)		NULL,
 	menuTextColor			VARCHAR(6)		NULL,
 	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
+	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
 	pageOpacity				INT				NULL,
 	startPage				VARCHAR(30)		NULL,
 	showSocialMedia			TINYINT			NOT NULL DEFAULT 0,
@@ -329,7 +334,8 @@ CREATE TABLE x2_profile(
     address                 TEXT,
     defaultFeedFilters      TEXT,
     layout					TEXT,
-    minimizeFeed            INT             DEFAULT 0,
+    minimizeFeed            TINYINT         DEFAULT 0,
+    fullscreen              TINYINT         DEFAULT 0,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

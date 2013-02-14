@@ -86,27 +86,35 @@ abstract class x2base extends X2Controller {
 		);
 	}
 	
+	public function behaviors() {
+		return array(
+			'CommonControllerBehavior' => array('class' => 'application.components.CommonControllerBehavior')
+		);
+	}
+	
 	protected function beforeAction($action = null) {
 		$auth = Yii::app()->authManager;
 		$params = array();
 		$action = $this->getAction()->getId();
-		$exceptions = array('updateStageDetails','list','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
+		$exceptions = array('updateStageDetails','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
         if(class_exists($this->modelClass)){
             $model=X2Model::model($this->modelClass);
         }
 		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
-			if ($model->hasAttribute('assignedTo') && method_exists($this, 'loadModel')) {
-				$model = $this->loadModel($_GET['id']);
-				if($model!==null) {
-					$params['assignedTo'] = $model->assignedTo;
-				}
-			}
+			if ($model->hasAttribute('assignedTo')) {
+				$model=X2Model::model($this->modelClass)->findByPk($_GET['id']);
+                if($model!==null){
+                    $params['assignedTo']=$model->assignedTo;
+                }
+            }
 		}
+        
 		$actionAccess = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
 		$authItem = $auth->getAuthItem($actionAccess);
 		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
 			return true;
 		elseif(Yii::app()->user->isGuest){
+			Yii::app()->user->returnUrl = Yii::app()->request->requestUrl;
 			$this->redirect($this->createUrl('/site/login'));
         }else
 			throw new CHttpException(403, 'You are not authorized to perform this action.');
@@ -587,7 +595,6 @@ abstract class x2base extends X2Controller {
             if($model->hasAttribute('visibility')){
                 $event->visibility=$model->visibility;
             }
-            $event->level=2;
             $event->associationType=$name;
             $event->associationId=$model->id;
             $event->user=Yii::app()->user->getName();
@@ -613,7 +620,6 @@ abstract class x2base extends X2Controller {
                     $event=new Events;
                     $event->timestamp=$model->dueDate;
                     $event->visibility=$model->visibility;
-                    $event->level=1;
                     $event->type='action_reminder';
                     $event->associationType="Actions";
                     $event->associationId=$model->id;
@@ -868,8 +874,12 @@ abstract class x2base extends X2Controller {
         }
         if(is_array($changes)){
             foreach ($changes as $field=>$array) {
-                preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
-                $matches = $matches[0];
+                if(is_string($array['new'])){
+                    preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
+                    $matches = $matches[0];
+                }else{
+                    $matches=array();
+                }
                 foreach ($matches as $match) {
                     if(!preg_match('/\&(^|\s|)#(\w\w+);/',$match)){
                         $tag = new Tags;
@@ -927,7 +937,6 @@ abstract class x2base extends X2Controller {
                         if ($criteria->type == 'notification') {
                             foreach ($users as $user) {
                                 $event=new Events;
-                                $event->level=1;
                                 $event->user=$user;
                                 $event->associationType='Notifications';
                                 $event->type='notif';
@@ -985,7 +994,6 @@ abstract class x2base extends X2Controller {
                             if ($model->save()) {
                                 $event=new Events;
                                 $event->type='notif';
-                                $event->level=1;
                                 $event->user=$model->assignedTo;
                                 $event->associationType='Notifications';
                                 
@@ -1294,31 +1302,6 @@ abstract class x2base extends X2Controller {
         $filterChain->run();
     }
 
-	/**
-	 * Obtain the IP address of the current web client.
-	 * @return string
-	 */
-	function getRealIp() {
-		foreach(array(
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR'
-		) as $var) {
-			if(array_key_exists($var,$_SERVER)){
-				foreach(explode(',',$_SERVER[$var]) as $ip) {
-					$ip = trim($ip);
-					if(filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false)
-						return $ip;
-				}
-			}
-		}
-		return false;
-	}
-
 
     // This function needs to be made in your extensions of the class with similar code. 
     // Replace "Opportunities" with the Model being used.
@@ -1536,29 +1519,6 @@ abstract class x2base extends X2Controller {
         return ucfirst($str);
     }
 
-    /**
-     * Copies a file, making directories for it at the receiving location as necessary.
-     * @param type $filepath
-     * @param type $file
-     * @return type 
-     */
-    function ccopy($filepath, $file) {
-
-        $pieces = explode('/', $file);
-        unset($pieces[count($pieces)]);
-        for ($i = 0; $i < count($pieces); $i++) {
-            $str = "";
-            for ($j = 0; $j < $i; $j++) {
-                $str.=$pieces[$j] . '/';
-            }
-
-            if (!is_dir($str) && $str != "") {
-                mkdir($str);
-            }
-        }
-        return copy($filepath, $file);
-    }
-
     function formatMenu($array, $params = array()) {
         $auth = Yii::app()->authManager;
         foreach ($array as &$item) {
@@ -1715,8 +1675,8 @@ abstract class x2base extends X2Controller {
         $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
 
         return $return_string; 
-    } 
-
+    }
+	
 }
 
 ?>

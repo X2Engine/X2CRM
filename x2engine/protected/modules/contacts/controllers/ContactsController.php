@@ -122,11 +122,11 @@ class ContactsController extends x2base {
 	}
 
 	public function behaviors() {
-		return array(
-			'LeadRoutingBehavior'=>array(
-				'class'=>'LeadRoutingBehavior'
-			)
-		);
+		return array_merge(parent::behaviors(), array(
+					'LeadRoutingBehavior' => array(
+						'class' => 'LeadRoutingBehavior'
+					)
+				));
 	}
 
 	/**
@@ -290,6 +290,22 @@ class ContactsController extends x2base {
 		echo CJSON::encode($result);
 	}
     
+    public function actionSyncAccount($id){
+        $contact=$this->loadModel($id);
+        if($contact->hasAttribute('company') && is_numeric($contact->company)){
+            $account=X2Model::model('Accounts')->findByPk($contact->company);
+            if(isset($account)){
+                foreach($account->attributes as $key=>$value){
+                    if($contact->hasAttribute($key) && $key!='id' && $key!='createDate' && $key!='lastUpdated' && $key!='lastActivity'){
+                        $contact->$key=$value;
+                    }
+                }
+            }
+        }
+        $contact->save();
+        $this->redirect(array('view','id'=>$id));
+    }
+    
     public function actionGoogleMaps($contactId=null,$params=array(),$loadMap=null){
         if(isset($_POST['contactId']))
             $contactId=$_POST['contactId'];
@@ -369,7 +385,11 @@ class ContactsController extends x2base {
                 $markerFlag="false";
             }
         }else{
-            $loc=$locationCodes[0];
+            if(isset($locationCodes[0])){
+                $loc=$locationCodes[0];
+            }else{
+                $loc=array('lat'=>0,'lng'=>0);
+            }
             $markerFlag="false";
         }
         if(isset($map)){
@@ -694,23 +714,12 @@ class ContactsController extends x2base {
 			$model->setX2Fields($_POST['Contacts']);
 
 			$criteria = new CDbCriteria();
-			if(!empty($model->firstName) && !empty($model->lastName))
+			if(!empty($model->firstName) && !empty($model->lastName)){
 				$criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
-			if(!empty($model->email))
+            }
+            if(!empty($model->email)){
 				$criteria->compare('email', $model->email, false, "OR");
-			if(Yii::app()->user->getName()!='admin'){
-				$condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
-				/* x2temp */
-				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-				if(!empty($groupLinks))
-					$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-
-				$condition .= 'OR (visibility=2 AND assignedTo IN 
-					(SELECT username FROM x2_group_to_user WHERE groupId IN
-						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-				$criteria->addCondition($condition);
-			}
-
+            }
 			if(isset($_POST['x2ajax'])) {
 				if($this->create($model,$oldAttributes, '1')) { // success creating account?
 					$primaryAccountLink = '';
@@ -766,6 +775,18 @@ class ContactsController extends x2base {
 				}
 			} else {
                 if(!empty($criteria->condition)){
+                    if(Yii::app()->user->getName()!='admin'){
+                        $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                        /* x2temp */
+                        $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                        if(!empty($groupLinks))
+                            $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+
+                        $condition .= 'OR (visibility=2 AND assignedTo IN 
+                            (SELECT username FROM x2_group_to_user WHERE groupId IN
+                                (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                        $criteria->addCondition($condition);
+                    }
                     $duplicates = X2Model::model('Contacts')->findAll($criteria);
                     if(count($duplicates) > 0) {
                         $this->render('duplicateCheck', array(
@@ -810,70 +831,29 @@ class ContactsController extends x2base {
 	}
 
 	public function actionQuickContact() {
-		//exit("ha");
 
 		$model = new Contacts;
-		$attributeLabels = $model->attributeLabels();
-
-		// if it is ajax validation request
-		// if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
-		// echo CActiveForm::validate($model);
-		// Yii::app()->end();
-		// }
 		// collect user input data
 		if(isset($_POST['Contacts'])) {
 			// clear values that haven't been changed from the default
-			foreach($_POST['Contacts'] as $name => &$value) {
-				if($value == $model->getAttributeLabel($name))
-					$value = '';
-			}
-			foreach($_POST as $key => $arr) {
-				$pieces = explode("_", $key);
-				if(isset($pieces[0]) && $pieces[0] == 'autoselect') {
-					$newKey = $pieces[1];
-					if(isset($_POST[$newKey . "_id"]) && $_POST[$newKey . "_id"] != "") {
-						$val = $_POST[$newKey . "_id"];
-					} else {
-						$field = Fields::model()->findByAttributes(array('fieldName' => $newKey));
-						if(isset($field)) {
-							$type = ucfirst($field->linkType);
-							if($type != "Contacts") {
-								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-							} else {
-								$names = explode(" ", $arr);
-								if(count($names) > 1)
-									$lookupModel = X2Model::model('Contacts')->findByAttributes(array('firstName' => $names[0], 'lastName' => $names[1]));
-							}
-							if(isset($lookupModel))
-								$val = $lookupModel->id;
-							else
-								$val = $arr;
-						}
-					}
-					$model->$newKey = $val;
-				}
-			}
-			$temp = $model->attributes;
-			foreach(array_keys($model->attributes) as $field) {
-				if(isset($_POST['Contacts'][$field])) {
-					$model->$field = $_POST['Contacts'][$field];
-					$fieldData = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $field));
-					if($fieldData->type == 'assignment' && $fieldData->linkType == 'multiple') {
-						$model->$field = Accounts::parseUsers($model->$field);
-					} elseif ($fieldData->type == 'date') {
-						$model->$field = strtotime($model->$field);
-					}
-				}
-			}
+            $temp=$model->attributes;
+			$model->setX2Fields($_POST['Contacts']);
 
 			$model->visibility = 1;
 			// validate user input and save contact
 			$changes = $this->calculateChanges($temp, $model->attributes, $model);
-			$model = $this->updateChangelog($model, 'Create');
+			$model = $this->updateChangelog($model, $changes);
 			$model->createDate = time();
 			if($model->save()) {
+                $event=new Events;
+                $event->user=Yii::app()->user->getName();
+                $event->associationType='Contacts';
+                $event->associationId=$model->id;
+                $event->type='record_create';
+                $event->visibility=$model->visibility;
+                $event->save();
 				$this->renderPartial('application.components.views.quickContact', array());
-			} //else print_r($model->getErrors());
+			}
 		}
 	}
 
@@ -887,10 +867,71 @@ class ContactsController extends x2base {
 			return parent::update($model, $oldAttributes, $api);
 	}
 
+	
+	public function actionTrigger() {
+		set_time_limit(1);
+
+		$str = '{a+b} a c,      c/ab2 * {8.333/ 0.3}+{apples.sauce}';
+		$str = '{}a{b} {apple}{sauce} + {a} and {apple.sauce}! ';
+		
+		var_dump($str);
+		
+		// $tokens = self::tokenize($str);
+		$tokens = X2FlowParam::parseExpression($str);
+		
+
+		var_dump($tokens);
+		
+		die();
+
+		
+		
+		// $data = array('{account.createDate} +5 days');
+		$attr = array('lastUpdated'=>time(),'account'=>23);
+
+		// $test = json_encode($data);
+		// echo $test;
+		// var_dump( json_decode($test));
+
+		$value = '{lastUpdated} 2 days ago';
+		$matches = array();
+		preg_match('/{(\w+|\w+.\w+)}/',$value,$matches);	// format can be either "{field}" or "{linkField.field}"
+		
+		
+
+		// if($type === 'timestamp') {
+		if(count($matches) > 1) {
+			$value = preg_replace('/{.+}/','',$value);	// remove variables (for date/time fields)
+			
+			
+			if(isset($attr[$matches[1]])) {
+			
+				// $timestamp = getAttribute($matches[1]); //$attr[$matches[1]];
+				$timestamp = $attr[$matches[1]];
+			
+				if(trim($value) === '')
+					$date = $timestamp;
+				else
+					$date = strtotime($value,$timestamp);
+			} else
+				$date = false;
+		} else
+			$date = strtotime($value);
+		var_dump($value);
+		var_dump($date);
+		var_dump(date('Y-m-d h:i:s',$date));
+		// }
+
+	}
+	
+	
+	
+	
 	// Controller/action wrapper for update()
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users = User::getNames();
+        $renderFlag = true;
 		$accounts = Accounts::getNames();
 
 		if(isset($_POST['Contacts'])) {
@@ -898,11 +939,17 @@ class ContactsController extends x2base {
 
 			$model->setX2Fields($_POST['Contacts']);
 			if($model->dupeCheck != '1') {
+                $model->dupeCheck=1;
 				$criteria = new CDbCriteria();
-                if(!empty($model->firstName) && !empty($model->lastName))
+                $criteriaFlag=false;
+                if(!empty($model->firstName) && !empty($model->lastName)){
                     $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
-				if(!empty($model->email))
+                    $criteriaFlag=true;
+                }
+                if(!empty($model->email)){
                     $criteria->compare('email', $model->email, false, "OR");
+                    $criteriaFlag=true;
+                }
 				$criteria->compare('id', "<>" . $model->id, false, "AND");
                 if(Yii::app()->user->getName()!='admin'){
                     $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
@@ -916,28 +963,49 @@ class ContactsController extends x2base {
                             (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
                     $criteria->addCondition($condition);
                 }
-
-				$duplicates = X2Model::model('Contacts')->findAll($criteria);
-				if(count($duplicates) > 0) {
-					$this->render('duplicateCheck', array(
-						'newRecord' => $model,
-						'duplicates' => $duplicates,
-						'ref' => 'update'
-					));
+                if(!empty($criteria) && $criteriaFlag){
+                    $duplicates = X2Model::model('Contacts')->findAll($criteria);
+                    if(count($duplicates) > 0) {
+                        $this->render('duplicateCheck', array(
+                            'newRecord' => $model,
+                            'duplicates' => $duplicates,
+                            'ref' => 'update'
+                        ));
+                        $renderFlag=false;
+                    } else {
+                        $this->update($model, $oldAttributes, 0);
+                    }
+                }else{
+                    $this->update($model, $oldAttributes, 0);
+                }
+			} else {
+				$this->update($model, $oldAttributes, 0);
+			}
+		}
+        if($renderFlag) {
+		
+			if(isset($_POST['x2ajax'])) {
+				Yii::app()->clientScript->scriptMap['*.js'] = false;
+				Yii::app()->clientScript->scriptMap['*.css'] = false;
+				if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true) {
+					$page = $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts'), true, true);
+					echo json_encode(
+						array(
+							'status'=>'userError',
+							'page'=>$page,
+						)
+					);
 				} else {
-					$this->update($model, $oldAttributes, false);
+					$this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts'), false, true);
 				}
 			} else {
-				$this->update($model, $oldAttributes, false);
+				$this->render('update', array(
+					'model' => $model,
+					'users' => $users,
+					'accounts' => $accounts,
+				));
 			}
-		}else{
-
-            $this->render('update', array(
-                'model' => $model,
-                'users' => $users,
-                'accounts' => $accounts,
-            ));
-        }
+		}
 	}
 
 	// Default action - displays all visible Contact Lists
@@ -1239,7 +1307,7 @@ class ContactsController extends x2base {
 							if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
 									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
 								$fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
-								if($fieldRef->type=='link'){
+								if(isset($fieldRef) && $fieldRef->type=='link'){
 									$lookup=X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
 									if(isset($lookup))
 										$values[$i]=$lookup->id;
@@ -2009,7 +2077,6 @@ class ContactsController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;
@@ -2168,7 +2235,6 @@ class ContactsController extends x2base {
 			$action->save();
             
             $event=new Events;
-            $event->level=2;
             $event->associationType='Contacts';
             $event->associationId=$model->id;
             $event->user=$model->assignedTo;

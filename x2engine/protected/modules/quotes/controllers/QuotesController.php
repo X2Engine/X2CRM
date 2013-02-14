@@ -195,7 +195,6 @@ class QuotesController extends x2base {
 		    $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 		    $this->updateChangelog($model,$changes);
             $event=new Events;
-            $event->level=2;
             $event->associationType=$name;
             $event->associationId=$model->id;
             $event->user=Yii::app()->user->getName();
@@ -1033,7 +1032,6 @@ class QuotesController extends x2base {
 		if(Yii::app()->request->isPostRequest) {
             $event=new Events;
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;

@@ -67,7 +67,7 @@ class Publisher extends X2Widget {
 			$model->assignedTo = Yii::app()->user->getName();
         
         Yii::app()->clientScript->registerScript('loadEmails',"
-            function loadEmail(id){
+            function loadFrame(id,type){
                 var frame='<iframe style=\"width:99%;height:99%\" src=\"".Yii::app()->controller->createUrl('/actions/viewEmail/')."?id='+id+'\"></iframe>';
                 if(typeof x2ViewEmailDialog != 'undefined') {
                     if($(x2ViewEmailDialog).is(':hidden')){
@@ -81,7 +81,7 @@ class Publisher extends X2Widget {
                 x2ViewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
 
                 x2ViewEmailDialog.dialog({
-                    title: 'View Email', 
+                    title: 'View '+type, 
                     autoOpen: false,
                     resizable: true,
                     width: '650px',
@@ -110,7 +110,13 @@ class Publisher extends X2Widget {
                 var t;
                 $('.email-frame').mouseenter(function(){
                     var id=$(this).attr('id');
-                    t=setTimeout(function(){loadEmail(id)},500);
+                    t=setTimeout(function(){loadFrame(id,'Email')},500);
+                }).mouseleave(function(){
+                    clearTimeout(t);
+                });
+                $('.quote-frame').mouseenter(function(){
+                    var id=$(this).attr('id');
+                    t=setTimeout(function(){loadFrame(id,'Quote')},500);
                 }).mouseleave(function(){
                     clearTimeout(t);
                 });

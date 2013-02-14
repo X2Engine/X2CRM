@@ -131,108 +131,106 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Quote'));
-
+?>
+<?php
 if($model->type == 'invoice') { ?>
-	<div class="x2-layout form-view" style="margin-bottom: 0;">
-	
-	    <div class="formSection showSection">
-	    	<div class="formSectionHeader">
-	    		<span class="sectionTitle" title="Invoice"><?php echo Yii::t('quotes', 'Invoice'); ?></span>
-	    	</div>
-	    	<div class="tableWrapper">
-	    		<table>
-	    			<tbody>
-	    				<tr class="formSectionRow">
-	    					<td style="width: 300px">
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Status'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderAttribute('invoiceStatus'); ?>
-	    							</div>
-	    						</div>
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Created'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderAttribute('invoiceCreateDate'); ?>
-	    							</div>
-	    						</div>
-	    					</td>
-	    					<td style="width: 300px">
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Issued'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderAttribute('invoiceIssuedDate'); ?>
-	    							</div>
-	    						</div>
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Payed'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderAttribute('invoicePayedDate'); ?>
-	    							</div>
-	    						</div>
-	    					</td>
-	    				</tr>
-	    			</tbody>
-	    		</table>
-	    	</div>
-	    </div>
-	    </div>
-	    
-	</div>
-<?php } ?>
-
-<?php $productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products')); ?>
-
-<div class="x2-layout form-view" style="margin-bottom: 0;">
-	<div class="formSection">
+<div class="x2-layout form-view">
+	<div class="formSection showSection">
 		<div class="formSectionHeader">
-			<span class="sectionTitle"><?php echo $productField->attributeLabel; ?></span>
+			<span class="sectionTitle" title="Invoice"><?php echo Yii::t('quotes', 'Invoice'); ?></span>
+		</div>
+		<div class="tableWrapper">
+			<table>
+				<tbody>
+					<tr class="formSectionRow">
+						<td style="width: 300px">
+							<div class="formItem leftLabel">
+								<label><?php echo Yii::t('media', 'Invoice Status'); ?></label>
+								<div class="formInputBox" style="width: 150px; height: auto;">
+									<?php echo $model->renderAttribute('invoiceStatus'); ?>
+								</div>
+							</div>
+							<div class="formItem leftLabel">
+								<label><?php echo Yii::t('media', 'Invoice Created'); ?></label>
+								<div class="formInputBox" style="width: 150px; height: auto;">
+									<?php echo $model->renderAttribute('invoiceCreateDate'); ?>
+								</div>
+							</div>
+						</td>
+						<td style="width: 300px">
+							<div class="formItem leftLabel">
+								<label><?php echo Yii::t('media', 'Invoice Issued'); ?></label>
+								<div class="formInputBox" style="width: 150px; height: auto;">
+									<?php echo $model->renderAttribute('invoiceIssuedDate'); ?>
+								</div>
+							</div>
+							<div class="formItem leftLabel">
+								<label><?php echo Yii::t('media', 'Invoice Payed'); ?></label>
+								<div class="formInputBox" style="width: 150px; height: auto;">
+									<?php echo $model->renderAttribute('invoicePayedDate'); ?>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>
-<div class="form" style="border:1px solid #ccc; border-top: 0; padding: 0; margin-top:-1px; border-radius:0;-webkit-border-radius:0; background:#fafafa;">
-<?php
-$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>"quote-products-grid",
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'summaryText'=>'',
-	'dataProvider'=>$dataProvider,
-	'columns'=>array(
-		array(
-			'name'=>'name',
-			'header'=>Yii::t('products','Line Item'),
-			'value'=>'$data["name"]',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'unit',
-			'header'=>Yii::t('products','Unit Price'),
-			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$model->currency.'")',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'quantity',
-			'header'=>Yii::t('products','Quantity'),
-			'value'=>'$data["quantity"]',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'adjustment',
-			'header'=> Yii::t('products', 'Adjustment'),
-			'value'=>'$data["adjustment"]',
-			'type'=>'raw',
-			'footer'=>'<b>Total</b>',
-		),
-		array(
-			'name'=>'price',
-			'header'=>Yii::t('products', "Price"),
-			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$model->currency.'")',
-			'type'=>'raw',
-			'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$model->currency) .'</b>',
-		),
-	),
-));
-?>
+<?php } ?>
+
+<?php $productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products')); ?>
+<div class="x2-layout form-view">
+	<div class="formSection showSection">
+		<div class="formSectionHeader">
+			<span class="sectionTitle"><?php echo $productField->attributeLabel; ?></span>
+		</div>
+		<div class="tableWrapper">
+		<?php
+		$this->widget('zii.widgets.grid.CGridView', array(
+			'id'=>"quote-products-grid",
+			'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
+			'summaryText'=>'',
+			'dataProvider'=>$dataProvider,
+			'columns'=>array(
+				array(
+					'name'=>'name',
+					'header'=>Yii::t('products','Line Item'),
+					'value'=>'$data["name"]',
+					'type'=>'raw',
+				),
+				array(
+					'name'=>'unit',
+					'header'=>Yii::t('products','Unit Price'),
+					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$model->currency.'")',
+					'type'=>'raw',
+				),
+				array(
+					'name'=>'quantity',
+					'header'=>Yii::t('products','Quantity'),
+					'value'=>'$data["quantity"]',
+					'type'=>'raw',
+				),
+				array(
+					'name'=>'adjustment',
+					'header'=> Yii::t('products', 'Adjustment'),
+					'value'=>'$data["adjustment"]',
+					'type'=>'raw',
+					'footer'=>'<b>Total</b>',
+				),
+				array(
+					'name'=>'price',
+					'header'=>Yii::t('products', "Price"),
+					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$model->currency.'")',
+					'type'=>'raw',
+					'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$model->currency) .'</b>',
+				),
+			),
+		));
+		?>
+		</div>
+
+	</div>
 </div>
 <?php
 /*

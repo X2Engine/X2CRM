@@ -267,3 +267,5 @@ ul.column-selector input {
 	padding:0;
 	margin:0;
 }
+
+.yiiPager li a {background:#fff;}

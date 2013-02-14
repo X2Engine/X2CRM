@@ -253,46 +253,24 @@ class Accounts extends X2Model {
 	}
 
 	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+		$criteria = new CDbCriteria;		
+		return $this->searchBase($criteria);
+	}
+    
+    /**
+	 * Base search method for all data providers.
+	 * Sets up record-level security checks.
+	 * 
+	 * @param CDbCriteria $criteria starting criteria for this search
+	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
+	 */
+	public function searchBase($criteria=null) {
+		if($criteria === null)
+			$criteria = $this->getAccessCriteria();
+		else
+			$criteria->mergeWith($this->getAccessCriteria());
 
-		$criteria=new CDbCriteria;
-        
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Accounts'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-                    
-                }
-
-		
-		$dataProvider=new SmartDataProvider(get_class($this), array(
-			'sort'=>array('defaultOrder'=>'name ASC'),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
-		$arr=$dataProvider->getData();
-		foreach($arr as $account){
-			$account->assignedTo=User::getUserLinks($account->assignedTo);
-			$account->associatedContacts=Contacts::getContactLinks($account->associatedContacts);
-		}
-		$dataProvider->setData($arr);
-
-		return $dataProvider;
+		return parent::searchBase($criteria);
 	}
  
 }

@@ -48,6 +48,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'template'=> '<div class="page-title"><h2>'.Yii::t('workflow','Workflows').'</h2><div class="title-bar">{summary}</div></div>{items}',
+	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'enableSorting'=>false,
 	'columns'=>array(
 		array(

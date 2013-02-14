@@ -116,8 +116,8 @@ class DefaultController extends x2base {
 		{
 			// we only allow deletion via POST request
 			$model=$this->loadModel($id);
-                        $this->cleanUpTags($model);
-                        $model->delete();
+            $this->cleanUpTags($model);
+            $model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))

@@ -247,7 +247,6 @@ class ProductsController extends x2base {
                         $model->delete();
 			$event=new Events();
             $event->type='record_deleted';
-            $event->level=2;
             $event->associationType=$this->modelClass;
             $event->associationId=$model->id;
             $event->text=$model->name;
