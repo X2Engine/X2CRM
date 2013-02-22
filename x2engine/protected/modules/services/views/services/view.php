@@ -120,9 +120,9 @@ if($model->contactId) { // every service case should have a contact associated w
 <?php $this->widget('Attachments',array('associationType'=>'services','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php
-if($model->contactId) {
-	$contact = Contacts::model()->findByPk($model->contactId);
-	if($contact) { // if associated contact exists, setup inline email form
+if(isset($contact)) {
+	// $contact = Contacts::model()->findByPk($model->contactId);
+	// if($contact) { // if associated contact exists, setup inline email form
 		$this->widget('InlineEmailForm',
 			array(
 				'attributes'=>array(
@@ -135,7 +135,7 @@ if($model->contactId) {
 				'startHidden'=>true,
 			)
 		);
-	}
+	// }
 }
 ?>
 

@@ -140,42 +140,40 @@ class Services extends X2Model {
 
 		$criteria=new CDbCriteria;
 
-	//	$criteria->compare('status', '<>Program Manager investigation');
+		// $criteria->compare('status', '<>Program Manager investigation');
 
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Services'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    
-                    if($field->fieldName == 'status') { // if status exists
-						// filter statuses based on user's profile
-						$hideStatus = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
-						if(!$hideStatus) {
-						    $hideStatus = array();
-						}
-						foreach($hideStatus as $hide) {
-							$criteria->compare('status', '<>'.$hide);
-						}
-                    }
-                    
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-                    
-                }
+		foreach($this->getFields(true) as $fieldName => $field) {
+			
+			if($fieldName == 'status') { // if status exists
+				// filter statuses based on user's profile
+				$hideStatus = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
+				if(!$hideStatus) {
+					$hideStatus = array();
+				}
+				foreach($hideStatus as $hide) {
+					$criteria->compare('status', '<>'.$hide);
+				}
+			}
+			
+			switch($field->type){
+				case 'boolean':
+					$criteria->compare($fieldName,$this->compareBoolean($this->$fieldName), true);
+					break;
+				case 'link':
+					$criteria->compare($fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
+					break;
+				case 'assignment':
+					$criteria->compare($fieldName,$this->compareAssignment($this->$fieldName), true);
+					break;
+				default:
+					$criteria->compare($fieldName,$this->$fieldName,true);
+			}
+			
+		}
 
 		
 		$criteria->together = true;
-	//	$criteria->with = array('contacts.accounts');
+		// $criteria->with = array('contactId.company');
 		// field 'account' is not in x2_services table,
 		// it is declared at the top of this class and is used
 		// by X2GridView to search the account name associated
@@ -183,12 +181,12 @@ class Services extends X2Model {
 		// Adding the field 'account' to the table x2_services will
 		// cause an SQL error in this function
 		if(isset($_GET['Services']['account'])) { 
-			$criteria->compare('accounts.name', $_GET['Services']['account'], true);
+			// $criteria->compare('company.name', $_GET['Services']['account'], true);
 		}
 	
 		$dataProvider=new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
-				'defaultOrder'=>'assignedTo ASC', // `t` is an SQL placeholder for x2_services, this prevents an SQL error caused by 3 ambiguous 'id' fields in the SQL query: one each from x2_services, x2_contacts, and x2_accounts
+				'defaultOrder'=>'t.assignedTo ASC', // `t` is an SQL placeholder for x2_services, this prevents an SQL error caused by 3 ambiguous 'id' fields in the SQL query: one each from x2_services, x2_contacts, and x2_accounts
 		/*		'attributes'=>array(
 					'account'=>array( // let's us sort by account name
 						'asc'=>'accounts.name',

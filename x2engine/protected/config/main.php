@@ -66,7 +66,9 @@ return array(
 		// 'application.components.EButtonColumnWithClearFilters',
 	),
 	'modules'=>array(
-		// 'gii'=>$gii,
+		// 'gii'=>array(
+			// 'class'=>'system.gii.GiiModule',
+		// ),
 		'mobile',
 	),
 	'behaviors' => array('ApplicationConfigBehavior'),
@@ -88,17 +90,20 @@ return array(
 			'urlRuleClass'=>'X2UrlRule',
 			'showScriptName'=>!isset($_SERVER['HTTP_MOD_REWRITE']),
 			'rules'=>array(
+			
+				'gii/<controller>'=>'gii/<controller>',
+			
 				'<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
 				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
 				
-                '<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>' => '<module>/<module>/index',
-				'<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<id:\d+>' => '<module>/<module>/view',
-				'<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>' => '<module>/<module>/<action>',
-				'<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
-				'<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<id:\d+>' => '<module>/<module>/view',
-				'<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
-				'<module:(accounts|actions|calendar|charts|contacts|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>'=>'<module>/<module>/index',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<id:\d+>'=>'<module>/<module>/view',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>'=>'<module>/<module>/<action>',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<action:\w+>/<id:\d+>'=>'<module>/<module>/<action>',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<id:\d+>'=>'<module>/<module>/view',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
+				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services)>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
 				
 				'<module:\w+>/<id:\d+>'=>'<module>/default/view',
 				'<module:\w+>/<action:\w+>'=>'<module>/default/<action>',
@@ -107,6 +112,7 @@ return array(
 				'<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
 				
 				'x2touch'=>'mobile/site/home', 
+				
 				
 				/*
 				// special HTTP methods for API
@@ -285,17 +291,17 @@ return array(
 					// 'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
 					// 'slowQueryMin' => 0.01, // Minimum time for the query to be slow
 				// ),
-//				 array(
-//					 'class'=>'CWebLogRoute',
-//					 'categories' => 'translations',
-//					 'levels' => 'missing',
-//				 ),
+				// array(
+					// 'class'=>'CWebLogRoute',
+					// 'categories' => 'translations',
+					// 'levels' => 'missing',
+				// ),
 			),
 		),
-//		 'messages'=>array(
-//			 'forceTranslation'=>true,
-//			 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
-//		 ),
+		// 'messages'=>array(
+			// 'forceTranslation'=>true,
+			// 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
+		// ),
 		
 		'cache'=>array(
 			'class'=>'system.caching.CFileCache',
@@ -317,6 +323,7 @@ return array(
 		'profile'=>null,
 		'roles'=>array(),
 		'groups'=>array(),
+		'isAdmin'=>false,
 		'sessionStatus'=>0,
 		'logo'=>"uploads/logos/yourlogohere.png",
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',

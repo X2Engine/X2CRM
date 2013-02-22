@@ -153,4 +153,22 @@ class Docs extends CActiveRecord {
 			'criteria' => $criteria,
 		));
 	}
+
+	public static function replaceVariables($str,&$model,$vars=array()) {
+		$matches = array();
+		
+		if(preg_match_all('/{\w+}/',$str,$matches)) {		// loop through the things (email body)
+			foreach($matches[0] as &$match) {
+				$match = substr($match,1,-1);	// remove { and }
+				
+				if(isset($vars[$match])) {
+					$str = preg_replace('/{'.$match.'}/',$vars[$match],$str);
+				} elseif($model->hasAttribute($match)) {
+					$value = $model->renderAttribute($match,false,true);	// get the correctly formatted attribute
+					$str = preg_replace('/{'.$match.'}/',$value,$str);
+				}
+			}
+		}
+		return $str;
+	}
 }

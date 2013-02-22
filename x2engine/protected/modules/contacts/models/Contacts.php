@@ -61,7 +61,7 @@ class Contacts extends X2Model {
 	public function tableName() { return 'x2_contacts'; }
 	
 	public function behaviors() {
-		return array(
+		return array_merge(parent::behaviors(),array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/contacts'
@@ -71,65 +71,62 @@ class Contacts extends X2Model {
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
 			)
-		);
+		));
 	}
-	
-	/**
-	 * @return array relational rules.
-	 */
-/*	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array();
-	} */
 
-	public function afterFind() {
-        if(isset(Yii::app()->params->admin)){
-            $admin=Yii::app()->params->admin;
-            if(!empty($admin->contactNameFormat)){
-                $str=$admin->contactNameFormat;
-                $str=str_replace('firstName',$this->firstName,$str);
-                $str=str_replace('lastName',$this->lastName,$str);
-            }else{
-                $str=$this->firstName.' '.$this->lastName;
-            }
-            if($admin->properCaseNames){
-                $str=$this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
-            }
-            $this->name = $str;
-        }
-	}
-	
-	
 	/**
-	 * Sets the name field (full name)
+	 * Sets the name field (full name) on record lookup
+	 */
+	public function afterFind() {
+		parent::afterFind();
+		
+		if(isset(Yii::app()->params->admin)) {
+			$admin=Yii::app()->params->admin;
+			if(!empty($admin->contactNameFormat)) {
+				$str = $admin->contactNameFormat;
+				$str = str_replace('firstName',$this->firstName,$str);
+				$str = str_replace('lastName',$this->lastName,$str);
+			} else {
+				$str = $this->firstName.' '.$this->lastName;
+			}
+			if($admin->properCaseNames)
+				$str = $this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
+			
+			$this->name = $str;
+		}
+	}
+
+	/**
+	 * Sets the name field (full name) before saving
+	 * Return boolean whether or not to save
 	 */
 	public function beforeSave() {
-		if(isset(Yii::app()->params->admin)){
-            $admin=Yii::app()->params->admin;
-            if(!empty($admin->contactNameFormat)){
-                $str=$admin->contactNameFormat;
-                $str=str_replace('firstName',$this->firstName,$str);
-                $str=str_replace('lastName',$this->lastName,$str);
-            }else{
-                $str=$this->firstName.' '.$this->lastName;
-            }
-            if($admin->properCaseNames){
-                $str=$this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
-            }
-            $this->name = $str;
-        }
-		return true;
-	}	
-	
+		if(isset(Yii::app()->params->admin)) {
+			$admin = Yii::app()->params->admin;
+			if(!empty($admin->contactNameFormat)) {
+				$str = $admin->contactNameFormat;
+				$str = str_replace('firstName',$this->firstName,$str);
+				$str = str_replace('lastName',$this->lastName,$str);
+			} else {
+				$str = $this->firstName.' '.$this->lastName;
+			}
+			if($admin->properCaseNames)
+				$str = $this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
+			
+			$this->name = $str;
+		}
+		
+		return parent::beforeSave();
+	}
+
 	/**
 	 * Returns full human-readable address, using all available address fields
 	 */
 	public function getCityAddress() {
 		$address = '';
-        if(!empty($this->address)){
-            $address.=$this->address." ";
-        }
+		if(!empty($this->address)){
+			$address.=$this->address." ";
+		}
 		if(!empty($this->city))
 			$address .= $this->city . ', ';
 		
@@ -244,14 +241,16 @@ class Contacts extends X2Model {
 				} else {
 					if($tags[$i][0] != '#')
 						$tags[$i] = '#'.$tags[$i];
-					$tags[$i] = 'x2_tags.tag = "'.$tags[$i].'"';
+					$tags[$i] = 'b.tag = "'.$tags[$i].'"';
 				}
 			}
 			// die($str);
 			$tagConditions = implode(' OR ',$tags);
 			
 			$criteria->distinct = true;
-			$criteria->join .= ' RIGHT JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+			$criteria->join .= ' RIGHT JOIN x2_tags b ON (b.itemId=t.id AND b.type="Contacts" AND ('.$tagConditions.'))';
+            $criteria->condition='t.id IS NOT NULL';
+            $criteria->order='b.timestamp DESC';
 		}
 		return $this->searchBase($criteria);
 	}
@@ -337,35 +336,6 @@ class Contacts extends X2Model {
 				
 				
 			$this->compareAttributes($search);
-				
-			/* $search->compare('name',$this->name,true);
-			$search->compare('firstName',$this->firstName,true);
-			$search->compare('lastName',$this->lastName,true);
-			$search->compare('title',$this->title,true);
-			$search->compare('company',$this->company,true);
-			$search->compare('phone',$this->phone,true);
-			$search->compare('phone2',$this->phone2,true);
-			$search->compare('email',$this->email,true);
-			$search->compare('website',$this->website,true);
-			$search->compare('address',$this->address,true);
-			$search->compare('city',$this->city,true);
-			$search->compare('state',$this->state,true);
-			$search->compare('zipcode',$this->zipcode,true);
-			$search->compare('country',$this->country,true);
-			$search->compare('visibility',$this->visibility);
-			$search->compare('assignedTo',$this->assignedTo,true);
-			$search->compare('backgroundInfo',$this->backgroundInfo,true);
-			$search->compare('twitter',$this->twitter,true);
-			$search->compare('linkedin',$this->linkedin,true);
-			$search->compare('skype',$this->skype,true);
-			$search->compare('googleplus',$this->googleplus,true);
-			// $search->compare('lastUpdated',$this->lastUpdated,true);
-			$search->compare('updatedBy',$this->updatedBy,true);
-			$search->compare('priority',$this->priority,true);
-			$search->compare('leadSource',$this->leadSource,true);
-			$search->compare('rating',$this->rating);
-			$search->compare('doNotCall',$this->doNotCall);
-			$search->compare('doNotEmail',$this->doNotEmail); */
 
 			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,

@@ -51,13 +51,17 @@ Yii::app()->clientScript->registerScript('vcrListCookie', "
 
 $vcrControls = array();
 $searchModel = new Contacts('search');
-
+$tagFlag=false;
 //listId should be either a number (for a list), 'index', or 'admin'
 //convert numbers to list/# for uniform url path
 if(is_numeric($listId)){
 	$path = 'list/' . $listId;
-}else
+}elseif(strpos($listId,'#')===0){
+    $tagFlag=true;
 	$path = $listId;
+}else{
+    $path = $listId;
+}
 
 //try to get the saved sort and filters from the session if applicable
 //the strings in this code are tied to values specified in ERememberColumnFilters and SmartDataProvider
@@ -87,12 +91,18 @@ if(is_numeric($listId)) {
 } elseif($listId=='newContacts') {
 	$listLink = CHtml::link(Yii::t('contacts','New Contacts'),array('/contacts/'.$path));
 	$vcrDataProvider = $searchModel->searchNewContacts();
+} elseif($tagFlag){
+    $listLink = CHtml::link(Yii::t('contacts','Tag Search'),array('/search/search?term='.urlencode($listId)));
+    $_GET['tagField']=$listId;
+    $vcrDataProvider = $searchModel->searchAll();
 } else {
 	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));	// default to All Contacts
 	$vcrDataProvider = $searchModel->searchAll();
 }
-if(empty($order))
+if(empty($order) && !$tagFlag)
 	$order = $vcrDataProvider->sort->getOrderBy();
+elseif(empty($order) && $tagFlag)
+	$order = $vcrDataProvider->criteria->order;
 if(!empty($order))
 	$vcrDataProvider->criteria->order = $order;
 

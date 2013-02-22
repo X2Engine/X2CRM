@@ -98,11 +98,13 @@ CREATE TABLE x2_changelog(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(50)		NOT NULL,
 	itemId					INT				NOT NULL,
+    recordName              VARCHAR(255),
 	changedBy				VARCHAR(50)		NOT NULL,
 	changed					TEXT			NULL,
-    fieldName               VARCHAR(255),
-    oldValue                TEXT,
-    newValue                TEXT,
+    fieldName				VARCHAR(255),
+    oldValue				TEXT,
+    newValue				TEXT,
+    diff					TINYINT			NOT NULL DEFAULT 0,
 	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/

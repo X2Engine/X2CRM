@@ -88,10 +88,8 @@ class AccountsController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model=$this->loadModel($id);	 
-		
-		$type='accounts';
-		parent::view($model, $type);
+		$model = $this->loadModel($id);
+		parent::view($model,'accounts');
 	}
 	
 	public function actionShareAccount($id){

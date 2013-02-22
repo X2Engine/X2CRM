@@ -43,6 +43,19 @@ $(function() {
 
 	if(window.fullscreen)
 		$('#page-body').addClass('no-widgets');
+		
+	//widget collapsing
+	// var widgetHoverTimeout = null;
+	
+	// $("#sidebar-right").css({display:"block",position:"absolute",top:"0",right:"0","z-index":"1"}).unbind().mouseenter(function(){
+		// clearTimeout(widgetHoverTimeout);
+		// $(this).stop().animate({"right":"0"},300);
+	// }).mouseleave(function() {
+		// var self = this;
+		// widgetHoverTimeout = setTimeout(function() {
+			// $(self).stop().animate({"right":"-"+($(self).width()-20)+"px"},300);
+		// },750);
+	// });
 
 	// jquery references to eliminate repeated lookups in window.resize()
 	var $header = $('#header .width-constraint').first();

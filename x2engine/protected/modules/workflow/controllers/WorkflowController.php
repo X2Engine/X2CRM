@@ -459,9 +459,11 @@ class WorkflowController extends x2base {
 				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
 			}
 		}
-        $contact=Contacts::model()->findByPk($modelId);
-        $contact->lastActivity=time();
-        $contact->save();
+        $record=X2Model::model(ucfirst($type))->findByPk($modelId);
+        if($record->hasAttribute('lastActivity')){
+            $record->lastActivity=time();
+            $record->save();
+        }
 		echo Workflow::renderWorkflow($workflowStatus);
 	}
 	
@@ -777,7 +779,12 @@ class WorkflowController extends x2base {
         $type=$action->associationType=='opportunities'?"Opportunity":ucfirst($action->associationType);
 		$changelog->type = $type;
 		$changelog->itemId = $action->associationId;
-
+        $record=X2Model::model(ucfirst($type))->findByPk($action->associationId);
+        if(isset($record) && $record->hasAttribute('name')){
+            $changelog->recordName=$record->name;
+        }else{
+            $changelog->recordName=$type;
+        }
 		$changelog->changedBy = Yii::app()->user->getName();
 		$changelog->timestamp = time();
 		

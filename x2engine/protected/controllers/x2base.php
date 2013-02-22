@@ -114,62 +114,19 @@ abstract class x2base extends X2Controller {
 		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
 			return true;
 		elseif(Yii::app()->user->isGuest){
-			Yii::app()->user->returnUrl = Yii::app()->request->requestUrl;
+			Yii::app()->user->returnUrl = Yii::app()->request->url;
 			$this->redirect($this->createUrl('/site/login'));
         }else
 			throw new CHttpException(403, 'You are not authorized to perform this action.');
 	}
 
-    /**
-     * Specifies the access control rules.
-     * This method is used by the 'accessControl' filter.
-     * @return array access control rules
-     */
-    public function accessRules() {
-        /* $moduleId=Yii::app()->controller->module->id;
-          $module=Modules::model()->findByAttributes(array('name'=>$moduleId));
-          if(isset($module) && $module->adminOnly){
-          return array(
-          array('allow',
-          'actions'=>array('getItems'),
-          'users'=>array('*'),
-          ),
-          array('allow', // allow authenticated user to perform the following actions
-          'actions'=>array('index','view','create','update','search','delete','inlineEmail','admin'),
-          'users'=>array('admin'),
-          ),
-          array('deny',  // deny all users
-          'users'=>array('*'),
-          ),
-          );
-          }else{
-          return array(
-          array('allow',
-          'actions'=>array('getItems'),
-          'users'=>array('*'),
-          ),
-          array('allow', // allow authenticated user to perform the following actions
-          'actions'=>array('index','view','create','update','search','delete','inlineEmail'),
-          'users'=>array('@'),
-          ),
-          array('allow', // allow admin user to perform 'admin' action
-          'actions'=>array('admin'),
-          'users'=>array('admin'),
-          ),
-          array('deny',  // deny all users
-          'users'=>array('*'),
-          ),
-          );
-          } */
-    }
-
-    public function actions() {
-        return array(
-            'inlineEmail' => array(
-                'class' => 'InlineEmailAction',
-            ),
-        );
-    }
+	public function actions() {
+		return array(
+			'inlineEmail' => array(
+				'class' => 'InlineEmailAction',
+			),
+		);
+	}
 
     /**
      * Renders a view with any attached scripts, WITHOUT the core scripts.
@@ -281,17 +238,16 @@ abstract class x2base extends X2Controller {
      * @param mixed $model The model to be displayed (subclass of {@link CActiveRecord} or {@link X2Model}
      * @param String $type The type of the module being displayed
      */
-    public function view($model, $type, $params = array()) {
-        $actionHistory = $this->getHistory($model, $type);
-
-        $users = User::getNames();
-        $showActionForm = isset($_GET['showActionForm']);
-        $this->render('view', array_merge($params, array(
-                    'model' => $model,
-                    'actionHistory' => $actionHistory,
-                    'users' => $users,
-                    'currentWorkflow' => $this->getCurrentWorkflow($model->id, $type),
-                )));
+    public function view(&$model,$type,$params=array()) {
+		
+		// if($type === null)
+			// $type = $model->
+		
+		$this->render('view', array_merge($params, array(
+			'model' => $model,
+			'actionHistory' => $this->getHistory($model,$type),
+			'currentWorkflow' => $this->getCurrentWorkflow($model->id,$type),
+		)));
     }
 
     /**
@@ -326,43 +282,26 @@ abstract class x2base extends X2Controller {
 		));
 	}
 
-    /**
-     * Obtains the worflow for a model of given type and id.
-     *
-     * @param integer $id
-     * @param string $type
-     * @return int 
-     */
-    public function getCurrentWorkflow($id, $type) {
-        $currentWorkflowActions = X2Model::model('Actions')->findAllByAttributes(
-                array('associationType' => $type, 'associationId' => $id, 'type' => 'workflow'), new CDbCriteria(array('condition' => 'completeDate = 0 OR completeDate IS NULL', 'order' => 'createDate DESC'))
-        );
-        if (count($currentWorkflowActions)) { // are there any?
-            // $actionData = explode(':',$currentWorkflowActions[0]->actionDescription);
-            // if(count($actionData) == 2)
-            // $currentWorkflow = $actionData[0];
-            // else
-            // $currentWorkflow = 0;
-            $currentWorkflow = $currentWorkflowActions[0]->workflowId;
-        } else {       // if not, then check for completed stages
-            $completedWorkflowActions = X2Model::model('Actions')->findAllByAttributes(
-                    array('associationType' => $type, 'associationId' => $id, 'type' => 'workflow'), new CDbCriteria(array('order' => 'createDate DESC'))
-            );
-            if (count($completedWorkflowActions)) { // are there any?
-                // $actionData = explode(':',$completedWorkflowActions[0]->actionDescription);
-                // if(count($actionData) == 2)
-                // $currentWorkflow = $actionData[0];
-                // else
-                // $currentWorkflow = 0;
-                $currentWorkflow = $completedWorkflowActions[0]->workflowId;
-            } else
-                $currentWorkflow = 0;
-        }
-        //$default = X2Model::model('Workflow')->findByPk(1);
-        //if(isset($default))
-        //		$currentWorkflow = 1;
-
-        return $currentWorkflow;
+	/**
+	 * Obtains the current worflow for a model of given type and id.
+	 * Prioritizes incomplete workflows over completed ones.
+	 * @param integer $id the ID of the record
+	 * @param string $type the associationType of the record
+	 * @return int the ID of the current workflow (0 if none are found)
+	 */
+	public function getCurrentWorkflow($id, $type) {
+		$currentWorkflow = Yii::app()->db->createCommand()
+			->select('workflowId,completeDate,createDate')
+			->from('x2_actions')
+			->where('type="workflow" AND associationType=:type AND associationId=:id',array(':type'=>$type,':id'=>$id))
+			->order('IF(completeDate = 0 OR completeDate IS NULL,1,0) DESC, createDate DESC')
+			->limit(1)
+			->queryRow(false);
+		
+		if($currentWorkflow === false || !isset($currentWorkflow[0]))
+			return 0;
+		
+		return $currentWorkflow[0];
     }
 
     /**
@@ -831,6 +770,11 @@ abstract class x2base extends X2Controller {
                     }
                 }
                 $changelog->itemId = $model->id;
+                if($model->hasAttribute('name')){
+                    $changelog->recordName=$model->name;
+                }else{
+                    $changelog->recordName=$type;
+                }
                 $changelog->changedBy = Yii::app()->user->getName();
                 $changelog->fieldName = $field;
                 $changelog->oldValue=$array['old'];
@@ -1152,17 +1096,15 @@ abstract class x2base extends X2Controller {
 	 */
     public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null) {
 
-        $user = X2Model::model('User')->findByPk(Yii::app()->user->getId());
-
-        $phpMail = $this->getPhpMailer();
+	$phpMail = $this->getPhpMailer();
 
         try {
         	if($from == null) { // if no from address (or not formatted properly)
 				if (empty(Yii::app()->params->profile->emailAddress))
     	            throw new Exception('<b>' . Yii::t('app', 'Your profile doesn\'t have a valid email address.') . '</b>');
 	
-            	$phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress, $user->name);
-            	$phpMail->SetFrom(Yii::app()->params->profile->emailAddress, $user->name);
+            	$phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress,Yii::app()->params->profile->fullName);
+            	$phpMail->SetFrom(Yii::app()->params->profile->emailAddress,Yii::app()->params->profile->fullName);
             } else {
             	$phpMail->AddReplyTo($from['address'], $from['name']);
             	$phpMail->SetFrom($from['address'], $from['name']);

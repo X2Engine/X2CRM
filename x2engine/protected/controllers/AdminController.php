@@ -2181,7 +2181,7 @@ class AdminController extends Controller {
 
             $module = Yii::app()->file->set('data');
             $moduleName = $module->filename;
-
+            $module->copy($moduleName.".zip");
             $zip = Yii::app()->zip;
             $zip->extractZip("$moduleName.zip", 'protected/modules/');
 

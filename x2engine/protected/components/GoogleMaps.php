@@ -98,9 +98,11 @@ class GoogleMaps extends X2Widget {
 			});
 		}
 		',CClientScript::POS_READY);
-		
-		Yii::app()->clientScript->registerScriptFile('http://maps.googleapis.com/maps/api/js?sensor=false');
-
+		if(isset($_SERVER['HTTPS'])){
+            Yii::app()->clientScript->registerScriptFile('https://maps.googleapis.com/maps/api/js?sensor=false');
+        }else{
+            Yii::app()->clientScript->registerScriptFile('http://maps.googleapis.com/maps/api/js?sensor=false');
+        }
 		echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';
 	}
 }

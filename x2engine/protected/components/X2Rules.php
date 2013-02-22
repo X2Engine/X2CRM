@@ -62,30 +62,73 @@ class X2Rules {
 			-------------------------------------------------------------------------------------------------------------------------------------------
 			
 			
-			Record Activity													model type, filters, list
-			---------------													
-			View								record_view					model type, model attributes										record, user
-			Field change						record_field_change			model type, model attributes, fieldName, comparison type/value		record, old attributes, user
-			Edit								record_update				model type, model attributes, user									record, user
-			Create action						record_action_create		model type, model attributes, user									record, user
-			Complete action						record_action_complete		model type, model attributes, user									record, user
-			Create								record_create				model type, model attributes, user									record, user
-			Delete								record_delete				model type, model attributes, user									record, user
-			Inactive (no edits, actions, etc)	record_inactive				model type, model attributes, user, duration						record, last activity, user
-			Tags (added, removed)				record_tag_add	
-												record_tag_remove	
-													
-			Workflow - start					workflow_start				workflowId, stage number, user										record, action, user
-			Workflow - complete					workflow_complete			workflowId, stage number, user										record, action, user
-			Workflow - start stage				workflow_stage_start		workflowId, stage number, user										record, action, user
-			Workflow - complete stage			workflow_stage_complete		workflowId, stage number, user										record, action, user
-			Workflow - undo stage				workflow_stage_undo			workflowId, stage number, user										record, action, user
-				
-			Generic action - complete			
-			Generic action - uncomplete			
-							
-			Weblead								weblead						model type, lead source, model attributes							record, lead source
-			Web activity						record_webtracker			model attributes, campaign, 
+			X2Model::create()						record_create					model, 
+			
+			
+			
+			X2Model::calculateChanges()				record_field_change
+			X2Model::calculateChanges()				reassignment
+			
+			ActionsController::actionComplete()		record_action_complete			
+			ActionsController::actionUncomplete()	record_action_uncomplete		
+			
+			SiteController::actionLogin()			user_login						user
+			SiteController::actionLogout()			user_logout						user
+			
+			WebListenerAction::trackGeneric()		weblead
+			WebListenerAction::trackGeneric()		weblead
+			
+			
+			
+		Trigger code:
+		
+		// run automation
+		X2Flow::trigger('campaign_webtracker',array(
+			'model'=>$contact,
+			'campaign'=>$campaign,
+			'url'=>$url,
+		));
+			
+			
+
+		Record Activity					Trigger Location												model type, filters, list
+		--------------------------------------------------------------------------------------------------------------------------------------------
+		Create							X2Model::beforeSave()							record_create				model type, model attributes, user									record, user
+		View							[Whatever]Controller::actionView()				record_view					model type, model attributes										record, user
+		Update							X2Model::beforeSave()							record_update				model type, model attributes, user									record, user
+		Delete							X2Model::beforeDelete()							record_delete				model type, model attributes, user									record, user
+		Field change					X2ChangeLogBehavior::compare()					record_field_change			model type, model attributes, fieldName, comparison type/value		record, old attributes, user
+		
+		Create action					ActionsController::actionPublisherCreate()		record_action_create		model type, model attributes, user									record, user
+		Complete action					ActionsController::actionComplete()				record_action_complete		model type, model attributes, user									record, user
+		
+		Inactive						?												record_inactive				model type, model attributes, user, duration						record, last activity, user
+		Tags (added, removed)			X2ChangeLogBehavior::compare()					record_tag_add
+										X2ChangeLogBehavior::compare()					record_tag_remove
+	
+		Workflow - start																workflow_start				workflowId, stage number, user										record, action, user
+		Workflow - complete																workflow_complete			workflowId, stage number, user										record, action, user
+		Workflow - start stage															workflow_stage_start		workflowId, stage number, user										record, action, user
+		Workflow - complete stage														workflow_stage_complete		workflowId, stage number, user										record, action, user
+		Workflow - undo stage															workflow_stage_undo			workflowId, stage number, user										record, action, user
+												
+		Action - complete				Actions::complete()								action_complete
+		Action - uncomplete				Actions::uncomplete()							action_uncomplete
+															
+		Weblead																		weblead						model type, lead source, model attributes							record, lead source
+			
+		Web activity					WebListenerAction::trackGeneric()				record_webtracker			model, url
+			
+												
+		Campaign - email open														campaign_open
+		Campaign - email click														campaign_click
+		Campaign - unsubscribe														campaign_unsub
+		Marketing - web activity		WebListenerAction::trackCampaignClick()			campaign_webtracker
+		Newsletter - web activity		WebListenerAction::trackCampaignClick()			newsletter_webtracker
+												
+												
+		User login																	user_login					user, group, role													user
+		User logout																	user_logout					user, group, role													user
 			
 
 		Parameters:
@@ -138,23 +181,17 @@ class X2Rules {
 			record_inactive(attributes={},duration='1 day') => notification (user="{record.assignedTo}",message="{record.linkTo} has been inactive for {{now}-{lastActivity}}"
 				
 				
-				
-				
-		Variables:
-		
 			
-				
-				
-				
-				
-				
-				
-				
-				
-				
-		Tables:
-		
-		
+			
+			
+			
+			
+			
+
+			
+			
+			Tables:
+			
 			CREATE TABLE x2_flows(
 				id						INT				AUTO_INCREMENT PRIMARY KEY,
 				active					TINYINT			NOT NULL DEFAULT 1,
@@ -190,23 +227,6 @@ class X2Rules {
 			
 			
 			
-
-			
-			places to check for triggers:
-			
-			
-			X2Model::create()
-			X2Model::calculateChanges()			field change, reassignment, 
-			
-			ActionsController::actionComplete()
-			ActionsController::actionUncomplete()
-			
-			
-			SiteController::actionLogin()
-			SiteController::actionLogout()
-			
-			ApiController::actionWebLead()
-
 		 */
 		 
 		// $flow = new X2Flow;

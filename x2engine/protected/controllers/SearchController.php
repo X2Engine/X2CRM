@@ -366,11 +366,16 @@ class SearchController extends x2base {
                 'term' => $term,
             ));
         } else {
+            Yii::app()->user->setState('vcr-list',$term);
+            $_COOKIE['vcr-list']=$term;
             $results = new CActiveDataProvider('Tags', array(
                         'criteria' => array('condition' => 'tag="' . $term . '"'),
                         'pagination' => array(
                                             'pageSize' => ProfileChild::getResultsPerPage(),
                                         ),
+                        'sort'=>array(
+                            'defaultOrder'=>'timestamp DESC',
+                        )
                     ));
             $this->render('searchTags', array(
                 'tags' => $results,

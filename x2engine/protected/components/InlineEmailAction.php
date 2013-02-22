@@ -97,26 +97,16 @@ class InlineEmailAction extends CAction {
 					// if there is a model name/id available, look it up and use its attributes
 					if(isset($this->model->modelName, $this->model->modelId)) {
 						$targetModel = X2Model::model($this->model->modelName)->findByPk($this->model->modelId);
-						if(isset($targetModel)) {
-						
-							$matches = array();
-							preg_match_all('/{\w+}/',$emailBody,$matches);	// find all the things
-							
-							if(isset($matches[0])) {					// loop through the things
-								foreach($matches[0] as $match) {
-									$match = substr($match,1,-1);	// remove { and }
-									
-									if($targetModel->hasAttribute($match)) {
-										$value = $targetModel->renderAttribute($match,false,true);	// get the correctly formatted attribute
-										$emailBody = preg_replace('/{'.$match.'}/',$value,$emailBody);
-									}
-								}
-							}
+
+						if($targetModel !== null) {
+							$emailBody = Docs::replaceVariables($emailBody,$targetModel);
+							$this->model->subject = Docs::replaceVariables($this->model->subject,$targetModel);
 						}
 					}
-					$this->model->template = 0;				// set to custom so the person can edit the whole message
 					$this->model->message = $emailBody;
 				}
+				$this->model->template = 0;				// after applying the template, set it back to custom
+				
 			} elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
 				$emailBody = $this->model->message;
 			// } elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
@@ -162,37 +152,29 @@ class InlineEmailAction extends CAction {
 					foreach($this->model->mailingList['to'] as &$target) {
 						$model = X2Model::model(ucwords($this->model->modelName))->findByPk($this->model->modelId);
 						if(isset($model)) {
-                            if($model->hasAttribute('lastActivity')){
-                                $model->lastActivity=time();
-                                $model->save();
-                            }
-
+							if($model->hasAttribute('lastActivity')) {
+								$model->lastActivity = time();
+								$model->update(array('lastActivity'));
+							}
+							
 							$action = new Actions;
 							$action->associationType = strtolower($this->model->modelName);
 							$action->associationId = $model->id;
 							$action->associationName = $model->name;
-							if(isset($model->visibility))
-								$action->visibility = $model->visibility;
-							else
-								$action->visibility = 1;
-							$action->complete = 'Yes';
-							$action->type = 'email';
+							$action->visibility = isset($model->visibility)? $model->visibility : 1;
 							$action->completedBy = Yii::app()->user->getName();
 							$action->assignedTo = $model->assignedTo;
 							$action->createDate = time();
-
+							$action->dueDate = time();
 							if($stageEmail) {
 								$action->complete = 'No';
 								$action->type = 'email_staged';
-								$action->dueDate = time();
-								$action->completeDate = time();
 							} else {
+								$action->completeDate = time();
 								$action->complete = 'Yes';
 								$action->type = 'email';
-								$action->dueDate = time();
-								$action->completeDate = time();
 							}
-
+							
 							if($template == null) {
 								$action->actionDescription = '<b>'.$this->model->subject."</b><br><br>".$this->model->message;
 								if(isset($attachments)) {
@@ -206,13 +188,13 @@ class InlineEmailAction extends CAction {
 								$action->actionDescription = CHtml::link($template->name,array('/docs/'.$template->id));
 							
 							if($action->save()) {
-                                $event=new Events;
-                                $event->type='email_sent';
-                                $event->user=Yii::app()->user->getName();
-                                $event->associationType=$this->model->modelName;
-                                $event->associationId=$model->id;
-                                $event->save();
-                                
+								$event=new Events;
+								$event->type='email_sent';
+								$event->user=Yii::app()->user->getName();
+								$event->associationType=$this->model->modelName;
+								$event->associationId=$model->id;
+								$event->save();
+								
 								$track = new TrackEmail;
 								$track->actionId = $action->id;
 								$track->uniqueId = $uniqueId;

@@ -99,11 +99,11 @@ $('.search-form form').submit(function(){
 Yii::app()->clientScript->registerScript('completeUncompleteSelected', "
 function completeSelected() {
 	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
-	$.post('completeSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+	$.post('completeSelected', {'actionIds': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
 }
 function uncompleteSelected() {
 	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
-	$.post('uncompleteSelected', {'Actions': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
+	$.post('uncompleteSelected', {'actionIds': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
 }
 
 function toggleShowActions() {

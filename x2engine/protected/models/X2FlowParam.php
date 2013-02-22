@@ -224,8 +224,9 @@ class X2FlowParam extends CActiveRecord {
 		'-' => 'MINUS',
 		'*' => 'TIMES',
 		'/' => 'DIVIDE',
-		'(' => 'OPEN_PAREN',
-		')' => 'CLOSE_PAREN',
+		'%' => 'MOD',
+		// '(' => 'OPEN_PAREN',
+		// ')' => 'CLOSE_PAREN',
 	);
 	protected static $_tokenRegex = array(
 		'\d+\.\d+\b|^\.?\d+\b' => 'NUMBER',
@@ -235,16 +236,22 @@ class X2FlowParam extends CActiveRecord {
 		'.' => 'UNKNOWN',
 	);
 	
+	/**
+	 * Breaks a string expression into an array of 2-element arrays (type, value) 
+	 * using {@link $_tokenChars} and {@link $_tokenRegex} to identify tokens
+	 * @param string $str the input expression
+	 * @return array a flat array of tokens
+	 */
 	protected static function tokenize($str) {
 		$tokens = array();
 		$offset = 0;
-		while($offset < strlen($str)) {
+		while($offset < mb_strlen($str)) {
 			$token = array();
 			
-			$substr = substr($str,$offset);	// remaining string starting at $offset
+			$substr = mb_substr($str,$offset);	// remaining string starting at $offset
 		
 			foreach(self::$_tokenChars as $char => &$name) {	// scan single-character patterns first
-				if(substr($substr,0,1) === $char) {
+				if(mb_substr($substr,0,1) === $char) {
 					$tokens[] = array($name);	// add it to $tokens
 					$offset++;
 					continue 2;
@@ -252,9 +259,9 @@ class X2FlowParam extends CActiveRecord {
 			}
 			foreach(self::$_tokenRegex as $regex => &$name) {	// now loop through regex patterns
 				$matches = array();
-				if(preg_match('/^'.$regex.'/',$substr,$matches) === 1) {
+				if(preg_match('/^'.$regex.'/u',$substr,$matches) === 1) {
 					$tokens[] = array($name,$matches[0]);	// add it to $tokens
-					$offset += strlen($matches[0]);
+					$offset += mb_strlen($matches[0]);
 					continue 2;
 				}
 			}
@@ -262,20 +269,29 @@ class X2FlowParam extends CActiveRecord {
 		}
 		return $tokens;
 	}
-	
-	
-	
-	protected static function addNode(&$tree,$nodePath,$value) {		//if(isset($tree[$nodePath[0]]))
+
+	/**
+	 * Adds a new node at the end of the specified branch
+	 * @param array &$tree the tree object
+	 * @param array $nodePath array of branch indeces leading to the target branch
+	 * @value array an array containing the new node's type and value
+	 */
+	protected static function addNode(&$tree,$nodePath,$value) {
 		if(count($nodePath) > 0)
 			return self::addNode($tree[array_shift($nodePath)],$nodePath,$value);
 		
 		$tree[] = $value;
 		return count($tree) - 1;
 	}
-	
-	protected static function simplifyNode(&$tree,$nodePath) {	// traverse to the specified node
-		if(count($nodePath) > 0)
-			return self::simplifyNode($tree[array_shift($nodePath)],$nodePath);
+
+	/**
+	 * Checks if this branch has only one node and eliminates it by moving the child node up one level
+	 * @param array &$tree the tree object
+	 * @param array $nodePath array of branch indeces leading to the target node
+	 */
+	protected static function simplifyNode(&$tree,$nodePath) {
+		if(count($nodePath) > 0)													// before doing anything, recurse down the tree using $nodePath  
+			return self::simplifyNode($tree[array_shift($nodePath)],$nodePath);		// to get to the targeted node
 			
 		$last = count($tree) - 1;
 		
@@ -284,8 +300,14 @@ class X2FlowParam extends CActiveRecord {
 		elseif(count($tree[$last][1]) === 1)
 			$tree[$last] = $tree[$last][1][0];
 	}
-	
-	protected static function validateExpression(&$tree) {
+
+	/**
+	 * Processes the expression tree and attempts to evaluate it
+	 * @param array &$tree the tree object
+	 * @param boolean $expression
+	 * @return mixed the value, or false if the tree was invalid
+	 */
+	protected static function validateExpression(&$tree,$expression=false) {
 		// echo '1';
 		for($i=0;$i<count($tree);$i++) {
 			$prev = isset($tree[$i+1])? $tree[$i+1] : false;
@@ -293,13 +315,16 @@ class X2FlowParam extends CActiveRecord {
 		
 			
 			switch($tree[$i][0]) {
-				case 'UNKNOWN':
-					return 'Unrecognized entity: "'.$tree[$i][1].'"';
-					
 				case 'EXPRESSION':
-					$subresult = self::validateExpression($tree[$i][1]);
+					$subresult = self::validateExpression($tree[$i][1],$true);	// the expression itself must be valid
 					if($subresult !== true)
 						return $subresult; 
+						
+					// if($next !== false)
+					
+						
+						
+						
 					break;
 				
 				case 'VAR':
@@ -324,29 +349,29 @@ class X2FlowParam extends CActiveRecord {
 
 					
 				case 'SPACE':
+				
+				case 'UNKNOWN':
+					return 'Unrecognized entity: "'.$tree[$i][1].'"';
+				
 				default:
-					break;
+					return 'Unknown entity type: "'.$tree[$i][0].'"';
 			}
 		}
 		return true;
 	}
-	
-	
-	
-	
+
 	/**
 	 * @param String $str string to be parsed into an expression tree
 	 * @return mixed a variable depth array containing pairs of entity 
 	 * types and values, or a string containing an error message
 	 */
-	public static function parseExpression($str) {
+	public static function parseExpressionTree($str) {
 
 		$tokens = self::tokenize($str);
 		
 		$tree = array();
 		$nodePath = array();
 		$error = false;
-		$bracketLevel = 0;
 		
 		for($i=0;$i<count($tokens);$i++) {
 			switch($tokens[$i][0]) {
@@ -372,19 +397,6 @@ class X2FlowParam extends CActiveRecord {
 		
 		if(count($nodePath) !== 0)
 			$error = 'unbalanced brackets';
-		
-		
-		echo self::validateExpression($tree);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		if($error !== false)
 			return 'ERROR: '.$error;

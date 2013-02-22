@@ -624,12 +624,13 @@ class ContactsController extends x2base {
 	}
 
 	public function actionDiscardNew() {
-		if(isset($_POST['id']) && isset($_POST['newId'])) {
+        
+		if(isset($_POST['id'])) {
 			$ref=$_POST['ref'];
 			$action=$_POST['action'];
 			$oldId=$_POST['id'];
-			if($ref=='create' && is_null($action)){
-				echo $_POST['id'];
+			if($ref=='create' && is_null($action) || $action=='null'){
+				echo $oldId;
 				return;
 			}elseif($ref=='create'){
 				$oldRecord=X2Model::model('Contacts')->findByPk($oldId);
@@ -657,10 +658,10 @@ class ContactsController extends x2base {
 						return;
 					}
 				}
-			}else{
+			}elseif(isset($_POST['newId'])){
 				$newId=$_POST['newId'];
 				$oldRecord=X2Model::model('Contacts')->findByPk($oldId);
-				$newRecord=Contacts::model()->findByPk($_POST['newId']);
+				$newRecord=Contacts::model()->findByPk($newId);
 				$newRecord->dupeCheck=1;
 				$newRecord->save();
 				if(is_null($action)){
@@ -692,7 +693,7 @@ class ContactsController extends x2base {
 						}
 					}
 
-					echo $_POST['newId'];
+					echo $newId;
 				}
 			}
 		}
@@ -869,15 +870,40 @@ class ContactsController extends x2base {
 
 	
 	public function actionTrigger() {
+	
+		$t0 = microtime(true);
+		for($i=0;$i<10000;$i++)
+			time();
+		
+		
+		echo (microtime(true) - $t0);
+		die();
+	
+	
+	
 		set_time_limit(1);
 
-		$str = '{a+b} a c,      c/ab2 * {8.333/ 0.3}+{apples.sauce}';
-		$str = '{}a{b} {apple}{sauce} + {a} and {apple.sauce}! ';
+		$str = '{a+b} a c,  {a+5}%10 c/ab2 * {8.333/ 0.3}-{apples.sauce}';
+		// $str = '{}a{b} {apple}{sauce} + {a} and {apple.sauce}! ';
+		
+		
+		$str2 = '{a+b} a c e, {a+5}%10 c/ab2 * {8.333/ 0.3}-{apples.sauce}';
+		var_dump($str);
+		var_dump($str2);
+		$diff = FineDiff::getDiffOpcodes($str,$str2,FineDiff::$wordGranularity);
+		var_dump($diff);
+		// $diff = new FineDiff($str,$str2,FineDiff::$wordGranularity);
+		// var_dump($diff->edits);
+		
+		var_dump(FineDiff::renderToTextFromOpcodes($str,$diff));
+		
+		// die();
+		
 		
 		var_dump($str);
 		
 		// $tokens = self::tokenize($str);
-		$tokens = X2FlowParam::parseExpression($str);
+		$tokens = X2FlowParam::parseExpressionTree($str);
 		
 
 		var_dump($tokens);
@@ -1666,7 +1692,7 @@ class ContactsController extends x2base {
 		if(isset($_FILES['contacts'])) {
 			$temp = CUploadedFile::getInstanceByName('contacts');
 			$temp->saveAs('contacts.csv');
-			
+            ini_set('auto_detect_line_endings',1);
 			$fp=fopen('contacts.csv','r+');
 			$meta=fgetcsv($fp);
 			while ("" === end($meta)) {
@@ -2039,7 +2065,8 @@ class ContactsController extends x2base {
                 foreach($fields as $field){
                     $fieldName=$field->fieldName;
                     if($field->type=='date' || $field->type=='dateTime'){
-                        $contact->$fieldName=date("c",$contact->$fieldName);
+                        if(is_int($contact->$fieldName))
+                            $contact->$fieldName=date("c",$contact->$fieldName);
                     }elseif($field->type=='link'){
                         try{
                             $linkModel=X2Model::model($field->linkType)->findByPk($contact->$fieldName);

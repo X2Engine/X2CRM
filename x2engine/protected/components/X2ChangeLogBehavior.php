@@ -63,14 +63,15 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			$this->_oldAttributes = $this->owner->getAttributes();		// afterFind() won't be fired so let's get the attributes manually
 	}
 
-	public function afterSave($event) {
-		$this->doStuff();
-	}
+	// public function afterSave($event) {
+		// $this->doStuff();
+	// }
 	
-	public function doStuff() {
+	public static function test() { echo 'test'; }
 	
-	
-		if ($this->owner->isNewRecord) {
+	public function updateChangelog() {
+		
+		if($this->owner->isNewRecord) {
 
 			// $log=new ActiveRecordLog;
 			// $log->description=  'User ' . Yii::app()->user->Name 
@@ -89,31 +90,35 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		
 		
 			// new attributes
-			$newattributes = $this->owner->getAttributes();
-			$oldattributes = $this->getOldAttributes();
+			$newAttributes = $this->owner->getAttributes();
+			$oldAttributes = $this->getOldAttributes();
 
 			// compare old and new
-			foreach($newattributes as $name => $value) {
-				if(!empty($oldattributes)) {
-					$old = $oldattributes[$name];
-				} else {
-					$old = '';
-				}
-
-				if ($value != $old) {
-					//$changes = $name . ' ('.$old.') => ('.$value.'), ';
-
-					$log=new ActiveRecordLog;
-					$log->description=  'User ' . Yii::app()->user->Name 
-											. ' changed ' . $name . ' for ' 
-											. get_class($this->owner) 
-											. '[' . $this->owner->getPrimaryKey() .'].';
-					$log->action = 'CHANGE';
-					$log->model = get_class($this->owner);
-					$log->idModel = $this->owner->getPrimaryKey();
-					$log->field = $name;
-					$log->creationdate = new CDbExpression('NOW()');
-					$log->userid = Yii::app()->user->id;
+			foreach($newAttributes as $attr => $new) {
+				$old = '';
+				if(!empty($oldAttributes))
+					$old = $oldAttributes[$attr];
+				
+				if($new != $old) {
+					$log = new Changelog;
+					$log->type = get_class($model);
+					
+					$log->itemId = $model->id;
+					$log->changedBy = Yii::app()->user->getName();
+					$log->fieldName = $field;
+					// $log->oldValue=$array['old'];
+					$log->timestamp = time();
+					
+					if(empty($old)) {
+						$log->diff = false;
+						$log->newValue = $new;
+					} else {
+						$diff = FineDiff::getDiffOpcodes($old,$new,FineDiff::$wordGranularity);
+						
+						$log->diff = strlen($diff) > strlen($old);
+						$log->newValue = $log->diff? $diff : $new;
+					}
+					
 					$log->save();
 				}
 			}
@@ -140,24 +145,11 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
 	
 	
-	protected function calculateChanges($old, $new, &$model = null) {
+	/* protected function calculateChanges2($old, $new, &$model = null) {
 	
 	
-		if($this->isNewRecord) {
-		
-		
-		} else {
-			
-			
-			$flowItems = CActiveRecord::model('X2FlowItem')->with('flowParams')->findAllBySql('type IN("record_field_change","record_update")');
+		// $changes = array();
 
-		}
-	
-		// "record_tag_add","record_tag_remove"
-	
-	
-	
-	
 		$arr = array();
 		$keys = array_keys($new);
 		for ($i = 0; $i < count($keys); $i++) {
@@ -175,7 +167,6 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						if ($criteria->type == 'notification') {
 							foreach ($users as $user) {
 								$event=new Events;
-								$event->level=1;
 								$event->user=$user;
 								$event->associationType='Notifications';
 								$event->type='notif';
@@ -233,7 +224,6 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 							if ($model->save()) {
 								$event=new Events;
 								$event->type='notif';
-								$event->level=1;
 								$event->user=$model->assignedTo;
 								$event->associationType='Notifications';
 								
@@ -260,7 +250,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			$changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
 		}
 		return $changes;
-	}
+	} */
 	
 	
 	
@@ -270,7 +260,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 * @param type $model The model to be updated
 	 * @return type $model The model with modified attributes
 	 */
-	protected function updateChangelog($model, $changes) {
+	/* protected function updateChangelog($model, $changes) {
 		$model->lastUpdated = time();
 		$model->updatedBy = Yii::app()->user->getName();
 		$model->save();
@@ -328,8 +318,12 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		}
 		if(is_array($changes)){
 			foreach ($changes as $field=>$array) {
-				preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
-				$matches = $matches[0];
+				if(is_string($array['new'])){
+					preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
+					$matches = $matches[0];
+				}else{
+					$matches=array();
+				}
 				foreach ($matches as $match) {
 					if(!preg_match('/\&(^|\s|)#(\w\w+);/',$match)){
 						$tag = new Tags;
@@ -360,5 +354,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			}
 		}
 		return $model;
-	}
+	} */
+	
+	
 }

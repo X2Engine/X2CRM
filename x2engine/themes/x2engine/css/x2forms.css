@@ -274,6 +274,7 @@ div.x2-layout .formInputBox input {margin:0;padding:2px;}
 div.x2-layout .formInputBox input[type="text"] {width:100%;}
 div.x2-layout .formInputBox textarea {height:100%;resize:none;padding:2px;}
 div.x2-layout .formInputBox select {width:100%;}
+div.x2-layout .formInputBox input.input-percentage { background: #FFFFFF url(../images/formEditor/percentage.gif) no-repeat 95%;}
 
 div.x2-layout .tableWrapper .grid-view table.items {clear:none;margin-top:0;}
 div.x2-layout .tableWrapper .grid-view table.items {border:none;}
@@ -491,6 +492,7 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 #editorFieldList label.dateIcon, 		ul.fieldlist li label.dateIcon		{background:url(../images/formEditor/date_icon.gif)		2px	0px no-repeat transparent;}
 #editorFieldList label.textIcon, 		ul.fieldlist li label.textIcon		{background:url(../images/formEditor/text_icon.gif)		2px	0px no-repeat transparent;}
 #editorFieldList label.varcharIcon, 	ul.fieldlist li label.varcharIcon	{background:url(../images/formEditor/varchar_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.percentageIcon, 	ul.fieldlist li label.percentageIcon	{background:url(../images/formEditor/percentage_icon.gif)	2px 0px no-repeat transparent;}
 
 
 /* Tab Order Mode */

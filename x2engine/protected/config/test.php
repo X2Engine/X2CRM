@@ -60,4 +60,5 @@ $config['components']['fixture'] = array(
 	'class' => 'application.components.X2FixtureManager',
 	'initScriptSuffix' => '.init.php'
 );
+$config['import'][] = 'application.tests.*';
 return $config;

@@ -67,27 +67,34 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<div id="about-intro">
 		<h4><?php echo Yii::t('app','Address');?></h4>
 		<ul>
-		<li>X2Engine Inc.</li>
-		<li>PO Box 66752</li>
-		<li>Scotts Valley, California 95067</li>
-		<li>USA</li>
-		<li><a href="http://www.x2engine.com/">www.x2engine.com</a></li>
+			<li>X2Engine Inc.</li>
+			<li>PO Box 66752</li>
+			<li>Scotts Valley, California 95067</li>
+			<li>USA</li>
+			<li><a href="http://www.x2engine.com/">www.x2engine.com</a></li>
 		</ul>
-		<h4><?php echo Yii::t('app','Core team');?></h4>
+		
+		<h4><?php echo Yii::t('app','Core Team');?></h4>
 		<ul>
-		<li>John Roberts</li>
-		<li>Jake Houser</li>
-		<li>Matthew Pearson</li>
-		<li>Demitri Morgan</li>
+			<li>John Roberts</li>
+			<li>Jake Houser</li>
+			<li>Matthew Pearson</li>
+			<li>Demitri Morgan</li>
 		</ul>
-		<h4><?php echo Yii::t('app','Contributors');?></h4>
+
+		<h4><?php echo Yii::t('app','Special Thanks');?></h4>
 		<ul>
-		<li>DJ Visbal</li>
-		<li>John Mendonca</li>
-		<li>Haley Sedam</li>
-		<li>Andrew Hoffman</li>
-		<li>Zach Louden</li>
-		<li>Steve Lance</li>
+			<li>Andrew Hoffman</li>
+			<li>Zach Louden</li>
+			<li>Steve Lance</li>
+			<li>DJ Visbal</li>
+			<li>John Mendonca</li>
+			<li>Xinyi Lin</li>
+			<li>Haley Sedam</li>
+			<li>Ben Hoehn</li>
+			<li>Bill Posner</li>
+			<li>Chris Hodges</li>
+			<li>Bastian Pfaff</li>
 		</ul>
 	</div>
 	<div id="about-legal">

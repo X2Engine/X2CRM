@@ -64,6 +64,7 @@ class X2CalendarPermissions extends CActiveRecord
 			array(
 				'select'=>'id, username, firstName, lastName',
 				'index'=>'id',
+                'condition'=>'status=1'
 			)
 		);
 		

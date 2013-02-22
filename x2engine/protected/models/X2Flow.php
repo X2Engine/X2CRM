@@ -133,4 +133,31 @@ class X2Flow extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
+	
+	
+	
+	public static function trigger($trigger,$params=array()) {
+		
+		// $triggerAttributes = array('type'=>$trigger)
+		
+		// if(isset($params['model']))
+			// $triggerAttributes['modelClass'] = get_class($params['model']);
+		
+		
+		// $triggers = CActiveRecord::model('X2FlowItem')->findAllByAttributes($triggerAttributes);
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
 }

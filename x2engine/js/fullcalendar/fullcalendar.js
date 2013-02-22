@@ -46,7 +46,7 @@ var defaults = {
 	// time formats
 	titleFormat: {
 		month: 'MMMM yyyy',
-		week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
+		week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy} '&#40;'Week WW'&#41;'",
 		day: 'dddd, MMM d, yyyy'
 	},
 	columnFormat: {
@@ -1550,7 +1550,16 @@ function formatDates(date1, date2, format, options) {
 	return res;
 };
 
-
+var iso8601Week = function(date) {
+       var checkDate = cloneDate(date);
+       checkDate.setDate(checkDate.getDate() + 1);
+       // Find Thursday of this week starting on Monday
+       checkDate.setDate(checkDate.getDate() + 4 - (checkDate.getDay() || 7));
+       var time = checkDate.getTime();
+       checkDate.setMonth(0); // Compare with Jan 1
+       checkDate.setDate(1);
+       return Math.floor(Math.round((time - checkDate) / 86400000) / 7) + 1;
+};
 var dateFormatters = {
 	s	: function(d)	{ return d.getSeconds() },
 	ss	: function(d)	{ return zeroPad(d.getSeconds()) },
@@ -1563,7 +1572,8 @@ var dateFormatters = {
 	d	: function(d)	{ return d.getDate() },
 	dd	: function(d)	{ return zeroPad(d.getDate()) },
 	ddd	: function(d,o)	{ return o.dayNamesShort[d.getDay()] },
-	dddd: function(d,o)	{ return o.dayNames[d.getDay()] },
+	dddd    : function(d,o)	{ return o.dayNames[d.getDay()] },
+    WW       : function(d){return iso8601Week(d)},
 	M	: function(d)	{ return d.getMonth() + 1 },
 	MM	: function(d)	{ return zeroPad(d.getMonth() + 1) },
 	MMM	: function(d,o)	{ return o.monthNamesShort[d.getMonth()] },
@@ -1577,9 +1587,7 @@ var dateFormatters = {
 	u	: function(d)	{ return formatDate(d, "yyyy-MM-dd'T'HH:mm:ss'Z'") },
 	S	: function(d)	{
 		var date = d.getDate();
-		if (date > 10 && date < 20) {
-			return 'th';
-		}
+		if (date > 10 && date < 20) return 'th';
 		return ['st', 'nd', 'rd'][date%10-1] || 'th';
 	}
 };

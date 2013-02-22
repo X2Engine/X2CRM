@@ -182,7 +182,7 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 
 li.special.leadrouting-indicator span {
 	display:block;
-	margin-top:14px;
+	margin-top:10px;
 	height:7px;
 	width:7px;
 	border-radius:			6px;
@@ -753,7 +753,7 @@ span.x2-widget-menu-item.ui-draggable {
 	/* min-width:600px; */
 }
 
-div.page-title {
+div.page-title, table.fc-header {
 	background-repeat:no-repeat;
 	background-position:0 -5px;
 	padding:0 5px 0 10px;;
@@ -787,13 +787,20 @@ div.page-title.fixed {
 	border-radius:			0 0 4px 4px;
 
 }
-div.page-title h2 {
+div.page-title h2, table.fc-header h2 {
 	float:left;
 	font-weight:bold;
 	color:#fff;
 	line-height:36px;
-	margin:0 10px 0 0;
+	margin:0 10px 0 10px;
 }
+table.fc-header td {vertical-align:middle;}
+table.fc-header td.fc-header-right {padding-right:5px;}
+table.fc-header .fc-button {margin:5px 0 0 0;border:none;}
+table.fc-header .fc-header-space {padding-left:5px;}
+
+
+
 div.page-title h2 .no-bold {font-weight:normal;color:#ccc;}
 div.page-title .summary {color:#eee;margin-right:2px;}
 div.page-title .title-bar {color:#555;}

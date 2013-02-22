@@ -113,7 +113,8 @@
                         'boolean'=>'Checkbox',
                         'link'=>'Lookup',
                         'rating'=>'Rating',
-                        'assignment'=>'Assignment'
+                        'assignment'=>'Assignment',
+                        'percentage' => 'Percentage'
                     ),
                 array(
                 'id'=>'fieldType',

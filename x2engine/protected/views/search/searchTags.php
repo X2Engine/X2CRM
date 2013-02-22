@@ -37,9 +37,14 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-
+Yii::app()->clientScript->registerScript('set-tag-cookie',"
+$('#content').on('mouseup','#tag-search a',function(e) {
+	document.cookie = 'vcr-list=".$term."; expires=0; path=/';
+});    
+");
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $tags,
+    'id'=>'tag-search',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2>'
 		.CHtml::link(Yii::t('marketing','Email These Contacts'),

@@ -689,8 +689,8 @@ if ($silent) {
 	$config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
 	$config['webLeadUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 }
-if (!in_array($config['type'], array('Silent', 'Bitnami', 'Testing'))) // Special installation types
-	$config['type'] = $config['test_db'] == 1 ? 'Testing' : ($silent ? 'Silent' : 'On Premise');
+//if(!in_array($config['type'],array('Silent','Bitnami','Testing'))) // Special installation types
+//	$config['type'] = $config['test_db']==1?'Testing':($silent ? 'Silent' : 'On Premise');
 $config['GD_support'] = function_exists('gd_info') ? '1' : '0';
 $config['user_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 $config['php_version'] = phpversion();

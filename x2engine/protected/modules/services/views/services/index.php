@@ -116,7 +116,7 @@ $this->widget('application.components.X2GridView', array(
 			'name'=>'account',
 			'header'=>Yii::t('accounts', 'Account'),
 			'type'=>'raw',
-			'value'=>'$data->contacts? (isset($data->contacts->accounts) ? $data->contacts->accounts->getLink() : "") : ""'
+			'value'=>'$data->contactIdModel? (isset($data->contactIdModel->companyModel) ? $data->contactIdModel->companyModel->getLink() : "") : ""'
 		), 
 /*		'name'=>array(
 			'name'=>'name',

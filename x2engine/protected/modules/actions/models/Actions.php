@@ -59,7 +59,7 @@ class Actions extends X2Model {
 	}
 	
 	public function behaviors() {
-		return array(
+		return array_merge(parent::behaviors(),array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/actions'
@@ -69,15 +69,13 @@ class Actions extends X2Model {
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
 			)
-		);
+		));
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
 	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('actionDescription','required','on'=>'insert'),	// code-generated actions may not have a description
 			array('allDay','boolean'),
@@ -91,25 +89,9 @@ class Actions extends X2Model {
 	 * @return array relational rules.
 	 */
 	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
+		return array();
 	}
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	
-/* 	public function attributeLabels() {
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Actions'));
-		$arr=array();
-		foreach($fields as &$field)
-			$arr[$field->fieldName] = Yii::t('actions',$field->attributeLabel);
-		
-		return $arr;
-	} */
-	
 	/**
 	 * return an array of possible colors for an action
 	 */
@@ -122,13 +104,72 @@ class Actions extends X2Model {
 		    'Black'=>Yii::t('actions', 'Black'),
 		);
 	}
-
-	public static function completeAction($id) {
-		$action=Actions::model()->findByPk($id);
-		$action->complete="Yes";
-		$action->completedBy=Yii::app()->user->getName();
-		$action->completeDate = time();
-		$action->update();
+	
+	/**
+	 * Marks the action complete and updates the record.
+	 * @return boolean whether or not the action updated successfully
+	 */
+	public function complete($completedBy=null) {
+		if($completedBy === null)
+			$completedBy = Yii::app()->user->getName();
+		
+		$this->complete = 'Yes';
+		$this->completedBy = $completedBy;
+		$this->completeDate = time();
+		
+		if($result = $this->update()) {
+			X2Flow::trigger('action_complete',array(
+				'model'=>$this,
+				'user'=>$completedBy
+			));
+			
+			CActiveRecord::model('Events')->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$this->id,'type'=>'action_reminder'),'timestamp > NOW()');
+			
+			// $eventRecord = Events::model()->findByAttributes(array('associationType'=>'Actions','associationId'=>$this->id,'type'=>'action_reminder'));
+			// if(isset($eventRecord)){
+				// if($eventRecord->timestamp > time()){
+					// $eventRecord->delete();
+				// }
+			// }
+			
+			$event=new Events;
+			$event->type = 'action_complete';
+			$event->visibility = $this->visibility;
+			$event->associationType = 'Actions';
+			$event->user=Yii::app()->user->getName();
+			$event->associationId = $this->id;
+			
+			// notify the admin
+			if($event->save() && Yii::app()->user->getName() !== 'admin') {
+				$notif = new Notification;
+				$notif->type = 'action_complete';
+				$notif->modelType = 'Actions';
+				$notif->modelId = $this->id;
+				$notif->user = 'admin';
+				$notif->createdBy = $completedBy;
+				$notif->createDate = time();
+				$notif->save();
+			}
+		}
+		return $result;
+	}
+	
+	/**
+	 * Marks the action incomplete and updates the record.
+	 * @return boolean whether or not the action updated successfully
+	 */
+	public function uncomplete() {
+		$this->complete = 'No';
+		$this->completedBy = null;
+		$this->completeDate = null;
+		
+		if($result = $this->update()) {
+			X2Flow::trigger('action_uncomplete',array(
+				'model'=>$this,
+				'user'=>Yii::app()->user->getName()
+			));
+		}
+		return $result;
 	}
 
 	public function getName() {
@@ -139,7 +180,7 @@ class Actions extends X2Model {
 	
 		$text = $this->owner->name;
 		if($length && strlen($text) > $length)
-			$text = CHtml::encode(substr($text,0,$length).'...');
+			$text = CHtml::encode(mb_substr($text,0,$length,'UTF-8').'...');
 		return CHtml::link($text,array($this->viewRoute.'/'.$this->owner->id));
 	}
 	
@@ -315,7 +356,7 @@ class Actions extends X2Model {
 			
 		}
 		
-		$criteria->addCondition('(type != "workflow" AND type!="email" AND type!="event") OR type IS NULL');
+		$criteria->addCondition('(type != "workflow" AND type!="email" AND type!="event" AND type!="emailFrom") OR type IS NULL');
 		
 		
 		$dataProvider=new SmartDataProvider('Actions', array(

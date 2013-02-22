@@ -1,5 +1,5 @@
-# X2CRM 2.8 Changelog #
-2/13/2013
+# X2CRM 2.8.1 Changelog #
+2/20/2013
 
 * Dozens of bug fixes - thanks everyone for reporting bugs using the new bug reporting tool!
 * New theme and background settings
@@ -8,8 +8,17 @@
 * Email dropbox now creates events (Pofessional edition)
 * Google Analytics integration for monitoring X2CRM usage
 
+New in 2.8.1
+* VCR controls for tag based search results
+* Fixed bugs:
+	* Emailing contacts
+	* int/float/currency type fields
+* Changelog now allows filtering by record name
+* Email templates now allow variables in subject line
+* "percentage" field type
+
 # Introduction #
-Welcome to  X2CRM v2.8!
+Welcome to  X2CRM v2.8.1!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

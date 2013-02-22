@@ -270,6 +270,8 @@ class X2GridView extends CGridView {
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->controller->formatLongDate($data["'.$columnName.'"])';
+				} elseif($this->allFields[$columnName]->type=='percentage') {
+					$newColumn['value'] = '$data["'.$columnName.'"]!==null&&$data["'.$columnName.'"]!==""?((string)($data["'.$columnName.'"]))."%":null';
 				} elseif($this->allFields[$columnName]->type=='dateTime') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->formatDateTime($data["'.$columnName.'"],"medium")';
 				} elseif($this->allFields[$columnName]->type=='link') {

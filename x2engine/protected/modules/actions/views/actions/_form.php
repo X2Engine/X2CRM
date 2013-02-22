@@ -182,7 +182,7 @@ if($inlineForm){
                         var loc=str.split("?");
                         if(loc.length>1){
                             var loc2=loc[1].split("&");
-                            if(loc2.length>1){
+                            if(loc2.length>1 || loc2[0].substr(0,2)=="id"){
                                 window.location="?"+loc2[0]+"&param='.Yii::app()->user->getName().';"+data+":0";
                             }else{
                                 window.location="?param='.Yii::app()->user->getName().';"+data+":0";

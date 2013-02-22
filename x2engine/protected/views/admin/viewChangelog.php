@@ -57,13 +57,9 @@
         ),
 		array(
             
-			'name'=>'type',
+			'name'=>'recordName',
 			'header'=>Yii::t('admin','Record'),
-			'value'=>'
-				(class_exists($data->type) && !is_null(X2Model::model($data->type)->findByPk($data->itemId)))?
-				($data->type!="Actions"?($data->type=="Opportunity"?CHtml::link(X2Model::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl("opportunities/".$data->itemId)):CHtml::link(X2Model::model($data->type)->findByPk($data->itemId)->name,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
-					CHtml::link("Action",Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))):
-				"RECORD DELETED"',
+			'value'=>'CHtml::link($data->recordName,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))',
 			'type'=>'raw',
 		),
 		array(

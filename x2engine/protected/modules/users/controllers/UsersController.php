@@ -385,6 +385,7 @@ Please click on the link below to create an account at X2CRM!
 	}
 
 	public function actionDelete($id) {
+        if($id!=1){
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
 			$dataProvider=new CActiveDataProvider('Actions', array(
@@ -432,6 +433,9 @@ Please click on the link below to create an account at X2CRM!
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+        }else{
+            throw new CHttpException(400,Yii::t('app','Cannot delete admin user.  Please do not repeat this request.'));
+        }
 	}
 
 	public function actionAddTopContact() {

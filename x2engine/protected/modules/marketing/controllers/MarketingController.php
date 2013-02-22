@@ -601,7 +601,7 @@ class MarketingController extends x2base {
 			}
 			$phpMail->AddReplyTo($fromEmail, $fromName);
 			$phpMail->SetFrom($fromEmail, $fromName);
-			$phpMail->Subject = $campaign->subject;
+			// $phpMail->Subject = $campaign->subject;
 	/*		$attachments = $campaign->attachments;
 			foreach($attachments as $attachment) {
 				$media = $attachment->mediaFile;
@@ -624,10 +624,15 @@ class MarketingController extends x2base {
 		$sentAddresses = array();
 
 		foreach($recipients as $recipient) {
+			if(isset($limit) && $totalSent >= $limit)	//only send up to the specified limit
+				break;
+			
 			try {
-				//only send up to the specified limit
-				if(isset($limit) && $totalSent >= $limit) break;
+				
+				$contact = new Contacts();
+				$contact->setAttributes($recipient);
 
+				
 				//get the correct email address to send to
 				//'email' is from contact record, 'emailAddress' is from list item
 				$email = !empty($recipient['email']) ? $recipient['email'] : $recipient['emailAddress'];
@@ -688,32 +693,15 @@ class MarketingController extends x2base {
 					'/\{_unsub\}/', 
 					'<a href="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'unsub', 'email'=>$email)) . '">'. Yii::t('marketing', 'unsubscribe') .'</a>', 
 					$emailBody); 
-			
-				//replace any {attribute} tags with the contact attribute value
-				$attrMatches = array();
-				preg_match_all('/{\w+}/', $emailBody,$attrMatches);
 				
-				if(isset($attrMatches[0])) {
-					foreach($attrMatches[0] as $match) {
-						$match = substr($match,1,-1);	// remove { and }
-						
-						$contact = new Contacts();
-						$contact->setAttributes($recipient);	
-
-						if($contact->hasAttribute($match)) {
-							if($match === 'trackingKey')
-								$value = $uniqueId;		// use the campaign key for this, not the general key
-							else
-								$value = $contact->renderAttribute($match, false, true);	// get the correctly formatted attribute
-								
-							$emailBody = preg_replace('/{'.$match.'}/', $value, $emailBody);
-						}
-					}
-				}
-
+				//replace any {attribute} tags with the contact attribute value
+				$emailBody = Docs::replaceVariables($emailBody,$contact,array('trackingKey'=>$uniqueId));	// use the campaign key, not the general key
+				
 				//add a link to transparent img to track when email was viewed
 				$emailBody .= '<img src="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
 
+				$phpMail->Subject = Docs::replaceVariables($campaign->subject,$contact);
+				
 				$phpMail->ClearAllRecipients();
 				$phpMail->AddAddress($email, $recipient['firstName'] .' '. $recipient['lastName']);
 				$phpMail->MsgHTML($emailBody);

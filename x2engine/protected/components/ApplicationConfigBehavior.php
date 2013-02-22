@@ -112,7 +112,7 @@ class ApplicationConfigBehavior extends CBehavior {
 
 		// $this->owner->messages->forceTranslation = true;
 		$this->owner->messages->onMissingTranslation = array(new TranslationLogger,'log');
-		$this->owner->params->admin = X2Model::model('Admin')->findByPk(1);
+		$this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
 		$notGuest = True;
 		$uname = 'admin';
 		if (!$cli) {
@@ -123,8 +123,8 @@ class ApplicationConfigBehavior extends CBehavior {
 		$sessionId = isset($_SESSION['sessionId'])? $_SESSION['sessionId'] : session_id();
 		
 		
-		$this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username'=>$uname));
-		$session = X2Model::model('Session')->findByPk($sessionId);
+		$this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$uname));
+		$session = CActiveRecord::model('Session')->findByPk($sessionId);
         if(isset($this->owner->params->profile)){
             $_SESSION['fullscreen']=$this->owner->params->profile->fullscreen;
         }

@@ -363,20 +363,25 @@ class X2List extends CActiveRecord {
 		
 		foreach(explode(',',$criteria->order) as $token) {		// we also need any columns that are being used in the sort
 			$token = preg_replace('/\s|asc|desc/i','',$token);	// so loop through $criteria->order and extract them
-			if($token !== '' && $token !== 'id')
-				$criteria->select .= ',t.'.$token;
+			if($token !== '' && $token !== 'id'){
+                if(strpos($token,'.')!=1){
+                    $criteria->select .= ',t.'.$token;
+                }else{
+                    $criteria->select .= ','.$token;
+                }
+            }
 		}
 		
 		// always include "id DESC" in sorting (for order consistency with SmartDataProvider)
 		if(!preg_match('/\bid\b/',$criteria->order)) {
 			if(!empty($criteria->order))
 				$criteria->order .= ',';
-			$criteria->order .= 'id DESC';
+			$criteria->order .= 't.id DESC';
 		}
 		
 		// get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
 		$searchConditions = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->getText();
-		
+        
 		$rowNumberQuery = Yii::app()->db->createCommand(
 			'SELECT r-1 FROM (SELECT *,@rownum:=@rownum + 1 AS r FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 WHERE t2.id='.$modelId
 		);
