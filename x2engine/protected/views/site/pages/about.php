@@ -1,43 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
-
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 $this->layout = '//layouts/column1';
 $this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','About');
@@ -65,6 +60,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?><br><br>
 	<div style="clear:both">For customer and community support: <a href="http://www.x2engine.com/">www.x2engine.com</a></div>
 	<div id="about-intro">
+		<div class="span-4">
 		<h4><?php echo Yii::t('app','Address');?></h4>
 		<ul>
 			<li>X2Engine Inc.</li>
@@ -73,7 +69,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			<li>USA</li>
 			<li><a href="http://www.x2engine.com/">www.x2engine.com</a></li>
 		</ul>
-		
+		</div>
+		<div class="span-4">
 		<h4><?php echo Yii::t('app','Core Team');?></h4>
 		<ul>
 			<li>John Roberts</li>
@@ -81,9 +78,9 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			<li>Matthew Pearson</li>
 			<li>Demitri Morgan</li>
 		</ul>
-
-		<h4><?php echo Yii::t('app','Special Thanks');?></h4>
-		<ul>
+		</div><br>
+		<h4 class="clear"><?php echo Yii::t('app','Special Thanks');?></h4>
+		<ul class="inline">
 			<li>Andrew Hoffman</li>
 			<li>Zach Louden</li>
 			<li>Steve Lance</li>
@@ -97,11 +94,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			<li>Bastian Pfaff</li>
 		</ul>
 	</div>
-	<div id="about-legal">
-		Copyright © 2013 X2Engine Inc. The Program is provided AS IS, without warranty.
-		<?php if(Yii::app()->params->edition==='opensource') echo 'Licensed under the ',CHtml::link('BSD License',Yii::app()->getBaseUrl().'/LICENSE.txt'),'.'; ?>
-	</div>
-	<br><hr>
+	<hr>
 	<div id="about-credits">
 		<!--<div class="about-list" style="height:450px;width:auto;overflow-y:scroll;border:1px solid #ddd;padding:10px;"></div>
 		<hr>-->
@@ -164,8 +157,41 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 			<li>jStorage: <a href="http://www.jstorage.info/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 				<a href="http://www.jstorage.info/static/license.txt" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
+			<li>FineDiff: <a href="http://www.raymondhill.net/finediff/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 		</ul>
 	</div>
+	<hr>
+	<div id="about-legal">
+<?php
+	// Yii::app()->params->edition = 'opensource'; 
+?>
+		<a href="http://www.x2engine.com/">Powered by X2Engine</a>. Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.<br>
+		<div style="margin-top:5px;"><?php echo CHtml::link(CHtml::image(Yii::app()->getBaseUrl().'/images/powered_by_x2engine.png',''),'http://www.x2engine.com/'); ?></div>
+		<?php if(Yii::app()->params->edition==='opensource'): ?>
+			Released as free software without warranties under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.<br><br>
+			
+			<b>The interactive user interfaces in modified source and object code versions 
+			of this program must display Appropriate Legal Notices, as required under 
+			Section 5 of the GNU Affero General Public License version 3. In accordance 
+			with Section 7(b) of the GNU General Public License version 3, these 
+			Appropriate Legal Notices must retain the display of the "Powered by X2Engine" 
+			logo. If the display of the logo is not reasonably feasible for technical reasons, 
+			the Appropriate Legal Notices must display the words "Powered by X2Engine".
+			X2CRM and X2Engine are trademarks of X2Engine Inc.<br><br>
+			
+		<?php else: ?>
+			<b>X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 
+			to install and use this Software for your internal business purposes.  
+			You shall not modify, distribute, license or sublicense the Software.
+			Title, ownership, and all intellectual property rights in the Software belong 
+			exclusively to X2Engine.<br><br>
+		<?php endif; ?>
+		THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 
+		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 
+		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+		</b>
+	</div><br>
 </div>
 <div id="about-map">
 <a title="<?php echo Yii::t('about','Our office in downtown Santa Cruz'); ?>" target="_blank" href="http://maps.google.com/maps?q=1101+Pacific+Avenue+Suite+309+Santa+Cruz,+CA+95060+USA&hl=en&ll=37.03764,-122.189941&spn=3.231366,4.762573&sll=36.978421,-122.0327&sspn=0.404269,0.595322&vpsrc=6&hnear=1101+Pacific+Ave+%23210,+Santa+Cruz,+California+95060&t=m&z=8">

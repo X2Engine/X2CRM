@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * Track service/support cases among contacts.
@@ -81,11 +77,11 @@ class ServicesController extends x2base {
 	}
 	
 	public function behaviors() {
-		return array_merge(parent::behaviors(), array(
-					'ServiceRoutingBehavior' => array(
-						'class' => 'ServiceRoutingBehavior'
-					)
-				));
+		return array_merge(parent::behaviors(),array(
+			'ServiceRoutingBehavior' => array(
+				'class' => 'ServiceRoutingBehavior'
+			)
+		));
 	}
 
 	/**
@@ -93,19 +89,15 @@ class ServicesController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model=$this->loadModel($id);	 
-		
-		
-		$type='services';
-		parent::view($model, $type);
+		$model = $this->loadModel($id);	 
+		parent::view($model,'services');
 	}
-	
 
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function create($model,$oldAttributes, $api){
+	/* public function create($model,$oldAttributes, $api){
 //		$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
 		$model->createDate=time();
 		$model->lastUpdated=time();
@@ -138,7 +130,7 @@ class ServicesController extends x2base {
 		} else {
 		     return parent::create($model,$oldAttributes,$api);
 		}
-	}
+	} */
 
 	/**
 	 * Create a new Service Case
@@ -168,9 +160,10 @@ class ServicesController extends x2base {
 				$model->addError('contactId', Yii::t('services', 'Contact does not exist'));
 			
 			if(isset($_POST['x2ajax'])) { // we're creating a case with "Create Case" button in contacts view
-				if($this->create($model,$temp, '1')) { // success creating case?
+				// if($this->create($model,$temp, '1')) { // success creating case?
+				if($model->save()) { // success creating case?
 		     		$model->name = $model->id; // every model needs a name field to work with X2GridView and a few other places, for service cases the id of the case is the name
-		     		$model->update();
+		     		$model->update(array('name'));
 					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) { // we are creating this case from within a contact, so set up a relationship with the contact
 						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Services', $model->id);
 					}
@@ -186,8 +179,9 @@ class ServicesController extends x2base {
 				} else {
 					$x2ajaxCreateError = true; // used at the bottom of this function to return an error via ajax
 				}
-			} else {
-				$this->create($model,$temp, '0');
+			} elseif($model->save()) {
+				$this->redirect(array('view','id'=>$model->id));
+				// $this->create($model,$temp, '0');
 			}
 		}
 		
@@ -224,7 +218,7 @@ class ServicesController extends x2base {
 	}
     
     
-	public function update($model, $oldAttributes,$api){
+	/* public function update($model, $oldAttributes,$api){
 		
 		$ret = parent::update($model,$oldAttributes,'1');
 		
@@ -250,7 +244,7 @@ class ServicesController extends x2base {
 			$this->redirect(array('view', 'id' => $model->id));
 		else
 			return $ret;
-	}
+	} */
 
 	/**
 	 * Updates a particular model.
@@ -277,7 +271,9 @@ class ServicesController extends x2base {
 			if($model->contactId != '' && !is_numeric($model->contactId)) // make sure an existing contact is associated with this case, otherwise don't create it
 				$model->addError('contactId', Yii::t('services', 'Contact does not exist'));
 			
-			$this->update($model,$temp,'0');
+			// $this->update($model,$temp,'0');
+			$model->save();
+			$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
@@ -463,9 +459,10 @@ class ServicesController extends x2base {
 			$model->createDate = $now;
 			$model->lastUpdated = $now;
 			$model->updatedBy = 'admin';
-			if($this->create($model, $oldAttributes, 1)) {
+			// if($this->create($model, $oldAttributes, 1)) {
+			if($model->save()) {
 				$model->name = $model->id;
-				$model->update();
+				$model->update(array('name'));
 			}
 					
 			

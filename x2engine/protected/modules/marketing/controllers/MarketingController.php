@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /** 
  * Controller to handle creating and mailing campaigns.
@@ -106,11 +102,7 @@ class MarketingController extends x2base {
 			//set this as the list we are viewing, for use by vcr controls
 			Yii::app()->user->setState('contacts-list', $model->list->id);
 		}
-
-		$this->render('view',array(
-			'model'=>$model,
-			'contactList'=>$model->list,
-		));
+		$this->view($model,'marketing',array('contactList'=>$model->list));
 	}
 	
 	/**
@@ -152,7 +144,7 @@ class MarketingController extends x2base {
 			if($model->template != 0)
 				$model->content = '';
 			$model->createdBy = Yii::app()->user->getName();
-			if(parent::create($model, $oldAttributes,1)) {
+			if($model->save()) {
 				if(isset($_POST['AttachmentFiles'])) {
 					if(isset($_POST['AttachmentFiles']['id'])) {
 						foreach($_POST['AttachmentFiles']['id'] as $mediaId) {
@@ -167,7 +159,7 @@ class MarketingController extends x2base {
 			}
 		} elseif(isset($_GET['Campaign'])) {
 			//preload the create form with query params
-			$model->setAttributes($_GET['Campaign']);			
+			$model->setAttributes($_GET['Campaign']);
 			$model->setX2Fields($_GET['Campaign']);
 		}
 
@@ -272,7 +264,7 @@ class MarketingController extends x2base {
 			if($model->template != 0)
 				$model->content = '';
 
-			if(parent::update($model,$oldAttributes,1)) {
+			if($model->save()) {
 				CampaignAttachment::model()->deleteAllByAttributes(array('campaign'=>$model->id));
 				if(isset($_POST['AttachmentFiles'])) {
 					if(isset($_POST['AttachmentFiles']['id'])) {
@@ -306,28 +298,28 @@ class MarketingController extends x2base {
 	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest) {
 			$model = $this->loadModel($id);
-
+			
 			if(!isset($model)) {
 				Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
 				$this->redirect(array('index'));
 			}
-            $event=new Events;
-            $event->type='record_deleted';
-            $event->associationType=$this->modelClass;
-            $event->associationId=$model->id;
-            $event->text=$model->name;
-            $event->user=Yii::app()->user->getName();
-            $event->save();
+			// now in X2ChangeLogBehavior
+			// $event=new Events;
+			// $event->type='record_deleted';
+			// $event->associationType=$this->modelClass;
+			// $event->associationId=$model->id;
+			// $event->text=$model->name;
+			// $event->user=Yii::app()->user->getName();
+			// $event->save();
 			$list = $model->list;
 			if(isset($list) && $list->type == "campaign")
 				$list->delete();
-			$this->cleanUpTags($model);
+			// $this->cleanUpTags($model);	// now in TagBehavior
 			$model->delete();
-
+			
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-			if(!isset($_GET['ajax'])) {
+			if(!isset($_GET['ajax']))
 				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-			}
 		} else {
 			Yii::app()->user->setFlash('error', Yii::t('app', 'Invalid request. Please do not repeat this request again.'));
 			$this->redirect(array('index'));
@@ -367,7 +359,6 @@ class MarketingController extends x2base {
 				$campaign->content = $template->text;
 		}
 		
-
 		if(!isset($campaign)) {
 			Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
 			$this->redirect(array('index'));
@@ -904,23 +895,23 @@ class MarketingController extends x2base {
 	 * @param string $email For unsub types, this is the urlencoded email address
 	 *  of the person unsubscribing
 	 */
-	public function actionClick($uid, $type, $url=null, $email=null) {
+	public function actionClick($uid,$type,$url=null,$email=null) {
 		$now = time();
-		$item = X2ListItem::model()->with('contact','list')->findByAttributes(array('uniqueId'=>$uid));
-
-		if(isset($item))
-			$campaign = Campaign::model()->findByAttributes(array('listId'=>$item->listId));
+		$item = CActiveRecord::model('X2ListItem')->with('contact','list','campaign')->findByAttributes(array('uniqueId'=>$uid));
+		
+		// if($item !== null)
+			// $campaign = CActiveRecord::model('Campaign')->findByAttributes(array('listId'=>$item->listId));
 
 		//it should never happen that we have a list item without a campaign, 
 		//but it WILL happen on x2software or any old db where x2_list_items does not cascade on delete
 		//we can't track anything if the listitem was deleted, but at least prevent breaking links
-		if(!isset($item) || !isset($campaign)) {
+		if($item === null || $item->campaign === null) {
 			if($type == 'click') {
 				$this->redirect(urldecode($url));
 			} elseif($type == 'open') {
-				//return a one pixel transparent png
-				header('Content-Type: image/png');
-				echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
+				//return a one pixel transparent gif
+				header('Content-Type: image/gif');
+				echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
 			} elseif($type == 'unsub' && !empty($email)) {
 				Contacts::model()->updateAll(array('doNotEmail'=>true), array('email'=>$email));
 				X2ListItem::model()->updateAll(array('unsubscribed'=>time()), 'emailAddress=:email AND unsubscribed=0', array('email'=>$email));
@@ -929,145 +920,125 @@ class MarketingController extends x2base {
 			} 
 			return;
 		}
-
+		
+		$contact = $item->contact;
+		$list = $item->list;
+		
+		$event = new Events;
+		$notif = new Notification;
+		
 		$action = new Actions;
-		$action->type = 'note';
-		$action->createDate = $now;
-		$action->lastUpdated = $now;
 		$action->completeDate = $now;
 		$action->complete = 'Yes';
-		$action->updatedBy = 'admin';
-		if(isset($item->contact)) {
+		$action->updatedBy = 'API';
+		
+		if($contact !== null) {
+			if($email === null)
+				$email = $contact->email;
+		
 			$action->associationType = 'contacts';
-			$action->associationId = $item->contact->id;
-			$action->associationName = $item->contact->name;
-			$action->visibility = $item->contact->visibility;
-			$action->assignedTo = $item->contact->assignedTo;
-			$event=new Events;
-            $event->associationId=$action->associationId;
-            $event->associationType='Contacts';
-			if($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
-				$notif = new Notification;
-				$notif->user = $action->assignedTo;
-				$notif->modelType = 'Contacts';
-				$notif->modelId = $action->associationId;
-				$notif->createDate = $now;
-				$notif->value = $campaign->getLink();
-			}
+			$action->associationId = $contact->id;
+			$action->associationName = $contact->name;
+			$action->visibility = $contact->visibility;
+			$action->assignedTo = $contact->assignedTo;
 			
-		} elseif(isset($item->list)) {
+			$event->associationId = $action->associationId;
+			$event->associationType = 'Contacts';
+			
+			if($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
+				$notif->user = $contact->assignedTo;
+				$notif->modelType = 'Contacts';
+				$notif->modelId = $contact->id;
+				$notif->createDate = $now;
+				$notif->value = $item->campaign->getLink();
+			}
+		} elseif($list !== null) {
+			$action = new Actions;
+			$action->type = 'note';
+			$action->createDate = $now;
+			$action->lastUpdated = $now;
+			$action->completeDate = $now;
+			$action->complete = 'Yes';
+			$action->updatedBy = 'admin';
+			
 			$action->associationType = 'X2List';
-			$action->associationId = $item->list->id;
-			$action->associationName = $item->list->name;
-			$action->visibility = $item->list->visibility;
-			$action->assignedTo = $item->list->assignedTo;
-		} else { //should be never
-			$action->visibility = 1;
-			$action->assignedTo = 'Anyone';
+			$action->associationId = $list->id;
+			$action->associationName = $list->name;
+			$action->visibility = $list->visibility;
+			$action->assignedTo = $list->assignedTo;
 		}
 		
 		if($type == 'unsub') {
-			if($item->unsubscribed == 0) $item->unsubscribed = $now;
-			if($item->opened == 0) $item->opened = $now;
-			$item->save();
+			$item->unsubscribe();
 			
-			//also unsubscribe from any other lists
-			X2ListItem::model()->updateAll(array('unsubscribed'=>time()), 'emailAddress=:email AND unsubscribed=0', array('email'=>$email));
-
-			if(isset($item->contact)) {
-				$item->contact->doNotEmail = true;
-				$item->contact->save();
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name ."\n\n"
-					.Yii::t('marketing','Contact has unsubscribed') .".\n". Yii::t('marketing','\'Do Not Email\' has been set') .".";
-			} else {
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name ."\n\n"
-					.$item->emailAddress ." ". Yii::t('marketing','has unsubscribed') .".";
-			}
-			$action->type = 'email_unsubscribed';
-			$action->save();
-
-			//find any weblists associated with the email address to attach them unsubscribe actions as well
+			// find any weblists associated with the email address and create unsubscribe actions for each of them
 			$sql = 'SELECT t.* FROM x2_lists as t JOIN x2_list_items as li ON t.id=li.listId WHERE li.emailAddress=:email AND t.type="weblist";'; 
-			$weblists = Yii::app()->db->createCommand($sql)->queryAll(true, array('email'=>$email));
+			$weblists = Yii::app()->db->createCommand($sql)->queryAll(true,array('email'=>$email));
 			foreach($weblists as $weblist) {
-				$action->id = 0;
-				$action->isNewRecord = true;
-				$action->type = 'email_unsubscribed';
-				$action->associationType = 'X2List';
-				$action->associationId = $weblist['id'];
-				$action->associationName = $weblist['name'];
-				$action->visibility = $weblist['visibility'];
-				$action->assignedTo = $weblist['assignedTo'];
-				$action->actionDescription = Yii::t('marketing','Campaign'). ': '. $campaign->name ."\n\n"
-					.$email ." ". Yii::t('marketing','has unsubscribed') .".";
-				$action->save();
+				$weblistAction->id = 0;
+				$weblistAction->isNewRecord = true;
+				$weblistAction->type = 'email_unsubscribed';
+				$weblistAction->associationType = 'X2List';
+				$weblistAction->associationId = $weblist['id'];
+				$weblistAction->associationName = $weblist['name'];
+				$weblistAction->visibility = $weblist['visibility'];
+				$weblistAction->assignedTo = $weblist['assignedTo'];
+				$weblistAction->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".$email." ".Yii::t('marketing','has unsubscribed').".";
+				$weblistAction->save();
 			}
-			// create notification
-			if(isset($notif)) {
-				$notif->type = 'email_unsubscribed';
-				$notif->save();
-			}
+			
+			$action->type = 'email_unsubscribed';
+			$event->type = 'email_unsubscribed';
+			$notif->type = 'email_unsubscribed';
+			
+			if($contact === null)
+				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $item->campaign->name ."\n\n".$item->emailAddress.' '.Yii::t('marketing','has unsubscribed').".";
+			else
+				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $item->campaign->name ."\n\n".Yii::t('marketing','Contact has unsubscribed').".\n".Yii::t('marketing','\'Do Not Email\' has been set').".";
 			
 			$message = Yii::t('marketing','You have been unsubscribed');
 			echo '<html><head><title>'. $message .'</title></head><body>'. $message .'</body></html>';
+			
 		} elseif($type == 'open') {
-			if($item->opened == 0) $item->opened = $now;
-			$item->save();
-
-			if(isset($item->contact)) {
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name."\n\n"
-					.Yii::t('marketing','Contact has opened the email') .".";
-			} else {
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name."\n\n"
-					.$item->emailAddress ." ". Yii::t('marketing','has opened the email') .".";
-			}
+			$item->markOpened();
+			
 			$action->type = 'email_opened';
-			$action->save();
-			// create notification
-            if(isset($event)){
-                $event->user=$item->contact->assignedTo;
-                $event->type='email_opened';
-                $event->save();
-            }
-			if(isset($notif)) {
-				$notif->type = 'email_opened';
-				$notif->save();
-			}
-			//return a one pixel transparent png
-			header('Content-Type: image/png');
-			echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
-		} elseif($type == 'click') {
-			if($item->clicked == 0) $item->clicked = $now;
-			if($item->opened == 0) $item->opened = $now;
-			$item->save();
+			$event->type = 'email_opened';
+			$notif->type = 'email_opened';
+			
+			if($contact === null)
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has opened the email').".";
+			else
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".Yii::t('marketing','Contact has opened the email').".";
+			
+			//return a one pixel transparent gif
+			header('Content-Type: image/gif');
+			echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
 
-			if(isset($item->contact)) {
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name."\n\n"
-					.Yii::t('marketing','Contact has clicked a link') .":\n". urldecode($url);
-			} else {
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name."\n\n"
-					.$item->emailAddress ." ". Yii::t('marketing','has clicked a link') .":\n". urldecode($url);
-			}
+		} elseif($type == 'click') {
+			$item->markClicked($url);
+			
 			$action->type = 'email_clicked';
-			$action->save();
-			// create notification
-            if(isset($event)){
-                $event->type='email_clicked';
-                $event->save();
-            }
-			if(isset($notif)) {
-				$notif->type = 'email_clicked';
-				$notif->save();
-			}
+			$event->type='email_clicked';
+			$notif->type = 'email_clicked';
+			
+			if($contact === null)
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".Yii::t('marketing','Contact has clicked a link').":\n".urldecode($url);
+			else
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has clicked a link').":\n".urldecode($url);
+			
 			$this->redirect(urldecode($url));	
 		}
+		
+		$action->save();
+		$event->save();		// if any of these hasn't been fully configured
+		$notif->save();		// it will simply not validate and not be saved
 	}
 
 	/**
 	 * Create a web lead form with a custom style
 	 */
 	public function actionWebleadForm() {
-	
 		if(file_exists(__DIR__ . '/pro/actionWebleadForm.php')) {
 			include(__DIR__ . '/pro/actionWebleadForm.php');
 			return;

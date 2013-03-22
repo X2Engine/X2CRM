@@ -23,12 +23,12 @@ class ProductFeature extends X2Model {
 	public function tableName() { return 'x2_product_features'; }
 
 	public function behaviors() {
-		return array(
+		return array_merge(parent::behaviors(),array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
 				'baseRoute'=>'/products/productFeature'
 			)
-		);
+		));
 	}
 
 	/**

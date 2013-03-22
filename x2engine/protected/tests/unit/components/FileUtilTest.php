@@ -89,6 +89,49 @@ class FileUtilTest extends CTestCase {
 		$this->assertFileNotExists(FileUtil::rpath($this->baseDir.'/subdir1/testFile'));
 		$this->removeTestDirs();
 	}
+	
+	public function testFormatSize() {
+		$this->assertEquals('10 KB',FileUtil::formatSize(1024*10));
+	}
+	
+	public function testGetContents() {
+		// With both methods:
+		$this->assertTrue((bool) FileUtil::getContents('http://google.com'));
+		FileUtil::$alwaysCurl = true;
+		$this->assertTrue((bool) FileUtil::getContents('http://google.com'));
+		FileUtil::$alwaysCurl = false;
+	}
+	
+	/**
+	 * Test copying the requirements checker script.
+	 * 
+	 * NOTE: the requirements checker (which gets deleted) will need to be copied back first.
+	 */
+	public function testRemoteCopy() {
+		// 
+		$outdir = Yii::app()->basePath . "/tests/data/output";
+		$copy = "$outdir/requirements-copy.php";
+		$curl = "$outdir/requirements-curl.php";
+		$live = Yii::app()->basePath . "/../requirements.php";
+		FileUtil::ccopy('http://x2planet.com/installs/requirements.php',$copy);
+		FileUtil::$alwaysCurl = true;
+		FileUtil::ccopy('http://x2planet.com/installs/requirements.php',$curl);		
+		FileUtil::$alwaysCurl = false;
+		// Test that the files are identical:
+		$this->assertEquals(file_get_contents($copy),file_get_contents($curl));
+		// Test that the first 4 bytes of the file are identical to the stored file:
+		$afh = fopen($live,'rb');
+		$cfh = fopen($copy,'rb');
+		$ufh = fopen($curl,'rb');
+		$aread = fread($afh,4);
+		$this->assertEquals($aread,fread($cfh,4));
+		$this->assertEquals($aread,fread($ufh,4));
+		fclose($afh);
+		fclose($cfh);
+		fclose($ufh);
+		unlink($copy);
+		unlink($curl);
+	}
 
 }
 

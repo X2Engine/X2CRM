@@ -1,24 +1,21 @@
-# X2CRM 2.8.1 Changelog #
-2/20/2013
+# X2CRM 2.9 Changelog #
+3/21/2013
 
-* Dozens of bug fixes - thanks everyone for reporting bugs using the new bug reporting tool!
-* New theme and background settings
-* New manual bug reporting tool
-* Added some icons
-* Email dropbox now creates events (Professional edition)
-* Google Analytics integration for monitoring X2CRM usage
-
-New in 2.8.1
-* VCR controls for tag based search results
-* Fixed bugs:
-	* Emailing contacts
-	* int/float/currency type fields
-* Changelog now allows filtering by record name
-* Email templates now allow variables in subject line
-* "percentage" field type
+* Revamped web API
+	* now supports operations on any module type, including custom ones
+	*  Improved stability
+* More user control over the color scheme
+* All new default background images
+* Background fade button (lower right of screen)
+* Changed to Affero GPL v3 license
+* Updated CKEditor to version 4
+* Spellcheck now available in CKEditor
+* You can now pin activity feed items
+* Enhancements to Requirement Checker on installation
+* Numerous bug fixes
 
 # Introduction #
-Welcome to  X2CRM v2.8.1!
+Welcome to  X2CRM v2.9!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and
@@ -51,12 +48,14 @@ upload by itself to your server. Simply visit the script in your browser to see
 if your server will run X2CRM.
 
 # Installation #
-1. Upload X2Engine to the web directory of your choice.
+1. Upload X2Engine to the web directory of your choice. Be sure to set your FTP 
+   client to use binary mode.
 2. Create a new MySQL database for X2Engine to use
-3. Navigate to the x2engine web folder in your browser and you will be redirected to the installer.
+3. Browse to the x2engine folder and you will be redirected to the installer.
 4. Fill out the form, click install, and that's it!
-5. You are now ready to use X2Engine. If you chose to install Dummy Data, you will have about 1100 contacts, 125 actions, and 30 accounts to play with.
-   
+5. You are now ready to use X2Engine.  If you chose to install Dummy Data,  you 
+   will have about 1100 contacts, 125 actions, and 30 accounts to play with.
+
 
 # Creating the Action Reminder Cronjob #
 As we don't have access to your server, you'll need to create a cronjob to make 

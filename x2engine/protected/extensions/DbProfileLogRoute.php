@@ -85,22 +85,24 @@ class DbProfileLogRoute extends CProfileLogRoute
 	 */
 	protected function render($view,$data)
 	{
-		$countLimit = $this->countLimit;
-		$slowQueryMin = $this->slowQueryMin;
+        if(Yii::app()->user->checkAccess('AdminIndex')){
+            $countLimit = $this->countLimit;
+            $slowQueryMin = $this->slowQueryMin;
 
-		$app=Yii::app();
-		$isAjax=$app->getRequest()->getIsAjaxRequest();
+            $app=Yii::app();
+            $isAjax=$app->getRequest()->getIsAjaxRequest();
 
-		if($this->showInFireBug)
-		{
-			if($isAjax && $this->ignoreAjaxInFireBug)
-				return;
-			$view.='-firebug';
-		}
-		else if(!($app instanceof CWebApplication) || $isAjax)
-			return;
+            if($this->showInFireBug)
+            {
+                if($isAjax && $this->ignoreAjaxInFireBug)
+                    return;
+                $view.='-firebug';
+            }
+            else if(!($app instanceof CWebApplication) || $isAjax)
+                return;
 
-		include dirname(__FILE__).DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php';
+            include dirname(__FILE__).DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php';
+        }
 	}
 
 	/**

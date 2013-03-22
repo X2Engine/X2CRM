@@ -1,8 +1,9 @@
 <?php
 return array(
-	'name'=>"Template",
+	'name'=>"Templates",
 	'install'=>array(
 		dirname(__FILE__).'/data/install.sql',
+        dirname(__FILE__).'/sqlData.sql',
     ),
 	'uninstall'=>array(
 		dirname(__FILE__).'/data/uninstall.sql'
@@ -12,6 +13,6 @@ return array(
 	'adminOnly'=>false,
 	'custom'=>true,
 	'toggleable'=>true,
-	'version' => '2.0',
+	'version' => '2.8',
 );
 ?>

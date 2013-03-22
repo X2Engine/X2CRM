@@ -171,7 +171,7 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	public function afterConstruct($event) {
 		//always start with a unique remember scenario
 		//based on the controller/action names, and id if specified
-		if ($this->owner->scenario != 'console') // scenario will be 'console' if not instantiating from the web
+		if (!Yii::app()->params->noSession)
 			$this->setRememberScenario(Yii::app()->controller->uniqueid . '/' . Yii::app()->controller->action->id . (isset($_GET['id']) ? '/' . $_GET['id'] : ''));
 
 		//$this->doReadSave(); //original functionality, overidden by John M

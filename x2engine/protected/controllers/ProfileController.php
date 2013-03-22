@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * User profiles controller
@@ -131,19 +127,27 @@ class ProfileController extends x2base {
 	 */
 	public function actionDeletePost($id) {
 		$post = Events::model()->findByPk($id);
-		if($post->type=='comment') {
-			$postParent = X2Model::model('Events')->findByPk($post->associationId);
-			$user=ProfileChild::model()->findByPk($postParent->associationId);
-		} else
-			$user=ProfileChild::model()->findByPk($post->associationId);
-		if(isset($postParent) && $post->user!=Yii::app()->user->getName()){
-			if($postParent->associationId==Yii::app()->user->getId())
-				$post->delete();
-		}
-		if($post->user==Yii::app()->user->getName() || $post->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')) {
-			if($post->delete()) {
-			}
-		}
+        if(isset($post)){
+            if($post->type=='comment') {
+                $postParent = X2Model::model('Events')->findByPk($post->associationId);
+                $user=ProfileChild::model()->findByPk($postParent->associationId);
+                $redirId=$postParent->associationId;
+            } else{
+                $user=ProfileChild::model()->findByPk($post->associationId);
+                $redirId=$post->associationId;
+            }
+            if(isset($postParent) && $post->user!=Yii::app()->user->getName()){
+                if($postParent->associationId==Yii::app()->user->getId())
+                    $post->delete();
+            }
+            if($post->user==Yii::app()->user->getName() || $post->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')) {
+                if($post->delete()) {
+                }
+            }
+        }
+        if(isset($_GET['redirect']) && $_GET['redirect']=='view'){
+            $this->redirect(array('view','id'=>$redirId));
+        }
 			$this->redirect(array('site/whatsNew'));
 	}
 
@@ -175,7 +179,11 @@ class ProfileController extends x2base {
 		$modules=Modules::model()->findAllByAttributes(array('visible'=>1));
                 $menuItems=array();
                 foreach($modules as $module){
-                    $menuItems[$module->name]=$module->title;
+                    if($module->name=='document'){
+                        $menuItems[$module->title]=$module->title;
+                    }else{
+                        $menuItems[$module->name]=$module->title;
+                    }
                 }
 		$menuItems = array(''=>Yii::t('app',"What's New")) + $menuItems;
 		

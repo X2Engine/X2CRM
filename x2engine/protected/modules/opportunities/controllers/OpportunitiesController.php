@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * @package X2CRM.modules.opportunities.controllers
@@ -145,7 +141,7 @@ class OpportunitiesController extends x2base {
 		));
 	}
 	
-	public function create($model,$oldAttributes,$api=0){
+	/* public function create($model,$oldAttributes,$api=0) {
 		
 		// process currency into an INT
 //		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
@@ -160,7 +156,7 @@ class OpportunitiesController extends x2base {
 		} else {
 			parent::create($model,$oldAttributes,'0');
 		}
-	}
+	} */
 
 	/**
 	 * Creates a new model.
@@ -224,7 +220,8 @@ class OpportunitiesController extends x2base {
 				}
 			} */
 			if(isset($_POST['x2ajax'])) {
-				if($this->create($model,$temp, '1')) { // success creating account?
+				// if($this->create($model,$temp, '1')) { // success creating account?
+				if($model->save()) { // success creating account?
 					$primaryAccountLink = '';
 					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
 						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Opportunity', $model->id);
@@ -247,7 +244,9 @@ class OpportunitiesController extends x2base {
 					Yii::app()->end();
 				}
 			} else {
-				$this->create($model,$temp);
+				// $this->create($model,$temp);
+				if($model->save())
+					$this->redirect(array('view','id'=>$model->id));
 			}
 		}
 		
@@ -263,31 +262,32 @@ class OpportunitiesController extends x2base {
 		}
 	}
         
-        public function update($model,$oldAttributes,$api=0){
-            
-            // process currency into an INT
-//            $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+	/* public function update($model,$oldAttributes,$api=0){
+		
+		// process currency into an INT
+		// $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
 
-            $arr=$model->associatedContacts;
-            if(isset($model->associatedContacts)) {
-                foreach($model->associatedContacts as $contact) {
-                    $rel=new Relationships;
-                    $rel->firstType='Contacts';
-                    $rel->firstId=$contact;
-                    $rel->secondType='Opportunity';
-                    $rel->secondId=$model->id;
-                    if($rel->firstId!="" && $rel->secondId!="")
-                        $rel->save();
-                }
-                    $model->associatedContacts=Opportunity::parseContacts($arr);
-            }
-            $model->lastUpdated = time();
-            // if($model->expectedCloseDate!=""){
-				// $model->expectedCloseDate=strtotime($model->expectedCloseDate);
-            // }
-            
-            parent::update($model,$oldAttributes,'0');
-        }
+		$arr=$model->associatedContacts;
+		if(isset($model->associatedContacts)) {
+			foreach($model->associatedContacts as $contact) {
+				$rel=new Relationships;
+				$rel->firstType='Contacts';
+				$rel->firstId=$contact;
+				$rel->secondType='Opportunity';
+				$rel->secondId=$model->id;
+				if($rel->firstId!="" && $rel->secondId!="")
+					$rel->save();
+			}
+				$model->associatedContacts=Opportunity::parseContacts($arr);
+		}
+		$model->lastUpdated = time();
+		// if($model->expectedCloseDate!=""){
+			// $model->expectedCloseDate=strtotime($model->expectedCloseDate);
+		// }
+		
+		parent::update($model,$oldAttributes,'0');
+	} */
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -298,9 +298,9 @@ class OpportunitiesController extends x2base {
 		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
-                foreach(Groups::model()->findAll() as $group){
-                    $users[$group->id]=$group->name;
-                }
+		foreach(Groups::model()->findAll() as $group)
+			$users[$group->id]=$group->name;
+		
 		$contacts=Contacts::getAllNames();
 		unset($contacts['0']);
 		
@@ -314,82 +314,15 @@ class OpportunitiesController extends x2base {
 		
 		$model->assignedTo = explode(' ',$model->assignedTo);
 		
-/* 		$fields=Fields::model()->findAllByAttributes(array('modelName'=>"Opportunity"));
-                foreach($fields as $field){
-                    if($field->type=='link'){
-                        $fieldName=$field->fieldName;
-                        $type=ucfirst($field->linkType);
-                        if(is_numeric($model->$fieldName) && $model->$fieldName!=0){
-                            eval("\$lookupModel=$type::model()->findByPk(".$model->$fieldName.");");
-                            if(isset($lookupModel))
-                                $model->$fieldName=$lookupModel->name;
-                        }
-                    }elseif($field->type=='date'){
- //                       $fieldName=$field->fieldName;
- //                       $model->$fieldName=date("Y-m-d",$model->$fieldName);
-                    }
-                } */
-		
-		// $curContacts=$model->associatedContacts;
-		// $contactPieces=explode(" ",$curContacts);
-		// $arr=array();
-		// foreach($contactPieces as $piece){
-			// $arr[]=$piece;
-		// }
-		// $model->associatedContacts=$arr;
-		
 		$model->associatedContacts = explode(' ',$model->associatedContacts);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
+		
 		if(isset($_POST['Opportunity'])) {
 			$temp=$model->attributes;
 			$model->setX2Fields($_POST['Opportunity']);
-			
-			
-/* 			foreach($_POST['Opportunity'] as $name => &$value) {
-				if($value == $model->getAttributeLabel($name))
-					$value = '';
-			}
-			foreach($_POST as $key=>$arr){
-				$pieces=explode("_",$key);
-				if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-					$newKey=$pieces[1];
-					if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-						$val=$_POST[$newKey."_id"];
-					}else{
-						$field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-						if(isset($field)){
-							$type=ucfirst($field->linkType);
-							if($type!="Contacts"){
-								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-							}else{
-								$names=explode(" ",$arr);
-								$lookupModel=X2Model::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-							}
-							if(isset($lookupModel))
-								$val=$lookupModel->id;
-							else
-								$val=$arr;
-						}
-					}
-					$model->$newKey=$val;
-				}
-			}
-			foreach(array_keys($model->attributes) as $field){
-				if(isset($_POST['Opportunity'][$field])){
-					$model->$field=$_POST['Opportunity'][$field];
-					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Opportunity','fieldName'=>$field));
-						if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-							$model->$field=Accounts::parseUsers($model->$field);
-						}elseif($fieldData->type=='date'){
-							$model->$field=strtotime($model->$field);
-						}
-				}
-			} */
 
-			$this->update($model,$temp);
+			// $this->update($model,$temp);
+			$model->save();
+			$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
@@ -451,8 +384,8 @@ class OpportunitiesController extends x2base {
 			else
 				$temp=$model->assignedTo;
 			$model->assignedTo=$temp;
-                        $changes=$this->calculateChanges($tempArr,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+			// $changes=$this->calculateChanges($tempArr,$model->attributes);
+			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -494,8 +427,8 @@ class OpportunitiesController extends x2base {
 				$rel->secondId=$model->id;
 				$rel->save();
 			}
-            $changes=$this->calculateChanges($tempArr,$model->attributes, $model);
-            $model=$this->updateChangelog($model,$changes);
+            // $changes=$this->calculateChanges($tempArr,$model->attributes, $model);
+            // $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -531,8 +464,8 @@ class OpportunitiesController extends x2base {
 			$temp=Opportunity::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
-            $changes=$this->calculateChanges($temp,$model->attributes, $model);
-            $model=$this->updateChangelog($model,$changes);
+            // $changes=$this->calculateChanges($temp,$model->attributes, $model);
+            // $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -570,8 +503,8 @@ class OpportunitiesController extends x2base {
 					$rel->delete();
 				unset($pieces[$contact]);
 			}
-            $changes=$this->calculateChanges($temp,$model->attributes);
-            $model=$this->updateChangelog($model,$changes);
+			// $changes=$this->calculateChanges($temp,$model->attributes);
+			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -603,16 +536,11 @@ class OpportunitiesController extends x2base {
 		return $model;
 	}
 	
-	public function delete($id){
-		$model=$this->loadModel($id);
-		$dataProvider=new CActiveDataProvider('Actions', array(
-				'criteria'=>array(
-				'condition'=>'associationId='.$id.' AND associationType=\'opportunities\'',
-		)));
-		$actions=$dataProvider->getData();
-		foreach($actions as $action){
-				$action->delete();
-		}
+	public function delete($id) {
+		$model = $this->loadModel($id);
+		
+		CActiveDataProvider::model('Actions')->deleteAllByAttributes(array('associationType'=>'opportunities','associationId'=>$id));
+		
 		$this->cleanUpTags($model);
 		$model->delete();
 	}

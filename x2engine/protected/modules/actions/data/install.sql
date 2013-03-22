@@ -5,7 +5,7 @@ CREATE TABLE x2_actions	(
 	assignedTo				VARCHAR(20),
 	calendarId				INT,
 	actionDescription		text,
-	visibility				INT				NOT NULL,
+	visibility				INT				NOT NULL DEFAULT 1,
 	associationId			INT				NOT NULL,
 	associationType			VARCHAR(20),
 	associationName			VARCHAR(100),

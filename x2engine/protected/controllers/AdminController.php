@@ -1,43 +1,39 @@
 <?php
 
-/* * *******************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ****************************************************************************** */
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * Administrative, app-wide configuration actions.
@@ -120,7 +116,8 @@ class AdminController extends Controller {
             'ReportsController'=>'application.modules.reports.controllers.ReportsController',
             'ServicesController'=>'application.modules.services.controllers.ServicesController',
             'UsersController'=>'application.modules.users.controllers.UsersController',
-            'WorkflowController'=>'application.modules.workflow.controllers.WorkflowControllers',
+            'WorkflowController'=>'application.modules.workflow.controllers.WorkflowController',
+            'BugReportsController'=>'application.modules.bugReports.controllers.BugReportsController',
         );
         $missingPermissions=array();
         $auth=Yii::app()->authManager;
@@ -169,7 +166,7 @@ class AdminController extends Controller {
         if (Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->user->checkAccess('AdminIndex')) {
             return true;
         } elseif (Yii::app()->user->isGuest) {
-			Yii::app()->user->returnUrl = Yii::app()->request->requestUrl;
+			Yii::app()->user->returnUrl = Yii::app()->request->requestUri;
             $this->redirect($this->createUrl('/site/login'));
         } else {
             throw new CHttpException(403, 'You are not authorized to perform this action.');
@@ -208,7 +205,7 @@ class AdminController extends Controller {
         return array(
             //'accessControl',
             'clearCache',
-			'clearAuthCache'
+			//'clearAuthCache'
         );
     }
 
@@ -1159,6 +1156,14 @@ class AdminController extends Controller {
                     $admin->$attribute=$value;
                 }
             }
+			if(isset($_POST['currency'])) {
+				if($_POST['currency'] == 'other') {
+					$admin->currency = $_POST['currency2'];
+					if(empty($admin->currency))
+						$admin->addError('currency',Yii::t('admin','Please enter a valid currency type.'));
+				} else
+					$admin->currency = $_POST['currency'];
+			}
             if($oldFormat!=$admin->contactNameFormat){
                 if($admin->contactNameFormat=='lastName, firstName'){
                     $command=Yii::app()->db->createCommand()->setText('UPDATE x2_contacts SET name=CONCAT(lastName,", ",firstName)')->execute();
@@ -1390,7 +1395,8 @@ class AdminController extends Controller {
         function in_arrayi($needle, $haystack) {
             return in_array(strtolower($needle), array_map('strtolower', $haystack));
         }
-        $reservedWords=include('protected/data/mysqlReservedWords.php');
+        $reservedWords = array_merge(require('protected/data/mysqlReservedWords.php'),require('protected/data/modelReservedWords.php'));
+		
         if(in_arrayi($fieldName,$reservedWords)){
             echo Yii::t('admin','This field is a MySQL reserved word.  Choose a different field name.');
         }elseif(preg_match('/\W/', $fieldName) || preg_match('/^[^a-zA-Z]+/', $fieldName)){
@@ -1575,11 +1581,11 @@ class AdminController extends Controller {
      */
     public function actionCreatePage() {
 
-        $model = new DocChild;
+        $model = new Docs;
         $users = User::getNames();
-        if (isset($_POST['DocChild'])) {
+        if (isset($_POST['Docs'])) {
 
-            $model->attributes = $_POST['DocChild'];
+            $model->attributes = $_POST['Docs'];
             $arr = $model->editPermissions;
             if (isset($arr))
                 $model->editPermissions = Accounts::parseUsers($arr);
@@ -1623,8 +1629,8 @@ class AdminController extends Controller {
      * @param int $id The ID of the page being viewed.
      */
     public function actionViewPage($id) {
-        $model = DocChild::model()->findByPk($id);
-        if (!isset($model))
+        $model = CActiveRecord::model('Docs')->findByPk($id);
+        if(!isset($model))
             $this->redirect(array('docs/index'));
 
         $this->render('viewTemplate', array(
@@ -1815,7 +1821,7 @@ class AdminController extends Controller {
     public function actionTranslationManager() {
         $this->layout = null;
         $messagePath = 'protected/messages';
-        include('protected/extensions/TranslationManager.php');
+        include('protected/components/TranslationManager.php');
         // die('hello:'.var_dump($_POST));
     }
 
@@ -1883,9 +1889,9 @@ class AdminController extends Controller {
 				$moduleRecord->save();
 				$auth = Yii::app()->authManager;
 				$auth->createOperation(ucfirst($moduleName) . 'Index');
-				$auth->addItemChild('authenticated', ucfirst($moduleName) . 'Index');
+				$auth->addItemChild('DefaultRole', ucfirst($moduleName) . 'Index');
 				$auth->createOperation(ucfirst($moduleName) . 'Admin');
-				$auth->addItemChild('admin', ucfirst($moduleName) . 'Admin');
+				$auth->addItemChild('administrator', ucfirst($moduleName) . 'Admin');
 				$this->redirect(array('/' . $moduleName . '/index'));
 			}
 		}
@@ -2055,7 +2061,11 @@ class AdminController extends Controller {
 							}
 							foreach ($sqlComm as $sqlLine) {
 								$query = Yii::app()->db->createCommand($sqlLine);
-								$query->execute();
+                                try{
+                                    $query->execute();
+                                }catch(CDbException $e){
+                                    
+                                }
 							}
 						}
 					} else {
@@ -2065,10 +2075,8 @@ class AdminController extends Controller {
 							$query->execute();
 						}
 					}
-					$fields = Fields::model()->findAllByAttributes(array('modelName' => $moduleName));
-					foreach ($fields as $field) {
-						$field->delete();
-					}
+					X2Model::model('Fields')->deleteAllByAttributes(array('modelName' => $moduleName));
+					X2Model::model('FormLayout')->deleteAllByAttributes(array('model' => $moduleName));
 					$auth = Yii::app()->authManager;
 					$auth->removeAuthItem(ucfirst($moduleName) . 'Index');
 					$auth->removeAuthItem(ucfirst($moduleName) . 'Admin');
@@ -2102,7 +2110,7 @@ class AdminController extends Controller {
     public function actionExportModule() {
         $dlFlag=false;
         if (isset($_POST['name'])) {
-            $moduleName = strtolower($_POST['name']);
+            $moduleName = ($_POST['name']);
 
             $fields = Fields::model()->findAllByAttributes(array('modelName' => ucfirst($moduleName)));
             $sql = "";
@@ -2136,10 +2144,19 @@ class AdminController extends Controller {
                             $fieldType = 'VARCHAR(250)';
                             break;
                     }
-                    $sql.="ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType; INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
+                    $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
                 }
             }
-
+            $formLayouts=X2Model::model('FormLayout')->findAllByAttributes(array('model'=>$moduleName));
+            foreach($formLayouts as $layout){
+                $attributes=$layout->attributes;
+                unset($attributes['id']);
+                $attributeKeys=array_keys($attributes);
+                $attributeValues=array_values($attributes);
+                $keys=implode(", ",$attributeKeys);
+                $values="'".implode("', '",$attributeValues)."'";
+                $sql.="/*&*/INSERT INTO x2_form_layouts ($keys) VALUES ($values);";
+            }
 			$db = Yii::app()->file->set("protected/modules/$moduleName/sqlData.sql");
 			$db->create();
 			$db->setContents($sql);
@@ -2165,7 +2182,7 @@ class AdminController extends Controller {
         $this->render('exportModules', array(
             'modules' => $arr,
             'dlFlag'=>$dlFlag?:false,
-            'file'=>$dlFlag?strtolower($_POST['name']):''
+            'file'=>$dlFlag?($_POST['name']):''
         ));
     }
 
@@ -2197,8 +2214,10 @@ class AdminController extends Controller {
                         }
                     }
                     foreach ($sqlComm as $sqlLine) {
-                        $command=Yii::app()->db->createCommand($sqlLine);
-                        $command->execute();
+                        if(!empty($sqlLine)){
+                            $command=Yii::app()->db->createCommand($sqlLine);
+                            $command->execute();
+                        }
                     }
                 }
             }
@@ -2602,13 +2621,15 @@ class AdminController extends Controller {
             $name = ucfirst($module->name);
             if($name!='Document'){
                 $controllerName = $name . 'Controller';
-                Yii::import("application.modules.$module->name.controllers.$controllerName");
-                $controller = new $controllerName($controllerName);
-                $model = $controller->modelClass;
-                if (class_exists($model)) {
-                    $recordCount = X2Model::model($model)->count();
-                    if ($recordCount > 0) {
-                        $modelList[$model] = array('name' => $module->title, 'count' => $recordCount);
+                if(file_exists('protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
+                    Yii::import("application.modules.$module->name.controllers.$controllerName");
+                    $controller = new $controllerName($controllerName);
+                    $model = $controller->modelClass;
+                    if (class_exists($model)) {
+                        $recordCount = X2Model::model($model)->count();
+                        if ($recordCount > 0) {
+                            $modelList[$model] = array('name' => $module->title, 'count' => $recordCount);
+                        }
                     }
                 }
             }
@@ -2962,8 +2983,8 @@ class AdminController extends Controller {
 				)));
 	
 		// Check to see if there's an update available:
-		$versionTest = @file_get_contents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
-		$updaterCheck = @file_get_contents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
+		$versionTest = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
+		$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
 		//  On failure, file_get_contents() will return FALSE. (http://php.net/manual/en/function.file-get-contents.php)
 		
 		if ($updaterCheck && $versionTest) {
@@ -2987,7 +3008,7 @@ class AdminController extends Controller {
 						$params['{n_users}'] = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
 					}
 				}
-				$updateData = @file_get_contents('http://x2planet.com/installs/updates/' . strtr($route, $params));
+				$updateData = FileUtil::getContents('http://x2planet.com/installs/updates/' . strtr($route, $params));
 				
 				
 				if ($updateData) {
@@ -3041,7 +3062,7 @@ class AdminController extends Controller {
 	
 	public function actionUpgrader() {
 		$thisVersion = Yii::app()->params->version;
-		$currentVersion = @file_get_contents('http://x2planet.com/installs/updates/versionCheck');
+		$currentVersion = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck');
 		if (version_compare($thisVersion, $currentVersion) < 0) {
 			$this->render('updater', array(
 				'scenario' => 'error',
@@ -3057,7 +3078,7 @@ class AdminController extends Controller {
 					)));
 
 			// Check to see if the updater has changed:
-			$updaterCheck = @file_get_contents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
+			$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
 
 			if ($updaterCheck != $updaterVersion) {
 				$this->updateUpdater($updaterCheck, 'upgrader');
@@ -3230,7 +3251,6 @@ class AdminController extends Controller {
 				$this->respond("Update failed.  Please try again or contact X2Engine.",true);
 			} else {
 				$url = $_POST['url'];
-				$updaterCheck = file_get_contents("http://www.$url.com/updates/updateCheck.php");
 				$this->regenerateConfig($_POST['version'],$_POST['updater'],time());
 				$this->respond("Update succeeded!");
 			}
@@ -3440,6 +3460,9 @@ class AdminController extends Controller {
 		$message = "One or more dependencies of AdminController are missing and could not be automatically retrieved. The classes are: ";
 		$behaviorPaths = array();
 		foreach (self::$behaviorClasses as $class) {
+			$behaviorPaths[] = "protected/components/$class.php";
+		}
+		foreach (self::$dependencies as $class) {
 			$behaviorPaths[] = "protected/components/$class.php";
 		}
 		$message .= implode(', ',$behaviorPaths);

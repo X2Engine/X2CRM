@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 Yii::import('application.models.X2Model');
 
@@ -62,7 +58,7 @@ class Actions extends X2Model {
 		return array_merge(parent::behaviors(),array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/actions'
+				'module'=>'actions'
 			),
 			'ERememberFiltersBehavior' => array(
 				'class'=>'application.components.ERememberFiltersBehavior',
@@ -89,7 +85,63 @@ class Actions extends X2Model {
 	 * @return array relational rules.
 	 */
 	public function relations() {
-		return array();
+		return array_merge(parent::relations(),array(
+			'workflow'=>array(self::BELONGS_TO, 'Workflow', 'workflowId'),
+		));
+	}
+
+	/**
+	 * Fixes up record association, parses dates (since this doesn't use {@link X2Model::setX2Fields()})
+	 * @return boolean whether or not to save
+	 */
+	public function beforeSave() {
+		if($this->scenario !== 'workflow') {
+			$association = self::getAssociationModel($this->associationType, $this->associationId);
+			
+			if($association === null) {
+				$this->associationName = 'None';
+				$this->associationId = 0;
+			} else {
+				if($association->hasAttribute('name'))
+					$this->associationName = $association->name;
+				$association->updateLastActivity();
+			}
+			
+			if($this->associationName == 'None' && $this->associationType != 'none')
+				$this->associationName = ucfirst($this->associationType);
+			
+			$this->dueDate = self::parseDateTime($this->dueDate);
+			$this->completeDate = self::parseDateTime($this->completeDate);
+		}
+		
+		return parent::beforeSave();
+	}
+
+	/**
+	 * Creates an action reminder event.
+	 * Fires the onAfterCreate event in {@link X2Model::afterCreate} 
+	 */
+	public function afterCreate() {
+		if(empty($this->type) && $this->complete !== 'Yes') {
+			$event = new Events;
+			$event->timestamp = $this->dueDate;
+			$event->visibility = $this->visibility;
+			$event->type = 'action_reminder';
+			$event->associationType = 'Actions';
+			$event->associationId = $this->id;
+			$event->user = $this->assignedTo;
+			$event->save();
+		}
+		parent::afterCreate();
+	}
+	
+	/**
+	 * Deletes the action reminder event, if any
+	 * Fires the onAfterDelete event in {@link X2Model::afterDelete} 
+	 */
+	public function afterDelete() {
+		CActiveRecord::model('Events')->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$this->id,'type'=>'action_reminder'));
+		parent::afterDelete();
 	}
 
 	/**
@@ -107,6 +159,7 @@ class Actions extends X2Model {
 	
 	/**
 	 * Marks the action complete and updates the record.
+	 * @param string $completedBy the user completing the action (defaults to currently logged in user)
 	 * @return boolean whether or not the action updated successfully
 	 */
 	public function complete($completedBy=null) {
@@ -117,22 +170,19 @@ class Actions extends X2Model {
 		$this->completedBy = $completedBy;
 		$this->completeDate = time();
 		
+		$this->disableBehavior('changelog');
+		
 		if($result = $this->update()) {
-			X2Flow::trigger('action_complete',array(
+		
+			X2Flow::trigger('action_completed',array(
 				'model'=>$this,
 				'user'=>$completedBy
 			));
 			
+			// delete the action reminder event
 			CActiveRecord::model('Events')->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$this->id,'type'=>'action_reminder'),'timestamp > NOW()');
 			
-			// $eventRecord = Events::model()->findByAttributes(array('associationType'=>'Actions','associationId'=>$this->id,'type'=>'action_reminder'));
-			// if(isset($eventRecord)){
-				// if($eventRecord->timestamp > time()){
-					// $eventRecord->delete();
-				// }
-			// }
-			
-			$event=new Events;
+			$event = new Events;
 			$event->type = 'action_complete';
 			$event->visibility = $this->visibility;
 			$event->associationType = 'Actions';
@@ -151,6 +201,8 @@ class Actions extends X2Model {
 				$notif->save();
 			}
 		}
+		$this->enableBehavior('changelog');
+		
 		return $result;
 	}
 	
@@ -163,12 +215,16 @@ class Actions extends X2Model {
 		$this->completedBy = null;
 		$this->completeDate = null;
 		
+		$this->disableBehavior('changelog');
+		
 		if($result = $this->update()) {
-			X2Flow::trigger('action_uncomplete',array(
+			X2Flow::trigger('action_uncompleted',array(
 				'model'=>$this,
 				'user'=>Yii::app()->user->getName()
 			));
 		}
+		$this->enableBehavior('changelog');
+		
 		return $result;
 	}
 
@@ -185,7 +241,7 @@ class Actions extends X2Model {
 	}
 	
 	public function getAssociationLink() {
-		$model = Yii::app()->controller->getAssociationModel($this->associationType, $this->associationId);
+		$model = self::getAssociationModel($this->associationType, $this->associationId);
 		if($model !== null)
 			return $model->getLink();
 		return false;
@@ -210,33 +266,7 @@ class Actions extends X2Model {
 		else
 			return Yii::t('actions','Due {date}',array('{date}'=>Actions::formatDate($dueDate)));
 	}
-	
-	public static function formatDate($date) {
-
-		if (!is_numeric($date))
-			$date = strtotime($date);	// make sure $date is a proper timestamp
-
-		$now = getDate();			// generate date arrays
-		$due = getDate($date);	// for calculations
-		//$date = mktime(23,59,59,$due['mon'],$due['mday'],$due['year']);	// give them until 11:59 PM to finish the action
-		//$due = getDate($date);
-	
-		if ($due['year'] == $now['year']) {		// is the due date this year?
-			if ($due['yday'] == $now['yday'])		// is the due date today?
-				return Yii::t('app','Today');
-			else if ($due['yday'] == $now['yday']+1)	// is it tomorrow?
-				return Yii::t('app','Tomorrow');
-			else 
-				return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'),$date);	// any other day this year
-		} else {
-			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'),$date);	// due date is after this year
-		}
-	}
-    
-    public static function formatCompleteDate($date){
-        return Yii::app()->dateFormatter->formatDateTime($date,'long');	
-    }
-	
+		
 	public static function formatTimeLength($seconds) {
 		$seconds = abs($seconds);
 		if($seconds < 60)
@@ -253,26 +283,27 @@ class Actions extends X2Model {
 	
 	// finds record for the "owner" of a action, using the owner type and ID
 	public static function getOwnerModel($ownerType,$ownerId) {
-
-		if(!(empty($ownerType) || empty($ownerId))) {	// both ID and type must be set
-			if($ownerType=='projects')
-				return X2Model::model('ProjectChild')->findByPk($ownerId);
-			if($ownerType=='contacts')
-				return X2Model::model('Contacts')->findByPk($ownerId);
-			if($ownerType=='accounts')
-				return X2Model::model('Accounts')->findByPk($ownerId);
-			if($ownerType=='cases')
-				return X2Model::model('CaseChild')->findByPk($ownerId);
-			if($ownerType=='opportunities')
-				return X2Model::model('Opportunity')->findByPk($ownerId);
+		if(!(empty($ownerType) || empty($ownerId)) && isset(X2Model::$associationModels[$ownerType])) {	// both ID and type must be set
+			return X2Model::model(X2Model::$associationModels[$ownerType])->findByPk($ownerId);
+		
+			// if($ownerType=='projects')
+				// return X2Model::model('ProjectChild')->findByPk($ownerId);
+			// if($ownerType=='contacts')
+				// return X2Model::model('Contacts')->findByPk($ownerId);
+			// if($ownerType=='accounts')
+				// return X2Model::model('Accounts')->findByPk($ownerId);
+			// if($ownerType=='cases')
+				// return X2Model::model('CaseChild')->findByPk($ownerId);
+			// if($ownerType=='opportunities')
+				// return X2Model::model('Opportunity')->findByPk($ownerId);
 		}
-		return false;	// either the type is unkown, or there simply is no owner
+		return null;	// either the type is unkown, or there simply is no owner
 	}
 	
 	// creates virtual attribute for owner's name, if exists
 	public function getOwnerName() {
 		$ownerModel = Actions::getOwnerModel($this->ownerType,$this->ownerId);
-		if ($ownerModel)
+		if($ownerModel !== null)
 			return $ownerModel->name;	// get name of owner
 		else
 			return false;
@@ -416,6 +447,33 @@ class Actions extends X2Model {
 				$arr[]=$model->username;
 			}
 			return count($arr)>0?$arr:-1;
+		}
+	}
+
+	public function syncGoogleCalendar($operation) {
+		$profiles = array();
+		
+		if(!is_numeric($this->assignedTo)) {	// assigned to user
+			$profiles[] = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$this->assignedTo));
+		} else {	// Assigned to group
+			$groups = Yii::app()->db->createCommand()
+				->select('userId')
+				->from('x2_group_to_user')
+				->where('groupId=:assignedTo',array(':assignedTo'=>$this->assignedTo))
+				->queryAll();
+			foreach($groups as $group)
+				$profile[] = CActiveRecord::model('Profile')->findByPk($group['userId']);
+		}
+		
+		foreach($profiles as &$profile) {
+			if($profile !== null) {
+				if($operation === 'create')
+					$profile->syncActionToGoogleCalendar($this);	// create action to Google Calendar
+				elseif($operation === 'update')
+					$profile->deleteGoogleCalendarEvent($this);	// update action to Google Calendar
+				elseif($operation === 'delete')
+					$profile->updateGoogleCalendarEvent($this); // delete action in Google Calendar
+			}
 		}
 	}
 }

@@ -3,9 +3,9 @@
 Yii::import('application.models.*');
 
 /**
- * Prepares the application singleton for database testing.
- *
- * @author Demitri Morgan
+ * Class for database unit testing that performs additional preparation
+ * 
+ * @package X2CRM.tests
  */
 class X2DbTestCase extends CDbTestCase {
 	public function __construct($name = NULL, array $data = array(), $dataName = '') {

@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 
 Yii::import('zii.widgets.jui.CJuiWidget');
@@ -69,22 +65,11 @@ class SortableWidgets extends CJuiWidget
 	*/
 	public function run() {
 		$themeURL = Yii::app()->theme->getBaseUrl();
-		Yii::app()->clientScript->registerScript('logos',"
-		$(window).load(function(){
-			if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-				$('a').removeAttr('href');
-				alert('Please put the logo back');
-				window.location='http://www.x2engine.com';
-			}
-			var touchlogosrc = $('#x2touch-logo').attr('src');
-			var logosrc=$('#x2crm-logo').attr('src');
-			if(logosrc!='$themeURL/images/x2footer.png'|| touchlogosrc!='$themeURL/images/x2touch.png'){
-				$('a').removeAttr('href');
-				alert('Please put the logo back');
-				window.location='http://www.x2engine.com';
-			}
-		});    
-		");
+		Yii::app()->clientScript->registerScript('logos',base64_decode(
+			'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
+			.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
+			.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
+		
 		Yii::app()->clientScript->registerScript('toggleWidgetState',"
 			function toggleWidgetState(widget,state) {
 				if($('#widget_' + widget).hasClass('ui-sortable-helper') == false) {
@@ -95,7 +80,7 @@ class SortableWidgets extends CJuiWidget
 						success: function(response) {
 							if(response=='success') {
 								var link = $('#widget_'+widget+' .portlet-minimize a.portlet-minimize-button');
-								var newLink = (link.html()=='[+]')? '[&ndash;]' : '[+]';			// toggle link between [+] and [-]
+								var newLink = ($(link).find('img').attr('class')=='expand-widget')? '<img src=\"".$themeURL."/images/icons/Collapse_Widget.png\" class=\'collapse-widget\' />' : '<img src=\"".$themeURL."/images/icons/Expand_Widget.png\" class=\'expand-widget\'/>';			// toggle link between [+] and [-]
 								link.html(newLink);
 					
 								// slide widget open or closed
@@ -135,8 +120,8 @@ class SortableWidgets extends CJuiWidget
 				if(!$visible)
 					$widgetHideList[] = '#widget_'.$class;
 				
-				$minimizeLink = CHtml::link($visible? '[&ndash;]' : '[+]','#',array('class'=>'portlet-minimize-button', /*'onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;" */ ))
-								. ' ' . CHtml::link('['.Yii::t('app','Hide').']','#',array('onclick'=>"$('#widget_$class').hideWidgetRight(); return false;"));
+				$minimizeLink = CHtml::link($visible? CHtml::image($themeURL.'/images/icons/Collapse_Widget.png','',array('class'=>'collapse-widget')) : CHtml::image($themeURL.'/images/icons/Expand_Widget.png','',array('class'=>'expand-widget')),'#',array('class'=>'portlet-minimize-button', /*'onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;" */ ))
+								. ' ' . CHtml::link(CHtml::image($themeURL.'/images/icons/Close_Widget.png'),'#',array('onclick'=>"$('#widget_$class').hideWidgetRight(); return false;"));
 
 				// $t0 = microtime(true);
 				// for($i=0;$i<100;$i++)

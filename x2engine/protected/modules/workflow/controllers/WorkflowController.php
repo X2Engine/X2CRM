@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * @package X2CRM.modules.workflow.controllers 
@@ -250,8 +246,6 @@ class WorkflowController extends x2base {
 	
 	public function actionGetStageDetails($workflowId,$stage,$modelId,$type) {
 		if(is_numeric($workflowId) && is_numeric($stage) && is_numeric($modelId) && ctype_alpha($type)) {
-		
-		
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 		
 			if(isset($workflowStatus['stages'][$stage])) {
@@ -298,41 +292,58 @@ class WorkflowController extends x2base {
 	
 	public function actionUpdateStageDetails($id) {
 
-		$model = X2Model::model('Actions')->findByPk($id);
-		if(isset($model, $_POST['Actions'])) {
-			$model->setScenario('workflow');
+		$action = X2Model::model('Actions')->findByPk($id);
+		$previouslyComplete = $action->complete === 'Yes';
+		
+		$model = Actions::getOwnerModel($action->associationType,$action->associationId);
+		
+		if(isset($model,$action,$_POST['Actions'])) {
+			$action->setScenario('workflow');
 
-			$model->createDate = $this->parseDate($_POST['Actions']['createDate']);
-			$model->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
-			$model->actionDescription = $_POST['Actions']['actionDescription'];
+			$action->createDate = $this->parseDate($_POST['Actions']['createDate']);
+			$action->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
+			$action->actionDescription = $_POST['Actions']['actionDescription'];
 
 			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->params->admin->workflowBackdateReassignment))
-				$model->completedBy = $_POST['Actions']['completedBy'];
+				$action->completedBy = $_POST['Actions']['completedBy'];
 
 			// don't save if createDate isn't valid
-			if($model->createDate === false)
+			if($action->createDate === false)
 				return;
-			if($model->completeDate === false) {
-				$model->complete = 'No';
-				$model->completedBy = null;
+			
+			if($action->completeDate === false) {
+				$action->complete = 'No';
+				$action->completedBy = null;
+				
+				$model->updateLastActivity();
+				
+				if($previouslyComplete)	// we're uncompleteing this thing
+					$this->updateWorkflowChangelog($action,'revert',$model);
+				
 			} else {
-				if($model->completeDate < $model->createDate)
-					$model->completeDate = $model->createDate;	// we can't have the completeDate before the createDate now can we
-				$model->complete = 'Yes';
+				if($action->completeDate < $action->createDate)
+					$action->completeDate = $action->createDate;	// we can't have the completeDate before the createDate now can we
+				$action->complete = 'Yes';
+				
+				if(!$previouslyComplete)	// we're completeing it
+					$this->updateWorkflowChangelog($action,'complete',$model);
 			}
-			$model->save();
+			$action->save();
 		}
 	}
 
 	public function actionStartStage($workflowId,$stageNumber,$modelId,$type) {
 		if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
-
+		
+			$model = Actions::getOwnerModel($type,$modelId);
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-			// die(var_dump($workflowStatus));
-			if((!isset($workflowStatus['stages'][$stageNumber]['createDate']) || $workflowStatus['stages'][$stageNumber]['createDate'] == 0) 
+			
+			if($model !== null && (!isset($workflowStatus['stages'][$stageNumber]['createDate']) || $workflowStatus['stages'][$stageNumber]['createDate'] == 0) 
 				&& (!isset($workflowStatus['stages'][$stageNumber]['completeDate']) || $workflowStatus['stages'][$stageNumber]['completeDate'] == 0)) {
 				
 				$action = new Actions('workflow');
+				$action->disableBehavior('changelog');	// don't genererate normal action changelog/triggers/events
+				$action->disableBehavior('tags');		// no tags up in here
 				$action->associationId = $modelId;
 				$action->associationType = $type;
 				$action->assignedTo = Yii::app()->user->getName();
@@ -345,21 +356,16 @@ class WorkflowController extends x2base {
 				$action->workflowId = (int)$workflowId;
 				$action->stageNumber = (int)$stageNumber;
 				$action->save();
-                $event=new Events;
-                $event->type='workflow_start';
-                $event->user=Yii::app()->user->getName();
-                $event->associationType='Actions';
-                $event->associationId=$action->id;
-                $event->save();
-				$contact = Contacts::model()->findByPk($modelId);
-				if(isset($contact)) {
-					$contact->lastActivity = time();
-					$contact->update(array('lastActivity'));
-				}
-				// die(var_dump($action->getErrors()));
-				// die(var_dump($action->rules()));
 				
-				$this->updateWorkflowChangelog($action,'start');
+				$model->updateLastActivity();
+				
+				if(!$workflowStatus['started'])
+					X2Flow::trigger('workflow_started',array(
+						'workflow'=>$action->workflow,
+						'model'=>$model,
+					));
+				
+				$this->updateWorkflowChangelog($action,'start',$model);
 			}
 		}
 		$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
@@ -371,13 +377,15 @@ class WorkflowController extends x2base {
 			return;
 
 		$comment = trim($comment);
-	
+		
+		$model = Actions::getOwnerModel($type,$modelId);
+		
 		$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 		$stageCount = count($workflowStatus['stages']);
 		
 		$stage = &$workflowStatus['stages'][$stageNumber];
 		
-		if(isset($stage['createDate']) && empty($stage['completeDate'])) {
+		if($model !== null && isset($stage['createDate']) && empty($stage['completeDate'])) {
 		
 			$previousCheck = true;
 			if($workflowStatus['stages'][$stageNumber]['requirePrevious'] == 1) {	// check if all stages before this one are complete
@@ -401,33 +409,33 @@ class WorkflowController extends x2base {
 					new CDbCriteria(array('order'=>'createDate DESC'))
 				);
 				
-				if(count($actionModels) > 1)				// if there is more than 1 action for this stage,
-				for($i=1;$i<count($actionModels);$i++)		// delete all but the most recent one
-					$actionModels[$i]->delete();
+				for($i=1;$i<count($actionModels);$i++)		// if there is more than 1 action for this stage,
+					$actionModels[$i]->delete();			// delete all but the most recent one
 
 				$actionModels[0]->setScenario('workflow');
+				$actionModels[0]->disableBehavior('changelog');	// don't genererate normal action changelog/triggers/events
+				$actionModels[0]->disableBehavior('tags');	// no tags up in here
+				
 				$actionModels[0]->completeDate = time();	// set completeDate and save model
 				$actionModels[0]->complete = 'Yes';
 				$actionModels[0]->completedBy = Yii::app()->user->getName();
 				// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
 				$actionModels[0]->actionDescription = $comment;
 				$actionModels[0]->save();
-                $event=new Events;
-                $event->type='workflow_complete';
-                $event->associationType='Actions';
-                $event->user=Yii::app()->user->getName();
-                $event->associationId=$actionModels[0]->id;
-                $event->save();
 				
-				$this->updateWorkflowChangelog($actionModels[0],'complete');
+				$model->updateLastActivity();
+				
+				$this->updateWorkflowChangelog($actionModels[0],'complete',$model);
 				
 				for($i=1; $i<=$stageCount; $i++) {
 					if($i != $stageNumber && empty($workflowStatus['stages'][$i]['completeDate']) && !empty($workflowStatus['stages'][$i]['createDate']))
 						break;
 				
 				
-					if(empty($workflowStatus['stages'][$i]['createDate'])) {
-						$nextAction = new Actions('workflow');					// start the next one (unless there is already one)
+					if(empty($workflowStatus['stages'][$i]['createDate'])) {	// start the next one (unless there is already one)
+						$nextAction = new Actions('workflow');
+						$nextAction->disableBehavior('changelog');	// don't genererate normal action changelog/triggers/events
+						$nextAction->disableBehavior('tags');		// no tags up in here
 						$nextAction->associationId = $modelId;
 						$nextAction->associationType = $type;
 						$nextAction->assignedTo = Yii::app()->user->getName();
@@ -446,7 +454,7 @@ class WorkflowController extends x2base {
                         $event->associationId=$nextAction->id;
                         $event->save();
 						
-						$this->updateWorkflowChangelog($nextAction,'start');
+						$this->updateWorkflowChangelog($nextAction,'start',$model);
 						
 						// $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
 						// $this->updateChangelog($model,$changes);
@@ -457,23 +465,32 @@ class WorkflowController extends x2base {
 					
 				// }
 				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
+				
+				if($workflowStatus['completed'])
+					X2Flow::trigger('workflow_completed',array(
+						'workflow'=>$actionModels[0]->workflow,
+						'model'=>$model,
+					));
+				
 			}
 		}
-        $record=X2Model::model(ucfirst($type))->findByPk($modelId);
-        if($record->hasAttribute('lastActivity')){
-            $record->lastActivity=time();
-            $record->save();
-        }
+		
+		// $record=X2Model::model(ucfirst($type))->findByPk($modelId);
+		// if($record->hasAttribute('lastActivity')){
+			// $record->lastActivity=time();
+			// $record->save();
+		// }
 		echo Workflow::renderWorkflow($workflowStatus);
 	}
-	
+
 	public function actionRevertStage($workflowId,$stageNumber,$modelId,$type) {
 		if(is_numeric($workflowId) && is_numeric($stageNumber) && is_numeric($modelId) && ctype_alpha($type)) {
-
+			$model = Actions::getOwnerModel($type,$modelId);
+			
 			$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
 			$stageCount = count($workflowStatus['stages']);
 			
-			if(isset($workflowStatus['stages'][$stageNumber]['createDate'])) {
+			if($model !== null && isset($workflowStatus['stages'][$stageNumber]['createDate'])) {
 
 				// find selected stage (and duplicates)
 				$actions = X2Model::model('Actions')->findAllByAttributes(
@@ -487,21 +504,15 @@ class WorkflowController extends x2base {
 
 				if($workflowStatus['stages'][$stageNumber]['complete']) {		// the stage is complete, so just set it to 'started'
 					$actions[0]->setScenario('workflow');
+					$actions[0]->disableBehavior('changelog');	// don't genererate normal action changelog/triggers/events
+					$actions[0]->disableBehavior('tags');		// no tags up in here
 					$actions[0]->complete = 'No';
 					$actions[0]->completeDate = null;
 					$actions[0]->completedBy = '';
 					$actions[0]->actionDescription = '';	// original completion note no longer applies
 					$actions[0]->save();
-                    
-                    $event=new Events;
-                    $event->type='workflow_revert';
-                    $event->user=Yii::app()->user->getName();
-                    $event->associationType='Actions';
-                    $event->associationId=$actions[0]->id;
-                    $event->save();
-                    
 					
-					$this->updateWorkflowChangelog($actions[0],'revert');
+					$this->updateWorkflowChangelog($actions[0],'revert',$model);
 					
 					// delete all incomplete stages after this one
 					// X2Model::model('Actions')->deleteAll(new CDbCriteria(
@@ -514,7 +525,7 @@ class WorkflowController extends x2base {
 						array('condition'=>"associationId=$modelId AND associationType='$type' AND type='workflow' AND workflowId=$workflowId AND stageNumber >= $stageNumber")
 					));
 					foreach($subsequentActions as &$action) {
-						$this->updateWorkflowChangelog($action,'revert');
+						$this->updateWorkflowChangelog($action,'revert',$model);
 						$action->delete();
 					}
 				}
@@ -695,116 +706,136 @@ class WorkflowController extends x2base {
 		
 		}
 	}
-    
-    public function actionGetStageValue($workflowId,$stageId,$user){
-        $models=array(
-            new Contacts,
-            new Opportunity
-        );
-        $totalValue=0;
-        $projectedValue=0;
-        $currentAmount=0;
-        $count=0;
-        foreach($models as $model){
-            $dateRange=$this->getDateRange();
-            if(!empty($user)){
-                $userString=" AND x2_actions.assignedTo='$user' ";
-            }else{
-                $userString="";
-            }
-            $attributeConditions='x2_actions.createDate BETWEEN :date1 AND :date2
-                AND x2_actions.type="workflow" AND x2_actions.workflowId="'.$workflowId.'"
-                AND x2_actions.associationType=:associationType
-                AND x2_actions.stageNumber="'.$stageId.'" '.$userString.'
-                AND x2_actions.complete!="Yes" AND (x2_actions.completeDate IS NULL OR x2_actions.completeDate=0)';
-            $attributeParams=array(
-                ':date1'=>$dateRange['start'],
-                ':date2'=>$dateRange['end'],
-                ':associationType'=>get_class($model)=="Contacts"?"Contacts":"Opportunities",
-            );
-            if($model->hasAttribute('dealvalue')){
-                $valueField="dealvalue";
-            }elseif($model->hasAttribute('quoteAmount')){
-                $valueField='quoteAmount';
-            }
-            if($model->hasAttribute('rating')){
-                $probability='((rating*20)/100)';
-            }elseif($model->hasAttribute('probability')){
-                $probability='probability/100';
-            }
-            $valueString="";
-            if(isset($valueField)){
-                $valueString.=", SUM($valueField), SUM($valueField*$probability)";
-            }
-            $totalRecords=Yii::app()->db->createCommand()
-                    ->select("COUNT(*)".$valueString)
-                    ->from($model->tableName())
-                    ->join('x2_actions','x2_actions.associationId='.$model->tableName().'.id')
-                    ->where($attributeConditions,$attributeParams)
-                    ->queryRow();
-            if($model->hasAttribute('dealstatus')){
-                $status='dealstatus';
-            }elseif($model->hasAttribute('salesStage')){
-                $status='salesStage';
-            }
-            if(isset($valueField)){
-                $currentValue=Yii::app()->db->createCommand()
-                        ->select('SUM('.$valueField.')')
-                        ->from($model->tableName())
-                        ->join('x2_actions','x2_actions.associationId='.$model->tableName().'.id')
-                        ->where($attributeConditions.' AND '.$status.'="Won"',$attributeParams)
-                        ->queryRow();
-            }
-            if(isset($valueField)){
-                $totalValue+=$totalRecords["SUM($valueField)"];
-                $projectedValue+=$totalRecords["SUM($valueField*$probability)"];
-                $currentAmount+=$currentValue["SUM($valueField)"];
-                $count+=$totalRecords['COUNT(*)'];
-            }
-        }
-        $htmlString="
-                <h3>".Yii::t('charts','Data Summary')."</h3>
-                <b>".Yii::t('charts','Total Records').":</b> $count<br />
-                <b>".Yii::t('charts','Total Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
-                <b>".Yii::t('charts','Projected Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
-                <b>".Yii::t('charts','Current Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
-            ";
-        echo $htmlString;
-    }
-	
-	private function updateWorkflowChangelog(&$action,$changeType) {
-	
-		// die(var_dump($action));
+
+	public function actionGetStageValue($workflowId,$stageId,$user){
+		$models=array(
+			new Contacts,
+			new Opportunity
+		);
+		$totalValue=0;
+		$projectedValue=0;
+		$currentAmount=0;
+		$count=0;
+		foreach($models as $model){
+			$dateRange=$this->getDateRange();
+			if(!empty($user)){
+				$userString=" AND x2_actions.assignedTo='$user' ";
+			}else{
+				$userString="";
+			}
+			$attributeConditions='x2_actions.createDate BETWEEN :date1 AND :date2
+				AND x2_actions.type="workflow" AND x2_actions.workflowId="'.$workflowId.'"
+				AND x2_actions.associationType=:associationType
+				AND x2_actions.stageNumber="'.$stageId.'" '.$userString.'
+				AND x2_actions.complete!="Yes" AND (x2_actions.completeDate IS NULL OR x2_actions.completeDate=0)';
+			$attributeParams=array(
+				':date1'=>$dateRange['start'],
+				':date2'=>$dateRange['end'],
+				':associationType'=>get_class($model)=="Contacts"?"Contacts":"Opportunities",
+			);
+			if($model->hasAttribute('dealvalue')){
+				$valueField="dealvalue";
+			}elseif($model->hasAttribute('quoteAmount')){
+				$valueField='quoteAmount';
+			}
+			if($model->hasAttribute('rating')){
+				$probability='((rating*20)/100)';
+			}elseif($model->hasAttribute('probability')){
+				$probability='probability/100';
+			}
+			$valueString="";
+			if(isset($valueField)){
+				$valueString.=", SUM($valueField), SUM($valueField*$probability)";
+			}
+			$totalRecords=Yii::app()->db->createCommand()
+					->select("COUNT(*)".$valueString)
+					->from($model->tableName())
+					->join('x2_actions','x2_actions.associationId='.$model->tableName().'.id')
+					->where($attributeConditions,$attributeParams)
+					->queryRow();
+			if($model->hasAttribute('dealstatus')){
+				$status='dealstatus';
+			}elseif($model->hasAttribute('salesStage')){
+				$status='salesStage';
+			}
+			if(isset($valueField)){
+				$currentValue=Yii::app()->db->createCommand()
+						->select('SUM('.$valueField.')')
+						->from($model->tableName())
+						->join('x2_actions','x2_actions.associationId='.$model->tableName().'.id')
+						->where($attributeConditions.' AND '.$status.'="Won"',$attributeParams)
+						->queryRow();
+			}
+			if(isset($valueField)){
+				$totalValue+=$totalRecords["SUM($valueField)"];
+				$projectedValue+=$totalRecords["SUM($valueField*$probability)"];
+				$currentAmount+=$currentValue["SUM($valueField)"];
+				$count+=$totalRecords['COUNT(*)'];
+			}
+		}
+		$htmlString="
+				<h3>".Yii::t('charts','Data Summary')."</h3>
+				<b>".Yii::t('charts','Total Records').":</b> $count<br />
+				<b>".Yii::t('charts','Total Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($totalValue, Yii::app()->params['currency'])."<br />
+				<b>".Yii::t('charts','Projected Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($projectedValue, Yii::app()->params['currency'])."<br />
+				<b>".Yii::t('charts','Current Value').":</b> ".Yii::app()->locale->numberFormatter->formatCurrency($currentAmount, Yii::app()->params['currency'])."<br />
+			";
+		echo $htmlString;
+	}
+
+	private function updateWorkflowChangelog(&$action,$changeType,&$model) {
 		$changelog = new Changelog;
-        $type=$action->associationType=='opportunities'?"Opportunity":ucfirst($action->associationType);
-		$changelog->type = $type;
+        // $type = $action->associationType=='opportunities'?"Opportunity":ucfirst($action->associationType);
+		$changelog->type = get_class($model);
 		$changelog->itemId = $action->associationId;
-        $record=X2Model::model(ucfirst($type))->findByPk($action->associationId);
-        if(isset($record) && $record->hasAttribute('name')){
-            $changelog->recordName=$record->name;
-        }else{
-            $changelog->recordName=$type;
-        }
+        // $record=X2Model::model(ucfirst($type))->findByPk($action->associationId);
+        // if(isset($record) && $record->hasAttribute('name')){
+            // $changelog->recordName=$record->name;
+        // }else{
+            // $changelog->recordName=$type;
+        // }X2Flow::trigger('workflow_stage_completed',array('workflow'=>'model'=>$model));
+		$changelog->recordName = $model->name;
 		$changelog->changedBy = Yii::app()->user->getName();
 		$changelog->timestamp = time();
+		$changelog->oldValue = '';
 		
-		$workflowName = Yii::app()->db->createCommand()->select('name')->from('x2_workflows')->where('id=:id',array(':id'=>$action->workflowId))->queryScalar();
+		$workflowName = $action->workflow->name;
+		// $workflowName = Yii::app()->db->createCommand()->select('name')->from('x2_workflows')->where('id=:id',array(':id'=>$action->workflowId))->queryScalar();
 		$stageName = Yii::app()->db->createCommand()->select('name')->from('x2_workflow_stages')->where('workflowId=:id AND stageNumber=:sn',array(':sn'=>$action->stageNumber,':id'=>$action->workflowId))->queryScalar();
 		
 		$stageText = Yii::t('workflow','<b>Stage {n}: {stageName}</b> in <b>{workflowName}</b>',array('{n}'=>$action->stageNumber,'{stageName}'=>$stageName,'{workflowName}'=>$workflowName));
 		
-		if($changeType == 'start'){
-            $changelog->oldValue='';
-            $changelog->newValue='Workflow Stage Started: '.$stageName;
-        }elseif($changeType == 'complete'){
-			$changelog->oldValue='';
-            $changelog->newValue='Workflow Stage Completed: '.$stageName;
-        }elseif($changeType == 'revert'){
-			$changelog->oldValue='';
-            $changelog->newValue='Workflow Stage Reverted: '.$stageName;
-        }else
+		$event = new Events;
+		$event->associationType = 'Actions';
+		$event->associationId = $action->id;
+		$event->user = Yii::app()->user->getName();
+		
+		if($changeType === 'start') {
+			$trigger = 'workflow_stage_started';
+			$event->type = 'workflow_start';
+			$changelog->newValue='Workflow Stage Started: '.$stageName;
+			
+		} elseif($changeType === 'complete') {
+			$trigger = 'workflow_stage_completed';
+			$event->type = 'workflow_complete';
+			$changelog->newValue = 'Workflow Stage Completed: '.$stageName;
+			
+		} elseif($changeType === 'revert') {
+			$trigger = 'workflow_stage_reverted';
+			$event->type = 'workflow_revert';
+			$changelog->newValue = 'Workflow Stage Reverted: '.$stageName;
+			
+		} else
 			return;
-
+		
+		X2Flow::trigger($trigger,array(
+			'workflow'=>$action->workflow,
+			'model'=>$model,
+			'stageNumber'=>$action->stageNumber,
+			'stageName'=>$stageName,
+		));
+		
+		$event->save();
 		$changelog->save();
 	}
 	

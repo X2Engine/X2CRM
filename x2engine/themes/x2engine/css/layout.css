@@ -1,64 +1,46 @@
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 html, body {/* height:100%; */margin:0;padding:0;}
 body {
 	background:#efeee8;
 	margin-top:32px;
+	min-width:880px;
 }
 body.no-borders div.form, body.no-borders div.wide.form, body.no-borders div#sidebar-right, body.no-borders div#sidebar-left, body.no-borders .grid-view table.items, body.no-borders .list-view .items, body.no-borders div.x2-layout {border:none;}
 body.no-borders .portlet-decoration {border-top:none;}
-
-div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20px;}
-
-#header.defaultBg #header-inner {
-	/* background-size:cover; */
-	background-image: url(../images/stripes2.png);
-	background-repeat: no-repeat;
-	/* background-color: #62851f; */
-	background-size:auto;
-	
-	/* temp */
-	/* background:none; */
-	/* background-color:#1f559b; */
-	border-bottom:1px solid rgba(0,0,0,0.5);
-}
 
 #header {
 	height:32px;
@@ -66,14 +48,8 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 	position:fixed;
 	top:0;
 	width:100%;
+	min-width:880px;
 	z-index:100;
-
-	/* height:38px; */
-	/* background-size:cover; */
-	/* border-bottom:1px solid #333; */
-	/* -moz-box-shadow:		0px 0px 10px 0px rgba(0,0,0,0.5);
-	-webkit-box-shadow:		0px 0px 10px 0px rgba(0,0,0,0.5);
-	box-shadow:				0px 0px 10px 0px rgba(0,0,0,0.5); */
 }
 #header.defaultBg {
 	background: #417dcd; /* Old browsers */
@@ -88,13 +64,14 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 	/* temp */
 	/* background:#222; */
 }
-#header-body-container {
-	min-height:100%;
-	height:auto !important;
-	height:100%;
-	margin:0 0 -111px 0;
-	background:#efeee8;	/* eee */
+#header-inner {height:31px;}
+#header.defaultBg #header-inner {
+	background-image: url(../images/stripes2.png);
+	background-repeat: no-repeat;
+	background-size:auto;
+	border-bottom:1px solid rgba(0,0,0,0.5);
 }
+
 /* Search Bar */
 .main-menu li.search-bar {
 	padding-left:0;
@@ -157,7 +134,6 @@ div.width-constraint {position:relative;width:auto;min-width:740px;padding:0 20p
 .main-menu, .dropdown ul {
 	list-style:none;
 	margin:0;
-	padding:0;
 	display:block;
 }
 .main-menu > li {
@@ -545,21 +521,6 @@ span.x2-widget-menu-item.ui-draggable {
 	border-left:6px solid transparent;
 	content:'';
 }
-/* #notif-box * {
-	height:auto;
-	color:black;
-	font-weight:normal;
-	line-height:12px;
-	text-shadow:none;
-	font-size:12px;
-	float:none;
-	padding:0;
-	display:inline;
-}
-#notif-box a {
-	color:#06f;
-} */
-
 #notif-box .notif {
 	/* border-bottom:1px solid #999; */
 	overflow:auto;
@@ -570,20 +531,6 @@ span.x2-widget-menu-item.ui-draggable {
 	-webkit-border-radius:	2px;
 	-o-border-radius:		2px;
 }
-/* #notifications .notif:first-child  {
-	border-radius:			2px 2px 0 0;
-	-moz-border-radius:		2px 2px 0 0;
-	-webkit-border-radius:	2px 2px 0 0;
-	-o-border-radius:		2px 2px 0 0;
-}
-#notifications .notif:last-child {
-	border-radius:			0 0 2px 2px;
-	-moz-border-radius:		0 0 2px 2px;
-	-webkit-border-radius:	0 0 2px 2px;
-	-o-border-radius:		0 0 2px 2px;
-} */
-
-
 #notifications .notif.unviewed {
 	background:#eef0ff;
 	font-weight:bold;
@@ -619,23 +566,27 @@ span.x2-widget-menu-item.ui-draggable {
 	/* background:#efeee8; */
 	/* overflow:auto; */
 	padding-bottom:50px;
-	margin:0;
+	/* margin:0; */
 	/* padding-top:10px; */
 	/* background:#fff; */
-	border:none;
+	/* border:none; */
 }
-#page-body.no-widgets {min-width:740px;}
-#page-body.no-widgets #content-container {padding-right:0;}
-#page-body.no-widgets #sidebar-right {display:none;}
-#page-body.no-widgets #content {margin:5px 0 0 0;}
+/* body.no-widgets {min-width:720px;} */
+body.no-widgets #content-container {padding-right:0;}
+body.no-widgets #sidebar-right {display:none;}
+body.no-widgets #content {margin:5px 0 0 0;}
 
 #sidebar-left-container {float:left;width:150px;background:none;}
-#sidebar-left {background:none;}
-#sidebar-left {width:150px;padding:0 0 10px 0;position:relative;}	/* Left sidebar */
-#sidebar-left.fixed{position:fixed;top:5px;}
+#sidebar-left {
+	width:150px;
+	margin-left:20px;
+	padding:0 0 10px 0;
+	position:relative;
+	float:left;
+}	/* Left sidebar */
 
 .sidebar-left {
-	margin-top:4px;
+	margin-top:5px;
 	border-radius:			4px;
 	-moz-border-radius:		4px;
 	-webkit-border-radius:	4px;
@@ -722,35 +673,33 @@ span.x2-widget-menu-item.ui-draggable {
 .portlet-content li {margin:0 0 5px 0;}
 
 
-#flexible-content {min-height:0; /* overflow:auto; */ zoom:1;}
+#flexible-content {
+	margin:0 20px 0 170px;
+	min-height:0;
+	overflow:hidden;
+	zoom:1;
+}
 #sidebar-right {
-	margin-top:4px;
+	margin-top:5px;
 	width:22%;
-	padding:0;
 	float:right;
 	border:1px solid #ccc;
+	border-width:0 1px;
 	border-radius:			4px;
 	-moz-border-radius:		4px;
 	-webkit-border-radius:	4px;
 	-o-border-radius:		4px;
-	/* background:#fff; */
 }
-#content-container {overflow:hidden; zoom:1;}
+#content-container {overflow:hidden;zoom:1;margin-right:22%;}
+body.no-widgets #content-container {margin-right:0;}
 #content {
 	margin:5px 10px 10px 0;
 	padding:0 0 0 10px;
-	/* background:#fff; */
-	/* overflow:hidden; */
 }
 #content-fullscreen {
 	position:relative;
 	padding:0 10px 20px 10px;
 	margin:10px 0 0 0;
-}
-#main-column {
-	/* margin-bottom:10px; */
-	/* margin-top:42px; */
-	/* min-width:600px; */
 }
 
 div.page-title, table.fc-header {
@@ -775,23 +724,47 @@ div.page-title.icon {
 }
 /* html.lt-ie9 div.page-title {border:1px solid #ccc;} */
 
-div.page-title.fixed {
+
+div.page-title-placeholder {height:42px;clear:both;}
+div.page-title-fixed-outer {
+	width:100%;
+	height:0;
+	min-width:880px;
 	position:fixed;
 	z-index:1;
 	top:32px;
-	border-top:none;
-	/* border-color:#fff; */
-	-moz-border-radius:		0 0 4px 4px;
-	-o-border-radius:		0 0 4px 4px;
-	-webkit-border-radius:	0 0 4px 4px;
-	border-radius:			0 0 4px 4px;
-
+	left:0;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+	padding-left:180px;
+	padding-right:40px;
 }
+div.page-title-fixed-inner {
+	height:0;
+	padding-right:22%;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+div.page-title-fixed-outer div.page-title {
+	width:auto;
+	-moz-border-radius: 0 0 4px 4px;
+	-o-border-radius: 0 0 4px 4px;
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+}
+
+.no-widgets div.page-title-fixed-outer {padding-right:20px;}
+.no-widgets div.page-title-fixed-inner {padding-right:0;}
+
+.half-width div.page-title-fixed-inner {margin-right:15px;}
+.half-width div.page-title-fixed-outer div.page-title {margin-right:35%;}
+
 div.page-title h2, table.fc-header h2 {
 	float:left;
 	font-weight:bold;
 	color:#fff;
-	line-height:36px;
 	margin:0 10px 0 10px;
 }
 table.fc-header td {vertical-align:middle;}
@@ -812,29 +785,23 @@ div.page-title .title-bar .x2-button:hover {color:#000;text-decoration:none;}
 div.page-title div.form select {border:none;}
 div.page-title .x2-button {padding:1px 15px;border:none;margin:5px 0 0 5px;}
 
-div.page-title .x2-button.email {padding:0 5px;}
-div.page-title .x2-button.email span {
-	height:26px;
-	width:25px;
-	background:url(../images/email-button2.png) center center no-repeat;
-}
+div.page-title .x2-button.icon {padding:0 5px;}
+div.page-title .x2-button.icon span {height:26px;width:25px;}
+div.page-title .x2-button.email span {background:url(../images/email-button2.png) center center no-repeat;}
+div.page-title .x2-button.edit span {background:url(../images/icons/Edit.png) center center no-repeat;}
+div.page-title .x2-button.sync span {background:url(../images/icons/Sync.png) center center no-repeat;}
 
 #footer-push {clear:both;height:110px;}
 #footer {
+	width:650px;
 	position:relative;
+	margin:0 auto 2px auto;
 	text-align:center;
-	height:80px;
-	padding-top:15px;
-	padding-bottom:15px;
+	padding:5px 10px;
 	color:#333;
 	font-size:10px;
 	clear:both;
-
-	width:600px;
-	margin: 0 auto 5px auto;
-	background: #efeee8;
-	/* background: rgba(255,255,255,0.5); */
-
+	background: rgba(255,255,255,0.5);
 	-moz-border-radius:		4px;
 	-o-border-radius:		4px;
 	-webkit-border-radius:	4px;
@@ -843,6 +810,7 @@ div.page-title .x2-button.email span {
 #footer.defaultBg {
 	border-top:1px solid #ccc;
 	color:#999;
+	background: #efeee8;
 	background: #efeee8; /* Old browsers */
 	background: -moz-linear-gradient(top, #f7f7f7 0%, #efeee8 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f7f7f7), color-stop(100%,#efeee8)); /* Chrome,Safari4+ */
@@ -853,15 +821,9 @@ div.page-title .x2-button.email span {
 }
 #footer a {color:#175CA3;}
 #footer a:hover {color:#8dbff2;}
-#footer-logos {
-	display:block;
-	width:300px;
-	margin:0 auto 0 auto;
-}
-#login-page #footer {
-	
-	color:#333;
-}
+#powered-by-x2engine {margin:5px 0 0 0;}
+
+#login-page #footer {color:#333;}
 #footer .hr {
 	border-top:1px solid rgba(0,0,0,0.1);
 	border-bottom:1px solid rgba(255,255,255,0.25);
@@ -870,6 +832,20 @@ div.page-title .x2-button.email span {
 	width:100%;
 	height:0px;
 	margin:0 0 1em;
+}
+
+#page-fader {
+	position:fixed;
+	bottom:0;
+	right:0;
+	margin:0;
+	padding:0;
+	border:none;
+}
+#page-fader span {
+	background:url(../images/contrast-icon.png) center center no-repeat;
+	height:24px;
+	width:24px;
 }
 
 .x2-hint {

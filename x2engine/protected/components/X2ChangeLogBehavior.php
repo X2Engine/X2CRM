@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * Changelog recording behavior class.
@@ -53,220 +49,166 @@
  */
 class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
-
-	protected $_oldAttributes = array();
-
-	public function attach($owner) {
-		parent::attach($owner);
-		
-		if(!$this->owner->isNewRecord && empty($this->_oldAttributes))	// if the behavior was attached manually,
-			$this->_oldAttributes = $this->owner->getAttributes();		// afterFind() won't be fired so let's get the attributes manually
+	public function events() {
+		return array_merge(parent::events(),array(
+			'onAfterCreate'=>'afterCreate',
+			'onAfterUpdate'=>'afterUpdate',
+		));
 	}
 
-	// public function afterSave($event) {
-		// $this->doStuff();
-	// }
-	
-	public static function test() { echo 'test'; }
-	
-	public function updateChangelog() {
+	public function afterCreate($event) {
 		
-		if($this->owner->isNewRecord) {
-
-			// $log=new ActiveRecordLog;
-			// $log->description=  'User ' . Yii::app()->user->Name 
-									// . ' created ' . get_class($this->owner) 
-									// . '[' . $this->owner->getPrimaryKey() .'].';
-			// $log->action=       'CREATE';
-			// $log->model=        get_class($this->owner);
-			// $log->idModel=      $this->owner->getPrimaryKey();
-			// $log->field=        '';
-			// $log->creationdate= new CDbExpression('NOW()');
-			// $log->userid=       Yii::app()->user->id;
-			// $log->save();
-		} else {
-
+		$model = $this->getOwner();
+		
+		$api = 0;	// FIX THIS
+		
+		X2Flow::trigger('record_created',array('model'=>$model));
 		
 		
+		$event = new Events;
+		$event->visibility = $model->hasAttribute('visibility')? $model->visibility : 1;
+		$event->associationType = get_class($model);
+		$event->associationId = $model->id;
+		$event->user = Yii::app()->user->getName();
+		$event->type = 'record_create';
+		// if(!$model instanceof Contacts || $api==0) // Event creation already handled by web lead.
+		$event->save(); 
 		
-			// new attributes
-			$newAttributes = $this->owner->getAttributes();
-			$oldAttributes = $this->getOldAttributes();
-
-			// compare old and new
-			foreach($newAttributes as $attr => $new) {
-				$old = '';
-				if(!empty($oldAttributes))
-					$old = $oldAttributes[$attr];
-				
-				if($new != $old) {
-					$log = new Changelog;
-					$log->type = get_class($model);
-					
-					$log->itemId = $model->id;
-					$log->changedBy = Yii::app()->user->getName();
-					$log->fieldName = $field;
-					// $log->oldValue=$array['old'];
-					$log->timestamp = time();
-					
-					if(empty($old)) {
-						$log->diff = false;
-						$log->newValue = $new;
-					} else {
-						$diff = FineDiff::getDiffOpcodes($old,$new,FineDiff::$wordGranularity);
-						
-						$log->diff = strlen($diff) > strlen($old);
-						$log->newValue = $log->diff? $diff : $new;
-					}
-					
-					$log->save();
-				}
+		if($model->hasAttribute('assignedTo')) {
+			if(!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
+				$notif = new Notification;
+				$notif->user = $model->assignedTo;
+				$notif->createdBy = ($api == 1) ? 'API' : Yii::app()->user->getName();
+				$notif->createDate = time();
+				$notif->type = 'create';
+				$notif->modelType = get_class($model);
+				$notif->modelId = $model->id;
+				$notif->save();
 			}
 		}
 	}
-
+	
+	/**
+	 * Triggers record_updated, runs changelog calculations and checks notification criteria (soon to be removed)
+	 */
+	public function afterUpdate($event) {
+		X2Flow::trigger('record_updated',array(
+			'model'=>$this->getOwner()
+		));
+		
+		$changes = $this->getChanges();
+		$this->updateChangelog($changes);
+	}
+	
+	
 	/**
 	 * Logs the deletion of the model
 	 */
 	public function afterDelete($event) {
+		$modelClass = get_class($this->getOwner());
+		if($modelClass === 'Actions' && $this->getOwner()->workflowId !== null)		// no deletion events for workflow actions, that's somebody else's problem
+			return;
 		
+		$event = new Events();
+		$event->type='record_deleted';
+		$event->associationType = $modelClass;
+		$event->associationId = $this->getOwner()->id;
+		$event->text = $this->getOwner()->name;
+		$event->user = Yii::app()->user->getName();
+		$event->save();
+		
+		$log = new Changelog;
+		$log->type = $modelClass;
+		$log->itemId = $this->getOwner()->id;
+		$log->recordName = $this->getOwner()->name;
+		$log->changed = 'delete';
+		
+		$log->changedBy = Yii::app()->user->getName();
+		$log->timestamp = time();
+
+		$log->save();
+		
+		X2Flow::trigger('record_deleted',array(
+			'model'=>$this->getOwner()
+		));
 	}
 
 	/**
-	 * Saves attributes on initial model lookup
+	 * Finds attributes that were changed and generates an array of changes.
+	 * 
+	 * @return array a 2-dimensional array of changes, with the format $fieldName => array($old,$new)
 	 */
-	public function afterFind($event) {
-		$this->_oldAttributes = $this->owner->getAttributes();
-	}
-
-	public function getOldAttributes() {
-		return $this->_oldAttributes;
-	}
-
+	public function getChanges() {
+		$changes = array();
 	
-	
-	/* protected function calculateChanges2($old, $new, &$model = null) {
-	
-	
-		// $changes = array();
+		// $this->_oldAttributes
+		$oldAttributes = $this->getOwner()->getOldAttributes();
+		$newAttributes = $this->getOwner()->getAttributes();
 
-		$arr = array();
-		$keys = array_keys($new);
-		for ($i = 0; $i < count($keys); $i++) {
-			if ($old[$keys[$i]] != $new[$keys[$i]]) {
-				$arr[$keys[$i]] = $new[$keys[$i]];
-				$allCriteria = Criteria::model()->findAllByAttributes(array('modelType' => $this->modelClass, 'modelField' => $keys[$i]));
-				foreach ($allCriteria as $criteria) {
-					if (($criteria->comparisonOperator == "=" && $new[$keys[$i]] == $criteria->modelValue)
-							|| ($criteria->comparisonOperator == ">" && $new[$keys[$i]] >= $criteria->modelValue)
-							|| ($criteria->comparisonOperator == "<" && $new[$keys[$i]] <= $criteria->modelValue)
-							|| ($criteria->comparisonOperator == "change" && $new[$keys[$i]] != $old[$keys[$i]])) {
-
-						$users = explode(", ", $criteria->users);
-
-						if ($criteria->type == 'notification') {
-							foreach ($users as $user) {
-								$event=new Events;
-								$event->user=$user;
-								$event->associationType='Notifications';
-								$event->type='notif';
-								
-								$notif = new Notification;
-								$notif->type = 'change';
-								$notif->fieldName = $keys[$i];
-								$notif->modelType = get_class($model);
-								$notif->modelId = $model->id;
-
-								if ($criteria->comparisonOperator == 'change') {
-									$notif->comparison = 'change';    // if the criteria is just 'changed'
-									$notif->value = $new[$keys[$i]];   // record the new value
-								} else {
-									$notif->comparison = $criteria->comparisonOperator;  // otherwise record the operator type
-									$notif->value = substr($criteria->modelValue, 0, 250); // and the comparison value
-								}
-								$notif->user = $user;
-								$notif->createdBy = Yii::app()->user->name;
-								$notif->createDate = time();
-
-								if($notif->save()){
-									$event->associationId=$notif->id;
-									$event->save();
-								}
-							}
-						} elseif ($criteria->type == 'action') {
-							$users = explode(", ", $criteria->users);
-							foreach ($users as $user) {
-								$action = new Actions;
-								$action->assignedTo = $user;
-								if ($criteria->comparisonOperator == "=") {
-									$action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
-								} else if ($criteria->comparisonOperator == ">") {
-									$action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
-								} else if ($criteria->comparisonOperator == "<") {
-									$action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
-								} else if ($criteria->comparisonOperator == "change") {
-									$action->actionDescription = "A record of type " . $this->modelClass . " has had its $criteria->modelField field changed from " . $old[$keys[$i]] . " to " . $new[$keys[$i]] . " by " . Yii::app()->user->getName();
-								}
-								$action->dueDate = mktime('23', '59', '59');
-								$action->createDate = time();
-								$action->lastUpdated = time();
-								$action->updatedBy = 'admin';
-								$action->visibility = 1;
-								$action->associationType = strtolower($this->modelClass);
-								$action->associationId = $new['id'];
-								$model = X2Model::model($this->modelClass)->findByPk($new['id']);
-								$action->associationName = $model->name;
-								$action->save();
-							}
-						} elseif ($criteria->type == 'assignment') {
-							$model->assignedTo = $criteria->users;
-
-							if ($model->save()) {
-								$event=new Events;
-								$event->type='notif';
-								$event->user=$model->assignedTo;
-								$event->associationType='Notifications';
-								
-								$notif = new Notification;
-								$notif->user = $model->assignedTo;
-								$notif->createDate = time();
-								$notif->type = 'assignment';
-								$notif->modelType = $this->modelClass;
-								$notif->modelId = $new['id'];
-								if($notif->save()){
-									$event->associationId=$notif->id;
-									$event->save();
-								}
-							}
-						}
-					}
-				}
+		// compare old and new
+		foreach($newAttributes as $fieldName => $new) {
+			if(isset($oldAttributes[$fieldName])) {
+				$old = $oldAttributes[$fieldName];
+				if(is_array($old))
+					$old = implode(', ',$old);	// convert arrays to a string with commas in it (for example multiple assignedTo)
+					
+				if($new != $old)
+					$changes[$fieldName] = array($old,$new);
 			}
 		}
-		$changes=array();
-		foreach ($arr as $key => $item) {
-			if(is_array($old[$key]))
-				$old[$key] = implode(', ',$old[$key]);
-			$changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
-		}
+		
 		return $changes;
+	}
+
+
+/* 	public function writeChangelog($changes) {
+		for($i=0;$i<count($changes); $i++) {
+			$old = &$changes[$i][0];
+			$new = &$changes[$i][1];
+			
+			if($new != $old) {
+				$log = new Changelog;
+				$log->type = get_class($this->getOwner());
+				
+				$log->itemId = $this->getOwner()->id;
+				$log->changedBy = Yii::app()->user->getName();
+				$log->fieldName = $field;
+				// $log->oldValue = $old;
+				$log->timestamp = time();
+				
+				if(empty($old)) {
+					$log->diff = false;
+					$log->newValue = $new;
+				} else {
+					$diff = FineDiff::getDiffOpcodes($old,$new,FineDiff::$wordGranularity);
+					
+					$log->diff = strlen($diff) > strlen($old);
+					$log->newValue = $log->diff? $diff : $new;
+				}
+				
+				$log->save();
+			}
+		}
 	} */
-	
-	
-	
-	
+
 	/**
-	 * Sets the lastUpdated and updatedBy fields to reflect recent changes.
-	 * @param type $model The model to be updated
-	 * @return type $model The model with modified attributes
+	 * Writes field changes to the changelog. Calls {@link checkNotificationCriteria()} for each change
+	 * @param array $changes the changes array, calls {@link getChanges()} if not provided
 	 */
-	/* protected function updateChangelog($model, $changes) {
-		$model->lastUpdated = time();
-		$model->updatedBy = Yii::app()->user->getName();
-		$model->save();
+	public function updateChangelog($changes = null) {
+		$model = $this->getOwner();
+		
+		if($changes === null)
+			$changes = $this->getChanges();
+		
+		// $model->lastUpdated = time();
+		// $model->updatedBy = Yii::app()->user->getName();
+		// $model->save();
 		$type = get_class($model);
-		if(is_array($changes)){
-			foreach($changes as $field=>$array){
+		
+		if(is_array($changes)) {
+		
+			foreach($changes as $fieldName => $change){
 				$changelog = new Changelog;
 				$changelog->type = $type;
 				if (!isset($model->id)) {
@@ -275,86 +217,143 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 					}
 				}
 				$changelog->itemId = $model->id;
+				if($model->hasAttribute('name')){
+					$changelog->recordName=$model->name;
+				}else{
+					$changelog->recordName=$type;
+				}
 				$changelog->changedBy = Yii::app()->user->getName();
-				$changelog->fieldName = $field;
-				$changelog->oldValue=$array['old'];
-				$changelog->newValue=$array['new'];
+				$changelog->fieldName = $fieldName;
+				$changelog->oldValue = $change[0];
+				$changelog->newValue = $change[1];
 				$changelog->timestamp = time();
 
-				if ($changelog->save()) {
-
-				}
+				$changelog->save();
+				
+				
+				
+				$this->checkNotificationCriteria($fieldName,$change[0],$change[1]);
 			}
 		}
+		// } elseif($changes == 'Create' || $changes == 'Edited') {
+			// if($model instanceof Contacts)
+				// $change = $model->backgroundInfo;
+			// else if($model instanceof Actions)
+				// $change = $model->actionDescription;
+			// else if($model instanceof Docs)
+				// $change = $model->text;
+			// else
+				// $change = $model->name;
+		// } elseif($changes != '' && $changes != 'Completed') {
+			// $pieces = explode("<br />", $change);
+			// foreach($pieces as $piece) {
+				// $newPieces = explode("TO:", $piece);
+				// $forDeletion = $newPieces[0];
+				// if(isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
+					// $changes[] = $newPieces[1];
+				// }
+			// }
+		// }
+	}
+	
+	/**
+	 * Looks up notification criteria in x2_criteria relevant to this model 
+	 * and field and performs the specified operation.
+	 * Soon to be eliminated in wake of x2flow automation system.
+	 * 
+	 * @param string $fieldName the name of the current field
+	 * @param string $old the old value
+	 * @param string $new the new value
+	 */
+	public function checkNotificationCriteria($fieldName,$old,$new) {
 		
-		if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
-			if ($changes != "" && !is_array($changes)) {
-				$pieces = explode("<br />", $change);
-				foreach ($pieces as $piece) {
-					$newPieces = explode("TO:", $piece);
-					$forDeletion = $newPieces[0];
-					if (isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
-						$changes[] = $newPieces[1];
-					}
+		$model = $this->getOwner();
+		$modelClass = get_class($model);
+		
+		$allCriteria = Criteria::model()->findAllByAttributes(array('modelType' => $modelClass, 'modelField' => $fieldName));
+		foreach ($allCriteria as $criteria) {
+			if (($criteria->comparisonOperator == "=" && $new == $criteria->modelValue)
+					|| ($criteria->comparisonOperator == ">" && $new >= $criteria->modelValue) 
+					|| ($criteria->comparisonOperator == "<" && $new <= $criteria->modelValue)
+					|| ($criteria->comparisonOperator == "change" && $new != $old)) {
+				
+				$users = preg_split('/[\s,]+/',$criteria->users,null,PREG_SPLIT_NO_EMPTY);
+				
+				if($criteria->type == 'notification') {
+					foreach($users as $user) {
+						$event=new Events;
+						$event->user=$user;
+						$event->associationType='Notifications';
+						$event->type='notif';
+						
+						$notif = new Notification;
+						$notif->type = 'change';
+						$notif->fieldName = $fieldName;
+						$notif->modelType = get_class($model);
+						$notif->modelId = $model->id;
 
-					preg_match_all('/(^|\s|)#(\w\w+)/', $forDeletion, $deleteMatches);
-					$deleteMatches = $deleteMatches[0];
-					foreach ($deleteMatches as $match) {
-						$oldTag = Tags::model()->findByAttributes(array('tag' => substr($match, 1), 'type' => $type, 'itemId' => $model->id));
-						if (isset($oldTag))
-							$oldTag->delete();
+						if($criteria->comparisonOperator == 'change') {
+							$notif->comparison = 'change';	// if the criteria is just 'changed'
+							$notif->value = $new;			// record the new value
+						} else {
+							$notif->comparison = $criteria->comparisonOperator;  // otherwise record the operator type
+							$notif->value = substr($criteria->modelValue, 0, 250); // and the comparison value
+						}
+						$notif->user = $user;
+						$notif->createdBy = Yii::app()->user->name;
+						$notif->createDate = time();
+
+						if($notif->save()) {
+							$event->associationId = $notif->id;
+							$event->save();
+						}
+					}
+				} elseif($criteria->type == 'action') {
+					foreach($users as $user) {
+						$action = new Actions;
+						$action->assignedTo = $user;
+						if ($criteria->comparisonOperator == "=") {
+							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+						} else if ($criteria->comparisonOperator == ">") {
+							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+						} else if ($criteria->comparisonOperator == "<") {
+							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+						} else if ($criteria->comparisonOperator == "change") {
+							$action->actionDescription = "A record of type " . $modelClass . " has had its $criteria->modelField field changed from ".$old.' to '.$new.' by '.Yii::app()->user->getName();
+						}
+						$action->dueDate = mktime('23', '59', '59');
+						$action->createDate = time();
+						$action->lastUpdated = time();
+						$action->updatedBy = 'admin';
+						$action->visibility = 1;
+						$action->associationType = strtolower($modelClass);
+						$action->associationId = $model->id;
+						$action->associationName = $model->name;
+						$action->save();
+					}
+				} elseif ($criteria->type == 'assignment') {
+					$model->assignedTo = $criteria->users;
+
+					if ($model->save()) {
+						$event=new Events;
+						$event->type='notif';
+						$event->user=$model->assignedTo;
+						$event->associationType='Notifications';
+						
+						$notif = new Notification;
+						$notif->user = $model->assignedTo;
+						$notif->createDate = time();
+						$notif->type = 'assignment';
+						$notif->modelType = $modelClass;
+						$notif->modelId = $model->id;
+						if($notif->save()){
+							$event->associationId = $notif->id;
+							$event->save();
+						}
 					}
 				}
 			}
-		}else if ($changes == 'Create' || $changes == 'Edited') {
-			if ($model instanceof Contacts)
-				$change = $model->backgroundInfo;
-			else if ($model instanceof Actions)
-				$change = $model->actionDescription;
-			else if ($model instanceof Docs)
-				$change = $model->text;
-			else
-				$change = $model->name;
 		}
-		if(is_array($changes)){
-			foreach ($changes as $field=>$array) {
-				if(is_string($array['new'])){
-					preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
-					$matches = $matches[0];
-				}else{
-					$matches=array();
-				}
-				foreach ($matches as $match) {
-					if(!preg_match('/\&(^|\s|)#(\w\w+);/',$match)){
-						$tag = new Tags;
-						$tag->type = $type;
-						$tag->taggedBy = Yii::app()->user->getName();
-						$tag->type = $type;
-						//cut out leading whitespace
-						$tag->tag = trim($match);
-						if ($model instanceof Contacts)
-							$tag->itemName = $model->firstName . " " . $model->lastName;
-						else if ($model instanceof Actions)
-							$tag->itemName = $model->actionDescription;
-						else if ($model instanceof Docs)
-							$tag->itemName = $model->title;
-						else
-							$tag->itemName = $model->name;
-						if (!isset($model->id)) {
-							$model->save();
-						}
-						$tag->itemId = $model->id;
-						$tag->timestamp = time();
-						//save tags including # sign
-						if ($tag->save()) {
+	}
 
-						}
-					}
-				}
-			}
-		}
-		return $model;
-	} */
-	
-	
 }

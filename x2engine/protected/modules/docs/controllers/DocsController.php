@@ -1,49 +1,45 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * @package X2CRM.modules.docs.controllers 
  */
 class DocsController extends x2base {
 
-	public $modelClass="DocChild";
+	public $modelClass = 'Docs';
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -93,13 +89,13 @@ class DocsController extends x2base {
             echo $model->text;
         }
 	}
-		
+
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model = DocChild::model()->findByPk($id);
+		$model = CActiveRecord::model('Docs')->findByPk($id);
 		if(isset($model)){
 			$permissions=explode(", ",$model->editPermissions);
 			if(in_array(Yii::app()->user->getName(),$permissions))
@@ -135,28 +131,28 @@ class DocsController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate() {
-		$users=User::getNames();
+		$users = User::getNames();
 		unset($users['Anyone']);
 		unset($users['admin']);
 		unset($users[Yii::app()->user->getName()]);
-		$model=new DocChild;
+		$model = new Docs;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if (isset($_POST['DocChild'])) {
-			$temp=$model->attributes;
-			$model->attributes=$_POST['DocChild'];
-            $model->visibility=$_POST['DocChild']['visibility'];
+		if (isset($_POST['Docs'])) {
+			$temp = $model->attributes;
+			$model->attributes=$_POST['Docs'];
+            $model->visibility=$_POST['Docs']['visibility'];
 
-			$arr=$model->editPermissions;
+			$arr = $model->editPermissions;
 			if(isset($arr))
-				$model->editPermissions=Accounts::parseUsers($arr);
+				$model->editPermissions = Accounts::parseUsers($arr);
 
-			$model->createdBy=Yii::app()->user->getName();
-			$model->createDate=time();
-						$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangeLog($model,'Create');
+			$model->createdBy = Yii::app()->user->getName();
+			$model->createDate = time();
+			// $changes=$this->calculateChanges($temp,$model->attributes);
+			// $model=$this->updateChangeLog($model,'Create');
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -176,25 +172,25 @@ class DocsController extends x2base {
 		unset($users['Anyone']);
 		unset($users['admin']);
 		unset($users[Yii::app()->user->getName()]);
-		$model = new DocChild;
+		$model = new Docs;
 		$model->type = 'email';
 		
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['DocChild'])) {
-			$temp=$model->attributes;
-			$model->attributes=$_POST['DocChild'];
-            $model->visibility=$_POST['DocChild']['visibility'];
+		if(isset($_POST['Docs'])) {
+			$temp = $model->attributes;
+			$model->attributes = $_POST['Docs'];
+            $model->visibility = $_POST['Docs']['visibility'];
 			$model->editPermissions = '';
 			// $arr=$model->editPermissions;
 			// if(isset($arr))
 				// $model->editPermissions=Accounts::parseUsers($arr);
 
-			$model->createdBy=Yii::app()->user->getName();
-			$model->createDate=time();
-						$changes=$this->calculateChanges($temp,$model->attributes);
-			$model=$this->updateChangeLog($model,'Create');
+			$model->createdBy = Yii::app()->user->getName();
+			$model->createDate = time();
+			// $changes = $this->calculateChanges($temp,$model->attributes);
+			// $model = $this->updateChangeLog($model,'Create');
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -206,20 +202,20 @@ class DocsController extends x2base {
 	}
 	
 	public function actionChangePermissions($id){
-		$model=$this->loadModel($id);
+		$model = $this->loadModel($id);
 		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy) {
-			$users=User::getNames();
+			$users = User::getNames();
 			unset($users['admin']);
 			unset($users['Anyone']);
-			$str=$model->editPermissions;
-			$pieces=explode(", ",$str);
+			$str = $model->editPermissions;
+			$pieces = explode(", ",$str);
 			$model->editPermissions=$pieces;
 			
-			if(isset($_POST['DocChild'])) {
-				$model->attributes=$_POST['DocChild'];
+			if(isset($_POST['Docs'])) {
+				$model->attributes = $_POST['Docs'];
 				$arr=$model->editPermissions;
 				
-				$model->editPermissions=Accounts::parseUsers($arr);
+				$model->editPermissions = Accounts::parseUsers($arr);
 				if($model->save()) {
 					$this->redirect(array('view','id'=>$id));
 				}
@@ -235,9 +231,9 @@ class DocsController extends x2base {
 	}
 		
 	public function actionExportToHtml($id){
-		$model=$this->loadModel($id);
-		$file='doc.html';
-		$fp=fopen($file,'w+');
+		$model = $this->loadModel($id);
+		$file = 'doc.html';
+		$fp = fopen($file,'w+');
 		$data="<style>
 				#wrap{
 					width:6.5in;
@@ -252,7 +248,7 @@ class DocsController extends x2base {
 			".$model->text."</div>";
 		fwrite($fp, $data);
 		fclose($fp);
-		$link=CHtml::link(Yii::t('app','Download').'!',Yii::app()->request->baseUrl."/doc.html");
+		$link = CHtml::link(Yii::t('app','Download').'!',Yii::app()->request->baseUrl."/doc.html");
 		$this->render('export',array(
 			'model'=>$model,
 			'link'=>$link,
@@ -265,22 +261,22 @@ class DocsController extends x2base {
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-		$model=$this->loadModel($id);
-		$perm=$model->editPermissions;
-		$pieces=explode(", ",$perm);
-		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
-			if(isset($_POST['DocChild'])) {
-				$model->attributes=$_POST['DocChild'];
-                $model->visibility=$_POST['DocChild']['visibility'];
-				$model=$this->updateChangeLog($model,'Edited');
-				if($model->save()){
-                    $event=new Events;
-                    $event->associationType="Docs";
-                    $event->associationId=$model->id;
-                    $event->type="doc_update";
-                    $event->user=Yii::app()->user->getName();
-                    $event->visibility=$model->visibility;
-                    $event->save();
+		$model = $this->loadModel($id);
+		$perm = $model->editPermissions;
+		$pieces = explode(', ',$perm);
+		if(Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
+			if(isset($_POST['Docs'])) {
+				$model->attributes = $_POST['Docs'];
+                $model->visibility = $_POST['Docs']['visibility'];
+				// $model=$this->updateChangeLog($model,'Edited');
+				if($model->save()) {
+					$event = new Events;
+					$event->associationType='Docs';
+					$event->associationId=$model->id;
+					$event->type='doc_update';
+					$event->user=Yii::app()->user->getName();
+					$event->visibility=$model->visibility;
+					$event->save();
 					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));
                 }
 			}
@@ -301,7 +297,7 @@ class DocsController extends x2base {
 	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
-			$model=$this->loadModel($id);
+			$model = $this->loadModel($id);
 			$this->cleanUpTags($model);
 			$model->delete();
 
@@ -315,9 +311,8 @@ class DocsController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-		$model=new DocChild('search');
-		$name="Docs";
-				
+		$model = new Docs('search');
+		
 		$attachments=new CActiveDataProvider('Media',array(
 			'criteria'=>array(
 			'order'=>'createDate DESC',
@@ -336,8 +331,8 @@ class DocsController extends x2base {
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) {
-		$model = X2Model::model('DocChild')->findByPk((int)$id);
-		if($model===null)
+		$model = CActiveRecord::model('Docs')->findByPk($id);
+		if($model === null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
@@ -354,10 +349,10 @@ class DocsController extends x2base {
 	}
 	
 	public function actionAutosave($id) {
-		$model=$this->loadModel($id);
-		if(isset($_POST['DocChild'])) {
-			$model->attributes=$_POST['DocChild'];
-			$model=$this->updateChangeLog($model,'Edited');
+		$model = $this->loadModel($id);
+		if(isset($_POST['Docs'])) {
+			$model->attributes = $_POST['Docs'];
+			// $model = $this->updateChangeLog($model,'Edited');
 			if($model->save()) {
 				echo Yii::t('Docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
 			};

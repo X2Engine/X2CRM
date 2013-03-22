@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  *  The Quotes module lets user's send people a quote with a list of products. Quotes can be converted to invoices.
@@ -192,23 +188,23 @@ class QuotesController extends x2base {
 		$name=$this->modelClass;
 		if($model->save()){
 		
-		    $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
-		    $this->updateChangelog($model,$changes);
-            $event=new Events;
-            $event->associationType=$name;
-            $event->associationId=$model->id;
-            $event->user=Yii::app()->user->getName();
-            $event->type='record_create';
-		    if($event->save() && $model->assignedTo!=Yii::app()->user->getName()){
+		    // $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
+		    // $this->updateChangelog($model,$changes);
+            // $event=new Events;
+            // $event->associationType=$name;
+            // $event->associationId=$model->id;
+            // $event->user=Yii::app()->user->getName();
+            // $event->type='record_create';
+		    // if($event->save() && $model->assignedTo!=Yii::app()->user->getName()){
 			
-				$notif = new Notification;
-				$notif->user = $model->assignedTo;
-				$notif->createdBy = Yii::app()->user->getName();
-				$notif->createDate = time();
-				$notif->type = 'create';
-				$notif->modelType = $name;
-				$notif->modelId = $model->id;
-				$notif->save();
+				// $notif = new Notification;
+				// $notif->user = $model->assignedTo;
+				// $notif->createdBy = Yii::app()->user->getName();
+				// $notif->createDate = time();
+				// $notif->type = 'create';
+				// $notif->modelType = $name;
+				// $notif->modelId = $model->id;
+				// $notif->save();
 				
 		        // $notif=new Notifications;
 		        // $profile=X2Model::model('ProfileChild')->findByAttributes(array('username'=>$model->assignedTo));
@@ -219,7 +215,7 @@ class QuotesController extends x2base {
 		        // $notif->viewed=0;
 		        // $notif->record="$name:$model->id";
 		        // $notif->save();
-		    }
+		    // }
 		   	
 		   	// tie contacts to quote
 		   	/*
@@ -426,8 +422,8 @@ class QuotesController extends x2base {
 			
 			if($model->save()){
 							
-			    $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
-			    $this->updateChangelog($model,$changes);
+			    // $changes=$this->calculateChanges($oldAttributes, $model->attributes, $model);
+			    // $this->updateChangelog($model,$changes);
 			   	
 			   	// tie contacts to quote
 			   	/*
@@ -495,8 +491,8 @@ class QuotesController extends x2base {
 	    $model->lastUpdated = time();
 	    $model->updatedBy = Yii::app()->user->name;
 	    
-	    $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
-	    $model = $this->updateChangelog($model,$changes);
+	    // $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
+	    // $model = $this->updateChangelog($model,$changes);
         
 	    if($model->save()) {
 	    	
@@ -841,8 +837,8 @@ class QuotesController extends x2base {
 			else
 				$temp=$model->assignedTo;
 			$model->assignedTo=$temp;
-                        $changes=$this->calculateChanges($tempArr,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+			// $changes=$this->calculateChanges($tempArr,$model->attributes);
+			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -883,8 +879,8 @@ class QuotesController extends x2base {
 			$model->associatedContacts=Quote::parseContacts($arr);
 			$temp.=" ".$model->associatedContacts;
 			$model->associatedContacts=$temp;
-                        $changes=$this->calculateChanges($tempArr,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+			// $changes=$this->calculateChanges($tempArr,$model->attributes);
+			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -908,20 +904,17 @@ class QuotesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Quote'])) {
-                        $temp=$model->attributes;
+			$temp=$model->attributes;
 			$model->attributes=$_POST['Quote'];  
 			$arr=$model->assignedTo;
 			
 			
-			foreach($arr as $id=>$user){
+			foreach($arr as $id=>$user)
 				unset($pieces[$user]);
-			}
 			
-			$temp=Quote::parseUsersTwo($pieces);
-
-			$model->assignedTo=$temp;
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+			$model->assignedTo = Quote::parseUsersTwo($pieces);
+			// $changes=$this->calculateChanges($temp,$model->attributes);
+			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -942,32 +935,29 @@ class QuotesController extends x2base {
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Quote']))
-		{
+		if(isset($_POST['Quote'])) {
             $temp=$model->attributes;
 			$model->attributes=$_POST['Quote'];  
 			$arr=$model->associatedContacts;
 			
 			
-			foreach($arr as $id=>$contact){
-            	$rel=X2Model::model('Relationships')->findByAttributes(
-            		array(
-            			'firstType'=>'Contacts',
-            			'firstId'=>$contact,
-            			'secondType'=>'Quotes',
-            			'secondId'=>$model->id
-            		)
-            	);
-                if(isset($rel))
-                	$rel->delete();
+			foreach($arr as $id=>$contact) {
+				$rel=X2Model::model('Relationships')->findByAttributes(
+					array(
+						'firstType'=>'Contacts',
+						'firstId'=>$contact,
+						'secondType'=>'Quotes',
+						'secondId'=>$model->id
+					)
+				);
+				if(isset($rel))
+					$rel->delete();
 				unset($pieces[$contact]);
 			}
 			
-			$temp2=Quote::parseContactsTwo($pieces);
-
-			$model->associatedContacts=$temp2;
-                        $changes=$this->calculateChanges($temp,$model->attributes);
-                        $model=$this->updateChangelog($model,$changes);
+			$model->associatedContacts = Quote::parseContactsTwo($pieces);
+			// $changes=$this->calculateChanges($temp,$model->attributes);
+			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

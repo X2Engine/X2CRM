@@ -1,43 +1,39 @@
 <?php
 
-/* * *******************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95066 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ****************************************************************************** */
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 ////////////////////////
 // Requirements Check //
@@ -56,7 +52,11 @@ if (!function_exists('installer_t')) {
 	function installer_t($msg) {
 		return $msg;
 	}
-
+	$phpInfoContent = array();
+	ob_start();
+	phpinfo();
+	preg_match('%^.*(<style[^>]*>.*</style>).*<body>(.*)</body>.*$%ms', ob_get_contents(), $phpInfoContent);
+	ob_end_clean();
 }
 
 function checkServerVar() {
@@ -84,33 +84,56 @@ function checkServerVar() {
 }
 
 $canInstall = True;
+$curl = true; // 
+$tryAccess = true; // Attempt to access the internet from the web server.
+$failedWrite = false; // Whether an attempt was made to identify the UID of the PHP process by writing a file, and the writing failed
 $reqMessages = array();
 $rbm = installer_t("required but missing");
 
-// Step 0: check for a mismatch in directory ownership. Skip this step on Windows 
+//////////////////////////////////////////////
+// TOP PRIORITY: BIG IMPORTANT REQUIREMENTS // 
+//////////////////////////////////////////////
+
+// Check for a mismatch in directory ownership. Skip this step on Windows 
 // and systems where posix functions are unavailable; in such cases there's no 
 // reliable way to get the UID of the actual running process.
+$uid = array_fill_keys(array('{id_own}','{id_run}'),null);
+$uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
 if (function_exists('posix_geteuid')) {
-	$uid = array();
-	$uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
 	$uid['{id_run}'] = posix_geteuid();
-	if ($uid['{id_own}'] != $uid['{id_run}']) {
-		$canInstall = False;
-		$reqMessages[] = strtr(installer_t("Directory ownership mismatch. PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}. Please check your web server configuration or contact the system administrator or hosting provider."), $uid);
+} else {
+	// Try doing it by creating a file.
+	$canPutFile = @file_put_contents('helloworld.txt','Hello, world!');
+	if($canPutFile && file_exists('helloworld.txt')) {
+		$uid['{id_run}'] = fileowner('helloworld.txt');
+		unlink('helloworld.txt');
+	} else {
+		$failedWrite = true;
 	}
 }
+if ($uid['{id_own}'] != $uid['{id_run}'] && !$failedWrite) {
+	$canInstall = False;
+	$reqMessages[] = strtr(installer_t("PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}. This will result in errors due to the directory not being writable. Please check your web server's configuration or contact the system administrator or hosting provider."), $uid);
+} elseif($failedWrite) {
+	$canInstall = False;
+	$reqMessages[] = installer_t("This directory is not writable by PHP processes run by the webserver.");
+}
+// Check PHP version
 if (!version_compare(PHP_VERSION, "5.3.0", ">=")) {
 	$canInstall = False;
 	$reqMessages[] = installer_t("Your server's PHP version") . ': ' . PHP_VERSION . '; ' . installer_t("version 5.3 or later is required");
 }
+// Check $_SERVER variable meets requirements of Yii
 if (($message = checkServerVar()) !== '') {
 	$canInstall = False;
 	$reqMessages[] = installer_t($message);
 }
+// Check for existence of Reflection class
 if (!class_exists('Reflection', false)) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://php.net/manual/class.reflectionclass.php">PHP reflection class</a>: ' . $rbm;
 } else if (extension_loaded("pcre")) {
+	// Check PCRE library version
 	$pcreReflector = new ReflectionExtension("pcre");
 	ob_start();
 	$pcreReflector->info();
@@ -127,15 +150,39 @@ if (!class_exists('Reflection', false)) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.pcre.php">PCRE extension</a>: ' . $rbm;
 }
-if(!extension_loaded('json')) {
-	$canInstall = False;
-	$reqMessages[] = '<a href="http://www.php.net/manual/function.json-decode.php">json extension</a>: '.$rbm;
-}
+// Check for SPL extension
 if (!extension_loaded("SPL")) {
 	$canInstall = False;
 	$reqMessages[] = '<a href="http://www.php.net/manual/book.spl.php">SPL</a>: ' . $rbm;
 }
+// Check for MySQL connecter
+if (!extension_loaded('pdo_mysql')) {
+	$canInstall = False;
+	$reqMessages[] = '<a href="http://www.php.net/manual/ref.pdo-mysql.php">PDO MySQL extension</a>: ' . $rbm;
+}
+// Check for CType extension
+if (!extension_loaded("ctype")) {
+	$canInstall = False;
+	$reqMessages[] = '<a href="http://www.php.net/manual/book.ctype.php">CType extension</a>: ' . $rbm;
+}
+// Check for multibyte-string extension
+if (!extension_loaded("mbstring")) {
+	$canInstall = False;
+	$reqMessages[] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: ' . $rbm;
+}
+// Check for JSON extension:
+if(!extension_loaded('json')) {
+	$canInstall = False;
+	$reqMessages[] = '<a href="http://www.php.net/manual/function.json-decode.php">json extension</a>: '.$rbm;
+}
+
+///////////////////////////////////////////////////////////
+// MEDIUM-PRIORITY: IMPORTANT FUNCTIONALITY REQUIREMENTS //
+///////////////////////////////////////////////////////////
+
+// Check remote access methods
 if (!extension_loaded("curl")) {
+	$curl = false; 
 	$curlMissingIssues = array(
 		installer_t('Time zone widget will not work'),
 		installer_t('Contact views may be inaccessible'),
@@ -144,28 +191,65 @@ if (!extension_loaded("curl")) {
 	);
 	$reqMessages[] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: ' . $rbm.'. '.installer_t('This will result in the following issues:').'<ul><li>'.implode('</li><li>',$curlMissingIssues).'</li></ul>';
 }
+if (!(bool)(@ini_get('allow_url_fopen'))) {
+	if(!$curl) {
+		$tryAccess = false;
+		$canInstall = false;
+		$reqMessages[] = installer_t('The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.');
+	} else 
+		$reqMessages[] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.');
+}
+if($tryAccess) {
+	if(!(bool)@file_get_contents('http://google.com')) {
+		$ch = curl_init('http://google.com');
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch,CURLOPT_POST,0);
+		$response = (bool)@curl_exec($ch);
+		if(!$response) {
+			$canInstall = false;
+			$reqMessages[] = installer_t('This server is effectively cut off from the internet; no outbound routes exist for HTTP traffic. Software updates will not work.');
+		}
+	}
+}
+
+if ( !((bool)(@ini_get('sendmail_path')) || is_executable('/usr/sbin/sendmail') || is_executable('/var/qmail/bin/sendmail'))) {
+	$mailIssues = array(
+		installer_t('The "PHP Mail" method will not work because E-mail delivery in PHP is disabled.'),
+		installer_t('The "Sendmail" method will not work because sendmail is not present on this system.'),
+		installer_t('The "Qmail" method will not work because qmail is not present on this system.')
+	);
+	$mainMessage = installer_t('You will not be able to send email through X2CRM unless you have a third-party email service that supports SMTP and use the "SMTP" method of email delivery.');
+	$reqMessages[] = $mainMessage . '<ul><li>'.implode('</li><li>',$mailIssues).'</li></ul>';
+}
+
+// Check the session save path:
+$ssp = ini_get('session.save_path'); //'%.*;?(/.*)$%'
+if(!is_writable($ssp)) {
+	$reqMessages[] = strtr(installer_t('The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'),array('{ssp}'=>$ssp));
+}
+
+////////////////////////////////////////////////////////////
+// LOW PRIORITY: MISCELLANEOUS FUNCTIONALITY REQUIREMENTS //
+////////////////////////////////////////////////////////////
+
+// Check for Zip extension
 if(!extension_loaded('zip')) {
 	$reqMessages[] = '<a href="http://php.net/manual/book.zip.php">Zip</a>: '. $rbm.'. '.installer_t('This will result in the inability to import and export custom modules.');
 }
-if (!extension_loaded('pdo_mysql')) {
-	$canInstall = False;
-	$reqMessages[] = '<a href="http://www.php.net/manual/ref.pdo-mysql.php">PDO MySQL extension</a>: ' . $rbm;
+// Check for fileinfo extension
+if(!extension_loaded('fileinfo')) {
+	$reqMessages[] = '<a href="http://php.net/manual/book.fileinfo.php">Fileinfo</a>: '. $rbm.'. '.installer_t('Image previews and MIME info for uploaded files in the media module will not be available.');
 }
-if (!extension_loaded("ctype")) {
-	$canInstall = False;
-	$reqMessages[] = '<a href="http://www.php.net/manual/book.ctype.php">CType extension</a>: ' . $rbm;
-}
-if (!extension_loaded("mbstring")) {
-	$canInstall = False;
-	$reqMessages[] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: ' . $rbm;
-}
-if (!ini_get('allow_url_fopen')) {
-	$canInstall = False;
-	$reqMessages[] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. Software updates will not work.');
+// Check for GD exension
+if(!extension_loaded('gd')) {
+	$reqMessages[] = '<a href="http://php.net/manual/book.image.php">GD</a>: '. $rbm.'. '.installer_t('Security captchas and will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
 }
 
-if ($standalone)
+if ($standalone) {
+	echo "<html><header><title>X2CRM System Requirements Check</title>{$phpInfoContent[1]}</head><body>";
 	echo '<div style="width: 680px; border:1px solid #DDD; margin: 25px auto 25px auto; padding: 20px;font-family:sans-serif;">';
+}
+
 
 if (!$canInstall) {
 	echo '<div style="color:red"><div style="width: 100%; text-align:center;"><h1>' . installer_t('Cannot install X2CRM') . "</h1></div>\n";
@@ -184,12 +268,14 @@ if(count($reqMessages)>0) {
 	echo "</ul>\n";
 	if(!$canInstall)
 		echo "</div>";
+	else
+		echo installer_t("All other essential requirements were met.").'&nbsp;';
 	echo installer_t('For more information, please refer to') . ' <a href="http://wiki.x2engine.com/wiki/Installation#Installing_Without_All_Requirements:_What_Won.27t_Work">"Installing Without All Requirements: What Won\'t Work"</a> in the X2CRM Installation Guide.';
 	echo '<br /><br />';
 }
 
 if ($standalone) {
-	phpinfo();
-	echo '</div>';
+	echo $phpInfoContent[2];
+	echo '</div></body></html>';
 }
 ?>

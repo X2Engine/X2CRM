@@ -1,43 +1,39 @@
 <?php
 
-/* * *******************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ****************************************************************************** */
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * Base controller for all application controllers with CRUD operations
@@ -238,12 +234,15 @@ abstract class x2base extends X2Controller {
      * @param mixed $model The model to be displayed (subclass of {@link CActiveRecord} or {@link X2Model}
      * @param String $type The type of the module being displayed
      */
-    public function view(&$model,$type,$params=array()) {
+    public function view(&$model,$type=null,$params=array()) {
 		
-		// if($type === null)
-			// $type = $model->
+		if($type === null)	// && $model->asa('X2LinkableBehavior') !== null)	// should only happen when the model is known to have X2LinkableBehavior
+			$type = $model->module;
 		
-		$this->render('view', array_merge($params, array(
+		if(!isset($_GET['ajax']))
+			X2Flow::trigger('record_viewed',array('model'=>$model));
+		
+		$this->render('view', array_merge($params,array(
 			'model' => $model,
 			'actionHistory' => $this->getHistory($model,$type),
 			'currentWorkflow' => $this->getCurrentWorkflow($model->id,$type),
@@ -302,20 +301,6 @@ abstract class x2base extends X2Controller {
 			return 0;
 		
 		return $currentWorkflow[0];
-    }
-
-    /**
-     * Returns a model of the appropriate type with a particular record loaded.
-     * 
-     * @param String $type The type of the model to load
-     * @param Integer $id The id of the record to load
-     * @return CActiveRecord A database record with the requested type and id
-     */
-    protected function getAssociationModel($type, $id) {
-        if (array_key_exists($type, X2Model::$associationModels) && $id != 0)
-            return X2Model::model(X2Model::$associationModels[$type])->findByPk($id);
-        else
-            return null;
     }
 
     /**
@@ -495,121 +480,130 @@ abstract class x2base extends X2Controller {
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
-    public function create($model, $oldAttributes, $api) {
-        $name = get_class($model);
-        $model->createDate = time();
-        if($model->hasAttribute('lastUpdated'))
-            $model->lastUpdated=time();
-		if($model->hasAttribute('lastActivity'))
-			$model->lastActivity = time();
+	public function create($model, $oldAttributes, $api) {
+		// $name = get_class($model);
+		// $model->createDate = time();
+		// if($model->hasAttribute('lastUpdated'))
+			// $model->lastUpdated=time();
+		// if($model->hasAttribute('lastActivity'))
+			// $model->lastActivity = time();
 		
-        if ($model->save()) {
-            if (!($model instanceof Actions)) {
-                $fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
-                foreach ($fields as $field) {
-                    $fieldName = $field->fieldName;
-                    if (isset($model->$fieldName) && is_numeric($model->$fieldName)) {
-                        if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+		// if ($model->save()) {
+		
+			// relationships (now in X2Model::afterSave())
+			/* if (!($model instanceof Actions)) {
+				$fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
+				foreach ($fields as $field) {
+					$fieldName = $field->fieldName;
+					if (isset($model->$fieldName) && is_numeric($model->$fieldName)) {
+						if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
 							(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $model->$fieldName . "') 
 							OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $model->$fieldName . "')"))) {
-                            $rel = new Relationships;
-                            $rel->firstType = $name;
-                            $rel->secondType = ucfirst($field->linkType);
-                            $rel->firstId = $model->id;
-                            $rel->secondId = $model->$fieldName;
-                            if ($rel->save()) {
-                                $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+							$rel = new Relationships;
+							$rel->firstType = $name;
+							$rel->secondType = ucfirst($field->linkType);
+							$rel->firstId = $model->id;
+							$rel->secondId = $model->$fieldName;
+							if ($rel->save()) {
+								$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
 									(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $oldAttributes[$fieldName] . "') 
 									OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $oldAttributes[$fieldName] . "')");
-                                if (isset($lookup))
-                                    $lookup->delete();
-                            }
-                        }
-                    }
-                }
-            }
-            $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
-            $this->updateChangelog($model, $changes);
-            $event=new Events;
-            if($model->hasAttribute('visibility')){
-                $event->visibility=$model->visibility;
-            }
-            $event->associationType=$name;
-            $event->associationId=$model->id;
-            $event->user=Yii::app()->user->getName();
-            $event->type='record_create';
-            if(!$model instanceof Contacts || $api==0){ // Event creation already handled by web lead.
-                $event->save(); 
-            }
-            if ($model->hasAttribute('assignedTo')) {
-                if (!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
+								if (isset($lookup))
+									$lookup->delete();
+							}
+						}
+					}
+				}
+			} */
+			// $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
+			// $this->updateChangelog($model, $changes);
+			
+			
+			// create event, and notification if record was reassigned - now in X2ChangeLogBehavior::afterSave()
+			/* $event=new Events;
+			if($model->hasAttribute('visibility')){
+				$event->visibility=$model->visibility;
+			}
+			$event->associationType=$name;
+			$event->associationId=$model->id;
+			$event->user=Yii::app()->user->getName();
+			$event->type='record_create';
+			if(!$model instanceof Contacts || $api==0){ // Event creation already handled by web lead.
+				$event->save(); 
+			}
+			if ($model->hasAttribute('assignedTo')) {
+				if (!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
 
-                    $notif = new Notification;
-                    $notif->user = $model->assignedTo;
-                    $notif->createdBy = ($api == 0) ? 'API' : Yii::app()->user->getName();
-                    $notif->createDate = time();
-                    $notif->type = 'create';
-                    $notif->modelType = $name;
-                    $notif->modelId = $model->id;
-                    $notif->save();
-                }
-            }
-            if ($model instanceof Actions) {
-                if(empty($model->type)){
-                    $event=new Events;
-                    $event->timestamp=$model->dueDate;
-                    $event->visibility=$model->visibility;
-                    $event->type='action_reminder';
-                    $event->associationType="Actions";
-                    $event->associationId=$model->id;
-                    $event->user=$model->assignedTo;
-                    $event->save();
-                }
-                if($api==0){
-                    if (isset($_GET['inline']) || $model->type == 'note')
-                        if ($model->associationType == 'product' || $model->associationType == 'products')
-                            $this->redirect(array('/products/products/view', 'id' => $model->associationId));
-                        //TODO: avoid such hackery
-                        else if ($model->associationType == 'Campaign')
-                            $this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
-                        else
-                            $this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
-                    else
-                        $this->redirect(array('view', 'id' => $model->id));
-                }
-            } else if ($api == 0) {
-                $this->redirect(array('view', 'id' => $model->id));
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
+					$notif = new Notification;
+					$notif->user = $model->assignedTo;
+					$notif->createdBy = ($api == 0) ? 'API' : Yii::app()->user->getName();
+					$notif->createDate = time();
+					$notif->type = 'create';
+					$notif->modelType = $name;
+					$notif->modelId = $model->id;
+					$notif->save();
+				}
+			} */
+			// if ($model instanceof Actions) {
+				// create reminder - now in Actions::afterCreate()
+				/* if(empty($model->type)){
+					$event=new Events;
+					$event->timestamp=$model->dueDate;
+					$event->visibility=$model->visibility;
+					$event->type='action_reminder';
+					$event->associationType="Actions";
+					$event->associationId=$model->id;
+					$event->user=$model->assignedTo;
+					$event->save();
+				} */
+				// if($api==0){
+					// now in ActionsController::actionCreate
+					/* if (isset($_GET['inline']) || $model->type == 'note')
+						if ($model->associationType == 'product' || $model->associationType == 'products')
+							$this->redirect(array('/products/products/view', 'id' => $model->associationId));
+						//TODO: avoid such hackery
+						else if ($model->associationType == 'Campaign')
+							$this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
+						else
+							$this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
+					else
+						$this->redirect(array('view', 'id' => $model->id)); */
+				// }
+			// } else if ($api == 0) {
+		if($model->save()) {
+			if($api == 0)
+				$this->redirect(array('view', 'id' => $model->id));
+			else
+				return true;
+		} else {
+			return false;
+		}
+	}
 
-    /**
-     * Updates a particular model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id the ID of the model to be updated
-     */
-    public function update($model, $oldAttributes, $api) {
-        $name = $this->modelClass;
-		if($model->hasAttribute('lastActivity'))
-			$model->lastActivity = time();
+	/**
+	 * Updates a particular model.
+	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * @param integer $id the ID of the model to be updated
+	 */
+	public function update($model, $oldAttributes, $api) {
+		// $name = $this->modelClass;
+		// if($model->hasAttribute('lastActivity'))
+			// $model->lastActivity = time();
 		
-        $temp = $oldAttributes;
-        $changes = $this->calculateChanges($temp, $model->attributes, $model);
-        $model = $this->updateChangelog($model, $changes);
-        if ($model->save()) {
-        	if( $model instanceof Contacts) {
-        		// send subscribe emails if anyone has subscribed to this contact
-        		$result = Yii::app()->db->createCommand()
+		// $temp = $oldAttributes;
+		// $changes = $this->calculateChanges($temp, $model->attributes, $model);
+		// $model = $this->updateChangelog($model, $changes);
+/*		if($model->save()) {
+			if( $model instanceof Contacts) {
+			// now in Contacts::afterUpdate()
+				// send subscribe emails if anyone has subscribed to this contact
+				$result = Yii::app()->db->createCommand()
 						->select()
 						->from('x2_subscribe_contacts')
 						->where("contact_id={$model->id}")
 						->queryAll();
 				
-				$datetime = $this->formatLongDateTime(time());
+				$datetime = X2Model::formatLongDateTime(time());
 				$modelLink = CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/' . $model->id));
 				$subject = "X2CRM: {$model->name} updated";
 				$message = "Hello,<br>\n<br>\n";
@@ -637,93 +631,97 @@ abstract class x2base extends X2Controller {
 					}
 				}
 				
-        	}
-            if (!($model instanceof Actions)) {
-                $fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
-                foreach ($fields as $field) {
-                    $fieldName = $field->fieldName;
-                    if (isset($model->$fieldName) && $model->$fieldName != "") {
-                        if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+			}*/
+			// relationships, now in X2Model::afterSave()
+			/* if (!($model instanceof Actions)) {
+			
+				$fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
+				foreach ($fields as $field) {
+					$fieldName = $field->fieldName;
+					if (isset($model->$fieldName) && $model->$fieldName != "") {
+						if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
 								(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:fieldname) 
 								OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:fieldname)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':fieldname'=>$model->$fieldName)))) {
 
-                            $rel = new Relationships;
-                            $rel->firstType = $name;
-                            $rel->secondType = ucfirst($field->linkType);
-                            $rel->firstId = $model->id;
-                            $rel->secondId = $model->$fieldName;
-                            if ($rel->save()) {
-                                if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
-                                    if (is_numeric($oldAttributes[$fieldName]))
-                                        $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                                    else
-                                        $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
-                                }
-                                else {
-                                    $pieces = explode(" ", $oldAttributes[$fieldName]);
-                                    if (count($pieces) > 1) {
-                                        if (is_numeric($oldAttributes[$fieldName]))
-                                            $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                                        else
-                                            $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
-                                    }
-                                }
-                                if (isset($oldRel)) {
-                                    $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+							$rel = new Relationships;
+							$rel->firstType = $name;
+							$rel->secondType = ucfirst($field->linkType);
+							$rel->firstId = $model->id;
+							$rel->secondId = $model->$fieldName;
+							if ($rel->save()) {
+								if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
+									if (is_numeric($oldAttributes[$fieldName]))
+										$oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+									else
+										$oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
+								}
+								else {
+									$pieces = explode(" ", $oldAttributes[$fieldName]);
+									if (count($pieces) > 1) {
+										if (is_numeric($oldAttributes[$fieldName]))
+											$oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+										else
+											$oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
+									}
+								}
+								if (isset($oldRel)) {
+									$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
 									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid) 
 									OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
-                                    if (isset($lookup)) {
-                                        $lookup->delete();
-                                    }
-                                }
-                            }
-                        }
-                    } elseif ($model->$fieldName == "") {
-                        if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
-                            if (is_numeric($oldAttributes[$fieldName]))
-                                $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                            else
-                                $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
-                        }else {
-                            $pieces = explode(" ", $oldAttributes[$fieldName]);
-                            if (count($pieces) > 1) {
-                                if (is_numeric($oldAttributes[$fieldName]))
-                                    $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                                else
-                                    $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
-                            }
-                        }
-                        if (isset($oldRel)) {
-                            $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
+									if (isset($lookup)) {
+										$lookup->delete();
+									}
+								}
+							}
+						}
+					} elseif ($model->$fieldName == "") {
+						if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
+							if (is_numeric($oldAttributes[$fieldName]))
+								$oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+							else
+								$oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
+						}else {
+							$pieces = explode(" ", $oldAttributes[$fieldName]);
+							if (count($pieces) > 1) {
+								if (is_numeric($oldAttributes[$fieldName]))
+									$oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
+								else
+									$oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
+							}
+						}
+						if (isset($oldRel)) {
+							$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
 									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid) 
 									OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
-                            if (isset($lookup)) {
-                                $lookup->delete();
-                            }
-                        }
-                    }
-                }
-            }
-            if ($model instanceof Actions && $api == 0) {
-                if (isset($_GET['redirect']) && $model->associationType != 'none') { // if the action has an association
-                    if ($model->associationType == 'product' || $model->associationType == 'products')
-                        $this->redirect(array('/products/products/view', 'id' => $model->associationId));
-                    //TODO: avoid such hackery
-                    else if ($model->associationType == 'Campaign')
-                        $this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
-                    else
-                        $this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId)); // go back to the association
-                } else // no association
-                    $this->redirect(array('/actions/' . $model->id)); // view the action
-            } else if ($api == 0) {
-                $this->redirect(array('view', 'id' => $model->id));
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
+							if (isset($lookup)) {
+								$lookup->delete();
+							}
+						}
+					}
+				}
+			} */
+			/* if ($model instanceof Actions && $api == 0) {
+				if (isset($_GET['redirect']) && $model->associationType != 'none') { // if the action has an association
+					if ($model->associationType == 'product' || $model->associationType == 'products')
+						$this->redirect(array('/products/products/view', 'id' => $model->associationId));
+					//TODO: avoid such hackery
+					else if ($model->associationType == 'Campaign')
+						$this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
+					else
+						$this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId)); // go back to the association
+				} else // no association
+					$this->redirect(array('/actions/' . $model->id)); // view the action
+			} else if ($api == 0) { */
+			
+		if($model->save()) {
+			if($api == 0)
+				$this->redirect(array('view', 'id' => $model->id));
+			else
+				return true;
+		} else {
+			return false;
+		}
+	}
 
     /**
      * Lists all models.
@@ -750,52 +748,66 @@ abstract class x2base extends X2Controller {
         $this->redirect(Yii::app()->request->scriptUrl . '/search/search?term=' . $term);
     }
 
-    /**
-     * Sets the lastUpdated and updatedBy fields to reflect recent changes.
-     * @param type $model The model to be updated
-     * @return type $model The model with modified attributes
-     */
+	/**
+	 * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
+	 */
     protected function updateChangelog($model, $changes) {
-        $model->lastUpdated = time();
-        $model->updatedBy = Yii::app()->user->getName();
-        $model->save();
-        $type = get_class($model);
-        if(is_array($changes)){
-            foreach($changes as $field=>$array){
-                $changelog = new Changelog;
-                $changelog->type = $type;
-                if (!isset($model->id)) {
-                    if ($model->save()) {
+		return $model;
+	}
+	
+	/**
+	 * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
+	 */
+	protected function calculateChanges($old, $new, &$model = null) {
+		return array();
+	}
+	
+	/**
+	 * Sets the lastUpdated and updatedBy fields to reflect recent changes.
+	 * @param type $model The model to be updated
+	 * @return type $model The model with modified attributes
+	 */
+/* 	protected function updateChangelog($model, $changes) {
+		$model->lastUpdated = time();
+		$model->updatedBy = Yii::app()->user->getName();
+		$model->save();
+		$type = get_class($model);
+		if(is_array($changes)){
+			foreach($changes as $field=>$array){
+				$changelog = new Changelog;
+				$changelog->type = $type;
+				if (!isset($model->id)) {
+					if ($model->save()) {
 
-                    }
-                }
-                $changelog->itemId = $model->id;
-                if($model->hasAttribute('name')){
-                    $changelog->recordName=$model->name;
-                }else{
-                    $changelog->recordName=$type;
-                }
-                $changelog->changedBy = Yii::app()->user->getName();
-                $changelog->fieldName = $field;
-                $changelog->oldValue=$array['old'];
-                $changelog->newValue=$array['new'];
-                $changelog->timestamp = time();
+					}
+				}
+				$changelog->itemId = $model->id;
+				if($model->hasAttribute('name')){
+					$changelog->recordName=$model->name;
+				}else{
+					$changelog->recordName=$type;
+				}
+				$changelog->changedBy = Yii::app()->user->getName();
+				$changelog->fieldName = $field;
+				$changelog->oldValue=$array['old'];
+				$changelog->newValue=$array['new'];
+				$changelog->timestamp = time();
 
-                if ($changelog->save()) {
+				if ($changelog->save()) {
 
-                }
-            }
-        }
-        
-        if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
-            if ($changes != "" && !is_array($changes)) {
-                $pieces = explode("<br />", $change);
-                foreach ($pieces as $piece) {
-                    $newPieces = explode("TO:", $piece);
-                    $forDeletion = $newPieces[0];
-                    if (isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
-                        $changes[] = $newPieces[1];
-                    }
+				}
+			}
+		}
+		
+		if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
+			if ($changes != "" && !is_array($changes)) {
+				$pieces = explode("<br />", $change);
+				foreach ($pieces as $piece) {
+					$newPieces = explode("TO:", $piece);
+					$forDeletion = $newPieces[0];
+					if (isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
+						$changes[] = $newPieces[1];
+					}
 
                     preg_match_all('/(^|\s|)#(\w\w+)/', $forDeletion, $deleteMatches);
                     $deleteMatches = $deleteMatches[0];
@@ -863,7 +875,7 @@ abstract class x2base extends X2Controller {
         Tags::model()->deleteAllByAttributes(array('itemId' => $model->id));
     }
 
-    protected function calculateChanges($old, $new, &$model = null) {
+    /* protected function calculateChanges($old, $new, &$model = null) {
         $arr = array();
         $keys = array_keys($new);
         for ($i = 0; $i < count($keys); $i++) {
@@ -928,7 +940,7 @@ abstract class x2base extends X2Controller {
                                 $action->visibility = 1;
                                 $action->associationType = strtolower($this->modelClass);
                                 $action->associationId = $new['id'];
-                                $model = X2Model::model($this->modelClass)->findByPk($new['id']);
+                                
                                 $action->associationName = $model->name;
                                 $action->save();
                             }
@@ -961,11 +973,11 @@ abstract class x2base extends X2Controller {
         foreach ($arr as $key => $item) {
 			if(is_array($old[$key]))
 				$old[$key] = implode(', ',$old[$key]);
-            $changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
-        }
-        return $changes;
-    }
-
+			$changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
+		}
+		return $changes;
+	} */
+ 
     public function partialDateRange($input) {
         $datePatterns = array(
             array('/^(0-9)$/', '000-01-01', '999-12-31'),
@@ -1272,7 +1284,7 @@ abstract class x2base extends X2Controller {
      * Format a date to be long (September 25, 2011)
      * @param integer $timestamp Unix time stamp
      */
-    function formatLongDate($timestamp) {
+    public function formatLongDate($timestamp) {
         if (empty($timestamp))
             return '';
         else
@@ -1286,7 +1298,7 @@ abstract class x2base extends X2Controller {
      * @param string $width A length keyword, i.e. "medium"
      * @return string 
      */
-    function formatDate($timestamp, $width = '') {
+    public function formatDate($timestamp, $width = '') {
         if (empty($timestamp))
             return '';
         else {
@@ -1307,7 +1319,7 @@ abstract class x2base extends X2Controller {
      * @param string $width A length keyword, i.e. "medium"
      * @return string 
      */
-    function formatDatePicker($width = '') {
+    public function formatDatePicker($width = '') {
         if (Yii::app()->language == 'en') {
             if ($width == 'medium')
                 return "M d, yy";
@@ -1350,33 +1362,9 @@ abstract class x2base extends X2Controller {
             return true;
     }
 
-    /**
-     * Obtain a Unix-style integer timestamp for a date format.
-     * 
-     * @param string $date
-     * @return integer 
-     */
-    function parseDate($date) {
-        if (Yii::app()->language == 'en')
-            return strtotime($date);
-        else
-            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short'));
-    }
-
     /*     * * Date Time Format Functions ** */
 
-    /**
-     * Returns a formatted string for the date.
-     * 
-     * @param integer $timestamp
-     * @return string 
-     */
-    function formatLongDateTime($timestamp) {
-        if (empty($timestamp))
-            return '';
-        else
-            return Yii::app()->dateFormatter->formatDateTime($timestamp, 'long', 'short');
-    }
+
     
     function formatFeedTimestamp($timestamp){
         if(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)==Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),time())){
@@ -1404,34 +1392,7 @@ abstract class x2base extends X2Controller {
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
     }
 
-    /**
-     * Formats the date and time for a given timestamp.
-     * @param type $timestamp
-     * @return string 
-     */
-    function formatDateTime($timestamp) {
-        if (empty($timestamp))
-            return '';
-        else
-        if (Yii::app()->language == 'en')
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium') . ' ' . Yii::app()->locale->getTimeFormat('short'), $timestamp);
-        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
-			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . 'HH:mm', $timestamp);
-        else
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . Yii::app()->locale->getTimeFormat('short'), $timestamp);
-    }
 
-    /**
-     * Parses both date and time into a Unix-style integer timestamp.
-     * @param string $date
-     * @return integer
-     */
-    function parseDateTime($date) {
-        if (Yii::app()->language == 'en')
-            return strtotime($date);
-        else
-            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short') . ' hh:mm');
-    }
 
     /**
      * Cuts string short.
@@ -1618,7 +1579,4 @@ abstract class x2base extends X2Controller {
 
         return $return_string; 
     }
-	
 }
-
-?>

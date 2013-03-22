@@ -1,42 +1,38 @@
 <?php
-/*********************************************************************************
- * The X2CRM by X2Engine Inc. is free software. It is released under the terms of 
- * the following BSD License.
- * http://www.opensource.org/licenses/BSD-3-Clause
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
- * Company website: http://www.x2engine.com 
- * Community and support website: http://www.x2community.com 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
  * 
- * Copyright (C) 2011-2012 by X2Engine Inc. www.X2Engine.com
- * All rights reserved.
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
  * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
  * 
- * - Redistributions of source code must retain the above copyright notice, this 
- *   list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, this 
- *   list of conditions and the following disclaimer in the documentation and/or 
- *   other materials provided with the distribution.
- * - Neither the name of X2Engine or X2CRM nor the names of its contributors may be 
- *   used to endorse or promote products derived from this software without 
- *   specific prior written permission.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- ********************************************************************************/
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
  
 $isGuest = Yii::app()->user->isGuest;
 $auth=Yii::app()->authManager;
@@ -63,24 +59,25 @@ $cs ->registerCoreScript('jquery')
 
 // custom scripts
 $cs ->registerScriptFile($baseUrl.'/js/json2.js')
-	->registerScriptFile($baseUrl.'/js/layout.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/publisher.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/media.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/x2forms.js'.$jsVersion)
-    ->registerScriptFile($baseUrl.'/js/tags.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/layout.js')
+	->registerScriptFile($baseUrl.'/js/publisher.js')
+	->registerScriptFile($baseUrl.'/js/media.js')
+	->registerScriptFile($baseUrl.'/js/x2forms.js')
+    ->registerScriptFile($baseUrl.'/js/tags.js')
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency.all.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/relationships.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/widgets.js'.$jsVersion);
+	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
+	->registerScriptFile($baseUrl.'/js/relationships.js')
+	->registerScriptFile($baseUrl.'/js/widgets.js')
+	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion);
 
 
 if(Yii::app()->session['translate'])
-	$cs->registerScriptFile($baseUrl.'/js/translator.js'.$jsVersion);
+	$cs->registerScriptFile($baseUrl.'/js/translator.js');
 
-$cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
-	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
+$cs ->registerScriptFile($baseUrl.'/js/backgroundFade.js');
+// $cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js');
+
 
 // blueprint CSS framework
 $cs ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
@@ -91,20 +88,14 @@ $cs ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection
 	->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection');
+	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
+	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion); 
 
 $cs->registerScript('fullscreenToggle','
 window.enableFullWidth = ' . (!Yii::app()->user->isGuest?(Yii::app()->params->profile->enableFullWidth? 'true':'false'):'true') . ';
 window.fullscreen = ' . (Yii::app()->session['fullscreen']? 'true':'false') . ';
 ',CClientScript::POS_HEAD);
-
-$cs->registerScript('checkImages','
-$(document).ready(function() {
-	$("#main-menu-icon").css({"display":"inline-block","visibility":"visible","z-index":"2147483647"});
-           
-});
-',CClientScript::POS_END);
 
 $cs ->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
@@ -116,17 +107,18 @@ $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
 
-$checkResult = false;
+$logoMissing = false;
 $checkFiles = array(
-	'themes/x2engine/images/x2footer.png'=>'1393e4af54ababdcf76fac7f075b555b',
-	'themes/x2engine/images/x2-mini-icon.png'=>'153d66b514bf9fb0d82a7521a3c64f36',
+	// 'themes/x2engine/images/x2footer.png'=>'1393e4af54ababdcf76fac7f075b555b',
+	// 'themes/x2engine/images/x2-mini-icon.png'=>'153d66b514bf9fb0d82a7521a3c64f36',
+	'images/powered_by_x2engine.png'=>'b7374cbbd29cd63191f7e0b1dcd83c48',
 );
 foreach($checkFiles as $key=>$value) {
-	if(!file_exists($key) || hash_file('md5',$key) != $value)
-		$checkResult = true;
+	if(!file_exists($key) || hash_file('md5',$key) !== $value)
+		$logoMissing = true;
 }
 $theme2Css = '';
-if($checkResult)
+if($logoMissing)
 	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
@@ -135,11 +127,16 @@ if($checkResult)
 // else
 	// $backgroundImg = CHtml::image($baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
 
-$cs->registerCss('applyTheme',
-	'ul.main-menu > li > a, ul.main-menu > li > span {color:#'.Yii::app()->params->profile->menuTextColor.';}',
-	'screen',
-	CClientScript::POS_HEAD);
 
+$themeCss = '';
+if(!empty(Yii::app()->params->profile->menuTextColor))
+	$themeCss .= 'ul.main-menu > li > a, ul.main-menu > li > span {color:#'.Yii::app()->params->profile->menuTextColor.";}\n";
+if(!empty(Yii::app()->params->profile->pageHeaderBgColor))
+	$themeCss .= 'div.page-title {background-color:#'.Yii::app()->params->profile->pageHeaderBgColor.";}\n";
+if(!empty(Yii::app()->params->profile->pageHeaderTextColor))
+	$themeCss .= 'div.page-title, div.page-title h2 {color:#'.Yii::app()->params->profile->pageHeaderTextColor.";}\n";
+
+$cs->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
 $cs->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
 // $admin=Admin::model()->findByPk(1);
@@ -185,7 +182,7 @@ if($isGuest) {
             if($permission)
                 $menuItems[$key] = array('label'=>Yii::t('app', $value),'url'=>array("/$key/$defaultAction"), 'active'=>(strtolower($module)==strtolower($key) && (!isset($_GET['static']) || $_GET['static']!='true'))? true : null);
 		} else {
-			$page=DocChild::model()->findByAttributes(array('name'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
+			$page = Docs::model()->findByAttributes(array('name'=>ucfirst(mb_ereg_replace('&#58;',':',$value))));
 			if(isset($page)){
 				$id=$page->id;
 				$menuItems[$key] = array('label' =>ucfirst($value),'url' => array('/docs/'.$id.'?static=true'),'active'=>Yii::app()->request->requestUri==$scriptUrl.'/docs/'.$id.'?static=true'?true:null);
@@ -269,7 +266,11 @@ $userMenu = array(
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
             array('label' => Yii::t('app','Report A Bug'),'url' => array('/site/bugReport')),
             array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
-			array('label' => (Yii::app()->params->sessionStatus == 1)?Yii::t('app','Go Invisible'):Yii::t('app','Go Visible'),'url'=>'#', 'linkOptions'=>array('submit'=>array('/site/toggleVisibility','redirect'=>Yii::app()->request->requestUri),'confirm'=>'Are you sure you want to toggle your session status?')),
+			array('label' => (Yii::app()->params->sessionStatus == 1)? Yii::t('app','Go Invisible') : Yii::t('app','Go Visible'),'url'=>'#','linkOptions'=>array(
+				'submit'=>array('/site/toggleVisibility',
+				'redirect'=>Yii::app()->request->requestUri),
+				'confirm'=>'Are you sure you want to toggle your session status?'
+			)),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
@@ -301,7 +302,10 @@ $userMenu = array(
 <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ie.css" media="screen, projection">
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
-<?php $this->renderGaCode('internal'); ?> 
+<?php 
+if(method_exists($this,'renderGaCode'))
+    $this->renderGaCode('internal'); 
+?> 
 
 </head>
 <body style="<?php
@@ -333,7 +337,6 @@ $userMenu = array(
 	}
 ?>"<?php if($noBorders) echo ' class="no-borders"'; ?>>
 <?php //echo $backgroundImg; ?>
-<!--<div id="header-body-container">-->
 <div id="header" <?php
 	if(empty(Yii::app()->params->profile->menuBgColor))
 		echo 'class="defaultBg"';
@@ -342,7 +345,6 @@ $userMenu = array(
 ?>>
 <div id="header-inner">
 	<div id="main-menu-bar">
-		<div class="width-constraint">
 			<?php
 			//render main menu items
 			$this->widget('zii.widgets.CMenu', array(
@@ -366,17 +368,11 @@ $userMenu = array(
 			</div><div id="notifications"></div><div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
 			<?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?>
 			</div></div>
-		</div>
 	</div>
-	<div style="clear:both;"></div>
 </div>
 </div>
-<div class="width-constraint" id="page-body">
 <?php echo $content; ?>
-</div>
-<!--<div id="footer-push"></div>-->
-<!--</div>-->
-
+<!--
 <div style="font-family:monospace, 'Courier New';">
 <?php
 	// if(!empty($GLOBALS['modelDebug']))
@@ -420,58 +416,12 @@ $userMenu = array(
 
 ?>
 </div>
-
-
-<div id="footer"<?php //if(empty(Yii::app()->params->profile->backgroundImg)) echo ' class="defaultBg"'; ?>>
-<!--<div class="width-constraint">-->
-	<div id="footer-logos">
-		<a href="<?php echo $scriptUrl.'/x2touch'; ?>">
-			<?php echo CHtml::image($themeUrl.'/images/x2touch.png','',array('id'=>'x2touch-logo')); ?></a>
-			<?php echo CHtml::link(
-				CHtml::image($themeUrl.'/images/x2footer.png','', array('id'=>'x2crm-logo')),
-				array('/site/page','view'=>'about')
-			); ?>
-			
-	</div>
-	<b>v<?php echo Yii::app()->params->version; ?>
-	<?php
-	if(Yii::app()->params->edition==='pro')
-		echo 'Professional Edition';
-	else
-		echo 'Open Source Edition';
-	?>.</b>
-	<?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?><br>
-	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
-	<?php echo Yii::t('app','Rights reserved.'); ?>
-	<?php echo Yii::t('app','The Program is provided AS IS, without warranty.'); ?><br>
-	
-	<?php if(Yii::app()->params->admin->edition==='opensource') echo Yii::t('app','Licensed under {BSD}.',array('{BSD}'=>CHtml::link('BSD License',$baseUrl.'/LICENSE.txt')));?><br>
-	<?php echo Yii::t('app','Generated in {time} seconds.',array('{time}'=>number_format(Yii::getLogger()->getExecutionTime(),3))); ?> 
-	<?php
-	$cs->registerScript('logos',"
-	$(window).load(function(){
-		if((!$('#x2touch-logo').length) || (!$('#x2crm-logo').length)){
-			$('a').removeAttr('href');
-			alert('Please put the logo back');
-			window.location='http://www.x2engine.com';
-		}
-		var touchlogosrc = $('#x2touch-logo').attr('src');
-		var logosrc=$('#x2crm-logo').attr('src');
-		if(logosrc!='$themeUrl/images/x2footer.png'|| touchlogosrc!='$themeUrl/images/x2touch.png'){
-			$('a').removeAttr('href');
-			alert('Please put the logo back');
-			window.location='http://www.x2engine.com';
-	}
-	});
-	");
-
-	$peak_memory = memory_get_peak_usage(true);
-	$memory_units = array('b','kb','mb','gb','tb','pb');
-	echo round($peak_memory/pow(1024,($memory_log=floor(log($peak_memory,1024)))),2).' '.$memory_units[$memory_log];
-	?>
-	<br>
-<!--</div>-->
-</div>
-<?php if(Yii::app()->session['translate']) echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>'; ?>
+-->
+<?php
+$this->renderPartial('//layouts/footer');
+if(Yii::app()->session['translate'])
+	echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
+?>
+<a id="page-fader" class="x2-button"><span></span></a>
 </body>
 </html>
