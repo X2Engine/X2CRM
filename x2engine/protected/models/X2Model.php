@@ -1182,15 +1182,31 @@ abstract class X2Model extends CActiveRecord {
 		} else { // User session not available; doing an operation through API or console
 			$uid = $this->suID;
 		}
-				
-		if (Yii::app()->authManager->checkAccess($module . 'Admin',$uid))
-			return 3;
-		elseif (Yii::app()->authManager->checkAccess($module . 'View',$uid))
-			return 2;
-		elseif (Yii::app()->authManager->checkAccess($module . 'PrivateReadOnlyAccess',$uid))
-			return 1;
-		else
-			return 0;
+        $accessLevel=0;
+        if (Yii::app()->authManager->checkAccess($module . 'Admin',$uid)){
+            if($accessLevel < 3)
+                $accessLevel=3;
+        }elseif (Yii::app()->authManager->checkAccess($module . 'View',$uid)){
+            if($accessLevel < 2)
+                $accessLevel=2;
+        }elseif (Yii::app()->authManager->checkAccess($module . 'PrivateReadOnlyAccess',$uid)){
+            if($accessLevel < 1)
+                $accessLevel=1;
+        }
+        $roles=X2Model::model('RoleToUser')->findAllByAttributes(array('userId'=>$uid));
+        foreach($roles as $role){
+            if (Yii::app()->authManager->checkAccess($module . 'Admin',$role->roleId)){
+                if($accessLevel < 3)
+                    $accessLevel=3;
+            }elseif (Yii::app()->authManager->checkAccess($module . 'View',$role->roleId)){
+               if($accessLevel < 2)
+                   $accessLevel=2;
+            }elseif (Yii::app()->authManager->checkAccess($module . 'PrivateReadOnlyAccess',$role->roleId)){
+                if($accessLevel < 1)
+                    $accessLevel=1;
+            }
+        }
+        return $accessLevel;
 	}
 
 	/**
@@ -1208,7 +1224,7 @@ abstract class X2Model extends CActiveRecord {
 			else
 				$user = $this->suModel->username;
 		}
-
+        
 		if ($accessLevel === 2 && $useVisibility === false) // level 2 access only works if we consider visibility,
 			$accessLevel = 3;  // so upgrade to full access
 

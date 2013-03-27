@@ -150,7 +150,7 @@ class OpportunitiesController extends x2base {
 			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
 		$model->createDate = time();
 		$model->lastUpdated = time();
-		// $model->expectedCloseDate = $this->parseDate($model->expectedCloseDate);
+		// $model->expectedCloseDate = X2Model::parseDate($model->expectedCloseDate);
 		if($api == 1) {
 			return parent::create($model,$oldAttributes,$api);
 		} else {

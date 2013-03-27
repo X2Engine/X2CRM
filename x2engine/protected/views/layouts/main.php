@@ -336,6 +336,8 @@ if(method_exists($this,'renderGaCode'))
 		}
 	}
 ?>"<?php if($noBorders) echo ' class="no-borders"'; ?>>
+<div id="page-container">
+<div id="page">
 <?php //echo $backgroundImg; ?>
 <div id="header" <?php
 	if(empty(Yii::app()->params->profile->menuBgColor))
@@ -343,33 +345,33 @@ if(method_exists($this,'renderGaCode'))
 	else
 		echo 'style="background-color:#'.Yii::app()->params->profile->menuBgColor.';"';
 ?>>
-<div id="header-inner">
-	<div id="main-menu-bar">
-			<?php
-			//render main menu items
-			$this->widget('zii.widgets.CMenu', array(
-				'id'=>'main-menu',
-				'encodeLabel'=>false,
-				'htmlOptions'=>array('class'=>'main-menu'),
-				'items'=>$menuItems
-			));
-			//render user menu items if logged in
-			if (!$isGuest) {
+	<div id="header-inner">
+		<div id="main-menu-bar">
+				<?php
+				//render main menu items
 				$this->widget('zii.widgets.CMenu', array(
-					'id' => 'user-menu',
-					'items' => $userMenu,
+					'id'=>'main-menu',
+					'encodeLabel'=>false,
 					'htmlOptions'=>array('class'=>'main-menu'),
-					'encodeLabel' => false
+					'items'=>$menuItems
 				));
-			}
-		?>
-		<div id="notif-box"><div id="no-notifications"<?php if($notifCount > 0) echo ' style="display:none;"'; ?>>
-			<?php echo Yii::t('app','You don\'t have any notifications.'); ?>
-			</div><div id="notifications"></div><div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
-			<?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?>
-			</div></div>
+				//render user menu items if logged in
+				if (!$isGuest) {
+					$this->widget('zii.widgets.CMenu', array(
+						'id' => 'user-menu',
+						'items' => $userMenu,
+						'htmlOptions'=>array('class'=>'main-menu'),
+						'encodeLabel' => false
+					));
+				}
+			?>
+			<div id="notif-box"><div id="no-notifications"<?php if($notifCount > 0) echo ' style="display:none;"'; ?>>
+				<?php echo Yii::t('app','You don\'t have any notifications.'); ?>
+				</div><div id="notifications"></div><div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
+				<?php echo CHtml::link(Yii::t('app','View all'),array('/site/viewNotifications')); ?>
+				</div></div>
+		</div>
 	</div>
-</div>
 </div>
 <?php echo $content; ?>
 <!--
@@ -417,6 +419,8 @@ if(method_exists($this,'renderGaCode'))
 ?>
 </div>
 -->
+</div>
+</div>
 <?php
 $this->renderPartial('//layouts/footer');
 if(Yii::app()->session['translate'])

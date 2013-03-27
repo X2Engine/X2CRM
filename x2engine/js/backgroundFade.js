@@ -75,10 +75,12 @@ $(function() {
 	}); */
 	
 	var isHidden = false;
+	var hideTargets = $("#page").children().not("#header").add("#footer");
+	
 	
 	$(document).click(function(e) {
 		if(isHidden) {
-			$("body").children().not("#header, #page-fader").stop().animate({opacity:1},300);
+			hideTargets.stop().animate({opacity:1},300);
 			isHidden = false;
 		}
 	});
@@ -86,7 +88,7 @@ $(function() {
 	$("#page-fader").click(function(e) {
 		if(!isHidden) {
 			e.stopPropagation();
-			$("body").children().not("#header, #page-fader").stop().animate({opacity:0},300);
+			hideTargets.stop().animate({opacity:0},300);
 			isHidden = true;
 		}
 	});

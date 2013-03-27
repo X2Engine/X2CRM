@@ -115,7 +115,7 @@ class Workflow extends CActiveRecord {
 			$list[$model->id] = $model->name;
 		return $list;
 	}
-	
+
 	public static function getWorkflowStatus($workflowId,$modelId = 0,$modelType = '') {
 	
 		$workflowStatus = array(

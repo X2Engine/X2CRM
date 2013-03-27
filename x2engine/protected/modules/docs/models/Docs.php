@@ -184,8 +184,9 @@ class Docs extends X2Model {
 
 	public static function getEmailTemplates() {
 		$templateLinks = array();
-		$criteria=new CDbCriteria(array('order'=>'lastUpdated DESC'));
-		if(!Yii::app()->user->checkAccess('AdminIndex')){
+		// $criteria = new CDbCriteria(array('order'=>'lastUpdated DESC'));
+		$condition = 'TRUE';
+		if(!Yii::app()->user->checkAccess('AdminIndex')) {
 			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
 			/* x2temp */
 			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -195,11 +196,20 @@ class Docs extends X2Model {
 			$condition .= 'OR (visibility=2 AND createdBy IN 
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
 					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-			$criteria->addCondition($condition);
+			// $criteria->addCondition($condition);
 		}
-		$templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
-		foreach($templates as &$template)
-			$templateLinks[$template->id] = $template->name;
+		// $templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
+		
+		$templateData = Yii::app()->db->createCommand()
+			->select('id,name')
+			->from('x2_docs')
+			->where('type="email" AND ('.$condition.')')
+			// ->andWhere($condition)
+			->queryAll(false);
+		
+		foreach($templateData as &$row)
+			$templateLinks[$row[0]] = $row[1];
+		
 		natcasesort($templateLinks);
 		return $templateLinks;
 	}

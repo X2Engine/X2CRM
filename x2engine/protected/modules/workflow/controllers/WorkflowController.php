@@ -300,8 +300,8 @@ class WorkflowController extends x2base {
 		if(isset($model,$action,$_POST['Actions'])) {
 			$action->setScenario('workflow');
 
-			$action->createDate = $this->parseDate($_POST['Actions']['createDate']);
-			$action->completeDate = $this->parseDate($_POST['Actions']['completeDate']);
+			$action->createDate = X2Model::parseDate($_POST['Actions']['createDate']);
+			$action->completeDate = X2Model::parseDate($_POST['Actions']['completeDate']);
 			$action->actionDescription = $_POST['Actions']['actionDescription'];
 
 			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->params->admin->workflowBackdateReassignment))

@@ -1610,7 +1610,7 @@ class SiteController extends x2base {
 	public function actionAppendTag() {
 		if(isset($_POST['Type'],$_POST['Id'],$_POST['Tag']) && ctype_alpha($_POST['Type'])) {
 			$model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
-			
+			echo $model->addTags($_POST['Tag']);exit;
 			if($model !== null && $model->addTags($_POST['Tag'])) {
 				echo 'true';
 				return;
@@ -1814,7 +1814,7 @@ class SiteController extends x2base {
 			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
 		$model->createDate = time();
 		$model->lastUpdated = time();
-		// $model->expectedCloseDate = $this->parseDate($model->expectedCloseDate);
+		// $model->expectedCloseDate = X2Model::parseDate($model->expectedCloseDate);
 		if($api == 1) {
 			return parent::create($model,$oldAttributes,$api);
 		} else {

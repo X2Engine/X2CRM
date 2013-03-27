@@ -232,8 +232,8 @@ class AccountsController extends x2base {
 					$x2ajaxCreateError = true;
 				}
 			} else {
-				$model->save();
-				$this->redirect(array('view','id'=>$model->id));
+				if($model->save())
+                    $this->redirect(array('view','id'=>$model->id));
 			}
 		}
 		
@@ -301,8 +301,8 @@ class AccountsController extends x2base {
 					$value = null;
 				}
 			$model->setX2Fields($_POST['Accounts']);
-			$model->save();
-			$this->redirect(array('view','id'=>$model->id));
+			if($model->save())
+                $this->redirect(array('view','id'=>$model->id));
 			// $this->update($model,$temp,'0');
 		}
 

@@ -435,58 +435,7 @@ class ActionsController extends x2base {
 					$event->associationId=$model->id;
 					$event->save();
 				}
-				
-				// now done in X2ChangeLogBehavior
-				
-				// if(empty($model->type)) {
-					/* $event2=new Events;
-					$event2->associationType='Actions';
-					$event2->associationId=$model->id;
-					$event2->visibility=$model->visibility;
-					$event2->user=Yii::app()->user->getName();
-					$event2->type='record_create';
-					$event2->save();
-					
-					$event=new Events;
-					$event->associationType='Actions';
-					$event->associationId=$model->id;
-					$event->type='action_reminder';
-					$event->visibility=$model->visibility;
-					$event->user=$model->assignedTo;
-					$event->timestamp=$model->dueDate;
-					$event->save(); */
-				// }
-				
-				// notify other user (if not assigned to logged in user)
-				// $changes = $this->calculateChanges($temp, $model->attributes, $model);
-				// $this->updateChangelog($model,$changes);
-				
-				
-				/* if($model->assignedTo != Yii::app()->user->getName()){
-					$notif = new Notification;
-					$notif->user = $model->assignedTo;
-					$notif->createdBy = Yii::app()->user->getName();
-					$notif->createDate = time();
-					$notif->type = 'create';
-					$notif->modelType = $name;
-					$notif->modelId = $model->id;
-					$notif->save();
-				} */
-				
 				$model->syncGoogleCalendar('create');
-				/* // Google Calendar Sync
-				if(!is_numeric($model->assignedTo)) { // assigned to user
-					$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
-					if(isset($profile))
-						$profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
-				} else { // Assigned to group
-					$groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
-					foreach($groups as $group) {
-						$profile = ProfileChild::model()->findByPk($group['userId']);
-						if(isset($profile))
-							$profile->syncActionToGoogleCalendar($model);
-					}
-				} */
 			}
 			
 		}
@@ -559,7 +508,7 @@ class ActionsController extends x2base {
 			
 			// $this->update($model,$oldAttributes,'0');
 			if($model->save()) {
-				$model->updateGoogleCalendar();
+				$model->syncGoogleCalendar('update');
 				if(isset($_GET['redirect']) && $model->associationType != 'none') { // if the action has an association
 					if($model->associationType == 'product' || $model->associationType == 'products')
 						$this->redirect(array('/products/products/view', 'id' => $model->associationId));

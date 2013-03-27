@@ -113,6 +113,9 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		$event->type='record_deleted';
 		$event->associationType = $modelClass;
 		$event->associationId = $this->getOwner()->id;
+        if($this->getOwner()->hasAttribute('visibility')){
+            $event->visibility=$this->getOwner()->visibility;
+        }
 		$event->text = $this->getOwner()->name;
 		$event->user = Yii::app()->user->getName();
 		$event->save();

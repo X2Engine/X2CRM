@@ -68,7 +68,7 @@ class ApiController extends x2base {
 	public function filters() {
 		return array(
 			'noSession',
-			'authenticate - voip', // Only VoIP is currently used without user credentials
+			'authenticate - voip,webListener',
 			'validModel + create,view,lookup,update,delete',
 			'checkCRUDPermissions + create,view,lookup,update,delete',
 		);

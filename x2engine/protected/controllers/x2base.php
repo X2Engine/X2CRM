@@ -1505,7 +1505,7 @@ abstract class x2base extends X2Controller {
                 $dateRange['start'] = 0;        // every record
                 $dateRange['end'] = time();
                 if (isset($_GET['end'])) {
-                    $dateRange['end'] = $this->parseDate($_GET['end']);
+                    $dateRange['end'] = X2Model::parseDate($_GET['end']);
                     if ($dateRange['end'] == false)
                         $dateRange['end'] = time();
                     else
@@ -1517,7 +1517,7 @@ abstract class x2base extends X2Controller {
             default:
                 $dateRange['end'] = time();
                 if (isset($_GET['end'])) {
-                    $dateRange['end'] = $this->parseDate($_GET['end']);
+                    $dateRange['end'] = X2Model::parseDate($_GET['end']);
                     if ($dateRange['end'] == false)
                         $dateRange['end'] = time();
                     else
@@ -1526,7 +1526,7 @@ abstract class x2base extends X2Controller {
 
                 $dateRange['start'] = strtotime('1 month ago', $dateRange['end']);
                 if (isset($_GET['start'])) {
-                    $dateRange['start'] = $this->parseDate($_GET['start']);
+                    $dateRange['start'] = X2Model::parseDate($_GET['start']);
                     if ($dateRange['start'] == false)
                         $dateRange['start'] = strtotime('-30 days 0:00', $dateRange['end']);
                     else

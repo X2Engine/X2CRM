@@ -77,17 +77,29 @@ class FileUtil {
 			// Fall back on the getContents method, which will try using CURL
 			$ch = self::curlInit($source);
 			$contents = curl_exec($ch);
-			return (bool) @file_put_contents($target, $contents);
-		} else
-			return @copy($source, $target);
+			if((bool) $contents)
+				return @file_put_contents($target, $contents) !== false;
+			else
+				return false;
+		} else {
+			$context = stream_context_create(array(
+			'http' => array(
+				'timeout' => 15  // Timeout in seconds
+				)));
+			return @copy($source, $target, $context) !== false;
+		}
 	}
 	
 	public static function curlInit($url) {
 		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, 0);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+		$curlopt = array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_BINARYTRANSFER => 1,
+			CURLOPT_POST => 0,
+			CURLOPT_TIMEOUT => 15
+		);
+		curl_setopt_array($ch, $curlopt);
 		return $ch;
 	}
 
@@ -197,7 +209,7 @@ class FileUtil {
 		$try = preg_match('/^https?:\/\//', $source) && (ini_get('allow_url_fopen')==0 || self::$alwaysCurl);
 		if ($try)
 			if (!extension_loaded('curl'))
-				throw new Exception('No HTTP methods available; tried accessing a remote URL, but allow_url_fopen is not enabled and the CURL extension is not loaded.');
+				throw new Exception('No HTTP methods available; tried accessing a remote URL, but allow_url_fopen is not enabled and the CURL extension is not loaded.',500);
 		return $try;
 	}
 

@@ -230,7 +230,7 @@ $(function() {
 	
 	$('#notif-box .close').click(function() {
 		$('#notif-box').fadeOut(300);
-		$.fn.titleMarquee('softStop');
+		// $.fn.titleMarquee('softStop');
 	});
 	
 	// listen for window focus/blur for stupid browsers that can't handle document.hasFocus()
@@ -430,7 +430,7 @@ $(function() {
 	function closeNotifications() {
 		clearTimeout(notifViewTimeout);
 		$('#notif-box').fadeOut(300);
-		$.fn.titleMarquee('softStop');
+		// $.fn.titleMarquee('softStop');
 	}
 	
 	/**

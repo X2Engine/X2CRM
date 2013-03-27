@@ -78,6 +78,8 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 )); */ ?> 
 </div><!-- search-form -->
 <?php
+$attributeLabels = CActiveRecord::model('X2List')->attributeLabels();
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'lists-grid',
 	'enableSorting'=>false,
@@ -86,41 +88,46 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 		. '<div class="form no-border" style="display:inline;"> '
-		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(),Profile::getPossibleResultsPerPage(),array(
 				'ajax' => array(
 					'url' => $this->createUrl('/profile/setResultsPerPage'),
 					'data' => 'js:{results:$(this).val()}',
-					'complete' => 'function(response) { $.fn.yiiGridView.update("users-grid"); }',
+					'complete' => 'function(response) { $.fn.yiiGridView.update("lists-grid"); }',
 				),
 				// 'style' => 'margin: 0;',
 			))
 		. ' </div>',
 	'dataProvider'=>$contactLists,
 	// 'filter'=>$model,
+	'rowCssClassExpression'=>'$data["id"]==="all"?"bold":""',
 	'columns'=>array(
 		//'id',
 		array(
 			'name'=>'name',
+			'header'=>$attributeLabels['name'],
 			'type'=>'raw',
-			'value'=>'CHtml::link($data->name,X2List::getRoute($data->id))',
+			'value'=>'CHtml::link($data["name"],X2List::getRoute($data["id"]))',
 			'headerHtmlOptions'=>array('style'=>'width:40%;'),
 		),
 		array(
 			'name'=>'type',
+			'header'=>$attributeLabels['type'],
 			'type'=>'raw',
-			'value'=>'$data->type=="static"? Yii::t("contacts","Static") : Yii::t("contacts","Dynamic")',
+			'value'=>'$data["type"]=="static"? Yii::t("contacts","Static") : Yii::t("contacts","Dynamic")',
 			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),
 		array(
 			'name'=>'assignedTo',
+			'header'=>$attributeLabels['assignedTo'],
 			'type'=>'raw',
-			'value'=>'User::getUserLinks($data->assignedTo)',
+			'value'=>'User::getUserLinks($data["assignedTo"])',
 		),
 		array(
 			'name'=>'count',
+			'header'=>$attributeLabels['count'],
 			'headerHtmlOptions'=>array('class'=>'contact-count'),
 			'htmlOptions'=>array('class'=>'contact-count'),
-			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data->count)',
+			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data["count"])',
 			'headerHtmlOptions'=>array('style'=>'width:20%;'),
 		),
 	),

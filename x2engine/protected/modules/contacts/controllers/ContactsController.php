@@ -1054,27 +1054,27 @@ class ContactsController extends x2base {
 	public function actionLists() {
         $criteria = new CDbCriteria();
 		$criteria->addCondition('type="static" OR type="dynamic"');
-        if(Yii::app()->user->getName()!='admin'){
-        $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+        if(Yii::app()->user->getName()!='admin') {
+			$condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+			/* x2temp */
+			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			if(!empty($groupLinks))
+				$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-            $criteria->addCondition($condition);
-        }
+			$condition .= 'OR (visibility=2 AND assignedTo IN 
+				(SELECT username FROM x2_group_to_user WHERE groupId IN
+					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+			$criteria->addCondition($condition);
+		}
 		
-		$contactLists = new CActiveDataProvider('X2List', array(
-			'sort' => array(
-				'defaultOrder' => 'createDate DESC',
-			),
-			'pagination' => array('pageSize'=>ProfileChild::getResultsPerPage()),
-			'criteria' => $criteria
-		));
-
+		$perPage = ProfileChild::getResultsPerPage();
+		
+		$criteria->offset = isset($_GET['page'])? $_GET['page'] * $perPage - 3 : -3;
+		$criteria->limit = $perPage;
+		$criteria->order = 'createDate DESC';
+		
+		$contactLists = new CActiveDataProvider('X2List',array('criteria'=>$criteria));
+		
 		$totalContacts = X2Model::model('Contacts')->count();
 		$totalMyContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '"');
 		$totalNewContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '" AND createDate >= ' . mktime(0, 0, 0));
@@ -1114,15 +1114,19 @@ class ContactsController extends x2base {
 			'createDate' => 0,
 			'lastUpdated' => 0,
 		);
-
-		$contactListData = $contactLists->getData();
-		$contactListData[] = $newContacts;
-		$contactListData[] = $myContacts;
-		$contactListData[] = $allContacts;
-		$contactLists->setData($contactListData);
-		$contactLists->getPagination()->itemCount += 3;
+		$contactListData = array(
+			$allContacts,
+			$myContacts,
+			$newContacts,
+		);
+		
+		$dataProvider = new CArrayDataProvider(array_merge($contactListData,$contactLists->getData()),array(
+			'pagination' => array('pageSize'=>$perPage),
+			'totalItemCount' => $contactLists->getTotalItemCount()+3,
+		));
+		
 		$this->render('listIndex', array(
-			'contactLists' => $contactLists,
+			'contactLists' => $dataProvider,
 		));
 	}
 

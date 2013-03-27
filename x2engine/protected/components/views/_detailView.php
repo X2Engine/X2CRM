@@ -39,24 +39,28 @@ $attributeLabels = $model->attributeLabels();
 // $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
 
 // $showWorkflow = Yii::app()->params->profile->showWorkflow;
-if($modelName=='contacts' || $modelName=='opportunities'){
 
-Yii::app()->clientScript->registerScript('toggleWorkflow', "
-function showWorkflow() {
-	$('tr#workflow-row').show();
-	$('tr#workflow-toggle').hide();
-}
-function hideWorkflow() {
-	$('tr#workflow-row').hide();
-	$('tr#workflow-toggle').show();
-}
-",CClientScript::POS_HEAD);
+$cs = Yii::app()->getClientScript();
+$cs->registerCoreScript('rating');
+$cs->registerCssFile($cs->getCoreScriptUrl().'/rating/jquery.rating.css');
+
+if($modelName=='contacts' || $modelName=='opportunities'){
+	$cs->registerScript('toggleWorkflow', "
+	function showWorkflow() {
+		$('tr#workflow-row').show();
+		$('tr#workflow-toggle').hide();
+	}
+	function hideWorkflow() {
+		$('tr#workflow-row').hide();
+		$('tr#workflow-toggle').show();
+	}
+	",CClientScript::POS_HEAD);
 }
 // $(function() {\n"
 // .($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
 // ."});",CClientScript::POS_HEAD);
 
-Yii::app()->clientScript->registerScript('setFormName',"
+$cs->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
 

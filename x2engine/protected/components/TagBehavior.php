@@ -158,11 +158,12 @@ class TagBehavior extends CActiveRecordBehavior {
 	 */
 	public function addTags($tags) {
 		$result = false;
-		foreach((array)$tags as $tag) {
-			if(empty($tag))
+		foreach((array)$tags as $tagName) {
+			if(empty($tagName))
 				continue;
-			if(!in_array($tag,$this->getTags())) {	// check for duplicate tag
+			if(!in_array($tagName,$this->getTags())) {	// check for duplicate tag
 				$tag = new Tags;
+                $tag->tag=$tagName;
 				$tag->itemId = $this->getOwner()->id;
 				$tag->type = get_class($this->getOwner());
 				$tag->taggedBy = Yii::app()->user->getName();

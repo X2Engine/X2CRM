@@ -33,14 +33,20 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-html, body {/* height:100%; */margin:0;padding:0;}
-body {
-	background:#efeee8;
-	margin-top:32px;
-	min-width:880px;
-}
+html, body {height:100%;margin:0;padding:0;}
+body {background:#efeee8;min-width:880px;}
 body.no-borders div.form, body.no-borders div.wide.form, body.no-borders div#sidebar-right, body.no-borders div#sidebar-left, body.no-borders .grid-view table.items, body.no-borders .list-view .items, body.no-borders div.x2-layout {border:none;}
 body.no-borders .portlet-decoration {border-top:none;}
+/*Opera Fix*/
+body:before {
+	content:"";
+	height:100%;
+	float:left;
+	width:0;
+	margin-top:-32767px;/
+}
+#page-container {min-height:100%;overflow:auto;}
+#page {margin-top:32px;overflow:auto;padding-bottom:100px;}
 
 #header {
 	height:32px;
@@ -674,7 +680,7 @@ body.no-widgets #content {margin:5px 0 0 0;}
 
 
 #flexible-content {
-	margin:0 20px 0 170px;
+	margin-right:20px;
 	min-height:0;
 	overflow:hidden;
 	zoom:1;
@@ -690,7 +696,7 @@ body.no-widgets #content {margin:5px 0 0 0;}
 	-webkit-border-radius:	4px;
 	-o-border-radius:		4px;
 }
-#content-container {overflow:hidden;zoom:1;margin-right:22%;}
+#content-container {overflow:hidden;zoom:1;}
 body.no-widgets #content-container {margin-right:0;}
 #content {
 	margin:5px 10px 10px 0;
@@ -791,21 +797,18 @@ div.page-title .x2-button.email span {background:url(../images/email-button2.png
 div.page-title .x2-button.edit span {background:url(../images/icons/Edit.png) center center no-repeat;}
 div.page-title .x2-button.sync span {background:url(../images/icons/Sync.png) center center no-repeat;}
 
-#footer-push {clear:both;height:110px;}
 #footer {
-	width:650px;
 	position:relative;
-	margin:0 auto 2px auto;
+	margin-top:-80px;
+	height:70px;
+	clear:both;
 	text-align:center;
 	padding:5px 10px;
 	color:#333;
 	font-size:10px;
 	clear:both;
-	background: rgba(255,255,255,0.5);
-	-moz-border-radius:		4px;
-	-o-border-radius:		4px;
-	-webkit-border-radius:	4px;
-	border-radius:			4px;
+	background: #efeee8;
+	/* background: rgba(255,255,255,0.5); */
 }
 #footer.defaultBg {
 	border-top:1px solid #ccc;
@@ -847,6 +850,7 @@ div.page-title .x2-button.sync span {background:url(../images/icons/Sync.png) ce
 	height:24px;
 	width:24px;
 }
+#response-time {position:absolute;bottom:5px;left:10px;}
 
 .x2-hint {
 	color: #06C;

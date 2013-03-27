@@ -183,7 +183,7 @@ $(document).ready(function(){
     if(minimize==true){
         $("#min-posts").click();
     }
-    $(".first").after("<div class=\"list-view\"><div id=\"new-events\" class=\"items\" style=\"display:none;border-bottom:solid;\"></div></div>");
+    $(".date-break.first").after("<div class=\"list-view\"><div id=\"new-events\" class=\"items\" style=\"display:none;border-bottom:solid;\"></div></div>");
 });
 var username="'.Yii::app()->user->getName().'";
 var usergroups="'.$usersGroups.'";

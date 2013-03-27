@@ -304,7 +304,7 @@ class QuotesController extends x2base {
                             }
                         }
         	        	
-			$model->expirationDate = $this->parseDate($model->expirationDate);
+			$model->expirationDate = X2Model::parseDate($model->expirationDate);
         	*/
         	
         	/*
@@ -663,7 +663,7 @@ class QuotesController extends x2base {
                                 if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
                                     $model->$field=Accounts::parseUsers($model->$field);
                                 }elseif($fieldData->type=='date'){
-                                    $model->$field=$this->parseDate($model->$field);
+                                    $model->$field=X2Model::parseDate($model->$field);
                                 }
                                 
                             }

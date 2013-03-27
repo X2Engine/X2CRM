@@ -17,7 +17,8 @@ CKEDITOR.editorConfig = function(config)
 	config.toolbar = 'Full';
 	config.height = 600;
 	config.resize_enabled = true;
-	config.removePlugins = 'autogrow,blockquote,showblocks,elementspath';
+	config.removePlugins = 
+        'autogrow,blockquote,showblocks,elementspath,liststyle,tabletools,contextmenu';
 	
 	config.extraPlugins = 'insertattributes';
     config.disableNativeSpellChecker = false; // allow use of browser's native spellchecker

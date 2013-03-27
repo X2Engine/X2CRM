@@ -52,7 +52,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<?php
 	if(Yii::app()->params->edition==='opensource')
 		echo Yii::t('app','X2Engine is an open source Customer Relationship Management application <br>designed by John Roberts and licensed under the {link}.',array(
-			'{link}'=>CHtml::link(Yii::t('app','BSD License'),Yii::app()->getBaseUrl().'/LICENSE.txt')
+			'{link}'=>CHtml::link(Yii::t('app','GNU Affero GPL v3'),Yii::app()->getBaseUrl().'/LICENSE.txt',array('title'=>Yii::t('app','GNU Affero General Public License version 3')))
 		));
 	else
 		echo Yii::t('app','X2Engine is a Customer Relationship Management application <br>designed by John Roberts.');

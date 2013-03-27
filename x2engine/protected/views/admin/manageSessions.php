@@ -61,13 +61,44 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'header'=>'Toggle Invisible',
             'type'=>'raw',
-            'value'=>"CHtml::link('Toggle','#',array('class'=>'x2-button', 'submit'=>'toggleSession?id='.\$data->id,'confirm'=>'Are you sure you want to change this session\'s status?'))"
+            'value'=>"CHtml::link('Toggle','#',array('class'=>'x2-button toggle-session', 'id'=>\$data->id))"
         ),
         array(
             'header'=>'End Session',
             'type'=>'raw',
-            'value'=>"CHtml::link('End','#',array('class'=>'x2-button', 'title'=>\$data->id, 'submit'=>'endSession?id='.\$data->id,'confirm'=>'Are you sure you want to end this session?'))"
+            'value'=>"CHtml::link('End','#',array('class'=>'x2-button end-session', 'title'=>\$data->id))"
         ),
 	),
 ));
+Yii::app()->clientScript->registerScript('session-controls','
+$(document).on("click",".toggle-session",function(e){
+    e.preventDefault();
+    var link=this;
+    if(confirm("Are you sure you want to toggle this session?")){
+        $.ajax({
+            url:"toggleSession?id="+$(this).attr("id"),
+            success:function(data){
+                if(data==1){
+                    $(link).parent().prev().html("Active");
+                }else if(data==0){
+                    $(link).parent().prev().html("Inactive");
+                }
+            }
+        });
+    }
+});    
+
+$(document).on("click",".end-session",function(e){
+    e.preventDefault();
+    var link=this;
+    if(confirm("Are you sure you want to end this session?")){
+        $.ajax({
+            url:"endSession?id="+$(this).attr("title"),
+            success:function(){
+                $.fn.yiiGridView.update("sessions-grid");
+            }
+        });
+    }
+});  
+');
 ?>

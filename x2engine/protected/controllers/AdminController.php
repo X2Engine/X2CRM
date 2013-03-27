@@ -43,6 +43,7 @@
  * is downloaded upon running the action (route admin/updater).
  * 
  * @package X2CRM.controllers 
+ * @property boolean $noRemoteAccess (Read-only) true indicates there's no way to automatically retrieve files.
  */
 class AdminController extends Controller {
 
@@ -60,6 +61,8 @@ class AdminController extends Controller {
 	 * @var type 
 	 */
 	public static $dependencies = array('FileUtil');
+	
+	private $_noRemoteAccess;
 
     /**
      * A list of actions to include.
@@ -223,32 +226,34 @@ class AdminController extends Controller {
      * @return array An array of behaviors to implement. 
      */
     public function behaviors() {
-		set_error_handler('AdminController::missingClassesError');
 		$missingClasses = array();
 		$behaviors = array();
 		$maxTries = 3;
-		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine';
+		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine/protected';
+		$x2planUrl = 'http://x2planet.com/updates/x2engine/protected';
 		$files = array_merge( array_fill_keys( self::$behaviorClasses, 'behavior'), array_fill_keys(self::$dependencies,'dependency'));
+		$tryCurl = in_array(ini_get('allow_url_fopen'),array(0,'Off','off'));
 		foreach ($files as $class=>$type) {
 			// First try to download from the X2Engine update server...
-			$path = "protected/components/$class.php";
-			if (!file_exists($path)) {
-				if(!is_dir(dirname($path)))
-					throw new CHttpException(500,'The protected/components folder is missing on the webserver! This is very bad. How is this even possible?');
+			$path = "components/$class.php";
+			$absPath = Yii::app()->basePath . "/$path";
+			if (!file_exists($absPath)) {
+				if(!is_dir(dirname($absPath)))
+					throw new CHttpException(500,'The components folder is missing on the webserver! This is very bad. How is this even possible?');
 				$i = 0;
-				while (!copy("http://x2planet.com/updates/x2engine/" . $path, $path) && $i < $maxTries) {
+				while (!$this->copyRemote("$x2planUrl/$path", $absPath, $tryCurl) && $i < $maxTries) {
 					$i++;
 				}
 				// Try to download the file from Github...
-				if ($i == 5) {
+				if ($i >= $maxTries) {
 					$i = 0;
-					while (!copy("$GithubUrl/$path", $path) && $i < $maxTries) {
+					while (!$this->copyRemote("$GithubUrl/$path", $path, $tryCurl) && $i < $maxTries) {
 						$i++;
 					}
 				}
-				// Mark the file as a failed download. An exception will be thrown.
-				if ($i == 5) {
-					$missingClasses[$class] = $path;
+				// Mark the file as a failed download.
+				if ($i >= $maxTries) {
+					$missingClasses[] = "protected/$path";
 				}
 			}
 			if ($type == 'behavior') {
@@ -257,9 +262,13 @@ class AdminController extends Controller {
 				);
 			}
 		}
+
+		// Display error.
+		// Test:
+		// $missingClasses[] = 'FOO';
 		if(count($missingClasses))
-			self::missingClassesError(null,null);
-		restore_error_handler();
+			$this->missingClassesException($missingClasses);
+		
         return $behaviors;
     }
 
@@ -434,15 +443,16 @@ class AdminController extends Controller {
             $session = Session::model()->findByPk($id);
             if (isset($session)) {
                 $session->status = !$session->status;
-                $session->save();
+                $ret=$session->status;
+                if($session->save()){
+                    echo $ret;
+                }
             }
         }
-        $this->redirect('manageSessions');
     }
 
     public function actionEndSession($id) {
-        Session::model()->deleteByPk($id);
-        $this->redirect('manageSessions');
+        echo Session::model()->deleteByPk($id);
     }
 
     /**
@@ -1918,7 +1928,7 @@ class AdminController extends Controller {
 			createDate INT,
 			lastUpdated INT,
 			updatedBy VARCHAR(250)
-			)",
+			) COLLATE = utf8_general_ci",
 			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
 			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
 			"INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
@@ -2982,10 +2992,11 @@ class AdminController extends Controller {
 				'timeout' => 15  // Timeout in seconds
 				)));
 	
-		// Check to see if there's an update available:
+		// Check to see if there's an update available. By this point in time
+		// (if this AdminController is running inside of a much older installation)
+		// FileUtil should have been downloaded and available.
 		$versionTest = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
 		$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
-		//  On failure, file_get_contents() will return FALSE. (http://php.net/manual/en/function.file-get-contents.php)
 		
 		if ($updaterCheck && $versionTest) {
 			if ($updaterCheck != $updaterVersion) {
@@ -3447,28 +3458,25 @@ class AdminController extends Controller {
 	}
 	
 	/**
-	 * Error handler for missing behavior classes. 
-	 * 
-	 * @param type $no
-	 * @param type $st
-	 * @param type $fi
-	 * @param type $ln
-	 * @throws CHttpException 
+	 * Prints an error message explaing what has gone wrong when the classes are missing.
+	 * @param array $classes The missing dependencies
 	 */
-	public static function missingClassesError($no,$st,$fi=Null,$ln=Null) {
-		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine';
-		$message = "One or more dependencies of AdminController are missing and could not be automatically retrieved. The classes are: ";
-		$behaviorPaths = array();
-		foreach (self::$behaviorClasses as $class) {
-			$behaviorPaths[] = "protected/components/$class.php";
-		}
-		foreach (self::$dependencies as $class) {
-			$behaviorPaths[] = "protected/components/$class.php";
-		}
-		$message .= implode(', ',$behaviorPaths);
-		$message .= '; this error is due to PHP\'s "copy" function failing during an update, which could be caused either by a server misconfiguration or a faltering connection to the internet.';
-		$message .= ' You can fix this by manually downloading the missing files from Github or SourceForge and uploading them to your web server at the specified paths, or by trying your request to the Admin controller again.';
-		throw new CHttpException(500, $message);
+	public function missingClassesException($classes) {
+		$message = trim("
+One or more dependencies of AdminController are missing and could not be automatically retrieved:
+".implode(', ',$classes)."
+
+To diagnose this error, please upload and run the requirements check script on your server:
+http://x2planet.com/installs/requirements.php
+
+The error is most likely due to one of the following things:
+(1) PHP processes run by the web server do not have permission to create or modify files
+(2) x2planet.com and/or raw.github.com are currently unavailable
+(3) This web server has no outbound internet connection, because it is: (a) behind a firewall that does not permit outbound connections; (b) connected to a private subnet with broken DNS resolution or (c) connected to a private subnet with no outbound route
+
+To stop this error from occurring, if the problem persists: restore the file protected/controllers/AdminController.php to the copy from your version of X2CRM:
+https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engine/protected/controllers/AdminController.php");
+		$this->error500($message);
 	}
 	
 	
@@ -3536,14 +3544,7 @@ class AdminController extends Controller {
 		$this->render('authGraph',array('authGraph'=>$authGraph,'bizruleTasks'=>$bizruleTasks));
 	
 	}
-	
-	public function actionFlowDesigner() {
-		if(Yii::app()->user->getName() !== 'admin')
-			throw new CHttpException(403, 'You are not authorized to perform this action.');
-		$this->render('flowEditor');
-	
-	}
-	
+
 	/**
 	 * Exits, returning SQL error messages
 	 * 
@@ -3574,6 +3575,7 @@ class AdminController extends Controller {
 	 */
 	public function updateUpdater($updaterCheck,$redirect) {
 		
+		// The files involved in the update process:
 		$updaterFiles = array(
 			"controllers/AdminController.php",
 			"views/admin/updater.php",
@@ -3581,11 +3583,31 @@ class AdminController extends Controller {
 			"components/FileUtil.php"
 		);
 		
+		// Try to retrieve the files:
+		$tryCurl = in_array(ini_get('allow_url_fopen'),array(0,'Off','off'));
+		$failed2Retrieve = array();
 		foreach ($updaterFiles as $file) {
-			copy("http://x2planet.com/updates/x2engine/protected/$file", Yii::app()->basePath."/$file");
+			$remoteFile = "http://x2planet.com/updates/x2engine/protected/$file";
+			$localFile = Yii::app()->basePath."/$file";
+			$finishedTrying = $this->copyRemote($remoteFile, $localFile,$tryCurl);
+			$attempts = 1;
+			while(!$finishedTrying) {
+				if ($attempts < 5) {
+					$finishedTrying = $this->copyRemote($remoteFile, $localFile, $tryCurl);
+					$attempts++;
+				} else {
+					$finishedTrying = true;
+					$failed2Retrieve[] = "protected/$file";
+				}
+			}
 		}
+		
+		// Display error.
+		if(count($failed2Retrieve))
+			$this->missingClassesException($failed2Retrieve);
+
 		// Write the new updater version into the configuration; else 
-		// the app will get stuck in a loop
+		// the app will get stuck in a redirect loop
 		$this->regenerateConfig(Null, $updaterCheck, Null);
 		$this->redirect($redirect);
 	}
@@ -3597,4 +3619,108 @@ class AdminController extends Controller {
 	public function rrmdir($path) {
 		FileUtil::rrmdir($path);
 	}
+	
+	/**
+	 * Last-resort, built-in, fail-resistant copy method 
+	 * 
+	 * Copy method used in the case that FileUtil is not yet available (i.e. if 
+	 * AdminController was downloaded in an auto-update by a much older version
+	 * but nothing else). Returns true on success and false on failure.
+	 * 
+	 * @param string $remoteFile URL of file to fetch
+	 * @param string $localFile Path to local destination
+	 * @param boolean $curl Whether to use CURL
+	 * @return boolean
+	 */
+	public function copyRemote($remoteFile,$localFile,$curl) {
+		$this->checkRemoteMethods();
+		if(!$curl) {
+			$context = stream_context_create(array(
+			'http' => array(
+				'timeout' => 15  // Timeout in seconds
+				)));
+			return copy($remoteFile, $localFile, $context) !== false;
+		} else {
+			// Try using CURL
+			$ch = curl_init($remoteFile);
+			$curlopt = array(
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_BINARYTRANSFER => 1,
+				CURLOPT_POST => 0,
+				CURLOPT_TIMEOUT => 15
+			);
+			curl_setopt_array($ch, $curlopt);
+			$contents = curl_exec($ch);
+			if ((bool) $contents) {
+				return file_put_contents($localFile,$contents) !== false;
+			} else
+				return false;
+		}
+	}
+	
+	/**
+	 * Magic getter for "noRemoteAccess" property.
+	 * 
+	 * If true, signifies that there is no possible way to retrieve remote files.
+	 * @return boolean 
+	 */
+	public function getNoRemoteAccess() {
+		if (!isset($this->_noRemoteAccess))
+			$this->_noRemoteAccess =
+					!extension_loaded('curl')
+					&& (
+					in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off'))
+					|| !(function_exists('file_get_contents') && function_exists('copy'))
+					);
+		return $this->_noRemoteAccess;
+	}
+
+	/**
+	 * Check whether it is possible to retrieve remote files.
+	 * 
+	 * Based on the availability of CURL and allow_url_fopen (from {@
+	 */
+	public function checkRemoteMethods() {
+		if ($this->noRemoteAccess)
+			$this->error500(Yii::t('admin', 'X2CRM needs to retrieve one or more remote files, but no remote access methods are available on this web server, because allow_url_fopen is disabled and the CURL extension is missing.'));
+	}
+	
+	/**
+	 * Explicit, attention-grabbing error message w/o bug reporter.
+	 * 
+	 * This is for errors that are NOT bugs, but that arise from server 
+	 * malconfiguration and/or missing requirements for running X2CRM.
+	 * @param type $message 
+	 */
+	public function error500($message) {
+		$app = Yii::app();
+		$email = Yii::app()->params->adminEmail;
+		$inAction = @is_subclass_of($this->action,'CAction');
+		if ($app->params->hasProperty('admin')) {
+			if ($app->params->admin->hasProperty('emailFromAddr'))
+				$email = $app->params->admin->emailFromAddr;
+		}
+		$inAction = @is_subclass_of($this->action,'CAction');
+		if ($inAction) {
+			$data = array(
+				'scenario' => 'error',
+				'message' => Yii::t('admin', "Cannot run {action}.", array('{action}' => $this->action->id)),
+				'longMessage' => str_replace("\n","<br />",$message),
+			);
+			$this->render('updater', $data);
+			Yii::app()->end();
+		} else {
+			$data = array(
+				'time' => time(),
+				'admin' => $email,
+				'version' => Yii::getVersion(),
+				'message' => $message
+			);
+			header("HTTP/1.1 500 Internal Server Error");
+			$this->renderPartial('system.views.error500', array('data' => $data));
+		}
+		Yii::app()->end();
+	}
+
 }

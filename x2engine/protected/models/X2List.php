@@ -591,15 +591,15 @@ class X2List extends CActiveRecord {
 		$existingIds = Yii::app()->db->createCommand()
 			->select('contactId')
 			->from('x2_list_items')
-			->where('listId='.$list->id.' AND contactId IN('.implode(',',$ids).')')		// intersection of $ids and the IDs already in this list
+			->where('listId='.$this->id.' AND contactId IN('.implode(',',$ids).')')		// intersection of $ids and the IDs already in this list
 			->queryColumn();
 		
 		foreach($ids as $id) {
 			if(in_array($id,$existingIds))
 				continue;
 			$listItem = new X2ListItem();
-			$listItem->listId = $list->id;
-			$listItem->contactId = $contactId;
+			$listItem->listId = $this->id;
+			$listItem->contactId = $id;
 			$listItem->save();
 		}
 		

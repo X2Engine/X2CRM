@@ -628,7 +628,7 @@ p.descrip{
 .lt-ie9 .ui-dialog {border-width:1px;}
 .ui-draggable .ui-widget-header {
 	border:none;
-	margin:-3px;
+	margin:-3px -3px 0 -3px;
 	font-weight:bold;
 	background:#444;
 	color:#fff;
@@ -1088,7 +1088,7 @@ div.contact-lists td.contact-count {
 	background:url(../images/contact-icon.png) 5px center no-repeat;
 	padding-left:24px;
 }
-div.contact-lists table.items tbody tr:last-child td {font-weight:bold;}
+div.contact-lists tr.bold td {font-weight:bold;}
 
 
 /* #modcoder_colorpicker {z-index:3;} */

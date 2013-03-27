@@ -236,7 +236,8 @@ class Contacts extends X2Model {
 		foreach($contacts as &$id){
 			if($id !=0 ) {
 				$model = X2Model::model('Contacts')->findByPk($id);
-				$links[] = CHtml::link($model->name,array('/contacts/contacts/view','id'=>$id));
+                if(isset($model))
+                    $links[] = CHtml::link($model->name,array('/contacts/contacts/view','id'=>$id));
 				//$links.=$link.', ';
 				
 			}

@@ -89,9 +89,9 @@ return array(
 			
 				'gii/<controller>'=>'gii/<controller>',
 			
-				'<controller:(site|admin|profile|api|search|notifications)>/<id:\d+>'=>'<controller>/view',
-				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-				'<controller:(site|admin|profile|api|search|notifications)>/<action:\w+>'=>'<controller>/<action>',
+				'<controller:(site|admin|profile|api|search|notifications|studio)>/<id:\d+>'=>'<controller>/view',
+				'<controller:(site|admin|profile|api|search|notifications|studio)>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+				'<controller:(site|admin|profile|api|search|notifications|studio)>/<action:\w+>'=>'<controller>/<action>',
 				
                 '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>'=>'<module>/<module>/index',
 				'<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<id:\d+>'=>'<module>/<module>/view',

@@ -14,6 +14,11 @@
 * Enhancements to Requirement Checker on installation
 * Numerous bug fixes
 
+## Changes in 2.9.1 ##
+3/27/2013
+* Additional bugfixes
+* Better failsafe in updater: uses either of two remote copy methods depending on which is available
+
 # Introduction #
 Welcome to  X2CRM v2.9!
 X2CRM is a next-generation,  open source social sales application for small and 
