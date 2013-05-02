@@ -50,7 +50,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'name'=>'lastUpdated',
             'header'=>'Last Activity',
             'type'=>'raw',
-            'value'=>'Actions::formatCompleteDate($data->lastUpdated)',
+            'value'=>'Formatter::formatCompleteDate($data->lastUpdated)',
         ),
         array(
             'name'=>'status',

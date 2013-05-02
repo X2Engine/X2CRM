@@ -91,9 +91,9 @@ $('#currency').change(function() {
 
 	echo $form->textField($model, 'chatPollTime', array('id' => 'chatPollTime'));
 	?><br>
-	<?php echo Yii::t('admin', 'Set the duration between chat update requests in milliseconds.'); ?>
+	<?php echo Yii::t('admin', 'Set the duration between notification requests in milliseconds.'); ?>
 	<br><br>
-	<?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous chatting, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
+	<?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous notifications, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
     </div>
     <div class="form">
 	<?php
@@ -124,9 +124,15 @@ $('#currency').change(function() {
 	<br>
 	<?php echo Yii::t('admin', 'Set user session expiration time (in minutes). Default is 60.'); ?><br>
 	<br>
-
-	<?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?>
-	<?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
+    <label for="Admin_sessionLog"><?php echo Yii::t('admin','Log user sessions?'); ?></label>
+    <?php echo $form->checkBox($model,'sessionLog'); ?>
+    </div>
+    <div class="form">
+        <label for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?> <span class="x2-hint" title="Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.">[?]</span></label>
+        <?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
+        <br><br>
+        <label for="Admin_userActionBackdating"><?php echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?> <span class="x2-hint" title="Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.">[?]</span></label>
+        <?php echo $form->checkBox($model, 'userActionBackdating'); ?>
     </div>
     <div class="form">
         <?php echo $form->labelEx($model,'corporateAddress'); ?>
@@ -137,9 +143,7 @@ $('#currency').change(function() {
         <?php echo $form->labelEx($model,'properCaseNames'); ?>
         <?php echo Yii::t('admin','Attempt to format Contact names to have proper case?') ?><br>
         <?php echo $form->dropDownList($model, 'properCaseNames' , array(1=>Yii::t('app','Yes'),0=>Yii::t('app','No'))); ?> 
-    </div>
-    
-    <div class="form">
+        <br><br>
         <?php echo $form->labelEx($model,'contactNameFormat'); ?>
         <?php echo Yii::t('admin','Select a name format to use for Contact names throughout the app.') ?><br>
         <?php echo $form->dropDownList($model, 'contactNameFormat', array('firstName lastName'=>'{'.Yii::t('contacts','First Name').'} {'.Yii::t('contacts','Last Name').'}','lastName, firstName'=>'{'.Yii::t('contacts','Last Name').'}, {'.Yii::t('contacts','First Name').'}')); ?> 

@@ -51,14 +51,15 @@ var record=0;
         text-decoration:none;
     }    
 </style>
-<h2><?php echo Yii::t('admin','Contacts Import'); ?></h2>
-<div class="form" style="width:600px;">
+<div class="page-title icon contacts"><h2><?php echo Yii::t('admin','Contacts Import'); ?></h2></div>
+<div class="form" >
+<div style="width:600px">
 <?php echo Yii::t('admin',"First, we'll need to make sure your fields have mapped properly for import. "); ?>
 <?php echo Yii::t('admin','Below is a list of our fields, the fields you provided, and a few sample records that you are importing.');?><br /><br />
 <?php echo Yii::t('admin','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.') ?>
 <br /><br />
 <?php echo Yii::t('contacts','Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.') ?>
-</div><div><br /></div>
+</div></div><div><br /></div>
 <div id="import-container">
 <div id="super-import-map-box">
 <h2><a href="#" class="clean-link" onclick="$('.import-hide').toggle();">[-]</a> <span class="import-hide">Import Map</span></h2>

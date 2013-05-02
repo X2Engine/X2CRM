@@ -75,19 +75,45 @@ var deletionCount=0;
 var sqlList=<?php echo $scenario == 'update' ? CJSON::encode($sqlList) : "[]"; ?>;
 var n_sql = sqlList.length;
 var sqlCount=0;
+var version = '<?php echo $scenario == 'update'?$newVersion:Yii::app()->params->version; ?>';
+var buildDate = <?php echo $scenario == isset($buildDate)?$buildDate:Yii::app()->params->buildDate; ?>;
+
+//var $('#progress-errors') = $('#progress-errors'); 
+
+if (jQuery == undefined) {
+	alert('The jQuery JavaScript library is required for the updater to work, and it is missing.');
+}
+
+function makeBackup() {
+	var proceed = true;
+	var inProgress = $('#something-inprogress').show().css({'display':'inline-block'});
+	$.ajax({
+		url:'backup',
+		type:'GET',
+		dataType:'json'
+	}).done(function(data){
+		alert(data.message);
+		$('#backup-state-error').hide();
+		$('#backup-download-link').show();
+	}).fail(function(jqXHR,textStatus,errorMessage) {
+		if(jqXHR.status != 0)
+			alert('Backup failed: '+textStatus+' '+jqXHR.status+' '+errorMessage);
+	}).always(function() {
+		inProgress.hide();
+	});
+}
 
 function downloadFile(i,altSource) {
 	if (fileCount == n_files) { // No files left to download
+		var proceed = true;
 		if(n_files > 0) {
 			$('#update-text').text('Download complete.');
-			alert('Download complete.');
+			proceed = confirm('All files downloaded. Proceed with {0}?'.format(scenario));
+		} else { // Case where there are no new files, only deletions and/or SQL changes
+			proceed = confirm('Proceed with {1}?'.format(scenario));
 		}
-		if (scenario == 'update') {
-			// Update in progress. Clear files deleted between versions.
-			deleteFile(0);
-		} else {
-			// Upgrade in progress. Skip ahead to applying database changes.
-			copyInstall();
+		if(proceed) {
+			enactChanges();
 		}
 	} else { // Download next file in queue at index i
 		if (!altSource)
@@ -124,104 +150,55 @@ function downloadFile(i,altSource) {
 				}
 			} else {
 				$('#progress-errors').html(data.message).show();
-				cleanUp('error');
 			}
-		}).fail(function(){
-			cleanUp('error');
+		}).fail(function(jqXHR,textStatus,errorMessage) {
+			if(jqXHR.status != 0)
+				alert('Error: server failed to respond to request to download file '+currentFile+'; '+textStatus+' '+jqXHR.errorCode+' '+errorMessage);
 		});
 	}
 }
 
-function deleteFile(k){
-	if (deletionCount == n_deletions) { // No files left to delete
-		$('#update-text').text('Deletions complete.');
-		alert('Deletions complete.');
-		copyInstall();
-	} else { // Delete next file in queue at index k
-		var currentFile = deletionList[k];
-		$('#update-text').text("Deleting file {0}/{1}: {2}".format((deletionCount+1).toString(),n_deletions.toString(),currentFile));
-		$.ajax({
-			url: "delete",
-			type: "POST",
-			data: {'delete':currentFile},
-			context: document.body
-		}).done(function(){
-			deletionCount++;
-			var width=deletionCount/n_deletions*100;
-			width=Math.round(width);
-			$('#progress').css({'width':width+'%'});
-			$('#progress-text').text(width+"%");
-			deleteFile(k+1);
-		}).fail(function(){
-			cleanUp('error');
-		});
-	}
-}
+function enactChanges() {
+	$('#update-text').text('Applying database and file changes...');
+	$('#progress-bar').hide();
+	var inProgress = $('#update-status').prepend($('#something-inprogress').clone().removeAttr('id')).find('img').show();
+	var scenarioTitle = scenario.charAt(0).toUpperCase() + scenario.slice(1);
 	
-function copyInstall() {
-	if(sqlList.len > 0) {
-		$('#update-text').text('Applying database changes...');
-		$.ajax({
-			url: "installUpdate",
-			type: "POST",
-			data: {'sqlList':sqlList},
-			dataType: 'json',
-			context: document.body
-		}).done(function(data) {
-			if(!data.error) {
-				var scenarioTitle = scenario.charAt(0).toUpperCase() + scenario.slice(1)
-				$('#update-text').text(scenarioTitle+' complete.');
-
-				alert(scenarioTitle+" Complete.");
-				if(scenario == 'update') {
-					cleanUp('success');			
-				} else {
-					finishUpgrade('success');
-				}
-			} else {
-				$('#progress-errors').html(data.message).show();
-				cleanUp('error');
-			}
-		}).fail(function() {
-			cleanUp('error');
-		});
-	} else {
-		if(scenario == 'update') {
-			cleanUp('success');
-		} else {
-			finishUpgrade('success');
-		}
-	}
-}
-	
-function cleanUp(status){
 	$.ajax({
-		url: scenario=='update'?"cleanUp":"saveEdition",
-		context: document.body,
+		url: "enactChanges?scenario={0}{1}".format(scenario,($('#auto-restore').is(':checked')?'&autoRestore=1':'')),
 		type: "POST",
-		data: scenario=='update'?{
-			'status':status, 
-			'version':'<?php echo $newVersion; ?>', 
-			'updater':'<?php echo $updaterCheck; ?>',
-			'dataType':'json',
-			'fileList':"<?php echo addslashes(CJSON::encode($filesToDownload)); ?>",
-			'url':'<?php echo $url; ?>'
-		}:{
-			'status':status, 
-			'edition':edition, 
-			'unique_id':unique_id,
-			'fileList':"<?php echo addslashes(CJSON::encode($filesToDownload)); ?>"
+		data: {
+			'scenario':scenario,
+			'sqlList':sqlList,
+			'deletionList':(scenario=='update'?deletionList:[]),
+			'version':version,
+			'buildDate':(scenario=='update'?buildDate:0),
+			'edition':edition,
+			'unique_id':unique_id
+		},
+		dataType: 'json',
+		context: document.body
+	}).done(function(data) {
+		if(!data.error) {
+			$('#update-text').text(scenarioTitle+' complete.');
+			exitUpdater(data);
+		} else {
+			inProgress.hide();
+			$('#progress-errors').html(data.message).show();
 		}
-	}).done(function(response){
-		if(status != 'error') {
-			alert(response.message);
-			window.location.reload();
+	}).fail(function(jqXHR,textStatus,errorMessage) {
+		if (jqXHR.status != 0) {
+			inProgress.hide();
+			$('#progress-errors').text('{0} could not be completed because the request to the server failed or timed out.'.format(scenarioTitle)).show();
+			alert('{0} failed due to unsuccessful web request.'.format(scenarioTitle));
 		}
 	});
 }
 
+// This function used by the upgrade/pro registration form
 function submitExternalForm() {
-	var statusMsg = $('#error-box').find('h3').text('Retrieving upgrade data...');
+	var errorBox = $('#error-box');
+	var statusMsg = errorBox.find('h3').text('Retrieving upgrade data...');
 	$.ajax({
 		url:'getNUsers',
 		type:'GET'
@@ -238,7 +215,7 @@ function submitExternalForm() {
 			// Display data & "upgrade" form:
 			if (r.errors != undefined) {
 				statusMsg.html("Could not retrieve upgrade data.");
-				$('#error-box').append(r.errors);
+				errorBox.append(r.errors);
 			} else {
 				sqlList = r.sqlUpgrade;
 				fileList1 = r.fileUpgrade;
@@ -255,25 +232,24 @@ function submitExternalForm() {
 	});
 }
 
-function finishUpgrade(status) {
-	$.ajax({
-		url: "saveEdition",
-		context: document.body,
-		type: "POST",
-		data: {
-			'status':status, 
-			'edition':edition,
-			'unique_id':unique_id,
-			'dataType':'json',
-			'fileList':"<?php echo addslashes(CJSON::encode($filesToDownload)); ?>"
-		}
-	}).done(function(response){
-		if (status != 'error') {
-			alert(response.message);
-			window.location.href = '<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>';
-		}
-	});
+function exitUpdater(response) {
+	if(response != undefined)
+		alert(response.message);
+	if(scenario == 'upgrade') // Go to about page
+		window.location.href = '<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>';
+	else // Reload to show we're at the latest verion
+		window.location.reload();
 }
+
+$(function() {
+		$('#auto-restore').change(function() {
+			if($(this).is(':checked'))
+				$('#autorestore-disclaimer').fadeIn(300);
+			else
+				$('#autorestore-disclaimer').fadeOut(300);
+		})
+});
+//()(functio);
 
 </script>
 <?php endif; ?>
@@ -288,19 +264,76 @@ function finishUpgrade(status) {
 
 <?php
 Yii::app()->clientScript->registerScript("updater","$('#update-button').click(function(){
+	$('#progress-bar').fadeIn(300);
+	$('#update-status').show();
     downloadFile(0,scenario=='upgrade');
-    $('#update-status').show();
 });",CClientScript::POS_READY);
 ?>
 <div class="span-20">
 <div class="form">
 <h2><?php echo in_array($scenario,array('message','error')) ? $message : "X2CRM ".ucfirst($scenario); ?></h2>
-<?php if ($scenario != 'error') {
+<?php if($scenario != 'error'): ?>
+<hr />
+<?php if (in_array($scenario,array('update','upgrade'))): ?>
+<h3><?php echo Yii::t('admin','Before Proceeding'); ?></h3>
+<?php echo Yii::t('admin','The following precautions are highly recommended:') ?><br />
+<ul style="margin-top:10px;">
+	<li><?php echo Yii::t('admin',"Make a backup copy of X2CRM's database:")?>
+		<ul>
+			<li><?php echo Yii::t('admin','using third-party web hosting tools, or:'); ?></li> 
+			<li><?php echo Yii::t('admin','by clicking the button below.'); ?></li>
+		</ul>
+	</li>
+	<li><?php echo Yii::t('admin',"Disable pop-up blocking on this page.");?></li>
+</ul>
+
+<a href="#" onclick="makeBackup()" class="x2-button" id="backup-button"><?php echo Yii::t('admin','Backup Database'); ?></a>
+<img id="something-inprogress" style="height:25px;width:25px;vertical-align:middle;display:none" src="<?php echo Yii::app()->theme->BaseUrl.'/images/loading.gif'; ?>" /><br />
+<label for="auto-restore" style="display:inline-block;margin-right:10px"><?php echo Yii::t('admin','Automatically restore from backup if update fails'); ?></label>
+<input type="checkbox" name="auto-restore" id="auto-restore" style="display:inline-block;padding:0;margin:0;vertical-align: middle" />
+<?php
+$msg = '';
+try {
+	$this->checkDatabaseBackup();
+} catch (Exception $e) {
+	if($e->getCode() == 1) {
+		$msg = Yii::t('admin','Note: no database backup was found.');
+	} else if ($e->getCode() == 2) {
+		$msg = Yii::t('admin','Note: a database backup was found, but it is over 24 hours old.');
+	} else {
+		throw $e;
+	}
+}
+
+?>
+<span id="backup-state">
+	<span id="backup-state-error" style="color:red;"><?php echo $msg; ?></span>
+	<span id="backup-download-link" style="<?php echo empty($msg)?'':'display:none;' ?>"><?php echo CHtml::link('[ '.Yii::t('admin','Download database backup').' ]',array('admin/downloadDatabaseBackup')); ?></span>
+</span>
+<div style="display:none;margin-top:10px;" class="form" id="autorestore-disclaimer">
+	<h4><?php echo Yii::t('admin','Disclaimer'); ?></h4>
+	<?php
+	$disclaimer = array();
+	$disclaimer[] = 'Restoring a database may take longer than the maximum PHP execution time permitted in some server environments, or even longer than the request timeout value in the configuration of your web browser.';
+	$disclaimer[] = 'This is especially likely to occur if you have a large X2CRM installation with hundreds of thousands of records.';
+	$disclaimer[] = 'If a database restore operation is cut short, the consequences could be severe.';
+	$disclaimer[] = 'Please check your web server configuration and test making a backup of the database first.';
+	$disclaimer[] = 'If database backups do not succeed, consider disabling this option.';
+	?>
+	<?php echo Yii::t('admin',implode(' ',$disclaimer)); ?>
+</div>
+<br /><br /><hr />
+<?php endif; ?>
+<?php 
 	if ($scenario == 'update') {
+		echo '<h3>'.Yii::t('admin',"Update Details").'</h3>';
 		echo "Number of files to download: <b>$n_files</b><br />";
-		echo "Number of database changes: <b>" . (!empty($sqlList)?($sqlList[0] != "" ? count($sqlList) : "0"):'0') . "</b><br /><br />";
-		echo "Current updater version: <b>$updaterCheck</b><br />";
-		echo "Your updater version: <b>$updaterVersion</b><br /><br />";
+		echo empty($deletionList)?'':Yii::t('admin','Number of obsolete files to be deleted:').' <b>'.count($deletionList)."</b><br />";
+		echo "Number of database changes: <b>" . (!empty($sqlList)?($sqlList[0] != "" ? count($sqlList) : "0"):'0') . "</b><br />";
+		echo Yii::t('admin',"Updater utility version check:").'<strong>&nbsp;'
+				.( $updaterCheck == $updaterVersion 
+				? Yii::t('admin','pass')
+				: '<span style="color: red">'.Yii::t('admin','Something went wrong; the updater utility is at version {uver}, but to enact the changes requested requires it to be at {uchk}',array('{uver}'=>$updaterVersion,'{uchk}'=>$updaterCheck))).'</strong><br />';
 		echo "Current X2CRM version: <b>$newVersion</b><br />";
 	}
 	echo "Your X2CRM version: <b>$version</b><br /><br />";
@@ -336,21 +369,21 @@ Yii::app()->clientScript->registerScript("updater","$('#update-button').click(fu
 		$this->endWidget();
 		echo '<div id="upgrade-data" style="display:none;"></div>';
 	}
-}
+endif;
 ?>
-
 
 <?php if (!in_array($scenario, array('message','error'))): ?>
 <div id="updates-control"<?php echo $scenario == 'upgrade'?' style="display:none"':'';?>>
-<a href="#" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br />(note: you will need to disable pop-up blocking on this page before continuing)<br /><br />
-<div id="update-status" style="">
-<div id="progress-bar" style="width:300px;height:30px;border-style:solid;border-width:2px;">
+<a href="#" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br />
+<div id="update-status">
+<div id="progress-bar" style="display:none;width:300px;height:30px;border-style:solid;border-width:2px;">
     <div id="progress"><div id="progress-text" style="height:30px;width:300px;text-align:center;font-weight:bold;font-size:15px;">0%</div></div>
 </div><br />
-<div id="update-text" style="">Click "<?php echo ucfirst($scenario); ?>" to begin the <?php echo $scenario; ?>.</div>
-</div>
+<div id="update-text">Click "<?php echo ucfirst($scenario); ?>" to begin the <?php echo $scenario; ?>.</div>
 </div>
 <div id="progress-errors" class="form" style="display:none; color:red"></div>
+</div>
+</div>
 <?php else: ?>
 <?php 
 if (isset($longMessage)) echo "<p>$longMessage</p>";

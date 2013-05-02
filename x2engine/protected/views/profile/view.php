@@ -95,6 +95,7 @@ $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,
 	'itemView'=>'../social/_viewFull',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
-	'template'=> '<h3>'.Yii::t('profile','Feed').'</h3>{summary}{sorter}{items}{pager}',
+	// 'template'=> '<h3>'.Yii::t('profile','Feed').'</h3>{summary}{sorter}{items}{pager}',
+	'template'=> '{sorter}{items}{pager}',
 ));
 ?>

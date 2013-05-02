@@ -33,45 +33,130 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
- 
-/*********************************************************************************
- * Portions created by X2Engine are Copyright (C) X2Engine, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
+
+Yii::import('application.components.x2flow.actions.*');
+Yii::import('application.components.x2flow.triggers.*');
 
 /**
- * 
- * 
  * @package X2CRM.controllers
  */
 class StudioController extends x2base {
 	// Declares class-based actions.
-	
 
-	public $layout = '//layouts/column1';
+
+	// public $layout = '//layouts/column1';
 	public function filters() {
 		return array(
 			'setPortlets',
-			'accessControl',
+			//'accessControl',
 		);
 	}
 
-	
-	public function actionGetParams($name,$type) {
-		if($type === 'action') {
-			Yii::import('application.components.x2flow.actions.*');
-			echo CJSON::encode(X2FlowItem::getActionParamRules($name));
-		} else {
-			Yii::import('application.components.x2flow.triggers.*');
-			echo CJSON::encode(X2FlowItem::getTriggerParamRules($name));
+	public function actions() {
+		if(file_exists(Yii::app()->getBasePath().'/components/FlowDesignerAction.php')) {
+			return array(
+				'flowDesigner'=>array(
+					'class'=>'FlowDesignerAction'
+				),
+			);
 		}
+		return array();
 	}
+
+
+	public function actionFlowIndex() {
+		$this->render('flowIndex');
+	}
+
+	public function actionDeleteFlow($id) {
+		$model = $this->loadModel($id);
+		$model->delete();
+		$this->redirect(array('flowIndex'));
+	}
+
+	public function actionTest() {
+		$a = array();
+		
+		$act = new X2FlowEmail;
+		$act->config = array (
+			'type' => 'X2FlowEmail',
+			'options' => array (
+				'to' => 'me@x2engine.com',
+				'from' => 'mpearson@x2engine.com',
+				'template' => '',
+				'subject' => 'Hey you!',
+				'cc' =>'',
+				'bcc' =>'',
+				'body' => 'test test test test'
+			)
+		);
+		var_dump($act->execute($a));
+		
+		// $x = X2FlowTrigger::checkCondition(array('type'=>'time_of_day','operator'=>'<','value'=>'11:30'),$a);
+		// var_dump($x);
 	
+		/* $triggerName = 'RecordDeleteTrigger';
+		$params = array('model'=>new Contacts);
+
+		$flowAttributes = array('triggerType'=>$triggerName);
+
+		if(isset($params['model']))
+			$flowAttributes['modelClass'] = get_class($params['model']);
+
+		$results = array();
+
+		// find all flows matching this trigger and modelClass
+		foreach(CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes) as $flow) {
+			// file_put_contents('triggerLog.txt',"\n".$triggerName,FILE_APPEND);
+			$flowData = CJSON::decode($flow->flow);	// parse JSON flow data
+
+
+			if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
+
+				$trigger = X2FlowTrigger::create($flowData['trigger']);
+
+				if($trigger === null || !$trigger->validateRules($params) || !$trigger->check($params))
+					return;
+				// var_dump($trigger->check($params));
+				$results[] = array($flow->name,$flow->executeBranch($flowData['items'],$params));
+			}
+		}
+		var_dump($results); */
+	}
+
+	public function actionGetParams($name,$type) {
+
+		if($type === 'action')
+			$paramRules = X2FlowAction::getParamRules($name);	// X2Flow Actions
+		elseif($type === 'trigger')
+			$paramRules = X2FlowTrigger::getParamRules($name);	// X2Flow Triggers
+		elseif($type === 'condition')
+			$paramRules = X2FlowTrigger::getGenericCondition($name); // generic conditions (for triggers and switches)
+		else
+			$paramRules = false;
+
+		if($paramRules !== false) {
+			if($type === 'condition') {
+				if(isset($paramRules['options']))
+					$paramRules['options'] = X2FlowAction::dropdownForJson($paramRules['options']);
+			} else {
+				foreach($paramRules['options'] as &$option) {	// find any dropdowns and reformat them
+					if(isset($option['options']))				// so the item order is preserved in JSON
+						$option['options'] = X2FlowAction::dropdownForJson($option['options']);
+				}
+			}
+		}
+		echo CJSON::encode($paramRules);
+	}
+
 	public function actionGetFields($model) {
+		if(!class_exists($model)) {
+			echo 'false';
+			return;
+		}
 		$fieldModels = X2Model::model($model)->getFields();
 		$fields = array();
-		
+
 		foreach($fieldModels as &$field) {
 			if($field->isVirtual)
 				continue;
@@ -80,46 +165,41 @@ class StudioController extends x2base {
 				'label' => $field->attributeLabel,
 				'type' => $field->type,
 			);
-			
+
 			if($field->required)
 				$data['required'] = 1;
 			if($field->readOnly)
 				$data['readOnly'] = 1;
-			if($field->type === 'assignment' && $field->linkType === 'multiple')
-				$data['type'] = 'assignment_multiple';
-			if($field->type === 'dropdown' || $field->type === 'link')
+			if($field->type === 'assignment' || $field->type === 'optionalAssignment' ) {
+				$data['options'] = X2FlowAction::dropdownForJson(User::getNames());
+			} elseif($field->type === 'dropdown') {
 				$data['linkType'] = $field->linkType;
-			
+				$data['options'] = X2FlowAction::dropdownForJson(Dropdowns::getItems($field->linkType));
+			}
+
+			if($field->type === 'link') {
+				$staticLinkModel = X2Model::model($field->linkType);
+				if(array_key_exists('X2LinkableBehavior', $staticLinkModel->behaviors())) {
+					$data['linkType'] = $field->linkType;
+					$data['linkSource'] = Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource);
+				}
+			}
+
+
 			$fields[] = $data;
 		}
 		echo CJSON::encode($fields);
 	}
-	
-	
-		
-	public function actionFlowDesigner() {
-		$t0 = microtime(true);
-		if(Yii::app()->user->getName() !== 'admin')
-			throw new CHttpException(403, 'You are not authorized to perform this action.');
-			
-		Yii::import('application.components.x2flow.actions.*');
-		
-		$actionTypes = array();
-		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.actions')) as $file) {
-			if($file === '.' || $file === '..' || $file === 'X2FlowAction.php')
-				continue;
-			
-			$class = X2FlowAction::create(substr($file,0,-4));	// remove file extension and create instance
-			if($class !== null)
-				$actionTypes[get_class($class)] = $class->title;
-		}
-		// var_dump(microtime(true)-$t0);
-		// die(var_dump(array_keys($actionTypes)));
-		
-		
-		$this->render('flowEditor',array('actionTypes'=>$actionTypes));
-	
+
+	/**
+	 * Returns the data model based on the primary key given in the GET variable.
+	 *
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer $id the ID of the model to be loaded
+	 */
+	public function loadModel($id) {
+		if(null === $model = CActiveRecord::model('X2Flow')->findByPk((int)$id))
+			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
+		return $model;
 	}
-	
-	
 }

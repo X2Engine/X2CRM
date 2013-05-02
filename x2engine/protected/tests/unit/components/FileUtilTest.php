@@ -39,43 +39,7 @@ Yii::import('application.components.FileUtil');
 /**
  * @package X2CRM.tests.unit.components 
  */
-class FileUtilTest extends CTestCase {
-
-	public $baseDir;
-	public $subDirs = array('subdir1', 'subdir2');
-	public $exclSubDirs = array('exclDir1', 'exclDir2');
-	public $files = array('subdir1/testFile', 'subdir2/testFile');
-	public $exclFiles = array('exclDir1/testFile', 'exclDir2/exclFile');
-
-	public function setupTestDirs() {
-		$time = time();
-		$this->baseDir = FileUtil::rpath(Yii::app()->basePath . "/tests/data/output/test-$time");
-		if(!is_dir($this->baseDir))
-			mkdir($this->baseDir);
-
-		foreach (array_merge($this->subDirs, $this->exclSubDirs) as $dir)
-			if(!is_dir($this->baseDir . DIRECTORY_SEPARATOR . $dir))
-				mkdir($this->baseDir . DIRECTORY_SEPARATOR . $dir);
-		foreach (array_merge($this->files, $this->exclFiles) as $file)
-			if(!file_exists($this->baseDir . FileUtil::rpath("/$file")))
-				file_put_contents($this->baseDir . FileUtil::rpath("/$file"), 'test file');
-	}
-	
-	public function removeTestDirs() {
-		foreach (array_merge($this->files, $this->exclFiles) as $file) {
-			$path = $this->baseDir . FileUtil::rpath("/$file");
-			if (file_exists($path))
-				unlink($path);
-		}
-		foreach (array_merge($this->subDirs, $this->exclSubDirs) as $dir) {
-			$path = $this->baseDir . FileUtil::rpath("/$dir");
-			if (file_exists($path))
-				rmdir($path);
-		}
-		if (file_exists($this->baseDir)) {
-			rmdir($this->baseDir);
-		}
-	}
+class FileUtilTest extends FileOperTestCase {
 
 	/**
 	 * Expected behavior: if an exclude pattern is specified, and a subdirectory contains
@@ -142,18 +106,18 @@ class FileUtilTest extends CTestCase {
 	 * NOTE: the requirements checker (which gets deleted) will need to be copied back first.
 	 */
 	public function testRemoteCopy() {
-		// 
 		$outdir = Yii::app()->basePath . "/tests/data/output";
-		$copy = "$outdir/requirements-copy.php";
-		$curl = "$outdir/requirements-curl.php";
-		$live = Yii::app()->basePath . "/../requirements.php";
-		FileUtil::ccopy('http://x2planet.com/installs/requirements.php',$copy);
+		$copy = "$outdir/index-copy.php";
+		$curl = "$outdir/index-curl.php";
+		$file = 'index.php';
+		$live = Yii::app()->basePath . "/../$file";
+		FileUtil::ccopy("http://x2planet.com/updates/x2engine/$file",$copy);
 		FileUtil::$alwaysCurl = true;
-		FileUtil::ccopy('http://x2planet.com/installs/requirements.php',$curl);		
+		FileUtil::ccopy("http://x2planet.com/updates/x2engine/$file",$curl);
 		FileUtil::$alwaysCurl = false;
 		// Test that the files are identical:
 		$this->assertEquals(file_get_contents($copy),file_get_contents($curl));
-		// Test that the first 4 bytes of the file are identical to the stored file:
+		// Test that the first 4 bytes of the file are identical to the locally-stored file:
 		$afh = fopen($live,'rb');
 		$cfh = fopen($copy,'rb');
 		$ufh = fopen($curl,'rb');
@@ -166,7 +130,34 @@ class FileUtilTest extends CTestCase {
 		unlink($copy);
 		unlink($curl);
 	}
-
+	
+	public function testRelpath() {
+		// Specifying both paths
+		$startPoint = Yii::app()->basePath.'/config/main.php';
+		$file = Yii::app()->basePath.'/../framework/YiiBase.php';
+		$relpath = FileUtil::relpath($file,$startPoint);
+		$this->assertEquals('../../framework/YiiBase.php',$relpath);
+		// Specifying only one path. The return value should originate from 
+		// index.php's directory!
+		$relpath = FileUtil::relpath($file);
+		$this->assertEquals('../../framework/YiiBase.php',$relpath);
+		// Test on Windows!
+		$startPoint = 'C:\\Program Files (x86)\\Something\\SomethingElse\\..\\something.exe';
+		$endPoint = 'C:\\Windows\\Something\\..\\Something\\SomethingMore/library.dll';
+		$relpath = FileUtil::relpath($endPoint,$startPoint);
+		$this->assertEquals('../../Windows/Something/SomethingMore/library.dll',$relpath);
+		// Two ordinary points that don't require upward traversal...
+		$startPoint = '/home/joeschmoe/public_html/';
+		$endPoint = '/home/joeschmoe/public_html/protected/controllers/FatController.php';
+		$relpath = FileUtil::relpath($endPoint,$startPoint);
+		$this->assertEquals('protected/controllers/FatController.php',$relpath);
+		// Two points, one in a backup dir
+		$startPoint = '/home/joeschmoe/public_html/protected/controllers/FatController.php';
+		$endPoint   = '/home/joeschmoe/public_html/backup/protected/controllers/FatController.php';
+		$relpath = FileUtil::relpath($endPoint,$startPoint);
+		$this->assertEquals('../../backup/protected/controllers/FatController.php',$relpath);
+		
+	}
 }
 
 ?>

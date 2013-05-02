@@ -84,6 +84,7 @@ class Profile extends CActiveRecord {
 			array('backgroundColor, menuBgColor, menuTextColor, pageHeaderBgColor, pageHeaderTextColor', 'length', 'max'=>6),
 			array('backgroundTiling,emailUseSignature', 'length', 'max'=>10),
 			array('startPage', 'length', 'max'=>30),
+            array('googleId','unique'),
 			array('fullName', 'length', 'max'=>60),
 			array('username, updatedBy', 'length', 'max'=>20),
 			array('officePhone, cellPhone, language', 'length', 'max'=>40),
@@ -230,9 +231,9 @@ class Profile extends CActiveRecord {
 			),
 			$signature
 		);
-		if($html)
-			$signature = x2base::convertLineBreaks($signature);
-			// $signature = '<span style="color:grey;">' . x2base::convertLineBreaks($signature) . '</span>';
+		if($html) {
+			$signature = Formatter::convertLineBreaks($signature);
+		}
 			
 		return $signature;
 	}
@@ -327,7 +328,6 @@ class Profile extends CActiveRecord {
 		$visibility = ($model->widgets=='')? array() : explode(":",$model->widgets);
 		
 		$widgetList = array();
-		
 		$updateRecord = false;
 		
 		for($i=0;$i<count($widgetNames);$i++) {
@@ -399,11 +399,23 @@ class Profile extends CActiveRecord {
 	}
 	
 	public function getLink() {
-	
-		if($this->id == Yii::app()->user->id)
-			return CHtml::link(Yii::t('app','your feed'),array($this->baseRoute.'/'.$this->id));
-		else
-			return CHtml::link(Yii::t('app','{name}\'s feed',array('{name}'=>$this->fullName)),array($this->baseRoute.'/'.$this->id));
+
+		$noSession = Yii::app()->params->noSession;
+		if(!$noSession) {
+			if($this->id == Yii::app()->user->id)
+				return CHtml::link(Yii::t('app','your feed'),array($this->baseRoute.'/'.$this->id));
+			else
+				return CHtml::link(Yii::t('app','{name}\'s feed',array('{name}'=>$this->fullName)),array($this->baseRoute.'/'.$this->id));
+		} else {
+			if($wbc = realpath(Yii::app()->basePath.'/../webLeadConfig.php')) {
+				// Attempt to get the URL of the base of the app from webLeadConfig
+				include($wbc);
+				return CHtml::link($this->fullName,$url.'/index.php'.$this->baseRoute.'/'.$this->id);
+			} else {
+				// Give up and just return text
+				return $this->fullName;
+			}
+		}
 	}
 
 	public function syncActionToGoogleCalendar($action) {
@@ -634,7 +646,7 @@ class Profile extends CActiveRecord {
     				'minimize' => false,
     			),
     			'ChatBox' => array(
-    				'title' => 'Chat',
+    				'title' => 'Activity Feed',
     				'minimize' => false,
     			),
     			'GoogleMaps' => array(
@@ -676,7 +688,11 @@ class Profile extends CActiveRecord {
     			'TopSites' => array(
     				'title' => 'Top Sites',
     				'minimize' => false,
-    			)
+    			),
+                'HelpfulTips' => array(
+    				'title' => 'Helpful Tips',
+    				'minimize' => false,
+    			),
     		),
     		'hidden' => array(),
     		'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere

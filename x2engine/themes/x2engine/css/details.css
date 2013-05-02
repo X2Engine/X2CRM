@@ -117,7 +117,7 @@ table.details input, table.details textarea {
 	font-family:Arial, Helvetica, sans-serif;
 }
 table.details {
-	margin:5px 0 10px 0;
+	margin:5px 0;
 	clear:both;
 	border:1px solid #aaa;
 	width:100%;

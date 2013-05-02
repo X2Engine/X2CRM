@@ -51,7 +51,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
-<div class="page-title">
+<div class="page-title icon accounts">
 <h2><span class="no-bold"><?php echo Yii::t('app','Share:');?></span> <?php echo $model->name; ?></h2>
 </div>
 

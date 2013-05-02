@@ -36,7 +36,7 @@
 
 /**
  * User notifications & social feed controller
- * 
+ *
  * @package X2CRM.controllers
  */
 class NotificationsController extends CController {
@@ -47,28 +47,25 @@ class NotificationsController extends CController {
 				'actions'=>array('get','delete','deleteAll','newMessage','getMessages','checkNotifications','saveGridviewSettings','saveFormSettings', 'fullScreen', 'pageOpacity', 'widgetState','widgetOrder'),
 				'users'=>array('@'),
 			),
-			array('deny', 
+			array('deny',
 				'users'=>array('*')
 			)
 		);
 	}
 
 	/**
-	 * Obtain all current notifications for the current web user. 
+	 * Obtain all current notifications for the current web user.
 	 */
 	public function actionGet() {
-	
-		if(!isset($_GET['lastNotifId']))	// if the client doesn't specify the last 
+
+		if(!isset($_GET['lastNotifId']))	// if the client doesn't specify the last
 			$_GET['lastNotifId'] = 0;		// message ID received, send everything
-	
-	
+
 		$notifications = $this->getNotifications($_GET['lastNotifId']);
 		$notifCount = 0;
-
-		
 		if(count($notifications))
-			$notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name));
-		
+			$notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name),'createDate < '.time());
+
 		$chatMessages = array();
 		$lastEventId = 0;
         $lastTimestamp=0;
@@ -79,6 +76,9 @@ class NotificationsController extends CController {
             $lastTimestamp=$_GET['lastTimestamp'];
         }
         Yii::import('application.models.Events');
+        Yii::import('application.components.Formatter');
+        Yii::import('application.controllers.x2base');
+        Yii::import('application.controllers.X2Controller');
         if($lastEventId==0){
             $limit=20;
         }else{
@@ -95,11 +95,11 @@ class NotificationsController extends CController {
                     (int)$events[$i]->timestamp,
                     $userLink,
                     $events[$i]->getText(true),
-                    $this->formatFeedTimestamp($events[$i]->timestamp)
+                    Formatter::formatFeedTimestamp($events[$i]->timestamp)
                 );
             }
 		}
-        
+
 		if(!empty($notifications) || !empty($chatMessages)) {
 			echo CJSON::encode(array(
 				'notifCount'=>$notifCount,
@@ -113,7 +113,7 @@ class NotificationsController extends CController {
 	 * Looks up notifications using the specified offset and limit
 	 */
 	public function getNotifications($lastId=0,$getNext=false) {
-	
+
 		// import all the models
 		Yii::import('application.models.Social');
 		Yii::import('application.models.Profile');
@@ -124,32 +124,32 @@ class NotificationsController extends CController {
 			if(file_exists('protected/modules/'.$module.'/register.php'))
 				Yii::import('application.modules.'.$module.'.models.*');
 		}
-		
+
 		$notifications = array();
-		
+
 		if($getNext) {
 			$criteria = new CDbCriteria(array(
-				'condition'=>'id<=:lastId AND user=:user',								// don't get anything more recent than lastId, 
-				'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),	// because these are going to get appended to the end, 
-				'order'=>'id DESC',														// not the beginning of the list
+				'condition'=>'id<=:lastId AND user=:user AND createDate <= :time',								// don't get anything more recent than lastId,
+				'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId,':time'=>time()),        // because these are going to get appended to the end,
+				'order'=>'id DESC',                                                                         // not the beginning of the list
 				'limit'=>1,		// only get the 10th row
 				'offset'=>9
 			));
 		} else {
 			$criteria = new CDbCriteria(array(
-				'condition'=>'id>:lastId AND user=:user',								// normal request; get everything since lastId
-				'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId),
+				'condition'=>'id>:lastId AND user=:user AND createDate <= :time',								// normal request; get everything since lastId
+				'params'=>array(':user'=>Yii::app()->user->name,':lastId'=>$lastId,':time'=>time()),
 				'order'=>'id DESC',
 				'limit'=>10
 			));
 		}
 
-		
+
 		$notifModels = X2Model::model('Notification')->findAll($criteria);
-		
+
 		foreach($notifModels as &$model) {
 			$msg = $model->getMessage();
-			
+
 			if($msg !== null) {
 				$notifications[] = array(
 					'id'=>$model->id,
@@ -161,15 +161,15 @@ class NotificationsController extends CController {
 		}
 		return $notifications;
 	}
-	
+
 	/**
-	 * Mark an action as viewed. 
+	 * Mark an action as viewed.
 	 */
 	public function actionMarkViewed() {
 		if(isset($_GET['id'])) {
 			if(!is_array($_GET['id']))
 				$_GET['id'] = array($_GET['id']);
-				
+
 			foreach($_GET['id'] as &$id) {
 				$notif = X2Model::model('Notification')->findByPk($id);
 				if(isset($notif) && $notif->user == Yii::app()->user->name) {
@@ -179,20 +179,20 @@ class NotificationsController extends CController {
 			}
 		}
 	}
-	
+
 	/**
 	 * Delete an action by its ID. Encode and return the next notification if requested
 	 * @param type $id
 	 */
 	public function actionDelete($id) {
-	
+
 		if(!isset($_GET['lastNotifId']))
 			$_GET['lastNotifId'] = 0;
-	
+
 		$model = X2Model::model('Notification')->findByPk($id);
 		if(isset($model) && $model->user = Yii::app()->user->name)
 			$model->delete();
-			
+
 		if(isset($_GET['getNext']))
 			echo CJSON::encode(array('notifData'=>$this->getNotifications($_GET['lastNotifId'],true)));
 	}
@@ -205,11 +205,11 @@ class NotificationsController extends CController {
 		$this->redirect(array('/site/viewNotifications'));
 	}
 
-/* 
+/*
 	public function actionCheckNotifications(){
 		Yii::import('application.models.Notifications');
 		Yii::import('application.models.NotificationChild');
-		
+
 		$list=X2Model::model('NotificationChild')->findAllByAttributes(array('user'=>Yii::app()->user->getName(),'viewed'=>'0'));
 		if(count($list)>0){
 			echo json_encode(count($list));
@@ -223,7 +223,7 @@ class NotificationsController extends CController {
 		// echo var_dump(Yii::app()->session['fullscreen']);
 		echo 'Success';
 	}
-	
+
 	public function actionPageOpacity() {
 		if(isset($_GET['opacity']) && is_numeric($_GET['opacity'])) {
 
@@ -232,9 +232,9 @@ class NotificationsController extends CController {
 				$opacity = 1;
 			if($opacity < 0.1)
 				$opacity = 0.1;
-		
+
 			$opacity = round(100*$opacity);
-			
+
 			// $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			Yii::app()->params->profile->pageOpacity = $opacity;
@@ -245,13 +245,13 @@ class NotificationsController extends CController {
 	}
 
 	public function actionWidgetState() {
-		
+
 		if(isset($_GET['widget']) && isset($_GET['state'])) {
 			$widgetName = $_GET['widget'];
 			$widgetState = ($_GET['state']==0)? 0 : 1;
-			
+
 			// $profile = Yii::app()->params->profile;
-			
+
 			$order = explode(":",Yii::app()->params->profile->widgetOrder);
 			$visibility = explode(":",Yii::app()->params->profile->widgets);
 
@@ -259,9 +259,9 @@ class NotificationsController extends CController {
 
 				$pos = array_search($widgetName,$order);
 				$visibility[$pos] = $widgetState;
-			
+
 				Yii::app()->params->profile->widgets = implode(':',$visibility);
-				
+
 				if(Yii::app()->params->profile->save()){
 					echo 'success';
 				}
@@ -273,16 +273,16 @@ class NotificationsController extends CController {
 		if(isset($_POST['widget'])) {
 
 			$widgetList = $_POST['widget'];
-			
+
 			// $profile = Yii::app()->params->profile;
 			$order = Yii::app()->params->profile->widgetOrder;
 			$visibility = Yii::app()->params->profile->widgets;
-			
+
 			$order = explode(":",$order);
 			$visibility = explode(":",$visibility);
-			
+
 			$newOrder = array();
-			
+
 			foreach($widgetList as $item) {
 				if(array_key_exists($item,Yii::app()->params->registeredWidgets))
 					$newOrder[] = $item;
@@ -297,24 +297,24 @@ class NotificationsController extends CController {
 			}
 			$str = substr($str,0,-1);
 			$visStr = substr($visStr,0,-1);
-			
+
 			Yii::app()->params->profile->widgetOrder = $str;
 			Yii::app()->params->profile->widgets = $visStr;
-			
+
 			if(Yii::app()->params->profile->save()){
 				echo 'success';
 			}
 		}
 	}
-	
+
 	public function actionSaveGridviewSettings() {
-		
-		
-		
+
+
+
 		$result = false;
 		if(isset($_GET['gvSettings']) && isset($_GET['viewName'])) {
 			$gvSettings = json_decode($_GET['gvSettings'],true);
-			
+
 			if(isset($gvSettings))
 				$result = ProfileChild::setGridviewSettings($gvSettings,$_GET['viewName']);
 		}
@@ -323,12 +323,12 @@ class NotificationsController extends CController {
 		else
 			echo '400 Failure';
 	}
-	
+
 	public function actionSaveFormSettings() {
 		$result = false;
 		if(isset($_GET['formSettings']) && isset($_GET['formName'])) {
 			$formSettings = json_decode($_GET['formSettings'],true);
-			
+
 			if(isset($formSettings))
 				$result = ProfileChild::setFormSettings($formSettings,$_GET['formName']);
 		}
@@ -341,7 +341,7 @@ class NotificationsController extends CController {
 
 	/**
 	 * Used in function convertUrls
-	 * 
+	 *
 	 * @todo refactor this out of controllers
 	 * @param mixed $a
 	 * @param mixed $b
@@ -353,7 +353,7 @@ class NotificationsController extends CController {
 
 	/**
 	 *  Replaces any URL in text with an html link (supports mailto links)
-	 * 
+	 *
 	 * @todo refactor this out of controllers
 	 */
 	public function convertUrls($text, $convertLineBreaks = true) {
@@ -385,11 +385,11 @@ class NotificationsController extends CController {
 
 		/* First break the text into two arrays, one containing <a> tags and the like
 		 * which should not have any replacements, and another with all the text that
-		 * should have URLs activated.  Each piece of each array has its offset from 
+		 * should have URLs activated.  Each piece of each array has its offset from
 		 * original string so we can piece it back together later
 		 */
-		
-		//add any additional tags to be passed over here	
+
+		//add any additional tags to be passed over here
 		$tags_with_urls = "/(<a[^>]*>.*<\/a>)|(<img[^>]*>)/i";
 		$text_to_add_links = preg_split($tags_with_urls, $text, NULL, PREG_SPLIT_OFFSET_CAPTURE);
 		$matches = array();
@@ -409,21 +409,21 @@ class NotificationsController extends CController {
 
 		// Merge the arrays and sort to be in the original order
 		$all_text_chunks = array_merge($text_to_add_links, $text_to_leave);
-		
+
 		usort($all_text_chunks,'NotificationsController::compareChunks');
 
 		$new_text = "";
 		foreach ($all_text_chunks as $chunk) {
 			$new_text = $new_text . $chunk[0];
 		}
-		$text = $new_text;	
+		$text = $new_text;
 
 		// Make sure all links open in new window, and have http:// if missing
 		$text = preg_replace(
-			array(	'/<a([^>]+)target=("[^"]+"|\'[^\']\'|[^\s]+)([^>]+)/i',	
+			array(	'/<a([^>]+)target=("[^"]+"|\'[^\']\'|[^\s]+)([^>]+)/i',
 				'/<a([^>]+)>/i',
-				'/<a([^>]+href="?\'?)(www\.|ftp\.)/i'), 
-			array(	'<a\\1\\3',	
+				'/<a([^>]+href="?\'?)(www\.|ftp\.)/i'),
+			array(	'<a\\1\\3',
 				'<a\\1 target="_blank">',
 				'<a\\1http://\\2'),
 			$text
@@ -436,19 +436,19 @@ class NotificationsController extends CController {
 
 
 		if($convertLineBreaks)
-			return $this->convertLineBreaks($text,true,false);
+			return Formatter::convertLineBreaks($text,true,false);
 		else
 			return $text;
 	}
 
 	/**
 	 * Normalize linebreaks in output.
-	 * 
+	 *
 	 * @todo refactor this out of controllers
 	 * @param string $text
 	 * @param boolean $allowDouble
 	 * @param boolean $allowUnlimited
-	 * @return string 
+	 * @return string
 	 */
 	public static function convertLineBreaks($text,$allowDouble = true,$allowUnlimited = false) {
 		$text = mb_ereg_replace("\r\n","\n",$text);		//convert microsoft's stupid CRLF to just LF
@@ -462,13 +462,4 @@ class NotificationsController extends CController {
 
 		return $text;
 	}
-    
-    function formatFeedTimestamp($timestamp){
-        if(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)==Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),time())){
-            $str=Yii::t('app','Today').' '.Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
-        }else{
-            $str=Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)." ".Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
-        }
-        return $str;
-    }
 }

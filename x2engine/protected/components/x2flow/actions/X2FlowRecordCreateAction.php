@@ -41,17 +41,33 @@
  */
 class X2FlowRecordCreateAction extends X2FlowAction {
 	public $title = 'Create Action for Record';
-	public $info = '';
+	public $info = 'Creates a new action associated with the record that triggered this flow.';
 	
 	public function paramRules() {
-		return array('title'=>$this->title,'fields'=>array(
-			'attributes' => array(),
-			'model' => array(),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'modelRequired' => 1,
+			'options' => array(
+				// array('name'=>'attributes'),
+				array('name'=>'subject','label'=>Yii::t('actions','Subject'),'optional'=>1),
+				array('name'=>'description','label'=>Yii::t('actions','Description'),'type'=>'text')
+			));
 	}
 	
-	public function execute($params) {
+	public function execute(&$params) {
 		$action = new Actions;
-			return $this->setModelAttributes($action,$params) && $model->save();
+		$action->associationType = get_class($params['model']);
+		$action->associationId = $params['model']->id;
+		$action->subject = $this->config['options']['subject'];
+		$action->actionDescription = $this->config['options']['description'];
+		$action->assignedTo = $params['model']->assignedTo;
+		$action->priority = $params['model']->priority;
+		$action->visibility = $params['model']->visibility;
+		
+		// return $this->setModelAttributes($action,$params) && $model->save();
+		
+		return $action->save();
 	}
 }
+

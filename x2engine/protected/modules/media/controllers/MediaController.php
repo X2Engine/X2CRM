@@ -107,6 +107,32 @@ class MediaController extends x2base {
 				$model->description = $_POST['Media']['description'];
 			
 			if($model->save()) {
+                if(!empty($model->associationType) && !empty($model->associationId) && is_numeric($model->associationId)){
+                    $note=new Actions;
+					$note->createDate = time();
+					$note->dueDate = time();
+					$note->completeDate = time();
+					$note->complete='Yes';
+					$note->visibility='1';
+					$note->completedBy=Yii::app()->user->getName();
+					if($model->private) {
+						$note->assignedTo = Yii::app()->user->getName();
+						$note->visibility = '0';
+					} else {
+						$note->assignedTo='Anyone';
+					}
+					$note->type='attachment';
+					$note->associationId=$model->associationId;
+					$note->associationType=$model->associationType;
+                    if($modelName=X2Model::getModelName($model->associationType)){
+                        $association =X2Model::model($modelName)->findByPk($model->associationId);
+                        if($association != null){
+                                $note->associationName = $association->name;
+                        }
+                    }
+					$note->actionDescription = $model->fileName . ':' . $model->id;
+                    $note->save();
+                }
 				$this->redirect(array('view','id'=>$model->id));
 			}
 		

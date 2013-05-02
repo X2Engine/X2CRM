@@ -92,7 +92,7 @@ if(isset($_GET['fields'])){
 
 	
 	<?php if(isset($contact->leadDate) && $contact->leadDate != "") { ?>
-		<?php echo Yii::t('contacts', 'Lead Date').": "; ?> <strong><?php echo $this->formatLongDate($contact->leadDate); ?></strong><br />
+		<?php echo Yii::t('contacts', 'Lead Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->leadDate); ?></strong><br />
 	<?php } ?>
 	
 	
@@ -105,7 +105,7 @@ if(isset($_GET['fields'])){
 	<?php } ?>
 	
 	<?php if(isset($contact->closedate) && $contact->closedate != "") { ?>
-		<?php echo Yii::t('contacts', 'Close Date').": "; ?> <strong><?php echo $this->formatLongDate($contact->closedate); ?></strong><br />
+		<?php echo Yii::t('contacts', 'Close Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->closedate); ?></strong><br />
 	<?php } ?>
 	
 	<?php if(isset($contact->dealstatus) && $contact->dealstatus != "") { ?>

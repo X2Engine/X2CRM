@@ -40,7 +40,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','Create',array('{X}'=>$moduleConfig['recordName']))),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2></div>
+<div class="page-title icon products"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2></div>
 <?php 
 if(!isset($model->status) || $model->status == '') {
 	$model->status = 'Active';

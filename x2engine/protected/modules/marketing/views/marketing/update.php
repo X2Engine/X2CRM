@@ -47,6 +47,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
+	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ),$authParams);
 
 $form = $this->beginWidget('CActiveForm', array(
@@ -54,7 +55,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'enableAjaxValidation'=>false
 ));
 ?>
-<div class="page-title">
+<div class="page-title icon marketing">
 	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button highlight right')); ?>
 </div>

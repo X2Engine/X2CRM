@@ -52,9 +52,9 @@ foreach($recentItems as $item) {
 		if(strlen($description)>123)
 			$description = substr($description,0,120).'...';
 		
-		$link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).'</strong><br />'.MediaChild::attachmentActionText($description);
+		$link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).'</strong><br />'.Media::attachmentActionText($description);
 		//$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
-		echo CHtml::link($link,array('/actions/'.$item['model']->id));
+		echo CHtml::link($link,'#',array('class'=>'action-frame-link','data-action-id'=>$item['model']->id));
 
 	} else if ($item['type']=='c') {	//item is a contact
 

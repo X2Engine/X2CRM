@@ -48,11 +48,12 @@ $this->pageTitle = Yii::app()->name . ' - Home';
     if ($isUser || $isAdmin) {
         $menuItems = array(
             array('label' => Yii::t('app', 'Top Contacts'), 'url' => array('contacts/index/')),
-            array('label' => Yii::t('app', 'Chat'), 'url' => array('site/chat/')),
+            //array('label' => Yii::t('app', 'Chat'), 'url' => array('site/chat/')),
             array('label' => Yii::t('mobile', 'New Record'), 'url' => array('contacts/new/')),
             array('label' => Yii::t('mobile', 'Find Contacts'), 'url' => array('contacts/search/')),
             array('label' => Yii::t('mobile', 'People'), 'url' => array('site/people/')),
-            array('label' => Yii::t('mobile', 'More'), 'url' => array('site/more/')),
+            array('label' => Yii::t('mobile', 'Who\'s Online'), 'url' => array('site/online/')),   
+            //array('label' => Yii::t('mobile', 'More'), 'url' => array('site/more/')),
         );
     } else {
         $menuItems = array(

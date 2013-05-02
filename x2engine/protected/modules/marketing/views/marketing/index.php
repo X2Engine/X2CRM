@@ -42,6 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
+	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'),'visible'=>false)//(Yii::app()->params->edition==='pro')),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -80,7 +81,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 $this->widget('application.components.X2GridView', array(
 	'id'=>'marketing-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'. Yii::t('marketing','Campaigns') .'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon marketing"><h2>'. Yii::t('marketing','Campaigns') .'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '

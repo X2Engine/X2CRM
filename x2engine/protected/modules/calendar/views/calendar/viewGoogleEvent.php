@@ -68,10 +68,10 @@ $form=$this->beginWidget('CActiveForm', array(
 <div class="row">
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,'startDate', array('class'=>'dialog-label'));
-		echo X2Model::formatDateTime($model->dueDate);	//format date from DATETIME
+		echo Formatter::formatDateTime($model->dueDate);	//format date from DATETIME
 
 		echo $form->label($model, 'endDate', array('class'=>'dialog-label'));
-		echo X2Model::formatDateTime($model->completeDate);	//format date from DATETIME
+		echo Formatter::formatDateTime($model->completeDate);	//format date from DATETIME
 
 		?>
 		

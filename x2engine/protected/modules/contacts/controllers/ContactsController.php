@@ -171,6 +171,7 @@ class ContactsController extends x2base {
 					));
 				} else {
                     $contact->dupeCheck=1;
+					$contact->scenario = 'noChangelog';
                     $contact->update(array('dupeCheck'));
 					User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
 					parent::view($contact, 'contacts');
@@ -851,13 +852,6 @@ class ContactsController extends x2base {
 			// $model = $this->updateChangelog($model, $changes);
 			$model->createDate = time();
 			if($model->save()) {
-                $event=new Events;
-                $event->user=Yii::app()->user->getName();
-                $event->associationType='Contacts';
-                $event->associationId=$model->id;
-                $event->type='record_create';
-                $event->visibility=$model->visibility;
-                $event->save();
 				$this->renderPartial('application.components.views.quickContact', array());
 			}
 		}
@@ -1178,7 +1172,7 @@ class ContactsController extends x2base {
 				&& !empty($_POST['gvSelection']) && is_array($_POST['gvSelection']) && $_POST['listName'] != '' && class_exists($_POST['modelName'])) {
 
 			foreach($_POST['gvSelection'] as &$contactId) {
-				if(!ctype_digit($contactId))
+				if(!ctype_digit((string)$contactId))
 					throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
 			}
 
@@ -1408,7 +1402,7 @@ class ContactsController extends x2base {
 		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
 			
 			foreach($_POST['gvSelection'] as &$contactId)
-				if(!ctype_digit($contactId))
+				if(!ctype_digit((string)$contactId))
 					throw new CHttpException(400, Yii::t('app','Invalid selection.'));
 			
 			$list = CActiveRecord::model('X2List')->findByPk($_POST['listId']);
@@ -1428,7 +1422,7 @@ class ContactsController extends x2base {
 		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
 
 			foreach($_POST['gvSelection'] as $contactId)
-				if(!ctype_digit($contactId))
+				if(!ctype_digit((string)$contactId))
 					throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
 
 			$list = CActiveRecord::model('X2List')->findByPk($_POST['listId']);
@@ -1805,7 +1799,7 @@ class ContactsController extends x2base {
             if(!empty($keys) && !empty($attributes)){
                 $importMap=array_combine($keys,$attributes);
                 foreach($importMap as $key=>&$value){
-                    $key=$this->deCamelCase($key);
+                    $key=Formatter::deCamelCase($key);
                     $key=preg_replace('/\[W|_]/',' ',$key);
                     $key=mb_convert_case($key,MB_CASE_TITLE,"UTF-8");
                     $key=preg_replace('/\W/','',$key);
@@ -2273,6 +2267,7 @@ class ContactsController extends x2base {
 		
 		if(isset($_POST['Contacts'])) {
 			$model = new Contacts;
+            $model->createEvent=false;
 			$oldAttributes = $model->getAttributes();
 			$model->setX2Fields($_POST['Contacts']);
 			$now = time();
@@ -2292,7 +2287,9 @@ class ContactsController extends x2base {
 
 			//find any existing contacts with the same contact info
 			$criteria = new CDbCriteria();
-			$criteria->compare('email', $model->email, false, "OR");
+            if(!empty($model->email)){
+                $criteria->compare('email', $model->email, false, "OR");
+            }
 			
 			$duplicates = $model->findAll($criteria);
 			
@@ -2317,7 +2314,7 @@ class ContactsController extends x2base {
 			}
 
 			if($success) {
-				X2Flow::trigger('weblead',array('model'=>$model));
+				X2Flow::trigger('WebleadTrigger',array('model'=>$model));
 				
 				// add tags
 				if(!empty($_POST['tags'])) {
@@ -2337,7 +2334,7 @@ class ContactsController extends x2base {
 							$tagModel->itemName = $model->name;
 							$tagModel->save();
 							
-							X2Flow::trigger('record_tag_added',array(
+							X2Flow::trigger('RecordTagAddTrigger',array(
 								'model'=>$model,
 								'tag'=>$tag,
 							));

@@ -77,9 +77,9 @@ if(in_array($file_ext,$legal_extensions))
 	</tr>
 	<tr>
 		<td class="label" width="15%"><label><?php echo $attributeLabels['createDate']; ?></label></td>
-		<td><b><?php echo X2Model::formatLongDateTime($model->createDate); ?></td>
+		<td><b><?php echo Formatter::formatLongDateTime($model->createDate); ?></td>
 		<td class="label" width="15%"><label><?php echo $attributeLabels['lastUpdated']; ?></label></td>
-		<td><b><?php echo X2Model::formatLongDateTime($model->lastUpdated); ?></td>
+		<td><b><?php echo Formatter::formatLongDateTime($model->lastUpdated); ?></td>
 	</tr>
 </table>
 </div>

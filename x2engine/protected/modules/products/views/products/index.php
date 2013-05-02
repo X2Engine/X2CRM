@@ -70,7 +70,7 @@ function trimText($text) {
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'product-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.$moduleConfig['title'].'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon products"><h2>'.$moduleConfig['title'].'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
 		.X2GridView::getFilterHint()

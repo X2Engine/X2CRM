@@ -70,7 +70,7 @@ class Notification extends CActiveRecord {
 			array('user, createdBy, comparison, type', 'length', 'max'=>20),
 			array('type, value', 'length', 'max'=>250),
 			// array('text', 'safe'),
-			array('id, user, viewed, createDate, type, comparison, modelType, modelId, fieldName', 'safe', 'on'=>'search'),	//text, record, 
+			array('id, user, viewed, text, createDate, type, comparison, modelType, modelId, fieldName', 'safe', 'on'=>'search'),	//text, record, 
 		);
 	}
 
@@ -100,6 +100,7 @@ class Notification extends CActiveRecord {
 			'type' => 'Type',
 			'comparison' => 'Comparison',
 			'value' => 'Value',
+			'text' => 'Text',
 			'modelType' => 'Model Type',
 			'modelId' => 'Model ID',
 			'fieldName' => 'Field Name',
@@ -151,7 +152,7 @@ class Notification extends CActiveRecord {
 			}
 		}
 		
-		if(!isset($record) && $this->type!='lead_failure'){
+		if(!isset($record) && $this->type !== 'lead_failure' && $this->type !== 'custom') {
 			// return var_dump($this->attributes);
 			return null;
         }
@@ -164,7 +165,9 @@ class Notification extends CActiveRecord {
 					return Yii::t('actions','Action completed: {action}',array('{action}'=>$record->getLink()));
 				else
 					return Yii::t('actions','{user} completed an action: {action}',array('{user}'=>User::getUserLinks($record->completedBy),'{action}'=>$record->getLink(20)));
-
+                
+            case 'action_reminder':
+                return Yii::t('actions','<b>Reminder!</b> The following action is due: {action}',array('{action}'=>$record->getLink()));
 			// case 'workflow_complete':
 				// if($passive)
 					// return Yii::t('actions','Stage {n}: {stage} was completed for {record}',array('{record}'=>$record->getLink()));
@@ -264,7 +267,8 @@ class Notification extends CActiveRecord {
 					'{user}'=>User::getUserLinks($this->createdBy),
 					'{record}'=>$record->createLink(),
 				));
-			
+			case 'custom':
+				return $this->text;
 			default:
 				return 'Error: unkown type <b>'.$this->type.'</b>';
 

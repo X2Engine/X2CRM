@@ -34,5 +34,5 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('actions','That action is not assigned to you.'); ?></h2></div>
+<div class="page-title icon actions"><h2><?php echo Yii::t('actions','That action is not assigned to you.'); ?></h2></div>
 <?php echo CHtml::link(Yii::t('app','Click here to return to where you were'),Yii::app()->user->returnUrl.'/actions/viewAll/'); ?>

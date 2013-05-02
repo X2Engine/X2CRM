@@ -88,7 +88,7 @@ class X2WebUser extends CWebUser {
 	 */
 	protected function afterLogin($fromCookie) {
 		if(!$fromCookie) {
-			X2Flow::trigger('user_login',array(
+			X2Flow::trigger('UserLoginTrigger',array(
 				'user'=>$this->getName()
 			));
 		}
@@ -100,7 +100,7 @@ class X2WebUser extends CWebUser {
 	 * @return boolean whether or not to logout
 	 */
 	protected function beforeLogout() {
-		X2Flow::trigger('user_logout',array(
+		X2Flow::trigger('UserLogoutTrigger',array(
 			'user'=>$this->getName()
 		));
 		return parent::beforeLogout();

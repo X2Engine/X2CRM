@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
- 
+
 $isGuest = Yii::app()->user->isGuest;
 $auth=Yii::app()->authManager;
 $isAdmin = !$isGuest && (Yii::app()->user->checkAccess('AdminIndex'));
@@ -69,13 +69,18 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
 	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
 	->registerScriptFile($baseUrl.'/js/relationships.js')
 	->registerScriptFile($baseUrl.'/js/widgets.js')
-	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion);
+	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
+    ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion);
 
 
 if(Yii::app()->session['translate'])
 	$cs->registerScriptFile($baseUrl.'/js/translator.js');
 
 $cs ->registerScriptFile($baseUrl.'/js/backgroundFade.js');
+$cs->registerScript('actionFrames',"
+
+
+");
 // $cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js');
 
 
@@ -90,7 +95,7 @@ $cs ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection
 	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
 	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
-// $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion); 
+// $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
 
 $cs->registerScript('fullscreenToggle','
 window.enableFullWidth = ' . (!Yii::app()->user->isGuest?(Yii::app()->params->profile->enableFullWidth? 'true':'false'):'true') . ';
@@ -154,7 +159,7 @@ if($isGuest) {
 	// $admin=Admin::model()->findByPk(1);
 
 	$modules = Modules::model()->findAll(array('condition'=>'visible="1"','order'=>'menuPosition ASC'));
-	$standardMenuItems = array();	
+	$standardMenuItems = array();
 	foreach($modules as $moduleItem) {
 		if(($isAdmin || $moduleItem->adminOnly==0) && $moduleItem->name != 'users') {
 			if($moduleItem->name!='document')
@@ -164,10 +169,10 @@ if($isGuest) {
 		}
 	}
 	$menuItems = array();
-	
+
 	$defaultAction = 'index';
     //$isAdmin? 'admin' : 'index';
-	
+
 	foreach($standardMenuItems as $key=>$value) {
 		$file=Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
         $action=ucfirst($key).ucfirst($defaultAction);
@@ -189,7 +194,7 @@ if($isGuest) {
 			}
 		}
 	}
-	
+
 }
 
 $maxMenuItems = 4;
@@ -209,21 +214,23 @@ if ($menuItemCount > $maxMenuItems) {
 $logoOptions = array();
 if(is_file(Yii::app()->params->logo)) {
 	$logoSize = @getimagesize(Yii::app()->params->logo);
-	if(!$logoSize)
-		$logoSize = array(110,30);
-	
+	if($logoSize)
+		$logoSize = array(min($logoSize[0],200),min($logoSize[1],30));
+	else
+		$logoSize = array(92,30);
+
 	$logoOptions['width'] = $logoSize[0];
 	$logoOptions['height'] = $logoSize[1];
 }
 array_unshift($menuItems,array(
-	'label'=>CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,'X2EngineCRM',$logoOptions),
+	'label'=>CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo,Yii::app()->name,$logoOptions),
 	'url'=>array('/site/whatsNew'),
 	'active'=>false,
 	'itemOptions'=>array('id'=>'search-bar-title','class'=>'special')
 ));
 
 
-$notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->getName()));
+$notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->getName()),'createDate < '.time());
 
 $searchbarHtml = CHtml::beginForm(array('/search/search'),'get')
 	.'<button class="x2-button black" type="submit"><span></span></button>'
@@ -234,12 +241,17 @@ $searchbarHtml = CHtml::beginForm(array('/search/search'),'get')
 		'autocomplete'=>'off'
 	)).'</form>';
 
-if(!empty(Yii::app()->params->profile->avatar))
+if(!empty(Yii::app()->params->profile->avatar) && file_exists(Yii::app()->params->profile->avatar))
 	$avatar = Yii::app()->request->baseUrl.'/'.Yii::app()->params->profile->avatar;
 else
-	$avatar = Yii::app()->request->baseUrl.'/uploads/default.jpg';
+	$avatar = Yii::app()->request->baseUrl.'/uploads/default.png';
 
 $widgetsImageUrl = $themeUrl . '/images/admin_settings.png';
+if(!Yii::app()->user->isGuest){
+    $widgetMenu=Yii::app()->params->profile->getWidgetMenu();
+}else{
+    $widgetMenu="";
+}
 $userMenu = array(
 	array('label' => Yii::t('app','Admin'), 'url' => array('/admin/index'),'active'=>($module=='admin')?true:null, 'visible'=>$isAdmin),
 	array('label' => Yii::t('app','Activity'),'url' => array('/site/whatsNew')),
@@ -254,7 +266,7 @@ $userMenu = array(
 			'id'=>'widget-button',
 			'class'=>'x2-button',
 			'title'=>'hidden widgets'
-		)).Yii::app()->params->profile->getWidgetMenu(),
+		)).$widgetMenu,
 		'itemOptions'=>array('class'=>'search-bar special'
 	)),
 	array('label'=>CHtml::image($avatar,'',array('height'=>25,'width'=>25)).Yii::app()->user->getName(),
@@ -264,13 +276,14 @@ $userMenu = array(
 			array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications')),
 			array('label' => Yii::t('app','Preferences'),'url' => array('/profile/settings')),
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
+			array('label' => Yii::t('app','Icon Reference'), 'url' => array ('/site/page/', 'view'=>'iconreference'), 'linkOptions'=>array('target'=>'_blank')),
             array('label' => Yii::t('app','Report A Bug'),'url' => array('/site/bugReport')),
             array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
-			array('label' => (Yii::app()->params->sessionStatus == 1)? Yii::t('app','Go Invisible') : Yii::t('app','Go Visible'),'url'=>'#','linkOptions'=>array(
-				'submit'=>array('/site/toggleVisibility',
-				'redirect'=>Yii::app()->request->requestUri),
-				'confirm'=>'Are you sure you want to toggle your session status?'
-			)),
+			array('label' => Yii::app()->params->sessionStatus? Yii::t('app','Go Invisible') : Yii::t('app','Go Visible'),'url'=>'#',
+				'linkOptions'=>array(
+					'submit'=>array('/site/toggleVisibility','visible'=>!Yii::app()->params->sessionStatus,'redirect'=>Yii::app()->request->requestUri),
+					'confirm'=>'Are you sure you want to toggle your session status?',
+				)),
 			array('label' => Yii::t('app','Logout'),'url' => array('/site/logout'))
 		)
 	),
@@ -278,11 +291,11 @@ $userMenu = array(
 		// 'label'=>'',
 		// 'itemOptions'=>array(
 			// 'class'=>'special leadrouting-indicator'.(Yii::app()->params->sessionStatus == 1? ' visible' : ''),
-			// 'title'=>(Yii::app()->params->sessionStatus == 1? Yii::t('app','Visible to lead routing') : Yii::t('app','Visible to lead routing'))
+			// 'title'=>Yii::app()->params->sessionStatus? Yii::t('app','Visible to lead routing') : Yii::t('app','Invisible to lead routing'))
 		// )
 	// ),
 );
-	
+
 ?><!DOCTYPE html>
 <!--[if lt IE 9]>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" lang="<?php echo Yii::app()->language; ?>" class="lt-ie9">
@@ -302,10 +315,10 @@ $userMenu = array(
 <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ie.css" media="screen, projection">
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
-<?php 
+<?php
 if(method_exists($this,'renderGaCode'))
-    $this->renderGaCode('internal'); 
-?> 
+    $this->renderGaCode('internal');
+?>
 
 </head>
 <body style="<?php
@@ -314,12 +327,12 @@ if(method_exists($this,'renderGaCode'))
 		echo 'background-color:#'.Yii::app()->params->profile->backgroundColor.';';
 
 	if(!empty(Yii::app()->params->profile->backgroundImg)) {
-	
+
 		if(file_exists('uploads/'.Yii::app()->params->profile->backgroundImg))
 			echo 'background-image:url('.$baseUrl.'/uploads/'.Yii::app()->params->profile->backgroundImg.');';
 		else
 			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.Yii::app()->params->profile->backgroundImg.');';
-	
+
 		switch($bgTiling = Yii::app()->params->profile->backgroundTiling) {
 			case 'repeat-x':
 			case 'repeat-y':
@@ -336,6 +349,7 @@ if(method_exists($this,'renderGaCode'))
 		}
 	}
 ?>"<?php if($noBorders) echo ' class="no-borders"'; ?>>
+
 <div id="page-container">
 <div id="page">
 <?php //echo $backgroundImg; ?>
@@ -381,11 +395,11 @@ if(method_exists($this,'renderGaCode'))
 		// foreach($GLOBALS['modelDebug'] as $modelName=>$calls) {
 			// echo "<u>$modelName</u><br>";
 			// foreach($calls as $x) {
-				
+
 				// foreach($x as $y) {
 					// if(isset($y['file'],$y['line'],$y['function'])) {
 						// $file = preg_replace('/^.+x2engine/','',$y['file']).' <b>('.$y['line'].')</b>';
-						
+
 						// $file .= '<span style="color:#aaa">';
 						// $file .= substr('---------------------------------------------------------------------------------------------------',0,110-strlen($file));
 						// echo $file.'</span> <em>'.$y['function'].'()</em><br>';
@@ -394,23 +408,23 @@ if(method_exists($this,'renderGaCode'))
 				// echo '<br>';
 			// }
 		// }
-	
+
 	// if(!empty($GLOBALS['modelCount'])) {
-	
+
 		// $total = 0;
 		// foreach($GLOBALS['modelCount'] as $modelname=>$ids) {
 			// $total += count($ids);
 			// $values = array_count_values($ids);
-			
+
 			// foreach($values as $id=>$count) {
 				// if($id<0) $id='null';
 				// echo "$modelname-$id ... $count<br>";
-				
+
 			// }
 		// }
 		// echo "<br>total: $total";
 	// }
-	
+
 	// echo $GLOBALS['accessCount'];
 	// if(isset( $GLOBALS['access'] ))
 		// var_dump( $GLOBALS['access'] );
@@ -425,7 +439,30 @@ if(method_exists($this,'renderGaCode'))
 $this->renderPartial('//layouts/footer');
 if(Yii::app()->session['translate'])
 	echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
+
+if(($_SESSION['playLoginSound'])){
+        $_SESSION['playLoginSound']=false;
+        $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+        $where = 'fileName = "' . $profile->loginSound . '"';
+        $uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
+        if(!empty($uploadedBy['uploadedBy'])){
+            $loginSound = Yii::app()->baseUrl . '/uploads/media/' . $uploadedBy['uploadedBy'] . '/' . $profile->loginSound;
+        }else{
+            $loginSound = Yii::app()->baseUrl . '/uploads/'. $profile->loginSound;
+        }
+        echo "";
+        Yii::app()->clientScript->registerScript('playLoginSound','
+                $("#loginSound").attr("src","'.$loginSound.'");
+                var sound = $("#loginSound")[0];
+                sound.play();
+        ');
+}
 ?>
 <a id="page-fader" class="x2-button"><span></span></a>
+<div id="dialog" title="Completion Notes? (Optional)" style="display:none;" class="text-area-wrapper">
+    <textarea id="completion-notes" style="height:110px;width:99%;"></textarea>
+</div>
 </body>
+<audio id="notification"></audio>
+<audio id='loginSound'></audio>
 </html>

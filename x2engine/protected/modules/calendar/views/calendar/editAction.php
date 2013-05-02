@@ -68,8 +68,8 @@ $form=$this->beginWidget('CActiveForm', array(
 <div class="row">
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,($isEvent?'startDate':'dueDate'), array('class'=>'dialog-label'));
-		$defaultDate = $this->formatDate($model->dueDate, 'medium');
-		$model->dueDate = X2Model::formatDateTime($model->dueDate);	//format date from DATETIME
+		$defaultDate = Formatter::formatDate($model->dueDate, 'medium');
+		$model->dueDate = Formatter::formatDateTime($model->dueDate);	//format date from DATETIME
 
 		Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 		$this->widget('CJuiDateTimePicker',array(
@@ -77,10 +77,10 @@ $form=$this->beginWidget('CActiveForm', array(
 			'attribute'=>'dueDate', //attribute name
 			'mode'=>'datetime', //use "time","date" or "datetime" (default)
 			'options'=>array(
-				'dateFormat'=> $this->formatDatePicker('medium'),
-				'timeFormat'=>$this->formatTimePicker(),
+				'dateFormat'=> Formatter::formatDatePicker('medium'),
+				'timeFormat'=>Formatter::formatTimePicker(),
 				'defaultDate'=>$defaultDate,
-				'ampm'=>$this->formatAMPM(),
+				'ampm'=>Formatter::formatAMPM(),
 			), // jquery plugin options
 			'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 			'htmlOptions'=>array(
@@ -93,17 +93,17 @@ $form=$this->beginWidget('CActiveForm', array(
 		
 		if($isEvent) {
 			echo $form->label($model, 'endDate', array('class'=>'dialog-label'));
-			$defaultDate = $this->formatDate($model->completeDate, 'medium');
-			$model->completeDate = X2Model::formatDateTime($model->completeDate);	//format date from DATETIME
+			$defaultDate = Formatter::formatDate($model->completeDate, 'medium');
+			$model->completeDate = Formatter::formatDateTime($model->completeDate);	//format date from DATETIME
 			$this->widget('CJuiDateTimePicker',array(
 				'model'=>$model, //Model object
 				'attribute'=>'completeDate', //attribute name
 				'mode'=>'datetime', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=> $this->formatDatePicker('medium'),
-					'timeFormat'=>$this->formatTimePicker(),
+					'dateFormat'=> Formatter::formatDatePicker('medium'),
+					'timeFormat'=>Formatter::formatTimePicker(),
 					'defaultDate'=>$defaultDate,
-					'ampm'=>$this->formatAMPM(),
+					'ampm'=>Formatter::formatAMPM(),
 				), // jquery plugin options
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 				'htmlOptions'=>array(

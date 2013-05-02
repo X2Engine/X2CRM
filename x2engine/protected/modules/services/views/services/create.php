@@ -40,7 +40,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('services','Create Case'); ?></h2></div>
+<div class="page-title icon services"><h2><?php echo Yii::t('services','Create Case'); ?></h2></div>
 
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'services')); ?>
 

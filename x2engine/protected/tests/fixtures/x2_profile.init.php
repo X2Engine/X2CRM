@@ -16,6 +16,7 @@ return array(
 		'lastUpdated' => time(),
 		'status' => 1,
 		'backgroundImg' => null,
+		'emailSignature' => 'Hello, testing, I am a signature'
 	),
 );
 ?>

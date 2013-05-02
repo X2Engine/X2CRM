@@ -44,7 +44,7 @@ $this->actionMenu = $this->formatMenu($menuItems);
 
 ?>
 <div class="span-12">
-<div class="page-title"><h2><?php echo Yii::t('marketing','Service Cases Web Form'); ?></h2></div>
+<div class="page-title icon services"><h2><?php echo Yii::t('marketing','Service Cases Web Form'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('marketing','Create a public form to receive new services cases. When the form is submitted, a new service case will be created, and the case # will be sent to the email address provided in the form.'); ?>
 </div>

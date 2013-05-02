@@ -41,23 +41,58 @@
  */
 class X2FlowEmail extends X2FlowAction {
 	public $title = 'Send Email';
-	public $info = 'Send a template or custom email.';
+	public $info = 'Send a template or custom email to the specified address.';
 	
 	public function paramRules() {
-		return array('title'=>$this->title,'info'=>$this->info,'fields'=>array(
-			'to' => array('label'=>'To:','type'=>'email'),
-			'from' => array('label'=>'From:','type'=>'email'),
-			'template' => array('label'=>'Template','type'=>'dropdown','options'=>Docs::getEmailTemplates()),
-			'subject' => array('label'=>'Subject'),
-			'cc' => array('label'=>'CC:','optional'=>1,'type'=>'email'),
-			'bcc' => array('label'=>'BCC:','optional'=>1,'type'=>'email'),
-			'body' => array('label'=>'Message','optional'=>1,'type'=>'richtext'),
-			// 'time' => array('timestamp'),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'options' => array(
+				array('name'=>'to','label'=>'To:','type'=>'email'),
+				array('name'=>'from','label'=>'From:','type'=>'email'),
+				array('name'=>'template','label'=>'Template','type'=>'dropdown','options'=>array_merge(array(''=>Yii::t('studio','Custom')),Docs::getEmailTemplates()),'optional'=>1),
+				array('name'=>'subject','label'=>'Subject'),
+				array('name'=>'cc','label'=>'CC:','optional'=>1,'type'=>'email'),
+				array('name'=>'bcc','label'=>'BCC:','optional'=>1,'type'=>'email'),
+				array('name'=>'body','label'=>'Message','optional'=>1,'type'=>'richtext'),
+				// 'time','dateTime'),
+			));
 	}
 	
-	public function execute($params) {
-		// mail()
+	public function execute(&$params) {
+		$eml = new InlineEmail;
+		$options = $this->config['options'];
+		
+		if(isset($options['cc']))
+			$eml->cc = $options['cc'];
+		if(isset($options['bcc']))
+			$eml->bcc = $options['bcc'];
+		$eml->to = $options['to'];
+		
+		$eml->from = array('address'=>$options['from'],'name'=>'');
+		$eml->subject = $options['subject'];
+		
+		if(isset($options['body']) && !empty($options['body'])) {	// "body" option (deliberately-entered content) takes precedence over template
+			$eml->scenario = 'custom';
+			$eml->message = InlineEmail::emptyBody($options['body']);
+			$eml->prepareBody();
+			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
+		} elseif(!empty($options['template'])) {
+			$eml->scenario = 'template';
+			$eml->template = $options['template'];
+			$eml->prepareBody();
+		}
+		return $eml->send(false);
 	}
 }
-?>
+
+
+
+
+
+
+
+
+
+
+

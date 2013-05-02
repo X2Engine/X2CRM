@@ -91,7 +91,7 @@ $('#deleteVersionButton').click(function() {
     <?php echo Yii::t('admin','Add a form row and drag and drop fields from the field list. Click save when finished.'); ?><br /><br />
     <?php echo Yii::t('admin','Each module can have multiple layouts, but only one view and one form can be active at any given time.');?>
     <?php echo Yii::t('admin','To choose which layout is used, select either "Default View" or "Default Form" or both depending on how you want the layout to be used.');?>
-    
+
 </div>
 <br><br>
 <?php
@@ -104,7 +104,7 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			<?php echo CHtml::label(Yii::t('admin','Model'),'modelList'); ?>
 			<?php echo CHtml::dropDownList('model',$modelName,$modelList,array(
 				'id'=>'modelList'
-			)); ?> 
+			)); ?>
 		</div>
 		<?php if(!empty($modelName)) { ?>
 		<div class="cell">
@@ -117,7 +117,7 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			<?php echo CHtml::button(Yii::t('admin','New'),array('id'=>'newLayoutButton','class'=>'x2-button small float')); ?>
 		</div>
 		<?php } ?>
-		
+
 		<?php if(count($versionList) > 1 && !empty($id)) { ?>
 		<div class="cell" style="padding-top:11px;">
 			<?php echo CHtml::button(Yii::t('admin','Copy'),array('id'=>'copyLayoutButton','class'=>'x2-button small float')); ?>
@@ -146,7 +146,7 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 <div id="fieldListTitle"><?php echo Yii::t('admin','Field List'); ?></div>
 <div id="editorFieldList" class="formSortable">
 	<?php
-	
+
 	// get list of all fields, sort by attribute label alphabetically
 	$fields = Fields::model()->findAllByAttributes(array('modelName'=>$modelName),new CDbCriteria(array('order'=>'attributeLabel ASC')));
 	foreach($fields as &$field) {
@@ -185,9 +185,15 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			));
 		}elseif($field->type=='dropdown'){
 			$dropdown=Dropdowns::model()->findByPk($field->linkType);
-			echo CHtml::dropDownList($modelName.'_'.$field->fieldName,'',json_decode($dropdown->options), array(
+            if(isset($dropdown)){
+                echo CHtml::dropDownList($modelName.'_'.$field->fieldName,'',json_decode($dropdown->options), array(
+                        'title'=>$field->attributeLabel,
+                ));
+            }else{
+                echo CHtml::textField($modelName.'_'.$field->fieldName,'', array(
 					'title'=>$field->attributeLabel,
-			));
+                ));
+            }
 		}elseif($field->type=='boolean'){
 			echo '<div class="checkboxWrapper">';
 			echo CHtml::checkBox($modelName.'_'.$field->fieldName,false,array(
@@ -215,9 +221,9 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 <div class="formContainer span-15">
 <div class="x2-layout form-view editMode" id="formEditor">
 	<div id="formEditorControls">
-		<a href="javascript:void(0)" id="addRow" class="x2-button"><?php echo Yii::t('admin','Add Row'); ?></a> 
+		<a href="javascript:void(0)" id="addRow" class="x2-button"><?php echo Yii::t('admin','Add Row'); ?></a>
 		<a href="javascript:void(0)" id="addCollapsibleRow" class="x2-button"><?php echo Yii::t('admin','Add Collapsible'); ?></a>
-		
+
 		<span class="formItemOptions">
 			<label for="readOnly"><?php echo Yii::t('admin','Read-only'); ?></label>
 			<select id="readOnly">

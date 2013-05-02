@@ -102,14 +102,14 @@ $commentCount=X2Model::model('Events')->countByAttributes(array(
                     $recipient='';
                     $modifier='';
                 }
-        echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,array('profile/view','id'=>$data->associationId)).": ".MediaChild::attachmentSocialText($data->text,true,true);
+        echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,array('profile/view','id'=>$data->associationId)).": ".Media::attachmentSocialText($data->text,true,true);
     }else{
-        echo x2base::convertLineBreaks(x2base::convertUrls($data->getText()));
+        echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
     }
     ?>
     </span>
         <br />
-    <span class="comment-age"><?php echo $this->formatFeedTimestamp($data->timestamp); ?></span> | <span>
+    <span class="comment-age"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span> | <span>
         <?php echo CHtml::link(Yii::t('app','Comments').' (<span id="'.$data->id.'-comment-count">'.($commentCount>0?"<b>".$commentCount."</b>":$commentCount).'</span>)','#',array('class'=>'comment-link','id'=>$data->id.'-link')); ?> 
         <?php echo CHtml::link(Yii::t('app','Hide comments'),'#',array('class'=>'comment-hide-link','id'=>$data->id.'-hide-link','style'=>'display:none;')); ?> 
         | 

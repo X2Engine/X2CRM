@@ -112,7 +112,7 @@ class Dropdowns extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	public static function getItems($id,$translationPack=null) {
 		$dropdowns = array();
 		$data = Yii::app()->db->createCommand()
@@ -124,27 +124,16 @@ class Dropdowns extends CActiveRecord {
 			$dropdowns = CJSON::decode($data);
 			if(!isset($dropdowns))
 				$dropdowns = array();
-			
-			if($translationPack === null) {		// try to figure out the module name for translations
-				if(isset(Yii::app()->controller->module))
-					$translationPack = strtolower(Yii::app()->controller->module->id);
-				else
-					$translationPack = strtolower(Yii::app()->controller->id);
-			}
-			
-			foreach($dropdowns as $key => &$value)
-				$value = Yii::t($translationPack,$value);
-
 		}
 		return $dropdowns;
 	}
-    
-    public function getDropdownValue($id,$index){
-        $arr=Dropdowns::getItems($id);
-        if(isset($arr[$index])){
-            return $arr[$index];
-        }else{
-            return $index;
-        }
-    }
+
+	public function getDropdownValue($id,$index){
+		$arr=Dropdowns::getItems($id);
+		if(isset($arr[$index])){
+			return $arr[$index];
+		}else{
+			return $index;
+		}
+	}
 }

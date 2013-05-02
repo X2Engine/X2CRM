@@ -72,7 +72,7 @@ $(function() {
 $heading=Yii::t('media','Media & File Library');
 $this->widget('application.components.X2GridView', array(
 	'id' => 'media-grid',
-	 	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
+	 	'template'=> '<div class="page-title icon media"><h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
@@ -120,7 +120,7 @@ $this->widget('application.components.X2GridView', array(
 			'name' => 'uploadedBy',
 			'header' => Yii::t('media','Uploaded By'),
 			'type' => 'raw',
-			'value' => 'User::getUserLinks($data["uploadedBy"],true,false)'
+			'value' => 'User::getUserLinks($data["uploadedBy"])'
 		),
 		'associationType' => array(
 			'name' => 'associationType',
@@ -132,7 +132,7 @@ $this->widget('application.components.X2GridView', array(
 			'name' => 'createDate',
 			'header' => Yii::t('media','Create Date'),
 			'type' => 'raw',
-			'value' => 'Yii::app()->controller->formatLongDate($data->createDate)'
+			'value' => 'Formatter::formatLongDate($data->createDate)'
 		),
 		'filesize' => array(
 			'name' => 'filesize',

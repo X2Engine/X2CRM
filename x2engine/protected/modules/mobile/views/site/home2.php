@@ -47,8 +47,8 @@ $this->pageTitle = Yii::app()->name . ' - Home';
 
     if ($isUser || $isAdmin) {
         $menuItems = array(
-            array('label' => Yii::t('app', 'Social Feed'), 'url' => array('social/index/')),
-            array('label' => Yii::t('app', 'Documents'), 'url' => array('docs/index/')),
+            //array('label' => Yii::t('app', 'Social Feed'), 'url' => array('social/index/')),
+            //array('label' => Yii::t('app', 'Documents'), 'url' => array('docs/index/')),
             array('label' => Yii::t('mobile', 'Who\'s Online'), 'url' => array('site/online/')),            
             array('label' => Yii::t('mobile', 'Back'), 'url' => array('site/index/'), 'left'=>true),
         );

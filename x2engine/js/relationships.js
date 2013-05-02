@@ -208,8 +208,8 @@ function x2CreateContactDialogHandleSubmit(form) {
 	$.post($('#create-contact').data('createContactUrl'), formdata, function(response) {
 	    response = $.parseJSON(response);
 	    if(response['status'] == 'success') {
-	    	if($('#opportunities-grid').length == 1) {
-	    		$.fn.yiiGridView.update('opportunities-grid');
+	    	if($('#relationships-grid').length == 1) {
+	    		$.fn.yiiGridView.update('relationships-grid');
 	    	}
 	    	x2CreateContactDialog.dialog('close');
 	    	x2CreateContactDialog.empty(); // clean up dialog
@@ -334,7 +334,7 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 						$.post($('#create-opportunity').data('createOpportunityUrl'), formdata, function(response) {
 							response = $.parseJSON(response);
 							if(response['status'] == 'success') {
-								$.fn.yiiGridView.update('opportunities-grid');
+								$.fn.yiiGridView.update('relationships-grid');
 								x2CreateOpportunityDialog.dialog('close');
 								x2CreateOpportunityDialog.empty(); // clean up dialog
 								$('body').off('click','#Opportunity_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
@@ -455,7 +455,7 @@ function x2CreateCaseDialogHandleSubmit(form) {
 	$.post($('#create-case').data('createCaseUrl'), formdata, function(response) {
 	    response = $.parseJSON(response);
 	    if(response['status'] == 'success') {
-	    	$.fn.yiiGridView.update('opportunities-grid');
+	    	$.fn.yiiGridView.update('relationships-grid');
 	    	x2CreateCaseDialog.dialog('close');
 	    	x2CreateCaseDialog.empty(); // clean up dialog
 	    	$('body').off('click','#Services_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error
@@ -581,7 +581,7 @@ function x2CreateAccountDialogHandleSubmit(form) {
 	$.post($('#create-account').data('createAccountUrl'), formdata, function(response) {
 	    response = $.parseJSON(response);
 	    if(response['status'] == 'success') {
-	    	$.fn.yiiGridView.update('opportunities-grid');
+	    	$.fn.yiiGridView.update('relationships-grid');
 	    	x2CreateAccountDialog.dialog('close');
 	    	x2CreateAccountDialog.empty(); // clean up dialog
 	    	$('body').off('click','#Accounts_assignedTo_groupCheckbox'); // clean up javascript so we can open this window again without error

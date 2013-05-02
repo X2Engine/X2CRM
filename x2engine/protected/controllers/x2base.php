@@ -37,7 +37,7 @@
 
 /**
  * Base controller for all application controllers with CRUD operations
- * 
+ *
  * @package X2CRM.controllers
  */
 abstract class x2base extends X2Controller {
@@ -69,6 +69,7 @@ abstract class x2base extends X2Controller {
 	 */
 	public $breadcrumbs = array();
 	public $portlets = array(); // This is the array of widgets on the sidebar.
+	public $leftPortlets = array(); // additional menu blocks on the left mneu
 	public $modelClass = 'Admin';
 	public $actionMenu = array();
 
@@ -81,13 +82,13 @@ abstract class x2base extends X2Controller {
 			'setPortlets', // performs widget ordering and show/hide on each page
 		);
 	}
-	
+
 	public function behaviors() {
 		return array(
 			'CommonControllerBehavior' => array('class' => 'application.components.CommonControllerBehavior')
 		);
 	}
-	
+
 	protected function beforeAction($action = null) {
 		$auth = Yii::app()->authManager;
 		$params = array();
@@ -104,7 +105,7 @@ abstract class x2base extends X2Controller {
                 }
             }
 		}
-        
+
 		$actionAccess = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
 		$authItem = $auth->getAuthItem($actionAccess);
 		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
@@ -126,8 +127,8 @@ abstract class x2base extends X2Controller {
 
     /**
      * Renders a view with any attached scripts, WITHOUT the core scripts.
-     * 
-     * This method fixes the problem with {@link renderPartial()} where an AJAX request with 
+     *
+     * This method fixes the problem with {@link renderPartial()} where an AJAX request with
      * $processOutput=true includes the core scripts, breaking everything on the page
      * in rendering a partial view, or an AJAX response.
      *
@@ -169,9 +170,9 @@ abstract class x2base extends X2Controller {
 
     /**
      * Determines if we have permission to edit something based on the assignedTo field.
-     * 
+     *
      * @param mixed $model The model in question (subclass of {@link CActiveRecord} or {@link X2Model}
-     * @return boolean  
+     * @return boolean
      */
     public function editPermissions(&$model) {
         if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo'))
@@ -182,7 +183,7 @@ abstract class x2base extends X2Controller {
 
     /**
      * Determines if we have permission to edit something based on the assignedTo field.
-     * 
+     *
      * @param mixed $model The model in question (subclass of {@link CActiveRecord} or {@link X2Model}
      * @param string $action
      * @return boolean
@@ -199,10 +200,10 @@ abstract class x2base extends X2Controller {
 
             $view = true;
         } else {
-            if (ctype_digit($model->assignedTo) && !empty(Yii::app()->params->groups)) {  // if assignedTo is numeric, it's a group
+            if (ctype_digit((string)$model->assignedTo) && !empty(Yii::app()->params->groups)) {  // if assignedTo is numeric, it's a group
                 $edit = in_array($model->assignedTo, Yii::app()->params->groups); // if we're in the assignedTo group we act as owners
             } elseif ($model->visibility == 2) {  // if record is shared with owner's groups, see if we're in any of those groups
-                $view = (bool) Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_group_to_user A JOIN x2_group_to_user B 
+                $view = (bool) Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_group_to_user A JOIN x2_group_to_user B
 																ON A.groupId=B.groupId AND A.username=:user1 AND B.username=:user2')
                                 ->bindValues(array(':user1' => $model->assignedTo, ':user2' => Yii::app()->user->getName()))
                                 ->queryScalar();
@@ -225,23 +226,23 @@ abstract class x2base extends X2Controller {
 
     /**
      * Displays a particular model.
-     * 
+     *
      * This method is called in child controllers
      * which pass it a model to display and what type of model it is (i.e. Contact,
      * Opportunity, Account).  It also creates an action history and provides appropriate
      * variables to the view.
-     * 
+     *
      * @param mixed $model The model to be displayed (subclass of {@link CActiveRecord} or {@link X2Model}
      * @param String $type The type of the module being displayed
      */
     public function view(&$model,$type=null,$params=array()) {
-		
+
 		if($type === null)	// && $model->asa('X2LinkableBehavior') !== null)	// should only happen when the model is known to have X2LinkableBehavior
 			$type = $model->module;
-		
+
 		if(!isset($_GET['ajax']))
-			X2Flow::trigger('record_viewed',array('model'=>$model));
-		
+			X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
+
 		$this->render('view', array_merge($params,array(
 			'model' => $model,
 			'actionHistory' => $this->getHistory($model,$type),
@@ -251,11 +252,11 @@ abstract class x2base extends X2Controller {
 
     /**
      * Obtain the history of actions associated with a model.
-     * 
+     *
      * Returns the data provider that references the history.
      * @param mixed $model The model in question (subclass of {@link CActiveRecord} or {@link X2Model}
      * @param mixed $type The association type (type of the model)
-     * @return CActiveDataProvider 
+     * @return CActiveDataProvider
      */
     public function getHistory(&$model, $type = null) {
 
@@ -268,7 +269,7 @@ abstract class x2base extends X2Controller {
 			'attachments'=>' AND type="attachment"',
 			'all'=>''
 		);
-			
+
 		$history = 'all';
 		if(isset($_GET['history']) && array_key_exists($_GET['history'],$filters))
 			$history = $_GET['history'];
@@ -296,16 +297,16 @@ abstract class x2base extends X2Controller {
 			->order('IF(completeDate = 0 OR completeDate IS NULL,1,0) DESC, createDate DESC')
 			->limit(1)
 			->queryRow(false);
-		
+
 		if($currentWorkflow === false || !isset($currentWorkflow[0]))
 			return 0;
-		
+
 		return $currentWorkflow[0];
     }
 
     /**
      * Convert currency to the proper format
-     * 
+     *
      * @param String $str The currency string
      * @param Boolean $keepCents Whether or not to keep the cents
      * @return String $str The modified currency string.
@@ -327,56 +328,11 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-     * A function to convert a timestamp into a string stated how long ago an object
-     * was created.
-     * 
-     * @param $timestamp The time that the object was posted.
-     * @return String How long ago the object was posted.
-     */
-    public static function timestampAge($timestamp) {
-        $age = time() - strtotime($timestamp);
-        //return $age;
-        if ($age < 60)
-            return Yii::t('app', 'Just now'); // less than 1 min ago
-        if ($age < 3600)
-            return Yii::t('app', '{n} minutes ago', array('{n}' => floor($age / 60))); // minutes (less than an hour ago)
-        if ($age < 86400)
-            return Yii::t('app', '{n} hours ago', array('{n}' => floor($age / 3600))); // hours (less than a day ago)
-
-        return Yii::t('app', '{n} days ago', array('{n}' => floor($age / 86400))); // days (more than a day ago)
-    }
-
-    /**
-     * Converts a record's Description or Background Info to deal with the discrepancy
-     * between MySQL/PHP line breaks and HTML line breaks.
-     */
-    public static function convertLineBreaks($text, $allowDouble = true, $allowUnlimited = false) {
-        
-        if(preg_match("/<br \/>/",$text)){
-            $text = preg_replace("/<\/b>/","</b><br />",$text,1);
-            $text = preg_replace("/\s<b>/","<br /><b>",$text,1);
-            return $text;
-        }
-        
-        $text = mb_ereg_replace("\r\n", "\n", $text);  //convert microsoft's stupid CRLF to just LF
-
-        if (!$allowUnlimited)
-            $text = mb_ereg_replace("[\r\n]{3,}", "\n\n", $text); // replaces 2 or more CR/LF chars with just 2
-
-        if ($allowDouble)
-            $text = mb_ereg_replace("[\r\n]", '<br />', $text); // replaces all remaining CR/LF chars with <br />
-        else
-            $text = mb_ereg_replace("[\r\n]+", '<br />', $text);
-
-        return $text;
-    }
-
-    /**
      * Used in function convertUrls
      *
      * @param mixed $a
      * @param mixed $b
-     * @return mixed  
+     * @return mixed
      */
     protected static function compareChunks($a, $b) {
         return $a[1] - $b[1];
@@ -384,7 +340,7 @@ abstract class x2base extends X2Controller {
 
     /**
      * Replaces any URL in text with an html link (supports mailto links)
-     * 
+     *
      * @todo refactor this out of controllers
      * @param string $text Text to be converted
      * @param boolean $convertLineBreaks
@@ -418,12 +374,12 @@ abstract class x2base extends X2Controller {
 
         /* First break the text into two arrays, one containing <a> tags and the like
          * which should not have any replacements, and another with all the text that
-         * should have URLs activated.  Each piece of each array has its offset from 
+         * should have URLs activated.  Each piece of each array has its offset from
          * original string so we can piece it back together later
          */
 
-        //add any additional tags to be passed over here	
-        $tags_with_urls = "/(<a[^>]*>.*<\/a>)|(<img[^>]*>)/i";
+        //add any additional tags to be passed over here
+        $tags_with_urls = "/(<a[^>]*>.*<\/a>)|(<img[^>]*>)|(<iframe[^>]*>.*<\/iframe>)/i";
         $text_to_add_links = preg_split($tags_with_urls, $text, NULL, PREG_SPLIT_OFFSET_CAPTURE);
         $matches = array();
         preg_match_all($tags_with_urls, $text, $matches, PREG_OFFSET_CAPTURE);
@@ -463,7 +419,7 @@ abstract class x2base extends X2Controller {
 
         //TODO: separate convertUrl and convertLineBreak concerns
         if ($convertLineBreaks)
-            return x2base::convertLineBreaks($text, true, false);
+            return Formatter::convertLineBreaks($text, true, false);
         else
             return $text;
     }
@@ -487,17 +443,17 @@ abstract class x2base extends X2Controller {
 			// $model->lastUpdated=time();
 		// if($model->hasAttribute('lastActivity'))
 			// $model->lastActivity = time();
-		
+
 		// if ($model->save()) {
-		
+
 			// relationships (now in X2Model::afterSave())
 			/* if (!($model instanceof Actions)) {
 				$fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
 				foreach ($fields as $field) {
 					$fieldName = $field->fieldName;
 					if (isset($model->$fieldName) && is_numeric($model->$fieldName)) {
-						if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-							(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $model->$fieldName . "') 
+						if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
+							(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $model->$fieldName . "')
 							OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $model->$fieldName . "')"))) {
 							$rel = new Relationships;
 							$rel->firstType = $name;
@@ -505,8 +461,8 @@ abstract class x2base extends X2Controller {
 							$rel->firstId = $model->id;
 							$rel->secondId = $model->$fieldName;
 							if ($rel->save()) {
-								$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-									(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $oldAttributes[$fieldName] . "') 
+								$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
+									(firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $oldAttributes[$fieldName] . "')
 									OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $oldAttributes[$fieldName] . "')");
 								if (isset($lookup))
 									$lookup->delete();
@@ -517,8 +473,8 @@ abstract class x2base extends X2Controller {
 			} */
 			// $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
 			// $this->updateChangelog($model, $changes);
-			
-			
+
+
 			// create event, and notification if record was reassigned - now in X2ChangeLogBehavior::afterSave()
 			/* $event=new Events;
 			if($model->hasAttribute('visibility')){
@@ -529,7 +485,7 @@ abstract class x2base extends X2Controller {
 			$event->user=Yii::app()->user->getName();
 			$event->type='record_create';
 			if(!$model instanceof Contacts || $api==0){ // Event creation already handled by web lead.
-				$event->save(); 
+				$event->save();
 			}
 			if ($model->hasAttribute('assignedTo')) {
 				if (!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
@@ -589,7 +545,7 @@ abstract class x2base extends X2Controller {
 		// $name = $this->modelClass;
 		// if($model->hasAttribute('lastActivity'))
 			// $model->lastActivity = time();
-		
+
 		// $temp = $oldAttributes;
 		// $changes = $this->calculateChanges($temp, $model->attributes, $model);
 		// $model = $this->updateChangelog($model, $changes);
@@ -603,13 +559,13 @@ abstract class x2base extends X2Controller {
 						->where("contact_id={$model->id}")
 						->queryAll();
 				
-				$datetime = X2Model::formatLongDateTime(time());
+				$datetime = Formatter::formatLongDateTime(time());
 				$modelLink = CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/' . $model->id));
 				$subject = "X2CRM: {$model->name} updated";
 				$message = "Hello,<br>\n<br>\n";
 				$message .= "You are receiving this email because you are subscribed to changes made to the contact $modelLink in X2CRM. ";
 				$message .= "The following changes were made on $datetime:<br>\n<br>\n";
-				
+
 				foreach($changes as $attribute=>$change) {
 					if($attribute != 'lastActivity') {
 						$old = $change['old'] == ''? '-----' : $change['old'];
@@ -618,9 +574,9 @@ abstract class x2base extends X2Controller {
 						$message .= "$label: $old => $new<br>\n";
 					}
 				}
-				
+
 				$message .="<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
-				
+
 				$adminProfile = Profile::model()->findByPk(1);
 				foreach($result as $subscription) {
 					$profile = Profile::model()->findByPk($subscription['user_id']);
@@ -630,17 +586,17 @@ abstract class x2base extends X2Controller {
 						$this->sendUserEmail($to, $subject, $message, null, $from);
 					}
 				}
-				
+
 			}*/
 			// relationships, now in X2Model::afterSave()
 			/* if (!($model instanceof Actions)) {
-			
+
 				$fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
 				foreach ($fields as $field) {
 					$fieldName = $field->fieldName;
 					if (isset($model->$fieldName) && $model->$fieldName != "") {
-						if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-								(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:fieldname) 
+						if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
+								(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:fieldname)
 								OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:fieldname)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':fieldname'=>$model->$fieldName)))) {
 
 							$rel = new Relationships;
@@ -665,8 +621,8 @@ abstract class x2base extends X2Controller {
 									}
 								}
 								if (isset($oldRel)) {
-									$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid) 
+									$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
+									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid)
 									OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
 									if (isset($lookup)) {
 										$lookup->delete();
@@ -690,8 +646,8 @@ abstract class x2base extends X2Controller {
 							}
 						}
 						if (isset($oldRel)) {
-							$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE 
-									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid) 
+							$lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
+									(firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid)
 									OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
 							if (isset($lookup)) {
 								$lookup->delete();
@@ -712,7 +668,7 @@ abstract class x2base extends X2Controller {
 				} else // no association
 					$this->redirect(array('/actions/' . $model->id)); // view the action
 			} else if ($api == 0) { */
-			
+
 		if($model->save()) {
 			if($api == 0)
 				$this->redirect(array('view', 'id' => $model->id));
@@ -740,7 +696,7 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-     * Search for a term.  Defined in X2Base so that all Controllers can use, but 
+     * Search for a term.  Defined in X2Base so that all Controllers can use, but
      * it makes a call to the SearchController.
      */
     public function actionSearch() {
@@ -754,14 +710,14 @@ abstract class x2base extends X2Controller {
     protected function updateChangelog($model, $changes) {
 		return $model;
 	}
-	
+
 	/**
 	 * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
 	 */
 	protected function calculateChanges($old, $new, &$model = null) {
 		return array();
 	}
-	
+
 	/**
 	 * Sets the lastUpdated and updatedBy fields to reflect recent changes.
 	 * @param type $model The model to be updated
@@ -798,7 +754,7 @@ abstract class x2base extends X2Controller {
 				}
 			}
 		}
-		
+
 		if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
 			if ($changes != "" && !is_array($changes)) {
 				$pieces = explode("<br />", $change);
@@ -896,7 +852,7 @@ abstract class x2base extends X2Controller {
                                 $event->user=$user;
                                 $event->associationType='Notifications';
                                 $event->type='notif';
-                                
+
                                 $notif = new Notification;
                                 $notif->type = 'change';
                                 $notif->fieldName = $keys[$i];
@@ -940,7 +896,7 @@ abstract class x2base extends X2Controller {
                                 $action->visibility = 1;
                                 $action->associationType = strtolower($this->modelClass);
                                 $action->associationId = $new['id'];
-                                
+
                                 $action->associationName = $model->name;
                                 $action->save();
                             }
@@ -952,7 +908,7 @@ abstract class x2base extends X2Controller {
                                 $event->type='notif';
                                 $event->user=$model->assignedTo;
                                 $event->associationType='Notifications';
-                                
+
                                 $notif = new Notification;
                                 $notif->user = $model->assignedTo;
                                 $notif->createDate = time();
@@ -977,7 +933,7 @@ abstract class x2base extends X2Controller {
 		}
 		return $changes;
 	} */
- 
+
     public function partialDateRange($input) {
         $datePatterns = array(
             array('/^(0-9)$/', '000-01-01', '999-12-31'),
@@ -1026,7 +982,11 @@ abstract class x2base extends X2Controller {
     }
 
     public static function cleanUpSessions() {
-        X2Model::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
+        $sessions=X2Model::model('Session')->findAllByAttributes(array(),'lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
+        foreach($sessions as $session){
+            SessionLog::logSession($session->user,$session->id,'passiveTimeout');
+            $session->delete();
+        }
     }
 
     public function getPhpMailer() {
@@ -1062,43 +1022,12 @@ abstract class x2base extends X2Controller {
         return $phpMail;
     }
 
-    public function addEmailAddresses(&$phpMail, $addresses) {
-
-        if (isset($addresses['to'])) {
-            foreach ($addresses['to'] as $target) {
-                if (count($target) == 2)
-                    $phpMail->AddAddress($target[1], $target[0]);
-            }
-        } else {
-            if (count($addresses) == 2 && !is_array($addresses[0])) // this is just an array of [name, address],
-                $phpMail->AddAddress($addresses[1], $addresses[0]); // not an array of arrays
-            else {
-                foreach ($addresses as $target) {     //this is an array of [name, address] subarrays
-                    if (count($target) == 2)
-                        $phpMail->AddAddress($target[1], $target[0]);
-                }
-            }
-        }
-        if (isset($addresses['cc'])) {
-            foreach ($addresses['cc'] as $target) {
-                if (count($target) == 2)
-                    $phpMail->AddCC($target[1], $target[0]);
-            }
-        }
-        if (isset($addresses['bcc'])) {
-            foreach ($addresses['bcc'] as $target) {
-                if (count($target) == 2)
-                    $phpMail->AddBCC($target[1], $target[0]);
-            }
-        }
-    }
-
     function throwException($message) {
         throw new Exception($message);
     }
 
     /**
-	 *	send an email from x2
+	 *	Send an email from X2CRM
 	 *
 	 *	@param addresses
 	 *	@param $subject the subject for the email
@@ -1107,75 +1036,14 @@ abstract class x2base extends X2Controller {
 	 *	@param $from from and reply to address for the email array(name, address)
 	 */
     public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null) {
-
-	$phpMail = $this->getPhpMailer();
-
-        try {
-        	if($from == null) { // if no from address (or not formatted properly)
-				if (empty(Yii::app()->params->profile->emailAddress))
-    	            throw new Exception('<b>' . Yii::t('app', 'Your profile doesn\'t have a valid email address.') . '</b>');
-	
-            	$phpMail->AddReplyTo(Yii::app()->params->profile->emailAddress,Yii::app()->params->profile->fullName);
-            	$phpMail->SetFrom(Yii::app()->params->profile->emailAddress,Yii::app()->params->profile->fullName);
-            } else {
-            	$phpMail->AddReplyTo($from['address'], $from['name']);
-            	$phpMail->SetFrom($from['address'], $from['name']);
-            }
-
-            $this->addEmailAddresses($phpMail, $addresses);
-
-            $phpMail->Subject = $subject;
-            // $phpMail->AltBody = $message;
-            $phpMail->MsgHTML($message);
-            // $phpMail->Body = $message;
-            // add attachments, if any
-            if ($attachments) {
-                foreach ($attachments as $attachment) {
-                    if ($attachment['temp']) { // stored as a temp file?
-                        $file = 'uploads/media/temp/' . $attachment['folder'] . '/' . $attachment['filename'];
-                        if (file_exists($file)) // check file exists
-                            if (filesize($file) <= (10 * 1024 * 1024)) // 10mb file size limit
-                                $phpMail->AddAttachment($file);
-                            else
-                                $this->throwException("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
-                    } else { // stored in media library
-                        $file = 'uploads/media/' . $attachment['folder'] . '/' . $attachment['filename'];
-                        if (file_exists($file)) // check file exists
-                            if (filesize($file) <= (10 * 1024 * 1024)) // 10mb file size limit
-                                $phpMail->AddAttachment($file);
-                            else
-                                $this->throwException("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
-                    }
-                }
-            }
-
-            $phpMail->Send();
-
-            // delete temp attachment files, if they exist
-            if ($attachments) {
-                foreach ($attachments as $attachment) {
-                    if ($attachment['temp']) {
-                        $file = 'uploads/media/temp/' . $attachment['folder'] . '/' . $attachment['filename'];
-                        $folder = 'uploads/media/temp/' . $attachment['folder'];
-                        if (file_exists($file))
-                            unlink($file); // delete temp file
-                        if (file_exists($folder))
-                            rmdir($folder); // delete temp folder
-                        TempFile::model()->deleteByPk($attachment['id']);
-                    }
-                }
-            }
-
-            $status[] = '200';
-            $status[] = Yii::t('app', 'Email Sent!');
-        } catch (phpmailerException $e) {
-            $status[] = '<span class="error">' . $e->errorMessage() . '</span>'; //Pretty error messages from PHPMailer
-        } catch (Exception $e) {
-            $status[] = '<span class="error">' . $e->getMessage() . '</span>'; //Boring error messages from anything else!
-        }
-
-        return $status;
-    }
+		$eml = new InlineEmail();
+		$eml->mailingList = $addresses;
+		$eml->subject = $subject;
+		$eml->message = $message;
+		$eml->attachments = $attachments;
+		$eml->from = $from;
+		return $eml->deliver();
+	}
 
     public function parseEmailTo($string) {
 
@@ -1238,8 +1106,8 @@ abstract class x2base extends X2Controller {
 
     /**
      * Obtain the widget list for the current web user.
-     * 
-     * @param CFilterChain $filterChain 
+     *
+     * @param CFilterChain $filterChain
      */
     public function filterSetPortlets($filterChain) {
 		if (!Yii::app()->user->isGuest) {
@@ -1257,7 +1125,7 @@ abstract class x2base extends X2Controller {
     }
 
 
-    // This function needs to be made in your extensions of the class with similar code. 
+    // This function needs to be made in your extensions of the class with similar code.
     // Replace "Opportunities" with the Model being used.
     /*     * public function loadModel($id)
       {
@@ -1278,149 +1146,6 @@ abstract class x2base extends X2Controller {
         }
     }
 
-    /*     * * Date Format Functions ** */
-
-    /**
-     * Format a date to be long (September 25, 2011)
-     * @param integer $timestamp Unix time stamp
-     */
-    public function formatLongDate($timestamp) {
-        if (empty($timestamp))
-            return '';
-        else
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $timestamp);
-    }
-
-    /**
-     * Formats a date.
-     * 
-     * @param integer $timestamp
-     * @param string $width A length keyword, i.e. "medium"
-     * @return string 
-     */
-    public function formatDate($timestamp, $width = '') {
-        if (empty($timestamp))
-            return '';
-        else {
-            if (Yii::app()->language == 'en')
-                if ($width == 'medium')
-                    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'), $timestamp);
-                elseif($width=='short')
-                    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'), $timestamp);
-                else
-                    return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $timestamp);
-            else
-                return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'), $timestamp);
-        }
-    }
-
-    /**
-     * Format dates for the date picker.
-     * @param string $width A length keyword, i.e. "medium"
-     * @return string 
-     */
-    public function formatDatePicker($width = '') {
-        if (Yii::app()->language == 'en') {
-            if ($width == 'medium')
-                return "M d, yy";
-            else
-                return "MM d, yy";
-        } else {
-            $format = Yii::app()->locale->getDateFormat('short'); // translate Yii date format to jquery
-            $format = str_replace('yy', 'y', $format);
-            $format = str_replace('MM', 'mm', $format);
-            $format = str_replace('M', 'm', $format);
-            return $format;
-        }
-    }
-
-    /**
-     * Formats time for the time picker.
-     * 
-     * @param string $width
-     * @return string 
-     */
-    function formatTimePicker($width = '') {
-    	if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
-    		return "hh:mm";
-    	}
-        $format = Yii::app()->locale->getTimeFormat('short');
-        $format = strtolower($format); // jquery specifies hours/minutes as hh/mm instead of HH//MM
-        $format = str_replace('a', 'TT', $format); // yii and jquery have different format to specify am/pm
-        return $format;
-    }
-
-    /**
-     * Check if am/pm is being used in this locale.
-     */
-    function formatAMPM() {
-        if (strstr(Yii::app()->locale->getTimeFormat(), "a") === false)
-            return false;
-        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') // 24 hour format for china
-        	return false;
-        else
-            return true;
-    }
-
-    /*     * * Date Time Format Functions ** */
-
-
-    
-    function formatFeedTimestamp($timestamp){
-        if(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)==Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),time())){
-            $str=Yii::t('app','Today').' '.Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
-        }else{
-            $str=Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'),$timestamp)." ".Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'),$timestamp);
-        }
-        return $str;
-    }
-
-    /**
-     * Returns a formatted string for the end of the day.
-     * @param integer $timestamp
-     * @return string
-     */
-    function formatDateEndOfDay($timestamp) {
-        if (empty($timestamp))
-            return '';
-        else
-        if (Yii::app()->language == 'en')
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium') . ' ' . Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
-        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
-        	return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . 'HH:mm', strtotime("tomorrow", $timestamp) - 60);
-        else
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
-    }
-
-
-
-    /**
-     * Cuts string short.
-     * @param string $str String to be truncated.
-     * @param integer $length Maximum length of the string
-     * @return string
-     */
-    function truncateText($str, $length = 30) {
-
-        if (strlen($str) > $length - 3) {
-            if ($length < 3)
-                $str = '';
-            else
-                $str = substr($str, 0, $length - 3);
-            $str .= '...';
-        }
-        return $str;
-    }
-
-    /**
-     * Converts CamelCased words into first-letter-capitalized, spaced words.
-     * @param type $str
-     * @return type 
-     */
-    function deCamelCase($str) {
-        $str = preg_replace("/(([a-z])([A-Z])|([A-Z])([A-Z][a-z]))/", "\\2\\4 \\3\\5", $str);
-        return ucfirst($str);
-    }
 
     function formatMenu($array, $params = array()) {
         $auth = Yii::app()->authManager;
@@ -1437,7 +1162,8 @@ abstract class x2base extends X2Controller {
                     $action = ucfirst($this->getId() . ucfirst($item['url'][0]));
                 }
                 $authItem = $auth->getAuthItem($action);
-                $item['visible'] = Yii::app()->user->checkAccess($action, $params) || is_null($authItem);
+				if(!isset($item['visible']) || $item['visible'] == true)
+					$item['visible'] = Yii::app()->user->checkAccess($action, $params) || is_null($authItem);
             } else {
                 if (isset($item['linkOptions']['submit'])) {
                     $action = ucfirst($this->getId() . ucfirst($item['linkOptions']['submit'][0]));
@@ -1505,7 +1231,7 @@ abstract class x2base extends X2Controller {
                 $dateRange['start'] = 0;        // every record
                 $dateRange['end'] = time();
                 if (isset($_GET['end'])) {
-                    $dateRange['end'] = X2Model::parseDate($_GET['end']);
+                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
                     if ($dateRange['end'] == false)
                         $dateRange['end'] = time();
                     else
@@ -1517,7 +1243,7 @@ abstract class x2base extends X2Controller {
             default:
                 $dateRange['end'] = time();
                 if (isset($_GET['end'])) {
-                    $dateRange['end'] = X2Model::parseDate($_GET['end']);
+                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
                     if ($dateRange['end'] == false)
                         $dateRange['end'] = time();
                     else
@@ -1526,7 +1252,7 @@ abstract class x2base extends X2Controller {
 
                 $dateRange['start'] = strtotime('1 month ago', $dateRange['end']);
                 if (isset($_GET['start'])) {
-                    $dateRange['start'] = X2Model::parseDate($_GET['start']);
+                    $dateRange['start'] = Formatter::parseDate($_GET['start']);
                     if ($dateRange['start'] == false)
                         $dateRange['start'] = strtotime('-30 days 0:00', $dateRange['end']);
                     else
@@ -1535,48 +1261,48 @@ abstract class x2base extends X2Controller {
         }
         return $dateRange;
     }
-    
-    function ucwords_specific ($string, $delimiters = '', $encoding = NULL) 
-    { 
-        
-        if ($encoding === NULL) { $encoding = mb_internal_encoding();} 
 
-        if (is_string($delimiters)) 
-        { 
-            $delimiters =  str_split( str_replace(' ', '', $delimiters)); 
-        } 
+    function ucwords_specific ($string, $delimiters = '', $encoding = NULL)
+    {
 
-        $delimiters_pattern1 = array(); 
-        $delimiters_replace1 = array(); 
-        $delimiters_pattern2 = array(); 
-        $delimiters_replace2 = array(); 
-        foreach ($delimiters as $delimiter) 
-        { 
+        if ($encoding === NULL) { $encoding = mb_internal_encoding();}
+
+        if (is_string($delimiters))
+        {
+            $delimiters =  str_split( str_replace(' ', '', $delimiters));
+        }
+
+        $delimiters_pattern1 = array();
+        $delimiters_replace1 = array();
+        $delimiters_pattern2 = array();
+        $delimiters_replace2 = array();
+        foreach ($delimiters as $delimiter)
+        {
             $ucDelimiter=$delimiter;
             $delimiter=strtolower($delimiter);
-            $uniqid = uniqid(); 
-            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/'; 
-            $delimiters_replace1[]   = $delimiter.$uniqid.' '; 
-            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/'; 
-            $delimiters_replace2[]   = $ucDelimiter; 
-            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/'; 
-            $delimiters_cleanup_pattern1[]   = $delimiter; 
-        } 
-        $return_string = mb_strtolower($string, $encoding); 
-        //$return_string = $string; 
+            $uniqid = uniqid();
+            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/';
+            $delimiters_replace1[]   = $delimiter.$uniqid.' ';
+            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/';
+            $delimiters_replace2[]   = $ucDelimiter;
+            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/';
+            $delimiters_cleanup_pattern1[]   = $delimiter;
+        }
+        $return_string = mb_strtolower($string, $encoding);
+        //$return_string = $string;
         $return_string = preg_replace($delimiters_pattern1, $delimiters_replace1, $return_string);
 
-        $words = explode(' ', $return_string); 
-        
-        foreach ($words as $index => $word) 
-        { 
-            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding); 
-        } 
-        $return_string = implode(' ', $words); 
-        
+        $words = explode(' ', $return_string);
+
+        foreach ($words as $index => $word)
+        {
+            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding);
+        }
+        $return_string = implode(' ', $words);
+
         $return_string = preg_replace($delimiters_pattern2, $delimiters_replace2, $return_string);
         $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
 
-        return $return_string; 
+        return $return_string;
     }
 }

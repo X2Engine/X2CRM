@@ -51,5 +51,29 @@ class X2Date {
 		$str .= '</span></div>';
 		return $str;
 	}
+	
+	public static function actionDate($date,$priority,$complete='No') {
+        if($complete=="No"){
+            if($priority == '3')
+                $priority = ' p-3';
+            elseif($priority == '2')
+                $priority = ' p-2';
+            else
+                $priority = ' p-1';
+        }else{
+            $priority='';
+        }
+		
+		$str = '<div class="date-box'.$priority.'" title="';
+		$str .= date('Y-m-d H:i',$date);
+		
+		$str .= '"><span class="month">';
+		$str .= Yii::app()->getLocale()->getMonthName(date('n',$date),'abbreviated');
+		// $str .= date('M',$date);
+		$str .= '</span><span class="day">';
+		$str .= date('d',$date);
+		$str .= '</span></div>';
+		return $str;
+	}
 }
 ?>

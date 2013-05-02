@@ -18,9 +18,9 @@ CREATE TABLE x2_opportunities(
 	updatedBy				VARCHAR(20)
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
+INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("opportunities",	"Opportunities",	1,			3,				1,			1,			0,			0,		0);
+	VALUES	("opportunities",	"Opportunities",	1,			4,				1,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)

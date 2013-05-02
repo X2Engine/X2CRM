@@ -53,11 +53,12 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
     array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
+	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ),$authParams);
 
 ?>
 <div id="main-column" class="half-width">
-<div class="page-title">
+<div class="page-title icon marketing">
 	<h2><span class="no-bold"><?php echo Yii::t('marketing', 'Campaign'); ?>:</span> <?php echo $model->name; ?></h2>
 	<?php if(Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
 		<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update/'.$model->id);?>"><span></span></a>
@@ -142,6 +143,7 @@ $this->widget('InlineEmailForm',
 			'modelName'=>'Campaign',
 			'modelId'=>$model->id,
 		),
+		'insertableAttributes' => array(),
 		'startHidden'=>true,
 	)
 );

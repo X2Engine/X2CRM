@@ -818,7 +818,9 @@ if (!$complete || $silent) {
 	if (!empty($sqlError))
 		$errors[] = 'MySQL Error: ' . $sqlError;
 	outputErrors();
-	respond('Installation complete.');
+	$installTime = time();
+	file_put_contents(implode(DIRECTORY_SEPARATOR,array(realpath('protected/data'),'install_timestamp')),$installTime);
+	respond(installer_tr('Installation completed {time}.',array('{time}' => strftime('%D %T',$installTime))));
 	if ($silent && function_exists('curl_init') && $config['type'] != 'Testing') {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];

@@ -50,22 +50,22 @@ if($model->type=='note' || $model->type=='attachment') {
 <table class="details">
 	<tr>
 		<td class="label">
-			<?php echo $attributeLabels['actionDescription']; ?>
+			<?php echo $model->getAttributeLabel('actionDescription'); ?>
 		</td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
 			<?php
 			if($model->type=='attachment')
-				echo MediaChild::attachmentActionText($model->actionDescription,true,true);
+				echo Media::attachmentActionText($model->actionDescription,true,true);
 			else
 				echo $this->convertUrls(CHtml::encode($model->actionDescription));
 			?>
 		</td>
 	</tr>
 	<tr>
-		<td class="label" width="20%"><?php echo $attributeLabels['completedBy']; ?></td>
+		<td class="label" width="20%"><?php echo $model->getAttributeLabel('completedBy'); ?></td>
 		<td width="25%"><?php echo ($model->completedBy=="Email") ? "Email" : User::getUserLinks($model->completedBy) ?></td>
 		<td class="label" width="15%"><?php echo $attributeLabels['createDate']; ?></td>
-		<td><b><?php echo X2Model::formatLongDateTime($model->createDate); ?></b></td>
+		<td><b><?php echo Formatter::formatLongDateTime($model->createDate); ?></b></td>
 	</tr>
 </table>
 
@@ -82,7 +82,7 @@ if($model->type=='note' || $model->type=='attachment') {
     <?php } else { ?>
 	<tr>
 		<td class="label" width="20%">
-			<?php echo $attributeLabels['actionDescription']; ?>
+			<?php echo $model->getAttributeLabel('actionDescription'); ?>
 		</td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
 			<?php echo $this->convertUrls(CHtml::encode($model->actionDescription)); ?>
@@ -94,7 +94,7 @@ if ($model->associationType!="none") {
 ?>
 	<tr>
 		<td class="label" width="20%">
-			<?php echo $attributeLabels['associationName']; ?>
+			<?php echo $model->getAttributeLabel('associationName'); ?>
 		</td>
 		<td colspan="3">
 			<?php echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId)); ?>
@@ -103,22 +103,22 @@ if ($model->associationType!="none") {
 	
 <?php } ?>
     <tr>
-		<td class="label"><?php echo $attributeLabels['assignedTo']; ?></td>
+		<td class="label"><?php echo $model->getAttributeLabel('assignedTo'); ?></td>
 		<td><?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : User::getUserLinks($model->assignedTo); ?></td>
 		<td class="label" width="20%"><?php echo $attributeLabels['dueDate']; ?>
-		<td><b><?php echo X2Model::formatLongDateTime($model->dueDate);?></b></td>
+		<td><b><?php echo Formatter::formatLongDateTime($model->dueDate);?></b></td>
 	</tr>
 	<tr>
-		<td class="label"><?php echo $attributeLabels['priority']; ?></td>
+		<td class="label"><?php echo $model->getAttributeLabel('priority'); ?></td>
 		<td><b><?php echo Yii::t('actions',$model->priority); ?></b></td>
 		<td class="label"><?php echo $attributeLabels['createDate']; ?></td>
-		<td><b><?php echo X2Model::formatLongDateTime($model->createDate); ?></b></td>
+		<td><b><?php echo Formatter::formatLongDateTime($model->createDate); ?></b></td>
 	</tr>
 	<tr>
 		<td class="label"><?php echo Yii::t('actions','Status'); ?></td>
 		<td><b><?php echo $status; ?></b></td>
 		<td class="label"><?php echo $attributeLabels['lastUpdated']; ?></td>
-		<td><b><?php echo X2Model::formatLongDateTime($model->lastUpdated); ?></b></td>
+		<td><b><?php echo Formatter::formatLongDateTime($model->lastUpdated); ?></b></td>
 	</tr>
         <?php 
         

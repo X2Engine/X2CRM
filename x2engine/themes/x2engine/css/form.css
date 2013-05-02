@@ -223,7 +223,7 @@ div.form div.error input,div.form div.error textarea,div.form div.error select,d
 	border-color: #C6D880;
 } */
 
-div.row input[type=text].focus {
+div.row input[type=text].focus,div.formInputBox input[type=text].focus {
 	background: #E6EFC2;
 	border-color: #C6D880;
 }
@@ -298,7 +298,7 @@ div.form .background-row a.delete-link {
 #login-logo {
 	/* display:block; */
 	/* float:left; */
-	margin:14px 10px 0 0;
+	margin:22px 10px 0 -5px;
 }
 #login-box h2 {
 	font-size:16px;
@@ -339,6 +339,7 @@ div.form .background-row a.delete-link {
 	margin-right:0;
 	width:auto;
 }
+#login-form .row {overflow:visible;}
 #login-form label {font-weight:bold;font-size:12px;color:#777;}
 #login-form input:focus {
 	border-color:#aaa;

@@ -37,52 +37,66 @@
 
 /**
  * Administrative, app-wide configuration actions.
- * 
+ *
  * Note: when running {@link actionUpdater}, if a new version is available on the
  * remote updates server, this file will be overwritten by the new file, which
  * is downloaded upon running the action (route admin/updater).
- * 
- * @package X2CRM.controllers 
+ *
+ * @package X2CRM.controllers
  * @property boolean $noRemoteAccess (Read-only) true indicates there's no way to automatically retrieve files.
  */
 class AdminController extends Controller {
 
     public $portlets = array();
     public $layout = '//layouts/column1';
-	
+
 	/**
-	 * Behavior classes used
+	 * Behavior classes used by AdminController
 	 * @var array
 	 */
 	public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior','CommonControllerBehavior');
-	
+
 	/**
-	 * Miscellaneous component classes that the controller depends on
-	 * @var type 
+	 * Extraneous properties for individual behaviors
+	 * @var array
 	 */
-	public static $dependencies = array('FileUtil');
-	
+	public static $behaviorProperties = array('UpdaterBehavior'=>array('isConsole'=>false));
+
+	/**
+	 * Miscellaneous component classes that the controller (or its behaviors)
+	 * depend on, but that aren't directly used by it as behaviors.
+	 * @var type
+	 */
+	public static $dependencies = array('FileUtil','ResponseBehavior');
+
+	/**
+	 * Stores value of {@link $noRemoteAccess}
+	 * @var boolean
+	 */
 	private $_noRemoteAccess;
 
     /**
      * A list of actions to include.
-     * 
+     *
      * This method specifies which actions are defined elsewhere but used here.
      * These actions are pro code that are included in the pro version of the software.
-     * 
-     * @return array An array of actions to include. 
+     *
+     * @return array An array of actions to include.
      */
     public function actions() {
-        return array(
-            'getRoleAccess' => array(
-                'class' => 'GetRoleAccessAction',
-            ),
-            'editRoleAccess' => array(
-                'class' => 'EditRoleAccessAction',
-            ),
-        );
-    }
-    
+		return array(
+			'getRoleAccess' => array(
+				'class' => 'GetRoleAccessAction',
+			),
+			'editRoleAccess' => array(
+				'class' => 'EditRoleAccessAction',
+			),
+			'emailDropboxSettings' => array(
+				'class' => 'EmailDropboxSettingsAction'
+			),
+		);
+	}
+
     public function actionCalculateTranslationRedundancy(){
         $files=scandir('protected/messages/template');
         $languageList=array();
@@ -99,10 +113,11 @@ class AdminController extends Controller {
             }
         }
     }
-    
+
     public function actionFindMissingPermissions(){
         $controllers=array(
             'AdminController'=>'application.controllers.AdminController',
+            'StudioController'=>'application.controllers.StudioController',
             'AccountsController'=>'application.modules.accounts.controllers.AccountsController',
             'ActionsController'=>'application.modules.actions.controllers.ActionsController',
             'CalendarController'=>'application.modules.calendar.controllers.CalendarController',
@@ -154,10 +169,10 @@ class AdminController extends Controller {
 
     /**
      * An overridden Yii method that happens before an action.
-     * 
+     *
      * This method handles authorization on an attempt by a user to access an action.
      * The same method is defined in {@link X2Base::beforeAction} with a few minor differences.
-     * 
+     *
      * @param string $action A paramter passed by Yii's internal action handling.
      * @return boolean True if the action is allowed to continue, otherwise throw exception.
      * @throws CHttpException Generates a 403 error if authorization fails
@@ -179,12 +194,12 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * Deprecated method for how to guides.
-     * 
+     *
      * While these guides technically still exist in the software, much more useful
      * and up to date information can be found on the X2Engine website.
-     * 
+     *
      * @param type $guide Which how to guide to access.
-     
+
     public function actionHowTo($guide) {
         if ($guide == 'gii')
             $this->render('howToGii');
@@ -196,12 +211,12 @@ class AdminController extends Controller {
 
     /**
      * Filters to be used by the controller.
-     * 
+     *
      * This method defines which filters the controller will use.  Filters can be
      * built in with Yii or defined in the controller (see {@link AdminController::filterClearCache}).
      * See also Yii documentation for more information on filters.
-     * 
-     * @return array An array consisting of the filters to be used. 
+     *
+     * @return array An array consisting of the filters to be used.
      */
     public function filters() {
         // return the filter configuration for this controller, e.g.:
@@ -213,17 +228,22 @@ class AdminController extends Controller {
     }
 
     /**
-     * A list of behaviors for the controller to use; downloads missing files if any.
-     * 
+     * A list of behaviors for the controller to use.
+	 *
+	 * It will download missing files (including classes that aren't behaviors)
+	 * if any that are defined in {@link $behaviorClasses} are missing from the
+	 * local filesystem.
+     *
      * {@link LeadRoutingBehavior} is used to consolidate code for lead routing rules.
      * As such, it has been moved to an external file.  This file includes LeadRoutingBehavior
      * or downloads it if the file does not currently exist.  See also Yii documentation
      * for more information on behaviors.
 	 * {@link UpdaterBehavior} is a centralized, re-usable behavior class for code
-	 * pertaining to the updater.
+	 * pertaining to the updater that is agnostic to whether the update is being
+	 * performed inside of a web request.
 	 * {@link CommonControllerBehavior} is for methods shared between x2base and Admin controller
-     * 
-     * @return array An array of behaviors to implement. 
+     *
+     * @return array An array of behaviors to implement.
      */
     public function behaviors() {
 		$missingClasses = array();
@@ -268,17 +288,23 @@ class AdminController extends Controller {
 		// $missingClasses[] = 'FOO';
 		if(count($missingClasses))
 			$this->missingClassesException($missingClasses);
-		
+
+		// Add extraneous behavior properties:
+		foreach (self::$behaviorProperties as $class => $properties) {
+			foreach ($properties as $name => $value) {
+				$behaviors[$class][$name] = $value;
+			}
+		}
         return $behaviors;
     }
 
     /**
      * @deprecated
      * Deprecated access control function.
-     * 
-     * This function used to be used to control access roles for actions within 
+     *
+     * This function used to be used to control access roles for actions within
      * the admin tab.  This system has been replaced with Yii's built in RBAC
-     * which uses {@link AdminController::beforeAction} to determine permissions. 
+     * which uses {@link AdminController::beforeAction} to determine permissions.
      */
     public function accessRules() {
         /* return array(
@@ -313,12 +339,12 @@ class AdminController extends Controller {
 
 	/**
 	 * A filter to clear the cache.
-	 * 
+	 *
 	 * This method clears the cache whenever the admin controller is accessed.
-	 * Caching improves performance throughout the app, but will occasionally 
+	 * Caching improves performance throughout the app, but will occasionally
 	 * need to be cleared. Keeping this filter here allows for cleaning up the
 	 * cache when required.
-	 * 
+	 *
 	 * @param type $filterChain The filter chain Yii is currently acting on.
 	 */
 	public function filterClearCache($filterChain) {
@@ -327,7 +353,7 @@ class AdminController extends Controller {
 			$cache->flush();
 		$filterChain->run();
 	}
-	
+
 	/**
 	 * A filter to clear the authItem cache.
 	 * @param type $filterChain The filter chain Yii is currently acting on.
@@ -342,17 +368,17 @@ class AdminController extends Controller {
             }
         }
 		$filterChain->run();
-		
+
 	}
 
     /**
      * @deprecated
      * Deprecated function for mass emailing contacts.
-     * 
-     * This method used to render a page to search for contacts to send out a 
+     *
+     * This method used to render a page to search for contacts to send out a
      * mass mailing list to. The Marketing module has replaced this functionality
-     * and is significantly more useful. 
-     
+     * and is significantly more useful.
+
     public function actionSearchContact() {
         $this->render('searchContactInfo');
     }*/
@@ -360,10 +386,10 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * Deprecated method to render a list of contacts meeting the search criteria of the previous method.
-     *  
+     *
      * This method would be accessed when the {@link AdminController::actionSearchContact}
-     * action had data posted in the form on the page.  It would 
-     
+     * action had data posted in the form on the page.  It would
+
     public function actionSendEmail() {
         $criteria = $_POST['searchTerm'];
 
@@ -378,11 +404,11 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * Deprecated method to actually send mass emails.
-     * 
+     *
      * This method links with the previous two deprecated methods to send out emails
      * after a contact list has been made and confirmed.  It has been replaced
-     * by the Marketing module. 
-     
+     * by the Marketing module.
+
     public function actionMail() {
         $subject = $_POST['subject'];
         $body = $_POST['body'];
@@ -401,7 +427,7 @@ class AdminController extends Controller {
             'criteria' => $criteria,
         ));
     }*/
-    
+
     public function actionManageTags(){
         $dataProvider=new CActiveDataProvider('Tags',array(
             'criteria'=>array(
@@ -411,12 +437,12 @@ class AdminController extends Controller {
                 'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
             ),
         ));
-        
+
         $this->render('manageTags',array(
             'dataProvider'=>$dataProvider,
         ));
     }
-    
+
     public function actionDeleteTag($tag){
         if(!empty($tag)){
             if($tag!='all'){
@@ -455,12 +481,42 @@ class AdminController extends Controller {
         echo Session::model()->deleteByPk($id);
     }
 
+    public function actionViewSessionLog(){
+        $sessionLog=new CActiveDataProvider('SessionLog',array(
+           'sort' => array(
+                        'defaultOrder' => 'timestamp DESC',
+                    ),
+            'pagination'=>array(
+                'pageSize'=>Profile::getResultsPerPage()
+            )
+        ));
+        $this->render('viewSessionLog',array(
+            'dataProvider'=>$sessionLog,
+        ));
+    }
+
+    public function actionViewSessionHistory($id){
+        $sessions=X2Model::model('SessionLog')->findAllByAttributes(array('sessionId'=>$id));
+        $firstTimestamp=0;
+        $lastTimestamp=0;
+        $str="<table class='items'><thead><tr><th>User</th><th>Status</th><th>Timestamp</th></tr></thead>";
+        foreach($sessions as $session){
+            $str.="<tr>";
+            $str.="<td>".User::getUserLinks($session->user)."</td>";
+            $str.="<td>".SessionLog::parseStatus($session->status)."</td>";
+            $str.="<td>".Formatter::formatCompleteDate($session->timestamp)."</td>";
+            $str.="</tr>";
+        }
+        $str.="</table>";
+        echo $str;
+    }
+
     /**
      * Find user for lead routing.
-     * 
+     *
      * This method uses {@link LeadRoutingBehavior} to determine the proper user
      * for lead distribution within the app.  The user is echoed out to allow for
-     * access via AJAX request. 
+     * access via AJAX request.
      */
     public function actionGetRoutingType() {
         $assignee = $this->getNextAssignee();
@@ -472,11 +528,11 @@ class AdminController extends Controller {
 
     /**
      * Render/save the Custom Lead Routing Rules
-     * 
+     *
      * This method renders a grid of Custom Round Robin Rules and allows for new
      * rules to be created and saved. These rules are used in conjunction with
      * {@link AdminController::actionGetRoutingType} when the "Custom Round Robin"
-     * lead distribution method is chosen. 
+     * lead distribution method is chosen.
      */
     public function actionRoundRobinRules() {
         $model = new LeadRouting;
@@ -531,7 +587,7 @@ class AdminController extends Controller {
 
     /**
      * Create a new Role.
-     * 
+     *
      * This method is accessed by a form on the {@link AdminController::actionManageRoles}
      * page to create a new role. View and Edit permissions are set and saved in the proper
      * tables in this method, and then the user is redirected back to the "Manage Roles"
@@ -605,7 +661,7 @@ class AdminController extends Controller {
 
     /**
      * Delete an existing role.
-     * 
+     *
      * This method is accessed by a form on the {@link AdminController::manageRoles}
      * page to allow for the deletion of admin created roles.  Default system roles
      * (authenticated, guest, and admin) cannot be deleted this way.
@@ -637,9 +693,9 @@ class AdminController extends Controller {
 
     /**
      * Modify the permissions on an existing role.
-     * 
+     *
      * This action is called by a form on the {@link AdminController::actionManageRoles}
-     * page to allow for the modification of an existing role. 
+     * page to allow for the modification of an existing role.
      */
     public function actionEditRole() {
         $model = new Roles;
@@ -725,8 +781,8 @@ class AdminController extends Controller {
 
     /**
      * Create a workflow based exception for a role.
-     * 
-     * This method is called by a form on the {@link AdminController::manageRoles} 
+     *
+     * This method is called by a form on the {@link AdminController::manageRoles}
      * page to allow for the creation of workflow based exceptions for a role.
      * Workflow exceptions modify which fields are visible or editable based on
      * what stage of a workflow a contact is in.
@@ -798,11 +854,11 @@ class AdminController extends Controller {
 
     /**
      * Modify workflow configuration settings.
-     * 
+     *
      * This method allows for the configuration of workflow backdating functions.
      * These settings control whether or not users are allowed to set workflow
      * completion dates to be in the past, and to what extent they can modify a
-     * workflow action once it is marked as complete. 
+     * workflow action once it is marked as complete.
      */
     public function actionWorkflowSettings() {
         $admin = &Yii::app()->params->admin;
@@ -824,9 +880,9 @@ class AdminController extends Controller {
 
     /**
      * A method to echo a dropdown of workflow stages.
-     * 
-     * This method is called via AJAX request and echoes back a dropdown with 
-     * options consisting of all stages for a particular workflow. 
+     *
+     * This method is called via AJAX request and echoes back a dropdown with
+     * options consisting of all stages for a particular workflow.
      */
     public function actionGetWorkflowStages() {
         if (isset($_POST['workflow'])) {
@@ -842,7 +898,7 @@ class AdminController extends Controller {
 
     /**
      * Echo out a series of inputs for a role editor page.
-     *  
+     *
      * This method is called via AJAX from the "Edit Role" portion of the "Manage Roles"
      * page.  Upon selection of a role in the dropdown on that page, this method
      * finds all relevant information about the role and echoes it back as a form
@@ -911,10 +967,10 @@ class AdminController extends Controller {
 
     /**
      * A catch all page for roles.
-     * 
+     *
      * This action renders a page with forms for the creation, editing, and deletion
-     * of roles.  It also displays a grid with all user created roles (default 
-     * roles are not included and cannot be edited this way). 
+     * of roles.  It also displays a grid with all user created roles (default
+     * roles are not included and cannot be edited this way).
      */
     public function actionManageRoles() {
         $model = new Roles;
@@ -942,23 +998,23 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * A deprecated function controlling the updater.
-     * 
+     *
      * This function formerly toggled whether or not to notify the admin of any
      * new updates to X2CRM.  This has been replaced with an option in the "Updater
-     * Settings" page of the Admin tab. 
-     
+     * Settings" page of the Admin tab.
+
     public function actionToggleUpdater() {
         $this->redirect('updaterSettings');
     }*/
-    
+
     /**
      * @deprecated
      * A deprecated method for contacting X2Engine Inc.
-     * 
+     *
      * This method has been replaced with a form on our website, and is no longer
      * linked to anywhere on the application.  If you wish to get in contact with us,
-     * please visit www.x2engine.com 
-     
+     * please visit www.x2engine.com
+
     public function actionContactUs() {
 
         if (isset($_POST['email'])) {
@@ -975,9 +1031,9 @@ class AdminController extends Controller {
 
     /**
      * Render the changelog.
-     * 
+     *
      * This action renders the user changelog page, which contains a list of all
-     * changed made by users within the app. 
+     * changed made by users within the app.
      */
     public function actionViewChangelog() {
 
@@ -1001,15 +1057,17 @@ class AdminController extends Controller {
 
     /**
      * Add notification criteria.
-     * 
+     *
      * This method is called by a form on the "Manage Notification Criteria" page
-     * and is used to create a new criteria for generation notifications. 
+     * and is used to create a new criteria for generation notifications.
      */
     public function actionAddCriteria() {
         $criteria = new Criteria;
         $users = User::getNames();
         $dataProvider = new CActiveDataProvider('Criteria');
         unset($users['']);
+        unset($users['Anyone']);
+        $criteria->users=Yii::app()->user->getName();
         if (isset($_POST['Criteria'])) {
             $criteria->attributes = $_POST['Criteria'];
             $str = "";
@@ -1026,7 +1084,7 @@ class AdminController extends Controller {
             $criteria->users = $str;
             if ($criteria->modelType != null && $criteria->comparisonOperator != null) {
                 if ($criteria->save()) {
-                    
+
                 }
                 $this->redirect('index');
             }
@@ -1040,11 +1098,11 @@ class AdminController extends Controller {
 
     /**
      * Delete a notification criteria.
-     * 
+     *
      * This function is called to delete a user created notification critera.
      * Some criteria are built in to the app and cannot be deleted this way.
-     * 
-     * @param int $id The ID of the criteria to be deleted. 
+     *
+     * @param int $id The ID of the criteria to be deleted.
      */
     public function actionDeleteCriteria($id) {
 
@@ -1055,7 +1113,7 @@ class AdminController extends Controller {
 
     /**
      * Delete a routing rule.
-     * 
+     *
      * This method will delete a custom routing rule that has been configured
      * for the lead distribution process.
      * @param int $id The ID of the rule to be deleted.
@@ -1069,10 +1127,10 @@ class AdminController extends Controller {
 
     /**
      * Echo a list of model attributes as a dropdown.
-     * 
+     *
      * This method is called via AJAX as a part of creating notification criteria.
      * It takes the model or module name as POST data and returns a list of dropdown
-     * options consisting of the fields available to that model. 
+     * options consisting of the fields available to that model.
      */
     public function actionGetAttributes() {
         $data = array();
@@ -1099,10 +1157,10 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * Deprecated function to set user timeout.
-     * 
-     * This method formerly controlled the user session timeout settings for the 
+     *
+     * This method formerly controlled the user session timeout settings for the
      * software.  This setting is now controlled by the "General Settings" page.
-     
+
     public function actionSetTimeout() {
 
         $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
@@ -1124,10 +1182,10 @@ class AdminController extends Controller {
     /**
      * @deprecated
      * Deprecated method to set chat polling
-     * 
+     *
      * This method formerly controlled the configuration of chat polling requests.
      * This timeout is now set by the "General Settings" page.
-     
+
     public function actionSetChatPoll() {
 
         $admin = &Yii::app()->params->admin; //X2Model::model('Admin')->findByPk(1);
@@ -1148,9 +1206,9 @@ class AdminController extends Controller {
 
     /**
      * Control chat polling and session timeout.
-     * 
+     *
      * This method renders a page with settings for user session timeout and chat
-     * request polling.  These settings are application wide and not per user. 
+     * request polling.  These settings are application wide and not per user.
      */
     public function actionAppSettings() {
 
@@ -1193,7 +1251,7 @@ class AdminController extends Controller {
             'model' => $admin,
         ));
     }
-    
+
     public function actionActivitySettings() {
 
         $admin = &Yii::app()->params->admin;
@@ -1213,9 +1271,9 @@ class AdminController extends Controller {
 
     /**
      * Sets the lead routing type.
-     * 
+     *
      * This method allows for the admin to configure which option to use for lead
-     * distribution.  This is what determines the actions of {@link LeadRoutingBehavior}. 
+     * distribution.  This is what determines the actions of {@link LeadRoutingBehavior}.
      */
     public function actionSetLeadRouting() {
 
@@ -1243,9 +1301,9 @@ class AdminController extends Controller {
 
     /**
      * Sets the service routing type.
-     * 
+     *
      * This method allows for the admin to configure which option to use for service case
-     * distribution.  This is what determines the actions of {@link ServiceRoutingBehavior}. 
+     * distribution.  This is what determines the actions of {@link ServiceRoutingBehavior}.
      */
     public function actionSetServiceRouting() {
 
@@ -1276,10 +1334,10 @@ class AdminController extends Controller {
 
     /**
      * Configure google integration.
-     * 
+     *
      * This method provides a form for the entry of Google Apps data.  This will
      * allow for users to log in with their google account and sync X2CRM's calendars
-     * with their Google Calendar. 
+     * with their Google Calendar.
      */
     public function actionGoogleIntegration() {
 
@@ -1302,9 +1360,9 @@ class AdminController extends Controller {
 
     /**
      * Configure email settings.
-     * 
+     *
      * This allows for configuration of how emails are handled by X2CRM.  The admin
-     * can select to use the server that the software is hosted on or a separate mail server. 
+     * can select to use the server that the software is hosted on or a separate mail server.
      */
     public function actionEmailSetup() {
 
@@ -1326,9 +1384,9 @@ class AdminController extends Controller {
 
     /**
      * Add a custom field.
-     * 
+     *
      * This method allows for the creation of custom fields linked to any customizable
-     * module in X2CRM.  This is used by "Manage Fields." 
+     * module in X2CRM.  This is used by "Manage Fields."
      */
     public function actionAddField() {
         $model = new Fields;
@@ -1340,6 +1398,7 @@ class AdminController extends Controller {
             // $model->visible=1;
             $model->custom = 1;
             $model->modified = 1;
+            $model->modelName=X2Model::getModelName($model->modelName);
 
             $fieldType = $model->type;
             switch ($fieldType) {
@@ -1393,20 +1452,20 @@ class AdminController extends Controller {
                         $result = $command->query();
                     }catch(CDbException $e){
                         $model->delete();
-                    }   
+                    }
 
                 }
             }
             $this->redirect('manageFields');
         }
     }
-    
+
     public function actionValidateField($fieldName, $modelName){
         function in_arrayi($needle, $haystack) {
             return in_array(strtolower($needle), array_map('strtolower', $haystack));
         }
         $reservedWords = array_merge(require('protected/data/mysqlReservedWords.php'),require('protected/data/modelReservedWords.php'));
-		
+
         if(in_arrayi($fieldName,$reservedWords)){
             echo Yii::t('admin','This field is a MySQL reserved word.  Choose a different field name.');
         }elseif(preg_match('/\W/', $fieldName) || preg_match('/^[^a-zA-Z]+/', $fieldName)){
@@ -1423,9 +1482,9 @@ class AdminController extends Controller {
 
     /**
      * Delete a field.
-     * 
+     *
      * This method allows for the deletion of custom fields.  Default fields cannot
-     * be deleted in this way. 
+     * be deleted in this way.
      */
     public function actionRemoveField() {
 
@@ -1445,10 +1504,10 @@ class AdminController extends Controller {
 
     /**
      * Edit a pre-existing field.
-     * 
+     *
      * This method allows for the editing of both user created and default fields.
      * This also changes the database schema to fit the field type and as such must
-     * be used very carefully. 
+     * be used very carefully.
      */
     public function actionCustomizeFields() {
 
@@ -1516,10 +1575,10 @@ class AdminController extends Controller {
 
     /**
      * Echo a dropdown of field data.
-     * 
-     * This method is called via AJAX as part of editing fields.  It echoes back 
+     *
+     * This method is called via AJAX as part of editing fields.  It echoes back
      * a list of all the relevant attributes for a field when a dropdown option
-     * is selected. 
+     * is selected.
      */
     public function actionGetFieldData() {
 
@@ -1558,9 +1617,9 @@ class AdminController extends Controller {
 
     /**
      * General field management.
-     * 
+     *
      * This action serves as the landing page for all of the custom field related
-     * actions within the software. 
+     * actions within the software.
      */
     public function actionManageFields() {
         $model = new Fields;
@@ -1584,10 +1643,10 @@ class AdminController extends Controller {
 
     /**
      * Create a static page.
-     * 
+     *
      * This method allows the admin to create a static page to go on the top bar
      * menu.  The page is a basic doc editor which is then saved as a Module record
-     * of type "Document." 
+     * of type "Document."
      */
     public function actionCreatePage() {
 
@@ -1631,11 +1690,11 @@ class AdminController extends Controller {
 
     /**
      * View a page that has been created.
-     * 
+     *
      * This method is what is called when a user clicks the top bar link to a static
      * page that has been previously created.  Nearly identical to a document view
      * but without the widgets in the layout.
-     * 
+     *
      * @param int $id The ID of the page being viewed.
      */
     public function actionViewPage($id) {
@@ -1650,9 +1709,9 @@ class AdminController extends Controller {
 
     /**
      * Change the title of a module.
-     * 
-     * This allows for the configuration of the display name of a module.  As of 
-     * version 2.0, this will not affect text other than the top bar menu. 
+     *
+     * This allows for the configuration of the display name of a module.  As of
+     * version 2.0, this will not affect text other than the top bar menu.
      */
     public function actionRenameModules() {
 
@@ -1683,7 +1742,7 @@ class AdminController extends Controller {
 
     /**
      * Re-arrange the top bar menu.
-     * 
+     *
      * This form allows for the admin to change the order and visibility of top bar
      * menu items for all users.
      */
@@ -1723,7 +1782,7 @@ class AdminController extends Controller {
                     $moduleRecord->visible = 1;
                     $moduleRecord->menuPosition = array_search($key, array_keys($newMenuItems));
                     if ($moduleRecord->save()) {
-                        
+
                     }
                 } else {
                     $moduleRecord = Modules::model()->findByAttributes(array('title' => $key));
@@ -1731,7 +1790,7 @@ class AdminController extends Controller {
                         $moduleRecord->visible = 1;
                         $moduleRecord->menuPosition = array_search($key, array_keys($newMenuItems));
                         if ($moduleRecord->save()) {
-                            
+
                         }
                     }
                 }
@@ -1742,7 +1801,7 @@ class AdminController extends Controller {
                     $moduleRecord->visible = 0;
                     $moduleRecord->menuPosition = -1;
                     if ($moduleRecord->save()) {
-                        
+
                     }
                 } else {
                     $moduleRecord = Modules::model()->findByAttributes(array('title' => $key));
@@ -1750,7 +1809,7 @@ class AdminController extends Controller {
                         $moduleRecord->visible = 0;
                         $moduleRecord->menuPosition = -1;
                         if ($moduleRecord->save()) {
-                            
+
                         }
                     }
                 }
@@ -1766,9 +1825,9 @@ class AdminController extends Controller {
 
     /**
      * Upload a custom logo
-     * 
+     *
      * This method allows for the admin to upload their own logo to go in place of
-     * the X2CRM logo in the top left corner of the software. 
+     * the X2CRM logo in the top left corner of the software.
      */
     public function actionUploadLogo() {
         if (isset($_FILES['logo-upload'])) {
@@ -1798,7 +1857,7 @@ class AdminController extends Controller {
     }
 
     /**
-     * Reverts the logo back to X2CRM. 
+     * Reverts the logo back to X2CRM.
      */
     public function actionToggleDefaultLogo() {
 
@@ -1813,7 +1872,7 @@ class AdminController extends Controller {
             $logo->fileName = 'uploads/logos/' . $name;
 
             if ($logo->save()) {
-                
+
             }
         } else if($logo->fileName!='uploads/logos/yourlogohere.png') {
             $logo->delete();
@@ -1823,10 +1882,10 @@ class AdminController extends Controller {
 
     /**
      * Create or edit translations.
-     * 
+     *
      * This method allows the admin to access the X2CRM built in translation manager.
      * Any translation for any language can be edited and saved from here, and new
-     * ones can be added. 
+     * ones can be added.
      */
     public function actionTranslationManager() {
         $this->layout = null;
@@ -1837,44 +1896,44 @@ class AdminController extends Controller {
 
 	/**
 	 * Creates a new custom module.
-	 * 
+	 *
 	 * This method allows for the creation of admin defined modules to use in the
 	 * software. These modules are more basic in functionality than most other X2
-	 * modules, but are fully customizable from the studio. 
+	 * modules, but are fully customizable from the studio.
 	 */
 	public function actionCreateModule() {
-		
+
 		$errors = array();
-		
+
 		if(isset($_POST['moduleName'])) {
-			
+
 			$title = trim($_POST['title']);
 			$recordName = trim($_POST['recordName']);
-			
+
 			$moduleName = trim($_POST['moduleName']);
-			
+
 			if(preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName))   // are there any non-alphanumeric or _ chars?
 				$errors[] = Yii::t('module', 'Invalid table name'); //$this->redirect('createModule');									// or non-alpha characters at the beginning?
-			
+
 			if($moduleName == '')  // we will attempt to use the title
 				$moduleName = $title; // as the backend name, if possible
-			
-			if($recordName == '')  // use title for record name 
+
+			if($recordName == '')  // use title for record name
 				$recordName = $title; // if none is provided
-			
+
 			$trans = include('protected/data/transliteration.php');
-			
+
 			$moduleName = strtolower(strtr($moduleName,$trans));  // replace characters with their A-Z equivalent, if possible
-			
+
 			$moduleName = preg_replace('/\W/', '', $moduleName); // now remove all remaining non-alphanumeric or _ chars
-			
+
 			$moduleName = preg_replace('/^[0-9_]+/', '', $moduleName); // remove any numbers or _ from the beginning
-			
-			
+
+
 			if($moduleName == '')        // if there is nothing left of moduleName at this point,
 				$moduleName = 'module' . substr(time(), 5);  // just generate a random one
-				
-				
+
+
 			if(!is_null(Modules::model()->findByAttributes(array('title' => $title))) || !is_null(Modules::model()->findByAttributes(array('name' => $moduleName))))
 				$errors[] = Yii::t('module', 'A module with that name already exists');
 			if(empty($errors)) {
@@ -1885,7 +1944,7 @@ class AdminController extends Controller {
 				} catch(Exception $e) {
 					die($e->getMessage());
 				}
-				
+
 				$moduleRecord = new Modules;
 				$moduleRecord->name = $moduleName;
 				$moduleRecord->title = $title;
@@ -1911,11 +1970,11 @@ class AdminController extends Controller {
 
 	/**
 	 * Creates a table for a new module
-	 * 
+	 *
 	 * This method is called by {@link AdminController::actionCreateModule} as part
 	 * of creating a new module.  This creates the table for the new module as well
 	 * as creating records in the x2_fields table for use in the studio.
-	 * 
+	 *
 	 * @param string $moduleName The name of the module being created
 	 */
 	private function createNewTable($moduleName) {
@@ -1944,28 +2003,28 @@ class AdminController extends Controller {
 
 	/**
 	 * Create file system for a custom module
-	 * 
+	 *
 	 * This method is called by {@link AdminController::actionCreateModule} as a
 	 * part of creating a new module.  This method copies all the proper files to
 	 * their new directories, renames them, and replaces the contents to fit the
 	 * new module name.
-	 * 
+	 *
 	 * @param string $moduleName The name of the moduel being created
 	 */
 	private function createSkeletonDirectories($moduleName) {
 
 		$errors = array();
-		
+
 		$templateFolderPath = 'protected/modules/template/';
 		$moduleFolderPath = 'protected/modules/'.$moduleName.'/';
-		
+
 		$moduleFolder = Yii::app()->file->set($moduleFolderPath);
 		if(!$moduleFolder->exists && $moduleFolder->createDir() === false)
 			throw new Exception('Error creating module folder "'.$moduleFolderPath.'".');
-		
+
 		if(Yii::app()->file->set($templateFolderPath)->copy($moduleName) === false)
 			throw new Exception('Error copying Template folder "'.$templateFolderPath.'".');
-		
+
 		// list of files to process
 		$fileNames = array(
 			'register.php',
@@ -1983,27 +2042,27 @@ class AdminController extends Controller {
 			'views/default/update.php',
 			'views/default/view.php',
 		);
-		
+
 		foreach($fileNames as $fileName) {
 			// calculate proper file name
 			$fileName = $moduleFolderPath . $fileName;
-			
+
 			$file = Yii::app()->file->set($fileName);
 			if(!$file->exists)
 				throw new Exception('Unable to find template file "'.$fileName.'".');
-				
+
 			// rename files
 			$newFileName = str_replace(array('templates','Templates'),array($moduleName,ucfirst($moduleName)),$file->filename);
 			if($file->setFileName($newFileName) === false)
 				throw new Exception('Error renaming template file "'.$fileName.'" to "'.$newFileName.'".');
-			
+
 			// chmod($file->filename, 0755);
 			// $file->setPermissions(0755);
-			
+
 			// replace "template", "Templates", etc within the file
 			$contents = $file->getContents();
 			$contents = str_replace(array('templates','Templates'),array($moduleName,ucfirst($moduleName)),$contents);
-			
+
 			if($file->setContents($contents) === false)
 				throw new Exception('Error modifying template file "'.$newFileName.'".');
 		}
@@ -2011,19 +2070,19 @@ class AdminController extends Controller {
 
 	/**
 	 * Create module config file
-	 * 
+	 *
 	 * This is called by {@link AdminController::actionCreateModule} in the process
 	 * of creating a new module.  This writes a config file for the module to use.
-	 * 
+	 *
 	 * @param string $title The display title of the module
 	 * @param string $moduleName The actual name of the module
 	 * @param string $recordName What to call the records of this module
 	 */
 	private function writeConfig($title,$moduleName,$recordName) {
-	
+
 		$configFilePath = 'protected/modules/'.$moduleName.'/'.$moduleName.'Config.php';
 		$configFile = Yii::app()->file->set($configFilePath,true);
-		
+
 		$contents = str_replace(
 			array(
 				'{title}',
@@ -2037,16 +2096,16 @@ class AdminController extends Controller {
 			),
 			$configFile->getContents()
 		);
-		
+
 		if($configFile->setContents($contents) === false)
 			throw new Exception('Error writing to config file "'.$configFilePath.'".');
 	}
 
 	/**
 	 * Deletes a custom module.
-	 * 
-	 * This method deletes an admin created module from the system.  All files are 
-	 * deleted as well as the table associated with it. 
+	 *
+	 * This method deletes an admin created module from the system.  All files are
+	 * deleted as well as the table associated with it.
 	 */
 	public function actionDeleteModule() {
 
@@ -2074,7 +2133,7 @@ class AdminController extends Controller {
                                 try{
                                     $query->execute();
                                 }catch(CDbException $e){
-                                    
+
                                 }
 							}
 						}
@@ -2112,10 +2171,10 @@ class AdminController extends Controller {
 
     /**
      * Export a custom module.
-     * 
-     * This method creates a zip file from a custom module with all the proper 
-     * files and SQL for installation required to set up the module again.  These 
-     * zip files can be imported into other X2 installations. 
+     *
+     * This method creates a zip file from a custom module with all the proper
+     * files and SQL for installation required to set up the module again.  These
+     * zip files can be imported into other X2 installations.
      */
     public function actionExportModule() {
         $dlFlag=false;
@@ -2198,9 +2257,9 @@ class AdminController extends Controller {
 
     /**
      * Import a zip of a module.
-     * 
-     * This method will allow the admin to import a zip file of an exported X2 
-     * module. 
+     *
+     * This method will allow the admin to import a zip file of an exported X2
+     * module.
      */
     public function actionImportModule() {
 
@@ -2240,9 +2299,9 @@ class AdminController extends Controller {
 
     /**
      * DO NOT USE
-     * 
+     *
      * Testing method used for a prototype system of managing modules in a more
-     * modular fashion.  This is NOT ready for use and should not be accessed. 
+     * modular fashion.  This is NOT ready for use and should not be accessed.
      */
     public function actionRegisterModules() {
 
@@ -2264,11 +2323,11 @@ class AdminController extends Controller {
 
     /**
      * DO NOT USE
-     * 
+     *
      * Like {@link actionRegisterModules} this method is not yet ready for use.
      * Please refrain from attempting to use this module or it will likely create
      * issues in your installation.
-     * 
+     *
      * @param string $module The name of the moduel being toggled.
      */
     public function actionToggleModule($module) {
@@ -2297,7 +2356,7 @@ class AdminController extends Controller {
                 if ($exists->toggleable) {
                     $uninstall = $config['uninstall'];
                 } else {
-                    
+
                 }
             }
         }
@@ -2306,9 +2365,9 @@ class AdminController extends Controller {
 
     /**
      * X2Studio Form Editor
-     * 
-     * This method allows the admin to create and edit the form layouts for 
-     * all editable modules within the software. 
+     *
+     * This method allows the admin to create and edit the form layouts for
+     * all editable modules within the software.
      */
     public function actionEditor() {
 
@@ -2397,9 +2456,9 @@ class AdminController extends Controller {
 
     /**
      * Create form Layout
-     * 
+     *
      * This method is called via AJAX from within {@link actionEditor} to create
-     * new form layouts for use with the modules. 
+     * new form layouts for use with the modules.
      */
     public function actionCreateFormLayout() {
         if (isset($_GET['newLayout'], $_GET['model'], $_GET['layoutName'])) {
@@ -2423,7 +2482,7 @@ class AdminController extends Controller {
 
     /**
      * Delete a form layout.
-     * 
+     *
      * @param int $id The ID of the layout to be deleted.
      */
     public function actionDeleteFormLayout($id) {
@@ -2457,7 +2516,7 @@ class AdminController extends Controller {
 
     /**
      * Landing page for admin created dropdowns
-     * 
+     *
      * This method allows the admin to access the functions related to creating
      * and editing admin created dropdowns in the app.
      */
@@ -2481,15 +2540,15 @@ class AdminController extends Controller {
         $this->render('manageDropDowns', array(
             'dataProvider' => $dataProvider,
             'model' => $model,
-            'dropdowns' => $dataProvider->getData(),
+            'dropdowns' => Dropdowns::model()->findAll(),
         ));
     }
 
     /**
      * Create a custom dropdown
-     * 
+     *
      * This method allows the admin to create a custom dropdown to be used with
-     * a module in conjunction with the form editor. 
+     * a module in conjunction with the form editor.
      */
     public function actionDropDownEditor() {
         $model = new Dropdowns;
@@ -2517,7 +2576,7 @@ class AdminController extends Controller {
     }
 
     /**
-     * Delete a custom dropdown 
+     * Delete a custom dropdown
      */
     public function actionDeleteDropdown() {
         $dropdowns = Dropdowns::model()->findAll();
@@ -2558,9 +2617,9 @@ class AdminController extends Controller {
 
     /**
      * Print out a dropdown's data
-     * 
-     * This method is called via AJAX by {@link actionEditDropdown} to get the 
-     * options of the dropdown for the edit dropdown page. 
+     *
+     * This method is called via AJAX by {@link actionEditDropdown} to get the
+     * options of the dropdown for the edit dropdown page.
      */
     public function actionGetDropdown() {
         if (isset($_POST['Dropdowns']['name'])) {
@@ -2586,7 +2645,7 @@ class AdminController extends Controller {
 
     /**
      * Echos a list of custom dropdowns
-     * 
+     *
      * This method is called via AJAX on the field editor to get a list of dropdowns
      * or modules to be used for modifying the type of field.
      */
@@ -2619,7 +2678,7 @@ class AdminController extends Controller {
 
     /**
      * Export all data
-     * 
+     *
      * This method is used to export all of the data from the software as a CSV
      */
     public function actionExport() {
@@ -2658,7 +2717,7 @@ class AdminController extends Controller {
 
     /**
      * Private method to handle the export
-     * 
+     *
      * This method actually prepares all the data and the CSV for export before
      * rending the page with the download.
      */
@@ -2705,7 +2764,7 @@ class AdminController extends Controller {
             $file->send();
         }
     }
-    
+
     public function actionRollbackStage($model,$stage,$importId){
         $stages=array(
             "tags"=>"DELETE a FROM x2_tags a
@@ -2731,7 +2790,7 @@ class AdminController extends Controller {
         $result=$command->execute();
         echo $result;
     }
-    
+
     public function actionRollbackImport(){
         if(isset($_GET['importId'])){
             $importId=$_GET['importId'];
@@ -2757,7 +2816,7 @@ class AdminController extends Controller {
                 'dataProvider'=>null,
                 'count'=>$count,
             ));
-            
+
         }else{
             $data=array();
             $imports=Yii::app()->db->createCommand()
@@ -2791,15 +2850,15 @@ class AdminController extends Controller {
                 'dataProvider'=>$dataProvider,
             ));
         }
-        
+
     }
 
     /**
      * Import data from an export
-     * 
+     *
      * This method allows for the import of data by the admin into the software.
      * The import is compatible with the format from an X2 export only at the moment,
-     * so that CSV should be used as a template for how to format the data. 
+     * so that CSV should be used as a template for how to format the data.
      */
     public function actionImport() {
         if (isset($_FILES['data'])) {
@@ -2874,7 +2933,7 @@ class AdminController extends Controller {
                         }else{
                             $model = new $modelType;
                         }
-                        
+
                         foreach ($attributes as $key => $value) {
                             if ($model->hasAttribute($key) && isset($value)) {
                                 if($value=="")
@@ -2894,7 +2953,7 @@ class AdminController extends Controller {
                                     isset($_SESSION['overwriteFailure'][$modelType])?$_SESSION['overwriteFailure'][$modelType]++:$_SESSION['overwriteFailure'][$modelType]=1;
                                 }
                                 if(!$model->validate()){
-                                    $saveFlag=false; 
+                                    $saveFlag=false;
                                     $failedImport = fopen('failedImport.csv', 'a+');
                                     $lastFailed = $_SESSION['lastFailed'];
                                     if ($lastFailed != $modelType) {
@@ -2926,7 +2985,7 @@ class AdminController extends Controller {
                                 } else {
                                     isset($_SESSION['overwriten'][$modelType])? : $_SESSION['overwriten'][$modelType] = 0;
                                 }
-                            } 
+                            }
                         } else {
                             $failedImport = fopen('failedImport.csv', 'a+');
                             $lastFailed = $_SESSION['lastFailed'];
@@ -2991,16 +3050,16 @@ class AdminController extends Controller {
 			'http' => array(
 				'timeout' => 15  // Timeout in seconds
 				)));
-	
+
 		// Check to see if there's an update available. By this point in time
 		// (if this AdminController is running inside of a much older installation)
 		// FileUtil should have been downloaded and available.
 		$versionTest = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
 		$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
-		
+
 		if ($updaterCheck && $versionTest) {
 			if ($updaterCheck != $updaterVersion) {
-				$this->updateUpdater($updaterCheck,'updater');
+				$this->runUpdateUpdater($updaterCheck,'updater');
 			}
 
 			if (version_compare($version,$versionTest)<0) {
@@ -3020,16 +3079,15 @@ class AdminController extends Controller {
 					}
 				}
 				$updateData = FileUtil::getContents('http://x2planet.com/installs/updates/' . strtr($route, $params));
-				
-				
+
+
 				if ($updateData) {
 					// Render the updater with the data
 					$updateData = CJSON::decode($updateData);
 					$updateData['newVersion'] = $versionTest;
 					$updateData['updaterCheck'] = $updaterCheck;
-					
-					
-					
+
+
 					if (!isset($updateData['errors'])) {
 						$updateData['scenario'] = 'update';
 						foreach(array('updaterCheck','updaterVersion','version','unique_id') as $var)
@@ -3042,7 +3100,6 @@ class AdminController extends Controller {
 						$newFiles = $updateData['fileList'];
 						if(!empty($updateData['nonFreeFileList']))
 							$newFiles = array_merge($newFiles,$updateData['nonFreeFileList']);
-						$this->saveBackup($newFiles);
 						$this->render('updater', $updateData);
 					} else { // Scenario $updateData['errors'] is set; server denied/dropped request
 						// Redirect, with the appropriate error message
@@ -3064,14 +3121,21 @@ class AdminController extends Controller {
 				Yii::app()->session['versionCheck']=true;
 				$this->render('updater',array('scenario'=>'message','version'=>$version,'message'=>Yii::t('admin','X2CRM is at the latest version!')));
 			}
-			
+
 		} else { // $updaterCheck === False || $versionTest === False; couldn't connect to server
 			// Redirect to updater with the appropriate error message
 			$this->render('updater',array('scenario'=>'error','message'=>Yii::t('admin','Error connecting to the updates server.')));
 		}
 	}
-	
+
+	/**
+	 * The upgrader action.
+	 */
 	public function actionUpgrader() {
+		// Remove database backup; if it exists, the user most likely came here
+		// immediately after updating to the latest version, in which case the
+		// backup is outdated (applies to the old version)
+		$this->removeDatabaseBackup();
 		$thisVersion = Yii::app()->params->version;
 		$currentVersion = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck');
 		if (version_compare($thisVersion, $currentVersion) < 0) {
@@ -3092,7 +3156,7 @@ class AdminController extends Controller {
 			$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
 
 			if ($updaterCheck != $updaterVersion) {
-				$this->updateUpdater($updaterCheck, 'upgrader');
+				$this->runUpdateUpdater($updaterCheck, 'upgrader');
 			}
 			$this->render('updater', array(
 				'scenario' => 'upgrade',
@@ -3100,43 +3164,16 @@ class AdminController extends Controller {
 				'unique_id' => '',
 				'url' => 'x2planet',
 				'newVersion' => $currentVersion,
-				'updaterCheck' => '',
+				'updaterCheck' => $updaterCheck,
+				'updaterVersion' => $updaterVersion,
 				'edition' => Yii::app()->params->admin->edition
 			));
 		}
 	}
-	
-	public function actionSaveEdition() {
-		foreach (array('unique_id', 'edition', 'status', 'fileList') as $var) {
-			if (isset($_POST[$var]))
-				${$var} = $_POST[$var];
-			else
-				$this->respond("Missing POST data variable $var.",true);
-		}
-		$fileList = CJSON::decode($fileList);
 
-		if ($status != 'error') {
-			if (Yii::app()->request->isAjaxRequest) {
-				$admin = &Yii::app()->params->admin;
-				$admin->edition = $edition;
-				$admin->unique_id = $unique_id;
-				$admin->save();
-				$this->respond("Upgrade succeeded!");
-			} else {
-				$this->_sendResponse('400', 'Edition info must be updated via AJAX.');
-			}
-		} else {
-			// Remove downloaded files; upgrade failed.
-			foreach ($fileList as $file)
-				if (file_exists($file))
-					unlink($file);
-			$this->respond("Upgrade failed.  Please try again or contact X2Engine.",true);
-		}
-	}
-	
     /**
      * Control settings for the updater
-     * 
+     *
      * This method controls the update interval setting for the application.
      */
     public function actionUpdaterSettings() {
@@ -3157,126 +3194,83 @@ class AdminController extends Controller {
     }
 
     /**
-     * Downloads files as a part of the updater. 
-     */
-    public function actionDownload($url,$route, $file) {
-		set_error_handler('AdminController::respondWithError');
+	 * Downloads files as a part of the updater.
+	 */
+	public function actionDownload($url, $route, $file) {
+		set_exception_handler('ResponseBehavior::respondWithException');
 		if (Yii::app()->request->isAjaxRequest) {
 			if ($url == 'x2planet') {
-				$i = 0;
-				if ($file != "") {
-					while (!FileUtil::ccopy("http://$url.com/$route/$file", "temp/" . $file) && $i < 5) {
-						$i++;
-					}
-				}
-				if ($i == 5) {
-					$this->respond("Error copying file $file.",true,false,true);
-				} else {
-					$this->respond('File copied successfully');
-				}
+				if ($this->downloadSourceFile($route, $file))
+					UpdaterBehavior::respond(Yii::t('admin','File {file} downloaded successfully.',array('{file}'=>$file)));
 			} else {
-				$this->respond('Update server not implemented for URL provided.',true,false,true);
+				UpdaterBehavior::respond('Update server not implemented for URL provided.', true, true);
 			}
 		} else {
 			$this->_sendResponse('400', 'Update requests must be made via AJAX.');
 		}
-		restore_error_handler();
+	}
+
+	/**
+	 * Back up the database and existing files to be deleted or replaced in an
+	 * update/upgrade.
+	 */
+	public function actionBackup() {
+		set_error_handler('ResponseBehavior::respondWithError');
+		set_exception_handler('ResponseBehavior::respondWithException');
+		if($this->makeDatabaseBackup())
+			UpdaterBehavior::respond(Yii::t('admin','Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
+	}
+
+	/**
+	 * Looks for an existing database backup.
+	 */
+	public function actionCheckDatabaseBackup() {
+		try {
+			if($this->checkDatabaseBackup())
+				UpdaterBehavior::respond(Yii::t('admin','Backup file exists and is not more than 24 hours old.'));
+		} catch (Exception $e) {
+			UpdaterBehavior::respond(Yii::t('admin','Backup does not exist or is too old.'),true,true);
+		}
+	}
+
+	/**
+	 * Yields the backup file.
+	 */
+	public function actionDownloadDatabaseBackup() {
+		$backup = realpath($this->dbBackupPath);
+		if((bool) $backup) {
+			header("Cache-Control: public");
+			header("Content-Description: File Transfer");
+			header("Content-Disposition: attachment; filename=".UpdaterBehavior::BAKFILE);
+			header("Content-type: application/octet");
+			header("Content-Transfer-Encoding: binary");
+			readfile($backup);
+		} else {
+			if(!empty($_SERVER['HTTP_REFERER']))
+				header("Location: {$_SERVER['HTTP_REFERER']}");
+			else
+				$this->redirect('index');
+		}
+
 	}
 
     /**
-     * Deletes files required for the update.
-     */
-    public function actionDelete() {
-        if (isset($_POST['delete'])) {
-            $file = $_POST['delete'];
-            if (file_exists($file)) {
-                if (unlink($file))
-                    $this->respond('File deleted successfully');
-                else
-                    $this->respond('File deletion failed',true);
-            }
-        }
-    }
-
-    /**
-     * @deprecated
-     * Deprecated method to run SQL as part of the update. 
-     
-    public function actionSql() {
-        if (isset($_POST['sql'])) {
-            $sql = $_POST['sql'];
-            $command = Yii::app()->db->createCommand($sql);
-            $result = $command->execute();
-            $this->_sendResponse('200', 'SQL Executed Successfully');
-        }
-    }*/
-
-    /**
-     * Finalizes the update
-     * 
+     * Finalizes an update/upgrade by applying file and database changes.
+     *
      * This method replaces the SQL method as well as finishing copying files over.
      * Both of these happen at once to prevent issues from files depending on SQL
-     * changes or vice versa. 
+     * changes or vice versa.
      */
-    public function actionInstallUpdate() {
-        $this->copyFile("temp");
-		$sqlRun = array();
-        if (isset($_POST['sqlList'])) {
-			$pdo = Yii::app()->db->pdoInstance;
-            $sql = $_POST['sqlList'];
-            foreach ($sql as $query) {
-                if ($query != "") {
-					try {
-						$command = $pdo->prepare($query);
-						$result = $command->execute();
-						if($result !== false)
-							$sqlRun[] = $query;
-						else {
-							$errorInfo = $command->errorInfo();
-							$this->sqlError($sqlRun,'('.$errorInfo[0].') '.$errorInfo[2]);
-						}
-					} catch (PDOException $e) {
-						$this->sqlError($sqlRun,$e->getMessage());
-					}
-                }
-            }
-        } else {
-            $this->respond('Improper request; expected postdata variable "sqlList"',true);
-        }
-        $this->rrmdir("temp");
-        $this->respond('Database changes succesfully applied.');
-    }
+    public function actionEnactChanges($scenario=null,$autoRestore = false) {
+		set_error_handler('ResponseBehavior::respondWithError');
+		set_exception_handler('ResponseBehavior::respondWithException');
+		$autoRestore = (bool) $autoRestore;
+		if($this->enactChanges($scenario,$_POST,$autoRestore))
+			UpdaterBehavior::respond(Yii::t('admin',ucfirst($scenario).' complete.'));
+	}
 
-
-    /**
-     * Perform all post-update tasks. 
-     * 
-     * Writes new data to protected/config/X2Config.php, removes the backup
-     * files, and returns a message that the update succeeded.
-     */
-    public function actionCleanUp() {
-        if (isset($_POST['status'])) {
-			$status = $_POST['status'];
-			if ($status == 'error') {
-				$this->restoreBackup(CJSON::decode($_POST['fileList']));
-				$this->respond("Update failed.  Please try again or contact X2Engine.",true);
-			} else {
-				$url = $_POST['url'];
-				$this->regenerateConfig($_POST['version'],$_POST['updater'],time());
-				$this->respond("Update succeeded!");
-			}
-		}
-		if (is_dir('backup'))
-			$this->rrmdir('backup');
-		$assets = scandir('assets');
-		foreach ($assets as $folder) {
-			if ($folder != ".." && $folder != ".")
-				$this->rrmdir($folder);
-		}
-    }
-	
 	/**
-	 * Retrieve the number of users 
+	 * Retrieve the number of users
 	 */
 	public function actionGetNUsers() {
 		echo Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
@@ -3284,34 +3278,8 @@ class AdminController extends Controller {
 	}
 
     /**
-     * Saves a backup copy of a list of files.
-     * @param array $fileList
-     */
-    function saveBackup($fileList) {
-        if (!is_dir('backup'))
-            mkdir('backup');
-        foreach ($fileList as $file) {
-            if ($file != "" && file_exists($file)) {
-                FileUtil::ccopy($file, 'backup/' . $file);
-            }
-        }
-    }
-
-    /**
-     * Restores a backup copy of a list of files.
-     * @param array $fileList 
-     */
-    function restoreBackup($fileList) {
-        foreach ($fileList as $file) {
-            if ($file != "" && file_exists($file)) {
-                copy('backup/' . $file, $file);
-            }
-        }
-    }
-
-    /**
      * Respond to a request with a specified status code and body.
-     * 
+     *
      * @param integer $status The HTTP status code.
      * @param string $body The body of the response message
      * @param string $content_type The response mimetype.
@@ -3352,7 +3320,7 @@ class AdminController extends Controller {
                     break;
             }
 
-            // servers don't always have a signature turned on 
+            // servers don't always have a signature turned on
             // (this is an apache directive "ServerSignature On")
             $signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
 
@@ -3379,9 +3347,9 @@ class AdminController extends Controller {
 
     /**
      * Obtain an appropriate message for a given HTTP response code.
-     * 
+     *
      * @param integer $status
-     * @return string 
+     * @return string
      */
     private function _getStatusCodeMessage($status) {
         // these could be stored in a .ini file and loaded
@@ -3394,6 +3362,7 @@ class AdminController extends Controller {
             402 => 'Payment Required',
             403 => 'Forbidden',
             404 => 'Not Found',
+			408 => 'Request Timeout',
             500 => 'Internal Server Error',
             501 => 'Not Implemented',
         );
@@ -3402,18 +3371,18 @@ class AdminController extends Controller {
 
     /**
      * View the changelogs.
-     
+
     public function actionViewLogs() {
         $this->render('viewLogs');
     }*/
 
     /**
      * Improved version of array_search that allows for regex searching
-     * 
+     *
      * @param string $find Regex to search on
      * @param array $in_array An array to search in
      * @param array $keys_found An array of keys which meet the regex
-     * @return type Returns the an array of keys if $in_array is valid, or false if not. 
+     * @return type Returns the an array of keys if $in_array is valid, or false if not.
      */
     function Array_Search_Preg($find, $in_array, $keys_found = Array()) {
         if (is_array($in_array)) {
@@ -3439,24 +3408,7 @@ class AdminController extends Controller {
         $str = preg_replace("/(([a-z])([A-Z])|([A-Z])([A-Z][a-z]))/", "\\2\\4 \\3\\5", $str);
         return ucfirst($str);
     }
-	
-	/**
-	 * Error handler for AJAX-called actions that returns errors in JSON format.
-	 * 
-	 * @param type $no
-	 * @param type $st
-	 * @param type $fi
-	 * @param type $ln 
-	 */
-	public static function respondWithError($no, $st, $fi = Null, $ln = Null) {
-		header("Content-type: application/json");
-		echo CJSON::encode(array(
-			'message' => "Error [$no]: $st",
-			'error' => true
-		));
-		Yii::app()->end();
-	}
-	
+
 	/**
 	 * Prints an error message explaing what has gone wrong when the classes are missing.
 	 * @param array $classes The missing dependencies
@@ -3478,54 +3430,54 @@ To stop this error from occurring, if the problem persists: restore the file pro
 https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engine/protected/controllers/AdminController.php");
 		$this->error500($message);
 	}
-	
-	
+
+
 	public function actionAuthGraph() {
-		
+
 		if(!Yii::app()->user->checkAccess('AdminIndex'))
 			return;
-		
+
 		$allTasks = array();
-		
+
 		$authGraph = array();
-			
+
 		$taskNames = Yii::app()->db->createCommand()
 			->select('name')
 			->from('x2_auth_item')
 			->where('type=1')
 			->queryColumn();
-		
+
 		foreach($taskNames as $task) {
 			$children = Yii::app()->db->createCommand()
 				->select('child')
 				->from('x2_auth_item_child')
 				->where('parent=:parent',array(':parent'=>$task))
 				->queryColumn();
-				
+
 			foreach($children as $child)
 				$allTasks[$task][$child] = array();
 		}
-		
+
 		$bizruleTasks = Yii::app()->db->createCommand()
 			->select('name')
 			->from('x2_auth_item')
 			->where('bizrule IS NOT NULL')
 			->queryColumn();
-		
+
 		function buildGraph($task,&$allTasks,&$authGraph) {
-			
+
 			if(!isset($allTasks[$task]) || empty($allTasks[$task])) {
 				return array();
 			} else {
 				$children = array();
-				
+
 				foreach(array_keys($allTasks[$task]) as $child) {
-					
+
 					if(isset($authGraph[$child]) && $authGraph[$child] === false)
 						continue;
-					
+
 					$childGraph = buildGraph($child,$allTasks,$authGraph);
-					
+
 					$children[$child] = $childGraph;
 					$authGraph[$child] = false;	// this is a child task, remove it from the top level
 				}
@@ -3535,98 +3487,46 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 
 		foreach(array_keys($allTasks) as $task)
 			$authGraph[$task] = buildGraph($task,$allTasks,$authGraph);
-			
+
 		foreach(array_keys($authGraph) as $key) {
 			if(empty($authGraph[$key]))
 				unset($authGraph[$key]);
 		}
-		
+
 		$this->render('authGraph',array('authGraph'=>$authGraph,'bizruleTasks'=>$bizruleTasks));
-	
+
 	}
+
 
 	/**
-	 * Exits, returning SQL error messages
-	 * 
-	 * @param type $sqlRun
-	 * @param type $errorMessage 
+	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
+	 * in a user-friendly way and reloads the page.
 	 */
-	public function sqlError($sqlRun, $errorMessage = null) {
-		$message = 'A database change failed to apply. ';
-		if (count($sqlRun)) {
-			$message .= count($sqlRun) . ' changes were applied prior to this failure:<ol>';
-			foreach ($sqlRun as $sqlStatemt)
-				$message .= '<li>' . CHtml::encode($sqlStatemt) . '</li>';
-			$message .= '</ol> Please save the above list. <br /><br />';
+	public function runUpdateUpdater($updaterCheck,$redirect) {
+		try {
+			if(count($classes = $this->updateUpdater($updaterCheck)))
+				$this->missingClassesException($classes);
+			$this->redirect($redirect);
+		} catch(Exception $e) {
+			$this->error500($e->getMessage());
 		}
-		if ($errorMessage !== null) {
-			$message .= " The error message given was: " . CHtml::encode($errorMessage);
-		}
-
-		$message .= '<br /><br /> Update failed.';
-		$this->respond($message, true, false, true);
 	}
-	
-	/**
-	 * Download the new updater so that update can proceed as usual
-	 * 
-	 * @param type $updaterCheck
-	 * @param type $redirect
-	 */
-	public function updateUpdater($updaterCheck,$redirect) {
-		
-		// The files involved in the update process:
-		$updaterFiles = array(
-			"controllers/AdminController.php",
-			"views/admin/updater.php",
-			"components/UpdaterBehavior.php",
-			"components/FileUtil.php"
-		);
-		
-		// Try to retrieve the files:
-		$tryCurl = in_array(ini_get('allow_url_fopen'),array(0,'Off','off'));
-		$failed2Retrieve = array();
-		foreach ($updaterFiles as $file) {
-			$remoteFile = "http://x2planet.com/updates/x2engine/protected/$file";
-			$localFile = Yii::app()->basePath."/$file";
-			$finishedTrying = $this->copyRemote($remoteFile, $localFile,$tryCurl);
-			$attempts = 1;
-			while(!$finishedTrying) {
-				if ($attempts < 5) {
-					$finishedTrying = $this->copyRemote($remoteFile, $localFile, $tryCurl);
-					$attempts++;
-				} else {
-					$finishedTrying = true;
-					$failed2Retrieve[] = "protected/$file";
-				}
-			}
-		}
-		
-		// Display error.
-		if(count($failed2Retrieve))
-			$this->missingClassesException($failed2Retrieve);
 
-		// Write the new updater version into the configuration; else 
-		// the app will get stuck in a redirect loop
-		$this->regenerateConfig(Null, $updaterCheck, Null);
-		$this->redirect($redirect);
-	}
-	
 	/**
 	 * Wrapper for FileUtil
-	 * @param type $path 
+	 * @param type $path
 	 */
 	public function rrmdir($path) {
 		FileUtil::rrmdir($path);
 	}
-	
+
 	/**
-	 * Last-resort, built-in, fail-resistant copy method 
-	 * 
-	 * Copy method used in the case that FileUtil is not yet available (i.e. if 
+	 * Last-resort, built-in, fail-resistant copy method
+	 *
+	 * Copy method used in the case that FileUtil is not yet available (i.e. if
 	 * AdminController was downloaded in an auto-update by a much older version
 	 * but nothing else). Returns true on success and false on failure.
-	 * 
+	 *
 	 * @param string $remoteFile URL of file to fetch
 	 * @param string $localFile Path to local destination
 	 * @param boolean $curl Whether to use CURL
@@ -3658,12 +3558,12 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 				return false;
 		}
 	}
-	
+
 	/**
 	 * Magic getter for "noRemoteAccess" property.
-	 * 
+	 *
 	 * If true, signifies that there is no possible way to retrieve remote files.
-	 * @return boolean 
+	 * @return boolean
 	 */
 	public function getNoRemoteAccess() {
 		if (!isset($this->_noRemoteAccess))
@@ -3678,20 +3578,20 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 
 	/**
 	 * Check whether it is possible to retrieve remote files.
-	 * 
+	 *
 	 * Based on the availability of CURL and allow_url_fopen (from {@
 	 */
 	public function checkRemoteMethods() {
 		if ($this->noRemoteAccess)
 			$this->error500(Yii::t('admin', 'X2CRM needs to retrieve one or more remote files, but no remote access methods are available on this web server, because allow_url_fopen is disabled and the CURL extension is missing.'));
 	}
-	
+
 	/**
 	 * Explicit, attention-grabbing error message w/o bug reporter.
-	 * 
-	 * This is for errors that are NOT bugs, but that arise from server 
+	 *
+	 * This is intended for errors that are NOT bugs, but that arise from server
 	 * malconfiguration and/or missing requirements for running X2CRM.
-	 * @param type $message 
+	 * @param type $message
 	 */
 	public function error500($message) {
 		$app = Yii::app();

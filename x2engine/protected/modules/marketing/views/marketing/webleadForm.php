@@ -41,9 +41,10 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Contact Lists'),'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('marketing','Newsletters'),'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form')),
+	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
+<div class="page-title icon marketing"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('marketing','Create a public form to receive new contacts.'),'<br>',Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?>
 </div>

@@ -139,22 +139,8 @@ class ApiController extends x2base {
 	public function actionCreate() {
 		// Get an instance of the respective model
 		$model = new $this->modelClass;
-		$temp = $model->attributes;
-
-		if ($model->hasAttribute('assignedTo')) {
-			if (array_key_exists('assignedTo', $_POST)) {
-				$model->assignedTo = $_POST['assignedTo'];
-			} else {
-				$model->assignedTo = $this->user->username;
-			}
-		}
-		
 		$model->setX2Fields($_POST);
-		// Identify the model with the user being used to authenticate
-		foreach (array('createdBy', 'updatedBy') as $attr) {
-			if ($model->hasAttribute($attr))
-				$model->$attr = $this->user->username;
-		}
+		$this->modelSetUsernameFields($model);
 		
 		// Attempt to save the model, and perform special post-save (or error) 
 		// operations based on the model type:
@@ -256,13 +242,14 @@ class ApiController extends x2base {
 	 * with 'authUser' and 'authPassword' just as in create.
 	 */
 	public function actionUpdate() {
-
 		$modelSingle = X2Model::model($this->modelClass);
 		$model = $modelSingle->findByPkInArray($_GET);
+		
 		// Did we find the requested model? If not, raise an error
 		if (is_null($model))
 			$this->_respondBadPk($modelSingle, $_GET);
 
+		$this->modelSetUsernameFields($model);
 		$model->setX2Fields($_POST);
 
 		// Try to save the model and perform special post-save operations based on
@@ -333,7 +320,7 @@ class ApiController extends x2base {
 					$notif->createDate = time();
 					$notif->save();
 
-					X2Flow::trigger('record_voip_inbound', array(
+					X2Flow::trigger('RecordVoipInboundTrigger', array(
 						'model' => $contact,
 						'number' => $matches[0]
 					));
@@ -657,7 +644,33 @@ class ApiController extends x2base {
 			}
 			// We're all clear to proceed
 			$this->modelClass = $_GET['model'];
+
+			// Set user for the model:
+			X2Model::model($this->modelClass)->setSuModel($this->user);
 		}
 		$filterChain->run();
+	}
+
+	/**
+	 * A quick and dirty hack for filling in the gaps if the model requested
+	 * does not make use of the changelog behavior (which takes care of that
+	 * automatically)
+	 */
+	public function modelSetUsernameFields(&$model) {
+		$restrictedAttr = array('updatedBy');
+		if($this->action->id == 'create')
+			$restrictedAttr[] = 'createdBy';
+		foreach($restrictedAttr as $attr){
+			if($model->hasAttribute($attr)){
+				$model->$attr = $this->user->username;
+			}
+		}
+		if($model->hasAttribute('assignedTo')){
+			if(array_key_exists('assignedTo', $_POST)){
+				$model->assignedTo = $_POST['assignedTo'];
+			}else{
+				$model->assignedTo = $this->user->username;
+			}
+		}
 	}
 }

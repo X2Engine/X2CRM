@@ -326,8 +326,8 @@ $timezones = array(
 					} else {
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					}
-				}).fail(function(jqXHR,textStatus) {
-					alert('An unexpected internal server error occurred during validation: '+textStatus+' '+jqXHR.status);
+				}).fail(function(jqXHR,textStatus,errorMessage) {
+					alert('An unexpected server error occurred during validation: '+textStatus+' '+jqXHR.status+' '+errorMessage);
 				});
 			} else {
 				var messageHeader = box.find('h3');
@@ -353,8 +353,8 @@ $timezones = array(
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					else
 						box.find('img').remove();
-				}).fail(function(jqXHR,textStatus) {
-					alert('An unexpected internal server error occurred during installation: '+textStatus+' '+jqXHR.status);
+				}).fail(function(jqXHR,textStatus,errorMessage) {
+					alert('An unexpected server error occurred during installation: '+textStatus+' '+jqXHR.status+' '+errorMessage);
 				});
 			}
 		} else {

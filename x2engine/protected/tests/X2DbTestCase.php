@@ -41,9 +41,11 @@ Yii::import('application.models.*');
  * 
  * @package X2CRM.tests
  */
-class X2DbTestCase extends CDbTestCase {
+abstract class X2DbTestCase extends CDbTestCase {
 	public function __construct($name = NULL, array $data = array(), $dataName = '') {
-		Yii::app()->params->admin = CActiveRecord::model('Admin')->findByPk(1);
+		$admin = CActiveRecord::model('Admin')->findByPk(1);
+		$admin->emailDropbox_logging = 1;
+		Yii::app()->params->admin = $admin;
 		parent::__construct($name,$data, $dataName);
 	}
 }

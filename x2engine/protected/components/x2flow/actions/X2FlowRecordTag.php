@@ -49,18 +49,20 @@ class X2FlowRecordTag extends X2FlowAction {
 			'remove' => 'Remove',
 			'clear' => 'Clear All',
 		);
-		
-		return array('title'=>$this->title,'info'=>$this->info,'fields'=>array(
-			'model' => array(),
-			'tags' => array('label'=>'Tags'),
-			'action' => array('label'=>'Action','type'=>'dropdown','options'=>$tagActions),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'modelRequired' => 1,
+			'options' => array(
+				array('name'=>'tags','label'=>'Tags','type'=>'tags'),
+				array('name'=>'action','label'=>'Action','type'=>'dropdown','options'=>$tagActions),
+			));
 	}
 	
-	public function execute($params) {
-		$tags = Tags::parseTags($params['tags']);
+	public function execute(&$params) {
+		$tags = Tags::parseTags($this->config['options']['tags']);
 		
-		switch($params['action']) {
+		switch($this->config['options']['action']) {
 			case 'add':
 				return $params['model']->addTags($tags);
 			case 'remove':

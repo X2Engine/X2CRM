@@ -35,6 +35,7 @@
  *****************************************************************************************/
 
 Yii::import('application.models.X2Model');
+Yii::import('application.modules.user.models.*');
 
 /**
  * This is the model class for table "x2_services".
@@ -74,6 +75,14 @@ class Services extends X2Model {
 			)
 		));
 	}
+    
+    public function afterFind(){
+        if($this->name != $this->id) {
+			$this->name = $this->id;
+			$this->update(array('name'));
+		}
+        return parent::afterFind();
+    }
 
 	/**
 	 * 
@@ -82,26 +91,21 @@ class Services extends X2Model {
 	public function afterSave() {
 		$model = $this->getOwner();
 		
-		if($model->name != $model->id) {
-			$model->name = $model->id;
-			$model->update(array('name'));
-		}
-		
 		$oldAttributes = $model->getOldAttributes();
 		
 		if($model->escalatedTo != '' && $model->escalatedTo != $oldAttributes['escalatedTo']) {
 			$event=new Events;
 			$event->type='case_escalated';
-			$event->user=Yii::app()->user->getName();
-			$event->associationType=$this->modelClass;
+			$event->user=$this->updatedBy;
+			$event->associationType='Services';
 			$event->associationId=$model->id;
 			if($event->save()){
 				$notif = new Notification;
 				$notif->user = $model->escalatedTo;
 				$notif->createDate = time();
-				$notif->createdBy = Yii::app()->user->name;
+				$notif->createdBy = $this->createdBy;
 				$notif->type = 'escalateCase';
-				$notif->modelType = $this->modelClass;
+				$notif->modelType = 'Services';
 				$notif->modelId = $model->id;
 				$notif->save();
 			}

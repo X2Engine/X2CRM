@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -44,37 +45,38 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
- * @package X2CRM.components 
+ * @package X2CRM.components
  */
-class SortableWidgets extends CJuiWidget
-{
+class SortableWidgets extends CJuiWidget {
+
 	/**
 	 * @var array list of sortable items (id=>item content).
 	 * Note that the item contents will not be HTML-encoded.
 	 */
 	public $portlets = array();
 	public $jQueryOptions = array();
+
 	/**
 	 * @var string the name of the container element that contains all items. Defaults to 'ul'.
 	 */
-	public $tagName='div';
+	public $tagName = 'div';
 
 	/**
 	 * Run this widget.
 	 * This method registers necessary javascript and renders the needed HTML code.
-	*/
-	public function run() {
+	 */
+	public function run(){
 		$themeURL = Yii::app()->theme->getBaseUrl();
-		Yii::app()->clientScript->registerScript('logos',base64_decode(
-			'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
-			.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
-			.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
-		
-		Yii::app()->clientScript->registerScript('toggleWidgetState',"
+		Yii::app()->clientScript->registerScript('logos', base64_decode(
+						'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
+						.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
+						.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
+
+		Yii::app()->clientScript->registerScript('toggleWidgetState', "
 			function toggleWidgetState(widget,state) {
 				if($('#widget_' + widget).hasClass('ui-sortable-helper') == false) {
 					$.ajax({
-						url: '" . CHtml::normalizeUrl(array('/site/widgetState')) . "',
+						url: '".CHtml::normalizeUrl(array('/site/widgetState'))."',
 						type: 'GET',
 						data: 'widget='+widget+'&state='+state,
 						success: function(response) {
@@ -82,7 +84,7 @@ class SortableWidgets extends CJuiWidget
 								var link = $('#widget_'+widget+' .portlet-minimize a.portlet-minimize-button');
 								var newLink = ($(link).find('img').attr('class')=='expand-widget')? '<img src=\"".$themeURL."/images/icons/Collapse_Widget.png\" class=\'collapse-widget\' />' : '<img src=\"".$themeURL."/images/icons/Expand_Widget.png\" class=\'expand-widget\'/>';			// toggle link between [+] and [-]
 								link.html(newLink);
-					
+
 								// slide widget open or closed
 								$('#widget_'+widget+' .portlet-content').toggle('blind',{},200,function() {
 									if(widget == 'GoogleMaps' && $(this).is(':visible'))	// for google maps, trigger a resize event
@@ -92,64 +94,83 @@ class SortableWidgets extends CJuiWidget
 						}
 					});
 				}
-				
-			}
-		",CClientScript::POS_HEAD);
 
-		$id=$this->getId();	//get generated id
-		if (isset($this->htmlOptions['id']))
+			}
+		", CClientScript::POS_HEAD);
+
+		$id = $this->getId(); //get generated id
+		if(isset($this->htmlOptions['id']))
 			$id = $this->htmlOptions['id'];
 		else
-			$this->htmlOptions['id']=$id;
+			$this->htmlOptions['id'] = $id;
 
 		$options = empty($this->jQueryOptions) ? '' : CJavaScript::encode($this->jQueryOptions);
-		Yii::app()->getClientScript()->registerScript('SortableWidgets'.'#'.$id,"jQuery('#{$id}').sortable({$options});");
+		Yii::app()->getClientScript()->registerScript('SortableWidgets'.'#'.$id, "jQuery('#{$id}').sortable({$options});");
 
-		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
+		echo CHtml::openTag($this->tagName, $this->htmlOptions)."\n";
 
 		$widgetHideList = array();
-		
-		$layout = Yii::app()->params->profile->getLayout();
-		
-		
-		foreach($this->portlets as $class=>$properties) {
-		
-			if(!in_array($class, array_keys($layout['hiddenRight']))) { // show widget if it isn't hidden
+		if(!Yii::app()->user->isGuest){
+			$layout = Yii::app()->params->profile->getLayout();
+		}else{
+			$layout = array();
+		}
+
+		foreach($this->portlets as $class => $properties){
+			if(!in_array($class, array_keys($layout['hiddenRight']))){ // show widget if it isn't hidden
 				$visible = ($properties['visibility'] == '1');
-				
+
 				if(!$visible)
 					$widgetHideList[] = '#widget_'.$class;
 				
-				$minimizeLink = CHtml::link($visible? CHtml::image($themeURL.'/images/icons/Collapse_Widget.png','',array('class'=>'collapse-widget')) : CHtml::image($themeURL.'/images/icons/Expand_Widget.png','',array('class'=>'expand-widget')),'#',array('class'=>'portlet-minimize-button', /*'onclick'=>"toggleWidgetState('$class',".($visible? 0 : 1)."); return false;" */ ))
-								. ' ' . CHtml::link(CHtml::image($themeURL.'/images/icons/Close_Widget.png'),'#',array('onclick'=>"$('#widget_$class').hideWidgetRight(); return false;"));
+				// $minimizeLink = '<div class="collapse-widget '.($visible? 'collapse-widget' : 'expand-widget').'"></div><div class="close-widget"></div>';
+				
+				
+				
+				$minimizeLink = CHtml::link(
+					$visible ? CHtml::image($themeURL.'/images/icons/Collapse_Widget.png', '', array('class' => 'collapse-widget')) : CHtml::image($themeURL.'/images/icons/Expand_Widget.png', '', array('class' => 'expand-widget'))
+					, '#', array('class' => 'portlet-minimize-button')
+				)
+						.' '.CHtml::link(CHtml::image($themeURL.'/images/icons/Close_Widget.png'), '#', array('onclick' => "$('#widget_$class').hideWidgetRight(); return false;"));
 
 				// $t0 = microtime(true);
 				// for($i=0;$i<100;$i++)
-					$widget = $this->widget($class,$properties['params'],true);
-				
+				$widget = $this->widget($class, $properties['params'], true);
+
 				// $t1 = microtime(true);
-				if(!empty($widget)) {
-					$this->beginWidget('zii.widgets.CPortlet',array(
-						'title'=>'<div>'.($class=='ChatBox'?CHtml::link(Yii::t('app','Activity Feed'),array('/site/whatsNew'),array('style'=>'text-decoration:none')):Yii::t('app',Yii::app()->params->registeredWidgets[$class])) . '<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
-						'id'=>$properties['id']
+				$profile = yii::app()->params->profile;
+				if($profile->activityFeedOrder){
+					$activityFeedOrderSelect = 'top';
+				}else{
+					$activityFeedOrderSelect = 'bottom';
+				}
+				if(!empty($widget)){
+					$this->beginWidget('zii.widgets.CPortlet', array(
+						'title' => '<div '.(($class == 'ChatBox')?'style="text-align:left"':'').'>'.(
+						$class == 'ChatBox' ?
+								CHtml::dropDownList("activityFeedDropDown", $activityFeedOrderSelect, array('top' => 'Top Down', 'bottom' => 'Bottom Up'), array('style' => 'float:left;margin-top:-1px;'))
+								.CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration:none;margin-left:10px;')) :
+								Yii::t('app', Yii::app()->params->registeredWidgets[$class])
+						).'<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible ? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
+						'id' => $properties['id']
 					));
 					echo $widget;
 					$this->endWidget();
 					// echo ($t1-$t0);
-				} else {
-					echo '<div ',CHtml::renderAttributes(array('style'=>'display;none;','id'=>$properties['id'])),'></div>';
+				}else{
+					echo '<div ', CHtml::renderAttributes(array('style' => 'display;none;', 'id' => $properties['id'])), '></div>';
 				}
 			}
 		}
-		
-		
+
+
 		Yii::app()->clientScript->registerScript('setWidgetState', '
 			$(document).ready(function() {
-				$("' . implode(',',$widgetHideList) . '").find(".portlet-content").hide();
-			});',CClientScript::POS_HEAD);
-		
+				$("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
+			});', CClientScript::POS_HEAD);
+
 		echo CHtml::closeTag($this->tagName);
 	}
-}
 
+}
 

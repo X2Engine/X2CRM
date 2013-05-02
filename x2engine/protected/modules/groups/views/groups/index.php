@@ -42,7 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('groups','Groups').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon groups"><h2>'.Yii::t('groups','Groups').'</h2><div class="title-bar">'
 		.'{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(

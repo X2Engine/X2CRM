@@ -39,7 +39,6 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
     array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('export')),
     array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
@@ -52,9 +51,9 @@ $this->actionMenu = $this->formatMenu($menuItems);
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'maps-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('contacts','Saved Maps').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon contacts"><h2>'.Yii::t('contacts','Saved Maps').'</h2><div class="title-bar">'
 		.'{summary}</div></div>{items}{pager}',
-	'dataProvider'=>$dataProvider, 
+	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	// 'columns'=>$columns,
@@ -86,6 +85,6 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'type'=>'raw',
             'value'=>'CHtml::link("Delete","#",array("submit"=>"deleteMap?id=".$data->id,"confirm"=>"Are you sure you want to delete this map?"))',
         ),
-        
+
     ),
 ));

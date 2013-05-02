@@ -88,12 +88,17 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row">
 		<?php
 		// Determine the available mail sending methods:
+		$can = array(
+			'sendmail' => @is_executable('/usr/sbin/sendmail'),
+			'qmail' => @is_executable('/var/qmail/bin/sendmail')
+		);
 		$mailMethods = array();
-		if((bool)(@ini_get('sendmail_path')))
-			$mailMethods['mail'] = Yii::t('admin','PHP Mail');
-		if(is_executable('/usr/sbin/sendmail'))
+		if((bool) @ini_get('sendmail_path'))
+			if(@is_executable(@ini_get('sendmail_path')))
+				$mailMethods['mail'] = Yii::t('admin','PHP Mail');
+		if($can['sendmail'])
 			$mailMethods['sendmail'] = Yii::t('admin','Sendmail');
-		if(is_executable('/var/qmail/bin/sendmail'))
+		if($can['qmail'])
 			$mailMethods['qmail'] = Yii::t('admin','Qmail');
 		$mailMethods['smtp'] = Yii::t('admin','SMTP');
 		?>

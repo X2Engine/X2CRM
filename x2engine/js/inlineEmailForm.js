@@ -99,6 +99,7 @@ function toggleEmailForm() {
 	}
 	
 	if($('#inline-email-form').is(':hidden')) {
+		$('#inline-email-status').hide(); // Opening new form; hide previous submission's status
 		$(document).trigger('setupInlineEmailEditor');
 		$('.focus-mini-module').removeClass('focus-mini-module');
 		$('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
@@ -159,23 +160,59 @@ function setupInlineEmailForm() {
 	$('#email-template').change(function() {
 		var template = $(this).val();
 		if(template != "0") {
-			window.inlineEmailEditor.updateElement();
-			jQuery.ajax({
-				'beforeSend':function() {
-					$('#email-sending-icon').show();
-				},
-				'complete':function(response) {
-					$('#email-sending-icon').hide();
-					setupInlineEmailForm();
-					return false;
-				},
-				'type':'POST',
-				'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&preview=1',
-				'data':jQuery(this).parents("form").serialize(),
-				'success':function(html){
-					jQuery("#inline-email-form").replaceWith(html)
-				}
-			});
+			var proceed = true;
+			var noChange = ! window.inlineEmailEditor.checkDirty();
+			if(!noChange)
+				proceed = confirm($('#template-change-confirm').text());
+			if(proceed) {
+				window.inlineEmailEditor.updateElement();
+				jQuery.ajax({
+					'type':'POST',
+					'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1',
+					'data':jQuery(this).parents("form").serialize(),
+					'beforeSend':function() {
+						$('#email-sending-icon').show();
+					}
+				}).done(function(data, textStatus, jqXHR) {
+					handleInlineEmailActionResponse(data, textStatus, jqXHR);
+				});
+			}
 		}
 	});
+}
+
+/**
+ * Function called to denote that the email form is being submitted.
+ */
+function setInlineEmailFormLoading() {
+	$('#email-sending-icon').show();
+}
+
+function handleInlineEmailActionResponse(data, textStatus, jqXHR) {	
+	$('#email-sending-icon').hide();
+	if(data.error) {
+		if(data.modelHasErrors) {
+			// Error-highlight the fields that have errors:
+			for (var attr in data.modelErrors) {
+				if(attr != 'message') { // Skip the message area; it will turn the background pink, and that would be icky.
+					$('input[name="InlineEmail['+attr+']"]').addClass('error');
+				}
+			}
+		} else {
+			$('#inline-email-errors').addClass('errorSummary');
+		}
+		$('#inline-email-errors').html(data.modelHasErrors ? data.modelErrorHtml : data.message).show();
+		return false;
+	}
+	if(data !== undefined) {
+		if(data.scenario == 'template') { // Submission was for getting new template. Fill in with template content.
+			window.inlineEmailEditor.setData(data.attributes.message);
+			$('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
+		} else { // Email was sent successfully.
+			$('#inline-email-status').show().html(data.message);
+			toggleEmailForm();
+			updateHistory();
+		}
+	}
+	return false;
 }

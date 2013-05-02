@@ -22,9 +22,9 @@ CREATE TABLE `x2_services` (
 	parentCase			INT
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
-INSERT INTO `x2_modules` 
-			(name,				title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
-	VALUES	("services",		"Service",		1,			15,				1,			1,			0,			0,		0);
+INSERT INTO `x2_modules`
+			(name,				title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
+	VALUES	("services",		"Service",		1,			6,				1,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,			modified,	custom,	type,					required,	readOnly,	linkType,   	searchable,	isVirtual,	relevance)

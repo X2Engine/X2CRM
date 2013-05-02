@@ -24,13 +24,13 @@ CREATE TABLE x2_calendar_permissions (
 	edit					TINYINT
 ) COLLATE utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
+INSERT INTO `x2_modules`
 			(name,				title,				visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("calendar",		"Calendar",			1,			6,				0,			0,			0,			0,		0);
+	VALUES	("calendar",		"Calendar",			1,			7,				0,			0,			0,			0,		0);
 /*&*/
-INSERT INTO `x2_fields` 
+INSERT INTO `x2_fields`
 (modelName,		fieldName,			attributeLabel,		modified,	custom,	type,			required,	readOnly,  linkType,	searchable,	isVirtual,	relevance)
-VALUES 	
+VALUES
 ("Calendar",	"name",				"Name",				0,			0,		"varchar",		0,			0,			NULL,		1,			0,			"High"),
 ("Calendar",	"viewPermission",	"View Permission",	0,			0,		"assignment",	0,			0,			"multiple",	0,			0,			""),
 ("Calendar",	"editPermission",	"Edit Permission",	0,			0,		"assignment",	0,			0,			"multiple",	0,			0,			"");

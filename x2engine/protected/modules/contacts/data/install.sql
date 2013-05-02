@@ -55,9 +55,9 @@ CREATE TABLE x2_subscribe_contacts(
 	user_id					INT				UNSIGNED
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
+INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("contacts",		"Contacts",			1,			0,				1,			1,			0,			0,		0);
+	VALUES	("contacts",		"Contacts",			1,			1,				1,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)

@@ -46,7 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 ),$authParams);
 
 ?>
-<div class="page-title">
+<div class="page-title icon actions">
 	<h2><?php
 	if($model->associationType=='none')
 		echo Yii::t('actions','Action');

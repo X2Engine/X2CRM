@@ -49,10 +49,9 @@
 		<?php 
 			$modelList = array();
 			foreach(X2Model::model('Modules')->findAllByAttributes(array('editable'=>true)) as $module) {
-				if(array_key_exists($module->name,X2Model::$associationModels))
-					$modelName = X2Model::$associationModels[$module->name];
-				else
+				if(!($modelName=X2Model::getModelName($module->name))){
 					$modelName = ucfirst($module->name);
+                }
 
 				$modelList[$modelName] = $module->title;
 			}

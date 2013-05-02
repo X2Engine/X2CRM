@@ -60,6 +60,7 @@ $config['import'] = array_merge($config['import'], array('application.tests.*', 
 $config['components']['log']['routes'] = array(
 	array(
 		'class' => 'CFileLogRoute',
+		'logFile' => 'test.log',
 	)
 );
 

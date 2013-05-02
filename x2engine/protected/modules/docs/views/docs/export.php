@@ -40,6 +40,8 @@ $user = Yii::app()->user->getName();
 $this->actionMenu=array(
 	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
 	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
+	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
 );
 $this->actionMenu=$this->formatMenu($this->actionMenu,array());
@@ -52,7 +54,7 @@ if(array_search($user,$pieces)!=false || $user==$model->editPermissions || $user
 	
 $this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('docs','Export Doc');?></h2></div>
+<div class="page-title icon docs"><h2><?php echo Yii::t('docs','Export Doc');?></h2></div>
 <div class="form"><div class="span-10">
 <?php echo Yii::t('docs','Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.');?><br /><br />
 <?php echo $link; ?>

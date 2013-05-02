@@ -38,7 +38,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_contacts".
- * 
+ *
  * @package X2CRM.modules.contacts.models
  */
 class Contacts extends X2Model {
@@ -55,7 +55,7 @@ class Contacts extends X2Model {
 	 * @return string the associated database table name
 	 */
 	public function tableName() { return 'x2_contacts'; }
-	
+
 	public function behaviors() {
 		return array_merge(parent::behaviors(),array(
 			'X2LinkableBehavior'=>array(
@@ -66,7 +66,7 @@ class Contacts extends X2Model {
 				'class'=>'application.components.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
-			)
+			),
 		));
 	}
 
@@ -75,7 +75,7 @@ class Contacts extends X2Model {
 	 */
 	public function afterFind() {
 		parent::afterFind();
-		
+
 		if(isset(Yii::app()->params->admin)) {
 			$admin=Yii::app()->params->admin;
 			if(!empty($admin->contactNameFormat)) {
@@ -87,7 +87,7 @@ class Contacts extends X2Model {
 			}
 			if($admin->properCaseNames)
 				$str = $this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
-			
+
 			$this->name = $str;
 		}
 	}
@@ -108,23 +108,23 @@ class Contacts extends X2Model {
 			}
 			if($admin->properCaseNames)
 				$str = $this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
-			
+
 			$this->name = $str;
 		}
-		
+
 		return parent::beforeSave();
 	}
 
-	/** 
-	 * Responds when {@link X2Model::afterUpdate()} is called (record saved, but 
+	/**
+	 * Responds when {@link X2Model::afterUpdate()} is called (record saved, but
 	 * not a new record). Sends a notification to anyone subscribed to this contact.
+	 *
+	 * Before executing this, the model must check whether the contact has the
+	 * "changelog" behavior. That is because the behavior is disabled
+	 * when checking for duplicates in {@link ContactsController}
 	 */
 	public function afterUpdate() {
-		// NOTE:
-		// The following won't get run in console commands (i.e. email dropbox) 
-		// because "sendUserEmail" is still a method of x2base, and the app
-		// singleton has no valid controller property in console commands.
-		if (!Yii::app()->params->noSession && isset($_SERVER['REQUEST_METHOD'])) {
+		if (!Yii::app()->params->noSession && $this->scenario != 'noChangelog') {
 			// send subscribe emails if anyone has subscribed to this contact
 			$result = Yii::app()->db->createCommand()
 					->select('user_id')
@@ -132,7 +132,7 @@ class Contacts extends X2Model {
 					->where('contact_id=:id', array(':id' => $this->id))
 					->queryColumn();
 
-			$datetime = X2Model::formatLongDateTime(time());
+			$datetime = Formatter::formatLongDateTime(time());
 			$modelLink = CHtml::link($this->name, Yii::app()->controller->createAbsoluteUrl('/contacts/' . $this->id));
 			$subject = 'X2CRM: ' . $this->name . ' updated';
 			$message = "Hello,<br>\n<br>\n";
@@ -152,19 +152,22 @@ class Contacts extends X2Model {
 
 			$adminProfile = CActiveRecord::model('Profile')->findByPk(1);
 			foreach ($result as $subscription) {
-				$profile = CActiveRecord::model('Profile')->findByPk($subscription['user_id']);
-				if ($profile && $profile->emailAddress && $adminProfile && $adminProfile->emailAddress) {
-					$to = array($profile->fullName, $profile->emailAddress);
-					$from = array('name' => $adminProfile->fullName, 'address' => $adminProfile->emailAddress);
-					Yii::app()->controller->sendUserEmail($to, $subject, $message, null, $from);
-				}
+                $subscription=array();
+                if(isset($subscription['user_id'])){
+                    $profile = X2Model::model('Profile')->findByPk($subscription['user_id']);
+                    if ($profile && $profile->emailAddress && $adminProfile && $adminProfile->emailAddress) {
+                        $to = array($profile->fullName, $profile->emailAddress);
+                        $from = array('name' => $adminProfile->fullName, 'address' => $adminProfile->emailAddress);
+                        Yii::app()->controller->sendUserEmail($to, $subject, $message, null, $from);
+                    }
+                }
 			}
 		}
-		
-		
+
+
 		parent::afterUpdate();
 	}
-	
+
 	/**
 	 * Returns full human-readable address, using all available address fields
 	 */
@@ -175,30 +178,30 @@ class Contacts extends X2Model {
 		}
 		if(!empty($this->city))
 			$address .= $this->city . ', ';
-		
+
 		if(!empty($this->state))
 			$address .= $this->state . ' ';
-		
+
 		if(!empty($this->zipcode))
 			$address .= $this->zipcode . ' ';
-			
+
 		if(!empty($this->country))
 			$address .= $this->country;
-			
+
 		return $address;
 	}
-	
+
 	public static function getNames() {
-	
+
 		$criteria = $this->getAccessCriteria();
-	
+
         // $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
 		// /* x2temp */
 		// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
 		// if(!empty($groupLinks))
 			// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-		// $condition .= 'OR (visibility=2 AND assignedTo IN 
+		// $condition .= 'OR (visibility=2 AND assignedTo IN
 			// (SELECT username FROM x2_group_to_user WHERE groupId IN
 				// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		$contactArray = X2Model::model('Contacts')->findAll($condition);
@@ -231,7 +234,7 @@ class Contacts extends X2Model {
 	public static function getContactLinks($contacts) {
 		if(!is_array($contacts))
 			$contacts = explode(' ',$contacts);
-		
+
 		$links = array();
 		foreach($contacts as &$id){
 			if($id !=0 ) {
@@ -239,17 +242,17 @@ class Contacts extends X2Model {
                 if(isset($model))
                     $links[] = CHtml::link($model->name,array('/contacts/contacts/view','id'=>$id));
 				//$links.=$link.', ';
-				
+
 			}
 		}
 		//$links=substr($links,0,strlen($links)-2);
 		return implode(', ',$links);
 	}
-	
+
 	public static function getMailingList($criteria) {
-		
+
 		$mailingList=array();
-		
+
 		$arr=X2Model::model('Contacts')->findAll();
 		foreach($arr as $contact){
 			$i=preg_match("/$criteria/i",$contact->backgroundInfo);
@@ -259,7 +262,7 @@ class Contacts extends X2Model {
 		}
 		return $mailingList;
 	}
-	
+
 	public function searchAll() {
 		$criteria = new CDbCriteria;
 		// $condition = 'visibility="1" OR assignedTo="Anyone" OR assignedTo="'.Yii::app()->user->getName().'"';
@@ -269,16 +272,16 @@ class Contacts extends X2Model {
 		// if(!empty($groupLinks))
 			// $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-		// $condition .= ' OR (visibility=2 AND assignedTo IN 
+		// $condition .= ' OR (visibility=2 AND assignedTo IN
 			// (SELECT username FROM x2_group_to_user WHERE groupId IN
 			// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 
         // if(Yii::app()->user->getName()!='admin' && !Yii::app()->user->checkAccess('AdminIndex'))
             // $parameters['condition']=$condition;
 		// $criteria->scopes=array('findAll'=>array($parameters));
-				
+
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
-			
+
 			$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($_GET['tagField'])));	//remove any spaces around commas, then explode to array
 			for($i=0; $i<count($tags); $i++) {
 				if(empty($tags[$i])) {
@@ -293,7 +296,7 @@ class Contacts extends X2Model {
 			}
 			// die($str);
 			$tagConditions = implode(' OR ',$tags);
-			
+
 			$criteria->distinct = true;
 			$criteria->join .= ' RIGHT JOIN x2_tags b ON (b.itemId=t.id AND b.type="Contacts" AND ('.$tagConditions.'))';
             $criteria->condition='t.id IS NOT NULL';
@@ -306,7 +309,7 @@ class Contacts extends X2Model {
 		$criteria = new CDbCriteria;
 
 		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
-		
+
 		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
 
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
@@ -314,7 +317,7 @@ class Contacts extends X2Model {
 
 		// $parameters['condition']=$condition;
 		// $criteria->scopes=array('findAll'=>array($parameters));
-		
+
 		return $this->searchBase($criteria);
 	}
 
@@ -324,16 +327,16 @@ class Contacts extends X2Model {
 		$condition = 'createDate > '.mktime(0,0,0);
 		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
 		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
-		
+
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 
 		$parameters['condition']=$condition;
 		$criteria->scopes=array('findAll'=>array($parameters));
-		
+
 		return $this->searchBase($criteria);
 	}
-	
-	
+
+
 	public function search() {
 		$criteria = new CDbCriteria;
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
@@ -346,7 +349,7 @@ class Contacts extends X2Model {
 			// $accessLevel = 2;
 		// elseif(Yii::app()->user->checkAccess('ContactsViewPrivate'))
 			// $accessLevel = 1;
-			
+
 		// $condition = Yii::app()->user->searchAccessConditions($accessLevel);
 
 		// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -355,10 +358,10 @@ class Contacts extends X2Model {
 		/* end x2temp */
 		// $parameters['condition'] = $condition;
 		// $criteria->scopes=array('findAll'=>array($parameters));
-		
+
 		return $this->searchBase($criteria);
 	}
-	
+
 	public function searchAdmin() {
 		$criteria=new CDbCriteria;
 		return $this->searchBase($criteria);
@@ -367,7 +370,7 @@ class Contacts extends X2Model {
 	public function searchAccount($id) {
 		$criteria = new CDbCriteria;
 		$criteria->compare('company',$id);
-		
+
 		return $this->searchBase($criteria);
 	}
 
@@ -380,29 +383,29 @@ class Contacts extends X2Model {
 
 		if(isset($list)) {
 			$search = $list->queryCriteria();
-				
-				
+
+
 			$this->compareAttributes($search);
 
 			return new SmartDataProvider('Contacts',array(
 				'criteria'=>$search,
 				'sort'=>array(
-					'defaultOrder'=>'lastUpdated DESC'	// true = ASC
+					'defaultOrder'=>'t.lastUpdated DESC'	// true = ASC
 				),
 				'pagination'=>array(
 					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 				),
 			));
-			
+
 		} else {	//if list is not working, return all contacts
 			return $this->searchBase();
 		}
 	}
-	
+
 	/**
 	 * Base search method for all data providers.
 	 * Sets up record-level security checks.
-	 * 
+	 *
 	 * @param CDbCriteria $criteria starting criteria for this search
 	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
 	 */
@@ -414,21 +417,21 @@ class Contacts extends X2Model {
 
 		return parent::searchBase($criteria);
 	}
-	
+
 	/**
 	 * Generates a random tracking key and guarantees uniqueness
 	 * @return String $key a unique random tracking key
 	 */
 	public static function getNewTrackingKey() {
-	
+
 		$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-		
+
 		// try up to 100 times to guess a unique key
 		for($i=0; $i<100; $i++) {
 			$key = '';
 			for($j=0; $j<32; $j++)	// generate a random 32 char alphanumeric string
 				$key .= substr($chars,rand(0,strlen($chars)-1), 1);
-		
+
 			if(X2Model::model('Contacts')->exists('trackingKey="'.$key.'"'))	// check if this key is already used
 				continue;
 			else
@@ -436,48 +439,48 @@ class Contacts extends X2Model {
 		}
 		return null;
 	}
-    
-    function ucwords_specific ($string, $delimiters = '', $encoding = NULL) 
-    { 
-        
-        if ($encoding === NULL) { $encoding = mb_internal_encoding();} 
 
-        if (is_string($delimiters)) 
-        { 
-            $delimiters =  str_split( str_replace(' ', '', $delimiters)); 
-        } 
+    function ucwords_specific ($string, $delimiters = '', $encoding = NULL)
+    {
 
-        $delimiters_pattern1 = array(); 
-        $delimiters_replace1 = array(); 
-        $delimiters_pattern2 = array(); 
-        $delimiters_replace2 = array(); 
-        foreach ($delimiters as $delimiter) 
-        { 
+        if ($encoding === NULL) { $encoding = mb_internal_encoding();}
+
+        if (is_string($delimiters))
+        {
+            $delimiters =  str_split( str_replace(' ', '', $delimiters));
+        }
+
+        $delimiters_pattern1 = array();
+        $delimiters_replace1 = array();
+        $delimiters_pattern2 = array();
+        $delimiters_replace2 = array();
+        foreach ($delimiters as $delimiter)
+        {
             $ucDelimiter=$delimiter;
             $delimiter=strtolower($delimiter);
-            $uniqid = uniqid(); 
-            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/'; 
-            $delimiters_replace1[]   = $delimiter.$uniqid.' '; 
-            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/'; 
-            $delimiters_replace2[]   = $ucDelimiter; 
-            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/'; 
-            $delimiters_cleanup_pattern1[]   = $delimiter; 
-        } 
-        $return_string = mb_strtolower($string, $encoding); 
-        //$return_string = $string; 
+            $uniqid = uniqid();
+            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/';
+            $delimiters_replace1[]   = $delimiter.$uniqid.' ';
+            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/';
+            $delimiters_replace2[]   = $ucDelimiter;
+            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/';
+            $delimiters_cleanup_pattern1[]   = $delimiter;
+        }
+        $return_string = mb_strtolower($string, $encoding);
+        //$return_string = $string;
         $return_string = preg_replace($delimiters_pattern1, $delimiters_replace1, $return_string);
 
-        $words = explode(' ', $return_string); 
-        
-        foreach ($words as $index => $word) 
-        { 
-            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding); 
-        } 
-        $return_string = implode(' ', $words); 
-        
+        $words = explode(' ', $return_string);
+
+        foreach ($words as $index => $word)
+        {
+            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding);
+        }
+        $return_string = implode(' ', $words);
+
         $return_string = preg_replace($delimiters_pattern2, $delimiters_replace2, $return_string);
         $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
 
-        return $return_string; 
+        return $return_string;
     }
 }

@@ -62,9 +62,11 @@ return array(
 		// 'application.components.EButtonColumnWithClearFilters',
 	),
 	'modules'=>array(
-		// 'gii'=>array(
-			// 'class'=>'system.gii.GiiModule',
-		// ),
+//		 'gii'=>array('class'=>'system.gii.GiiModule',
+//            'password'=>'admin',
+//            // If removed, Gii defaults to localhost only. Edit carefully to taste.
+//            'ipFilters'=>false,
+//        ),
 		'mobile',
 	),
 	'behaviors' => array('ApplicationConfigBehavior'),
@@ -309,7 +311,6 @@ return array(
 			// 'autoCreateCacheTable'=>false,
 		),
 	),
-
 	// application-level parameters that can be accessed
 	// using Yii::app()->params['paramName']
 	'params'=>array(
@@ -325,19 +326,20 @@ return array(
 		'webRoot'=>__DIR__.DIRECTORY_SEPARATOR.'..',
 		'trueWebRoot'=>substr(__DIR__,0,-17), 
 		'registeredWidgets'=>array(
+			'OnlineUsers'=>'Active Users',
 			'TimeZone' => 'Time Zone',
+			'GoogleMaps'=>'Google Map',
+			'ChatBox'=>'Activity Feed',
+			'TagCloud'=>'Tag Cloud',
+			'ActionMenu'=>'My Actions',
 			'MessageBox'=>'Message Board',
 			'QuickContact'=>'Quick Contact',
-			'GoogleMaps'=>'Google Map',
 			//'TwitterFeed'=>'Twitter Feed',
-			'ChatBox'=>'Activity Feed',
 			'NoteBox'=>'Note Pad',
-			'ActionMenu'=>'My Actions',
-			'TagCloud'=>'Tag Cloud',
-			'OnlineUsers'=>'Active Users',
 			'MediaBox' => 'Media',
 			'DocViewer' => 'Doc Viewer',
 			'TopSites' => 'Top Sites',
+			'HelpfulTips' => 'Helpful Tips'
 		),
 		'currency'=>'',
 		'version'=>$version,

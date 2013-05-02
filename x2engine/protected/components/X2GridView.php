@@ -242,7 +242,7 @@ class X2GridView extends CGridView {
 			
 			//if($isDate)
 				//$datePickerJs .= ' $("#'.$columnName.'DatePicker").datepicker('
-					//.'$.extend({showMonthAfterYear:false}, {"dateFormat":"'.$this->controller->formatDatePicker().'"})); ';
+					//.'$.extend({showMonthAfterYear:false}, {"dateFormat":"'.Formatter::formatDatePicker().'"})); ';
 					// .'{"showAnim":"fold","dateFormat":"yy-mm-dd","changeMonth":"true","showButtonPanel":"true","changeYear":"true","constrainInput":"false"}));';
 			
 			
@@ -270,21 +270,19 @@ class X2GridView extends CGridView {
 				if($isCurrency) {
 					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
-				} else if($columnName == 'assignedTo') {
-					$newColumn['value'] = 'empty($data->assignedTo)?Yii::t("app","Anyone"):User::getUserLinks($data->assignedTo)';
+				} else if($columnName == 'assignedTo' || $columnName == 'updatedBy') {
+					$newColumn['value'] = 'empty($data->'.$columnName.')?Yii::t("app","Anyone"):User::getUserLinks($data->'.$columnName.')';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
-					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->controller->formatLongDate($data["'.$columnName.'"])';
+					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Formatter::formatLongDate($data["'.$columnName.'"])';
 				} elseif($this->allFields[$columnName]->type=='percentage') {
 					$newColumn['value'] = '$data["'.$columnName.'"]!==null&&$data["'.$columnName.'"]!==""?((string)($data["'.$columnName.'"]))."%":null';
 				} elseif($this->allFields[$columnName]->type=='dateTime') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->formatDateTime($data["'.$columnName.'"],"medium")';
 				} elseif($this->allFields[$columnName]->type=='link') {
-					$newColumn['value'] = 'X2Model::getModelLink($data->'.$columnName.',"'.ucfirst($this->allFields[$columnName]->linkType).'")';
+					$newColumn['value'] = '!is_numeric($data->'.$columnName.')?$data->'.$columnName.':(is_null($data->'.$columnName.'Model)?$data->'.$columnName.':$data->'.$columnName.'Model->getLink())';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='boolean') {
-					$field=$this->allFields[$columnName];
-					$type=ucfirst($field->linkType);
 					$newColumn['value']='$data->'.$columnName.'==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
 					$newColumn['type'] = 'raw';
 				}elseif($this->allFields[$columnName]->type=='phone'){

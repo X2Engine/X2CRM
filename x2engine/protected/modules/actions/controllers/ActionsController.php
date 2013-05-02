@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.actions.controllers 
+ * @package X2CRM.modules.actions.controllers
  */
 class ActionsController extends x2base {
 
@@ -62,7 +62,7 @@ class ActionsController extends x2base {
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
-				'users'=>array('*'),  
+				'users'=>array('*'),
 			),
 		);
 	}
@@ -73,29 +73,29 @@ class ActionsController extends x2base {
 			),
 		);
 	}
-	
+
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
 		$action = CActiveRecord::model('Actions')->findByPk($id);
-		
+
 		if($action === null)
 			$this->redirect('index');
-		
+
 		$users = User::getNames();
 		$association = $this->getAssociation($action->associationType,$action->associationId);
-		
+
 		// if($association != null)
 			// $associationName = $association->name;
 		//else
 			//$associationName = Yii::t('app','None');
-		
+
 		if($this->checkPermissions($action, 'view')) {
-			
-			X2Flow::trigger('record_viewed',array('model'=>$action));
-			
+
+			X2Flow::trigger('RecordViewTrigger',array('model'=>$action));
+
 			User::addRecentItem('t',$id,Yii::app()->user->getId());	//add action to user's recent item list
 			$this->render('view',array(
 				'model'=>$this->loadModel($id),
@@ -104,7 +104,7 @@ class ActionsController extends x2base {
 			));
 		} else
 			$this->redirect('index');
-			
+
 	}
 
 	public function actionViewEmail($id) {
@@ -112,10 +112,18 @@ class ActionsController extends x2base {
 		echo $action->actionDescription;
 	}
 
+    public function actionViewAction($id,$publisher=false) {
+		$action=X2Model::model('Actions')->findByPk($id);
+		$this->renderPartial('_viewFrame',array(
+            'model'=>$action,
+            'publisher'=>$publisher,
+        ));
+	}
+
 	public function actionShareAction($id) {
-		
+
 		$model=$this->loadModel($id);
-		$body="\n\n\n\n".Yii::t('actions',"Reminder, the following action is due")." ".date("Y-m-d",$model->dueDate).":<br />
+		$body="\n\n\n\n".Yii::t('actions',"Reminder, the following action is due")." ".Formatter::formatLongDateTime($model->dueDate).":<br />
 <br />".Yii::t('actions','Description').": $model->actionDescription
 <br />".Yii::t('actions','Type').": $model->type
 <br />".Yii::t('actions','Associations').": ".Yii::t('actions',$model->associationName)."
@@ -126,7 +134,7 @@ class ActionsController extends x2base {
 		$status = array();
 		$email = array();
 		if(isset($_POST['email'], $_POST['body'])){
-		
+
 			$subject = Yii::t('actions',"Reminder, the following action is due")." ".date("Y-m-d",$model->dueDate);
 			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
@@ -135,7 +143,7 @@ class ActionsController extends x2base {
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
-			
+
 			if(empty($errors))
 				$status = $this->sendUserEmail($email,$subject,$body);
 
@@ -158,7 +166,7 @@ class ActionsController extends x2base {
 	}
 
 	public function actionSendReminder() {
-		
+
 		$dataProvider=new CActiveDataProvider('Actions', array(
 			'criteria'=>array(
 				'condition'=>'(dueDate<"'.mktime(23,59,59).'" AND dueDate>"'.mktime(0,0,0).'" AND complete="No")',
@@ -169,7 +177,7 @@ class ActionsController extends x2base {
 		$actionArray=$dataProvider->getData();
 
 		foreach($actionArray as $action) {
-			if($action->reminder=='Yes') {
+			if($action->reminder==1) {
 
 				if($action->associationId!=0) {
 					$contact=X2Model::model('Contacts')->findByPk($action->associationId);
@@ -200,9 +208,9 @@ class ActionsController extends x2base {
 			}
 		}
 	}
-	
+
 	public function create($model, $oldAttributes, $api) {
-		
+
 		/* if($model->associationId=='')
 			$model->associationId=0;
 		//if($model->
@@ -210,14 +218,14 @@ class ActionsController extends x2base {
         $model->createDate = time();	// created now, full datetime
         //$model->associationId=$_POST['Actions']['associationId'];
         if(!is_numeric($model->dueDate)){
-            $dueDate = X2Model::parseDateTime($model->dueDate);
+            $dueDate = Formatter::parseDateTime($model->dueDate);
             $model->dueDate = ($dueDate===false)? '' : $dueDate; //date('Y-m-d',$dueDate).' 23:59:59';	// default to being due by 11:59 PM
         } */
 
 		//if($type=='none')
 		//	$model->associationId=0;
 		//$model->associationType=$type;
-        
+
 		/* $association = $this->getAssociation($model->associationType,$model->associationId);
 
 		if($association != null) {
@@ -245,10 +253,10 @@ class ActionsController extends x2base {
 			$model->type=$_POST['submit']==2?'note':'call';
 		} else if($model->type == 'event') {
 			if($model->completeDate) {
-				$model->completeDate = X2Model::parseDateTime($model->completeDate);
+				$model->completeDate = Formatter::parseDateTime($model->completeDate);
 			}
 		} */
-		
+
 		// $model->syncGoogleCalendar();
 		// google sync
  		/* if(!is_numeric($model->assignedTo)) { // assigned to user
@@ -263,7 +271,7 @@ class ActionsController extends x2base {
 					$profile->syncActionToGoogleCalendar($model);
 			}
 		} */
-		
+
 		if($api==0){
 			parent::create($model,$oldAttributes,$api);
         }else
@@ -274,100 +282,67 @@ class ActionsController extends x2base {
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	
+
 	public function actionCreate() {
-		
+
 		$model = new Actions;
 		$users = User::getNames();
-		
+
 		if(isset($_POST['Actions'])) {
-			$temp = $model->attributes;
-			if(isset($_POST['inCalendar'])) { // create new calendar event
-				foreach(array_keys($model->attributes) as $field){
-					if(isset($_POST['CalendarEvent'][$field])){
-						$model->$field=$_POST['CalendarEvent'][$field];
-					}
-				}
-				$model->actionDescription = $_POST['Actions']['actionDescription'];
-			} else {
-				foreach(array_keys($model->attributes) as $field){
-					if(isset($_POST['Actions'][$field])){
-						$model->$field=$_POST['Actions'][$field];
-					}
-				}
-			}
-			
-			
-			// if user clicked "New Comment" rather than "New Action"
-			if($model->type != 'event' && isset($_POST['submit']) && ($_POST['submit']=='0' || $_POST['submit']=='2') && $model->calendarId == null) {
-				$model->createDate = time();
-				$model->dueDate = time();
-				$model->completeDate = time();
-				$model->complete = 'Yes';
-				$model->visibility = 1;
-				$model->assignedTo = Yii::app()->user->getName();
-				$model->completedBy = Yii::app()->user->getName();
-				$model->type = $_POST['submit']==2? 'note' : 'call';
-			} elseif($model->type == 'event' && !empty($model->completeDate)) {
-				$model->completeDate = X2Model::parseDateTime($model->completeDate);
-			}
-			
-			
-			// $this->create($model,$temp,'0');
+            $model->setX2Fields($_POST['Actions']);
 			if($model->save()) {
+                if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
+                    $notif=new Notification;
+                    $notif->modelType='Actions';
+                    $notif->createdBy=Yii::app()->user->getName();
+                    $notif->modelId=$model->id;
+                    if($_POST['notificationUsers']=='me'){
+                        $notif->user=Yii::app()->user->getName();
+                    }else{
+                        $notif->user=$model->assignedTo;
+                    }
+                    $notif->createDate=$model->dueDate-($_POST['notificationTime']*60);
+                    $notif->type='action_reminder';
+                    $notif->save();
+                    if($_POST['notificationUsers']=='both' && Yii::app()->user->getName()!=$model->assignedTo){
+                        $notif2=new Notification;
+                        $notif2->modelType='Actions';
+                        $notif2->createdBy=Yii::app()->user->getName();
+                        $notif2->modelId=$model->id;
+                        $notif2->user=Yii::app()->user->getName();
+                        $notif2->createDate=$model->dueDate-($_POST['notificationTime']*60);
+                        $notif2->type='action_reminder';
+                        $notif2->save();
+                    }
+                }
+                $model->actionDescription=$_POST['Actions']['actionDescription'];
 				$model->syncGoogleCalendar('create');
-			
-				if(isset($_GET['inline']) || $model->type == 'note') {
-					if($model->associationType == 'product' || $model->associationType == 'products')
-						$this->redirect(array('/products/products/view', 'id' => $model->associationId));	//TODO: avoid such hackery
-					elseif($model->associationType == 'Campaign')
-						$this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
-					else
-						$this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
-				} else {
-					$this->redirect(array('view', 'id' => $model->id));
-				}
+                $this->redirect(array('index'));
 			}
 		}
-		if(isset($_GET['param'])) {
-			$pieces=explode(';',$_GET['param']);
-			$user=$pieces[0];
-			$pieces2=explode(':',$pieces[1]);
-			$type=$pieces2[0];
-			$id=$pieces2[1];
-		} else {	// defaults
-			$user=Yii::app()->user->getName();
-			$type='none';
-			$id=null;
-		}
-		$model->associationType=$type;
-		$model->assignedTo=$user;
-		if(!empty($id))
-			$model->associationId=$id;
+        if(empty($model->assignedTo)){
+            $model->assignedTo=Yii::app()->user->getName();
+        }
 
 		$this->render('create',array(
 			'model'=>$model,
-			'users'=>$users
+			'users'=>$users,
+            'modelList'=>Admin::getModelList(),
 		));
-		
+
 	}
 
 	public function actionPublisherCreate() {
-		
+
 		if(isset($_POST['SelectedTab'],$_POST['Actions'])) {
-		
+
 			$model = new Actions;
-		
-			$temp = $model->attributes;
-			foreach(array_keys($model->attributes) as $field){
-				if(isset($_POST['Actions'][$field])){
-					$model->$field=$_POST['Actions'][$field];
-				}
-			}
-			
+
+			$model->setX2Fields($_POST['Actions']);
+
 			// format dates
-			$model->dueDate = X2Model::parseDateTime($model->dueDate);
-			
+			$model->dueDate = Formatter::parseDateTime($model->dueDate);
+
 			if($_POST['SelectedTab'] == 'new-event') {
                 $event=new Events;
                 $event->type='calendar_event';
@@ -376,21 +351,26 @@ class ActionsController extends x2base {
                 $event->timestamp=$model->dueDate;
 				$model->type = 'event';
 				if($model->completeDate){
-					$model->completeDate = X2Model::parseDateTime($model->completeDate);
+					$model->completeDate = Formatter::parseDateTime($model->completeDate);
                 }else{
                     $model->completeDate=$model->dueDate;
                 }
 			} else {
+                $event=new Events;
+				$event->associationType='Actions';
+				$event->type='record_create';
+				$event->user=Yii::app()->user->getName();
+				$event->visibility=$model->visibility;
 				$model->completeDate = null;
 			}
-			
-			
+
+
 			// format association
 			if($model->associationId=='')
 				$model->associationId=0;
-			    
+
 			$association = $this->getAssociation($model->associationType,$model->associationId);
-			
+
 			if($association) {
 				$model->associationName = $association->name;
 				if($association->hasAttribute('lastActivity')) {
@@ -399,17 +379,12 @@ class ActionsController extends x2base {
 				}
 			} else
 				$model->associationName = 'none';
-			
+
 			if($model->associationName == 'None' && $model->associationType != 'none')
 				$model->associationName = ucfirst($model->associationType);
-	
+
 			if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment') {
-				$event=new Events;
-				$event->associationType='Actions';
-				$event->type='record_create';
-				$event->user=Yii::app()->user->getName();
-				$event->visibility=$model->visibility;
-				
+
 				$model->createDate = time();
 				$model->dueDate = time();
 				$model->completeDate = time();
@@ -422,32 +397,32 @@ class ActionsController extends x2base {
 				else
 					$model->type = 'note';
 			}
-			
+
 			// save model
-			$name = $this->modelClass;
-			$model->createDate=time(); 
-			
+			$model->createDate=time();
+
 			if(!empty($model->type))
 				$model->disableBehavior('changelog');
-			
+
 			if($model->save()) { // action saved to database *
+                $model->actionDescription=$_POST['Actions']['actionDescription'];
 				if(isset($event)){
 					$event->associationId=$model->id;
 					$event->save();
 				}
 				$model->syncGoogleCalendar('create');
 			}
-			
+
 		}
 	}
 
 	public function update($model, $oldAttributes, $api){
-		
+
 		// now in Actions::beforeSave()
-		/* $model->dueDate = X2Model::parseDateTime($model->dueDate);
+		/* $model->dueDate = Formatter::parseDateTime($model->dueDate);
 
 		if($model->completeDate)
-			$model->completeDate = X2Model::parseDateTime($model->completeDate);
+			$model->completeDate = Formatter::parseDateTime($model->completeDate);
 
 		$association = $this->getAssociation($model->associationType,$model->associationId);
 
@@ -457,7 +432,7 @@ class ActionsController extends x2base {
 			$model->associationName = 'None';
 			$model->associationId = 0;
 		} */
-		
+
 		// now in Actions::synchGoogleCalendar()
 		/* if( !is_numeric($model->assignedTo)) { // assigned to user
 			$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
@@ -471,7 +446,7 @@ class ActionsController extends x2base {
 					$profile->updateGoogleCalendarEvent($model);
 			}
 		} */
-		
+
 		if($api==0)
 			parent::update($model,$oldAttributes,$api);
 		else
@@ -483,21 +458,23 @@ class ActionsController extends x2base {
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate() {
-        if(isset($_GET['id'])){
-            $id=$_GET['id'];
-        }else{
-            throw new CHttpException('No action ID provided.',400);
-        }
+	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
 		$users=User::getNames();
-
+        $notifications=X2Model::model('Notification')->findAllByAttributes(array(
+                            'modelType'=>'Actions',
+                            'modelId'=>$model->id,
+                            'type'=>'action_reminder'
+        ));
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Actions'])) {
 			$oldAttributes = $model->attributes;
 			$model->setX2Fields($_POST['Actions']);
+            if($model->lastUpdated!=$oldAttributes['lastUpdated']){
+                $model->disableBehavior('X2TimestampBehavior');
+            }
 			if($model->dueDate != $oldAttributes['dueDate']) {
 				$event = CActiveRecord::model('Events')->findByAttributes(array('type'=>'action_reminder','associationType'=>'Actions','associationId'=>$model->id));
 				if(isset($event)) {
@@ -505,9 +482,53 @@ class ActionsController extends x2base {
 					$event->update(array('timestamp'));
 				}
 			}
-			
+
 			// $this->update($model,$oldAttributes,'0');
 			if($model->save()) {
+                if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']
+                        && X2Model::model('Notification')->countByAttributes(array(
+                            'modelType'=>'Actions',
+                            'modelId'=>$model->id,
+                            'type'=>'action_reminder'
+                        )
+                )!=0){
+                    $notifications=X2Model::model('Notification')->findAllByAttributes(array(
+                            'modelType'=>'Actions',
+                            'modelId'=>$model->id,
+                            'type'=>'action_reminder'
+                    ));
+                    foreach($notifications as $notification){
+                        if($notification->user==$model->assignedTo && ($_POST['notificationUsers']=='assigned' || $_POST['notificationUsers']=='both')){
+                            $notification->delete();
+                        }elseif($notification->user==Yii::app()->user->getName() && ($_POST['notificationUsers']=='me' || $_POST['notificationUsers']=='both')){
+                            $noticiation->delete();
+                        }
+                    }
+                }elseif(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
+                    $notif=new Notification;
+                    $notif->modelType='Actions';
+                    $notif->modelId=$model->id;
+                    if($_POST['notificationUsers']=='me'){
+                        $notif->user=Yii::app()->user->getName();
+                    }else{
+                        $notif->user=$model->assignedTo;
+                    }
+                    $notif->createdBy=Yii::app()->user->getName();
+                    $notif->createDate=$model->dueDate-($_POST['notificationTime']*60);
+                    $notif->type='action_reminder';
+                    $notif->save();
+                    if($_POST['notificationUsers']=='both' && Yii::app()->user->getName()!=$model->assignedTo){
+                        $notif2=new Notification;
+                        $notif2->modelType='Actions';
+                        $notif2->modelId=$model->id;
+                        $notif2->createdBy=Yii::app()->user->getName();
+                        $notif2->user=Yii::app()->user->getName();
+                        $notif2->createDate=$model->dueDate-($_POST['notificationTime']*60);
+                        $notif2->type='action_reminder';
+                        $notif2->save();
+                    }
+                }
+                $model->actionDescription=$_POST['Actions']['actionDescription'];
 				$model->syncGoogleCalendar('update');
 				if(isset($_GET['redirect']) && $model->associationType != 'none') { // if the action has an association
 					if($model->associationType == 'product' || $model->associationType == 'products')
@@ -517,26 +538,34 @@ class ActionsController extends x2base {
 						$this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
 					else
 						$this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId)); // go back to the association
-				} else {	// no association
-					$this->redirect(array('/actions/' . $model->id)); // view the action
-				}
+				} elseif(!Yii::app()->request->isAjaxRequest){	// no association
+					$this->redirect(array('index')); // view the action
+				}else{
+                    echo $this->renderPartial('_viewIndex',array('data'=>$model),true);
+                    return;
+                }
 			}
 		}
-        if(isset($_GET['param'])) {
-			$pieces=explode(';',$_GET['param']);
-			$pieces2=explode(':',$pieces[1]);
-			$type=$pieces2[0];
-			$id=$pieces2[1];
-			$model->associationType=$type;
-			$model->associationId=$id;
-			$model->associationName="";
-		}
+        if(count($notifications) > 0){
+            if(count($notifications)>1){
+                $notifType='both';
+            }else{
+                $notifType='assigned';
+            }
+            $notifTime=($model->dueDate-$notifications[0]->createDate)/60;
+        }else{
+            $notifType='';
+            $notifTime='';
+        }
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
+            'modelList'=>Admin::getModelList(),
+            'notifType'=>$notifType,
+            'notifTime'=>$notifTime,
 		));
 	}
-	
+
 	public function actionQuickUpdate($id) {
 		$model=$this->loadModel($id);
 		if(isset($_POST['Actions'])) {
@@ -546,17 +575,17 @@ class ActionsController extends x2base {
 			        $model->$field=$_POST['Actions'][$field];
 			    }
 			}
-			
-            $model->dueDate = X2Model::parseDateTime($model->dueDate);
+
+            $model->dueDate = Formatter::parseDateTime($model->dueDate);
 			if($model->completeDate){
-				$model->completeDate = X2Model::parseDateTime($model->completeDate);
+				$model->completeDate = Formatter::parseDateTime($model->completeDate);
             }elseif(empty($model->completeDate)){
                 $model->completeDate=$model->dueDate;
             }
 
 			// $changes = $this->calculateChanges($temp, $model->attributes, $model);
 			// $model = $this->updateChangelog($model,$changes);
-			
+
  			if(!is_numeric($model->assignedTo)) { // assigned to user
 				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
 				if(isset($profile))
@@ -569,25 +598,34 @@ class ActionsController extends x2base {
 						$profile->updateGoogleCalendarEvent($model);
 				}
 			}
-			
+
 			$model->update();
 		}
 	}
-	
+
+    public function actionToggleSticky($id){
+        $action=X2Model::model('Actions')->findByPk($id);
+        if(isset($action)){
+            $action->sticky=!$action->sticky;
+            $action->update(array('sticky'));
+            echo $action->sticky;
+        }
+    }
+
 	/**
 	 * Complete a list of selected actions from a gridview
 	 */
 	public function actionCompleteSelected() {
 		$this->updateSelected('complete');
 	}
-	
+
 	/**
 	 * Uncomplete a list of selected actions from a gridview
 	 */
 	public function actionUncompleteSelected() {
 		$this->updateSelected('uncomplete');
 	}
-	
+
 	/**
 	 * Updates several actions at once (complete, uncomplete)
 	 * @param string $operation the type of update happening
@@ -597,18 +635,18 @@ class ActionsController extends x2base {
 			foreach(CActiveRecord::model('Actions')->findAllByPk($_POST['actionIds']) as $action) {
 				if($action === null)
 					continue;
-				
+
 				$inGroup = false;
-				if(ctype_digit($action->assignedTo))	// we have an action assigned to a group? Then check if we are in the group
+				if(ctype_digit((string)$action->assignedTo))	// we have an action assigned to a group? Then check if we are in the group
 					$inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
-				
+
 				if(Yii::app()->user->getName()==$action->assignedTo || $action->assignedTo=='Anyone' || $action->assignedTo=='' || $inGroup || Yii::app()->user->checkAccess('AdminIndex')) { // make sure current user can edit this action
-					
+
 					if($operation === 'complete')
 						$action->complete();		// $this->completeNotification('admin',$action->id);
 					elseif($operation === 'uncomplete')
 						$action->uncomplete();
-					
+
 				}
 			}
 		}
@@ -621,7 +659,7 @@ class ActionsController extends x2base {
 			$profile->update();
 		}
 	}
-	
+
 	// Postpones due date (and sets action to incomplete)
 	/* public function actionTomorrow($id) {
 		$model = $this->loadModel($id);
@@ -663,11 +701,11 @@ class ActionsController extends x2base {
 			$event->user=Yii::app()->user->getName();
 			$event->save();
 			Events::model()->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$id,'type'=>'action_reminder')); */
-			
+
 			$model->syncGoogleCalendar('delete');
-			
+
  			/* if(!is_numeric($model->assignedTo)) { // assigned to user
-				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo)); 
+				$profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
 				if(isset($profile))
 					$profile->deleteGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
 			} else { // Assigned to group
@@ -677,44 +715,49 @@ class ActionsController extends x2base {
 				if(isset($profile))
 					$profile->deleteGoogleCalendarEvent($model);
 			} */
-			
+
 			$model->delete();
 		} else {
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		}
-		if(isset($_GET['ajax']))
+		if(isset($_GET['ajax']) || Yii::app()->request->isAjaxRequest)
 			echo 'Success';
 		else
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
-	
+
 	/**
 	 * Marks an action as complete and redirects back to the page it was completed on.
 	 * @param integer $id The id of the action
 	 */
 	public function actionComplete($id) {
 		$model = $this->loadModel($id);
-		
+        if(isset($_GET['notes'])){
+            $notes=$_GET['notes'];
+        }else{
+            $notes=null;
+        }
+
 		$inGroup = false;
 		if(is_numeric($model->assignedTo)) { // we have an action assigned to a group, check if we are in the group
 			$inGroup = Groups::inGroup(Yii::app()->user->id, $model->assignedTo);
 		}
-		
+
 		if(Yii::app()->user->getName()==$model->assignedTo || $model->assignedTo=='Anyone' || $model->assignedTo=="" || $inGroup || Yii::app()->user->checkAccess('AdminIndex')) {
-			
+
 			if(isset($_POST['note']) && !empty($_POST['note']))
 				$model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
-				
+
 			// $model = $this->updateChangelog($model,'Completed');
-			$model->complete();
-			
+			$model->complete(null, $notes);
+
 			// Actions::completeAction($id);
 			// $this->completeNotification('admin',$model->id);
-			
+
 			$createNew = isset($_GET['createNew']) || ((isset($_POST['submit']) && ($_POST['submit']=='completeNew')));
 			$redirect = isset($_GET['redirect']) || $createNew;
-			
+
 			if($redirect) {
 				if($model->associationType!='none' && !$createNew) {	// if the action has an association
 					$this->redirect(array('/'.$model->associationType.'/'.$model->associationType.'/view','id'=>$model->associationId));	// go back to the association
@@ -722,41 +765,48 @@ class ActionsController extends x2base {
 					if($createNew)
 						$this->redirect(array('/actions/create'));		// go to blank 'create action' page
 					else
-						$this->redirect(array('/actions/'.$model->id));	// view the action
+						$this->redirect(array('index'));	// view the action
 				}
-			} else {
-				$this->redirect(array('/actions/'.$model->id)); 
-			}
-		} else {
-			$this->redirect(array('/actions/invalid'));
-		}
+			} elseif(Yii::app()->request->isAjaxRequest) {
+                echo "Success";
+			}else{
+                $this->redirect(array('index'));
+            }
+		} elseif(Yii::app()->request->isAjaxRequest) {
+			echo "Failure";
+		}else{
+            $this->redirect(array('/actions/invalid'));
+        }
 	}
-	
+
 	/**
 	 * Marks an action as incomplete and clears the completedBy field.
 	 * @param integer $id The id of the action
 	 */
 	public function actionUncomplete($id) {
 		$model = $this->loadModel($id);
-		
+		switch($model->priority){
+            case "High":
+                $box="Red";
+                break;
+            case "Medium":
+                $box="Orange";
+                break;
+            default:
+                $box="Yellow";
+        }
 		if($model->uncomplete()) {
-			if(isset($_GET['redirect'])) {
-				if($model->associationType!='none')
-					$this->redirect(array('/'.$model->associationType.'/'.$model->associationType.'/'.$model->associationId));
-				else
-					$this->redirect(array('/actions/'.$id));
-			} else {
-				$this->redirect(array('/actions/'.$id));
-			}
-		} else {
-			print_r($model->getErrors());
+			echo json_encode(array(
+                "<span style='color:grey'>".Yii::t('actions', 'Due: ')."</span>" . Actions::parseStatus($model->dueDate) . '</b>',
+                "background:url(".Yii::app()->theme->baseUrl."/images/icons/{$box}_box.png) 0 0px no-repeat transparent"
+                ));
 		}
 	}
-	
+
 	/**
 	 * Called when a Contact opens an email sent from Inline Email Form. Inline Email Form
 	 * appends an image to the email with src pointing to this function. This function
-	 * creates an action associated with the Contact indicating that the email was opened. 
+	 * creates an action associated with the Contact indicating that the email was opened.
 	 *
 	 * @param integer $uid The unique id of the recipient
 	 * @param string $type 'open', 'click', or 'unsub'
@@ -769,7 +819,16 @@ class ActionsController extends x2base {
 				$action = $track->action;
 				if($action) {
 					$note = new Actions;
-					$note->type = 'emailOpened';
+					switch($action->type) {
+						case 'email_quote':
+							$note->type = 'emailOpened_quote';
+							break;
+						case 'email_invoice':
+							$note->type = 'emailOpened_invoice';
+							break;
+						default:
+							$note->type = 'emailOpened';
+					}
 					$now = time();
 					$note->createDate = $now;
 					$note->lastUpdated = $now;
@@ -782,11 +841,21 @@ class ActionsController extends x2base {
 					$note->visibility = $action->visibility;
 					$note->assignedTo = $action->assignedTo;
 					$note->actionDescription = Yii::t('marketing','Contact has opened the email sent on ');
-					$note->actionDescription .= X2Model::formatLongDateTime($action->createDate) . "<br>";
+					$note->actionDescription .= Formatter::formatLongDateTime($action->createDate) . "<br>";
 					$note->actionDescription .= $action->actionDescription;
 					if($note->save()) {
 						$event=new Events;
 						$event->type='email_opened';
+						switch($action->type){
+							case 'email_quote':
+								$event->subtype = 'quote';
+								break;
+							case 'email_invoice':
+								$event->subtype = 'invoice';
+								break;
+							default:
+								$event->subtype = 'email';
+						}
 						$contact=X2Model::model('Contacts')->findByPk($action->associationId);
 						if(isset($contact)){
 							$event->user=$contact->assignedTo;
@@ -805,17 +874,46 @@ class ActionsController extends x2base {
 					}
 				}
 			}
-			
+
 			//return a one pixel transparent png
 			header('Content-Type: image/png');
 			echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
 		}
 	}
-	
+
 	// Lists all actions assigned to this user
 	public function actionIndex() {
-		$model=new Actions('search');
-		$this->render('index', array('model'=>$model));
+        $model=new Actions('search');
+        if(!empty($_POST) || !empty(Yii::app()->params->profile->actionFilters)){
+            if(isset($_POST['complete'], $_POST['assignedTo'], $_POST['dateType'], $_POST['dateRange'], $_POST['orderType'], $_POST['order'],$_POST['start'],$_POST['end'])){
+                $complete=$_POST['complete'];
+                $assignedTo=$_POST['assignedTo'];
+                $dateType=$_POST['dateType'];
+                $dateRange=$_POST['dateRange'];
+                $orderType=$_POST['orderType'];
+                $order=$_POST['order'];
+                $start=$_POST['start'];
+                $end=$_POST['end'];
+                if($dateRange!='range'){
+                    $start=null;
+                    $end=null;
+                }
+                $filters=array('complete'=>$complete,'assignedTo'=>$assignedTo,'dateType'=>$dateType,'dateRange'=>$dateRange,'orderType'=>$orderType,'order'=>$order,'start'=>$start,'end'=>$end);
+            }elseif(!empty(Yii::app()->params->profile->actionFilters)){
+                $filters=json_decode(Yii::app()->params->profile->actionFilters,true);
+            }
+            $condition=Actions::createCondition($filters);
+            $dataProvider=$model->search($condition);
+            $params=$filters;
+        }else{
+            $dataProvider=$model->search();
+            $params=array();
+        }
+		$this->render('index', array(
+            'model'=>$model,
+            'dataProvider'=>$dataProvider,
+            'params'=>$params,
+        ));
 	}
 
 	// List all public actions
@@ -823,25 +921,35 @@ class ActionsController extends x2base {
 		$model=new Actions('search');
 		$this->render('index', array('model'=>$model));
 	}
-	
+
 	public function actionViewGroup() {
 		$model=new Actions('search');
 		$this->render('index', array('model'=>$model));
 	}
-	
+
 	// display error page
 	public function actionInvalid() {
 		$this->render('invalid');
 	}
 
-	
+
 	public function actionParseType() {
 		if(isset($_POST['Actions']['associationType'])){
 			$type=$_POST['Actions']['associationType'];
-			echo $type;
-		}else{
-			echo 'none';
-		}
+            if($modelName=X2Model::getModelName($type)){
+                $linkModel = $modelName;
+                if(class_exists($linkModel)){
+                    $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
+                }else{
+                    $linkSource="";
+                }
+                echo $linkSource;
+            }else{
+                echo '';
+            }
+        }else{
+            echo '';
+        }
 	}
 
 	public function actionGetTerms(){
@@ -875,7 +983,7 @@ class ActionsController extends x2base {
 			// $model->associationName = $this->parseName(array($model->associationType,$model->associationId));
 		// } else
 			// $model->associationName = 'None';
-		
+
 		if($model === null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

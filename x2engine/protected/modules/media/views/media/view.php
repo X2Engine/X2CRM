@@ -43,7 +43,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 <div id="main-column" class="half-width">
-<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
+<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
 <?php 
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
@@ -106,21 +106,10 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php if($model->associationType && $model->associationType != 'bg') { ?>
 													<?php 
-														if(!empty($model->associationId) && is_numeric($model->associationId)) {
-															$className = ucfirst($model->associationType);
-                                                            switch($className){
-                                                                case "Products":
-                                                                    $className="Product";
-                                                                    break;
-                                                                case "Quotes":
-                                                                    $className="Quote";
-                                                                    break;
-                                                            }
-															if(class_exists($className))
-																$linkModel = X2Model::model($className)->findByPk($model->associationId);
+														if(!empty($model->associationId) && is_numeric($model->associationId) && $modelName=X2Model::getModelName($model->associationType)) {
+															$linkModel = X2Model::model($modelName)->findByPk($model->associationId);
 															if(isset($linkModel)){
                                                                 echo CHtml::link($linkModel->name, array('/'.$model->associationType.'/'.$model->associationId));
-																//echo $linkModel->name;
                                                             }else
 																echo '';
 														} else {
@@ -166,7 +155,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
                                             <label><?php echo Yii::t('media', 'Description'); ?></label>
-											<div class="formInputBox" style="width: 550px; height: auto;">
+											<div class="formInputBox" style="height: auto;">
 												<?php echo $model->description; ?>
 											</div>
 										</div>

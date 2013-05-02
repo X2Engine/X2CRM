@@ -218,7 +218,7 @@ $associatedContacts = implode(', ', $associatedContacts);
 			<div class="detail-field">
 				<b>
 					<?php 
-					$model->expirationDate = $this->formatDate($model->expirationDate);
+					$model->expirationDate = Formatter::formatDate($model->expirationDate);
 					echo $model->expirationDate;
 					?>
 				</b>
@@ -229,7 +229,7 @@ $associatedContacts = implode(', ', $associatedContacts);
 				'attribute'=>'expirationDate', //attribute name
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
+					'dateFormat'=>Formatter::formatDatePicker(),
 					'changeMonth'=>true,
 					'changeYear'=>true,
 				), // jquery plugin options

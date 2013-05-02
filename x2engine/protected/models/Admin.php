@@ -38,8 +38,7 @@
  * This is the model class for table "x2_admin".
  * @package X2CRM.models
  */
-class Admin extends CActiveRecord
-{
+class Admin extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Admin the static model class
@@ -63,7 +62,7 @@ class Admin extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('emailFromName, emailFromAddr, serviceCaseFromEmailName, serviceCaseFromEmailAddress, serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
-			array('timeout, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
+			array('timeout, webTrackerCooldown, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
 			// accounts, sales, 
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),
 			array('currency', 'length', 'max'=>3),
@@ -72,8 +71,9 @@ class Admin extends CActiveRecord
 			array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max'=>255),
 			// array('emailSignature', 'length', 'max'=>512),
 			array('emailSignature', 'length', 'max'=>512),
-			array('quoteStrictLock, workflowBackdateReassignment', 'boolean'),
+			array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,emailDropbox_createContact,emailDropbox_zapLineBreaks,emailDropbox_emptyContact,emailDropbox_logging', 'boolean'),
 			array('gaTracking_internal,gaTracking_public','match','pattern'=>"/'/",'not'=>true,'message'=>Yii::t('admin','Invalid property ID')),
+			array('emailDropbox_alias', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			// array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -90,8 +90,10 @@ class Admin extends CActiveRecord
 			// 'sales' => Yii::t('admin','Opportunities'),
 			'timeout' => Yii::t('admin','Session Timeout'),
 			'webLeadEmail' => Yii::t('admin','Web Lead Email'),
+			'enableWebTracker' => Yii::t('admin','Enable Web Tracker'),
+			'webTrackerCooldown' => Yii::t('admin','Web Tracker Cooldown'),
 			'currency' => Yii::t('admin','Currency'),
-			'chatPollTime' => Yii::t('admin','Chat Poll Time'),
+			'chatPollTime' => Yii::t('admin','Notification Poll Time'),
 			'ignoreUpdates' => Yii::t('admin','Ignore Updates'),
 			'rrId' => Yii::t('admin','Rr'),
 			'leadDistribution' => Yii::t('admin','Lead Distribution'),
@@ -126,7 +128,27 @@ class Admin extends CActiveRecord
 			'serviceCaseEmailMessage' => Yii::t('admin', 'Email Message'),
 			'gaTracking_public' => Yii::t('admin','Google Analytics Property ID (public)'),
 			'gaTracking_internal' => Yii::t('admin','Google Analytics Property ID (internal)'),
+			'emailDropbox_alias' => Yii::t('admin','Email capture address'),
+			'emailDropbox_createContact' => Yii::t('admin',"Create contacts from emails"),
+			'emailDropbox_zapLineBreaks' => Yii::t('admin','Zap line breaks'),
+			'emailDropbox_emptyContact' => Yii::t('admin','Create contacts when first and last name are missing'),
+			'emailDropbox_logging' => Yii::t('admin','Enable logging'),
 		);
 	}
+    
+    public static function getModelList(){
+        $modelList = array();
+        foreach (X2Model::model('Modules')->findAllByAttributes(array('editable' => true,'visible'=>1)) as $module) {
+            if (X2Model::getModelName($module->name)){
+                $modelName = $module->name;
+            }else{
+                $modelName = ucfirst($module->name);
+            }
+            if(Yii::app()->user->checkAccess(ucfirst($module->name).'Index',array())){
+                $modelList[$modelName] = $module->title;
+            }
+        }
+        return $modelList;
+    }
 
 }

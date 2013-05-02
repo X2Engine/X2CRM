@@ -97,7 +97,6 @@ function checkServerVar() {
 $canInstall = True;
 $curl = true; // 
 $tryAccess = true; // Attempt to access the internet from the web server.
-$failedWrite = false; // Whether an attempt was made to identify the UID of the PHP process by writing a file, and the writing failed
 $reqMessages = array_fill_keys(array(1, 2, 3), array()); // Severity levels
 $rbm = installer_t("required but missing");
 
@@ -109,23 +108,17 @@ $rbm = installer_t("required but missing");
 // reliable way to get the UID of the actual running process.
 $uid = array_fill_keys(array('{id_own}', '{id_run}'), null);
 $uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
-if (function_exists('posix_geteuid')) {
+if(function_exists('posix_geteuid')){
 	$uid['{id_run}'] = posix_geteuid();
-} else {
-	// Try doing it by creating a file.
-	$canPutFile = @file_put_contents('helloworld.txt', 'Hello, world!');
-	if ($canPutFile && file_exists('helloworld.txt')) {
-		$uid['{id_run}'] = fileowner('helloworld.txt');
-		unlink('helloworld.txt');
-	} else {
-		$failedWrite = true;
+	if($uid['{id_own}'] !== $uid['{id_run}']){
+		$reqMessages[3][] = strtr(installer_t("PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}."), $uid);
 	}
 }
-if ($uid['{id_own}'] != $uid['{id_run}'] && !$failedWrite) {
-	$reqMessages[3][] = strtr(installer_t("PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}. This will result in fatal errors due to the filesystem not being writable. Please check your web server's configuration or contact the system administrator or hosting provider."), $uid);
-} elseif ($failedWrite) {
+// Check that the directory is writable. Print an error message one way or another.
+if (!is_writable(realpath('.')) || !is_writable(realpath(__FILE__))) {
 	$reqMessages[3][] = installer_t("This directory is not writable by PHP processes run by the webserver.");
 }
+
 // Check PHP version
 if (!version_compare(PHP_VERSION, "5.3.0", ">=")) {
 	$reqMessages[3][] = installer_t("Your server's PHP version") . ': ' . PHP_VERSION . '; ' . installer_t("version 5.3 or later is required");
@@ -206,6 +199,32 @@ if ($tryAccess) {
 		}
 	}
 }
+// Check the ability to make database backups during updates:
+$canBackup = function_exists('proc_open');
+if ($canBackup) {
+	try {
+		$ret = 0;
+		$result = exec('mysqldump --help', $ret);
+		if ($ret !== 0) {
+			$result = exec('mysqldump.exe --help',$ret);
+			$canBackup = $ret !== 0;
+		}
+	} catch (Exception $e) {
+		$canBackup = false;
+	}
+}
+if(!$canBackup) {
+	$reqMessages[2][] = installer_t('The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
+}
+// Check the session save path:
+$ssp = ini_get('session.save_path');
+if (!is_writable($ssp)) {
+	$reqMessages[2][] = strtr(installer_t('The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'), array('{ssp}' => $ssp));
+}
+
+////////////////////////////////////////////////////////////
+// LOW PRIORITY: MISCELLANEOUS FUNCTIONALITY REQUIREMENTS //
+////////////////////////////////////////////////////////////
 // Check the availability of email delivery messages.
 $canDo = array();
 $canDo['phpmail'] = @ini_get('sendmail_path') && function_exists('mail');
@@ -224,24 +243,14 @@ if (function_exists('is_executable')) {
 	$canDo['qmail'] = false;
 }
 if (!($canDo['phpmail'] || (($canDo['sendmail'] || $canDo['qmail'] ) && $canDo['shell']))) {
-	$reqMessages[2][] = installer_t("No methods for sending email are available on this server. As a result of this, none of X2CRM's email-related functionality will work.");
+	$reqMessages[1][] = installer_t("No methods for sending email are available on this server. As a result of this, none of X2CRM's email-related functionality will work unless using the SMTP method of delivery.");
 } else {
 	if (!($canDo['shell'] && ($canDo['sendmail'] || $canDo['qmail']))) {
-		$reqMessages[2][] = installer_t('The "sendmail" and "qmail" methods for email delivery cannot be used on this server.');
+		$reqMessages[1][] = installer_t('The "sendmail" and "qmail" methods for email delivery cannot be used on this server.');
 	}
 	if (!$canDo['phpmail'])
-		$reqMessages[2][] = installer_t('The "PHP Mail" method will not work because E-mail delivery in PHP is disabled on this webserver.');
+		$reqMessages[1][] = installer_t('The "PHP Mail" method will not work because E-mail delivery in PHP is disabled on this webserver.');
 }
-
-// Check the session save path:
-$ssp = ini_get('session.save_path');
-if (!is_writable($ssp)) {
-	$reqMessages[2][] = strtr(installer_t('The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'), array('{ssp}' => $ssp));
-}
-
-////////////////////////////////////////////////////////////
-// LOW PRIORITY: MISCELLANEOUS FUNCTIONALITY REQUIREMENTS //
-////////////////////////////////////////////////////////////
 // Check for Zip extension
 if (!extension_loaded('zip')) {
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.zip.php">Zip</a>: ' . $rbm . '. ' . installer_t('This will result in the inability to import and export custom modules.');
@@ -293,17 +302,50 @@ if ($hasMessages) {
 		}
 	}
 	echo "</ul>\n";
-	echo "( Severity legend: <strong>" . array_reduce(array_keys($severityStyles), function($str, $severity) use($severityClasses,$severityStyles) {
+	echo "<div style=\"text-align:center;\">( Severity legend: <strong>" . array_reduce(array_keys($severityStyles), function($str, $severity) use($severityClasses,$severityStyles) {
 				return $str . "<span style=\"{$severityStyles[$severity]}\">{$severityClasses[$severity]}</span>&nbsp;";
 			}) . "</strong>)<br />\n";
 	if ($canInstall)
-		echo installer_t("All other essential requirements were met.") . '&nbsp;';
-	echo '<br />';
+		echo '<br />'.installer_t("All other essential requirements were met.").'&nbsp;';
+	echo '</div><br />';
 }
 
 
 if ($standalone) {
-	$imgData = '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';
+	$imgData = 'iVBORw0KGgoAAAANSUhEUgAAAGkAAAAfCAYAAADk+ePmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADMlJREFUeNrs' .
+			'W3lwVGUS/82RZBISyMkRwhESIISjEBJAgWRQbhiuci3AqsUVarfcWlZR1xL+2HJry9oqdNUtj0UFQdSwoELCLcoKBUgOi3AkkkyCYi4SSELOSTIzyWz3N/Ne3nszCVnd2qHKNNU1' .
+			'731nf91fd/++7wUdiI4cOTKIfp4hfoJ4NPrJ39RAnEn8hsViuaLzGOhMZGTk1Pj4eAwZMqRfRX6mtrY2VFRUoKSkhI1lNrIHsYFmzJwpGnS5XP1a8jMFmUxISEyEwWgML7p+PVPP' .
+			'IS4hIQGurq5fFNtaW/Hujh2q9zdef/2+knHUyJEwmUyj2ZNGh0dE/OI8qLy8HMOHD5fXze+JtHvvNz0EBweDjSSs5g86c+Ys6uvrSFlxuHbtKjZt2oTKykrk5OQI4Tg2r1mzBm++' .
+			'+SY2b96MnNxcXLvqbnfw4EFMnjIFIdSO29fX18NsNnMcF/14zClTJuPEiRPyu9mcLr/zPOnUXlq71WoV5dkXs2VZtm/fjhdeeEGU79y5U8jgDzL6Mw/VkYEoHyJ1Rqp4tpKCT548' .
+			'iY0bNwojHTp0COWUQF0eGa+SgZhabTZqXw8O0xkZGVi/fj0p9ppoW8HKT08XXsH9Fy9eLPpwO1ubTZQz79q1C7GxsfLalf0kWWLJ02rr6pBLm2MRjeMPPbloTr3kSf7gSlJqakqK' .
+			'eK4nZbi6XEgkxZuCgtw7nATkZ/4tsZZg0qRJiKTQzMZKm5uGivIK0e8QeVVdbR2VzRXvCWPGiP6lpOizZ84I71m3dq2YT6rjdhHh4bIsPIeyLnbYMGFERlnKfv9v9rsnSUimoqKS' .
+			'EyRxEOrq6oU8VZVVwls4X5rIqzgErVy1Cv+kXc27K4WMW0W7nxW5YuVKGZmyB0rr4ecFCxeqoC3X5eXlqdop63helkUgLDLM7t27sXLlKr/piGc1UKh4iVEE76Sfy699/A0iBgYj' .
+			'elDwPdtyDikoKBC/Tc1NWEjKDAsLE4Jdzs93ly1YCKPRAIfTKZBOBBmMhZaeuX3N7du4fPkympqahPECjEaM9KzHZArGxW8u4vbtGsTEDBbti4uKEBYaJp5HKtbNctwoLZVl4TKj' .
+			'MQDFxUVYunTp/0Q/P4VrqqvBh1nXHAoTP5feOZCHzDNFCA0JxG9WPABL2rhe2xcWFqKqqgoLFiy4bw+Uez/8EJYVK4S3+osYKLnDXZdvVy7+sZaSrQMGgx4GvU5wUnyMV7t/5/2A' .
+			'Q18XYUjUAPx4qxE7My+h8nYTfrtmeo+T2yj5J09I7nFuf9O3FBKXL7dg6NBhfpWRHcoNwV2+IXheYRXe+TRPeEdocCAGBAfg2ccfxNTx3VdH331fi7f25yJ1Yizyi25BT4a0Ozph' .
+			'a3fgVm0z3iYP+/rbm2i22eU+YTTevJTReOrRsaq5z58/j9ra2h4FnjNnDqKjo1FEIYtZIg5PISEh8ruyXuqjJZ6rrKwM5cQSjU9KQpKHH5o9W4yRnZMt6qRypszMTLkPh8xp06ap' .
+			'xpbqeV6eX9vHF62ifNtTVurVk9YtmoiC0hpcKq6Wy/YevYLxo+YhKNCI8ppG/CMjB7HRYbCS14WGBJEhA5GSTMk8fTzWbvscza1u4xgN+u5Q0uHE8QulOJdfhoyXV2NoVKhbcefO' .
+			'UQ4o7nEhycnJBNmjcP36dRzOypLLdfSPw5JEynqpj0T5+ZewL2MfARTvzcBGqZg+HUnjkwRQUI5joPPauHHjxXOWQuG8OZJeeVWAG4mk+gkTJggjsX6z7mGkNavXwNnZ6RM46CVP' .
+			'6olffOIh4UVymCIPyThRQL92fHjkKoVCHToFVKTfzi4MjQ7FH9fNwp4jl2HQ6RAeGiR4+OAwpE8bJb8zc/jMOFkgEn5P3qz1fdFOg7ROnfqCPPCOLLOq3tOH+fz5c3iLDsaSgVjB' .
+			'rEiJpffOrk6f88jja8J2VlamSmfac05f1uaCy6f+BYBxe1LPg4SYjNiyfgZez8jtTmbkXaUV9RTa9ALNcf6JIyPcbW7HK08vBDkZrlprMHBAkNznb5vnY+KYaFwuvoU/7zgrlzeR' .
+			'p7GxHM5OsSCJtm3bhrHj1OCDz1HOTqeqHSuWFXXk8GH8esMGWTFK4vXV0dnnX/v2de9c8gyG54GBge7t6nZJtDMU9+jD1zgq3XjmPnXqFB6ZP18gTi/lk8zafnv37vVs7G7qpPX3' .
+			'ZAd9t7V75hkTh2Hp7ARVRwflHfac+kYbhpH3dNid+OvvH0ZQAOckBx5fPBEbLFPxq/nJMFP+mZQQg7b2drFnOCdJHBJkFMb2Ugi92+12FTucDrdMinZzPciUc0yJ1epV7/Ks76sv' .
+			'vxSIjWk6hbTlFouY10nwng0vmJ6NAQHda/dx+lfKyeMEe8LcB7s+8KBmV699hEEorGnXJm0+L5YPs31AL6vN41B44w6FOad7yxG1dxDyo4U2kgdtsDyAkUMGotXmVoQlLVEoQafT' .
+			'iTYdJEgrIcXDZ60UPgPkcceNjBI7iGVQSsH5qeDaNZUMywhtaXf4iBEj5Gc6TuCZLVvUSnG5xNhl5eXda1m9Gh0d9j5dyag9Sf3OIIdBw4ULF8R5qrTEijEJiV6bTduPQUSnIv9E' .
+			'RkXhwQcf6jHEe24c7h0zTUEGLJgZj6yzJZ796TYU2QBrF0/G7Kkj0NzSClnV9KN06eraVnxyolCERFOQ0X0jEBSAFeYk8jy7WwaFUtgzvDYKhaj2jg6V8qIIQc2aNQvZ2dki8V+5' .
+			'ckVV7/Ksj71MotjY4QRe2sXzsaNHcfzYMdU8zz//J8QnjPHh3d56WrZ8uTAS0/79+/Hi1m1eeUzbL0sBeiSAMZvQZO/AgXfxPbiipglf5dxU5RkmJ4W8xBGRaGltFR7hq29e4S3s' .
+			'+DwfdxraqL1LcKDRgKfXzyIvc1HodIp2fdnZop0mni1ZukwOO58eOKCG3C54jc1Kk2SDj2kNBoPPOrmPgviC2DxvnnhmSJ+bmyPKvGTu49q0DBf65kltFOLeO3gFkYNCRA7S0msf' .
+			'X8SLG2YSLNd71X1+2oqz+RWqstHDBmELnbdCQ4zCuMpdI9HWrVspdGjzoMOtYI2VIiIjYDbPw4kTx0UIamxoUNVzH1YcX/0wXbp0CUm0e5lmzJyByZMnCc+VPELqo81KvvTEyl2y' .
+			'ZClyyJM55/Eve7c0F9dr++3Zs0dcdSmJ04FvO7ju7UktdAjd/lGuyC0l5XUCgg8KNaljc4MNxy5879X3/cyrOErlfJCV2JI2Hi//YT5MBKpaODyqdk23UjhU2ii/Kdlud7jbasIZ' .
+			'l6WZzfIO/pJAgraevz3JNySnT8seFhERidjhcQgbONCrjxcI8OFJLnFHaMLiJUvkMxrfmvfmSRw5tGtjdOfTBuiDJ310vBBl1U0YHDnAHQqMeoLNHXg4NR6nc7+X2x2/cIMQXDQS' .
+			'hrsvSfO+q8YX2T+oxkqIi6Rc4MCOz3IISXXH38fmj/PyJA4d/N1IG1qYvYAByc836IsWL6GD6icCFmvr09LSxWcL6dD6/nvvYhEplr/OeoEET5++5KQuafz0dJyh8e+SBynn7/Lh' .
+			'SUUEMji3KonlCFYciL2BQw8x88BXxfi26DZiY8JQeaeZDqAmNLZ04KXfmckYg1BaXgtr2V25/Ssf5eCNZx+mfKPD259dVl0Fidtta7VgLfGFbHNLi8pKyjONRPzJgD1GpU+F/Cmp' .
+			'qcIQVVWVXvX8yWPtuvU0bob7rEfI8ZoGPWr7aL9O+NKT+xzk8lztrMbuD3b1WC/R31991Wuc5557HrFxcf/djcMpAgn7ThWJBG8tq0fUoGDKR2146tEUJMaF425DIx57ZCyFLYM8' .
+			'YIvNgbc+zceNigbcrGoUl7N9Yf4c4T6V955g+aLXVzul3Ct93IFJdSmpKXjyyY0+7/K0h9Te5vF1o8A8cdJE8bX4p9w46D1r87pxYATNnyoSPXdSSvrLrmykJI/ApaIqCnWhaKYQ' .
+			'NyE+BptWPYA7tXUyXLz+Qz2+KaiB3elCOx1oOZytmDsWe49dpdBo6NNN7/vblqGWwkRNTTX0vbSLjomBTm8QIcXpsMtw2qGBrhXlZQRiAnusNxJ642ukGzduwGG3y4bhz+VjE8cK' .
+			'eN7e3qGaR5pbOX5IyACEE2jhHCORso+yXimTL/IlJ1Ml9WMj3R05Oj6cP5apdi0peEBwiIinep1e/uVbA0ZZqjMUJc7AgAAvtNKbUGoY36nOI/0kE9/Ss2Uy6+tqn4gZrP7L1S6y' .
+			'foOjqU8D2Qh62jxXLmro3t6v5Z9BfI9ot3c0sJFeamluXqXX68PDwyMoNhr6tXOfGOh2jQBZz+g8d16j+IxFbOY/wOgn/xJf9HY6nTfZQBaLJUunrPT88f7UfjX5nRr4f1NIL/8R' .
+			'YABtitvxQEn6dgAAAABJRU5ErkJggg==';
 	echo '<img style="display:block;margin-left:278px;float:none;" src="data:image/png;base64,'.$imgData.'"><br /><br />';
 	echo $phpInfoContent[2];
 	echo '</div></body></html>';

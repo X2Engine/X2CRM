@@ -83,7 +83,6 @@ class X2ListItem extends CActiveRecord {
 		// class name for the relations automatically generated below.
 		return array(
 			'list'=>array(self::BELONGS_TO, 'X2List', 'listId'),
-			'campaign'=>array(self::HAS_ONE, 'Campaign', 'listId'),
 			'contact'=>array(self::BELONGS_TO, 'Contacts', 'contactId'),
 		);
 	}
@@ -144,16 +143,16 @@ class X2ListItem extends CActiveRecord {
 			$this->update(array('opened'));
 		}
 		
-		if($this->campaign !== null) {
+		if($this->list->campaign !== null) {
 			if($this->contact !== null) {
-				X2Flow::trigger('campaing_opened',array(
+				X2Flow::trigger('CampaingEmailOpenTrigger',array(
 					'model'=>$this->contact,
-					'campaign'=>$this->campaign
+					'campaign'=>$this->list->campaign
 				));
 			} else {
-				X2Flow::trigger('newsletter_opened',array(
+				X2Flow::trigger('NewsletterEmailOpenTrigger',array(
 					'item'=>$this,
-					'campaign'=>$this->campaign,
+					'campaign'=>$this->list->campaign,
 				));
 			}
 		}
@@ -173,17 +172,17 @@ class X2ListItem extends CActiveRecord {
 			$this->update(array('clicked'));
 		}
 		
-		if($this->campaign !== null) {
+		if($this->list->campaign !== null) {
 			if($this->contact !== null) {
-				X2Flow::trigger('campaing_clicked',array(
+				X2Flow::trigger('CampaingEmalClickTrigger',array(
 					'model'=>$this->contact,
-					'campaign'=>$this->campaign,
+					'campaign'=>$this->list->campaign,
 					'url'=>$url
 				));
 			} else {
-				X2Flow::trigger('newsletter_clicked',array(
+				X2Flow::trigger('NewsletterEmalClickTrigger',array(
 					'item'=>$this,
-					'campaign'=>$this->campaign,
+					'campaign'=>$this->list->campaign,
 					'url'=>$url
 				));
 			}
@@ -205,22 +204,22 @@ class X2ListItem extends CActiveRecord {
 		// unsubscribe this email from all other newsletters
 		CActiveRecord::model('X2ListItem')->updateAll(array('unsubscribed'=>time()),'emailAddress=:email AND unsubscribed=0',array('email'=>$this->emailAddress));
 		
-		if($this->campaign !== null) {
+		if($this->list->campaign !== null) {
 			if($this->contact !== null) {		// regular campaign
 				// update the contact
 				$this->contact->doNotEmail = true;
 				$this->contact->lastActivity = time();
 				$this->contact->update(array('doNotEmail','lastActivity'));
 				
-				X2Flow::trigger('campaing_unsubscribed',array(
+				X2Flow::trigger('CampaingUnsubscribeTrigger',array(
 					'model'=>$this->contact,
-					'campaign'=>$this->campaign
+					'campaign'=>$this->list->campaign
 				));
 			} elseif(isset($this->list)) {		// no contact, must be a newsletter
 			
-				X2Flow::trigger('newsletter_unsubscribed',array(
+				X2Flow::trigger('NewsletterUnsubscribeTrigger',array(
 					'item'=>$this,
-					'campaign'=>$this->campaign
+					'campaign'=>$this->list->campaign
 				));
 			}
 		}

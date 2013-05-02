@@ -42,6 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
+	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ));
 
 $form = $this->beginWidget('CActiveForm', array(
@@ -49,7 +50,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'enableAjaxValidation'=>false
 ));
 ?>
-<div class="page-title">
+<div class="page-title icon marketing">
 	<h2><?php echo Yii::t('marketing','Create Campaign'); ?></h2>
 	<?php echo CHtml::submitButton(Yii::t('module','Create'),array('class'=>'x2-button highlight right')); ?>
 </div>

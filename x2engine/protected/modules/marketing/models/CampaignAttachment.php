@@ -45,7 +45,7 @@
  *
  * @package X2CRM.modules.marketing.models
  */
-class CampaignAttachment extends X2Model {
+class CampaignAttachment extends CActiveRecord {
 	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
@@ -53,17 +53,13 @@ class CampaignAttachment extends X2Model {
 	public function tableName()	{ return 'x2_campaigns_attachments'; }
 
 	public function behaviors() {
-		return array_merge(parent::behaviors(),array(
-			'X2LinkableBehavior'=>array(
-				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/marketing'
-			),
+		return array(
 			'ERememberFiltersBehavior' => array(
 				'class'=>'application.components.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
 			)
-		));
+		);
 	}
 
 	public function relations() {

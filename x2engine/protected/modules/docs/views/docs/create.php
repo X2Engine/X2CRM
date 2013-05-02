@@ -38,17 +38,22 @@ $menuItems = array(
 	array('label'=>Yii::t('docs','List Docs'),'url'=>array('index')),
 	array('label'=>Yii::t('docs','Create Doc'),'url'=>array('create')),
 	array('label'=>Yii::t('docs','Create Email'),'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 );
 
 ?>
-<div class="page-title"><h2><?php
-	if($this->route=='docs/docs/createEmail') {
+<div class="page-title icon docs"><h2><?php
+	if($this->action->id=='createEmail') {
 		unset($menuItems[2]['url']);
 		echo Yii::t('docs','Create Email Template');
+	} else if($this->action->id == 'createQuote') {
+		unset($menuItems[3]['url']);
+		echo Yii::t('docs','Create Quote');
 	} else {
 		unset($menuItems[1]['url']);
 		echo Yii::t('docs','Create Document');
 	}
+
 	?></h2>
 </div>
 

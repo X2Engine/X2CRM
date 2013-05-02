@@ -44,20 +44,25 @@ class X2FlowRecordComment extends X2FlowAction {
 	public $info = '';
 	
 	public function paramRules() {
-		return array('title'=>$this->title,'fields'=>array(
-			'model' => array(),
-			'comment' => array('label'=>'Comment','type'=>'text'),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'model' => 'required',
+			'options'=>array(
+				array('name'=>'comment','label'=>'Comment','type'=>'text'),
+			));
 	}
 	
-	public function execute($params) {
+	public function execute(&$params) {
 		$model = new Actions;
 		$model->type = 'note';
+		$model->complete = 'Yes';
 		$model->associationId = $params['model']->id;
 		$model->associationType = $params['model']->module;
-		$model->actionDescription = $params['comment'];
+		$model->actionDescription = $this->config['options']['comment'];
 		$model->assignedTo = $params['model']->assignedTo;
 		$model->visibility = $params['model']->visibility;
+		$action->createDate = time();
+		$action->completeDate = time();
 		
 		return $model->save();
 	}

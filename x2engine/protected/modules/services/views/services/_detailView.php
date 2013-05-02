@@ -98,7 +98,7 @@ foreach($fields as $field){
 			<?php echo $attributeLabels['description']; ?>
 		</td>
 		<td colspan="5" class="text-field" id="description" onclick="toggleField(this);"><div class="spacer"></div>
-			<div class="detail-field"><?php echo $this->convertLineBreaks($info); ?></div>
+			<div class="detail-field"><?php echo Formatter::convertLineBreaks($info); ?></div>
 			<div class="detail-form"><?php echo $form->textArea($model,'description',array('rows'=>4, 'cols'=>50)); ?></div>
 		</td>
                 <?php } ?>

@@ -14,7 +14,7 @@
         // setup
         var opts = $.extend({}, $.ias.defaults, options);
         var util = new $.ias.util();								// utilities module
-        var paging = new $.ias.paging();							// paging module
+        var paging = new $.ias.paging(opts.scrollContainer);		// paging module
         var hist = (opts.history ? new $.ias.history() : false);	// history module
         var _self = this;
 
@@ -55,7 +55,7 @@
                         paginateToPage(pageNum);
 
                         curTreshold = get_scroll_treshold(true);
-                        $("html,body").scrollTop(curTreshold);
+                        $(opts.scrollContainer).scrollTop(curTreshold);
                     }
                     else {
                         reset();
@@ -75,7 +75,7 @@
         {
             hide_pagination();
 
-            $(window).scroll(scroll_handler);
+            $(opts.scrollContainer).scroll(scroll_handler);
         }
 
         /**
@@ -85,8 +85,8 @@
 		 */
         function scroll_handler()
         {
-            scrTop = $(window).scrollTop();
-            wndHeight = $(window).height();
+            scrTop = $(opts.scrollContainer).scrollTop();
+            wndHeight = $(opts.scrollContainer).height();
 
             curScrOffset = scrTop + wndHeight;
 
@@ -102,7 +102,7 @@
 		 */
         function stop_scroll()
         {
-            $(window).unbind('scroll', scroll_handler);
+            $(opts.scrollContainer).unbind('scroll', scroll_handler);
         }
 
         /**
@@ -217,12 +217,12 @@
                     if ((paging.getCurPageNum(curTreshold) + 1) < pageNum) {
                         paginateToPage(pageNum);
 
-                        $("html,body").animate({
+                        $(opts.scrollContainer).animate({
                             "scrollTop": curTreshold
                         }, 400, "swing");
                     }
                     else {
-                        $("html,body").animate({
+                        $(opts.scrollContainer).animate({
                             "scrollTop": curTreshold
                         }, 1000, "swing");
 
@@ -292,6 +292,7 @@
         item: '.item',
         pagination: '#pagination',
         next: '.next',
+        scrollContainer: window,
         loader: '<img src="images/loader.gif"/>',
         tresholdMargin: 0,
         history : true,
@@ -349,14 +350,15 @@
             }
         };
     };
-
+    
     // paging module
-    $.ias.paging = function()
+    $.ias.paging = function(options)
     {
         // setup
         var pagebreaks = [[0, document.location.toString()]];
         var changePageHandler = function() {};
         var lastPageNum = 1;
+        var scrollContainer=options;
 
         // initialize
         init();
@@ -368,7 +370,7 @@
 		 */
         function init()
         {
-            $(window).scroll(scroll_handler);
+            $(scrollContainer).scroll(scroll_handler);
         }
 
         /**
@@ -380,8 +382,8 @@
 		 */
         function scroll_handler()
         {
-            scrTop = $(window).scrollTop();
-            wndHeight = $(window).height();
+            scrTop = $(scrollContainer).scrollTop();
+            wndHeight = $(scrollContainer).height();
 
             curScrOffset = scrTop + wndHeight;
 

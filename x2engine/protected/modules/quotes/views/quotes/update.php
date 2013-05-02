@@ -45,24 +45,14 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<div class="page-title">
+<?php echo $quick?'':'<div class="page-title">'; ?>
 <h2><span class="no-bold"><?php echo ($model->type == 'invoice')? Yii::t('quotes','Update Invoice:') : Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name; ?></h2>
+<?php if(!$quick): ?>
 <a class="x2-button right" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>
 </div>
+<?php endif; ?>
 
 <?php 
-/*
-echo $this->renderPartial('_form',
-	array(
-		'model'=>$model, 
-		'users'=>$users, 
-		'contacts'=>$contacts,
-		'selectedContacts'=>$selectedContacts,
-		'products'=>$products,
-		'orders'=>$orders,
-	)
-);
-*/
 
 $form=$this->beginWidget('CActiveForm', array(
    'id'=>'quotes-form',
@@ -129,16 +119,36 @@ if($model->type == 'invoice') { ?>
 	<br />
 <?php }
 
-echo $this->renderPartial('productTable',
+echo $this->renderPartial('_lineItems',
 	array(
 		'model'=>$model,
 		'products'=>$products,
-		'orders'=>$orders,
+		'readOnly'=>false,
+		'form'=>$form
 	)
 );
 
-echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+$templateRec = Yii::app()->db->createCommand()->select('id,name')->from('x2_docs')->where("type='quote'")->queryAll();
+$templates = array();
+$templates[null] = '(none)';
+foreach($templateRec as $tmplRec){
+	$templates[$tmplRec['id']] = $tmplRec['name'];
+}
+echo '<div style="display:inline-block">';
+echo '<strong>'.$form->label($model,'template').'</strong>&nbsp;';
+echo $form->dropDownList($model,'template',$templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint','title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".',array('{crQu}'=>Yii::t('docs','Create Quote')))), '[?]');
+echo '</div><br />';
+echo '	<div class="row buttons" style="padding-left:0;">'."\n";
+echo CHtml::submitButton(Yii::t('app', 'Update'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25))."\n";
+echo $quick?CHtml::button(Yii::t('app','Cancel'),array('class'=>'x2-button right','id'=>'quote-cancel-button','tabindex'=>24))."\n":'';
 echo "	</div>\n";
+
 $this->endWidget();
- ?>
+
+if($quick){
+	echo '<br /><br /><hr />';
+	$scripts = '<script id="quick-quote-form">'."\n";
+	$scripts .= implode(";\n",Yii::app()->clientScript->scripts[CClientScript::POS_READY]);
+	echo $scripts."\n</script>";
+}
+?>

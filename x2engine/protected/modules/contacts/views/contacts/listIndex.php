@@ -85,7 +85,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'enableSorting'=>false,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'htmlOptions'=>array('class'=>'grid-view contact-lists'),
-	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
+	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 		. '<div class="form no-border" style="display:inline;"> '
 		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(),Profile::getPossibleResultsPerPage(),array(

@@ -125,7 +125,7 @@ class CClientScript extends CApplicationComponent
 	/**
 	 * @var array the registered JavaScript code blocks (position, key => code)
 	 */
-	protected $scripts=array();
+	public $scripts=array();
 	/**
 	 * @var array the registered head meta tags. Each array element represents an option array
 	 * that will be passed as the last parameter of {@link CHtml::metaTag}.

@@ -45,6 +45,7 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
+//	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
 );
 
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
@@ -67,7 +68,7 @@ $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
 <div id="main-column" class="half-width">
-<div class="page-title">
+<div class="page-title icon accounts">
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 
@@ -85,10 +86,18 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 
 $this->endWidget();
 
+
 $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'accounts'));
 
-
-//$this->widget('InlineTags', array('model'=>$model));
+?><?php
+/* <div id="quote-form-wrapper"><?php
+$this->widget('InlineQuotes',
+	 array(
+		 'startHidden'=>true,
+		 'account'=>$model->name,
+	 )
+ );
+?></div> */
 ?>
 
 <?php $this->widget('Attachments',array('associationType'=>'accounts','associationId'=>$model->id,'startHidden'=>true)); ?>
@@ -131,3 +140,5 @@ $this->widget('History',array('associationType'=>'accounts','associationId'=>$mo
 </div>
 
 <?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
+
+

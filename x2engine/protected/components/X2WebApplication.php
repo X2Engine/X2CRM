@@ -125,18 +125,4 @@ class X2WebApplication extends CWebApplication {
 			$basePath.=DIRECTORY_SEPARATOR.$id;
 		}
 	}
-	
-	
-	/**
-	 * 
-	 * 
-	 */
-	public function formatTimePicker($width = 'short') {
-		if($this->locale->getLanguageId($this->locale->getId()) == 'zh')
-			return 'hh:mm';
-		
-		$format = strtolower($this->locale->getTimeFormat($width));	// jquery specifies hours/minutes as hh/mm instead of HH/MM
-		return str_replace('a', 'TT', $format);		// yii and jquery have different format to specify am/pm
-	}
-
 }

@@ -44,12 +44,11 @@ $(window).resize(function() {
 });
 ',CClientScript::POS_READY);
 ?>
-<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
+<div class="page-title icon docs"><h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
 
 <?php
 $perm=$model->editPermissions;
 $pieces=explode(", ",$perm);
-echo CHtml::link(Yii::t('docs','Export'),array('/docs/docs/exportToHtml','id'=>$model->id),array('class'=>'x2-button','style'=>'float:right;'));
 if(Yii::app()->user->checkAccess('DocsUpdate') && (Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm))
     echo CHtml::link('<span></span>',array('/docs/docs/update','id'=>$model->id),array('class'=>'x2-button icon edit right'));
 echo "<br>\n";

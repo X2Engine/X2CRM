@@ -39,7 +39,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('media', 'Upload')),
 ));
 ?>
-<div class="page-title">
+<div class="page-title icon media">
 <h2><?php echo Yii::t('media','Upload Media File'); ?></h2>
 </div>
 

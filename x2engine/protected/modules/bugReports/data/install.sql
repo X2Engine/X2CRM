@@ -21,7 +21,7 @@ CREATE TABLE x2_bug_reports(
         visibility TINYINT,
         x2Version VARCHAR(250),
         errorCode VARCHAR(250)
-);
+) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules` 
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 

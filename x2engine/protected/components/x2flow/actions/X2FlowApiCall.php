@@ -51,23 +51,29 @@ class X2FlowApiCall extends X2FlowAction {
 			'delete'=>'DELETE'
 		);
 		
-		return array('title'=>$this->title,'info'=>$this->info,'fields'=>array(
-			'url' => array('label'=>'URL'),
-			'method' => array('label'=>'Method','type'=>'dropdown','options'=>$httpVerbs),
-			'attributes' => array('optional'=>1),
-			'immediate' => array('label'=>'Call immediately?','type'=>'boolean','default'=>true),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'modelClass' => 'API_params',
+			'options' => array(
+				array('name'=>'url','label'=>'URL'),
+				array('name'=>'method','label'=>'Method','type'=>'dropdown','options'=>$httpVerbs),
+				array('name'=>'attributes','optional'=>1),
+				// array('name'=>'immediate','label'=>'Call immediately?','type'=>'boolean','defaultVal'=>true),
+			));
 	}
 	
-	public function execute($params) {
-		if($params['immediate'] || true) {
+	public function execute(&$params) {
+		$options = &$this->config['options'];
+	
+		if($options['immediate'] || true) {
 			$headers = array();
-			if(!empty($params['attributes'])) {
-				$data = http_build_query($params['attributes']);
+			if(isset($this->config['attributes']) && !empty($this->config['attributes'])) {
+				$data = http_build_query($this->config['attributes']);
 			
-				if($params['method'] === 'GET') {
-					$params['url'] .= strpos($params['url'],'?')===false? '?' : '&';	// make sure the URL is ready for GET params
-					$params['url'] .= http_build_query($params['attributes']);
+				if($options['method'] === 'GET') {
+					$options['url'] .= strpos($options['url'],'?')===false? '?' : '&';	// make sure the URL is ready for GET params
+					$options['url'] .= $data;
 				} else {
 					$headers[] = 'Content-type: application/xml';	// set up headers for POST style data
 					$headers[] = 'Content-Length: '.strlen($data);
@@ -76,13 +82,13 @@ class X2FlowApiCall extends X2FlowAction {
 			}
 			$httpOptions = array(
 				'timeout' => 5,		// 5 second timeout
-				'method' => $params['method'],
+				'method' => $options['method'],
 				'header' => implode("\r\n",$headers),
 			);
 			
 			$context = stream_context_create(array('http'=>$httpOptions));
 			
-			return @FileUtil::getContents($params['url'],false,$context);
+			return @FileUtil::getContents($options['url'],false,$context);
 		}
 	}
 }

@@ -57,6 +57,8 @@ Yii::app()->getClientScript()->registerScript('logos',base64_decode(
 	<?php } /* else { ?>
 		<a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt">License</a>
 	<?php } */ ?>
+	<br>
+	<?php echo CHtml::link(CHtml::image(Yii::app()->getBaseUrl().'/images/powered_by_x2engine.png','',array('id'=>'powered-by-x2engine')),'http://www.x2engine.com/'); ?>
 	<div id="response-time">
 	<?php
 	echo round(Yii::getLogger()->getExecutionTime()*1000), 'ms ';
@@ -64,6 +66,5 @@ Yii::app()->getClientScript()->registerScript('logos',base64_decode(
 	$memory_units = array('b','kb','mb','gb','tb','pb');
 	echo round($peak_memory/pow(1024,($memory_log=floor(log($peak_memory,1024)))),2).$memory_units[$memory_log];
 	?></div>
-	<br>
-	<?php echo CHtml::link(CHtml::image(Yii::app()->getBaseUrl().'/images/powered_by_x2engine.png','',array('id'=>'powered-by-x2engine')),'http://www.x2engine.com/'); ?>
+	
 </div>

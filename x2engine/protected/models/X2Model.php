@@ -39,11 +39,14 @@ Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.components.X2ChangeLogBehavior');
 Yii::import('application.components.X2TimestampBehavior');
 Yii::import('application.components.TagBehavior');
+Yii::import('application.modules.users.models.*');
 
 /**
  * General model class that uses dynamic fields
- * 
+ *
  * @property User $suModel Substitute User model in the case that no user session is available.
+ * @property string $myModelName (read-only) Model name of the instance.
+ * @property array $relatedX2Models (read-only) Models associated via the associations table
  * @property integer $suID (read-only) substitute user ID in the case that no user session is available.
  * @package X2CRM.models
  */
@@ -65,7 +68,7 @@ abstract class X2Model extends CActiveRecord {
 		'quote' => 'Quote',
 		'quotes' => 'Quote',
 		'opportunities' => 'Opportunity',
-		'social' => 'SocialChild',
+		'social' => 'Social',
 		'services' => 'Services',
 		'' => ''
 	);
@@ -74,22 +77,24 @@ abstract class X2Model extends CActiveRecord {
 	protected static $_linkedModels;	// cache for models loaded for link field attributes (used by automation system)
 
 	protected $_runAfterCreate;			// run afterCreate before afterSave, but only for new records
-	
+
+	private $_relatedX2Models;			// Relationship models stored in here
+
 	/**
 	 * Substitute user ID. Used in the case of API calls and console commands
 	 * when Yii::app()->user is not available (because there is no user session
 	 * in such cases).
-	 * 
+	 *
 	 * @var integer
 	 */
 	private $_suID = 1;
-	
+
 	/**
 	 * Substitute user model (used in api and console scenarios)
-	 * @var User 
+	 * @var User
 	 */
 	private static $_suModel;
-	
+
 	/**
 	 * Distinguishes whether the model is being used inside an actual user session.
 	 * @var bool
@@ -106,17 +111,64 @@ abstract class X2Model extends CActiveRecord {
 	}
 
 	public static function model($className = 'CActiveRecord') {
-		if (class_exists($className))
+		if (class_exists($className)){
 			return parent::model($className);
-		else
-			throw new CHttpException(500, 'Class: ' . $className . " not found.");
+        }elseif(class_exists(X2Model::getModelName($className))){
+            return parent::model(X2Model::getModelName($className));
+        }else{
+            throw new CHttpException(500, 'Class: ' . $className . " not found.");
+        }
+	}
+
+    public static function getModelName($type){
+        if(array_key_exists($type,X2Model::$associationModels)){
+            return X2Model::$associationModels[$type];
+        }else{
+            if(class_exists(ucfirst($type))){
+                return ucfirst($type);
+            }elseif(class_exists($type)){
+                return $type;
+            }else{
+                return false;
+            }
+        }
+    }
+
+	/**
+	 * Magic getter for {@link myModelName}
+	 * @return string
+	 */
+	public function getMyModelName() {
+		return self::getModelName(get_class($this));
+	}
+
+	/**
+	 * Magic getter for {@link relatedX2Models}
+	 * @return array
+	 */
+	public function getRelatedX2Models() {
+		if(!isset($this->_relatedX2Models)){
+			$myModelName = get_class($this);
+			$this->_relatedX2Models = array();
+			$relationships = Relationships::model()->findAllBySql("SELECT * FROM x2_relationships WHERE (firstType=\"{$myModelName}\" AND firstId=\"{$this->id}\") OR (secondType=\"{$myModelName}\" AND secondId=\"{$this->id}\")");
+			$modelRelationships = array();
+			foreach($relationships as $relationship){
+				list($idAttr,$typeAttr) = ($relationship->firstId == $this->id && $relationship->firstType == $myModelName)?array('secondId','secondType'):array('firstId','firstType');
+				if(!array_key_exists($relationship->$typeAttr, $modelRelationships))
+					$modelRelationships[$relationship->$typeAttr] = array();
+				$modelRelationships[$relationship->$typeAttr][] = $relationship->$idAttr;
+			}
+			foreach($modelRelationships as $modelName=>$ids)
+				$this->_relatedX2Models = array_merge($this->_relatedX2Models,X2Model::model($modelName)->findAllByPk($ids));
+		}
+		return $this->_relatedX2Models;
 	}
 
 	/**
 	 * Queries and caches Fields objects for the model.
-	 * 
-	 * This method obtains the fields defined for the model in 
-	 * <tt>x2_fields</tt> and makes them avaialble for later usage to ensure 
+	 *
+	 * This method obtains the fields defined for the model in
+	 * <tt>x2_fields</tt> and makes them avaialble for later usage to ensure
 	 * that the query does not need to be performed again. The vields are stored
 	 * as both static attributes of the model and and as Yii cache objects.
 	 */
@@ -174,10 +226,10 @@ abstract class X2Model extends CActiveRecord {
 	public function onAfterCreate($event) {
 		$this->raiseEvent('onAfterCreate',$event);
 	}
-	
+
 	public function afterCreate() {
 		$this->_runAfterCreate = false;
-		
+
 		if($this->hasEventHandler('onAfterCreate'))
 			$this->onAfterCreate(new CEvent($this));
 	}
@@ -185,7 +237,7 @@ abstract class X2Model extends CActiveRecord {
 	public function onAfterUpdate($event) {
 		$this->raiseEvent('onAfterUpdate',$event);
 	}
-	
+
 	public function afterUpdate() {
 		if($this->hasEventHandler('onAfterUpdate'))
 			$this->onAfterUpdate(new CEvent($this));
@@ -198,20 +250,20 @@ abstract class X2Model extends CActiveRecord {
 	 * Fires onAfterSave event.
 	 */
 	public function afterSave() {
-	
+
 		if($this->_runAfterCreate)
 			$this->afterCreate();
 		else
 			$this->afterUpdate();
-		
+
 		$phoneFields = array();
 		$linkFields = array();
-		
+
 		// look through fields for phone numbers and relationships
 		foreach(self::$_fields[$this->tableName()] as &$_field) {
 			if($_field->type === 'phone') {
 				$phoneFields[$_field->fieldName] = $this->getAttribute($_field->fieldName);
-				
+
 			} elseif($_field->type === 'link') {
 				$linkFields[$_field->fieldName] = array(
 					'id'=>$this->getAttribute($_field->fieldName),
@@ -219,11 +271,11 @@ abstract class X2Model extends CActiveRecord {
 				);
 			}
 		}
-		
+
 		// deal with phone numbers
 		if(count($phoneFields))
 			X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this)));	// clear out old phone numbers
-		
+
 		foreach($phoneFields as $field => &$number) {		// create new entries in x2_phone_numbers
 			if(!empty($number)) {
 				$num = new PhoneNumber;
@@ -234,22 +286,22 @@ abstract class X2Model extends CActiveRecord {
 				$num->save();
 			}
 		}
-		
+
 		/////////////// deal with relationships ///////////////
 		$oldAttributes = $this->getOldAttributes();
-		
+
 		$relationSql = '(firstType=:type1 AND firstId=:id1 AND secondType=:type2 AND secondId=:id2) OR
 						 (firstType=:type2 AND firstId=:id2 AND secondType=:type1 AND secondId=:id1)';
-		
+
 		foreach($linkFields as $fieldName => &$relation) {
 			if(isset($oldAttributes[$fieldName]))
 				$oldLinkId = $oldAttributes[$fieldName];
 			else
 				$oldLinkId = null;
-			
+
 			if($relation['id'] == $oldLinkId)	// skip field if it hasn't changed
 				continue;
-			
+
 			// forget old relationship (wouldn't it be nice...)
 			if(!empty($oldLinkId)) {
 				CActiveRecord::model('Relationships')->deleteAll($relationSql,array(
@@ -260,7 +312,7 @@ abstract class X2Model extends CActiveRecord {
 				));
 			}
 			// save new relationship
-			if(!empty($relation['id']) && ctype_digit($relation['id'])) {
+			if(!empty($relation['id']) && ctype_digit((string)$relation['id'])) {
 				if(!CActiveRecord::model('Relationships')->exists($relationSql,array(		// check if there's already a relationship between these here thingies
 					':type1'=>get_class($this),
 					':id1'=>$this->id,
@@ -272,12 +324,12 @@ abstract class X2Model extends CActiveRecord {
 					$rel->secondType = $relation['type'];
 					$rel->firstId = $this->id;
 					$rel->secondId = $relation['id'];
-					
+
 					$rel->save();
 				}
 			}
 		}
-		
+
 		parent::afterSave();	// raise onAfterSave event for behaviors, such as X2ChangeLogBehavior
 	}
 
@@ -388,7 +440,7 @@ abstract class X2Model extends CActiveRecord {
 	public function getLinkedModel($linkField) {
 		$id = $this->getAttribute($linkField);
 
-		if (ctype_digit($id)) {
+		if (ctype_digit((string)$id)) {
 			$field = $this->getField($linkField);
 
 			if ($field !== null && $field->type === 'link') {
@@ -397,7 +449,7 @@ abstract class X2Model extends CActiveRecord {
 				// try to look up the linked model
 				if (!isset(self::$_linkedModels[$modelClass][$id])) {
 					self::$_linkedModels[$modelClass][$id] = X2Model::model($modelClass)->findByPk($id);
-					if (self::$_linkedModels[$modelClass][$id] === null)  // if it doesn't exist, set it to false in the cache 
+					if (self::$_linkedModels[$modelClass][$id] === null)  // if it doesn't exist, set it to false in the cache
 						self::$_linkedModels[$modelClass][$id] = false;  // so isset() returns false and we can skip this next time
 				}
 
@@ -410,7 +462,7 @@ abstract class X2Model extends CActiveRecord {
 
 	/**
 	 * Wrapper method for generating a link to the view for a model record.
-	 *  
+	 *
 	 * @param int $id the route to this model's AutoComplete data source
 	 * @param string $class the model class
 	 * @return string a link to the model, or $id if the model is invalid
@@ -424,6 +476,25 @@ abstract class X2Model extends CActiveRecord {
 			return '';
 		else
 			return $id;
+	}
+
+	/**
+	 * Returns all possible models, either as a regular array or associative
+	 * (key and value are the same)
+	 * @param boolean $assoc
+	 * @return array
+	 */
+	public static function getModelTypes($assoc=false) {
+		$modelTypes = Yii::app()->db->createCommand()
+			->selectDistinct('modelName')
+			->from('x2_fields')
+			->where('modelName!="Calendar"')
+			->order('modelName ASC')
+			->queryColumn();
+
+		if($assoc === true)
+			return array_combine($modelTypes,$modelTypes);
+		return $modelTypes;
 	}
 
 	/**
@@ -527,19 +598,36 @@ abstract class X2Model extends CActiveRecord {
 		if (!isset($field))
 			return null;
 
+		/**
+		 * Skip variable replacement in cases that a full session and request
+		 * aren't available:
+		 */
+		if(Yii::app()->params->noSession) {
+			$webRequestAttributes = array(
+				'rating', // Uses a Yii widget, which requires access to the controller
+				'assignment', // Depends on getUserLinks, which depends on the user session
+				'optionalAssignment', // Same as above
+				'url', // Renders an actual link
+				'text', // Uses convertUrls, which is in x2base
+				'dropdown' // This depends on the module/controller to ascertain which translation pack to use
+			);
+			if(in_array($field->type,$webRequestAttributes))
+				return $this->$fieldName;
+		}
+
 		switch ($field->type) {
 			case 'date':
 				if (empty($this->$fieldName))
 					return ' ';
 				elseif (is_numeric($this->$fieldName))
-					return Yii::app()->controller->formatLongDate($this->$fieldName);
+					return Formatter::formatLongDate($this->$fieldName);
 				else
 					return $this->$fieldName;
 			case 'dateTime':
 				if (empty($this->$fieldName))
 					return ' ';
 				elseif (is_numeric($this->$fieldName))
-					return Actions::formatCompleteDate($this->$fieldName);
+					return Formatter::formatCompleteDate($this->$fieldName);
 				else
 					return $this->$fieldName;
 
@@ -621,7 +709,7 @@ abstract class X2Model extends CActiveRecord {
 							$text = '<a href="http://www.twitter.com/#!/' . $this->$fieldName . '">' . $this->$fieldName . '</a>';
 							break;
 						case 'linkedin':
-							$text = '<a href="http://www.linkedin.com/in/' . $this->$fieldName . '">' . $this->$fieldName . '</a>';
+							$text = '<a href="http://www.linkedin.com/pub/' . $this->$fieldName . '">' . $this->$fieldName . '</a>';
 							break;
 						default:
 							$text = '<a href="http://www.' . $field->linkType . '.com/' . $this->$fieldName . '">' . $this->$fieldName . '</a>';
@@ -719,14 +807,14 @@ abstract class X2Model extends CActiveRecord {
 			// ));
 
 			case 'date':
-				$this->$fieldName = Yii::app()->controller->formatDate($this->$fieldName);
+				$this->$fieldName = Formatter::formatDate($this->$fieldName);
 				Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 				return Yii::app()->controller->widget('CJuiDateTimePicker', array(
 							'model' => $this, //Model object
-							'attribute' => $field->fieldName, //attribute name
+							'attribute' => $fieldName, //attribute name
 							'mode' => 'date', //use "time","date" or "datetime" (default)
 							'options' => array(// jquery options
-								'dateFormat' => Yii::app()->controller->formatDatePicker(),
+								'dateFormat' => Formatter::formatDatePicker(),
 								'changeMonth' => true,
 								'changeYear' => true,
 							),
@@ -736,15 +824,16 @@ abstract class X2Model extends CActiveRecord {
 							'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
 								), true);
 			case 'dateTime':
-				$this->$fieldName = X2Model::formatDateTime($this->$fieldName);
+				$this->$fieldName = Formatter::formatDateTime($this->$fieldName);
 				Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 				return Yii::app()->controller->widget('CJuiDateTimePicker', array(
 							'model' => $this, //Model object
-							'attribute' => $field->fieldName, //attribute name
+							'attribute' => $fieldName, //attribute name
 							'mode' => 'datetime', //use "time","date" or "datetime" (default)
 							'options' => array(// jquery options
-								'dateFormat' => Yii::app()->controller->formatDatePicker(),
-								'timeFormat' => Yii::app()->controller->formatTimePicker(),
+								'dateFormat' => Formatter::formatDatePicker('medium'),
+								'timeFormat' => Formatter::formatTimePicker(),
+                                'ampm' => Formatter::formatAMPM(),
 								'changeMonth' => true,
 								'changeYear' => true,
 							),
@@ -784,7 +873,7 @@ abstract class X2Model extends CActiveRecord {
 
 				if (class_exists($field->linkType)) {
 					// if the field is an ID, look up the actual name
-					if (isset($this->$fieldName) && ctype_digit($this->$fieldName)) {
+					if (isset($this->$fieldName) && ctype_digit((string)$this->$fieldName)) {
 						$linkModel = X2Model::model($field->linkType)->findByPk($this->$fieldName);
 						if (isset($linkModel)) {
 							$this->$fieldName = $linkModel->name;
@@ -828,29 +917,29 @@ abstract class X2Model extends CActiveRecord {
 								return false;
 							}',
 								'create' => $field->linkType == 'Contacts'? 'js:function(event, ui) {
-									$(this).data( "autocomplete" )._renderItem = function(ul,item) {
+									$(this).data( "uiAutocomplete" )._renderItem = function(ul,item) {
 										return $("<li>").data("item.autocomplete",item).append(renderContactLookup(item)).appendTo(ul);
 									};
 								}' : ($field->linkType=='BugReports'?'js:function(event, ui) {
-									$(this).data( "autocomplete" )._renderItem = function( ul, item ) {
+									$(this).data( "uiAutocomplete" )._renderItem = function( ul, item ) {
 										var label = "<a style=\"line-height: 1;\">" + item.label;
-										
+
 										label += "<span style=\"font-size: 0.6em;\">";
-										
+
 										// add email if defined
 										if(item.subject) {
 											label += "<br>";
 											label += item.subject;
 										}
-									
+
 										label += "</span>";
 										label += "</a>";
-										
+
         							    return $( "<li>" )
         							        .data( "item.autocomplete", item )
         							        .append( label )
         							        .appendTo( ul );
-        							};	
+        							};
 								}':''),
 							),
 							'htmlOptions' => array_merge(array(
@@ -966,7 +1055,20 @@ abstract class X2Model extends CActiveRecord {
 				return CHtml::activeTextField($this,$field->fieldName,array_merge(array(
 					'title' => $field->attributeLabel,
 				),$htmlOptions));
-				
+
+           case 'currency':
+                    Yii::app()->controller->widget('application.extensions.moneymask.MMask',array(
+                        'element'=>'#'.$field->modelName.'_'.$field->fieldName,
+                        'currency'=>Yii::app()->params['currency'],
+                        'config'=>array(
+                            'showSymbol'=>true,
+                            'symbolStay'=>true,
+                        )
+                    ));
+               return CHtml::activeTextField($this,$field->fieldName,array_merge(array(
+					'title' => $field->attributeLabel,
+				),$htmlOptions));
+
 			default:
 				return CHtml::activeTextField($this,$field->fieldName,array_merge(array(
 					'title' => $field->attributeLabel,
@@ -986,62 +1088,32 @@ abstract class X2Model extends CActiveRecord {
 	 * @param array &$data array of attributes to be set (eg. $_POST['Contacts'])
 	 */
 	public function setX2Fields(&$data) {
-		foreach (self::$_fields[$this->tableName()] as &$_field) { // loop through fields to deal with special types
-			$fieldName = $_field->fieldName;
+		foreach(self::$_fields[$this->tableName()] as &$field) { // loop through fields to deal with special types
+			$fieldName = $field->fieldName;
 
-			if ($_field->readOnly || !isset($data[$fieldName]))  // skip fields that are read-only or haven't been set
+			if($field->readOnly || !isset($data[$fieldName]))  // skip fields that are read-only or haven't been set
 				continue;
 
-			$value = $data[$fieldName];
-			if ($value == $this->getAttributeLabel($fieldName)) // eliminate placeholder values
-				$value = '';
+			if($data[$fieldName] == $this->getAttributeLabel($fieldName))	// eliminate placeholder values
+				$data[$fieldName] = '';
 
-			if ($_field->type == 'assignment' && $_field->linkType == 'multiple') {
-				$value = Accounts::parseUsers($value);
-			} elseif ($_field->type == 'date') {
-				if (!preg_match('/^\d+$/', (string) $value)) {
-					$value = self::parseDate($value);
-					if ($value === false)
-						$value = null;
-				}
-			}elseif ($_field->type == 'dateTime') {
-				if (!preg_match('/^\d+$/', (string) $value)) {
-					$value = self::parseDateTime($value);
-					if ($value === false)
-						$value = null;
-				}
-			}elseif ($_field->type == 'link' && !empty($_field->linkType)) {
-				$modelType = ucfirst($_field->linkType);
+			if($field->type === 'link') {
+				$linkId = null;
+				if(isset($data[$fieldName.'_id']))
+					$linkId = $data[$fieldName.'_id'];	// get the linked model's ID from the hidden autocomplete field
 
-				if (!empty($value)) {
-					$linkId = isset($data[$fieldName . '_id']) ? $data[$fieldName . '_id'] : false;
-					$linkModel = X2Model::model($modelType)->findByPk($linkId);
-					// if the ID is sent, try to load the model
-					if (ctype_digit($linkId) && isset($linkModel) && $linkModel->name === $value) {  // if the model exists, make sure the name matches 
-						$value = $linkId;  // and use the ID as the field value if it does
-					} else {
-						$linkModel = X2Model::model($modelType)->findByAttributes(array('name' => $value));
-						// otherwise, if the field is a string, try to find the ID based on the name
-						if (isset($linkModel)) { // look in name field
-							$value = $linkModel->id;
-						} elseif ($modelType === 'Contacts') { // if it's a contact, we can also try firstName + lastName
-							$fullName = explode(' ', $value);
-							if (count($fullName) === 2 && $linkModel = X2Model::model('Contacts')->findByAttributes(array(
-								'firstName' => $fullName[0],
-								'lastName' => $fullName[1])))
-								$value = $linkModel->id;
-						}
-					}
+				if(ctype_digit((string)$linkId)) {
+					$linkName = Yii::app()->db->createCommand()
+						->select('name')
+						->from(X2Model::model($field->linkType)->tableName())
+						->where('id=?',array($linkId))
+						->queryScalar();
+					if($linkName === $data[$fieldName])	// make sure the linked model exists and that the name matches
+						$data[$fieldName] = (int)$linkId;		// (ie, the hidden ID field isn't junk data)
 				}
-			}elseif (in_array($_field->type, array('int', 'float', 'currency', 'percentage'))) {
-				$value = self::strToNumeric($value, $_field->type);
 			}
 
-			if (!empty($value) && !is_bool($value)) {
-				$this->$fieldName = trim($value);
-			} else {
-				$this->$fieldName = $value;
-			}
+			$this->$fieldName = $field->parseValue($data[$fieldName]);
 		}
 	}
 
@@ -1052,11 +1124,20 @@ abstract class X2Model extends CActiveRecord {
 	 */
 	public function searchBase($criteria) {
 		$this->compareAttributes($criteria);
-
+        $with=array();
+        foreach (self::$_fields[$this->tableName()] as &$field) {
+            if($field->type=='link'){
+                $with[]=$field->fieldName.'Model';
+            }
+        }
+        $criteria->with=$with;
+        $sort = new CSort(get_class($this));
+        $sort->multiSort = true;
+        $sort->attributes=$this->getSort();
+        $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
+        $sort->applyOrder($criteria);
 		return new SmartDataProvider(get_class($this), array(
-					'sort' => array(
-						'defaultOrder' => 'lastUpdated DESC, id DESC',
-					),
+					'sort' => $sort,
 					'pagination' => array(
 						'pageSize' => ProfileChild::getResultsPerPage(),
 					),
@@ -1064,24 +1145,53 @@ abstract class X2Model extends CActiveRecord {
 				));
 	}
 
+    public function getSort(){
+        $attributes=array();
+        foreach (self::$_fields[$this->tableName()] as &$field) {
+            $fieldName = $field->fieldName;
+			switch ($field->type) {
+                case 'link':
+                    $linkType=$field->linkType;
+                    if(class_exists(ucfirst($linkType)) && X2Model::model(ucfirst($linkType))->hasAttribute('name')){
+                        $attributes[$fieldName]=array(
+                            'asc'=>'IF('.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') ASC',
+                            'desc'=>'IF('.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') DESC',
+                        );
+                    }else{
+                       $attributes[$fieldName]=array(
+                            'asc'=>'t.'.$fieldName.' ASC',
+                            'desc'=>'t.'.$fieldName.' DESC',
+                        );
+                    }
+                    break;
+                default:
+                    $attributes[$fieldName]=array(
+                        'asc'=>'t.'.$fieldName.' ASC',
+                        'desc'=>'t.'.$fieldName.' DESC',
+                    );
+            }
+        }
+        return $attributes;
+    }
+
 	public function compareAttributes(&$criteria) {
 		foreach (self::$_fields[$this->tableName()] as &$field) {
 			$fieldName = $field->fieldName;
 			switch ($field->type) {
 				case 'boolean':
-					$criteria->compare($fieldName, $this->compareBoolean($this->$fieldName), true);
+					$criteria->compare('t.'.$fieldName, $this->compareBoolean($this->$fieldName), true);
 					break;
 				case 'link':
-					$criteria->compare($fieldName, $this->compareLookup($field->linkType, $this->$fieldName), true);
-					$criteria->compare($fieldName, $this->$fieldName, true, 'OR');
+					$criteria->compare('t.'.$fieldName, $this->compareLookup($field->linkType, $this->$fieldName), true);
+					$criteria->compare('t.'.$fieldName, $this->$fieldName, true, 'OR');
 					break;
 				case 'assignment':
-					$criteria->compare($fieldName, $this->compareAssignment($this->$fieldName), true);
+					$criteria->compare('t.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
 					break;
 				case 'phone':
 				// $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
 				default:
-					$criteria->compare($fieldName, $this->$fieldName, true);
+					$criteria->compare('t.'.$fieldName, $this->$fieldName, true);
 			}
 		}
 	}
@@ -1109,7 +1219,7 @@ abstract class X2Model extends CActiveRecord {
 	protected function compareBoolean($data) {
 		if (is_null($data) || $data == '')
 			return null;
-        
+
 		return in_array(mb_strtolower(trim($data)), array(0, 'f', 'false', Yii::t('actions', 'No')),true) ? 0 : 1;  // default to true unless recognized as false
 	}
 
@@ -1123,7 +1233,7 @@ abstract class X2Model extends CActiveRecord {
 	}
 
 	/**
-	 * Attempts to load the model with the given ID, if the current 
+	 * Attempts to load the model with the given ID, if the current
 	 * user passes authentication checks. Throws an exception if not.
 	 * @param Integer $d The ID of the model to load
 	 * @return mixed The model object
@@ -1224,7 +1334,7 @@ abstract class X2Model extends CActiveRecord {
 			else
 				$user = $this->suModel->username;
 		}
-        
+
 		if ($accessLevel === 2 && $useVisibility === false) // level 2 access only works if we consider visibility,
 			$accessLevel = 3;  // so upgrade to full access
 
@@ -1245,136 +1355,23 @@ abstract class X2Model extends CActiveRecord {
 		}
 	}
 
-	public static function strToNumeric($input, $type) {
-		$value = trim($input, ' %' . Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency));
-		if($value === null || $value === '')
-			return null;
-		else if (!in_array($type, array('int', 'currency', 'float', 'percentage')))
-			return $value;
-		else if (!preg_match('/\d+\.?\d*e?[\+\-]?\d*/', $value))
-			return $value;
-		switch ($type) {
-			case 'int':
-				return (int) $value;
-			case 'float':
-				return (float) $value;
-			case 'currency':
-				return (float) $value;
-			case 'percentage':
-				return ((float) $value);
-			default:
-				return $value;
-		}
-	}
-	
-	/**
-	 * Locale-dependent date string formatting.
-	 * @param type $date
-	 * @return type 
-	 */
-	public static function formatDate($date) {
-
-		if (!is_numeric($date))
-			$date = strtotime($date); // make sure $date is a proper timestamp
-
-		$now = getDate();   // generate date arrays
-		$due = getDate($date); // for calculations
-		//$date = mktime(23,59,59,$due['mon'],$due['mday'],$due['year']);	// give them until 11:59 PM to finish the action
-		//$due = getDate($date);
-
-		if ($due['year'] == $now['year']) {  // is the due date this year?
-			if ($due['yday'] == $now['yday'])  // is the due date today?
-				return Yii::t('app', 'Today');
-			else if ($due['yday'] == $now['yday'] + 1) // is it tomorrow?
-				return Yii::t('app', 'Tomorrow');
-			else
-				return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $date); // any other day this year
-		} else {
-			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $date); // due date is after this year
-		}
-	}
-
-	public static function formatCompleteDate($date) {
-		return Yii::app()->dateFormatter->formatDateTime($date, 'long');
-	}
-	
-	/**
-	 * Returns a formatted string for the date.
-	 * 
-	 * @param integer $timestamp
-	 * @return string 
-	 */
-	public static function formatLongDateTime($timestamp) {
-		if (empty($timestamp))
-			return '';
-		else
-			return Yii::app()->dateFormatter->formatDateTime($timestamp, 'long', 'short');
-	}
-	
-	/**
-	 * Formats the date and time for a given timestamp.
-	 * @param type $timestamp
-	 * @return string 
-	 */
-	public static function formatDateTime($timestamp) {
-		if (empty($timestamp))
-			return '';
-		else
-		if (Yii::app()->language == 'en')
-			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium') . ' ' . Yii::app()->locale->getTimeFormat('short'), $timestamp);
-		else if (Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
-			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . 'HH:mm', $timestamp);
-		else
-			return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short') . ' ' . Yii::app()->locale->getTimeFormat('short'), $timestamp);
-	}
-	
-	
-   /**
-     * Obtain a Unix-style integer timestamp for a date format.
-     * 
-     * @param string $date
-     * @return integer 
-     */
-    public static function parseDate($date) {
-        if (Yii::app()->language == 'en')
-            return strtotime($date);
-        else
-            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short'));
-    }
-	
-	/**
-	 * Parses both date and time into a Unix-style integer timestamp.
-	 * @param string $date
-	 * @return integer
-	 */
-	public static function parseDateTime($date) {
-		if ($date === null)
-			return null;
-		elseif (is_numeric($date))
-			return $date;
-		elseif (Yii::app()->language == 'en')
-			return strtotime($date);
-		else
-			return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short') . ' hh:mm');
-	}
-
 	/**
 	 * Substitute user ID magic getter.
-	 * 
-	 * If the user has already been looked up or set, method will defer to its 
+	 *
+	 * If the user has already been looked up or set, method will defer to its
 	 * value for id.
-	 * @return type 
+	 * @return type
 	 */
 	public function getSuID() {
-		if(isset($this->_suModel))
-			return $this->_suModel->id;
+		if(!empty($this->suModel))
+			return $this->suModel->id;
 		else
 			return $this->_suID;
 	}
-	
+
 	/**
 	 * Shortcut method for ascertaining if a user session is available
-	 * @return type 
+	 * @return type
 	 */
 	public static function isInSession() {
 		if (!isset(self::$_isInSession)) {
@@ -1388,46 +1385,48 @@ abstract class X2Model extends CActiveRecord {
 	}
 
 	/**
-	 * Substitute user model magic getter. 
-	 * 
+	 * Substitute user model magic getter.
+	 *
 	 * Uses static attribute for storage so that the user won't have to be looked
 	 * up for each and every model instantiated when checking permissions.
-	 * 
+	 *
 	 * @return User
 	 */
 	public function getSuModel() {
-		if(!isset(self::$_suModel) || self::$_suModel->id != $this->_suID)
+		if(!isset(self::$_suModel)) {
+			if(self::isInSession())
+				$this->_suID == Yii::app()->user->id;
 			self::$_suModel = User::model()->findByPk($this->_suID);
-		return self::_suModel;
+		}
+		return self::$_suModel;
 	}
-	
+
 	/**
 	 * Magic getter for substitute user model
-	 * @param User $user 
+	 * @param User $user
 	 */
 	public function setSuModel(User $user) {
 		self::$_suModel = $user;
 	}
-	
-	
+
 	/**
      * Returns a model of the appropriate type with a particular record loaded.
-     * 
+     *
      * @param String $type The type of the model to load
      * @param Integer $id The id of the record to load
      * @return CActiveRecord A database record with the requested type and id
      */
     public static function getAssociationModel($type, $id) {
-        if (array_key_exists($type, X2Model::$associationModels) && $id != 0)
-            return X2Model::model(X2Model::$associationModels[$type])->findByPk($id);
+        if ($id != 0 && $modelName=X2Model::getModelName($type))
+            return X2Model::model($modelName)->findByPk($id);
         else
             return null;
     }
-	
+
 	/**
 	 * Picks the primary key attribute out of an associative aray and finds the record
 	 * @param array $params
-	 * @return type 
+	 * @return type
 	 */
 	public function findByPkInArray(array $params) {
 		$pkc = $this->tableSchema->primaryKey;
@@ -1446,6 +1445,20 @@ abstract class X2Model extends CActiveRecord {
 			return null;
 		}
 		return $this->findByPk($pk);
+	}
+
+
+	public static function getAssignmentOptions($anyone=true,$showGroups=true) {
+		$users = User::getNames();
+		if($anyone !== true)
+			unset($users['Anyone']);
+
+		if($showGroups === true) {
+			$groups = Groups::getNames();
+			if(count($groups))
+				$users = array_merge($users,array(''=>'--------------------'),$groups);
+		}
+		return $users;
 	}
 
 }

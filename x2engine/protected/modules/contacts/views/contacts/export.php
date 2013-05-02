@@ -44,7 +44,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div class="page-title"><h2><?php echo Yii::t('contacts','Export Contacts'); ?></h2></div>
+<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Export Contacts'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('contacts','Please click the link below to download contacts.');?><br><br>
 <a class="x2-button" id="download-link" href="#"><?php echo Yii::t('app','Download');?>!</a>

@@ -39,6 +39,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('accounts','Create Account')),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('accounts','Create Account'); ?></h2></div>
+<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts','Create Account'); ?></h2></div>
 
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>

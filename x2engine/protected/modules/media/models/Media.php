@@ -366,5 +366,82 @@ class Media extends X2Model {
 	public static function forbiddenFileTypes() {
 		return "exe, bat, dmg, js, jar, swf, php, pl, cgi, htaccess, py";
 	}
+    
+    /**
+     * @param string $str
+     * @param boolean $makeLink
+     * @param boolean $makeImage
+     * @return string 
+     */ 
+	public static function attachmentSocialText($str,$makeLink = false,$makeImage = false) {
+		// $a = '<a href="/x2merge/index.php/media/16">footer.png</a>';
+		
+		// echo ,preg_match('/^<a href=".+(media\/[0-9]+)" target="_blank">.+<\/a>$/i',$description
+		$matches = array();
+		// die(CHtml::encode($description));
+		if(preg_match('/^<a href=".+media\/view\/([0-9]+)">.+<\/a>$/i',$str,$matches)) {
+			if(count($matches) == 2 && is_numeric($matches[1])) {
+			
+				$media = X2Model::model('Media')->findByPk($matches[1]);
+				if(isset($media)) {
+					$str = Yii::t('media','File:') . ' ';
+					
+					$fileExists = $media->fileExists();
+					
+					if($fileExists == false)
+					    return $str . ' ' . Yii::t('media','(deleted)');
+					
+					if($makeLink)
+					    $str .= $media->getMediaLink();
+					else
+					    $str .= "";
+					
+					if($makeImage && $media->isImage())	// to render an image, first check file extension
+					    $str .= $media->getImage();
+					
+					return $str;
+				}
+			}
+		}
+        return x2base::convertUrls($str);
+    }
+    
+    /**
+     * Generates a description message with a link and optional preview image
+     * for media items.
+     * 
+     * @param string $actionDescription
+     * @param boolean $makeLink
+     * @param boolean $makeImage
+     * @return string 
+     */
+	public static function attachmentActionText($actionDescription,$makeLink = false,$makeImage = false) {
+	
+		$data = explode(':',$actionDescription);
+		$media = null;
+		if(count($data) == 2 && is_numeric($data[1])) // ensure data is formatted properly
+			$media = X2Model::model('Media')->findByPK($data[1]); // look for an entry in the media table
+		
+		if($media) { // did we find an entry in the media table?
+			$str = Yii::t('media','File:') . ' ';
+			
+			$fileExists = $media->fileExists();
+			
+			if($fileExists == false)
+				return $str . $data[0] . ' ' . Yii::t('media','(deleted)');
+
+			if($makeLink){
+			    $str .= $media->getMediaLink() ." | " . CHtml::link('[Download]',array('/media/download/'.$media->id));
+            }else
+			    $str .= $data[0];
+
+			if($makeImage && $media->isImage())	// to render an image, first check file extension
+			    $str .= $media->getImage();
+			
+			return $str;
+			
+		} else
+			return $actionDescription;
+	}
 
 }

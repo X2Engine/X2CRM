@@ -145,13 +145,13 @@ class Campaign extends X2Model {
 		$criteria=new CDbCriteria;
 		$condition = '';
 		if(Yii::app()->user->getName() != 'admin') {
-			$condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
+			$condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
 				/* x2temp */
 				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
 				if(!empty($groupLinks))
-					$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
+					$condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-				$condition .= 'OR (visibility=2 AND assignedTo IN 
+				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
 					(SELECT username FROM x2_group_to_user WHERE groupId IN
 						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		}

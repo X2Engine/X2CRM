@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -39,7 +40,7 @@
  *
  * Relationships lists the relationships a model has with other models,
  * and provides a way to add existing models to the models relationships.
- * 
+ *
  * @package X2CRM.components 
  */
 class InlineRelationships extends X2Widget {
@@ -47,19 +48,25 @@ class InlineRelationships extends X2Widget {
 	public $model = null;
 	public $startHidden = false;
 	public $modelName = "";
-	
-	public function init() {
-	
- 		Yii::app()->clientScript->registerScript('toggleAttachmentForm', "
+	private $_relatedModels;
 
-		",CClientScript::POS_HEAD);
-	
+	public function init(){
+
+		Yii::app()->clientScript->registerScript('toggleAttachmentForm', "
+
+		", CClientScript::POS_HEAD);
+
 		parent::init();
 	}
 
-	public function run() {
-		$this->render('inlineRelationships',array('model'=>$this->model, 'modelName'=>$this->modelName, 'startHidden'=>$this->startHidden));
+	public function run(){
+		$this->render('inlineRelationships', array(
+			'model' => $this->model,
+			'modelName' => $this->model->myModelName,
+			'startHidden' => $this->startHidden
+		));
 	}
+
 }
 
 ?>

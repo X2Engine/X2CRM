@@ -9,13 +9,13 @@ CREATE TABLE x2_templates(
 		lastUpdated INT,
 		lastActivity BIGINT,
 		updatedBy VARCHAR(250)
-);
+) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
-			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
+INSERT INTO `x2_modules`
+			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	('templates',		'Templates',	1,			1,				1,			1,			0,			1,		1);
 /*&*/
-INSERT INTO x2_fields 
+INSERT INTO x2_fields
 (modelName,		fieldName,			attributeLabel,		custom,		type,		required,	readOnly, 		linkType,   searchable,	isVirtual,	relevance)
 VALUES
 ("Templates",	"id",				"ID",					0,		"int",			0,			0,			NULL,		0,			0,			""			),

@@ -14,6 +14,6 @@ CREATE TABLE x2_group_to_user (
 	username				VARCHAR(250)
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
-			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
-	VALUES	("groups",			"Groups",			1,			13,				0,			0,			0,			0,		0);
+INSERT INTO `x2_modules`
+			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
+	VALUES	("groups",			"Groups",			1,			15,				0,			0,			0,			0,		0);

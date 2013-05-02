@@ -8,6 +8,7 @@ Yii::import('application.modules.docs.models.Docs');
 Yii::import('application.modules.opportunities.models.Opportunity');
 Yii::import('application.modules.products.models.Product');
 Yii::import('application.modules.services.models.Services');
+Yii::import('application.modules.users.models.*');
 
 /**
  * CRUD test for X2CRM's REST API
@@ -61,7 +62,7 @@ class ApiControllerTest extends CURLTestCase {
 				'type' => 'business',
 			),
 			'Actions' => array(
-				'actionDescription' => 'Long words',
+				'assignedTo' => 'testuser',
 				'dueDate' => time()+86400,
 			),
 			'Contacts' => array(
@@ -103,7 +104,7 @@ class ApiControllerTest extends CURLTestCase {
 			$cr = curl_exec($ch);
 			file_put_contents('api_response.html',$cr);
 			$models[$class] = X2Model::model($class)->findByAttributes($attrs);
-			$this->assertTrue((bool) $models[$class]);
+			$this->assertTrue((bool) $models[$class],"Model of class $class not created. The response was: $cr");
 			foreach ($attrs as $attr => $value)
 				$this->assertEquals($value, $models[$class]->$attr);
 			// Test that createDate was set properly:
@@ -114,8 +115,9 @@ class ApiControllerTest extends CURLTestCase {
 			// assigned the contact associated with the case.
 			foreach (array('createdBy','assignedTo','updatedBy') as $attr) {
 				if ($models[$class]->hasAttribute($attr)) {
-//					echo "$attr = {$model->$attr}\n";
-					$this->assertEquals($this->param['user'], $models[$class]->$attr);
+					// echo "$class::$attr = {$models[$class]->$attr}\n";
+					$models[$class]->refresh();
+					$this->assertEquals($this->param['user'], $models[$class]->$attr,"Failed asserting $attr was set properly on creation of {$class}");
 				}
 			}
 		}
@@ -169,7 +171,7 @@ class ApiControllerTest extends CURLTestCase {
 				'description' => 'I have now added a description to this account.',
 			),
 			'Actions' => array(
-				'actionDescription' => 'Longer, modified action description.',
+				'assignedTo' => 'testuser',
 				'dueDate' => time()+86400,
 			),
 			'Contacts' => array(

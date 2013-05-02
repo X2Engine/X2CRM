@@ -35,11 +35,8 @@
  *****************************************************************************************/
 $authParams['assignedTo']=$model->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
-	array('label'=>Yii::t('actions','View'),'url'=>array('view','id'=>$model->id)),
+	array('label'=>Yii::t('actions','Action List'),'url'=>array('index')),
+	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create')), 
 	array('label'=>Yii::t('actions','Edit Action'),'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('contacts','Share Action')),
 	array('label'=>Yii::t('actions','Delete Action'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
@@ -51,7 +48,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
-<div class="page-title"><h2><?php echo Yii::t('actions','Share Action');?></h2></div>
+<div class="page-title icon actions"><h2><?php echo Yii::t('actions','Share Action');?></h2></div>
 <?php
 if(!empty($status)) {
 	$index = array_search('200',$status);

@@ -52,7 +52,7 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 ",CClientScript::POS_READY);
 ?>
 <div class="form">
-	<h2><?php echo Yii::t('charts', 'Lead Volume'); ?></h2>
+	<div class="page-title icon charts"><h2><?php echo Yii::t('charts', 'Lead Volume'); ?></h2></div>
 
 	<?php
 	$form = $this->beginWidget('CActiveForm', array(
@@ -79,13 +79,13 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 			$this->widget('CJuiDateTimePicker',array(
 				'name'=>'start',
 				// 'value'=>$startDate,
-				'value'=>$this->formatDate($dateRange['start']),
+				'value'=>Formatter::formatDate($dateRange['start']),
 				// 'title'=>Yii::t('app','Start Date'),
 				// 'model'=>$model, //Model object
 				// 'attribute'=>$field->fieldName, //attribute name
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
+					'dateFormat'=>Formatter::formatDatePicker(),
 
 				), // jquery plugin options
 				'htmlOptions'=>array('id'=>'startDate','width'=>20),
@@ -98,11 +98,11 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 			<?php
 			$this->widget('CJuiDateTimePicker',array(
 				'name'=>'end',
-				'value'=>$this->formatDate($dateRange['end']),
+				'value'=>Formatter::formatDate($dateRange['end']),
 				// 'value'=>$endDate,
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
+					'dateFormat'=>Formatter::formatDatePicker(),
 				),
 				'htmlOptions'=>array('id'=>'endDate','width'=>20),
 				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),

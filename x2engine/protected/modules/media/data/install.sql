@@ -8,16 +8,16 @@ CREATE TABLE x2_media(
 	fileName		VARCHAR(100),
 	createDate		BIGINT,
 	lastUpdated		BIGINT,
-	private			TINYINT,
+	private			TINYINT         DEFAULT 0,
 	description		TEXT,
 	mimetype		VARCHAR(250),
 	filesize		INT,
 	dimensions		VARCHAR(40)
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
-			(`name`,	title,	visible,	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
-	VALUES	("media",	"Media",1,			10,				0,			0,			0,			0,		0);
+INSERT INTO `x2_modules`
+			(`name`,	title,	visible,	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
+	VALUES	("media",	"Media",1,			11,				0,			0,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,	fieldName,			attributeLabel,			modified,	custom,		type,			required,	readOnly,	linkType,		searchable,	isVirtual,	relevance)
@@ -35,16 +35,27 @@ VALUES
 ("Media",	"filesize",			"File Size",			0,			0,			"int",			0,			1,			NULL,			0,			0,			""),
 ("Media",	"dimensions",		"Dimensions",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			"");
 /*&*/
-INSERT INTO x2_media 
+INSERT INTO x2_media
 (associationType, fileName)
 VALUES
-('bg','BeerCanRace.jpg'),
-('bg','CanneryRow.jpg'),
-('bg','DeathValley.jpg'),
-('bg','Divers.jpg'),
-('bg','Lassen.jpg'),
+('bg','santacruznight_blur.jpg'),
 ('bg','MBayInn.jpg'),
+('bg','Lassen.jpg'),
+('bg','Divers.jpg'),
 ('bg','Ravendale.jpg'),
-('bg','Redwoods.jpg'),
-('bg','SantaCruzSummer.jpg'),
-('bg','ThreeMile.jpg');
+('bg','DeathValley.jpg'),
+('bg','Redwoods2.jpg'),
+('bg','pigeon_point.jpg'),
+('bg','CanneryRow.jpg'),
+('bg','BeerCanRace.jpg');
+/*&*/
+INSERT INTO x2_media
+(id, associationType, fileName)
+VALUES
+(1000, 'notificationSound','X2_Notification.mp3'),
+(1001, 'loginSound','X2_Drums.mp3'),
+(1002, 'loginSound','X2_EDM.mp3'),
+(1003, 'loginSound','X2_Jazz.mp3'),
+(1004, 'loginSound','X2_orchestra.mp3'),
+(1005, 'loginSound','X2_piano.mp3'),
+(1006, 'loginSound','X2_rock_and_roll.mp3');

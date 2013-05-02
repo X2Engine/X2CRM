@@ -4,6 +4,7 @@ return array(
 	// The sender of the forwarded message in GMail1_fixture_testAnyone
 	// (treated as preexisting contact in email dropbox test)
 	'testAnyone' => array(
+		'id' => 12345,
 		'name' => 'Testfirstname Testlastname',
 		'firstName' => 'Testfirstname',
 		'lastName' => 'Testlastname',
@@ -13,6 +14,7 @@ return array(
 	),
 	// Treated as assigned to test user and preexisting.
 	'testUser' => array(
+		'id' => 67890,
 		'name' => 'Testfirstnametwo Testlastnametwo',
 		'firstName' => 'Testfirstnametwo',
 		'lastName' => 'Testlastnametwo',

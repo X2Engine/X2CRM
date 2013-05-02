@@ -50,19 +50,20 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (113,	'Social Subtypes',	'{"Social Post":"Social Post","Link":"Link","Announcement":"Announcement","Product Info":"Product Info","Competitive Info":"Competitive Info","Confidential":"Confidential"}'),
 (114,	'Invoice Status',	'{"Pending":"Pending","Issued":"Issued","Paid":"Paid","Open":"Open","Canceled":"Canceled","Other":"Other"}'),
 (115,	'Bug Status',       '{"Unconfirmed":"Unconfirmed","Confirmed":"Confirmed","In Progress":"In Progress","Closed (Resolved Internally)":"Closed (Resolved Internally)","Closed (Unable to Reproduce)":"Closed (Unable to Reproduce)","Closed (Duplicate)":"Closed (Duplicate)","Merged Into Base Code":"Merged Into Base Code"}'),
-(116,	'Bug Severity',     '{"5":"Blocker","4":"Critical","3":"Major","2":"Normal","1":"Minor","0":"Feature Request"}');
+(116,	'Bug Severity',     '{"5":"Blocker","4":"Critical","3":"Major","2":"Normal","1":"Minor","0":"Feature Request"}'),
+(117,	'Action Quick Note','{"Call logged.":"Call logged.","Follow up.":"Follow up.","Waiting to hear back.":"Waiting to hear back."}');
 /*&*/
 ALTER TABLE x2_profile CHANGE `language` language varchar(40) DEFAULT '{language}', CHANGE `timeZone` timeZone varchar(100) DEFAULT '{timezone}';
 /*&*/
 ALTER TABLE x2_admin CHANGE `emailFromAddr` emailFromAddr varchar(255) NOT NULL DEFAULT '{bulkEmail}';
 /*&*/
-INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin, userKey) 
+INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin, userKey)
         VALUES ('web','admin','admin','{adminPass}','{adminEmail}','1', '0', '{adminUserKey}');
 /*&*/
-INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin) 
+INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin)
         VALUES ('API','User','api','{apiKey}','{adminEmail}' ,'0', '0');
 /*&*/
-INSERT INTO x2_profile (fullName, username, emailAddress, status) 
+INSERT INTO x2_profile (fullName, username, emailAddress, status)
 		VALUES ('Web Admin', 'admin', '{adminEmail}','1');
 /*&*/
 INSERT INTO x2_profile (fullName, username, emailAddress, status)
@@ -89,7 +90,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 );
 /*&*/
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',
-	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:TagCloud:TwitterFeed:MessageBox:ChatBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
+	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 UPDATE `x2_auth_item` SET `bizrule`="return Yii::app()->user->name === '{adminUsername}';" WHERE `name`='admin';
 /*&*/
@@ -97,6 +98,14 @@ UPDATE `x2_users` SET `username`='{adminUsername}' WHERE `username`='admin';
 /*&*/
 UPDATE `x2_profile` SET `username`='{adminUsername}' WHERE `username`='admin';
 /*&*/
-UPDATE `x2_modules` SET `visible`=0
+UPDATE `x2_modules` SET `visible`=0;
 /*&*/
-UPDATE `x2_modules` SET `visible`=1 WHERE `name` IN {visibleModules}
+UPDATE `x2_modules` SET `visible`=1 WHERE `name` IN {visibleModules};
+/*&*/
+INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
+("You can click on the icon with 4 outward arrows in the top right to hide the widget sidebar.",'opensource',0,'Layout'),
+("An action's priority determines its color in the list. Gray actions have already been completed.",'opensource',0,'Actions'),
+("Clicking on an item in the Action list will slide a window over with more information.",'opensource',0,'Actions'),
+("The gear icon in the top right can be used to restore any widgets you have hidden.",'opensource',0,'Layout'),
+("You can drag and drop widgets on the right sidebar to re-arrange their order.",'opensource',0,'Layout'),
+("The options in the \"Quick Note\" menu on the publisher can be changed in the Dropdown Editor.",'opensource',1,'Admin');

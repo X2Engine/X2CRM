@@ -54,6 +54,7 @@ $config['import'] = array_merge($config['import'], array('application.components
 $config['components']['log']['routes'] = array(
 	array(
 		'class' => 'CFileLogRoute',
+		'logFile' => 'console.log',
 	)
 );
 

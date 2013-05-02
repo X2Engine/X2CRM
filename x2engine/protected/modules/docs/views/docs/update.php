@@ -43,6 +43,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
 	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
 	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
 ));
 
@@ -55,6 +56,6 @@ if(Yii::app()->user->checkAccess('AdminIndex') || $user==$model->createdBy)
 	
 $this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('exportToHtml','id'=>$model->id));
 ?>
-<div class="page-title"><h2><span class="no-bold"><?php echo $title; ?></span> <?php echo CHtml::encode($model->name); ?></h2></div>
+<div class="page-title icon docs"><h2><span class="no-bold"><?php echo $title; ?></span> <?php echo CHtml::encode($model->name); ?></h2></div>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

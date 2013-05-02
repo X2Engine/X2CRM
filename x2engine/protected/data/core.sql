@@ -38,10 +38,12 @@ CREATE TABLE x2_admin(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout					INT,
 	webLeadEmail			VARCHAR(255),
+	webTrackerCooldown		INT				DEFAULT 60,
+	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 2000,
 	ignoreUpdates			TINYINT			DEFAULT 0,
-	rrId					INT				DEFAULT 0, 
+	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
 	onlineOnly				TINYINT,
 	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2CRM",
@@ -85,7 +87,14 @@ CREATE TABLE x2_admin(
     properCaseNames             INT             DEFAULT 1,
     contactNameFormat           VARCHAR(255),
 	gaTracking_public			VARCHAR(20) NULL,
-	gaTracking_internal			VARCHAR(20) NULL
+	gaTracking_internal			VARCHAR(20) NULL,
+    sessionLog                  TINYINT         DEFAULT 0,
+    userActionBackdating        TINYINT         DEFAULT 0,
+	emailDropbox_alias			VARCHAR(50) DEFAULT NULL,
+	emailDropbox_createContact	TINYINT	DEFAULT 1,
+	emailDropbox_zapLineBreaks	TINYINT DEFAULT 0,
+	emailDropbox_emptyContact	TINYINT DEFAULT 1,
+	emailDropbox_logging		TINYINT DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -159,11 +168,11 @@ CREATE TABLE x2_form_layouts (
 /*&*/
 DROP TABLE IF EXISTS x2_lead_routing;
 /*&*/
-CREATE TABLE x2_lead_routing( 
+CREATE TABLE x2_lead_routing(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	criteria				TEXT,
 	users					TEXT,
-	priority				INT, 
+	priority				INT,
 	rrId					INT				DEFAULT 0,
 	groupType				INT
 ) COLLATE = utf8_general_ci;
@@ -232,11 +241,12 @@ CREATE TABLE x2_modules (
 /*&*/
 DROP TABLE IF EXISTS x2_notifications;
 /*&*/
-CREATE TABLE x2_notifications( 
+CREATE TABLE x2_notifications(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(20),
 	comparison				VARCHAR(20),
 	value					VARCHAR(250),
+	text					TEXT,
 	modelType				VARCHAR(250),
 	modelId					INT				UNSIGNED,
 	fieldName				VARCHAR(250),
@@ -248,7 +258,7 @@ CREATE TABLE x2_notifications(
 /*&*/
 DROP TABLE IF EXISTS x2_events;
 /*&*/
-CREATE TABLE x2_events( 
+CREATE TABLE x2_events(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(250),
     subtype                 VARCHAR(250),
@@ -261,12 +271,15 @@ CREATE TABLE x2_events(
 	timestamp				BIGINT,
     lastUpdated             BIGINT,
     important               TINYINT             DEFAULT 0,
-    sticky                  TINYINT             DEFAULT 0
+    sticky                  TINYINT             DEFAULT 0,
+    color                   VARCHAR(10),
+    fontColor               VARCHAR(10),
+    linkColor               VARCHAR(10)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
 /*&*/
-CREATE TABLE x2_events_data( 
+CREATE TABLE x2_events_data(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(250),
     count                   INT,
@@ -306,12 +319,15 @@ CREATE TABLE x2_profile(
 	widgets					VARCHAR(255),
 	widgetOrder				TEXT,
 	widgetSettings			TEXT,
-	backgroundColor			VARCHAR(6)		NULL,
+	activityFeedOrder       TINYINT         DEFAULT 0,
+    backgroundColor			VARCHAR(6)		NULL,
 	menuBgColor				VARCHAR(6)		NULL,
 	menuTextColor			VARCHAR(6)		NULL,
 	pageHeaderBgColor		VARCHAR(6)		NULL,
 	pageHeaderTextColor		VARCHAR(6)		NULL,
 	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
+    loginSound              VARCHAR(100)    NULL DEFAULT "",
+    notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
 	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
 	pageOpacity				INT				NULL,
 	startPage				VARCHAR(30)		NULL,
@@ -340,13 +356,14 @@ CREATE TABLE x2_profile(
     fullFeedControls        TINYINT         DEFAULT 0,
     feedFilters             TEXT,
     hideBugsWithStatus		TEXT,
+    actionFilters           TEXT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_relationships;
 /*&*/
-CREATE TABLE x2_relationships ( 
+CREATE TABLE x2_relationships (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstType				VARCHAR(100),
 	firstId					INT,
@@ -403,6 +420,16 @@ CREATE TABLE x2_sessions(
 	status					TINYINT			NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
+DROP TABLE IF EXISTS x2_session_log;
+/*&*/
+CREATE TABLE x2_session_log(
+	id						INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    sessionId               CHAR(40),
+	user					VARCHAR(40),
+	timestamp				BIGINT,
+	status					VARCHAR(250)
+) COLLATE = utf8_general_ci;
+/*&*/
 DROP TABLE IF EXISTS x2_social;
 /*&*/
 CREATE TABLE x2_social(
@@ -419,7 +446,7 @@ CREATE TABLE x2_social(
 /*&*/
 DROP TABLE IF EXISTS x2_tags;
 /*&*/
-CREATE TABLE x2_tags( 
+CREATE TABLE x2_tags(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	type					VARCHAR(50)		NOT NULL,
 	itemId					INT				NOT NULL,
@@ -480,13 +507,43 @@ CREATE TABLE x2_locations(
 DROP TABLE IF EXISTS x2_maps;
 /*&*/
 CREATE TABLE x2_maps(
-	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id			INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
     owner               VARCHAR(250),
-	name    			VARCHAR(250),
+    name    		VARCHAR(250),
     contactId           INT,
     params              TEXT,
     centerLat           FLOAT,
     centerLng           FLOAT,
     zoom                INT
 ) COLLATE = utf8_general_ci;
-
+/*&*/
+DROP TABLE IF EXISTS x2_tips;
+/*&*/
+CREATE TABLE x2_tips(
+    id                  INT                             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    tip                 TEXT,
+    edition             VARCHAR(10),
+    admin               TINYINT,
+    module              VARCHAR(255)
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_flows;
+/*&*/
+CREATE TABLE x2_flows(
+	id						INT				AUTO_INCREMENT PRIMARY KEY,
+	active					TINYINT			NOT NULL DEFAULT 1,
+	name					VARCHAR(100)	NOT NULL,
+	triggerType				VARCHAR(40)		NOT NULL,
+	modelClass				VARCHAR(40),
+	flow					TEXT,
+	createDate				BIGINT			NOT NULL,
+	lastUpdated				BIGINT			NOT NULL
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_like_to_post;
+/*&*/
+CREATE TABLE `x2_like_to_post` (
+  userId             int unsigned     NOT NULL,
+  postId             int unsigned     NOT NULL,
+  INDEX (postId)
+) COLLATE = utf8_general_ci;

@@ -4,6 +4,17 @@
  * @package X2CRM.modules.quotes
  */
 class QuotesModule extends CWebModule {
+
+  private $_assetsUrl = null;
+
+  public function getAssetsUrl()
+  {
+      if ($this->_assetsUrl === null)
+          $this->_assetsUrl = Yii::app()->getAssetManager()->publish(
+              Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true );
+      return $this->_assetsUrl;
+  }
+
 	public function init() {
 		// this method is called when the module is being created
 		// you may place code here to customize the module or the application

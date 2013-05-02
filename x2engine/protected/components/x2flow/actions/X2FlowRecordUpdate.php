@@ -44,18 +44,18 @@ class X2FlowRecordUpdate extends X2FlowAction {
 	public $info = 'Change one or more fields on an existing record.';
 	
 	public function paramRules() {
-		return array('title'=>$this->title,'info'=>$this->info,'fields'=>array(
-			'model' => array(),
-			'attributes' => array(),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'modelReqired' => 1,
+			// 'modelClass' => 'modelClass',
+			'options' => array(
+				array('name'=>'attributes'),
+			));
 	}
 	
-	public function execute($params) {
-		for($i=0;$i<count($params['attributes']); $i++) {	// loop through attributes and set them in the model
-			if(!$params['model']->hasAttribute($params['attributes'][$i]))	// fail if the attribute doesn't exist
-				return false;
-			$params['model']->setAttribute($params['attributes'][$i],$params['values'][$i]);
-		}
+	public function execute(&$params) {
+		$this->setModelAttributes($params['model'],$this->config['attributes']);
 		return $params['model']->save();
 	}
 }

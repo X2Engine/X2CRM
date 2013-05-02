@@ -46,11 +46,11 @@ $form=$this->beginWidget('CActiveForm', array(
 
 	<div class="row" style="margin-bottom:10px;">
 		<div class="cell">
-			<?php echo $form->checkBox($model,'allowPost',array('onchange'=>'js:highlightSave();')); ?> 
+			<?php echo $form->checkBox($model,'allowPost',array('onchange'=>'js:highlightSave();')); ?>
 			<?php echo $form->labelEx($model,'allowPost',array('style'=>'display:inline;')); ?>
 		</div>
 		<!--<div class="cell">
-			<?php //echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();')); ?> 
+			<?php //echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();')); ?>
 			<?php //echo $form->labelEx($model,'showSocialMedia',array('style'=>'display:inline;')); ?>
 			<?php //echo $form->dropDownList($model,'showSocialMedia',array(1=>Yii::t('actions','Yes'),0=>Yii::t('actions','No')),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
 		</div>-->
@@ -72,7 +72,7 @@ $form=$this->beginWidget('CActiveForm', array(
 			<?php echo $form->dropDownList($model,'language',$languages,array('onchange'=>'js:highlightSave();')); ?>
 		</div>
 		<div class="cell">
-			<?php 
+			<?php
 			if(!isset($model->timeZone))
 				$model->timeZone="Europe/London";
 			?>
@@ -105,17 +105,17 @@ $form=$this->beginWidget('CActiveForm', array(
 		<div class="row">
 			<?php echo $form->labelEx($model,'backgroundTiling'); ?>
 			<?php echo $form->dropDownList($model,'backgroundTiling',array(
+				'stretch'=>Yii::t('app','Stretch'),
+				'center'=>Yii::t('app','Center'),
+				'repeat'=>Yii::t('app','Tile'),
 				'repeat-x'=>Yii::t('app','Tile Horizontally'),
 				'repeat-y'=>Yii::t('app','Tile Vertically'),
-				'repeat'=>Yii::t('app','Tile'),
-				'center'=>Yii::t('app','Center'),
-				'stretch'=>Yii::t('app','Stretch'),
 			),array('id'=>'backgroundTiling')); ?>
 		</div>
 	</div>
 	<div class="cell">
 		<h3><?php echo Yii::t('profile','Background Image'); ?></h3>
-		
+
 		<?php
 		echo CHtml::link(
 			Yii::t('app','None'),
@@ -134,8 +134,49 @@ $form=$this->beginWidget('CActiveForm', array(
 			),
 		)); ?>
 	</div>
+
+        <div class="cell">
+            <h3><?php echo Yii::t('profile', 'Login Sound'); ?></h3>
+            <?php
+            echo CHtml::link(
+                    Yii::t('app','None'),
+                    '#',
+                    array ( 'onclick'=>"setLoginSound(null,null,null); return false;")
+            );
+            $this->widget('zii.widgets.CListView', array(
+                'dataProvider'=>$myLoginSounds,
+                'template'=>'{items}{pager}',
+                'itemView'=>'//media/_loginSound',
+                'sortableAttributes'=>array(
+                    'fileName',
+                    'createDate',
+                ),
+            ))
+            ?>
+        </div>
+
+        <div class="cell">
+            <h3><?php echo Yii::t('profile', 'Notification Sound'); ?></h3>
+            <?php
+            echo CHtml::link(
+                    Yii::t('app','None'),
+                    '#',
+                    array ( 'onclick'=>"setNotificationSound(null,null,null); return false;")
+            );
+            $this->widget('zii.widgets.CListView', array(
+                'dataProvider'=>$myNotificationSounds,
+                'template'=>'{items}{pager}',
+                'itemView'=>'//media/_notificationSound',
+                'sortableAttributes'=>array(
+                    'fileName',
+                    'createDate',
+                ),
+            ))
+            ?>
+        </div>
+
 	<?php /*<div class="row">
-		<?php echo $form->checkBox($model,'enableFullWidth'); ?> 
+		<?php echo $form->checkBox($model,'enableFullWidth'); ?>
 		<?php echo $form->labelEx($model,'enableFullWidth',array('style'=>'display:inline;')); ?>
 	</div> */ ?>
 	<br>
@@ -148,7 +189,7 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row">
 		<h3><?php echo Yii::t('profile','Upload a Background'); ?></h3>
 		<?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
-		<?php echo CHtml::dropDownList('visibility','public',array('1'=>Yii::t('actions','Public'),'-'=>Yii::t('actions','Private'))); ?>
+		<?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
 		<?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
 		<?php echo CHtml::hiddenField('associationType', 'bg'); ?>
 		<?php echo CHtml::fileField('upload','',array('id'=>'backgroundImg','onchange'=>"checkName();")); ?>
@@ -157,12 +198,26 @@ $form=$this->beginWidget('CActiveForm', array(
 	</div>
 </div>
 
+<!-- DO THIS -->
+<div class="form">
+    <div class="row">
+        <h3><?php echo Yii::t('profile', 'Upload a Login or Notification Sound'); ?></h3>
+        <?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
+        <?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
+        <?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
+        <?php echo CHtml::dropDownList('associationType','Login',array('loginSound'=>'Login', 'notificationSound'=>'Notification'));?>
+        <?php echo CHtml::fileField('upload','',array('id'=>'sound','onchange'=>"checkSoundName();")); ?>
+        <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('id'=>'sound-upload-button','disabled'=>'disabled','class'=>'x2-button')); ?>
+        <?php echo CHtml::endForm(); ?>
+    </div>
+</div>
+
 <div class="form">
     <div class="row">
         <h3><?php   echo Yii::t('profile','Unhide Tags'); ?></h3>
         <?php   foreach($allTags as &$tag) {
                     echo '<span class="tag unhide" tag-name="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).' </span>';
-                } 
+                }
         ?>
     </div>
 </div>
@@ -202,7 +257,7 @@ $form=$this->beginWidget('CActiveForm', array(
                   $(elem).closest('.tag').fadeOut(500);
               }
            });
-           
+
         });
     }).mouseleave(function(){
         $('.hide-link-span').remove();

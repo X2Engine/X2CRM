@@ -47,7 +47,7 @@ if($authorRecord->id != $data->associationId && $data->associationId != 0) {
 ?>
 <br />
 <div class="view">
-	<b><?php echo $author.$modifier.$recipient; ?></b> <span class="comment-age"><?php echo x2base::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
+	<b><?php echo $author.$modifier.$recipient; ?></b> <span class="comment-age"><?php echo Formatter::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
 	<?php echo x2base::convertUrls(CHtml::encode($data->data)); ?>
 </div>
 

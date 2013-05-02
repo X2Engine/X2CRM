@@ -65,8 +65,9 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 
 <?php echo CHtml::button(
 	Yii::t('quotes', 'New Quote'), 
-	array('id'=>'show-new-quote-button', 'onclick'=>'toggleNewQuote();', 'class'=>'x2-button')
+	array('id'=>'show-new-quote-button', 'onclick'=>'quickQuote.openForm();', 'class'=>'x2-button')
 ); ?>
+
 
 <div id="new-quote">
 <b><?php echo Yii::t('quotes', 'New Quote'); ?></b>
@@ -88,7 +89,7 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 				<?php echo $form->error($model,'name'); ?>
 			</td>
 			<td>
-				<?php echo $form->dropDownList($model,'status', Quote::statusList()); ?>
+				<?php echo $form->dropDownList($model,'status', Quote::getStatusList()); ?>
 				<?php echo $form->error($model,'status'); ?>
 				<span style="padding-left: 5px;">
 				    <?php echo Yii::t('quotes', 'Locked'); ?>
@@ -97,13 +98,13 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 			</td>
 			<td>
 				<?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-				$model->expirationDate = $this->controller->formatDate($model->expirationDate);
+				$model->expirationDate = Formatter::formatDate($model->expirationDate);
 				$this->widget('CJuiDateTimePicker',array(
 					'model'=>$model, //Model object
 					'attribute'=>'expirationDate', //attribute name
 					'mode'=>'date', //use "time","date" or "datetime" (default)
 					'options'=>array(
-						'dateFormat'=>$this->controller->formatDatePicker(),
+						'dateFormat'=>Formatter::formatDatePicker(),
 						'changeMonth'=>true,
 						'changeYear'=>true
 					), // jquery plugin options
@@ -166,6 +167,5 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 	array('id'=>"create-quote-button", 'class'=>'x2-button', 'live'=>false)
 ); ?>
 </div>
-
 <?php $this->endWidget(); ?>
 

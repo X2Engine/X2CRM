@@ -156,10 +156,28 @@ $(function() {
 )); */ ?> 
 </div><!-- search-form -->
 <?php
+$listActions = '<div class="list-actions">'.CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
+
+$listNames = array();
+foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
+	if($this->checkPermissions($list,'edit'))	// check permissions
+		$listNames[$list->id] = $list->name;
+}
+unset($listNames[$listModel->id]);	// remove current list from the list...yo dawg, I heard you like lists
+$editPermissions=Yii::app()->user->checkAccess('ContactsUpdateList',$authParams);
+if($editPermissions && $listModel->type == 'static')
+	$listActions .= ' | '.CHtml::link(Yii::t('contacts','Remove From List'),'#',array('id'=>'removeFromList','class'=>'list-action'));
+
+if(!empty($listNames)) {
+	$listActions .= ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
+	$listActions .= CHtml::dropDownList('addToListTarget',null,$listNames, array());
+}
+$listActions .= '</div>';
+
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">'
 		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listModel->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportContacts?listId='.$listModel->id)) . ' | '
@@ -171,6 +189,7 @@ $this->widget('application.components.X2GridView', array(
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
+	'pager'=>array('class'=>'CLinkPager','header'=>$listActions),
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts_list'.$listModel->id,
@@ -195,24 +214,3 @@ $this->widget('application.components.X2GridView', array(
 	'enableControls'=>true,
 	'enableTags'=>true,
 ));
-?>
-<span class="list-actions">
-<?php
-echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
-
-$listNames = array();
-foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
-	if($this->checkPermissions($list,'edit'))	// check permissions
-		$listNames[$list->id] = $list->name;
-}
-unset($listNames[$listModel->id]);	// remove current list from the list...yo dawg, I heard you like lists
-$editPermissions=Yii::app()->user->checkAccess('ContactsUpdateList',$authParams);
-if($editPermissions && $listModel->type == 'static')
-	echo ' | '.CHtml::link(Yii::t('contacts','Remove From List'),'#',array('id'=>'removeFromList','class'=>'list-action'));
-
-if(!empty($listNames)) {
-	echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
-	echo CHtml::dropDownList('addToListTarget',null,$listNames, array());
-}
-?>
-</span>

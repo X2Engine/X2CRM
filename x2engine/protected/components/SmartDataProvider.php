@@ -123,7 +123,7 @@ class SmartDataProvider extends CActiveDataProvider {
 		if(!preg_match('/\bid\b/',$orderBy)) {
 			if(!empty($orderBy))
 				$orderBy .= ',';
-			$orderBy .= 'id DESC';
+			$orderBy .= 't.id DESC';
 			$criteria->order = $orderBy;
 		}
 

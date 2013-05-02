@@ -35,9 +35,14 @@
  *****************************************************************************************/
 //
 ?>
+<html>
 
-<?php if($includeLogo) echo CHtml::image(Yii::app()->baseUrl . '/' . Yii::app()->params['logo'], ''); ?>
-
+  <head>
+    <script src='<?php echo Yii::app()->assetManager->publish('framework/web/js/source/jquery.min.js'); ?>'></script>
+    <script src='<?php echo Yii::app()->assetManager->publish('framework/web/js/source/jui/js/jquery-ui.min.js'); ?>'></script>
+	<meta charset="UTF-8">
+  </head>
+  <body>
 <table style="width:100%;">
 	<tbody>
 		<tr>
@@ -51,8 +56,9 @@
 </table><br />
 
 <?php
-echo $model->productTable(true);
+echo $model->productTable($email);
 ?>
-<br />
-<br />
-<?php if($includeNotes) echo $notes ?>
+  <?php echo empty($model->description)?'':'<div>'.$model->renderAttribute('description').'</div>'; ?>
+
+  </body>
+</html>

@@ -54,6 +54,6 @@ $this->widget('SortWidg',array(
                 data: $('#yw0').sortable('serialize'),
             });
         }"
-    ),$
+    )
 ));
 echo "</div>";

@@ -36,23 +36,23 @@
 
 /**
  * Primary/default controller for the web application.
- * 
+ *
  * @package X2CRM.controllers
  */
 class SiteController extends x2base {
 	// Declares class-based actions.
 
 	//public $layout = '//layouts/main';
-	
+
 	public $portlets = array();
-	
+
 	public function filters() {
 		return array(
 			'setPortlets',
             'accessControl',
 		);
 	}
-    
+
     protected function beforeAction($action=null){
         return true;
     }
@@ -69,19 +69,19 @@ class SiteController extends x2base {
 					'saveWidgetHeight','inlineEmail','tmpUpload','upload','uploadProfilePicture','index','contact',
                     'viewNotifications','inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
                     'whatsNew','toggleVisibility','page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget','publishPost','getEvents','loadComments',
-                    'loadPosts','addComment','flagPost','sendErrorReport','minimizePosts','bugReport','deleteRelationship','toggleFeedControls','toggleFeedFilters'),
+                    'loadPosts','addComment','flagPost','sendErrorReport','minimizePosts','bugReport','deleteRelationship','toggleFeedControls','toggleFeedFilters','getTip','share', 'activityFeedOrder', 'likePost', 'loadLikeHistory'),
 				'users'=>array('@'),
 			),
 			 array('allow',
 				 'actions'=>array('motd','stickyPost'),
 				 'users'=>array('admin'),
 			 ),
-			array('deny', 
+			array('deny',
 				'users'=>array('*')
 			)
 		);
 	}
-	
+
 	public function actions() {
 		return array(
 			// captcha action renders the CAPTCHA image displayed on the contact page
@@ -100,11 +100,11 @@ class SiteController extends x2base {
 			),
 		);
 	}
-	
+
 //	/**
 //	 * Obtain the widget list for the current web user.
-//	 * 
-//	 * @param CFilterChain $filterChain 
+//	 *
+//	 * @param CFilterChain $filterChain
 //	 */
 //	public function filterSetPortletsq($filterChain){
 //		if(!Yii::app()->user->isGuest){
@@ -120,7 +120,7 @@ class SiteController extends x2base {
 //		}
 //		$filterChain->run();
 //	}
-    
+
     public function actionSendErrorReport(){
         if(isset($_POST['report'])){
             $errorReport=$_POST['report'];
@@ -142,21 +142,21 @@ class SiteController extends x2base {
             curl_close($ccSession);
         }
     }
-	
+
 	/**
 	 * Default landing page action for the web application.
-	 * 
+	 *
 	 * Displays a feed of new records that have been created since the last
 	 * login of the current web user.
 	 */
 	public function actionWhatsNew(){
-		
+
 		if(!Yii::app()->user->isGuest){
             if(!Yii::app()->request->isAjaxRequest){
                 $_SESSION['lastDate']=0;
                 unset($_SESSION['lastEventId']);
             }
-            
+
             $dateRange=Yii::app()->params->admin->eventDeletionTime;
             if(!empty($dateRange)){
                 $dateRange=$dateRange*24*60*60;
@@ -164,10 +164,7 @@ class SiteController extends x2base {
                 if(!empty($deletionTypes)){
                     $deletionTypes="('".implode("','",$deletionTypes)."')";
                     $time=time()-$dateRange;
-                    $events=X2Model::model('Events')->findAll('timestamp < '.$time.' AND type IN '.$deletionTypes);
-                    foreach($events as $event){
-                        $event->delete();
-                    }
+                    X2Model::model('Events')->deleteAll('lastUpdated < '.$time.' AND type IN '.$deletionTypes);
                 }
             }
             unset($_SESSION['feed-condition']);
@@ -205,7 +202,7 @@ class SiteController extends x2base {
                 }else{
                     $visibilityFilter=array();
                 }
-                
+
                 $users=$filters['users'];
                 if($users!=""){
                     $users=explode(",",$users);
@@ -224,7 +221,7 @@ class SiteController extends x2base {
                     $userCondition="";
                     $userFilter=array();
                 }
-                
+
                 $types=$filters['types'];
                 if($types!=""){
                     $types=explode(",",$types);
@@ -288,7 +285,7 @@ class SiteController extends x2base {
                 $lastTimestamp=0;
             }
             if(isset($_SESSION['lastEventId'])){
-                $condition.=" AND id <= ".$_SESSION['lastEventId'];
+                $condition.=" AND id <= ".$_SESSION['lastEventId']." AND sticky = 0";
             }
             $dataProvider=new CActiveDataProvider('Events',array(
                 'criteria'=>array(
@@ -305,7 +302,6 @@ class SiteController extends x2base {
             else
                 $firstId=0;
             $users=User::getUserIds();
-            $_SESSION['stickyFlag']=false;
             $_SESSION['firstFlag']=true;
             $stickyDataProvider=new CActiveDataProvider('Events',array(
                 'criteria'=>array(
@@ -316,6 +312,7 @@ class SiteController extends x2base {
                     'pageSize'=>20
                 ),
             ));
+            $_SESSION['stickyFlag']=false;
 			$this->render('whatsNew',array(
 				'dataProvider'=>$dataProvider,
                 'users'=>$users,
@@ -328,11 +325,11 @@ class SiteController extends x2base {
 			$this->redirect('login');
 		}
 	}
-    
-   
-    
+
+
+
     public function actionGetEvents($lastEventId, $lastTimestamp){
-        
+
         $result=Events::getEvents($lastEventId,$lastTimestamp);
         $events=$result['events'];
         $eventData="";
@@ -364,7 +361,7 @@ class SiteController extends x2base {
             }
             $lastCommentId=$comment->id;
         }
-        
+
         echo CJSON::encode(array(
             $newLastEventId,
             $newLastEventId!=$lastEventId?$eventData:'',
@@ -373,7 +370,7 @@ class SiteController extends x2base {
             $newLastTimestamp,
         ));
     }
-    
+
     public function actionAddComment(){
         if(isset($_POST['id']) && isset($_POST['text']) && $_POST['text']!=''){
             $id=$_POST['id'];
@@ -440,7 +437,7 @@ class SiteController extends x2base {
             echo "";
         }
     }
-    
+
     public function actionPublishPost(){
         $post = new Events;
 		// $user = $this->loadModel($id);
@@ -458,9 +455,9 @@ class SiteController extends x2base {
 			$post->timestamp = time();
 			if($post->save()){
 				if(!empty($post->associationId) && $post->associationId != Yii::app()->user->getId()) {
-				
+
 					$notif = new Notification;
-					
+
 					$notif->type = 'social_post';
 					$notif->createdBy = $post->user;
 					$notif->modelType = 'Profile';
@@ -471,7 +468,7 @@ class SiteController extends x2base {
 						->from('x2_users')
 						->where('id=:id',array(':id'=>$post->associationId))
 						->queryScalar();
-					
+
 					// $prof = X2Model::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
 					// $notif->text = "$prof->fullName posted on your profile.";
 					// $notif->record = "profile:$prof->id";
@@ -482,10 +479,61 @@ class SiteController extends x2base {
 					$notif->save();
 				}
 			}
-			
+
 		}
     }
-    
+
+    /*
+    Used for both like and unlike buttons. If the user has alread liked the
+    post, the post will be unliked and visa versa. The function returns a string
+    indicating whether the post was liked or unliked.
+    Parameter:
+        $id - the user's id
+    */
+    public function actionLikePost($id){
+        $userId = Yii::app()->user->id;
+
+        $likedPost=Yii::app()->db->createCommand()
+            ->select('count(userId)')
+            ->from('x2_like_to_post')
+            ->where('userId=:userId and postId=:postId', array(':userId'=>Yii::app()->user->id, ':postId'=>$id))
+            ->queryScalar();
+
+        if (!$likedPost) {
+            Yii::app()->db->createCommand()
+                ->insert('x2_like_to_post', array('userId'=>$userId, 'postId'=>$id));
+            echo 'liked post';
+        } else {
+            Yii::app()->db->createCommand()
+                ->delete('x2_like_to_post', 'userId=:userId and postId=:postId',
+                array('userId'=>$userId, 'postId'=>$id));
+            echo 'unliked post';
+        }
+
+    }
+
+    /*
+    Returns an array of links to the user profiles of users who have liked the
+    post.
+    Parameter:
+        $id - the id of the post
+    */
+    public function actionLoadLikeHistory($id){
+        $likeHistory=Yii::app()->db->createCommand()
+            ->select('concat (firstName, " ", lastName), usrs.id')
+            ->from('x2_like_to_post as likes, x2_users as usrs')
+            ->where('likes.userId=usrs.id and likes.postId=:postId', array('postId'=>$id))
+            ->queryAll();
+
+        $likeHistoryLinks = array ();
+        foreach ($likeHistory as $like) {
+            $likeHistoryLinks[] = CHtml::link ($like['concat (firstName, " ", lastName)'],
+                array ('/profile/' . $like['id']));
+        }
+
+        echo CJSON::encode($likeHistoryLinks);
+    }
+
     public function actionLoadComments($id){
         $commentDataProvider=new CActiveDataProvider('Events', array(
             'criteria'=>array(
@@ -499,39 +547,109 @@ class SiteController extends x2base {
                 'id'=>$id.'-comments',
         ));
     }
-    
+
     public function actionFlagPost(){
         if(isset($_GET['id']) && isset($_GET['attr'])){
             $id=$_GET['id'];
             $important=$_GET['attr'];
             $event=X2Model::model('Events')->findByPk($id);
             if(isset($event)){
+                if(isset($_GET['color']) && !empty($_GET['color'])){
+                    $event->color=$_GET['color'];
+                }else{
+                    $event->color=null;
+                }
+                if(isset($_GET['fontColor']) && !empty($_GET['fontColor'])){
+                    $event->fontColor=$_GET['fontColor'];
+                }else{
+                    $event->fontColor=null;
+                }
+                if(isset($_GET['linkColor']) && !empty($_GET['linkColor'])){
+                    $event->linkColor=$_GET['linkColor'];
+                }else{
+                    $event->linkColor=null;
+                }
                 if($important=='important'){
                     $event->important=1;
                 }else{
                     $event->important=0;
                 }
-                $event->save();
+                if($event->save()){
+                    if(isset($_GET['email']) && $_GET['email']=='checked' && $event->important){
+                        $subject = "Event Broadcast";
+                        $phpMail = $this->getPhpMailer();
+                        $fromEmail = Yii::app()->params->profile->emailAddress;
+                        $fromName = Yii::app()->params->profile->fullName;
+                        $phpMail->AddReplyTo($fromEmail, $fromName);
+                        $phpMail->SetFrom($fromEmail, $fromName);
+                        $phpMail->Subject = $subject;
+                        $phpMail->MsgHTML("$fromName has broadcast an event on your X2CRM Activity Feed:<br><br>".$event->getText()."<br><br>Link to activity feed:<br><br>");
+                        $users=Profile::model()->findAllByAttributes(array('status'=>1));
+                        foreach($users as $user){
+                            $phpMail->AddAddress($user->emailAddress, $user->fullName);
+                        }
+                        if($phpMail->Send()){
+
+                        }
+
+                    }
+                }
             }
         }
     }
-    
+
     public function actionStickyPost($id){
         $event=X2Model::model('Events')->findByPk($id);
         if(isset($event)){
             $event->sticky=!$event->sticky;
-            $event->update();
+            $event->update(array('sticky'));
+        }
+        echo (date("M j",time())==date("M j",$event->timestamp)?Yii::t('app',"Today"):Yii::app()->locale->dateFormatter->formatDateTime($event->timestamp,'long',null));
+
+    }
+
+    public function actionActivityFeedOrder(){
+        $profile=Yii::app()->params->profile;
+        if(isset($profile)){
+            $profile->activityFeedOrder=!$profile->activityFeedOrder;
+            $profile->update(array('activityFeedOrder'));
         }
     }
-    
+
+    public function actionGetTip(){
+        //opensource or pro
+        $edition = yii::app()->params->admin->edition;
+        //True or False
+        $admin = Yii::app()->user->checkAccess('AdminIndex');
+        //Check user type and editon to deliever an appropriate tip
+        if($edition == 'pro'){
+            if($admin){
+                $where = 'edition = "pro" OR edition = "opensource"';
+            } else {
+                $where = 'admin = 0';
+            }
+        } else if($admin){
+            $where = 'edition = "opensource"';
+        } else {
+            $where = 'admin = 0 AND edition = "opensource"';
+        }
+        $tip=Yii::app()->db->createCommand()
+                    ->select('*')
+                    ->from('x2_tips')
+                    ->where($where)
+                    ->order('rand()')
+                    ->queryRow();
+        echo json_encode($tip);
+    }
+
     public function actionToggleFeedControls(){
         $profile=Yii::app()->params->profile;
         if(isset($profile)){
             $profile->fullFeedControls=!$profile->fullFeedControls;
-            $profile->update();
+            $profile->update(array('fullFeedControls'));
         }
     }
-    
+
     public function actionToggleFeedFilters($filter){
         $profile=Yii::app()->params->profile;
         if(isset($profile)){
@@ -547,7 +665,7 @@ class SiteController extends x2base {
             echo $flag;
         }
     }
-    
+
     public function actionMinimizePosts(){
         if(isset($_GET['minimize'])){
             $profile=Yii::app()->params->profile;
@@ -588,7 +706,7 @@ class SiteController extends x2base {
 		// display full screen group chat
 		$this->render('groupChat');
 	}
-	
+
 	/**
 	 * Creates a new chat message from the current web user.
 	 */
@@ -603,7 +721,7 @@ class SiteController extends x2base {
             $chat->visibility=1;
 			$chat->timestamp = time();
 			$chat->type = 'chat';
-			
+
 			if($chat->save()) {
 				echo CJSON::encode(array(
 					array(
@@ -630,7 +748,7 @@ class SiteController extends x2base {
             $note->visibility=1;
 			$note->timestamp=time();
 			$note->type = 'note';
-			
+
 			if($note->save()) {
 				echo "1";
 			}
@@ -638,7 +756,7 @@ class SiteController extends x2base {
 	}
 
 	/**
-	 * Adds a new URL 
+	 * Adds a new URL
 	 */
 	public function actionAddSite(){
 		if((isset($_POST['url-title'])&&isset($_POST['url-url'])) &&($_POST['url-title']!=''&&$_POST['url-url']!='')) {
@@ -673,7 +791,7 @@ class SiteController extends x2base {
 
 	/**
 	 * Gets URLs for "top sites"
-	 * @param string $url 
+	 * @param string $url
 	 */
 	public function actionGetURLs($url) {
 		$content = URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
@@ -692,18 +810,18 @@ class SiteController extends x2base {
 		}
 		echo $res;
 	}
-	
+
 	/**
 	 * Delete a message from the social feed.
 	 * @param integer $id
-	 * @param string $url 
+	 * @param string $url
 	 */
 	public function actionDeleteMessage($id,$url){
 		$note=Social::model()->findByPk($id);
         if(isset($note))
             $note->delete();
 		$this->redirect($url);
-	} 
+	}
 
 	/**
 	 * Sets "Fullscreen" mode for the current web user / session
@@ -716,7 +834,7 @@ class SiteController extends x2base {
 		// echo var_dump(Yii::app()->session['fullscreen']);
 		echo 'Success';
 	}
-    
+
     public function actionDeleteRelationship($id){
         $rel=X2Model::model('Relationships')->findByPk($id);
         if(isset($rel)){
@@ -726,7 +844,7 @@ class SiteController extends x2base {
             $this->redirect($this->createUrl($_GET['redirect']));
         }
     }
-	
+
 	/**
 	 * Sets the page opacity for the current web user.
 	 */
@@ -738,9 +856,9 @@ class SiteController extends x2base {
 				$opacity = 1;
 			if($opacity < 0.1)
 				$opacity = 0.1;
-		
+
 			$opacity = round(100*$opacity);
-			
+
 			// $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			Yii::app()->params->profile->pageOpacity = $opacity;
@@ -751,16 +869,16 @@ class SiteController extends x2base {
 	}
 
 	/**
-	 * Checks for the widget's state. 
+	 * Checks for the widget's state.
 	 */
 	public function actionWidgetState() {
-		
+
 		if(isset($_GET['widget']) && isset($_GET['state'])) {
 			$widgetName = $_GET['widget'];
 			$widgetState = ($_GET['state']==0)? '0' : '1';
-			
+
 			// $profile = Yii::app()->params->profile;
-			
+
 			$order = explode(":",Yii::app()->params->profile->widgetOrder);
 			$visibility = explode(":",Yii::app()->params->profile->widgets);
 
@@ -771,9 +889,9 @@ class SiteController extends x2base {
 				$pos = array_search($widgetName,$order);
 				$visibility[$pos] = $widgetState;
 				// die(var_dump($visibility));
-			
+
 				Yii::app()->params->profile->widgets = implode(':',$visibility);
-				
+
 				if(Yii::app()->params->profile->save()){
 					echo 'success';
 				}
@@ -788,16 +906,16 @@ class SiteController extends x2base {
 		if(isset($_POST['widget'])) {
 
 			$widgetList = $_POST['widget'];
-			
+
 			// $profile = Yii::app()->params->profile;
 			$order = Yii::app()->params->profile->widgetOrder;
 			$visibility = Yii::app()->params->profile->widgets;
-			
+
 			$order = explode(":",$order);
 			$visibility = explode(":",$visibility);
-			
+
 			$newOrder = array();
-			
+
 			foreach($widgetList as $item) {
 				if(array_key_exists($item,Yii::app()->params->registeredWidgets))
 					$newOrder[] = $item;
@@ -812,28 +930,28 @@ class SiteController extends x2base {
 			}
 			$str = substr($str,0,-1);
 			$visStr = substr($visStr,0,-1);
-			
+
 			Yii::app()->params->profile->widgetOrder = $str;
 			Yii::app()->params->profile->widgets = $visStr;
-			
+
 			if(Yii::app()->params->profile->save()){
 				echo 'success';
 			}
 		}
 	}
-	
+
 	/**
 	 * Save custom gridview settings.
-	 * 
+	 *
 	 * Saves the settings (i.e. columns, column position and column width)
-	 * for the X2GridView model. 
+	 * for the X2GridView model.
 	 */
 	public function actionSaveGridviewSettings() {
-		
+
 		$result = false;
 		if(isset($_GET['gvSettings']) && isset($_GET['viewName'])) {
 			$gvSettings = json_decode($_GET['gvSettings'],true);
-			
+
 			if(isset($gvSettings))
 				$result = ProfileChild::setGridviewSettings($gvSettings,$_GET['viewName']);
 		}
@@ -842,17 +960,17 @@ class SiteController extends x2base {
 		else
 			echo '400 Failure';
 	}
-	
+
 	/**
 	 * Save settings for a custom form layout.
-	 * 
-	 * @throws CHttpException 
+	 *
+	 * @throws CHttpException
 	 */
 	public function actionSaveFormSettings() {
 		$result = false;
 		if(isset($_GET['formSettings']) && isset($_GET['formName'])) {
 			$formSettings = json_decode($_GET['formSettings'],true);
-			
+
 			if(isset($formSettings))
 				$result = ProfileChild::setFormSettings($formSettings,$_GET['formName']);
 		}
@@ -861,20 +979,20 @@ class SiteController extends x2base {
 		else
 			throw new CHttpException(400,'Invalid request. Probabaly something wrong with the JSON string.');
 	}
-	
+
 	/**
-	 * Saves the height of a widget. 
+	 * Saves the height of a widget.
 	 */
 	public function actionSaveWidgetHeight() {
 		if( isset($_POST['Widget']) && isset($_POST['Height']) ) {
 			$heights = $_POST['Height'];
 			$widget = $_POST['Widget'];
 			$widgetSettings = ProfileChild::getWidgetSettings();
-			
+
 			foreach($heights as $key=>$height) {
 				$widgetSettings->$widget->$key = intval($height);
 			}
-			
+
 			Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
 			Yii::app()->params->profile->update();
 		}
@@ -882,7 +1000,7 @@ class SiteController extends x2base {
 
 	/**
 	 * Uploads a file to a temporary folder.
-	 * 
+	 *
 	 * Upload a file to a temp folder, which will presumably be deleted shortly thereafter
 	 * Temp files are stored in a temp folder with a randomly generated name. They are stored
 	 * in 'uploads/media/temp'
@@ -890,14 +1008,14 @@ class SiteController extends x2base {
 	public function actionTmpUpload() {
 		if(isset($_FILES['upload'])) {
 			$upload = CUploadedFile::getInstanceByName('upload');
-			
+
 			if($upload) {
-			
+
 				$name=$upload->getName();
 				$name=str_replace(' ','_',$name);
-				
+
 				$temp = TempFile::createTempFile($name);
-				
+
 				if($temp && $upload->saveAs($temp->fullpath())) // temp file saved
 					echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
 				else
@@ -909,7 +1027,7 @@ class SiteController extends x2base {
 			echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
 		}
 	}
-	
+
 	/**
 	 * Remove a temp file and the temp folder that is in.
 	 */
@@ -936,54 +1054,56 @@ class SiteController extends x2base {
 		if(isset($_FILES['upload'])) {
 			$model=new Media;
 			$temp = CUploadedFile::getInstanceByName('upload');
-			$name=$temp->getName();
-			$name=str_replace(' ','_',$name);
-			$check=Media::model()->findAllByAttributes(array('fileName'=>$name));
-			if(count($check)!=0) {
-				$count=1;
-				$newName=$name;
-				$arr=explode('.',$name);
-				$name=$arr[0];
-				while(count($check)!=0){
-						$newName=$name.'('.$count.').'.$temp->getExtensionName();
-						$check=Media::model()->findAllByAttributes(array('fileName'=>$newName));
-						$count++;
-				}
-				$name=$newName;
-			}
-			$username = Yii::app()->user->name;
-			if(FileUtil::ccopy($temp->getTempName(),"uploads/media/$username/$name")) {
-				if(isset($_POST['associationId']))
-					$model->associationId = $_POST['associationId'];
-				if(isset($_POST['associationType']))
-					$model->associationType = $_POST['associationType'];
-				if(isset($_POST['private']))
-					$model->private = $_POST['private'];
-				$model->uploadedBy=Yii::app()->user->getName();
-				$model->createDate=time();
-				$model->lastUpdated = time();
-				$model->fileName=$name;
-				if($model->save()){
+            if(isset($temp)){
+                $name=$temp->getName();
+                $name=str_replace(' ','_',$name);
+                $check=Media::model()->findAllByAttributes(array('fileName'=>$name));
+                if(count($check)!=0) {
+                    $count=1;
+                    $newName=$name;
+                    $arr=explode('.',$name);
+                    $name=$arr[0];
+                    while(count($check)!=0){
+                            $newName=$name.'('.$count.').'.$temp->getExtensionName();
+                            $check=Media::model()->findAllByAttributes(array('fileName'=>$newName));
+                            $count++;
+                    }
+                    $name=$newName;
+                }
+                $username = Yii::app()->user->name;
+                if(FileUtil::ccopy($temp->getTempName(),"uploads/media/$username/$name")) {
+                    if(isset($_POST['associationId']))
+                        $model->associationId = $_POST['associationId'];
+                    if(isset($_POST['associationType']))
+                        $model->associationType = $_POST['associationType'];
+                    if(isset($_POST['private']))
+                        $model->private = $_POST['private'];
+                    $model->uploadedBy=Yii::app()->user->getName();
+                    $model->createDate=time();
+                    $model->lastUpdated = time();
+                    $model->fileName=$name;
+                    if($model->save()){
 
-				}
-				if($model->associationType=='feed') {
-					$soc = new Events;
-					$soc->user = Yii::app()->user->getName();
-					$soc->text = Yii::t('app','Attached file: ').
-					$soc->type = 'feed';
-					$soc->timestamp = time();
-					$soc->lastUpdated = time();
-					$soc->associationId = $model->associationId;
-                    $soc->associationType='Media';
-					$soc->text = $model->getMediaLink();
-					if($soc->save()) {
-							$this->redirect('whatsNew');
-					} else {
-							unlink('uploads/'.$name);
-					}
-					$this->redirect(array('site/whatsNew'));
-
-				} else if($model->associationType=='bg' || $model->associationType=='bg-private') {
+                    }
+                    if($model->associationType=='feed') {
+                        $event = new Events;
+                        $event->user = Yii::app()->user->getName();
+                        if(isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])){
+                            $event->text = $_POST['attachmentText'];
+                        }else{
+                            $event->text = Yii::t('app','Attached file: ');
+                        }
+                        $event->type = 'media';
+                        $event->timestamp = time();
+                        $event->lastUpdated = time();
+                        $event->associationId = $model->id;
+                        $event->associationType='Media';
+                        if($event->save()) {
+                                $this->redirect('whatsNew');
+                        } else {
+                                unlink('uploads/'.$name);
+                        }
+                        $this->redirect(array('site/whatsNew'));
 
 					$profile=X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 					$profile->backgroundImg = $name;
@@ -995,39 +1115,57 @@ class SiteController extends x2base {
 	//				if($model->associationType == 'product')
 	//					$this->redirect(array('/products/'.$model->associationId));
 	//				$this->redirect(array($model->associationType.'/'.$model->associationId));
+                                } else if($model->associationType=='loginSound' || $model->associationType=='notificationSound') {
+                                        $profile=X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+                                        if($model->associationType=='loginSound') {
+                                            $profile->loginSound = $name;
+                                        } else {
+                                            $profile->notificationSound = $name;
+                                        }
+                                        $profile->save();
+                                        $this->redirect(array('profile/settings','id'=>Yii::app()->user->getId()));
 				}else {
-					$note=new Actions;
-					$note->createDate = time();
-					$note->dueDate = time();
-					$note->completeDate = time();
-					$note->complete='Yes';
-					$note->visibility='1';
-					$note->completedBy=Yii::app()->user->getName();
-					if($model->private) {
-						$note->assignedTo = Yii::app()->user->getName();
-						$note->visibility = '0';
-					} else {
-						$note->assignedTo='Anyone';
-					}
-					$note->type='attachment';
-					$note->associationId=$_POST['associationId'];
-					$note->associationType=$_POST['associationType'];
+                        $note=new Actions;
+                        $note->createDate = time();
+                        $note->dueDate = time();
+                        $note->completeDate = time();
+                        $note->complete='Yes';
+                        $note->visibility='1';
+                        $note->completedBy=Yii::app()->user->getName();
+                        if($model->private) {
+                            $note->assignedTo = Yii::app()->user->getName();
+                            $note->visibility = '0';
+                        } else {
+                            $note->assignedTo='Anyone';
+                        }
+                        $note->type='attachment';
+                        $note->associationId=$_POST['associationId'];
+                        $note->associationType=$_POST['associationType'];
 
-					$association = $this->getAssociation($note->associationType,$note->associationId);
-					if($association != null)
-							$note->associationName = $association->name;
+                        $association = $this->getAssociation($note->associationType,$note->associationId);
+                        if($association != null)
+                                $note->associationName = $association->name;
 
-					$note->actionDescription = $model->fileName . ':' . $model->id;
-					if($note->save()){
-					} else {
-							unlink('uploads/'.$name);
-					}
-					if($model->associationType == 'product')
-						$this->redirect(array('/products/'.$model->associationId));
-					$this->redirect(array($model->associationType.'/'.$model->associationId));
-				}
-			}
-		}
+                        $note->actionDescription = $model->fileName . ':' . $model->id;
+                        if($note->save()){
+                        } else {
+                                unlink('uploads/'.$name);
+                        }
+                        if($model->associationType == 'product')
+                            $this->redirect(array('/products/'.$model->associationId));
+                        $this->redirect(array($model->associationType.'/'.$model->associationId));
+                    }
+                }
+            }else{
+                if(isset($_SERVER['HTTP_REFERER'])){
+                    $this->redirect($_SERVER['HTTP_REFERER']);
+                }else{
+                    throw new CHttpException('400','Invalid request');
+                }
+            }
+        }else{
+            throw new CHttpException('400','Invalid request.');
+        }
 	}
 
         /**
@@ -1055,11 +1193,11 @@ class SiteController extends x2base {
 			$model->associationType=$_POST['type'];
 			$model->createDate=time();
 			$model->fileName=$name;
-			
+
 			// download and save picture
 			$img = FileUtil::ccopy($photourl,"uploads/$name");
 			$model->save();
-			
+
 			// put picture into new action
 			$note = new Actions;
 			$note->createDate = time();
@@ -1087,18 +1225,18 @@ class SiteController extends x2base {
 		}
 	}
 
-	
+
 	/**
 	 * Index action.
-	 * 
-	 * This is the default 'index' action that is invoked when an action 
+	 *
+	 * This is the default 'index' action that is invoked when an action
 	 * is not explicitly requested by users.
 	 */
-	// 
+	//
 	public function actionIndex() {
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
-		
+
 		// check if we are on a mobile browser
 		if(isset($_GET['mobile']) && $_GET['mobile'] == 'false') {
 			$cookie = new CHttpCookie('x2mobilebrowser', 'false'); // create cookie
@@ -1109,7 +1247,7 @@ class SiteController extends x2base {
 			if($mobileBrowser == 'true')
 			    $this->redirect(array('/mobile/site/index'));
 		}
-		
+
 		if(Yii::app()->user->isGuest)
 			$this->redirect(array('/site/login'));
 		else {
@@ -1124,7 +1262,7 @@ class SiteController extends x2base {
 			}else{
 				Yii::app()->session['alertUpdate']=false;
 			}
-			
+
 			if(empty($profile->startPage)) {
 				$this->redirect(array('site/whatsNew'));
 			} else {
@@ -1140,18 +1278,18 @@ class SiteController extends x2base {
 					if(isset($page)) {
 						$id=$page->id;
 						$this->redirect('docs/'.$id.'?static=true');
-				
+
 					} else {
                         $this->redirect(array('site/whatsNew'));
 					}
 				}
 			}
 		}
-			
+
 	}
-        
+
     function phpinfo_array($return=false){
-        ob_start(); 
+        ob_start();
         phpinfo(-1);
 
         $pi = preg_replace(
@@ -1189,14 +1327,14 @@ class SiteController extends x2base {
         }
 
         return ($return === false) ? print_r($pi) : $pi;
-    }     
+    }
 
 	/**
 	 * Error printing.
-	 * 
+	 *
 	 * This is the action to handle external exceptions.
 	 */
-	public function actionError() { 
+	public function actionError() {
         function var_dump_to_string($var){
             $output = "<pre>";
             _var_dump_to_string($var,$output);
@@ -1214,25 +1352,29 @@ class SiteController extends x2base {
                 }
             }
         }
-        
+
 		if($error=Yii::app()->errorHandler->error) {
-			if(Yii::app()->request->isAjaxRequest)
+			if(Yii::app()->request->isAjaxRequest){
 				echo $error['message'];
-			else{
+            }else{
+                $referer = isset($_SERVER['HTTP_REFERER'])? $_SERVER['HTTP_REFERER'] : '';
                 if($error['code']=='404'){
                      $request=Yii::app()->request->requestUri;
                      if(preg_match('/opportunity/',$request)){
                          $request=preg_replace('/opportunity/','opportunities',$request);
                          $this->redirect($request);
                      }
+                     if(empty($referer)){
+                        $this->render('errorDisplay',$error);
+                        Yii::app()->end();
+                     }
                 }
-				if($error['code'] == '403') {
+				if($error['code'] == '403' || $error['code']=='400') {
 					$this->render('errorDisplay',$error);
 					Yii::app()->end();
 				}
                 $request=Yii::app()->request->requestUri;
                 $info=$this->phpinfo_array(true);
-                $referer=$_SERVER['HTTP_REFERER'];
                 if(!empty(Yii::app()->params->admin->emailFromAddr))
                     $email=Yii::app()->params->admin->emailFromAddr;
                 else
@@ -1243,7 +1385,7 @@ class SiteController extends x2base {
                 $x2version=Yii::app()->params->version;
                 unset($error['traces']);
                 $error['trace']=CHtml::encode($error['trace']);
-                
+
                 $phpInfoErrorReport=base64_encode(serialize(array_merge($error,array(
                     'request'=>$request,
                     'phpinfo'=>$info,
@@ -1256,7 +1398,7 @@ class SiteController extends x2base {
                     'user'=>Yii::app()->user->getName(),
                     'isAdmin'=>Yii::app()->user->checkAccess('AdminIndex'),
                 ))));
-                
+
                 $errorReport=base64_encode(serialize(array_merge($error,array(
                     'request'=>$request,
                     'referer'=>$referer,
@@ -1268,7 +1410,7 @@ class SiteController extends x2base {
                     'user'=>Yii::app()->user->getName(),
                     'isAdmin'=>Yii::app()->user->checkAccess('AdminIndex'),
                 ))));
-                
+
 				$this->render('error', array_merge($error,array(
                     'request'=>$request,
                     'info'=>$info,
@@ -1283,9 +1425,9 @@ class SiteController extends x2base {
             }
 		}
 	}
-    
+
     public function actionBugReport(){
-        
+
         $info=$this->phpinfo_array(true);
         if(!empty(Yii::app()->params->admin->emailFromAddr))
             $email=Yii::app()->params->admin->emailFromAddr;
@@ -1310,7 +1452,7 @@ class SiteController extends x2base {
             'user'=>Yii::app()->user->getName(),
             'isAdmin'=>Yii::app()->user->checkAccess('AdminIndex'),
         )));
-        
+
         $this->render('bugReport',array(
             'phpInfoErrorReport'=>$phpInfoErrorReport,
             'errorReport'=>$errorReport,
@@ -1342,14 +1484,13 @@ class SiteController extends x2base {
 	 *
 	 * @param string $type
 	 * @param integer $id
-	 * @return mixed 
+	 * @return mixed
 	 */
 	protected function getAssociation($type,$id) {
-	
+
 		$classes = array(
 			'actions'=>'Actions',
 			'contacts'=>'Contacts',
-			'projects'=>'ProjectChild',
 			'accounts'=>'Accounts',
 			'product'=>'Product',
 			'products'=>'Product',
@@ -1357,9 +1498,8 @@ class SiteController extends x2base {
 			'quote'=>'Quote',
 			'quotes'=>'Quote',
 			'opportunities'=>'Opportunity',
-			'social'=>'SocialChild',
 		);
-		
+
 		if(array_key_exists($type,$classes) && $id != 0)
 			return X2Model::model($classes[$type])->findByPk($id);
 		else
@@ -1392,7 +1532,7 @@ class SiteController extends x2base {
 		$img .= 'CwAAAAAZABQAAAI/wABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjwkDiBS5cKRAkiBTKkQJIMBKlwNZqpxJUOZJkzdNjiS5s+VOnDph9qT5EqbPmzGNHk3acilSny6jClVK1CDQqUyzIpUKFaXMn1SrWuXq9CtVnmS9KrUptqBRtE+dLsUKd+7at23dDu2aFCdUpmrB+t2bt7Dhw4gTK57pV+viqmwfG7ZJ+GfOqYOHEn4cmaVnu1vTipYct+bbs5aPovWcWmPYiJ/jUg5bl29kjLcfxi6LNzZctWU3NpYItmvg04GNZ85NfDjptrWfiwUuHfrp6pDvTryKNaRzvWNdo//e3l33a9Mp2TL3HtqsWdPHMd+N/5KvXN0n0T9lfZC6ftCqnXdcafg1pZV/7vl3YHfR6bfXev01xh9vWSkoG4NkgXeZY+ZpCCCFAF63H12vsfYebMhxJ198mF024F/DJfgfdhlJGON5NDan12w54jabejj22FBnJQYpZFERIgShcS5eJ1VqKq5oZHhJVskQXgYaSFd+TWHpZUwQfXffjCGB2WVNSqLJ5ZdTUqnjlWbeeJaaWsa5JHxKijnmWJ8JSGeW8oHZJpnw4QihUGammSigay7qkJ6beahonWsiuuiXjXJ55aD1eZciUHLZ2GKTbeoZJqfY3bnpkZ4K5uqrrbHwWiistAom6624klchizC+aFlQtiKGKaVaWoqlpnNpiupHUfWXn3bEuuXgs5KV2BeazWYpraDFLpueVdiGa+xuZyLqLbPazilttseme6a2iQ1rKaVeXapmvcjmxd+v/Ga43GoBRprrwAQXbPDBCOMqZ6HXtvrkX/f1VNyfPDm60rbEzmukdl/RqTHG5XGqbrTKloRenxZnS/GkJnucL6MXc9tbyurtiHHLiY6r8sbicltps7SxPKixcRb98s1eamY0uM5arOjHMLfbdMlRL73WtE7zaSKeDecJrHIQR3m1oCMnjDPLZsdcZtpst+22QQEBADs=';
 		echo base64_decode($img);
 	}
-	
+
 	/**
 	 * Displays the login page
 	 */
@@ -1402,45 +1542,46 @@ class SiteController extends x2base {
 			$this->redirect(Yii::app()->homeUrl);
 			return;
 		}
-		
+
 		$model = new LoginForm;
 		$model->useCaptcha = false;
-		
+
 		if(isset($_POST['LoginForm'])) {
 			$model->attributes = $_POST['LoginForm'];	// get user input data
-			
+
 			x2base::cleanUpSessions();
-			
+
 			$ip = $this->getRealIp();
-			
+
 			// increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
 			Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1, lastUpdated=:time WHERE user=:name AND IP=:ip AND status BETWEEN -2 AND 0')
 				->bindValues(array(':time'=>time(),':name'=>$model->username,':ip'=>$ip))
 				->execute();
-			
+
 			$activeUser = Yii::app()->db->createCommand()	// see if this is an actual, active user
 				->select('username')
 				->from('x2_users')
 				->where('username=:name AND status=1',array(':name'=>$model->username))
 				->limit(1)
 				->queryScalar();	// get the correctly capitalized username
-				
+
 			if($activeUser === false) {
 				$model->verifyCode = '';	// clear captcha code
 				$model->addError('username',Yii::t('app','Incorrect username or password.'));
 				$model->addError('password',Yii::t('app','Incorrect username or password.'));
 			} else {
 				$model->username = $activeUser;
-				
+
 				if(isset($_SESSION['sessionId']))
 					$sessionId = $_SESSION['sessionId'];
 				else
-					$sessionId = $_SESSION['sessionId'] = session_id();
-					
+					$sessionId = null;
+
 				$session = X2Model::model('Session')->findByPk($sessionId);
-				
+
 				// if this client has already tried to log in, increment their attempt count
 				if($session === null) {
+                    $sessionId = $_SESSION['sessionId'] = session_id();
 					$session = new Session;
 					$session->id = $sessionId;
 					$session->user = $model->username;
@@ -1454,21 +1595,22 @@ class SiteController extends x2base {
 					if($session->status < -2)
 						$model->setScenario('loginWithCaptcha');
 				}
-				
+
 				if($model->validate() && $model->login()) {		// user successfully logged in
 					if(Yii::app()->user->checkAccess('AdminIndex'))
 						$this->checkUpdates();			// check for updates if admin
 					else
 						Yii::app()->session['versionCheck'] = true;	// ...or don't
-					
+
 					$session->status = 1;
 					$session->save();
-					
+                    SessionLog::logSession($model->username,$sessionId,'login');
+                    $_SESSION['playLoginSound']=true;
 					if(Yii::app()->user->returnUrl=='site/index')
 						$this->redirect('index');
 					else
 						$this->redirect(Yii::app()->user->returnUrl);	// after login, redirect to wherever
-						
+
 				} else {	// login failed
 					$model->verifyCode = '';	// clear captcha code
 					if($model->hasErrors()) {
@@ -1479,13 +1621,13 @@ class SiteController extends x2base {
 				}
 			}
 		}
-		
+
 		header('REQUIRES_AUTH: 1');    // tell windows making AJAX requests to redirect
-		
+
 		$this->render('login',array('model'=>$model));	// display the login form
 	}
 
-	
+
 	/**
 	 * Log in using a Google account.
 	 */
@@ -1493,7 +1635,7 @@ class SiteController extends x2base {
 		$this->layout = '//layouts/login';
 		$model = new LoginForm;
 		$model->useCaptcha = false;
-	
+
 		// echo var_dump(Session::getOnlineUsers());
 		if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
 			$this->redirect(Yii::app()->homeUrl);
@@ -1513,12 +1655,12 @@ class SiteController extends x2base {
 			$client->setRedirectUri('http://www.x2developer.com/x2jake/site/googleLogin');
 			//$client->setDeveloperKey('insert_your_developer_key');
 			$oauth2 = new Google_Oauth2Service($client);
-			
+
 			$client->setAccessToken($_SESSION['access_token']);
-			
+
 			$user = $oauth2->userinfo->get();
 			$email = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
-			
+
 			$userRecord = User::model()->findByAttributes(array('emailAddress'=>$email));
 			$profileRecord = Profile::model()->findByAttributes(array(), "emailAddress='$email' OR googleId='$email'");
 			if(isset($userRecord) || isset($profileRecord)){
@@ -1531,15 +1673,15 @@ class SiteController extends x2base {
 				$model->password=$password;
 				if($model->login(true)) {
 					$ip = $this->getRealIp();
-					
+
 					x2base::cleanUpSessions();
 					if(isset($_SESSION['sessionId']))
 						$sessionId = $_SESSION['sessionId'];
 					else
 						$sessionId = $_SESSION['sessionId'] = session_id();
-					
+
 					$session = X2Model::model('Session')->findByPk($sessionId);
-				
+
 					// if this client has already tried to log in, increment their attempt count
 					if($session === null) {
 						$session = new Session;
@@ -1563,13 +1705,14 @@ class SiteController extends x2base {
 						// $session->IP = $ip;
 					// }
 					$session->save();
+                    SessionLog::logSession($userRecord->username,$sessionId,'googleLogin');
 					$userRecord->login = time();
 					$userRecord->save();
 					Yii::app()->session['versionCheck']=true;
-					
+
 					Yii::app()->session['loginTime']=time();
 						$session->status=1;
-					
+
 					if(Yii::app()->user->returnUrl=='site/index')
 						$this->redirect('index');
 					else
@@ -1587,8 +1730,8 @@ class SiteController extends x2base {
 			$this->render('googleLogin');
 		}
 	}
-	
-	
+
+
 	/**
 	 * Toggle display of tags.
 	 */
@@ -1601,10 +1744,10 @@ class SiteController extends x2base {
 			Yii::app()->params->profile->update();
 		}
 	}
-	
+
 	/**
 	 * Adds a tag to a model.
-	 * 
+	 *
 	 * Echoes "true" if tag was created (and was not a duplicate), "false" otherwise.
 	 */
 	public function actionAppendTag() {
@@ -1618,16 +1761,16 @@ class SiteController extends x2base {
 		}
 		echo 'false';
 	}
-	
+
 	/**
 	 * Removes a tag from a model.
-	 * 
+	 *
 	 * Echoes "true" if tag was removed, "false" otherwise.
 	 */
 	public function actionRemoveTag() {
 		if(isset($_POST['Type'],$_POST['Id'],$_POST['Tag']) && ctype_alpha($_POST['Type'])) {
 			$model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
-			
+
 			if($model !== null && $model->removeTags($_POST['Tag'])) {
 				echo 'true';
 				return;
@@ -1635,8 +1778,8 @@ class SiteController extends x2base {
 		}
 		echo 'false';
 	}
-	
-	
+
+
 	/**
 	 * Add a record to record relationship
 	 *
@@ -1647,12 +1790,12 @@ class SiteController extends x2base {
 	public function actionAddRelationship() {
 		//check if relationship already exits
 		if(isset($_POST['ModelName']) && isset($_POST['ModelId']) && isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])) {
-		
+
 			$modelName = $_POST['ModelName'];
 			$modelId = $_POST['ModelId'];
 			$relationshipModelName = $_POST['RelationshipModelName'];
 			$relationshipModelId = $_POST['RelationshipModelId'];
-		
+
 			$relationship = Relationships::model()->findByAttributes(array(
 				'firstType'=>$_POST['ModelName'],
 				'firstId'=>$_POST['ModelId'],
@@ -1673,7 +1816,7 @@ class SiteController extends x2base {
 				echo "duplicate";
 				Yii::app()->end();
 			}
-			
+
 			$relationship = new Relationships;
 			$relationship->firstType = $_POST['ModelName'];
 			$relationship->firstId = $_POST['ModelId'];
@@ -1694,49 +1837,49 @@ class SiteController extends x2base {
 			Yii::app()->end();
 		}
 	}
-	
-	
+
+
 	public function actionCreateRecords() {
 		$contact = new Contacts;
 		$account = new Accounts;
 		$opportunity = new Opportunity;
 		$users = User::getNames();
-		
+
 		if (isset($_POST['Contacts']) && isset($_POST['Accounts']) && isset($_POST['Opportunity']) ) {
 	//		var_dump($_POST);
 	//		exit();
 			$contact->setX2Fields($_POST['Contacts']);
 			$account->setX2Fields($_POST['Accounts']);
 			$opportunity->setX2Fields($_POST['Opportunity']);
-			
+
 			$allValid = true;
-			
+
 			if($contact->validate() == false)
 				$allValid = false;
-			
+
 			if($account->validate() == false)
 				$allValid = false;
-			
+
 			if($opportunity->validate() == false)
 				$allValid = false;
-			
+
 			if($allValid) {
 				$c = $this->createContact($contact, $contact->attributes, '1');
 				$a = $this->createAccount($account, $account->attributes, '1');
 				$o = $this->createOpportunity($opportunity, $opportunity->attributes, '1');
-				
-				
-				
+
+
+
 				if($c && $a && $o) { // all records created?
 					$contact->company = $account->id;
 					$contact->update();
 					$opportunity->accountName = $account->id;
 					$opportunity->update();
-					
+
 					Relationships::create('Contacts', $contact->id, 'Accounts', $account->id);
 					Relationships::create('Opportunity', $opportunity->id, 'Contacts', $contact->id);
-					Relationships::create('Opportunity', $opportunity->id, 'Accounts', $account->id);	
-					
+					Relationships::create('Opportunity', $opportunity->id, 'Accounts', $account->id);
+
 					if(isset($_GET['ret'])) {
 						if($_GET['ret'] == 'contacts')
 							$this->redirect(array("/contacts/{$contact->id}"));
@@ -1750,7 +1893,7 @@ class SiteController extends x2base {
 				}
 			}
 		}
-		
+
 		$this->render('createRecords', array(
 			'contact'=>$contact,
 			'account'=>$account,
@@ -1758,8 +1901,8 @@ class SiteController extends x2base {
 			'users'=>$users,
 		));
 	}
-	
-	/** 
+
+	/**
 	 * Creates contact record
 	 *
 	 * Call this function from createRecords
@@ -1784,14 +1927,14 @@ class SiteController extends x2base {
 			return parent::create($model, $oldAttributes, $api);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Creates account record
 	 *
 	 * Call this function from createRecords
 	 */
 	public function createAccount($model,$oldAttributes, $api) {
-            
+
 		$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
 		$model->createDate=time();
 		if($api==0)
@@ -1799,22 +1942,22 @@ class SiteController extends x2base {
 		else
 			return parent::create($model,$oldAttributes,$api);
 	}
-	
-	/** 
+
+	/**
 	 * Creates opportunity record
 	 *
 	 * Call this function from createRecords
 	 */
 	public function createOpportunity($model,$oldAttributes,$api=0) {
-		
+
 		// process currency into an INT
 //		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
-		
+
 		if(isset($model->associatedContacts))
 			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
 		$model->createDate = time();
 		$model->lastUpdated = time();
-		// $model->expectedCloseDate = X2Model::parseDate($model->expectedCloseDate);
+		// $model->expectedCloseDate = Formatter::parseDate($model->expectedCloseDate);
 		if($api == 1) {
 			return parent::create($model,$oldAttributes,$api);
 		} else {
@@ -1822,9 +1965,9 @@ class SiteController extends x2base {
 		}
 	}
 
-	/** 
-	 * Connects to one of the X2 update servers and sets Yii::app()->session['versionCheck'] 
-	 * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion'] 
+	/**
+	 * Connects to one of the X2 update servers and sets Yii::app()->session['versionCheck']
+	 * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion']
 	 * to the latest version if not up to date.
 	 */
 	protected function checkUpdates() {
@@ -1844,7 +1987,7 @@ class SiteController extends x2base {
 			);
 		}
 		$newVersion = '';
-		
+
 		foreach($updateSources as $url) {
 			$sourceVersion = FileUtil::getContents($url,0,$context);
 			if($sourceVersion !== false) {
@@ -1854,7 +1997,7 @@ class SiteController extends x2base {
 		}
 		if(empty($newVersion))
 			$newVersion = Yii::app()->params->version;
-		/* 
+		/*
 		// check X2Planet for updates
 		$x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
 		if($x2planetVersion !== false)
@@ -1875,7 +2018,7 @@ class SiteController extends x2base {
 			Yii::app()->session['versionCheck']=true;
 	}
 
-	/** 
+	/**
 	 * Checks for any tasks that need to be executed at a specific time
 	 *
 	 * Needs to be called by a cronjob.
@@ -1896,18 +2039,20 @@ class SiteController extends x2base {
 		if(isset($user)) {
 			$user->lastLogin = time();
 			$user->save();
-			
-			if(isset($_SESSION['sessionId']))
+
+			if(isset($_SESSION['sessionId'])){
+                SessionLog::logSession($user->username,$_SESSION['sessionId'],'logout');
 				X2Model::model('Session')->deleteByPk($_SESSION['sessionId']);
-			else
+            }else{
 				X2Model::model('Session')->deleteAllByAttributes(array('IP'=>$this->getRealIp()));
-			
+            }
+
 		}
 		if(isset($_SESSION['access_token']))
 			unset($_SESSION['access_token']);
-		
+
 		Yii::app()->user->logout();
-		
+
 		$this->redirect(Yii::app()->homeUrl);
 	}
 
@@ -1915,12 +2060,15 @@ class SiteController extends x2base {
         $id=$_SESSION['sessionId'];
 		$session = Session::model()->findByAttributes(array('id'=>$id));
 		if(isset($session)) {
+            if($session->status<0)
+                $session->status=0;
 			$session->status = !$session->status;
 			$session->save();
+            SessionLog::logSession(Yii::app()->user->getName(),$id,$session->status?"visible":"invisible");
 		}
 		$this->redirect($_GET['redirect']);
 	}
-	
+
     /**
      *  Remove a widget from the page and put it in the widgets menu
      *
@@ -1928,9 +2076,9 @@ class SiteController extends x2base {
     function actionHideWidget() {
     	if(isset($_POST['name'])) {
     		$name = $_POST['name'];
-    		
+
     		$layout = Yii::app()->params->profile->getLayout();
-    		
+
     		// the widget could be in any of the blocks in the page, so check all of them
     		foreach($layout as $b=>&$block) {
     			if(isset($block[$name])) {
@@ -1944,7 +2092,7 @@ class SiteController extends x2base {
     			    break;
     			}
     		}
-    		
+
     		// make a list of hidden widgets, using <li>, to send back to the browser
     		$list = "";
     		foreach($layout['hidden'] as $name=>$widget) {
@@ -1953,26 +2101,26 @@ class SiteController extends x2base {
     		foreach($layout['hiddenRight'] as $name=>$widget) {
     			$list .= "<li><span class=\"x2-widget-menu-item right\" id=\"$name\">{$widget['title']}</span></li>";
     		}
-    		
+
     		echo Yii::app()->params->profile->getWidgetMenu();
     	}
     }
- 
-    
+
+
 	function actionShowWidget() {
 		if(isset($_POST['name']) && isset($_POST['block'])) { // ensure we have the params we need
 			$name = $_POST['name'];
 			$block = $_POST['block'];
-			
+
 			if(isset($_POST['modelType']) && isset($_POST['modelId'])) {
 				$modelType = $_POST['modelType'];
 				$modelId = $_POST['modelId'];
 			}
-			
+
     		$layout = Yii::app()->params->profile->getLayout();
-    		
+
     		if($block == 'right') { // x2temp: remove when $layout['hiddenRight'] is merged into $layout['hidden']
-    			
+
     			foreach($layout['hiddenRight'] as $key=>$widget) {
     				if($key == $name) {
     					$widget['minimize'] = false; // un-minimize widgets when we show them
@@ -1982,13 +2130,13 @@ class SiteController extends x2base {
     					Yii::app()->session['fullscreen'] = false; // we just added a widget to the right sidebar, so turn off fullscreen mode
     				//	Yii::app()->clientScript->scriptMap['*.js'] = false;
 					//	$this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
-				
+
     					break;
     				}
     			}
-    			
+
     		} else {
-    		
+
     			foreach($layout['hidden'] as $key=>$widget) {
     				if($key == $name) {
     					$widget['minimize'] = false; // un-minimize widgets when we show them
@@ -1997,7 +2145,7 @@ class SiteController extends x2base {
     					Yii::app()->params->profile->saveLayout($layout);
     					Yii::app()->clientScript->scriptMap['*.js'] = false;
 						$this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
-				
+
     					break;
     				}
     			}
@@ -2005,16 +2153,16 @@ class SiteController extends x2base {
 
 		}
 	}
-	
-	function actionReorderWidgets() {	
+
+	function actionReorderWidgets() {
 		if(isset($_POST['x2widget']) && isset($_POST['x2widget'])) {
 			$widgets = $_POST['x2widget']; // list of widgets
 			$block = $_POST['block']; // left, right, or center
-			
+
 			$layout = Yii::app()->params->profile->getLayout();
-			
+
 			$newOrder = array();
-			
+
 			foreach($widgets as $name) {
 				foreach($layout[$block] as $key=>$widget) {
 					if($key == $name) {
@@ -2022,18 +2170,18 @@ class SiteController extends x2base {
 					}
 				}
 			}
-			
+
 			$layout[$block] = $newOrder;
 			Yii::app()->params->profile->saveLayout($layout);
 		}
 	}
-	
+
 	function actionMinimizeWidget() {
 		if(isset($_POST['name']) && isset($_POST['minimize'])) {
 			$name = $_POST['name'];
 			$minimize = json_decode($_POST['minimize']);
     		$layout = Yii::app()->params->profile->getLayout();
-    		
+
     		// the widget could be in any of the blocks in the page, so check all of them
     		foreach($layout as &$block) {
     		    foreach($block as $key=>&$widget) {
@@ -2046,5 +2194,5 @@ class SiteController extends x2base {
 			}
 		}
 	}
-	
+
 }

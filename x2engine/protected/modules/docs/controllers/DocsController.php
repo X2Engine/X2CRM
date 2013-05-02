@@ -201,6 +201,40 @@ class DocsController extends x2base {
 		));
 	}
 	
+	public function actionCreateQuote() {
+		$users = User::getNames();
+		unset($users['Anyone']);
+		unset($users['admin']);
+		unset($users[Yii::app()->user->getName()]);
+		$model = new Docs;
+		$model->type = 'quote';
+		
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['Docs'])) {
+			$temp = $model->attributes;
+			$model->attributes = $_POST['Docs'];
+            $model->visibility = $_POST['Docs']['visibility'];
+			$model->editPermissions = '';
+			// $arr=$model->editPermissions;
+			// if(isset($arr))
+				// $model->editPermissions=Accounts::parseUsers($arr);
+
+			$model->createdBy = Yii::app()->user->getName();
+			$model->createDate = time();
+			// $changes = $this->calculateChanges($temp,$model->attributes);
+			// $model = $this->updateChangeLog($model,'Create');
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->id));
+		}
+
+		$this->render('create',array(
+			'model'=>$model,
+			'users'=>null,
+		));
+	}
+	
 	public function actionChangePermissions($id){
 		$model = $this->loadModel($id);
 		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy) {

@@ -83,47 +83,7 @@ class ProductsController extends x2base {
 		$users=User::getNames();
 		if(isset($_POST['Product'])) {
 			$temp=$model->attributes;
-			foreach($_POST['Product'] as $name => &$value) {
-				if($value == $model->getAttributeLabel($name)) {
-					$value = '';
-				}
-			}
-			foreach($_POST as $key=>$arr){
-						$pieces=explode("_",$key);
-						if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-							$newKey=$pieces[1];
-							if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-								$val=$_POST[$newKey."_id"];
-							}else{
-								$field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-								if(isset($field)){
-									$type=ucfirst($field->linkType);
-									if($type!="Contacts"){
-										eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-									}else{
-										$names=explode(" ",$arr);
-										$lookupModel=X2Model::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-									}
-									if(isset($lookupModel))
-										$val=$lookupModel->id;
-									else
-										$val=$arr;
-								}
-							}
-							$model->$newKey=$val;
-						}
-					}
-			foreach(array_keys($model->attributes) as $field) {
-				if(isset($_POST['Product'][$field])) {
-					$model->$field=$_POST['Product'][$field];
-					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Product','fieldName'=>$field));
-					if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-						$model->$field=Accounts::parseUsers($model->$field);
-					}elseif($fieldData->type=='date'){
-						$model->$field=strtotime($model->$field);
-					}
-				}
-			}
+			$model->setX2Fields($_POST['Product']);
 			// $model->price = $this->parseCurrency($model->price,false);
 			$model->createDate=time();
 			
@@ -158,47 +118,7 @@ class ProductsController extends x2base {
 		}
 		if(isset($_POST['Product'])) {
 			$temp=$model->attributes;
-			foreach($_POST['Product'] as $name => $value) {
-				if($value == $model->getAttributeLabel($name)){
-					$_POST['Product'][$name] = '';
-				}
-			}
-			foreach($_POST as $key=>$arr){
-				$pieces=explode("_",$key);
-				if(isset($pieces[0]) && $pieces[0]=='autoselect'){
-					$newKey=$pieces[1];
-					if(isset($_POST[$newKey."_id"]) && $_POST[$newKey."_id"]!=""){
-						$val=$_POST[$newKey."_id"];
-					}else{
-						$field=Fields::model()->findByAttributes(array('fieldName'=>$newKey));
-						if(isset($field)){
-							$type=ucfirst($field->linkType);
-							if($type!="Contacts"){
-								eval("\$lookupModel=$type::model()->findByAttributes(array('name'=>'$arr'));");
-							}else{
-								$names=explode(" ",$arr);
-								$lookupModel=X2Model::model('Contacts')->findByAttributes(array('firstName'=>$names[0],'lastName'=>$names[1]));
-							}
-							if(isset($lookupModel))
-								$val=$lookupModel->id;
-							else
-								$val=$arr;
-						}
-					}
-					$model->$newKey=$val;
-				}
-			}
-			foreach(array_keys($model->attributes) as $field){
-				if(isset($_POST['Product'][$field])){
-					$model->$field=$_POST['Product'][$field];
-					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Product','fieldName'=>$field));
-					if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-						$model->$field=Accounts::parseUsers($model->$field);
-					}elseif($fieldData->type=='date'){
-						$model->$field=strtotime($model->$field);
-					}
-				}
-			}
+			$model->setX2Fields($_POST['Product']);
 			
 			// generate history
 			$action = new Actions;

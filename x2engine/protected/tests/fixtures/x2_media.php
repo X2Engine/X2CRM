@@ -6,7 +6,7 @@ return array(
 		'associationType' => 'bg',
 		'associationId' => NULL,
 		'uploadedBy' => NULL,
-		'fileName' => 'SantaCruzSummer.jpg',
+		'fileName' => 'Divers.jpg',
 		'createDate' => NULL,
 		'lastUpdated' => NULL,
 		'private' => NULL,

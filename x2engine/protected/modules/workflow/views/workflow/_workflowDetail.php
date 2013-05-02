@@ -52,7 +52,7 @@ if($editable) {
 		</td>
 		<td class="text-field">
 			<?php
-			$model->createDate = $this->formatDate($model->createDate);
+			$model->createDate = Formatter::formatDate($model->createDate);
 			echo CHtml::tag('span',array(),$model->createDate);
 			if($editable) {
 				$this->widget('CJuiDateTimePicker',array(
@@ -62,7 +62,7 @@ if($editable) {
 					'attribute'=>'createDate', //attribute name
 					'mode'=>'date', //use "time","date" or "datetime" (default)
 					'options'=>array(
-						'dateFormat'=>$this->formatDatePicker(),
+						'dateFormat'=>Formatter::formatDatePicker(),
 						'changeMonth'=>true,
 						'changeYear'=>true,
 						'minDate'=>$minDate,
@@ -84,7 +84,7 @@ if($editable) {
 		<td class="text-field">
 			<span><?php echo $model->completeDate; ?></span>
 			<?php
-			$model->completeDate = $this->formatDate($model->completeDate);
+			$model->completeDate = Formatter::formatDate($model->completeDate);
 			if($editable) {
 				$this->widget('CJuiDateTimePicker',array(
 					// 'name'=>'completeDate',
@@ -93,7 +93,7 @@ if($editable) {
 					'attribute'=>'completeDate', //attribute name
 					'mode'=>'date', //use "time","date" or "datetime" (default)
 					'options'=>array(
-						'dateFormat'=>$this->formatDatePicker(),
+						'dateFormat'=>Formatter::formatDatePicker(),
 						'changeMonth'=>true,
 						'changeYear'=>true,
 						'minDate'=>$minDate,

@@ -247,9 +247,23 @@ ul.column-selector input {
 	float:right;
 }
 
+.grid-view > .pager .yiiPager a {
+    padding: 2px 8px 2px 8px;
+}
+
+.grid-view #JColResizer0 {
+}
+
 .grid-view .pager {
-	margin:5px 0 5px 0;
+    border: 1px solid #ccc;
+	padding:5px;
+	background:#fff;
+	margin:5px 0 0 0; 
 	text-align:right;
+	border-radius:			4px 4px 4px 4px;
+	-moz-border-radius:		4px 4px 4px 4px;
+	-webkit-border-radius:	4px 4px 4px 4px;
+	-o-border-radius:		4px 4px 4px 4px;
 }
 
 .grid-view .empty {

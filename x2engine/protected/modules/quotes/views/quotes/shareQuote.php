@@ -46,7 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Delete Quote'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ),$authParams);
 ?>
-<h2><?php echo Yii::t('quotes','Share Quote');?>: <b><?php echo $model->name;?></b></h2>
+<div class="page-title icon quotes"><h2><span class="no-bold"><?php echo Yii::t('quotes','Share Quote');?>:</span> <?php echo $model->name;?></h2></div>
 <?php
 if(!empty($status)) {
 	$index = array_search('200',$status);

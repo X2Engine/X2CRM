@@ -57,7 +57,7 @@ $this->actionMenu = $this->formatMenu($menuItems,$authParams);
 
 
 ?>
-<div class="page-title">
+<div class="page-title icon accounts">
 	<h2><span class="no-bold"><?php echo Yii::t('accounts','Update:'); ?></span> <?php echo $model->name; ?></h2>
 </div>
 

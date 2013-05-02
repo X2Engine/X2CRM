@@ -44,14 +44,19 @@ class X2FlowRecordListAdd extends X2FlowAction {
 	public $info = 'Add this record to a static list.';
 	
 	public function paramRules() {
-		return array('title'=>$this->title,'info'=>$this->info,'fields'=>array(
-			'model' => array(),
-			'listId' => array('label'=>'List','type'=>'lookup','linkType'=>'X2List'),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'modelRequired' => 'Contacts',
+			'options' => array(
+				array('name'=>'listId','label'=>'List','type'=>'link','linkType'=>'X2List','linkSource'=>Yii::app()->controller->createUrl(
+					CActiveRecord::model('X2List')->autoCompleteSource
+				)),
+			));
 	}
 	
-	public function execute($params) {
-		$list = CActiveRecord::model('X2List')->findByPk($params['listId']);
+	public function execute(&$params) {
+		$list = CActiveRecord::model('X2List')->findByPk($this->config['options']['listId']);
 		if($list !== null && $list->modelName === get_class($params['model']))
 			return $list->addIds($params['model']->id);
 		else

@@ -30,7 +30,7 @@ INSERT INTO x2_widgets (name, userID, posPROF, posDASH, dispNAME, needUSER) VALU
 ("QuickContact",1,3,3,"Quick Contact",0),
 ("GoogleMaps",1,4,4,"Google Map",1),
 ("Twitter Feed",1,5,5,"Twitter Feed",1),
-("ChatBox",1,6,6,"Chat",0),
+("ChatBox",1,6,6,"Activity Feed",0),
 ("NoteBox",1,7,7,"Note Pad",0),
 ("ActionMenu",1,8,8,"My Actions",0),
 ("TagCloud",1,9,9,"Tag Cloud",0),

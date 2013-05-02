@@ -81,7 +81,7 @@ $(function() {
 		array(
 			'name' => Yii::t('app','Description'), 
 			'type' => 'raw',
-			'value' => 'Yii::app()->controller->truncateText(CHtml::encode($data["description"]),140)'
+			'value' => 'Formatter::truncateText(CHtml::encode($data["description"]),140)'
 		),
         array(
 			'name' => Yii::t('app','Assigned To'),

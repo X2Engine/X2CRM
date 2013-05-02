@@ -57,7 +57,7 @@ function refreshQtip() {
 	});
 	
 	if($("#Relationships_Contacts_autocomplete").length == 1) {
-		$("#Relationships_Contacts_autocomplete").data( "autocomplete" )._renderItem = function( ul, item ) {
+		$("#Relationships_Contacts_autocomplete").data( "uiAutocomplete" )._renderItem = function( ul, item ) {
 			var label = "<a style=\"line-height: 1;\">" + item.label;
 			label += "<span style=\"font-size: 0.7em; font-weight: bold;\">";
 			if(item.city || item.state || item.country) {
@@ -99,11 +99,10 @@ $(function() {
 });
 ');
 
-$modelName = ucwords($modelName);
-$relationshipsDataProvider = new CActiveDataProvider('Relationships', array(
-    'criteria' => array(
-    	'condition' => "(firstType=\"$modelName\" AND firstId=\"{$model->id}\") OR (secondType=\"$modelName\" AND secondId=\"{$model->id}\")",
-    )
+$relationshipsDataProvider = new CArrayDataProvider($model->relatedX2Models,array(
+	'id' => 'relationships-gridview',
+	'sort' => array('attributes'=>array('name','myModelName','createDate','assignedTo')),
+	'pagination' => array('pageSize'=>10)
 ));
 
 $hideRelationships = true;
@@ -111,13 +110,6 @@ if($startHidden == false) {
 	$relationshipsCount = count($relationshipsDataProvider->data);
 	if($relationshipsCount > 1) {
 		$hideRelationships = false;
-	} else if($relationshipsCount == 1) {
-		$relationshipsData = $relationshipsDataProvider->data;
-		$relationship = $relationshipsData[0];
-		$hideRelationships = false;
-		if($modelName == 'Contacts' && $relationship && ($relationship->firstType == 'Accounts' || $relationship->secondType == 'Accounts') ) {
-			$hideRelationships = true;
-		}
 	}
 }
 ?>
@@ -125,7 +117,7 @@ if($startHidden == false) {
 <div id="relationships-form" style="text-align: center;<?php //echo ($hideRelationships? ' display: none;' : ''); ?>">
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>"opportunities-grid",
+	'id'=>"relationships-grid",
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<div class="title-bar">'
 		.'{summary}</div>{items}{pager}',
@@ -135,34 +127,34 @@ if($startHidden == false) {
         array(
 			'name'=>'name',
 			'header'=>Yii::t("contacts",'Name'),
-			'value'=>'($data->firstType=="'.$modelName.'" && $data->firstId=="'.$model->id.'")?
-                            ((class_exists($data->secondType) && !is_null(X2Model::model($data->secondType)->findByPk($data->secondId)))?CHtml::link(X2Model::model($data->secondType)->findByPk($data->secondId)->name,array("/".(strtolower($data->secondType)=="opportunity"? "opportunities" : lcfirst($data->secondType))."/".$data->secondId."/"), array("class"=>($data->secondType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found.")):
-                            ((class_exists($data->firstType) && !is_null(X2Model::model($data->firstType)->findByPk($data->firstId)))?CHtml::link(X2Model::model($data->firstType)->findByPk($data->firstId)->name,array("/".(strtolower($data->firstType)=="opportunity"? "opportunities" : lcfirst($data->firstType))."/".$data->firstId."/"), array("class"=>($data->firstType=="Contacts"? "contact-name":null))):Yii::t("app","Record not found."))',
+			'value'=>'$data->link',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
 		),
 		array(
-			'name'=>'secondType',
+			'name'=>'myModelName',
 			'header'=>Yii::t("contacts",'Type'),
-			'value'=>"(\$data->firstType==\"$modelName\" && \$data->firstId==\"{$model->id}\")?Yii::t('app',\$data->secondType):Yii::t('app',\$data->firstType)",
+			'value'=>'$data->myModelName',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
 		),
         array(
-			'name'=>'name',
+			'name'=>'assignedTo',
 			'header'=>Yii::t("contacts",'Assigned To'),
-			'value'=>'($data->firstType=="'.$modelName.'" && $data->firstId=="'.$model->id.'")?
-                            ((class_exists($data->secondType) && !is_null(X2Model::model($data->secondType)->findByPk($data->secondId)) && X2Model::model($data->secondType)->hasAttribute("assignedTo"))?UserChild::getUserLinks(X2Model::model($data->secondType)->findByPk($data->secondId)->assignedTo):Yii::t("app","Record not found.")):
-                            ((class_exists($data->firstType) && !is_null(X2Model::model($data->firstType)->findByPk($data->firstId)) && X2Model::model($data->firstType)->hasAttribute("assignedTo"))?UserChild::getUserLinks(X2Model::model($data->firstType)->findByPk($data->firstId)->assignedTo):Yii::t("app","Record not found."))',
+			'value'=>'$data->renderAttribute("assignedTo")',
 			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
+		),
+		array(
+			'name'=>'createDate',
+			'header'=>Yii::t('contacts','Date Created'),
+			'value'=>'$data->renderAttribute("createDate")',
+			'type' => 'raw'
 		),
         array(
 			'name'=>'deletion',
 			'header'=>Yii::t("contacts",'Delete'),
-			'value'=>"CHtml::link('Delete','#',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?id='.\$data->id.'&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
+			'value'=>"CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/delete.png'),'#',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?id='.\$data->id.'&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
             'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
+			'htmlOptions'=>array('style'=>'width:25px;text-align:center;'),
+			'headerHtmlOptions'=>array('style'=>'width:50px'),
 		),
 	),
 ));
@@ -212,7 +204,7 @@ if($startHidden == false) {
 					if(response == "duplicate") {
 						alert("Relationship already exists.");
 					} else if(response == "success") {
-						$.fn.yiiGridView.update("opportunities-grid");
+						$.fn.yiiGridView.update("relationships-grid");
 						$("#Relationships_Contacts_autocomplete").val("");
 						$("#Relationships_Contacts_id").val("");
 					}
@@ -270,7 +262,7 @@ if($startHidden == false) {
 					if(response == "duplicate") {
 						alert("Relationship already exists.");
 					} else if(response == "success") {
-						$.fn.yiiGridView.update("opportunities-grid");
+						$.fn.yiiGridView.update("relationships-grid");
 						$("#Relationships_Accounts_autocomplete").val("");
 						$("#Relationships_Accounts_id").val("");
 					}
@@ -331,7 +323,7 @@ echo CHtml::ajaxButton(
 			if(response == "duplicate") {
 				alert("Relationship already exists.");
 			} else if(response == "success") {
-				$.fn.yiiGridView.update("opportunities-grid");
+				$.fn.yiiGridView.update("relationships-grid");
 				$("#Relationships_Opportunity_autocomplete").val("");
 				$("#Relationships_Opportunity_id").val("");
 			}

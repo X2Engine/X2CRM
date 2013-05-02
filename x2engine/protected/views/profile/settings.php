@@ -34,24 +34,27 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex');
+$canEdit = $model->id == Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex');
 
 $this->actionMenu = array(
-	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
-	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
-	array('label'=>Yii::t('profile','Change Settings')),
-	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $model->id)),
+    array('label' => Yii::t('profile', 'Update Profile'), 'url' => array('update', 'id' => $model->id), 'visible' => $canEdit),
+    array('label' => Yii::t('profile', 'Change Settings')),
+    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)),
 );
 ?>
-<div class="page-title"><h2><?php echo Yii::t('profile','Change Personal Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('profile', 'Change Personal Settings'); ?></h2></div>
 
 
-<?php echo $this->renderPartial('_settings',
-	array(
-		'model'=>$model,
-		'languages'=>$languages,
-		'times'=>$times,
-		'myBackgrounds'=>$myBackgrounds,
-		'menuItems'=>$menuItems,
-        'allTags'=>$allTags
-	)); ?>
+<?php
+echo $this->renderPartial('_settings', array(
+    'model' => $model,
+    'languages' => $languages,
+    'times' => $times,
+    'myBackgrounds' => $myBackgrounds,
+    'myLoginSounds' => $myLoginSounds,
+    'myNotificationSounds' => $myNotificationSounds,
+    'menuItems' => $menuItems,
+    'allTags' => $allTags
+));
+?>

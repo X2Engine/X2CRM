@@ -48,15 +48,16 @@ class X2FlowWorkflowComplete extends X2FlowAction {
 		$workflowIds = array_keys($workflows);
 		$stages = count($workflowIds)? Workflow::getStages($workflowIds[0]) : array('---');
 		
-		return array('title'=>$this->title,'fields'=>array(
-			'model'			=>	array(),
-			'workflowId'	=>	array('label'=>'Workflow',			'type'=>'dropdown','options'=>$workflows),
-			'stageNumber'	=>	array('label'=>'Stage',				'type'=>'dropdown','options'=>$stages),
-
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'modelRequired' => 1,
+			'options'=>array(
+				array('name'=>'workflowId','label'=>'Workflow','type'=>'dropdown','options'=>$workflows),
+				array('name'=>'stageNumber','label'=>'Stage','type'=>'dropdown','options'=>$stages),
+			));
 	}
 	
-	public function execute($params) {
+	public function execute(&$params) {
 		
 	}
 }

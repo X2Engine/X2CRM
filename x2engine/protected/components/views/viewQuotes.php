@@ -56,7 +56,7 @@ $productTableInit = "$(function() {\n";
 foreach($orders as $order) {
 	if($order->adjustmentType == 'percent')
 		$order->adjustment = "'{$order->adjustment}%'";
-	$productTableInit .= "	addFilledProduct({$quote->id}, {$order->productId}, {$order->price}, {$order->quantity}, ".(!empty($order->adjustment)?$order->adjustment:0).", '{$quote->currency}', $productNames, $prices);\n";
+	$productTableInit .= "	addFilledProduct({$quote->id}, ".(empty($order->productId)?'""':$order->productId).", {$order->price}, {$order->quantity}, ".(!empty($order->adjustment)?$order->adjustment:0).", '{$quote->currency}', $productNames, $prices);\n";
 }
 $productTableInit .= "	$('#quote-update-{$quote->id}').hide();\n";
 $productTableInit .= "});\n";
@@ -83,8 +83,7 @@ $deleteButton = ' '. CHtml::ajaxLink(
 	'['. Yii::t('quotes', 'Delete') .']', 
 	Yii::app()->createUrl('/quotes/quotes/quickDelete', array('id'=>$quote->id, 'contactId'=>$contactId)),
 	array(
-		'success' => "function(html) { jQuery('#quote-form-wrapper').html(html); }",
-		'complete'=>"function(response) { $.fn.yiiListView.update('contact-history'); }"
+		'success' => "function(html) { quickQuote.reloadAll(); }",
 	),
 	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
 );
@@ -92,7 +91,7 @@ $deleteButton = ' '. CHtml::ajaxLink(
 
 <?php /*** Email Quote ***/
 
-$emailName = "<br />
+$emailName = "<br /><br /><br />
 <table style=\"width:100%;\">
 	<tbody>
 		<tr>
@@ -131,7 +130,7 @@ $printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(
 
 
 <?php /*** Duplicate Quote ***/
-
+/*
 $jsProductArray = '[ ';
 foreach($orders as $order) {
 	$jsProductArray .= '{ ';
@@ -155,7 +154,7 @@ $jsDuplicateQuote .= "'prices': $prices,";
 $jsDuplicateQuote .= ' }';
 
 $duplicateButton = CHtml::link('['. Yii::t('products', 'Duplicate') .']', 'javascript:void(0);', array('onClick'=>"duplicateQuote($jsDuplicateQuote)"));
-
+*/
 /*** End Duplicate Quote ***/
 
 
@@ -168,8 +167,7 @@ if($quote->type != 'invoice') {
 	'['. Yii::t('quotes', 'Invoice') .']', 
 	Yii::app()->createUrl('/quotes/quotes/convertToInvoice', array('id'=>$quote->id, 'contactId'=>$contactId)),
 	     array(
-	     	'success'=>"function(html) { jQuery('#quote-form-wrapper').html(html); }",
-	     	'complete'=>"function(response) { $.fn.yiiListView.update('history'); }",
+	     	'success'=>"function(html) { quickQuote.reloadAll()}",
 	     ),
 	     array('id'=>"convert-to-invoice-quote-{$quote->id}", 'title'=> Yii::t('quotes', 'Convert To Invoice'), 'live'=>false)
 	);
@@ -200,7 +198,7 @@ if($quote->type != 'invoice') {
 				<?php echo $deleteButton; ?>
 				<?php echo $emailButton; ?>
 				<?php echo $printButton; ?>
-				<?php echo $duplicateButton; ?>
+				<?php // echo $duplicateButton; ?>
 				<?php echo $convertToIncoieButton; ?>
 			</td>
 		</tr>
@@ -211,20 +209,20 @@ if($quote->type != 'invoice') {
 		</tr>
 		<tr>
 			<td>
-				<?php echo $this->controller->formatLongDate($quote->createDate); ?>
+				<?php echo Formatter::formatLongDate($quote->createDate); ?>
 			</td>
 			<td>
-				<?php echo $this->controller->formatLongDate($quote->lastUpdated); ?>
+				<?php echo Formatter::formatLongDate($quote->lastUpdated); ?>
 			</td>
 			<td>
-				<?php echo $this->controller->formatLongDate($quote->expirationDate); ?>
+				<?php echo Formatter::formatLongDate($quote->expirationDate); ?>
 			</td>
 		</tr>
 		<tr>
 			<th><?php echo Yii::t('quotes', 'Created By'); ?></th>
 			<th><?php echo Yii::t('quotes', 'Updated By'); ?></th>
 			<th><?php echo Yii::t('quotes', 'Status'); ?></th>
-		</tr>
+		</tr>	
 		<tr>
 			<td><?php echo $quote->createdBy; ?></td>
 			<td><?php echo $quote->updatedBy; ?></td>
@@ -241,50 +239,12 @@ if($quote->type != 'invoice') {
 		</tr>
 		<?php } ?>
 	</tbody>
-</table>
+</table><br />
 
-<?php 
-$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>"quote-{$quote['id']}-grid",
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'summaryText'=>'',
-	'loadingCssClass'=>'grid-view-loading',
-	'dataProvider'=>$dataProvider,
-	'columns'=>array(
-		array(
-			'name'=>'name',
-			'header'=>Yii::t('products','Line Item'),
-			'value'=>'$data["name"]',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'unit',
-			'header'=>Yii::t('products','Unit Price'),
-			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$quote->currency.'")',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'quantity',
-			'header'=>Yii::t('products','Quantity'),
-			'value'=>'$data["quantity"]',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'adjustment',
-			'header'=>Yii::t('products', 'Adjustment'),
-			'value'=>'$data["adjustment"]',
-			'type'=>'raw',
-			'footer'=>'<b>Total</b>',
-		),
-		array(
-			'name'=>'price',
-			'header'=>Yii::t('products', "Price"),
-			'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$quote->currency.'")',
-			'type'=>'raw',
-			'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$quote->currency) .'</b>',
-		),
-	),
-)); 
+<?php
+
+echo $quote->productTable();
+
 ?>
 
 </div>
@@ -293,12 +253,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 
 <?php /*** Begin Quote Update View ***/ ?>
+<?php /*
+
 <div id="quote-update-<?php echo $quote->id; ?>">
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>"update-quote-form-{$quote->id}",
 	'enableAjaxValidation'=>false,
 )); ?>
-
 <table class="quote-detail-table">
 	<tbody>
 		<tr>
@@ -315,13 +276,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			</td>
 			<td>
 				<?php Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-				$quote->expirationDate = $this->controller->formatDate($quote->expirationDate);
+				$quote->expirationDate = Formatter::formatDate($quote->expirationDate);
 				$this->widget('CJuiDateTimePicker',array(
 					'model'=>$quote, //Model object
 					'attribute'=>'expirationDate', //attribute name
 					'mode'=>'date', //use "time","date" or "datetime" (default)
 					'options'=>array(
-						'dateFormat'=>$this->controller->formatDatePicker(),
+						'dateFormat'=>Formatter::formatDatePicker(),
 					), // jquery plugin options
 					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
 					'htmlOptions' => array('id'=>"quote-{$quote->id}-expires"),
@@ -338,7 +299,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			<td><?php echo $quote->createdBy; ?></td>
 			<td><?php echo $quote->updatedBy; ?></td>
 			<td>
-					<?php echo $form->dropDownList($quote, 'status', Quote::statusList()); ?>
+					<?php echo $form->dropDownList($quote, 'status', Quote::getStatusList()); ?>
 					<?php echo $form->error($quote,'status'); ?>
 					<span style="padding-left: 5px;">
 						<?php echo Yii::t('quotes', $attributeLabel['locked']); ?>
@@ -405,6 +366,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <?php $this->endWidget() ?>
 
 </div>
+
+ */ ?>
 <?php /*** End Quote Update View ***/ ?>
 
 <br />

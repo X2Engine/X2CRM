@@ -300,8 +300,8 @@ class WorkflowController extends x2base {
 		if(isset($model,$action,$_POST['Actions'])) {
 			$action->setScenario('workflow');
 
-			$action->createDate = X2Model::parseDate($_POST['Actions']['createDate']);
-			$action->completeDate = X2Model::parseDate($_POST['Actions']['completeDate']);
+			$action->createDate = Formatter::parseDate($_POST['Actions']['createDate']);
+			$action->completeDate = Formatter::parseDate($_POST['Actions']['completeDate']);
 			$action->actionDescription = $_POST['Actions']['actionDescription'];
 
 			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->params->admin->workflowBackdateReassignment))
@@ -360,7 +360,7 @@ class WorkflowController extends x2base {
 				$model->updateLastActivity();
 				
 				if(!$workflowStatus['started'])
-					X2Flow::trigger('workflow_started',array(
+					X2Flow::trigger('WorkflowStartTrigger',array(
 						'workflow'=>$action->workflow,
 						'model'=>$model,
 					));
@@ -417,11 +417,13 @@ class WorkflowController extends x2base {
 				$actionModels[0]->disableBehavior('tags');	// no tags up in here
 				
 				$actionModels[0]->completeDate = time();	// set completeDate and save model
+                $actionModels[0]->dueDate=null;
 				$actionModels[0]->complete = 'Yes';
 				$actionModels[0]->completedBy = Yii::app()->user->getName();
 				// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
-				$actionModels[0]->actionDescription = $comment;
-				$actionModels[0]->save();
+				if($actionModels[0]->save()){
+                    $actionModels[0]->actionDescription = $comment;
+                }
 				
 				$model->updateLastActivity();
 				
@@ -467,7 +469,7 @@ class WorkflowController extends x2base {
 				$workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);	// refresh the workflow status
 				
 				if($workflowStatus['completed'])
-					X2Flow::trigger('workflow_completed',array(
+					X2Flow::trigger('WorkflowCompleteTrigger',array(
 						'workflow'=>$actionModels[0]->workflow,
 						'model'=>$model,
 					));
@@ -636,7 +638,7 @@ class WorkflowController extends x2base {
 						array(
 					'name'=>'expectedCloseDate',
 					'header'=>Yii::t('contacts','Expected Close Date'),
-					'value'=>'Yii::app()->controller->formatDate($data["lastUpdated"])',
+					'value'=>'Formatter::formatDate($data["lastUpdated"])',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'15%')
 				),
@@ -689,7 +691,7 @@ class WorkflowController extends x2base {
 				array(
 					'header'=>X2Model::model('Opportunity')->getAttributeLabel('expectedCloseDate'),
 					'name'=>'expectedCloseDate',
-					'value'=>'Yii::app()->controller->formatDate($data["expectedCloseDate"])',
+					'value'=>'Formatter::formatDate($data["expectedCloseDate"])',
 					'type'=>'raw',
 					'htmlOptions'=>array('width'=>'13%'),
 				),
@@ -811,17 +813,17 @@ class WorkflowController extends x2base {
 		$event->user = Yii::app()->user->getName();
 		
 		if($changeType === 'start') {
-			$trigger = 'workflow_stage_started';
+			$trigger = 'WorkflowStageStartTrigger';
 			$event->type = 'workflow_start';
 			$changelog->newValue='Workflow Stage Started: '.$stageName;
 			
 		} elseif($changeType === 'complete') {
-			$trigger = 'workflow_stage_completed';
+			$trigger = 'WorkflowStageCompleteTrigger';
 			$event->type = 'workflow_complete';
 			$changelog->newValue = 'Workflow Stage Completed: '.$stageName;
 			
 		} elseif($changeType === 'revert') {
-			$trigger = 'workflow_stage_reverted';
+			$trigger = 'WorkflowStageRevertTrigger';
 			$event->type = 'workflow_revert';
 			$changelog->newValue = 'Workflow Stage Reverted: '.$stageName;
 			

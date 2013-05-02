@@ -41,21 +41,54 @@
  */
 class X2FlowCreateEvent extends X2FlowAction {
 	public $title = 'Post to Activity Feed';
-	public $info = '';
+	public $info = 'Creates an activity event.'; // You can write your own message, or X2CRM will automatically choose one based on what triggered this flow.';
 	
 	public function paramRules() {
-		$eventTypes = array('auto'=>Yii::t('app','Auto')) + Dropdowns::getItems(113,'app');
+		// $eventTypes = array('auto'=>Yii::t('app','Auto')) + Dropdowns::getItems(113,'app');
+		$eventTypes = Dropdowns::getItems(113,'app');
 		
-		return array('title'=>$this->title,'fields' => array(
-			'type' => array('label'=>'Post Type','type'=>'dropdown','options'=>$eventTypes),
-			'text' => array('label'=>'Text','type'=>'text'),
-			'user' => array('label'=>'User','type'=>'assignment'),
-			'createNotif' => array('label'=>'Create Notification?','type'=>'boolean','default'=>true),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'options' => array(
+				array('name'=>'type','label'=>'Post Type','type'=>'dropdown','options'=>$eventTypes),
+				array('name'=>'text','label'=>'Text','type'=>'text'),
+				// array('name'=>'user','label'=>'User','type'=>'dropdown','options'=>array(''=>'----------')+X2Model::getAssignmentOptions(false,false)),
+				array('name'=>'createNotif','label'=>'Create Notification?','type'=>'boolean','defaultVal'=>true),
+			));
 	}
-	
-	public function execute($params) {
-		// $event = new Events;
-		// return $event->save();
+
+	public function execute(&$params) {
+		$options = &$this->config['options'];
+		
+		$event = new Events;
+		$notif = new Notification;
+		
+		// $event->user = $options['user'];
+		
+		if($options['type'] === 'auto') {
+			if(!isset($params['model']))
+				return false;
+			$notif->modelType = get_class($params['model']);
+			$notif->modelId = $params['model']->id;
+			$notif->type = $this->getNotifType();
+			
+			$event->associationType = get_class($params['model']);
+			$event->associationId = $params['model']->id;
+			$event->type = $this->getEventType();
+			$event->visibility = $params['model']->visibility;
+			// $event->user = $options['user'];
+		} else {
+			$notif->type = 'custom';
+			$notif->text = $options['text'];
+			
+			$event->type = 'feed';
+			$event->subtype = $options['type'];
+			$event->text = $options['text'];
+			$event->user = 'admin';
+		}
+		if(!$options['createNotif'])
+			$notif->save();
+		$event->save();
 	}
 }

@@ -150,7 +150,7 @@ class OpportunitiesController extends x2base {
 			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
 		$model->createDate = time();
 		$model->lastUpdated = time();
-		// $model->expectedCloseDate = X2Model::parseDate($model->expectedCloseDate);
+		// $model->expectedCloseDate = Formatter::parseDate($model->expectedCloseDate);
 		if($api == 1) {
 			return parent::create($model,$oldAttributes,$api);
 		} else {
@@ -301,23 +301,11 @@ class OpportunitiesController extends x2base {
 		foreach(Groups::model()->findAll() as $group)
 			$users[$group->id]=$group->name;
 		
-		$contacts=Contacts::getAllNames();
-		unset($contacts['0']);
-		
-		// $curUsers=$model->assignedTo;
-		// $userPieces=explode(', ',$curUsers);
-		// $arr=array();
-		// foreach($userPieces as $piece){
-			// $arr[]=$piece;
-		// }
-		// $model->assignedTo=$arr;
-		
 		$model->assignedTo = explode(' ',$model->assignedTo);
 		
 		$model->associatedContacts = explode(' ',$model->associatedContacts);
 		
 		if(isset($_POST['Opportunity'])) {
-			$temp=$model->attributes;
 			$model->setX2Fields($_POST['Opportunity']);
 
 			// $this->update($model,$temp);
@@ -328,7 +316,6 @@ class OpportunitiesController extends x2base {
 		$this->render('update',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$contacts,
 		));
 	}
 	/*
@@ -360,11 +347,9 @@ class OpportunitiesController extends x2base {
 		$users=User::getNames();
 		unset($users['admin']);
 		unset($users['']);
-                foreach(Groups::model()->findAll() as $group){
-                    $users[$group->id]=$group->name;
-                }
-		$contacts=Contacts::getAllNames();
-                unset($contacts['0']);
+        foreach(Groups::model()->findAll() as $group){
+            $users[$group->id]=$group->name;
+        }
 		$model=$this->loadModel($id);
 		$users=Opportunity::editUserArray($users,$model);
 
@@ -393,7 +378,6 @@ class OpportunitiesController extends x2base {
 		$this->render('addUser',array(
 			'model'=>$model,
 			'users'=>$users,
-			'contacts'=>$contacts,
 			'action'=>'Add'
 		));
 	}

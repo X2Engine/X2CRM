@@ -44,24 +44,21 @@ class X2FlowRecordCreate extends X2FlowAction {
 	public $info = '';
 	
 	public function paramRules() {
-		$modelTypes = Yii::app()->db->createCommand()
-			->selectDistinct('modelName')
-			->from('x2_fields')
-			->where('modelName!="Calendar"')
-			->queryColumn();
-		$modelTypes = array_combine($modelTypes,$modelTypes);
-		
-		return array('title'=>$this->title,'fields'=>array(
-			'modelType' => array('label'=>'Record Type','type'=>'dropdown','options'=>$modelTypes),
-			'attributes' => array(),
-		));
+		return array(
+			'title' => $this->title,
+			'modelClass' => 'modelClass',
+			'options' => array(
+				array('name'=>'attributes'),
+				array('name'=>'modelClass','label'=>'Record Type','type'=>'dropdown','options'=>X2Model::getModelTypes(true)),
+			)
+		);
 	}
 	
-	public function execute($params) {
-		if(!is_subclass_of($params['modelType'],'X2Model'))	// make sure this is a valid model type
+	public function execute(&$params) {
+		if(!is_subclass_of($params['modelClass'],'X2Model'))	// make sure this is a valid model type
 			return false;
 			
-		$model = new $params['modelType'];
+		$model = new $params['modelClass'];
 		return $this->setModelAttributes($model,$params) && $model->save();
 	}
 }

@@ -21,7 +21,7 @@ CREATE TABLE x2_campaigns (
 	lastUpdated				BIGINT	 		NOT NULL,
 	lastActivity			BIGINT,
 	updatedBy				VARCHAR(20),
-	
+
 	PRIMARY KEY (id),
 	FOREIGN KEY (masterId) REFERENCES x2_campaigns(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
@@ -51,13 +51,13 @@ CREATE TABLE x2_web_forms(
 	lastUpdated				BIGINT	 		NOT NULL,
 	userEmailTemplate		INT,
 	webleadEmailTemplate	INT,
-	
+
 	PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
+INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("marketing",		"Marketing",		1,			2,				0,			1,			0,			0,		0);
+	VALUES	("marketing",		"Marketing",		1,			3,				0,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)

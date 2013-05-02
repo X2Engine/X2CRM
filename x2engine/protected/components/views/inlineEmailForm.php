@@ -36,8 +36,11 @@
 
 
 ?>
+	<div class="form email-status"  id="inline-email-status" style="display:none"></div>
 <div id="inline-email-top"></div>
+
 <div id="inline-email-form">
+	<span id="template-change-confirm" style="display:none"><?php echo Yii::t('app','Note: if you load a template, you lose changes you have made. Are you sure you want to continue?'); ?></span>
 <?php
 /* if(isset($preview) && !empty($preview)) { ?>
 <div class="form">
@@ -66,6 +69,8 @@ if(!empty($model->status)) {
 	echo '</div>';
 }
 ?>
+
+
 <div id="email-mini-module" class="wide form<?php if($emailSent) echo ' hidden'; ?>">
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'enableAjaxValidation'=>false,
@@ -75,6 +80,7 @@ if(!empty($model->status)) {
 	echo $form->hiddenField($model,'modelName');
 	?>
 	<div class="row">
+		<div id="inline-email-errors" class="error" style="display:none"></div>
 		<?php echo $form->errorSummary($model, Yii::t('app', "Please fix the following errors:"), null, array('style'=>'margin-bottom: 5px;')); ?>
 	</div>
 	<div class="row">
@@ -97,7 +103,7 @@ if(!empty($model->status)) {
 	<div class="row">
 		<?php echo $form->label($model,'subject', array('class'=>'x2-email-label')); ?>
 		<?php echo $form->textField($model,'subject', array('style'=>'width: 265px;', 'tabindex'=>'4')); ?>
-		<?php $templateList = Docs::getEmailTemplates(); ?>
+		<?php $templateList = Docs::getEmailTemplates($type); ?>
 		<?php $templateList = array('0'=>Yii::t('docs','Custom Message')) + $templateList; ?>
 		<?php echo $form->label($model,'template', array('class'=>'x2-email-label', 'style'=>'float: none; margin-left: 10px; vertical-align: text-top;')); ?>
 		<?php echo $form->dropDownList($model,'template',$templateList,array('id'=>'email-template')); ?>
@@ -147,9 +153,9 @@ if(!empty($model->status)) {
 		Yii::t('app','Send'),
 		array('inlineEmail','ajax'=>1),
 		array(
-			'beforeSend'=>"function() { $('#email-sending-icon').show(); }",
-			'replace'=>'#inline-email-form',
-			'complete'=>"function(response) { $('#email-sending-icon').hide(); updateHistory(); setupInlineEmailForm(); return false; }",
+			'beforeSend'=>"setInlineEmailFormLoading",
+			'dataType' => 'json',
+			'success'=>"handleInlineEmailActionResponse",
 		),
 		array(
 			'id'=>'send-email-button',

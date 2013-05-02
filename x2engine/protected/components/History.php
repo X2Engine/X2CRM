@@ -36,8 +36,8 @@
 
 /**
  * Renders a CListView containing all actions associated with the specified model
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class History extends X2Widget {
 	public $associationType;		// type of record to associate actions with
@@ -54,20 +54,20 @@ class History extends X2Widget {
 			'attachments'=>'Attachments',
 			'marketing'=>'Marketing',
 		);
-		
+
 		if(isset($_GET['history']) && array_key_exists($_GET['history'],$historyTabs))
 			$this->historyType = $_GET['history'];
-		
+
 		foreach($historyTabs as $type => &$label) {
 			if($type == $this->historyType)
 				$label = Yii::t('app',$label);
 			else
 				$label = CHtml::link(Yii::t('app',$label),'javascript:$.fn.yiiListView.update("history", {data: "history='.$type.'"})');
 		}
-		
+
 		$historyTabs['collapse'] = '<a href="#" id="history-collapse" onclick="javascript:$(\'#history .description\').toggle();">[&ndash;]</a>';
-		
-		
+
+
 		$this->widget('zii.widgets.CListView', array(
 			'id'=>'history',
 			'dataProvider'=>$this->getHistory(),
@@ -76,7 +76,7 @@ class History extends X2Widget {
 			'template'=>'<div class="publisher-tabs">'.implode(' | ',array_values($historyTabs)).'</div> {sorter}{items}{pager}',
 		));
 	}
-	
+
 	public function getHistory() {
 
 		$historyCriteria = array(
@@ -87,12 +87,12 @@ class History extends X2Widget {
 			'attachments'=>' AND type="attachment"',
 			'marketing'=>' AND type IN ("email","webactivity","weblead","email_staged","email_opened","email_clicked","email_unsubscribed")',
 		);
-
+        
 		return new CActiveDataProvider('Actions',array(
 			'criteria'=>array(
 				'order'=>'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
-				'condition'=>'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'" 
-					AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
+				'condition'=>'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"
+					AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
 			)
 		));
 	}

@@ -44,7 +44,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div class="page-title"><h2><?php echo Yii::t('contacts','Export Contacts'); ?></h2></div>
+<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Export Contacts'); ?></h2></div>
 <div class="form">
 <div style="width:600px;">
     <?php echo Yii::t('contacts','Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.') ?><br><br>

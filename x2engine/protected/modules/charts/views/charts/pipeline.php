@@ -50,8 +50,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 
 <div class="form">
-	<h1><?php echo Yii::t('app', 'Pipeline Dashboard'); ?>&nbsp;&nbsp;</h1>
-	<br>
+	<div class="page-title icon charts"><h2><?php echo Yii::t('app', 'Pipeline Dashboard'); ?>&nbsp;&nbsp;</h2></div>
 	<br>
 
 	<?php

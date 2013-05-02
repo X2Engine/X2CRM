@@ -44,7 +44,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div class="page-title"><h2><?php echo Yii::t('contacts','Import Contacts from Template'); ?></h2></div>
+<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Import Contacts from Template'); ?></h2></div>
 <div class="form">
 <div id="info-box" style="width:600px;">
 <?php echo Yii::t('contacts','To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'); ?>

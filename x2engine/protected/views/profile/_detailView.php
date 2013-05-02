@@ -71,7 +71,7 @@ function checkPictureExt(el, sbm) {
 		$(sbm).attr('disabled','disabled');
 		alert('\".'+ ar_ext+ '\" is not an file type allowed for upload');
 	}
-	
+
 
 }
 
@@ -93,27 +93,27 @@ $attributeLabels = $model->attributeLabels();
 			<span class="file-wrap3per">
 			<?php
 			// getimagesize()
-			
-			if(isset($model->avatar) && $model->avatar!='') {
+
+			if(isset($model->avatar) && $model->avatar!='' && file_exists($model->avatar)) {
 
 				$imgSize = @getimagesize($model->avatar);
 				// die( var_dump($imgSize));
 				if(!$imgSize)
-					$imgSize = array(125,125);
-				
+					$imgSize = array(45,45);
+
 				$maxDimension = max($imgSize[0],$imgSize[1]);
-				
+
 				$scaleFactor = 1;
-				if($maxDimension > 125)
-					$scaleFactor = 125 / $maxDimension;
-					
+				if($maxDimension > 250)
+					$scaleFactor = 250 / $maxDimension;
+
 				$imgSize[0] = round($imgSize[0] * $scaleFactor);
 				$imgSize[1] = round($imgSize[1] * $scaleFactor);
 				// echo var_dump($imgSize);
-				
+
 				echo '<img width="'.$imgSize[0].'" height="'.$imgSize[1].'" src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
 			} else
-				echo '<img width="125" height="125" src='.Yii::app()->request->baseUrl."/uploads/default.jpg".'>';
+				echo '<img width="45" height="45" src='.Yii::app()->request->baseUrl."/uploads/default.png".'>';
 			?>
 			<?php if($model->username == Yii::app()->user->getName()) {
 				echo CHtml::form('uploadPhoto/'.$model->id,'post',array('enctype'=>'multipart/form-data', 'id'=>'photo-form'));

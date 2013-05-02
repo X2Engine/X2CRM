@@ -39,5 +39,5 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>'Create Group'),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('groups','Create Group'); ?></h2></div>
+<div class="page-title icon groups"><h2><?php echo Yii::t('groups','Create Group'); ?></h2></div>
 <?php echo $this->renderPartial('_form', array('model'=>$model, 'users'=>$users)); ?>

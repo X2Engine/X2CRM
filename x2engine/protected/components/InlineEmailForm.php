@@ -36,54 +36,57 @@
 
 /**
  * Provides an inline form for sending email from a view page.
- * 
+ *
+ * @property integer $template The default template to use when opening the form.
+ * @property string $type Type; null is default (plain email). Specifies which list of templates to fetch.
+ * @property X2Model $targetModel The model of the form.
  * @package X2CRM.components 
  */
 class InlineEmailForm extends X2Widget {
 
-	public $model;
 	public $attributes;
+	public $template = null;
+	public $templateType = 'email';
+	public $model;
+	public $targetModel;
 	
-	public $insertableAttributes = null;
+	public $insertableAttributes;
 
 	public $errors = array();
 	public $startHidden = false;
 
 	public function init() {
-		// $this->startHidden = false;
-	
-		$this->model = new InlineEmail;
+			
+		// Prepare the model for initially displayed input:
+		$this->model = new InlineEmail();
+		if(isset($this->targetModel))
+			$this->model->targetModel = $this->targetModel;
+		// Bring in attributes set in the configuration:
 		$this->model->attributes = $this->attributes;
-		$signature = Yii::app()->params->profile->getSignature(true);
-		
-		//if message comes prepopulated, don't overwrite with signature
-		if (empty($this->model->message)) {
-			$this->model->message = empty($signature)? '' : '<br><br><!--BeginSig--><font face="Arial" size="2">'.$signature.'</font><!--EndSig-->';
-		}
-		
-		// die(var_dump($this->model->attributes));
-		
-		if(isset($_POST['InlineEmail'])) {
-			$this->model->attributes = $_POST['InlineEmail'];
-			$this->startHidden = false;
+		if(empty($this->template)){
+			if(empty($this->model->message))
+				$this->model->message = InlineEmail::emptyBody();
+			$this->model->insertSignature();
+		}else{
+			// Fill in the body with a template:
+			$this->model->scenario = 'template';
+			$this->model->prepareBody();
 		}
 
+		if((bool) $this->model->targetModel && !isset($this->insertableAttributes)) {
+			$this->insertableAttributes = $this->model->insertableAttributes;
+		}
+
+		// Load resources:
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/inlineEmailForm.js');
-		// var_dump($this->insertableAttributes);
-		if($this->insertableAttributes !== null) { // && !empty($this->model->attributes['modelName'])) {
-			// $this->insertableAttributes = array(
-				// Yii::t('contacts','Contact Attributes')=>X2Model::model($this->model->attributes['modelName'])->attributeLabels()
-			// );
+		if(!empty($this->insertableAttributes)) {
 			Yii::app()->clientScript->registerScript('setInsertableAttributes',
 				'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';',
 			CClientScript::POS_HEAD);
 		}
-		
-		
-		
  		Yii::app()->clientScript->registerScript('toggleEmailForm',
 		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n"),CClientScript::POS_HEAD);
 
@@ -91,8 +94,9 @@ class InlineEmailForm extends X2Widget {
 	}
 
 	public function run() {
-		$action = new InlineEmailAction($this->controller,'inlineEmail');
-		$action->model = &$this->model;
-		$action->run(); 
+		$this->render('application.components.views.inlineEmailForm', array(
+			'model' => $this->model,
+			'type' => $this->templateType
+		));
 	}
 }

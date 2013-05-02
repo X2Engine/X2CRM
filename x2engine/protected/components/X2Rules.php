@@ -43,7 +43,7 @@ class X2Rules {
 
 	// public $model;
 	
-	public function run() {
+	// public function run() {
 
 		
 		/*  Notification Engine
@@ -196,23 +196,13 @@ class X2Rules {
 				flowId					INT				NOT NULL,
 				active					TINYINT			NOT NULL DEFAULT 1,
 				type					VARCHAR(40)		NOT NULL,
-				parent					INT				NOT NULL,
+				modelClass				VARCHAR(40)		NULL,
+				isTrigger				TINYINT			NOT NULL DEFAULT 0,
+				nextIfTrue				INT				NULL,
+				nextIfFalse				INT				NULL,
+				config					TEXT			NULL,
 				
 				FOREIGN KEY (flowId) REFERENCES x2_flows(id) ON UPDATE CASCADE ON DELETE CASCADE
-				
-			) ENGINE InnoDB  COLLATE = utf8_general_ci;
-			
-			CREATE TABLE x2_flow_params(
-				id						INT				AUTO_INCREMENT PRIMARY KEY,
-				flowId					INT				NOT NULL,
-				itemId					INT				NOT NULL,
-				type					VARCHAR(40)		NOT NULL,
-				variable				VARCHAR(100)	NULL,
-				operator				VARCHAR(40)		NULL,
-				value					VARCHAR(500)	NULL,
-				
-				FOREIGN KEY (flowId) REFERENCES x2_flows(id) ON UPDATE CASCADE ON DELETE CASCADE,
-				FOREIGN KEY (itemId) REFERENCES x2_flow_items(id) ON UPDATE CASCADE ON DELETE CASCADE
 				
 			) ENGINE InnoDB  COLLATE = utf8_general_ci;
 			
@@ -233,10 +223,10 @@ class X2Rules {
 		// }
 		// $flowParam = new X2FlowParam;
 		// $flowParam->
-	}
+	// }
 	
 	
-	public static function getRules($trigger) {
+	// public static function getRules($trigger) {
 	
 		
 		// CActiveRecord::model('
@@ -247,7 +237,221 @@ class X2Rules {
 	
 	
 	
+	// }
+
+	
+	
+	
+	
+	// const T_VAR = 0;
+	// const T_SPACE = 1;
+	// const T_COMMA = 2;
+	// const T_OPEN_BRACKET = 3;
+	// const T_CLOSE_BRACKET = 4;
+	// const T_PLUS = 5;
+	// const T_MINUS = 6;
+	// const T_TIMES = 7;
+	// const T_DIVIDE = 8;
+	// const T_OPEN_PAREN = 9;
+	// const T_CLOSE_PAREN = 10;
+	// const T_NUMBER = 11;
+	// const T_ERROR = 12;
+
+	protected static $_tokenChars = array(
+		',' => 'COMMA',
+		'{' => 'OPEN_BRACKET',
+		'}' => 'CLOSE_BRACKET',
+		'+' => 'ADD',
+		'-' => 'SUBTRACT',
+		'*' => 'MULTIPLY',
+		'/' => 'DIVIDE',
+		'%' => 'MOD',
+		// '(' => 'OPEN_PAREN',
+		// ')' => 'CLOSE_PAREN',
+	);
+	protected static $_tokenRegex = array(
+		'\d+\.\d+\b|^\.?\d+\b' => 'NUMBER',
+		'[a-zA-Z]\w*\.[a-zA-Z]\w*' => 'VAR_COMPLEX',
+		'[a-zA-Z]\w*' => 'VAR',
+		'\s+' => 'SPACE',
+		'.' => 'UNKNOWN',
+	);
+	
+	/**
+	 * Breaks a string expression into an array of 2-element arrays (type, value) 
+	 * using {@link $_tokenChars} and {@link $_tokenRegex} to identify tokens
+	 * @param string $str the input expression
+	 * @return array a flat array of tokens
+	 */
+	protected static function tokenize($str) {
+		$tokens = array();
+		$offset = 0;
+		while($offset < mb_strlen($str)) {
+			$token = array();
+			
+			$substr = mb_substr($str,$offset);	// remaining string starting at $offset
+		
+			foreach(self::$_tokenChars as $char => &$name) {	// scan single-character patterns first
+				if(mb_substr($substr,0,1) === $char) {
+					$tokens[] = array($name);	// add it to $tokens
+					$offset++;
+					continue 2;
+				}
+			}
+			foreach(self::$_tokenRegex as $regex => &$name) {	// now loop through regex patterns
+				$matches = array();
+				if(preg_match('/^'.$regex.'/u',$substr,$matches) === 1) {
+					$tokens[] = array($name,$matches[0]);	// add it to $tokens
+					$offset += mb_strlen($matches[0]);
+					continue 2;
+				}
+			}
+			$offset++;	// no infinite looping, yo
+		}
+		return $tokens;
 	}
 
+	/**
+	 * Adds a new node at the end of the specified branch
+	 * @param array &$tree the tree object
+	 * @param array $nodePath array of branch indeces leading to the target branch
+	 * @value array an array containing the new node's type and value
+	 */
+	protected static function addNode(&$tree,$nodePath,$value) {
+		if(count($nodePath) > 0)
+			return self::addNode($tree[array_shift($nodePath)],$nodePath,$value);
+		
+		$tree[] = $value;
+		return count($tree) - 1;
+	}
+
+	/**
+	 * Checks if this branch has only one node and eliminates it by moving the child node up one level
+	 * @param array &$tree the tree object
+	 * @param array $nodePath array of branch indeces leading to the target node
+	 */
+	protected static function simplifyNode(&$tree,$nodePath) {
+		if(count($nodePath) > 0)													// before doing anything, recurse down the tree using $nodePath  
+			return self::simplifyNode($tree[array_shift($nodePath)],$nodePath);		// to get to the targeted node
+			
+		$last = count($tree) - 1;
+		
+		if(empty($tree[$last][1]))
+			array_pop($tree);
+		elseif(count($tree[$last][1]) === 1)
+			$tree[$last] = $tree[$last][1][0];
+	}
+
+	/**
+	 * Processes the expression tree and attempts to evaluate it
+	 * @param array &$tree the tree object
+	 * @param boolean $expression
+	 * @return mixed the value, or false if the tree was invalid
+	 */
+	protected static function parseExpression(&$tree,$expression=false) {
+	
+		$answer = 0;
+		
+		// echo '1';
+		for($i=0;$i<count($tree);$i++) {
+			$prev = isset($tree[$i+1])? $tree[$i+1] : false;
+			$next = isset($tree[$i+1])? $tree[$i+1] : false;
+		
+			
+			switch($tree[$i][0]) {
+			
+				case 'VAR':
+				case 'VAR_COMPLEX':
+					continue 2;
+				
+				case 'EXPRESSION':	// please
+					$subresult = self::parseExpression($tree[$i][1],true);	// the expression itself must be valid
+					if($subresult === false)
+						return $subresult; 
+						
+					// if($next !== false)
+					break;
+				
+				case 'EXPONENT':	// excuse
+					break;
+				
+				case 'MULTIPLY':	// my 
+					break;
+					
+				case 'DIVIDE':	// dear
+					break;
+				
+				case 'MOD':
+					break;
+				
+				
+				case 'ADD':	// aunt
+					break;
+				
+				case 'SUBTRACT':	// sally
+					break;
+					
+				case 'COMMA':
+
+					break;
+				case 'NUMBER':
+					break;
+
+					
+				case 'SPACE':
+				
+				case 'UNKNOWN':
+					return 'Unrecognized entity: "'.$tree[$i][1].'"';
+				
+				default:
+					return 'Unknown entity type: "'.$tree[$i][0].'"';
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @param String $str string to be parsed into an expression tree
+	 * @return mixed a variable depth array containing pairs of entity 
+	 * types and values, or a string containing an error message
+	 */
+	public static function parseExpressionTree($str) {
+
+		$tokens = self::tokenize($str);
+		
+		$tree = array();
+		$nodePath = array();
+		$error = false;
+		
+		for($i=0;$i<count($tokens);$i++) {
+			switch($tokens[$i][0]) {
+				case 'OPEN_BRACKET':
+					$nodePath[] = self::addNode($tree,$nodePath,array('EXPRESSION',array()));	// add a new expression node, get its offset in the current branch, 
+					$nodePath[] = 1;	// then move down to its 2nd element (1st element is the type, i.e. 'EXPRESSION')
+					break;
+				case 'CLOSE_BRACKET':
+					if(count($nodePath) > 1) {
+						$nodePath = array_slice($nodePath,0,-2);	// set node path to one level higher
+						self::simplifyNode($tree,$nodePath);		// we're closing an expression node; check to see if its empty or only contains one thing
+						
+					} else {
+						$error = 'unbalanced brackets';
+					}
+					break;
+					
+				case 'SPACE': break;
+				default:
+					self::addNode($tree,$nodePath,$tokens[$i]);
+			}
+		}
+		
+		if(count($nodePath) !== 0)
+			$error = 'unbalanced brackets';
+		
+		if($error !== false)
+			return 'ERROR: '.$error;
+		else
+			return $tree;
+	}
 }
 ?>

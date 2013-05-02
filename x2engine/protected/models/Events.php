@@ -54,11 +54,11 @@ class Events extends CActiveRecord
 	public function tableName() {
 		return 'x2_events';
 	}
-    
+
     public function relations(){
         $relationships=array();
         $relationships=array_merge($relationships,array(
-            'children'=>array(self::HAS_MANY,'Events','associationId','condition'=>'children.associationType="Events"'), 
+            'children'=>array(self::HAS_MANY,'Events','associationId','condition'=>'children.associationType="Events"'),
         ));
         return $relationships;
     }
@@ -70,11 +70,11 @@ class Events extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			
+
         );
 	}
-    
-    protected function parseModelName($model){
+
+    public static function parseModelName($model){
         $model=ucfirst($model);
         switch($model){
             case 'Contacts':
@@ -98,12 +98,15 @@ class Events extends CActiveRecord
             case 'Docs':
                 $model='document';
                 break;
+            case 'Groups':
+                $model='group';
+                break;
             default:
                 $model=strtolower($model);
         }
         return Yii::t('app',$model);
     }
-    
+
     public function getText($truncated=false){
         $text="";
         $authorText="";
@@ -137,16 +140,16 @@ class Events extends CActiveRecord
                         }
                         if($actionFlag){
                             $text=$authorText.Yii::t('app',"created a new {actionLink} associated with the contact {contactLink}",
-                                    array('{actionLink}'=>CHtml::link($this->parseModelName($this->associationType),Yii::app()->controller->createUrl('/actions/view?id='.$this->associationId)),
+                                    array('{actionLink}'=>CHtml::link(Events::parseModelName($this->associationType),'#',array('class'=>'action-frame-link','data-action-id'=>$this->associationId)),
                                         '{contactLink}'=>X2Model::getModelLink($action->associationId,ucfirst($action->associationType))));
                         }else{
                             if(!empty($authorText)){
                                 $text=$authorText.Yii::t('app',"created a new {modelName}, {modelLink}",
-                                    array('{modelName}'=>$this->parseModelName($this->associationType),
+                                    array('{modelName}'=>Events::parseModelName($this->associationType),
                                           '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)));
                             }else{
                                 $text=Yii::t('app',"A new {modelName}, {modelLink}, has been created.",
-                                    array('{modelName}'=>$this->parseModelName($this->associationType),
+                                    array('{modelName}'=>Events::parseModelName($this->associationType),
                                           '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)));
                             }
                         }
@@ -154,12 +157,12 @@ class Events extends CActiveRecord
                         $deletionEvent=X2Model::model('Events')->findByAttributes(array('type'=>'record_deleted','associationType'=>$this->associationType,'associationId'=>$this->associationId));
                         if(isset($deletionEvent)){
                             $text=$authorText.Yii::t('app',"created a new {modelName}, {deletionText}. It has been deleted.",array(
-                                '{modelName}'=>$this->parseModelName($this->associationType),
+                                '{modelName}'=>Events::parseModelName($this->associationType),
                                 '{deletionText}'=>$deletionEvent->text,
                             ));
                         }else{
                             $text=$authorText.Yii::t('app',"created a new {modelName}, but it could not be found.",array(
-                                '{modelName}'=>$this->parseModelName($this->associationType)
+                                '{modelName}'=>Events::parseModelName($this->associationType)
                             ));
                         }
                     }
@@ -184,12 +187,12 @@ class Events extends CActiveRecord
             case 'record_deleted':
                 if(class_exists($this->associationType) && (!$truncated && (Yii::app()->params->profile->language!='en' && !empty(Yii::app()->params->profile->language)) || (strpos($this->associationType,'A')!==0 && strpos($this->associationType,'E')!==0 && strpos($this->associationType,'I')!==0 && strpos($this->associationType,'O')!==0 && strpos($this->associationType,'U')!==0))){
                     $text=$authorText.Yii::t('app',"deleted a {modelType}, {text}",array(
-                        '{modelType}'=>$this->parseModelName($this->associationType),
+                        '{modelType}'=>Events::parseModelName($this->associationType),
                         '{text}'=>$this->text
                     ));
                 }else{
                     $text=$authorText.Yii::t('app',"deleted an {modelType}, {text}",array(
-                        '{modelType}'=>$this->parseModelName($this->associationType),
+                        '{modelType}'=>Events::parseModelName($this->associationType),
                         '{text}'=>$this->text
                     ));
                 }
@@ -203,18 +206,18 @@ class Events extends CActiveRecord
                         if(isset($stages[$action->stageNumber-1])){
                             $text=$authorText.Yii::t('app','started the workflow stage "{stage}" for the {modelName} {modelLink}',array(
                                 '{stage}'=>$stages[$action->stageNumber-1],
-                                '{modelName}'=>$this->parseModelName($action->associationType),
+                                '{modelName}'=>Events::parseModelName($action->associationType),
                                 '{modelLink}'=>X2Model::getModelLink($action->associationId,$action->associationType)
                             ));
                         }else{
                             $text=$authorText.Yii::t('app',"started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.",array(
-                                '{modelName}'=>$this->parseModelName($action->associationType),
+                                '{modelName}'=>Events::parseModelName($action->associationType),
                                 '{modelLink}'=>X2Model::getModelLink($action->associationId,$action->associationType)
                             ));
                         }
                     }else{
                         $text=$authorText.Yii::t('app',"started a workflow stage, but the associated {modelName} was not found.",array(
-                            '{modelName}'=>$this->parseModelName($action->associationType)
+                            '{modelName}'=>Events::parseModelName($action->associationType)
                         ));
                     }
                 }else{
@@ -230,18 +233,18 @@ class Events extends CActiveRecord
                         if(isset($stages[$action->stageNumber-1])){
                             $text=$authorText.Yii::t('app','completed the workflow stage "{stageName}" for the {modelName} {modelLink}',array(
                                 '{stageName}'=>$stages[$action->stageNumber-1],
-                                '{modelName}'=>$this->parseModelName($action->associationType),
+                                '{modelName}'=>Events::parseModelName($action->associationType),
                                 '{modelLink}'=>X2Model::getModelLink($action->associationId,$action->associationType)
                             ));
                         }else{
                             $text=$authorText.Yii::t('app',"completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.",array(
-                                '{modelName}'=>$this->parseModelName($action->associationType),
+                                '{modelName}'=>Events::parseModelName($action->associationType),
                                 '{modelLink}'=>X2Model::getModelLink($action->associationId,$action->associationType)
                             ));
                         }
                     }else{
                         $text=$authorText.Yii::t('app',"completed a workflow stage, but the associated {modelName} was not found.",array(
-                            '{modelName}'=>$this->parseModelName($action->associationType)
+                            '{modelName}'=>Events::parseModelName($action->associationType)
                         ));
                     }
                 }else{
@@ -256,12 +259,12 @@ class Events extends CActiveRecord
                         $stages=Workflow::getStages($action->workflowId);
                         $text=$authorText.Yii::t('app','reverted the workflow stage "{stageName}" for the {modelName} {modelLink}',array(
                             '{stageName}'=>$stages[$action->stageNumber-1],
-                            '{modelName}'=>$this->parseModelName($action->associationType),
+                            '{modelName}'=>Events::parseModelName($action->associationType),
                             '{modelLink}'=>X2Model::getModelLink($action->associationId,$action->associationType)
                         ));
                     }else{
                         $text=$authorText.Yii::t('app',"reverted a workflow stage, but the associated {modelName} was not found.",array(
-                            '{modelName}'=>$this->parseModelName($action->associationType)
+                            '{modelName}'=>Events::parseModelName($action->associationType)
                         ));
                     }
                 }else{
@@ -277,46 +280,100 @@ class Events extends CActiveRecord
                 }
                 if($authorRecord->id != $this->associationId && $this->associationId != 0) {
                     $temp=Profile::model()->findByPk($this->associationId);
-                    if(Yii::app()->user->getId()==$temp->id){
-                        $recipient=Yii::t('app','You');
+                    if(isset($temp)){
+                       if(Yii::app()->user->getId()==$temp->id){
+                            $recipient=Yii::t('app','You');
+                        }else{
+                            $recipient=$temp->fullName;
+                        }
+                        $modifier=' &raquo; ';
                     }else{
-                        $recipient=$temp->fullName;
+                        $recipient='';
+                        $modifier='';
                     }
-                    $modifier=' &raquo; ';
                 } else {
                     $recipient='';
                     $modifier='';
                 }
-                $text=CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,array('profile/view','id'=>$this->associationId)).": ".$this->text;
+                $text=CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,array('profile/view','id'=>$this->associationId)).": ".($truncated?strip_tags(Formatter::convertLineBreaks(x2base::convertUrls($this->text),true,true),'<a></a>'):$this->text);
                 break;
             case 'email_sent':
-                if(class_exists($this->associationType)){
-                    if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId))>0){
-                        $text=$authorText.Yii::t('app', "sent an email to the {transModelName} {modelLink}",array(
-                            '{transModelName}'=>$this->parseModelName($this->associationType),
-                            '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)
-                        ));
-                    }else{
-                        $deletionEvent=X2Model::model('Events')->findByAttributes(array('type'=>'record_deleted','associationType'=>$this->associationType,'associationId'=>$this->associationId));
-                        if(isset($deletionEvent)){
-                            $text=$authorText.Yii::t('app',"sent an email to a {transModelName}, but that record has been deleted.",array(
-                                '{transModelName}'=>$this->parseModelName($this->associationType)
-                            ));
-                        }else{
-                            $text=$authorText.Yii::t('app',"sent an email to a {transModelName}, but that record could not be found.",array(
-                                '{transModelName}'=>$this->parseModelName($this->associationType)
-                            ));
-                        }
-                     }
-                }
-                break;
-            case 'email_opened':
-                if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId))>0){
-                    $text=X2Model::getModelLink($this->associationId,$this->associationType).Yii::t('app'," has opened an email!");
-                }else{
-                    $text=Yii::t('app',"A contact has opened an email, but that contact cannot be found.");
-                }
-                break;
+				if(class_exists($this->associationType)){
+					$model = X2Model::model($this->associationType)->findByPk($this->associationId);
+					if(!empty($model)){
+						switch($this->subtype){
+							case 'quote':
+								$text = $authorText.Yii::t('app', "issued the {transModelName} \"{modelLink}\" via email", array(
+											'{transModelName}' => Events::parseModelName($this->associationType),
+											'{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
+										));
+								break;
+							case 'invoice':
+								$text = $authorText.Yii::t('app', "issued the {transModelName} \"{modelLink}\" via email", array(
+											'{transModelName}' => Yii::t('quotes', 'invoice'),
+											'{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
+										));
+								break;
+							default:
+								$text = $authorText.Yii::t('app', "sent an email to the {transModelName} {modelLink}", array(
+											'{transModelName}' => Events::parseModelName($this->associationType),
+											'{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
+										));
+								break;
+						}
+					}else{
+						$deletionEvent = X2Model::model('Events')->findByAttributes(array('type' => 'record_deleted', 'associationType' => $this->associationType, 'associationId' => $this->associationId));
+						switch($this->subtype){
+							case 'quote':
+								if(isset($deletionEvent)){
+									$text = $authorText.Yii::t('app', "issued a quote by email, but that record has been deleted.");
+								}else{
+									$text = $authorText.Yii::t('app', "issued a quote by email, but that record could not be found.");
+								}
+								break;
+							case 'invoice':
+								if(isset($deletionEvent)){
+									$text = $authorText.Yii::t('app', "issued an invoice by email, but that record has been deleted.");
+								}else{
+									$text = $authorText.Yii::t('app', "issued an invoice by email, but that record could not be found.");
+								}
+								break;
+							default:
+								if(isset($deletionEvent)){
+									$text = $authorText.Yii::t('app', "sent an email to a {transModelName}, but that record has been deleted.", array(
+												'{transModelName}' => Events::parseModelName($this->associationType)
+											));
+								}else{
+									$text = $authorText.Yii::t('app', "sent an email to a {transModelName}, but that record could not be found.", array(
+												'{transModelName}' => Events::parseModelName($this->associationType)
+											));
+								}
+								break;
+						}
+					}
+				}
+				break;
+			case 'email_opened':
+				switch($this->subtype){
+					case 'quote':
+						$emailType = 'a quote email';
+						break;
+					case 'invoice':
+						$emailType = 'an invoice email';
+						break;
+					default:
+						$emailType = 'an email';
+						break;
+				}
+				if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
+					$text = X2Model::getModelLink($this->associationId, $this->associationType).Yii::t('app', " has opened {emailType}!",array(
+						'{emailType}'=>Yii::t('app',$emailType),
+						'{modelLink}'=>X2Model::getModelLink($this->associationId, $this->associationType)
+					));
+				}else{
+					$text = Yii::t('app', "A contact has opened {emailType}, but that contact cannot be found.",array('{emailType}'=>Yii::t('app',$emailType)));
+				}
+				break;
             case 'web_activity':
                 if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId))>0){
                     $text=X2Model::getModelLink($this->associationId,$this->associationType)." ".Yii::t('app',"is currently on your website!");
@@ -377,24 +434,37 @@ class Events extends CActiveRecord
 				if(class_exists($this->associationType)){
                     if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId))>0){
                         $text=$authorText.Yii::t('app', "received an email from a {transModelName}, {modelLink}",array(
-							'{transModelName}'=>$this->parseModelName($this->associationType),
+							'{transModelName}'=>Events::parseModelName($this->associationType),
                             '{modelLink}'=>X2Model::getModelLink($this->associationId,$this->associationType)
                         ));
                     }else{
                         $deletionEvent=X2Model::model('Events')->findByAttributes(array('type'=>'record_deleted','associationType'=>$this->associationType,'associationId'=>$this->associationId));
                         if(isset($deletionEvent)){
                             $text=$authorText.Yii::t('app',"received an email from a {transModelName}, but that record has been deleted.",array(
-                                '{transModelName}'=>$this->parseModelName($this->associationType)
+                                '{transModelName}'=>Events::parseModelName($this->associationType)
                             ));
                         }else{
                             $text=$authorText.Yii::t('app',"received an email from a {transModelName}, but that record could not be found.",array(
-                                '{transModelName}'=>$this->parseModelName($this->associationType)
+                                '{transModelName}'=>Events::parseModelName($this->associationType)
                             ));
                         }
                      }
                 }
-				
+
 				break;
+            case 'media':
+                $media=X2Model::model('Media')->findByPk($this->associationId);
+                $text=substr($authorText,0,-1).": ".$this->text;
+                if(isset($media)){
+                    if(!$truncated){
+                        $text.="<br>".Media::attachmentSocialText($media->getMediaLink(),true,true);
+                    }else{
+                        $text.="<br>".Media::attachmentSocialText($media->getMediaLink(),true,false);
+                    }
+                }else{
+                    $text.="<br>Media file not found.";
+                }
+                break;
             default:
                 $text=$authorText.$this->text;
                 break;
@@ -404,11 +474,14 @@ class Events extends CActiveRecord
         }
         return $text;
     }
-    
+
     public static function parseType($type){
         switch($type){
             case 'feed':
                 $type="Social Posts";
+                break;
+            case 'comment':
+                $type="Comment";
                 break;
             case 'record_create':
                 $type='Records Created';
@@ -463,7 +536,7 @@ class Events extends CActiveRecord
         }
         return Yii::t('app',$type);
     }
-    
+
     public static function getEvents($id, $timestamp, $user=null, $maxTimestamp=null,$limit=null){
         if(is_null($maxTimestamp)){
             $maxTimestamp=time();
@@ -483,7 +556,7 @@ class Events extends CActiveRecord
             'events'=>X2Model::model('Events')->findAll($criteria),
         );
     }
-    
+
     protected function beforeSave(){
         if(empty($this->timestamp))
             $this->timestamp=time();
@@ -505,7 +578,7 @@ class Events extends CActiveRecord
         }
         return parent::beforeSave();
     }
-    
+
     protected function beforeDelete(){
         if(!empty($this->children)){
             foreach($this->children as $child){
@@ -514,7 +587,7 @@ class Events extends CActiveRecord
         }
         return parent::beforeDelete();
     }
-	
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */

@@ -157,20 +157,34 @@ $(function() {
 </div><!-- search-form -->
 <form>
 <?php
+$listActions = '<div class="list-actions">'.CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
+
+$listNames = array();
+foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
+	if($this->checkPermissions($list,'edit'))	// check permissions
+		$listNames[$list->id] = $list->name;
+}
+
+if(!empty($listNames)) {
+	$listActions .= ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
+	$listActions .= CHtml::dropDownList('addToListTarget',null,$listNames, array());
+}
+$listActions .= '</div>';
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
 		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+		.'{summary}</div></div>{pager}{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
+	'pager'=>array('class'=>'CLinkPager','header'=>$listActions),
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts',
@@ -183,6 +197,7 @@ $this->widget('application.components.X2GridView', array(
 		'leadSource'=>145,
 		// 'gvControls'=>66,
 	),
+    'pager'=>array('class'=>'CLinkPager', 'maxButtonCount'=>10),
 	'specialColumns'=>array(
 		'name'=>array(
 			'name'=>'name',
@@ -195,20 +210,6 @@ $this->widget('application.components.X2GridView', array(
 	'enableControls'=>true,
 	'enableTags'=>true,
 ));
-echo CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
-
-$listNames = array();
-foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
-	if($this->checkPermissions($list,'edit'))	// check permissions
-		$listNames[$list->id] = $list->name;
-}
-
-if(!empty($listNames)) {
-	echo ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
-	echo CHtml::dropDownList('addToListTarget',null,$listNames, array('id'=>'addToListTarget'));
-}
-// echo var_dump(Yii::app()->user->getState('myvariable'));
-
 ?>
 
 </form>

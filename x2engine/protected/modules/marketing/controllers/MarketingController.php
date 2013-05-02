@@ -196,6 +196,7 @@ class MarketingController extends x2base {
 			->select('itemId')
 			->from('x2_tags')
 			->where('type=:type AND tag=:tag')
+            ->group('itemId')
 			->order('itemId ASC')
 			->bindValues(array(':type'=>$modelType, ':tag'=>$tag))
 			->queryColumn();
@@ -897,15 +898,14 @@ class MarketingController extends x2base {
 	 */
 	public function actionClick($uid,$type,$url=null,$email=null) {
 		$now = time();
-		$item = CActiveRecord::model('X2ListItem')->with('contact','list','campaign')->findByAttributes(array('uniqueId'=>$uid));
-		
+		$item = CActiveRecord::model('X2ListItem')->with('contact','list')->findByAttributes(array('uniqueId'=>$uid));
 		// if($item !== null)
 			// $campaign = CActiveRecord::model('Campaign')->findByAttributes(array('listId'=>$item->listId));
 
 		//it should never happen that we have a list item without a campaign, 
 		//but it WILL happen on x2software or any old db where x2_list_items does not cascade on delete
 		//we can't track anything if the listitem was deleted, but at least prevent breaking links
-		if($item === null || $item->campaign === null) {
+		if($item === null || $item->list->campaign === null) {
 			if($type == 'click') {
 				$this->redirect(urldecode($url));
 			} elseif($type == 'open') {
@@ -913,7 +913,7 @@ class MarketingController extends x2base {
 				header('Content-Type: image/gif');
 				echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
 			} elseif($type == 'unsub' && !empty($email)) {
-				Contacts::model()->updateAll(array('doNotEmail'=>true), array('email'=>$email));
+				Contacts::model()->updateAll(array('doNotEmail'=>true),'email=:email',array(':email'=>$email));
 				X2ListItem::model()->updateAll(array('unsubscribed'=>time()), 'emailAddress=:email AND unsubscribed=0', array('email'=>$email));
 				$message = Yii::t('marketing','You have been unsubscribed');
 				echo '<html><head><title>'. $message .'</title></head><body>'. $message .'</body></html>';
@@ -950,7 +950,7 @@ class MarketingController extends x2base {
 				$notif->modelType = 'Contacts';
 				$notif->modelId = $contact->id;
 				$notif->createDate = $now;
-				$notif->value = $item->campaign->getLink();
+				$notif->value = $item->list->campaign->getLink();
 			}
 		} elseif($list !== null) {
 			$action = new Actions;
@@ -983,33 +983,33 @@ class MarketingController extends x2base {
 				$weblistAction->associationName = $weblist['name'];
 				$weblistAction->visibility = $weblist['visibility'];
 				$weblistAction->assignedTo = $weblist['assignedTo'];
-				$weblistAction->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".$email." ".Yii::t('marketing','has unsubscribed').".";
+				$weblistAction->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".$email." ".Yii::t('marketing','has unsubscribed').".";
 				$weblistAction->save();
 			}
 			
 			$action->type = 'email_unsubscribed';
-			$event->type = 'email_unsubscribed';
 			$notif->type = 'email_unsubscribed';
 			
 			if($contact === null)
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $item->campaign->name ."\n\n".$item->emailAddress.' '.Yii::t('marketing','has unsubscribed').".";
+				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $item->list->campaign->name ."\n\n".$item->emailAddress.' '.Yii::t('marketing','has unsubscribed').".";
 			else
-				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $item->campaign->name ."\n\n".Yii::t('marketing','Contact has unsubscribed').".\n".Yii::t('marketing','\'Do Not Email\' has been set').".";
+				$action->actionDescription = Yii::t('marketing','Campaign') .': '. $item->list->campaign->name ."\n\n".Yii::t('marketing','Contact has unsubscribed').".\n".Yii::t('marketing','\'Do Not Email\' has been set').".";
 			
 			$message = Yii::t('marketing','You have been unsubscribed');
 			echo '<html><head><title>'. $message .'</title></head><body>'. $message .'</body></html>';
 			
 		} elseif($type == 'open') {
 			$item->markOpened();
-			
+			$action->disableBehavior('changelog');
 			$action->type = 'email_opened';
 			$event->type = 'email_opened';
 			$notif->type = 'email_opened';
+            $event->save();
 			
 			if($contact === null)
-				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has opened the email').".";
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has opened the email').".";
 			else
-				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".Yii::t('marketing','Contact has opened the email').".";
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".Yii::t('marketing','Contact has opened the email').".";
 			
 			//return a one pixel transparent gif
 			header('Content-Type: image/gif');
@@ -1019,19 +1019,18 @@ class MarketingController extends x2base {
 			$item->markClicked($url);
 			
 			$action->type = 'email_clicked';
-			$event->type='email_clicked';
 			$notif->type = 'email_clicked';
 			
 			if($contact === null)
-				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".Yii::t('marketing','Contact has clicked a link').":\n".urldecode($url);
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".Yii::t('marketing','Contact has clicked a link').":\n".urldecode($url);
 			else
-				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has clicked a link').":\n".urldecode($url);
+				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has clicked a link').":\n".urldecode($url);
 			
 			$this->redirect(urldecode($url));	
 		}
 		
 		$action->save();
-		$event->save();		// if any of these hasn't been fully configured
+                    		// if any of these hasn't been fully configured
 		$notif->save();		// it will simply not validate and not be saved
 	}
 
@@ -1103,6 +1102,12 @@ class MarketingController extends x2base {
 	 * Get the web tracker code to insert into your website
 	 */
 	public function actionWebTracker() {
-		$this->render('webTracker');
+		$admin = Yii::app()->params->admin;
+		if(isset($_POST['Admin']['enableWebTracker'],$_POST['Admin']['webTrackerCooldown'])) {
+			$admin->enableWebTracker = $_POST['Admin']['enableWebTracker'];
+			$admin->webTrackerCooldown = $_POST['Admin']['webTrackerCooldown'];
+			$admin->save();
+		}
+		$this->render('webTracker',array('admin'=>$admin));
 	}
 }

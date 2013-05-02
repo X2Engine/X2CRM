@@ -44,7 +44,6 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
 	array('label'=>Yii::t('opportunities','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 );
@@ -69,7 +68,7 @@ $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
 <div id="main-column" class="half-width">
-<div class="page-title">
+<div class="page-title icon opportunities">
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?> </span><?php echo $model->name; ?></h2>
@@ -113,7 +112,7 @@ Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {
 		// init create account button
 		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Opportunity', '{$model->id}', $accountName, $assignedTo, '', '', $accountsTooltip);
-		
+
 		// init create contact button
 		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Opportunity', '{$model->id}', $accountName, $assignedTo, '', '', $contactTooltip);
 	});
@@ -125,14 +124,14 @@ Yii::app()->clientScript->registerScript('create-model', "
 <?php
 $this->widget('Publisher',
 	array(
-		'associationType'=>'opportunities',
+		'associationType'=>'opportunity',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
 		'halfWidth'=>true
 	)
 );
 
-$this->widget('History',array('associationType'=>'opportunities','associationId'=>$model->id));
+$this->widget('History',array('associationType'=>'opportunity','associationId'=>$model->id));
 ?>
 </div>
 

@@ -43,7 +43,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','View')),
 ));
 ?>
-<div class="page-title"></div>
+<div class="page-title icon contacts"></div>
 <h1><span style="color:#f00;font-weight:bold;"><?php echo Yii::t('app','This record may be a duplicate!'); ?></span></h1>
 <div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('app','You Entered:'); ?></span> <?php echo $newRecord->firstName,' ',$newRecord->lastName; ?></h2></div>
 <?php

@@ -34,110 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$profile = ProfileChild::model()->findByPk(Yii::app()->user->id);
-$this->showActions = $profile->showActions;
-if(!$this->showActions) // if user hasn't saved a type of action to show, show uncomple actions by default
-    $this->showActions = 'uncomplete';
-
-if($this->showActions == 'uncomplete')
-	$model->complete = 'No';
-else if ($this->showActions == 'complete')
-	$model->complete = 'Yes';
-else
-	$model->complete = '';
-
-
-
 $menuItems = array(
-	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create'),'url'=>array('create')), 
+	array('label'=>Yii::t('actions','Action List')),
+	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
 );
-
-if($this->route=='actions/actions/index') {
-	$heading = Yii::t('actions','Today\'s Actions');
-	$dataProvider=$model->search();
-	$dataProvider2=$model->searchComplete();
-	
-	unset($menuItems[0]['url']);
-
-} elseif($this->route=='actions/actions/viewAll') {
-	$heading = Yii::t('actions','All My Actions'); 
-	$dataProvider=$model->searchAll();
-	$dataProvider2=$model->searchComplete();
-	
-	unset($menuItems[1]['url']);
-} else {
-	$heading = Yii::t('actions','Everyone\'s Actions'); 
-	$dataProvider=$model->searchAllGroup();
-	$dataProvider2=$model->searchAllComplete();
-	
-	unset($menuItems[2]['url']);
-}
-
 $this->actionMenu = $this->formatMenu($menuItems);
-
-Yii::app()->clientScript->registerScript('search', "
-$('.search-button').click(function(){
-	$('.search-form').toggle();
-	return false;
-});
-$('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('contacts-grid', {
-		data: $(this).serialize()
-	});
-	return false;
-});
-");
-
-// functions for completeing/uncompleting multiple selected actions
-Yii::app()->clientScript->registerScript('completeUncompleteSelected', "
-function completeSelected() {
-	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
-	$.post('completeSelected', {'actionIds': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
-}
-function uncompleteSelected() {
-	var checked = $.fn.yiiGridView.getChecked('actions-grid', 'C_gvCheckbox');
-	$.post('uncompleteSelected', {'actionIds': checked}, function() {jQuery.fn.yiiGridView.update('actions-grid')});
-}
-
-function toggleShowActions() {
-	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
-	$.post('saveShowActions', {ShowActions: show}, function() {
-		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
-	});
-}
-",CClientScript::POS_HEAD);
-
-// init qtip for contact names
-Yii::app()->clientScript->registerScript('contact-qtip', '
-function refreshQtip() {
-	$(".contact-name").each(function (i) {
-		var contactId = $(this).attr("href").match(/\\d+$/);
-
-		if(typeof contactId != null && contactId.length) {
-			$(this).qtip({
-				content: {
-					text: "'.addslashes(Yii::t('app','loading...')).'",
-					ajax: {
-						url: yii.baseUrl+"/index.php/contacts/qtip",
-						data: { id: contactId[0] },
-						method: "get",
-					}
-				},
-				style: {
-				}
-			});
-		}
-	});
-}
-
-$(function() {
-	refreshQtip();
-});
-');
-
 
 function trimText($text) {
 	if(strlen($text)>150)
@@ -147,51 +48,119 @@ function trimText($text) {
 }
 
 ?>
-<div class="search-form" style="display:none">
-<?php $this->renderPartial('_search',array(
-	'model'=>$model, 
-)); ?>
-</div><!-- search-form -->
+<div class="page-title icon actions" id="page-header">
+    <h2>Actions</h2>
+    <div class="title-bar" style="padding-left:0px;">
+        <?php echo CHtml::link(Yii::t('app','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
+        <?php echo CHtml::link(Yii::t('app','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
+        <?php echo CHtml::link(Yii::t('actions','<div class="page-title x2-button img-box plus-sign right" style="width:40px;margin-top:7px;"></div>'),array('/actions/create')); ?>
+    </div>
+</div>
+<?php echo $this->renderPartial('_advancedControls',$params,true); ?>
 <?php
-$this->widget('application.components.X2GridView', array(
-	'id'=>'actions-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>'
-		.CHtml::button(Yii::t('actions','Complete Selected'),array('class'=>'x2-button','style'=>'display:inline-block;','onclick'=>'completeSelected()'))
-		.CHtml::button(Yii::t('actions','Uncomplete Selected'),array('class'=>'x2-button','style'=>'display:inline-block;','onclick'=>'uncompleteSelected()'))
-		.'{items}{pager}',
-	'dataProvider'=>$dataProvider,
-	// 'enableSorting'=>false,
-	// 'model'=>$model,
-	'filter'=>$model,
-	// 'columns'=>$columns,
-	'modelName'=>'Actions',
-	'viewName'=>'actions',
-	// 'columnSelectorId'=>'contacts-column-selector',
-	'defaultGvSettings'=>array(
-		'gvCheckbox'=>28,
-		'actionDescription'=>257,
-		'associationName'=>132,
-		'dueDate'=>91,
-		'assignedTo'=>105,
-	),
-	'specialColumns'=>array(
-		'actionDescription'=>array(
-			'name'=>'actionDescription',
-			'value'=>'CHtml::link(($data->type=="attachment")? MediaChild::attachmentActionText($data->actionDescription) : CHtml::encode(trimText($data->actionDescription)),array("view","id"=>$data->id))',
-			'type'=>'raw',
-		),
-		'associationName'=>array(
-			'name'=>'associationName',
-			'header'=>Yii::t('actions','Association Name'),
-			'value'=>'$data->associationName=="None" ? Yii::t("app","None") : CHtml::link($data->associationName,array("/".$data->associationType."/".$data->associationId),array("class"=>($data->associationType=="contacts"? "contact-name" : null)))',
-			'type'=>'raw',
-		),
-	),
-	'enableControls'=>true,
-));
+$this->widget('zii.widgets.CListView', array(
+			'id'=>'action-list',
+			'dataProvider'=>$dataProvider,
+			'itemView'=>'application.modules.actions.views.actions._viewIndex',
+			'htmlOptions'=>array('class'=>'action list-view','style'=>'width:100%'),
+            'viewData'=>$params,
+			'template'=>'{items}{pager}',
+            'afterAjaxUpdate'=>'js:function(){
+                clickedFlag=false;
+                lastClass="";
+                $(\'#advanced-controls\').after(\'<div class="form" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>\');
+            }',
+        'pager' => array(
+                    'class' => 'ext.infiniteScroll.IasPager',
+                    'rowSelector'=>'.view',
+                    'listViewId' => 'action-list',
+                    'header' => '',
+                    'options' => array(
+                        'history' => true,
+                        'triggerPageTreshold' => 2,
+                        'trigger'=>Yii::t('app','Load More'),
+                        'scrollContainer'=>'.items',
+                        'container'=>'.items',
+                    ),
+                  ),
+		));
+?>
+
+<script>
+    var clickedFlag=false;
+    var lastClass="";
+    $(document).on('click','#scroll-top-button',function(e){
+        e.preventDefault();
+        $(".items").animate({ scrollTop: 0 }, "slow");
+    });
+    $(document).on('click','#advanced-controls-toggle',function(e){
+        e.preventDefault();
+        if($('#advanced-controls').is(':hidden')){
+            $("#advanced-controls").slideDown();
+        }else{
+            $("#advanced-controls").slideUp();
+        }
+    });
+    $(document).on('ready',function(){
+        $('#advanced-controls').after('<div class="form" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>');
+    });
+    $(document).on('click','.view',function(e){
+        if(!$(e.target).is('a')){
+            e.preventDefault();
+            if(clickedFlag){
+                if($('#action-view-pane').hasClass($(this).attr('id'))){
+                    $('#action-view-pane').removeClass($(this).attr('id'));
+                    $('.items').animate({'margin-right': '20px'},400,function(){
+                        $('.items').css('margin-right','0px')
+                    });
+                    $('#action-view-pane').html('<div style="height:800px;"></div>');
+                    $('#action-view-pane').animate({width: '0px'},400,function(){
+                        $('#action-view-pane').hide();
+                    });
+                    $(this).removeClass('important');
+                    clickedFlag=!clickedFlag;
+                }else{
+                    $('#'+lastClass).removeClass('important');
+                    $(this).addClass('important');
+                    $('#action-view-pane').removeClass(lastClass);
+                    $('#action-view-pane').addClass($(this).attr('id'));
+                    lastClass=$(this).attr('id');
+                    var pieces=lastClass.split('-');
+                    var id=pieces[1];
+                    $('#action-view-pane').html('<iframe style="width:100%;height:800px" id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                }
+            }else{
+                $(this).addClass('important');
+                $('.items').css('margin-right','20px').animate({'margin-right': '60%'});
+                $('#action-view-pane').addClass($(this).attr('id'));
+                lastClass=$(this).attr('id');
+                var pieces=lastClass.split('-');
+                var id=pieces[1];
+                $('#action-view-pane').show();
+                $('#action-view-pane').animate({width: '59%'});;
+                clickedFlag=!clickedFlag;
+                $('#action-view-pane').html('<iframe style="width:100%;height:800px" id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+            }
+        }
+    });
+
+</script>
+<style>
+    #action-list .items{
+        clear:none;
+        max-height:800px;
+        overflow-y:auto;
+    }
+    #action-list .view{
+        clear:none;
+    }
+    #action-list .view:hover{
+        background-color:#FFFFC2;
+    }
+    .important{
+        background-color:#FFFFC2;
+    }
+    .complete{
+        color:green;
+    }
+</style>

@@ -77,7 +77,7 @@ $messages = array();
 foreach($messageDir as $langPack) {
 	if($langPack == '.' || $langPack == '..' || filetype($messagePath.'/'.$langPack) != "dir")
 		continue;
-		
+
 	$messageFiles = scandir($messagePath.'/'.$langPack);
 	if(file_exists($messagePath.'/'.$langPack.'/app.php')) {
 		$appFile = include($messagePath.'/'.$langPack.'/app.php');
@@ -112,18 +112,18 @@ if(isset($_POST['data']) && isset($_POST['file'])) {
 	$fileHeader = '<?php
 return array (
 ';
-	
+
 	foreach(array_keys($messages) as $langPack) {
 		$file = fopen($messagePath.'/'.$langPack.'/'.$_POST['file'],'w');	// open all files to be rewritten
 
 		fwrite($file,$fileHeader);
-		
+
 		$index = 0;
 		for($i=0; $i<count($_POST['data']['template']); $i++) {
-		
+
 			$line = $_POST['data']['template'][$i];
 			// foreach($fileHandles as $langPack=>$file) {
-			
+
 			if(preg_match('/^s*\/\/\s*$/u',$line)) {
 				fwrite($file,"\n");
 			} else if(preg_match('/^s*\/\/.*$/u',$line)) {
@@ -134,9 +134,14 @@ return array (
 						fwrite($file,"'languageName'=>'Template',\n");
 					else
 						fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'',\n");
-				} else
-					fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'". addcslashes(decodeQuotes($_POST['data'][$langPack][$index]),'\'') ."',\n");
-				$index++;
+				} else{
+                    if(isset($_POST['data'][$langPack][$index])){
+                        fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'". addcslashes(decodeQuotes($_POST['data'][$langPack][$index]),'\'') ."',\n");
+                    }else{
+                        fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'". '' ."',\n");
+                    }
+                }
+                $index++;
 			}
 		}
 		fwrite($file,');');
@@ -169,12 +174,12 @@ $(function() {
 	});
 
 	$('#translationForm').submit(function() { $('input.comment').val(function(index,value) { return '// '+value; }); });
-	
+
 	$('.content table').delegate('a.add-comment','click',function() { addComment(this); return false; })
 		.delegate('a.add-entry','click',function() { addLine(this); return false; })
 		.delegate('a.remove','click',function() { removeLine(this); return false; })
 		.delegate('.language','click',function() { googleTranslate(this); });
-	
+
 	showLang('none',null);
 });
 function showAll(object) {
@@ -186,7 +191,7 @@ function showLang(newLang,object) {
 	lang = newLang;
 	$('#languageMenu tr').removeClass();
 	$(object).closest('tr').addClass('active');
-	
+
 	// var lang = $('#langDropdown').val();
 	if(lang == 'all')
 		$('.translation, .language').show();
@@ -201,7 +206,7 @@ function googleTranslate(object) {
 	var message = $(object).closest('tr').find('.source input').val();
 	var lang = $(object).html();
 	if(lang == 'zh_cn')
-		lang = 'zh-CN'; 
+		lang = 'zh-CN';
     if(lang == 'he')
         lang = 'iw';
 	var url = 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message);
@@ -212,7 +217,7 @@ function googleTranslate(object) {
 	window.open(url, windowName, "width=800,height=400");
 
 	// event.preventDefault();
-	
+
 	// $.ajax({
 		// url: 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message),
 		// context: document.body,
@@ -220,10 +225,10 @@ function googleTranslate(object) {
 			// $('#googleTranslate').html(response);
 		// }
 	// });
-	
+
 	// $('#contentPane').animate({height:400});
 	// $('#iframeBox').animate({height:250});
-	
+
 }
 
 function toggleGoogle() {
@@ -256,7 +261,7 @@ function addLine(object) {
 	foreach(array_keys($messages) as $langPack)
 		if($langPack != 'template') echo '"'.$langPack.'",';
 	?>];
-	
+
 	var newEntry = '\
 		<td width="30" class="controls">\
 			<a href="#" onclick="showAll(this); return false;" title="Show all languages">All</a>\
@@ -300,8 +305,8 @@ function removeLine(object) {
 		<?php
 		for($i=1; $i<count($messages['template']); $i++) {
 			$fileName = $messages['template'][$i];
-			$lines = count(file($messagePath.'/template/'.$fileName)); 
-			
+			$lines = count(file($messagePath.'/template/'.$fileName));
+
 			$active = ($fileName == $targetFile);
 			?>
 			<tr<?php if($active) echo ' class="active"'; ?>>
@@ -310,7 +315,7 @@ function removeLine(object) {
 			</tr>
 			<?php
 		}
-		
+
 
 	?>
 	</table>
@@ -325,24 +330,24 @@ function removeLine(object) {
 		</tr>
 		<tr class="active">
 			<td colspan="2">
-				<a href="#" onclick="showLang('all',this); return false;">Show All</a> | 
+				<a href="#" onclick="showLang('all',this); return false;">Show All</a> |
 				<a href="#" onclick="showLang('none',this); return false;">Hide All</a>
 			</td>
 		</tr>
 		<?php
 		$langPackFiles = array();
 		$langPackFiles['template'] = include($messagePath.'/template/'.$targetFile);
-		
+
 		foreach($messages as $langPack => $messageFiles) {
 			if($langPack == 'template')
 				continue;
-			
+
 			$fileName = $messagePath.'/'.$langPack.'/'.$targetFile;
-			
-			
+
+
 			$missing = !file_exists($fileName);
 			$incomplete = false;
-			
+
 			$langPackFiles[$langPack] = $missing? array() : include($fileName);
 			foreach($langPackFiles['template'] as $key => $value) {
 				if(!array_key_exists($key,$langPackFiles[$langPack]) || $langPackFiles[$langPack][$key] == '')
@@ -369,7 +374,7 @@ function removeLine(object) {
 <!-- Main window - view, edit and translations -->
 <div class="content-container">
 <div class="content">
-<form method="POST" action="<?php echo Yii::app()->getBaseUrl().'/index.php/admin/translationManager?file='.$targetFile; ?>" id="translationForm">
+<form method="POST" action="<?php echo Yii::app()->request->scriptUrl.'/admin/translationManager?file='.$targetFile; ?>" id="translationForm">
 <input type="hidden" name="file" value="<?php echo $_GET['file']; ?>">
 <table class="rounded" style="table-layout:fixed;">
 	<tr>
@@ -384,7 +389,7 @@ function removeLine(object) {
 			$dataStarted = false;
 			$currentTemplate = file($messagePath.'/template/'.$targetFile);
 			foreach($currentTemplate as $line) {
-			
+
 				if(!$dataStarted) {
 					if(preg_match('/^\s*return array/',$line))
 						$dataStarted = true;
@@ -393,7 +398,7 @@ function removeLine(object) {
 				}
 
 				$matches = array();
-				
+
 				if(preg_match("/'(.+)'=>'(.*)',/u",$line,$matches)) { ?>
 				<tr class="entry">
 					<td width="30" class="controls"><a href="#" onclick="showAll(this); return false;" title="Show all languages">All</a></td>
@@ -404,7 +409,7 @@ function removeLine(object) {
 					foreach($messages as $langPack => $messageFiles) {
 						if($langPack == 'template')
 							continue;
-					
+
 						$translation = isset($langPackFiles[$langPack][stripslashes($matches[1])])? $langPackFiles[$langPack][stripslashes($matches[1])] : '';
 						?>
 						<div class="language <?php echo $langPack; ?>"><?php echo $langPack; ?></div>

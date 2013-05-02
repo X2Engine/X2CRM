@@ -81,6 +81,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		</div><br>
 		<h4 class="clear"><?php echo Yii::t('app','Special Thanks');?></h4>
 		<ul class="inline">
+			<li>Derek Mueller</li>
+			<li>James Thomas</li>
 			<li>Andrew Hoffman</li>
 			<li>Zach Louden</li>
 			<li>Steve Lance</li>

@@ -86,7 +86,8 @@ class X2List extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'listItems'=>array(self::HAS_MANY, 'X2ListItem', 'listId')
+			'listItems'=>array(self::HAS_MANY, 'X2ListItem', 'listId'),
+			'campaign'=>array(self::HAS_ONE, 'Campaign', 'listId'),
 		);
 	}
 
@@ -206,14 +207,14 @@ class X2List extends CActiveRecord {
 						switch($field->type) {
 							case 'date': 
 							case 'dateTime':
-								if (ctype_digit($criterion->value) || (substr($criterion->value, 0, 1)=='-' && ctype_digit(substr($criterion->value, 1))))
+								if (ctype_digit((string)$criterion->value) || (substr($criterion->value, 0, 1)=='-' && ctype_digit((string)substr($criterion->value, 1))))
 									$criterion->value = (int)$criterion->value;
 								else
 									$criterion->value = strtotime($criterion->value);
 								$dateType = true; 
 								break;
 							case 'link': 
-								if (!ctype_digit($criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
+								if (!ctype_digit((string)$criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
 							case 'boolean': 
 							case 'visibility':
 								$criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
@@ -368,7 +369,7 @@ class X2List extends CActiveRecord {
 		
 		foreach(explode(',',$criteria->order) as $token) {		// we also need any columns that are being used in the sort
 			$token = preg_replace('/\s|asc|desc/i','',$token);	// so loop through $criteria->order and extract them
-			if($token !== '' && $token !== 'id'){
+			if($token !== '' && $token !== 'id' && $token!='t.id'){
                 if(strpos($token,'.')!=1){
                     $criteria->select .= ',t.'.$token;
                 }else{
@@ -479,30 +480,20 @@ class X2List extends CActiveRecord {
 	 * @return CSqlDataProvider
 	 */
 	public function campaignDataProvider($pageSize=null) {
-
 		$conditions = X2Model::model('Campaign')->getAccessCriteria()->condition;
-
-		$count = Yii::app()->db->createCommand()
-			->select('COUNT(*)')
-			->from(X2ListItem::model()->tableName().' as list')
-			->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
-			->where('list.listId=:listId AND '.$conditions,array(':listId'=>$this->id))
-			->queryScalar();
-
 		$params = array('listId'=>$this->id);
-
 		$sql = Yii::app()->db->createCommand()
 			->select('list.*, t.*')
 			->from(X2ListItem::model()->tableName().' as list')
 			->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
-			->where('list.listId=:listId AND '.$conditions)
+			->where('list.listId=:listId AND ('.$conditions.')',array(':listId'=>$this->id))
+            ->group('t.id')
 			->getText();
 			
 		return new CSqlDataProvider($sql, array(
-			'totalItemCount'=>$count,
 			'params'=>$params,
 			'pagination'=>array(
-				'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+				'pageSize'=>!empty($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 			),
 			'sort'=>array(
 				//messing with attributes may cause columns to become unsortable

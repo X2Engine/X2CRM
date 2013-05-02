@@ -51,19 +51,8 @@
 
     <div class="row">
         <?php echo $form->labelEx($model, 'modelName'); ?>
-        <?php
-        $modelList = array();
-        foreach (X2Model::model('Modules')->findAllByAttributes(array('editable' => true)) as $module) {
-            if (array_key_exists($module->name, X2Model::$associationModels))
-                $modelName = X2Model::$associationModels[$module->name];
-            else
-                $modelName = ucfirst($module->name);
-
-            $modelList[$modelName] = $module->title;
-        }
-        echo $form->dropDownList($model, 'modelName', $modelList);
-        ?>
-<?php echo $form->error($model, 'modelName'); ?>
+        <?php  echo $form->dropDownList($model, 'modelName', Admin::getModelList());?>
+        <?php echo $form->error($model, 'modelName'); ?>
     </div>
 
     <div class="row">

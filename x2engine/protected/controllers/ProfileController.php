@@ -36,7 +36,7 @@
 
 /**
  * User profiles controller
- * 
+ *
  * @package X2CRM.controllers
  */
 class ProfileController extends x2base {
@@ -53,7 +53,7 @@ class ProfileController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setBackground','deleteBackground','changePassword', 'setResultsPerPage','hideTag','unhideTag', 'resetWidgets','updatePost'),
+				'actions'=>array('index','view','update','search','addPost','deletePost','uploadPhoto','profiles','settings','addComment','setLoginSound','deleteLoginSound','setNotificationSound','deleteNotificationSound','setBackground','deleteBackground','changePassword', 'setResultsPerPage','hideTag','unhideTag', 'resetWidgets','updatePost'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -65,14 +65,14 @@ class ProfileController extends x2base {
 			),
 		);
 	}
-    
+
     public function filters(){
         return array(
             'accessControl',
             'setPortlets',
         );
     }
-    
+
     public function actionHideTag($tag){
         $tag="#".$tag;
         $profile=Yii::app()->params->profile;
@@ -87,7 +87,7 @@ class ProfileController extends x2base {
             }
         }
     }
-    
+
     public function actionUnhideTag($tag){
         $tag="#".$tag;
         $profile=Yii::app()->params->profile;
@@ -120,10 +120,10 @@ class ProfileController extends x2base {
             'commentDataProvider'=>$commentDataProvider
         ));
     }
-    
+
 	/**
 	 * Deletes a post in the public feed for the current user.
-	 * @param integer $id 
+	 * @param integer $id
 	 */
 	public function actionDeletePost($id) {
 		$post = Events::model()->findByPk($id);
@@ -131,10 +131,8 @@ class ProfileController extends x2base {
             if($post->type=='comment') {
                 $postParent = X2Model::model('Events')->findByPk($post->associationId);
                 $user=ProfileChild::model()->findByPk($postParent->associationId);
-                $redirId=$postParent->associationId;
             } else{
                 $user=ProfileChild::model()->findByPk($post->associationId);
-                $redirId=$post->associationId;
             }
             if(isset($postParent) && $post->user!=Yii::app()->user->getName()){
                 if($postParent->associationId==Yii::app()->user->getId())
@@ -145,10 +143,7 @@ class ProfileController extends x2base {
                 }
             }
         }
-        if(isset($_GET['redirect']) && $_GET['redirect']=='view'){
-            $this->redirect(array('view','id'=>$redirId));
-        }
-			$this->redirect(array('site/whatsNew'));
+        $this->redirect(array('site/whatsNew'));
 	}
 
 	/**
@@ -186,10 +181,10 @@ class ProfileController extends x2base {
                     }
                 }
 		$menuItems = array(''=>Yii::t('app',"What's New")) + $menuItems;
-		
+
 		if(isset($_POST['ProfileChild'])) {
 			$model->attributes = $_POST['ProfileChild'];
-			
+
 			if($model->save()){
 				//$this->redirect(array('view','id'=>$model->id));
 			}
@@ -205,10 +200,22 @@ class ProfileController extends x2base {
 						$languages[$code] = $name;	// add to $languages if name is found
 		}
 		$times=$this->getTimeZones();
-		
-		$myBackgroundProvider = new CActiveDataProvider('MediaChild',array(
+
+		$myBackgroundProvider = new CActiveDataProvider('Media',array(
 			'criteria'=>array(
 				'condition'=>"(associationType = 'bg-private' AND associationId = '".Yii::app()->user->getId()."') OR associationType = 'bg'",
+				'order'=>'createDate DESC'
+			),
+		));
+                $myLoginSoundProvider = new CActiveDataProvider('Media',array(
+			'criteria'=>array(
+				'condition'=>"(associationType='loginSound' AND (private=0 OR private IS NULL OR uploadedBy='".Yii::app()->user->getName()."'))",
+				'order'=>'createDate DESC'
+			),
+		));
+                $myNotificationSoundProvider = new CActiveDataProvider('Media',array(
+			'criteria'=>array(
+				'condition'=>"(associationType='notificationSound' AND (private=0 OR private IS NULL OR uploadedBy='".Yii::app()->user->getName()."'))",
 				'order'=>'createDate DESC'
 			),
 		));
@@ -223,12 +230,14 @@ class ProfileController extends x2base {
 			->order('tag ASC')
 			->limit(20)
 			->queryAll();
-		
+
 		$this->render('settings',array(
 			'model'=>$model,
 			'languages'=>$languages,
 			'times'=>$times,
 			'myBackgrounds'=>$myBackgroundProvider,
+                        'myLoginSounds'=>$myLoginSoundProvider,
+                        'myNotificationSounds'=>$myNotificationSoundProvider,
 			'menuItems'=>$menuItems,
             'allTags'=>$allTags
 		));
@@ -236,7 +245,7 @@ class ProfileController extends x2base {
 
 	/**
 	 * Updates a particular model.
-	 * 
+	 *
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
@@ -244,10 +253,10 @@ class ProfileController extends x2base {
 		if ($id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')) {
                     $model = $this->loadModel($id);
                     $users=User::getNames();
-                    $accounts=Accounts::getNames();  
-                    
+                    $accounts=Accounts::getNames();
+
                     if(isset($_POST['ProfileChild'])) {
-							
+
                             $temp=$model->attributes;
                             foreach($_POST['ProfileChild'] as $name => $value) {
                                     if($value == $model->getAttributeLabel($name)){
@@ -269,7 +278,7 @@ class ProfileController extends x2base {
 			$this->redirect(array('/profile/'.$id));
 		}
 	}
-	
+
 	/**
 	 * Changes the password for the user given by its record ID number.
 	 * @param integer $id ID of the user to be updated.
@@ -278,7 +287,7 @@ class ProfileController extends x2base {
 		if($id==Yii::app()->user->getId()){
 			$user=UserChild::model()->findByPk($id);
 			if(isset($_POST['oldPassword']) && isset($_POST['newPassword']) && isset($_POST['newPassword2'])){
-			
+
 				$oldPass=$_POST['oldPassword'];
 				$newPass=$_POST['newPassword'];
 				$newPass2=$_POST['newPassword2'];
@@ -286,14 +295,14 @@ class ProfileController extends x2base {
 					if($newPass==$newPass2){
 						$user->password=md5($newPass);
 						$user->save();
-						
+
 						$this->redirect($this->createUrl('profile/'.$id));
 					}
 				}else{
 					Yii::app()->clientScript->registerScript('alertPassWrong',"alert('Old password is incorrect.');");
 				}
 			}
-			
+
 			$this->render('changePassword',array(
 				'model'=>$user,
 			));
@@ -319,9 +328,9 @@ class ProfileController extends x2base {
 
 					$prof->avatar='uploads/'.$name.'.'.$ext;
 					if($prof->save()){
-						
+
 					}
-					
+
 				}else{
 					echo "File is too large!";
 				}
@@ -329,9 +338,9 @@ class ProfileController extends x2base {
 		}
 		$this->redirect(array('view','id'=>$id));
 	}
-	
+
 	/**
-	 * Set the background image. 
+	 * Set the background image.
 	 */
 	public function actionSetBackground() {
 		if(isset($_POST['name'])) {
@@ -346,17 +355,42 @@ class ProfileController extends x2base {
 			//$this->redirect(array('profile/settings','id'=>Yii::app()->user->getId()));
 		}
 	}
-	
+        /*
+         * Set the login sound.
+         */
+        public function actionSetLoginSound(){
+            if(isset($_POST['name'])){
+                $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+                $profile->loginSound = $_POST['name'];
+                if($profile->save()){
+                    echo "success";
+                }
+            }
+        }
+
+        /*
+         * set the notification sound.
+         */
+        public function actionSetNotificationSound(){
+            if(isset($_POST['name'])){
+                $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+                $profile->notificationSound = $_POST['name'];
+                if($profile->save()){
+                    echo "success";
+                }
+            }
+        }
+
 	/**
 	 * Delete a background image.
-	 * 
-	 * @param type $id 
+	 *
+	 * @param type $id
 	 */
 	public function actionDeleteBackground($id) {
 
-		$image = X2Model::model('MediaChild')->findByPk($id);
+		$image = X2Model::model('Media')->findByPk($id);
 		if($image->associationId == Yii::app()->user->getId() && ($image->associationType=='bg' || $image->associationType=='bg-private')) {
-			
+
 			$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
 
 			if($profile->backgroundImg == $image->fileName) {	// if this BG is currently in use, clear user's background image setting
@@ -370,24 +404,57 @@ class ProfileController extends x2base {
 			}
 		}
 	}
-	
+
+        public function actionDeleteLoginSound($id){
+		$sound = X2Model::model('Media')->findByPk($id);
+		if($sound->associationId == Yii::app()->user->getId() && ($sound->associationType=='loginSound' || $sound->associationType=='loginSound-private')) {
+
+			$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+
+			if($profile->loginSound == $sound->fileName) {	// if this sound is currently in use, clear user's sound setting
+				$profile->loginSound = '';
+				$profile->save();
+			}
+			if ($sound->delete()) {
+				unlink('uploads/media/'.  $sound->uploadedBy . '/' .$sound->fileName);	// delete file
+				echo 'success';
+			}
+		}
+        }
+
+        public function actionDeleteNotificationSound($id){
+		$sound = X2Model::model('Media')->findByPk($id);
+		if($sound->associationId == Yii::app()->user->getId() && $sound->associationId == Yii::app()->user->getId() && ($sound->associationType=='notificationSound' || $sound->associationType=='notificationSound-private')) {
+
+			$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+
+			if($profile->notificationSound == $sound->fileName) {	// if this sound is currently in use, clear user's sound setting
+				$profile->notificationSound = '';
+				$profile->save();
+			}
+			if ($sound->delete()) {
+				unlink('uploads/media/' . $sound->uploadedBy . '/' .$sound->fileName);	// delete file
+				echo 'success';
+			}
+		}
+        }
 	/**
 	 * Generate a random filename for a picture.
-	 * 
+	 *
 	 * @return string
 	 */
 	private function generatePictureName(){
-		
+
 		$time=time();
 		$rand=chr(rand(65,90));
 		$salt=$time.$rand;
 		$name=md5($salt.md5($salt).$salt);
 		return $name;
 	}
-	
+
 	/**
 	 * Add a new post to the social feed.
-	 * 
+	 *
 	 * @param integer $id ID of the user.
 	 */
 	public function actionAddPost($id,$redirect) {
@@ -409,9 +476,9 @@ class ProfileController extends x2base {
 				$post->associationId=$id;
 			if($post->save()){
 				if($post->associationId != Yii::app()->user->getId()) {
-				
+
 					$notif = new Notification;
-					
+
 					$notif->type = 'social_post';
 					$notif->createdBy = $post->user;
 					$notif->modelType = 'Profile';
@@ -422,7 +489,7 @@ class ProfileController extends x2base {
 						->from('x2_users')
 						->where('id=:id',array(':id'=>$post->associationId))
 						->queryScalar();
-					
+
 					// $prof = X2Model::model('ProfileChild')->findByAttributes(array('username'=>$post->user));
 					// $notif->text = "$prof->fullName posted on your profile.";
 					// $notif->record = "profile:$prof->id";
@@ -433,26 +500,26 @@ class ProfileController extends x2base {
 					$notif->save();
 				}
 			}
-			
+
 		}
 		if($redirect=="view")
 			$this->redirect(array('view','id'=>$id));
 		else
 			$this->redirect(array('site/whatsNew'));
 	}
-	
-	/** 
+
+	/**
 	 * Posts a comment on some post.
-	 * 
+	 *
 	 * @param $comment string the text you're posting
 	 * @param $id integer the id of the post you're commenting on
 	 */
 	public function actionAddComment($comment,$id){
-		
+
 		// if(isset($_GET['comment'],$_GET['id'])) {
 
 		$postModel = Events::model()->findByPk($id);
-		
+
 		if($postModel === null)
 			throw new CHttpException(404,Yii::t('app','The requested post does not exist.'));
 
@@ -463,19 +530,19 @@ class ProfileController extends x2base {
 		$commentModel->associationId = $postModel->id;
         $commentModel->associationType='Events';
 		$commentModel->timestamp = time();
-		
+
 		if($commentModel->save()) {
-		
+
 			$postModel->lastUpdated = time();
 			$postModel->save();
-			
+
 			$profileUser = Yii::app()->db->createCommand()
 					->select('username')
 					->from('x2_users')
 					->where('id=:id',array(':id'=>$postModel->associationId))
 					->queryScalar();
-			
-			
+
+
 			// notify the owner of the feed containing the post you commented on (unless that person is you)
 			if($postModel->associationId != Yii::app()->user->getId()) {
 				$postNotif = new Notification;
@@ -514,7 +581,7 @@ class ProfileController extends x2base {
 			// $notif->user=$subject->username;
 			// if($notif->user!=Yii::app()->user->getName())
 				// $notif->save();
-			
+
 			// $notif=new Notifications;
 			// $prof=X2Model::model('ProfileChild')->findByAttributes(array('username'=>$comment->user));
 			// $subject=X2Model::model('ProfileChild')->findByPk($post->associationId);
@@ -542,7 +609,7 @@ class ProfileController extends x2base {
 	public function actionIndex() {
         $this->redirect(array('/site/whatsNew'));
 	}
-	
+
 	/**
 	 * Lists users profiles.
 	 */
@@ -553,7 +620,7 @@ class ProfileController extends x2base {
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
-	 * 
+	 *
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
 	 */
@@ -563,13 +630,13 @@ class ProfileController extends x2base {
 			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
 		return $model;
 	}
-	
+
 	/**
 	 * Obtain the name of the language given its 2-5 letter code.
-	 * 
+	 *
 	 * If a language pack was found for the language code, return its full
 	 * name. Otherwise, return false.
-	 * 
+	 *
 	 * @param string $code
 	 * @param array $languageDirs
 	 * @return mixed
@@ -586,11 +653,11 @@ class ProfileController extends x2base {
 		}
 		return false;	// false if languge pack wasn't there
 	}
-	
-	
+
+
 	/**
 	 * Return a mapping of Olson TZ code names to timezone names.
-	 * @return array 
+	 * @return array
 	 */
 	private function getTimeZones(){
 		return array(
@@ -710,22 +777,22 @@ class ProfileController extends x2base {
 			'Asia/Kamchatka'    => "(GMT+12:00) Kamchatka",
 		);
 	}
-	
+
 	/**
 	 * Sets the the option for the number of results per page.
-	 * @param integer $results 
+	 * @param integer $results
 	 */
 	public function actionSetResultsPerPage($results) {
 		Yii::app()->params->profile->resultsPerPage = $results;
 		Yii::app()->params->profile->save();
 	}
-	
+
 	public function actionResetWidgets($id) {
 		$model = $this->loadModel($id);
-		
+
 		$model->layout = json_encode($model->initLayout());
 		$model->update();
-		
+
 		$this->redirect(array('view','id'=>$id));
 	}
 }

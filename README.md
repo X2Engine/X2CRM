@@ -1,26 +1,44 @@
-# X2CRM 2.9 Changelog #
-3/21/2013
+# X2CRM 3.0 #
+5/1/2013
+## Changes ##
+* (Professional Edition only) X2Flow automation system (beta)
+  * Visual, drag-and-drop designer makes it easy to create convenient and 
+    powerful automation flows
+  * Automation flows can enact changes, create records, and a broad range of 
+    other operations ("actions") whenever certain events ("triggers") take place
+  * Supports a very extensive set of actions and triggers
+* Greatly improved Actions module; streamlined, user-friendly interface
+* New and improved Quotes module
+  * Line items can be re-ordered after adding them
+  * Can add adjustments to the total, i.e. tax and shipping; displays subtotal
+    vs. total if there are adjustments
+  * Support for arbitrary quote/invoice templates, which can be created and 
+    designed via "Create Quote" in the Docs module, and loaded/sent via email 
+    by going to the Quote's record view
+* Customizable login and notification sounds
 
-* Revamped web API
-	* now supports operations on any module type, including custom ones
-	*  Improved stability
-* More user control over the color scheme
-* All new default background images
-* Background fade button (lower right of screen)
-* Changed to Affero GPL v3 license
-* Updated CKEditor to version 4
-* Spellcheck now available in CKEditor
-* You can now pin activity feed items
-* Enhancements to Requirement Checker on installation
-* Numerous bug fixes
-
-## Changes in 2.9.1 ##
-3/27/2013
-* Additional bugfixes
-* Better failsafe in updater: uses either of two remote copy methods depending on which is available
+## Release Notes ##
+* The automation designer, while largely complete, is still in active 
+  development, and thus has been deemed a "beta" feature.
+* Quotes created before updating to 3.0 may display incorrect totals in email,
+  print and inline views. This can be easily corrected by opening the update 
+  view of the quote and saving it (even without any changes). This is due to 
+  how, in previous versions, totals weren't stored in quote records, but rather 
+  were re-calculated on-the-fly whereverthere they were displayed. This required 
+  writing and maintaining three separate versions of the code that calculated
+  totals: the default quotes update page (JavaScript), the inline quotes widget
+  in the contact view (JavaScript), and in the model where the line items table 
+  was generated (PHP). In order to improve the maintainability and reliability 
+  of the line items code (by reducing the number of places it could fail), and 
+  in keeping with the DRY (don't repeat yourself) principle, all line item 
+  calculations are now performed via client-side JavaScript in the 
+  "\_lineItems" view of the quotes module. The arithmetic, however, is only run 
+  when a quote is created or updated. Thus, to correct the total displayed on 
+  a quote, open the quote's update view so that the subtotal can be 
+  recalculated, and then save it.
 
 # Introduction #
-Welcome to  X2CRM v2.9!
+Welcome to  X2CRM v3.0!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and
@@ -35,6 +53,12 @@ mobile and tablet apps are combined within a  compact  and  fast  contact sales
 management application. Reps  are  able  to  make  more  sales  contacts  while 
 leveraging the combined  social intelligence of peers enabling them to add more 
 value to their customer interactions resulting in higher close rates. 
+
+# Documentation and Support #
+* [Community Forums](http://x2community.com/)
+* [Wiki](http://wiki.x2engine.com)
+* [Class Reference](http://doc.x2engine.com/)
+* [Live Demo Server](http://demo.x2engine.com/)
 
 # System Requirements #
 * A web server that can execute PHP
@@ -97,3 +121,4 @@ to get you started!
 - The  .htaccess  file  may  cause  issues  on  some  servers.  If  you  get  a 
   500 Internal Server Error  when you  try  to load the installer,  delete  the
   .htaccess file (the application will still work without it.)
+

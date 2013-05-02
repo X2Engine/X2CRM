@@ -46,8 +46,8 @@ var denyBox = $('<div></div>')
     	buttons: {
     		'OK': function() {
     			$(this).dialog('close');
-    		},
-    	},
+    		}
+    	}
     });
         
 denyBox.dialog('open');
@@ -68,12 +68,18 @@ var confirmBox = $('<div></div>')
     		'No': function() {
     			$(this).dialog('close');
     		}
-    	},
+    	}
     });
 confirmBox.dialog('open');
 }
 
 ",CClientScript::POS_HEAD);
+
+if($contactId) { 
+	$contact = Contacts::model()->findByPk($contactId); // used to determine if 'Send Email' menu item is displayed
+} else {
+  $contact = false;
+}
 
 $authParams['assignedTo']=$model->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
@@ -81,7 +87,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
 	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('quotes','View')),
-	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
+	array('label'=>Yii::t('app','Email '.($model->type=='invoice'?'Invoice':'Quote')),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;'),'visible'=>(bool) $contact),
 ),$authParams);
 
 $strict = Yii::app()->params['admin']['quoteStrictLock'];
@@ -123,7 +129,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'quotes-form',
 	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
+	'action'=>array('saveChanges','id'=>$model->id)
 ));
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Quote'));
@@ -175,7 +181,9 @@ if($model->type == 'invoice') { ?>
 </div>
 <?php } ?>
 
-<?php $productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products')); ?>
+<?php 
+  $productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products')); 
+?>
 <div class="x2-layout form-view">
 	<div class="formSection showSection">
 		<div class="formSectionHeader">
@@ -183,46 +191,7 @@ if($model->type == 'invoice') { ?>
 		</div>
 		<div class="tableWrapper">
 		<?php
-		$this->widget('zii.widgets.grid.CGridView', array(
-			'id'=>"quote-products-grid",
-			'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-			'summaryText'=>'',
-			'dataProvider'=>$dataProvider,
-			'columns'=>array(
-				array(
-					'name'=>'name',
-					'header'=>Yii::t('products','Line Item'),
-					'value'=>'$data["name"]',
-					'type'=>'raw',
-				),
-				array(
-					'name'=>'unit',
-					'header'=>Yii::t('products','Unit Price'),
-					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["unit"],"'.$model->currency.'")',
-					'type'=>'raw',
-				),
-				array(
-					'name'=>'quantity',
-					'header'=>Yii::t('products','Quantity'),
-					'value'=>'$data["quantity"]',
-					'type'=>'raw',
-				),
-				array(
-					'name'=>'adjustment',
-					'header'=> Yii::t('products', 'Adjustment'),
-					'value'=>'$data["adjustment"]',
-					'type'=>'raw',
-					'footer'=>'<b>Total</b>',
-				),
-				array(
-					'name'=>'price',
-					'header'=>Yii::t('products', "Price"),
-					'value'=>'Yii::app()->locale->numberFormatter->formatCurrency($data["price"],"'.$model->currency.'")',
-					'type'=>'raw',
-					'footer'=>'<b>'. Yii::app()->locale->numberFormatter->formatCurrency($total,$model->currency) .'</b>',
-				),
-			),
-		));
+    $this->renderPartial ('_lineItems', array ('model'=>$model,'readOnly'=>true));
 		?>
 		</div>
 
@@ -251,46 +220,21 @@ $this->endWidget();
 <?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php
-if($contactId) {
-	$contact = Contacts::model()->findByPk($contactId);
-	if($contact) { // if associated contact exists, setup inline email form
-		$emailName = "<br />
-		<table style=\"width:100%;\">
-			<tbody>
-				<tr>
-					<td><b>{$model->name}</b></td>
-					<td style=\"text-align:right;font-weight:bold;\">
-						<span>". ( $model->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) ." # {$model->id}</span><br />
-						<span>".date("F d, Y", time())."</span>
-					</td>
-				</tr>
-			</tbody>
-		</table><br />
-		";
-		
-		$emailName = str_replace("\n", "", $emailName); // fixed for history
-		$emailProducts = $model->productTable(true) ."<br />";
-		$emailProducts = str_replace("\n", "", $emailProducts); // fixed for history
-		$emailNotes = '';
-		
-		if($model->description) {
-			$emailNotes = $model->getAttributeLabel('description') . "<br>\n" . $model->description .'<br /><br />';
-		}
-		
-		$this->widget('InlineEmailForm',
-			array(
-				'attributes'=>array(
-					'to'=>'"'.$contact->name.'" <'.$contact->email.'>, ',
-					// 'subject'=>'hi',
-					// 'redirect'=>'contacts/'.$model->id,
-					'modelName'=>'Quotes',
-					'modelId'=>$model->id,
-					'message'=>$emailName . $emailProducts . $emailNotes,
-				),
-				'startHidden'=>true,
-			)
-		);
-	}
+if($contact){ // if associated contact exists, setup inline email form
+	$this->widget('InlineEmailForm', array(
+		'attributes' => array(
+			'to' => '"'.$contact->name.'" <'.$contact->email.'>, ',
+			// 'subject'=>'hi',
+			// 'redirect'=>'contacts/'.$model->id,
+			'modelName' => 'Quote',
+			'modelId' => $model->id,
+			'message' => $this->getPrintQuote($model->id, true),
+			'subject' => $model->type == ('invoice' ? Yii::t('quotes', 'Invoice') : Yii::t('quotes', 'Quote')).'('.Yii::app()->name.'): '.$model->name,
+		),
+		'startHidden' => true,
+		'templateType' => 'quote',
+	)
+	);
 }
 
 ?>

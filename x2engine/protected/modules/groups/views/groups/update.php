@@ -42,7 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>'Delete Group', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ));
 ?>
-<div class="page-title">
+<div class="page-title icon groups">
 	<h2><span class="no-bold"><?php echo Yii::t('modules','Update'); ?>:</span> <?php echo $model->name; ?></h2>
 </div>
 

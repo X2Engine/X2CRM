@@ -46,22 +46,24 @@ class X2FlowRecordReassign extends X2FlowAction {
 	public function paramRules() {
 		$leadRoutingModes = array(
 			''=>'Free For All',
-			'roundRobin'=>'Round Robin',
+			'roundRobin'=>'Round Robin Distribution',
 			'roundRobin'=>'Sequential Distribution',
-			'singleUser'=>'Simple User'
+			'singleUser'=>'Direct User Assignment'
 		);
-		
-		return array('title'=>$this->title,'info'=>$this->info,'fields'=>array(
-			'model' => array(),
-			'routeMode' => array('label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
-			'user' => array('label'=>'User','type'=>'assignment','multiple'=>1),
-			'onlineOnly' => array('label'=>'Online Only?','optional'=>1,'type'=>'boolean','default'=>false),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'modelRequired' => 'Contacts',
+			'options' => array(
+				// array('name'=>'routeMode','label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
+				array('name'=>'user','label'=>'User','type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(true,true)),
+				// array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
+			));
 	}
 	
-	public function execute($params) {
-		if(CActiveRecord::model('User')->exists('username=?',array($params['user']))) {	// make sure the user exists
-			$params['model']->assignedTo = $params['user'];
+	public function execute(&$params) {
+		if(CActiveRecord::model('User')->exists('username=?',array($this->config['options']['user']))) {	// make sure the user exists
+			$params['model']->assignedTo = $this->config['options']['user'];
 			return $params['model']->save();
 		}
 		return false;

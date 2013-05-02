@@ -46,7 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('opportunities','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
 ),$authParams);
 ?>
-<div class="page-title">
+<div class="page-title icon opportunities">
 	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
 </div>
 <div class="form">

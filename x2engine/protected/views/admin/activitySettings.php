@@ -49,7 +49,7 @@ $('#timeout').change(function() {
 ", CClientScript::POS_READY);
 
 ?>
-<div class="span-16">
+<div>
 	<div class="page-title"><h2><?php echo Yii::t('admin', 'Activity Feed Settings'); ?></h2></div>
 	<?php
 	$form = $this->beginWidget('CActiveForm', array(
@@ -59,6 +59,7 @@ $('#timeout').change(function() {
 	?>
 	
 	<div class="form">
+    <div class="span-16">
 	<?php
 	echo $form->labelEx($model, 'eventDeletionTime')."<br /><br />";
 	echo $form->dropDownList($model,'eventDeletionTime',array(1=>'1 day',7=>'7 days',30=>'30 days', 0=>'Do not delete'));
@@ -67,11 +68,14 @@ $('#timeout').change(function() {
 	<br><br>
 	<?php echo Yii::t('admin', 'Events build up quickly as they are triggered very often and it is highly recommended that some form of clean up is enabled.  Default is 7 days.'); ?>
     </div>
+    </div>
     <div class="form">
+    <div class="span-16">
 	<?php
 	echo $form->labelEx($model, 'eventDeletionTypes')."<br /><br />";
 	echo $form->checkBoxList($model,'eventDeletionTypes',array(
         'feed'=>Events::model()->parseType('feed'),
+        'comment'=>Events::model()->parseType('comment'),
         'record_create'=>Events::model()->parseType('record_create'),
         'record_deleted'=>Events::model()->parseType('record_deleted'),
         'action_reminder'=>Events::model()->parseType('action_reminder'),
@@ -94,6 +98,8 @@ $('#timeout').change(function() {
     <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
     <?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n"; ?>
     <?php $this->endWidget(); ?>
+    </div>
+</div>
 </div>
 <style>
     div.form label{

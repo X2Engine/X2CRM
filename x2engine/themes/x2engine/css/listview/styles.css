@@ -36,7 +36,18 @@
 .list-view-loading {background:url(loading.gif) no-repeat;}
 .list-view .summary {margin:0 0 5px 0;text-align:right;}
 .list-view .sorter {margin:0 0 5px 0;text-align:right;}
-.list-view .pager {margin:5px 0 5px 0;text-align:right;}
+.list-view .pager {
+	margin:5px 0 5px 0;text-align:right;
+    border: 1px solid #ccc;
+	padding:5px;
+	background:#fff;
+	margin:5px 0 0 0; 
+	text-align:right;
+	border-radius:			4px 4px 4px 4px;
+	-moz-border-radius:		4px 4px 4px 4px;
+	-webkit-border-radius:	4px 4px 4px 4px;
+	-o-border-radius:		4px 4px 4px 4px;
+}
 .list-view .sorter {font-size:0.9em;}
 .list-view .sorter ul {
 	display:inline;

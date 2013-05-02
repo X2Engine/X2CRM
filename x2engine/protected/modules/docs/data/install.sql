@@ -8,18 +8,18 @@ CREATE TABLE `x2_docs` (
 	text					LONGTEXT		NOT NULL,
 	createdBy				VARCHAR(60)		NOT NULL,
 	createDate				BIGINT,
-	editPermissions			VARCHAR(250), 
+	editPermissions			VARCHAR(250),
 	updatedBy				VARCHAR(40),
 	lastUpdated				BIGINT,
     visibility              TINYINT
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
+INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("docs",			"Docs",				1,			5,				0,			0,			0,			0,		0);
+	VALUES	("docs",			"Docs",				1,			8,				0,			0,			0,			0,		0);
 /*&*/
-INSERT INTO `x2_fields` (`modelName`, `fieldName`, `attributeLabel`, `modified`, `custom`, `type`, `required`, `readOnly`, `linkType`, `searchable`, `relevance`, `isVirtual`) 
-VALUES 
+INSERT INTO `x2_fields` (`modelName`, `fieldName`, `attributeLabel`, `modified`, `custom`, `type`, `required`, `readOnly`, `linkType`, `searchable`, `relevance`, `isVirtual`)
+VALUES
 ('Docs','createDate','Created',0,0,'date',0,0,NULL,0,NULL,0),
 ('Docs','createdBy','Created By',0,0,'varchar',0,0,NULL,0,NULL,0),
 ('Docs','editPermissions','Edit Permissions',0,0,'varchar',0,0,NULL,0,NULL,0),

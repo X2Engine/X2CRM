@@ -56,40 +56,71 @@ class FileUtil {
 	 * use CURL instead.
 	 * 
 	 * @param string $source The source file
-	 * @param strint $target The destination path.
+	 * @param string $target The destination path.
+	 * @param boolean $relTarget Transform the target to a relative path.
 	 * @return boolean 
 	 */
-	public static function ccopy($source, $target) {
-
-		$pieces = explode('/', $target);
-		unset($pieces[count($pieces)]);
-		for ($i = 0; $i < count($pieces); $i++) {
-			$str = "";
-			for ($j = 0; $j < $i; $j++) {
-				$str.=$pieces[$j] . '/';
-			}
-
-			if (!is_dir($str) && $str != "") {
-				mkdir($str);
+	public static function ccopy($source, $target, $relTarget = false) {
+		if($relTarget)
+			$target = self::relpath($target);
+		$pathNodes = explode('/', $target);
+		array_pop($pathNodes);
+		for ($i = 0; $i <= count($pathNodes); $i++) {
+			$parent = implode('/',array_slice($pathNodes,0,$i));
+			if (!is_dir($parent) && $parent != '') {
+				if(!@mkdir($parent))
+					throw new Exception("Failed to create directory $parent");
 			}
 		}
-		if (self::tryCurl($source)) {
-			// Fall back on the getContents method, which will try using CURL
-			$ch = self::curlInit($source);
-			$contents = curl_exec($ch);
-			if((bool) $contents)
-				return @file_put_contents($target, $contents) !== false;
-			else
-				return false;
+		if (preg_match('%^https?://%', $source)) {
+			if (self::tryCurl($source)) {
+				// Fall back on the getContents method, which will try using CURL
+				$ch = self::curlInit($source);
+				$contents = curl_exec($ch);
+				if ((bool) $contents)
+					return @file_put_contents($target, $contents) !== false;
+				else
+					return false;
+			} else {
+				$context = stream_context_create(array(
+					'http' => array(
+						'timeout' => 15  // Timeout in seconds
+						)));
+				return @copy($source, $target, $context) !== false;
+			}
 		} else {
-			$context = stream_context_create(array(
-			'http' => array(
-				'timeout' => 15  // Timeout in seconds
-				)));
-			return @copy($source, $target, $context) !== false;
+			return @copy($source, $target) !== false;
 		}
 	}
 	
+	/**
+	 * Removes DOS-related junk from an absolute path.
+	 * 
+	 * Returns the path as an array of nodes.
+	 */
+	public static function cleanDosPath($path) {
+		$a_dirty = explode('\\', $path);
+		$a = array();
+		foreach ($a_dirty as $node) {
+			$a[] = $node;
+		}
+		$lastNode = array_pop($a);
+		if (preg_match('%/%', $lastNode)) {
+			// The final part of the path might contain a relative path put 
+			// together with forward slashes (for the lazy developer)
+			foreach (explode('/', $lastNode) as $node)
+				$a[] = $node;
+		} else {
+			$a[] = $lastNode;
+		}
+		return $a;
+	}
+	
+	/**
+	 * Initializes and returns a CURL resource handle
+	 * @param string $url
+	 * @return resource
+	 */
 	public static function curlInit($url) {
 		$ch = curl_init($url);
 		$curlopt = array(
@@ -122,6 +153,25 @@ class FileUtil {
 	}
 
 	/**
+	 * Removes up-one-level directory traversal from a path.
+	 * 
+	 * Returns an array. path (in array form, with directory traversal
+	 * @param array $path Path to clean
+	 */
+	public static function noTraversal($path) {
+		$p2 = array();
+		foreach ($path as $node) {
+			if ($node == '..') {
+				if(count($p2) > 0)
+					array_pop($p2);
+			} else {
+				$p2[] = $node;
+			}
+		}
+		return $p2;
+	}
+	
+	/**
 	 * Format a path so that it is platform-independent. Doesn't return false
 	 * if the path doesn't exist (so unlike realpath() it can be used to create 
 	 * new filess).
@@ -132,9 +182,52 @@ class FileUtil {
 	public static function rpath($path) {
 		return implode(DIRECTORY_SEPARATOR, explode('/', $path));
 	}
+	
+	/**
+	 * Calculates a relative path from two absolute paths.
+	 * 
+	 * @param string $path0
+	 * @param string $path1 
+	 */
+	public static function relpath($path,$start=null) {
+		$thisPath = $start===null?realpath('.').'/.':$start;
+		if (preg_match('/^([A-Z]):\\\\/', $thisPath, $match0)) {
+			// Windows environment
+			if (preg_match('/([A-Z]):\\\\/', $path, $match1)) {
+				if ($match0[1] != $match1[1])
+					// They're on different drives. Regurgitate the absolute path.
+					return $path;
+				else {
+					$a1 = self::cleanDosPath($path);
+					array_shift($a1);
+					$a1 = self::noTraversal($a1);
+				}
+			} else {
+				$a1 = self::noTraversal(explode('/',$path));
+			}
+			$a0 = self::cleanDosPath($thisPath);
+			array_shift($a0);
+			$a0 = self::noTraversal($a0);
+			array_pop($a0);
+		} else {
+			// Unix environment. So much easier.
+			$a0 = self::noTraversal(explode('/',$thisPath));
+			array_pop($a0);
+			$a1 = self::noTraversal(explode('/',$path));
+		}
+				
+		$l = 0;
+		while($l < count($a0) && $l < count($a1)) {
+			if($a0[$l] != $a1[$l])
+				break;
+			$l++;
+		}
+		$lUp = count($a0) - $l;
+		return str_repeat('../',$lUp).implode('/',array_slice($a1,$l));
+	}
 
 	/**
-	 * Recursively remove a directory.
+	 * Recursively remove a directory and all its subdirectories.
 	 * 
 	 * Walks a directory structure, removing files recursively. An optional
 	 * exclusion pattern can be included. If a directory contains a file that
@@ -206,10 +299,10 @@ class FileUtil {
 	 * @return type 
 	 */
 	public static function tryCurl($source) {
-		$try = preg_match('/^https?:\/\//', $source) && (ini_get('allow_url_fopen')==0 || self::$alwaysCurl);
+		$try = preg_match('%^https?://%', $source) && (ini_get('allow_url_fopen')==0 || self::$alwaysCurl);
 		if ($try)
 			if (!extension_loaded('curl'))
-				throw new Exception('No HTTP methods available; tried accessing a remote URL, but allow_url_fopen is not enabled and the CURL extension is not loaded.',500);
+				throw new Exception('No HTTP methods available. Tried accessing a remote object, but allow_url_fopen is not enabled and the CURL extension is missing.',500);
 		return $try;
 	}
 

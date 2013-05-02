@@ -41,16 +41,81 @@
  */
 class X2FlowCreateAction extends X2FlowAction {
 	public $title = 'Create Action';
-	public $info = '';
+	public $info = 'Creates a new action for the specified user.';
 	
 	public function paramRules() {
-		return array('title'=>$this->title,'fields'=>array(
-			'attributes' => array(),
-		));
+		$visOptions = array(
+			1 => Yii::t('actions','Public'),
+			0 => Yii::t('actions','Private'),
+			2 => Yii::t('actions','User\'s Groups')
+		);
+		$priorityOptions = array(
+			'Low' => Yii::t('actions','Low'),
+			'Medium' => Yii::t('actions','Medium'),
+			'High' => Yii::t('actions','High')
+		);
+		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
+		$assignmentOptions = X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
+		
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'options' => array(
+				// array('name'=>'attributes'),
+				array('name'=>'subject','label'=>Yii::t('actions','Subject'),'optional'=>1),
+				array('name'=>'description','label'=>Yii::t('actions','Description'),'type'=>'text'),
+				array('name'=>'assignedTo','label'=>Yii::t('actions','Assigned To'),'type'=>'dropdown','options'=>$assignmentOptions),
+				array('name'=>'priority','label'=>Yii::t('actions','Priority'),'type'=>'dropdown','options'=>$priorityOptions),
+				array('name'=>'visibility','label'=>Yii::t('actions','Visibility'),'type'=>'dropdown','options'=>$visOptions),
+				// array('name'=>'reminder','label'=>Yii::t('actions','Remind Me'),'type'=>'checkbox','default'=>false),
+			));
 	}
 	
-	public function execute($params) {
+	public function execute(&$params) {
+		$options = $this->config['options'];
+		
 		$action = new Actions;
-			return $this->setModelAttributes($action,$params) && $model->save();
+		
+		$action->subject = $options['subject'];
+		$action->actionDescription = $options['description'];
+		$action->priority = $options['priority'];
+		$action->visibility = $options['visibility'];
+		// $action->
+		
+		if(isset($params['model']))
+			$action->assignedTo = X2Flow::parseValue($options['assignedTo'],'assignment',$params['model']);
+		
+		// replaceVariables($str, &$model, $vars = array(), $encode = false)
+		
+		// if(isset($this->config['attributes']))
+			// $this->setModelAttributes($action,$this->config['attributes']);
+		
+		return $action->save();
+		
+		
+		
+		// if($options['reminder']) {
+			// $notif=new Notification;
+			// $notif->modelType='Actions';
+			// $notif->createdBy=Yii::app()->user->getName();
+			// $notif->modelId=$model->id;
+			// if($_POST['notificationUsers']=='me'){
+				// $notif->user=Yii::app()->user->getName();
+			// }else{
+				// $notif->user=$model->assignedTo;
+			// }
+			// $notif->createDate=$model->dueDate-($_POST['notificationTime']*60);
+			// $notif->type='action_reminder';
+			// $notif->save();
+			// if($_POST['notificationUsers']=='both' && Yii::app()->user->getName()!=$model->assignedTo){
+				// $notif2=new Notification;
+				// $notif2->modelType='Actions';
+				// $notif2->createdBy=Yii::app()->user->getName();
+				// $notif2->modelId=$model->id;
+				// $notif2->user=Yii::app()->user->getName();
+				// $notif2->createDate=$model->dueDate-($_POST['notificationTime']*60);
+				// $notif2->type='action_reminder';
+				// $notif2->save();
+			// }
+		// }
 	}
 }

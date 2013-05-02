@@ -41,20 +41,40 @@
  */
 class X2FlowCreateNotif extends X2FlowAction {
 	public $title = 'Create Popup Notification';
-	public $info = '';
+	// public $info = 'You can type a custom message, or X2CRM will automatically choose one based on the event that triggered this flow.';
 	
 	public function paramRules() {
 		$notifTypes = array('auto'=>'Auto','custom'=>'Custom');
+		$assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,false);	// '{assignedTo}', no groups, no 'anyone'
 		
-		return array('title'=>$this->title,'fields'=>array(
-			'user' => array('label'=>'User','type'=>'assignment'),
-			'text' => array('label'=>'Message','optional'=>1),
-			'type' => array('label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
-		));
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'options' => array(
+				array('name'=>'user','label'=>'User','type'=>'dropdown','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
+				// array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
+				array('name'=>'text','label'=>'Message','optional'=>1),
+			));
 	}
-	
-	public function execute($params) {
+
+	public function execute(&$params) {
+		$options = &$this->config['options'];
+		
 		$notif = new Notification;
-		return $this->setModelAttributes($notif,$params) && $notif->save();
+		$notif->user = $options['user'];
+		$notif->createdBy = 'API';
+		$notif->createDate = time();
+		
+		// if($options['type'] == 'auto') {
+			// if(!isset($params['model']))
+				// return false;
+			// $notif->modelType = get_class($params['model']);
+			// $notif->modelId = $params['model']->id;
+			// $notif->type = $this->getNotifType();
+		// } else {
+			$notif->type = 'custom';
+			$notif->text = $options['text'];
+		// }
+		return $notif->save();
 	}
 }

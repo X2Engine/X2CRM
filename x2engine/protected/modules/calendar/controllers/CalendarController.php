@@ -420,7 +420,7 @@ class CalendarController extends x2base {
 	
 		// get actions assigned to user
 		$actions = Yii::app()->db->createCommand()
-			->select('id, visibility, assignedTo, complete, type, actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
+			->select('id, visibility, assignedTo, complete, type, (SELECT text FROM x2_action_text a WHERE a.actionId = id) AS actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
 			->from('x2_actions')
 			->where($where)
 			->queryAll();
@@ -1013,17 +1013,17 @@ class CalendarController extends x2base {
 			}
 			
 			if($model->allDay) {
-				$googleEvent['start']['date'] = date('Y-m-d', X2Model::parseDateTime($model->dueDate));
+				$googleEvent['start']['date'] = date('Y-m-d', Formatter::parseDateTime($model->dueDate));
 				if($model->completeDate)
-					$googleEvent['end']['date'] = date('Y-m-d', X2Model::parseDateTime($model->completeDate) + 86400);
+					$googleEvent['end']['date'] = date('Y-m-d', Formatter::parseDateTime($model->completeDate) + 86400);
 				if(isset($googleEvent['start']['dateTime']))
 					unset($googleEvent['start']['dateTime']);
 				if(isset($googleEvent['end']['dateTime']))
 					unset($googleEvent['end']['dateTime']);
 			} else {
-				$googleEvent['start']['dateTime'] = date('c', X2Model::parseDateTime($model->dueDate));
+				$googleEvent['start']['dateTime'] = date('c', Formatter::parseDateTime($model->dueDate));
 				if($model->completeDate)
-					$googleEvent['end']['dateTime'] = date('c', X2Model::parseDateTime($model->completeDate));
+					$googleEvent['end']['dateTime'] = date('c', Formatter::parseDateTime($model->completeDate));
 				if(isset($googleEvent['start']['date']))
 					unset($googleEvent['start']['date']);
 				if(isset($googleEvent['end']['date']))

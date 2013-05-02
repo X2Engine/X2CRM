@@ -35,11 +35,9 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create Action')), 
+	array('label'=>Yii::t('actions','Action List'),'url'=>array('index')),
+	array('label'=>Yii::t('actions','Create')), 
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('actions','Create Action'); ?></h2></div>
-<?php echo $this->renderPartial('_form', array('actionModel'=>$model, 'users'=>$users)); ?>
+<div class="page-title icon actions"><h2><?php echo Yii::t('actions','Create Action'); ?></h2></div>
+<?php echo $this->renderPartial('_form', array('actionModel'=>$model, 'users'=>$users,'modelList'=>$modelList)); ?>

@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -42,11 +43,12 @@
  * @package X2CRM.modules.docs.models
  */
 class Docs extends X2Model {
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Docs the static model class
 	 */
-	public static function model($className=__CLASS__) {
+	public static function model($className = __CLASS__) {
 		return parent::model($className);
 	}
 
@@ -56,19 +58,19 @@ class Docs extends X2Model {
 	public function tableName() {
 		return 'x2_docs';
 	}
-	
+
 	public function behaviors() {
-		return array_merge(parent::behaviors(),array(
-			'X2LinkableBehavior'=>array(
-				'class'=>'X2LinkableBehavior',
-				'module'=>'docs',
-			),
-            'ERememberFiltersBehavior' => array(
-				'class'=>'application.components.ERememberFiltersBehavior',
-				'defaults'=>array(),
-				'defaultStickOnClear'=>false
-			)
-		));
+		return array_merge(parent::behaviors(), array(
+					'X2LinkableBehavior' => array(
+						'class' => 'X2LinkableBehavior',
+						'module' => 'docs',
+					),
+					'ERememberFiltersBehavior' => array(
+						'class' => 'application.components.ERememberFiltersBehavior',
+						'defaults' => array(),
+						'defaultStickOnClear' => false
+					)
+				));
 	}
 
 	/**
@@ -79,14 +81,14 @@ class Docs extends X2Model {
 		// will receive user inputs.
 		return array(
 			array('name, text, createdBy', 'required'),
-			array('createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('name, editPermissions, subject', 'length', 'max'=>100),
-			array('createdBy', 'length', 'max'=>60),
-			array('updatedBy', 'length', 'max'=>40),
-			array('type', 'length', 'max'=>10),
+			array('createDate, lastUpdated', 'numerical', 'integerOnly' => true),
+			array('name, editPermissions, subject', 'length', 'max' => 100),
+			array('createdBy', 'length', 'max' => 60),
+			array('updatedBy', 'length', 'max' => 40),
+			array('type', 'length', 'max' => 10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions, type', 'safe', 'on'=>'search'),
+			array('id, name, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions, type', 'safe', 'on' => 'search'),
 		);
 	}
 
@@ -101,13 +103,13 @@ class Docs extends X2Model {
 	}
 
 	public function parseType() {
-		if(!isset($this->type))
+		if (!isset($this->type))
 			$this->type = '';
-		switch($this->type) {
+		switch ($this->type) {
 			case 'email':
-				return Yii::t('docs','Template');
+				return Yii::t('docs', 'Template');
 			default:
-				return Yii::t('docs','Document');
+				return Yii::t('docs', 'Document');
 		}
 	}
 
@@ -122,94 +124,147 @@ class Docs extends X2Model {
 		$criteria = new CDbCriteria;
 
 		// $criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
-        $criteria->compare('subject',$this->subject,true);
+		$criteria->compare('name', $this->name, true);
+		$criteria->compare('subject', $this->subject, true);
 		// $criteria->compare('text',$this->text,true);
-		$criteria->compare('createdBy',$this->createdBy,true);
-		$criteria->compare('createDate',$this->createDate);
-		$criteria->compare('updatedBy',$this->updatedBy,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated);
-		$criteria->compare('type',$this->type);
-		
-		if(!Yii::app()->user->checkAccess('AdminIndex')){
-			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'" OR editPermissions LIKE "%'.Yii::app()->user->getName().'%"';
+		$criteria->compare('createdBy', $this->createdBy, true);
+		$criteria->compare('createDate', $this->createDate);
+		$criteria->compare('updatedBy', $this->updatedBy, true);
+		$criteria->compare('lastUpdated', $this->lastUpdated);
+		$criteria->compare('type', $this->type);
+
+		if (!Yii::app()->user->checkAccess('AdminIndex')) {
+			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="' . Yii::app()->user->getName() . '" OR editPermissions LIKE "%' . Yii::app()->user->getName() . '%"';
 			/* x2temp */
-			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-			if(!empty($groupLinks))
-				$condition .= ' OR createdBy IN ('.implode(',',$groupLinks).')';
+			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
+			if (!empty($groupLinks))
+				$condition .= ' OR createdBy IN (' . implode(',', $groupLinks) . ')';
 
 			$condition .= 'OR (visibility=2 AND createdBy IN 
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
-					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+					(SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . ')))';
 			$criteria->addCondition($condition);
 		}
 		// $criteria->compare('editPermissions',$this->editPermissions,true);
 
 		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
-		if($dateRange !== false)
-			$criteria->addCondition('createDate BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
-			
+		if ($dateRange !== false)
+			$criteria->addCondition('createDate BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
+
 		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
-		if($dateRange !== false)
-			$criteria->addCondition('lastUpdated BETWEEN '.$dateRange[0].' AND '.$dateRange[1]);
-		
-		return new SmartDataProvider('Docs',array(
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'sort'=>array(
-				'defaultOrder' => 'lastUpdated DESC, id DESC',
-			),
-			'criteria'=>$criteria,
-		));
+		if ($dateRange !== false)
+			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
+
+		return new SmartDataProvider('Docs', array(
+					'pagination' => array(
+						'pageSize' => ProfileChild::getResultsPerPage(),
+					),
+					'sort' => array(
+						'defaultOrder' => 'lastUpdated DESC, id DESC',
+					),
+					'criteria' => $criteria,
+				));
 	}
 
-	public static function replaceVariables($str,&$model,$vars=array()) {
+	/**
+	 * Replace tokens with model attribute values.
+	 * 
+	 * @param type $str Input text
+	 * @param X2Model $model Model to use for replacement
+	 * @param array $vars List of extra variables to replace
+	 * @param bool $encode Encode replacement values if true; use renderAttribute otherwise.
+	 * @return string
+	 */
+	public static function replaceVariables($str, &$model, $vars = array(), $encode = false) {
 		$matches = array();
-		
-		if(preg_match_all('/{\w+}/',$str,$matches)) {		// loop through the things (email body)
-			foreach($matches[0] as &$match) {
-				$match = substr($match,1,-1);	// remove { and }
-				
-				if(isset($vars[$match])) {
-					$str = preg_replace('/{'.$match.'}/',$vars[$match],$str);
-				} elseif($model->hasAttribute($match)) {
-					$value = $model->renderAttribute($match,false,true);	// get the correctly formatted attribute
-					$str = preg_replace('/{'.$match.'}/',$value,$str);
+		if (get_class($model) != 'Quote') {
+			if (preg_match_all('/{\w+}/', $str, $matches)) {  // loop through the things (email body)
+				foreach ($matches[0] as &$match) {
+					$match = substr($match, 1, -1); // remove { and }
+
+					if (isset($vars[$match])) {
+						$str = preg_replace('/{' . $match . '}/', $encode ? (CHtml::encode($vars[$match])) : $vars[$match], $str);
+					} elseif ($model->hasAttribute($match)) {
+						$value = $model->renderAttribute($match, false, true); // get the correctly formatted attribute (which is already in HTML)
+						$str = preg_replace('/{' . $match . '}/', $value, $str);
+					}
 				}
 			}
+		} else {
+			// Specialized, separate method for quotes that can use details from 
+			// either accounts or quotes.
+			// There may still be some stray quotes with 2+ contacts on it, so
+			// explode and pick the first to be on the safe side. The most 
+			// common use case by far is to have only one contact on the quote.
+			$contactIds = explode(' ', $model->associatedContacts);
+			$contactId = $contactIds[0];
+			$accountId = $model->accountName;
+			$staticModels = array('Contact' => Contacts::model(), 'Account' => Accounts::model(), 'Quote' => Quote::model());
+			$models = array(
+				'Contact' => empty($contactId) ? null : $staticModels['Contact']->findByPk($contactIds[0]),
+				'Account' => empty($accountId) ? null : $staticModels['Account']->findByPk($model->accountName),
+				'Quote' => $model
+			);
+			$attributes = array();
+			foreach ($models as $name => $modelObj) {
+				if (empty($modelObj)) {
+					// Model will be blank
+					foreach ($staticModels[$name]->fields as $field) {
+						$attributes['{' . $name . '.' . $field->fieldName . '}'] = '';
+					}
+				} else {
+					// Insert attributes
+					foreach ($modelObj->attributes as $fieldName => $value) {
+						$attributes['{' . $name . '.' . $fieldName . '}'] = $encode ? CHtml::encode($value) : $modelObj->renderAttribute($fieldName);
+					}
+				}
+
+			}
+			$quoteParams = array(
+				'{Quote.lineItems}' => $model->productTable(true),
+				'{Quote.dateNow}' => date("F d, Y", time()),
+			);
+			// Run the replacement:
+			$str = strtr($str, array_merge($attributes, $vars,$quoteParams));
 		}
 		return $str;
 	}
 
-	public static function getEmailTemplates() {
+	public static function getEmailTemplates($type = 'email') {
 		$templateLinks = array();
 		// $criteria = new CDbCriteria(array('order'=>'lastUpdated DESC'));
 		$condition = 'TRUE';
-		if(!Yii::app()->user->checkAccess('AdminIndex')) {
-			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
+		if (!Yii::app()->user->checkAccess('AdminIndex')) {
+			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="' . Yii::app()->user->getName() . '"';
 			/* x2temp */
-			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-			if(!empty($groupLinks))
-				$condition .= ' OR createdBy IN ('.implode(',',$groupLinks).')';
+			$uid = self::model()->suID;
+			if(empty($uid)){
+				if(Yii::app()->params->noSession)
+					$uid = 1;
+				else
+					$uid = Yii::app()->user->id;
+			}
+			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' .$uid)->queryColumn();
+			if (!empty($groupLinks))
+				$condition .= ' OR createdBy IN (' . implode(',', $groupLinks) . ')';
 
 			$condition .= 'OR (visibility=2 AND createdBy IN 
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
-					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+					(SELECT groupId FROM x2_group_to_user WHERE userId=' . $uid . ')))';
 			// $criteria->addCondition($condition);
 		}
 		// $templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
-		
+
 		$templateData = Yii::app()->db->createCommand()
-			->select('id,name')
-			->from('x2_docs')
-			->where('type="email" AND ('.$condition.')')
-			// ->andWhere($condition)
-			->queryAll(false);
-		
-		foreach($templateData as &$row)
+				->select('id,name')
+				->from('x2_docs')
+				->where('type="'.$type.'" AND (' . $condition . ')')
+				// ->andWhere($condition)
+				->queryAll(false);
+
+		foreach ($templateData as &$row)
 			$templateLinks[$row[0]] = $row[1];
-		
+
 		natcasesort($templateLinks);
 		return $templateLinks;
 	}

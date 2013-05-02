@@ -46,7 +46,7 @@ include('WebTestConfig.php');
 /**
  * @package X2CRM.tests
  */
-class X2WebTestCase extends CWebTestCase {
+abstract class X2WebTestCase extends CWebTestCase {
 
 	public $localSeleneseDir;
 

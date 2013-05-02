@@ -53,9 +53,9 @@ CClientScript::POS_HEAD);
 <div class="form" id="login-form">
 	<div class="row">
 		<div class="cell">
-			<?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png','X2Engine',array('id'=>'login-logo','width'=>74,'height'=>84)); ?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png','X2Engine',array('id'=>'login-logo','width'=>80,'height'=>71)); ?>
 		</div>
-		<div class="cell" style="margin:0;width:230px;">
+		<div class="cell" style="margin:0;width:225px;">
 		
 			<?php echo $form->label($model,'username'); ?>
 			<?php echo $form->textField($model,'username',array('autofocus'=>'autofocus')); ?>

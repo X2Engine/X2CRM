@@ -29,15 +29,15 @@ class IasPager extends CLinkPager {
 
         $js = "jQuery.ias(" .
                 CJavaScript::encode(
-                        CMap::mergeArray($this->options, array(
+                        CMap::mergeArray(array(
                             'container' => '#' . $this->listViewId . ' ' . $this->itemsSelector,
                             'item' => $this->rowSelector,
                             'pagination' => '#' . $this->listViewId . ' ' . $this->pagerSelector,
                             'next' => '#' . $this->listViewId . ' ' . $this->nextSelector,
                             'loader' => " Loading...",
-                        ))) . ");";
+                        ),$this->options)) . ");";
 
-
+        
         $cs = Yii::app()->clientScript;
         $cs->registerScript('infscrl', $js, CClientScript::POS_READY);
 

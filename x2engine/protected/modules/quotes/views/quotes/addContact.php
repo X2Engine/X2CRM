@@ -46,7 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 ),$authParams);
 ?>
 
-<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name; ?></h2></div>
+<div class="page-title icon quotes"><h2><span class="no-bold"><?php echo Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name; ?></h2></div>
 
 <div class="form">
 

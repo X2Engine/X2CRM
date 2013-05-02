@@ -45,12 +45,33 @@ $autosaveUrl = $this->createUrl('autosave').'?id='.$model->id;
 
 $js = '';
 
-if($model->type==='email') {
-	$insertableAttributes = array();
-	foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
-		$insertableAttributes[$label] = '{'.$fieldName.'}';
-		
-	$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).';';
+if($model->type==='email' || $model->type ==='quote') {
+	$attributes = array();
+	if($model->type === 'email')
+		foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
+			$attributes[$label] = '{'.$fieldName.'}';
+	else {
+		$accountAttributes = array();
+		$contactAttributes = array();
+		$quoteAttributes = array();
+		foreach(Contacts::model()->attributeLabels() as $fieldName => $label)
+			$contactAttributes["Contact: $label"] = '{Contact.'.$fieldName.'}';
+		foreach(Accounts::model()->attributeLabels() as $fieldName => $label)
+			$accountAttributes["Account: $label"] = '{Account.'.$fieldName.'}';
+		$quoteAttributes["Quote: Item Table"] = '{Quote.lineItems}';
+		$quoteAttributes["Quote: Date printed/emailed"] = '{Quote.dateNow}';
+		foreach(Quote::model()->attributeLabels() as $fieldName => $label)
+			$quoteAttributes["Quote: $label"] = '{Quote.'.$fieldName.'}';
+	}
+	if($model->type === 'email') {
+		$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$attributes)).';';
+	} else {
+		$js = 'x2.insertableAttributes = '.CJSON::encode(array(
+			Yii::t('docs','Contact Attributes')=>$contactAttributes,
+			Yii::t('docs','Account Attributes')=>$accountAttributes,
+			Yii::t('docs','Quote Attributes')=>$quoteAttributes
+		)).';';
+	}
 }
 
 $js .='
@@ -67,7 +88,7 @@ function autosave() {
 if(window.docEditor)
 	window.docEditor.destroy(true);
 window.docEditor = createCKEditor("input",{
-	'.($model->type==='email'? 'insertableAttributes:x2.insertableAttributes,' : '').'
+	'.($model->type==='email' || $model->type == 'quote' ? 'insertableAttributes:x2.insertableAttributes,':'').'
 	// toolbar:"Full",
 	fullPage:true,
 	height:600
@@ -123,7 +144,7 @@ $form = $this->beginWidget('CActiveForm', array(
 				echo Yii::t('Docs', 'Saved at') ." $date";
 			} ?>
 		</span>
-	</div><?php if($this->route=='docs/createEmail') { ?>
+	</div><?php if($this->action->id=='createEmail') { ?>
 	<div class="row">
 		<?php echo Yii::t('docs','<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
 	</div><?php } ?>

@@ -46,6 +46,10 @@
 		<?php if($showNewEvent) { ?><li><a href="#new-event"><b>+</b><?php echo Yii::t('actions','Event'); ?></a></li><?php } ?>
 	</ul>
 	<div class="form">
+        <div class="row">
+            <?php echo CHtml::label('Quick Note','quickNote',array('style'=>'display:inline-block;')); ?>
+            <?php echo CHtml::dropDownList('quickNote','',array_merge(array(''=>'-'),Dropdowns::getItems(117)));?>
+        </div>
 		<div class="row">
 			<?php echo CHtml::ajaxSubmitButton(Yii::t('app','Save'),
 				array('/actions/PublisherCreate'),
@@ -59,7 +63,7 @@
 							\$('.publisher-text').animate({opacity: 0.0});
 							\$('#publisher-saving-icon').animate({opacity: 1.0});
 						}
-						
+
 						return true; // form is sane: submit!
 					 }",
 					 'success'=>"function() { publisherUpdates(); resetPublisher();
@@ -74,7 +78,7 @@
 			</div>
 		</div>
 		<?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab ?>
-		
+
 		<?php echo $form->hiddenField($model,'associationType'); ?>
 		<?php echo $form->hiddenField($model,'associationId'); ?>
 
@@ -87,16 +91,15 @@
 					<?php echo CHtml::label(Yii::t('actions', 'Start Date'), 'Actions_dueDate', array('id'=>'start-date-label', 'style'=>'display: none;')); ?>
 
 					<?php
-					$model->dueDate = $this->controller->formatDateEndOfDay(time());	//default to tomorow for new actions
 					Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 					$this->widget('CJuiDateTimePicker',array(
 						'model'=>$model, //Model object
 						'attribute'=>'dueDate', //attribute name
 						'mode'=>'datetime', //use "time","date" or "datetime" (default)
 						'options'=>array(
-							'dateFormat'=> $this->controller->formatDatePicker('medium'),
-							'timeFormat'=> $this->controller->formatTimePicker(),
-							'ampm'=> $this->controller->formatAMPM(),
+							'dateFormat'=> Formatter::formatDatePicker('medium'),
+							'timeFormat'=> Formatter::formatTimePicker(),
+							'ampm'=> Formatter::formatAMPM(),
 							'changeMonth'=>true,
 							'changeYear'=>true
 						), // jquery plugin options
@@ -106,16 +109,16 @@
 
 					echo CHtml::label(Yii::t('actions', 'End Date'), 'Actions_completeDate', array('id'=>'end-date-label', 'style'=>'display: none;'));
 
-					$model->dueDate = X2Model::formatDateTime(time());
+					$model->dueDate = Formatter::formatDateTime(time());
 					Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 					$this->widget('CJuiDateTimePicker', array(
 						'model'=>$model, //Model object
 						'attribute'=>'completeDate', //attribute name
 						'mode'=>'datetime', //use "time","date" or "datetime" (default)
 						'options'=>array(
-							'dateFormat'=> $this->controller->formatDatePicker('medium'),
-							'timeFormat'=> $this->controller->formatTimePicker(),
-							'ampm'=> $this->controller->formatAMPM(),
+							'dateFormat'=> Formatter::formatDatePicker('medium'),
+							'timeFormat'=> Formatter::formatTimePicker(),
+							'ampm'=> Formatter::formatAMPM(),
 							'changeMonth'=>true,
 							'changeYear'=>true,
 						), // jquery plugin options
@@ -124,22 +127,17 @@
 							'onClick'=>"$('#ui-datepicker-div').css('z-index', '20');", // fix datepicker so it's always on top
 							'style'=>'display: none;',
 							'id'=>'end-date-input',
-						), 
+						),
 					));
 					?>
-					<?php echo $form->label($model, 'allDay'); ?>
-					<?php echo $form->checkBox($model, 'allDay'); ?>
 				</div>
 				<div class="cell">
 					<?php echo $form->label($model,'priority'); ?>
 					<?php echo $form->dropDownList($model, 'priority', array(
-						'Low'=>Yii::t('actions','Low'),
-						'Medium'=>Yii::t('actions','Medium'),
-						'High'=>Yii::t('actions','High')));
+						'1'=>Yii::t('actions','Low'),
+						'2'=>Yii::t('actions','Medium'),
+						'3'=>Yii::t('actions','High')));
 					?>
-
-					<?php echo $form->label($model, 'color'); ?>
-					<?php echo $form->dropDownList($model, 'color', Actions::getColors()); ?>
 				</div>
 				<?php /* Assinged To */ ?>
 				<div class="cell">
@@ -179,11 +177,7 @@
 				<div class="cell">
 					<?php echo $form->label($model,'visibility'); ?>
 					<?php $model->visibility = 1; // default visibility = public ?>
-					<?php echo $form->dropDownList($model,'visibility',array(0=>Yii::t('actions','Private'), 1=>Yii::t('actions','Public'), 2=>Yii::t('actions', "User's Group"))); ?> 
-				</div>
-				<div class="cell">
-					<?php echo $form->label($model,'reminder'); ?>
-					<?php echo $form->dropDownList($model,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?> 
+					<?php echo $form->dropDownList($model,'visibility',array(0=>Yii::t('actions','Private'), 1=>Yii::t('actions','Public'), 2=>Yii::t('actions', "User's Group"))); ?>
 				</div>
 			</div>
 		</div>
@@ -198,21 +192,24 @@
 	</div>
 </div>
 
-<?php 
+<?php
 
 $this->endWidget();
 
 // save default values of fields for when the publisher is submitted and then reset
 Yii::app()->clientScript->registerScript('defaultValues',"
 $(function() {
-	
+
 	// turn on jquery taps for the publisher
 	$('#tabs').tabs({
-		select: function(event, ui) { tabSelected(event, ui); }, 
-	}); 
-	
-	if($('#tabs .ui-tabs-selected').length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
-		var selected = $('#tabs .ui-tabs-selected').children().attr('href').substring(1);
+		activate: function(event, ui) { tabSelected(event, ui); },
+	});
+    $(document).on('change','#quickNote',function(){
+        $('#Actions_actionDescription').val($(this).val());
+    });
+
+	if($('#tabs .ui-state-active').length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
+		var selected = $('#tabs .ui-state-active').attr('aria-controls');
 		$('#SelectedTab').val(selected); // save the selected tab as POST data
 		if(selected == 'log-a-call' || selected == 'new-comment') {
 			$('#action-event-panel').css('display', 'none');
@@ -222,18 +219,18 @@ $(function() {
 	$('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
 		$(this).data('defaultValue', $(this).val());
 	});
-	
+
 	$('#publisher-form input[type=checkbox]').each(function(i) {
 		$(this).data('defaultValue', $(this).is(':checked'));
 	});
-	
+
 	// highlight save button when something is edited in the publisher
 	$('#publisher-form input, #publisher-form select, #publisher-form textarea').focus(function(){
 		$('#save-publisher').addClass('highlight');
 		// $('#publisher-form textarea').animate({'height':80},300);
 		$('#publisher-form textarea').height(80);
-		
-		
+
+
 		$(document).unbind('click.publisher').bind('click.publisher',function(e) {
 			if(!$(e.target).parents().is('#publisher-form, .ui-datepicker')
 				&& $('#publisher-form textarea').val()=='') {
@@ -241,21 +238,21 @@ $(function() {
 				$('#publisher-form textarea').animate({'height':22},300);
 			}
 		});
-		
+
 	});
 
-	
+
 	// highlight save button when user starts typing in Description
 	$('#Actions_actionDescription').keydown(function() {
 		$('#save-publisher').addClass('highlight');
 	});
-	
+
 	// position the saving icon for the publisher (which starts invisible)
 	// var publisherLabelCenter = parseInt($('.publisher-label').css('width'), 10)/2;
 	// var halfIconWidth = parseInt($('#publisher-saving-icon').css('width'), 10)/2;
 	// var iconLeft = publisherLabelCenter - halfIconWidth;
 	// $('#publisher-saving-icon').css('left', iconLeft + 'px');
-	
+
 });");
 
 

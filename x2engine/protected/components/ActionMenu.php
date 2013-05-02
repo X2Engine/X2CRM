@@ -52,13 +52,13 @@ class ActionMenu extends X2Widget {
 	 * Creates the widget. 
 	 */
 	public function run() {
-		$total = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(),'type'=>null));
+		$total = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName()),'type="" OR type IS NULL');
 
-		$unfinished = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No','type'=>null));
+		$unfinished = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'),'type="" OR type IS NULL');
 
-		$overdue = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No','type'=>null),'dueDate < '.time());
+		$overdue = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'),'dueDate < '.time().' AND type="" OR type IS NULL');
 
-		$complete = Actions::model()->countByAttributes(array('completedBy' => Yii::app()->user->getName(), 'complete' => 'Yes','type'=>null));
+		$complete = Actions::model()->countByAttributes(array('completedBy' => Yii::app()->user->getName(), 'complete' => 'Yes'),'type="" OR type IS NULL');
 
 
 		$this->render('actionMenu', array(

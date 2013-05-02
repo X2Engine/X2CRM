@@ -90,7 +90,7 @@
 	<div class="row">
 		<div class="cell">
 			<?php echo $form->labelEx($model,'googleId'); ?>
-			<?php echo $form->textField($model,'googleId',array('size'=>40,'maxlength'=>250)); ?>
+			<?php echo $form->textField($model,'googleId',array('size'=>40,'maxlength'=>250)).' <span class="x2-hint" title="This field should contain a Google Account (i.e. yourname@gmail.com) which you can use to log in to X2CRM with if Google Integration has been enabled.">[?]</span>'; ?>
 			<?php echo $form->error($model,'googleId'); ?>
 		</div>
 	</div>

@@ -36,34 +36,34 @@
 // called when a tab is clicked
 function tabSelected(event, ui) {
 	// set field SelectedTab for use in POST request
-	$('#SelectedTab').val(ui.panel.id);
-	
-	if(ui.panel.id == 'new-event') {
+	$('#SelectedTab').val(ui.newTab.attr('aria-controls'));
+
+	if(ui.newTab.attr('aria-controls') == 'new-event') {
 		// switch labels Due Date vs Start Date
 		$('#due-date-label').css('display', 'none');
 		$('#start-date-label').css('display', 'block');
-		
+
 		// show end date
 		$('#end-date-label').css('display', 'block');
 		$('#end-date-input').css('display', 'inline-block');
-		
+
 		// show action-event-panel
 		$('#action-event-panel').css('display', 'block');
-		
-	} else if(ui.panel.id == 'new-action') {
+
+	} else if(ui.newTab.attr('aria-controls') == 'new-action') {
 		$('#due-date-label').css('display', 'block');
 		$('#start-date-label').css('display', 'none');
-		
+
 		// hide end date
 		$('#end-date-label').css('display', 'none');
 		$('#end-date-input').css('display', 'none');
-		
+
 		// show action-event-panel
 		$('#action-event-panel').css('display', 'block');
-	} else if(ui.panel.id == 'log-a-call') {
+	} else if(ui.newTab.attr('aria-controls') == 'log-a-call') {
 		// hide action-event-panel
 		$('#action-event-panel').css('display', 'none');
-	} else if(ui.panel.id == 'new-comment') {
+	} else if(ui.newTab.attr('aria-controls') == 'new-comment') {
 		// hide action-event-panel
 		$('#action-event-panel').css('display', 'none');
 	}
@@ -78,7 +78,7 @@ function sanityCheck() {
 function publisherUpdates() {
 	if($('#calendar').length !== 0) // if we are in calendar module
 		$('#calendar').fullCalendar('refetchEvents'); // refresh calendar
-	
+
 	if($('.list-view').length !== 0)
 		$.fn.yiiListView.update($('.list-view').attr('id'));
 }
@@ -90,17 +90,17 @@ function resetPublisher() {
 	if($('#groupCheckbox').is(':checked')) {
 		$('#groupCheckbox').click(); // unchecks group checkbox, and calls ajax function to restor Assigned To to list of users
 	}
-	
+
 	// reset textarea and dropdowns
 	$('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
 		$(this).val($(this).data('defaultValue'));
 	});
-	
+
 	// reset checkboxes
 	$('#publisher-form input[type=checkbox]').each(function(i) {
 		$(this).attr('checked', $(this).data('defaultValue'));
 	});
-	
+
 	// reset save button
 	$('#save-publisher').removeClass('highlight');
 }

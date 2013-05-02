@@ -48,7 +48,7 @@ class MediaTest extends X2DbTestCase {
 	
 	public function testFilesystem() {
 		$image = $this->media('bg');
-		$this->assertNotEquals(null,$image->path);
+		$this->assertNotEquals(null,$image->path,'Failed asserting valid path for media item "bg"');
 		$this->assertFileExists($image->path);
 	}
 	
@@ -61,15 +61,15 @@ class MediaTest extends X2DbTestCase {
 	
 	public function testResolveSize() {
 		$image = $this->media('bg');
-		$this->assertEquals(280869,$image->resolveSize());
-		$this->assertEquals(280869,Yii::app()->db->createCommand()->select('filesize')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar());
+		$this->assertEquals(97724,$image->resolveSize());
+		$this->assertEquals(97724,Yii::app()->db->createCommand()->select('filesize')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar());
 	}
 	
 	public function testResolveDimensions() {
 		$this->assertEquals(1,extension_loaded('gd'));
 		$image = $this->media('bg');
-		$this->assertEquals(array('height'=>1200,'width'=>1500),CJSON::decode($image->resolveDimensions()));
-		$this->assertEquals(array('height'=>1200,'width'=>1500),CJSON::decode(Yii::app()->db->createCommand()->select('dimensions')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar()));
+		$this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode($image->resolveDimensions()));
+		$this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode(Yii::app()->db->createCommand()->select('dimensions')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar()));
 	}
 }
 

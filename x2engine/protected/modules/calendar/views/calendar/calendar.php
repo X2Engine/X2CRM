@@ -178,7 +178,7 @@ foreach($sharedCalendars as $calendarId) {
 		else
 			$editable = 'false';
 		$checkedSharedCalendars .= "
-	$('#calendar').fullCalendar('addEventSource', 
+	$('#calendar').fullCalendar('addEventSource',
 		{
 			url: '$calendarFeed',
 			type: 'POST',
@@ -199,7 +199,7 @@ foreach($googleCalendars as $calendarId) {
 			else
 				$editable = 'false';
 			$checkedGoogleCalendars .= "
-	$('#calendar').fullCalendar('addEventSource', 
+	$('#calendar').fullCalendar('addEventSource',
 	   {
 	   		url: '$jsonFeedGoogle?calendarId=' + '{$calendar->id}',
 	   		type: 'POST',
@@ -211,7 +211,7 @@ foreach($googleCalendars as $calendarId) {
 ";
 		} else {
 			$checkedGoogleCalendars .= "
-	$('#calendar').fullCalendar('addEventSource', 
+	$('#calendar').fullCalendar('addEventSource',
 		{
 			url: '{$calendar->googleFeed}',
 			type: 'POST',
@@ -260,26 +260,22 @@ $(function() {
 			}
 
 			$('#Actions_actionDescription').focus();
-			
+
 			var actionDate = new Date(date.getTime());
 			var eventDate = new Date(date.getTime());
 			if(view.name == 'month' || view.name == 'basicWeek') {
-				var oldActionDate = $('#Actions_dueDate').datetimepicker('getDate');
-				actionDate.setHours(oldActionDate.getHours());
-				actionDate.setMinutes(oldActionDate.getMinutes());
-				
 				if($('#end-date-input').datetimepicker('getDate')) {
 					var oldEventDate = $('#end-date-input').datetimepicker('getDate');
 					eventDate.setHours(oldEventDate.getHours());
 					eventDate.setMinutes(oldEventDate.getMinutes());
 				}
 			}
-			
+
 			var dateformat = $('#publisher-form').data('dateformat');
 			var timeformat = $('#publisher-form').data('timeformat');
 			var ampmformat = $('#publisher-form').data('ampmformat');
 			var region = $('#publisher-form').data('region');
-			
+
 			if(typeof(dateformat) == 'undefined') {
 				dateformat = 'M d, yy';
 			}
@@ -292,11 +288,11 @@ $(function() {
 			if(typeof(region) == 'undefined') {
 				region = '';
 			}
-			
+
 			$('#Actions_dueDate').datetimepicker("destroy");
 			$('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': actionDate}));
 			$('#Actions_dueDate').datetimepicker('setDate', actionDate);
-			
+
 			if($('#end-date-input').datetimepicker('getDate')) {
 				$('#end-date-input').datetimepicker("destroy");
 				$('#end-date-input').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
@@ -321,25 +317,25 @@ $(function() {
       if ($('[id="dialog-content_' + event.id + '"]').length != 0) { // prevent duplicate dialog windows
         return;
       }
-		
+
 			if(event.source.type == 'googleFeed')
 				return;
 			var viewAction = $('<div></div>', {id: 'dialog-content' + '_' + event.id});  // dialog box (opened at the end of this function)
 			var focusButton = 'Close';
 			var dialogWidth = 390;
-			
+
 			var boxButtons =  [ // buttons on bottom of dialog
 			    {
-			    	text: '<?php echo Yii::t('app', 'Close'); ?>', 
+			    	text: '<?php echo Yii::t('app', 'Close'); ?>',
 			    	click: function() {
 			    		$(this).dialog('close');
-			    		
+
 			    		// remove unique id's so we can open the dialog more then once
 						cleanUpDialog();
 			    	}
 			    },
 			];
-			
+
 			if(event.source.source == 'google') {
 				var boxTitle = '<?php echo Yii::t('calendar', 'Google Event'); ?>';
 				if(event.source.editable) {
@@ -374,7 +370,7 @@ $(function() {
 					});
 				}
 			} else {
-			
+
 				if(event.source.editable) {
 					/*
 					var eventDescription = $('<textarea></textarea>', {
@@ -402,11 +398,11 @@ $(function() {
 					$(dueDate).datetimepicker($.extend(
 						{showMonthAfterYear:false},
 						$.datepicker.regional['<?php echo (Yii::app()->language == 'en'? '':Yii::app()->getLanguage()); ?>'],
-						{'dateFormat': '<?php echo $this->formatDatePicker('medium'); ?>'}
+						{'dateFormat': '<?php echo Formatter::formatDatePicker('medium'); ?>'}
 					));
 					*/
 					dialogWidth = 600;
-					$.post('<?php echo $urls['editAction']; ?>', {'ActionId': event.id, 'IsEvent': event.type=='event'}, function(data) { 
+					$.post('<?php echo $urls['editAction']; ?>', {'ActionId': event.id, 'IsEvent': event.type=='event'}, function(data) {
 					    $(viewAction).append(data);
 					    viewAction.dialog('open'); //open dialog after its filled with action/event
 					});
@@ -434,12 +430,12 @@ $(function() {
 					    },
 					});
 				} else { // non-editable event/action
-					$.post('<?php echo $urls['viewAction']; ?>', {'ActionId': event.id, 'IsEvent': event.type=='event'}, function(data) { 
+					$.post('<?php echo $urls['viewAction']; ?>', {'ActionId': event.id, 'IsEvent': event.type=='event'}, function(data) {
 					    $(viewAction).append(data);
 					    viewAction.dialog('open'); //open dialog after its filled with action/event
 					});
 				}
-				
+
 				if(event.associationType == 'calendar') { // calendar event clicked
 					var boxTitle = 'Event';
 				} else if(event.associationType == 'contacts') { // action associated with a contact clicked
@@ -513,7 +509,7 @@ $(function() {
 			}
 
 			viewAction.dialog({
-				title: boxTitle, 
+				title: boxTitle,
 				autoOpen: false,
 				resizable: true,
 				width: dialogWidth,
@@ -530,7 +526,7 @@ $(function() {
 				    $('.ui-dialog-titlebar').css('padding', '0.2em 0.4em');
 				    $(viewAction).css('font-size', '0.75em');
 				},
-        close: function () { 
+        close: function () {
               $('[id="dialog-content_' + event.id + '"]').remove ();
         }
 			});
@@ -603,14 +599,14 @@ function toggleUserCalendarSource(user, on, isEditable) {
 	if(user == '')
 		user = 'Anyone';
 	if(on) {
-		$('#calendar').fullCalendar('addEventSource', 
+		$('#calendar').fullCalendar('addEventSource',
 			{
 				url: '<?php echo $urls['jsonFeed']; ?>?user=' + user,
 				editable: isEditable,
 			}
 		);
 	} else {
-		$('#calendar').fullCalendar('removeEventSource', 
+		$('#calendar').fullCalendar('removeEventSource',
 			{
 				url: '<?php echo $urls['jsonFeed']; ?>?user=' + user,
 				editable: isEditable,
@@ -643,7 +639,7 @@ function toggleGroupCalendarSource(groupId, on) {
 /*
 function toggleCalendarSourceShared(calendarId, on, isEditable) {
 	if(on) {
-		$('#calendar').fullCalendar('addEventSource', 
+		$('#calendar').fullCalendar('addEventSource',
 			{
 				url: '<?php echo $urls['jsonFeedShared']; ?>' + '?calendarId=' + calendarId,
 				type: 'POST',
@@ -651,7 +647,7 @@ function toggleCalendarSourceShared(calendarId, on, isEditable) {
 			}
 		);
 	} else {
-		$('#calendar').fullCalendar('removeEventSource', 
+		$('#calendar').fullCalendar('removeEventSource',
 			{
 				url: '<?php echo $urls['jsonFeedShared']; ?>' + '?calendarId=' + calendarId,
 				type: 'POST',
@@ -666,7 +662,7 @@ function toggleCalendarSourceShared(calendarId, on, isEditable) {
 function toggleCalendarSourceGoogle(id, on, isEditable) {
 //	$.post('<?php echo $urls['jsonFeedGoogle']; ?>' + '?calendarId=' + calendarId);
 	if(on) {
-		$('#calendar').fullCalendar('addEventSource', 
+		$('#calendar').fullCalendar('addEventSource',
 			{
 				url: '<?php echo $urls['jsonFeedGoogle']; ?>' + '?calendarId=' + id,
 				type: 'POST',
@@ -676,7 +672,7 @@ function toggleCalendarSourceGoogle(id, on, isEditable) {
 			}
 		);
 	} else {
-		$('#calendar').fullCalendar('removeEventSource', 
+		$('#calendar').fullCalendar('removeEventSource',
 			{
 				url: '<?php echo $urls['jsonFeedGoogle']; ?>' + '?calendarId=' + id,
 				type: 'POST',
@@ -693,7 +689,7 @@ function toggleCalendarSourceGoogle(id, on, isEditable) {
 // view/hide actions from a read only google calendar feed
 function toggleCalendarSourceGoogleFeed(calendarId, on, googleFeed) {
 	if(on) {
-		$('#calendar').fullCalendar('addEventSource', 
+		$('#calendar').fullCalendar('addEventSource',
 			{
 				url: googleFeed,
 				type: 'POST',
@@ -702,7 +698,7 @@ function toggleCalendarSourceGoogleFeed(calendarId, on, googleFeed) {
 			}
 		);
 	} else {
-		$('#calendar').fullCalendar('removeEventSource', 
+		$('#calendar').fullCalendar('removeEventSource',
 			{
 				url: googleFeed,
 				type: 'POST',

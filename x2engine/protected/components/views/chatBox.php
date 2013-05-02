@@ -69,7 +69,7 @@ $(function() {
 		},
 	});
 });
-",CClientScript::POS_HEAD); 
+",CClientScript::POS_HEAD);
 
 // find height of chat box, chat message, and use these to find height of widget
 $widgetSettings = ProfileChild::getWidgetSettings();
@@ -82,14 +82,33 @@ $chatboxContainerHeight = $chatboxHeight + 2;
 $chatmessageContainerHeight = $chatmessageHeight + 6;
 
 $chatContainerHeight = $chatboxHeight + $chatmessageHeight + 45;
-$chatContainerFixHeight = $chatContainerHeight + 5;
+$chatContainerFixHeight = $chatContainerHeight + 10;
 
 ?>
 
+<script>
+            $("#activityFeedDropDown").change(function() {
+                $.ajax({
+                    url:yii.baseUrl+"/index.php/site/activityFeedOrder",
+                    success:function(){
+                        $('#chat-box').empty();
+                        var profile = JSON.parse(yii.profile);
+                        if(profile['activityFeedOrder']==1){
+                            profile['activityFeedOrder']=0;
+                        }else{
+                            profile['activityFeedOrder']=1;
+                        }
+                        yii.profile=JSON.stringify(profile);
+                        lastEventId=0;
+                        lastTimestamp=0;
+                    }
+                });
+            })
+</script>
 <div id="chat-container-fix" style="height:<?php echo $chatContainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->
 	<div id="chat-container" style="height:<?php echo $chatContainerHeight; ?>px;">									<!--this is the resizable for this widget-->
 		<div id="chat-box-container" style="height:<?php echo $chatContainerHeight; ?>px; margin-bottom: 5px;">	<!--resizable for chatbox-->
-			<div id="chat-box" style="height:<?php echo $chatContainerHeight; ?>px;"></div>
+			<div id="chat-box" style="padding-top:5px; height:<?php echo $chatContainerHeight; ?>px;"></div>
 		</div>
 	</div>
 </div>

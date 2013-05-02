@@ -63,7 +63,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function afterSave($event) {
 		// look up current tags
 		$oldTags = $this->getTags();
-		$allTags = $oldTags;
+		$newTags = $oldTags;
 		
 		foreach($this->scanForTags() as $tag) {
 			if(!in_array($tag,$oldTags)) {	// don't add duplicates if there are already tags
@@ -74,16 +74,18 @@ class TagBehavior extends CActiveRecordBehavior {
 				$tagModel->itemName = $this->getOwner()->name;
 				$tagModel->taggedBy = Yii::app()->user->getName();
 				$tagModel->timestamp = time();
-				if($tagModel->save()) {
-					$allTags[] = $tag;
-					X2Flow::trigger('record_tag_added',array(
-						'model'=>$this->getOwner(),
-						'tag'=>$tag,
-					));
-				}
+				if($tagModel->save())
+					$newTags[] = $tag;
 			}
 		}
-		$this->_tags = $allTags;	// update tag cache
+		$this->_tags = $newTags + $oldTags;	// update tag cache
+		
+		if(!empty($newTags)) {
+			X2Flow::trigger('RecordTagAddTrigger',array(
+				'model'=>$this->getOwner(),
+				'tags'=>$newTags,
+			));
+		}
 	}
 
 	/**
@@ -158,6 +160,8 @@ class TagBehavior extends CActiveRecordBehavior {
 	 */
 	public function addTags($tags) {
 		$result = false;
+		$addedTags = array();
+		
 		foreach((array)$tags as $tagName) {
 			if(empty($tagName))
 				continue;
@@ -171,15 +175,17 @@ class TagBehavior extends CActiveRecordBehavior {
 				$tag->itemName = $this->getOwner()->name;
 				
 				if($tag->save()) {
-					X2Flow::trigger('record_tag_added',array(
-						'model'=>$this->getOwner(),
-						'tag'=>$tag,
-					));
 					$this->_tags[] = $tag;	// update tag cache
+					$addedTags[] = $tagName;
 					$result = true;
 				}
 			}
 		}
+		X2Flow::trigger('RecordTagAddTrigger',array(
+			'model'=>$this->getOwner(),
+			'tags'=>$addedTags,
+		));
+		
 		return $result;
 	}
 	
@@ -190,6 +196,8 @@ class TagBehavior extends CActiveRecordBehavior {
 	 */
 	public function removeTags($tags) {
 		$result = false;
+		$removedTags = array();
+		
 		foreach((array)$tags as $tag) {
 			if(empty($tag))
 				continue;
@@ -201,17 +209,18 @@ class TagBehavior extends CActiveRecordBehavior {
 			);
 			
 			if(in_array($tag,$this->getTags()) && CActiveRecord::model('Tags')->deleteAllByAttributes($attributes) > 0) {
-				
 				if(false !== $offset = array_search($tag,$this->_tags))
 					unset($this->_tags[$offset]);	// update tag cache
 					
-				X2Flow::trigger('record_tag_removed',array(
-					'model'=>$this->getOwner(),
-					'tag'=>$tag,
-				));
+				$removedTags[] = $tag;
 				$result = true;
 			}
 		}
+		X2Flow::trigger('RecordTagRemoveTrigger',array(
+			'model'=>$this->getOwner(),
+			'tags'=>$removedTags,
+		));
+		
 		return $result;
 	}
 

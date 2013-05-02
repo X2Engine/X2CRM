@@ -45,6 +45,7 @@ foreach($groups as $groupId){
         }
     }
 }
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
 $userList=array_keys(User::getNames());
 $tempUserList=array_diff($userList,$tempUserList);
 $usersGroups=implode(",",$tempUserList);
@@ -63,8 +64,24 @@ if($(":checkbox:checked").length > ($(":checkbox").length)/2){
     checkedFlag=false;
     $("#toggle-filters-link").html("Check Filters");
 }
+$.each($(".comment-count"),function(){
+    if($(this).attr("val")>0){
+        $(this).parent().click();
+    }
+});
 ',CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('activity-feed','
+
+var debug = 0;
+
+function consoleLog(obj) {
+    if (console != undefined) {
+        if(console.log != undefined && debug) {
+            console.log(obj);
+        }
+    }
+}
+
 function updateComments(id){
     $.ajax({
         url:"loadComments",
@@ -125,7 +142,7 @@ function minimizePosts(){
                 }
             });
         }else{
-        
+
         }
     });
 }
@@ -195,7 +212,7 @@ $(document).on("click","#just-me-filter",function(e){
                 users.push($(this).attr("name"));
             }
         });
-        
+
         var str=window.location+"";
         pieces=str.split("?");
         var str2=pieces[0];
@@ -254,16 +271,54 @@ $(document).on("click",".important-link",function(e){
     e.preventDefault();
     var pieces=$(this).attr("id").split("-");
     var id=pieces[0];
-    $.ajax({
-        url:"flagPost",
-        data:{id:id,attr:"important"},
-        success:function(data){
-            $(link).parents(".view.top-level").addClass("important");
-            
-        }
+    $("#broadcast-dialog").dialog({
+        autoOpen: true,
+        buttons: {
+            "Broadcast": function() {
+                $(this).dialog("close");
+                $.ajax({
+                    url:"flagPost",
+                    data:{
+                        id:id,
+                        attr:"important",
+                        email:$("#emailUsers").attr("checked"),
+                        color:$("#broadcastColor").val().replace("#","%23"),
+                        fontColor:$("#fontColor").val().replace("#","%23"),
+                        linkColor:$("#linkColor").val().replace("#","%23")
+                    },
+                    success:function(data){
+                        if($("#broadcastColor").val()==""){
+                            var color="#FFFFC2";
+                        }else{
+                            var color=$("#broadcastColor").val();
+                        }
+                        if($("#fontColor").val()!=""){
+                            $(link).parents(".view.top-level").css("color",$("#fontColor").val());
+                            $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("color",$("#fontColor").val());
+                        }
+                        if($("#linkColor").val()!=""){
+                            $(link).parents(".view.top-level div.event-text-box").find("a").css("color",$("#linkColor").val());
+                        }
+                        $(link).parents(".view.top-level").css("background-color",color);
+                        $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("background-color",color);
+                        $(link).toggle();
+                        $(link).next().toggle();
+                        $("#broadcastColor").val("");
+                        $("#fontColor").val("");
+                        $("#linkColor").val("");
+                        $(".modcoder_excolor_clrbox").css("background-image","url("+yii.baseUrl+"/js/modcoder_excolor/transp.gif)");
+                    }
+                });
+            },
+            "Nevermind":function(){
+                $(this).dialog("close");
+            }
+        },
+        height:"auto",
+        width:450,
+        resizable:false
     });
-    $(link).toggle();
-    $(link).next().toggle();
+
 });
 
 $(document).on("click",".unimportant-link",function(e){
@@ -275,25 +330,388 @@ $(document).on("click",".unimportant-link",function(e){
         url:"flagPost",
         data:{id:id,attr:"unimportant"},
         success:function(data){
-            $(link).parents(".view.top-level").removeClass("important");
-            
+            $(link).parents(".view.top-level").css("background-color","#fff");
+            $(link).parents(".view.top-level").css("color","#222");
+            $(link).parents(".view.top-level div.event-text-box").find("a").css("color","#06c");
+            $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("background-color","#fff");
+            $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("color","#666");
+
         }
     });
     $(link).toggle();
     $(link).prev().toggle();
 });
 
+function incrementLikeCount (likeCountElem) {
+    likeCount = parseInt ($(likeCountElem).html ().replace (/[() ]/g, ""), 10) + 1;
+    $(likeCountElem).html (" (" + likeCount + ")");
+}
+
+function decrementLikeCount (likeCountElem) {
+    likeCount = parseInt ($(likeCountElem).html ().replace (/[() ]/g, ""), 10) - 1;
+    $(likeCountElem).html (" (" + likeCount + ")");
+}
+
+$(document).on("click",".like-button",function(e){
+    consoleLog ("click like");
+    var link=this;
+    e.preventDefault();
+    var pieces=$(this).attr("id").split("-");
+    var id=pieces[0];
+    var tmpElem = $("<span>", { "text": ($(link).text ()) });
+    $(link).after (tmpElem);
+    $(link).toggle();
+    $.ajax({
+        url:"likePost",
+        data:{id:id},
+        success:function(data){
+            consoleLog ("like-button ajax success " + data);
+            $(tmpElem).remove ();
+            if (data === "liked post") {
+                incrementLikeCount ($(link).next().next());
+            }
+            $(link).next().toggle();
+            reloadLikeHistory (id);
+        }
+    });
+});
+
+$(document).on("click",".unlike-button",function(e){
+    consoleLog ("click unlike");
+    var link=this;
+    e.preventDefault();
+    var pieces=$(this).attr("id").split("-");
+    var id=pieces[0];
+    var tmpElem = $("<span>", { "text": ($(link).text ()) });
+    $(link).after (tmpElem);
+    $(link).toggle();
+    $.ajax({
+        url:"likePost",
+        data:{id:id},
+        success:function(data){
+            consoleLog ("unlike-button ajax success " + data);
+            $(tmpElem).remove ();
+            if (data === "unliked post") {
+                decrementLikeCount ($(link).next());
+            }
+            $(link).prev().toggle();
+            reloadLikeHistory (id);
+        }
+    });
+});
+
+/*
+Used by unlike-button and like-button click events to update the like history
+if it is already open
+*/
+function reloadLikeHistory (id) {
+    var likeHistoryBox = $("#" + id + "-like-history-box");
+    if (!likeHistoryBox.is(":visible")) {
+        return;
+    }
+    var likes = $("#" + id + "-likes");
+    $.ajax({
+        url:"loadLikeHistory",
+        data:{id:id},
+        success:function(data){
+            likes.html ("");
+            var likeHistory = JSON.parse (data);
+            consoleLog (data);
+
+            // if last like was removed, collapse box
+            if (likeHistory.length === 0) {
+                likeHistoryBox.slideUp ();
+                likes.html ("");
+                return;
+            }
+            for (var name in likeHistory) {
+                likes.append (likeHistory[name] + " liked this post. </br>");
+            }
+        }
+    });
+}
+
+/*
+Display the like history in a drop down underneath the post
+*/
+$(document).on("click",".like-count",function(e){
+    e.preventDefault();
+    var pieces=$(this).attr("id").split("-");
+    var id=pieces[0];
+    var likeHistoryBox = $("#" + id + "-like-history-box");
+    var likes = $("#" + id + "-likes");
+    if (likeHistoryBox.is(":visible")) {
+        likeHistoryBox.slideUp ();
+        likes.html ("");
+        return;
+    }
+    $.ajax({
+        url:"loadLikeHistory",
+        data:{id:id},
+        success:function(data){
+            var likeHistory = JSON.parse (data);
+            consoleLog (likeHistory);
+            for (var name in likeHistory) {
+                likes.append (likeHistory[name] + " liked this post. </br>");
+                likeHistoryBox.slideDown (400);
+            }
+        }
+    });
+});
+
+/*
+Inserts a stickied activity into the sticky feed
+*/
+function insertSticky (stickyElement) {
+    var id = $(stickyElement).children ().find (".comment-age").attr ("id").split ("-");
+
+    // add sticky header
+    if ($("#sticky-feed .empty").length !== 0) {
+        $("#sticky-feed .items").append ($("<div>", {
+            "class": "view top-level date-break sticky-section-header",
+            "text": "- Sticky -"
+        }));
+        $("#sticky-feed .empty").remove ();
+    }
+    $("#sticky-feed").show ();
+    $("#sticky-feed .items").show ();
+
+    var stickyId = id[0];
+    var stickyTimeStamp = id[1];
+
+    // place the stickied post into the sticky feed in the correct location
+    var hasInserted = false;
+    $("#sticky-feed > .items > div.view.top-level.activity-feed").each (function (index, element) {
+        var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
+        var eventId = id[0];
+        var eventTimeStamp = id[1];
+        consoleLog ("evtts = " + eventTimeStamp + ", stickyts = " + stickyTimeStamp);
+        if (stickyTimeStamp == eventTimeStamp) {
+            consoleLog ("found equal timestamp");
+            if (stickyId > eventId) {
+                $(stickyElement).insertBefore ($(element));
+                hasInserted = true;
+                return false;
+            }
+        } else if (stickyTimeStamp > eventTimeStamp) {
+            $(stickyElement).insertBefore ($(element));
+            hasInserted = true;
+            return false;
+        }
+    });
+    if (!hasInserted) {
+        $("#sticky-feed .items").append ($(stickyElement));
+    }
+
+}
+
+/*
+Removes the activity from the activity feed and determines whether or not the
+date header needs to be removed.
+Parameter:
+    activityElement - the activity element
+    timeStamp - the formatted time stamp returned by ajax
+Returns:
+    the detacheded activity element
+*/
+function detachActivity (activityElement, timeStamp) {
+    var foundMatch = false;
+    var eventCount = 0;
+    var match = null;
+    var re = new RegExp (timeStamp, "g");
+
+    // check if the activity is the only activity on a certain day,
+    // if yes, remove the date header
+    $("#activity-feed > .items").children ().each (function (index, element) {
+        if ($(element).hasClass ("date-break")) { // found date header
+            consoleLog ("if" + $(element).text ());
+            if ($(element).text ().match (re)) { // date header matches
+                consoleLog ("match");
+                foundMatch = true;
+                match = element;
+            } else if (foundMatch) {
+                return false;
+            }
+        } else if ($(element).hasClass ("view top-level activity-feed")) { // found post
+            consoleLog ("else");
+            if (foundMatch) {
+                eventCount++;
+            }
+        } else if ($(element).hasClass ("list-view")) { // search through new posts
+            $(element).find ("div.view.top-level.activity-feed").each (function (index, element) {
+                if ($(element).hasClass ("view top-level activity-feed")) {
+                    consoleLog ("else");
+                    if (foundMatch) {
+                        eventCount++;
+                    }
+                }
+            });
+        }
+    });
+
+    if (eventCount === 1) {
+        consoleLog ("removing header");
+        $(match).remove ();
+    } else {
+        consoleLog ("not removing header");
+    }
+
+    $(activityElement).children ().find (".sticky-link").mouseleave (); // close tool tip
+
+    // hide extra elements if the activity is the last new post
+    if ($(activityElement).parent ("#new-events").length === 1 &&
+          $(activityElement).siblings ().length === 0) {
+        $("#new-events").toggle ();
+    }
+
+    return $(activityElement).detach ();
+}
+
+function getDateHeader (timeStamp, timeStampFormatted) {
+    return $("<div>", {
+        "class": "view top-level date-break",
+        "id": ("date-break-" + timeStamp),
+        "text": ("- " + timeStampFormatted + " -")
+    });
+}
+
+/*
+Inserts an activity into the activity feed. Inserts a new date header if necessary.
+Parameters:
+    timeStamp - the formatted time stamp returned by ajax
+*/
+function insertActivity (activityElement, timeStampFormatted) {
+    var id = $(activityElement).children ().find (".comment-age").attr ("id").split ("-");
+
+    if ($("#sticky-feed div.view.top-level.activity-feed").length === 0) {
+        $("#sticky-feed").hide ();
+    }
+
+    var stickyId = id[0];
+    var stickyTimeStamp = id[1];
+    var re = new RegExp (timeStampFormatted, "g");
+
+    var hasInserted = false;
+    var foundMyHeader = false;
+    var prevElement = null;
+    $("#activity-feed > .items").children ().each (function (index, element) {
+        if ($(element).hasClass ("date-break")) { // found date header
+            consoleLog ("date-break " + $(element).text ());
+            if (!$(element).text ().match (re)) { // date header differs
+                var eventTimeStamp = $(element).attr ("id").split ("-")[2];
+                if (foundMyHeader) { // insert as last element under header
+                    if (stickyTimeStamp > eventTimeStamp || timeStampFormatted.match (/Today/)) {
+                        $(activityElement).insertBefore ($(element));
+                        hasInserted = true;
+                        return false;
+                    }
+                } else { // create new date header
+                    if (stickyTimeStamp > eventTimeStamp || timeStampFormatted.match (/Today/)) {
+                        var header = getDateHeader (stickyTimeStamp, timeStampFormatted);
+                        $(header).insertBefore ($(element));
+                        $(activityElement).insertAfter ($(header));
+                        if (timeStampFormatted.match (/Today/)) {
+                            var newPostContainer = $("#activity-feed > .items > div.list-view").detach ();
+                            $(newPostContainer).insertAfter ($(header));
+                        }
+                        consoleLog ("create header");
+                        hasInserted = true;
+                        return false;
+                    }
+                }
+                consoleLog ("dont create header");
+            } else {
+                foundMyHeader = true;
+            }
+        } else if ($(element).hasClass ("view top-level activity-feed")) { // found post
+            consoleLog ("false " + $(element).attr ("class"));
+            var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
+            var eventId = id[0];
+            var eventTimeStamp = id[1];
+            if (stickyTimeStamp === eventTimeStamp) {
+                if (stickyId > eventId) {
+                    consoleLog ("inserting element before next, sort id");
+                    $(activityElement).insertBefore ($(element));
+                    hasInserted = true;
+                    return false;
+                }
+            } else if (stickyTimeStamp > eventTimeStamp) {
+                consoleLog ("inserting element before next");
+                $(activityElement).insertBefore ($(element));
+                hasInserted = true;
+                return false;
+            }
+            prevElement = element;
+        } else if ($(element).hasClass ("list-view")) { // search through new posts
+            consoleLog ("false false " + $(element).attr ("class"));
+            var brokeLoop = false;
+            $(element).find ("div.view.top-level.activity-feed").each (function (index, element) {
+                var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
+                var eventId = id[0];
+                var eventTimeStamp = id[1];
+                if (stickyTimeStamp === eventTimeStamp) {
+                    if (stickyId > eventId) {
+                        consoleLog ("2 inserting element before next, sort id");
+                        $(activityElement).insertBefore ($(element));
+                        hasInserted = true;
+                        brokeLoop = true;
+                        return false;
+                    }
+                } else if (stickyTimeStamp > eventTimeStamp) {
+                    consoleLog ("2 inserting element before next");
+                    $(activityElement).insertBefore ($(element));
+                    hasInserted = true;
+                    brokeLoop = true;
+                    return false;
+                }
+                prevElement = element;
+            });
+            if (brokeLoop) {
+                return false;
+            }
+        }
+    });
+
+    if (!hasInserted) {
+        if (prevElement) { // insert post at end of activity feed
+            if (foundMyHeader) {
+                consoleLog ("inserting element at end");
+                $(activityElement).insertAfter ($(prevElement));
+            } else {
+                consoleLog ("inserting element + header at end 1");
+                var header = getDateHeader (stickyTimeStamp, timeStampFormatted);
+                $(header).insertAfter ($(prevElement));
+                $(activityElement).insertAfter ($(header));
+            }
+        } else { // no posts in activity feed
+            consoleLog ("inserting element + header at end");
+            var header = getDateHeader (stickyTimeStamp, timeStampFormatted);
+            $("#activity-feed .list-view").before ($(header));
+            $("#activity-feed > .items").append ($(activityElement));
+        }
+    }
+}
+
 $(document).on("click",".sticky-link",function(e){
     var link=this;
     e.preventDefault();
     var pieces=$(this).attr("id").split("-");
     var id=pieces[0];
+    var tmpElem = $("<span>", { "text": ($(link).text ()) });
+    $(link).after (tmpElem);
+    $(link).toggle();
     $.ajax({
         url:"stickyPost",
-        data:{id:id}
+        data:{id:id},
+        success:function (data) {
+            consoleLog ("sticky ajax " + data);
+            var elem = detachActivity (
+                $(link).parents ("div.view.top-level.activity-feed"), data);
+            $(tmpElem).remove ();
+            $(link).next().toggle();
+            insertSticky (elem);
+        }
     });
-    $(link).toggle();
-    $(link).next().toggle();
 });
 
 $(document).on("click",".unsticky-link",function(e){
@@ -301,12 +719,20 @@ $(document).on("click",".unsticky-link",function(e){
     e.preventDefault();
     var pieces=$(this).attr("id").split("-");
     var id=pieces[0];
+    var tmpElem = $("<span>", { "text": ($(link).text ()) });
+    $(link).after (tmpElem);
+    $(link).toggle();
     $.ajax({
         url:"stickyPost",
-        data:{id:id}
+        data:{id:id},
+        success:function (data) {
+            consoleLog ("unsticky ajax " + data);
+            var elem = $(link).parents ("div.view.top-level.activity-feed").detach ();
+            $(tmpElem).remove ();
+            $(link).prev().toggle();
+            insertActivity (elem, data);
+        }
     });
-    $(link).toggle();
-    $(link).prev().toggle();
 });
 
     var lastEventId='.(!empty($lastEventId)?$lastEventId:0).';
@@ -321,6 +747,9 @@ $(document).on("click",".unsticky-link",function(e){
                 lastEventId=data[0];
                 if(data[1]){
                     var text=data[1];
+                    if($("#activity-feed .items .empty").html()){
+                        $("#activity-feed .items").html("<div class=\"list-view\"><div id=\"new-events\" style=\"display:none;\"></div></div>");
+                    }
                     if($("#new-events").is(":hidden")){
                         $("#new-events").show();
                     }
@@ -329,7 +758,7 @@ $(document).on("click",".unsticky-link",function(e){
                                 $(this).yiiListView();
                         });
                     $(text).hide().prependTo("#new-events").fadeIn(1000);
-                    
+
                 }
                 if(data[2]){
                     var comments=data[2];
@@ -354,20 +783,25 @@ $(document).on("click",".delete-link",function(e){
         e.preventDefault();
     }
 });
+$(document).on("submit","#attachment-form-form",function(){
+    if($("#Events_text").val()!="" && $("#Events_text").val()!="'.Yii::t('app','Enter text here...').'"){
+        $("#attachmentText").val($("#Events_text").val());
+    }
+});
 ',CClientScript::POS_HEAD);
 
 ?>
 
-<div class="page-title icon" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/Activity_Feed.png);"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
+<div class="page-title icon" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/Activity.png);"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
 	<div id="menu-links" class="title-bar">
-		<?php 
+		<?php
         echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
         echo CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button right'));
 		echo CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button right'));
         echo CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button right'));
         echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
         echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button right'));
-        
+
 		?>
 	</div>
 </div>
@@ -380,8 +814,8 @@ $(document).on("click",".delete-link",function(e){
     'htmlOptions'=>array(
         'onsubmit'=>'publishPost();return false;'
     ),
-	
-	)); ?>	
+
+	)); ?>
 	<div class="float-row" style='overflow:visible;'>
 		<?php
 		$feed->text = Yii::t('app','Enter text here...');
@@ -406,41 +840,15 @@ $(document).on("click",".delete-link",function(e){
 <div id="attachments" style="display:none;">
 <?php $this->widget('Attachments',array('associationType'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
 </div>
-<?php 
-if(count($stickyDataProvider->getData())>0){
-    $this->widget('zii.widgets.CListView', array(
-        'dataProvider'=>$stickyDataProvider,
-        'itemView'=>'_viewEventSticky', 
-        'id'=>'sticky-feed',
-        'pager' => array(
-                        'class' => 'ext.infiniteScroll.IasPager', 
-                        'rowSelector'=>'.view.top-level', 
-                        'listViewId' => 'activity-feed', 
-                        'header' => '',
-                        'options'=>array(
-                            'onRenderComplete'=>'js:function(){
-                                if(minimize){
-                                    minimizePosts();
-                                }
-                                if(commentFlag){
-                                    $(".comment-link").click();
-                                }
-                            }'
-                        ),
-
-                    ),
-        'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
-        'template'=>'{pager} {items}',
-    )); 
-}
+<?php
 $this->widget('zii.widgets.CListView', array(
-	'dataProvider'=>$dataProvider,
-	'itemView'=>'_viewEvent', 
-    'id'=>'activity-feed',
+    'dataProvider'=>$stickyDataProvider,
+    'itemView'=>'_viewEvent',
+    'id'=>'sticky-feed',
     'pager' => array(
-                    'class' => 'ext.infiniteScroll.IasPager', 
-                    'rowSelector'=>'.view.top-level', 
-                    'listViewId' => 'activity-feed', 
+                    'class' => 'ext.infiniteScroll.IasPager',
+                    'rowSelector'=>'.view.top-level',
+                    'listViewId' => 'sticky-feed',
                     'header' => '',
                     'options'=>array(
                         'onRenderComplete'=>'js:function(){
@@ -452,14 +860,64 @@ $this->widget('zii.widgets.CListView', array(
                             }
                         }'
                     ),
-                    
+
+                ),
+    'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
+    'template'=>'{pager} {items}'
+));
+$this->widget('zii.widgets.CListView', array(
+	'dataProvider'=>$dataProvider,
+	'itemView'=>'_viewEvent',
+    'id'=>'activity-feed',
+    'pager' => array(
+                    'class' => 'ext.infiniteScroll.IasPager',
+                    'rowSelector'=>'.view.top-level',
+                    'listViewId' => 'activity-feed',
+                    'header' => '',
+                    'options'=>array(
+                        'onRenderComplete'=>'js:function(){
+                            if(minimize){
+                                minimizePosts();
+                            }
+                            if(commentFlag){
+                                $(".comment-link").click();
+                            }
+                            $.each($(".comment-count"),function(){
+                                if($(this).attr("val")>0){
+                                    $(this).parent().click();
+                                }
+                            });
+                        }'
+                    ),
+
                   ),
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
 	'template'=>'{pager} {items}',
-)); 
-
+));
 
 ?>
+<div id="broadcast-dialog">
+    <div>
+        <?php echo CHtml::label('Do you want to email all users?','emailUsers'); ?>
+        <?php echo CHtml::checkBox('emailUsers'); ?>
+    </div>
+    <div>
+        <br><?php echo Yii::t('app','Leave colors blank for defaults.');?>
+    </div>
+    <div>
+        <br>
+        <?php echo CHtml::label('What color should the broadcast be?','broadcastColor'); ?>
+        <?php echo CHtml::textField('broadcastColor',''); ?>
+    </div>
+    <div>
+        <?php echo CHtml::label('What color should the font be?','fontColor'); ?>
+        <?php echo CHtml::textField('fontColor',''); ?>
+    </div>
+    <div>
+        <?php echo CHtml::label('What color should the links be?','linkColor'); ?>
+        <?php echo CHtml::textField('linkColor',''); ?>
+    </div>
+</div>
 <style>
     .social-tabs a{
         text-decoration:none;
@@ -486,13 +944,62 @@ $this->widget('zii.widgets.CListView', array(
     .important{
         background-color:#FFFFC2;
     }
+    #modcoder_colorpicker{
+        z-index:9998;
+        height:17px;
+    }
+    #modcoder_picker{
+        z-index:9999;
+    }
+    .pager{
+        visibility:hidden;
+    }
+    .yiiPager{
+        display:none;
+    }
 </style>
 <script>
     $(document).on('focus','#feed-form textarea',function(){
-        formFieldFocus(this);
+        $(this).animate({"height":"50px"});
+        $(this).next().slideDown(400);
     });
-    function formFieldFocus(elem) {
-        $(elem).css("height","50px");
-        $(elem).next().slideDown(400);
+
+    if ($("#sticky-feed .empty").length !== 0) {
+        $("#sticky-feed").hide ();
     }
+
+    $(document).on('ready',function(){
+        $("#broadcastColor").modcoder_excolor({
+            hue_bar : 3,
+            hue_slider : 5,
+            border_color : "#aaa",
+            sb_border_color : "#d6d6d6",
+            round_corners : true,
+            shadow_color : "#000000",
+            background_color : "#f0f0f0",
+            backlight : true
+        });
+        $("#fontColor").modcoder_excolor({
+            hue_bar : 3,
+            hue_slider : 5,
+            border_color : "#aaa",
+            sb_border_color : "#d6d6d6",
+            round_corners : true,
+            shadow_color : "#000000",
+            background_color : "#f0f0f0",
+            backlight : true
+        });
+        $("#linkColor").modcoder_excolor({
+            hue_bar : 3,
+            hue_slider : 5,
+            border_color : "#aaa",
+            sb_border_color : "#d6d6d6",
+            round_corners : true,
+            shadow_color : "#000000",
+            background_color : "#f0f0f0",
+            backlight : true
+        });
+        $('#broadcast-dialog').hide();
+    });
 </script>
+

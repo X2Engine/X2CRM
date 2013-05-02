@@ -41,6 +41,8 @@ $authParams['assignedTo']=$model->createdBy;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
 	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
+	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
     array('label'=>Yii::t('docs','Edit Doc'), 'url'=>array('update', 'id'=>$model->id)),
     array('label'=>Yii::t('docs','Delete Doc'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('docs','Are you sure you want to delete this item?')))
@@ -56,7 +58,7 @@ $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'docs-form',
 	'enableAjaxValidation'=>false,
 ));?>
-<div class="page-title"><h2><?php echo Yii::t('docs','Edit Doc Permissions');?></h2></div>
+<div class="page-title icon docs"><h2><?php echo Yii::t('docs','Edit Doc Permissions');?></h2></div>
 <div class="form">
 	<div class="row" style="width:500px;">
 		<?php echo Yii::t('docs','Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'); ?>

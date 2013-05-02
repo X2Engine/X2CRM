@@ -36,16 +36,17 @@
 
 /**
  * Changelog recording behavior class.
- * 
- * X2ChangeLogBehavior is a CActiveRecordBehavior which automatically saves changelog 
- * data when a record is saved. It also looks up any applicable notification criteria 
- * and takes the appropriate action (create a notification, create a new action, 
+ *
+ * X2ChangeLogBehavior is a CActiveRecordBehavior which automatically saves changelog
+ * data when a record is saved. It also looks up any applicable notification criteria
+ * and takes the appropriate action (create a notification, create a new action,
  * reassign the record, etc.)
  *
  * @package X2CRM.components
- * @property string $baseRoute The default module/controller this model "belongs" to
- * @property string $viewRoute The default action to view this model
  * @property string $autoCompleteSource The action to user for autocomplete data
+ * @property string $baseRoute The default module/controller this model "belongs" to
+ * @property string $editingUsername Username of the user who is performing the save operation.
+ * @property string $viewRoute The default action to view this model
  */
 class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
@@ -56,29 +57,73 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		));
 	}
 
+	private $_editingUsername;
+    public $createEvent = true;
+	protected $validated = false;
+
+	/**
+	 * Magic getter for {@link editingUsername} that returns a username regardless of context.
+	 *
+	 * {@link editingUsername} should be used in place of Yii::app()->user->name
+	 * in order for X2Model to work in console commands and API calls (where
+	 * there is no user session).
+	 *
+	 * @return type
+	 */
+	public function getEditingUsername() {
+		if (!isset($this->_editingUsername)) {
+			if (Yii::app()->params->noSession) {
+				$lookupUsername = false;
+				if ($this->owner->hasProperty('suModel')) {
+					if (isset($this->owner->suModel->username))
+						$this->_editingUsername = $this->owner->suModel->username;
+					else
+						$lookupUsername = true;
+				} else
+					$lookupUsername = true;
+				if ($lookupUsername) {
+					// As a last resort, get the admin user's name and use it
+					$this->_editingUsername = User::model()->findByPk(1)->username;
+				}
+			} else {
+				$this->_editingUsername = Yii::app()->user->getName();
+			}
+		}
+		return $this->_editingUsername;
+	}
+
+    public function beforeSave($event){
+        $model=$this->getOwner();
+        if($model->hasAttribute('updatedBy')){
+            $model->updatedBy=$this->editingUsername;
+        }
+        return parent::beforeSave($event);
+    }
+
 	public function afterCreate($event) {
-		
+
 		$model = $this->getOwner();
-		
+
 		$api = 0;	// FIX THIS
-		
-		X2Flow::trigger('record_created',array('model'=>$model));
-		
-		
-		$event = new Events;
-		$event->visibility = $model->hasAttribute('visibility')? $model->visibility : 1;
-		$event->associationType = get_class($model);
-		$event->associationId = $model->id;
-		$event->user = Yii::app()->user->getName();
-		$event->type = 'record_create';
-		// if(!$model instanceof Contacts || $api==0) // Event creation already handled by web lead.
-		$event->save(); 
-		
+
+		X2Flow::trigger('RecordCreateTrigger',array('model'=>$model));
+
+		if($this->createEvent){
+            $event = new Events;
+            $event->visibility = $model->hasAttribute('visibility')? $model->visibility : 1;
+            $event->associationType = get_class($model);
+            $event->associationId = $model->id;
+            $event->user = $this->editingUsername;
+            $event->type = 'record_create';
+            // if(!$model instanceof Contacts || $api==0) // Event creation already handled by web lead.
+            $event->save();
+        }
+
 		if($model->hasAttribute('assignedTo')) {
-			if(!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
+			if(!empty($model->assignedTo) && $model->assignedTo != $this->editingUsername && $model->assignedTo != 'Anyone') {
 				$notif = new Notification;
 				$notif->user = $model->assignedTo;
-				$notif->createdBy = ($api == 1) ? 'API' : Yii::app()->user->getName();
+				$notif->createdBy = ($api == 1) ? 'API' : $this->editingUsername;
 				$notif->createDate = time();
 				$notif->type = 'create';
 				$notif->modelType = get_class($model);
@@ -87,20 +132,29 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			}
 		}
 	}
-	
+
+	/**
+	 * Marks the record as validated, so we know somebody called CActiveRecord::save() rather than CActiveRecord::update() on it
+	 */
+	public function afterValidate($event) {
+		$this->validated = true;
+	}
+
 	/**
 	 * Triggers record_updated, runs changelog calculations and checks notification criteria (soon to be removed)
 	 */
 	public function afterUpdate($event) {
-		X2Flow::trigger('record_updated',array(
-			'model'=>$this->getOwner()
-		));
-		
-		$changes = $this->getChanges();
-		$this->updateChangelog($changes);
+		if($this->validated) {
+			X2Flow::trigger('RecordChangedTrigger',array(
+				'model'=>$this->getOwner()
+			));
+			
+			$changes = $this->getChanges();
+			$this->updateChangelog($changes);
+		}
+		$this->validated = false;	// reset in case CActiveRecord::update() is called after CActiveRecord::save()
 	}
-	
-	
+
 	/**
 	 * Logs the deletion of the model
 	 */
@@ -108,42 +162,43 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		$modelClass = get_class($this->getOwner());
 		if($modelClass === 'Actions' && $this->getOwner()->workflowId !== null)		// no deletion events for workflow actions, that's somebody else's problem
 			return;
-		
-		$event = new Events();
-		$event->type='record_deleted';
-		$event->associationType = $modelClass;
-		$event->associationId = $this->getOwner()->id;
-        if($this->getOwner()->hasAttribute('visibility')){
-            $event->visibility=$this->getOwner()->visibility;
-        }
-		$event->text = $this->getOwner()->name;
-		$event->user = Yii::app()->user->getName();
-		$event->save();
-		
+		if($this->createEvent){
+			$event = new Events();
+			$event->type='record_deleted';
+			$event->associationType = $modelClass;
+			$event->associationId = $this->getOwner()->id;
+			if($this->getOwner()->hasAttribute('visibility')){
+				$event->visibility=$this->getOwner()->visibility;
+			}
+			$event->text = $this->getOwner()->name;
+			$event->user = $this->editingUsername;
+			$event->save();
+		}
+
 		$log = new Changelog;
 		$log->type = $modelClass;
 		$log->itemId = $this->getOwner()->id;
 		$log->recordName = $this->getOwner()->name;
 		$log->changed = 'delete';
-		
-		$log->changedBy = Yii::app()->user->getName();
+
+		$log->changedBy = $this->editingUsername;
 		$log->timestamp = time();
 
 		$log->save();
-		
-		X2Flow::trigger('record_deleted',array(
+
+		X2Flow::trigger('RecordDeleteTrigger',array(
 			'model'=>$this->getOwner()
 		));
 	}
 
 	/**
 	 * Finds attributes that were changed and generates an array of changes.
-	 * 
+	 *
 	 * @return array a 2-dimensional array of changes, with the format $fieldName => array($old,$new)
 	 */
 	public function getChanges() {
 		$changes = array();
-	
+
 		// $this->_oldAttributes
 		$oldAttributes = $this->getOwner()->getOldAttributes();
 		$newAttributes = $this->getOwner()->getAttributes();
@@ -154,12 +209,14 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 				$old = $oldAttributes[$fieldName];
 				if(is_array($old))
 					$old = implode(', ',$old);	// convert arrays to a string with commas in it (for example multiple assignedTo)
-					
+
 				if($new != $old)
 					$changes[$fieldName] = array($old,$new);
-			}
+			}elseif(!is_null($new)){
+                $changes[$fieldName]=array(null,$new);
+            }
 		}
-		
+
 		return $changes;
 	}
 
@@ -168,27 +225,27 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		for($i=0;$i<count($changes); $i++) {
 			$old = &$changes[$i][0];
 			$new = &$changes[$i][1];
-			
+
 			if($new != $old) {
 				$log = new Changelog;
 				$log->type = get_class($this->getOwner());
-				
+
 				$log->itemId = $this->getOwner()->id;
-				$log->changedBy = Yii::app()->user->getName();
+				$log->changedBy = $this->editingUsername;
 				$log->fieldName = $field;
 				// $log->oldValue = $old;
 				$log->timestamp = time();
-				
+
 				if(empty($old)) {
 					$log->diff = false;
 					$log->newValue = $new;
 				} else {
 					$diff = FineDiff::getDiffOpcodes($old,$new,FineDiff::$wordGranularity);
-					
+
 					$log->diff = strlen($diff) > strlen($old);
 					$log->newValue = $log->diff? $diff : $new;
 				}
-				
+
 				$log->save();
 			}
 		}
@@ -200,42 +257,48 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 */
 	public function updateChangelog($changes = null) {
 		$model = $this->getOwner();
-		
+
 		if($changes === null)
 			$changes = $this->getChanges();
-		
+
 		// $model->lastUpdated = time();
 		// $model->updatedBy = Yii::app()->user->getName();
 		// $model->save();
 		$type = get_class($model);
-		
+		$excludeFields=array(
+            'lastUpdated',
+            'createDate',
+            'lastActivity',
+            'updatedBy',
+            'trackingKey',
+        );
 		if(is_array($changes)) {
-		
+
 			foreach($changes as $fieldName => $change){
-				$changelog = new Changelog;
-				$changelog->type = $type;
-				if (!isset($model->id)) {
-					if ($model->save()) {
+                if(!in_array($fieldName,$excludeFields)){
+                    $changelog = new Changelog;
+                    $changelog->type = $type;
+                    if (!isset($model->id)) {
+                        if ($model->save()) {
 
 					}
 				}
 				$changelog->itemId = $model->id;
-				if($model->hasAttribute('name')){
+				if ($model->hasAttribute('name')) {
 					$changelog->recordName=$model->name;
-				}else{
+				} else {
 					$changelog->recordName=$type;
 				}
-				$changelog->changedBy = Yii::app()->user->getName();
+				$changelog->changedBy = $this->editingUsername;
 				$changelog->fieldName = $fieldName;
 				$changelog->oldValue = $change[0];
 				$changelog->newValue = $change[1];
 				$changelog->timestamp = time();
 
-				$changelog->save();
-				
-				
-				
-				$this->checkNotificationCriteria($fieldName,$change[0],$change[1]);
+                    $changelog->save();
+
+                    $this->checkNotificationCriteria($fieldName,$change[0],$change[1]);
+                }
 			}
 		}
 		// } elseif($changes == 'Create' || $changes == 'Edited') {
@@ -258,37 +321,37 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			// }
 		// }
 	}
-	
+
 	/**
-	 * Looks up notification criteria in x2_criteria relevant to this model 
+	 * Looks up notification criteria in x2_criteria relevant to this model
 	 * and field and performs the specified operation.
 	 * Soon to be eliminated in wake of x2flow automation system.
-	 * 
+	 *
 	 * @param string $fieldName the name of the current field
 	 * @param string $old the old value
 	 * @param string $new the new value
 	 */
 	public function checkNotificationCriteria($fieldName,$old,$new) {
-		
+
 		$model = $this->getOwner();
 		$modelClass = get_class($model);
-		
+
 		$allCriteria = Criteria::model()->findAllByAttributes(array('modelType' => $modelClass, 'modelField' => $fieldName));
 		foreach ($allCriteria as $criteria) {
 			if (($criteria->comparisonOperator == "=" && $new == $criteria->modelValue)
-					|| ($criteria->comparisonOperator == ">" && $new >= $criteria->modelValue) 
+					|| ($criteria->comparisonOperator == ">" && $new >= $criteria->modelValue)
 					|| ($criteria->comparisonOperator == "<" && $new <= $criteria->modelValue)
 					|| ($criteria->comparisonOperator == "change" && $new != $old)) {
-				
+
 				$users = preg_split('/[\s,]+/',$criteria->users,null,PREG_SPLIT_NO_EMPTY);
-				
+
 				if($criteria->type == 'notification') {
 					foreach($users as $user) {
 						$event=new Events;
 						$event->user=$user;
 						$event->associationType='Notifications';
 						$event->type='notif';
-						
+
 						$notif = new Notification;
 						$notif->type = 'change';
 						$notif->fieldName = $fieldName;
@@ -303,7 +366,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 							$notif->value = substr($criteria->modelValue, 0, 250); // and the comparison value
 						}
 						$notif->user = $user;
-						$notif->createdBy = Yii::app()->user->name;
+						$notif->createdBy = $this->editingUsername;
 						$notif->createDate = time();
 
 						if($notif->save()) {
@@ -316,13 +379,13 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						$action = new Actions;
 						$action->assignedTo = $user;
 						if ($criteria->comparisonOperator == "=") {
-							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . $this->editingUsername;
 						} else if ($criteria->comparisonOperator == ">") {
-							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . $this->editingUsername;
 						} else if ($criteria->comparisonOperator == "<") {
-							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
+							$action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . $this->editingUsername;
 						} else if ($criteria->comparisonOperator == "change") {
-							$action->actionDescription = "A record of type " . $modelClass . " has had its $criteria->modelField field changed from ".$old.' to '.$new.' by '.Yii::app()->user->getName();
+							$action->actionDescription = "A record of type " . $modelClass . " has had its $criteria->modelField field changed from ".$old.' to '.$new.' by '.$this->editingUsername;
 						}
 						$action->dueDate = mktime('23', '59', '59');
 						$action->createDate = time();
@@ -342,7 +405,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						$event->type='notif';
 						$event->user=$model->assignedTo;
 						$event->associationType='Notifications';
-						
+
 						$notif = new Notification;
 						$notif->user = $model->assignedTo;
 						$notif->createDate = time();
@@ -351,7 +414,9 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						$notif->modelId = $model->id;
 						if($notif->save()){
 							$event->associationId = $notif->id;
-							$event->save();
+                            if($this->createEvent){
+                                $event->save();
+                            }
 						}
 					}
 				}

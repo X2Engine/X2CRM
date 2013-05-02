@@ -91,10 +91,13 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 		$tag = '<span>';
 		// if(!empty($this->icon))
 			// $tag = '<span style="background-image:url('.Yii::app()->theme->baseUrl.'/images/'.$this->icon.');">';
-
-		return CHtml::link($tag.$this->owner->name.'</span>',
-			// array($this->viewRoute.'/'.$this->owner->id),array('class'=>'x2-link'));
-			array($this->viewRoute.'/'.$this->owner->id));
+        if($this->owner->hasAttribute('name')){
+            return CHtml::link($tag.($this->owner->name==''?('&#35;'.$this->owner->id):($this->owner->name)).'</span>',
+                // array($this->viewRoute.'/'.$this->owner->id),array('class'=>'x2-link'));
+                array($this->viewRoute.'/'.$this->owner->id));
+        }else{
+            return '';
+        }
 	}
 
 	/**

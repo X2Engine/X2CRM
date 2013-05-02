@@ -40,6 +40,9 @@ $('.x2-layout.form-view :input').change(function() {
 	$('#save-button, #save-button1, #save-button2, h2 a.x2-button').addClass('highlight');
 });
 ",CClientScript::POS_READY);
+Yii::app()->clientScript->registerScript('datePickerDefault',"
+    $.datepicker.setDefaults( $.datepicker.regional[ ''] );
+",CClientScript::POS_READY);
 
 Yii::app()->clientScript->registerScript('setFormName',"
 window.formName = '$modelName';
@@ -73,7 +76,7 @@ echo '<div class="x2-layout form-view">';
 // foreach($groups as $link){
     // $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
     // if(isset($tempRole))
-        // $roles[]=$tempRole->roleId; 
+        // $roles[]=$tempRole->roleId;
 // }
 /* end x2temp */
 
@@ -116,16 +119,16 @@ foreach($layoutData['sections'] as &$section) {
 	if(!isset($section['collapsible'])) $section['collapsible'] = false;
 	if(!isset($section['rows'])) $section['rows'] = array();
 	if(!isset($formSettings[$i])) $formSettings[$i] = 1;
-	
+
 	$collapsed = !$formSettings[$i] && $section['collapsible'];
-	
+
 	echo '<div class="formSection';
 	if($section['collapsible'])
 		echo ' collapsible';
 	if(!$collapsed)
 		echo ' showSection';
 	echo '">';
-		
+
 	if($section['collapsible'] || !empty($section['title'])) {
 		echo '<div class="formSectionHeader">';
 		if($section['collapsible']) {
@@ -136,23 +139,23 @@ foreach($layoutData['sections'] as &$section) {
 			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';
 		echo '</div>';
 	}
-	
+
 	if(!empty($section['rows'])) {
 		echo '<div class="tableWrapper"><table>';
-	
+
 		foreach($section['rows'] as &$row) {
 			echo '<tr class="formSectionRow">';
 			if(isset($row['cols'])) {
 				foreach($row['cols'] as &$col) {
-				
+
 					$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
 					echo "<td$width>";
 					if(isset($col['items'])) {
 						foreach($col['items'] as &$item) {
-							
+
 							if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
 								$fieldName = preg_replace('/^formItem_/u','',$item['name']);
-							
+
 								if(isset($fields[$fieldName])) {
 									$field = &$fields[$fieldName];
 									if( ($field->fieldName == "company" || $field->fieldName == "accountName") && isset($hideAccount) && $hideAccount == true)
@@ -167,30 +170,30 @@ foreach($layoutData['sections'] as &$section) {
 											$item['readOnly']=true;
 										}
 									}
-									
+
 									$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
 									switch($labelType) {
 										case 'inline':	$labelClass = 'inlineLabel'; break;
 										case 'none':	$labelClass = 'noLabel'; break;
 										case 'left':	$labelClass = 'leftLabel'; break;
-										case 'top': 
+										case 'top':
 										default:		$labelClass = 'topLabel';
 									}
-									
+
 									// set value of field to label if this is an inline labeled field
 									if(empty($model->$fieldName) && $labelType == 'inline')
 										$model->$fieldName = $field->attributeLabel;
-									
+
 									if($field->type!='text')
 										$item['height'] = 'auto';
 									else
 										$item['height'] .= 'px';
-									
+
 									echo '<div class="formItem '.$labelClass.'">';
 									echo $form->labelEx($model,$field->fieldName);
 									echo '<div class="formInputBox" style="width:'.$item['width'].'px;height:'.$item['height'].';">';
 									$default=$model->$fieldName==$field->attributeLabel;
-									
+
 									if(isset($specialFields[$fieldName])) {
 										echo $specialFields[$fieldName];
 									} else {
@@ -205,7 +208,7 @@ foreach($layoutData['sections'] as &$section) {
 
                                     if($modelName == "services" && $field->fieldName == 'contactId')
                                         echo '<span id="create-contact">+</span>';
-                                    
+
 								}
 
 							}

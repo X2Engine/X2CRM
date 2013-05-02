@@ -41,6 +41,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','List Docs')),
 	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
 	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -118,7 +119,7 @@ $('.search-form form').submit(function(){
 $this->widget('application.components.X2GridView', array(
 	'id'=>'docs-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('docs','Docs').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title icon docs"><h2>'.Yii::t('docs','Docs').'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '

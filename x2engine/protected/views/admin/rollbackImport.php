@@ -74,7 +74,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'timestamp'=>array(
                 'name' => 'timestamp',
                 'header' => Yii::t('admin', "Timestamp"),
-                'value' => 'Actions::formatCompleteDate($data["timestamp"])',
+                'value' => 'Formatter::formatCompleteDate($data["timestamp"])',
                 'type' => 'raw',
             ),
             'link'=>array(

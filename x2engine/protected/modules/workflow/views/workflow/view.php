@@ -40,7 +40,7 @@ function getStageMembers(stage) {
 	$.ajax({
 		url: '" . CHtml::normalizeUrl(array('/workflow/workflow/getStageMembers')) . "',
 		type: 'GET',
-		data: 'workflowId=".$model->id."&stage='+stage+'&modelId=".$model->id."&type=contacts&start=".$this->formatDate($dateRange['start'])."&end=".$this->formatDate($dateRange['end'])."&range=".$dateRange['range']."&user=".$user."',
+		data: 'workflowId=".$model->id."&stage='+stage+'&modelId=".$model->id."&type=contacts&start=".Formatter::formatDate($dateRange['start'])."&end=".Formatter::formatDate($dateRange['end'])."&range=".$dateRange['range']."&user=".$user."',
 		success: function(response) {
 			if(response!='')
 				$('#workflow-gridview').html(response);
@@ -65,7 +65,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('workflow','Workflow:'); ?></span> <?php echo $model->name; ?></h2></div>
+<div class="page-title icon workflow"><h2><span class="no-bold"><?php echo Yii::t('workflow','Workflow:'); ?></span> <?php echo $model->name; ?></h2></div>
 <div style="margin-bottom:30px;width:300px;float:left;">
 <?php
 
@@ -94,13 +94,13 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 			$this->widget('CJuiDateTimePicker',array(
 				'name'=>'start',
 				// 'value'=>$startDate,
-				'value'=>$this->formatDate($dateRange['start']),
+				'value'=>Formatter::formatDate($dateRange['start']),
 				// 'title'=>Yii::t('app','Start Date'),
 				// 'model'=>$model, //Model object
 				// 'attribute'=>$field->fieldName, //attribute name
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
+					'dateFormat'=>Formatter::formatDatePicker(),
 					'changeMonth'=>true,
 					'changeYear'=>true,
 
@@ -115,11 +115,11 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 			<?php
 			$this->widget('CJuiDateTimePicker',array(
 				'name'=>'end',
-				'value'=>$this->formatDate($dateRange['end']),
+				'value'=>Formatter::formatDate($dateRange['end']),
 				// 'value'=>$endDate,
 				'mode'=>'date', //use "time","date" or "datetime" (default)
 				'options'=>array(
-					'dateFormat'=>$this->formatDatePicker(),
+					'dateFormat'=>Formatter::formatDatePicker(),
 					'changeMonth'=>true,
 					'changeYear'=>true,
 				),
@@ -165,7 +165,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 <div id="workflow-gridview">
 <?php
 if(isset($viewStage)){
-	echo Yii::app()->controller->actionGetStageMembers($model->id,$viewStage,$this->formatDate($dateRange['start']),$this->formatDate($dateRange['end']),$dateRange['range'],$user);
+	echo Yii::app()->controller->actionGetStageMembers($model->id,$viewStage,Formatter::formatDate($dateRange['start']),Formatter::formatDate($dateRange['end']),$dateRange['range'],$user);
 }else {
 $this->widget('zii.widgets.grid.CGridView', array(
 	// 'id'=>'docs-grid',

@@ -114,7 +114,7 @@ $(document).ready(function() {
 			$('#pageHeaderTextColor').change();
 		}
 	});
-	
+
 	$('#backgroundColor').change(function() {
 		var text = $('#backgroundColor').val();
 		if(text == '') {
@@ -124,7 +124,7 @@ $(document).ready(function() {
 			$('body').css('background-color',text);
 		}
 		highlightSave();
-		
+
 	});
 	$('#menuBgColor').change(function() {
 		var text = $('#menuBgColor').val();
@@ -146,7 +146,7 @@ $(document).ready(function() {
 		}
 		highlightSave();
 	});
-	
+
 
 	$('#pageHeaderBgColor').change(function() {
 		var text = $('#pageHeaderBgColor').val();
@@ -187,10 +187,10 @@ $(document).ready(function() {
 				break;
 		}
 		$("body").toggleClass("no-borders",noBorders);
-		
+
 		highlightSave();
-	});
-	
+	}).change();
+
 	$('#ProfileChild_enableFullWidth').change(function() {
 		window.enableFullWidth = $(this).is(':checked');
 		$(window).resize();
@@ -199,7 +199,64 @@ $(document).ready(function() {
 
 });
 
-// js to change background image
+function setLoginSound(id, filename, uploadedBy) {
+    if(filename!=null){
+        if(uploadedBy){
+            $('#loginSound').attr('src',yii.baseUrl+'/uploads/'+uploadedBy+'/'+filename);
+        }else{
+            $('#loginSound').attr('src',yii.baseUrl+'/uploads/'+filename);
+        }
+        var sound = $("#loginSound")[0];
+        sound.play();
+    }
+    $.ajax({
+            url: yii.scriptUrl+'/profile/setLoginSound',
+            type: 'post',
+            data: 'name='+filename
+        });
+        $('.loginSound-row a').css('font-weight','normal');
+        $('#sound-'+id).css('font-weight','bold');
+}
+
+function setNotificationSound(id ,filename, uploadedBy) {
+    if(filename!=null){
+        if(uploadedBy){
+            $('#notification').attr('src',yii.baseUrl+'/uploads/'+uploadedBy+'/'+filename);
+        }else{
+            $('#notification').attr('src',yii.baseUrl+'/uploads/'+filename);
+        }
+        var sound = $("#notification")[0];
+        sound.play();
+    }
+	$.ajax({
+		url: yii.scriptUrl+'/profile/setNotificationSound',
+		type: 'post',
+		data: 'name='+filename
+	});
+    $('.notificationSound-row a').css('font-weight','normal');
+    $('#sound-'+id).css('font-weight','bold');
+}
+function deleteLoginSound(id, filename){
+    $.ajax({
+        url: yii.scriptUrl+'/profile/deleteLoginSound',
+        type: 'get',
+        data: 'id='+id,
+        success: function(response){
+            $('#loginSound_'+id).hide();
+        }
+    })
+}
+function deleteNotificationSound(id, filename){
+    $.ajax({
+        url: yii.scriptUrl+'/profile/deleteNotificationSound',
+        type: 'get',
+        data: 'id='+id,
+        success: function(response){
+            $('#notificationSound_'+id).hide();
+        }
+    })
+}
+//js to change background image
 function setBackground(filename) {
 	$.ajax({
 		url: yii.scriptUrl+'/profile/setBackground',
@@ -236,7 +293,7 @@ function deleteBackground(id,filename) {
 						$('#header').addClass('defaultBg').css('background-image','');
 					else
 						$('#header').removeClass('defaultBg').css('background-image','');
-					
+
 				}
 			}
 		}
@@ -277,4 +334,27 @@ function checkName() {
 		$('#upload-button').attr('disabled','disabled');
 		alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
 	}
+}
+
+var s_ext = ['mp3', 'wav', 'aiff'];
+
+function checkSoundName() {
+    var name = $('#sound').val();
+    var ar_name = name.split('.');
+
+    var re=0;
+    for(var i=0; i<s_ext.length; i++){
+        if(s_ext[i] == ar_name[1].toLowerCase()) {
+            re = 1;
+            break;
+        }
+    }
+    if(re==1){
+        $('#sound-upload-button').removeAttr('disabled');
+    } else {
+		// delete the file name, disable Submit, Alert message
+	$('#sound').val('');
+	$('#sound-upload-button').attr('disabled','disabled');
+	alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
+    }
 }

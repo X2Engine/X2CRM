@@ -64,7 +64,11 @@ class Publisher extends X2Widget {
         
         Yii::app()->clientScript->registerScript('loadEmails',"
             function loadFrame(id,type){
-                var frame='<iframe style=\"width:99%;height:99%\" src=\"".Yii::app()->controller->createUrl('/actions/viewEmail/')."?id='+id+'\"></iframe>';
+                if(type!='Action'){
+                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/viewEmail/'))."?id='+id+'\"></iframe>';
+                }else{
+                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/viewAction/'))."?id='+id+'&publisher=true\"></iframe>';
+                }
                 if(typeof x2ViewEmailDialog != 'undefined') {
                     if($(x2ViewEmailDialog).is(':hidden')){
                         $(x2ViewEmailDialog).remove();

@@ -46,6 +46,8 @@
 class InlineQuotes extends X2Widget {
 
 	public $contactId; // quotes displayed here are associated with this contact
+	public $contact;
+	public $account = null;
 
 	public $errors = array();
 	public $startHidden = false;
@@ -66,17 +68,23 @@ class InlineQuotes extends X2Widget {
 			($this->startHidden? "$(document).ready(function() { $('#quotes-form').hide();
 			 });\n" : '')
 			. "function toggleQuotes() {
-				
-				if($('#quotes-form').is(':hidden')) {
+
+				var wasHidden = $('#quotes-form').is(':hidden');
+				if(wasHidden) {
 					$('.focus-mini-module').removeClass('focus-mini-module');
 					$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
 					$('html,body').animate({
-						scrollTop: ($('#publisher-form').offset().top - 200)
+						scrollTop: ($('#quote-form-wrapper').offset().top - 100)
 					}, 300);
 				}
 				$('#quotes-form').toggle('blind',300,function() {
 					$('#quotes-form').focus();
 				});
+				if(!wasHidden) {
+					$('html,body').animate({
+						scrollTop: ($('body').offset().top)
+					}, 300);
+				}
 			}
 			
 			$(function() {
@@ -375,7 +383,7 @@ function toggleUpdateQuote(id, locked, strict) {
 			buttons: {
 				'Yes': function() {
 					$('#quote-detail-' + id).hide('blind', 'slow');
-					$('#quote-update-' + id).show('slow');
+					/* $('#quote-update-' + id).show('slow'); */
 					$(this).dialog('close');
 				},
 				'No': function() {
@@ -403,8 +411,7 @@ function toggleUpdateQuote(id, locked, strict) {
 		else
 			confirmBox.dialog('open');
 	else {
-		$('#quote-detail-' + id).hide('blind', 'slow');
-		$('#quote-update-' + id).show('slow');
+		quickQuote.openForm(id);
 	}
 }
 
@@ -426,14 +433,32 @@ function duplicateQuote(quote) {
 }
 
 ", CClientScript::POS_HEAD);
-	
-	}
+
+			// Set up the new create form:
+			Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/quickquote.js',CClientScript::POS_HEAD);
+			$quotesAssetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true);
+
+			Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
+			Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
+			Yii::app()->clientScript->registerCoreScript('jquery.ui');
+
+			$this->contact = Contacts::model()->findByPk($this->contactId);
+			$qqConfig = array(
+				'contact'=>($this->contact instanceof Contacts) ? $this->contact->name :'',
+				'account'=> $this->account,
+				'failMessage'=>Yii::t('quotes', 'Could not save quote.'),
+				'reloadAction'=>CHtml::normalizeUrl(array('quotes/viewInline'))."?contactId={$this->contactId}",
+				'createAction'=>CHtml::normalizeUrl(array('quotes/create')).'?quick=1',
+				'updateAction'=>CHtml::normalizeUrl(array('quotes/update')).'?quick=1'
+			);
+			Yii::app()->clientScript->registerScript('quickquote-vars', 'quickQuote = '.CJSON::encode($qqConfig).';', CClientScript::POS_HEAD);
+		}
 		parent::init();
 	}
 
 	public function run() {
 	
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->getBaseUrl() .'/css/gridview/jquery.yiigridview.js');
+//		Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->getBaseUrl() .'/css/gridview/jquery.yiigridview.js');
 
 		$relationships = Relationships::model()->findAllByAttributes(array(
 			'firstType'=>'quotes', 
@@ -443,9 +468,21 @@ function duplicateQuote(quote) {
 		
 		echo '<div id="quotes-form">';
 		echo '<div id="wide-quote-form" class="wide form" style="overflow: visible;">';
+		echo '<div id="quote-create-form-wrapper" style="display:none"></div>';
 		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Quotes') .'</span>';
 		echo '<br /><br />';
-		
+
+		// Mini Create Quote Form
+		$model = new Quote;
+
+		$this->render('createQuote', array(
+			'model'=>$model,
+			'contactId'=>$this->contactId,
+			// 'productNames'=>$productNames,
+	//		'showNewQuote'=>$showNewQuote,
+		));
+		echo '<br /><hr />';
+
 		// get a list of products for adding to quotes
 		$products = Product::model()->findAll(array('select'=>'id, name'));
 		// $productNames = array(0 => '');
@@ -502,16 +539,6 @@ function duplicateQuote(quote) {
 			));
 		}
 		
-		
-		// Mini Create Quote Form
-		$model = new Quote;
-		
-		$this->render('createQuote', array(
-			'model'=>$model,
-			'contactId'=>$this->contactId,
-			// 'productNames'=>$productNames,
-	//		'showNewQuote'=>$showNewQuote,
-		));
 		
 		echo '<br /><br />';
 		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Invoices') .'</span>';

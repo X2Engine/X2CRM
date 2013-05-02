@@ -36,205 +36,105 @@
 
 /**
  * Provides an action for sending email from a view page with an inline form.
- * 
+ *
+ * Accepts post requests with form-urlencoded data, responds with JSON.
+ *
+ * @property InlineEmail $model
  * @package X2CRM.components 
  */
 class InlineEmailAction extends CAction {
 
-	public $model;
-	
-	public function run() {
+	public $model = null;
 
-		$preview = false;
-		$stageEmail = false;
-		$emailBody = '';
-		$signature = '';
-		$template = null;
-		$attachments = null;
-			
-		if(!isset($this->model))
-			$this->model = new InlineEmail;
-
-		if(isset($_POST['InlineEmail'])) {
-
-			if(isset($_GET['preview']) || (isset($_POST['InlineEmail']['submit']) && $_POST['InlineEmail']['submit'] == Yii::t('app','Preview')))
-				$preview = true;
-			// if(isset($_GET['emailSendTimeSelector']) && $_GET['emailSendTimeSelector'] === '1')
-				// $emailSendTimeSelector = '1';
-
-			$this->model->attributes = $_POST['InlineEmail'];
-
-			// if the user specified a template, look it up and use it for the message
-			if($this->model->template != 0) {
-				$matches = array();
-				if(preg_match('/<!--BeginSig-->(.*)<!--EndSig-->/u',$this->model->message,$matches) && count($matches) > 1)	// extract signature
-					$signature = $matches[1];
-					
-				$this->model->message = preg_replace('/<!--BeginSig-->(.*)<!--EndSig-->/u','',$this->model->message);	// remove signatures
-					
-				$matches = array();
-				if(preg_match('/<!--BeginMsg-->(.*)<!--EndMsg-->/u',$this->model->message,$matches) && count($matches) > 1)
-					$this->model->message = $matches[1];
-			
-				if(empty($signature))
-					$signature = Yii::app()->params->profile->getSignature(true);	// load default signature if empty
-			
-				$template = X2Model::model('Docs')->findByPk($this->model->template);
-				if(isset($template)) {
-					$this->model->message = str_replace('\\\\', '\\\\\\', $this->model->message);
-					$this->model->message = str_replace('$', '\\$', $this->model->message);
-					$emailBody = preg_replace('/{content}/u','<!--BeginMsg-->'.$this->model->message.'<!--EndMsg-->',$template->text);
-					$emailBody = preg_replace('/{signature}/u','<!--BeginSig-->'.$signature.'<!--EndSig-->',$emailBody);
-					
-					// check if subject is empty, or is from another template
-					if(empty($this->model->subject) || X2Model::model('Docs')->countByAttributes(array('type'=>'email','subject'=>$this->model->subject)))
-						$this->model->subject = $template->subject;
-					
-					// if there is a model name/id available, look it up and use its attributes
-					if(isset($this->model->modelName, $this->model->modelId)) {
-						$targetModel = X2Model::model($this->model->modelName)->findByPk($this->model->modelId);
-
-						if($targetModel !== null) {
-							$emailBody = Docs::replaceVariables($emailBody,$targetModel);
-							$this->model->subject = Docs::replaceVariables($this->model->subject,$targetModel);
-						}
-					}
-					$this->model->message = $emailBody;
-				}
-				$this->model->template = 0;				// after applying the template, set it back to custom
-				
-			} elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
-				$emailBody = $this->model->message;
-			// } elseif(!empty($this->model->message)) {	// if no template, use the user's custom message, and include a signature
-				// $emailBody = $this->model->message.'<br><br>'.Yii::app()->params->profile->getSignature(true);
-			}
-			
-			if($this->model->template == 0)
-				$this->model->setScenario('custom');
-				
-			if($this->model->validate() && !$preview) {
-			
-				$uniqueId = md5(uniqid(rand(), true));
-				$emailBody .= '<img src="' . $this->controller->createAbsoluteUrl('actions/emailOpened', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
-				
-				$mediaLibraryUsed = false; // is there an attachment from the media library?
-				if(isset($_POST['AttachmentFiles']) && isset($_POST['AttachmentFiles']['id']) && isset($_POST['AttachmentFiles']['temp']))  {
-					$ids = $_POST['AttachmentFiles']['id'];
-					$temps = $_POST['AttachmentFiles']['temp'];
-					$attachments = array();
-					for($i = 0; $i < count($ids); $i++) {
-						$temp = json_decode($temps[$i]);
-						if($temp) { // attachment is a temp file
-							$tempFile = TempFile::model()->findByPk($ids[$i]);
-							$attachments[] = array('filename' => $tempFile->name, 'folder' => $tempFile->folder, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
-						} else { // attachment is from media library
-							$mediaLibraryUsed = true;
-							$media = Media::model()->findByPk($ids[$i]);
-							$attachments[] = array('filename' => $media->fileName, 'folder' => $media->uploadedBy, 'temp' => json_decode($temps[$i]), 'id' => $media->id);
-						}
-					}
-				}
-				
-				// if(isset($attachments))
-				if(empty($this->model->emailSendTimeParsed))
-					$this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody, $attachments);
-				else
-					$stageEmail = true;
-				// else
-					// $this->model->status = $this->controller->sendUserEmail($this->model->mailingList,$this->model->subject,$emailBody);
-				
-				if(in_array('200',$this->model->status) || $stageEmail) {
-					
-					foreach($this->model->mailingList['to'] as &$target) {
-						$model = X2Model::model(ucwords($this->model->modelName))->findByPk($this->model->modelId);
-						if(isset($model)) {
-							if($model->hasAttribute('lastActivity')) {
-								$model->lastActivity = time();
-								$model->update(array('lastActivity'));
-							}
-							
-							$action = new Actions;
-							$action->associationType = strtolower($this->model->modelName);
-							$action->associationId = $model->id;
-							$action->associationName = $model->name;
-							$action->visibility = isset($model->visibility)? $model->visibility : 1;
-							$action->completedBy = Yii::app()->user->getName();
-							$action->assignedTo = $model->assignedTo;
-							$action->createDate = time();
-							$action->dueDate = time();
-							if($stageEmail) {
-								$action->complete = 'No';
-								$action->type = 'email_staged';
-							} else {
-								$action->completeDate = time();
-								$action->complete = 'Yes';
-								$action->type = 'email';
-							}
-							
-							if($template == null) {
-								$action->actionDescription = '<b>'.$this->model->subject."</b><br><br>".$this->model->message;
-								if(isset($attachments)) {
-									$action->actionDescription .= "\n\n";
-									$action->actionDescription .= '<b>'. Yii::t('media', 'Attachments:') . "</b>\n";
-									foreach($attachments as $attachment) {
-										$action->actionDescription .= '<span class="email-attachment-text">'. $attachment['filename'] . "</span>\n";
-									}
-								}
-							} else
-								$action->actionDescription = CHtml::link($template->name,array('/docs/'.$template->id));
-							
-							if($action->save()) {
-								$event=new Events;
-								$event->type='email_sent';
-								$event->user=Yii::app()->user->getName();
-								$event->associationType=$this->model->modelName;
-								$event->associationId=$model->id;
-								$event->save();
-								
-								$track = new TrackEmail;
-								$track->actionId = $action->id;
-								$track->uniqueId = $uniqueId;
-								$track->save();
-							}
-							
-							// $message="2";
-							// $email=$toEmail;
-							// $id=$contact['id'];
-							// $note.="\n\nSent to Contact";
-						}
-					}
-					
-				}
-				
-			}
-		}
-		
-		$attachments = array();
-		if(isset($_POST['AttachmentFiles']) && isset($_POST['AttachmentFiles']['id']) && isset($_POST['AttachmentFiles']['temp']))  {
-		    $ids = $_POST['AttachmentFiles']['id'];
-		    $temps = $_POST['AttachmentFiles']['temp'];
-		    for($i = 0; $i < count($ids); $i++) {
-		    	$temp = json_decode($temps[$i]);
-		    	if($temp) { // attachment is a temp file
-		    		$tempFile = TempFile::model()->findByPk($ids[$i]);
-		    		if(isset($tempFile))
-		    			$attachments[] = array('filename' => $tempFile->name, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
-		    	} else { // attachment is from media library
-		    		$mediaLibraryUsed = true;
-		    		$media = Media::model()->findByPk($ids[$i]);
-		    		if(isset($media))
-		    			$attachments[] = array('filename' => $media->fileName, 'temp' => json_decode($temps[$i]), 'id' => $media->id);
-		    	}
-		    }
-		}
-		
-		echo $this->controller->renderPartial('application.components.views.inlineEmailForm',array(
-			'model'=>$this->model,
-			'preview'=>$preview? $emailBody : null,
-			'attachments'=>$attachments,
-		));
-		
-		// }
+	public function getBehaviors(){
+		return array(
+			'responds' => array(
+				'class' => 'application.components.ResponseBehavior',
+				'isConsole' => false,
+				'exitNonFatal' => false,
+				'longErrorTrace' => false,
+			),
+		);
 	}
+
+	public function run(){
+		$this->attachBehaviors($this->behaviors);
+		// Safety net of handlers - they ensure that errors can be caught and seen easily:
+		set_error_handler('ResponseBehavior::respondWithError');
+		set_exception_handler('ResponseBehavior::respondWithException');
+
+		$scenario = 'custom';
+		if(empty($this->model))
+			$model = new InlineEmail();
+		else
+			$model = $this->model;
+		// Check to see if the user is requesting a new template
+		if(isset($_GET['template'])){
+			$scenario = 'template';;
+		}
+		$model->setScenario($scenario);
+
+		$attachments = array();
+		
+		if(isset($_POST['InlineEmail'])){
+			// This could indicate either a template change or a form submission.
+			$model->attributes = $_POST['InlineEmail'];
+
+			// Prepare attachments that may have been uploaded on-the-fly (?)
+			$mediaLibraryUsed = false; // is there an attachment from the media library?
+			if(isset($_POST['AttachmentFiles'], $_POST['AttachmentFiles']['id'], $_POST['AttachmentFiles']['temp'])){
+				$ids = $_POST['AttachmentFiles']['id'];
+				$temps = $_POST['AttachmentFiles']['temp'];
+				$attachments = array();
+				for($i = 0; $i < count($ids); $i++){
+					$temp = json_decode($temps[$i]);
+					if($temp){ // attachment is a temp file
+						$tempFile = TempFile::model()->findByPk($ids[$i]);
+						$attachments[] = array('filename' => $tempFile->name, 'folder' => $tempFile->folder, 'temp' => json_decode($temps[$i]), 'id' => $tempFile->id);
+					}else{ // attachment is from media library
+						$mediaLibraryUsed = true;
+						$media = Media::model()->findByPk($ids[$i]);
+						$attachments[] = array('filename' => $media->fileName, 'folder' => $media->uploadedBy, 'temp' => json_decode($temps[$i]), 'id' => $media->id);
+					}
+				}
+			}
+			$model->attachments = $attachments;
+
+			// Validate/prepare the body, and send if no problems occur:
+			$sendStatus = array_fill_keys(array('code','message'),'');
+			$failed = false;
+			$message = '';
+			if($model->prepareBody()){
+				if($scenario != 'template'){
+					// Sending the email, not merely requesting a template change
+					$sendStatus = $model->send();
+					// $sendStatus = array('code'=>'200','message'=>'sent (testing)');
+					$failed = $sendStatus['code'] != '200';
+					$message = $sendStatus['message'];
+				} else if($model->modelName == 'Quote' && empty($model->templateModel)) {
+					// Fill in the gap with the default / "semi-legacy" quotes view:
+					$model->message = $this->renderPartial('application.modules.quotes.views.quotes.print', array('model' => $model,'email' => true), true);
+				}
+			}
+
+			// Populate response data:
+			$modelHasErrors = $model->hasErrors();
+			$failed = $failed || $modelHasErrors;
+			$this->response = array_merge($this->response, array(
+				'scenario' => $scenario,
+				'sendStatus' => $sendStatus,
+				'attributes' => $model->attributes,
+				'modelErrors' => $model->errors,
+				'modelHasErrors' => $modelHasErrors,
+				'modelErrorHtml' => CHtml::errorSummary($model,Yii::t('app', "Please fix the following errors:"), null,array('style'=>'margin-bottom: 5px;')),
+					));
+
+			self::respond($message,$failed);
+		}else{
+			self::respond(Yii::t('app', 'Inline email model missing from the request to the server.'), 1);
+		}
+	}
+
 }
+
 ?>

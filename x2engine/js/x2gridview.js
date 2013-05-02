@@ -92,7 +92,7 @@ $.widget("x2.gvSettings", {
 	},
 
 	_setupGridviewDragging: function(self) {
-		this.element.dragtable('destroy');	// reset if this was already activated
+		// this.element.dragtable('destroy');	// reset if this was already activated
 		this.element.dragtable({
 			// delay:500,
 			distance:10,

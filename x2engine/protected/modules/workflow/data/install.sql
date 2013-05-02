@@ -10,7 +10,7 @@ CREATE TABLE x2_workflows(
 	lastUpdated				BIGINT
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
-CREATE TABLE x2_workflow_stages( 
+CREATE TABLE x2_workflow_stages(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	workflowId				INT				NOT NULL,
 	stageNumber				INT,
@@ -33,6 +33,6 @@ CREATE TABLE x2_role_to_workflow(
 	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
-			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
-	VALUES	("workflow",		"Workflow",			1,			4,				0,			0,			0,			0,		0);
+INSERT INTO `x2_modules`
+			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
+	VALUES	("workflow",		"Workflow",			1,			5,				0,			0,			0,			0,		0);

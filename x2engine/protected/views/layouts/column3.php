@@ -71,6 +71,13 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			$this->widget('zii.widgets.CMenu',array('items'=>$this->actionMenu,'encodeLabel'=>false));
 			$this->endWidget();
 		}
+		foreach($this->leftPortlets as &$portlet) {
+			$this->beginWidget('zii.widgets.CPortlet',$portlet['options']);
+			echo $portlet['content'];
+			$this->endWidget();
+		}
+		
+		
 		if(isset($this->modelClass) && $this->modelClass == 'Actions' && $this->showActions !== null) {
 			$this->beginWidget('zii.widgets.CPortlet', array(
 				'title'=>Yii::t('actions', 'Show Actions'),
@@ -92,7 +99,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			echo '</div>';
 			$this->endWidget();
 		}
-
+		
 		// Add Show/Hide Status for Service Cases
 		// This is a list of service case statuses. When the User checks one of the corresponding checkboxes
 		// the status will be hidden in the gridview in services/index

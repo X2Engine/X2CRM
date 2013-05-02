@@ -35,8 +35,16 @@
  *****************************************************************************************/
 //
 ?>
-<html><header>
-		<meta charset="UTF-8">
+<html>
+
+  <head>
+    <script src='<?php echo Yii::app()->baseUrl . '/framework/web/js/source/jquery.min.js'; ?>'></script>
+    <script src='<?php echo Yii::app()->baseUrl . '/framework/web/js/source/jui/js/jquery-ui.min.js'; ?>'></script>
+	<meta charset="UTF-8">
+  </head>
+
+  <header>
+		
 		<title><?php $type = $model->type == 'invoice' ? Yii::t('quotes', 'Invoice:') : Yii::t('quotes', 'Quote:');
 echo "$type #{$model->id}"; ?></title>
 	</header>
@@ -68,7 +76,10 @@ echo "$type #{$model->id}"; ?></title>
 		</table><br />
 
 		<?php
-		echo $model->productTable(true);
+		//echo $model->productTable(true);
+
+
+    
 
 		$defaultIncludeNotes = !empty($model->description);
 		?>

@@ -58,7 +58,7 @@ $menuItems = array(
     array('label'=>Yii::t('contacts','Delete Contact'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
-	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
+	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
 	array('label'=>Yii::t('quotes',($subscribed? 'Unsubscribe' : 'Subscribe' )), 'url'=>'#', 'linkOptions'=>array('class'=>'x2-subscribe-button', 'onclick'=>'return subscribe($(this));', 'title'=>Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}'=>$model->firstName.' '.$model->lastName)))),
 );
 
@@ -121,7 +121,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
 	<div class="page-title-fixed-inner">
-		<div class="page-title icon" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/contacts.png);">
+		<div class="page-title icon contacts">
 			<h2><?php echo $model->name; ?></h2>
 			<?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
 			<?php echo CHtml::link('<span></span>','#',array('class'=>'x2-button icon email right','onclick'=>'toggleEmailForm(); return false;'));
@@ -208,10 +208,13 @@ $this->widget('InlineEmailForm',
 			'modelName'=>'Contacts',
 			'modelId'=>$model->id,
 		),
-		'insertableAttributes'=>array(Yii::t('app','Contact Attributes')=>$insertableAttributes),
+//		'insertableAttributes'=>array(Yii::t('app','Contact Attributes')=>$insertableAttributes),
 		'startHidden'=>true,
 	)
 );
+
+
+
 ?>
 <div id="quote-form-wrapper">
 <?php
@@ -219,10 +222,12 @@ $this->widget('InlineEmailForm',
 	 array(
 		 'startHidden'=>true,
 		 'contactId'=>$model->id,
+		 'account'=>$model->getLinkedAttribute('company','name'),
 	 )
  );
 ?>
 </div>
+
 </div>
 <div class="history half-width">
 <?php

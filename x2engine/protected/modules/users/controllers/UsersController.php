@@ -406,7 +406,7 @@ Please click on the link below to create an account at X2CRM!
                 $socialItem->delete();
             }
                         
-                        $dataProvider=new CActiveDataProvider('Contacts', array(
+            $dataProvider=new CActiveDataProvider('Contacts', array(
 			'criteria'=>array(
 				'condition'=>"assignedTo='$model->username'",
 			)));
@@ -420,9 +420,10 @@ Please click on the link below to create an account at X2CRM!
                                 $contact->save();
 			}
                         
-                        $prof=ProfileChild::model()->findByAttributes(array('username'=>$model->username));
-                        $prof->delete();
-                        $model->delete();
+            $prof=ProfileChild::model()->findByAttributes(array('username'=>$model->username));
+            $prof->delete();
+            Yii::app()->db->createCommand("DELETE FROM x2_events where user='".$model->username."' OR (type='feed' AND associationId=".$model->id.")")->execute();
+			$model->delete();
 			
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
