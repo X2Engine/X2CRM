@@ -152,6 +152,7 @@ class X2ListItem extends CActiveRecord {
 			} else {
 				X2Flow::trigger('NewsletterEmailOpenTrigger',array(
 					'item'=>$this,
+					'email'=>$this->emailAddress,
 					'campaign'=>$this->list->campaign,
 				));
 			}
@@ -182,6 +183,7 @@ class X2ListItem extends CActiveRecord {
 			} else {
 				X2Flow::trigger('NewsletterEmalClickTrigger',array(
 					'item'=>$this,
+					'email'=>$this->emailAddress,
 					'campaign'=>$this->list->campaign,
 					'url'=>$url
 				));
@@ -219,6 +221,7 @@ class X2ListItem extends CActiveRecord {
 			
 				X2Flow::trigger('NewsletterUnsubscribeTrigger',array(
 					'item'=>$this,
+					'email'=>$this->emailAddress,
 					'campaign'=>$this->list->campaign
 				));
 			}

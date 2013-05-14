@@ -97,7 +97,7 @@ function createControls(id, publisher){
         e.preventDefault();
         var link=this;
         $.ajax({
-            url:yii.baseUrl+'/actions/toggleSticky?id='+id,
+            url:yii.baseUrl+'/index.php/actions/toggleSticky?id='+id,
             success:function(data){
                 if(data){
                     $(link).addClass('unsticky');
@@ -111,7 +111,7 @@ function createControls(id, publisher){
 }
 function loadActionFrame(id){
     var publisher=($('#publisher-form').html()!=null);
-    var frame='<iframe id="action-frame" style="width:99%;height:99%" src="'+yii.baseUrl+'/actions/viewAction?id='+id+'&publisher='+publisher+'" onload="createControls('+id+', true);"></iframe>';
+    var frame='<iframe id="action-frame" style="width:99%;height:99%" src="'+yii.baseUrl+'/index.php/actions/viewAction?id='+id+'&publisher='+publisher+'" onload="createControls('+id+', true);"></iframe>';
     if(typeof x2ViewEmailDialog != 'undefined') {
         if($(x2ViewEmailDialog).is(':hidden')){
             $(x2ViewEmailDialog).remove();
@@ -154,7 +154,7 @@ function loadActionFrame(id){
 function uncompleteAction(id, publisher){
     resetFlag=false;
     $.ajax({
-        url:yii.baseUrl+'/actions/uncomplete',
+        url:yii.baseUrl+'/index.php/actions/uncomplete',
         type:'GET',
         data:{
             'id':id
@@ -190,7 +190,7 @@ function completeAction(id, publisher){
             "Yes": function() {
                 $(this).dialog('close');
                 $.ajax({
-                    url:yii.baseUrl+'/actions/complete',
+                    url:yii.baseUrl+'/index.php/actions/complete',
                     type:'GET',
                     data:{
                         'id':id,
@@ -221,7 +221,7 @@ function completeAction(id, publisher){
             "No":function(){
                 $(this).dialog('close');
                 $.ajax({
-                    url:yii.baseUrl+'/actions/complete',
+                    url:yii.baseUrl+'/index.php/actions/complete',
                     type:'GET',
                     data:{
                         'id':id

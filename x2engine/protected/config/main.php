@@ -346,6 +346,6 @@ return array(
 		'edition'=>'',
 		'buildDate'=>$buildDate,
 		'noSession' => false,
-		
+		'automatedTesting' => false,
 	),
 );

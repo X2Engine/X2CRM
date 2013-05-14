@@ -40,7 +40,7 @@
 <div id="inline-email-top"></div>
 
 <div id="inline-email-form">
-	<span id="template-change-confirm" style="display:none"><?php echo Yii::t('app','Note: if you load a template, you lose changes you have made. Are you sure you want to continue?'); ?></span>
+	<span id="template-change-confirm" style="display:none"><?php echo Yii::t('app','Note: you have entered text into the email that will be lost. Are you sure you want to continue?'); ?></span>
 <?php
 /* if(isset($preview) && !empty($preview)) { ?>
 <div class="form">

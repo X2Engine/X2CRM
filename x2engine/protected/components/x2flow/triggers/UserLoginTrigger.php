@@ -33,39 +33,22 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$this->menu=array(
-	array('label'=>Yii::t('media','View Media')),
-	array('label'=>Yii::t('media','Delete Media'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
-);
-?>
 
-<h2><?php echo Yii::t('media','View Attachment'); ?></h2>
-<?php 
-
-if($model->associationType!='feed') {
-	// $list = $this->parseType($model->associationType);
-	// $contact=$list[$model->associationId];
-	$association = X2Model::getAssociationModel($model->associationType,$model->associationId);
-} else
-	$association = null;
+/**
+ * X2FlowTrigger 
+ * 
+ * @package X2CRM.components.x2flow.actions
+ */
+class UserLoginTrigger extends X2FlowTrigger {
+	public $title = 'User Signed In';
+	public $info = 'Triggered when a user signs in to X2CRM.';
 	
-$this->renderPartial('_detailView',array('model'=>$model,'association'=>$association));
-/*
-$this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/detailview',
-	'attributes'=>array(
-		'fileName',
-		'uploadedBy',
-		array(
-			'name'=>'createDate',
-			'type'=>'raw',
-			'value'=>date('Y-m-d g:i a',$model->createDate),
-		),	
-		array(
-			'label'=>ucwords($model->associationType),
-			'type'=>'raw',
-			'value'=>$model->associationType!='feed' ? CHtml::link($association->name,array($model->associationType.'/view','id'=>$model->associationId)) : CHtml::link(Yii::t('social','Feed Post'),array('profile/'.$model->associationId)),
-		),	
-	),
-)); */ ?>
+	public function paramRules() {
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'options' => array(
+				array('name'=>'user','label'=>'User','type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(true,false),'operators'=>array('=','<>','list','notList'),'optional'=>1),
+			));
+	}
+}

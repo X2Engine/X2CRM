@@ -68,16 +68,6 @@ class BugReports extends X2Model {
 
 
 	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
-
-	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
@@ -85,11 +75,11 @@ class BugReports extends X2Model {
 		$criteria=new CDbCriteria;
 		return $this->searchBase($criteria);
 	}
-    
+
     /**
 	 * Base search method for all data providers.
 	 * Sets up record-level security checks.
-	 * 
+	 *
 	 * @param CDbCriteria $criteria starting criteria for this search
 	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
 	 */
@@ -101,14 +91,14 @@ class BugReports extends X2Model {
 
 		return parent::searchBase($criteria);
 	}
-    
+
     public function afterFind(){
         if($this->id!=$this->name){
             $this->name=$this->id;
             $this->save();
         }
     }
-    
+
     /**
 	 *  Like search but filters by status based on the user's profile
 	 *
@@ -122,7 +112,7 @@ class BugReports extends X2Model {
 		// $criteria->compare('status', '<>Program Manager investigation');
 
 		foreach($this->getFields(true) as $fieldName => $field) {
-			
+
 			if($fieldName == 'status') { // if status exists
 				// filter statuses based on user's profile
 				$hideStatus = CJSON::decode(Yii::app()->params->profile->hideBugsWithStatus); // get a list of statuses the user wants to hide
@@ -134,8 +124,8 @@ class BugReports extends X2Model {
 				}
 			}
 		}
-	
+
 		return $this->searchBase($criteria);
 	}
-       
+
 }

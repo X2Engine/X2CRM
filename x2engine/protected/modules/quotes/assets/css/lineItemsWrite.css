@@ -34,7 +34,13 @@
  *****************************************************************************************/
 
 .quote-table input {
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin: 0 0 0 0;
+}
+
+::-moz-placeholder {
+    text-overflow: ellipsis;
 }
 
 .quote-table .add-line-item-button
@@ -65,9 +71,11 @@
 
 .quote-table input.error
 {
-    border: 2px solid rgb(170,170,170);
-    background: none repeat scroll 0% 0% rgb(255,238,238);
-    border-color: rgb(204,0,0);
+    /*border: 2px solid rgb(170,170,170);*/
+    background: #FEE;
+    border-color: #C00 !important;
+    /*background: none repeat scroll 0% 0% rgb(255,238,238);*/
+    /*border-color: rgb(204,0,0);*/
 }
 
 .quote-table .arrow-both-handle
@@ -135,12 +143,14 @@ set width of input fields in the quotes table
 .line-item > .first-cell, .adjustment > .first-cell
 {
     width: 10%;
+    padding-right: 0;
 }
 
 /* line item name cell */
 .quote-table > tbody#line-items > tr > td:nth-child(2) {
 	text-align: left;
     width: 22%;
+    padding-right: 0;
 }
 
 
@@ -149,20 +159,23 @@ set width of input fields in the quotes table
 .quote-table > tbody#line-items > tr > td:nth-child(2) input
 {
     margin: 0 0 0 0;
-    width: 75%;
+    width: 85%;
     float: left;
 	font-size: 12px;
 }
 
 .quote-table .product-select-button
 {
-    width: 10%;
     height: 20px;
+    width: 10%;
     max-width: 20px;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
 }
 
 .quote-table .product-select-button img
 {
+    margin: 0 0 0 0;
     width: 10px;
     height: 10px;
 }
@@ -175,7 +188,7 @@ set width of input fields in the quotes table
 
 /* unit price */
 .quote-table > tbody#line-items > tr > td:nth-child(3) input {
-    width: 90%;
+    width: 100%;
 	text-align: right;
 	font-size: 12px;
 }
@@ -188,10 +201,16 @@ set width of input fields in the quotes table
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td:nth-child(4) input,
-.quote-table > tbody#adjustments> tr > td:nth-child(4) input {
-    width: 90%;
+.quote-table > tbody#line-items > tr > td:nth-child(4) input {
+    width: 100%;
 	text-align: right;
+	font-size: 12px;
+}
+
+/* adjustment name */
+.quote-table > tbody#adjustments> tr > td:nth-child(4) input {
+    width: 100%;
+	text-align: left;
 	font-size: 12px;
 }
 
@@ -205,7 +224,7 @@ set width of input fields in the quotes table
 /* adjustments */
 .quote-table > tbody#line-items > tr > td:nth-child(5) input,
 .quote-table > tbody#adjustments > tr > td:nth-child(5) input {
-    width: 90%;
+    width: 100%;
 	font-size: 12px;
 	text-align: right;
 }
@@ -220,7 +239,7 @@ set width of input fields in the quotes table
 /* description */
 .quote-table > tbody#line-items > tr > td:nth-child(6) input,
 .quote-table > tbody#adjustments > tr > td:nth-child(6) input {
-    width: 90%;
+    width: 100%;
 	font-size: 12px;
 }
 
@@ -234,7 +253,7 @@ set width of input fields in the quotes table
 /* line total */
 .quote-table > tbody#line-items > tr > td:nth-child(7) input,
 .quote-table > tbody#adjustments > tr > td:nth-child(7) input {
-    width: 90%;
+    width: 100%;
 	font-size: 12px;
 }
 
@@ -248,8 +267,26 @@ set width of input fields in the quotes table
 /* subtotal and total */
 .quote-table input#subtotal,
 .quote-table input#total {
-    width: 80%;
+    width: 100%;
 	font-size: 12px;
 }
 
+.quotes-error-summary {
+    background: #FEE;
+    border: 2px solid #C00;
+    font-size: 0.9em;
+    padding: 5px;
+    margin-bottom: 1px;
+    margin-top: 5px;
+}
+
+.quotes-error-summary p {
+    margin: 0;
+    padding: 5px;
+}
+
+.quotes-error-summary ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+}
 

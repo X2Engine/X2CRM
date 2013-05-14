@@ -114,6 +114,19 @@ $(document).ready(function() {
 			$('#pageHeaderTextColor').change();
 		}
 	});
+        $('#activityFeedWidgetBgColor').modcoder_excolor({
+		hue_bar : 3,
+		hue_slider : 5,
+		border_color : '#aaa',
+		sb_border_color : '#d6d6d6',
+		round_corners : false,
+		shadow_color : '#000000',
+		background_color : '#f0f0f0',
+		backlight : false,
+		callback_on_ok : function() {
+			$('#activityFeedWidgetBgColor').change();
+		}
+	});
 
 	$('#backgroundColor').change(function() {
 		var text = $('#backgroundColor').val();
@@ -168,6 +181,33 @@ $(document).ready(function() {
 		}
 		highlightSave();
 	});
+        $('#activityFeedWidgetBgColor').change(function() {
+		var text = $('#activityFeedWidgetBgColor').val();
+		if(text == '') {
+			$('.chat-box').css('background-color','#fff');
+                        $('.chat-box').css('color', '#ffffff');
+		} else {
+			$('#activityFeedWidgetBgColor').val(text.substring(1,7));
+			$('.chat-box').css('background-color',text);
+                        $('.chat-box').css('color', text);
+		}
+		highlightSave();
+	});
+        
+        function convertTextColor(colorString){
+            var redHex = colorString.slice(1,2);
+            var greenHex = colorString.slice(3,4);
+            var blueHex = colorString.slice(5,6);
+            
+            var red = parseInt(redHex, 16);
+            var green = parseInt(greenHex, 16);
+            var blue = parseInt(blueHex, 16);
+            
+            if((red*0.299 + green*0.587 + blue*0.114) > 186){
+                return '#000000';
+            }
+            else return '#ffffff';
+        }
 
 	$('#backgroundTiling').change(function() {
 		var val = $(this).val();
@@ -199,63 +239,36 @@ $(document).ready(function() {
 
 });
 
-function setLoginSound(id, filename, uploadedBy) {
+function setSound(sound, id, filename, uploadedBy) {
     if(filename!=null){
         if(uploadedBy){
-            $('#loginSound').attr('src',yii.baseUrl+'/uploads/'+uploadedBy+'/'+filename);
+            $('#'+sound).attr('src',yii.baseUrl+'/uploads/media/'+uploadedBy+'/'+filename);
         }else{
-            $('#loginSound').attr('src',yii.baseUrl+'/uploads/'+filename);
+            $('#'+sound).attr('src',yii.baseUrl+'/uploads/'+filename);
         }
-        var sound = $("#loginSound")[0];
-        sound.play();
+        var soundFile = $("#"+sound)[0];
+        soundFile.play();
     }
     $.ajax({
-            url: yii.scriptUrl+'/profile/setLoginSound',
+            url: yii.scriptUrl+'/profile/setSound?sound='+sound,
             type: 'post',
             data: 'name='+filename
         });
-        $('.loginSound-row a').css('font-weight','normal');
+        $('.'+sound+'-row a').css('font-weight','normal');
         $('#sound-'+id).css('font-weight','bold');
 }
 
-function setNotificationSound(id ,filename, uploadedBy) {
-    if(filename!=null){
-        if(uploadedBy){
-            $('#notification').attr('src',yii.baseUrl+'/uploads/'+uploadedBy+'/'+filename);
-        }else{
-            $('#notification').attr('src',yii.baseUrl+'/uploads/'+filename);
-        }
-        var sound = $("#notification")[0];
-        sound.play();
-    }
-	$.ajax({
-		url: yii.scriptUrl+'/profile/setNotificationSound',
-		type: 'post',
-		data: 'name='+filename
-	});
-    $('.notificationSound-row a').css('font-weight','normal');
-    $('#sound-'+id).css('font-weight','bold');
-}
-function deleteLoginSound(id, filename){
+function deleteSound(sound, id){
     $.ajax({
-        url: yii.scriptUrl+'/profile/deleteLoginSound',
+        url: yii.scriptUrl+'/profile/deleteSound?sound='+sound,
         type: 'get',
         data: 'id='+id,
-        success: function(response){
-            $('#loginSound_'+id).hide();
+        success: function(){
+            $('#'+sound+'_'+id).hide();
         }
-    })
+    });
 }
-function deleteNotificationSound(id, filename){
-    $.ajax({
-        url: yii.scriptUrl+'/profile/deleteNotificationSound',
-        type: 'get',
-        data: 'id='+id,
-        success: function(response){
-            $('#notificationSound_'+id).hide();
-        }
-    })
-}
+
 //js to change background image
 function setBackground(filename) {
 	$.ajax({

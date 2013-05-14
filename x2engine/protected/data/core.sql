@@ -325,6 +325,8 @@ CREATE TABLE x2_profile(
 	menuTextColor			VARCHAR(6)		NULL,
 	pageHeaderBgColor		VARCHAR(6)		NULL,
 	pageHeaderTextColor		VARCHAR(6)		NULL,
+    activityFeedWidgetBgColor       VARCHAR(6)              NULL,
+    activityFeedWidgetTextColor     VARCHAR(6)              NULL,
 	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
     loginSound              VARCHAR(100)    NULL DEFAULT "",
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",

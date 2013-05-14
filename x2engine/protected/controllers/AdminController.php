@@ -1399,6 +1399,10 @@ class AdminController extends Controller {
             $model->custom = 1;
             $model->modified = 1;
             $model->modelName=X2Model::getModelName($model->modelName);
+			if(strpos('c_',$model->fieldName) !== 0)
+				// This is a safeguard against fields that end up having
+				// identical names to fields added later in updates.
+				$model->fieldName = "c_{$model->fieldName}";
 
             $fieldType = $model->type;
             switch ($fieldType) {

@@ -35,29 +35,29 @@
  *****************************************************************************************/
 
 class X2WebUser extends CWebUser {
-	
+
 	private $_keyPrefix;
 	// private $_access=array();
 	private $_access = null;
-	
+
 	public function checkAccess($operation,$params=array(),$allowCaching=true) {
-		
+
 		// return true;
 		if($allowCaching && $params===array()) {
-		
+
 			if($this->_access===null)
 				$this->_access = Yii::app()->authCache->loadAuthCache($this->getId());
-	
+
 			if(isset($this->_access[$operation]))
 				return $this->_access[$operation];
-				
+
 			// if(isset($this->_access[$operation]))
 				// return $this->_access[$operation];
 			// if(($result = Yii::app()->authCache->checkResult($this->getId(),$operation)) !== null)
 				// return $result;
 		}
 		// $GLOBALS['access'][] = $operation;
-		
+        
 		$result = Yii::app()->getAuthManager()->checkAccess($operation,$this->getId(),$params);
 		foreach(Yii::app()->params['roles'] as $roleId) {
 			if($result = ($result || Yii::app()->getAuthManager()->checkAccess($operation,$roleId,$params)))
@@ -69,7 +69,7 @@ class X2WebUser extends CWebUser {
 
 		// $roles=RoleToUser::model()->findAllByAttributes(array('userId'=>$this->getId()));
 		// foreach($roles as $role){
-			// $roleRecord=Roles::model()->findByPk($role->roleId); 
+			// $roleRecord=Roles::model()->findByPk($role->roleId);
 			// if(isset($roleRecord))
 				// $result=$result || Yii::app()->getAuthManager()->checkAccess($operation,$roleRecord->id,$params);
 		// }
@@ -83,7 +83,7 @@ class X2WebUser extends CWebUser {
 
 	/**
 	 * Runs the user_login automation trigger
-	 * 
+	 *
 	 * @param $fromCookie whether the login was automatic (cookie-based)
 	 */
 	protected function afterLogin($fromCookie) {
@@ -96,7 +96,7 @@ class X2WebUser extends CWebUser {
 
 	/**
 	 * Runs the user_logout automation trigger
-	 * 
+	 *
 	 * @return boolean whether or not to logout
 	 */
 	protected function beforeLogout() {

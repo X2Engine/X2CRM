@@ -62,7 +62,7 @@ $(function(){
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $backdating=!(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->params->admin->userActionBackdating);
 ?>
-<div class="form" id="action-form">
+<div class="form focus-mini-module" id="action-form">
     <?php
     $form = $this->beginWidget('CActiveForm', array(
         'id' => 'actions-newCreate-form',
@@ -97,7 +97,7 @@ $backdating=!(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->param
                                             $("#auto_complete").show();
                                         }else{
                                             $("#auto_complete").hide();
-                                        }   
+                                        }
                                     }'
                         )
                             )
@@ -250,7 +250,7 @@ $backdating=!(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->param
                     <?php
                     $visibility = array(1 => Yii::t('actions', 'Public'), 0 => Yii::t('actions', 'Private'));
                     ?>
-                    <?php echo $form->dropDownList($actionModel, 'visibility', $visibility); ?>     
+                    <?php echo $form->dropDownList($actionModel, 'visibility', $visibility); ?>
                 </div>
                 <div class="cell buttons" style="float:right;">
                     <?php echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app', 'Save') : Yii::t('app', 'Save'), array('type' => 'submit', 'class' => 'x2-button', 'id' => 'save-button1', 'name' => 'submit')); ?>
@@ -258,10 +258,9 @@ $backdating=!(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->param
             </div>
         </div>
     </div>
-</div>
 <div class="form">
-    <span><?php echo CHtml::link(CHtml::image($themeUrl . '/images/icons/Expand_Inverted.png', '', array('style' => 'float:left;')) . "<label style='cursor:pointer'>&nbsp;Action Reminders</label>", '#', array('id' => 'reminder-link', 'style' => 'color:black;text-decoration:none;')); ?></span>  
-    <div id="action-reminders" style="display:none;">
+    <span><?php echo CHtml::link(CHtml::image($themeUrl . '/images/icons/Collapse_Widget.png', '', array('style' => 'float:left;')) . "<label style='cursor:pointer'>&nbsp;Action Reminders</label>", '#', array('id' => 'reminder-link', 'style' => 'color:black;text-decoration:none;')); ?></span>
+    <div id="action-reminders">
         <br>
         <?php echo $form->checkBox($actionModel, 'reminder'); ?>
         <?php echo Yii::t('actions', 'Create a notification reminder for'); ?>
@@ -359,6 +358,7 @@ $backdating=!(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->param
         <?php } ?>
     </div>
 </div>
+</div>
 <?php $this->endWidget(); ?>
 <script>
     $(document).on('click','#reminder-link',function(e){
@@ -380,5 +380,8 @@ $backdating=!(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->param
             $('#action-backdating').slideUp();
             $(this).find('img').attr('src',yii.themeBaseUrl+'/images/icons/Expand_Inverted.png');
         }
+    });
+    $(document).on('ready',function(){
+        $('#Actions_subject').focus();
     });
 </script>

@@ -60,35 +60,76 @@ function insertArrowBothImage () {
 }
 
 $currency = null;
-
 if (isset ($model)) {
   if (!empty ($model->currency)) {
     $currency = $model->currency;
   } else {
-    $currency = $model->currency;
     $currency = Yii::app()->params['currency'];
   }
 }
 
-$orders = $model->lineItems;   // Sorting by line items is done in the magic getter/setter, so no need to sort.
-if (!empty($orders)) {  
-  $lineCounter = 0; // used to differentiate line items and adjustments in the DOM
-  // passed to the client so that line item rows can have a uid 
-  $ordersNum = count ($orders);
-
-} else {
-  $ordersNum = 0;
-}
-
-// set variables for the client JavaScript
+// ***set global variables for the client JavaScript
 $passVariablesToClientScript = "
-  x2.quotes = {};
+  if (typeof x2.quotes === 'undefined') {
+    x2.quotes = {};
+    x2.quotes.view = 'default'; // used to determine view-dependent behavior of quotes table
+  }
   x2.quotes.currency = '".$currency."';
   x2.quotes.readOnly = '".$readOnly."';
-  x2.quotes.adjustmentsNum = ". count ($model->adjustmentLines) .";
-  x2.quotes.lineCounter = ". $ordersNum .";
+  x2.quotes.lineCounter = 0; // used to differentiate name values of input fields
 ";
 
+/* 
+Send an array containing product line information. This array is used by the client to build
+the rows of the line items table.
+*/
+$passVariablesToClientScript .= "x2.quotes.productLines = [];";
+foreach ($model->productLines as $item) {
+  $passVariablesToClientScript .= "x2.quotes.productLines.push (".
+    CJSON::encode (array ( // keys correspond to CSS classes of each input field
+    'product-name'=>array ($item->formatAttribute('name'),$item->hasErrors('name')),
+    'price'=>array ($item->formatAttribute('price'),$item->hasErrors('price')),
+    'quantity'=>array ($item->formatAttribute('quantity'),$item->hasErrors('quantity')),
+    'adjustment'=>array ($item->formatAttribute('adjustment'),$item->hasErrors('adjustment')),
+    'description'=>array ($item->formatAttribute('description'),$item->hasErrors('description')),
+    'adjustment-type'=>array ($item->formatAttribute('adjustmentType'),false))).
+  ");";
+}
+
+/* 
+Send an array containing adjustment line information. This array is used by the client to build
+the rows of the line items table.
+*/
+$passVariablesToClientScript .= "x2.quotes.adjustmentLines = [];";
+foreach ($model->adjustmentLines as $item) {
+  $passVariablesToClientScript .= "x2.quotes.adjustmentLines.push (".
+    CJSON::encode (array ( // keys correspond to CSS classes of each input field
+    'adjustment-name'=>array ($item->formatAttribute('name'),$item->hasErrors('name')),
+    'adjustment'=>array ($item->formatAttribute('adjustment'),$item->hasErrors('adjustment')),
+    'description'=>array ($item->formatAttribute('description'),$item->hasErrors('description')),
+    'adjustment-type'=>array ($item->formatAttribute('adjustmentType'),false))).
+  ");";
+}
+
+
+/*
+Send a dictionary containing translations for the types of each input field. 
+Used for html title attributes.
+*/
+$titleTranslations = array( // keys correspond to CSS classes of each input field
+  'product-name'=>Yii::t('quotes', 'Product Name'),
+  'adjustment-name'=>Yii::t('quotes', 'Adjustment Name'),
+  'price'=>Yii::t('quotes', 'Price'),
+  'quantity'=>Yii::t('quotes', 'Quantity'),
+  'adjustment'=>Yii::t('quotes', 'Adjustment'),
+  'description'=>Yii::t('quotes', 'Comments')
+);
+$passVariablesToClientScript .= "x2.quotes.titleTranslations = ".CJSON::encode ($titleTranslations).";";
+
+/*
+Send information about existing products. This information is used by the client to construct the
+product selection drop-down menu.
+*/
 if (!$readOnly && isset ($products)) {
   $passVariablesToClientScript .= "x2.quotes.productNames = [];" ;
   $passVariablesToClientScript .= "x2.quotes.productPrices = {};" ;
@@ -115,16 +156,29 @@ if (!$readOnly) {
   Yii::app()->clientScript->registerCssFile($this->module->assetsUrl . '/css/lineItemsRead.css');
 }
 
+$debug = 0;
+if (YII_DEBUG && $debug) {
+  Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl.'/js/qunit/qunit-1.11.0.js',
+    CClientScript::POS_HEAD);
+  Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl.'/js/qunit/qunit-1.11.0.css',
+    CClientScript::POS_HEAD);
+  Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl . '/js/quotesUnitTests.js',
+    CClientScript::POS_HEAD);
+}
 
-//Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl . '/js/testjs.js'); 
-//Yii::app()->clientScript->registerScript(
-//  'passVariablesToClient',$passVariablesToClientScript,CClientScript::POS_HEAD);
 echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>";
 
 ?>
 
+<?php 
+if (YII_DEBUG && $debug) {
+  echo "<div id='qunit'></div>"; 
+  echo "<div id='qunit-fixture'></div>"; 
+}
+?>
+
 <?php
-  // For the create an update page, create a drop down menu for previous product
+  // For the create and update page, create a drop down menu for previous product
   // selection
   if (!$readOnly && isset ($products)) {
     echo "<ul id='product-menu'>";
@@ -150,74 +204,13 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   </thead>
   <tbody id='line-items' 
    <?php if (!$readOnly) echo 'class="sortable"' ?>>
-   <?php 
-    // display each line item, place undisplayed database attributes in hidden 
-    // fields, leave a table cell for the line total
-    foreach ($model->productLines as $item): ?>
-    <tr class='line-item'>
-      <td class='first-cell'> 
-        <?php 
-          if (!$readOnly) {
-            insertRemoveImage ();
-            insertArrowBothImage ();
-          }
-        ?>
-      </td>
-      <td class='input-cell'>
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $item->renderAttribute('name') . "'" ?>
-         class='line-item-field product-name'
-         name=<?php echo "'lineitem[" . ++$lineCounter . "][name]'" ?>/>
-        <?php 
-          if (!$readOnly) {
-            echo "<button type='button' class='product-select-button'>";
-            echo "<img src='" . 
-              Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/arrow_down.png' . 
-              "' alt='[" . Yii::t('quotes', 'Select a Product') . "]'/>";
-            echo "</button>";
-          }
-        ?>
-      </td>
-      <td class='input-cell'>
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $item->formatAttribute('price') . "'" ?> 
-         class='line-item-field price' name=<?php echo "'lineitem[" . $lineCounter . "][price]'" ?>/>
-      </td>
-      <td class='input-cell'>
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $item->formatAttribute('quantity') . "'" ?> 
-         class='line-item-field quantity'
-         name=<?php echo "'lineitem[" . $lineCounter . "][quantity]'" ?>/>
-      </td>
-      <td class='input-cell'> 
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $item->formatAttribute('adjustment') . "'"?> 
-         class='line-item-field adjustment' 
-         name=<?php echo "'lineitem[" . $lineCounter . "][adjustment]'" ?>/>
-      </td>
-      <td class='input-cell'>
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $item->renderAttribute('description') . "'" ?> 
-         class='line-item-field' name=<?php echo "'lineitem[" . $lineCounter . "][description]'" ?>/>
-      </td>
-      <td class='line-item-field text-field'>
-        <input type="text" readonly='readonly' onfocus='this.blur();' class='line-item-total'
-         name=<?php echo "'lineitem[" . $lineCounter . "][total]'" ?>/></input>
-        <input type="hidden" value=<?php echo "'" . $item->adjustmentType . "'" ?>
-         class='line-item-field adjustment-type'
-         name=<?php echo "'lineitem[" . $lineCounter . "][adjustmentType]'" ?>/>
-        <input type="hidden" value=<?php echo "'" . $item->lineNumber . "'" ?>
-         class='line-item-field line-number'
-         name=<?php echo "'lineitem[" . $lineCounter . "][lineNumber]'" ?>/>
-      </td>
-    </tr>
-    <?php endforeach; ?>
+   <!-- line items will be placed here by addLineItem() in javascript -->
   </tbody>
   <tr id='subtotal-row'>
     <td class='first-cell'> </td>
     <td colspan='4'> </td>
     <td class="text-field"><span style="font-weight:bold"> Subtotal: </span></td>
-    <td class="text-field subtotal-container">
+    <td class="subtotal-container input-cell">
       <input type="text" readonly='readonly' onfocus='this.blur();' 
        style="font-weight:bold" id="subtotal" name="Quote[subtotal]">
       </input>
@@ -225,54 +218,13 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   </tr>
   <tbody id='adjustments' 
    <?php if (!$readOnly) echo 'class="sortable"' ?>>
-   <?php 
-    // display each adjustment, place undisplayed database attributes in hidden 
-    // fields
-    foreach ($model->adjustmentLines as $adj): ?>
-    <tr class='adjustment'>
-      <td class='first-cell'> 
-        <?php 
-          if (!$readOnly) {
-            insertRemoveImage();
-            insertArrowBothImage ();
-          }
-        ?>
-      </td>
-      <td> </td>
-      <td> </td>
-      <td class='input-cell'> 
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $adj->renderAttribute('name') . "'" ?> class='line-item-field'
-         name=<?php echo "'lineitem[" . ++$lineCounter . "][name]'" ?>/>
-      </td>
-      <td class='input-cell'> 
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $adj->formatAttribute('adjustment') . "'" ?> 
-         class='line-item-field adjustment'
-         name=<?php echo "'lineitem[" . $lineCounter . "][adjustment]'" ?>/>
-      </td>
-      <td class='input-cell'>
-        <input type="text" <?php if ($readOnly) echo "readonly='readonly' onfocus='this.blur();'" ?>
-         value=<?php echo "'" . $adj->renderAttribute('description') . "'" ?> 
-         class='line-item-field'
-         name=<?php echo "'lineitem[" . $lineCounter . "][description]'" ?>/>
-      </td>
-      <td class='text-field'> 
-        <input type="hidden" value=<?php echo "'" . $adj->adjustmentType . "'" ?> 
-         class='line-item-field adjustment-type'
-         name=<?php echo "'lineitem[" . $lineCounter . "][adjustmentType]'" ?>/>
-        <input type="hidden" value=<?php echo "'" . $adj->lineNumber . "'" ?> 
-         class='line-item-field line-number'
-         name=<?php echo "'lineitem[" . $lineCounter . "][lineNumber]'" ?>/>
-      </td>
-    </tr>
-    <?php endforeach; ?>
+   <!-- adjustments will be placed here by addAdjustment() in javascript -->
   </tbody>
   <tr>
     <td class='first-cell'> </td>
     <td colspan="4"></td>
     <td class='text-field'><span style="font-weight:bold"> Total: </span></td> 
-    <td class="text-field total-container">
+    <td class="total-container input-cell">
       <input type="text" readonly='readonly' onfocus='this.blur();' style="font-weight:bold" id="total"  name="Quote[total]">
       </input>
     </td>
@@ -282,6 +234,10 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
 <button type='button' class='x2-button add-line-item-button'>+&nbsp;<?php echo Yii::t('workflow', 'Add Line Item'); ?></button>
 <button type='button' class='x2-button add-adjustment-button'>+&nbsp;<?php echo Yii::t('workflow', 'Add Adjustment'); ?></button>
 <?php endif; ?>
+
+
+
+
 
 <script>
 
@@ -298,14 +254,14 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
     'BRL': 'pt-BR'
   };
 
-  var debug = 1;
+  var debug = 0;
   
   function consoleLog(obj) {
-	  if (console != undefined) {
-		  if(console.log != undefined && debug) {
-			  console.log(obj);
-		  }
-	  }
+    if (console != undefined) {
+      if(console.log != undefined && debug) {
+        console.log(obj);
+      }
+    }
   }
 
   /*
@@ -340,7 +296,6 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   function getPrice (rowElement) {
     var price = $(rowElement).find (".price").toNumber(
       {region: currencyTable[x2.quotes.currency]});
-    //console.log ('getPrice: price = ' + price.val ());
     if (price.val () === '') price.val (0); // convert invalid input to 0
     price = parseFloat (price.val ());
     $(rowElement).find (".price").formatCurrency(
@@ -355,7 +310,7 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   function getAdjustment (rowElement, adjustmentType) {
     var adjustment;
     if (adjustmentType === 'percent' || adjustmentType === 'totalPercent') {
-      adjustment = parseInt (removePercentSign (
+      adjustment = parseFloat (removePercentSign (
         $(rowElement).find (".adjustment").val ()), 10);
     } else { // adjustmentType === 'linear' || adjustmentType === 'totalLinear'
       adjustment = $(rowElement).find (".adjustment").toNumber(
@@ -380,8 +335,6 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
     var price = getPrice (rowElement);
     var quantity = 
       parseInt ($(rowElement).find (".quantity").val (), 10);
-    if(isNaN(quantity))
-	  quantity = 0;
     var adjustmentType = 
       $(rowElement).find (".adjustment-type").val ();
     var adjustment = getAdjustment (rowElement, adjustmentType);
@@ -418,12 +371,26 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
     lineTotals - an array of Numbers, one for each line item in the line item 
       table
   */
-
   function setLineTotals (lineTotals) {
     $('.line-item').each (function (index, element) {
-       $(element).find ('.line-item-total').val (lineTotals.shift ()).formatCurrency (
+      total = lineTotals.shift (); 
+      $(element).find ('.line-item-total').val (total).formatCurrency (
         {'region': currencyTable[x2.quotes.currency]});
     });
+  }
+
+  /*
+  Helper function to convert the value of an input field containing a currency to 
+  a float, save the float, and convert the value of the input field back to a currency.
+  The converted currency is returned.
+  */
+  function extractCurrency (element) {
+    $(element).toNumber(
+      {'region': currencyTable[x2.quotes.currency]});
+    var currency = parseFloat ($(element).val ());
+    $(element).formatCurrency(
+      {region: currencyTable[x2.quotes.currency]});
+    return currency;
   }
   
   /*
@@ -431,12 +398,7 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   Number
   */
   function getLineItemTotal (rowElement) {
-    var price = $(rowElement).find ('.line-item-total').toNumber(
-      {'region': currencyTable[x2.quotes.currency]});
-    price = parseFloat (price.val());
-    $(rowElement).find ('.line-item-total').formatCurrency(
-      {region: currencyTable[x2.quotes.currency]});
-    return price;
+    return extractCurrency ($(rowElement).find ('.line-item-total'));
   }
 
   /*
@@ -491,139 +453,271 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   /*
   Insert a new line item row into the quotes line item table
   */
-  function addLineItem (event) {
+  function addLineItem (fillLineItem, values /* set if fillLineItem is true */) {
+    if (!fillLineItem) {
+        values = { // default values, 
+            "product-name": ['' /* default input value */, false /* validation error */],
+            "price": ['0', false],
+            "quantity": ['1', false],
+            "adjustment": ['0', false],
+            "description": ['', false],
+            "adjustment-type": ['linear', false],
+        }
+    }
 
     var lineItemRow = $("<tr>", {'class': 'line-item'});
 
-    lineItemRow.append ($("<td>", {'class': 'first-cell'}).append (
-      $("<img>", {src: x2.quotes.deleteImageSource, 'class': 'item-delete-button'}),
-      $("<img>", {src: x2.quotes.arrowBothImageSource, 'class': 'handle arrow-both-handle'}))
-    );
-    lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
+    $firstCell = lineItemRow.append ($("<td>", {'class': 'first-cell'}));
+    if (!x2.quotes.readOnly) {
+      $firstCell.find ('td').append (
+        $("<img>", {src: x2.quotes.deleteImageSource, 'class': 'item-delete-button'}),
+        $("<img>", {src: x2.quotes.arrowBothImageSource, 'class': 'handle arrow-both-handle'})
+      );
+    }
+    $inputCell = lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field product-name',
-        name: 'lineitem[' + ++x2.quotes.lineCounter + '][name]' }),
-      $("<button>", {'class': 'product-select-button', 'type': 'button'}).append (
-        $("<img>", { src: x2.quotes.arrowDownImageSource })))
-    );
+        maxlength: '100',
+        value: values['product-name'][0],
+        name: 'lineitem[' + ++x2.quotes.lineCounter + '][name]' })
+    ));
+    if (!x2.quotes.readOnly) {
+      $inputCell.find ('input').after (
+        $("<button>", {'class': 'product-select-button', 'type': 'button'}).append (
+          $("<img>", { src: x2.quotes.arrowDownImageSource })));
+    }
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field price',
-        value: '0',
+        value: values['price'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][price]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field quantity',
-        value: '1',
+        value: values['quantity'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][quantity]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field adjustment',
-        value: '0',
+        value: values['adjustment'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustment]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field description',
+        maxlength: '140',
+        'value': values['description'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][description]' }))
     );
-    lineItemRow.append ($("<td>", {'class': 'line-item-field'}).append (
-      $("<input>", {
-        type: 'text',
-        readonly: 'readonly',
-        onfocus: 'this.blur ();',
-        'class': 'line-item-total',
-        name: 'lineitem[' + x2.quotes.lineCounter + '][total]' }),
-      $("<input>", {
-        type: 'hidden', 
-        'class': 'line-item-field adjustment-type',
-        name: 'lineitem[' + x2.quotes.lineCounter + '][adjustmentType]' }),
-      $("<input>", {
-        type: 'hidden', 
-        'class': 'line-item-field line-number',
-        name: 'lineitem[' + x2.quotes.lineCounter + '][lineNumber]' }))
+    lineItemRow.append ($("<td>", {
+      'class': 'input-cell line-item-field'}).append (
+        $("<input>", {
+          type: 'text',
+          'class': 'line-item-total',
+          readonly: 'readonly',
+          onfocus: 'this.blur();',
+          name: 'lineitem[' + x2.quotes.lineCounter + '][total]' }),
+        $("<input>", {
+          type: 'hidden', 
+          'class': 'adjustment-type',
+          value: values['adjustment-type'][0],
+          name: 'lineitem[' + x2.quotes.lineCounter + '][adjustmentType]' }),
+        $("<input>", {
+          type: 'hidden', 
+          'class': 'line-number',
+          name: 'lineitem[' + x2.quotes.lineCounter + '][lineNumber]' }))
     );
+
+    if (fillLineItem) { // add error class if server side validation failed
+      for (var inputType in values) {
+        if (values[inputType][1] === true) {
+          $(lineItemRow).find ("." + inputType).addClass ('error');
+        }
+      }
+    }
+    if (x2.quotes.readOnly) { // make uneditable
+      $(lineItemRow).find ("input").attr ({
+        "readonly": "readonly",
+        "onfocus": "this.blur();"
+      });
+    } else { // add translated title attributes
+      for (var inputType in x2.quotes.titleTranslations) {
+        var $inputField = $(lineItemRow).find ("." + inputType);
+        if ($inputField.length === 1) {
+          $inputField.attr ("title", x2.quotes.titleTranslations[inputType]);
+        }
+      }
+    }
 
     $('#line-items').append (lineItemRow);
 
-    lineItemRow.find ('.adjustment').formatCurrency (
-      {region: currencyTable[x2.quotes.currency]});
-    lineItemRow.find ('.price').formatCurrency (
-      {'region': currencyTable[x2.quotes.currency]});
-    lineItemRow.find ('.line-item-total').val (0).formatCurrency (
+    if (!x2.quotes.readOnly) { // set up product select menu behavior
+      var productNameInput = $(lineItemRow).find ('input.product-name');
+      $(productNameInput).autocomplete ({
+          source: x2.quotes.productNames,
+          select: selectProductFromAutocomplete,
+          open: function () {
+              if ($('#product-menu').is (":visible")) {
+                  $('#product-menu').hide (); 
+              }
+          }
+      });
+      formatAutocompleteWidget (productNameInput);
+      $('tbody.sortable').sortable ('refresh');
+    }
+    if (!fillLineItem) { // format default input field values 
+      lineItemRow.find ('.adjustment').formatCurrency (
+        {region: currencyTable[x2.quotes.currency]});
+      lineItemRow.find ('.price').formatCurrency (
         {'region': currencyTable[x2.quotes.currency]});
+      lineItemRow.find ('.line-item-total').val (0).formatCurrency (
+        {'region': currencyTable[x2.quotes.currency]});
+      if ($('.quote-table').find ('tr.line-item').length === 1 &&
+          $('.quote-table').find ('tr.adjustment').length > 0) {
+        $('#subtotal-row').show ();
+      }
+    }
 
-    $('input.product-name').autocomplete ({source: x2.quotes.productNames});
-    $('tbody.sortable').sortable ('refresh');
     resetLineNums ();
-
   }
 
   /*
   Insert a new adjustment row into the quotes line item table
   */
-  function addAdjustment (event) {
+  function addAdjustment (fillAdjustment, values /* set if fillAdjustment is true */) {
+    if (!fillAdjustment) {
+        values = { // default values
+            "adjustment-name": ['' /* default input value */, false /* validation error */],
+            "adjustment": ['0', false],
+            "description": ['', false],
+            "adjustment-type": ['totalLinear', false],
+        }
+    }
+
     var lineItemRow = $("<tr>", {'class': 'adjustment'});
 
-    lineItemRow.append ($("<td>", {'class': 'first-cell'}).append (
-      $("<img>", {src: x2.quotes.deleteImageSource, 'class': 'item-delete-button'}),
-      $("<img>", {src: x2.quotes.arrowBothImageSource, 'class': 'handle arrow-both-handle'}))
-    );
+    $firstCell = lineItemRow.append ($("<td>", {'class': 'first-cell'}));
+    if (!x2.quotes.readOnly) {
+      $firstCell.find ('td').append (
+        $("<img>", {src: x2.quotes.deleteImageSource, 'class': 'item-delete-button'}),
+        $("<img>", {src: x2.quotes.arrowBothImageSource, 'class': 'handle arrow-both-handle'})
+      );
+    }
     lineItemRow.append ($("<td>"));
     lineItemRow.append ($("<td>"));
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
-        'class': 'line-item-field product-name',
+        'class': 'line-item-field adjustment-name',
+        maxlength: '100',
+        value: values['adjustment-name'][0],
         name: 'lineitem[' + ++x2.quotes.lineCounter + '][name]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field adjustment',
-        value: '0',
+        value: values['adjustment'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustment]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
         type: 'text', 
         'class': 'line-item-field description',
+        maxlength: '140',
+        value: values['description'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][description]' }))
     );
-    lineItemRow.append ($("<td>", {'class': 'line-item-field'}).append (
+    lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       //$("<span></span>", {'class': 'line-item-total'}),
       $("<input>", {
         type: 'hidden', 
-        'class': 'line-item-field adjustment-type',
-        value: 'totalLinear',
+        'class': 'adjustment-type',
+        value: values['adjustment-type'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustmentType]' }),
       $("<input>", {
         type: 'hidden', 
-        'class': 'line-item-field line-number',
+        'class': 'line-number',
         name: 'lineitem[' + x2.quotes.lineCounter + '][lineNumber]' }))
     );
 
+    if (fillAdjustment) { // add error class if server side validation failed
+      for (var inputType in values) {
+        if (values[inputType][1] === true) {
+          $(lineItemRow).find ("." + inputType).addClass ('error');
+        }
+      }
+    }
+    if (x2.quotes.readOnly) { // make uneditable
+      $(lineItemRow).find ("input").attr ({
+        "readonly": "readonly",
+        "onfocus": "this.blur();"
+      });
+    } else { // add translated title attributes
+      for (var inputType in x2.quotes.titleTranslations) {
+        var $inputField = $(lineItemRow).find ("." + inputType);
+        if ($inputField.length === 1) {
+          $inputField.attr ("title", x2.quotes.titleTranslations[inputType]);
+        }
+      }
+
+    }
+
     $('#adjustments').append (lineItemRow);
 
-    lineItemRow.find ('.adjustment').formatCurrency (
-      {region: currencyTable[x2.quotes.currency]});
-
-    $('tbody.sortable').sortable ('refresh');
-
-    if (++x2.quotes.adjustmentsNum == 1) {
-      updateTotals ();
+    if (!x2.quotes.readOnly) {  
+      $('tbody.sortable').sortable ('refresh');
     }
-    resetLineNums ();
-    if (x2.quotes.adjustmentsNum == 1)
-      $('#product-menu').css ('width', $('input.product-name').css ('width'));
+    if (!fillAdjustment) { // format default input field values
+      lineItemRow.find ('.adjustment').formatCurrency (
+      {region: currencyTable[x2.quotes.currency]});
+      if ($('.quote-table').find ('tr.adjustment').length === 1) {
+        $('#subtotal-row').show ();
+      }
+    }
 
+    resetLineNums ();
+  }
+
+  function selectProductFromAutocomplete (event, ui) {
+    event.preventDefault ();
+    var lineItemName = ui.item.label;
+    $(event.target).val (lineItemName);
+    var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
+    $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
+      formatCurrency ({region: currencyTable[x2.quotes.currency]});
+    validateName (event.target);
+    updateTotals ();
+  }
+
+  function selectProductFromDropDown (event, ui) {
+    event.preventDefault ();
+    var lineItemName = ui.item.text ();
+    $(x2.quotes.clickedLineItem).val (lineItemName);
+    var lineItemPrice = $(x2.quotes.clickedLineItem).attr ('name').replace (/name/, 'price');
+    $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
+      formatCurrency ({region: currencyTable[x2.quotes.currency]});
+    validateName (x2.quotes.clickedLineItem);
+    updateTotals ();
+  }
+
+  function formatAutocompleteWidget (element) {
+      var widget = $(element).autocomplete ("widget");
+      $(widget).css ({
+          "font-size": "10px",
+          "max-height": "16em",
+          "overflow-y": "scroll"
+      });
+      $(window).resize (function () {
+        $(widget).hide ();
+      });
   }
 
   /*
@@ -631,41 +725,38 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   list of existing products
   */
   function setupProductSelectMenu () {
-      if (x2.quotes.productNames) {
-        $('input.product-name').autocomplete ({source: x2.quotes.productNames});
-      }
-
-      $('#product-menu').css ('width', $('input.product-name').css ('width'));
-
-      $('#line-items').on (
-        'click', '.product-select-button', function (event) {
-
-        $('#product-menu').css ('width', $('input.product-name').css ('width'));
-
-        x2.quotes.clickedLineItem = $(this).prev ().prev ();
-        $('#product-menu').show ().position ({
-          my: "left top",
-          at: "left bottom",
-          of: $(this).prev ().prev ()
-        });
-        $(document).one ('click', function () {
-          $('#product-menu').hide ();
-        });
-        return false;
+    if (x2.quotes.productNames) {
+      $('input.product-name').autocomplete ({
+        source: x2.quotes.productNames,
+        select: selectProductFromAutocomplete,
+        open: function () {
+            if ($('#product-menu').is (":visible")) {
+                $('#product-menu').hide (); 
+            }
+        }
       });
+      $('input.product-name').each (function () {
+        formatAutocompleteWidget ($(this));
+      });
+    }
 
-      $('#product-menu').hide ().menu ({select: function (event, ui) {
-        event.preventDefault ();
-        var lineItemName = ui.item.text ();
-        $(x2.quotes.clickedLineItem).val (lineItemName);
-        var lineItemPrice = $(x2.quotes.clickedLineItem).attr ('name').replace (/name/, 'price');
-        $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
-          formatCurrency ({region: currencyTable[x2.quotes.currency]});
-        updateTotals ();
-      }});
+    $('#line-items').on (
+      'click', '.product-select-button', function (event) {
+
+      x2.quotes.clickedLineItem = $(this).prev ().prev ();
+      $('#product-menu').show ().position ({
+        my: "left top",
+        at: "left bottom",
+        of: $(this).prev ().prev ()
+      });
+      $(document).one ('click', function () {
+        $('#product-menu').hide ();
+      });
+      return false;
+    });
+
+    $('#product-menu').hide ().menu ({select: selectProductFromDropDown});
   }
-
-
 
   /*
   Recalculate line item total, the subtotal, and the overall total
@@ -674,14 +765,25 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
     lineTotals = calculateLineTotals ();
     setLineTotals (lineTotals);
     var subtotal = calculateSubtotal ();
-    if (x2.quotes.adjustmentsNum > 0) {
-      $('#subtotal-row').show ();
+    if ($('.quote-table').find ('tr.adjustment').length !== 0 &&
+        $('.quote-table').find ('tr.line-item').length !== 0) {
       setSubtotal (subtotal);
       var total = calculateTotal (subtotal);
       setTotal (total);
     } else {
-      $('#subtotal-row').hide ();
       setTotal (subtotal);
+    }
+
+    if ($('.quote-table').children ().find ('.error').length !== 0) {
+      var calculationErrors = 0
+      $('.quote-table').children ().find ('.error').each (function (index, element) {
+        if (!($(element).hasClass ('product-name') || $(element).hasClass ('adjustment-name'))) {
+          $(element).parents ('.line-item').children ().find ('.line-item-total').val ("");
+          calculationErrors++;
+        }
+      }); 
+      if (calculationErrors > 0) 
+        $('#total, #subtotal').val ("");
     }
   }
 
@@ -724,7 +826,7 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   }
 
   function validateQuantity (element) {
-    if ($(element).val ().match (/^[0-9]*$/)) {
+    if ($(element).val ().match (/^[0-9]+$/)) {
       $(element).removeClass ('error');
       return true;
     } else {
@@ -733,35 +835,123 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
     }
   }
 
-  function setupValidationEvents () {
-      $('#line-items, #adjustments').on ('change', '.line-item-field.adjustment', 
-        function (event) {
+  function validateName (element) {
+    if ($(element).val () === "") {
+      return false;
+    } else {
+      $(element).removeClass ('error');
+      return true;
+    }
+  }
 
-        if (checkAdjustment (event.target)) {
-          updateTotals ();
+  /*
+  Helper function for validateAllInputs. 
+  Parameter:
+    element - a input field in the quotes table
+  Returns:
+    An error message corresponding to the type of the input field of the given element.
+  */
+  function getErrorMessage (element) {
+    var elemClass = $(element).attr ('class');
+    var errorMessage = "";
+    if (elemClass.match (/product-name/)) {
+      errorMessage = "Line item name cannot be blank.";
+    } else if (elemClass.match (/quantity/)) {
+      if ($(element).val () === "") {
+        errorMessage = "Quantity cannot be blank.";
+      } else {
+        errorMessage = "Quantity contains illegal characters.";
+      }
+    } else if (elemClass.match (/price/)) {
+      errorMessage = "Price contains illegal characters.";
+    } else if (elemClass.match (/adjustment-name/)) {
+      errorMessage = "Adjustment Label cannot be blank.";
+    } else if (elemClass.match (/adjustment/)) {
+      var temporaryElem = $("<input>", {val: 50}); 
+      var exampleCurrency = $(temporaryElem).
+        formatCurrency ({region: currencyTable[x2.quotes.currency]}).val ();
+      errorMessage = "Adjustment must be a currency amount or a percentage (e.g. \"" +
+        exampleCurrency + "\" or \"-50%\").";
+    }
+    return errorMessage;
+  }
+
+
+  /*
+  Helper for update button click event
+  */
+  function validateAllInputs () {
+    $('.quote-table').find ('input').each (function (index, element) {
+      if ($(element).val () === "" &&
+          $(element).hasClass ('line-item-field') &&
+          !$(element).hasClass ('description')) {
+        $(element).addClass ("error");
+      }
+    });
+    if ($('.quotes-error-summary').length !== 0) {
+        $('.quotes-error-summary').remove ();
+    }
+    if ($('.quote-table').find ('input').hasClass ("error")) {
+      $('div#quotes-errors').after ($("<div>", {class: "quotes-error-summary"}).append (
+        $("<p> Please fix the following input errors: </p>"),
+        $("<ul>")
+      ));
+      var usedErrorMessages = [];
+      $('.quote-table').find ('.error').each (function (index, element) {
+        var errorMessage = getErrorMessage (element);
+        if ($.inArray (errorMessage, usedErrorMessages) === -1) {
+            usedErrorMessages.push (errorMessage);
+            $('.quotes-error-summary').find ('ul').append ($("<li> " + errorMessage + " </li>"));
         }
       });
-      $('#line-items').on ('change', '.line-item-field.quantity', function (event) {
-        if (validateQuantity (event.target)) {
-          updateTotals ();
+      return false;
+    } else {
+      return true;
+    }
+
+  }
+
+  function setupValidationEvents () {
+    $('#line-items, #adjustments').on ('change', '.line-item-field.adjustment', 
+      function (event) {
+        checkAdjustment (event.target); 
+        updateTotals ();
+    });
+    $('#line-items').on ('change', '.line-item-field.quantity', function (event) {
+      validateQuantity (event.target);
+      updateTotals ();
+    });
+    $('#line-items').on ('change', '.line-item-field.price', function (event) {
+        updateTotals ();
+    });
+    $('#line-items, #adjustments').on (
+      'blur', '.line-item-field.product-name, .line-item-field.adjustment-name', function (event) {
+      validateName (event.target);
+    });
+    if (x2.quotes.view === "default") {
+      consoleLog ('setup');
+      $('#quote-save-button').on ('click', function (event) {
+        if (validateAllInputs ()) {
+          return true;
+        } else {
+          return false;
         }
       });
-      $('#line-items').on ('change', '.line-item-field.price', function (event) {
-          updateTotals ();
-      });
+    }
   }
 
   function deleteAdjustment (element) {
     $(element).parents ('.adjustment').remove ();
-    x2.quotes.adjustmentsNum--;
+    if ($('.quote-table').find ('tr.adjustment').length === 0) 
+      $('#subtotal-row').hide ();
     updateTotals ();
     resetLineNums ();
-    if (x2.quotes.adjustmentsNum == 0)
-      $('#product-menu').css ('width', $('input.product-name').css ('width'));
   }
 
   function deleteLineItem (element) {
     $(element).parents ('.line-item').remove ();
+    if ($('.quote-table').find ('tr.line-item').length === 0) 
+      $('#subtotal-row').hide ();
     updateTotals ();
     resetLineNums ();
   }
@@ -769,15 +959,16 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
   function resetLineNums () {
     var lineNum = 1;
     $('tr.line-item').each (function (index, element) {
-      //console.log ('loop 1 ' + lineNum);
       $(element).find ('.line-number').val (lineNum++);
     });
     $('tr.adjustment').each (function (index, element) {
-      //console.log ('loop 2 ' + lineNum);
       $(element).find ('.line-number').val (lineNum++);
     });
   }
 
+  /*
+  Used to prevent row width from collapsing when being sorted.
+  */
   function preserveRowWidth (event, sortedElement) {
     sortedElement.children ().each (function (index, element) {
       $(element).width ($(element).width ());
@@ -785,45 +976,73 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
     return sortedElement;
   }
 
+  /*
+  Populate quotes table with existing line items and adjustments
+  */
+  function populateQuotesTable () {
+    for (var i in x2.quotes.productLines) {
+      addLineItem (true, x2.quotes.productLines[i]);
+    }
+    for (var i in x2.quotes.adjustmentLines) {
+      addAdjustment (true, x2.quotes.adjustmentLines[i]);
+    }
+  }
+
   function setupEditingBehavior () {
-      $(window).resize (function () {
+    $(window).resize (function () {
+      $('#product-menu').hide ();
+    });
+
+    setupProductSelectMenu ();
+    
+    $('tbody.sortable').sortable ({
+      handle: ".handle", 
+      start: function (event, ui) {
         $('#product-menu').hide ();
-      });
+        if ($(ui.item).hasClass ("line-item")) {
+          var widget = $(ui.item).find ("input.product-name").autocomplete ("widget");
+          if (widget)
+              $(widget).hide ();
+        }
+      },
+      stop: resetLineNums,
+      helper: preserveRowWidth
+    });
+    //$('tbody.sortable').disableSelection ();
 
-      $('tbody.sortable').sortable ({
-        handle: ".handle", 
-        start: function () {
-          $('#product-menu').hide ();
-        },
-        stop: resetLineNums,
-        helper: preserveRowWidth
-      });
-      //$('tbody.sortable').disableSelection ();
+    $('.add-adjustment-button').click (function () {addAdjustment (false);});
+    $('.add-line-item-button').click (function (){addLineItem (false);});
 
-      $('.add-adjustment-button').click (addAdjustment);
-      $('.add-line-item-button').click (addLineItem);
+    $('#adjustments').on ('click', '.item-delete-button', function (event) {
+      deleteAdjustment (event.target);
+    });
+    $('#line-items').on ('click', '.item-delete-button', function (event) {
+      deleteLineItem (event.target);
+    });
 
-      $('#adjustments').on ('click', '.item-delete-button', function (event) {
-        deleteAdjustment (event.target);
-      });
-      $('#line-items').on ('click', '.item-delete-button', function (event) {
-        deleteLineItem (event.target);
-      });
+    setupValidationEvents ();
 
-      // add a line item if this is the create view
-      if (x2.quotes.lineCounter === 0) 
-        addLineItem ();
+    // add a line item if this is the create view
+    if (x2.quotes.productLines.length === 0 && 
+        x2.quotes.adjustmentLines.length === 0) { 
+      addLineItem ();
+    } else { 
+      populateQuotesTable ();
+    }
 
-      setupProductSelectMenu ();
-      setupValidationEvents ();
   }
 
 
   $(function () {
     if (x2.quotes.readOnly) {
-
+      populateQuotesTable ();
     } else {
       setupEditingBehavior ();
+    }
+
+    if ($('.quote-table').find ('tr.adjustment').length === 0 || 
+        $('.quote-table').find ('tr.line-item').length === 0) {
+      $('#subtotal-row').hide ();
     }
 
     updateTotals ();

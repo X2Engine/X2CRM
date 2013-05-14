@@ -64,9 +64,11 @@ class X2FlowCreateEvent extends X2FlowAction {
 		$event = new Events;
 		$notif = new Notification;
 		
-		// $event->user = $options['user'];
+		// $event->user = $this->parseOption('user'];
 		
-		if($options['type'] === 'auto') {
+		$type = $this->parseOption('type',$params);
+		
+		if($type === 'auto') {
 			if(!isset($params['model']))
 				return false;
 			$notif->modelType = get_class($params['model']);
@@ -77,17 +79,19 @@ class X2FlowCreateEvent extends X2FlowAction {
 			$event->associationId = $params['model']->id;
 			$event->type = $this->getEventType();
 			$event->visibility = $params['model']->visibility;
-			// $event->user = $options['user'];
+			// $event->user = $this->parseOption('user',$params);
 		} else {
+			$text = $this->parseOption('text',$params);
+			
 			$notif->type = 'custom';
-			$notif->text = $options['text'];
+			$notif->text = $text;
 			
 			$event->type = 'feed';
-			$event->subtype = $options['type'];
-			$event->text = $options['text'];
+			$event->subtype = $type;
+			$event->text = $text;
 			$event->user = 'admin';
 		}
-		if(!$options['createNotif'])
+		if(!$this->parseOption('createNotif',$params))
 			$notif->save();
 		$event->save();
 	}

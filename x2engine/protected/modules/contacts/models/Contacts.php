@@ -324,7 +324,7 @@ class Contacts extends X2Model {
 	public function searchNewContacts() {
 		$criteria=new CDbCriteria;
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
-		$condition = 'createDate > '.mktime(0,0,0);
+		$condition = 't.createDate > '.mktime(0,0,0);
 		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
 		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
 

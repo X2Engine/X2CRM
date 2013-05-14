@@ -570,11 +570,8 @@ class ActionsController extends x2base {
 		$model=$this->loadModel($id);
 		if(isset($_POST['Actions'])) {
 			$temp=$model->attributes;
-			foreach($model->attributes as $field=>$value){
-			    if(isset($_POST['Actions'][$field])){
-			        $model->$field=$_POST['Actions'][$field];
-			    }
-			}
+			$model->setX2Fields($_POST['Actions']);
+            $model->actionDescription=$_POST['Actions']['actionDescription'];
 
             $model->dueDate = Formatter::parseDateTime($model->dueDate);
 			if($model->completeDate){

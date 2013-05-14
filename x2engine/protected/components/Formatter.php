@@ -149,11 +149,11 @@ class Formatter {
 	 */
 	public static function truncateText($str, $length = 30){
 
-		if(strlen($str) > $length - 3){
+		if(mb_strlen($str,'UTF-8') > $length - 3){
 			if($length < 3)
 				$str = '';
 			else
-				$str = substr($str, 0, $length - 3);
+				$str = mb_substr($str, 0, $length - 3,'UTF-8');
 			$str .= '...';
 		}
 		return $str;

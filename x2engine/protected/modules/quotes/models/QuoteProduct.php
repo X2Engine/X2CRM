@@ -59,6 +59,7 @@ class QuoteProduct extends CActiveRecord {
 		return array(
 			array('quantity,lineNumber,productId', 'numerical', 'integerOnly' => true),
 			array('price,adjustment,total','numerical','allowEmpty'=>true),
+			array('name','required'),
 			array('name,type,currency', 'length', 'max' => 100),
 			array('description','length','max'=>140),
 			array('adjustmentType', 'in', 'range' => array('percent', 'linear', 'totalPercent', 'totalLinear')),

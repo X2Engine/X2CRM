@@ -60,29 +60,32 @@ class X2FlowEmail extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
+		// die(var_dump(array_keys($params)));
 		$eml = new InlineEmail;
-		$options = $this->config['options'];
+		$options = &$this->config['options'];
 		
-		if(isset($options['cc']))
-			$eml->cc = $options['cc'];
-		if(isset($options['bcc']))
-			$eml->bcc = $options['bcc'];
-		$eml->to = $options['to'];
+		if(isset($options['cc']['value']))
+			$eml->cc = $this->parseOption('cc',$params);
+		if(isset($options['bcc']['value']))
+			$eml->bcc = $this->parseOption('bcc',$params);
+		$eml->to = $this->parseOption('to',$params);
 		
-		$eml->from = array('address'=>$options['from'],'name'=>'');
-		$eml->subject = $options['subject'];
+		$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
+		$eml->subject = $this->parseOption('subject',$params);
 		
-		if(isset($options['body']) && !empty($options['body'])) {	// "body" option (deliberately-entered content) takes precedence over template
+		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	// "body" option (deliberately-entered content) takes precedence over template
 			$eml->scenario = 'custom';
-			$eml->message = InlineEmail::emptyBody($options['body']);
+			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
 			$eml->prepareBody();
 			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
-		} elseif(!empty($options['template'])) {
+		} elseif(!empty($options['template']['value'])) {
 			$eml->scenario = 'template';
-			$eml->template = $options['template'];
+			$eml->template = $this->parseOption('template',$params);
 			$eml->prepareBody();
 		}
-		return $eml->send(false);
+		$result = $eml->send(false);
+		// die(var_dump($result));
+		return isset($result['code']) && $result['code'] == 200;
 	}
 }
 

@@ -39,19 +39,7 @@
  *
  * @package X2CRM.components.x2flow
  */
-abstract class X2FlowTrigger {
-	/**
-	 * $var string the text label for this action
-	 */
-	public $label = '';
-	/**
-	 * $var string the description of this action
-	 */
-	public $info = '';
-	/**
-	 * $var array the config parameters for this trigger
-	 */
-	public $config = '';
+abstract class X2FlowTrigger extends X2FlowItem {
 	/**
 	 * $var string the type of notification to create
 	 */
@@ -60,11 +48,6 @@ abstract class X2FlowTrigger {
 	 * $var string the type of event to create
 	 */
 	public $eventType = '';
-
-	/**
-	 * @return array the param rules.
-	 */
-	abstract public function paramRules();
 
 	/**
 	 * @return array all standard comparison operators
@@ -205,53 +188,63 @@ abstract class X2FlowTrigger {
 	/**
 	 * Checks if all all the params are ship-shape
 	 */
-	public function validateRules(&$params) {
-		$rules = $this->paramRules();
-		if(!isset($rules['options'],$this->config['options']))
+	public function validate(&$params=array()) {
+		$paramRules = $this->paramRules();
+		if(!isset($paramRules['options'],$this->config['options']))
 			return false;
-		$options = &$this->config['options'];
+		$config = &$this->config['options'];
 		
-		if(isset($rules['modelClass'])) {
-			if(isset($params['model']) && !is_object($params['model']) || !($params['model'] instanceof X2Model))	// validate model parameter
-				return false;
-			$modelClass = $rules['modelClass'];
+		if(isset($paramRules['modelClass'])) {
+			$modelClass = $paramRules['modelClass'];
 			if($modelClass === 'modelClass') {
-				if(isset($options['modelClass']))
-					$modelClass = $options['modelClass'];
+				if(isset($config['modelClass']))
+					$modelClass = $config['modelClass'];
 				else
 					return false;
 			}
 			if($modelClass !== get_class($params['model']))
 				return false;
 		}
-		
-		foreach($rules['options'] as &$opt) {	// loop through options defined in paramRules() and make sure they're all set in $config
-			if(!isset($opt['name']) || isset($opt['optional']) && $opt['optional'])		// don't worry about unnamed or optional params
-				continue;
-			
-			if(!isset($options[$opt['name']]))
-				return false;
-		}
-		return true;
+		return $this->validateOptions($paramRules,$params);
 	}
 
 	/**
-	 * Tests this trigger's conditions against the provided params.
+	 * Default conidition processor for main config panel. Checks each option against the key in $params of the same name, 
+	 * using an operator if provided (defaults to "=")
 	 * @return boolean the result of the test
 	 */
 	public function check(&$params) {
+		foreach($this->config['options'] as &$option) {
+			if(!isset($option['name']) || $option['name'] === 'modelClass')	// modelClass is a special case, ignore it
+				continue;
+			
+			if($option['optional'] && ($option['value'] === null || $option['value'] === ''))	// if it's optional and blank, forget about it
+				continue;
+			
+			$value = $option['value'];
+			if(isset($option['type']))
+				$value = X2Flow::parseValue($value,$option['type'],$params);
+			
+			if(!$this->evalComparison($params[$option['name']],$option['optional'],$value))
+				return false;
+		}
+		
+		return $this->checkConditions($params);
+	}
+	/**
+	 * Tests this trigger's conditions against the provided params.
+	 * @return boolean the result of the tests
+	 */
+	public function checkConditions(&$params) {
 		if(isset($this->config['conditions'])){
 			foreach($this->config['conditions'] as &$condition) {
-
 				if(!isset($condition['type']))
 					continue;
-
 				$required = isset($condition['required']);
-
+				
 				if(isset($condition['name']) && $required && !isset($params[$condition['name']]))	// required param missing
 					return false;
-
-
+				
 				if(array_key_exists($condition['type'],self::$genericConditions)) {
 					if(!self::checkCondition($condition,$params))
 						return false;
@@ -293,10 +286,10 @@ abstract class X2FlowTrigger {
 					return !isset($oldAttributes[$attr]) || $model->getAttribute($attr) != $oldAttributes[$attr];
 				}
 				
-				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$model));
+				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$params));
 				
 			case 'current_user':
-				return self::evalComparison(Yii::app()->user->getName(),$operator,X2Flow::parseValue($value,'assignment',$model));
+				return self::evalComparison(Yii::app()->user->getName(),$operator,X2Flow::parseValue($value,'assignment',$params));
 				
 			case 'month':
 				return self::evalComparison((int)date('n'),$operator,$value);	// jan = 1, dec = 12
@@ -308,15 +301,15 @@ abstract class X2FlowTrigger {
 				return self::evalComparison((int)date('N'),$operator,$value);	// monday = 1, sunday = 7
 			
 			case 'time_of_day':	// - mktime(0,0,0)
-				return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'time',$model));	// seconds since midnight
+				return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'time',$params));	// seconds since midnight
 				
 			// case 'current_local_time':
 				
 			case 'current_time':
-				return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'dateTime',$model));
+				return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'dateTime',$params));
 				
 			case 'user_active':
-				return CActiveRecord::model('Session')->exists('user=:user AND status=1',array(':user'=>X2Flow::parseValue($value,'assignment',$model)));
+				return CActiveRecord::model('Session')->exists('user=:user AND status=1',array(':user'=>X2Flow::parseValue($value,'assignment',$params)));
 				
 				
 			case 'on_list':
@@ -674,19 +667,6 @@ abstract class X2FlowTrigger {
 	// public static function checkCondition($vars) {
 	// }
 
-
-	/**
-	 * Gets the param rules for the specified trigger type
-	 * @param string $type name of action class
-	 * @return mixed an array of param rules, or false if the trigger doesn't exist
-	 */
-	public static function getParamRules($type) {
-		$trigger = self::create(array('type'=>$type));
-		if($trigger !== null)
-			return $trigger->paramRules();
-		return false;
-	}
-
 	public static function getTriggerTypes() {
 		$types = array();
 		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
@@ -697,18 +677,5 @@ abstract class X2FlowTrigger {
 				$types[get_class($class)] = $class->title;
 		}
 		return $types;
-	}
-
-	/**
-	 * Instantiates a trigger object specified by $config
-	 * @return mixed a class extending X2FlowTrigger with the specified name
-	 */
-	public static function create($config) {
-		if(isset($config['type']) && class_exists($config['type'])) {
-			$trigger = new $config['type'];
-			$trigger->config = $config;
-			return $trigger;
-		}
-		return null;
 	}
 }

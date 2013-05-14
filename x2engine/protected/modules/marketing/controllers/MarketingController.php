@@ -687,7 +687,7 @@ class MarketingController extends x2base {
 					$emailBody); 
 				
 				//replace any {attribute} tags with the contact attribute value
-				$emailBody = Docs::replaceVariables($emailBody,$contact,array('trackingKey'=>$uniqueId));	// use the campaign key, not the general key
+				$emailBody = Docs::replaceVariables($emailBody,$contact,array('{trackingKey}'=>$uniqueId));	// use the campaign key, not the general key
 				
 				//add a link to transparent img to track when email was viewed
 				$emailBody .= '<img src="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';

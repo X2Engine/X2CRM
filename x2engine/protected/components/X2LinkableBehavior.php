@@ -34,11 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
- 
+
 /**
  * CModelBehavior class for route lookups on classes.
- * 
- * X2LinkableBehavior is a CModelBehavior which allows consistent lookup of Yii 
+ *
+ * X2LinkableBehavior is a CModelBehavior which allows consistent lookup of Yii
  * routes, HTML links and autcomplete sources.
  *
  * @package X2CRM.components
@@ -46,7 +46,7 @@
  * @property string $baseRoute The default module/controller path for this record's module
  * @property string $viewRoute The default action to view this record
  * @property string $autoCompleteSource The action to user for autocomplete data
- */ 
+ */
 class X2LinkableBehavior extends CActiveRecordBehavior {
 
 	public $module;
@@ -54,40 +54,40 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	public $viewRoute;
 	public $autoCompleteSource;
 	public $icon;
-	
+
 	/**
 	 * Attaches the behavior object to the model.
-	 * 
+	 *
 	 * @param string $owner The component to which the behavior will be applied
 	 */
 	public function attach($owner) {
-	
+
 		parent::attach($owner);
-		
+
 		if(!isset($this->module)) {
 			if(isset($this->baseRoute))
 				$this->module = preg_replace('/\/.*/','',preg_replace('/^\//','',$this->baseRoute));	// try to extract it from $baseRoute (old custom modules)
 			else
 				$this->module = strtolower(get_class($this->owner)); 	// assume the model name is the same as the controller
 		}
-		
+
 		if(!isset($this->baseRoute))
 			$this->baseRoute = '/'.$this->module;
-			
+
 		if(!isset($this->viewRoute))
 			$this->viewRoute = $this->baseRoute;
-			
+
 		if(!isset($this->autoCompleteSource))
 			$this->autoCompleteSource = $this->baseRoute.'/getItems';
 	}
 
 	/**
 	 * Generates a link to the view of the object.
-	 * 
+	 *
 	 * @return string a link to the model
 	 */
 	public function getLink() {
-	
+
 		$tag = '<span>';
 		// if(!empty($this->icon))
 			// $tag = '<span style="background-image:url('.Yii::app()->theme->baseUrl.'/images/'.$this->icon.');">';
@@ -109,10 +109,10 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 		else
 			return $this->owner->name;
     }
-	
+
 	/**
 	 * Accessor method for $autoCompleteSource
-	 * 
+	 *
 	 * @return string $autoCompleteSource
 	 */
 	public function getAutoCompleteSource() {

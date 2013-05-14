@@ -42,7 +42,7 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (105,	'Sales Stage',		'{"Working":"Working","Won":"Won","Lost":"Lost"}'),
 (106,	'Quote Status',		'{"Draft":"Draft","Presented":"Presented","Issued":"Issued","Won":"Won"}'),
 (107,	'Campaign Type',	'{"Email":"Email","Call List":"Call List","Physical Mail":"Physical Mail"}'),
-(108,	'Case Impact', 		'{"1 - Severe":"1 - Severe"," 2 - Critical":" 2 - Critical","3 - Moderate":"3 - Moderate","4 - Minor":"4 - Minor"}'),
+(108,	'Case Impact', 		'{"1 - Severe":"1 - Severe","2 - Critical":"2 - Critical","3 - Moderate":"3 - Moderate","4 - Minor":"4 - Minor"}'),
 (109,	'Case Status', 		'{"New":"New","WIP":"WIP","Waiting for response":"Waiting for response","Needs more info":"Needs more info","Escalated":"Escalated","Reopened":"Reopened","Work around provided, waiting for fix":"Work around provided, waiting for fix","Program Manager investigation":"Program Manager investigation","Closed - Resolved":"Closed - Resolved","Closed - No Response":"Closed - No Response"}'),
 (110,	'Case Main Issue',	'{"Hardware":"Hardware","Software":"Software","Internet Connection":"Internet Connection","LMS":"LMS","General Request":"General Request"}'),
 (111,	'Case Sub Issue', 	'{"Laptop":"Laptop","Desktop":"Desktop","WiFi":"WiFi","Loss Connection":"Loss Connection","Windows OS":"Windows OS","MS Office":"MS Office","Class Access":"Class Access","Lost Password":"Lost Password","Download\\/Upload":"Download\\/Upload","Other":"Other"}'),

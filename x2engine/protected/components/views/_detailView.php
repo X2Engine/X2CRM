@@ -76,13 +76,13 @@ if(method_exists($model,'getFields')) {
 }
 if($layoutData === false) {
 	$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultView'=>1));
-	
+
 	if(isset($layout)) {
 		$layoutData = json_decode($layout->layout,true);
 		Yii::app()->cache->set('form_'.$modelName,$layoutData,0);	// cache the data
 	}
 }
-	
+
 if($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 ?>
 <div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
@@ -113,16 +113,16 @@ foreach($layoutData['sections'] as &$section) {
 	if(!isset($section['collapsible'])) $section['collapsible'] = false;
 	if(!isset($section['rows'])) $section['rows'] = array();
 	if(!isset($formSettings[$i])) $formSettings[$i] = 1;
-	
+
 	$collapsed = !$formSettings[$i] && $section['collapsible'];
-	
+
 	echo '<div class="formSection';
 	if($section['collapsible'])
 		echo ' collapsible';
 	if(!$collapsed)
 		echo ' showSection';
 	echo '">';
-	
+
 	if($section['collapsible'] || !empty($section['title'])) {
 		echo '<div class="formSectionHeader">';
 		if($section['collapsible']) {
@@ -138,23 +138,23 @@ foreach($layoutData['sections'] as &$section) {
 		if($collapsed)
 			echo ' style="display:none;"';
 		echo '><table>';
-	
+
 		foreach($section['rows'] as &$row) {
 			echo '<tr class="formSectionRow">';
 			if(isset($row['cols'])) {
 				foreach($row['cols'] as &$col) {
-				
+
 					$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
 					echo "<td$width>";
 					if(isset($col['items'])) {
 						foreach($col['items'] as &$item) {
-							
-							
+
+
 							if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
 								$fieldName = preg_replace('/^formItem_/u','',$item['name']);
 								if(isset($fields[$fieldName])) {
 									$field = $fields[$fieldName];
-									
+
 										if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
 											unset($item);
 											echo '</div></div>';
@@ -177,33 +177,33 @@ foreach($layoutData['sections'] as &$section) {
 										// echo '</div></div>';
 										// continue;
 									// }
-									
+
 									$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
 									switch($labelType) {
 										case 'inline':	$labelClass = 'inlineLabel'; break;
 										case 'none':	$labelClass = 'noLabel'; break;
 										case 'left':	$labelClass = 'leftLabel'; break;
-										case 'top': 
+										case 'top':
 										default:		$labelClass = 'topLabel';
 									}
-									
+
 									echo "<div id=\"{$field->modelName}_{$field->fieldName}_field\" class=\"formItem $labelClass\">";
 									//echo '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
 									echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
-										
-										
-										
+
+
+
 									$class = 'formInputBox';
 									$style = 'width:'.$item['width'].'px;';
 									if($field->type == 'text') {
 										$class .= ' textBox';
 										$style .= 'min-height:'.$item['height'].'px;';
 									}
-										
+
 									// if($field->type == 'text')
 										// $style .= 'min-height:'.$item['height'].'px;';
 									echo '<div class="',$class,'" style="',$style,'">';
-									
+
 									if(isset($specialFields[$fieldName]))
 										$fieldHtml = $specialFields[$fieldName];
 									else

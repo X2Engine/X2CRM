@@ -166,6 +166,14 @@ if (!extension_loaded("mbstring")) {
 if (!extension_loaded('json')) {
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/function.json-decode.php">json extension</a>: ' . $rbm;
 }
+// Miscellaneous functions:
+$requiredFunctions = array(
+	'mb_regex_encoding'
+);
+foreach($requiredFunctions as $function) {
+	if(!function_exists($function))
+		$reqMessages[3][] = installer_t('The following required PHP function is missing or disabled:'). " $function";
+}
 
 ///////////////////////////////////////////////////////////
 // MEDIUM-PRIORITY: IMPORTANT FUNCTIONALITY REQUIREMENTS //

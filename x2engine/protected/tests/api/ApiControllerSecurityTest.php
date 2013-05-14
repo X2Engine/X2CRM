@@ -70,8 +70,10 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		'{params}' => '',
 	);
 
+	private $_urlFormat = 'api/{action}/model/{model}{params}';
+
 	public function urlFormat() {
-		return 'api/{action}/model/{model}{params}';
+		return $this->_urlFormat;
 	}
 	
 	public function testAuthenticate() {
@@ -114,10 +116,33 @@ class ApiControllerSecurityTest extends CURLTestCase {
 //		file_put_contents('api_response.html',$response);
 		$this->assertEquals(403,curl_getinfo($ch,CURLINFO_HTTP_CODE));
 		$this->assertRegExp('/cannot use API; userKey not set/',$response);
+
+		// Test access permissions:
+		$origUrlFormat = $this->_urlFormat;
+		$param = array();
+		$this->_urlFormat = 'api/checkPermissions/action/{action}/username/{username}/api/1';
+		$urlParam['{username}'] = 'testuser';
+
+		$auth = Yii::app()->authManager;
+		$roles = RoleToUser::model()->findAllByAttributes(array('userId' => $this->users('testUser')->id));		
+		foreach(array('Contacts','Actions','Quotes','Opportunities','Accounts','Products') as $module){
+			foreach(array('Create','Update','View','Delete') as $action) {
+				// Get response:
+				$urlParam['{action}'] = $module.$action;
+				$ch = $this->getCurlHandle($urlParam,$param);
+				$apiAccess = curl_exec($ch) == 'true';
+				$access = false;
+				foreach ($roles as $role) {
+					$access = $access || $auth->checkAccess($urlParam['{action}'], $role->roleId);
+				}
+				$this->assertEquals($access,$apiAccess,'Failed asserting consistency between API-reported permissions and internal app permissions.');
+			}
+		}
+		$this->_urlFormat = $origUrlFormat;
 	}
 	
 	public function testValidModel() {
-		$alias200 = array(400,401,403,500,501);
+		$alias200 = array(400,401,403,404,500,501);
 		$urlParam = $this->urlParam;
 		$urlParam['{action}'] = 'create';
 		
@@ -143,6 +168,34 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
 		$this->assertEquals(403, curl_getinfo($ch,CURLINFO_HTTP_CODE));
+	}
+
+	public function testListUsers() {
+		$this->_urlFormat = 'api/listUsers';
+		$alias200 = array(400,401,403,404,500,501);
+		$urlParam = array();
+		// First test retrieving user list with nonprivileged user:
+		$ch = $this->getCurlHandle($urlParam,$this->param);
+		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
+		$list = CJSON::decode(curl_exec($ch));
+		$this->assertEquals('array',gettype($list),'Failed asserting API responded with valid JSON');
+		foreach($list as $user) {
+			foreach(array('password','userKey') as $restrictedField) {
+				$this->assertArrayNotHasKey($restrictedField, $user, "Failed asserting non-priveleged user cannot see $restrictedField.");
+			}
+		}
+		// Now test getting with admin user (WARNING: will respond with API keys!)
+		$this->param['user'] = 'admin';
+		$this->param['userKey'] = '21232f297a57a5a743894a0e4a801fc3';
+		$ch = $this->getCurlHandle($urlParam,$this->param);
+		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
+		$list = CJSON::decode(curl_exec($ch));
+		$this->assertEquals('array',gettype($list),'Failed asserting API responded with valid JSON');
+		foreach($list as $user) {
+			foreach(array('password','userKey') as $restrictedField) {
+				$this->assertArrayHasKey($restrictedField, $user, "Failed asserting admin can see $restrictedField.");
+			}
+		}
 	}
 
 }

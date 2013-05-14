@@ -56,7 +56,7 @@ class X2FlowRecordListAdd extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
-		$list = CActiveRecord::model('X2List')->findByPk($this->config['options']['listId']);
+		$list = CActiveRecord::model('X2List')->findByPk($this->parseOption('listId',$params));
 		if($list !== null && $list->modelName === get_class($params['model']))
 			return $list->addIds($params['model']->id);
 		else

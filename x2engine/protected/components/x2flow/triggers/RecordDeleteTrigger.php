@@ -47,7 +47,6 @@ class RecordDeleteTrigger extends X2FlowTrigger {
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 1,
 			'modelClass' => 'modelClass',
 			'options' => array(
 				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Model::getModelTypes(true)),

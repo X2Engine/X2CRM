@@ -41,7 +41,7 @@
  */
 class RecordCreateTrigger extends X2FlowTrigger {
 	public $title = 'Record Created';
-	public $info = '';
+	public $info = 'Triggers when a new record of the specified type is created.';
 	
 	public function paramRules() {
 		return array(

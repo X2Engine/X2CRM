@@ -75,26 +75,26 @@ class Accounts extends X2Model {
 	/**
 	 * Responds to {@link CModel::onBeforeValidate} event.
 	 * Fixes the revenue field before validating.
-	 * 
+	 *
 	 * @return boolean whether validation should be executed. Defaults to true.
 	 */
 	public function beforeValidate() {
 		$this->annualRevenue = x2base::parseCurrency($this->annualRevenue,false);
 		return parent::beforeValidate();
 	}
-	
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public static function getNames(){
-	
+
 		$acctNames = array();
 		foreach(Yii::app()->db->createCommand()->select('id,name')->from('x2_accounts')->order('name ASC')->queryAll(false) as $row)
 			$acctNames[$row[0]] = $row[1];
-		
+
 		return $acctNames;
-	
+
 		// $arr=Accounts::model()->findAll();
 		// $names=array('0'=>'None');
 		// foreach($arr as $account){
@@ -105,10 +105,9 @@ class Accounts extends X2Model {
 
 	public static function parseUsers($arr){
 		$str="";
-		foreach($arr as $user){
-			 $str.=$user.", ";
-		}
-		$str=substr($str,0,strlen($str)-2);
+        if(is_array($arr)){
+            $str=implode(', ',$arr);
+        }
 		return $str;
 	}
 
@@ -118,7 +117,7 @@ class Accounts extends X2Model {
 			$str.=$user.", ";
 		}
 		$str=substr($str,0,strlen($str)-2);
-						
+
 		return $str;
 	}
 
@@ -148,7 +147,7 @@ class Accounts extends X2Model {
 				unset($arr[$contact]);
 			}
 		}
-		
+
 		return $arr;
 	}
 
@@ -166,12 +165,12 @@ class Accounts extends X2Model {
 	}
 
 	public static function editUsersInverse($arr) {
-		
+
 		$data=array();
-		
+
 		foreach($arr as $username)
 			$data[] = CActiveRecord::model('User')->findByAttributes(array('username'=>$username));
-		
+
 		$temp=array();
 			foreach($data as $item){
 				if(isset($item))
@@ -182,13 +181,13 @@ class Accounts extends X2Model {
 
 	public static function editContactsInverse($arr) {
 		$data=array();
-		
+
 		foreach($arr as $id){
 			if($id!='')
 				$data[]=CActiveRecord::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
-		
+
 		foreach($data as $item){
 			$temp[$item->id]=$item->firstName.' '.$item->lastName;
 		}
@@ -196,41 +195,41 @@ class Accounts extends X2Model {
 	}
 
 	public static function getAvailableContacts($accountId = 0) {
-	
+
 		$availableContacts = array();
-		
+
 		$criteria = new CDbCriteria;
 		$criteria->addCondition("accountId='$accountId'");
 		$criteria->addCondition(array("accountId=''"),'OR');
-		
-		
+
+
 		$contactRecords = CActiveRecord::model('Contacts')->findAll($criteria);
 		foreach($contactRecords as $record)
 			$availableContacts[$record->id] = $record->name;
 
 		return $availableContacts;
 	}
-		
-	
+
+
 	public static function getContacts($accountId) {
 		$contacts = array();
 		$contactRecords = CActiveRecord::model('Contacts')->findAllByAttributes(array('accountId'=>$accountId));
 		if(!isset($contactRecords))
 			return array();
-		
+
 		foreach($contactRecords as $record)
 			$contacts[$record->id] = $record->name;
-		
+
 		return $contacts;
 	}
-	
+
 	public static function setContacts($contactIds,$accountId) {
-	
+
 		$account = CActiveRecord::model('Accounts')->findByPk($accountId);
-		
+
 		if(!isset($account))
 			return false;
-		
+
 		// get all contacts currently associated
 		$oldContacts = CActiveRecord::model('Contacts')->findAllByAttributes(array('accountId'=>$accountId));
 		foreach($oldContacts as $contact) {
@@ -240,7 +239,7 @@ class Accounts extends X2Model {
 				$contact->save();
 			}
 		}
-		
+
 		// now set association for all contacts in the list
 		foreach($contactIds as $id) {
 			$contactRecord = CActiveRecord::model('Contacts')->findByPk($id);
@@ -252,14 +251,14 @@ class Accounts extends X2Model {
 	}
 
 	public function search() {
-		$criteria = new CDbCriteria;		
+		$criteria = new CDbCriteria;
 		return $this->searchBase($criteria);
 	}
-    
+
     /**
 	 * Base search method for all data providers.
 	 * Sets up record-level security checks.
-	 * 
+	 *
 	 * @param CDbCriteria $criteria starting criteria for this search
 	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
 	 */
@@ -271,5 +270,5 @@ class Accounts extends X2Model {
 
 		return parent::searchBase($criteria);
 	}
- 
+
 }

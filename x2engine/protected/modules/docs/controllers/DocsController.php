@@ -130,12 +130,22 @@ class DocsController extends x2base {
 	 * Creates a new doc.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate() {
+	public function actionCreate($duplicate = false) {
 		$users = User::getNames();
 		unset($users['Anyone']);
 		unset($users['admin']);
 		unset($users[Yii::app()->user->getName()]);
 		$model = new Docs;
+
+		if($duplicate) {
+			$copiedModel = Docs::model()->findByPk($duplicate);
+			if(!empty($copiedModel)) {
+				foreach($copiedModel->attributes as $name=>$value)
+					if($name != 'id')
+						$model->$name = $value;
+			}
+			$model->name .= ' ('.Yii::t('docs','copy').')';
+		}
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -147,7 +157,8 @@ class DocsController extends x2base {
 
 			$arr = $model->editPermissions;
 			if(isset($arr))
-				$model->editPermissions = Accounts::parseUsers($arr);
+				if(is_array($arr))
+					$model->editPermissions = Accounts::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();

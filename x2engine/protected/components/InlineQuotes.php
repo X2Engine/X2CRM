@@ -109,12 +109,8 @@ class InlineQuotes extends X2Widget {
 		}
 		
 		var sendingQuote = false;
-		function sendQuoteEmail(quote) {  // fill the inline email form with some info about a quote: name, table of products, description
-			var notes = ".'"\n"'." + quote['notes']['label'] + ".'"\n"'." + quote['notes']['notes'] + ".'"\n"'.";
-			toggleEmailForm();
-			window.inlineEmailEditor.setData('' + quote['name'] + quote['products'] + notes);
-			$('#InlineEmail_subject').val(quote['subject']);
-			$('#email-template').change();
+		function sendQuoteEmail(quoteId) {  // fill the inline email form with some info about a quote: name, table of products, description
+			quickQuote.setInlineEmail(quoteId);
 		    sendingQuote = true; // stop quote mini-module from stealing focus away from email
 		}
 		", CClientScript::POS_HEAD);

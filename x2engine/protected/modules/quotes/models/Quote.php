@@ -280,11 +280,6 @@ class Quote extends X2Model {
 			}
 			$lineItem->price = Fields::strToNumeric($lineItem->price,'currency',$curSym);
 			$lineItem->total = Fields::strToNumeric($lineItem->total,'currency',$curSym);
-			// Final clean-up: set to zero everything remaining that isn't numeric but should be:
-			foreach(array('price','adjustment','quantity') as $attr) {
-				if(!is_numeric($lineItem->$attr))
-					$lineItem->$attr = 0;
-			}
 		}
 
 		// Validate
@@ -310,15 +305,23 @@ class Quote extends X2Model {
 			$this->saveLineItems();
 	}
 
+	/**
+	 * Saves line item set changes to the database.
+	 */
 	public function saveLineItems(){
 		// Insert/update new/existing items:
-		foreach($this->_lineItems as $item) {
-			$item->quoteId = $this->id;
-			$item->save();
+		if(isset($this->_lineItems)){
+			foreach($this->_lineItems as $item){
+				$item->quoteId = $this->id;
+				$item->save();
+			}
 		}
-		// Delete all deleted items:
-		foreach($this->_deleteLineItems as $item)
-			$item->delete();
+		if(isset($this->_deleteLineItems)) {
+			// Delete all deleted items:
+			foreach($this->_deleteLineItems as $item)
+				$item->delete();
+			$this->_deleteLineItems = null;
+		}
 	}
 
 	/**
@@ -360,20 +363,24 @@ class Quote extends X2Model {
 		$pad = 4;
 		// Declare styles
 		$tableStyle = 'border-collapse: collapse; width: 100%;';
-		$thStyle = 'border: 1px solid black; background:#eee;';
+		$thStyle = 'padding: 5px; border: 1px solid black; background:#eee;';
 		$thProductStyle = $thStyle;
 		if(!$emailTable)
 			$tableStyle .= 'display: inline;';
 		else
 			$thProductStyle .=  "width:60%;";
-		$tdStyle = 'border-top:1px solid black; border-left: 1px solid black; border-right: 1px solid black; padding: 5px;border-spacing:0;';
-		$tdFooterStyle = "border: 1px solid black; padding: 5px; border-spacing:0;";
+		$defaultStyle =  'padding: 5px;border-spacing:0;';
+		$tdStyle = "$defaultStyle;border-left: 1px solid black; border-right: 1px solid black;";
+		$tdFooterStyle = "$tdStyle;border-bottom: 1px solid black";
+		$tdBoxStyle = "$tdFooterStyle;border-top: 1px solid black";
 
 		// Declare element templates
 		$thProduct = '<th style="'.$thProductStyle.'">{c}</th>';
+		$tdDef = '<td style="'.$defaultStyle.'">{c}</td>';
 		$th = '<th style="'.$thStyle.'">{c}</th>';
 		$td = '<td style="'.$tdStyle.'">{c}</td>';
 		$tdFooter = '<td style="'.$tdFooterStyle.'">{c}</td>';
+		$tdBox = '<td style="'.$tdBoxStyle.'">{c}</td>';
 		$hr = '<hr style="width: 100%;height:2px;background:black;" />';
 		$tr = '<tr>{c}</tr>';
 		$colRange = range(2,7);
@@ -420,18 +427,17 @@ class Quote extends X2Model {
 		if($n_adj) {
 			// Subtotal:
 			$row = array($span[$pad]);
-			$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Subtotal').'</strong>',$td);
-			$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->subtotal,$this->currency).'</strong>',$td);
+			$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Subtotal').'</strong>',$tdDef);
+			$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->subtotal,$this->currency).'</strong>',$tdDef);
 			$markup[] = str_replace('{c}',implode('',$row),$tr);
 			$markup[] = '</tbody>';
 			// Adjustments:
 			$markup[] = '<tbody>';
 			foreach($this->adjustmentLines as $ln => $li) {
 				// Begin row
-				$row = array($span[$pad-1]);
-				foreach(array('name','description','adjustment') as $attr) {
-					$row[] = str_replace('{c}',$li->renderAttribute($attr),$i==$n_adj?$tdFooter:$td);
-				}
+				$row = array($span[$pad]);
+				$row[] = str_replace('{c}',$li->renderAttribute('name').(!empty($li->description) ? ' ('.$li->renderAttribute('description').')':''),$tdDef);
+				$row[] = str_replace('{c}',$li->renderAttribute('adjustment'),$tdDef);
 				// Row done
 				$markup[] = str_replace('{c}',implode('',$row),$tr);
 				$i++;
@@ -442,8 +448,8 @@ class Quote extends X2Model {
 		
 		// Total:
 		$row = array($span[$pad]);
-		$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Total').'</strong>',$tdFooter);
-		$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->total,$this->currency).'</strong>',$tdFooter);
+		$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Total').'</strong>',$tdDef);
+		$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->total,$this->currency).'</strong>',$tdBox);
 		$markup[] = str_replace('{c}',implode('',$row),$tr);
 		$markup[] = '</tbody>';
 
@@ -684,11 +690,12 @@ class Quote extends X2Model {
 	}
 
 	/**
-	 * Clear out line item records associated with this quote
+	 * Clear out records associated with this quote before deletion.
 	 */
 	public function beforeDelete(){
 		QuoteProduct::model()->deleteAllByAttributes(array('quoteId'=>$this->id));
-		Relationships::model()->deleteAllByAttributes(array('firstType' => 'quotes', 'firstId' => $this->id));
+		Relationships::model()->deleteAllByAttributes(array('firstType' => 'quotes', 'firstId' => $this->id));// delete associated actions
+		Actions::model()->deleteAllByAttributes(array('associationId'=>$id, 'associationType'=>'quotes'));
 		$event = new Events;
 		$event->type = 'record_deleted';
 		$event->subtype = 'quote';
@@ -697,6 +704,25 @@ class Quote extends X2Model {
 		$event->text = $this->name;
 		$event->user = $this->assignedTo;
 		$event->save();
+		$name = $this->name;
+		// generate action record, for history
+		$contact = $this->contact;
+		if(!empty($contact)){
+			$action = new Actions;
+			$action->associationType = 'contacts';
+			$action->type = 'quotes';
+			$action->associationId = $contact->id;
+			$action->associationName = $contact->name;
+			$action->assignedTo = $this->suModel->username; //  Yii::app()->user->getName();
+			$action->completedBy = $this->suModel->username; // Yii::app()->user->getName();
+			$action->createDate = time();
+			$action->dueDate = time();
+			$action->completeDate = time();
+			$action->visibility = 1;
+			$action->complete = 'Yes';
+			$action->actionDescription = "Deleted Quote: <span style=\"font-weight:bold;\">{$this->id}</span> {$this->name}";
+			$action->save(); // Save after deletion of the model so that this action itself doensn't get deleted
+		}
 		return parent::beforeDelete();
 	}
 }

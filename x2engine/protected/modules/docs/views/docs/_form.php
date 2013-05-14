@@ -55,13 +55,14 @@ if($model->type==='email' || $model->type ==='quote') {
 		$contactAttributes = array();
 		$quoteAttributes = array();
 		foreach(Contacts::model()->attributeLabels() as $fieldName => $label)
-			$contactAttributes["Contact: $label"] = '{Contact.'.$fieldName.'}';
+			$contactAttributes[Yii::t('contacts',"Contact").": $label"] = "{Contact.$fieldName}";
 		foreach(Accounts::model()->attributeLabels() as $fieldName => $label)
-			$accountAttributes["Account: $label"] = '{Account.'.$fieldName.'}';
-		$quoteAttributes["Quote: Item Table"] = '{Quote.lineItems}';
-		$quoteAttributes["Quote: Date printed/emailed"] = '{Quote.dateNow}';
+			$accountAttributes[Yii::t('accounts',"Account").": $label"] = "{Account.$fieldName}";
+		$quoteAttributes[Yii::t('quotes',"Quote").": ".Yii::t('quotes',"Item Table")] = '{Quote.lineItems}';
+		$quoteAttributes[Yii::t('quotes',"Quote").": ".Yii::t('quotes',"Date printed/emailed")] = '{Quote.dateNow}';
+		$quoteAttributes[Yii::t('quotes',"Quote").": ".Yii::t('quotes','"Quote" or "Invoice"')] = '{Quote.quoteOrInvoice}';
 		foreach(Quote::model()->attributeLabels() as $fieldName => $label)
-			$quoteAttributes["Quote: $label"] = '{Quote.'.$fieldName.'}';
+			$quoteAttributes["Quote: $label"] = "{Quote.$fieldName}";
 	}
 	if($model->type === 'email') {
 		$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$attributes)).';';
@@ -133,7 +134,7 @@ $form = $this->beginWidget('CActiveForm', array(
 		</div>
 	</div>
 	<div class="row">
-        <?php if($this->action->id=='createEmail' || ($this->action->id=='update' && $model->type=='email')){ ?>
+        <?php if(in_array($model->type,array('email','quote'))){ ?>
             <?php echo $form->label($model,'subject'); ?>
             <?php echo $form->textField($model,'subject',array('size'=>60,'maxlength'=>255)); ?>
             <?php echo $form->error($model,'subject'); ?>
@@ -144,17 +145,24 @@ $form = $this->beginWidget('CActiveForm', array(
 				echo Yii::t('Docs', 'Saved at') ." $date";
 			} ?>
 		</span>
-	</div><?php if($this->action->id=='createEmail') { ?>
-	<div class="row">
-		<?php echo Yii::t('docs','<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
-	</div><?php } ?>
+	</div><?php  ?>
 	<div class="row" style="margin-top:5px;">
 		<?php 
-		if($model->isNewRecord && isset($users)){
+		if($model->isNewRecord && isset($users) && !in_array($model->type,array('email','quote'))){
 			echo $form->label($model,'editPermissions');
 			echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
 			echo $form->error($model,'editPermissions');
 		}
+		if($model->type == 'email'){
+?>
+		<div class="row">
+	<?php echo Yii::t('docs', '<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
+		</div><?php }elseif($model->type == 'quote'){ ?>
+		<div class="row">
+	<?php echo Yii::t('docs', '<strong>Note:</strong> You can use dynamic variables such as {Contact.firstName}, {Quote.dateCreated}, {Account.name} etc. in your template. When you email or print the quote, these will be replaced with the appropriate values from the quote or its associated contact/account.'); ?>
+		</div>
+<?php
+}
 		echo $form->error($model,'text');
 		echo $form->textArea($model,'text',array('id'=>'input'));
 		?>

@@ -57,8 +57,10 @@ class X2FlowRecordCreate extends X2FlowAction {
 	public function execute(&$params) {
 		if(!is_subclass_of($params['modelClass'],'X2Model'))	// make sure this is a valid model type
 			return false;
-			
+		if(!isset($this->config['attributes']) || empty($this->config['attributes']))
+			return false;
+		
 		$model = new $params['modelClass'];
-		return $this->setModelAttributes($model,$params) && $model->save();
+		return $this->setModelAttributes($model,$this->config['attributes'],$params) && $model->save();
 	}
 }

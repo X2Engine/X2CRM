@@ -33,29 +33,22 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
-<div class="notificationSound-row" id="notificationSound_<?php echo $data->id; ?>">
-<?php
-echo CHtml::link(
-	$data->fileName,
-	'#',
-	array(
-		'onclick'=>"setNotificationSound('".$data->id."','".$data->fileName."','".$data->uploadedBy."'); return false;",
-        'style'=>$data->fileName==Yii::app()->params->profile->notificationSound?'font-weight:bold':'',
-        'id'=>'sound-'.$data->id,
-	)
-);
 
-if($data->associationId == Yii::app()->user->getId()) {
-	echo CHtml::link(
-		'[x]',
-		'#',
-		array(
-			'onclick'=>"deleteNotificationSound('".$data->id."','".$data->fileName."'); return false;",
-			'class'=>'delete-link'
-		)
-	);
+/**
+ * X2FlowTrigger 
+ * 
+ * @package X2CRM.components.x2flow.actions
+ */
+class UserLogoutTrigger extends X2FlowTrigger {
+	public $title = 'User Signed Out';
+	public $info = 'Triggered when a user signs out of X2CRM.';
+	
+	public function paramRules() {
+		return array(
+			'title' => Yii::t('studio',$this->title),
+			'info' => Yii::t('studio',$this->info),
+			'options' => array(
+				array('name'=>'user','label'=>'User','type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(true,false),'operators'=>array('=','<>','list','notList'),'optional'=>1),
+			));
+	}
 }
-echo '<br />';
-?>
-</div>

@@ -55,7 +55,10 @@ class X2FlowRecordUpdate extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
-		$this->setModelAttributes($params['model'],$this->config['attributes']);
+		if(!isset($this->config['attributes']) || empty($this->config['attributes']))
+			return false;
+		
+		$this->setModelAttributes($params['model'],$this->config['attributes'],$params);
 		return $params['model']->save();
 	}
 }

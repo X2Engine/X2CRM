@@ -48,7 +48,7 @@ foreach($fields as $field) {
 }
 
 /* Javascript */
-
+/*
 $productNames = json_encode((object)$quote->productNames());
 $prices = json_encode((object)$quote->productPrices());
 
@@ -63,7 +63,9 @@ $productTableInit .= "});\n";
 
 Yii::app()->clientScript->registerScript("productTableQuote{$quote->id}", $productTableInit, CClientScript::POS_END);
 
-/* End JavaScript */
+// End JavaScript
+
+*/
 ?>
 
 <div class="row viewQuote" style="overflow: visible;">
@@ -91,33 +93,33 @@ $deleteButton = ' '. CHtml::ajaxLink(
 
 <?php /*** Email Quote ***/
 
-$emailName = "<br /><br /><br />
-<table style=\"width:100%;\">
-	<tbody>
-		<tr>
-			<td><b>{$quote->name}</b></td>
-			<td style=\"text-align:right;font-weight:bold;\">
-				<span>". ( $quote->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) ." # {$quote->id}</span><br />
-				<span>".date("F d, Y", time())."</span>
-			</td>
-		</tr>
-	</tbody>
-</table><br />
-";
-$emailName = str_replace("\n", "", $emailName); // fixed for history
-$emailProducts = $quote->productTable(true) ."<br />";
-$emailProducts = str_replace("\n", "", $emailProducts); // fixed for history
-$emailNotes = array();
-if(empty($quote->description))
-	$emailNotes['label'] = '';
-else
-	$emailNotes['label'] = '<b>'. Yii::t('quotes', $attributeLabel['description']) .'</b><br />';
-$emailNotes['notes'] = $quote->description .'<br /><br />';
+//$emailName = "<br /><br /><br />
+//<table style=\"width:100%;\">
+//	<tbody>
+//		<tr>
+//			<td><b>{$quote->name}</b></td>
+//			<td style=\"text-align:right;font-weight:bold;\">
+//				<span>". ( $quote->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) ." # {$quote->id}</span><br />
+//				<span>".date("F d, Y", time())."</span>
+//			</td>
+//		</tr>
+//	</tbody>
+//</table><br />
+//";
+//$emailName = str_replace("\n", "", $emailName); // fixed for history
+//$emailProducts = $quote->productTable(true) ."<br />";
+//$emailProducts = str_replace("\n", "", $emailProducts); // fixed for history
+//$emailNotes = array();
+//if(empty($quote->description))
+//	$emailNotes['label'] = '';
+//else
+//	$emailNotes['label'] = '<b>'. Yii::t('quotes', $attributeLabel['description']) .'</b><br />';
+//$emailNotes['notes'] = $quote->description .'<br /><br />';
+//
+//$jsEmailMessage = array('name'=>$emailName, 'products'=>$emailProducts, 'notes'=>$emailNotes, 'subject'=>( $quote->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) );
+//$jsEmailMessage = json_encode($jsEmailMessage); // encode for javascript
 
-$jsEmailMessage = array('name'=>$emailName, 'products'=>$emailProducts, 'notes'=>$emailNotes, 'subject'=>( $quote->type == 'invoice'? Yii::t('quotes', 'Invoice') : Yii::t('quotes','Quote')) );
-$jsEmailMessage = json_encode($jsEmailMessage); // encode for javascript
-
-$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail($jsEmailMessage)"));
+$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail({$quote->id})"));
 
 /*** End Email Quote ***/
 ?>

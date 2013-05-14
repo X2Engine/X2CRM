@@ -42,7 +42,11 @@
  * corresponds to actionCreate in ApiController.
  * 
  * @package X2CRM.models
- * @author Jake Houser <jake@x2engine.com>
+ * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
+ * @property mixed $responseObject Response data from the server
+ * @property array $modelErrors Validation errors, if any, from the server.
+ * @property int $responseCode (read-only) The most recent HTTP response code
+ *	sent back from the server
  */
 class APIModel {
 
@@ -51,6 +55,18 @@ class APIModel {
      * @var string 
      */
     private $_user = '';
+
+	/**
+	 * The response object from the server
+	 * @var array
+	 */
+	private $_responseObject = null;
+
+	/**
+	 * Response code from the server
+	 * @var int
+	 */
+	private $_responseCode = null;
 
     /**
      * The corresponding user key to authenticate with.  Set in constructor.
@@ -63,6 +79,8 @@ class APIModel {
      * @var string 
      */
     private $_baseUrl = '';
+
+	private $_modelErrors;
     
     /**
      * Attributes to be used for creating/updating models.
@@ -86,7 +104,125 @@ class APIModel {
         $this->_user = $user;
         $this->_userKey = $userKey;
         $this->_baseUrl = $baseUrl;
+		if(strpos($baseUrl,'http://') !== 0) // Assume http if unspecified
+			$this->_baseUrl = "http://{$baseUrl}";
+		$lenUrl = strlen($baseUrl);
+		if(strpos($baseUrl,'index.php') !== $lenUrl-9 && strpos($baseUrl,'index-test.php') !== $lenUrl-14) { // Assume using non-test index
+			$this->_baseUrl = rtrim($this->_baseUrl,'/').'/index.php';
+		}
     }
+
+	/**
+	 * Getter method for {@link modelErrors}
+	 * @return type
+	 */
+	public function getModelErrors() {
+		if(isset($this->_modelErrors))
+			return $this->_modelErrors;
+		else
+			return array();
+	}
+
+	/**
+	 * Setter for {@link responseObject}
+	 * @param type $response
+	 */
+	public function setResponseObject($response) {
+		if(is_string($response)) {
+			$this->_responseObject = json_decode($response,true);
+			if(is_null($this->_responseObject)) // Set it equal to the error returned
+				$this->_responseObject = $response;
+			else if (is_array($this->_responseObject)) {
+				if(array_key_exists('modelErrors', $this->_responseObject) && !empty($this->_responseObject['error'])){
+					$this->_modelErrors = $this->_responseObject['modelErrors'];
+				}else{
+					$this->_modelErrors = array();
+				}
+			} else {
+				$this->_modelErrors = array();
+			}
+
+		} else if(is_array($response))
+			$this->_responseObject = $response;
+	}
+
+	/**
+	 * Magic getter for {@link responseObject}
+	 * @return type
+	 */
+	public function getResponseObject() {
+		return $this->_responseObject;
+	}
+
+	/**
+	 * Magic getter for {@link responseCode}
+	 * @return type
+	 */
+	public function getResponseCode() {
+		return $this->_responseCode;
+	}
+
+	/**
+	 * Sets the model's attributes equal to those of the model contained in the
+	 * response from the API, if any, and returns true or false based on how the
+	 * API request returned (success or failure).
+	 * @param bool $responseIsModel The response object is the attributes of the model
+	 */
+	public function processResponse($responseIsModel=false) {
+		if(is_array($this->responseObject)){
+			// Server responded with a valid JSON
+			if(array_key_exists('modelErrors',$this->responseObject))
+				// Populate model errors if any:
+				$this->_modelErrors = $this->responseObject['modelErrors'];
+			if(array_key_exists('model', $this->responseObject) && array_key_exists('error',$this->responseObject)){
+				// API is responding using the data structure where the returned
+				// model's attributes are stored in the "model" property of the
+				// JSON object.
+				if(!$this->responseObject['error'] && $this->responseCode == 200) {
+					// No error. Update local attributes:
+					$this->attributes = $this->responseObject['model'];
+					return true;
+				}else{
+					// API responded with error=true due to validation error
+					$this->errors = $this->responseObject['message'];
+					return false;
+				}
+			}else if($responseIsModel && $this->responseCode == 200){
+				// The action was using the older format where the returned JSON
+				// *is* the model's attributes. Update local attributes:
+				$this->attributes = $this->responseObject;
+				return true;
+			}else if($this->responseCode == 200){
+				// API responded with error=false, but there's no "model" property.
+				// Whatever happened, it succeeded, so do nothing else (nothing
+				// else is necessary) and return true.
+				return true;
+			} else {
+				// API responded with a valid JSON, but the request did not
+				// succeed due to validation error, permissions/authentication
+				// error, or some other error. Thus, simply return false.
+				return false;
+			}
+		}else{
+			// In this case, there's an unrecognized error message that the server
+			// returned for whatever reason.
+			$this->errors = $this->responseObject;
+			return false;
+		}
+	}
+
+	/**
+	 * Creates or updates a model of a given type name using the current attributes.
+	 * @param type $modelName
+	 * @return boolean
+	 */
+	public function modelCreateUpdate($modelName,$action,$attributes=array()) {
+        $ccUrl = "{$this->_baseUrl}/api/$action/model/$modelName";
+		if($action=='update')
+			$ccUrl .= '?'.http_build_query(array('id'=>$this->id));
+        $this->responseObject = $this->_send($ccUrl, array_merge($this->attributes, $attributes));
+		return $this->processResponse();
+	}
 
     /**
      * Creates a contact with attributes specified in the APIModel's attributes property.
@@ -99,18 +235,11 @@ class APIModel {
             'visibility' => '1',
         );
         if ($leadRouting) {
-            $ccUrl = 'http://' . $this->_baseUrl . '/index.php/admin/getRoutingType';
+            $ccUrl = $this->_baseUrl . '/admin/getRoutingType';
             $attributes['assignedTo'] = $this->_send($ccUrl, array_merge($this->attributes, $attributes));
+			return $this->processResponse();
         }
-        $ccUrl = 'http://' . $this->_baseUrl . '/index.php/api/create/model/Contacts';
-        $result=$this->_send($ccUrl, array_merge($this->attributes, $attributes));
-        if(is_null(json_decode($result,true))){
-            $this->errors=$result;
-            return false;
-        }else{
-            $this->attributes=json_decode($result,true);
-            return true;
-        }
+		return $this->modelCreateUpdate('Contacts','create',$attributes);
     }
 
     /**
@@ -121,15 +250,7 @@ class APIModel {
     public function contactUpdate($id = null) {
         if (!isset($this->id))
             $this->id = $id;
-        $ccUrl = 'http://' . $this->_baseUrl . '/index.php/api/update/model/Contacts';
-        $result=$this->_send($ccUrl, $this->attributes);
-        if(is_null(json_decode($result,true))){
-            $this->errors=$result;
-            return false;
-        }else{
-            $this->attributes=json_decode($result,true);
-            return true;
-        }
+        $this->modelCreateUpdate('Contacts','update');
     }
 
     /**
@@ -137,21 +258,15 @@ class APIModel {
      * @return string Response code from the API request.  JSON string of attributes on success. 
      */
     public function contactLookup() {
-        $ccUrl = 'http://' . $this->_baseUrl . '/index.php/api/lookup/model/Contacts';
+        $ccUrl = $this->_baseUrl . '/api/lookup/model/Contacts';
         foreach($this->attributes as $key=>$value){
+			// Exclude null attributes from lookup
             if(is_null($value) || $value==''){
                 unset($this->attributes[$key]);
             }
         }
-        $attributes = $this->_send($ccUrl, $this->attributes);
-        if (!is_null(json_decode($attributes, true))) {
-            $attributes = json_decode($attributes, true);
-            $this->attributes = $attributes;
-            return true;
-        } else {
-            $this->errors=$attributes;
-            return false;
-        }
+        $this->responseObject = $this->_send($ccUrl, $this->attributes);
+        return $this->processResponse(true); // Set attributes
     }
 
     /**
@@ -162,14 +277,9 @@ class APIModel {
     public function contactDelete($id = null) {
         if (!isset($this->id))
             $this->id = $id;
-        $ccUrl = 'http://' . $this->_baseUrl . '/index.php/api/delete/model/Contacts';
-        $result=$this->_send($ccUrl, $this->attributes);
-        if($result!=1){
-            $this->errors=$result;
-            return false;
-        }else{
-            return true;
-        }
+        $ccUrl = $this->_baseUrl . '/api/delete/model/Contacts';
+        $this->responseObject = $this->_send($ccUrl, $this->attributes);
+        return $this->processResponse();
     }
 
     /**
@@ -185,7 +295,7 @@ class APIModel {
      * @return type 
      */
     public function checkAccess($action){
-        $accessUrl = 'http://' . $this->_baseUrl . '/index.php/api/checkPermissions/action/'.$action.'/username/'.$this->_user.'/api/1';
+        $accessUrl = $this->_baseUrl . '/api/checkPermissions/action/'.$action.'/username/'.$this->_user.'/api/1';
         $result=$this->_send($accessUrl,array());
         return $result=='true';
     }
@@ -196,12 +306,19 @@ class APIModel {
      * @param mixed $postData Post data to be included with the request.
      * @return string Response code sent by API controller. 
      */
-    private function _send($url, $postData) {
+    private function _send($url, $postData){
         $ccSession = curl_init($url);
-        curl_setopt($ccSession, CURLOPT_POST, 1);
-        curl_setopt($ccSession, CURLOPT_POSTFIELDS, array_merge(array('userKey' => $this->_userKey, 'user' => $this->_user), $postData));
+		// Tell CURL to receive response data (and don't return null) even if
+		// the server returned with an error, so that we can have the response
+		// and the response code:
+		curl_setopt($ccSession, CURLOPT_HTTP200ALIASES, array(400, 401, 403, 404, 500, 501));
+		// Make only a POST request:
+		curl_setopt($ccSession, CURLOPT_POST, 1);
+		curl_setopt($ccSession, CURLOPT_POSTFIELDS, array_merge(array('userKey' => $this->_userKey, 'user' => $this->_user), $postData));
+		// Response capture necessary:
         curl_setopt($ccSession, CURLOPT_RETURNTRANSFER, 1);
         $ccResult = curl_exec($ccSession);
+		$this->_responseCode = curl_getinfo($ccSession,CURLINFO_HTTP_CODE);
         return $ccResult;
     }
 
@@ -211,9 +328,15 @@ class APIModel {
      * @param string $value Attribute value.
      */
     public function __set($name, $value) {
+		$setter = 'set'.ucfirst($name);
         if (strpos($name, '_') === 0 || $name == 'attributes') {
+			// Set the value directly
             $this->$name = $value;
-        } else {
+        } else if(method_exists($this,$setter)) {
+			// Call the magic setter
+			$this->$setter($value);
+		} else {
+			// Set the named attribute
             $this->attributes[$name] = $value;
         }
     }
@@ -224,10 +347,15 @@ class APIModel {
      * @return The value of the attribute if set, else null .
      */
     public function __get($name) {
+		$getter = 'get'.ucfirst($name);
         if (strpos($name, '_') === 0 || $name == 'attributes') {
+			// Return the named property
             return $this->$name;
-        }
-        if (isset($this->attributes[$name])) {
+        } else if (method_exists($this,$getter)) {
+			// Return whatever the magic getter returns
+			return $this->$getter();
+		} else if (isset($this->attributes[$name])) {
+			// return the named attribute
             return $this->attributes[$name];
         }
         return null;

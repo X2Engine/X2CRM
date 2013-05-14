@@ -35,11 +35,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.modules.users.models.*');
+
 /**
  * Remote data insertion & lookup API
- * 
  * @package X2CRM.controllers
- * @author Jake Houser <jake@x2engine.com>
+ * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
  */
 class ApiController extends x2base {
 
@@ -61,7 +62,18 @@ class ApiController extends x2base {
 	public $actionAuthItemMap = array(
 		'lookUp' => 'View',
 	);
-	
+
+	public function behaviors() {
+		return array(
+			'responds' => array(
+				'class' => 'application.components.ResponseBehavior',
+				'isConsole' => false,
+				'exitNonFatal' => false,
+				'longErrorTrace' => false,
+			),
+		);
+	}
+
 	/**
 	 * @return array action filters
 	 */
@@ -84,6 +96,15 @@ class ApiController extends x2base {
 		return array();
 	}
 
+	/**
+	 * Multi-purpose method for checking permissions. If called as an action,
+	 * it will return "true" or "false" in plain text (to stay backwards-
+	 * compatibile with old API scripts). Otherwise, will return true or false.	 * 
+	 * @param type $action
+	 * @param type $username
+	 * @param type $api
+	 * @return type
+	 */
 	public function actionCheckPermissions($action, $username = null, $api = 0) {
 		$access = true; // Default: permissive if no auth item exists
 		Yii::log("Checking permissions...",'api');
@@ -94,7 +115,7 @@ class ApiController extends x2base {
 			$access = false; // Auth item exists; set true only through verification
 			$userId = null;
 			$access = $authenticated->checkAccess($action);
-			
+
 			if (!$access) { // Skip this if we already have access
 				if ($username != null) { // Override current API user if any
 					$userId = User::model()->findByAttributes(array('username' => $username))->id;
@@ -115,21 +136,26 @@ class ApiController extends x2base {
 					}
 				}
 			}
-		} elseif($this->action->id != 'checkPermissions')
+		} elseif($this->action->id != 'checkPermissions') 
 			Yii::log(sprintf("Auth item %s not found. Permitting action %s.",$action,$this->action->id),'api');
-		
+
 		if ($api == 1) { // API model:
+			// The method is being called as an action, most likely from APIModel
 			$access = $access ? "true" : "false";
-			$this->_sendResponse(200, $access);
+			header('Content-type: text/plain');
+			echo $access;
+			Yii::app()->end();
 		} else {
+			// This method is not being called as an action; rather, from a
+			// filter or some other method.
 			return $access;
 		}
 	}
-	
+
 	/**
-	 * Creates a new record. 
-	 * 
-	 * This method allows for the creation of new records via API request. 
+	 * Creates a new record.
+	 *
+	 * This method allows for the creation of new records via API request.
 	 * Requests should be made of the following format:
 	 * www.[server].com/index.php/path/to/x2/index.php/api/create/model/[modelType]
 	 * With the model's attributes as $_POST data.  Furthermore, in the post array
@@ -140,28 +166,34 @@ class ApiController extends x2base {
 		// Get an instance of the respective model
 		$model = new $this->modelClass;
 		$model->setX2Fields($_POST);
+        if($this->modelClass=='Actions' && isset($_POST['actionDescription'])){
+            $model->actionDescription=$_POST['actionDescription'];
+        }
 		$this->modelSetUsernameFields($model);
-		
-		// Attempt to save the model, and perform special post-save (or error) 
+
+		if(!empty($model->createDate)) // If create date is being manually set, i.e. an import, don't overwrite
+			$model->disableBehavior('changelog');
+
+		// Attempt to save the model, and perform special post-save (or error)
 		// operations based on the model type:
-		
-		if ($model->save()) { // New record successfully created
+		$valid = $model->validate();
+		if($valid)
+			$valid = $model->save();
+		if ($valid) { // New record successfully created
+			$message =  "A {$this->modelClass} type record was created"; //sprintf(' <b>%s</b> was created',$this->modelClass);
 			switch ($this->modelClass) {
-				case 'Contacts':
-					$this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $this->modelClass, $model->name));
-					break;
-				case 'Accounts':
-					$this->_sendResponse(200, sprintf('Model <b>%s</b> was created with name <b>%s</b>', $this->modelClass, $model->name));
-					break;
+				// Special extra actions to take for each model type:
 				case 'Actions':
+					$message .= " with description {$model->actionDescription}";
 					$model->syncGoogleCalendar('create');
-					$this->_sendResponse(200, sprintf('Model <b>%s</b> was created with description <b>%s</b>', $this->modelClass, $model->actionDescription));
 					break;
-				default:
-					$this->_sendResponse(200, sprintf('Model of type <b>%s</b> was created.', $this->modelClass));
-				//$this->_sendResponse(200, json_encode($model->attributes));
+				case 'Contacts':
+					$message .= " with name {$model->name}";
 			}
+			$this->addResponseProperty('model',$model->attributes);
+			$this->_sendResponse(200,$message);
 		} else { // API model creation failure
+			$this->addResponseProperty('modelErrors',$model->errors);
 			switch ($this->modelClass) {
 				case 'Contacts':
 					Yii::log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)), 'api');
@@ -178,6 +210,7 @@ class ApiController extends x2base {
 					}
 					$msg .= "</ul>";
 					// Special lead failure notification in the app and through email:
+					
 					$notif = new Notification;
 					$notif->user = 'admin';
 					$notif->type = 'lead_failure';
@@ -187,15 +220,17 @@ class ApiController extends x2base {
 
 					$to = Yii::app()->params->admin->webLeadEmail;
 					$subject = "Web Lead Failure";
-					$phpMail = $this->getPhpMailer();
-					$fromEmail = Yii::app()->params->admin->emailFromAddr;
-					$fromName = Yii::app()->params->admin->emailFromName;
-					$phpMail->AddReplyTo($fromEmail, $fromName);
-					$phpMail->SetFrom($fromEmail, $fromName);
-					$phpMail->Subject = $subject;
-					$phpMail->AddAddress($to, 'X2CRM Administrator');
-					$phpMail->MsgHTML($msg . "<br />JSON Encoded Attributes:<br /><br />" . json_encode($model->attributes));
-					$phpMail->Send();
+					if(!Yii::app()->params->automatedTesting){
+						$phpMail = $this->getPhpMailer();
+						$fromEmail = Yii::app()->params->admin->emailFromAddr;
+						$fromName = Yii::app()->params->admin->emailFromName;
+						$phpMail->AddReplyTo($fromEmail, $fromName);
+						$phpMail->SetFrom($fromEmail, $fromName);
+						$phpMail->Subject = $subject;
+						$phpMail->AddAddress($to, 'X2CRM Administrator');
+						$phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
+						$phpMail->Send();
+					}
 
 					$attributes = $model->attributes;
 					ksort($attributes);
@@ -230,21 +265,21 @@ class ApiController extends x2base {
 
 	/**
 	 * Updates a preexisting record.
-	 * 
+	 *
 	 * Usage of this function is very similar to {@link actionCreate}, although
 	 * it requires the "id" parameter that corresponds to the (auto-increment)
-	 * id field of the record in the database. Thus, URLs for post requests to 
+	 * id field of the record in the database. Thus, URLs for post requests to
 	 * this API function should be formatted as follows:
-	 * 
+	 *
 	 * index.php/api/update/model/[model name]/id/[record id]
-	 * 
+	 *
 	 * The attributes of the model should be submitted in the $_POST array along
 	 * with 'authUser' and 'authPassword' just as in create.
 	 */
 	public function actionUpdate() {
 		$modelSingle = X2Model::model($this->modelClass);
 		$model = $modelSingle->findByPkInArray($_GET);
-		
+
 		// Did we find the requested model? If not, raise an error
 		if (is_null($model))
 			$this->_respondBadPk($modelSingle, $_GET);
@@ -258,13 +293,15 @@ class ApiController extends x2base {
 			switch ($this->modelClass) {
 				case 'Actions':
 					$model->syncGoogleCalendar('update');
-					$this->_sendResponse(200, json_encode($model->attributes));
 					break;
 				default:
-					$this->_sendResponse(200, json_encode($model->attributes));
+					$this->_sendResponse(200, $model->attributes,true);
 			}
+			$this->addResponseProperty('model',$model->attributes);
+			$this->_sendResponse(200, 'Model created successfully');
 		} else {
 			// Errors occurred
+			$this->addResponseProperty('modelErrors',$model->errors);
 			$msg = "<h1>Error</h1>";
 			$msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
 			$msg .= "<ul>";
@@ -282,21 +319,21 @@ class ApiController extends x2base {
 
 	/**
 	 * Records a phone call as a notification.
-	 * 
-	 * Given a phone number, if a contact matching that phone number exists, a 
-	 * notification assigned to that contact's assignee will be created. 
+	 *
+	 * Given a phone number, if a contact matching that phone number exists, a
+	 * notification assigned to that contact's assignee will be created.
 	 * Software-based telephony systems such as Asterisk can thus immediately
-	 * notify sales reps of a phone call by making a cURL request to a url 
+	 * notify sales reps of a phone call by making a cURL request to a url
 	 * formatted as follows:
-	 * 
+	 *
 	 * api/voip/data/[phone number]
-	 * 
+	 *
 	 * (Note: the phone number itself must not contain anything but digits, i.e.
 	 * no periods or dashes.)
-	 * 
-	 * For Asterisk, one possible integration method is to insert into the 
-	 * dialplan, at the appropriate position, a call to a script that uses 
-	 * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone 
+	 *
+	 * For Asterisk, one possible integration method is to insert into the
+	 * dialplan, at the appropriate position, a call to a script that uses
+	 * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone
 	 * number. The script can then make the necessary request to this action.
 	 */
 	public function actionVoip() {
@@ -324,7 +361,7 @@ class ApiController extends x2base {
 						'model' => $contact,
 						'number' => $matches[0]
 					));
-					
+
 					echo 'Notification created.';
 				} else {
 					echo 'No contact found.';
@@ -342,14 +379,14 @@ class ApiController extends x2base {
 	}
 
 	/**
-	 * Obtain a model by its record ID. 
-	 * 
-	 * Looks up a model by its record ID and responds with its attributes as a 
+	 * Obtain a model by its record ID.
+	 *
+	 * Looks up a model by its record ID and responds with its attributes as a
 	 * JSON-encoded string.
-	 * 
+	 *
 	 * URLs to use this function:
 	 * index.php/view/id/[record id]
-	 * 
+	 *
 	 * Include 'authUser' and 'authPassword' just like in create and update.
 	 */
 	public function actionView() {
@@ -360,7 +397,7 @@ class ApiController extends x2base {
 			// Tell that the primary key is missing or incorrect.
 			$this->_respondBadPk($modelSingle,$_GET);
 		} else
-			$this->_sendResponse(200, CJSON::encode($model->attributes),'application/json');
+			$this->_sendResponse(200, $model->attributes,true);
 	}
 
 	public function actionList() {
@@ -382,18 +419,42 @@ class ApiController extends x2base {
 		$dataProvider = $model->searchList($listId, 10);
 		$data = $dataProvider->getData();
 		printR($dataProvider, true);
-		$this->_sendResponse(200, json_encode($data));
+		$this->_sendResponse(200, json_encode($data),true);
 	}
 
 	/**
-	 * Obtain a model using search parameters. 
-	 * 
-	 * Finds a record based on its first name, last name, and/or email and responds with its full 
+	 * Get a list of all users in the app.
+	 */
+	public function actionListUsers() {
+		$access = $this->actionCheckPermissions('UsersAccess');
+		$fullAccess = false;
+		if($access)
+			$fullAccess = $this->actionCheckPermissions('UsersFullAccess');
+		if(!$access)
+			$this->sendResponse(403,"User {$this->user} does not have permission to run UsersIndex");
+		$users = User::model()->findAll();
+		$userAttr = User::model()->attributes;
+		if(!$fullAccess) {
+			unset($userAttr['password']);
+			unset($userAttr['userKey']);
+		}
+		$userAttr = array_keys($userAttr);
+		$userList = array();
+		foreach($users as $user) {
+			$userList[] = $user->getAttributes($userAttr);
+		}
+		$this->_sendResponse(200,$userList,true);
+	}
+
+	/**
+	 * Obtain a model using search parameters.
+	 *
+	 * Finds a record based on its first name, last name, and/or email and responds with its full
 	 * attributes as a JSON-encoded string.
-	 * 
+	 *
 	 * URLs to use this function:
 	 * index.php/api/lookup/[model name]/[attribute]/[value]/...
-	 * 
+	 *
 	 * 'authUser' and 'authPassword' are required.
 	 */
 	public function actionLookup() {
@@ -402,21 +463,17 @@ class ApiController extends x2base {
 		unset($attrs['userKey']);
 
 		$model = X2Model::model($this->modelClass)->findByAttributes($attrs);
-		
+
 		// Did we find the requested model? If not, raise an error
-		if (is_null($model))
+		if (is_null($model)) {
 			$this->_sendResponse(404, 'No Item found with specified attributes.');
-		else
-			$this->_sendResponse(200, CJSON::encode($model->attributes));
+		} else {
+			$this->_sendResponse(200, $model->attributes,true);
+		}
 	}
 
 	/**
 	 * Delete a model record by primary key value.
-	 * 
-	 * URLs to use this action:
-	 * index.php/api/delete/id/[id]
-	 * 
-	 * 'authUser' and 'authPassword' are required
 	 */
 	public function actionDelete() {
 		$model = X2Model::model($this->modelClass)->findByPkInArray($_POST);
@@ -426,38 +483,36 @@ class ApiController extends x2base {
 
 		if ($this->modelClass === 'Actions')
 				$model->syncGoogleCalendar('delete');
-		
+
 		// Delete the model
 		$num = $model->delete();
 		if ($num > 0) {
-			
 			$this->_sendResponse(200, 1);
 		} else
 			$this->_sendResponse(500, sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_POST['id']));
 	}
-	
+
 	/**
 	 * Respond to a request with a specified status code and body.
-	 * 
+	 *
 	 * @param integer $status The HTTP status code.
-	 * @param string $body The body of the response message
-	 * @param string $content_type The response mimetype.
+	 * @param string $body The body of the response message, or the object to be
+	 *  JSON-encoded in the response (if "direct" is used)
+	 * @param bool $direct Whether the body should be JSON-encoded and returned
+	 *	directly instead of putting it into the standard response object's
+	 *	"model" property or the like.
 	 */
-	protected function _sendResponse($status = 200, $body = '', $content_type = 'text/html') {
+	protected function _sendResponse($status = 200, $body = '',$direct = false) {
 		// set the status
-		$status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
-		header($status_header);
-		// and the content type
-		header('Content-type: ' . $content_type);
-
-		// pages with body are easy
-		if ($body != '') {
-			// send the body
-			echo $body;
+		header("HTTP/1.1 $status " . $this->_getStatusCodeMessage($status));
+		if($direct) {
+			header('Content-type: application/json');
+			echo CJSON::encode($body);
 			Yii::app()->end();
 		}
+		
 		// we need to create the body if none is passed
-		else {
+		if ($body == '') {
 			// create some body messages
 			$message = '';
 
@@ -479,37 +534,25 @@ class ApiController extends x2base {
 					break;
 			}
 
-			// servers don't always have a signature turned on 
+			// servers don't always have a signature turned on
 			// (this is an apache directive "ServerSignature On")
 			$signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
 
 			// this should be templated in a real-world solution
-			$body = '
-	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-	<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<title>' . $status . ' ' . $this->_getStatusCodeMessage($status) . '</title>
-	</head>
-	<body>
-		<h1>' . $this->_getStatusCodeMessage($status) . '</h1>
+			$body = '<h1>' . $this->_getStatusCodeMessage($status) . '</h1>
 		<p>' . $message . '</p>
 		<hr />
-		<address>' . $signature . '</address>
-	</body>
-	</html>';
-
-
-			echo $body;
+		<address>' . $signature . '</address>';
 		}
-		Yii::app()->end();
+		// data.message is $body, data.error is true if the return status isn't 200 for success
+		self::respond($body, $status != 200);
 	}
 
 	/**
 	 * Obtain an appropriate message for a given HTTP response code.
-	 * 
+	 *
 	 * @param integer $status
-	 * @return string 
+	 * @return string
 	 */
 	protected function _getStatusCodeMessage($status) {
 		// these could be stored in a .ini file and loaded
@@ -527,11 +570,11 @@ class ApiController extends x2base {
 		);
 		return (isset($codes[$status])) ? $codes[$status] : '';
 	}
-	
+
 	/**
 	 * Tells the client that the primary key was bad or missing.
 	 * @param X2Model $modelSingle
-	 * @param array $params 
+	 * @param array $params
 	 */
 	protected function _respondBadPk(X2Model $modelSingle, array $params) {
 		$pkc = $modelSingle->tableSchema->primaryKey;
@@ -554,11 +597,11 @@ class ApiController extends x2base {
 			$this->_sendResponse(400, sprintf("No GET parameters matching primary key column(s) <b>%s</b> for model <b>%s</b>.",implode('-',$pkc),$this->modelClass));
 		}
 	}
-	
+
 	/**
 	 * Checks credentials for API access
-	 * 
-	 * @param CFilterChain $filterChain 
+	 *
+	 * @param CFilterChain $filterChain
 	 */
 	public function filterAuthenticate($filterChain) {
 		$haveCred = false;
@@ -570,7 +613,7 @@ class ApiController extends x2base {
 			$haveCred = isset($_GET['userKey']) && isset($_GET['user']);
 			$params = $_GET;
 		}
-		
+
 		if ($haveCred) {
 			$this->user = User::model()->findByAttributes(array('username' => $params['user'], 'userKey' => $params['userKey']));
 			if ((bool) $this->user) {
@@ -587,14 +630,14 @@ class ApiController extends x2base {
 			$this->_sendResponse(401, "No user credentials provided.");
 		}
 	}
-	
+
 	/**
 	 * Basic permissions check filter.
-	 * 
-	 * It is meant to simplify the simpler actions where named after existing 
+	 *
+	 * It is meant to simplify the simpler actions where named after existing
 	 * actions (or actions listed among the keys of {@link actionAuthItemMap})
-	 * 
-	 * @param type $filterChain 
+	 *
+	 * @param type $filterChain
 	 */
 	public function filterCheckCRUDPermissions($filterChain) {
 		$model = new $this->modelClass;
@@ -612,7 +655,7 @@ class ApiController extends x2base {
 			$this->_sendResponse(403, 'This user does not have permission to perform operation "'.$action."\" on model <b>{$this->modelClass}</b>");
 		}
 	}
-	
+
 	public function filterNoSession($filterChain) {
 		Yii::app()->params->noSession = true;
 		$filterChain->run();
@@ -620,8 +663,8 @@ class ApiController extends x2base {
 
 	/**
 	 * Ensures that the "model" parameter is present and valid.
-	 * 
-	 * @param CFilterChain $filterChain 
+	 *
+	 * @param CFilterChain $filterChain
 	 */
 	public function filterValidModel($filterChain) {
 		if (!isset($this->modelClass)) {

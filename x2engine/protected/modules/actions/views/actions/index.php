@@ -53,7 +53,7 @@ function trimText($text) {
     <div class="title-bar" style="padding-left:0px;">
         <?php echo CHtml::link(Yii::t('app','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
         <?php echo CHtml::link(Yii::t('app','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
-        <?php echo CHtml::link(Yii::t('actions','<div class="page-title x2-button img-box plus-sign right" style="width:40px;margin-top:7px;"></div>'),array('/actions/create')); ?>
+        <?php echo CHtml::link(Yii::t('app','New Action'),array('/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); ?>
     </div>
 </div>
 <?php echo $this->renderPartial('_advancedControls',$params,true); ?>

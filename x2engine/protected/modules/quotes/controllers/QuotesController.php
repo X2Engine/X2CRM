@@ -80,6 +80,11 @@ class QuotesController extends x2base {
 	public function actionView($id){
 		$type = 'quotes';
 		$model = $this->getModel($id);
+		// Just call the magic getter to grab the contact record. That avoids
+		// nonsense later when attempting to use the contact in the email
+		// template:
+		$model->contact;
+		// Now it's safe to turn it into links (the way it has always been done)
 		$contactId = $model->associatedContacts;
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 		$quoteProducts = $model->lineItems;
@@ -275,10 +280,10 @@ class QuotesController extends x2base {
 				// Template not found (it was probably deleted).
 				// Use the default quotes view.
 				$model->template = null;
+				$model->save();
 				return $this->getPrintQuote($model->id);
 			}
-			$content = Docs::replaceVariables($template->text,$model);
-			return $content;
+			return Docs::replaceVariables($template->text,$model);
 		}
 	}
 
@@ -748,35 +753,6 @@ class QuotesController extends x2base {
 		$model=$this->getModel($id);
 
 		if($model) {
-
-			// delete associated actions
-			Actions::model()->deleteAllByAttributes(array('associationId'=>$id, 'associationType'=>'quotes'));
-			// delete product relationships
-			QuoteProduct::model()->deleteAllByAttributes(array('quoteId'=>$id));
-			// delete contact relationships
-			Relationships::model()->deleteAllByAttributes(array('firstType'=>'quotes', 'firstId'=>$id, 'secondType'=>'contacts'));
-
-			$name = $model->name;
-
-			// generate history
-
-			$contact = X2Model::model('Contacts')->findByPk($_GET['contactId']);
-
-			$action = new Actions;
-			$action->associationType = 'contacts';
-			$action->type = 'quotes';
-			$action->associationId = $contact->id;
-			$action->associationName = $contact->name;
-			$action->assignedTo = Yii::app()->user->getName();
-			$action->completedBy=Yii::app()->user->getName();
-			$action->createDate = time();
-			$action->dueDate = time();
-			$action->completeDate = time();
-			$action->visibility = 1;
-			$action->complete='Yes';
-			$action->actionDescription = "Deleted Quote: <span style=\"font-weight:bold;\">{$model->id}</span> {$model->name}";
-			$action->save();
-
             $this->cleanUpTags($model);
 			$model->delete();
 

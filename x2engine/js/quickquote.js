@@ -43,7 +43,13 @@
 
 jQuery(document).ready(function ($) {
 
+	// Declare all properties required for proper function
 	quickQuote.declare = function() {
+
+        // used by _lineItems.php partial to determine view-dependent behavior of quote table
+        x2.quotes = {};
+        x2.quotes.view = "quickquote"; 
+
 		quickQuote.wrapper = $('#quote-create-form-wrapper').first();
 		quickQuote.loadingImg = $('<img>',{
 			src:yii.themeBaseUrl+'/images/loading.gif',
@@ -56,6 +62,26 @@ jQuery(document).ready(function ($) {
 			'text-align':'center',
 			'display':'block'
 		}).append(quickQuote.loadingImg);
+
+		quickQuote.inlineEmailModule = $('#inline-email-form');
+		quickQuote.inlineEmailModelName = quickQuote.inlineEmailModule.find('input[name="InlineEmail[modelName]"]');
+		quickQuote.inlineEmailModelId = quickQuote.inlineEmailModule.find('input[name="InlineEmail[modelId]"]');
+
+		quickQuote.inlineEmailMode = (typeof quickQuote.inlineEmailMode != 'undefined') ? quickQuote.inlineEmailMode : 'default';
+		// Copy current attributes:
+		if(typeof window.inlineEmailEditor !== 'undefined' && quickQuote.inlineEmailMode == 'default') {
+			// This stores the original value of insertable attributes, for switching between quote forms:
+			quickQuote.inlineEmailConfig = {
+				insertableAttributes:{},
+				modelName:'',
+				modelId:''
+			};
+			$.extend(quickQuote.inlineEmailConfig.insertableAttributes,x2.insertableAttributes);
+			quickQuote.inlineEmailConfig.modelName = quickQuote.inlineEmailModelName.val();
+			quickQuote.inlineEmailConfig.modelId = quickQuote.inlineEmailModelId.val();
+			quickQuote.inlineEmailConfig.templateList = quickQuote.inlineEmailModule.find('select#email-template').html();
+			quickQuote.inlineEmailConfig.insertableAttributes = (typeof x2.insertableAttributes != 'undefined')?x2.insertableAttributes:{};
+		}
 	}
 
 	quickQuote.declare();
@@ -84,31 +110,25 @@ jQuery(document).ready(function ($) {
 
 	quickQuote.openForm = function(id) {
 		id = typeof id === 'undefined' ? 0 : id;
-		if(quickQuote.wrapper.is(':hidden')) {
-			quickQuote.wrapper.append(quickQuote.loading).show();
-
-			$.ajax({
-				type:'GET',
-				url: id == 0 ? quickQuote.createAction : quickQuote.updateAction+'&id='+id,
-				dataType:'html'
-			}).done(function (data) {
-				quickQuote.loadForm(data);
-				if(quickQuote.contact !== undefined)
-					quickQuote.form.find('input[name="Quote[associatedContacts]"]').val(quickQuote.contact);
-				if(quickQuote.account !== undefined)
-					quickQuote.form.find('input[name="Quote[accountName]"]').val(quickQuote.account);
-			}).fail(function(jqXHR, textStatus, errorThrown) {
-				if(jqXHR.status != 0 && jqXHR.status != 400) {
-					alert(textStatus+' '+jqXHR.status+' '+errorThrown);
-					quickQuote.closeForm();
-				} else {
-					quickQuote.loadForm(jqXHR.responseText);
-				}
-			});
-		} else {
-			quickQuote.closeForm();
-			quickQuote.openForm(id);
-		}
+		quickQuote.wrapper.append(quickQuote.loading).show();
+		$.ajax({
+			type:'GET',
+			url: id == 0 ? quickQuote.createAction : quickQuote.updateAction+'&id='+id,
+			dataType:'html'
+		}).done(function (data) {
+			quickQuote.loadForm(data);
+			if(quickQuote.contact !== undefined)
+				quickQuote.form.find('input[name="Quote[associatedContacts]"]').val(quickQuote.contact);
+			if(quickQuote.account !== undefined)
+				quickQuote.form.find('input[name="Quote[accountName]"]').val(quickQuote.account);
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			if(jqXHR.status != 0 && jqXHR.status != 400) {
+				alert(textStatus+' '+jqXHR.status+' '+errorThrown);
+				quickQuote.closeForm();
+			} else {
+				quickQuote.loadForm(jqXHR.responseText);
+			}
+		});
 	}
 
 	/**
@@ -134,6 +154,11 @@ jQuery(document).ready(function ($) {
 		if(e!==undefined) { // Function is being used as an event handler
 			e.preventDefault();
 		}
+
+        if (!validateAllInputs () /* defined in lineItems.php */) {
+           return false; 
+        }
+
 		// Add the loading gif:
 		quickQuote.wrapper.find('h2').append(quickQuote.loadingImg.css({
 			'margin-left':'20px'
@@ -157,5 +182,67 @@ jQuery(document).ready(function ($) {
 			quickQuote.loading.hide();
 		});
 	}
+
+	// Restores the local inline email form to its state before using it to issue quotes.
+	quickQuote.resetInlineEmail = function() {
+		quickQuote.inlineEmailModelName.val(quickQuote.inlineEmailConfig.modelName);
+		quickQuote.inlineEmailModelId.val(quickQuote.inlineEmailConfig.modelId);
+		quickQuote.inlineEmailModule.find('select#email-template').html(quickQuote.inlineEmailConfig.templateList);
+		if(typeof x2 != 'undefined')
+			x2.insertableAttributes = quickQuote.inlineEmailConfig.insertableAttributes;
+	}
+
+	// Switches the inline email form into quote mode for issuing via email:
+	quickQuote.setInlineEmail = function(id) {
+		// Warn the user we're switching into quote issue mode:
+		if (!inlineEmailSwitchConfirm())
+			return false;
+		quickQuote.inlineEmailMode = 'quote';
+		quickQuote.inlineEmailModelName.val('Quote');
+		quickQuote.inlineEmailModelId.val(id);
+		quickQuote.inlineEmailModule.find('select#email-template').val(0);
+		// Set up initial quote email by requesting a template change from the server:
+		$.ajax({
+			'type':'POST',
+			'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1',
+			'data':quickQuote.inlineEmailModule.find("form").serialize(),
+			'beforeSend':function() {
+				$('#email-sending-icon').show();
+			}
+
+		}).done(function(data, textStatus, jqXHR) {
+			// Update the list of templates:
+			var tmplSelect = $('select[name="InlineEmail[template]"]'); // Template selector
+			var selTemplate = tmplSelect.val(); // Currently selected template
+			// Load new template list:
+			if(typeof data.templateList != 'undefined') {
+				tmplSelect.html(''); // Empty the current list
+				var tmpl;
+				for(var i=0;i<data.templateList.length; i++) {
+					tmpl = data.templateList[i];
+					var elt = $('<option>');
+					elt.attr({
+						value:tmpl.id,
+						selected:(tmpl.id==selTemplate?'selected':'')
+					}).text(tmpl.name);
+					tmplSelect.append(elt);
+				}
+			}
+			// Set the insertable attributes:
+			if(typeof x2 != 'undefined' && typeof data.insertableAttributes != 'undefined')
+				x2.insertableAttributes = data.insertableAttributes;
+			// Close the form if it's open already:
+			if(!$('#inline-email-form').is(':hidden'))
+				toggleEmailForm('quote');
+			// Now open (or re-open) with new quote-related settings:
+			toggleEmailForm('quote');
+			// Load data:
+			$('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
+			window.inlineEmailEditor.setData(data.attributes.message);
+		}).always(function(){
+			$('#email-sending-icon').hide();
+		});
+	}
+
 
 });

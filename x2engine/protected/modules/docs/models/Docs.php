@@ -175,57 +175,65 @@ class Docs extends X2Model {
 	 * @param bool $encode Encode replacement values if true; use renderAttribute otherwise.
 	 * @return string
 	 */
-	public static function replaceVariables($str, &$model, $vars = array(), $encode = false) {
-		$matches = array();
-		if (get_class($model) != 'Quote') {
-			if (preg_match_all('/{\w+}/', $str, $matches)) {  // loop through the things (email body)
-				foreach ($matches[0] as &$match) {
-					$match = substr($match, 1, -1); // remove { and }
-
-					if (isset($vars[$match])) {
-						$str = preg_replace('/{' . $match . '}/', $encode ? (CHtml::encode($vars[$match])) : $vars[$match], $str);
-					} elseif ($model->hasAttribute($match)) {
-						$value = $model->renderAttribute($match, false, true); // get the correctly formatted attribute (which is already in HTML)
-						$str = preg_replace('/{' . $match . '}/', $value, $str);
+	public static function replaceVariables($str,&$model,$vars = array(),$encode = false) {
+		if($encode) {
+			foreach(array_keys($vars) as $key)
+				$vars[$key] = CHtml::encode($vars[$key]);
+		}
+		$str = strtr($str,$vars);	// replace any manually set variables
+		
+		if($model instanceof X2Model) {
+			if(get_class($model) !== 'Quote') {
+				$matches = array();
+				preg_match_all('/{\w+}/',$str,$matches);
+				
+				if(isset($matches[0])) {
+					$attributes = array();
+					foreach($matches[0] as &$match) {	// loop through the things (email body)
+						$attribute = substr($match, 1, -1); // remove { and }
+						if($model->hasAttribute($attribute))
+							$attributes[$match] = $model->renderAttribute($attribute,false,true); // get the correctly formatted attribute (which is already in HTML)
+					}
+					$str = strtr($str,$attributes);	// replace any attributes that were found
+				}
+			} else {
+				// Specialized, separate method for quotes that can use details from 
+				// either accounts or quotes.
+				// There may still be some stray quotes with 2+ contacts on it, so
+				// explode and pick the first to be on the safe side. The most 
+				// common use case by far is to have only one contact on the quote.
+				$contactIds = explode(' ', $model->associatedContacts);
+				$contactId = $contactIds[0];
+				$accountId = $model->accountName;
+				$staticModels = array('Contact' => Contacts::model(), 'Account' => Accounts::model(), 'Quote' => Quote::model());
+				$models = array(
+					'Contact' => $model->contact,
+					'Account' => empty($accountId) ? null : $staticModels['Account']->findByPk($model->accountName),
+					'Quote' => $model
+				);
+				$attributes = array();
+				foreach($models as $name => $modelObj) {
+					if(empty($modelObj)) {
+						// Model will be blank
+						foreach ($staticModels[$name]->fields as $field) {
+							$attributes['{' . $name . '.' . $field->fieldName . '}'] = '';
+						}
+					} else {
+						// Insert attributes
+						foreach($modelObj->attributes as $fieldName => $value) {
+							$attributes['{' . $name . '.' . $fieldName . '}'] = $encode ? CHtml::encode($value) : $modelObj->renderAttribute($fieldName);
+						}
 					}
 				}
+				$quoteParams = array(
+					'{Quote.lineItems}' => $model->productTable(true),
+					'{Quote.dateNow}' => date("F d, Y", time()),
+					'{Quote.quoteOrInvoice}' => Yii::t('quotes',$model->type=='invoice' ? 'Invoice' : 'Quote'),
+				);
+				// Run the replacement:
+				$str = strtr($str,array_merge($attributes,$quoteParams));
+				return $str;
 			}
-		} else {
-			// Specialized, separate method for quotes that can use details from 
-			// either accounts or quotes.
-			// There may still be some stray quotes with 2+ contacts on it, so
-			// explode and pick the first to be on the safe side. The most 
-			// common use case by far is to have only one contact on the quote.
-			$contactIds = explode(' ', $model->associatedContacts);
-			$contactId = $contactIds[0];
-			$accountId = $model->accountName;
-			$staticModels = array('Contact' => Contacts::model(), 'Account' => Accounts::model(), 'Quote' => Quote::model());
-			$models = array(
-				'Contact' => empty($contactId) ? null : $staticModels['Contact']->findByPk($contactIds[0]),
-				'Account' => empty($accountId) ? null : $staticModels['Account']->findByPk($model->accountName),
-				'Quote' => $model
-			);
-			$attributes = array();
-			foreach ($models as $name => $modelObj) {
-				if (empty($modelObj)) {
-					// Model will be blank
-					foreach ($staticModels[$name]->fields as $field) {
-						$attributes['{' . $name . '.' . $field->fieldName . '}'] = '';
-					}
-				} else {
-					// Insert attributes
-					foreach ($modelObj->attributes as $fieldName => $value) {
-						$attributes['{' . $name . '.' . $fieldName . '}'] = $encode ? CHtml::encode($value) : $modelObj->renderAttribute($fieldName);
-					}
-				}
-
-			}
-			$quoteParams = array(
-				'{Quote.lineItems}' => $model->productTable(true),
-				'{Quote.dateNow}' => date("F d, Y", time()),
-			);
-			// Run the replacement:
-			$str = strtr($str, array_merge($attributes, $vars,$quoteParams));
 		}
 		return $str;
 	}
@@ -256,16 +264,14 @@ class Docs extends X2Model {
 		// $templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
 
 		$templateData = Yii::app()->db->createCommand()
-				->select('id,name')
-				->from('x2_docs')
-				->where('type="'.$type.'" AND (' . $condition . ')')
-				// ->andWhere($condition)
-				->queryAll(false);
-
-		foreach ($templateData as &$row)
+			->select('id,name')
+			->from('x2_docs')
+			->where('type="'.$type.'" AND (' . $condition . ')')
+			->order('name ASC')
+			// ->andWhere($condition)
+			->queryAll(false);
+		foreach($templateData as &$row)
 			$templateLinks[$row[0]] = $row[1];
-
-		natcasesort($templateLinks);
 		return $templateLinks;
 	}
 

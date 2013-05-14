@@ -77,12 +77,16 @@ if(Yii::app()->session['translate'])
 	$cs->registerScriptFile($baseUrl.'/js/translator.js');
 
 $cs ->registerScriptFile($baseUrl.'/js/backgroundFade.js');
-$cs->registerScript('actionFrames',"
-
-
+$cs->registerScript('datepickerLanguage',"
+    $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
 ");
 // $cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js');
 
+// MoneyMask extension:
+$mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
+$aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
+Yii::app()->getClientScript()->registerScriptFile("$aMmPath/jquery.maskMoney.js");
+Yii::app()->clientScript->registerCoreScript('jquery');
 
 // blueprint CSS framework
 $cs ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
@@ -141,6 +145,64 @@ if(!empty(Yii::app()->params->profile->pageHeaderBgColor))
 if(!empty(Yii::app()->params->profile->pageHeaderTextColor))
 	$themeCss .= 'div.page-title, div.page-title h2 {color:#'.Yii::app()->params->profile->pageHeaderTextColor.";}\n";
 
+if(!empty(Yii::app()->params->profile->activityFeedWidgetBgColor)) {
+	$themeCss .= '#chat-box {
+                        background:#'.Yii::app()->params->profile->activityFeedWidgetBgColor.';
+                        color:'.convertTextColor(Yii::app()->params->profile->activityFeedWidgetBgColor.'', 'standardText').';
+                     }
+                     #chat-box a:link     { color: ' . convertTextColor(Yii::app()->params->profile->activityFeedWidgetBgColor.'', 'linkText') . '; }
+                     #chat-box a:visited  { color: ' . convertTextColor(Yii::app()->params->profile->activityFeedWidgetBgColor.'', 'visitedLinkText') . '; }
+                     #chat-box a:active   { color: ' . convertTextColor(Yii::app()->params->profile->activityFeedWidgetBgColor.'', 'activeLinkText') . '; }
+                     #chat-box a:hover    { color: ' . convertTextColor(Yii::app()->params->profile->activityFeedWidgetBgColor.'', 'hoverLinkText') . '; }
+                     ';
+}
+
+// Outputs white or black depending on input color
+// @param $colorString a string representing a hex number
+// @param $testType standardText or linkText
+function convertTextColor($colorString, $textType){
+    // Split the string to red, green and blue components
+    // Convert hex strings into ints
+    $red   = intval(substr($colorString, 0, 2), 16);
+    $green = intval(substr($colorString, 2, 2), 16);
+    $blue  = intval(substr($colorString, 4, 2), 16);
+    if($textType == 'standardText') {
+        return (((($red*299)+($green*587)+($blue*114))/1000) >= 128) ? 'black' : 'white';
+    }
+    else if ($textType == 'linkText') {
+        if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+            return '#fff000';  // Yellow links
+        }
+        else return '#0645AD'; // Blue link color
+    }
+    else if ($textType == 'visitedLinkText') {
+        if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+            return '#ede100';  // Yellow links
+        }
+        else return '#0B0080'; // Blue link color
+    }
+    else if ($textType == 'activeLinkText') {
+        if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+            return '#fff000';  // Yellow links
+        }
+        else return '#0645AD'; // Blue link color
+    }
+    else if ($textType == 'hoverLinkText') {
+        if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+            return '#fff761';  // Yellow links
+        }
+        else return '#3366BB'; // Blue link color
+    }
+}
+
+// Check if any element of a triple is significantly less than the other two
+// based on a defined value
+function isSignificantlyLess($x, $y, $z, $howMuch){
+    if(($x > ($z + $howMuch)) && ($y > ($z + $howMuch))) return true;
+    if(($x > ($y + $howMuch)) && ($z > ($y + $howMuch))) return true;
+    if(($y > ($x + $howMuch)) && ($z > ($x + $howMuch))) return true;
+    return false;
+}
 $cs->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
 $cs->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
@@ -276,7 +338,7 @@ $userMenu = array(
 			array('label' => Yii::t('app','Notifications'),'url' => array('/site/viewNotifications')),
 			array('label' => Yii::t('app','Preferences'),'url' => array('/profile/settings')),
 			array('label' => Yii::t('app','Help'),'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions'=>array('target'=>'_blank')),
-			array('label' => Yii::t('app','Icon Reference'), 'url' => array ('/site/page/', 'view'=>'iconreference'), 'linkOptions'=>array('target'=>'_blank')),
+			array('label' => Yii::t('help','Icon Reference'), 'url' => array ('/site/page/', 'view'=>'iconreference')),
             array('label' => Yii::t('app','Report A Bug'),'url' => array('/site/bugReport')),
             array('label' => Yii::t('app','---'),'itemOptions'=>array('class'=>'divider')),
 			array('label' => Yii::app()->params->sessionStatus? Yii::t('app','Go Invisible') : Yii::t('app','Go Visible'),'url'=>'#',
@@ -440,7 +502,7 @@ $this->renderPartial('//layouts/footer');
 if(Yii::app()->session['translate'])
 	echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
 
-if(($_SESSION['playLoginSound'])){
+if(isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
         $_SESSION['playLoginSound']=false;
         $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
         $where = 'fileName = "' . $profile->loginSound . '"';
@@ -463,6 +525,6 @@ if(($_SESSION['playLoginSound'])){
     <textarea id="completion-notes" style="height:110px;width:99%;"></textarea>
 </div>
 </body>
-<audio id="notification"></audio>
+<audio id="notificationSound"></audio>
 <audio id='loginSound'></audio>
 </html>

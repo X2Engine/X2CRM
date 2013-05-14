@@ -34,10 +34,6 @@
  *****************************************************************************************/
 
 
-input.line-item-field
-{
-    width: 97%;
-}
 
 .quote-table .first-cell
 {
@@ -50,7 +46,11 @@ input.line-item-field
     background: none;
     border: none;
     color: black;
-    padding: 0px; 
+}
+
+.quote-table td {
+    padding-right: 2px !important;
+    padding-left: 2px !important;
 }
 
 /* line item name */
@@ -63,7 +63,6 @@ input.line-item-field
 
 /* line item name cell */
 .quote-table > tbody#line-items > tr > td:nth-child(2) {
-	text-align: left;
     width: 20%;
 }
 
@@ -73,62 +72,62 @@ input.line-item-field
 .quote-table > tbody#line-items > tr > td:nth-child(2) input
 {
     width: 95%;
-    padding: 0 4px 0 4px;
 	font-size: 12px;
-    margin-right: 0px;
 }
 
 /* unit price cell */
 .quote-table > tbody#line-items > tr > td:nth-child(3) {
-	text-align: right;
-    width: 15%;
+    width: 17.5%;
 }
 
 /* unit price */
 .quote-table > tbody#line-items > tr > td:nth-child(3) input {
-    width: 80%;
+    width: 95%;
 	text-align: right;
-    padding: 0 4px 0 0;
 	font-size: 12px;
 }
 
 /* quantity cell */
-.quote-table > tbody#line-items > tr > td:nth-child(4),
-.quote-table > tbody#adjustments> tr > td:nth-child(4) {
-	text-align: right;
+.quote-table > tbody#line-items > tr > td:nth-child(4) {
     width: 15%;
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td:nth-child(4) input,
-.quote-table > tbody#adjustments> tr > td:nth-child(4) input {
-    width: 80%;
+.quote-table > tbody#line-items > tr > td:nth-child(4) input {
+    width: 95%;
 	text-align: right;
-    padding: 0 4px 0 0;
+	font-size: 12px;
+}
+
+/* adjustment name cell */
+.quote-table > tbody#adjustments> tr > td:nth-child(4) {
+    width: 15%;
+}
+
+/* adjustment name */
+.quote-table > tbody#adjustments> tr > td:nth-child(4) input {
+    width: 95%;
+	text-align: left;
 	font-size: 12px;
 }
 
 /* adjustments cell */
 .quote-table > tbody#line-items > tr > td:nth-child(5),
 .quote-table > tbody#adjustments > tr > td:nth-child(5) {
-	text-align: right;
     width: 15%;
 }
 
 /* adjustments */
 .quote-table > tbody#line-items > tr > td:nth-child(5) input,
 .quote-table > tbody#adjustments > tr > td:nth-child(5) input {
-    width: 80%;
+    width: 95%;
 	font-size: 12px;
-    padding: 0 4px 0 0;
 	text-align: right;
-
 }
 
 /* description cell */
 .quote-table > tbody#line-items > tr > td:nth-child(6),
 .quote-table > tbody#adjustments > tr > td:nth-child(6) {
-	text-align: left;
     width: 15%;
 }
 
@@ -136,20 +135,19 @@ input.line-item-field
 .quote-table > tbody#line-items > tr > td:nth-child(6) input,
 .quote-table > tbody#adjustments > tr > td:nth-child(6) input {
     width: 95%;
-    padding: 0 4px 0 4px;
 	font-size: 12px;
 }
 
 /* line total cell */
 .quote-table > tbody#line-items > tr > td:nth-child(7),
 .quote-table > tbody#adjustments > tr > td:nth-child(7) {
-	text-align: right;
     width: 20%;
 }
 
 /* line total */
 .quote-table > tbody#line-items > tr > td:nth-child(7) input,
 .quote-table > tbody#adjustments > tr > td:nth-child(7) input {
+	text-align: left;
     width: 95%;
 	font-size: 12px;
 }
@@ -157,14 +155,14 @@ input.line-item-field
 /* subtotal and total cell */
 .quote-table .subtotal-container,
 .quote-table .total-container {
-    width: 20%;
-	text-align: right;
+    width: 17.5%;
 }
 
 /* subtotal and total */
 .quote-table input#subtotal,
 .quote-table input#total {
     width: 95%;
+	text-align: left;
 	font-size: 12px;
 }
 

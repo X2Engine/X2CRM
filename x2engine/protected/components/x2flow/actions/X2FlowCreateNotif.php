@@ -49,9 +49,9 @@ class X2FlowCreateNotif extends X2FlowAction {
 		
 		return array(
 			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
+			// 'info' => Yii::t('studio',$this->info),
 			'options' => array(
-				array('name'=>'user','label'=>'User','type'=>'dropdown','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
+				array('name'=>'user','label'=>'User','type'=>'assignment','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
 				// array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
 				array('name'=>'text','label'=>'Message','optional'=>1),
 			));
@@ -61,11 +61,11 @@ class X2FlowCreateNotif extends X2FlowAction {
 		$options = &$this->config['options'];
 		
 		$notif = new Notification;
-		$notif->user = $options['user'];
+		$notif->user = $this->parseOption('user',$params);
 		$notif->createdBy = 'API';
 		$notif->createDate = time();
-		
-		// if($options['type'] == 'auto') {
+		// file_put_contents('triggerLog.txt',"\n".$notif->user,FILE_APPEND);
+		// if($this->parseOption('type',$params) == 'auto') {
 			// if(!isset($params['model']))
 				// return false;
 			// $notif->modelType = get_class($params['model']);
@@ -73,8 +73,9 @@ class X2FlowCreateNotif extends X2FlowAction {
 			// $notif->type = $this->getNotifType();
 		// } else {
 			$notif->type = 'custom';
-			$notif->text = $options['text'];
+			$notif->text = $this->parseOption('text',$params);
 		// }
+		
 		return $notif->save();
 	}
 }

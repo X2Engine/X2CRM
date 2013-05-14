@@ -87,7 +87,7 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('quotes','Name'),
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'value'=>'$data->link',
 			'type'=>'raw',
 		),
 	),

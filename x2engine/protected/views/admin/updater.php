@@ -285,6 +285,7 @@ Yii::app()->clientScript->registerScript("updater","$('#update-button').click(fu
 		</ul>
 	</li>
 	<li><?php echo Yii::t('admin',"Disable pop-up blocking on this page.");?></li>
+	<?php if($scenario == 'update') echo '<li>'.Yii::t('admin','Notify all users that an update will be occurring; everyone (including you) will be logged out when the update has completed.').'</li>'; ?>
 </ul>
 
 <a href="#" onclick="makeBackup()" class="x2-button" id="backup-button"><?php echo Yii::t('admin','Backup Database'); ?></a>

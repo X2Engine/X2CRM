@@ -43,9 +43,9 @@ Yii::import('application.modules.user.models.*');
  * @package X2CRM.modules.services.models
  */
 class Services extends X2Model {
-	
+
 	public $account;
-	
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Services the static model class
@@ -75,7 +75,7 @@ class Services extends X2Model {
 			)
 		));
 	}
-    
+
     public function afterFind(){
         if($this->name != $this->id) {
 			$this->name = $this->id;
@@ -85,15 +85,15 @@ class Services extends X2Model {
     }
 
 	/**
-	 * 
+	 *
 	 * @return boolean whether or not to save
 	 */
 	public function afterSave() {
 		$model = $this->getOwner();
-		
+
 		$oldAttributes = $model->getOldAttributes();
-		
-		if($model->escalatedTo != '' && $model->escalatedTo != $oldAttributes['escalatedTo']) {
+
+		if($model->escalatedTo != '' && (!isset($oldAttributes['escalatedTo']) || $model->escalatedTo != $oldAttributes['escalatedTo'])) {
 			$event=new Events;
 			$event->type='case_escalated';
 			$event->user=$this->updatedBy;
@@ -103,14 +103,13 @@ class Services extends X2Model {
 				$notif = new Notification;
 				$notif->user = $model->escalatedTo;
 				$notif->createDate = time();
-				$notif->createdBy = $this->createdBy;
 				$notif->type = 'escalateCase';
 				$notif->modelType = 'Services';
 				$notif->modelId = $model->id;
 				$notif->save();
 			}
 		}
-		
+
 		parent::afterSave();
 	}
 
@@ -136,10 +135,10 @@ class Services extends X2Model {
                         default:
                             $criteria->compare($field->fieldName,$this->$fieldName,true);
                     }
-                    
+
                 }
 
-		
+
 		$dataProvider=new SmartDataProvider(get_class($this), array(
 			'sort'=>array('defaultOrder'=>'id ASC'),
 			'pagination'=>array(
@@ -155,7 +154,7 @@ class Services extends X2Model {
 
 		return $dataProvider;
 	}
-	
+
 	/**
 	 *  Like search but filters by status based on the user's profile
 	 *
@@ -169,7 +168,7 @@ class Services extends X2Model {
 		// $criteria->compare('status', '<>Program Manager investigation');
 
 		foreach($this->getFields(true) as $fieldName => $field) {
-			
+
 			if($fieldName == 'status') { // if status exists
 				// filter statuses based on user's profile
 				$hideStatus = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
@@ -180,7 +179,7 @@ class Services extends X2Model {
 					$criteria->compare('status', '<>'.$hide);
 				}
 			}
-			
+
 			switch($field->type){
 				case 'boolean':
 					$criteria->compare($fieldName,$this->compareBoolean($this->$fieldName), true);
@@ -194,10 +193,10 @@ class Services extends X2Model {
 				default:
 					$criteria->compare($fieldName,$this->$fieldName,true);
 			}
-			
+
 		}
 
-		
+
 		$criteria->together = true;
 		// $criteria->with = array('contactId.company');
 		// field 'account' is not in x2_services table,
@@ -206,10 +205,10 @@ class Services extends X2Model {
 		// with the contact associated with this service case.
 		// Adding the field 'account' to the table x2_services will
 		// cause an SQL error in this function
-		if(isset($_GET['Services']['account'])) { 
+		if(isset($_GET['Services']['account'])) {
 			// $criteria->compare('company.name', $_GET['Services']['account'], true);
 		}
-	
+
 		$dataProvider=new SmartDataProvider(get_class($this), array(
 			'sort'=>array(
 				'defaultOrder'=>'t.assignedTo ASC', // `t` is an SQL placeholder for x2_services, this prevents an SQL error caused by 3 ambiguous 'id' fields in the SQL query: one each from x2_services, x2_contacts, and x2_accounts
@@ -217,7 +216,7 @@ class Services extends X2Model {
 					'account'=>array( // let's us sort by account name
 						'asc'=>'accounts.name',
 						'desc'=>'accounts.name DESC',
-					), 
+					),
 				), */
 			),
 			'pagination'=>array(
@@ -233,7 +232,7 @@ class Services extends X2Model {
 
 		return $dataProvider;
 	}
-	
 
- 
+
+
 }

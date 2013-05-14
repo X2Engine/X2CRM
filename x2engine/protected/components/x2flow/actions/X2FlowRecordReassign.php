@@ -62,8 +62,9 @@ class X2FlowRecordReassign extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
-		if(CActiveRecord::model('User')->exists('username=?',array($this->config['options']['user']))) {	// make sure the user exists
-			$params['model']->assignedTo = $this->config['options']['user'];
+		$user = $this->parseOption('user',$params);
+		if(CActiveRecord::model('User')->exists('username=?',array($user))) {	// make sure the user exists
+			$params['model']->assignedTo = $user;
 			return $params['model']->save();
 		}
 		return false;

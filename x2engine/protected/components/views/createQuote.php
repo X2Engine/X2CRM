@@ -38,6 +38,8 @@
 
 <?php
 
+/*
+ * Javascript for legacy create quote form:
 $productNames = json_encode((object)Product::productNames());
 $prices = json_encode((object)Product::productPrices());
 $defaultCurrency = Yii::app()->params['currency'];
@@ -46,10 +48,10 @@ Yii::app()->clientScript->registerScript("productTableQuoteCreate", "
 $(function() {
 	addProduct('create', '$defaultCurrency', $productNames, $prices);
 	$('#new-quote').hide();
-   	/*
-	$('#create-quote-button').click(function() {
-		". CHtml::ajax(array('update'=>'#history-list-wrapper', 'url'=>Yii::app()->createUrl('/contacts/quickUpdateHistory', array('id'=>$contactId)))) ."
-	}); */
+   	
+	//$('#create-quote-button').click(function() {
+	//	". CHtml::ajax(array('update'=>'#history-list-wrapper', 'url'=>Yii::app()->createUrl('/contacts/quickUpdateHistory', array('id'=>$contactId)))) ."
+	//});
 });
 ", CClientScript::POS_END);
 
@@ -61,6 +63,7 @@ $form=$this->beginWidget('CActiveForm', array(
 $nameField = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'name'));
 $expirationField = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'expirationDate'));
 $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Quotes', 'fieldName'=>'existingProducts'));
+*/
 ?>
 
 <?php echo CHtml::button(
@@ -68,7 +71,8 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 	array('id'=>'show-new-quote-button', 'onclick'=>'quickQuote.openForm();', 'class'=>'x2-button')
 ); ?>
 
-
+<?php /*
+ * Legacy create quote form:
 <div id="new-quote">
 <b><?php echo Yii::t('quotes', 'New Quote'); ?></b>
 <br><br>
@@ -169,3 +173,5 @@ $existingProductsField = Fields::model()->findByAttributes(array('modelName'=>'Q
 </div>
 <?php $this->endWidget(); ?>
 
+*/
+?>

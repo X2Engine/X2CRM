@@ -120,7 +120,7 @@ class ResponseBehavior extends CBehavior {
 				$message .= ob_get_contents();
 				ob_end_clean();
 			}
-			self::respond(self::$_isConsole ? $message : CHtml::encode($message), true);
+			self::respond($message, true);
 		}
 	}
 
@@ -157,7 +157,24 @@ class ResponseBehavior extends CBehavior {
 				$message .= "();\n";
 			}
 		}
-		self::respond(self::$_isConsole ? $message : CHtml::encode($message), true);
+		self::respond($message, true);
+	}
+
+	/**
+	 * Add a new property to the response object.
+	 * @param type $key
+	 * @param type $object
+	 */
+	public function addResponseProperty($key,$object) {
+		$this->mergeResponse(array($key=>$object));
+	}
+
+	/**
+	 * Incorporate more properties into the response.
+	 * @param array $properties
+	 */
+	public function mergeResponse($properties) {
+		$this->response = array_merge($this->response,$properties);
 	}
 
 }

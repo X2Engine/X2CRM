@@ -104,6 +104,7 @@ class InlineEmailAction extends CAction {
 			$sendStatus = array_fill_keys(array('code','message'),'');
 			$failed = false;
 			$message = '';
+
 			if($model->prepareBody()){
 				if($scenario != 'template'){
 					// Sending the email, not merely requesting a template change
@@ -111,23 +112,35 @@ class InlineEmailAction extends CAction {
 					// $sendStatus = array('code'=>'200','message'=>'sent (testing)');
 					$failed = $sendStatus['code'] != '200';
 					$message = $sendStatus['message'];
-				} else if($model->modelName == 'Quote' && empty($model->templateModel)) {
-					// Fill in the gap with the default / "semi-legacy" quotes view:
-					$model->message = $this->renderPartial('application.modules.quotes.views.quotes.print', array('model' => $model,'email' => true), true);
+				} else if($model->modelName == 'Quote' && empty($model->template)) {
+					// Fill in the gap with the default / "semi-legacy" quotes view
+					$model->message = $this->controller->renderPartial('application.modules.quotes.views.quotes.print', array('model' => $model->targetModel,'email' => true), true);
 				}
 			}
 
 			// Populate response data:
 			$modelHasErrors = $model->hasErrors();
 			$failed = $failed || $modelHasErrors;
-			$this->response = array_merge($this->response, array(
+			$response = array(
 				'scenario' => $scenario,
 				'sendStatus' => $sendStatus,
 				'attributes' => $model->attributes,
 				'modelErrors' => $model->errors,
 				'modelHasErrors' => $modelHasErrors,
 				'modelErrorHtml' => CHtml::errorSummary($model,Yii::t('app', "Please fix the following errors:"), null,array('style'=>'margin-bottom: 5px;')),
-					));
+			);
+			if($scenario == 'template') {
+				// There's a chance the inline email form is switching gears into
+				// quote mode, in which case we need to include templates and
+				// insertable attributes for setting it all up properly:
+				$response['insertableAttributes'] = $model->insertableAttributes;
+				$templates = array(0=>Yii::t('docs','Custom Message')) + Docs::getEmailTemplates($model->modelName=='Quote'?'quote':'email');
+				$response['templateList'] = array();
+				foreach($templates as $id=>$templateName) {
+					$response['templateList'][] = array('id'=>$id,'name'=>$templateName);
+				}
+			}
+			$this->mergeResponse($response);
 
 			self::respond($message,$failed);
 		}else{

@@ -76,19 +76,19 @@ $form=$this->beginWidget('CActiveForm', array(
 		}
 
 		?>
-		
+
 
 		<?php echo $form->label($model, 'allDay', array('class'=>'dialog-label')); ?>
 		<?php echo $form->checkBox($model, 'allDay', array('onChange'=>'giveSaveButtonFocus();', 'disabled'=>'disabled')); ?>
 	</div>
-	
+
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,'priority', array('class'=>'dialog-label')); ?>
-		<?php 
+		<?php
 		$priorityArray = array(
-				'Low'=>Yii::t('actions','Low'),
-				'Medium'=>Yii::t('actions','Medium'),
-				'High'=>Yii::t('actions','High')
+				'1'=>Yii::t('actions','Low'),
+				'2'=>Yii::t('actions','Medium'),
+				'3'=>Yii::t('actions','High')
 			);
 		echo $priorityArray[$model->priority]; ?>
 		<?php /*

@@ -48,6 +48,7 @@
  * @property FlowParams[] $flowParams
  */
 
+Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
 
@@ -187,7 +188,10 @@ class X2Flow extends CActiveRecord {
 	public static function trigger($triggerName,$params=array()) {
 		if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH)	// ...have we delved too deep?
 			return;
-		
+			
+		if(isset($params['model']) && (!is_object($params['model']) || !($params['model'] instanceof X2Model)))	// Invalid model provided
+			return false;
+				
 		self::$_triggerDepth++;	// increment stack depth before doing anything that might call X2Flow::trigger()
 		
 		$flowAttributes = array('triggerType'=>$triggerName);
@@ -195,13 +199,11 @@ class X2Flow extends CActiveRecord {
 		if(isset($params['model']))
 			$flowAttributes['modelClass'] = get_class($params['model']);
 		
-		
-		// file_put_contents('triggerLog.txt',"\n".$triggerName,FILE_APPEND);
-		
 		$flowTraces = array();
+		$flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
 		
 		// find all flows matching this trigger and modelClass
-		foreach(CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes) as $flow) {
+		foreach($flows as &$flow) {
 			
 			$error = '';	//array($flow->name);
 			
@@ -212,7 +214,7 @@ class X2Flow extends CActiveRecord {
 				$trigger = X2FlowTrigger::create($flowData['trigger']);
 				if($trigger === null)
 					$error = 'failed to load trigger class';
-				if(!$trigger->validateRules($params))
+				if(!$trigger->validate($params))
 					$error = 'invalid rules/params';
 				if(!$trigger->check($params))
 					$error = 'conditions not passed';
@@ -230,9 +232,10 @@ class X2Flow extends CActiveRecord {
 				$flowTraces[] = array($flow->name,'invalid flow data');
 			}
 		}
-		// var_dump($flowTraces);
 		// echo '<div class="flowTrace">';
-		
+		// var_dump($flowTraces);
+		// if(!empty($flowTraces))
+			// die();
 		
 		// file_put_contents('triggerLog.txt',$triggerName.":\n",FILE_APPEND);
 		// file_put_contents('triggerLog.txt',print_r($flowTraces,true).":\n",FILE_APPEND);
@@ -240,8 +243,7 @@ class X2Flow extends CActiveRecord {
 		
 		// var_dump($params['model']->getChanges());
 		// echo '</div>';
-		// if(!empty($flowTraces))
-			// die();
+		
 		// $modelClass = '';
 		// if(isset($params['model']))
 			// $modelClass = ' ('.get_class($params['model']).' #'.$params['model']->id.')';
@@ -273,7 +275,7 @@ class X2Flow extends CActiveRecord {
 				}
 			} else {
 				$flowAction = X2FlowAction::create($item);
-				$results[] = array($item['type'],$flowAction->validateRules($params) && $flowAction->execute($params));
+				$results[] = array($item['type'],$flowAction->validate($params) && $flowAction->execute($params));
 			}
 		}
 		return $results;
@@ -286,13 +288,22 @@ class X2Flow extends CActiveRecord {
 	 * @param string $type the X2Fields type for this value
 	 * @return mixed the parsed value
 	 */
-	public static function parseValue($value,$type,&$model=null) {
+	public static function parseValue($value,$type,&$params=null) {
 		
-		if($model !== null) {
+		if($params !== null) {
 			$matches = array();
 			preg_match('/^{([a-z]\w*)}$/i',trim($value),$matches);	// check for a variable
-			if(isset($matches[1]) && $model->hasAttribute($matches[1]))
-				return $model->renderAttribute($matches[1]);
+			if(isset($matches[1])) {
+				if(isset($params[$matches[1]])) {
+					$value = $params[$matches[1]];	// don't return 
+				} elseif(isset($params['model']) && $params['model']->hasAttribute($matches[1])) {
+					if($type === '' || $type === 'text' || $type === 'richtext')
+						return $params['model']->renderAttribute($matches[1],true,true);
+					else
+						return $params['model']->getAttribute($matches[1]);
+					
+				}
+			}
 		}
 		// replaceVariables($str, &$model, $vars = array(), $encode = false)
 		

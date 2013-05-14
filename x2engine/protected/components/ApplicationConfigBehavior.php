@@ -208,17 +208,18 @@ class ApplicationConfigBehavior extends CBehavior {
         setlocale(LC_ALL, 'en_US.UTF-8');
 
         // set base path and theme path globals for JS
-        if($notGuest){
-            $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-            if(isset($profile)){
-                $where = 'fileName = "'.$profile->notificationSound.'"';
-                $uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
-                if(!empty($uploadedBy['uploadedBy'])){
-                    $notificationSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
-                }else{
-                    $notificationSound = Yii::app()->baseUrl.'/uploads/'.$profile->notificationSound;
-                }
-                $yiiString = '
+		if(!$noSession){
+			if($notGuest){
+				$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+				if(isset($profile)){
+					$where = 'fileName = "'.$profile->notificationSound.'"';
+					$uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
+					if(!empty($uploadedBy['uploadedBy'])){
+						$notificationSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
+					}else{
+						$notificationSound = Yii::app()->baseUrl.'/uploads/'.$profile->notificationSound;
+					}
+					$yiiString = '
                     var	yii = {
                         baseUrl: "'.Yii::app()->baseUrl.'",
                         scriptUrl: "'.Yii::app()->request->scriptUrl.'",
@@ -232,8 +233,8 @@ class ApplicationConfigBehavior extends CBehavior {
                     x2 = {},
                     notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                     ';
-            }else{
-                $yiiString = '
+				}else{
+					$yiiString = '
                 var	yii = {
                     baseUrl: "'.Yii::app()->baseUrl.'",
                     scriptUrl: "'.Yii::app()->request->scriptUrl.'",
@@ -245,9 +246,9 @@ class ApplicationConfigBehavior extends CBehavior {
                 x2 = {},
                 notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                 ';
-            }
-        }else{
-            $yiiString = '
+				}
+			}else{
+				$yiiString = '
 			var	yii = {
 				baseUrl: "'.Yii::app()->baseUrl.'",
 				scriptUrl: "'.Yii::app()->request->scriptUrl.'",
@@ -259,26 +260,26 @@ class ApplicationConfigBehavior extends CBehavior {
 			x2 = {},
 			notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 			';
-        }
-        if(!$noSession){
-            Yii::app()->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
-            $cs = Yii::app()->clientScript;
-            $baseUrl = Yii::app()->request->baseUrl;
-            $jsVersion = '?'.Yii::app()->params->buildDate;
-            /* $cs->scriptMap=array(
-              'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              ); */
-        }
+			}
+
+			Yii::app()->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
+			$cs = Yii::app()->clientScript;
+			$baseUrl = Yii::app()->request->baseUrl;
+			$jsVersion = '?'.Yii::app()->params->buildDate;
+			/* $cs->scriptMap=array(
+			  'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+			  ); */
+		}
     }
 
 }

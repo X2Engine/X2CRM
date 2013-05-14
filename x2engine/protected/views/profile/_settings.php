@@ -102,6 +102,10 @@ $form=$this->beginWidget('CActiveForm', array(
 			<?php echo $form->labelEx($model,'pageHeaderTextColor'); ?>
 			<?php echo $form->textField($model,'pageHeaderTextColor',array('id'=>'pageHeaderTextColor')); ?>
 		</div>
+                <div class="row">
+			<?php echo $form->labelEx($model,'activityFeedWidgetBgColor'); ?>
+                        <?php echo $form->textField($model, 'activityFeedWidgetBgColor', array('id'=>'activityFeedWidgetBgColor')); ?>
+		</div>
 		<div class="row">
 			<?php echo $form->labelEx($model,'backgroundTiling'); ?>
 			<?php echo $form->dropDownList($model,'backgroundTiling',array(
@@ -127,7 +131,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		$this->widget('zii.widgets.CListView', array(
 			'dataProvider'=>$myBackgrounds,
 			'template'=>'{items}{pager}',
-			'itemView'=>'//media/_background',	// refers to the partial view named '_post'
+			'itemView'=>'_background',	// refers to the partial view named '_post'
 			'sortableAttributes'=>array(
 				'fileName',
 				'createDate',
@@ -141,12 +145,12 @@ $form=$this->beginWidget('CActiveForm', array(
             echo CHtml::link(
                     Yii::t('app','None'),
                     '#',
-                    array ( 'onclick'=>"setLoginSound(null,null,null); return false;")
+                    array ( 'onclick'=>"setSound('loginSound',null,null,null); return false;")
             );
             $this->widget('zii.widgets.CListView', array(
                 'dataProvider'=>$myLoginSounds,
                 'template'=>'{items}{pager}',
-                'itemView'=>'//media/_loginSound',
+                'itemView'=>'_sound',
                 'sortableAttributes'=>array(
                     'fileName',
                     'createDate',
@@ -161,12 +165,12 @@ $form=$this->beginWidget('CActiveForm', array(
             echo CHtml::link(
                     Yii::t('app','None'),
                     '#',
-                    array ( 'onclick'=>"setNotificationSound(null,null,null); return false;")
+                    array ( 'onclick'=>"setSound('notificationSound',null,null,null); return false;")
             );
             $this->widget('zii.widgets.CListView', array(
                 'dataProvider'=>$myNotificationSounds,
                 'template'=>'{items}{pager}',
-                'itemView'=>'//media/_notificationSound',
+                'itemView'=>'_sound',
                 'sortableAttributes'=>array(
                     'fileName',
                     'createDate',

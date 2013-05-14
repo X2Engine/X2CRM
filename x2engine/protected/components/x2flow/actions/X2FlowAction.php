@@ -39,20 +39,7 @@
  * 
  * @package X2CRM.components.x2flow
  */
-abstract class X2FlowAction {
-	/**
-	 * $var string the text label for this action
-	 */
-	public $label = '';
-	/**
-	 * $var string the description of this action
-	 */
-	public $info = '';
-	/**
-	 * $var array the config parameters for this action
-	 */
-	public $config = '';
-	
+abstract class X2FlowAction extends X2FlowItem {
 	public $trigger = null;
 
 	/**
@@ -60,58 +47,36 @@ abstract class X2FlowAction {
 	 * @return boolean the result of the execution
 	 */
 	abstract public function execute(&$params);
-	
-	/**
-	 * @return array the param rules.
-	 */
 
-	abstract public function paramRules();
-	
 	/**
 	 * Checks if all the config variables and runtime params are ship-shape
 	 * Ignores param requirements if $params isn't provided
 	 */
-	public function validateRules(&$params=null) {
-		$rules = $this->paramRules();
-		if(!isset($rules['options'],$this->config['options']))
-			return false;
-		$options = &$this->config['options'];
-		
-		if(isset($params['model']) && !is_object($params['model']) || !($params['model'] instanceof X2Model))	// Invalid model provided
+	public function validate(&$params=array()) {
+		$paramRules = $this->paramRules();
+		if(!isset($paramRules['options'],$this->config['options']))
 			return false;
 		
-		if(isset($rules['modelRequired'])) {
+		if(isset($paramRules['modelRequired'])) {
 			if(!isset($params['model']))	// model not provided when required
 				return false;
-			if($rules['modelRequired'] != 1 && $rules['modelRequired'] !== get_class($params['model']))	// model is not the correct type
+			if($paramRules['modelRequired'] != 1 && $paramRules['modelRequired'] !== get_class($params['model']))	// model is not the correct type
 				return false;
 		}
+		return $this->validateOptions($paramRules);
+	}
+
+	/* 
+	 * 
+	 */
+	public function parseOption($name,&$params) {
+		$options = &$this->config['options'];
+		if(!isset($options[$name]['value']))
+			return null;
 		
-		foreach($rules['options'] as &$opt) {	// loop through options defined in paramRules() and make sure they're all set in $config
-			if(!isset($opt['name']) || (isset($opt['optional']) && $opt['optional']))		// don't worry about unnamed or optional params
-				continue;
-			
-			if(!isset($options[$opt['name']]))
-				return false;
-		}
+		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
 		
-		foreach($rules['options'] as $opt) {
-			if(!isset($opt['name']) || (isset($opt['optional']) && $opt['optional']) || $opt['name'] == 'attributes')		// skip ones with no name (special options)
-				continue;
-			$optName = $opt['name'];
-			
-			if(!isset($options[$optName])) {	// option missing from config
-				if(isset($opt['defaultVal']))		// try to use the default value
-					$option[$optName] = $opt['defaultVal'];
-				else	// if not, fail if it was required
-					return false;
-			}
-			if(isset($opt['operator']))	// operators must be valid
-				if(!isset($options[$optName]['operator']) || !in_array($options[$optName]['operator'],$opt['operators']))
-					return false;
-		}
-		return true;
-		// return $this->execute($params);	// no issues so far, try actually running the action
+		return X2Flow::parseValue($options[$name]['value'],$type,$params);
 	}
 
 	/* 
@@ -136,10 +101,11 @@ abstract class X2FlowAction {
 	 * 
 	 * @param CActiveRecord $model the model to set fields on
 	 * @param array $attributes an associative array of attributes
+	 * @param array $params the params array passed to X2Flow::trigger()
 	 * @return boolean whether or not the attributes were valid and set successfully
 	 * 
 	 */
-	public function setModelAttributes(&$model,&$attributeList) {
+	public function setModelAttributes(&$model,&$attributeList,&$params) {
 		foreach($attributeList as &$attr) {
 			if(!isset($attr['name'],$attr['value']))
 				continue;
@@ -150,52 +116,15 @@ abstract class X2FlowAction {
 		return true;
 	}
 
-	/**
-	 * Gets the param rules for the specified action type
-	 * @param string $type name of action class
-	 * @return mixed an array of param rules, or false if the action doesn't exist
-	 */
-	public static function getParamRules($type) {
-		$flowAction = self::create(array('type'=>$type));
-		if($flowAction !== null)
-			return $flowAction->paramRules();
-		return false;
-	}
-
 	public static function getActionTypes() {
 		$types = array();
 		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.actions')) as $file) {
 			if($file === '.' || $file === '..' || $file === 'X2FlowAction.php')
 				continue;
-			$class = X2FlowAction::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
+			$class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
 			if($class !== null)
 				$types[get_class($class)] = $class->title;
 		}
 		return $types;
-	}
-	
-	/**
-	 * Runs the automation action with provided params.
-	 * @return mixed a class extending X2FlowAction with the specified name
-	 */
-	public static function create($config) {
-		if(isset($config['type']) && class_exists($config['type'])) {
-			$flowAction = new $config['type'];
-			$flowAction->config = $config;
-			return $flowAction;
-		}
-		return null;
-	}
-	
-	/**
-	 * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
-	 * @param array an associative array of dropdown options ($value => $label)
-	 * @return array a 2-D array of values and labels
-	 */
-	public static function dropdownForJson($options) {
-		$dropdownData = array();
-		foreach($options as $value => &$label)
-			$dropdownData[] = array($value,Yii::t('studio',$label));
-		return $dropdownData;
 	}
 }

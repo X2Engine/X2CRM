@@ -411,8 +411,8 @@ $(function() {
 
     function playNotificationSound(){
 
-        $('#notification').attr("src", yii.notificationSoundPath);
-        var sound = $("#notification")[0];
+        $('#notificationSound').attr("src", yii.notificationSoundPath);
+        var sound = $("#notificationSound")[0];
         sound.play();
     }
 

@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
 
@@ -75,22 +76,28 @@ class StudioController extends x2base {
 	}
 
 	public function actionTest() {
-		$a = array();
+		echo CRYPT_SALT_LENGTH ;
+		// var_dump($a instanceof X2Model);
+	
+		// $a = array();
+		// $a = array(''=>Yii::t('studio','Custom')) + Docs::getEmailTemplates();
+		// $a = Docs::getEmailTemplates();
+		// var_dump($a);
 		
-		$act = new X2FlowEmail;
-		$act->config = array (
-			'type' => 'X2FlowEmail',
-			'options' => array (
-				'to' => 'me@x2engine.com',
-				'from' => 'mpearson@x2engine.com',
-				'template' => '',
-				'subject' => 'Hey you!',
-				'cc' =>'',
-				'bcc' =>'',
-				'body' => 'test test test test'
-			)
-		);
-		var_dump($act->execute($a));
+		// $act = new X2FlowEmail;
+		// $act->config = array (
+			// 'type' => 'X2FlowEmail',
+			// 'options' => array (
+				// 'to' => 'me@x2engine.com',
+				// 'from' => 'mpearson@x2engine.com',
+				// 'template' => '',
+				// 'subject' => 'Hey you!',
+				// 'cc' =>'',
+				// 'bcc' =>'',
+				// 'body' => 'test test test test'
+			// )
+		// );
+		// var_dump($act->execute($a));
 		
 		// $x = X2FlowTrigger::checkCondition(array('type'=>'time_of_day','operator'=>'<','value'=>'11:30'),$a);
 		// var_dump($x);

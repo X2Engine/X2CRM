@@ -197,8 +197,8 @@ class Fields extends CActiveRecord {
 			$sign = -1;
 		$value = trim($value, "-() $percentSymbol$currencySymbol" . Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency));
 
-		if($value === null || $value === '')
-			return $type=='float'?0.0:0;
+		if($value === null || $value === '') // Turn null string into zero
+			return ($type!='int')?0.0:0;
 		else if (!in_array($type, array('int', 'currency', 'float', 'percentage')))
 			return $value;
 		else if (!preg_match('/^([\d\.,]+)e?[\+\-]?\d*$/', $value)) // Unrecognized numeric string format

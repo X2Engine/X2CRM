@@ -58,7 +58,7 @@ class X2FlowRecordComment extends X2FlowAction {
 		$model->complete = 'Yes';
 		$model->associationId = $params['model']->id;
 		$model->associationType = $params['model']->module;
-		$model->actionDescription = $this->config['options']['comment'];
+		$model->actionDescription = $this->parseOption('comment',$params);
 		$model->assignedTo = $params['model']->assignedTo;
 		$model->visibility = $params['model']->visibility;
 		$action->createDate = time();

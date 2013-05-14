@@ -102,7 +102,7 @@ if(!array_key_exists('template',$messages))
 
 
 if(isset($_POST['data']) && isset($_POST['file'])) {
-
+    ini_set('max_input_vars',9999);
 	foreach($messages as $langPack=>$messageFiles) {
 		if(!isset($_POST['data'][$langPack])) //|| !in_array($_POST['file'],$messageFiles))
 			die('Error: language pack <b>'.strtoupper($langPack).'</b> missing.');

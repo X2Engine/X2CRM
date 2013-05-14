@@ -38,8 +38,6 @@
 <html>
 
   <head>
-    <script src='<?php echo Yii::app()->assetManager->publish('framework/web/js/source/jquery.min.js'); ?>'></script>
-    <script src='<?php echo Yii::app()->assetManager->publish('framework/web/js/source/jui/js/jquery-ui.min.js'); ?>'></script>
 	<meta charset="UTF-8">
   </head>
   <body>

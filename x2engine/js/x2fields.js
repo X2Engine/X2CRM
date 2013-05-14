@@ -55,8 +55,8 @@ x2.fieldUtils = {
 		$(elem)
 			.on("change",".x2fields-operator select",function(){ x2.fieldUtils.updateValueCell(this); })
 			.on("change",".x2fields-attribute select",function() {
-				var li = $(this).closest("li");
-				x2.fieldUtils.updateAttrListItem(li,x2.fieldUtils.attributeCache[li.data("modelClass")]);	// getModelAttributes() should already have been called so we can assume this is cached
+				var fieldset = $(this).closest("fieldset");
+				x2.fieldUtils.updateAttrListItem(fieldset,x2.fieldUtils.attributeCache[fieldset.data("modelClass")]);	// getModelAttributes() should already have been called so we can assume this is cached
 			});
 	
 	},
@@ -140,12 +140,12 @@ x2.fieldUtils = {
 		return attr;
 	},
 	updateAttrListItem:function(elem,attributeList) {
-		var attr = elem.find(".cell.x2fields-attribute select").val();
+		var attr = elem.find(".x2fields-attribute select").val();
 		var selectedAttribute = {};
 		$.extend(selectedAttribute,this.getSelectedAttribute(attr,attributeList));
 		
-		var operatorCell = elem.find(".cell.x2fields-operator");
-		var valueCell = elem.find(".cell.x2fields-value");
+		var operatorCell = elem.find(".x2fields-operator");
+		var valueCell = elem.find(".x2fields-value");
 		
 		if(operatorCell.length)
 			operatorCell.replaceWith(this.createOperatorCell(this.getOperators(selectedAttribute.type)));
@@ -159,18 +159,18 @@ x2.fieldUtils = {
 		var selectedAttribute = {};
 		$.extend(selectedAttribute,this.getSelectedAttribute(attr,attributeList),{value:val});
 		
-		var li = this.templates.conditionForm.clone()	// clone template condition form
-			.data("modelClass",modelClass)
+		var li = this.templates.conditionForm.clone();	// clone template condition form
+		var fieldset = li.children("fieldset").first();
+		fieldset.data("modelClass",modelClass)
 		
 		var attributeCell = this.createAttributeCell(attributeOptions,attr);
 		var operatorCell = this.createOperatorCell(this.getOperators(selectedAttribute.type),op);
 		var valueCell = this.createValueCell(selectedAttribute);
 		
-		var content = li.find('.content').first();
-		attributeCell.appendTo(content);				// add the attribute selector
+		attributeCell.appendTo(fieldset);				// add the attribute selector
 		if(op !== false)
-			operatorCell.appendTo(content)	// add the operator selector (unless we don't want to)
-		valueCell.appendTo(content);		// add the value field
+			operatorCell.appendTo(fieldset)	// add the operator selector (unless we don't want to)
+		valueCell.appendTo(fieldset);		// add the value field
 		if(op === 'empty' || op === 'notEmpty' || op === 'changed')
 			valueCell.hide();
 		
@@ -182,13 +182,8 @@ x2.fieldUtils = {
 		return cell;
 	},
 	createOperatorCell:function(operators,val) {
-		var operatorOptions = [];
-		for(var i=0;i<operators.length;i++) {
-			if(x2.operatorList[operators[i]])
-				operatorOptions.push([operators[i],x2.operatorList[operators[i]]]);
-		}
 		var cell = this.templates.conditionOpCell.clone();	// clone template cell
-		cell.find("select").replaceWith(this.createInput({"type":"dropdown","name":"operator","options":operatorOptions,"value":val}))	// create dropdown
+		cell.find("select").replaceWith(this.buildOperatorDropdown(operators,val))	// create dropdown
 		return cell;
 	},
 	createValueCell:function(attributes) {
@@ -202,13 +197,13 @@ x2.fieldUtils = {
 	 */
 	updateValueCell:function(elem) {
 		var operator = $(elem).val();
-		var valueCell = $(elem).closest('.content').find('.cell.x2fields-value');
+		var valueCell = $(elem).closest('fieldset').find('.x2fields-value');
 		
 		if(operator === 'empty' || operator === 'notEmpty' || operator === 'changed') {	//if set to empty or notempty, hide the value cell
 			valueCell.fadeOut(222);
 		} else {
 			valueCell.fadeIn(222);
-			if(valueCell.closest("li").data("multiple"))	// if this is a multiselect field, decide whether to allow multiple selections
+			if(valueCell.closest("fieldset").data("multiple"))	// if this is a multiselect field, decide whether to allow multiple selections
 				valueCell.find("select").attr("multiple",(operator === 'list' || operator === 'notList'? "multiple" : null));
 		}
 	},
@@ -347,6 +342,17 @@ x2.fieldUtils = {
 			default:
 				return $('<input type="text" />').attr(safeAttributes);
 		}
+	},
+	/* 
+	 * Generates an operator dropdown from a flat array of operators, using x2.operatorList to get human-readable labels
+	 */
+	buildOperatorDropdown:function(operators,val) {
+		var operatorOptions = [];
+		for(var i=0;i<operators.length;i++) {
+			if(x2.operatorList[operators[i]])
+				operatorOptions.push([operators[i],x2.operatorList[operators[i]]]);
+		}
+		return this.createInput({"type":"dropdown","name":"operator","options":operatorOptions,"value":val});
 	},
 	/* 
 	 * Generates an HTML <select> element with the specified name and options

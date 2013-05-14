@@ -351,7 +351,7 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 						$('#Opportunity_accountName').val($('#create-opportunity').data('account-name'));
 					if($('#create-opportunity').data('assigned-to') != undefined)
 						$('#Opportunity_assignedTo_assignedToDropdown').val($('#create-opportunity').data('assigned-to'));
-				});
+				},'html');
 			} else {
 				x2CreateOpportunityDialog.dialog('open');
 			}

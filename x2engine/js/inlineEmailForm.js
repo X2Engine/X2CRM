@@ -88,9 +88,16 @@ $(function() {
 /**
  * Toggles the inline email form open or closed. Scrolls to the email form and animates 
  * the form sliding open. Alternatively, slides the form closed.
+ *
+ * The optional "mode" parameter is used when opening the inline email form with
+ * a different model, i.e. a quote.
  */
-function toggleEmailForm() {
-	
+function toggleEmailForm(mode) {
+	mode = (typeof mode == 'undefined') ? 'default' : mode;
+	if(typeof quickQuote != 'undefined') {
+		if(quickQuote.inlineEmailMode != mode)
+			quickQuote.resetInlineEmail();
+	}
 	
 	if($('#inline-email-form .wide.form').hasClass('hidden')) {
 		$('#inline-email-form .wide.form').removeClass('hidden');
@@ -160,11 +167,7 @@ function setupInlineEmailForm() {
 	$('#email-template').change(function() {
 		var template = $(this).val();
 		if(template != "0") {
-			var proceed = true;
-			var noChange = ! window.inlineEmailEditor.checkDirty();
-			if(!noChange)
-				proceed = confirm($('#template-change-confirm').text());
-			if(proceed) {
+			if(inlineEmailSwitchConfirm()) {
 				window.inlineEmailEditor.updateElement();
 				jQuery.ajax({
 					'type':'POST',
@@ -179,6 +182,14 @@ function setupInlineEmailForm() {
 			}
 		}
 	});
+}
+
+function inlineEmailSwitchConfirm() {
+	var proceed = true;
+	var noChange = ! window.inlineEmailEditor.checkDirty();
+	if(!noChange)
+		proceed = confirm($('#template-change-confirm').text());
+	return proceed;
 }
 
 /**

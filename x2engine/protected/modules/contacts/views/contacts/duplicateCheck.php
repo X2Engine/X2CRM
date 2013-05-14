@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = $newRecord->name; 
+$this->pageTitle = $newRecord->name;
 $authParams['assignedTo'] = $newRecord->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
@@ -98,10 +98,10 @@ foreach($duplicates as $duplicate){
 	echo '<div id="'.$duplicate->firstName.'-'.$duplicate->lastName.'">';
 	echo '<div class="page-title"><h2><span class="no-bold">',Yii::t('app','Possible Match:'),'</span> ';
 	echo $duplicate->firstName,' ',$duplicate->lastName,'</h2></div>';
-	
+
 	$this->renderPartial('application.components.views._detailView',array('model'=>$duplicate,'modelName'=>'contacts'));
     echo "<span style='float:left'>";
-    echo CHtml::ajaxButton("Discard New Record",$this->createUrl('/contacts/discardNew'),array(
+    echo CHtml::ajaxButton("Keep This Record",$this->createUrl('/contacts/discardNew'),array(
         'type'=>'POST',
         'data'=>array('ref'=>$ref,'action'=>null,'id'=>$duplicate->id,'newId'=>$newRecord->id),
         'success'=>'function(data){

@@ -70,7 +70,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Create User'),array('/users/create')); ?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Manage Users'),array('/users/admin')); ?></div>
-        <?php if(Yii::app()->user->checkAccess('AdminEditRoleAccess')) { ?><div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Access Rules'),array('/admin/editRoleAccess')); ?><br><?php echo Yii::t('admin','Change access rules for roles');?></div><?php } ?>
+        <?php if(Yii::app()->params->edition==='pro') { ?><div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Access Rules'),array('/admin/editRoleAccess')); ?><br><?php echo Yii::t('admin','Change access rules for roles');?></div><?php } ?>
 	</div><br>
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Invite Users'),array('/users/inviteUsers')); ?><br><?php echo Yii::t('admin','Send invitation emails to create X2Engine accounts');?></div>
@@ -92,7 +92,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),array('/admin/roundRobinRules')); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?></div>
 	</div><br>
 	<div class="row">
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Web Tracker Setup'),array('/marketing/webTracker')); ?><br><?php echo Yii::t('admin','Configure and embed visitor tracking on your website');?></div>
+		<?php if(Yii::app()->params->edition==='pro'){ ?><div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Web Tracker Setup'),array('/marketing/webTracker')); ?><br><?php echo Yii::t('admin','Configure and embed visitor tracking on your website');?></div><?php } ?>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Workflows'),array('/workflow/index')); ?><br><?php echo Yii::t('admin','Create and manage workflows');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Workflow Settings'),array('/admin/workflowSettings')); ?><br><?php echo Yii::t('admin','Change advanced workflow settings');?></div>
 	</div><br>

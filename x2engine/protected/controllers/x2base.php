@@ -379,7 +379,7 @@ abstract class x2base extends X2Controller {
          */
 
         //add any additional tags to be passed over here
-        $tags_with_urls = "/(<a[^>]*>.*<\/a>)|(<img[^>]*>)|(<iframe[^>]*>.*<\/iframe>)/i";
+        $tags_with_urls = "/(<a[^>]*>.*<\/a>)|(<img[^>]*>)|(<iframe[^>]*>.*<\/iframe>)|(<script[^>]*>.*<\/script>)/i";
         $text_to_add_links = preg_split($tags_with_urls, $text, NULL, PREG_SPLIT_OFFSET_CAPTURE);
         $matches = array();
         preg_match_all($tags_with_urls, $text, $matches, PREG_OFFSET_CAPTURE);
@@ -558,7 +558,7 @@ abstract class x2base extends X2Controller {
 						->from('x2_subscribe_contacts')
 						->where("contact_id={$model->id}")
 						->queryAll();
-				
+
 				$datetime = Formatter::formatLongDateTime(time());
 				$modelLink = CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/' . $model->id));
 				$subject = "X2CRM: {$model->name} updated";

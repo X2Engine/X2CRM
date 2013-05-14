@@ -217,10 +217,10 @@ class InlineEmail extends CFormModel {
 	 * are required, and password needs to be authenticated.
 	 * @return array
 	 */
-	public function rules(){
+	public function rules() {
 		return array(
 			array('to, subject', 'required','on'=>'custom'),
-			array('modelName,modelId', 'required', 'on' => 'template'),
+			// array('modelName,modelId', 'required', 'on' => 'template'),
 			array('message', 'required', 'on' => 'custom'),
 			array('to,cc,bcc', 'parseMailingList'),
 			array('emailSendTime', 'date', 'allowEmpty' => true, 'timestampAttribute' => 'emailSendTimeParsed'),
@@ -232,7 +232,7 @@ class InlineEmail extends CFormModel {
 	 * Declares attribute labels.
 	 * @return array
 	 */
-	public function attributeLabels(){
+	public function attributeLabels() {
 		return array(
 			'from' => Yii::t('app', 'From:'),
 			'to' => Yii::t('app', 'To:'),
@@ -256,7 +256,7 @@ class InlineEmail extends CFormModel {
 	 * @param bool $re Whether to return the pattern as a regular expression
 	 * @param string $reFlags PCRE flags to use in the expression, if $re is enabled.
 	 */
-	public static function insertedPattern($name, $inside, $re = 0, $reFlags = ''){
+	public static function insertedPattern($name, $inside, $re = 0, $reFlags = '') {
 		$tn = constant('self::'.strtoupper($name.'tag'));
 		$tag = "<!--Begin$tn-->~inside~<!--End$tn--!>";
 		if($re)
@@ -271,8 +271,8 @@ class InlineEmail extends CFormModel {
 	 *
 	 * @return type
 	 */
-	public function getActionHeader(){
-		if(!isset($this->_actionHeader)){
+	public function getActionHeader() {
+		if(!isset($this->_actionHeader)) {
 
 			// Add email headers to the top of the action description's body
 			// so that the resulting recorded action has all the info of the
@@ -285,13 +285,13 @@ class InlineEmail extends CFormModel {
 			$header .= CHtml::tag('strong', array(), Yii::t('app','From: ')).CHtml::encode($fromString).'<br />';
 			// Put in recipient lists, and if any correspond to contacts, make links
 			// to them in place of their names.
-			foreach(array('to', 'cc', 'bcc') as $recList){
-				if(!empty($this->mailingList[$recList])){
+			foreach(array('to', 'cc', 'bcc') as $recList) {
+				if(!empty($this->mailingList[$recList])) {
 					$header .= CHtml::tag('strong', array(), ucfirst($recList).': ');
-					foreach($this->mailingList[$recList] as $target){
-						if($this->recipientContacts[$target[1]] != null){
+					foreach($this->mailingList[$recList] as $target) {
+						if($this->recipientContacts[$target[1]] != null) {
 							$header .= $this->recipientContacts[$target[1]]->link;
-						}else{
+						} else {
 							$header .= CHtml::encode("\"{$target[0]}\"");
 						}
 						$header .= CHtml::encode(" <{$target[1]}>,");
@@ -301,7 +301,7 @@ class InlineEmail extends CFormModel {
 			}
 
 			// Include special quote information if it's a quote being issued or emailed to a random contact
-			if($this->modelName == 'Quote'){
+			if($this->modelName == 'Quote') {
 				$header .= '<hr />';
 				$header .= CHtml::tag('strong', array(), Yii::t('quotes', $this->targetModel->type == 'invoice' ? 'Invoice' : 'Quote')).' &#35;'.$this->targetModel->id;
 				$header .= ' '.CHtml::encode($this->targetModel->link.' ('.$this->targetModel->status.')').', '.Yii::t('app', 'Created').' '.$this->targetModel->renderAttribute('createDate');
@@ -310,10 +310,10 @@ class InlineEmail extends CFormModel {
 			}
 
 			// Attachments info (include links to media items if
-			if(!empty($this->attachments)){
+			if(!empty($this->attachments)) {
 				$header .= '<hr />';
 				$header .= CHtml::tag('strong', array(), Yii::t('media', 'Attachments:'))."<br />";
-				foreach($this->attachments as $attachment){
+				foreach($this->attachments as $attachment) {
 					$header .= CHtml::tag('span', array('class' => 'email-attachment-text'), $attachment['filename']).'<br />';
 				}
 			}
@@ -341,15 +341,15 @@ class InlineEmail extends CFormModel {
 	 * Magic getter for {@link insertableAttributes}
 	 * @return array
 	 */
-	public function getInsertableAttributes(){
-		if(!isset($this->_insertableAttributes)){
+	public function getInsertableAttributes() {
+		if(!isset($this->_insertableAttributes)) {
 			$ia = array();
-			if((bool) $this->targetModel){
+			if($this->targetModel !== false) {
 
 				$labelFormat = '{attr}';
 				$headers = array();
 				$models = array();
-				switch($this->modelName){
+				switch($this->modelName) {
 					case 'Quote':
 						// There will be many more models whose attributes we want
 						// to insert, so prefix each one with the model name to
@@ -387,13 +387,13 @@ class InlineEmail extends CFormModel {
 
 				$headers = array_map(function($e){return Yii::t('app', $e);}, $headers);
 
-				foreach($headers as $modelName => $title){
+				foreach($headers as $modelName => $title) {
 					$model = $models[$modelName];
-					if($model instanceof CActiveRecord){
+					if($model instanceof CActiveRecord) {
 						$ia[$title] = array();
 						$friendlyName = Yii::t('app', rtrim($modelName, 's'));
 						foreach($model->attributeLabels() as $fieldName => $label){
-							$attr = trim($this->targetModel->renderAttribute($fieldName, false));
+							$attr = trim($model->renderAttribute($fieldName, false));
 							$fullLabel = strtr($labelFormat, array(
 								'{model}' => $friendlyName,
 								'{attr}' => $label
@@ -413,14 +413,14 @@ class InlineEmail extends CFormModel {
 	 * Magic getter for {@link phpMailer}
 	 * @return \PHPMailer
 	 */
-	public function getMailer(){
-		if(!isset($this->_phpMailer)){
+	public function getMailer() {
+		if(!isset($this->_phpMailer)) {
 			require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
 
 			$phpMail = new PHPMailer(true); // the true param means it will throw exceptions on errors, which we need to catch
 			$phpMail->CharSet = 'utf-8';
 
-			switch(Yii::app()->params->admin->emailType){
+			switch(Yii::app()->params->admin->emailType) {
 				case 'sendmail':
 					$phpMail->IsSendmail();
 					break;
@@ -433,7 +433,7 @@ class InlineEmail extends CFormModel {
 					$phpMail->Host = Yii::app()->params->admin->emailHost;
 					$phpMail->Port = Yii::app()->params->admin->emailPort;
 					$phpMail->SMTPSecure = Yii::app()->params->admin->emailSecurity;
-					if(Yii::app()->params->admin->emailUseAuth == 'admin'){
+					if(Yii::app()->params->admin->emailUseAuth == 'admin') {
 						$phpMail->SMTPAuth = true;
 						$phpMail->Username = Yii::app()->params->admin->emailUser;
 						$phpMail->Password = Yii::app()->params->admin->emailPass;
@@ -448,10 +448,10 @@ class InlineEmail extends CFormModel {
 		return $this->_mailer;
 	}
 
-	public function getRecipientContacts(){
-		if(!isset($this->_recipientContacts)){
+	public function getRecipientContacts() {
+		if(!isset($this->_recipientContacts)) {
 			$contacts = array();
-			foreach($this->recipients as $target){
+			foreach($this->recipients as $target) {
 				$contacts[$target[1]] = Contacts::model()->findByAttributes(array('email' => $target[1]));
 			}
 			$this->_recipientContacts = $contacts;
@@ -463,12 +463,12 @@ class InlineEmail extends CFormModel {
 	 * Magic getter for {@link recipients}
 	 * @return array
 	 */
-	public function getRecipients(){
-		if(empty($this->_recipients)){
+	public function getRecipients() {
+		if(empty($this->_recipients)) {
 			$this->_recipients = array();
-			foreach(array('to', 'cc', 'bcc') as $recList){
-				if(!empty($this->mailingList[$recList])){
-					foreach($this->mailingList[$recList] as $target){
+			foreach(array('to', 'cc', 'bcc') as $recList) {
+				if(!empty($this->mailingList[$recList])) {
+					foreach($this->mailingList[$recList] as $target) {
 						$this->_recipients[] = $target;
 					}
 				}
@@ -485,8 +485,8 @@ class InlineEmail extends CFormModel {
 	 *
 	 * @return string
 	 */
-	public function getSignature(){
-		if(!isset($this->_signature)){
+	public function getSignature() {
+		if(!isset($this->_signature)) {
 			$this->_signature = $this->getUserProfile()->getSignature(true);
 		}
 		return $this->_signature;
@@ -495,11 +495,14 @@ class InlineEmail extends CFormModel {
 	/**
 	 * Magic getter for {@link targetModel}
 	 */
-	public function getTargetModel(){
-		if(!isset($this->_targetModel)){
-			$this->_targetModel = false;
-			if(isset($this->modelId, $this->modelName)){
+	public function getTargetModel() {
+		if(!isset($this->_targetModel)) {
+			if(isset($this->modelId,$this->modelName)) {
 				$this->_targetModel = X2Model::model($this->modelName)->findByPk($this->modelId);
+				if($this->_targetModel === null)
+					$this->_targetModel = false;
+			} else {
+				$this->_targetModel = false;
 			}
 //			if(!(bool) $this->_targetModel)
 //				throw new Exception('InlineEmail used on a target model name and primary key that matched no existing record.');
@@ -533,15 +536,15 @@ class InlineEmail extends CFormModel {
 	 * Magic getter for {@link trackingImage}
 	 * @return type
 	 */
-	public function getTrackingImage(){
-		if(!isset($this->_uniqueId, $this->_trackingImage)){
+	public function getTrackingImage() {
+		if(!isset($this->_uniqueId, $this->_trackingImage)) {
 			$this->_trackingImage = null;
 			$trackUrl = null;
-			if(!Yii::app()->params->noSession){
+			if(!Yii::app()->params->noSession) {
 				$trackUrl = Yii::app()->controller->createAbsoluteUrl('actions/emailOpened', array('uid' => $this->uniqueId, 'type' => 'open'));
-			}else{
+			} else {
 				$file = realpath(Yii::app()->basePath.'/../webLeadConfig.php');
-				if($file){
+				if($file) {
 					include($file);
 					$trackUrl = "$url/index.php/actions/emailOpened?uid={$this->uniqueId}&type=open";
 				}
@@ -555,7 +558,7 @@ class InlineEmail extends CFormModel {
 	/**
 	 * Magic setter for {@link uniqueId}
 	 */
-	public function getUniqueId(){
+	public function getUniqueId() {
 		if(empty($this->_uniqueId))
 			$this->_uniqueId = md5(uniqid(rand(), true));
 		return $this->_uniqueId;
@@ -565,7 +568,7 @@ class InlineEmail extends CFormModel {
 	 * Magic setter for {@link uniqueId}
 	 * @param string $value
 	 */
-	public function setUniqueId($value){
+	public function setUniqueId($value) {
 		$this->_uniqueId = $value;
 	}
 
@@ -573,13 +576,13 @@ class InlineEmail extends CFormModel {
 	 * Magic getter for {@link userProfile}
 	 * @return Profile
 	 */
-	public function getUserProfile(){
-		if(!isset($this->_userProfile)){
-			if(empty($this->_userProfile)){
-				if(Yii::app()->params->noSession){
+	public function getUserProfile() {
+		if(!isset($this->_userProfile)) {
+			if(empty($this->_userProfile)) {
+				if(Yii::app()->params->noSession) {
 					// As a last resort: use admin
 					$this->_userProfile = Profile::model()->findByPk(1);
-				}else{
+				} else {
 					// By default: if no profile was defined, and it's in a web
 					// session, use the current user's profile.
 					$this->_userProfile = Yii::app()->params->profile;
@@ -593,7 +596,7 @@ class InlineEmail extends CFormModel {
 	 * Magic setter for {@link userProfile}
 	 * @param Profile $profile
 	 */
-	public function setUserProfile(Profile $profile){
+	public function setUserProfile(Profile $profile) {
 		$this->_userProfile = $profile;
 	}
 
@@ -603,11 +606,11 @@ class InlineEmail extends CFormModel {
 	 * @param string $attribute
 	 * @param array $params
 	 */
-	public function parseMailingList($attribute, $params = array()){
+	public function parseMailingList($attribute, $params = array()) {
 		$splitString = explode(',', $this->$attribute);
 		$invalid = false;
 
-		foreach($splitString as &$token){
+		foreach($splitString as &$token) {
 
 			$token = trim($token);
 			if(empty($token))
@@ -622,11 +625,11 @@ class InlineEmail extends CFormModel {
 			elseif(strlen($token) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $token, $matches)){ // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
 				if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  // (with or without quotes)
 					$this->mailingList[$attribute][] = array($matches[1], $matches[2]);
-				}else{
+				} else {
 					$invalid = true;
 					break;
 				}
-			}else{
+			} else {
 				$invalid = true;
 				break;
 			}
@@ -640,17 +643,17 @@ class InlineEmail extends CFormModel {
 	 * Inserts a signature into the body, if none can be found.
 	 * @param array $wrap Wrap the signature in tags (index 0 opens, index 1 closes)
 	 */
-	public function insertSignature($wrap=array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>')){
-		if(preg_match(self::insertedPattern('signature', '(.*)', 1, 'um'), $this->message, $matches)){
+	public function insertSignature($wrap=array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>')) {
+		if(preg_match(self::insertedPattern('signature', '(.*)', 1, 'um'), $this->message, $matches)) {
 			$this->_signature = $matches[1];
-		}else{
+		} else {
 			$sig = self::insertedPattern('signature', $this->signature);
 			if(count($wrap) >= 2) {
 				$sig = $wrap[0].$sig.$wrap[1];
 			}
-			if(strpos($this->message, '{signature}')){
+			if(strpos($this->message, '{signature}')) {
 				$this->message = str_replace('{signature}', $sig, $this->message);
-			}else if($this->scenario != 'custom'){
+			}else if($this->scenario != 'custom') {
 				$this->insertInBody($sig);
 			}
 		}
@@ -664,24 +667,24 @@ class InlineEmail extends CFormModel {
 	 * @param bool $replace Reset the image markup and unique ID, and replace
 	 * 	the existing tracking image.
 	 */
-	public function insertTrackingImage($replace = false){
+	public function insertTrackingImage($replace = false) {
 		$insertNew = true;
 		$pattern = self::insertedPattern('track', '(<img.*\/>)', 1, 'u');
-		if(preg_match($pattern, $this->message, $matchImg)){
-			if($replace){
+		if(preg_match($pattern, $this->message, $matchImg)) {
+			if($replace) {
 				// Reset unique ID and insert a new tracking image with a new unique ID
 				$this->_trackingImage = null;
 				$this->_uniqueId = null;
 				$this->message = replace_string($matchImg[0], self::insertedPattern('track', $this->trackingImage), $this->message);
-			}else{
+			} else {
 				$this->_trackingImage = $matchImg[1];
-				if(preg_match(self::UIDREGEX, $this->_trackingImage, $matchId)){
+				if(preg_match(self::UIDREGEX, $this->_trackingImage, $matchId)) {
 					$this->_uniqueId = $matchId[1];
 					$insertNew = false;
 				}
 			}
 		}
-		if($insertNew){
+		if($insertNew) {
 			$this->insertInBody(self::insertedPattern('track', $this->trackingImage));
 		}
 	}
@@ -693,7 +696,7 @@ class InlineEmail extends CFormModel {
 	 * @param bool $beginning True to insert at the beginning, false to insert at the end.
 	 * @param bool $return True to modify {@link message}; false to return the modified body instead.
 	 */
-	public function insertInBody($content, $beginning = 0, $return = 0){
+	public function insertInBody($content, $beginning = 0, $return = 0) {
 		$insertToken = '{content}';
 		$bodTag = $beginning ? '<body>' : '</body>';
 		$modTag = $beginning ? $bodTag.$insertToken : $insertToken.$bodTag;
@@ -717,27 +720,25 @@ class InlineEmail extends CFormModel {
 	 * Prepare the email body for sending or customization by the user.
 	 */
 	public function prepareBody() {
-		if(!$this->validate()){
+		if(!$this->validate()) {
 			return false;
 		}
 		// Replace the existing body, if any, with a template, i.e. for initial
 		// set-up or an automated email.
-		if($this->scenario == 'template'){
+		if($this->scenario === 'template') {
 			// Get the template and associated model
 
-			if(!empty($this->templateModel) && (bool) $this->targetModel){
+			if(!empty($this->templateModel)) {
 				// Replace variables in the subject and body of the email
-				if(empty($this->subject)){
-					$this->subject = Docs::replaceVariables($this->templateModel->subject, $this->targetModel);
+				if(empty($this->subject)) {
+					$this->subject = Docs::replaceVariables($this->templateModel->subject,$this->targetModel);
 				}
-				if(!empty($this->targetModel)){
-					$this->message = Docs::replaceVariables($this->templateModel->text, $this->targetModel, array(
-								'{signature}' => self::insertedPattern('signature', $this->signature)
-							));
-				} else {
-					$this->insertInBody('<span style="color:red">'.Yii::t('app','Error: attempted using a template, but the referenced model was not found.').'</span>');
-				}
-			}else{
+				// if(!empty($this->targetModel)) {
+				$this->message = Docs::replaceVariables($this->templateModel->text,$this->targetModel,array('{signature}'=>self::insertedPattern('signature',$this->signature)));
+				// } else {
+					// $this->insertInBody('<span style="color:red">'.Yii::t('app','Error: attempted using a template, but the referenced model was not found.').'</span>');
+				// }
+			} else {
 				// No template?
 				$this->message = self::emptyBody();
 				$this->insertSignature();
@@ -752,7 +753,7 @@ class InlineEmail extends CFormModel {
 	 *
 	 * @return array
 	 */
-	public function send($createEvent = true){
+	public function send($createEvent = true) {
 		// The tracking image is inserted at the very last moment before sending
 		// so there is no chance of the user monkeying around in the body and
 		// deleting it accidentally.
@@ -766,7 +767,7 @@ class InlineEmail extends CFormModel {
 	/**
 	 * Save the tracking record for this email.
 	 */
-	public function trackEmail($actionId){
+	public function trackEmail($actionId) {
 		$track = new TrackEmail;
 		$track->actionId = $actionId;
 		$track->uniqueId = $this->uniqueId;
@@ -785,24 +786,24 @@ class InlineEmail extends CFormModel {
 	 * email is addressed to and not the model from whose view the inline email
 	 * form (if that's how this model is being used) is submitted.
 	 */
-	public function recordEmailSent($makeEvent = true){
+	public function recordEmailSent($makeEvent = true) {
 
 		// The record, with action header:
 		$emailRecordBody = $this->insertInBody(self::insertedPattern('ah', $this->actionHeader) , 1, 1);
 		$now = time();
-		if((bool) $this->targetModel){
-			if($this->targetModel->hasAttribute('lastActivity')){
+		if((bool) $this->targetModel) {
+			if($this->targetModel->hasAttribute('lastActivity')) {
 				$this->targetModel->lastActivity = $now;
 				$this->targetModel->save();
 			}
 		}
 
-		foreach($this->recipientContacts as $email => $contact){
+		foreach($this->recipientContacts as $email => $contact) {
 			$trackEmail = false; // Only one record need be made: the record for the primary contact
-			if(!empty($contact)){
+			if(!empty($contact)) {
 				// Skip updating last activity if the contact is the email's "target model".
-				if((bool) $this->targetModel){
-					if($this->targetModel->id != $contact->id || $this->targetModel->myModelName != 'Contacts'){
+				if((bool) $this->targetModel) {
+					if($this->targetModel->id != $contact->id || $this->targetModel->myModelName != 'Contacts') {
 						$contact->lastActivity = $now;
 						$contact->update(array('lastActivity'));
 					}
@@ -824,7 +825,7 @@ class InlineEmail extends CFormModel {
 				$action->visibility = isset($contact->visibility) ? $contact->visibility : 1;
 				$action->assignedTo = $this->userProfile->username;
 
-				if($this->modelName == 'Quote'){
+				if($this->modelName == 'Quote') {
 					// The email is in this case a quote or invoice. However, if
 					// the contact is not the primary contact on the quote, the
 					// action should be saved as an ordinary email action. That
@@ -841,8 +842,8 @@ class InlineEmail extends CFormModel {
 					// It all boils down to this: are we sending the email to the
 					// primary contact on the quote? If so, we're "issuing" the
 					// quote or invoice. If not, we're just sending an email.
-					if(!empty($this->targetModel->contact)){
-						if($contact->id == $this->targetModel->contact->id){
+					if(!empty($this->targetModel->contact)) {
+						if($contact->id == $this->targetModel->contact->id) {
 							$trackEmail = true;
 							$action->associationType = strtolower($this->targetModel->myModelName);
 							$action->associationId = $this->targetModel->id;
@@ -851,7 +852,7 @@ class InlineEmail extends CFormModel {
 							$action->assignedTo = $this->targetModel->assignedTo;
 						}
 					}
-				}else if($this->modelName == 'Contacts' && $this->modelId == $contact->id){
+				}else if($this->modelName == 'Contacts' && $this->modelId == $contact->id) {
 					$trackEmail = true;
 				}
 
@@ -861,18 +862,18 @@ class InlineEmail extends CFormModel {
 				// set in stone anyways.
 				$action->disableBehavior('changelog');
 
-				if($action->save()){
+				if($action->save()) {
 					if($trackEmail)
 						$this->trackEmail($action->id);
-					if($makeEvent){
+					if($makeEvent) {
 						$event = new Events;
 						$event->type = 'email_sent';
 						$event->subtype = 'email';
 						$event->associationType = $contact->myModelName;
 						$event->associationId = $contact->id;
 						$event->user = $this->userProfile->username;
-						if($this->modelName == 'Quote'){
-							if($this->targetModel->contact->id == $contact->id){
+						if($this->modelName == 'Quote') {
+							if($this->targetModel->contact->id == $contact->id) {
 								// Special "quote issued" or "invoice issued" event,
 								// but only when the recipient is the primary contact
 								// of the quote:
@@ -899,7 +900,7 @@ class InlineEmail extends CFormModel {
 	 * @throws Exception
 	 * @return array
 	 */
-	public function deliver(){
+	public function deliver() {
 
 		$addresses = $this->mailingList;
 		$subject = $this->subject;
@@ -916,7 +917,7 @@ class InlineEmail extends CFormModel {
 
 				$phpMail->AddReplyTo($this->userProfile->emailAddress, $this->userProfile->fullName);
 				$phpMail->SetFrom($this->userProfile->emailAddress, $this->userProfile->fullName);
-			} else{
+			} else {
 				$phpMail->AddReplyTo($from['address'], $from['name']);
 				$phpMail->SetFrom($from['address'], $from['name']);
 			}
@@ -928,8 +929,8 @@ class InlineEmail extends CFormModel {
 			$phpMail->MsgHTML($message);
 			// $phpMail->Body = $message;
 			// add attachments, if any
-			if($attachments){
-				foreach($attachments as $attachment){
+			if($attachments) {
+				foreach($attachments as $attachment) {
 					if($attachment['temp']){ // stored as a temp file?
 						$file = 'uploads/media/temp/'.$attachment['folder'].'/'.$attachment['filename'];
 						if(file_exists($file)) // check file exists
@@ -951,9 +952,9 @@ class InlineEmail extends CFormModel {
 			$phpMail->Send();
 
 			// delete temp attachment files, if they exist
-			if($attachments){
-				foreach($attachments as $attachment){
-					if($attachment['temp']){
+			if($attachments) {
+				foreach($attachments as $attachment) {
+					if($attachment['temp']) {
 						$file = 'uploads/media/temp/'.$attachment['folder'].'/'.$attachment['filename'];
 						$folder = 'uploads/media/temp/'.$attachment['folder'];
 						if(file_exists($file))
@@ -967,10 +968,10 @@ class InlineEmail extends CFormModel {
 
 			$this->status['code'] = '200';
 			$this->status['message'] = Yii::t('app', 'Email Sent!');
-		}catch(phpmailerException $e){
+		}catch(phpmailerException $e) {
 			$this->status['code'] = '500';
 			$this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine(); //Pretty error messages from PHPMailer
-		}catch(Exception $e){
+		}catch(Exception $e) {
 			$this->status['code'] = '500';
 			$this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine(); //Boring error messages from anything else!
 		}
@@ -982,31 +983,31 @@ class InlineEmail extends CFormModel {
 	 * @param type $phpMail
 	 * @param type $addresses
 	 */
-	public function addEmailAddresses(&$phpMail, $addresses){
+	public function addEmailAddresses(&$phpMail, $addresses) {
 
-		if(isset($addresses['to'])){
-			foreach($addresses['to'] as $target){
+		if(isset($addresses['to'])) {
+			foreach($addresses['to'] as $target) {
 				if(count($target) == 2)
 					$phpMail->AddAddress($target[1], $target[0]);
 			}
-		} else{
-			if(count($addresses) == 2 && !is_array($addresses[0])) // this is just an array of [name, address],
+		} else {
+			if(count($addresses) == 2 && !is_array($addresses[0])) { // this is just an array of [name, address],
 				$phpMail->AddAddress($addresses[1], $addresses[0]); // not an array of arrays
-			else{
+			} else {
 				foreach($addresses as $target){	 //this is an array of [name, address] subarrays
 					if(count($target) == 2)
 						$phpMail->AddAddress($target[1], $target[0]);
 				}
 			}
 		}
-		if(isset($addresses['cc'])){
-			foreach($addresses['cc'] as $target){
+		if(isset($addresses['cc'])) {
+			foreach($addresses['cc'] as $target) {
 				if(count($target) == 2)
 					$phpMail->AddCC($target[1], $target[0]);
 			}
 		}
-		if(isset($addresses['bcc'])){
-			foreach($addresses['bcc'] as $target){
+		if(isset($addresses['bcc'])) {
+			foreach($addresses['bcc'] as $target) {
 				if(count($target) == 2)
 					$phpMail->AddBCC($target[1], $target[0]);
 			}

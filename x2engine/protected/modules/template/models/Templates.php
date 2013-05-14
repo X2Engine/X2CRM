@@ -66,17 +66,6 @@ class Templates extends X2Model {
 		));
 	}
 
-
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
-
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -85,6 +74,6 @@ class Templates extends X2Model {
 		$criteria=new CDbCriteria;
 		return $this->searchBase($criteria);
 	}
-        
-       
+
+
 }

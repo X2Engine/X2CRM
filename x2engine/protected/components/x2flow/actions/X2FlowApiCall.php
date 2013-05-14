@@ -64,16 +64,18 @@ class X2FlowApiCall extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
-		$options = &$this->config['options'];
-	
-		if($options['immediate'] || true) {
+		$url = $this->parseOption('url',$params);
+		$method = $this->parseOption('method',$params);
+		
+		if($this->parseOption('immediate',$params) || true) {
 			$headers = array();
 			if(isset($this->config['attributes']) && !empty($this->config['attributes'])) {
 				$data = http_build_query($this->config['attributes']);
 			
-				if($options['method'] === 'GET') {
-					$options['url'] .= strpos($options['url'],'?')===false? '?' : '&';	// make sure the URL is ready for GET params
-					$options['url'] .= $data;
+				if($method === 'GET') {
+					
+					$url .= strpos($url,'?')===false? '?' : '&';	// make sure the URL is ready for GET params
+					$url .= $data;
 				} else {
 					$headers[] = 'Content-type: application/xml';	// set up headers for POST style data
 					$headers[] = 'Content-Length: '.strlen($data);
@@ -82,13 +84,13 @@ class X2FlowApiCall extends X2FlowAction {
 			}
 			$httpOptions = array(
 				'timeout' => 5,		// 5 second timeout
-				'method' => $options['method'],
+				'method' => $method,
 				'header' => implode("\r\n",$headers),
 			);
 			
 			$context = stream_context_create(array('http'=>$httpOptions));
 			
-			return @FileUtil::getContents($options['url'],false,$context);
+			return @FileUtil::getContents($url,false,$context);
 		}
 	}
 }

@@ -55,9 +55,9 @@ class RecordTagAddTrigger extends X2FlowTrigger {
 	}
 
 	public function check(&$params) {
-		if(count(array_intersect($params['tags'],Tags::parseTags($this->config['options']['tags']))) === 0)	// fail if none of the specified tags are in $params['tags']
+		if(count(array_intersect($params['tags'],Tags::parseTags($this->config['options']['tags']['value']))) === 0)	// fail if none of the specified tags are in $params['tags']
 			return false;
 		
-		return parent::check($params);
+		return $this->checkConditions($params);
 	}
 }

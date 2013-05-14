@@ -211,7 +211,9 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 	
 	/**
-	 * Retrieves a file from the update server.
+	 * Retrieves a file from the update server. It will be stored in a temporary
+	 * directory, "temp", in the web root; to copy it into the live install, use
+	 * restoreBackup on target "temp".
 	 * 
 	 * @param string $route Route relative to the web root of the web root path in the X2CRM source code
 	 * @param string $file Path relative to the X2CRM web root of the file to be downloaded
@@ -347,6 +349,16 @@ class UpdaterBehavior extends ResponseBehavior {
 			$admin->edition = $params['edition'];
 			$admin->unique_id = $params['unique_id'];
 			$admin->save();
+		}
+		// Clear the cache!
+		$cache = Yii::app()->cache;
+		if(!empty($cache))
+			$cache->flush();
+		// Clear the auth cache!
+		Yii::app()->db->createCommand('DELETE FROM x2_auth_cache')->execute();
+		if($scenario == 'update'){
+			// Log everyone out; session data may now be obsolete.
+			Yii::app()->db->createCommand('DELETE FROM x2_sessions')->execute();
 		}
 		// Remove the database backup; it is now invalid/obsolete:
 		if(!$this->keepDbBackup)

@@ -75,25 +75,25 @@ class X2FlowCreateAction extends X2FlowAction {
 		
 		$action = new Actions;
 		
-		$action->subject = $options['subject'];
-		$action->actionDescription = $options['description'];
-		$action->priority = $options['priority'];
-		$action->visibility = $options['visibility'];
+		$action->subject = $this->parseOption('subject',$params);
+		$action->actionDescription = $this->parseOption('description',$params);
+		$action->priority = $this->parseOption('priority',$params);
+		$action->visibility = $this->parseOption('visibility',$params);
 		// $action->
 		
 		if(isset($params['model']))
-			$action->assignedTo = X2Flow::parseValue($options['assignedTo'],'assignment',$params['model']);
+			$action->assignedTo = $this->parseOption('assignedTo',$params);
 		
 		// replaceVariables($str, &$model, $vars = array(), $encode = false)
 		
 		// if(isset($this->config['attributes']))
-			// $this->setModelAttributes($action,$this->config['attributes']);
+			// $this->setModelAttributes($action,$this->config['attributes'],$params);
 		
 		return $action->save();
 		
 		
 		
-		// if($options['reminder']) {
+		// if($this->parseOption('reminder',$params)) {
 			// $notif=new Notification;
 			// $notif->modelType='Actions';
 			// $notif->createdBy=Yii::app()->user->getName();

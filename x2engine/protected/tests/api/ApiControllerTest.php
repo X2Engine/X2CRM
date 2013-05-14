@@ -9,9 +9,11 @@ Yii::import('application.modules.opportunities.models.Opportunity');
 Yii::import('application.modules.products.models.Product');
 Yii::import('application.modules.services.models.Services');
 Yii::import('application.modules.users.models.*');
+Yii::import('application.models.*');
 
 /**
- * CRUD test for X2CRM's REST API
+ * CRUD test for X2CRM's remote API
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ApiControllerTest extends CURLTestCase {
 	
@@ -46,6 +48,10 @@ class ApiControllerTest extends CURLTestCase {
 
 	public function urlFormat() {
 		return 'api/{action}/model/{model}{params}';
+	}
+
+	public function newModel() {
+		return new APIModel('testuser','5f4dcc3b5aa765d61d8327deb882cf99',rtrim(TEST_BASE_URL,'/'));
 	}
 	
 	/**
@@ -137,9 +143,9 @@ class ApiControllerTest extends CURLTestCase {
 			// Response must be valid JSON:
 			$this->assertEquals('array',  gettype($queriedModel));
 			// Test that the attributes are all equal. This is pretty much overkill:
-//			foreach($cr as $attr=>$value) {
-//				$this->assertEquals($models[$class]->$attr,$queriedModel[$attr]);
-//			}
+			foreach($queriedModel as $attr=>$value) {
+				$this->assertEquals($models[$class]->$attr,$value);
+			}
 			// This will be useful for the next tests (lookup by pk, update & delete):
 			$pkValues[$class] = $models[$class]->primaryKey;
 		}
@@ -160,7 +166,7 @@ class ApiControllerTest extends CURLTestCase {
 			file_put_contents('api_response.html',$cr);
 			$this->assertEquals(200,curl_getinfo($ch,CURLINFO_HTTP_CODE));
 			$queriedModel = CJSON::decode($cr);
-			$this->assertEquals('array', gettype($queriedModel));
+			$this->assertEquals('array', gettype($queriedModel), 'Failed asserting that the response from the server was valid JSON.');
 		}
 		
 		// Test "update": modify record by ID:
@@ -197,6 +203,11 @@ class ApiControllerTest extends CURLTestCase {
 				'description' => 'This is edited.',
 			),
 		);
+		$classModulesMap = array_combine(array_keys($modelAttrs),array_keys($modelAttrs));
+		$classModulesMap['Product'] = 'Products';
+		$classModulesMap['Opportunity'] = 'Opportunities';
+		$model = $this->newModel();
+		
 		foreach($pkValues as $class=>$pk) {
 			$urlParam['{model}'] = $class;
 			$post = array_merge($param,$modelAttrs[$class]);
@@ -210,11 +221,17 @@ class ApiControllerTest extends CURLTestCase {
 			curl_setopt($ch,CURLOPT_HTTP200ALIASES,array(500));
 			$cr = curl_exec($ch);
 			file_put_contents('api_response.html',$cr);
-			$this->assertEquals(200,curl_getinfo($ch,CURLINFO_HTTP_CODE));
+			// Choose the expected response code based on the permissions:
+			$authAction = $classModulesMap[$class].'Update';
+			$access = $model->checkAccess($authAction);
+			$expectedResponse = $access?200:403;
+			$this->assertEquals($expectedResponse,curl_getinfo($ch,CURLINFO_HTTP_CODE), $access ? "User does not have permission to $authAction but should." : "Failed asserting testuser does not have access to $authAction");
 			// Refresh the stowed model and verify that it was updated properly:
 			$models[$class]->refresh();
-			foreach($modelAttrs[$class] as $attr=>$value) {
-				$this->assertEquals($value,$models[$class]->$attr);
+			if($access){
+				foreach($modelAttrs[$class] as $attr => $value){
+					$this->assertEquals($value, $models[$class]->$attr, "Failed asserting that attribute $attr was updated in model $class.");
+				}
 			}
 		}
 		

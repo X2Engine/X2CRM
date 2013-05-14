@@ -159,6 +159,7 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_temp_files',
 			'x2_timezones',
 			'x2_timezone_points',
+			'x2_tips'
 		),$tblEditions['pro']);
 		$tblsExclude['pro'] = array(
 			'x2_forwarded_email_patterns',
@@ -172,10 +173,11 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_dropdowns' => 'id>=1000',
 			'x2_fields' => 'custom=1',
 			'x2_form_layouts' => 'id>=1000',
-			'x2_media' => 'id>11',
+			'x2_media' => '(id>11 AND id<1000) OR id>1006',
 			'x2_profile' => 'id>2',
 			'x2_users' => 'id>2',
 			'x2_social' => 'id>1',
+			'x2_docs' => 'id>52 OR id<52' // exclude the sample quote template, which is default
 		);
 
 		/**

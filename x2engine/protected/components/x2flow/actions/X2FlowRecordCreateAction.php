@@ -59,13 +59,11 @@ class X2FlowRecordCreateAction extends X2FlowAction {
 		$action = new Actions;
 		$action->associationType = get_class($params['model']);
 		$action->associationId = $params['model']->id;
-		$action->subject = $this->config['options']['subject'];
-		$action->actionDescription = $this->config['options']['description'];
+		$action->subject = $this->parseOption('subject',$params);
+		$action->actionDescription = $this->parseOption('description',$params);
 		$action->assignedTo = $params['model']->assignedTo;
 		$action->priority = $params['model']->priority;
 		$action->visibility = $params['model']->visibility;
-		
-		// return $this->setModelAttributes($action,$params) && $model->save();
 		
 		return $action->save();
 	}

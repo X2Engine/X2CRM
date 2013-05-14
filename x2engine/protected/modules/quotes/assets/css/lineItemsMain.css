@@ -37,7 +37,7 @@
 /*
 center cells in the quotes table
 */
-.line-item > .input-cell, .adjustment > .input-cell
+.quote-table .input-cell
 {
     text-align: center;
     vertical-align: middle;
@@ -46,7 +46,7 @@ center cells in the quotes table
 .quote-table .text-field
 {
     vertical-align: middle;
-    padding: 0px 4px;
+    padding: 0px 6px !important;
 }
 
 

@@ -63,6 +63,7 @@ $config['components']['log']['routes'] = array(
 		'logFile' => 'test.log',
 	)
 );
+$config['params']['automatedTesting'] = true;
 
 return $config;
 

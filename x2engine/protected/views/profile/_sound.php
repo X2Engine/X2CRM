@@ -33,25 +33,27 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+$type=$data->associationType;
 ?>
-<div class="loginSound-row" id="loginSound_<?php echo $data->id; ?>">
+<div class="<?php echo $type; ?>-row" id="<?php echo $type."_".$data->id; ?>">
 <?php
 echo CHtml::link(
 	$data->fileName,
 	'#',
 	array(
-		'onclick'=>"setLoginSound('".$data->id."','".$data->fileName."','".$data->uploadedBy."'); return false;",
-        'style'=>$data->fileName==Yii::app()->params->profile->loginSound?'font-weight:bold':'',
+		'onclick'=>"setSound('".$type."','".$data->id."','".$data->fileName."','".$data->uploadedBy."'); return false;",
+        'style'=>$data->fileName==Yii::app()->params->profile->$type?'font-weight:bold':'',
         'id'=>'sound-'.$data->id,
 	)
 );
 
-if($data->associationId == Yii::app()->user->getId()) {
+if($data->uploadedBy == Yii::app()->user->getName()) {
 	echo CHtml::link(
 		'[x]',
 		'#',
 		array(
-			'onclick'=>"deleteLoginSound('".$data->id."','".$data->fileName."'); return false;",
+			'onclick'=>"deleteSound('".$type."','".$data->id."'); return false;",
 			'class'=>'delete-link'
 		)
 	);

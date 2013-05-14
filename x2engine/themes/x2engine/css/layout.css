@@ -260,7 +260,7 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 	white-space:nowrap;
 	height:auto;
 	text-shadow:none;
-	min-width:120px;
+	min-width:130px;
 	font-size:12px;
 	float:none;
 	padding:0;
@@ -848,6 +848,7 @@ div.page-title .x2-button.icon {padding:0 5px;}
 div.page-title .x2-button.icon span {height:26px;width:25px;}
 div.page-title .x2-button.email span {background:url(../images/email-button2.png) center center no-repeat;}
 div.page-title .x2-button.edit span {background:url(../images/icons/Edit.png) center center no-repeat;}
+div.page-title .x2-button.copy span {background:url(../images/icons/Copy.png) center center no-repeat;}
 div.page-title .x2-button.sync span {background:url(../images/icons/Sync.png) center center no-repeat;}
 
 #footer {

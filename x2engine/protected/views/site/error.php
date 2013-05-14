@@ -50,7 +50,8 @@ $this->pageTitle=Yii::app()->name . ' - ' . $errorTitle;
     <b><?php echo Yii::t('app','Error Message:');?></b> <?php echo CHtml::encode($message);?><br>
     <b><?php echo Yii::t('app','Stack Trace:');?> </b> <a href="#" id="toggle-trace" style="text-decoration:none;">[<?php echo Yii::t('app','click to toggle display');?>]</a><br><div id="stack-trace" style="display:none;"><?php echo $trace;?></div>
     <b><?php echo Yii::t('app','X2CRM Version:');?> </b> <?php echo $x2version; ?><br>
-    <b><?php echo Yii::t('app','PHP Version:');?> </b> <?php echo $phpversion;?><br><br>
+    <b><?php echo Yii::t('app','PHP Version:');?> </b> <?php echo $phpversion;?><br>
+    <label><?php echo Yii::t('app','Email Address');?></label><?php echo CHtml::textField('email','',array('size'=>40)); ?><br><br>
     <label><span ><?php echo Yii::t('app','Include phpinfo()? (optional, but recommended)');?> <a href="#" style="text-decoration:none;" class="x2-hint" title="<?php echo Yii::t('app',"Detailed server and PHP configuration information that is very helpful for debugging purposes.  However, it can contain sensitive information about your server's configuration, and it is not required to be sent with the report.  We do however, highly recommend it.");?>">[?]</a></span></label>
     <?php echo CHtml::checkBox('phpinfo',true); ?><br><br>
     <b><?php echo Yii::t('app','Please Note:');?> </b><?php echo Yii::t('app','Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.');?>
@@ -80,10 +81,11 @@ $this->pageTitle=Yii::app()->name . ' - ' . $errorTitle;
         }
         $('#error-report-link').hide();
         $('#loading-text').show();
+        var email=$('#email').val();
         $.ajax({
             url:'<?php echo $this->createUrl('site/sendErrorReport'); ?>',
             type:'POST',
-            data:{'report':data},
+            data:{'report':data,'email':email},
             success:function(){
                 $('#loading-text').hide();
                 $('#sent-text').show();

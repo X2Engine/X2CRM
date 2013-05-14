@@ -106,7 +106,8 @@ class Actions extends X2Model {
 			} else {
 				if($association->hasAttribute('name'))
 					$this->associationName = $association->name;
-				$association->updateLastActivity();
+				if($association->asa('X2TimestampBehavior') !== null)
+					$association->updateLastActivity();
 			}
 
 			if($this->associationName == 'None' && $this->associationType != 'none')
@@ -123,6 +124,16 @@ class Actions extends X2Model {
 	 * Fires the onAfterCreate event in {@link X2Model::afterCreate}
 	 */
 	public function afterCreate() {
+        if(empty($this->type)){
+            $event = new Events;
+			$event->timestamp = $this->createDate;
+			$event->visibility = $this->visibility;
+			$event->type = 'record_create';
+			$event->associationType = 'Actions';
+			$event->associationId = $this->id;
+			$event->user = $this->assignedTo;
+			$event->save();
+        }
 		if(empty($this->type) && $this->complete !== 'Yes' && ($this->reminder==1 || $this->reminder=='Yes')) {
 			$event = new Events;
 			$event->timestamp = $this->dueDate;
@@ -133,6 +144,16 @@ class Actions extends X2Model {
 			$event->user = $this->assignedTo;
 			$event->save();
 		}
+        if(Yii::app()->params->noSession || $this->assignedTo!=Yii::app()->user->getName()){
+            $notif = new Notification;
+            $notif->user = $this->assignedTo;
+            $notif->createdBy = (Yii::app()->params->noSession) ? 'API' : Yii::app()->user->getName();
+            $notif->createDate = time();
+            $notif->type = 'create';
+            $notif->modelType = 'Actions';
+            $notif->modelId = $this->id;
+            $notif->save();
+        }
 		parent::afterCreate();
 	}
 
@@ -142,6 +163,7 @@ class Actions extends X2Model {
 	 */
 	public function afterDelete() {
 		X2Model::model('Events')->deleteAllByAttributes(array('associationType'=>'Actions','associationId'=>$this->id,'type'=>'action_reminder'));
+        X2Model::model('ActionText')->deleteByPk($this->id);
 		parent::afterDelete();
 	}
 
@@ -263,9 +285,7 @@ class Actions extends X2Model {
 	public function getLink($length = 30) {
 
 		$text = $this->name;
-        $pieces = explode("\n", $text);
-        $text=$pieces[0];
-		if($length && strlen($text) > $length)
+		if($length && mb_strlen($text,'UTF-8') > $length)
 			$text = CHtml::encode(mb_substr($text,0,$length,'UTF-8').'...');
 		return CHtml::link($text,'#',array('class'=>'action-frame-link','data-action-id'=>$this->id));
 	}
@@ -603,16 +623,4 @@ class Actions extends X2Model {
 			}
 		}
 	}
-
-    function truncateText($str, $length = 30) {
-
-        if (strlen($str) > $length - 3) {
-            if ($length < 3)
-                $str = '';
-            else
-                $str = substr($str, 0, $length - 3);
-            $str .= '...';
-        }
-        return $str;
-    }
 }
