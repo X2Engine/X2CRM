@@ -67,7 +67,7 @@
     for the content to be rendered.
   * In the APIModel class, there should now be a new "modelErrors" property,
     which stores the validation errors for each attribute of the object, returned by
-    (http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)[CActiveRecord.getErrors()]
+    [CActiveRecord.getErrors()](http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)
     on the server. The source of this data is the "modelErrors" property of the
     response from the create and update actions.
 
