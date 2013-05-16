@@ -49,6 +49,7 @@
   when a quote is created or updated. Thus, to correct the total displayed on 
   a quote, open the quote's update view so that the subtotal can be 
   recalculated, and then save it.
+
 ### 3.0.1 ###
 * The API has undergone some fundamental changes in its response format:
   * It always responds in JSON-encoded objects for all actions, with the
