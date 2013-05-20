@@ -338,7 +338,7 @@ CREATE TABLE x2_profile(
 	gridviewSettings		TEXT,
 	formSettings			TEXT,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
-	emailSignature			VARCHAR(512),
+	emailSignature			LONGTEXT,
 	enableFullWidth			TINYINT			DEFAULT 1,
 	showActions				VARCHAR(20),
 	syncGoogleCalendarId	TEXT,

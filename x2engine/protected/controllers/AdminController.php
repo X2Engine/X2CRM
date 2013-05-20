@@ -67,7 +67,7 @@ class AdminController extends Controller {
 	 * depend on, but that aren't directly used by it as behaviors.
 	 * @var type
 	 */
-	public static $dependencies = array('FileUtil','ResponseBehavior');
+	public static $dependencies = array('FileUtil','ResponseBehavior','views/requirements');
 
 	/**
 	 * Stores value of {@link $noRemoteAccess}
@@ -2153,6 +2153,8 @@ class AdminController extends Controller {
 					$auth = Yii::app()->authManager;
 					$auth->removeAuthItem(ucfirst($moduleName) . 'Index');
 					$auth->removeAuthItem(ucfirst($moduleName) . 'Admin');
+                    $auth->removeItemChild('DefaultRole', ucfirst($moduleName) . 'Index');
+                    $auth->removeItemChild('administrator', ucfirst($moduleName) . 'Admin');
 
 					$this->rrmdir('protected/modules/' . $moduleName);
 				} else {
@@ -2217,7 +2219,7 @@ class AdminController extends Controller {
                             $fieldType = 'VARCHAR(250)';
                             break;
                     }
-                    $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, visible, custom) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1');";
+                    $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, linkType) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1', '$field->type', '$field->linkType');";
                 }
             }
             $formLayouts=X2Model::model('FormLayout')->findAllByAttributes(array('model'=>$moduleName));
@@ -2732,6 +2734,9 @@ class AdminController extends Controller {
             $fp = fopen($file, 'a+');
             $tempModel = X2Model::model($model);
             $meta = array_keys($tempModel->attributes);
+            if($model=='Actions'){
+                $meta[]='actionDescription';
+            }
             $meta[] = $model;
             if ($page == 0)
                 fputcsv($fp, $meta);
@@ -2749,6 +2754,9 @@ class AdminController extends Controller {
             foreach ($records as $record) {
                 $tempAttributes = $tempModel->attributes;
                 $tempAttributes = array_merge($tempAttributes, $record->attributes);
+                if($model=='Actions'){
+                    $tempAttributes['actionDescription']=$record->actionDescription;
+                }
                 $tempAttributes[] = $model;
                 fputcsv($fp, $tempAttributes);
             }
@@ -2889,8 +2897,10 @@ class AdminController extends Controller {
         $version = fgetcsv($fp);
         $version = $version[0];
         $tempMeta = fgetcsv($fp);
-        $model = $tempMeta[count($tempMeta) - 1];
-        unset($tempMeta[count($tempMeta) - 1]);
+        while ("" === end($tempMeta)) {
+            array_pop($tempMeta);
+        }
+        $model = array_pop($tempMeta);
         $_SESSION['metaData'] = $tempMeta;
         $_SESSION['model'] = $model;
         $_SESSION['lastFailed'] = "";
@@ -2937,7 +2947,6 @@ class AdminController extends Controller {
                         }else{
                             $model = new $modelType;
                         }
-
                         foreach ($attributes as $key => $value) {
                             if ($model->hasAttribute($key) && isset($value)) {
                                 if($value=="")
@@ -2945,12 +2954,15 @@ class AdminController extends Controller {
                                 $model->$key = $value;
                             }
                         }
+                        $model->disableBehavior('changelog');
+                        $model->disableBehavior('X2TimestampBehavior');
                         $lookup = X2Model::model($modelType)->findByPk($model->id);
                         $lookupFlag = isset($lookup);
                         if($model->validate() || $modelType=="User"){
                             $saveFlag=true;
                             if ($lookupFlag) {
                                 if ($_SESSION['overwrite'] == 1) {
+                                    $lookup->disableBehavior('changelog');
                                     $lookup->delete();
                                 }else{
                                     $saveFlag=false;
@@ -2982,6 +2994,9 @@ class AdminController extends Controller {
                                     $importLink->importId=$_SESSION['importId'];
                                     $importLink->timestamp=time();
                                     $importLink->save();
+                                }
+                                if($modelType=='Actions' && isset($attributes['actionDescription'])){
+                                    $model->actionDescription=$attributes['actionDescription'];
                                 }
                                 isset($_SESSION['counts'][$modelType]) ? $_SESSION['counts'][$modelType]++ : $_SESSION['counts'][$modelType] = 1;
                                 if ($lookupFlag) {
@@ -3127,6 +3142,8 @@ class AdminController extends Controller {
 			}
 
 		} else { // $updaterCheck === False || $versionTest === False; couldn't connect to server
+			// Is it the fault of the user's server?
+			$this->checkRemoteMethods();
 			// Redirect to updater with the appropriate error message
 			$this->render('updater',array('scenario'=>'error','message'=>Yii::t('admin','Error connecting to the updates server.')));
 		}

@@ -36,6 +36,12 @@
 
 Yii::import('application.components.FileUtil');
 Yii::import('application.modules.media.models.Media');
+
+/**
+ * Test case for the {@link Media} model class.
+ * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.tests.unit.modules.media.models
+ */
 class MediaTest extends X2DbTestCase {
 	
 	public $fixtures = array(

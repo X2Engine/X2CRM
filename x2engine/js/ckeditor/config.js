@@ -20,9 +20,10 @@ CKEDITOR.editorConfig = function(config)
 	config.removePlugins = 
         'autogrow,blockquote,showblocks,elementspath,liststyle,tabletools,contextmenu';
 	
-	config.extraPlugins = 'insertattributes';
+	config.extraPlugins = 'insertattributes,confighelper';
     config.disableNativeSpellChecker = false; // allow use of browser's native spellchecker
 	config.resize_dir = 'vertical';
+    config.toolbarCanCollapse = true;
 	
 	config.toolbar_Full = [
 		// {name: 'document',items: ['Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates']},

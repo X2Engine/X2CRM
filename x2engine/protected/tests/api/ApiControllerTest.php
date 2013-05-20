@@ -13,6 +13,7 @@ Yii::import('application.models.*');
 
 /**
  * CRUD test for X2CRM's remote API
+ * @package X2CRM.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ApiControllerTest extends CURLTestCase {

@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 /**
- * @file exportUserData.php
+ * Sample/dummy data exporter.
  * 
  * A command for exporting non-application (human-entered) data into an SQL 
  * script for use as sample data. Requires the "mysqldump" utility to be 
@@ -56,6 +56,8 @@
  * Note also that any files in the uploads folder will also need to be backed up,
  * if the data is to be re-used elsewhere; references to files on the server 
  * will otherwise point to nonexistent files.
+ * @package X2CRM.commands
+ * @author Demitri Morgan <demitri@x2crm.com>
  */
 class SampleDataCommand extends CConsoleCommand {
 

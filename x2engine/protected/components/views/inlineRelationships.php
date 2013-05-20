@@ -55,25 +55,25 @@ function refreshQtip() {
 			});
 		}
 	});
-	
+
 	if($("#Relationships_Contacts_autocomplete").length == 1) {
 		$("#Relationships_Contacts_autocomplete").data( "uiAutocomplete" )._renderItem = function( ul, item ) {
 			var label = "<a style=\"line-height: 1;\">" + item.label;
 			label += "<span style=\"font-size: 0.7em; font-weight: bold;\">";
 			if(item.city || item.state || item.country) {
 				label += "<br>";
-			
+
 				if(item.city) {
 					label += item.city;
 				}
-				
+
 				if(item.state) {
 					if(item.city) {
 						label += ", ";
 					}
 					label += item.state;
 				}
-				
+
 				if(item.country) {
 					if(item.city || item.state) {
 						label += ", ";
@@ -81,11 +81,11 @@ function refreshQtip() {
 					label += item.country;
 				}
 			}
-			
+
 			label += "<br>" + item.assignedTo;
 			label += "</span>";
 			label += "</a>";
-	
+
             return $( "<li>" )
                 .data( "item.autocomplete", item )
                 .append( label )
@@ -151,7 +151,7 @@ if($startHidden == false) {
         array(
 			'name'=>'deletion',
 			'header'=>Yii::t("contacts",'Delete'),
-			'value'=>"CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/delete.png'),'#',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?id='.\$data->id.'&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
+			'value'=>"CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/delete.png'),'#',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?firstId='.\$data->id.'&firstType='.\$data->myModelName.'&secondId=".$model->id."&secondType=".get_class($model)."&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
             'type'=>'raw',
 			'htmlOptions'=>array('style'=>'width:25px;text-align:center;'),
 			'headerHtmlOptions'=>array('style'=>'width:50px'),
@@ -212,7 +212,7 @@ if($startHidden == false) {
 			),
 			array(
 				'class'=>'x2-button',
-				'id'=>'Relationships_Contacts_addbutton',	
+				'id'=>'Relationships_Contacts_addbutton',
 				'style'=>'margin: 0 auto;'
 			)
 		); ?>
@@ -270,7 +270,7 @@ if($startHidden == false) {
 			),
 			array(
 				'class'=>'x2-button',
-				'id'=>'Relationships_Accounts_addbutton',	
+				'id'=>'Relationships_Accounts_addbutton',
 				'style'=>'margin: 0 auto;'
 			)
 		); ?>
@@ -331,7 +331,7 @@ echo CHtml::ajaxButton(
 	),
 	array(
 		'class'=>'x2-button',
-		'id'=>'Relationships_Opportunity_addbutton',	
+		'id'=>'Relationships_Opportunity_addbutton',
 		'style'=>'margin: 0 auto;'
 	)
 );

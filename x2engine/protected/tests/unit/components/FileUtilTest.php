@@ -37,6 +37,9 @@
 Yii::import('application.components.FileUtil');
 
 /**
+ * Test case for {@link FileUtil}
+ * 
+ * @author Demitri Morgan <demitri@x2engine.com>
  * @package X2CRM.tests.unit.components 
  */
 class FileUtilTest extends FileOperTestCase {

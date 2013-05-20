@@ -997,7 +997,7 @@ div.workflow-status {display:block;float:left;line-height:20px;height:24px;width
     border: 1px solid #ccc;
 	padding:5px;
 	background:#fff;
-	margin:5px 0 0 0; 
+	margin:5px 0 0 0;
 	text-align:right;
 	border-radius:			4px 4px 4px 4px;
 	-moz-border-radius:		4px 4px 4px 4px;
@@ -1009,12 +1009,16 @@ div.img-box{
 	float:left;
 	height:45px;
 	width:30px;
+    padding-bottom:5px
 /* 	border:1px solid #ddd;
 	border-width:1px 0 0 1px; */
 	border-radius:4px 0 0 0;
 	-moz-border-radius:4px 0 0 0;
 	-o-border-radius:4px 0 0 0;
 	-webkit-border-radius:4px 0 0 0;
+}
+div.event-text-box{
+    margin-left:50px;
 }
 
 div.img-box.action_complete{
@@ -1024,7 +1028,7 @@ div.img-box.action_reminder{
     background:url(../images/eventIcons/action_reminder.png) no-repeat center center;
 }
 div.img-box.calendar_event{
-    background:url(../images/eventIcons/calendar_event.png) no-repeat center center;
+    background:url() no-repeat center center;
 }
 div.img-box.case_escalated{
     background:url(../images/eventIcons/case_escalated.png) no-repeat center center;
@@ -1196,7 +1200,7 @@ div.img-box.record_create.Groups-create{
 .action.list-view .icon.emailOpened_invoice {	background-image:url(../images/action_email_opened_invoice.png); }
 .action.list-view .icon.call {			background-image:url(../images/action_call.png); }
 .action.list-view .icon.marketing {		background-image:url(../images/action_marketing.png); }
-.action.list-view .icon.event {			background-image:url(../images/action_event.png); }
+.action.list-view .icon.event {			background-image:url(../images/calendar.png); }
 .action.list-view .icon.emailFrom {		background-image:url(../images/action_email.png);}
 .action.list-view .icon.quotes {		background-image:url(../images/quotes.png);}
 div.control-button.icon.complete-button{
@@ -1251,6 +1255,9 @@ img.attachment-img {
 	display:block;
 	max-width:250px;
 }
+span.event-text {
+    display:block;
+}
 span.event-text img.attachment-img {
 	margin:5px;
 	display:block;
@@ -1280,10 +1287,10 @@ div.date-box span {display:block;font-weight:bold;}
 div.date-box .month {background:#444;color:#fff;font-size:8px;line-height:10px;text-transform:uppercase;}
 div.date-box .day {display:block;font-size:12px;line-height:12px;}
 
-.action.list-view div.date-box {
+.list-view div.date-box {
 	height:32px;
 	width:32px;
-	margin:5px 5px 5px -35px;
+	margin:5px 5px 5px 5px;
 	border:2px solid #999;
 	display:block;
 	float:left;
@@ -1292,15 +1299,19 @@ div.date-box .day {display:block;font-size:12px;line-height:12px;}
 	-webkit-border-radius:	4px;
 	-o-border-radius:		4px;
 }
-.action.list-view div.date-box .month {background:#999;font-size:10px;line-height:11px;border-bottom:1px solid #999}
-.action.list-view div.date-box .day {font-size:14px;line-height:20px;}
+.action.list-view div.date-box {
+	margin:5px 5px 5px -35px;
 
-.action.list-view div.date-box.p-3 {border-color:#f25050;}
-.action.list-view div.date-box.p-2 {border-color:#f8ab50;}
-.action.list-view div.date-box.p-1 {border-color:#cbe24b;}
-.action.list-view div.date-box.p-3 .month {background:#f25050;border-color:#f25050;}
-.action.list-view div.date-box.p-2 .month {background:#f8ab50;border-color:#f8ab50;}
-.action.list-view div.date-box.p-1 .month {background:#cbe24b;border-color:#cbe24b;}
+}
+.list-view div.date-box .month {background:#999;font-size:10px;line-height:11px;border-bottom:1px solid #999}
+.list-view div.date-box .day {font-size:14px;line-height:20px;}
+
+.list-view div.date-box.p-3 {border-color:#f25050;}
+.list-view div.date-box.p-2 {border-color:#f8ab50;}
+.list-view div.date-box.p-1 {border-color:#cbe24b;}
+.list-view div.date-box.p-3 .month {background:#f25050;border-color:#f25050;}
+.list-view div.date-box.p-2 .month {background:#f8ab50;border-color:#f8ab50;}
+.list-view div.date-box.p-1 .month {background:#cbe24b;border-color:#cbe24b;}
 
 
 
@@ -1567,4 +1578,27 @@ td.fc-today div div.fc-day-number {
     width:22px;
     float:right;
     cursor:pointer;
+}
+.cke_top {
+    /*padding: 4px 8px 2px 8px !important;
+    margin: 0 0 0 0 !important;*/
+}
+.cke_toolbox_collapser.cke_toolbox_collapser_min {
+    margin: 0 0 2px 0 !important;
+    padding: 0 0 0 0 !important;
+}
+.cke_toolbox_collapser.cke_toolbox_collapser_min .cke_arrow {
+    margin-top: 7px !important;
+    border-bottom-color: transparent !important;
+    border-top-color: #474747 !important;
+}
+.cke_arrow {
+    border-left: 5px solid transparent !important;
+    border-right: 5px solid transparent !important;
+    border-bottom: 5px solid #474747 !important;
+    border-top: 5px solid transparent !important;
+}
+.cke_toolbox_collapser {
+    width: 20px !important;
+    height: 20px !important;
 }

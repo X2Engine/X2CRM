@@ -42,6 +42,7 @@ $(function() {
 	$(document).on('setupInlineEmailEditor',function(){
 		if(window.inlineEmailEditor)
 			window.inlineEmailEditor.destroy(true);
+		$('#email-message').val(x2.inlineEmailOriginalBody);
 		window.inlineEmailEditor = createCKEditor('email-message',{fullPage:true,tabIndex:5,insertableAttributes:x2.insertableAttributes}, function() {
 			if(typeof inlineEmailEditorCallback == 'function') {
 				inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
@@ -219,10 +220,16 @@ function handleInlineEmailActionResponse(data, textStatus, jqXHR) {
 		if(data.scenario == 'template') { // Submission was for getting new template. Fill in with template content.
 			window.inlineEmailEditor.setData(data.attributes.message);
 			$('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
-		} else { // Email was sent successfully.
+		} else { // Email was sent successfully. Reset everything.
+			
+			$('.error').removeClass('error');
 			$('#inline-email-status').show().html(data.message);
+			$('#inline-email-errors').html('').hide();
+			$('#email-template').val(0);			
+			$('input[name="InlineEmail[subject]"]').val('');
 			toggleEmailForm();
 			updateHistory();
+			
 		}
 	}
 	return false;

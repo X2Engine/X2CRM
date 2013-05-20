@@ -444,7 +444,7 @@ class SiteController extends x2base {
     public function actionPublishPost(){
         $post = new Events;
         // $user = $this->loadModel($id);
-        if(isset($_POST['text']) && $_POST['text'] != Yii::t('app', 'Enter text here...')){
+        if(isset($_POST['text']) && $_POST['text'] != ""){
             $post->text = $_POST['text'];
             $post->visibility = $_POST['visibility'];
             if(isset($_POST['associationId']))
@@ -838,10 +838,15 @@ class SiteController extends x2base {
         echo 'Success';
     }
 
-    public function actionDeleteRelationship($id){
-        $rel = X2Model::model('Relationships')->findByPk($id);
+    public function actionDeleteRelationship($firstId, $firstType, $secondId, $secondType){
+        $rel = X2Model::model('Relationships')->findByAttributes(array('firstId'=>$firstId,'firstType'=>$firstType,'secondId'=>$secondId,'secondType'=>$secondType));
         if(isset($rel)){
             $rel->delete();
+        }else{
+            $rel = X2Model::model('Relationships')->findByAttributes(array('firstId'=>$secondId,'firstType'=>$secondType,'secondId'=>$firstId,'secondType'=>$firstType));
+            if(isset($rel)){
+                $rel->delete();
+            }
         }
         if(isset($_GET['redirect'])){
             $this->redirect($this->createUrl($_GET['redirect']));

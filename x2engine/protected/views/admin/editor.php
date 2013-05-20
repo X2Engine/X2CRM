@@ -227,13 +227,13 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 		<span class="formItemOptions">
 			<label for="readOnly"><?php echo Yii::t('admin','Read-only'); ?></label>
 			<select id="readOnly">
-				<option value="0"><?php echo Yii::t('app','No'); ?></option>
+				<option value="0" selected="selected"><?php echo Yii::t('app','No'); ?></option>
 				<option value="1"><?php echo Yii::t('app','Yes'); ?></option>
 				<option value="mixed" disabled="disabled">---</option>
 			</select>
 			<label for="labelType"><?php echo Yii::t('admin','Label Position'); ?></label>
 			<select id="labelType">
-				<option value="left"><?php echo Yii::t('admin','Left'); ?></option>
+				<option value="left" selected="selected"><?php echo Yii::t('admin','Left'); ?></option>
 				<option value="top"><?php echo Yii::t('admin','Top'); ?></option>
 				<option value="inline"><?php echo Yii::t('admin','Inline'); ?></option>
 				<option value="none"><?php echo Yii::t('admin','None'); ?></option>

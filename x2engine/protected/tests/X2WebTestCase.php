@@ -38,8 +38,12 @@
 
 
 /**
+ * Base test class for tests with Selenium.
+ *
  * Change the following URL based on your server configuration
  * Make sure the URL ends with a slash so that we can use relative URLs in test cases
+ * @package X2CRM.tests
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 include('WebTestConfig.php');
 

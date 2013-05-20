@@ -38,8 +38,8 @@
 /**
  * Exports a table in the live database (or a range of records in it) to a fixture/init script
  *
- * @author Demitri Morgan <demitri@x2engine.com>
  * @package X2CRM.commands
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ExportFixtureCommand extends CConsoleCommand {
 

@@ -6,6 +6,11 @@ Yii::import('application.modules.docs.models.*');
 Yii::import('application.modules.quotes.models.*');
 Yii::import('application.modules.users.models.*');
 
+/**
+ * Test case for {@link Docs} model class.
+ * @package X2CRM.tests.unit.modules.docs.models
+ * @author Demitri Morgan <demitri@x2engine.com>
+ */
 class DocsTest extends X2DbTestCase {
 	
 	public $fixtures = array(

@@ -131,7 +131,7 @@ $this->widget('Publisher',
 	)
 );
 
-$this->widget('History',array('associationType'=>'opportunity','associationId'=>$model->id));
+$this->widget('History',array('associationType'=>'opportunities','associationId'=>$model->id));
 ?>
 </div>
 

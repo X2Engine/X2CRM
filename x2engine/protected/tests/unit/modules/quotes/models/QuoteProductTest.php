@@ -4,9 +4,10 @@ Yii::import('application.models.*');
 Yii::import('application.modules.quotes.models.*');
 
 /**
- * Test of Quote line item methods
+ * Test of Quote line item methods.
  *
  * @package X2CRM.tests.unit.modules.quotes.models
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class QuoteProductTest extends CTestCase {
 

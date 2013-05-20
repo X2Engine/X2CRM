@@ -440,8 +440,9 @@ $timezones = array(
 	    <div class="wide form" id="install-form">
 		<?php 
 		$thisFile = __FILE__;
-		if(file_exists('requirements.php'))
-			require_once('requirements.php'); 
+		$reqCheck = 'protected/components/views/requirements.php';
+		if(file_exists($reqCheck))
+			require_once($reqCheck);
 		else
 			echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
 		?>

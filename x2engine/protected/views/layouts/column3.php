@@ -726,7 +726,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					$.ajax({
 							type: 'POST',
 							url: '{$this->createUrl('/site/widgetOrder')}',
-							data: $(this).sortable('serialize'),
+							data: $(this).sortable('serialize')
 					});
 				}"
 			)

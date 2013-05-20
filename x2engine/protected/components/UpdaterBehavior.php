@@ -48,34 +48,44 @@ Yii::import('application.components.ResponseBehavior');
  * @property boolean $noHalt Whether to terminate the PHP process if errors occur
  * @property string $thisPath (read-only) Absolute path to the current working directory
  * @property string $webRoot (read-only) Absolute path to the web root, even if not in a web request
+ * @package X2CRM.components
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdaterBehavior extends ResponseBehavior {
+	///////////////
+	// CONSTANTS //
+	///////////////
+	
 	/**
 	 * SQL backup dump
 	 */
-
 	const BAKFILE = 'update_backup.sql';
 	/**
-	 * SDERR output from backup/recovery process 
+	 * SDERR output from backup/recovery process.
 	 */
 	const ERRFILE = 'update.err';
 	/**
-	 * STDOUT output from backup/recovery process
+	 * STDOUT output from backup/recovery process.
 	 */
 	const LOGFILE = 'update.log';
 
-	/**
-	 * SQL file with drop table statements, for clearing out tables.
-	 */
-	const DRPFILE = 'drop_tables.sql';
+	///////////////////////
+	// STATIC PROPERTIES //
+	///////////////////////
 
+	/**
+	 * Set to true in cases of testing, to avoid having errors end PHP execution.
+	 * @var boolean
+	 */
+	private static $_noHalt = false;
+	
 	/**
 	 * Core configuration file name.
 	 */
 	public static $configFilename = 'X2Config.php';
 
 	/**
-	 * Configuration file variables as [variable name] => [value quote]
+	 * Configuration file variables as [variable name] => [value quote wrap]
 	 * @var array
 	 */
 	public static $confVars = array(
@@ -90,6 +100,16 @@ class UpdaterBehavior extends ResponseBehavior {
 		'updaterVersion' => "'",
 		'buildDate' => "",
 	);
+
+	/**
+	 * Specifies that the behavior is being applied to a console command
+	 * @var bool
+	 */
+	public static $_isConsole = true;
+
+	///////////////////////////
+	// NON-STATIC PROPERTIES //
+	///////////////////////////
 
 	/**
 	 * Command to use for backing up the database.
@@ -115,24 +135,11 @@ class UpdaterBehavior extends ResponseBehavior {
 	 */
 	private $_dbParams;
 
-
-	/**
-	 * Specifies that the behavior is being applied to a console command
-	 * @var bool
-	 */
-	public static $_isConsole = true;
-
 	/**
 	 * Set to true to retain database backups after using them to recover from a failed update.
 	 * @var boolean
 	 */
 	private $_keepDbBackup = true;
-
-	/**
-	 * Set to true in cases of testing, to avoid having errors end PHP execution.
-	 * @var boolean
-	 */
-	private static $_noHalt = false;
 
 	/**
 	 * Current working directory.
@@ -306,6 +313,9 @@ class UpdaterBehavior extends ResponseBehavior {
 		// Check for valid scenario:
 		if(!in_array($scenario,array('update','upgrade')))
 			throw new Exception(Yii::t('admin', 'Cannot apply changes without specifying a valid scenario.'));
+		$permError = $this->testDatabasePermissions();
+		if($permError)
+			throw new Exception(Yii::t('admin','Unable to apply changes.').' '.$permError);
 		if(!array_key_exists('sqlList',$params))
 			$params['sqlList'] = array();
 		
@@ -829,7 +839,59 @@ class UpdaterBehavior extends ResponseBehavior {
 			$message = str_replace("\n", "<br />", $message);
 		throw new Exception($message);
 	}
-	
+
+	public function testDatabasePermissions(){
+		$missingPerms = array();
+		$con = Yii::app()->db->pdoInstance;
+		// Test creating a table:
+		try{
+			$con->exec("CREATE TABLE IF NOT EXISTS `x2_test_table` (
+			    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			    `a` varchar(10) NOT NULL,
+			    PRIMARY KEY (`id`))");
+		}catch(PDOException $e){
+			$missingPerms[] = 'create';
+		}
+
+		// Test inserting data:
+		try{
+			$con->exec("INSERT INTO `x2_test_table` (`id`,`a`) VALUES (1,'a')");
+		}catch(PDOException $e){
+			$missingPerms[] = 'insert';
+		}
+
+		// Test deleting data:
+		try{
+			$con->exec("DELETE FROM `x2_test_table`");
+		}catch(PDOException $e){
+			$missingPerms[] = 'delete';
+		}
+
+		// Test altering tables
+		try{
+			$con->exec("ALTER TABLE `x2_test_table` ADD COLUMN `b` varchar(10) NULL;");
+		}catch(PDOException $e){
+			$missingPerms[] = 'alter';
+		}
+
+		// Test removing the table:
+		try{
+			$con->exec("DROP TABLE `x2_test_table`");
+		}catch(PDOException $e){
+			$missingPerms[] = 'drop';
+		}
+		
+		if(empty($missingPerms)) {
+			return false;
+		} else {
+			return Yii::t('admin','Database user {u} does not have adequate permisions on database {db} to perform updates; it does not have the following permissions: {perms}',array(
+				'{u}' => $this->dbParams['dbuser'],
+				'{db}' => $this->dbParams['dbname'],
+				'{perms}' => implode(',',array_map(function($m){return Yii::t('app',$m);},$missingPerms))
+			));
+		}
+	}
+
 	/**
 	 * In which the updater downloads a new version of itself.
 	 * 
@@ -844,7 +906,8 @@ class UpdaterBehavior extends ResponseBehavior {
 			"views/admin/updater.php",
 			"components/UpdaterBehavior.php",
 			"components/FileUtil.php",
-			"components/ResponseBehavior.php"
+			"components/ResponseBehavior.php",
+			"components/views/requirements.php"
 		);
 
 		// Try to retrieve the files:

@@ -326,21 +326,54 @@ try {
 <br /><br /><hr />
 <?php endif; ?>
 <?php 
-	if ($scenario == 'update') {
-		echo '<h3>'.Yii::t('admin',"Update Details").'</h3>';
+	if ($scenario == 'update'){
+		echo '<h3>'.Yii::t('admin', "Update Details").'</h3>';
 		echo "Number of files to download: <b>$n_files</b><br />";
-		echo empty($deletionList)?'':Yii::t('admin','Number of obsolete files to be deleted:').' <b>'.count($deletionList)."</b><br />";
-		echo "Number of database changes: <b>" . (!empty($sqlList)?($sqlList[0] != "" ? count($sqlList) : "0"):'0') . "</b><br />";
-		echo Yii::t('admin',"Updater utility version check:").'<strong>&nbsp;'
-				.( $updaterCheck == $updaterVersion 
-				? Yii::t('admin','pass')
-				: '<span style="color: red">'.Yii::t('admin','Something went wrong; the updater utility is at version {uver}, but to enact the changes requested requires it to be at {uchk}',array('{uver}'=>$updaterVersion,'{uchk}'=>$updaterCheck))).'</strong><br />';
+		echo empty($deletionList) ? '' : Yii::t('admin', 'Number of obsolete files to be deleted:').' <b>'.count($deletionList)."</b><br />";
+		echo "Number of database changes: <b>".(!empty($sqlList) ? ($sqlList[0] != "" ? count($sqlList) : "0") : '0')."</b><br />";
+		echo Yii::t('admin', "Updater utility version check:").'<strong>&nbsp;'
+		.( $updaterCheck == $updaterVersion ? Yii::t('admin', 'pass') : '<span style="color: red">'.Yii::t('admin', 'Something went wrong; the updater utility is at version {uver}, but to enact the changes requested requires it to be at {uchk}', array('{uver}' => $updaterVersion, '{uchk}' => $updaterCheck))).'</strong><br />';
 		echo "Current X2CRM version: <b>$newVersion</b><br />";
+
+		echo "Your X2CRM version: <b>$version</b><br /><br />";
+		if(isset($changelog))
+			echo $changelog;
+
+		function installer_t($msg){
+			return $msg;
+		}
+
+		
+		ob_start();
+		$standalone = false;
+		$thisFile = Yii::app()->request->scriptFile;
+		require_once(Yii::app()->basePath.'/components/views/requirements.php');
+		$reqOutput = trim(ob_get_contents());
+		ob_end_clean();
+		
+		if(!empty($reqOutput)){ ?>
+			<strong><?php echo Yii::t('admin',"Note: your server may not meet all the necessary requirements to {scenario} X2CRM.",array('{scenario}'=>Yii::t('admin',$scenario)));?></strong> <a style="font-family:monospace;font-size:10px;text-decoration:none;" id="requirements-toggle-button" href="javascript:void(0)" onclick="toggleReqMessages();">[ + <?php echo Yii::t('admin','details') ?>]</a><br />
+			<div id="requirements-output" style="display:none; padding:5px; margin:5px; border:1px gray dashed;"><?php echo $reqOutput; ?></div>
+			<script id="requirements-output-toggle">
+				var reqMessages = $('#requirements-output');
+				var reqToggle = $('#requirements-toggle-button');
+				function toggleReqMessages() {
+					if(reqMessages.is(':hidden')) {
+						buttonText = reqToggle.text().replace('[ +','[ -');
+						reqToggle.text(buttonText);
+						reqMessages.show();
+					} else {
+						buttonText = reqToggle.text().replace('[ -','[ +');
+						reqToggle.text(buttonText);
+						reqMessages.hide();
+					}
+				}
+			</script>
+		<?php }
 	}
-	echo "Your X2CRM version: <b>$version</b><br /><br />";
-	if (isset($changelog)) echo $changelog;
-	if ($scenario == 'upgrade') echo '<p id="upgrade-step">To upgrade, begin by filling out the following form with your registration details. To obtain a license key: see <a href="http://www.x2engine.com/pricing-plans/" target="_blank">pricing plans</a>.</p>';
-	if ($scenario=='upgrade') {
+
+	if ($scenario == 'upgrade') {
+		echo '<p id="upgrade-step">To upgrade, begin by filling out the following form with your registration details. To obtain a license key: see <a href="http://www.x2engine.com/pricing-plans/" target="_blank">pricing plans</a>.</p>';
 		// Upgrade registration form
 		Yii::app()->clientScript->registerScriptfile(Yii::app()->baseUrl.'/js/webtoolkit.sha256.js');
 		$form = $this->beginWidget('CActiveForm', array(

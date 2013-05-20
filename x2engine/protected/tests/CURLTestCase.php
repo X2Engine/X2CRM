@@ -40,6 +40,7 @@ require_once('WebTestConfig.php');
  * Base class for running quick back & forth web tests with cURL
  * 
  * @package X2CRM.tests
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 abstract class CURLTestCase extends X2DbTestCase {
 

@@ -34,6 +34,41 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
+
+<?php
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/emailEditor.js');
+Yii::app()->clientScript->registerCss("ckeditorStyling", "
+#cke_Events_text {
+  margin-bottom: 6px !important;
+}
+
+/* collapse bottom bar */
+.cke_bottom {
+    background: none !important;
+    border-top: none !important;
+    display: inline !important;
+    height: 0px !important;
+    width: 0px !important;
+    padding: 0 0 0 0 !important;
+    margin: 0 0 0 0 !important;
+}
+
+/* move resizing handle */
+.cke_resizer_ltr { 
+    /*margin-right: 0px !important;
+    margin-top: -14px !important;*/
+    margin-right: 2px !important;
+    /*position: relative !important;*/
+}
+");
+Yii::app()->clientScript->registerScript('instantiateCKEditor','
+window.newPostEditor = createCKEditor (
+    "Events_text", { height:120, toolbarStartupExpanded: false, placeholder: "' . Yii::t('app','Enter text here...') . '"});
+');
+?>
+
 <h2>Edit Social Post</h2>
 <div class="form">
 

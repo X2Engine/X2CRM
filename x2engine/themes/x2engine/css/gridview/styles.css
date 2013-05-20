@@ -72,6 +72,39 @@ ul.column-selector input {
 	/* vertical-align:middle; */
 }
 
+.grid-view table.items.x2grid-resizable{
+	table-layout:fixed;
+	width:auto !important;
+	border:none;
+	margin-top:0;
+}
+.grid-view table.items.x2grid-resizable td, .grid-view table.items.x2grid-resizable th{overflow:hidden;}
+.grid-view table.items.x2grid-resizing{cursor:e-resize;}
+.x2grid-grips{height:0px;position:relative;}
+.x2grid-grip{
+	position:absolute;
+	top:1px;
+	/* height:27px; */
+	width:9px;
+	margin-left:-4px;
+	z-index:5;
+	cursor:e-resize;
+	/* background:rgba(255,0,0,0.1); */
+}
+.x2grid-grip:last-child{margin-left:-9px;}
+
+
+.grid-view table.items.x2grid-resizable tr.odd td{background: rgb(237, 242, 248);}
+.grid-view table.items.x2grid-resizable tr:first-child td{border-top:none;}
+.grid-view table.items.x2grid-resizable tr.odd td {padding:3px 5px;}
+.grid-view table.items.x2grid-resizable td {
+	border:solid rgb(196,214,235);
+	border-width:1px 0 0 1px;
+}
+.grid-view table.items.x2grid-resizable td div {white-space:nowrap;overflow:hidden;}
+
+
+
 
 .grid-view  .title-bar {
 	/* margin-top:3px; */
@@ -220,6 +253,11 @@ ul.column-selector input {
 
 .grid-view table.items tr:hover {
 	background:#fbf5d9;
+	/* #ECFBD4;
+	*/
+}
+.grid-view table.items.x2grid-resizing tr:hover {
+	background:none;
 	/* #ECFBD4;
 	*/
 }

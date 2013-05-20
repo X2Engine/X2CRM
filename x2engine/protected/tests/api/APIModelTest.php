@@ -6,6 +6,8 @@ Yii::import('application.modules.users.models.*');
 
 /**
  * Test suite for APIModel
+ * 
+ * @package X2CRM.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class APIModelTest extends CURLTestCase {

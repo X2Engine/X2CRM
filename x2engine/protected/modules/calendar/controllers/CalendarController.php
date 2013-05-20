@@ -537,8 +537,9 @@ class CalendarController extends x2base {
 
 		// get actions assigned to user
 		$actions = Yii::app()->db->createCommand()
-			->select('id, visibility, assignedTo, complete, type, actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
-			->from('x2_actions')
+			->select('a.id, a.visibility, a.assignedTo, a.complete, a.type, a.dueDate, a.completeDate, a.associationType, a.associationName, a.associationId, a.allDay, a.color,t.text')
+			->from('x2_actions AS a')
+			->join('x2_action_text AS t','t.actionId=a.id')
 			->where($where)
 			->queryAll();
 
@@ -1287,6 +1288,7 @@ class CalendarController extends x2base {
 		} else {
 			$client = null;
 			$googleCalendarList = null;
+            $syncGoogleCalendarName = null;
 		}
 
 		$this->render('syncActionsToGoogleCalendar',

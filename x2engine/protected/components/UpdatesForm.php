@@ -38,7 +38,8 @@
 /**
  * Configuration object for the installation contact & updates registry form.
  * 
- * @package X2CRM.components 
+ * @package X2CRM.components
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdatesForm {
 

@@ -87,6 +87,7 @@ class InlineEmailForm extends X2Widget {
 				'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';',
 			CClientScript::POS_HEAD);
 		}
+		Yii::app()->clientScript->registerScript('storeOriginalInlineEmailMessage','x2.inlineEmailOriginalBody = $("#email-message").val();',CClientScript::POS_READY);	//'.CJSON::encode($this->model->message).';',CClientScript::POS_READY);
  		Yii::app()->clientScript->registerScript('toggleEmailForm',
 		($this->startHidden? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n"),CClientScript::POS_HEAD);
 

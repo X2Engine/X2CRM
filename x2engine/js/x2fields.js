@@ -203,7 +203,7 @@ x2.fieldUtils = {
 			valueCell.fadeOut(222);
 		} else {
 			valueCell.fadeIn(222);
-			if(valueCell.closest("fieldset").data("multiple"))	// if this is a multiselect field, decide whether to allow multiple selections
+			// if(valueCell.closest("fieldset").data("multiple"))	// if this is a multiselect field, decide whether to allow multiple selections
 				valueCell.find("select").attr("multiple",(operator === 'list' || operator === 'notList'? "multiple" : null));
 		}
 	},

@@ -82,7 +82,7 @@ $likedPost=Yii::app()->db->createCommand()
             $_SESSION['stickyFlag']=true;
             echo "<div class='view top-level date-break sticky-section-header'>- Sticky -</div>";
         }
-    } else { 
+    } else {
         if(!isset($noDateBreak) || !$noDateBreak){
             if(isset($_SESSION['lastDate']) && $_SESSION['lastDate']!==date("M j",$data->timestamp)){
                 echo "<div class='view top-level date-break".($_SESSION['firstFlag']?" first":"")."'
@@ -109,9 +109,13 @@ $likedPost=Yii::app()->db->createCommand()
 
 <div class="view top-level activity-feed" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
     <div class="img-box <?php echo $data->type." ".(($data->type=='record_create')?$data->associationType.'-create':""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
-    <?php if($data->type=='record_create'){
+    <?php if($data->type=='record_create' && file_exists('themes/'.Yii::app()->theme->name.'/images/'.strtolower($data->associationType).'.png')){
         echo "<div class='img-box plus-sign'></div>";
-    } ?>
+    }
+    if($data->type=='calendar_event'){
+        echo X2Date::actionDate($data->timestamp,1);
+    }
+?>
     <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>
     <?php echo (!empty($avatar) && $data->type=='feed')?CHtml::image(Yii::app()->request->baseUrl."/".$avatar,'',array('height'=>45,'width'=>45)):""; ?>
     </div>
@@ -129,7 +133,6 @@ $likedPost=Yii::app()->db->createCommand()
         echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
     ?>
     </span>
-        <br />
     <span class="comment-age" id="<?php echo $data->id . "-" . $data->timestamp;?>" style="<?php echo $style; ?>"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span> | <span>
         <?php echo CHtml::link(Yii::t('app','Comments').' (<span id="'.$data->id.'-comment-count" class="comment-count" val="'.$commentCount.'">'.($commentCount>0?"<b>".$commentCount."</b>":$commentCount).'</span>)','#',array('class'=>'comment-link','id'=>$data->id.'-link')); ?>
         <?php echo CHtml::link(Yii::t('app','Hide comments'),'#',array('class'=>'comment-hide-link','id'=>$data->id.'-hide-link','style'=>'display:none;')); ?>
@@ -146,18 +149,18 @@ $likedPost=Yii::app()->db->createCommand()
             echo CHtml::link(Yii::t('app','Make Sticky'),'#',array('class'=>'sticky-link x2-hint','id'=>$data->id.'-sticky-link','style'=>($sticky?'display:none;':''),'title'=>Yii::t('app','Making an event sticky will cause it to always show up at the top of the feed.')));
             echo CHtml::link(Yii::t('app','Undo Sticky'),'#',array('class'=>'unsticky-link','id'=>$data->id.'-unsticky-link','style'=>($sticky?'':'display:none;')));
         }?>
-        <?php 
+        <?php
         echo " | ";
         if ($likedPost) {
           echo CHtml::link(Yii::t('app','Like Post'),'#',array('id'=>$data->id.'-like-button',
-            'class'=>'like-button', 'style'=>'display:none;')); 
+            'class'=>'like-button', 'style'=>'display:none;'));
           echo CHtml::link(Yii::t('app','Unlike Post'),'#',array('id'=>$data->id.'-unlike-button',
             'class'=>'unlike-button'));
         } else {
           echo CHtml::link(Yii::t('app','Like Post'),'#',array('id'=>$data->id.'-like-button',
             'class'=>'like-button'));
           echo CHtml::link(Yii::t('app','Unlike Post'),'#',array('id'=>$data->id.'-unlike-button',
-            'class'=>'unlike-button','style'=>'display:none;')); 
+            'class'=>'unlike-button','style'=>'display:none;'));
         }
         echo CHtml::link(Yii::t('app',' (' . $likeCount . ')'),'#',array('id'=>$data->id.'-like-count',
           'class'=>'like-count'));

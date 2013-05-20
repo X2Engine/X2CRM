@@ -45,7 +45,8 @@
  *  it will return the list of quotes for the contact id passed in the ajax call.
  *
  * @property Quote $model Model class being dealt with.
- * @package X2CRM.modules.quotes.controllers 
+ * @package X2CRM.modules.quotes.controllers
+ * @author David Visbal, Demitri Morgan <demitri@x2engine.com>
  */
 class QuotesController extends x2base {
 

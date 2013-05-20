@@ -33,12 +33,18 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+/**
+ * Test case for the {@link Fields} model class.
+ * @package X2CRM.tests.unit.models
+ * @author Demitri Morgan <demitri@x2engine.com>
+ */
 class FieldsTest extends X2DbTestCase {
 	
 //	public $fixtures = array(
 //		'opportunities' => 'Opportunity'
 //	);
-	
+
 	public function testStrToNumeric() {
 		
 		$cur =  Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency);

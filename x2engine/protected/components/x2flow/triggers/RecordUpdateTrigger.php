@@ -39,8 +39,8 @@
  * 
  * @package X2CRM.components.x2flow.actions
  */
-class RecordChangedTrigger extends X2FlowTrigger {
-	public $title = 'Record Changed';
+class RecordUpdateTrigger extends X2FlowTrigger {
+	public $title = 'Record Updated';
 	public $info = 'Triggered when some updates a record of the the specified type.';
 	
 	public function paramRules() {

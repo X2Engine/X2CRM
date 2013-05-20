@@ -37,10 +37,11 @@
 
 /**
  * Miscellaneous file system utilities. It is not a child class of CComponent or 
- * the like in order to be portable/stand-alone (i.e. so it can be used outside
- * the app by the installer).
+ * the like in order to be portable/stand-alone (so it can be used outside the
+ * app, i.e. by the installer).
  * 
- * @package X2CRM.components 
+ * @package X2CRM.components
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class FileUtil {
 

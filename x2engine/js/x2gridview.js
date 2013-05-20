@@ -34,6 +34,134 @@
  *****************************************************************************************/
 
 (function($) {
+
+
+$.widget("x2.gridResizing", $.ui.mouse, {
+	options:{
+		minColWidth:30
+	},
+	
+	table:$(),
+	hCells:$(),
+	cols:$(),
+	grips:$(),
+	gripContainer:$(),
+	colWidths:[],
+	
+	mouseStartX:0,
+	currentGrip:0,
+	colStartW:0,
+	
+	/**
+	 * Sets up table resizing
+	 */
+	_create:function() {
+		// return;
+		var self = this;
+		this.table = $(this.element);
+		this.hCells = this.table.find("tr:first").children();
+		
+		this.scanColWidths();
+		
+		// find colgroup and cols, create if missing
+		var colgroup = this.table.find("colgroup").empty();
+		if(colgroup.length === 0)
+			colgroup = $(document.createElement('colgroup')).prependTo(this.table);
+		
+		for(var i=0;i<this.hCells.length;i++)	// create one <col> for each header cell
+			$(document.createElement('col')).appendTo(colgroup);
+		this.cols = colgroup.children("col");
+		this.updateColWidths();
+		
+		this.table.addClass("x2grid-resizable");
+		this.gripContainer = $(document.createElement("div")).addClass("x2grid-grips").insertBefore(this.table);
+		
+		this.table.find("td,th").removeAttr('width').css("width",null).each(function(i,elem) {
+			$(elem).html("<div>"+$(elem).html()+"</div>");
+		})
+		
+		this.createGrips();
+		
+		this.element = this.gripContainer;	// initialize mouse handling on the grips
+		this._mouseInit();
+		
+	},
+	_destroy:function() {
+		this._mouseDestroy();
+		this.gripContainer.remove();
+		this.table.removeClass("x2grid-resizable");
+	},
+	/**
+	 * Filter what to drag
+	 */
+	_mouseCapture:function(e) {
+		// return $(e.target).is(".x2grid-grip");
+		return true;
+	},
+	/**
+	 * Start dragging. Determine which grip has been...gripped.
+	 */
+	_mouseStart:function(e) {
+		this.table.addClass("x2grid-resizing");
+		this.mouseStartX = e.pageX;
+		this.currentGrip = $(e.target).index();
+		this.colStartW = this.colWidths[this.currentGrip];	//this.currentGrip.position().left;
+	},
+	/**
+	 * Called on mousemove event. Resizes column to left of current grip, minimum width of 30px
+	 */
+	_mouseDrag:function(e) {
+		var w = Math.max(30,this.colStartW + e.pageX - this.mouseStartX);
+		if(this.colWidths[this.currentGrip] !== w) {
+			this.colWidths[this.currentGrip] = w;
+			this.updateColWidths();
+			this.updateGrips();
+		}
+	},
+	_mouseStop:function(e) {
+		this.table.removeClass("x2grid-resizing");
+		this.grips.height(this.table.height());
+	},
+	/* 
+	 * Scans current real column widths
+	 */
+	scanColWidths:function() {
+		for(var i=0;i<this.hCells.length;i++) {
+			var w = Math.max(this.options.minColWidth,this.hCells.eq(i).width() + 10);
+			if(i > 0)	// except the first one, 
+				w++;	// every column has a 1px border
+			this.colWidths.push(w);
+		}
+	},
+	updateColWidths:function() {
+		for(var i in this.colWidths) {
+			this.cols.eq(i).width(this.colWidths[i]);
+		}
+	},
+	createGrips:function() {
+		// make sure there are the right number of grips (only create/delete as needed)
+		var colCount = this.colWidths.length;
+		var gripCount;
+		while((gripCount = this.grips.length) != colCount) {
+			if(gripCount > colCount)
+				this.grips.last().remove();
+			else if(gripCount < colCount)
+				this.grips = this.grips.add($(document.createElement("div")).addClass("x2grid-grip").height(this.table.height()).appendTo(this.gripContainer));
+		}
+		this.updateGrips();
+	},
+	updateGrips:function() {
+		var self = this;
+		var x = 1;
+		this.grips.each(function(i,elem) {
+			x += self.colWidths[i];
+			$(elem).css("left",x+"px");
+		});
+		
+	}
+	
+});
+
 $.widget("x2.gvSettings", {
 
 	prevGvSettings: '',
@@ -54,7 +182,7 @@ $.widget("x2.gvSettings", {
 	// }
 
 	_create: function() {
-	
+
 		var self = this;
 		o = self.options;
 
@@ -63,7 +191,7 @@ $.widget("x2.gvSettings", {
 				$('.search-form').toggle();
 				return false;
 			});
-		
+
 		} else {
 			this.element.closest('.grid-view').after(o.columnSelectorHtml);
 			$('#'+o.columnSelectorId).find('input').bind('change',function() { self._saveColumnSelection(this,self); });
@@ -75,8 +203,8 @@ $.widget("x2.gvSettings", {
 		this._setupGridviewResizing(self);
 		this._setupGridviewDragging(self);
 		this._compareGridviewSettings(self);
-		
-		
+
+
 	},
 
 	_setupGridviewResizing: function(self) {
@@ -84,7 +212,7 @@ $.widget("x2.gvSettings", {
 		this.element.colResizable({disable:true});	// remove old colResizable class, if it exists
 		this.element.colResizable({
 			liveDrag:true,
-			//gripInnerHtml:'<div class=\"grip\"></div>', 
+			//gripInnerHtml:'<div class=\"grip\"></div>',
 			draggingClass:'dragging',
 			onResize:function() { self._compareGridviewSettings(self); },
 			onDrag:function() { clearTimeout(this.saveGridviewSettingsTimeout); }
@@ -117,7 +245,7 @@ $.widget("x2.gvSettings", {
 		var gvSettings = '{';
 		var tableData = [];
 		columns.each(function(i){
-		
+
 			var width = $(cols[i]).attr('width');
 			tableData.push('\"'+$(this).attr('id').substr(2)+'\":'+width);
 		});
@@ -125,7 +253,7 @@ $.widget("x2.gvSettings", {
 		if(this.prevGvSettings != '' && this.prevGvSettings != gvSettings) {
 			var encodedGvSettings = encodeURI(gvSettings);
 			var links = $('div.grid-view table th a, div.grid-view div.pager a');
-			
+
 			links.each(function(i,element) {
 				var link = $(element);
 				var url = link.attr('href');
@@ -135,7 +263,7 @@ $.widget("x2.gvSettings", {
 
 				link.attr('href',url+'&viewName='+self.options.viewName+'&gvSettings='+encodedGvSettings);
 			});
-		
+
 			clearTimeout(this.saveGridviewSettingsTimeout);
 			this.saveGridviewSettingsTimeout = setTimeout(function() {
 				$.ajax({
@@ -145,8 +273,8 @@ $.widget("x2.gvSettings", {
 				});
 
 			},o.saveTimeout);
-			
-			
+
+
 		}
 		// console.debug(gvSettings);
 		this.prevGvSettings = gvSettings;
@@ -159,11 +287,11 @@ $.widget("x2.gvSettings", {
 		//get the position of the link
 			var xPos = $(object).position().left - 6;
 			var yPos = self.element.position().top + 4;
-			
+
 			//show the menu directly over the placeholder
 			$('#'+o.columnSelectorId).css( { 'left': xPos + 'px', 'top':yPos + 'px' } );
 		}
-		
+
 		$('#'+o.columnSelectorId).fadeToggle(300,'swing',function() {
 			if($('#'+o.columnSelectorId).is(':visible')) {
 				$(document).bind('click.columnSelector',function(e) {

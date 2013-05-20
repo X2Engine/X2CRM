@@ -38,6 +38,7 @@ $menuItems = array(
 	array('label'=>Yii::t('services','All Cases')),
 	array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
 	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
+    array('label'=>Yii::t('services','Case Report'), 'url'=>array('servicesReport')),
 
 );
 
@@ -113,7 +114,7 @@ $this->widget('application.components.X2GridView', array(
 			'header'=>Yii::t('accounts', 'Account'),
 			'type'=>'raw',
 			'value'=>'$data->contactIdModel? (isset($data->contactIdModel->companyModel) ? $data->contactIdModel->companyModel->getLink() : "") : ""'
-		), 
+		),
 /*		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('services','Name'),

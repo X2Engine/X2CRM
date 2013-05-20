@@ -43,7 +43,8 @@ Yii::import('application.modules.users.models.User');
  * This is kept separate from ApiControllerTest to make it faster; it doesn't
  * require all the same fixtures.
  *
- * @package X2CRM.tests.functional.controllers
+ * @package X2CRM.tests.api
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ApiControllerSecurityTest extends CURLTestCase {
 	

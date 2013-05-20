@@ -237,6 +237,7 @@ if (isset($_POST['testDb'])) {
 	} catch (PDOException $e) {
 		RIP(installer_t('Could not connect to host or select database.'));
 	}
+	$permsError = 'User {u} does not have adequate permisions on database {db}';
 
 	// Now test creating a table:
 	try {
@@ -245,28 +246,36 @@ if (isset($_POST['testDb'])) {
 			    `a` varchar(10) NOT NULL,
 			    PRIMARY KEY (`id`))");
 	} catch (PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot create tables'));
+		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot create tables'));
 	}
 
 	// Test inserting data:
 	try {
-		$con->exec("INSERT INTO `x2_test_table` VALUES (1,'a')");
+		$con->exec("INSERT INTO `x2_test_table` (`id`,`a`) VALUES (1,'a')");
 	} catch (PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot insert data'));
+		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot insert data'));
 	}
 
 	// Test deleting data:
 	try {
 		$con->exec("DELETE FROM `x2_test_table`");
 	} catch (PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot delete data'));
+		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot delete data'));
 	}
+
+	// Test altering tables
+	try {
+		$con->exec("ALTER TABLE `x2_test_table` ADD COLUMN `b` varchar(10) NULL;");
+	} catch (PDOException $e) {
+		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot alter tables'));
+	}
+
 
 	// Test removing the table:
 	try {
 		$con->exec("DROP TABLE `x2_test_table`");
 	} catch (PDOException $e) {
-		RIP(installer_tr('User {u} does not have adequate permisions on database {db}', array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot drop tables'));
+		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot drop tables'));
 	}
 
 	respond(installer_t("Connection successful!"));
@@ -898,7 +907,7 @@ if (!$silent && $complete):
 	<?php
 endif;
 // Delete install files
-foreach (array('install.php', 'installConfig.php', 'requirements.php', 'initialize_pro.php') as $file)
+foreach (array('install.php', 'installConfig.php', 'initialize_pro.php') as $file)
 	if (file_exists($file))
 		unlink($file);
 // Delete self

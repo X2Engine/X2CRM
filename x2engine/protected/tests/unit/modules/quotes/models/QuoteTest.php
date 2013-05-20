@@ -7,6 +7,7 @@ Yii::import('application.modules.quotes.models.*');
  * Test of Quote methods
  *
  * @package X2CRM.tests.unit.modules.quotes.models
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class QuoteTest extends X2DbTestCase {
 

@@ -35,6 +35,7 @@
  *****************************************************************************************/
 
 Yii::import('application.components.X2LinkableBehavior');
+Yii::import('application.modules.users.models.*');
 
 /**
  * This is the model class for table "x2_profile".
@@ -90,7 +91,8 @@ class Profile extends CActiveRecord {
 			array('officePhone, cellPhone, language', 'length', 'max'=>40),
 			array('timeZone, backgroundImg', 'length', 'max'=>100),
 			array('widgets, tagLine, emailAddress', 'length', 'max'=>255),
-			array('widgetOrder, emailSignature', 'length', 'max'=>512),
+			array('widgetOrder', 'length', 'max'=>512),
+			array('emailSignature','length','max'=>10000,'message'=>'{attribute} is too long'),
 			array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -102,7 +104,9 @@ class Profile extends CActiveRecord {
 	 * @return array relational rules.
 	 */
 	public function relations() {
-		return array();
+		return array(
+			'user' => array(self::HAS_ONE,'User','id')
+		);
 	}
 
 	/**

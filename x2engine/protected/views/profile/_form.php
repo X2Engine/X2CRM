@@ -96,8 +96,21 @@
 	</div>
 	
 	<div class="row">
+		<?php
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+		$notNullAttributes = array_filter($model->attributes,function($a){return !empty($a);});
+		$insertableAttributes = array();
+		foreach($notNullAttributes as $attr=>$value) {
+			$insertableAttributes[$model->getAttributeLabel($attr)] = $value;
+		}
+		$insertableAttributes = array(Yii::t('app', 'Profile') => $insertableAttributes);
+		Yii::app()->clientScript->registerScript('setInsertableAttributes', 'x2.insertableAttributes = '.CJSON::encode($insertableAttributes).';', CClientScript::POS_HEAD);
+		Yii::app()->clientScript->registerScript('setupEmailSignatureForm', '
+			CKEDITOR.replace("email-signature",{"height":125,"width":725});');
+		?>
 		<?php echo $form->labelEx($model,'emailSignature'); ?>
-		<?php echo $form->textArea($model,'emailSignature',array('rows'=>5, 'cols'=>50)); ?>
+		<?php echo $form->textArea($model,'emailSignature',array('id'=>'email-signature','style'=>'max-width:600px; max-height:400px;')); ?>
 		<?php echo $form->error($model,'emailSignature'); ?>
 	</div>
 

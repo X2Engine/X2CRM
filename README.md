@@ -1,5 +1,5 @@
-# X2CRM 3.0.1 #
-5/13/2013
+# X2CRM 3.0.2 #
+5/20/2013
 ## Changes ##
 * (Professional Edition only) X2Flow automation system (beta)
   * Visual, drag-and-drop designer makes it easy to create convenient and 
@@ -29,6 +29,11 @@
   * More consistent response behavior
   * New method listUsers: gets list of users
 
+## New in 3.0.2 ##
+* New Services reporting tool
+* Rich text editor now available for activity feed posts and email signatures
+* Bug fixes
+
 ## Release Notes ##
 ### 3.0 ###
 * The automation designer, while largely complete, is still in active 
@@ -49,6 +54,7 @@
   when a quote is created or updated. Thus, to correct the total displayed on 
   a quote, open the quote's update view so that the subtotal can be 
   recalculated, and then save it.
+
 ### 3.0.1 ###
 * The API has undergone some fundamental changes in its response format:
   * It always responds in JSON-encoded objects for all actions, with the
@@ -67,7 +73,7 @@
     for the content to be rendered.
   * In the APIModel class, there should now be a new "modelErrors" property,
     which stores the validation errors for each attribute of the object, returned by
-    (http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)[CActiveRecord.getErrors()]
+    [CActiveRecord.getErrors()](http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)
     on the server. The source of this data is the "modelErrors" property of the
     response from the create and update actions.
 
@@ -158,4 +164,5 @@ to get you started!
 - The  .htaccess  file  may  cause  issues  on  some  servers.  If  you  get  a 
   500 Internal Server Error  when you  try  to load the installer,  delete  the
   .htaccess file (the application will still work without it.)
-
+- eAccelerator may cause PHP errors on various pages  ("Invalid Opcode").  This 
+  can be fixed by disabling eAccelerator.

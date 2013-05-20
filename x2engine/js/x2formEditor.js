@@ -33,4 +33,548 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-var formEditorVersion="1.2";window.selectedFormItems=$([]);window.layoutChanged=false;function toggleFormSection(b){if($(b).hasClass("showSection")){$(b).find(".tableWrapper").slideToggle(400,function(){$(this).parent(".formSection").toggleClass("showSection")})}else{$(b).toggleClass("showSection").find(".tableWrapper").slideToggle(400)}}$(function(){$("#addRow").click(function(){addFormSection()});$("#addCollapsibleRow").click(function(){addFormSection("collapsible")});$("#setTabOrder").click(function(){$(this).toggleClass("clicked");$("#formEditor").toggleClass("tabOrderMode");$("#formEditor .formTabOrder").each(function(b,c){$(c).html((b+1))})});$(document).delegate(".formSectionDelete","click",function(){deleteFormSection($(this))});$("#borderToggleButton").click(function(){deselectAll();$("#formEditor").toggleClass("editMode");$("#borderToggleButton").toggleClass("clicked");if($("#borderToggleButton").hasClass("clicked")){$(".formSortable").sortable("option","disabled",true)}else{$(".formSortable").sortable("option","disabled",false)}});$("#formEditorForm").submit(function(){if($("#modelList").val()!=""&&$("#modelList").val()!=""){$("#layoutHiddenField").val(generateFormJson())}else{return false}});$("div.x2-layout").delegate(".formSectionShow, .formSectionHide","click",function(){toggleFormSection($(this).closest(".formSection"));saveFormSections()});$(document).delegate(".formSectionAddCol","click",function(){addColumn($(this).closest(".formSection"))});$(document).delegate(".formSectionDelCol","click",function(){deleteColumn($(this).closest(".formSection"))});$(document).delegate(".formSectionSetName","click",function(){setSectionName($(this).closest(".formSection"))});$(document).delegate("#formEditor .formItem","click",function(b){if(!$("#borderToggleButton").hasClass("clicked")){if(!b.shiftKey){deselectAll()}if(window.selectedFormItems.is(this)){$(this).removeClass("selected");window.selectedFormItems=window.selectedFormItems.not(this);if(window.selectedFormItems.length==0){$(".formItemOptions").fadeOut(400)}}else{$(this).addClass("selected");window.selectedFormItems=window.selectedFormItems.add(this);updateFormItemOptions();$(".formItemOptions").fadeIn(400)}}});$(document).click(function(c){var b=$(c.target).add($(c.target).parents());if(!c.shiftKey&&!b.is("#formEditor .formItem, #formEditorControls")){deselectAll()}});$(document).keydown(function(b){if(b.which==46&&$("input:focus, textarea:focus").length==0){window.selectedFormItems.removeClass("selected").appendTo("#editorFieldList");resetFormItem(window.selectedFormItems);sortFieldList();deselectAll()}});$("#labelType").change(function(b){setLabelType(window.selectedFormItems,$(this).val())});$("#readOnly").change(function(b){setReadOnly(window.selectedFormItems,$(this).val())});$("#formEditor").sortable({tolerance:"intersect",items:".formSection",placeholder:"formSectionPlaceholder",handle:".formSectionHeader",opacity:0.5,axis:"y",distance:10,change:function(){window.layoutChanged=true}});$("#editorFieldList").sortable({connectWith:".formSortable",tolerance:"pointer",placeholder:"formItemPlaceholder",remove:function(b,c){$(b.target).closest(".formItem").data({labelType:"top",readOnly:0}).find(".formInputBox").resizable({grid:[5,10],handles:($(b.target).parent().find("textarea").length>0)?"e,se,s":"e",stop:function(){window.layoutChanged=true}}).closest(".formInput").addClass("topLabel");window.layoutChanged=true},receive:function(b,c){resetFormItem($(c.item));sortFieldList();window.layoutChanged=true},update:function(b,c){sortFieldList()}});$("div.x2-layout").delegate("div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea","focus",function(){formFieldFocus(this)});$("div.x2-layout").delegate("div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea","blur",function(){formFieldBlur(this)})});function addFormSection(e,d,f){if(typeof e=="undefined"){e="default"}if(typeof d!="number"){d=1}if(typeof f=="undefined"){f=""}var c='<div class="formSectionHeader">';c+='<a href="javascript:void(0)" class="formSectionDelCol">&ndash;Col</a>';c+='<a href="javascript:void(0)" class="formSectionAddCol">+Col</a>';c+='<a href="javascript:void(0)" class="formSectionSetName">Rename</a>';c+='<a href="javascript:void(0)" class="formSectionDelete">[ x ]</a>';if(e=="collapsible"){c+='<a href="javascript:void(0)" class="formSectionShow">[+]</a><a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>'}c+='<span class="sectionTitle">'+f+"</span>";c+='</div><div class="tableWrapper"><table><tr class="formSectionRow">';for(a=0;a<d;a++){c+='<td><div class="formSortable"></div></td>'}c+="</tr></table></div></div>";$(document.createElement("div")).addClass("formSection showSection"+((e=="collapsible")?" collapsible":"")).appendTo("#formEditor").html(c).find(".formSortable").sortable({connectWith:".formSortable",items:".formItem",tolerance:"pointer",placeholder:"formItemPlaceholder"});var b=$("#formEditor").find(".formSection").last().find("table");setupColResizing(b);window.layoutChanged=true}function deleteFormSection(c){var b=c.closest(".formSection").find(".formItem");resetFormItem(b);window.selectedFormItems=window.selectedFormItems.not(b);b.removeClass("selected").appendTo("#editorFieldList");sortFieldList();c.closest(".formSection").fadeOut(300,function(){$(this).remove()});window.layoutChanged=true}function setSectionName(c){var b=prompt("Please enter a name for this section.");if(b!=null){c.find(".sectionTitle").html(b)}}function addColumn(c){var b=c.find("table");b.find("tr.formSectionRow").each(function(g,o){var e=$(o).find("td");$('<td><div class="formSortable"></div></td>').appendTo($(o)).find(".formSortable").sortable({connectWith:".formSortable",tolerance:"pointer",items:".formItem",placeholder:"formItemPlaceholder"});if(g==0){var n=$(o).width();var d=n/e.length;$(o).find("td:last").width(d);var m=n/$(o).width();var l=0,h=0,f=0;$(o).find("td").each(function(q,p){l+=$(p).width();f=Math.round((l*m)-h);$(p).width(f-1);h+=f})}});setupColResizing(b);window.layoutChanged=true}function deleteColumn(c){var b=c.find("table");b.find("tr.formSectionRow").each(function(f,p){var d=$(p).find("td");if(d.length<2){return}if(f==0){var n=$(p).width();var l=n/(n-d.last().width());var h=0,g=0,e=0;$(p).find("td:not(:last)").each(function(r,q){h+=$(q).width();e=Math.round((h*l)-g);$(q).width(e)+1;g+=e})}var m=$(d[d.length-1]);var o=$(d[d.length-2]);m.find(".formItem").appendTo(o.find(".formSortable"));m.remove()});setupColResizing(b);window.layoutChanged=true}function setupColResizing(b){b.colResizable({disable:true}).colResizable({liveDrag:true,draggingClass:"colResizableDragging",onResize:function(){window.layoutChanged=true}})}function setLabelType(b,c){if(typeof c!="undefined"&&c!=""){b.data("labelType",c)}switch(c){case"left":b.each(function(d,e){$(e).removeClass("inlineLabel noLabel topLabel").addClass("leftLabel");$(e).find("input,textarea").attr("value","").val("").css("color","#000")});break;case"inline":b.each(function(e,f){$(f).removeClass("topLabel leftLabel").addClass("inlineLabel");var d=$(f).find("label").html();$(f).find("input,textarea").attr("value",d).val(d).css("color","#aaa")});break;case"none":b.each(function(d,e){$(e).removeClass("inlineLabel topLabel leftLabel").addClass("noLabel");$(e).find("input,textarea").attr("value","").val("").css("color","#000")});break;case"top":default:b.each(function(d,e){$(e).removeClass("inlineLabel noLabel leftLabel").addClass("topLabel");$(e).find("input,textarea").attr("value","").val("").css("color","#000")})}window.layoutChanged=true}function setReadOnly(b,c){if(typeof c!="undefined"&&c!=""){b.data("readOnly",c)}switch(c){case"1":b.find("input,textarea").attr("disabled","disabled");break;case"0":default:b.find("input,textarea").removeAttr("disabled")}window.layoutChanged=true}function updateFormItemOptions(){var b="";var c="";window.selectedFormItems.each(function(d,e){if(b==""){b=$(e).data("labelType")}else{if(b!=$(e).data("labelType")){b="mixed"}}if(c==""){c=$(e).data("readOnly")}else{if(c!=$(e).data("readOnly")){c="mixed"}}});$("#labelType").val(b);$("#readOnly").val(c)}function deselectAll(){window.selectedFormItems.removeClass("selected");window.selectedFormItems=$([]);$(".formItemOptions").fadeOut(400)}function resetFormItem(b){window.selectedFormItems=window.selectedFormItems.not(b);b.removeClass("selected");b.removeClass("noLabel leftLabel").addClass("topLabel");b.find(".formInputBox").resizable("destroy").css({height:"",width:""});b.find("input, textarea").attr("value","").removeAttr("disabled").val("").css("color","#000");b.data("labelType","");b.data("readOnly","")}function sortFieldList(){var c=$("#editorFieldList");var b=c.children(".formItem").get();b.sort(function(e,d){var g=$(e).find("label").html().toLowerCase();var f=$(d).find("label").html().toLowerCase();return g.localeCompare(f)});$.each(b,function(d,e){c.append(e)})}function generateFormJson(){var b=[];$("#formEditor .formSection").each(function(d,f){var c="{";var e=[];if($(f).hasClass("collapsible")){c+='"collapsible":true,'}else{c+='"collapsible":false,'}var g=$(f).find(".sectionTitle").html();c+='"title":"'+((g=="undefined")?"":g.replace(/\\/g,"\\\\").replace(/"/g,'\\"'))+'",';$(f).find("tr").each(function(h,n){var l="{";var m=[];$(n).find("td").each(function(p,q){columnJson='{"width":'+$(q).width()+",";var o=[];$(q).find(".formItem").each(function(r,s){var t="{";t+='"name":"'+$(s).attr("id")+'",';t+='"labelType":"'+$(s).data("labelType")+'",';t+='"readOnly":"'+$(s).data("readOnly")+'",';t+='"height":"'+$(s).find(".formInputBox").height()+'",';t+='"width":"'+$(s).find(".formInputBox").width()+'",';t+='"tabindex":"'+$(s).find("input,textarea,checkbox,select").first().attr("tabindex")+'"';t+="}";o.push(t)});columnJson+='"items":['+o.join(",")+"]}";m.push(columnJson)});l='{"cols":['+m.join(",")+"]}";e.push(l)});c+='"rows":['+e.join(",")+"]}";b.push(c)});return'{"version":"'+formEditorVersion+'","sections":['+b.join(",")+"]}"}function loadFormJson(e){var f=$.parseJSON(e);for(i=0;i<f.sections.length;i++){var h=f.sections[i];var d=h.collapsible?"collapsible":"";if(h.rows.length>0){addFormSection(d,h.rows[0].cols.length,h.title);$formSection=$("#formEditor .formSection:last");for(j=0;j<h.rows[0].cols.length;j++){var c=$formSection.find("td:nth-child("+(j+1)+")");c.width(h.rows[0].cols[j].width);for(k=0;k<h.rows[0].cols[j].items.length;k++){var b=h.rows[0].cols[j].items[k];var g=$("#editorFieldList").find("#"+b.name);g.appendTo(c.find(".formSortable")).data({labelType:b.labelType,readOnly:b.readOnly}).find(".formInputBox").resizable({grid:[5,10],handles:(g.find("textarea").length>0)?"e,se,s":"e",stop:function(){window.layoutChanged=true}}).height(b.height).width(b.width).find("input,textarea,checkbox,select").attr("tabindex",b.tabindex);setReadOnly(g,b.readOnly);setLabelType(g,b.labelType)}}setupColResizing($formSection.find("table"))}}window.layoutChanged=false};
+var formEditorVersion = '1.2';
+
+window.selectedFormItems = $([]);
+window.layoutChanged = false;
+
+
+function toggleFormSection(section) {
+	if($(section).hasClass('showSection'))
+		$(section).find('.tableWrapper').slideToggle(400,function(){
+			$(this).parent('.formSection').toggleClass('showSection');
+		});
+	else
+		$(section).toggleClass('showSection').find('.tableWrapper').slideToggle(400);
+}
+
+$(function() {
+
+	///////////////// Form Section Controls /////////////////
+	
+	// setup form editor controls
+	$('#addRow').click(function() {
+		addFormSection();
+	});
+	$('#addCollapsibleRow').click(function() {
+		addFormSection('collapsible');
+	});
+	
+	$('#setTabOrder').click(function() {
+		$(this).toggleClass('clicked');
+		$('#formEditor').toggleClass('tabOrderMode');
+		$('#formEditor .formTabOrder').each(function(i,item) {
+			$(item).html((i+1));
+		
+		});
+	});
+	
+	// form subsection delete
+	$(document).delegate('.formSectionDelete','click',function() {
+		deleteFormSection($(this))
+	});
+	
+	// enter preview mode
+	$('#borderToggleButton').click(function() {
+		deselectAll();
+		
+		$('#formEditor').toggleClass('editMode');
+		$('#borderToggleButton').toggleClass('clicked');
+		if($('#borderToggleButton').hasClass('clicked'))
+			$('.formSortable').sortable('option','disabled',true);
+		else
+			$('.formSortable').sortable('option','disabled',false);
+	});
+	
+	$('#formEditorForm').submit(function() {
+		
+			// console.debug(generateFormJson());
+		if($('#modelList').val() != '' && $('#modelList').val() != '')
+			$('#layoutHiddenField').val(generateFormJson());
+		else
+			return false;
+	});
+
+	// form subsection toggle
+	$('div.x2-layout').delegate('.formSectionShow, .formSectionHide','click',function() {
+		toggleFormSection($(this).closest('.formSection'));
+		saveFormSections();
+	});
+
+	// form section add column
+	$(document).delegate('.formSectionAddCol','click',function() {
+		addColumn($(this).closest('.formSection'));
+	});
+	// form section delete column
+	$(document).delegate('.formSectionDelCol','click',function() {
+		deleteColumn($(this).closest('.formSection'));
+	});
+	// form section delete column
+	$(document).delegate('.formSectionSetName','click',function() {
+		setSectionName($(this).closest('.formSection'));
+	});
+
+	
+	
+	///////////////// Form Item Selection/Deselection /////////////////
+	
+	
+	// formItem selection
+	$(document).delegate('#formEditor .formItem','click',function(e) {
+		if(!$('#borderToggleButton').hasClass('clicked')) {
+			if(!e.shiftKey) {
+				deselectAll();
+			}
+			if(window.selectedFormItems.is(this)) {	// if the item is already selected
+				$(this).removeClass('selected');
+				window.selectedFormItems = window.selectedFormItems.not(this);
+				if(window.selectedFormItems.length == 0)
+					$('.formItemOptions').stop().fadeOut(400);
+			} else {
+				$(this).addClass('selected');
+				window.selectedFormItems = window.selectedFormItems.add(this);
+				updateFormItemOptions();
+				
+				$('.formItemOptions').stop().fadeIn(400);
+			}
+		}
+	});
+	// deselect formItems when user clicks on white space
+	$(document).click(function(e) {
+		var elements = $(e.target).add($(e.target).parents());
+		
+		if(!e.shiftKey && !elements.is('#formEditor .formItem, #formEditorControls')) {
+			deselectAll();
+		}
+	});
+	
+	///////////////// Form Item Manipulation /////////////////
+	
+	// listen for delete keys ... if a formItem is selected, delete that junk
+	$(document).keydown(function(e) {
+		if(e.which==46 && $('input:focus, textarea:focus').length == 0) {	// if we're in a text box, nevermind
+			window.selectedFormItems.removeClass('selected').appendTo('#editorFieldList');
+			resetFormItem(window.selectedFormItems);
+			sortFieldList();
+			deselectAll();
+		}
+	});
+	
+	
+	// listen for changes in labelType option
+	$('#labelType').change(function(e) {
+		setLabelType(window.selectedFormItems,$(this).val());
+	});
+	
+	// listen for changes in readOnly option
+	$('#readOnly').change(function(e) {
+		setReadOnly(window.selectedFormItems,$(this).val());
+	});
+	
+	
+	
+	///////////////// jQuery Sortables Setup /////////////////
+	
+	// main form sortable has rows that don't connect to any other sortables
+	$('#formEditor').sortable({
+		tolerance:'intersect',
+		items:'.formSection',
+		placeholder:'formSectionPlaceholder',
+		handle:'.formSectionHeader',
+		opacity:0.5,
+		axis:'y',
+		distance:10,
+		change:function() { window.layoutChanged = true; }
+	});
+	// $('#formEditor .formItem').disableSelection();
+	
+	
+	// list of available fields on the side
+	$('#editorFieldList').sortable({
+		connectWith: '.formSortable',
+		tolerance: 'pointer',
+		placeholder:'formItemPlaceholder',
+		remove: function(event, ui) {		// make items resizable when removed from main list
+				$(event.target).closest('.formItem').data({'labelType':'top','readOnly':0}).find('.formInputBox').resizable({
+					grid: [5,10],
+					handles: ($(event.target).parent().find('textarea').length > 0)? 'e,se,s':'e',
+					stop:function() { window.layoutChanged = true; }
+				}).closest('.formInput').addClass('topLabel');
+				window.layoutChanged = true;
+			},
+		receive: function(event, ui) {
+				resetFormItem($(ui.item));	// clear formItem's settings
+				sortFieldList();			// sort field list
+				window.layoutChanged = true;
+			},
+		update: function(event,ui) { sortFieldList(); }
+	});
+
+	// setup field text toggling for any formItem that might get changed to inlineLabel
+	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','focus',function() { formFieldFocus(this); });
+	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','blur',function() { formFieldBlur(this); });
+	
+	
+});
+
+// creates a new formSelection in the formEditor sortable
+function addFormSection(type,columns,title) {
+
+	if(typeof type == 'undefined')
+		type = 'default';
+
+	if(typeof columns != 'number')
+		columns = 1;
+
+	if(typeof title == 'undefined')
+		title = '';
+	
+	// create formSection div and formSectionHeader, with editing links
+	var html = '<div class="formSectionHeader">';
+	html += '<a href="javascript:void(0)" class="formSectionDelCol">&ndash;Col</a>';
+	html += '<a href="javascript:void(0)" class="formSectionAddCol">+Col</a>';
+	html += '<a href="javascript:void(0)" class="formSectionSetName">Rename</a>';
+	html += '<a href="javascript:void(0)" class="formSectionDelete">[ x ]</a>';
+	// add toggle link if this is collapsible
+	if(type == 'collapsible')
+		html += '<a href="javascript:void(0)" class="formSectionShow">[+]</a><a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
+	html += '<span class="sectionTitle">'+title+'</span>';
+	html += '</div><div class="tableWrapper"><table><tr class="formSectionRow">';
+	// add however many columns
+	for(a=0; a<columns; a++) {
+		html += '<td><div class=\"formSortable\"></div></td>';
+	}
+	html += '</tr></table></div></div>';
+	// $('#formEditor').find('.formSortable').css('border','1px solid red');
+
+	$(document.createElement('div'))
+		.addClass('formSection showSection'+((type == 'collapsible')? ' collapsible':''))
+		.appendTo('#formEditor').html(html)
+		.find('.formSortable')
+		.sortable({
+			connectWith:'.formSortable',
+			items:'.formItem',
+			tolerance:'pointer',
+			placeholder:'formItemPlaceholder'
+		});
+	
+	var $formContent = $('#formEditor').find('.formSection').last().find('table');
+	setupColResizing($formContent);
+	
+	window.layoutChanged = true;
+}
+
+// deletes a form section, finding all formItems and returning them to the field list
+function deleteFormSection($formSection) {
+	var formItems = $formSection.closest('.formSection').find('.formItem');
+	resetFormItem(formItems);
+	window.selectedFormItems = window.selectedFormItems.not(formItems);
+	formItems.removeClass('selected').appendTo('#editorFieldList');
+	sortFieldList();
+	$formSection.closest('.formSection').fadeOut(300,function() { $(this).remove(); });
+	
+	window.layoutChanged = true;
+}
+
+function setSectionName($formSection) {
+	var newName = prompt('Please enter a name for this section.');
+	if(newName != null)
+		$formSection.find('.sectionTitle').html(newName);
+}
+
+
+// adds a new column to the current form section
+function addColumn($formSection) {
+	var $formContent = $formSection.find('table');
+	
+	// loop through every row of the table, transferring formItems left
+	$formContent.find('tr.formSectionRow').each(function(i,row) {
+	
+		var columns = $(row).find('td');
+	
+		$('<td><div class=\"formSortable\"></div></td>').appendTo($(row)).find('.formSortable').sortable({
+				connectWith:'.formSortable',
+				tolerance:'pointer',
+				items:'.formItem',
+				placeholder:'formItemPlaceholder'
+			});
+	
+		if(i==0) { // first row only: calculate new widths
+		
+			// calculate old average column width, then calculate average with the new column
+			var targetWidth = $(row).width();
+			
+			var averageWidth = targetWidth / columns.length;
+			$(row).find('td:last').width(averageWidth);
+
+			var widthFactor = targetWidth / $(row).width();
+
+			// scale column to have the same total width
+			var sum = 0, scaledSum = 0, newWidth = 0;
+			$(row).find('td').each(function(i,cell) {
+				sum += $(cell).width();
+				newWidth = Math.round((sum*widthFactor)-scaledSum);
+				$(cell).width(newWidth-1);
+				scaledSum += newWidth;
+			});
+		}
+	});
+
+	setupColResizing($formContent);
+	
+	window.layoutChanged = true;
+}
+
+// deletes the last column, moving its contents to the previous column's formSortable div
+function deleteColumn($formSection) {
+	var $formContent = $formSection.find('table');
+	// loop through every row of the table, transferring formItems left
+	$formContent.find('tr.formSectionRow').each(function(i,row) {
+	
+		
+		var columns = $(row).find('td');
+		if(columns.length < 2)
+			return;
+
+		if(i==0) { // first row only: calculate new widths
+			
+			// calculate old average column width, then calculate average with the new column
+			var targetWidth = $(row).width();
+			var widthFactor = targetWidth / (targetWidth - columns.last().width());
+			// scale column to have the same total width
+			var sum = 0, scaledSum = 0, newWidth = 0;
+			$(row).find('td:not(:last)').each(function(i,cell) {
+				sum += $(cell).width();
+				newWidth = Math.round((sum*widthFactor)-scaledSum);
+				$(cell).width(newWidth)+1;
+				scaledSum += newWidth;
+			});
+		}
+
+		var lastCell = $(columns[columns.length-1]);
+		var secondToLast = $(columns[columns.length-2]);
+
+		lastCell.find('.formItem').appendTo(secondToLast.find('.formSortable')); // transfer form items to the left
+		lastCell.remove();
+	});
+	setupColResizing($formContent);
+	
+	window.layoutChanged = true;
+}
+
+// removes and recreates resize handles for the formSection table columns
+function setupColResizing($table) {
+	$table.colResizable({disable:true})	// remove old colResizable class, if it exists
+		.colResizable({
+			liveDrag:true,
+			draggingClass:'colResizableDragging',
+			onResize:function() { window.layoutChanged = true; }
+		});
+}
+
+// formats all selected formItems to the chosen label type
+function setLabelType(formItems,type) {
+
+	if(typeof type != 'undefined' && type != '')
+		formItems.data('labelType',type);	// store type via jQuery's Data system
+		
+	switch(type) {
+		case 'left':
+			formItems.each(function(i,item) {
+				$(item).removeClass('inlineLabel noLabel topLabel').addClass('leftLabel');
+				$(item).find('input,textarea').attr('value','').val('').css('color','#000');	// reset default value and clear field
+			});
+			break;
+		case'inline':
+			formItems.each(function(i,item) {
+				$(item).removeClass('topLabel leftLabel').addClass('inlineLabel');
+				var attributeLabel = $(item).find('label').html();
+				$(item).find('input,textarea').attr('value',attributeLabel).val(attributeLabel).css('color','#aaa');	// reset default value and clear field
+			});
+			break;
+		case 'none':
+			formItems.each(function(i,item) {
+				$(item).removeClass('inlineLabel topLabel leftLabel').addClass('noLabel');
+				$(item).find('input,textarea').attr('value','').val('').css('color','#000');	// reset default value and clear field
+			});
+			break;
+		case 'top':
+		default:
+			formItems.each(function(i,item) {
+				$(item).removeClass('inlineLabel noLabel leftLabel').addClass('topLabel');
+				$(item).find('input,textarea').attr('value','').val('').css('color','#000');	// reset default value and clear field
+			});
+	}
+	
+	window.layoutChanged = true;
+}
+
+// sets all selected formItems to be read-only (disabled)
+function setReadOnly(formItems,readOnly) {
+	if(readOnly === '' || readOnly === 'undefined' || readOnly === undefined)
+		readOnly = '0';
+	// console.debug(readOnly);
+	
+	formItems.data('readOnly',readOnly);	// store readOnly via jQuery's Data system
+	
+	if(readOnly == '1')
+		formItems.find('input,textarea').attr('disabled','disabled');
+	else
+		formItems.find('input,textarea').removeAttr('disabled');
+	
+	window.layoutChanged = true;
+}
+
+// scans all selected elements to see if they share any values, and updates the formItemOptions controls
+function updateFormItemOptions() {
+
+	var labelType = '';
+	var readOnly = '';
+	window.selectedFormItems.each(function(i,item) {
+		var thisLabelType = $(item).data('labelType');
+		var thisReadOnly = $(item).data('readOnly');
+		
+		if(labelType === '')
+			labelType = thisLabelType;
+		else if(labelType !== thisLabelType)
+			labelType = 'mixed';
+		
+		if(readOnly === '')
+			readOnly = thisReadOnly;
+		else if(readOnly !== thisReadOnly)
+			readOnly = 'mixed';
+	});
+	$('#labelType').val(labelType);
+	$('#readOnly').val(readOnly);
+}
+
+function deselectAll() {
+	window.selectedFormItems.removeClass('selected');	// deselect all elements
+	window.selectedFormItems = $([]);
+	$('.formItemOptions').stop().fadeOut(400);
+}
+
+
+// removes all user settings from an array of formItems (label setup, size, read-only, etc)
+function resetFormItem($items) {
+	window.selectedFormItems = window.selectedFormItems.not($items);
+	$items.removeClass('selected');	// disable resizing, and de-select this item
+	$items.removeClass('noLabel leftLabel').addClass('topLabel');
+	$items.find('.formInputBox').resizable('destroy').css({'height':'','width':''});
+	$items.find('input, textarea').attr('value','').removeAttr('disabled').val('').css('color','#000');
+	$items.data('labelType','');
+	$items.data('readOnly','');
+}
+
+// puts field list in alphabetical order
+function sortFieldList() {
+	var mylist = $('#editorFieldList');
+	var listitems = mylist.children('.formItem').get();
+	listitems.sort(function(a, b) {
+		var labelA = $(a).find('label').html().toLowerCase();
+		var labelB = $(b).find('label').html().toLowerCase();
+		return labelA.localeCompare(labelB);
+	});
+	$.each(listitems, function(idx, itm) {
+		mylist.append(itm);
+	});
+}
+
+
+// loop through form structure and generate a JSON layout string
+function generateFormJson() {
+
+	var formSections = [];
+	
+	// loop through sections, add rows to rows[]
+	$('#formEditor .formSection').each(function(i,section) {
+		var sectionJson = '{';
+		var rows = [];
+		if($(section).hasClass('collapsible'))
+			sectionJson += '"collapsible":true,'
+		else
+			sectionJson += '"collapsible":false,'
+		var title = $(section).find('.sectionTitle').html();
+		
+		sectionJson += '"title":"'+((title=='undefined')? '' : title.replace(/\\/g,'\\\\').replace(/"/g, '\\\"'))+'",';
+		
+		// loop through rows, add columns to cols[]
+		$(section).find('tr').each(function(j,row) {
+			var rowJson = '{';
+			var cols = [];
+			
+			// loop through columns, add formItems to [items], also add widths
+			$(row).find('td').each(function(k,col) {
+				columnJson = '{"width":'+$(col).width()+',';
+				var items = [];
+				
+				// loop through formItems and get all individual properties (height, width, options)
+				$(col).find('.formItem').each(function(l,item) {
+					var itemJson = '{';
+					itemJson += '"name":"' + $(item).attr('id') + '",';
+					itemJson += '"labelType":"' + $(item).data('labelType') + '",';
+					itemJson += '"readOnly":"' + $(item).data('readOnly') + '",';
+					itemJson += '"height":"' + $(item).find('.formInputBox').height() + '",';
+					itemJson += '"width":"' + $(item).find('.formInputBox').width() + '",';
+					itemJson += '"tabindex":"' + $(item).find('input,textarea,checkbox,select').first().attr('tabindex')+'"';
+					
+					itemJson += '}';
+					items.push(itemJson);
+				});
+				
+				columnJson += '"items":['+items.join(',')+']}';
+				cols.push(columnJson);
+			});
+			
+			rowJson = '{"cols":['+cols.join(',')+']}';
+			rows.push(rowJson);
+		});
+
+		sectionJson += '"rows":['+rows.join(',')+']}';
+		formSections.push(sectionJson);
+	});
+	return '{"version":"'+formEditorVersion+'","sections":[' + formSections.join(',') + ']}';
+}
+
+// parse a JSON layout string and call appropriate functions to recreate the layout
+function loadFormJson(formJson) {
+
+	var form = $.parseJSON(formJson);
+	// console.log(form);
+
+	for(i=0; i<form.sections.length; i++) {
+
+		var formSection = form.sections[i];
+		
+		var type = formSection.collapsible? 'collapsible' : '';
+		if(formSection.rows.length > 0) {
+			addFormSection(type,formSection.rows[0].cols.length,formSection.title);
+			
+			$formSection = $('#formEditor .formSection:last');
+
+			for(j=0; j<formSection.rows[0].cols.length; j++) {
+
+				var $col = $formSection.find('td:nth-child('+(j+1)+')');
+				$col.width(formSection.rows[0].cols[j].width);
+
+				for(k=0; k<formSection.rows[0].cols[j].items.length; k++) {
+					// console.log(formSection.rows[0].cols[j].items[k]);
+					var properties = formSection.rows[0].cols[j].items[k];
+					var formItem = $('#editorFieldList').find('#'+properties.name);
+					formItem.appendTo($col.find('.formSortable'))
+						.data({'labelType':properties.labelType,'readOnly':properties.readOnly}).find('.formInputBox').resizable({
+							grid: [5,10],
+							handles: (formItem.find('textarea').length > 0)? 'e,se,s':'e',
+							stop:function() { window.layoutChanged = true; }
+							// helper:'resizeHelper'
+						}).height(properties.height).width(properties.width).find('input,textarea,checkbox,select').attr('tabindex',properties.tabindex);
+						
+					setReadOnly(formItem,properties.readOnly);
+					setLabelType(formItem,properties.labelType);
+				}
+			}
+			setupColResizing($formSection.find('table'));
+		}
+	}
+	window.layoutChanged = false;	// this is set to true by various functions above, needs to be reset
+}

@@ -18,6 +18,13 @@ class ResponseBehavior extends CBehavior {
 	public static $_response = array();
 
 	/**
+	 * Tells whether a response is already in progress; for triggering special
+	 * actions in the shutdown function respondFatalErrorMessage, if any.
+	 * @var type
+	 */
+	private static $_responding = false;
+
+	/**
 	 * Magic getter for {@link exitNonFatal}
 	 * @return bool
 	 */
@@ -88,6 +95,7 @@ class ResponseBehavior extends CBehavior {
 	 * @param type $fatal Shut down PHP thread after printing the message
 	 */
 	public static function respond($message, $error = false, $fatal = false){
+		self::$_responding = true;
 		if(self::$_isConsole){
 			echo $message;
 			if($error && $fatal && !self::$_noHalt)
@@ -126,18 +134,15 @@ class ResponseBehavior extends CBehavior {
 
 	/**
 	 * Shutdown function for handling fatal errors
-	 *
-	 * @global boolean $responding
 	 */
 	public static function respondFatalErrorMessage(){
-		global $responding;
 		$error = error_get_last();
-		if($error != null && !$responding){
+		if($error != null && !self::$_responding){
 			$errno = $error["type"];
 			$errfile = $error["file"];
 			$errline = $error["line"];
 			$errstr = $error["message"];
-			self::respond("PHP ".($errno == E_PARSE ? 'parse' : 'fatal')." error [$errno]: $errstr in $errfile L$errline");
+			self::respond("PHP ".($errno == E_PARSE ? 'parse' : 'fatal')." error [$errno]: $errstr in $errfile L$errline",true);
 		}
 	}
 
@@ -147,7 +152,7 @@ class ResponseBehavior extends CBehavior {
 	public static function respondWithException($e){
 		$message = 'Exception: "'.$e->getMessage().'" in '.$e->getFile().' L'.$e->getLine()."\n";
 		if(self::$_longErrorTrace){
-			foreach($trace as $stackLevel){
+			foreach($e->getTrace() as $stackLevel){
 				$message .= $stackLevel['file'].' L'.$stackLevel['line'].' ';
 				if($stackLevel['class'] != ''){
 					$message .= $stackLevel['class'];

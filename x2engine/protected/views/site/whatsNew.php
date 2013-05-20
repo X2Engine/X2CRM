@@ -45,18 +45,56 @@ foreach($groups as $groupId){
         }
     }
 }
+
+// used for rich editing in new post text field
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/emailEditor.js');
+Yii::app()->clientScript->registerCss("ckeditorStyling", "
+#cke_Events_text {
+  margin-bottom: 6px !important;
+}
+
+/* collapse bottom bar */
+.cke_bottom {
+    background: none !important;
+    border-top: none !important;
+    display: inline !important;
+    height: 0px !important;
+    width: 0px !important;
+    padding: 0 0 0 0 !important;
+    margin: 0 0 0 0 !important;
+}
+
+/* move resizing handle */
+.cke_resizer_ltr { 
+    /*margin-right: 0px !important;
+    margin-top: -14px !important;*/
+    margin-right: 2px !important;
+    /*position: relative !important;*/
+}
+");
+
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
 $userList=array_keys(User::getNames());
 $tempUserList=array_diff($userList,$tempUserList);
 $usersGroups=implode(",",$tempUserList);
-Yii::app()->clientScript->registerScript('highlightButton','
-$("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
-	.change(function(){
-		if($(this).val()=="")
-			$("#save-button").removeClass("highlight");
-		else
-			$("#save-button").addClass("highlight");
-	});
+Yii::app()->clientScript->registerScript('miscellaneous','
+if ($("#sticky-feed .empty").length !== 0) {
+    $("#sticky-feed").hide ();
+}
+
+window.newPostEditor = createCKEditor (
+    "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: "' . Yii::t('app','Enter text here...') . '"});
+
+// custom event triggered by ckeditor confighelper plugin
+$(document).on ("myFocus", function () { 
+    if (!$("#post-buttons").is (":visible")) { // first time user focused
+        window.newPostEditor.resize ("100%", 140);
+    }
+    $("#post-buttons").slideDown (400); 
+    $("#save-button").addClass ("highlight");
+});
 
 if($(":checkbox:checked").length > ($(":checkbox").length)/2){
     checkedFlag=true;
@@ -97,18 +135,16 @@ function publishPost(){
         url:"publishPost",
         type:"POST",
         data:{
-            "text":$("#Events_text").val(),
+            "text":window.newPostEditor.getData(),
             "associationId":$("#Events_associationId").val(),
             "visibility":$("#Events_visibility").val(),
             "subtype":$("#Events_subtype").val()
         },
         success:function(){
             $("#save-button").removeClass("highlight");
-            $("#Events_text").val("");
-            var textarea=document.getElementById("Events_text");
-            toggleText(textarea);
-            $(textarea).css("height","25px");
-            $(textarea).next().slideUp(400);
+            window.newPostEditor.setData ("", function () { window.newPostEditor.fire ("blur"); });
+              $("#post-buttons").slideUp (400); 
+            //window.newPostEditor.resize ("100%", 100);
         }
     });
 }
@@ -784,8 +820,8 @@ $(document).on("click",".delete-link",function(e){
     }
 });
 $(document).on("submit","#attachment-form-form",function(){
-    if($("#Events_text").val()!="" && $("#Events_text").val()!="'.Yii::t('app','Enter text here...').'"){
-        $("#attachmentText").val($("#Events_text").val());
+    if(window.newPostEditor.getData()!="" && window.newPostEditor.getData()!="'.Yii::t('app','Enter text here...').'"){
+        $("#attachmentText").val(window.newPostEditor.getData ());
     }
 });
 ',CClientScript::POS_HEAD);
@@ -818,7 +854,7 @@ $(document).on("submit","#attachment-form-form",function(){
 	)); ?>
 	<div class="float-row" style='overflow:visible;'>
 		<?php
-		$feed->text = Yii::t('app','Enter text here...');
+		//$feed->text = Yii::t('app','Enter text here...');
 		echo $form->textArea($feed,'text',array('style'=>'width:99%;height:25px;color:#aaa;display:block;clear:both;'));
 		echo "<div id='post-buttons' style='display:none;'>";
         echo $form->dropDownList($feed,'associationId',$users);
@@ -959,15 +995,6 @@ $this->widget('zii.widgets.CListView', array(
     }
 </style>
 <script>
-    $(document).on('focus','#feed-form textarea',function(){
-        $(this).animate({"height":"50px"});
-        $(this).next().slideDown(400);
-    });
-
-    if ($("#sticky-feed .empty").length !== 0) {
-        $("#sticky-feed").hide ();
-    }
-
     $(document).on('ready',function(){
         $("#broadcastColor").modcoder_excolor({
             hue_bar : 3,

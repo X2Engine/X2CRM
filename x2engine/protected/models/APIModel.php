@@ -35,6 +35,8 @@
  *****************************************************************************************/
 
 /**
+ * Standalone model class for interaction with X2CRM's API
+ * 
  * Remote data insertion & lookup API model. Has multiple magic methods and 
  * automatically makes cURL requests to API controller for ease of use. For each
  * kind of request, see the method in ApiController that corresponds to it. To 

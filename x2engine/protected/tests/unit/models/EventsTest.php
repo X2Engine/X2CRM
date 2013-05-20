@@ -36,7 +36,9 @@
 Yii::import('application.models.*');
 
 /**
- * @package X2CRM.tests.unit.models 
+ * Test case for the model class {@link Events}.
+ * @package X2CRM.tests.unit.models
+ * @author Jake Houser <jake@x2engine.com>
  */
 class EventsTest extends CDbTestCase {
     

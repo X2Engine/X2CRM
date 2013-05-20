@@ -41,9 +41,9 @@
  * create a service case from a contacts view via ajax by clicking the
  * "Create Case" button. (the new case is associated with the contact).
  *
- * @package X2CRM.modules.services.controllers 
+ * @package X2CRM.modules.services.controllers
  */
-class ServicesController extends x2base { 
+class ServicesController extends x2base {
 
 	public $modelClass = 'Services';
 	public $serviceCaseStatuses = null;
@@ -52,7 +52,7 @@ class ServicesController extends x2base {
 		return array(
 			array('allow',
 				'actions'=>array('getItems','webForm'),
-				'users'=>array('*'), 
+				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','update','search','saveChanges','delete','inlineEmail','createWebForm', 'statusFilter'),
@@ -67,15 +67,21 @@ class ServicesController extends x2base {
 			),
 		);
 	}
-	
+
 	public function actions() {
 		return array(
 			'inlineEmail'=>array(
 				'class'=>'InlineEmailAction',
 			),
+            'servicesReport'=>array(
+                'class'=>'ServicesReportAction',
+            ),
+            'exportServiceReport'=>array(
+              'class'=>'ExportServiceReportAction',
+            ),
 		);
 	}
-	
+
 	public function behaviors() {
 		return array_merge(parent::behaviors(),array(
 			'ServiceRoutingBehavior' => array(
@@ -89,7 +95,7 @@ class ServicesController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model = $this->loadModel($id);	 
+		$model = $this->loadModel($id);
 		parent::view($model,'services');
 	}
 
@@ -155,10 +161,10 @@ class ServicesController extends x2base {
 				$value = '';
 			}
 			$model->setX2Fields($_POST['Services']);
-			
+
 			if($model->contactId != '' && !is_numeric($model->contactId)) // make sure an existing contact is associated with this case, otherwise don't create it
 				$model->addError('contactId', Yii::t('services', 'Contact does not exist'));
-			
+
 			if(isset($_POST['x2ajax'])) { // we're creating a case with "Create Case" button in contacts view
 				// if($this->create($model,$temp, '1')) { // success creating case?
 				if($model->save()) { // success creating case?
@@ -184,16 +190,16 @@ class ServicesController extends x2base {
 				// $this->create($model,$temp, '0');
 			}
 		}
-		
+
 		// set default options for dropdowns
 		if(!isset($model->status) || $model->status == '') {
 			$model->status = "New";
 		}
-		
+
 		if(!isset($model->impact) || $model->impact == '') {
 			$model->impact = "3 - Moderate";
 		}
-				
+
 		if(isset($_POST['x2ajax'])) { // we're creating a case with "Create Case" button in contacts view
 			Yii::app()->clientScript->scriptMap['*.js'] = false; // don't return javascript files in ajax response (that kills things)
 			Yii::app()->clientScript->scriptMap['*.css'] = false;
@@ -216,12 +222,12 @@ class ServicesController extends x2base {
 		}
 
 	}
-    
-    
+
+
 	/* public function update($model, $oldAttributes,$api){
-		
+
 		$ret = parent::update($model,$oldAttributes,'1');
-		
+
 		if($model->escalatedTo != '' && $model->escalatedTo != $oldAttributes['escalatedTo']) {
             $event=new Events;
             $event->type='case_escalated';
@@ -239,7 +245,7 @@ class ServicesController extends x2base {
                 $notif->save();
             }
 		}
-		
+
 		if($api==0)
 			$this->redirect(array('view', 'id' => $model->id));
 		else
@@ -267,10 +273,10 @@ class ServicesController extends x2base {
 			  $value = null;
 			}
 			$model->setX2Fields($_POST['Services']);
-			
+
 			if($model->contactId != '' && !is_numeric($model->contactId)) // make sure an existing contact is associated with this case, otherwise don't create it
 				$model->addError('contactId', Yii::t('services', 'Contact does not exist'));
-			
+
 			// $this->update($model,$temp,'0');
 			$model->save();
 			$this->redirect(array('view','id'=>$model->id));
@@ -282,7 +288,7 @@ class ServicesController extends x2base {
 		));
 	}
         public function delete($id){
-            
+
             $model=$this->loadModel($id);
             $dataProvider=new CActiveDataProvider('Actions', array(
                 'criteria'=>array(
@@ -326,11 +332,11 @@ class ServicesController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-		
+
 		$model=new Services('search');
 		$this->render('index', array('model'=>$model));
 	}
-	
+
 	public function actionGetItems(){
 		$sql = 'SELECT id as value FROM x2_services WHERE id LIKE :qterm ORDER BY id ASC';
 		$command = Yii::app()->db->createCommand($sql);
@@ -339,8 +345,8 @@ class ServicesController extends x2base {
 		$result = $command->queryAll();
 		echo CJSON::encode($result); exit;
 	}
-	
-	
+
+
 	/**
 	 * Create a web lead form with a custom style
 	 *
@@ -354,7 +360,7 @@ class ServicesController extends x2base {
 			include(__DIR__ . '/pro/actionCreateWebForm.php');
 			return;
 		}
-	
+
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') { // save a web form
 			if (empty($_POST['name'])) {
 				echo json_encode(array('errors'=>array('name'=>Yii::t('marketing','Name cannot be blank.'))));
@@ -362,7 +368,7 @@ class ServicesController extends x2base {
 			}
 
 			$type = 'serviceCase';
-			
+
 			// check if we are updating an existing web form
 			$model = WebForm::model()->findByAttributes(array('name'=>$_POST['name'], 'type'=>$type));
 			if (!isset($model)) {
@@ -400,7 +406,7 @@ class ServicesController extends x2base {
 				if(!empty($groupLinks))
 					$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-				$condition .= ' OR (visibility=2 AND assignedTo IN 
+				$condition .= ' OR (visibility=2 AND assignedTo IN
 					(SELECT username FROM x2_group_to_user WHERE groupId IN
 					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 			} else {
@@ -411,8 +417,8 @@ class ServicesController extends x2base {
 			$this->render('createWebForm', array('forms'=>$forms));
 		}
 	}
-	
-	
+
+
 	/**
 	 * Display a service web form
 	 *
@@ -424,7 +430,7 @@ class ServicesController extends x2base {
 			include(__DIR__ . '/pro/actionWebForm.php');
 			return;
 		}
-	
+
 		if (isset($_POST['Services'])) { // web form submitted
 			$firstName = $_POST['Services']['firstName'];
 			$lastName = $_POST['Services']['lastName'];
@@ -432,21 +438,21 @@ class ServicesController extends x2base {
 			$email = $_POST['Services']['email'];
 			$phone = $_POST['Services']['phone'];
 			$description = $_POST['Services']['description'];
-			
+
 			$model = new Services;
 			$oldAttributes = $model->getAttributes();
-			
+
 			$contact = Contacts::model()->findByAttributes(array('email'=>$email));
 			if($contact) {
 				$model->contactId = $contact->id;
 			} else {
 				$model->contactId = "Unregistered";
 			}
-			
+
 			$model->subject = Yii::t('services', 'Web Form Case entered by {name}', array(
 				'{name}'=>$fullName,
 			));
-			
+
 			$model->description = $description;
 
 			$model->origin = 'Web';
@@ -464,8 +470,8 @@ class ServicesController extends x2base {
 				$model->name = $model->id;
 				$model->update(array('name'));
 			}
-					
-			
+
+
 			// add tags
 			if(!empty($_POST['tags'])) {
 				$taglist = explode(',', $_POST['tags']);
@@ -486,7 +492,7 @@ class ServicesController extends x2base {
 					}
 				}
 			}
-		
+
 			//use the submitted info to create an action
 			$action = new Actions;
 			$action->actionDescription = Yii::t('contacts','Web Form') ."\n\n".
@@ -494,7 +500,7 @@ class ServicesController extends x2base {
 				Yii::t('contacts','Email') .": ". $email ."\n".
 				Yii::t('contacts','Phone') .": ". $phone ."\n".
 				Yii::t('services','Description') .": ". $description;
-			
+
 			// create action
 			$action->type = 'note';
 			$action->assignedTo = $model->assignedTo;
@@ -508,13 +514,13 @@ class ServicesController extends x2base {
 			$action->complete= 'Yes';
 			$action->updatedBy = 'admin';
 			$action->save();
-			
+
 			//send email
 			$emailBody = Yii::t('services', 'Hello'). ' ' . $fullName . ",<br><br>";
 			$emailBody .= Yii::t('services', 'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}.  One of  our Technical Analysts will contact you shortly.', array(
 				'{casenumber}'=>$model->id,
 			));
-			
+
 			$emailBody = Yii::app()->params->admin->serviceCaseEmailMessage;
 			$emailBody = preg_replace('/{first}/u', $firstName, $emailBody);
 			$emailBody = preg_replace('/{last}/u', $lastName, $emailBody);
@@ -523,10 +529,10 @@ class ServicesController extends x2base {
 			$emailBody = preg_replace('/{description}/u', $description, $emailBody);
 			$emailBody = preg_replace('/{case}/u', $model->id, $emailBody);
 			$emailBody = preg_replace('/\n|\r\n/', "<br>", $emailBody);
-			
+
 			$uniqueId = md5(uniqid(rand(), true));
 			$emailBody .= '<img src="' . $this->createAbsoluteUrl('actions/emailOpened', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
-			
+
 			$emailSubject = Yii::app()->params->admin->serviceCaseEmailSubject;
 			$emailSubject = preg_replace('/{first}/u', $firstName, $emailSubject);
 			$emailSubject = preg_replace('/{last}/u', $lastName, $emailSubject);
@@ -534,10 +540,10 @@ class ServicesController extends x2base {
 			$emailSubject = preg_replace('/{email}/u', $email, $emailSubject);
 			$emailSubject = preg_replace('/{description}/u', $description, $emailSubject);
 			$emailSubject = preg_replace('/{case}/u', $model->id, $emailSubject);
-			
+
 			$from = array('name' => Yii::app()->params->admin->serviceCaseFromEmailName, 'address'=> Yii::app()->params->admin->serviceCaseFromEmailAddress);
 			$status = $this->sendUserEmail(array($fullName, $email), $emailSubject, $emailBody, null, $from);
-			
+
 			if($status[0] == 200) {
 				//email action
 				$action = new Actions;
@@ -560,20 +566,20 @@ class ServicesController extends x2base {
 				    $track->save();
 				}
 			}
-			
+
 			$this->renderPartial('webFormSubmit', array('caseNumber'=>$model->id));
-			
+
 		} else {
 			//sanitize get params
 			$whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
 			$_GET = array_intersect_key($_GET, array_flip($whitelist));
 			//restrict param values, alphanumeric, # for color vals, comma for tag list
 			$_GET = preg_replace('/[^a-zA-Z0-9#,]/', '', $_GET);
-	
+
 			$this->renderPartial('webForm', array('type'=>'webForm'));
 		}
 	}
-	
+
 	/**
 	 *  Show or hide a certain status in the gridview
 	 *
@@ -582,14 +588,14 @@ class ServicesController extends x2base {
 	 *
 	 */
 	public function actionStatusFilter() {
-	
+
 		if(isset($_POST['all'])) {	// show all the things!!
 			Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode(array());	// hide none
 			Yii::app()->params->profile->update(array('hideCasesWithStatus'));
-			
+
 		} elseif(isset($_POST['none'])) {	// hide all the things!!!!11
 			$statuses = array();
-			
+
 			$dropdownId = Yii::app()->db->createCommand()	// get the ID of the statuses dropdown via fields table
 				->select('linkType')
 				->from('x2_fields')
@@ -597,22 +603,22 @@ class ServicesController extends x2base {
 				->queryScalar();
 			if($dropdownId !== null)
 				$statuses = Dropdowns::getItems($dropdownId);	// get the actual statuses
-			
+
 			Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($statuses);
 			Yii::app()->params->profile->update(array('hideCasesWithStatus'));
-			
+
 		} elseif(isset($_POST['checked'])) {
-		
+
 			$checked = CJSON::decode($_POST['checked']);
 			$status = isset($_POST['status'])? $_POST['status'] : false;
-			
+
 			// var_dump($checked);
 			// var_dump($status);
-			
+
 			$hideStatuses = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
 			if($hideStatuses === null || !is_array($hideStatuses))
 				$hideStatuses = array();
-			
+
 			// var_dump($checked);
 			// var_dump(in_array($status, $hideStatuses));
 			if($checked && ($key = array_search($status, $hideStatuses)) !== false) { // if we want to show the status, and it's not being shown
@@ -620,11 +626,83 @@ class ServicesController extends x2base {
 			} else if(!$checked && !in_array($status, $hideStatuses)) { // if we want to hide the status, and it's not being hidden
 				$hideStatuses[] = $status;
 			}
-			
+
 			Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($hideStatuses);
 			Yii::app()->params->profile->update(array('hideCasesWithStatus'));
 		}
 	}
+
+    public function getDateRange() {
+
+        $dateRange = array();
+        $dateRange['strict'] = false;
+        if (isset($_GET['strict']) && $_GET['strict'])
+            $dateRange['strict'] = true;
+
+        $dateRange['range'] = 'custom';
+        if (isset($_GET['range']))
+            $dateRange['range'] = $_GET['range'];
+
+        switch ($dateRange['range']) {
+
+            case 'thisWeek':
+                $dateRange['start'] = strtotime('mon this week'); // first of this month
+                $dateRange['end'] = time(); // now
+                break;
+            case 'thisMonth':
+                $dateRange['start'] = mktime(0, 0, 0, date('n'), 1); // first of this month
+                $dateRange['end'] = time(); // now
+                break;
+            case 'lastWeek':
+                $dateRange['start'] = strtotime('mon last week'); // first of last month
+                $dateRange['end'] = strtotime('mon this week') - 1;  // first of this month
+                break;
+            case 'lastMonth':
+                $dateRange['start'] = mktime(0, 0, 0, date('n') - 1, 1); // first of last month
+                $dateRange['end'] = mktime(0, 0, 0, date('n'), 1) - 1;  // first of this month
+                break;
+            case 'thisYear':
+                $dateRange['start'] = mktime(0, 0, 0, 1, 1);  // first of the year
+                $dateRange['end'] = time(); // now
+                break;
+            case 'lastYear':
+                $dateRange['start'] = mktime(0, 0, 0, 1, 1, date('Y') - 1);  // first of last year
+                $dateRange['end'] = mktime(0, 0, 0, 1, 1, date('Y')) - 1;   // first of this year
+                break;
+            case 'all':
+                $dateRange['start'] = 0;        // every record
+                $dateRange['end'] = time();
+                if (isset($_GET['end'])) {
+                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
+                    if ($dateRange['end'] == false)
+                        $dateRange['end'] = time();
+                    else
+                        $dateRange['end'] = strtotime('23:59:59', $dateRange['end']);
+                }
+                break;
+
+            case 'custom':
+            default:
+                $dateRange['end'] = time();
+                if (isset($_GET['end'])) {
+                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
+                    if ($dateRange['end'] == false)
+                        $dateRange['end'] = time();
+                    else
+                        $dateRange['end'] = strtotime('23:59:59', $dateRange['end']);
+                }
+
+                $dateRange['start'] = strtotime('1 month ago', $dateRange['end']);
+                if (isset($_GET['start'])) {
+                    $dateRange['start'] = Formatter::parseDate($_GET['start']);
+                    if ($dateRange['start'] == false)
+                        $dateRange['start'] = strtotime('-30 days 0:00', $dateRange['end']);
+                    else
+                        $dateRange['start'] = strtotime('0:00', $dateRange['start']);
+                }
+        }
+        return $dateRange;
+    }
 
 
 	/**

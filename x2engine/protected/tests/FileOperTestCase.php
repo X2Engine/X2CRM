@@ -44,6 +44,7 @@
  * @property array $relFileList (read-only) List of testing files relative to the base of the testing directory
  * @property string $testTime (read-only) Timestamp of the test currently being run (used to construct test paths)
  * @package X2CRM.tests
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 abstract class FileOperTestCase extends CTestCase {
 

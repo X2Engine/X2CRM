@@ -45,6 +45,7 @@ Yii::import('application.models.X2Model');
  * @property array $lineItems All line items for the quote.
  * @property array $productLines (read-only) Line items that are products/services.
  * @package X2CRM.modules.quotes.models
+ * @author David Visbal, Demitri Morgan <demitri@x2engine.com>
  */
 class Quote extends X2Model {
 

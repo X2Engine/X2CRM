@@ -70,7 +70,6 @@ if(!empty($model->status)) {
 }
 ?>
 
-
 <div id="email-mini-module" class="wide form<?php if($emailSent) echo ' hidden'; ?>">
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'enableAjaxValidation'=>false,

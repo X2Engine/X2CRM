@@ -229,7 +229,7 @@ class UsersController extends x2base {
                     $old=$model->attributes;
                     $temp=$model->password;
                     $model->attributes=$_POST['User'];
-                    
+
                     if($model->password!="")
                         $model->password = md5($model->password);
                     else
@@ -238,6 +238,12 @@ class UsersController extends x2base {
                         $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
                     }
                     if($model->save()){
+						$profile = $model->profile;
+						if(!empty($profile)) {
+							$profile->emailAddress = $model->emailAddress;
+							$profile->fullName = $model->firstName.' '.$model->lastName;
+							$profile->save();
+						}
                         if($old['username']!=$model->username){
                             $fieldRecords=Fields::model()->findAllByAttributes(array('fieldName'=>'assignedTo'));
                             $modelList=array();

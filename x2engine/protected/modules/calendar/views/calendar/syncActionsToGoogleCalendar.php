@@ -46,7 +46,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 
-<?php 
+<?php
 $form=$this->beginWidget('CActiveForm', array(
    'id'=>'calendar-form',
    'enableAjaxValidation'=>false,
@@ -87,14 +87,18 @@ $(function() {
 				<?php } else { ?>
 					<?php echo CHtml::link(Yii::t('calendar', "Sync My Actions To Google Calendar"), $client->createAuthUrl()); ?>
 				<?php } ?>
-			<?php } ?>
+			<?php }else{
+                echo Yii::t('calendar','Google Integration is not configured on this server.');
+            } ?>
 		</td>
 	</table>
 </div>
 
 <?php
-echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton(Yii::t('app','Sync'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
-echo "	</div>\n";
+if($googleIntegration){
+    echo '	<div class="row buttons">'."\n";
+    echo '		'.CHtml::submitButton(Yii::t('app','Sync'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+    echo "	</div>\n";
+}
 $this->endWidget();
 ?>

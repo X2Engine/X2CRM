@@ -643,7 +643,7 @@ class InlineEmail extends CFormModel {
 	 * Inserts a signature into the body, if none can be found.
 	 * @param array $wrap Wrap the signature in tags (index 0 opens, index 1 closes)
 	 */
-	public function insertSignature($wrap=array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>')) {
+	public function insertSignature($wrap=array('<br /><br />','')) {
 		if(preg_match(self::insertedPattern('signature', '(.*)', 1, 'um'), $this->message, $matches)) {
 			$this->_signature = $matches[1];
 		} else {
