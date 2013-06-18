@@ -44,15 +44,22 @@ require_once('WebTestConfig.php');
  */
 abstract class CURLTestCase extends X2DbTestCase {
 
+	public function assertResponseCodeIs($code,$ch,$message='') {
+		$this->assertEquals($code,curl_getinfo($ch,CURLINFO_HTTP_CODE),$message);
+	}
+
 	public function getCurlResponse($params,$postData=array()) {
 		return curl_exec($this->getCurlHandle($params,$postData));
 	}
 	
 	public function getCurlHandle($params,$postData=array()) {
-		$ch = curl_init(TEST_BASE_URL . $this->url($params));
 		$post = count($postData) > 0;
-		curl_setopt($ch, CURLOPT_POST, $post);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$ch = curl_init(TEST_BASE_URL . $this->url($params));
+		curl_setopt_array($ch,array(
+			CURLOPT_POST => $post,
+			CURLOPT_RETURNTRANSFER => true, // Return the response data from curl_exec()
+			CURLOPT_HTTP200ALIASES => array(400,401,403,404,413,500,501), // Allows responses w/error codes, so that we can examine the contents of the response even if the request failed
+		));
 		if ($post)
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 		return $ch;

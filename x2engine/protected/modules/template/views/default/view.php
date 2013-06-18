@@ -43,6 +43,13 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
+$modelType = json_encode("Templates");
+$modelId = json_encode($model->id);
+Yii::app()->clientScript->registerScript('widgetShowData', "
+$(function() {
+	$('body').data('modelType', $modelType);
+	$('body').data('modelId', $modelId);
+});");
 ?>
 <div id="main-column" class="half-width">
 <div class="page-title"><h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php echo $model->name; ?></h2></div>

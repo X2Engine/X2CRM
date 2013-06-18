@@ -45,6 +45,8 @@ class SiteController extends x2base {
     // Declares class-based actions.
     //public $layout = '//layouts/main';
 
+	public $modelClass = 'Admin';
+
     public $portlets = array();
 
     public function filters(){
@@ -126,12 +128,12 @@ class SiteController extends x2base {
         if(isset($_POST['report'])){
             $errorReport = $_POST['report'];
             if(isset($_POST['email'])){
-                $errorReport = unserialize(base64_decode($_POST['report']));
+                $errorReport = unserialize(base64_decode($errorReport));
                 $errorReport['email'] = $_POST['email'];
                 $errorReport = base64_encode(serialize($errorReport));
             }
             if(isset($_POST['bugDescription'])){
-                $errorReport = unserialize(base64_decode($_POST['report']));
+                $errorReport = unserialize(base64_decode($errorReport));
                 $errorReport['bugDescription'] = $_POST['bugDescription'];
                 $errorReport = base64_encode(serialize($errorReport));
             }
@@ -143,6 +145,7 @@ class SiteController extends x2base {
             curl_setopt($ccSession, CURLOPT_RETURNTRANSFER, 1);
             $ccResult = curl_exec($ccSession);
             curl_close($ccSession);
+            echo $ccResult;
         }
     }
 
@@ -839,11 +842,11 @@ class SiteController extends x2base {
     }
 
     public function actionDeleteRelationship($firstId, $firstType, $secondId, $secondType){
-        $rel = X2Model::model('Relationships')->findByAttributes(array('firstId'=>$firstId,'firstType'=>$firstType,'secondId'=>$secondId,'secondType'=>$secondType));
+        $rel = X2Model::model('Relationships')->findByAttributes(array('firstId' => $firstId, 'firstType' => $firstType, 'secondId' => $secondId, 'secondType' => $secondType));
         if(isset($rel)){
             $rel->delete();
         }else{
-            $rel = X2Model::model('Relationships')->findByAttributes(array('firstId'=>$secondId,'firstType'=>$secondType,'secondId'=>$firstId,'secondType'=>$firstType));
+            $rel = X2Model::model('Relationships')->findByAttributes(array('firstId' => $secondId, 'firstType' => $secondType, 'secondId' => $firstId, 'secondType' => $firstType));
             if(isset($rel)){
                 $rel->delete();
             }
@@ -1123,8 +1126,8 @@ class SiteController extends x2base {
                         }
                         $profile->update(array($model->associationType));
                         $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
-                    }elseif($model->associationType=='bg' || $model->associationType=='bg-private'){
-                        $profile=Yii::app()->params->profile;
+                    }elseif($model->associationType == 'bg' || $model->associationType == 'bg-private'){
+                        $profile = Yii::app()->params->profile;
                         $profile->backgroundImg = $name;
                         $profile->update(array('backgroundImg'));
                         $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
@@ -1351,11 +1354,10 @@ class SiteController extends x2base {
             }
         }
 
-        function is_disabled($function) {
-            $disabled_functions=explode(',',str_replace(" ","",ini_get('disable_functions')));
+        function is_disabled($function){
+            $disabled_functions = explode(',', str_replace(" ", "", ini_get('disable_functions')));
             return in_array($function, $disabled_functions);
         }
-
 
         if($error = Yii::app()->errorHandler->error){
             if(Yii::app()->request->isAjaxRequest){
@@ -1385,7 +1387,7 @@ class SiteController extends x2base {
                 if(!is_disabled('phpinfo')){
                     $info = $this->phpinfo_array(true);
                 }else{
-                    $info='';
+                    $info = '';
                 }
                 if(!empty(Yii::app()->params->admin->emailFromAddr))
                     $email = Yii::app()->params->admin->emailFromAddr;
@@ -1397,7 +1399,6 @@ class SiteController extends x2base {
                 $x2version = Yii::app()->params->version;
                 unset($error['traces']);
                 $error['trace'] = CHtml::encode($error['trace']);
-
                 $phpInfoErrorReport = base64_encode(serialize(array_merge($error, array(
                                     'request' => $request,
                                     'phpinfo' => $info,
@@ -1608,7 +1609,8 @@ class SiteController extends x2base {
                 }
 
                 if($model->validate() && $model->login()){  // user successfully logged in
-                    if(Yii::app()->user->checkAccess('AdminIndex'))
+                    $adminUser=X2Model::model('User')->findByPk(1);
+                    if(isset($adminUser) && $adminUser->username==Yii::app()->user->getName())
                         $this->checkUpdates();   // check for updates if admin
                     else
                         Yii::app()->session['versionCheck'] = true; // ...or don't
@@ -1942,7 +1944,7 @@ class SiteController extends x2base {
      */
     public function createAccount($model, $oldAttributes, $api){
 
-        $model->annualRevenue = $this->parseCurrency($model->annualRevenue, false);
+        $model->annualRevenue = Formatter::parseCurrency($model->annualRevenue, false);
         $model->createDate = time();
         if($api == 0)
             parent::create($model, $oldAttributes, $api);
@@ -1958,7 +1960,7 @@ class SiteController extends x2base {
     public function createOpportunity($model, $oldAttributes, $api = 0){
 
         // process currency into an INT
-//		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+//		$model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
 
         if(isset($model->associatedContacts))
             $model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);

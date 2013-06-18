@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -36,42 +37,125 @@
 
 /**
  * Class for displaying tags on a record.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class X2WidgetList extends X2Widget {
-	public $model;
-	public $modelType;
-	public $block; // left, right, or center
-	public $layout; // associative array with 3 lists of widgets: left, right, and center
 
-	public function init() {
-	// widget layout
-		$this->layout = Yii::app()->params->profile->layout;
-		
-		if(!$this->layout) { // layout hasn't been initialized?
-			$this->layout = $this->controller->initLayout(); // initilize layout
-			Yii::app()->params->profile->layout = json_encode($this->layout);
-			Yii::app()->params->profile->update();
-		} else {
-			$this->layout = json_decode($this->layout, true); // json to associative array
-		}
-		
+    public $model;
+    public $modelType;
+    public $block; // left, right, or center
+    public $layout; // associative array with 3 lists of widgets: left, right, and center
 
-		
-		parent::init();
-	}
+    public function init(){
+        // widget layout
+        if(!Yii::app()->user->isGuest){
+        $this->layout = Yii::app()->params->profile->layout;
 
-	public function run() {
-	
-		if($this->block == 'center') {
-			echo '<div id="content-widgets">';
-			
-			foreach($this->layout['center'] as $name=>$widget) { // list of widgets
-				$this->render('centerWidget', array('widget'=>$widget, 'name'=>$name, 'model'=>$this->model, 'modelType'=>$this->modelType));
-			}
-			
-			echo '</div>';
-		}
-	}
+        if(!$this->layout){ // layout hasn't been initialized?
+            $this->layout = $this->initLayout(); // initilize layout
+            Yii::app()->params->profile->layout = json_encode($this->layout);
+            Yii::app()->params->profile->update();
+        }else{
+            $this->layout = json_decode($this->layout, true); // json to associative array
+        }
+        }else{
+            $this->layout = $this->initLayout();
+        }
+
+        parent::init();
+    }
+
+    public function run(){
+
+        if($this->block == 'center'){
+            echo '<div id="content-widgets">';
+            foreach($this->layout['center'] as $name => $widget){ // list of widgets
+				$exclude = $this->modelType == 'BugReports' && $name != 'InlineRelationships';
+				$exclude = $exclude || $this->modelType == 'Quote' && $name == 'WorkflowStageDetails';
+                if(!$exclude){
+                    $this->render('centerWidget', array('widget' => $widget, 'name' => $name, 'model' => $this->model, 'modelType' => $this->modelType));
+                }
+            }
+
+            echo '</div>';
+        }
+    }
+
+    function initLayout(){
+        return array(
+            'left' => array(),
+            'center' => array(
+                'InlineTags' => array(
+                    'title' => 'Tags',
+                    'minimize' => false,
+                ),
+                'WorkflowStageDetails' => array(
+                    'title' => 'Workflow',
+                    'minimize' => false,
+                ),
+                'InlineRelationships' => array(
+                    'title' => 'Relationships',
+                    'minimize' => false,
+                ),
+            ),
+            'right' => array(
+                'ActionMenu' => array(
+                    'title' => 'My Actions',
+                    'minimize' => false,
+                ),
+                'ChatBox' => array(
+                    'title' => 'Activity Feed',
+                    'minimize' => false,
+                ),
+                'GoogleMaps' => array(
+                    'title' => 'Google Map',
+                    'minimize' => false,
+                ),
+                'OnlineUsers' => array(
+                    'title' => 'Active Users',
+                    'minimize' => false,
+                ),
+                'TagCloud' => array(
+                    'title' => 'Tag Cloud',
+                    'minimize' => false,
+                ),
+                'TimeZone' => array(
+                    'title' => 'Time Zone',
+                    'minimize' => false,
+                ),
+                'MessageBox' => array(
+                    'title' => 'Message Board',
+                    'minimize' => false,
+                ),
+                'QuickContact' => array(
+                    'title' => 'Quick Contact',
+                    'minimize' => false,
+                ),
+                'NoteBox' => array(
+                    'title' => 'Note Pad',
+                    'minimize' => false,
+                ),
+                'MediaBox' => array(
+                    'title' => 'Media',
+                    'minimize' => false,
+                ),
+                'DocViewer' => array(
+                    'title' => 'Doc Viewer',
+                    'minimize' => false,
+                ),
+                'TopSites' => array(
+                    'title' => 'Top Sites',
+                    'minimize' => false,
+                ),
+                'HelpfulTips' => array(
+                    'title' => 'Helpful Tips',
+                    'minimize' => false,
+                ),
+            ),
+            'hidden' => array(),
+            'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere
+        );
+    }
+
 }

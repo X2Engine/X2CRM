@@ -68,10 +68,7 @@ Yii::app()->clientScript->registerCss("ckeditorStyling", "
 
 /* move resizing handle */
 .cke_resizer_ltr { 
-    /*margin-right: 0px !important;
-    margin-top: -14px !important;*/
     margin-right: 2px !important;
-    /*position: relative !important;*/
 }
 ");
 
@@ -80,20 +77,43 @@ $userList=array_keys(User::getNames());
 $tempUserList=array_diff($userList,$tempUserList);
 $usersGroups=implode(",",$tempUserList);
 Yii::app()->clientScript->registerScript('miscellaneous','
+
 if ($("#sticky-feed .empty").length !== 0) {
     $("#sticky-feed").hide ();
 }
 
 window.newPostEditor = createCKEditor (
-    "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: "' . Yii::t('app','Enter text here...') . '"});
+    "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: "' . Yii::t('app','Enter text here...') . '"}, editorCallback);
+
+function editorCallback () {
+
+    // expand post buttons if user manually resizes
+    CKEDITOR.instances.Events_text.on ("resize", function () {
+        if (x2.whatsNew.editorManualResize && !x2.whatsNew.editorIsExpanded) { 
+            CKEDITOR.instances.Events_text.focus ();
+        }
+    });
+
+    // prevent editor resize animation when user is manually resizing
+    $(".cke_resizer_ltr").mousedown (function () { 
+        $(document).one ("mouseup", function () {
+            x2.whatsNew.editorManualResize = false;
+        });
+        x2.whatsNew.editorManualResize = true;
+    });
+
+}
 
 // custom event triggered by ckeditor confighelper plugin
-$(document).on ("myFocus", function () { 
-    if (!$("#post-buttons").is (":visible")) { // first time user focused
-        window.newPostEditor.resize ("100%", 140);
+$(document).on ("myFocus", function () {
+    if (!x2.whatsNew.editorIsExpanded) {
+        x2.whatsNew.editorIsExpanded = true;
+        $("#save-button").addClass ("highlight");
+        var editorMinHeight = window.newPostEditor.config.height;
+        var newHeight = 140;
+        animateEditorVerticalResize (editorMinHeight, newHeight, 300);
+        $("#post-buttons").slideDown (400); 
     }
-    $("#post-buttons").slideDown (400); 
-    $("#save-button").addClass ("highlight");
 });
 
 if($(":checkbox:checked").length > ($(":checkbox").length)/2){
@@ -107,17 +127,76 @@ $.each($(".comment-count"),function(){
         $(this).parent().click();
     }
 });
+
+// expand all like histories
+$.each($(".like-count"),function(){
+    var likeCount = parseInt ($(this).text ().replace (/[()]/g, ""), 10);
+    if (likeCount > 0) {
+        $(this).click();
+    }
+}); 
 ',CClientScript::POS_READY);
 Yii::app()->clientScript->registerScript('activity-feed','
 
+// Globals
+x2.whatsNew = {};
+x2.whatsNew.timeout = null; // used to clear timeout when editor resize animation is called
+x2.whatsNew.editorManualResize = false; // used to prevent editor resize animation on manual resize
+x2.whatsNew.editorIsExpanded = false; // used to prevent text field expansion if already expanded
+
 var debug = 0;
 
-function consoleLog(obj) {
+function consoleLog (obj) {
     if (console != undefined) {
         if(console.log != undefined && debug) {
             console.log(obj);
         }
     }
+}
+
+/*
+Animate resize of the new post ckeditor window.
+*/
+function animateEditorVerticalResize (initialHeight, newHeight, 
+                                      animationTime /* in milliseconds */) {
+    if (x2.whatsNew.editorManualResize) { // user is currently resizing text field manually
+        return;
+    }
+
+    // calculate delta per 50 ms for given animation time
+    var heightDifference = Math.abs (newHeight - initialHeight);
+    var delay = 50;
+    var steps = Math.ceil (animationTime / delay);
+    var delta = Math.ceil (heightDifference / steps);
+
+    var lastStepSize = delta;
+
+    // ensure that ckeditor text field is resized exactly to specified height
+    if (steps * delta > heightDifference) {
+        lastStepSize = heightDifference - (steps - 1) * delta;
+    } 
+
+
+    var increaseHeight = newHeight - initialHeight > 0 ? true : false;
+    if (!increaseHeight) delta *= -1;
+    var currentHeight = initialHeight;
+
+    if (x2.whatsNew.timeout != null) {
+        window.clearTimeout (x2.whatsNew.timeout); // clear an existing animation timeout
+    }
+    x2.whatsNew.timeout = window.setTimeout (function resizeTimeout () {
+        if (--steps === 0) {
+            delta = lastStepSize;
+            if (!increaseHeight) delta *= -1;
+        }
+        window.newPostEditor.resize ("100%", currentHeight + delta, true);
+        currentHeight += delta;
+        if (increaseHeight && currentHeight < newHeight) {
+            x2.whatsNew.timeout = setTimeout (resizeTimeout, delay);
+        } else if (!increaseHeight && currentHeight > newHeight) {
+            x2.whatsNew.timeout = setTimeout (resizeTimeout, delay);
+        } 
+    }, delay);
 }
 
 function updateComments(id){
@@ -131,20 +210,69 @@ function updateComments(id){
 }
 var firstEventId='.$firstEventId.';
 function publishPost(){
+
+    var editorText = window.newPostEditor.getData();
+
+    if (!editorText.match (/<br \/>\\n&nbsp;$/)) { // append newline if there isn\'t one
+        editorText += "<br />\n&nbsp;";
+    } 
+
+    // insert an invisible div over editor to prevent focus
+    var editorOverlay = $("<div>", {"id": "editor-overlay"}).css ({
+        //"background": "red",
+        "width": $("#post-form").css ("width"),
+        "height": $("#post-form").css ("height"),
+        "position": "absolute"
+    });
+    $("#post-form").after ($(editorOverlay));
+    $(editorOverlay).position ({
+        my: "left top",
+        at: "left+10 top",
+        of: $("#post-form")
+    });
+
+    // prevent forced toolbar collapse from refocusing on editor
+    window.newPostEditor.focusManager.blur (true);
+    window.newPostEditor.focusManager.lock ();
+
     $.ajax({
         url:"publishPost",
         type:"POST",
         data:{
-            "text":window.newPostEditor.getData(),
+            //"text":window.newPostEditor.getData(),
+            "text":editorText,
             "associationId":$("#Events_associationId").val(),
             "visibility":$("#Events_visibility").val(),
             "subtype":$("#Events_subtype").val()
         },
         success:function(){
+            if ($("[title=\'Collapse Toolbar\']").length !== 0) {
+                window.newPostEditor.execCommand ("toolbarCollapse");
+            }
+            var editorCurrentHeight = parseInt (
+                window.newPostEditor.ui.space ("contents").getStyle("height").replace (/px/, ""), 10);
+            var editorMinHeight = window.newPostEditor.config.height;
+            animateEditorVerticalResize (editorCurrentHeight, editorMinHeight, 300);
+            if (window.newPostEditor.getData () !== "") {
+                window.newPostEditor.setData ("", function () { 
+                    window.newPostEditor.fire ("blur"); 
+                });
+            }
             $("#save-button").removeClass("highlight");
-            window.newPostEditor.setData ("", function () { window.newPostEditor.fire ("blur"); });
-              $("#post-buttons").slideUp (400); 
-            //window.newPostEditor.resize ("100%", 100);
+            $("#post-buttons").slideUp (400); 
+            x2.whatsNew.editorIsExpanded = false;
+
+            // focus on dummy input field to negate forced toolbar collapse refocusing on editor
+            $("body").append ($("<input>", {"id": "dummy-input"}));
+            var x = window.scrollX;
+            var y = window.scrollY;
+            $("#dummy-input").focus ();
+            window.scrollTo (x, y); // prevent scroll from focus event
+            $("#dummy-input").remove ();
+        },
+        complete:function(){
+            $(editorOverlay).remove ();
+            window.newPostEditor.focusManager.unlock ();
         }
     });
 }
@@ -389,7 +517,6 @@ function decrementLikeCount (likeCountElem) {
 }
 
 $(document).on("click",".like-button",function(e){
-    consoleLog ("click like");
     var link=this;
     e.preventDefault();
     var pieces=$(this).attr("id").split("-");
@@ -401,7 +528,6 @@ $(document).on("click",".like-button",function(e){
         url:"likePost",
         data:{id:id},
         success:function(data){
-            consoleLog ("like-button ajax success " + data);
             $(tmpElem).remove ();
             if (data === "liked post") {
                 incrementLikeCount ($(link).next().next());
@@ -413,7 +539,6 @@ $(document).on("click",".like-button",function(e){
 });
 
 $(document).on("click",".unlike-button",function(e){
-    consoleLog ("click unlike");
     var link=this;
     e.preventDefault();
     var pieces=$(this).attr("id").split("-");
@@ -425,7 +550,6 @@ $(document).on("click",".unlike-button",function(e){
         url:"likePost",
         data:{id:id},
         success:function(data){
-            consoleLog ("unlike-button ajax success " + data);
             $(tmpElem).remove ();
             if (data === "unliked post") {
                 decrementLikeCount ($(link).next());
@@ -452,7 +576,6 @@ function reloadLikeHistory (id) {
         success:function(data){
             likes.html ("");
             var likeHistory = JSON.parse (data);
-            consoleLog (data);
 
             // if last like was removed, collapse box
             if (likeHistory.length === 0) {
@@ -486,7 +609,6 @@ $(document).on("click",".like-count",function(e){
         data:{id:id},
         success:function(data){
             var likeHistory = JSON.parse (data);
-            consoleLog (likeHistory);
             for (var name in likeHistory) {
                 likes.append (likeHistory[name] + " liked this post. </br>");
                 likeHistoryBox.slideDown (400);
@@ -521,9 +643,7 @@ function insertSticky (stickyElement) {
         var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
         var eventId = id[0];
         var eventTimeStamp = id[1];
-        consoleLog ("evtts = " + eventTimeStamp + ", stickyts = " + stickyTimeStamp);
         if (stickyTimeStamp == eventTimeStamp) {
-            consoleLog ("found equal timestamp");
             if (stickyId > eventId) {
                 $(stickyElement).insertBefore ($(element));
                 hasInserted = true;
@@ -560,23 +680,19 @@ function detachActivity (activityElement, timeStamp) {
     // if yes, remove the date header
     $("#activity-feed > .items").children ().each (function (index, element) {
         if ($(element).hasClass ("date-break")) { // found date header
-            consoleLog ("if" + $(element).text ());
             if ($(element).text ().match (re)) { // date header matches
-                consoleLog ("match");
                 foundMatch = true;
                 match = element;
             } else if (foundMatch) {
                 return false;
             }
         } else if ($(element).hasClass ("view top-level activity-feed")) { // found post
-            consoleLog ("else");
             if (foundMatch) {
                 eventCount++;
             }
         } else if ($(element).hasClass ("list-view")) { // search through new posts
             $(element).find ("div.view.top-level.activity-feed").each (function (index, element) {
                 if ($(element).hasClass ("view top-level activity-feed")) {
-                    consoleLog ("else");
                     if (foundMatch) {
                         eventCount++;
                     }
@@ -586,10 +702,8 @@ function detachActivity (activityElement, timeStamp) {
     });
 
     if (eventCount === 1) {
-        consoleLog ("removing header");
         $(match).remove ();
     } else {
-        consoleLog ("not removing header");
     }
 
     $(activityElement).children ().find (".sticky-link").mouseleave (); // close tool tip
@@ -632,7 +746,6 @@ function insertActivity (activityElement, timeStampFormatted) {
     var prevElement = null;
     $("#activity-feed > .items").children ().each (function (index, element) {
         if ($(element).hasClass ("date-break")) { // found date header
-            consoleLog ("date-break " + $(element).text ());
             if (!$(element).text ().match (re)) { // date header differs
                 var eventTimeStamp = $(element).attr ("id").split ("-")[2];
                 if (foundMyHeader) { // insert as last element under header
@@ -650,36 +763,30 @@ function insertActivity (activityElement, timeStampFormatted) {
                             var newPostContainer = $("#activity-feed > .items > div.list-view").detach ();
                             $(newPostContainer).insertAfter ($(header));
                         }
-                        consoleLog ("create header");
                         hasInserted = true;
                         return false;
                     }
                 }
-                consoleLog ("dont create header");
             } else {
                 foundMyHeader = true;
             }
         } else if ($(element).hasClass ("view top-level activity-feed")) { // found post
-            consoleLog ("false " + $(element).attr ("class"));
             var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
             var eventId = id[0];
             var eventTimeStamp = id[1];
             if (stickyTimeStamp === eventTimeStamp) {
                 if (stickyId > eventId) {
-                    consoleLog ("inserting element before next, sort id");
                     $(activityElement).insertBefore ($(element));
                     hasInserted = true;
                     return false;
                 }
             } else if (stickyTimeStamp > eventTimeStamp) {
-                consoleLog ("inserting element before next");
                 $(activityElement).insertBefore ($(element));
                 hasInserted = true;
                 return false;
             }
             prevElement = element;
         } else if ($(element).hasClass ("list-view")) { // search through new posts
-            consoleLog ("false false " + $(element).attr ("class"));
             var brokeLoop = false;
             $(element).find ("div.view.top-level.activity-feed").each (function (index, element) {
                 var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
@@ -687,14 +794,12 @@ function insertActivity (activityElement, timeStampFormatted) {
                 var eventTimeStamp = id[1];
                 if (stickyTimeStamp === eventTimeStamp) {
                     if (stickyId > eventId) {
-                        consoleLog ("2 inserting element before next, sort id");
                         $(activityElement).insertBefore ($(element));
                         hasInserted = true;
                         brokeLoop = true;
                         return false;
                     }
                 } else if (stickyTimeStamp > eventTimeStamp) {
-                    consoleLog ("2 inserting element before next");
                     $(activityElement).insertBefore ($(element));
                     hasInserted = true;
                     brokeLoop = true;
@@ -711,16 +816,13 @@ function insertActivity (activityElement, timeStampFormatted) {
     if (!hasInserted) {
         if (prevElement) { // insert post at end of activity feed
             if (foundMyHeader) {
-                consoleLog ("inserting element at end");
                 $(activityElement).insertAfter ($(prevElement));
             } else {
-                consoleLog ("inserting element + header at end 1");
                 var header = getDateHeader (stickyTimeStamp, timeStampFormatted);
                 $(header).insertAfter ($(prevElement));
                 $(activityElement).insertAfter ($(header));
             }
         } else { // no posts in activity feed
-            consoleLog ("inserting element + header at end");
             var header = getDateHeader (stickyTimeStamp, timeStampFormatted);
             $("#activity-feed .list-view").before ($(header));
             $("#activity-feed > .items").append ($(activityElement));
@@ -740,7 +842,6 @@ $(document).on("click",".sticky-link",function(e){
         url:"stickyPost",
         data:{id:id},
         success:function (data) {
-            consoleLog ("sticky ajax " + data);
             var elem = detachActivity (
                 $(link).parents ("div.view.top-level.activity-feed"), data);
             $(tmpElem).remove ();
@@ -762,7 +863,6 @@ $(document).on("click",".unsticky-link",function(e){
         url:"stickyPost",
         data:{id:id},
         success:function (data) {
-            consoleLog ("unsticky ajax " + data);
             var elem = $(link).parents ("div.view.top-level.activity-feed").detach ();
             $(tmpElem).remove ();
             $(link).prev().toggle();
@@ -828,7 +928,7 @@ $(document).on("submit","#attachment-form-form",function(){
 
 ?>
 
-<div class="page-title icon" style="background-image:url(<?php echo Yii::app()->theme->baseUrl; ?>/images/Activity.png);"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
+<div class="page-title icon activity-feed"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
 	<div id="menu-links" class="title-bar">
 		<?php
         echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
@@ -854,7 +954,6 @@ $(document).on("submit","#attachment-form-form",function(){
 	)); ?>
 	<div class="float-row" style='overflow:visible;'>
 		<?php
-		//$feed->text = Yii::t('app','Enter text here...');
 		echo $form->textArea($feed,'text',array('style'=>'width:99%;height:25px;color:#aaa;display:block;clear:both;'));
 		echo "<div id='post-buttons' style='display:none;'>";
         echo $form->dropDownList($feed,'associationId',$users);
@@ -992,6 +1091,9 @@ $this->widget('zii.widgets.CListView', array(
     }
     .yiiPager{
         display:none;
+    }
+    .activity-feed div.like-history-box{
+        padding-top: 6px;
     }
 </style>
 <script>

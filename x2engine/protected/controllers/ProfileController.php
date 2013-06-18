@@ -188,8 +188,8 @@ class ProfileController extends x2base {
         }
         $menuItems = array('' => Yii::t('app', "What's New")) + $menuItems;
 
-        if(isset($_POST['ProfileChild'])){
-            $model->attributes = $_POST['ProfileChild'];
+        if(isset($_POST['Profile'])){
+            $model->attributes = $_POST['Profile'];
 
             if($model->save()){
                 //$this->redirect(array('view','id'=>$model->id));
@@ -261,12 +261,11 @@ class ProfileController extends x2base {
             $users = User::getNames();
             $accounts = Accounts::getNames();
 
-            if(isset($_POST['ProfileChild'])){
+            if(isset($_POST['Profile'])){
 
-                $temp = $model->attributes;
-                foreach($_POST['ProfileChild'] as $name => $value){
+                foreach($_POST['Profile'] as $name => $value){
                     if($value == $model->getAttributeLabel($name)){
-                        $_POST['ProfileChild'][$name] = '';
+                        $_POST['Profile'][$name] = '';
                     }
                     $model->$name = $value;
                 }
@@ -590,19 +589,6 @@ class ProfileController extends x2base {
     public function actionProfiles(){
         $model = new Profile('search');
         $this->render('profiles', array('model' => $model));
-    }
-
-    /**
-     * Returns the data model based on the primary key given in the GET variable.
-     *
-     * If the data model is not found, an HTTP exception will be raised.
-     * @param integer $id the ID of the model to be loaded
-     */
-    public function loadModel($id){
-        $model = ProfileChild::model('ProfileChild')->findByPk((int) $id);
-        if($model === null)
-            throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
-        return $model;
     }
 
     /**

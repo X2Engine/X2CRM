@@ -295,12 +295,12 @@ function createNewTagHandler(event) {
     	lockCreateTag(); // don't create another new tag while we're editing this one
     
     	var span = $('<span>', {
-    		'class': 'tag',
+    		'class': 'tag'
     	});
     
     	var textfield = $('<input type="text">', {
     		'class': 'x2-new-tag',
-    		'value': '#',
+    		'value': '#'
     	});
     
     	$('#x2-tag-list').append(span);
@@ -315,7 +315,7 @@ $.fn.appendTagInput = function() {
 	$(this).each(function() {
     	var tagtext = $('<input type="text">', {
     		'class': 'x2-new-tag',
-    		'value': '#',
+    		'value': '#'
     	});
 
 		var parent = $(this);
@@ -362,7 +362,7 @@ function tagKeyHandler(event, span, textfield) {
         	$.post($('#x2-inline-tags').data('appendTagUrl'), {Type: $('#x2-inline-tags').data('type'), Id: $('#x2-inline-tags').data('id'), Tag: value}, function(response) {
         		var link = $('<a>', {
         			'href': $('#x2-inline-tags').data('searchUrl') + '?term=' + value.replace(/#/g, '%23'),
-        			'html': value,
+        			'html': value
         		});
         		textfield.remove();
         		span.append(link);

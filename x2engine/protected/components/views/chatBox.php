@@ -57,7 +57,7 @@ $(function() {
 		stop: function(event, ui) {
 			// done resizing, save height to user profile for next time user visits page
 			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
-		},
+		}
 	});
 	$('#chat-box-container').resizable({
 		handles: 's',
@@ -66,7 +66,7 @@ $(function() {
 		stop: function(event, ui) {
 			// done resizing, save height to user profile for next time user visits page
 			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
-		},
+		}
 	});
 });
 ",CClientScript::POS_HEAD);
@@ -87,23 +87,14 @@ $chatContainerFixHeight = $chatContainerHeight + 10;
 ?>
 
 <script>
-            $("#activityFeedDropDown").change(function() {
-                $.ajax({
-                    url:yii.baseUrl+"/index.php/site/activityFeedOrder",
-                    success:function(){
-                        $('#chat-box').empty();
-                        var profile = JSON.parse(yii.profile);
-                        if(profile['activityFeedOrder']==1){
-                            profile['activityFeedOrder']=0;
-                        }else{
-                            profile['activityFeedOrder']=1;
-                        }
-                        yii.profile=JSON.stringify(profile);
-                        lastEventId=0;
-                        lastTimestamp=0;
-                    }
-                });
-            })
+$("#activityFeedDropDown").change(function() {
+	yii.profile.activityFeedOrder = !yii.profile.activityFeedOrder;
+	var chatbox = $('#chat-box');
+	chatbox.children().each(function(i,child){chatbox.prepend(child)});
+	chatbox.prop('scrollTop',chatbox.prop('scrollHeight'));
+	
+	$.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+})
 </script>
 <div id="chat-container-fix" style="height:<?php echo $chatContainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->
 	<div id="chat-container" style="height:<?php echo $chatContainerHeight; ?>px;">									<!--this is the resizable for this widget-->

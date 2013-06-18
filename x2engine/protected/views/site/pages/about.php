@@ -128,9 +128,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			<li>ExColor:
 				<a href="http://modcoder.org" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 				<a href="http://modcoder.org/?page=license" target="_blank" class="no-underline" title="License">[License]</a></li>
-			<li>Dragtable:
-				<a href="http://jebaird.com/blog/dragtable-jquery-ui-widget-re-arrange-table-columns-drag-drop" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 			<li>colResizable: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 			<li>formatCurrency: <a href="http://code.google.com/p/jquery-formatcurrency/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>

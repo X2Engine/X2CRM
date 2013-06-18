@@ -11,6 +11,8 @@ return array(
 		'email' => 'contact@test.com',
 		'assignedTo' => 'Anyone',
 		'visibility' => 1,
+		'phone' => '(234) 918-2348',
+		'phone2' => '398-103-6291',
 	),
 	// Treated as assigned to test user and preexisting.
 	'testUser' => array(
@@ -21,6 +23,8 @@ return array(
 		'email' => 'contact2@test.com',
 		'assignedTo' => 'testuser',
 		'visibility' => 1,
+		'phone' => '+13810482910',
+		'phone2' => '18561029204'
 	),
 );
 

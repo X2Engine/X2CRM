@@ -304,7 +304,7 @@ class Events extends CActiveRecord
 						switch($this->subtype){
 							case 'quote':
 								$text = $authorText.Yii::t('app', "issued the {transModelName} \"{modelLink}\" via email", array(
-											'{transModelName}' => Events::parseModelName($this->associationType),
+											'{transModelName}' => Yii::t('quotes', 'quote'),
 											'{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
 										));
 								break;

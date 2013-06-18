@@ -48,6 +48,16 @@ else {
 if($model->type=='note' || $model->type=='attachment') {
 ?>
 <table class="details">
+    <tr>
+		<td class="label">
+			<?php echo $model->getAttributeLabel('subject'); ?>
+		</td>
+		<td colspan="3" class="text-field">
+			<?php
+			echo $model->subject;
+			?>
+		</td>
+	</tr>
 	<tr>
 		<td class="label">
 			<?php echo $model->getAttributeLabel('actionDescription'); ?>
@@ -73,6 +83,16 @@ if($model->type=='note' || $model->type=='attachment') {
 } else {
 ?>
 <table class="details">
+    <tr>
+		<td class="label">
+			<?php echo $model->getAttributeLabel('subject'); ?>
+		</td>
+		<td colspan="3" class="text-field">
+			<?php
+			echo $model->subject;
+			?>
+		</td>
+	</tr>
     <?php if($model->type=='email' || $model->type=='emailOpened') { ?>
         <tr>
             <td colspan="6" class="text-field">
@@ -100,7 +120,7 @@ if ($model->associationType!="none") {
 			<?php echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId)); ?>
 		</td>
 	</tr>
-	
+
 <?php } ?>
     <tr>
 		<td class="label"><?php echo $model->getAttributeLabel('assignedTo'); ?></td>
@@ -120,9 +140,9 @@ if ($model->associationType!="none") {
 		<td class="label"><?php echo $attributeLabels['lastUpdated']; ?></td>
 		<td><b><?php echo Formatter::formatLongDateTime($model->lastUpdated); ?></b></td>
 	</tr>
-        <?php 
-        
-        
+        <?php
+
+
         ?>
 </table>
 <?php } ?>

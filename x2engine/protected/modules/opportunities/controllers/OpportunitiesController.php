@@ -144,7 +144,7 @@ class OpportunitiesController extends x2base {
 	/* public function create($model,$oldAttributes,$api=0) {
 		
 		// process currency into an INT
-//		$model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+//		$model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
 		
 		if(isset($model->associatedContacts))
 			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
@@ -265,7 +265,7 @@ class OpportunitiesController extends x2base {
 	/* public function update($model,$oldAttributes,$api=0){
 		
 		// process currency into an INT
-		// $model->quoteAmount = $this->parseCurrency($model->quoteAmount,false);
+		// $model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
 
 		$arr=$model->associatedContacts;
 		if(isset($model->associatedContacts)) {
@@ -330,7 +330,7 @@ class OpportunitiesController extends x2base {
                         }
 			
 			// process currency into an INT
-			$opportunity->quoteAmount = $this->parseCurrency($opportunity->quoteAmount,false);
+			$opportunity->quoteAmount = Formatter::parseCurrency($opportunity->quoteAmount,false);
 			
 			
 			if($opportunity->expectedCloseDate!=""){
@@ -506,18 +506,6 @@ class OpportunitiesController extends x2base {
 	public function actionIndex() {
 		$model=new Opportunity('search');
 		$this->render('index', array('model'=>$model));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model = X2Model::model('Opportunity')->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
-		return $model;
 	}
 	
 	public function delete($id) {

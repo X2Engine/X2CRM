@@ -69,12 +69,9 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<h2>'.$heading.'</h2><div class="title-bar">'
-		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'id'=>$listModel->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportList/'.$listModel->id)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link'))
-		.'{summary}</div>{items}{pager}',
+	'title'=>$heading,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -102,6 +99,7 @@ $this->widget('application.components.X2GridView', array(
 	),
 	'enableControls'=>true,
 	'enableTags'=>true,
+	'fullscreen'=>true,
 ));
 ?>
 

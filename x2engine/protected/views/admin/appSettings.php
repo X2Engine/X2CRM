@@ -155,7 +155,7 @@ $('#currency').change(function() {
 			<select name="currency" id="currency">
 				<?php 
 				$curFound = false;
-				foreach(array('USD','EUR','GBP','CAD','JPY','CNY','CHF','INR','BRL') as $currency): ?>
+				foreach(Yii::app()->params->supportedCurrencies as $currency): ?>
 				<option value="<?php echo $currency ?>"<?php if($model->currency==$currency) {$curFound = true;echo ' selected="true"';} ?>><?php echo $currency; ?></option>
 				<?php endforeach; ?>
 			    <option value="other"<?php if(!$curFound){echo ' selected="true"';}?>><?php echo Yii::t('admin','Other'); ?></option>

@@ -47,6 +47,13 @@ abstract class X2DbTestCase extends CDbTestCase {
 		$admin = CActiveRecord::model('Admin')->findByPk(1);
 		$admin->emailDropbox_logging = 1;
 		Yii::app()->params->admin = $admin;
+		// Create inverse mapping between currency symbols and their corresponding 3-letter codes:
+		$locale = Yii::app()->locale;
+		$curSyms = array();
+		foreach(Yii::app()->params->supportedCurrencies as $curCode) {
+			$curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
+		}
+		Yii::app()->params->supportedCurrencySymbols = $curSyms; // Code to symbol
 		parent::__construct($name,$data, $dataName);
 	}
 }

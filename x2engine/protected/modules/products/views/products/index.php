@@ -70,11 +70,11 @@ function trimText($text) {
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'product-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon products"><h2>'.$moduleConfig['title'].'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
+	'template'=> '<div class="page-title icon products"><h2>'.$moduleConfig['title'].'</h2><div class="x2-button-group">'
+		.CHtml::link('<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),'class'=>'x2-button search-button'))
+		.CHtml::link('<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button')).'</div> '
 		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+		.'{summary}</div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,

@@ -81,12 +81,9 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 $this->widget('application.components.X2GridView', array(
 	'id'=>'marketing-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon marketing"><h2>'. Yii::t('marketing','Campaigns') .'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>Yii::t('marketing','Campaigns'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon marketing">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -96,12 +93,12 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'campaigns',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>126,
-		'description'=>132,
-		'listId'=>45,
-		'subject'=>127,
-		'launchDate'=>105,
-		'active'=>50,
+		'name' => 156,
+		'listId' => 106,
+		'subject' => 271,
+		'launchDate' => 76,
+		'active' => 44,
+		'lastUpdated' => 78,
 	),
 	'specialColumns'=>array(
 		'name'=>array(
@@ -117,5 +114,6 @@ $this->widget('application.components.X2GridView', array(
 		),
 	),
 	'enableControls'=>true,
+	'fullscreen'=>true,
 ));
  ?>

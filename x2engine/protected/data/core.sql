@@ -159,6 +159,7 @@ CREATE TABLE x2_form_layouts (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	model					VARCHAR(250)	NOT NULL,
 	version					VARCHAR(250)	NOT NULL,
+	scenario				VARCHAR(20)		NOT NULL DEFAULT 'Default',
 	layout					TEXT,
 	defaultView				TINYINT			NOT NULL DEFAULT 0,
 	defaultForm				TINYINT			NOT NULL DEFAULT 0,
@@ -289,6 +290,7 @@ CREATE TABLE x2_events_data(
 DROP TABLE IF EXISTS x2_phone_numbers;
 /*&*/
 CREATE TABLE x2_phone_numbers(
+	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	modelId					INT				UNSIGNED NOT NULL,
 	modelType				VARCHAR(100)	NOT NULL,
 	number					VARCHAR(40)		NOT NULL,
@@ -359,6 +361,7 @@ CREATE TABLE x2_profile(
     feedFilters             TEXT,
     hideBugsWithStatus		TEXT,
     actionFilters           TEXT,
+    oldActions              TINYINT         DEFAULT 0,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -548,4 +551,14 @@ CREATE TABLE `x2_like_to_post` (
   userId             int unsigned     NOT NULL,
   postId             int unsigned     NOT NULL,
   INDEX (postId)
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_view_log;
+/*&*/
+CREATE TABLE `x2_view_log` (
+	id						INT				AUTO_INCREMENT PRIMARY KEY,
+	user                    VARCHAR(255),
+	recordType				VARCHAR(255),
+	recordId				INT,
+	timestamp				BIGINT
 ) COLLATE = utf8_general_ci;

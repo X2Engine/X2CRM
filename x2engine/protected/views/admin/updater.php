@@ -48,24 +48,16 @@ String.prototype.format = function() {
 };
 var scenario="<?php echo $scenario; ?>";
 var unique_id = '<?php echo $scenario == 'update' ? $unique_id : ''; ?>';
-var edition = '<?php echo isset($edition) ? $edition : Yii::app()->params->admin->edition; ?>';
+var edition = '<?php echo isset($edition) ? $edition : $this->edition; ?>';
 var n_users = 0; // Used in the upgrade process
+<?php $filesToDownload =  $scenario == 'update' ? $fileList : array(); ?>
 
-var fileList0=<?php echo $scenario == 'update' ? CJSON::encode($fileList) : '[]' ; ?>; 
-<?php 
-$altSrcFiles = '[]';
-$filesToDownload = array();
-if ($scenario == 'update' && isset($nonFreeFileList)) {
-	$altSrcFiles = CJSON::encode($nonFreeFileList);
-	$filesToDownload = array_merge($fileList,$nonFreeFileList);
-} else if($scenario == 'update') {
-	$filesToDownload = $fileList;
-}
+var fileList=<?php echo CJSON::encode($filesToDownload); ?>;
+<?php
 $n_files = count($filesToDownload);
 
 ?>
-var fileList1=<?php echo $scenario=='update'?$altSrcFiles:"[]"; ?>;
-var n_files = fileList0.length + fileList1.length;
+var n_files = fileList.length;
 var fileCount=0;
 
 var deletionList=<?php echo $scenario=='update'?CJSON::encode($deletionList):"[]"; ?>;
@@ -103,7 +95,7 @@ function makeBackup() {
 	});
 }
 
-function downloadFile(i,altSource) {
+function downloadFile(i) {
 	if (fileCount == n_files) { // No files left to download
 		var proceed = true;
 		if(n_files > 0) {
@@ -116,10 +108,7 @@ function downloadFile(i,altSource) {
 			enactChanges();
 		}
 	} else { // Download next file in queue at index i
-		if (!altSource)
-			if (fileList0[i] == undefined)
-				altSource = true; // No non-free files to download, so skip this list
-		var currentFile = altSource ? fileList1[i] : fileList0[i];
+		var currentFile = fileList[i];
 		$('#update-text').text('Downloading file {0}/{1}: {2}'.format((fileCount+1).toString(),n_files.toString(),currentFile));
 		$.ajax({
 			url: "download",
@@ -130,8 +119,10 @@ function downloadFile(i,altSource) {
 				url:'<?php echo $url; ?>',
 				// The file to download
 				file:currentFile,
-				// The route to use for accessing the file on the server
-				route:(altSource ? 'installs/update/{0}/{1}'.format(edition,unique_id) : 'updates/x2engine')
+				// These parameters will be used to construct the route to use
+				// for accessing the file on the server:
+				edition: edition,
+				unique_id: unique_id
 			},
 			context: document.body
 		}).done(function(data) {
@@ -141,13 +132,8 @@ function downloadFile(i,altSource) {
 				width=Math.round(width);
 				$('#progress').css({'width':width+'%'});
 				$('#progress-text').text(width+"%");
-				if (fileCount==fileList0.length && fileList1.length > 0) {
-					// Begin alternate source downloads
-					downloadFile(0,true);
-				} else {
-					// Continue downloading as before
-					downloadFile(i+1,altSource);
-				}
+				// Continue downloading
+				downloadFile(i+1);
 			} else {
 				$('#progress-errors').html(data.message).show();
 			}
@@ -200,7 +186,7 @@ function submitExternalForm() {
 	var errorBox = $('#error-box');
 	var statusMsg = errorBox.find('h3').text('Retrieving upgrade data...');
 	$.ajax({
-		url:'getNUsers',
+		url:'upgrader?n_=',
 		type:'GET'
 	}).done(function(response){
 		var n_users = Number(response);
@@ -218,8 +204,8 @@ function submitExternalForm() {
 				errorBox.append(r.errors);
 			} else {
 				sqlList = r.sqlUpgrade;
-				fileList1 = r.fileUpgrade;
-				n_files = fileList1.length;
+				fileList = r.fileUpgrade;
+				n_files = fileList.length;
 				n_sql = sqlList.length;
 				$('#registration-form').fadeOut();
 				$('#upgrade-step').text("Ready to begin the upgrade!");
@@ -408,7 +394,7 @@ endif;
 
 <?php if (!in_array($scenario, array('message','error'))): ?>
 <div id="updates-control"<?php echo $scenario == 'upgrade'?' style="display:none"':'';?>>
-<a href="#" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br />
+<a href="javascript:void(0);" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br />
 <div id="update-status">
 <div id="progress-bar" style="display:none;width:300px;height:30px;border-style:solid;border-width:2px;">
     <div id="progress"><div id="progress-text" style="height:30px;width:300px;text-align:center;font-weight:bold;font-size:15px;">0%</div></div>

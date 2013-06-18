@@ -70,14 +70,14 @@ else
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'users-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview/',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('users','Manage Users').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('admin','clearFilters'=>1)). ' | '
-		.CHtml::link(Yii::t('app','Today'),array('admin','offset'=>'0:00')). ' | '
-		.CHtml::link(Yii::t('app','This Week'),array('admin','offset'=>'first day of this week')). ' | '
-		.CHtml::link(Yii::t('app','This Month'),array('admin','offset'=>'first day of this month')). ' | '
+	'template'=> '<div class="page-title icon users"><h2>'.Yii::t('users','Manage Users').'</h2><div class="x2-button-group">'
+		.CHtml::link('<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),'class'=>'x2-button search-button'))
+		.CHtml::link('<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button')). '</div>'
+		.CHtml::link(Yii::t('app','Today'),array('admin','offset'=>'0:00'),array('class'=>'x2-button'))
+		.CHtml::link(Yii::t('app','This Week'),array('admin','offset'=>'first day of this week'),array('class'=>'x2-button'))
+		.CHtml::link(Yii::t('app','This Month'),array('admin','offset'=>'first day of this month'),array('class'=>'x2-button'))
 		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+		.'{summary}</div>{items}{pager}',
 		'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 			. '<div class="form no-border" style="display:inline;"> '
 			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(

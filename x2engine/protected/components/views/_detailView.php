@@ -67,6 +67,8 @@ window.formName = '$modelName';
 $layoutData = Yii::app()->cache->get('form_'.$modelName);	// check the app cache for the data
 $fields = array();
 
+$scenario = isset($scenario) ? $scenario : 'Default';
+
 // remove this later, once all models extend X2Models
 if(method_exists($model,'getFields')) {
 	$fields = $model->getFields(true);
@@ -75,7 +77,7 @@ if(method_exists($model,'getFields')) {
 		$fields[$fieldModel->fieldName] = $fieldModel;
 }
 if($layoutData === false) {
-	$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultView'=>1));
+	$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultView'=>1,'scenario'=>$scenario));
 
 	if(isset($layout)) {
 		$layoutData = json_decode($layout->layout,true);

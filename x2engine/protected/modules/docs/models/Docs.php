@@ -238,40 +238,55 @@ class Docs extends X2Model {
 		return $str;
 	}
 
-	public static function getEmailTemplates($type = 'email') {
+	/**
+	 * Returns a list of email available email templates.
+	 *
+	 * Email and quote are the only two types of supported templates;
+	 * no design has yet been done to completely generalize templating to
+	 * accomodate generic models. Part of the challenge will lie in how,
+	 * for multiple associated contacts (i.e. an account) any reference
+	 * to a contact is ambiguous unless it is distinguished (i.e.
+	 * primary contact, secondary contact, etc.)
+	 *
+	 * @param type $type
+	 * @return type
+	 */
+	public static function getEmailTemplates($type = 'email'){
 		$templateLinks = array();
-		// $criteria = new CDbCriteria(array('order'=>'lastUpdated DESC'));
-		$condition = 'TRUE';
-		if (!Yii::app()->user->checkAccess('AdminIndex')) {
-			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="' . Yii::app()->user->getName() . '"';
-			/* x2temp */
-			$uid = self::model()->suID;
-			if(empty($uid)){
-				if(Yii::app()->params->noSession)
-					$uid = 1;
-				else
-					$uid = Yii::app()->user->id;
-			}
-			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' .$uid)->queryColumn();
-			if (!empty($groupLinks))
-				$condition .= ' OR createdBy IN (' . implode(',', $groupLinks) . ')';
+		if(in_array($type, array('email', 'quote'))){
+			// $criteria = new CDbCriteria(array('order'=>'lastUpdated DESC'));
+			$condition = 'TRUE';
+			if(!Yii::app()->user->checkAccess('AdminIndex')){
+				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
+				/* x2temp */
+				$uid = self::model()->suID;
+				if(empty($uid)){
+					if(Yii::app()->params->noSession)
+						$uid = 1;
+					else
+						$uid = Yii::app()->user->id;
+				}
+				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.$uid)->queryColumn();
+				if(!empty($groupLinks))
+					$condition .= ' OR createdBy IN ('.implode(',', $groupLinks).')';
 
-			$condition .= 'OR (visibility=2 AND createdBy IN 
+				$condition .= 'OR (visibility=2 AND createdBy IN
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
-					(SELECT groupId FROM x2_group_to_user WHERE userId=' . $uid . ')))';
-			// $criteria->addCondition($condition);
-		}
-		// $templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
+					(SELECT groupId FROM x2_group_to_user WHERE userId='.$uid.')))';
+				// $criteria->addCondition($condition);
+			}
+			// $templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
 
-		$templateData = Yii::app()->db->createCommand()
-			->select('id,name')
-			->from('x2_docs')
-			->where('type="'.$type.'" AND (' . $condition . ')')
-			->order('name ASC')
-			// ->andWhere($condition)
-			->queryAll(false);
-		foreach($templateData as &$row)
-			$templateLinks[$row[0]] = $row[1];
+			$templateData = Yii::app()->db->createCommand()
+					->select('id,name')
+					->from('x2_docs')
+					->where('type="'.$type.'" AND ('.$condition.')')
+					->order('name ASC')
+					// ->andWhere($condition)
+					->queryAll(false);
+			foreach($templateData as &$row)
+				$templateLinks[$row[0]] = $row[1];
+		}
 		return $templateLinks;
 	}
 

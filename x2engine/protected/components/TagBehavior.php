@@ -63,7 +63,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function afterSave($event) {
 		// look up current tags
 		$oldTags = $this->getTags();
-		$newTags = $oldTags;
+		$newTags = array();
 		
 		foreach($this->scanForTags() as $tag) {
 			if(!in_array($tag,$oldTags)) {	// don't add duplicates if there are already tags
@@ -72,7 +72,7 @@ class TagBehavior extends CActiveRecordBehavior {
 				$tagModel->type = get_class($this->getOwner());
 				$tagModel->itemId = $this->getOwner()->id;
 				$tagModel->itemName = $this->getOwner()->name;
-				$tagModel->taggedBy = Yii::app()->user->getName();
+				$tagModel->taggedBy = $this->getOwner()->suModel->username;
 				$tagModel->timestamp = time();
 				if($tagModel->save())
 					$newTags[] = $tag;
@@ -170,7 +170,7 @@ class TagBehavior extends CActiveRecordBehavior {
                 $tag->tag=$tagName;
 				$tag->itemId = $this->getOwner()->id;
 				$tag->type = get_class($this->getOwner());
-				$tag->taggedBy = Yii::app()->user->getName();
+				$tag->taggedBy = $this->owner->suModel->username;
 				$tag->timestamp = time();
 				$tag->itemName = $this->getOwner()->name;
 				
@@ -178,6 +178,8 @@ class TagBehavior extends CActiveRecordBehavior {
 					$this->_tags[] = $tag;	// update tag cache
 					$addedTags[] = $tagName;
 					$result = true;
+				} else {
+					throw new CHttpException('Failed saving tag: '.json_encode($tag->attributes));
 				}
 			}
 		}

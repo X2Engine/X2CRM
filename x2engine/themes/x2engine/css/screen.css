@@ -47,19 +47,16 @@
 
 /* reset.css */
 html {margin:0;padding:0;border:0;}
-body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, hgroup, nav, section {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}
-article, aside, dialog, figure, footer, header, hgroup, nav, section {display:block;}
-body {line-height:1.5;}
-table {border-collapse:separate;border-spacing:0;}
-caption, th, td {text-align:left;font-weight:normal;float:none !important;}
-table, th, td {vertical-align:middle;}
+/* body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, hgroup, nav, section {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;} */
+/* article, aside, dialog, figure, footer, header, hgroup, nav, section {display:block;} */
+/* body {line-height:1.5;} */
 blockquote:before, blockquote:after, q:before, q:after {content:'';}
 blockquote, q {quotes:"" "";}
 a img {border:none;}
 :focus {outline:0;}
 /* typography.css */
 html {font-size:100.01%;}
-body {font-size:75%;color:#222;font-family:"Helvetica Neue", Arial, Helvetica, sans-serif;}
+body {font-size:75%;color:#222;font-family:Arial, Helvetica, sans-serif;}
 /* body {background: url(../../../uploads/lagunaseca.jpg) no-repeat center center fixed;
 -webkit-background-size: cover;
 -moz-background-size: cover;
@@ -82,8 +79,8 @@ p {margin:0 0 1.5em;}
 p .left {margin:1.5em 1.5em 1.5em 0;padding:0;}
 .right {float:right !important;}
 p .right {margin:1.5em 0 1.5em 1.5em;padding:0;}
-a:focus, a:hover {color:#09f;}
-a {color:#06c;	/* 0035bd */ text-decoration:underline;}
+a:focus, a:hover {color:#0070ff;/* #09f; */}
+a {color:#004baf;/* #06c; */	/* 0035bd */ text-decoration:underline;}
 blockquote {margin:1.5em;color:#666;font-style:italic;}
 strong, dfn {font-weight:bold;}
 em, dfn {font-style:italic;}
@@ -115,12 +112,6 @@ ol {list-style-type:decimal;}
 dl {margin:0 0 1.5em 0;}
 dl dt {font-weight:bold;}
 dd {margin-left:1.5em;}
-table {margin-bottom:0.5em;width:100%;}
-th {font-weight:bold;}
-thead th {background:#c3d9ff;}
-th, td, caption {padding:4px 10px 4px 5px;}
-tfoot {font-style:italic;}
-caption {background:#eee;}
 .small {font-size:.8em;margin-bottom:1.875em;line-height:1.875em;}
 .large {font-size:1.2em;line-height:2.5em;margin-bottom:1.25em;}
 .hide {display:none;}

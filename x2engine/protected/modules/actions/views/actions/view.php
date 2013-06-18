@@ -38,7 +38,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")), 
+	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")),
 	array('label'=>Yii::t('actions','View')),
 	array('label'=>Yii::t('actions','Edit Action'),'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('contacts','Share Action'),'url'=>array('shareAction','id'=>$model->id)),
@@ -48,7 +48,7 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <div class="page-title icon actions">
 	<h2><?php
-	if($model->associationType=='none')
+	if($model->associationName=='none')
 		echo Yii::t('actions','Action');
 	else
 		echo '<span class="no-bold">',Yii::t('actions','Action'),':</span> '.$model->associationName; ?>
@@ -95,9 +95,9 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 ?>	<div class="row buttons">
 		<button type="submit" name="submit" class="x2-button" value="complete"><?php echo Yii::t('actions','Complete'); ?></button>
 		<button type="submit" name="submit" class="x2-button" value="completeNew"><?php echo Yii::t('actions','Complete + New Action'); ?></button>
-		
+
 	</div>
-		
+
 	</form>
 </div>
 <?php
@@ -105,17 +105,17 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 }
 
 if($model->associationId!=0 && !is_null($associationModel)) {
-	if($model->associationType=='contacts') { 
+	if($model->associationType=='contacts') {
 		echo '<div class="page-title"><h2>'.Yii::t('actions','Contact Info').'</h2></div>';
 		$this->renderPartial('application.modules.contacts.views.contacts._detailViewMini',array('model'=>$associationModel,'actionModel'=>$model));
 	}
-	
+
 	$actionHistory=new CActiveDataProvider('Actions', array(
 		'criteria'=>array(
 			'order'=>'(IF (completeDate IS NULL, dueDate, completeDate)) DESC, createDate DESC',
 			'condition'=>'associationId='.$model->associationId.' AND associationType=\''.$model->associationType.'\''
 	)));
-	
+
 	$this->widget('zii.widgets.CListView', array(
 		'dataProvider'=>$actionHistory,
 		'itemView'=>'_view',

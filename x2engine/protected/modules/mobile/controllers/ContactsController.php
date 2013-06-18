@@ -38,7 +38,9 @@
  * @package X2CRM.modules.mobile.controllers
  */
 class ContactsController extends MobileController{
-	
+
+	public $modelClass = 'Contacts';
+
 	 public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -170,14 +172,6 @@ class ContactsController extends MobileController{
 		$model=new Contacts;
 		
 		
-	}
-	
-	
-	public function loadModel($id) {
-		$model = X2Model::model('Contacts')->findByPk((int) $id);
-		if ($model === null)
-			throw new CHttpException(404, 'The requested page does not exist.');
-		return $model;
 	}
 }
 

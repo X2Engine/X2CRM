@@ -27,7 +27,7 @@
 		mask : function(){
 			return this.trigger('mask');
 		},
-		
+
 		init : function(settings) {
 			settings = $.extend({
 				symbol: '',
@@ -205,7 +205,7 @@
 					startPos = startPos - (originalLen - newLen);
 					setCursorPosition(input, startPos);
 				}
-				
+
 				function mask(){
 					var value = input.val();
 					input.val(maskValue(value));

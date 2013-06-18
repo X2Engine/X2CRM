@@ -87,7 +87,7 @@ $('#sites-container').resizable({
 		$.post('".Yii::app()->createUrl("/site/saveWidgetHeight")."',           {Widget: 'TopSites',
 			Height: {topsitesHeight: parseInt($('topsites-box').css('height'))}
 			});
-	},
+	}
 });
 ",CClientScript::POS_HEAD);
 ?>

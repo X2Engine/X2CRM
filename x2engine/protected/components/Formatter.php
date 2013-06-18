@@ -2,7 +2,8 @@
 
 
 /**
- * Class for common formatting methods.
+ * Consolidated class for common string formatting and parsing functions.
+ * 
  * @package X2CRM.components
  */
 class Formatter {
@@ -176,7 +177,9 @@ class Formatter {
 	 * @return string
 	 */
 	public static function formatDate($date, $width = 'long'){
-
+        if(empty($date)){
+            return '';
+        }
 		if(!is_numeric($date))
 			$date = strtotime($date); // make sure $date is a proper timestamp
 
@@ -187,9 +190,9 @@ class Formatter {
 		$ret = '';
 
 		if($due['year'] == $now['year']){  // is the due date this year?
-			if($due['yday'] == $now['yday'])  // is the due date today?
+			if($due['yday'] == $now['yday'] && $width=='long')  // is the due date today?
 				$ret = Yii::t('app', 'Today');
-			else if($due['yday'] == $now['yday'] + 1) // is it tomorrow?
+			else if($due['yday'] == $now['yday'] + 1  && $width=='long') // is it tomorrow?
 				$ret = Yii::t('app', 'Tomorrow');
 			else
 				$ret = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat($width), $date); // any other day this year
@@ -266,6 +269,29 @@ class Formatter {
 			return strtotime($date);
 		else
 			return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short').' hh:mm');
+	}
+
+    /**
+	 * Convert currency to the proper format
+	 *
+	 * @param String $str The currency string
+	 * @param Boolean $keepCents Whether or not to keep the cents
+	 * @return String $str The modified currency string.
+	 */
+	public static function parseCurrency($str, $keepCents){
+
+		$cents = '';
+		if($keepCents){
+			$str = mb_ereg_match('[\.,]([0-9]{2})$', $str, $matches); // get cents
+			$cents = $matches[1];
+		}
+		$str = mb_ereg_replace('[\.,][0-9]{2}$', '', $str); // remove cents
+		$str = mb_ereg_replace('[^0-9]', '', $str);  //remove all non-numbers
+
+		if(!empty($cents))
+			$str .= ".$cents";
+
+		return $str;
 	}
 
 }

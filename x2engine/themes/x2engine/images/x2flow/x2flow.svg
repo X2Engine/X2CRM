@@ -22,6 +22,13 @@
    inkscape:export-ydpi="10.029035">
   <defs
      id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective3874" />
     <pattern
        inkscape:stockid="Stripes 1:1.5"
        id="Strips1_1.5"
@@ -54,6 +61,9 @@
          offset="0"
          id="stop5370" />
     </linearGradient>
+    <filter
+       id="filter3049"
+       inkscape:label="filter1" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -62,17 +72,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568543"
-     inkscape:cx="390.84779"
-     inkscape:cy="368.91206"
+     inkscape:zoom="1"
+     inkscape:cx="635.95806"
+     inkscape:cy="411.05912"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="1232"
-     inkscape:window-height="785"
-     inkscape:window-x="186"
-     inkscape:window-y="55"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      inkscape:snap-grids="true"
      inkscape:snap-global="true"
      inkscape:snap-bbox="true"
@@ -101,7 +111,16 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     style="display:inline">
+    <rect
+       style="color:#000000;fill:#414141;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3888"
+       width="26"
+       height="22"
+       x="619"
+       y="631.36218"
+       ry="0" />
     <rect
        style="fill:#a7db6c;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.37111235;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985"
@@ -137,7 +156,9 @@
        id="text3786"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan3788" /></text>
+         id="tspan3788"
+         x="127.375"
+         y="496.61218" /></text>
     <rect
        style="fill:#db916c;fill-opacity:1;stroke:#333333;stroke-width:1.96797645;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3792"
@@ -146,7 +167,7 @@
        x="158.16418"
        y="543.17462" />
     <rect
-       style="fill:url(#Strips1_1.5);fill-opacity:1;stroke:none;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:0.29880477999999999"
+       style="opacity:0.29880479;fill:url(#Strips1_1.5);fill-opacity:1;stroke:none"
        id="rect3794"
        width="183.35533"
        height="141.75484"
@@ -155,7 +176,7 @@
        ry="0"
        transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)" />
     <rect
-       style="fill:#a6ff42;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.37111233;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#a6ff42;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.37111235;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985-9"
        width="31.789293"
        height="31.789293"
@@ -204,14 +225,14 @@
        x="505"
        y="401.07648" />
     <rect
-       style="fill:#7caedc;fill-opacity:1;stroke:#333333;stroke-width:1.96797645000000010;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#7caedc;fill-opacity:1;stroke:#333333;stroke-width:1.96797645;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3792-1"
        width="58.032024"
        height="30.032024"
        x="225.12584"
        y="542.85791" />
     <rect
-       style="fill:#71bcff;fill-opacity:1;stroke:#333333;stroke-width:1.96797645000000010;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#71bcff;fill-opacity:1;stroke:#333333;stroke-width:1.96797645;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3792-5-7"
        width="58.032024"
        height="30.032024"
@@ -230,7 +251,7 @@
        inkscape:export-xdpi="71.661972"
        inkscape:export-ydpi="71.661972" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#cccccc;stroke-width:3.37111235000000020;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#cccccc;stroke-width:3.37111235;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985-9-1"
        width="31.789293"
        height="31.789293"
@@ -323,7 +344,7 @@
        inkscape:export-ydpi="88.831116"
        style="stroke:#aa5d42;stroke-opacity:1" />
     <path
-       style="fill:none;fill-opacity:1;stroke:#ef6c3e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none"
+       style="fill:none;stroke:#ef6c3e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none"
        d="m 49.24041,807.95799 0,9.16201 3.73996,0 0,29.64637 28.08104,0 0,-29.64637 3.69818,0 0,-9.16201 z"
        id="rect3014-7-1"
        inkscape:connector-curvature="0"
@@ -332,7 +353,7 @@
        inkscape:export-xdpi="88.831116"
        inkscape:export-ydpi="88.831116" />
     <path
-       style="fill:none;fill-opacity:1;stroke:#ef6c3e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none"
+       style="fill:none;stroke:#ef6c3e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none"
        d="m 59.90354,818.08697 0,24.19458"
        id="path3047-6-5"
        inkscape:connector-curvature="0"
@@ -351,7 +372,7 @@
        inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\x2flow\trash-hover.png"
        inkscape:export-xdpi="88.831116"
        inkscape:export-ydpi="88.831116"
-       style="stroke:#ef6c3e;stroke-opacity:1;fill:none;fill-opacity:1" />
+       style="fill:none;stroke:#ef6c3e;stroke-opacity:1" />
     <use
        id="use4019-6-2"
        xlink:href="#path3047-6-5"
@@ -363,7 +384,7 @@
        inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\x2flow\trash-hover.png"
        inkscape:export-xdpi="88.831116"
        inkscape:export-ydpi="88.831116"
-       style="stroke:#ef6c3e;stroke-opacity:1;fill:none;fill-opacity:1" />
+       style="fill:none;stroke:#ef6c3e;stroke-opacity:1" />
     <image
        y="712.36218"
        x="375"
@@ -454,21 +475,405 @@
     <path
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 416.10693,676.38282 9.72282,5.97937 3.24094,1.98462 3.24093,-1.98462 9.72282,-5.97937"
-       id="path3085"
+       id="path55"
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 449.64137,691.21656 -15.42802,-10.35438 m -10.28533,0 c -5.14267,3.45146 -10.28535,6.90292 -15.42802,10.35438"
-       id="path3274-7"
+       id="path57"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />
     <path
        inkscape:connector-curvature="0"
-       style="fill:#757575;fill-opacity:1;stroke:none"
+       style="fill:#333333;fill-opacity:1;stroke:none"
        d="m 418.40625,648.36218 c -1.3296,0 -2.40625,1.0454 -2.40625,2.375 l 0,0.375 0.625,0.40625 9.71875,5.96875 2.71875,1.6875 2.71875,-1.6875 9.71875,-5.96875 0.5,-0.3125 0,-0.46875 c 0,-1.3296 -1.07665,-2.375 -2.40625,-2.375 l -21.1875,0 z m -2.40625,5.125 0,7.46875 5.8125,-3.90625 -5.8125,-3.5625 z m 26,0.0937 -5.65625,3.46875 5.65625,3.8125 0,-7.28125 z m -18.3125,4.625 -7.6875,5.1875 0,0.5625 c 0,1.3296 1.07665,2.40625 2.40625,2.40625 l 21.1875,0 c 1.3296,0 2.40625,-1.07665 2.40625,-2.40625 l 0,-0.6875 -7.53125,-5.0625 -1.625,1 -3.25,1.96875 a 1.0001,1.0001 0 0 1 -1.03125,0 l -3.25,-1.96875 -1.625,-1 z"
        id="rect3292-9-1-1"
        inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\email-button.png"
        inkscape:export-xdpi="88"
        inkscape:export-ydpi="88" />
+    <path
+       style="fill:#333333;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       d="m 458,650.375 7,7 0,7 3,-2 0,-5 7,-7 -17,0 z"
+       id="rect3037"
+       inkscape:export-filename="C:\Users\mpearson\Desktop\filter.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#757575;fill-opacity:1;stroke:none"
+       id="rect3813"
+       width="16"
+       height="5"
+       x="468"
+       y="631.36218"
+       rx="2"
+       ry="2" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#333333;fill-opacity:1;stroke:none"
+       id="path3815"
+       sodipodi:cx="466"
+       sodipodi:cy="649.36218"
+       sodipodi:rx="8"
+       sodipodi:ry="1"
+       d="m 474,649.36218 a 8,1 0 1 1 -16,0 8,1 0 1 1 16,0 z"
+       transform="matrix(1.0625,0,0,1,-28.625,1)"
+       inkscape:export-filename="C:\Users\mpearson\Desktop\filter.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#cccccc;fill-opacity:1;stroke:none"
+       id="rect5030"
+       width="76"
+       height="40"
+       x="408"
+       y="572.36218"
+       rx="2"
+       ry="2" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#333333;stroke-width:2.99999856999999980;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       id="path3851"
+       sodipodi:cx="506"
+       sodipodi:cy="678.36218"
+       sodipodi:rx="6"
+       sodipodi:ry="6"
+       d="m 512,678.36218 a 6,6 0 1 1 -12,0 6,6 0 1 1 12,0 z"
+       transform="matrix(0.66666683,0,0,0.66666716,163.66658,217.12039)"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\search-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#333333;stroke-width:2.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       d="m 504,672.36218 5,5"
+       id="path3866"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\search-button.png" />
+    <rect
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3872"
+       width="15"
+       height="11.000001"
+       x="532"
+       y="652.36218"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       ry="1" />
+    <path
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 537,652.36218 0,11"
+       id="path3876"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 542,652.36218 0,11"
+       id="path3878"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="rect3872-4"
+       width="17"
+       height="11.000001"
+       x="537"
+       y="625.36218"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 545.5,624.86218 0,11.92741"
+       id="path3876-9"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:connector-curvature="0"
+       id="path3899"
+       d="m 549.5,624.86218 0,11.92741"
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button.png"
+       inkscape:connector-curvature="0"
+       id="path3901"
+       d="m 541.5,624.86218 0,11.92741"
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+    <path
+       style="fill:#333333;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       d="m 533,596.36218 5.9375,5.9375 0,7 3,-2 0,-5 6.0625,-5.9375 c -4.03931,2.05148 -10.93855,2.00509 -15,0 z"
+       id="path3970"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\filter-buttonA.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path3980"
+       sodipodi:cx="539"
+       sodipodi:cy="593.86218"
+       sodipodi:rx="7"
+       sodipodi:ry="2.25"
+       d="m 546,593.86218 a 7,2.25 0 1 1 -14,0 7,2.25 0 1 1 14,0 z"
+       transform="matrix(1.0714302,0,0,0.78393959,-37.000889,129.49891)"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\filter-buttonA.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       ry="0"
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button3.png"
+       y="649.36218"
+       x="564"
+       height="11.000001"
+       width="16"
+       id="rect4022"
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button3.png"
+       inkscape:connector-curvature="0"
+       id="path4024"
+       d="m 569.5,649.86218 0,11"
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button3.png"
+       inkscape:connector-curvature="0"
+       id="path4026"
+       d="m 574.5,648.86218 0,11"
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <image
+       y="696.36218"
+       x="520"
+       id="image4046"
+       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAKlJREFU OI2dkcsVgjAQRS9UQCl2ICXYgXSgm7fW/RSBdkAJloCdYAcujDkY4xh4q3zOvTOZVCyMpD3QABcz e1QL4R7ownYE2mKBpBNwTo7HIoGkbah4Azbzu7oA7gO4A9oginE7SN5MWA+zTqafggycSgbgmBU4 cJSY2RUyMyiAJ2Zz+OigEG7N7P4lWANHwVoYoJZ0WAvDa4iNA+PBb4GXzoP/CeJfe3kCci9GLyRw 6RkAAAAASUVORK5CYII= "
+       height="16"
+       width="16" />
+    <path
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\edit-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       style="fill:#525252;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       d="M 571 689.375 L 568.375 692 L 572.375 696 L 575 693.375 L 575 691.375 L 573 689.375 L 571 689.375 z M 567.65625 692.71875 L 560 700.375 L 560 704.375 L 564 704.375 L 571.65625 696.71875 L 567.65625 692.71875 z "
+       id="path4049" />
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:none;fill-opacity:1;stroke:#525252;stroke-width:2.50000000000000000;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path4061"
+       sodipodi:cx="566"
+       sodipodi:cy="726.36218"
+       sodipodi:rx="10"
+       sodipodi:ry="10"
+       d="m 576,726.36218 a 10,10 0 1 1 -20,0 10,10 0 1 1 20,0 z"
+       transform="matrix(0.8,0,0,0.8,111.2,143.27244)" />
+    <image
+       y="676.36218"
+       x="624"
+       id="image4071"
+       xlink:href="data:image/png;base64,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 7/n/Pf4X1TOSY9zrxzgAAAAASUVORK5CYII= "
+       height="54"
+       width="54" />
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:#525252;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4074"
+       sodipodi:cx="584"
+       sodipodi:cy="704.36218"
+       sodipodi:rx="4"
+       sodipodi:ry="4"
+       d="m 588,704.36218 a 4,4 0 1 1 -8,0 4,4 0 1 1 8,0 z"
+       transform="matrix(0.75,0,0,0.75,145,175.09055)"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\share-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.75,0,0,0.75,155,170.09055)"
+       d="m 588,704.36218 a 4,4 0 1 1 -8,0 4,4 0 1 1 8,0 z"
+       sodipodi:ry="4"
+       sodipodi:rx="4"
+       sodipodi:cy="704.36218"
+       sodipodi:cx="584"
+       id="path4080"
+       style="color:#000000;fill:#525252;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       sodipodi:type="arc"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\share-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.75,0,0,0.75,155,180.09055)"
+       d="m 588,704.36218 a 4,4 0 1 1 -8,0 4,4 0 1 1 8,0 z"
+       sodipodi:ry="4"
+       sodipodi:rx="4"
+       sodipodi:cy="704.36218"
+       sodipodi:cx="584"
+       id="path4082"
+       style="color:#000000;fill:#525252;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       sodipodi:type="arc"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\share-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#525252;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 592.5,698.61217 -9.5,4.75001 9.5,4.75"
+       id="path4084"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\share-button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       ry="1"
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button2.png"
+       y="629.36218"
+       x="569"
+       height="11.000001"
+       width="18"
+       id="rect4090"
+       style="fill:none;stroke:#525252;stroke-width:1.99999975999999990;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button2.png"
+       inkscape:connector-curvature="0"
+       id="path4092"
+       d="m 575,629.36218 0,11"
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button2.png"
+       inkscape:connector-curvature="0"
+       id="path4094"
+       d="m 581,629.36218 0,11"
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 569.69621,632.86218 16.60761,0"
+       id="path4096"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-button2.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4108"
+       width="11"
+       height="15"
+       x="494.5"
+       y="716.86218" />
+    <rect
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4110"
+       width="6"
+       height="10"
+       x="505.5"
+       y="-730.86218"
+       transform="scale(1,-1)" />
+    <path
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 495.4991,718.86218 9.0009,0"
+       id="path4112-5-1"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4220"
+       d="m 495.5,720.86218 9.0009,0"
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4222"
+       d="m 495.5,722.86218 14.9985,0"
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    <path
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 495.5015,724.86218 14.9985,0"
+       id="path4224"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4222-3"
+       d="m 495.5,726.86218 14.9985,0"
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    <path
+       style="color:#000000;fill:none;stroke:#525252;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 495.5015,728.86218 14.9985,0"
+       id="path4224-9"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="color:#000000;fill:#525252;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4265"
+       width="4"
+       height="1"
+       x="498"
+       y="730.36218" />
+    <rect
+       ry="1"
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-buttonB.png"
+       y="629.36218"
+       x="597"
+       height="11.000001"
+       width="15.999999"
+       id="rect4090-1"
+       style="fill:none;stroke:#525252;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-buttonB.png"
+       inkscape:connector-curvature="0"
+       id="path4092-7"
+       d="m 602.5,628.86218 0,11"
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\images\icons\columns-buttonB.png"
+       inkscape:connector-curvature="0"
+       id="path4094-4"
+       d="m 607.5,628.86218 0,11"
+       style="fill:none;stroke:#525252;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+    <path
+       style="color:#000000;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;stroke-opacity:0.25098040999999999;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+       inkscape:transform-center-y="-0.40000174"
+       d="m 632,640.36218 4,4 -8,0 z"
+       id="path3883"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="C:\X2Development\X2WAMP\x2engine\themes\x2engine\css\gridview\arrow_up4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer"
+     style="display:inline">
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#333333;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter5014)"
+       d="m 463.5,584.36218 c -4.69442,0 -8.5,0.44772 -8.5,1 0,0.069 0.0743,0.1224 0.1875,0.1875 l 6.8125,6.8125 0,7 3,-2 0,-5 6.8125,-6.8125 c 0.11323,-0.0651 0.1875,-0.11846 0.1875,-0.1875 0,-0.55228 -3.80558,-1 -8.5,-1 z"
+       id="rect3037-4" />
   </g>
 </svg>

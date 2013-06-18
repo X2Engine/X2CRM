@@ -54,7 +54,7 @@ function refreshQtip() {
 					ajax: {
 						url: yii.scriptUrl+"/media/qtip",
 						data: { id: mediaId[0] },
-						method: "get",
+						method: "get"
 					}
 				},
 				style: {
@@ -69,15 +69,11 @@ $(function() {
 });
 ');
 
-$heading=Yii::t('media','Media & File Library');
 $this->widget('application.components.X2GridView', array(
 	'id' => 'media-grid',
-	 	'template'=> '<div class="page-title icon media"><h2>'.$heading.'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>Yii::t('media','Media & File Library'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon media">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	/*
 	'template'=>'<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
@@ -101,12 +97,11 @@ $this->widget('application.components.X2GridView', array(
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'filter'=>$model,
 	'defaultGvSettings'=>array(
-		'fileName'=> 80,
-		'associationType' => 20,
-		'createDate'=>40,
-		'uploadedBy'=>20,
-		'filesize' => 20,
-		'mimetype' => 80
+		'fileName' => 285,
+		'associationType' => 85,
+		'createDate' => 94,
+		'uploadedBy' => 114,
+		'filesize' => 75,
 	),
 	'modelName'=>'Media',
 	'specialColumns' => array(
@@ -147,6 +142,7 @@ $this->widget('application.components.X2GridView', array(
 			'value' => '$data->fmtDimensions'
 		),
 	),
+	'fullscreen'=>true,
 ));
 
 ?>

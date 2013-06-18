@@ -40,7 +40,7 @@
  * Accepts post requests with form-urlencoded data, responds with JSON.
  *
  * @property InlineEmail $model
- * @package X2CRM.components 
+ * @package X2CRM.components
  */
 class InlineEmailAction extends CAction {
 
@@ -68,6 +68,9 @@ class InlineEmailAction extends CAction {
 			$model = new InlineEmail();
 		else
 			$model = $this->model;
+        if(isset($_POST['contactFlag'])){
+            $model->contactFlag=$_POST['contactFlag'];
+        }
 		// Check to see if the user is requesting a new template
 		if(isset($_GET['template'])){
 			$scenario = 'template';;
@@ -75,7 +78,7 @@ class InlineEmailAction extends CAction {
 		$model->setScenario($scenario);
 
 		$attachments = array();
-		
+
 		if(isset($_POST['InlineEmail'])){
 			// This could indicate either a template change or a form submission.
 			$model->attributes = $_POST['InlineEmail'];

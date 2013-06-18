@@ -48,6 +48,9 @@
  * @property integer $lastUpdated
  */
 class FormLayout extends CActiveRecord {
+
+	public static $scenarios = array('Default','Inline');
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return FormVersions the static model class

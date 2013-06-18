@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+$themeUrl = Yii::app()->theme->getBaseUrl();
 // init qtip for contact names
 Yii::app()->clientScript->registerScript('contact-qtip', '
 function refreshQtip() {
@@ -81,8 +81,9 @@ function refreshQtip() {
 					label += item.country;
 				}
 			}
-
-			label += "<br>" + item.assignedTo;
+            if(item.assignedTo){
+                label += "<br>" + item.assignedTo;
+            }
 			label += "</span>";
 			label += "</a>";
 
@@ -116,60 +117,66 @@ if($startHidden == false) {
 
 <div id="relationships-form" style="text-align: center;<?php //echo ($hideRelationships? ' display: none;' : ''); ?>">
 
-<?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>"relationships-grid",
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="title-bar">'
-		.'{summary}</div>{items}{pager}',
-	'afterAjaxUpdate'=>'js: function(id, data) { refreshQtip(); }',
-	'dataProvider'=>$relationshipsDataProvider,
-	'columns'=>array(
-        array(
-			'name'=>'name',
-			'header'=>Yii::t("contacts",'Name'),
-			'value'=>'$data->link',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'myModelName',
-			'header'=>Yii::t("contacts",'Type'),
-			'value'=>'$data->myModelName',
-			'type'=>'raw',
-		),
-        array(
-			'name'=>'assignedTo',
-			'header'=>Yii::t("contacts",'Assigned To'),
-			'value'=>'$data->renderAttribute("assignedTo")',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'createDate',
-			'header'=>Yii::t('contacts','Date Created'),
-			'value'=>'$data->renderAttribute("createDate")',
-			'type' => 'raw'
-		),
-        array(
-			'name'=>'deletion',
-			'header'=>Yii::t("contacts",'Delete'),
-			'value'=>"CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/delete.png'),'#',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?firstId='.\$data->id.'&firstType='.\$data->myModelName.'&secondId=".$model->id."&secondType=".get_class($model)."&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
-            'type'=>'raw',
-			'htmlOptions'=>array('style'=>'width:25px;text-align:center;'),
-			'headerHtmlOptions'=>array('style'=>'width:50px'),
-		),
+<?php
+$columns = array(
+	array(
+		'name' => 'name',
+		'header' => Yii::t("contacts", 'Name'),
+		'value' => '$data->link',
+		'type' => 'raw',
 	),
+	array(
+		'name' => 'myModelName',
+		'header' => Yii::t("contacts", 'Type'),
+		'value' => '$data->myModelName',
+		'type' => 'raw',
+	),
+	array(
+		'name' => 'assignedTo',
+		'header' => Yii::t("contacts", 'Assigned To'),
+		'value' => '$data->renderAttribute("assignedTo")',
+		'type' => 'raw',
+	),
+	array(
+		'name' => 'createDate',
+		'header' => Yii::t('contacts', 'Create Date'),
+		'value' => '$data->renderAttribute("createDate")',
+		'type' => 'raw'
+	),
+);
+if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update', array('assignedTo' => $model->assignedTo)))
+	$columns[] = array(
+		'name' => 'deletion',
+		'header' => Yii::t("contacts", 'Delete'),
+		'value' => "CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/delete.png'),'javascript:void(0);',array('class'=>'x2-hint','title'=>'Deleting this relationship will not delete the linked record.', 'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship')."?firstId='.\$data->id.'&firstType='.get_class(\$data).'&secondId=".$model->id."&secondType=".get_class($model)."&redirect=/".Yii::app()->controller->getId()."/".$model->id."','confirm'=>'Are you sure you want to delete this relationship?'))",
+		'type' => 'raw',
+		'htmlOptions' => array('style' => 'width:25px;text-align:center;'),
+		'headerHtmlOptions' => array('style' => 'width:50px'),
+	);
+
+
+$this->widget('zii.widgets.grid.CGridView', array(
+	'id' => "relationships-grid",
+	'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template' => '<div class="title-bar">'
+	.'{summary}</div>{items}{pager}',
+	'afterAjaxUpdate' => 'js: function(id, data) { refreshQtip(); }',
+	'dataProvider' => $relationshipsDataProvider,
+	'columns' => $columns,
 ));
 
 ?>
 
-<?php if($modelName != 'Contacts') { ?>
-	<div class="form" style="display: inline-block; margin-top: 20px;">
-		<div style="width: 200px; margin: 0 auto;">
+<?php if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update',array('assignedTo'=>$model->assignedTo))) { ?>
+	<div class="form" style="width:29%;display: inline-block; margin-top: 20px;">
+		<div style="width: 170px; margin: 0 auto;">
 			<input type="hidden" id="Relationships_Contacts_id">
 			<?php
 				$staticLinkModel = X2Model::model('Contacts');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 					'name'=>'Relationships_Actions',
 					'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
+                    'value'=>'Start typing to suggest...',
 					'options' => array(
 						'minLength' => '1',
 						'select' => 'js:function( event, ui ) {
@@ -181,12 +188,16 @@ if($startHidden == false) {
 					'htmlOptions'=>array(
 						'id'=>'Relationships_Contacts_autocomplete',
 						'class'=>'relationships-add-autocomplete',
+                        'onfocus' => 'toggleText(this);',
+                        'onblur' => 'toggleText(this);',
+                        'style'=>'color:#aaa',
 					),
 				));
+                echo CHtml::link(CHtml::image($themeUrl.'/images/Plus_sign.png'),'#',array('class'=>'right','style'=>'margin-top:6px;','onclick'=>'return false;','id'=>'create-contact'));
 			?>
 		</div>
 		<?php echo CHtml::ajaxButton(
-			Yii::t('app', 'Associate Contact'),
+			Yii::t('app', 'Link Contact'),
 			Yii::app()->controller->createUrl('/site/addRelationship'),
 			array(
 				'type'=>'POST',
@@ -215,19 +226,22 @@ if($startHidden == false) {
 				'id'=>'Relationships_Contacts_addbutton',
 				'style'=>'margin: 0 auto;'
 			)
-		); ?>
+		);
+
+                ?>
 	</div>
 <?php } ?>
 
-<?php if($modelName != 'Accounts') { ?>
-	<div class="form" style="display: inline-block; margin-top: 20px;">
-		<div style="width: 200px; margin: 0 auto;">
+<?php if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update',array('assignedTo'=>$model->assignedTo))) { ?>
+	<div class="form" style="width:29%;display: inline-block; margin-top: 20px;">
+		<div style="width: 170px; margin: 0 auto;">
 			<input type="hidden" id="Relationships_Accounts_id">
 			<?php
 				$staticLinkModel = X2Model::model('Accounts');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 					'name'=>'Relationships_Actions',
 					'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
+                    'value'=>'Start typing to suggest...',
 					'options' => array(
 						'minLength' => '1',
 						'select' => 'js:function( event, ui ) {
@@ -239,12 +253,16 @@ if($startHidden == false) {
 					'htmlOptions'=>array(
 						'id'=>'Relationships_Accounts_autocomplete',
 						'class'=>'relationships-add-autocomplete',
+                        'onfocus' => 'toggleText(this);',
+                        'onblur' => 'toggleText(this);',
+                        'style'=>'color:#aaa',
 					),
 				));
+                echo CHtml::link(CHtml::image($themeUrl.'/images/Plus_sign.png'),'#',array('class'=>'right','style'=>'margin-top:6px;','onclick'=>'return false;','id'=>'create-account'));
 			?>
 		</div>
 		<?php echo CHtml::ajaxButton(
-			Yii::t('app', 'Associate Account'),
+			Yii::t('app', 'Link Account'),
 			Yii::app()->controller->createUrl('/site/addRelationship'),
 			array(
 				'type'=>'POST',
@@ -278,16 +296,17 @@ if($startHidden == false) {
 <?php } ?>
 
 
-<?php if($modelName != 'Opportunity') { ?>
+<?php if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update',array('assignedTo'=>$model->assignedTo))) { ?>
 
-<div class="form" style="display: inline-block; margin-top: 20px;">
-<div style="width: 200px; margin: 0 auto;">
+<div class="form" style="width:29%;display: inline-block; margin-top: 20px;">
+<div style="width: 170px; margin: 0 auto;">
 <input type="hidden" id="Relationships_Opportunity_id">
 <?php
 	$staticLinkModel = X2Model::model('Opportunity');
 	$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 		'name'=>'Relationships_Actions',
 		'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
+        'value'=>'Start typing to suggest...',
 		'options' => array(
 			'minLength' => '1',
 			'select' => 'js:function( event, ui ) {
@@ -299,13 +318,17 @@ if($startHidden == false) {
 		'htmlOptions'=>array(
 			'id'=>'Relationships_Opportunity_autocomplete',
 			'class'=>'relationships-add-autocomplete',
+            'onfocus' => 'toggleText(this);',
+            'onblur' => 'toggleText(this);',
+            'style'=>'color:#aaa',
 		),
 	));
+    echo CHtml::link(CHtml::image($themeUrl.'/images/Plus_sign.png'),'#',array('class'=>'right','style'=>'margin-top:6px;','onclick'=>'return false;','id'=>'create-opportunity'));
 ?>
 </div>
 <?php
 echo CHtml::ajaxButton(
-	Yii::t('app', 'Associate Opportunity'),
+	Yii::t('app', 'Link Opportunity'),
 	Yii::app()->controller->createUrl('/site/addRelationship'),
 	array(
 		'type'=>'POST',

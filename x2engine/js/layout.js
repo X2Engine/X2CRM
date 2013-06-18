@@ -35,6 +35,9 @@
 
 $(function() {
 	
+	$(document).on('mousedown','.x2-button',function(e){ e.preventDefault(); });
+	
+	
 	$('a.x2-link').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'body',iframeFix:true});
 
 	if(window.fullscreen)

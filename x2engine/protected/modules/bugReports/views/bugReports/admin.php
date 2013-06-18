@@ -73,13 +73,10 @@ function trimText($text) {
 
 <?php $this->widget('application.components.X2GridView', array(
 	'id'=>'bugReports-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>bugReports</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>Yii::t('bugReports','Bug Reports'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -107,4 +104,5 @@ function trimText($text) {
 		),
 	),
 	'enableControls'=>true,
+	'fullscreen'=>true,
 )); ?>

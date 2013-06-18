@@ -154,13 +154,14 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import All Data'),array('/admin/import')); ?><br><?php echo Yii::t('admin','Import from a global export file');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rollback Import'),array('/admin/rollbackImport')); ?><br><?php echo Yii::t('admin','Delete all records created by a previous import.');?></div>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','View User Changelog'),'/admin/viewChangelog'); ?><br><?php echo Yii::t('admin','View a log of everything that has been changed');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','View User Changelog'),array('/admin/viewChangelog')); ?><br><?php echo Yii::t('admin','View a log of everything that has been changed');?></div>
 
 		<!--<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Translate Mode'),array('/admin/index','translateMode'=>Yii::app()->session['translate']?0:1),array('class'=>Yii::app()->session['translate']?'x2-button clicked':'x2-button')); ?><br><?php echo Yii::t('admin','Enable translation tool on all pages.');?></div>-->
 	</div><br>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2Contacts language packs.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tag Manager'),array('/admin/manageTags')); ?><br><?php echo Yii::t('admin','View a list of all used tags with options for deletion.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','User View History'),array('/admin/userViewLog')); ?><br><?php echo Yii::t('admin','See a history of what records users have viewed.');?></div>
     </div>
 </div>
 <div class="form">

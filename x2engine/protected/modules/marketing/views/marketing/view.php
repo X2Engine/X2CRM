@@ -59,7 +59,7 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <div id="main-column" class="half-width">
 <div class="page-title icon marketing">
-	<h2><span class="no-bold"><?php echo Yii::t('marketing', 'Campaign'); ?>:</span> <?php echo $model->name; ?></h2>
+	<h2><?php echo $model->name; ?></h2>
 	<?php if(Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
 		<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update/'.$model->id);?>"><span></span></a>
 	<?php } ?>

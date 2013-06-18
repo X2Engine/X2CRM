@@ -195,7 +195,7 @@ class DashboardController extends x2base {
                         }
 
 			// process currency into an INT
-			$account->annualRevenue = $this->parseCurrency($account->annualRevenue,false);
+			$account->annualRevenue = Formatter::parseCurrency($account->annualRevenue,false);
 			$changes=$this->calculateChanges($temp,$account->attributes, $account);
 			$account=$this->updateChangelog($account,$changes);
 			$account->update();
@@ -305,15 +305,4 @@ class DashboardController extends x2base {
         ));
 	}
 
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model=Dashboard::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
 }

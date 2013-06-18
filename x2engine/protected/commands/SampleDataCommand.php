@@ -175,7 +175,7 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_dropdowns' => 'id>=1000',
 			'x2_fields' => 'custom=1',
 			'x2_form_layouts' => 'id>=1000',
-			'x2_media' => '(id>11 AND id<1000) OR id>1006',
+			'x2_media' => '(id>11 AND id<1000) OR (id>1006 AND id<2000) OR id>2002', // Quit messing with my head, guys! I mean it! -- keep the "id" field following a simple and consistent pattern in protected/modules/media/data/install.sql
 			'x2_profile' => 'id>2',
 			'x2_users' => 'id>2',
 			'x2_social' => 'id>1',

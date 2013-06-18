@@ -38,19 +38,19 @@ $(function() {
 
 	/* var recordTitle = $(".record-title").first();
 	var x2layout = $(".x2-layout").first();
-	
+
 	if(recordTitle.length && ($.browser != 'msie' || $.browser.version > 6)) {
-	
+
 		var mainColumn = recordTitle.parent();
-	
+
 		var recordTitleTop = recordTitle.offset().top;
 		var recordTitleHeight = recordTitle.height()+15;
-		
+
 		// var pageContainer = $('#page-body'); //.find('.container:first');
 		var scrolled = false;
-		
+
 		// sidebarMenu.parent().height(sidebarMenu.height()+20);
-		
+
 		$(window).scroll(function(e) {
 				// console.debug($(this).scrollTop());
 			if($(this).scrollTop() + 31 >= recordTitleTop) {
@@ -68,7 +68,7 @@ $(function() {
 			}
 			// scrolled = true;
 		});
-		
+
 		$(window).resize(function(e) {
 			if(scrolled)
 				recordTitle.width(x2layout.width()-48);
@@ -86,7 +86,7 @@ $(function() {
 		toggleFormSection($(this).closest('.formSection'));
 		saveFormSections();
 	});
-	
+
 	$('a#showAll, a#hideAll').click(function() {
 		$('a#showAll, a#hideAll').toggleClass('hide');
 		if($('#showAll').hasClass('hide')) {
@@ -103,12 +103,12 @@ $(function() {
 	});
 
 	$('.inlineLabel').find('input:text, textarea').focus(function() { formFieldFocus(this); }).blur(function() { formFieldBlur(this); });
-	
+
 
 	// set up x2 helper tooltips
 	$('.x2-hint').qtip();
 	$('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
-	
+
 	/*
 	$(window).resize(function() {
 		$('#sidebar-right').height($(window).height() - 79);
@@ -169,14 +169,14 @@ function formFieldBlur(elem) {
 // $(function() {
 	// placeholderTest = document.createElement('input');
 	// if(!('placeholder' in placeholderTest)) {
-	
+
 		// var active = document.activeElement;
-		
+
 		// $.delegate(':text','focus',function() {
 			// if($(this).attr('placeholder') != '' && $(this).val() == $(this).attr('placeholder'))
 				// $(this).val('').removeClass('placeholder');
 		// });
-		
+
 		// $.delegate(':text','blur',function() {
 			// if($(this).attr('placeholder') != '' && ($(this).val() == '' || $(this).val() == $(this).attr('placeholder')))
 				// $(this).val($(this).attr('placeholder')).addClass('placeholder');
@@ -199,7 +199,7 @@ function toggleForm(formName,duration) {
 		}, 300);
 	}
 	$(formName).toggle('blind',{},duration);
-	
+
 }
 function hide(field) {
 	$(field).hide(); //field.style.display="none";
@@ -214,15 +214,15 @@ function show(field) {
 
 function renderContactLookup(item) {
 	var label = "<a style=\"line-height: 1;\">" + item.label + "<span style=\"font-size: 0.6em;\">";
-	
+
 	if(item.email) {		// add email if defined
 		label += "<br>";
 		label += item.email;
 	}
-	
+
 	if(item.city || item.state || item.country || item.email) {
 		label += "<br>";
-		
+
 		if(item.city)
 			label += item.city;
 		if(item.state) {
@@ -236,11 +236,12 @@ function renderContactLookup(item) {
 			label += item.country;
 		}
 	}
-	
-	label += "<br>" + item.assignedTo;
+    if(item.assignedTo){
+        label += "<br>" + item.assignedTo;
+    }
 	label += "</span>";
 	label += "</a>";
-	
+
 	return label;
 }
 
@@ -286,42 +287,42 @@ function fileUpload(form, fileField, action_url, remove_url) {
 					'class': 'AttachmentFiles',
 					'value': response['id'] // name of temp file
 				});
-				
+
 				var temp = $('<input>', {
 					'type': 'hidden',
 					'name': 'AttachmentFiles[temp][]',
 					'value': true
 				});
-				
+
 				var parent = fileField.parent().parent().parent();
-				
+
 				parent.parent().find('.error').html(''); // clear error messages
 				var newFileChooser = parent.clone(); // save copy of file upload span before we start making changes
-				
+
 				parent.removeClass('next-attachment');
 				parent.append(file);
 				parent.append(temp);
-				
+
 				var remove = $("<a>", {
 					'href': "#",
 					'html': "[x]"
 				});
-				
+
 				parent.find('.filename').html(response['name']);
 				parent.find('.remove').append(remove);
-				
+
 				remove.click(function() {removeAttachmentFile(remove.parent().parent(), remove_url); return false;});
-				
+
 				fileField.parent().parent().remove();
-				
+
 				parent.after(newFileChooser);
 				initX2FileInput();
-				
+
 			} else {
 				fileField.parent().parent().parent().find('.error').html(response['message']);
 				fileField.val("");
 			}
-			
+
 			// Del the iframe...
 			setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
 		}
@@ -339,7 +340,7 @@ function fileUpload(form, fileField, action_url, remove_url) {
 	form.setAttribute("encoding", "multipart/form-data");
 
 	// Submit the form...
-	form.submit(); 
+	form.submit();
 }
 
 // remove an attachment that is stored on the server as a temp file
@@ -362,23 +363,23 @@ function initX2FileInput() {
 	}, function() {
 		$('input.x2-file-input[type=file]').next().removeClass('hover');
 	});
-	
+
 	$('input.x2-file-input[type=file]').mousedown(function() {
 		$('input.x2-file-input[type=file]').next().removeClass('hover');
 		$('input.x2-file-input[type=file]').next().addClass('active');
 	});
-	
+
 	$('body').mouseup(function() {
 		$('input.x2-file-input[type=file]').next().removeClass('active');
 	});
-	
+
 	// position the saving icon for uploading files
 	// width
 	var chooseFileButtonCenter = parseInt($('input.x2-file-input[type=file]').css('width'), 10)/2;
 	var halfIconWidth = parseInt($('#choose-file-saving-icon').css('width'), 10)/2;
 	var iconLeft = chooseFileButtonCenter - halfIconWidth;
 	$('#choose-file-saving-icon').css('left', iconLeft + 'px');
-	
+
 	// height
 	var chooseFileButtonCenter = parseInt($('input.x2-file-input[type=file]').css('height'), 10)/2;
 	var halfIconHeight = parseInt($('#choose-file-saving-icon').height(), 10)/2;

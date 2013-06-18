@@ -44,6 +44,8 @@ Yii::import('application.components.x2flow.triggers.*');
 class StudioController extends x2base {
 	// Declares class-based actions.
 
+	public $modelClass = 'X2Flow';
+
 
 	// public $layout = '//layouts/column1';
 	public function filters() {
@@ -196,17 +198,5 @@ class StudioController extends x2base {
 			$fields[] = $data;
 		}
 		echo CJSON::encode($fields);
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 *
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer $id the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		if(null === $model = CActiveRecord::model('X2Flow')->findByPk((int)$id))
-			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
-		return $model;
 	}
 }

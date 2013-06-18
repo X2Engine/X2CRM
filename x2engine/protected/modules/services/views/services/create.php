@@ -49,9 +49,9 @@ $createContactUrl = $this->createUrl('/contacts/create');
 $contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact'));
 
 Yii::app()->clientScript->registerScript('create-model', "
-	$(function() {		
+	$(function() {
 		// init create contact button
-		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Services', '{$model->id}', '', '', '', '', $contactTooltip);
+		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Services', '{$model->id}', '', '', '', '', $contactTooltip, '', '', '');
 	});
 ");
 ?>

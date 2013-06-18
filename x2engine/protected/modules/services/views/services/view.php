@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
- 
+
 $authParams['assignedTo']=$model->assignedTo;
 $menuItems = array(
 	array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
@@ -45,7 +45,13 @@ $menuItems = array(
 	array('label'=>Yii::t('app','Attach a File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
 );
-
+$modelType = json_encode("Services");
+$modelId = json_encode($model->id);
+Yii::app()->clientScript->registerScript('widgetShowData', "
+$(function() {
+	$('body').data('modelType', $modelType);
+	$('body').data('modelId', $modelId);
+});");
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
@@ -56,7 +62,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<h2><?php echo Yii::t('services','Case {n}',array('{n}'=>$model->id)); ?></h2>
 	<?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){ ?>
 	<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
-	<a class="x2-button icon email right" href="#" onclick="toggleEmailForm(); return false;"><span></span></a>
+	<a class="x2-button icon email right" href="#" onclick="toggleEmailForm(); return false;" <?php if(empty($model->contactId)){echo ' style="display:none"';}?>><span></span></a>
 	<?php //} ?>
 </div>
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -92,7 +98,7 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 	</div>
 <?php } ?>
 
-<?php 
+<?php
 $this->endWidget();
 
 if($model->contactId) { // every service case should have a contact associated with it
@@ -117,23 +123,18 @@ if($model->contactId) { // every service case should have a contact associated w
 <?php $this->widget('Attachments',array('associationType'=>'services','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php
-if(isset($contact)) {
-	// $contact = Contacts::model()->findByPk($model->contactId);
-	// if($contact) { // if associated contact exists, setup inline email form
-		$this->widget('InlineEmailForm',
-			array(
-				'attributes'=>array(
-					'to'=>'"'.$contact->name.'" <'.$contact->email.'>, ',
-					// 'subject'=>'hi',
-					// 'redirect'=>'contacts/'.$model->id,
-					'modelName'=>'Services',
-					'modelId'=>$model->id,
-				),
-				'startHidden'=>true,
-			)
-		);
-	// }
-}
+$to = null;
+if(isset($contact))
+	$to = '"'.$contact->name.'" <'.$contact->email.'>, ';
+$this->widget('InlineEmailForm', array(
+	'attributes' => array(
+		'to' => $to,
+		'modelName' => 'Services',
+		'modelId' => $model->id,
+	),
+	'startHidden' => true,
+		)
+);
 ?>
 
 </div>

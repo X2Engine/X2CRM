@@ -35,14 +35,13 @@
  *****************************************************************************************/
 
 /**
- *  The Quotes module lets user's send people a quote with a list of products. Quotes can be converted to invoices.
+ * The Quotes module lets users send people a quote with a list of products. Quotes can be converted to invoices.
  *
- *  Quotes can be created, updated, deleted, and converted into invoices from the contacts view. The code
- *  for that is in the file components/InlineQuotes.php and is heavily based on ajax calls to this controller.
- *  This controller includes functions actionQuickCreate, actionQuickDelete, and actionQuickUpdate which should be called via
- *  ajax. Those functions then call the components/InlineQuotes.php which returns a list of quotes to the client browser
- *  that made the ajax call. The function actionConvertToInvoice handles both ajax and non-ajax calls. If called via ajax,
- *  it will return the list of quotes for the contact id passed in the ajax call.
+ * Quotes can be created, updated, deleted, and converted into invoices from the contacts view. The code
+ * for that is in the file components/InlineQuotes.php and is heavily based on ajax calls to this controller.
+ *
+ * The function actionConvertToInvoice handles both ajax and non-ajax calls. If called via ajax,
+ * it will return the list of quotes for the contact id passed in the ajax call.
  *
  * @property Quote $model Model class being dealt with.
  * @package X2CRM.modules.quotes.controllers
@@ -50,10 +49,8 @@
  */
 class QuotesController extends x2base {
 
-	private $_model;
-
 	public $modelClass = 'Quote';
-		
+
 	public function accessRules() {
 		return array(
 			array('allow',
@@ -73,7 +70,7 @@ class QuotesController extends x2base {
 			),
 		);
 	}
-		
+
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -81,9 +78,8 @@ class QuotesController extends x2base {
 	public function actionView($id){
 		$type = 'quotes';
 		$model = $this->getModel($id);
-		// Just call the magic getter to grab the contact record. That avoids
-		// nonsense later when attempting to use the contact in the email
-		// template:
+		// The following line is for compatibility with associatedContacts in
+		// the legacy format.
 		$model->contact;
 		// Now it's safe to turn it into links (the way it has always been done)
 		$contactId = $model->associatedContacts;
@@ -94,9 +90,9 @@ class QuotesController extends x2base {
 			'contactId' => $contactId
 		));
 	}
-	
+
 	public function actionShareQuote($id){
-		
+
 		$model=$this->getModel($id);
 		$body="\n\n\n\n".Yii::t('quotes','Quote Record Details')." \n
 ".Yii::t('quotes','Name').": $model->name
@@ -105,14 +101,14 @@ class QuotesController extends x2base {
 ".Yii::t('quotes','Lead Source').": $model->leadSource
 ".Yii::t('quotes','Probability').": $model->probability
 ".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/quotes/'.$model->id);
-		
+
 		$body = trim($body);
 
 		$errors = array();
 		$status = array();
 		$email = '';
 		if(isset($_POST['email'], $_POST['body'])){
-		
+
 			$subject = Yii::t('quotes','Quote Record Details');
 			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
@@ -121,7 +117,7 @@ class QuotesController extends x2base {
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
-			
+
 			if(empty($errors))
 				$status = $this->sendUserEmail($email,$subject,$body);
 
@@ -151,8 +147,18 @@ class QuotesController extends x2base {
 	 *
 	 * @param bool $quick If true, this indicates the action is being requested via AJAX
 	 */
-	public function actionCreate($quick=false){
+	public function actionCreate($quick=false,$duplicate = false){
 		$model = new Quote;
+		if($duplicate) {
+			$copiedModel = Quote::model()->findByPk($duplicate);
+			if(!empty($copiedModel)) {
+				foreach($copiedModel->attributes as $name => $value)
+					if($name != 'id')
+						$model->$name = $value;
+				$model->lineItems = $copiedModel->lineItems;
+			}
+		}
+
 		$users = User::getNames();
 
 		if($quick && !Yii::app()->request->isAjaxRequest)
@@ -172,6 +178,8 @@ class QuotesController extends x2base {
 			$model->lastUpdated = $model->createDate;
 			$model->createdBy = Yii::app()->user->name;
 			$model->updatedBy = $model->createdBy;
+			if(empty($model->name))
+				$model->name = '';
 			if(isset($_POST['lineitem']))
 				$model->lineItems = $_POST['lineitem'];
 			if(!$model->hasLineItemErrors){
@@ -193,7 +201,7 @@ class QuotesController extends x2base {
 			'users' => $users,
 			'products' => $products,
 			'quick' => $quick,
-			
+
 		);
 		if(!$quick)
 			$this->render('create', $viewData);
@@ -206,7 +214,7 @@ class QuotesController extends x2base {
 			$this->renderPartial('create', $viewData);
 		}
 	}
-	
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -251,7 +259,7 @@ class QuotesController extends x2base {
 			$this->renderPartial('update', $viewData);
 		}
 	}
-	
+
 	/**
 	 * Print a quote using a template or the legacy print view.
 	 */
@@ -295,7 +303,7 @@ class QuotesController extends x2base {
 		$model=new Quote('search');
 		$this->render('index', array('model'=>$model));
 	}
-	
+
 	/**
 	 * Lists all models.
 	 *
@@ -307,30 +315,6 @@ class QuotesController extends x2base {
 	public function actionIndexInvoice() {
 		$model=new Quote('searchInvoice');
 		$this->render('indexInvoice', array('model'=>$model));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded. Note, it is assumed that
-	 *	when this value is null, {@link _model} is set already; otherwise there's
-	 *	nothing that can be done to correctly resolve the model.
-	 */
-	public function getModel($id=null){
-		if(!isset($this->_model)) {
-			if(empty($id)) // Should not happen.
-				$this->redirect('index');
-			else {
-				$this->_model = Quote::model()->findByPk((int) $id);
-			}
-			if($this->_model === null)
-				throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
-		} else if($this->_model->id != $id && !empty($id)) {
-			// Load a different record
-			$this->_model = null;
-			return $this->getModel($id);
-		}
-		return $this->_model;
 	}
 
 	public function delete($id){
@@ -354,14 +338,14 @@ class QuotesController extends x2base {
 			$model->delete();
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
-			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser			
+			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
-		
+
 	/**
 	 *  Convert the Quote into an Invoice
-	 *  An invoice is a quote with field type='invoice'. The only difference is that 
+	 *  An invoice is a quote with field type='invoice'. The only difference is that
 	 *  when listing, printing, or emailing an invoice, we call it an invoice instead
 	 *  of a quote.
 	 *
@@ -370,13 +354,13 @@ class QuotesController extends x2base {
 	 */
 	public function actionConvertToInvoice($id) {
 		$model=$this->getModel($id); // get model
-		
+
 		// convert to invoice
 		$model->type = 'invoice';
 		$model->invoiceCreateDate = time();
-				
+
 		// set invoice status to the top choice in the invoice status drop down
-		$field = $model->getField('invoiceStatus'); 
+		$field = $model->getField('invoiceStatus');
 		if($field) {
 			$dropDownId = $field->linkType;
 			if($dropDownId) {
@@ -390,9 +374,9 @@ class QuotesController extends x2base {
 				}
 			}
 		}
-		
+
 		$model->update();
-		
+
 		if(isset($_GET['contactId'])) { // ajax request from a contact view, don't reload page, instead return a list of quotes for this contact
 			if(isset($_GET['contactId'])) {
 				$contact = X2Model::model('Contacts')->findByPk($_GET['contactId']);
@@ -403,7 +387,7 @@ class QuotesController extends x2base {
 				}
 			}
 		}
-		
+
 		$this->redirect(array('view','id'=>$model->id)); // view quote
 	}
 
@@ -535,7 +519,7 @@ class QuotesController extends x2base {
 
 	/**
 	 * Obtain the markup for the inline quotes widget.
-	 * 
+	 *
 	 * @param type $contactId Contact ID to use for displaying quotes
 	 */
 	public function actionViewInline($contactId){
@@ -646,11 +630,11 @@ class QuotesController extends x2base {
 		    $productNames[$product->id] = $product->name;
 		}
 
-		
+
 
 	    $model->lastUpdated = time();
 	    $model->updatedBy = Yii::app()->user->name;
-		
+
 		// get products
 		if(isset($_POST['ExistingProducts'])) {
 		    $ids = $_POST['ExistingProducts']['id'];
@@ -708,7 +692,7 @@ class QuotesController extends x2base {
 	   	    }
 	   	}
 
-		
+
 
 
 	   	$contact = X2Model::model('Contacts')->findByPk($_POST['contactId']);

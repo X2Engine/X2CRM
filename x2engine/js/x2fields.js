@@ -88,7 +88,7 @@ x2.fieldUtils = {
 			case 'boolean':
 				var ops = ['=']; break;
 			case 'visibility':
-				var ops = ['<','>','contains','noContains','list','notList']; break;
+				var ops = ['=','list','notList']; break;
 			case 'link':
 				var ops = ['=','<>','empty','notEmpty']; break;
 			case 'dropdown':

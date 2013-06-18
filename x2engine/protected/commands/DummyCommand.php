@@ -1,5 +1,5 @@
 <?php
-
+Yii::import('application.commands.*');
 
 /**
  * A test area for executing experimental PHP code inside of a Yii run environment.

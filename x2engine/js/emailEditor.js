@@ -105,18 +105,18 @@ function setupEmailAttachments(droppableId) {
 				'type': 'hidden',
 				'name': 'AttachmentFiles[id][]',
 				'class': 'AttachmentFiles',
-				'value': mediaId, // name of temp file
+				'value': mediaId // name of temp file
 			});		
 
 			var temp = $('<input>', { 
 				'type': 'hidden',
 				'name': 'AttachmentFiles[temp][]',
-				'value': false, // indicates that this is not a temp file
+				'value': false // indicates that this is not a temp file
 			});
 			
 			var remove = $("<a>", {
 				'href': "#",
-				'html': "[x]",
+				'html': "[x]"
 			});
 
 			var attachment = $('.next-attachment');

@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.contacts.controllers 
+ * @package X2CRM.modules.contacts.controllers
  */
 class ContactsController extends x2base {
 
@@ -132,17 +132,19 @@ class ContactsController extends x2base {
 	public function actionView($id) {
 		$contact = $this->loadModel($id);
 		
-		if(isset($this->portlets['TimeZone']))
+		if(isset($this->portlets['TimeZone'])) {
+			$this->portlets['TimeZone']['params']['localTime'] = false;
 			$this->portlets['TimeZone']['params']['model'] = &$contact;
+		}
 		if(isset($this->portlets['GoogleMaps']))
 			$this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
 		if($this->checkPermissions($contact,'view')) {
-		
+
 			if(isset($_COOKIE['vcr-list'])){
 				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
             }
-		
+
 			if($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)) {
 				$criteria = new CDbCriteria();
 				$criteria->compare('CONCAT(firstName," ",lastName)', $contact->firstName . " " . $contact->lastName, false, "OR");
@@ -156,7 +158,7 @@ class ContactsController extends x2base {
                     if(!empty($groupLinks))
                         $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-                    $condition .= 'OR (visibility=2 AND assignedTo IN 
+                    $condition .= 'OR (visibility=2 AND assignedTo IN
                         (SELECT username FROM x2_group_to_user WHERE groupId IN
                             (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
                     $criteria->addCondition($condition);
@@ -183,7 +185,7 @@ class ContactsController extends x2base {
 		} else
 			$this->redirect('index');
 	}
-    
+
     public function actionRevisions($id, $timestamp){
         $contact = $this->loadModel($id);
         $changes=X2Model::model('Changelog')->findAll('type="Contacts" AND itemId="'.$contact->id.'" AND timestamp > '.$timestamp.' ORDER BY timestamp DESC');
@@ -198,13 +200,13 @@ class ContactsController extends x2base {
 			$this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
 		if($this->checkPermissions($contact,'view')) {
-		
+
 			if(isset($_COOKIE['vcr-list']))
 				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
-			
+
 			User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
 			parent::view($contact, 'contacts');
-			
+
 		} else
 			$this->redirect('index');
 	}
@@ -227,7 +229,7 @@ class ContactsController extends x2base {
 	}
 
 	/**
-	 * Used for accounts auto-complete method.  May be obsolete. 
+	 * Used for accounts auto-complete method.  May be obsolete.
 	 */
 	public function actionGetTerms() {
 		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
@@ -253,8 +255,11 @@ class ContactsController extends x2base {
 	}
 
 	public function actionGetItems() {
-		$sql = 'SELECT id, city, state, country, email, IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), (SELECT fullname from x2_profile WHERE username=assignedTo) ) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts WHERE firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm ORDER BY firstName ASC';
-		$command = Yii::app()->db->createCommand($sql);  
+        $model=new Contacts('search');
+        $accessLevel=$model->getAccessLevel();
+        $visCriteria=$model->getAccessConditions($accessLevel);
+		$sql = 'SELECT id, city, state, country, email, IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), (SELECT fullname from x2_profile WHERE username=assignedTo) ) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts t WHERE (firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm) AND ('.$visCriteria.') ORDER BY firstName ASC';
+		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'] . '%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
 		$result = $command->queryAll();
@@ -270,7 +275,7 @@ class ContactsController extends x2base {
 			if(!empty($groupLinks))
 				$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-			$condition .= ' OR (visibility=2 AND assignedTo IN 
+			$condition .= ' OR (visibility=2 AND assignedTo IN
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
 				(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().'))))';
 		} else {
@@ -286,7 +291,7 @@ class ContactsController extends x2base {
 			->queryAll();
 		echo CJSON::encode($result);
 	}
-    
+
     public function actionSyncAccount($id){
         $contact=$this->loadModel($id);
         if($contact->hasAttribute('company') && is_numeric($contact->company)){
@@ -302,7 +307,7 @@ class ContactsController extends x2base {
         $contact->save();
         $this->redirect(array('view','id'=>$id));
     }
-    
+
     public function actionGoogleMaps($contactId=null,$params=array(),$loadMap=null){
         if(isset($_POST['contactId']))
             $contactId=$_POST['contactId'];
@@ -314,7 +319,7 @@ class ContactsController extends x2base {
             if(isset($map)){
                 $contactId=$map->contactId;
                 $params=json_decode($map->params,true);
-                
+
             }
         }
         $conditions="TRUE";
@@ -360,7 +365,7 @@ class ContactsController extends x2base {
                 ->queryAll();
         }
         $locationCodes=array();
-        
+
         foreach($locations as $location){
             if(isset($location['lat']) && isset($location['lon'])){
                 $tempArr['lat']=$location['lat'];
@@ -408,7 +413,7 @@ class ContactsController extends x2base {
             'noHeatMap'=>isset($_GET['noHeatMap']) && $_GET['noHeatMap']?true:false,
         ));
     }
-    
+
     public function actionSaveMap(){
         if(isset($_POST['centerLat']) && isset($_POST['centerLng']) && isset($_POST['mapName'])){
             $zoom=$_POST['zoom'];
@@ -417,7 +422,7 @@ class ContactsController extends x2base {
             $contactId=isset($_POST['contactId'])?$_POST['contactId']:'';
             $params=isset($_POST['parameters'])?$_POST['parameters']:array();
             $mapName=$_POST['mapName'];
-            
+
             $map=new Maps;
             $map->name=$mapName;
             $map->owner=Yii::app()->user->getName();
@@ -427,13 +432,13 @@ class ContactsController extends x2base {
             $map->centerLng=$centerLng;
             $map->params=json_encode($params);
             if($map->save()){
-                
+
             }else{
-                
+
             }
         }
     }
-    
+
     public function actionSavedMaps(){
         if(Yii::app()->user->checkAccess('ContactsAdmin')){
             $dataProvider=new CActiveDataProvider('Maps');
@@ -448,7 +453,7 @@ class ContactsController extends x2base {
             'dataProvider'=>$dataProvider,
         ));
     }
-    
+
     public function actionDeleteMap($id){
         $map=Maps::model()->findByPk($id);
 		if (isset($map) && ($map->owner==Yii::app()->user->getName() || Yii::app()->user->checkAccess('ContactsAdmin')) && Yii::app()->request->isPostRequest) {
@@ -456,7 +461,7 @@ class ContactsController extends x2base {
 		}
         $this->redirect('savedMaps');
     }
-    
+
     public function actionUpdateLocation($contactId, $lat, $lon){
         $location=Locations::model()->findByAttributes(array('contactId'=>$contactId));
         if(!isset($location)){
@@ -478,13 +483,13 @@ class ContactsController extends x2base {
 		$users = User::getNames();
 		$model = $this->loadModel($id);
 		$body = "\n\n\n\n" . Yii::t('contacts', 'Contact Record Details') . " <br />
-<br />" . Yii::t('contacts', 'Name') . ": $model->firstName $model->lastName 
-<br />" . Yii::t('contacts', 'E-Mail') . ": $model->email 
-<br />" . Yii::t('contacts', 'Phone') . ": $model->phone 
-<br />" . Yii::t('contacts', 'Account') . ": $model->company 
-<br />" . Yii::t('contacts', 'Address') . ": $model->address 
-<br />$model->city, $model->state $model->zipcode 
-<br />" . Yii::t('contacts', 'Background Info') . ": $model->backgroundInfo 
+<br />" . Yii::t('contacts', 'Name') . ": $model->firstName $model->lastName
+<br />" . Yii::t('contacts', 'E-Mail') . ": $model->email
+<br />" . Yii::t('contacts', 'Phone') . ": $model->phone
+<br />" . Yii::t('contacts', 'Account') . ": $model->company
+<br />" . Yii::t('contacts', 'Address') . ": $model->address
+<br />$model->city, $model->state $model->zipcode
+<br />" . Yii::t('contacts', 'Background Info') . ": $model->backgroundInfo
 <br />" . Yii::t('app', 'Link') . ": " . CHtml::link($model->name, 'http://' . Yii::app()->request->getServerName() . $this->createUrl('/contacts/view/' . $model->id));
 
 		$body = trim($body);
@@ -568,10 +573,12 @@ class ContactsController extends x2base {
 				$model = X2Model::model('Contacts')->findByPk($id);
 			}
 			$model->dupeCheck = 1;
-			
-			if($model->save() && $_POST['ref'] !== 'create' && $_POST['ref'] !== 'update')
-				$this->redirect(array('view','id'=>$model->id));
-			
+            $model->disableBehavior('X2TimestampBehavior');
+			if($model->save() && $_POST['ref'] !== 'create' && $_POST['ref'] !== 'update'){
+				echo $model->id;
+                return;
+            }
+
 			// if($_POST['ref']=='create') {
 				// $this->create($model, $temp, 1);
 			// } elseif ($_POST['ref'] == 'update') {
@@ -594,7 +601,7 @@ class ContactsController extends x2base {
 					if(!empty($groupLinks))
 						$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-					$condition .= 'OR (visibility=2 AND assignedTo IN 
+					$condition .= 'OR (visibility=2 AND assignedTo IN
 						(SELECT username FROM x2_group_to_user WHERE groupId IN
 							(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 					$criteria->addCondition($condition);
@@ -625,7 +632,7 @@ class ContactsController extends x2base {
 	}
 
 	public function actionDiscardNew() {
-        
+
 		if(isset($_POST['id'])) {
 			$ref=$_POST['ref'];
 			$action=$_POST['action'];
@@ -636,6 +643,7 @@ class ContactsController extends x2base {
 			}elseif($ref=='create'){
 				$oldRecord=X2Model::model('Contacts')->findByPk($oldId);
 				if(isset($oldRecord)){
+                    $oldRecord->disableBehavior('X2TimestampBehavior');
 					Relationships::model()->deleteAllByAttributes(array('firstType'=>'Contacts','firstId'=>$oldRecord->id));
 					Relationships::model()->deleteAllByAttributes(array('secondType'=>'Contacts','secondId'=>$oldRecord->id));
 					if($action=='hideThis'){
@@ -662,7 +670,9 @@ class ContactsController extends x2base {
 			}elseif(isset($_POST['newId'])){
 				$newId=$_POST['newId'];
 				$oldRecord=X2Model::model('Contacts')->findByPk($oldId);
+                $oldRecord->disableBehavior('X2TimestampBehavior');
 				$newRecord=Contacts::model()->findByPk($newId);
+                $newRecord->disableBehavior('X2TimestampBehavior');
 				$newRecord->dupeCheck=1;
 				$newRecord->save();
 				if(is_null($action)){
@@ -671,7 +681,7 @@ class ContactsController extends x2base {
 					return;
 				}else{
 					if(isset($oldRecord)){
-						 
+
 						if($action=='hideThis'){
 							$oldRecord->dupeCheck=1;
 							$oldRecord->assignedTo='Anyone';
@@ -699,7 +709,7 @@ class ContactsController extends x2base {
 			}
 		}
 	}
- 
+
 	// Controller/action wrapper for create()
 	public function actionCreate() {
 		$model = new Contacts;
@@ -730,7 +740,7 @@ class ContactsController extends x2base {
 					$newWebsite = '';
 					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
 						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Contacts', $model->id);
-						
+
 						if($_POST['ModelName'] == 'Accounts') {
 							$account = Accounts::model()->findByPk($_POST['ModelId']);
 							if($account) {
@@ -745,7 +755,7 @@ class ContactsController extends x2base {
 									$newPhone = $account->phone;
 									$changed = true;
 								}
-								
+
 								if($changed)
 									$account->update();
 							}
@@ -759,9 +769,9 @@ class ContactsController extends x2base {
 								}
 							}
 						}
-						
+
 					}
-			
+
 					echo json_encode(
 						array(
 							'status'=>'success',
@@ -785,7 +795,7 @@ class ContactsController extends x2base {
 						if(!empty($groupLinks))
 							$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-						$condition .= 'OR (visibility=2 AND assignedTo IN 
+						$condition .= 'OR (visibility=2 AND assignedTo IN
 							(SELECT username FROM x2_group_to_user WHERE groupId IN
 								(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 						$criteria->addCondition($condition);
@@ -810,9 +820,9 @@ class ContactsController extends x2base {
 				}
 			}
 		}
-		
+
 		if($renderFlag) {
-		
+
 			if(isset($_POST['x2ajax'])) {
 				Yii::app()->clientScript->scriptMap['*.js'] = false;
 				Yii::app()->clientScript->scriptMap['*.css'] = false;
@@ -860,37 +870,37 @@ class ContactsController extends x2base {
 
 /* 	// Updates a contact record
 	public function update($model, $oldAttributes, $api) {
-        
+
 		if($api == 0)
 			parent::update($model, $oldAttributes, $api);
 		else
 			return parent::update($model, $oldAttributes, $api);
 	} */
 
-	
+
 	public function actionTrigger() {
 		die();
 		$item = new X2FlowItem;
 		$item->type = 'workflow_complete';
-	
+
 		var_dump($item->getParamRules());
 		die();
 		// $t0 = microtime(true);
 		// for($i=0;$i<10000;$i++)
 			// time();
-		
-		
+
+
 		// echo (microtime(true) - $t0);
 		// die();
-	
-	
-	
+
+
+
 		set_time_limit(1);
 
 		$str = '{a+b} a c,  {a+5}%10 c/ab2 * {8.333/ 0.3}-{apples.sauce}';
 		// $str = '{}a{b} {apple}{sauce} + {a} and {apple.sauce}! ';
-		
-		
+
+
 		$str2 = '{a+b} a c e, {a+5}%10 c/ab2 * {8.333/ 0.3}-{apples.sauce}';
 		var_dump($str);
 		var_dump($str2);
@@ -898,24 +908,24 @@ class ContactsController extends x2base {
 		var_dump($diff);
 		// $diff = new FineDiff($str,$str2,FineDiff::$wordGranularity);
 		// var_dump($diff->edits);
-		
+
 		var_dump(FineDiff::renderToTextFromOpcodes($str,$diff));
-		
+
 		// die();
-		
-		
+
+
 		var_dump($str);
-		
+
 		// $tokens = self::tokenize($str);
 		$tokens = X2FlowParam::parseExpressionTree($str);
-		
+
 
 		var_dump($tokens);
-		
+
 		die();
 
-		
-		
+
+
 		// $data = array('{account.createDate} +5 days');
 		$attr = array('lastUpdated'=>time(),'account'=>23);
 
@@ -926,19 +936,19 @@ class ContactsController extends x2base {
 		$value = '{lastUpdated} 2 days ago';
 		$matches = array();
 		preg_match('/{(\w+|\w+.\w+)}/',$value,$matches);	// format can be either "{field}" or "{linkField.field}"
-		
-		
+
+
 
 		// if($type === 'timestamp') {
 		if(count($matches) > 1) {
 			$value = preg_replace('/{.+}/','',$value);	// remove variables (for date/time fields)
-			
-			
+
+
 			if(isset($attr[$matches[1]])) {
-			
+
 				// $timestamp = getAttribute($matches[1]); //$attr[$matches[1]];
 				$timestamp = $attr[$matches[1]];
-			
+
 				if(trim($value) === '')
 					$date = $timestamp;
 				else
@@ -953,10 +963,10 @@ class ContactsController extends x2base {
 		// }
 
 	}
-	
-	
-	
-	
+
+
+
+
 	// Controller/action wrapper for update()
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
@@ -988,7 +998,7 @@ class ContactsController extends x2base {
 					if(!empty($groupLinks))
 						$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-					$condition .= 'OR (visibility=2 AND assignedTo IN 
+					$condition .= 'OR (visibility=2 AND assignedTo IN
 						(SELECT username FROM x2_group_to_user WHERE groupId IN
 							(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 					$criteria->addCondition($condition);
@@ -1019,7 +1029,7 @@ class ContactsController extends x2base {
 			}
 		}
 		if($renderFlag) {
-		
+
 			if(isset($_POST['x2ajax'])) {
 				Yii::app()->clientScript->scriptMap['*.js'] = false;
 				Yii::app()->clientScript->scriptMap['*.css'] = false;
@@ -1055,20 +1065,20 @@ class ContactsController extends x2base {
 			if(!empty($groupLinks))
 				$condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-			$condition .= 'OR (visibility=2 AND assignedTo IN 
+			$condition .= 'OR (visibility=2 AND assignedTo IN
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
 					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 			$criteria->addCondition($condition);
 		}
-		
+
 		$perPage = ProfileChild::getResultsPerPage();
-		
+
 		$criteria->offset = isset($_GET['page'])? $_GET['page'] * $perPage - 3 : -3;
 		$criteria->limit = $perPage;
 		$criteria->order = 'createDate DESC';
-		
+
 		$contactLists = new CActiveDataProvider('X2List',array('criteria'=>$criteria));
-		
+
 		$totalContacts = X2Model::model('Contacts')->count();
 		$totalMyContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '"');
 		$totalNewContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '" AND createDate >= ' . mktime(0, 0, 0));
@@ -1113,12 +1123,12 @@ class ContactsController extends x2base {
 			$myContacts,
 			$newContacts,
 		);
-		
+
 		$dataProvider = new CArrayDataProvider(array_merge($contactListData,$contactLists->getData()),array(
 			'pagination' => array('pageSize'=>$perPage),
 			'totalItemCount' => $contactLists->getTotalItemCount()+3,
 		));
-		
+
 		$this->render('listIndex', array(
 			'contactLists' => $dataProvider,
 		));
@@ -1256,7 +1266,7 @@ class ContactsController extends x2base {
 
 						for ($i = 0; $i < count($attributes); $i++) { // create new criteria
 							if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
+									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != ''
                                 $fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
                                 if(isset($fieldRef) && $fieldRef->type=='link'){
                                     $lookup=X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
@@ -1284,7 +1294,7 @@ class ContactsController extends x2base {
 			$default->value = '';
 			$default->attribute = '';
 			$default->comparison = 'contains';
-			$criteriaModels[] = $default; 
+			$criteriaModels[] = $default;
 		}
 
 		$this->render('createList', array(
@@ -1345,7 +1355,7 @@ class ContactsController extends x2base {
 
 						for ($i = 0; $i < count($attributes); $i++) { // create new criteria
 							if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != '' 
+									&& array_key_exists($comparisons[$i], $comparisonList)) {  //&& $values[$i] != ''
 								$fieldRef=Fields::model()->findByAttributes(array('modelName'=>'Contacts','fieldName'=>$attributes[$i]));
 								if(isset($fieldRef) && $fieldRef->type=='link'){
 									$lookup=X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name'=>$values[$i]));
@@ -1398,15 +1408,15 @@ class ContactsController extends x2base {
 	}
 
 	public function actionAddToList() {
-		
+
 		if(isset($_POST['gvSelection'], $_POST['listId']) && !empty($_POST['gvSelection']) && is_array($_POST['gvSelection'])) {
-			
+
 			foreach($_POST['gvSelection'] as &$contactId)
 				if(!ctype_digit((string)$contactId))
 					throw new CHttpException(400, Yii::t('app','Invalid selection.'));
-			
+
 			$list = CActiveRecord::model('X2List')->findByPk($_POST['listId']);
-			
+
 			// check permissions
 			if($list !== null && $this->checkPermissions($list,'edit')) {
 				$list->addIds($_POST['gvSelection']);
@@ -1430,7 +1440,7 @@ class ContactsController extends x2base {
 			// check permissions
 			if($list !== null && $this->checkPermissions($list,'edit'))
 				$list->removeIds($_POST['gvSelection']);
-			
+
 			echo 'success';
 		}
 	}
@@ -1596,7 +1606,7 @@ class ContactsController extends x2base {
 //		$this->render('importContacts');
 //	}
 
-	
+
 
 //	private function import($file) {
 //		$arr = file($file);
@@ -1628,14 +1638,14 @@ class ContactsController extends x2base {
 //			$model->country = $this->stripquotes($pieces[14]);
 //
 //			if($model->save()) {
-//			   
+//
 //			}
 //		}
 //		unlink($file);
 //		$this->redirect('index');
 //	}
-	
-	
+
+
 
 	public function actionImportExcel() {
 		function createImportMap($attributes,$meta){
@@ -1679,7 +1689,7 @@ class ContactsController extends x2base {
 						$_SESSION['importMap'][$attribute]=$metaValue;
 				}
 			}
-			
+
 		}
 		if(isset($_FILES['contacts'])) {
 			$temp = CUploadedFile::getInstanceByName('contacts');
@@ -1716,9 +1726,9 @@ class ContactsController extends x2base {
             $_SESSION['created']=0;
 			$_SESSION['fields']=X2Model::model('Contacts')->getFields(true);
 			$_SESSION['x2attributes']=$x2attributes;
-			
+
 			createImportMap($x2attributes,$meta);
-			
+
 			$importMap=$_SESSION['importMap'];
 			$importMap=array_flip($importMap);
 			$sampleRecords=array();
@@ -1737,7 +1747,7 @@ class ContactsController extends x2base {
 				}
 			}
 			fclose($fp);
-            
+
 			$this->render('processContacts',array(
 				'attributes'=>$x2attributes,
 				'meta'=>$meta,
@@ -1756,7 +1766,7 @@ class ContactsController extends x2base {
             ));
 		}
 	}
-	
+
 	public function actionPrepareImport(){
 		if(isset($_POST['attributes']) && isset($_POST['keys'])){
 			$keys=$_POST['keys'];
@@ -1840,7 +1850,7 @@ class ContactsController extends x2base {
 			}
 		}
 	}
-	
+
 	public function actionCleanUpImport(){
 		unset($_SESSION['tags']);
 		unset($_SESSION['override']);
@@ -1859,7 +1869,7 @@ class ContactsController extends x2base {
 			unlink('contacts.csv');
 		}
 	}
-	
+
 	public function actionImportRecords() {
 		if(isset($_POST['count']) && file_exists('contacts.csv')){
 			$count=$_POST['count'];
@@ -1939,32 +1949,36 @@ class ContactsController extends x2base {
 										}
 									}
 									break;
+                                case "dateTime":
 								case "date":
-									if(is_numeric($importAttributes[$attribute])){
-										$model->$importMap[$attribute]=$importAttributes[$attribute];
-									}elseif(strtotime($importAttributes[$attribute])!==false){
+									if(strtotime($importAttributes[$attribute])!==false){
 										$model->$importMap[$attribute]=strtotime($importAttributes[$attribute]);
+									}elseif(is_numeric($importAttributes[$attribute])){
+										$model->$importMap[$attribute]=$importAttributes[$attribute];
 									}else{
 									}
 									break;
 								default:
 									$model->$importMap[$attribute]=$importAttributes[$attribute];
 							}
-							
+
 							$_POST[$importMap[$attribute]]=$model->$importMap[$attribute];
 						}
 					}
 					if(empty($model->visibility) && ($model->visibility!==0 || $model->visibility!=="0"))
 						$model->visibility=1;
-					if(empty($model->createDate)){
-						$model->createDate=time();
-					}
-					if(empty($model->lastUpdated)){
-						$model->lastUpdated=time();
-					}
-					if(empty($model->lastActivity)){
-						$model->lastActivity=time();
-					}
+                    if(!empty($model->createDate) || !empty($model->lastUpdated) || !empty($model->lastActivity)){
+						$model->disableBehavior('X2TimestampBehavior');
+                        if(empty($model->createDate)){
+                            $model->createDate=time();
+                        }
+                        if(empty($model->lastUpdated)){
+                            $model->lastUpdated=time();
+                        }
+                        if(empty($model->lastActivity)){
+                            $model->lastActivity=time();
+                        }
+                    }
 					if($_SESSION['leadRouting']==1){
 						$assignee = $this->getNextAssignee();
 						if ($assignee == "Anyone")
@@ -2000,7 +2014,7 @@ class ContactsController extends x2base {
 									$importLink->modelId=$relationship->secondId;
 									$importLink->importId=$_SESSION['importId'];
 									$importLink->timestamp=time();
-									$importLink->save(); 
+									$importLink->save();
 								}
 							}
 							foreach($_SESSION['tags'] as $tag){
@@ -2126,7 +2140,7 @@ class ContactsController extends x2base {
             'listName'=>$listName,
         ));
     }
-    
+
     public function actionExportSet($page){
         $file = $_SESSION['contactExportFile'];
         $fields=X2Model::model('Contacts')->getFields();
@@ -2175,25 +2189,12 @@ class ContactsController extends x2base {
         }
     }
 
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model = X2Model::model('Contacts')->findByPk((int) $id);
-		if($model === null)
-			throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
-		return $model;
-	}
-
 	public function actionDelete($id) {
 		$model = $this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
 			$model->clearTags();
 			$model->delete();
-			
+
 			Actions::model()->deleteAllByAttributes(array('associationType'=>'contacts','associationId'=>$id));
 		}
 		else
@@ -2237,7 +2238,7 @@ class ContactsController extends x2base {
 
 		$this->renderPartial('qtip', array('contact' => $contact));
 	}
-	
+
 	public function actionCleanFailedLeads() {
 		$file = 'failed_leads.csv';
 
@@ -2256,15 +2257,15 @@ class ContactsController extends x2base {
 			unlink($file);
 		}
 	}
-	
-	
+
+
 	public function actionWeblead() {
-	
+
 		if(file_exists(__DIR__ . '/pro/actionWeblead.php')) {
 			include(__DIR__ . '/pro/actionWeblead.php');
 			return;
 		}
-		
+
 		if(isset($_POST['Contacts'])) {
 			$model = new Contacts;
             $model->createEvent=false;
@@ -2275,8 +2276,8 @@ class ContactsController extends x2base {
 			//use the submitted info to create an action
 			$action = new Actions;
 			$action->actionDescription = Yii::t('contacts','Web Lead')
-				."\n\n". Yii::t('contacts','Name') .': '. $model->firstName ." ". $model->lastName 
-				."\n". Yii::t('contacts','Email') .": ". $model->email ."\n". Yii::t('contacts','Phone') .": ". $model->phone 
+				."\n\n". Yii::t('contacts','Name') .': '. $model->firstName ." ". $model->lastName
+				."\n". Yii::t('contacts','Email') .": ". $model->email ."\n". Yii::t('contacts','Phone') .": ". $model->phone
 				."\n". Yii::t('contacts','Background Info') .": ". $model->backgroundInfo;
 
 			//require email field, check format
@@ -2290,15 +2291,15 @@ class ContactsController extends x2base {
             if(!empty($model->email)){
                 $criteria->compare('email', $model->email, false, "OR");
             }
-			
+
 			$duplicates = $model->findAll($criteria);
-			
+
 			if(count($duplicates) > 0) {
 				//use existing record, update background info
 				$backgroundInfo = $model->backgroundInfo;
 				$model = $duplicates[0];
 				$model->backgroundInfo .= "\n". $backgroundInfo;
-				
+
 				$success = $model->save();
 			} else {
 				//create new record
@@ -2307,7 +2308,7 @@ class ContactsController extends x2base {
 				$model->createDate = $now;
 				$model->lastUpdated = $now;
 				$model->updatedBy = 'admin';
-				
+
 				// $success = $this->create($model, $oldAttributes, 1);
 				$success = $model->save();
 				//TODO: upload profile picture url from webleadfb
@@ -2315,7 +2316,7 @@ class ContactsController extends x2base {
 
 			if($success) {
 				X2Flow::trigger('WebleadTrigger',array('model'=>$model));
-				
+
 				// add tags
 				if(!empty($_POST['tags'])) {
 					$taglist = explode(',', $_POST['tags']);
@@ -2333,7 +2334,7 @@ class ContactsController extends x2base {
 							$tagModel->tag = $tag;
 							$tagModel->itemName = $model->name;
 							$tagModel->save();
-							
+
 							X2Flow::trigger('RecordTagAddTrigger',array(
 								'model'=>$model,
 								'tag'=>$tag,
@@ -2356,7 +2357,7 @@ class ContactsController extends x2base {
 			$action->complete= 'Yes';
 			$action->updatedBy = 'admin';
 			$action->save();
-            
+
 			$event=new Events;
 			$event->associationType='Contacts';
 			$event->associationId=$model->id;
@@ -2382,7 +2383,7 @@ class ContactsController extends x2base {
 					$status = $this->sendUserEmail($address, $subject, $message);
 				}
 			}
-			
+
 			$this->renderPartial('webleadSubmit');
 		} else {
 			//sanitize get params
@@ -2390,8 +2391,8 @@ class ContactsController extends x2base {
 			$_GET = array_intersect_key($_GET, array_flip($whitelist));
 			//restrict param values, alphanumeric, # for color vals, comma for tag list
 			$_GET = preg_replace('/[^a-zA-Z0-9#,]/', '', $_GET);
-	
+
 			$this->renderPartial('webleadForm', array('type'=>'weblead'));
-		}	
+		}
 	}
 }

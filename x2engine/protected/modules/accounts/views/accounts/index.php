@@ -68,13 +68,10 @@ $('.search-form form').submit(function(){
 <?php
 $this->widget('application.components.X2GridView', array(
 	'id'=>'accounts-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon accounts"><h2>'.Yii::t('accounts','Accounts').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>Yii::t('accounts','Accounts'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -84,10 +81,12 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'accounts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>234,
-		'type'=>108,
-		'annualRevenue'=>128,
-		'phone'=>115,
+		'name' => 184,
+		'type' => 153,
+		'annualRevenue' => 108,
+		'phone' => 115,
+		'lastUpdated' => 77,
+		'assignedTo' => 99,
 	),
 	'specialColumns'=>array(
 		'name'=>array(
@@ -98,5 +97,6 @@ $this->widget('application.components.X2GridView', array(
 		),
 	),
 	'enableControls'=>true,
+	'fullscreen'=>true,
 ));
 ?>

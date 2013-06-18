@@ -136,7 +136,7 @@ $.fn.hideWidget = function() {
 function handleWidgetRightMenuItemClick(menuItem) {
 	$.post($('body').data('showWidgetUrl'), {
 	    	name: menuItem.attr('id'),
-	    	block: 'right',
+	    	block: 'right'
 	    }, 
 	    function(response) {
 	    	window.location.reload(true);

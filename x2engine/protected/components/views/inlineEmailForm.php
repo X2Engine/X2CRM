@@ -77,6 +77,7 @@ if(!empty($model->status)) {
 	));
 	echo $form->hiddenField($model,'modelId');
 	echo $form->hiddenField($model,'modelName');
+    echo CHtml::hiddenField('contactFlag',$contactFlag);
 	?>
 	<div class="row">
 		<div id="inline-email-errors" class="error" style="display:none"></div>
@@ -85,8 +86,8 @@ if(!empty($model->status)) {
 	<div class="row">
 		<?php //echo $form->error($model,'to'); ?>
 		<?php echo $form->label($model,'to', array('class'=>'x2-email-label')); ?>
-		<?php echo $form->textField($model,'to',array('id'=>'email-to','style'=>'width:400px;', 'tabindex'=>'1'));?> 
-		<a href="javascript:void(0)" id="cc-toggle"<?php if(!empty($model->cc)) echo ' style="display:none;"'; ?>>[cc]</a> 
+		<?php echo $form->textField($model,'to',array('id'=>'email-to','style'=>'width:400px;', 'tabindex'=>'1'));?>
+		<a href="javascript:void(0)" id="cc-toggle"<?php if(!empty($model->cc)) echo ' style="display:none;"'; ?>>[cc]</a>
 		<a href="javascript:void(0)" id="bcc-toggle"<?php if(!empty($model->bcc)) echo ' style="display:none;"'; ?>>[bcc]</a>
 	</div>
 	<div class="row" id="cc-row"<?php if(empty($model->cc)) echo ' style="display:none;"'; ?>>
@@ -102,15 +103,19 @@ if(!empty($model->status)) {
 	<div class="row">
 		<?php echo $form->label($model,'subject', array('class'=>'x2-email-label')); ?>
 		<?php echo $form->textField($model,'subject', array('style'=>'width: 265px;', 'tabindex'=>'4')); ?>
-		<?php $templateList = Docs::getEmailTemplates($type); ?>
-		<?php $templateList = array('0'=>Yii::t('docs','Custom Message')) + $templateList; ?>
-		<?php echo $form->label($model,'template', array('class'=>'x2-email-label', 'style'=>'float: none; margin-left: 10px; vertical-align: text-top;')); ?>
-		<?php echo $form->dropDownList($model,'template',$templateList,array('id'=>'email-template')); ?>
+		<?php
+			
+		$templateList = Docs::getEmailTemplates($type);
+		$templateList = array('0' => Yii::t('docs', 'Custom Message')) + $templateList;
+		echo $form->label($model, 'template', array('class' => 'x2-email-label', 'style' => 'float: none; margin-left: 10px; vertical-align: text-top;'));
+		echo $form->dropDownList($model, 'template', $templateList, array('id' => 'email-template'));
+		?>
+
 	</div>
 	<div class="row" id="email-message-box">
 		<?php echo $form->textArea($model,'message',array('id'=>'email-message','style'=>'margin:0;padding:0;')); ?>
 	</div>
-	
+
 	<div class="row" id="email-attachments">
 		<div class="form" style="text-align:left;background:none;overflow:visible;">
 			<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
@@ -143,11 +148,11 @@ if(!empty($model->status)) {
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="row buttons" style="padding-left:0;">
 	<?php
 
-	
+
 	echo CHtml::ajaxSubmitButton(
 		Yii::t('app','Send'),
 		array('inlineEmail','ajax'=>1),
@@ -164,10 +169,10 @@ if(!empty($model->status)) {
 			'onclick'=>'window.inlineEmailEditor.updateElement();',
 		)
 	);
-	
+
 	// if(is_file(__DIR__.'/inlineEmailForm_pro.php'))
 		// include('inlineEmailForm_pro.php');
-		
+
 	echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button right','onclick'=>"toggleEmailForm();return false;")); ?>
 	</div>
 	<?php $this->endWidget(); ?>

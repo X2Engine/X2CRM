@@ -66,7 +66,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 <div class="page-title icon workflow"><h2><span class="no-bold"><?php echo Yii::t('workflow','Workflow:'); ?></span> <?php echo $model->name; ?></h2></div>
-<div style="margin-bottom:30px;width:300px;float:left;">
+<div style="width:300px;float:left;padding:10px;">
 <?php
 
 $workflowStatus = Workflow::getWorkflowStatus($model->id);	// true = include dropdowns
@@ -162,7 +162,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
     </div>
 </div>
 
-<div id="workflow-gridview">
+<div id="workflow-gridview" style="clear:both;">
 <?php
 if(isset($viewStage)){
 	echo Yii::app()->controller->actionGetStageMembers($model->id,$viewStage,Formatter::formatDate($dateRange['start']),Formatter::formatDate($dateRange['end']),$dateRange['range'],$user);

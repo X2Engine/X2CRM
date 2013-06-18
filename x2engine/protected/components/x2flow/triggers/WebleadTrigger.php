@@ -37,9 +37,9 @@
 /**
  * X2FlowTrigger 
  * 
- * @package X2CRM.components.x2flow.actions
+ * @package X2CRM.components.x2flow.triggers
  */
-class WebleadTrigger extends X2FlowTrigger {
+class WebleadTrigger extends BaseTagTrigger {
 	public $title = 'New Web Lead';
 	public $info = 'Triggers when a new contact fills out your web lead capture form.';
 	

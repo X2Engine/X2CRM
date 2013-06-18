@@ -88,6 +88,12 @@ return array(
 			'urlRuleClass'=>'X2UrlRule',
 			'showScriptName'=>!isset($_SERVER['HTTP_MOD_REWRITE']),
 			'rules'=>array(
+				// REST-ful API URLs (IN PROGRESS)
+				'api/tags/<model:[A-Z]\w+>/<id:\d+>/<tag:\w+>' => 'api/tags/model/<model>/id/<id>/tag/<tag>',
+				'api/tags/<model:[A-Z]\w+>/<id:\d+>' => 'api/tags/model/<model>/id/<id>',
+				// Generic restful action; capitalized first letter should always indicate model name
+				// 'api/<model:[A-Z]\w+>/<id:\d+>' => 'api/restful/model/<model>/id/<id>',
+				// 'api/<model:[A-Z]\w+>' => 'api/restful/model/<model>',
 			
 				'gii/<controller>'=>'gii/<controller>',
 			
@@ -109,7 +115,8 @@ return array(
 				'<module:\w+>/<controller:\w+>/<action:\w+>'=>'<module>/<controller>/<action>',
 				'<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>'=>'<module>/<controller>/<action>',
 				
-				'x2touch'=>'mobile/site/home', 
+				'x2touch'=>'mobile/site/home',
+
 				
 				
 				/*
@@ -347,5 +354,6 @@ return array(
 		'buildDate'=>$buildDate,
 		'noSession' => false,
 		'automatedTesting' => false,
+		'supportedCurrencies' => array('USD','EUR','GBP','CAD','JPY','CNY','CHF','INR','BRL')
 	),
 );

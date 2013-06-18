@@ -40,7 +40,7 @@ function dialogStrictLock() {
 var denyBox = $('<div></div>')
     .html('This quote is locked.')
     .dialog({
-    	title: 'Locked', 
+    	title: 'Locked',
     	autoOpen: false,
     	resizable: false,
     	buttons: {
@@ -49,7 +49,7 @@ var denyBox = $('<div></div>')
     		}
     	}
     });
-        
+
 denyBox.dialog('open');
 }
 
@@ -57,7 +57,7 @@ function dialogLock() {
 var confirmBox = $('<div></div>')
     .html('This quote is locked. Are you sure you want to update this quote?')
     .dialog({
-    	title: 'Locked', 
+    	title: 'Locked',
     	autoOpen: false,
     	resizable: false,
     	buttons: {
@@ -74,8 +74,14 @@ confirmBox.dialog('open');
 }
 
 ",CClientScript::POS_HEAD);
-
-if($contactId) { 
+$modelType = json_encode("Quotes");
+$modelId = json_encode($model->id);
+Yii::app()->clientScript->registerScript('widgetShowData', "
+$(function() {
+	$('body').data('modelType', $modelType);
+	$('body').data('modelId', $modelId);
+});");
+if($contactId) {
 	$contact = Contacts::model()->findByPk($contactId); // used to determine if 'Send Email' menu item is displayed
 } else {
   $contact = false;
@@ -109,7 +115,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
 
 <?php if($model->locked) { ?>
 	<?php if($strict && Yii::app()->user->name != 'admin') { ?>
@@ -181,8 +187,8 @@ if($model->type == 'invoice') { ?>
 </div>
 <?php } ?>
 
-<?php 
-  $productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products')); 
+<?php
+  $productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products'));
 ?>
 <div class="x2-layout form-view">
 	<div class="formSection showSection">
@@ -212,10 +218,7 @@ $this->renderPartial('_detailView',
 $this->endWidget();
 ?>
 
-<div class="form">
-	<b><?php echo Yii::t('app', 'Tags'); ?></b>
-	<?php $this->widget('InlineTags', array('model'=>$model)); ?>
-</div>
+<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
 
 <?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
 

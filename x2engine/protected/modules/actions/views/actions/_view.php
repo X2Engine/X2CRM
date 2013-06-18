@@ -34,12 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScript('deleteActionJs',"
+Yii::app()->clientScript->registerScript('deleteActionJs', "
 function deleteAction(actionId) {
 
-	if(confirm('".Yii::t('app','Are you sure you want to delete this item?')."')) {
+	if(confirm('".Yii::t('app', 'Are you sure you want to delete this item?')."')) {
 		$.ajax({
-			url: '" . CHtml::normalizeUrl(array('/actions/actions/delete')) . "/'+actionId+'?ajax=1',
+			url: '".CHtml::normalizeUrl(array('/actions/actions/delete'))."/'+actionId+'?ajax=1',
 			type: 'POST',
 			//data: 'id='+actionId,
 			success: function(response) {
@@ -49,182 +49,187 @@ function deleteAction(actionId) {
 		});
 	}
 }
-",CClientScript::POS_HEAD);
+", CClientScript::POS_HEAD);
 $themeUrl = Yii::app()->theme->getBaseUrl();
-if(empty($data->type)) {
-	if($data->complete=='Yes')
-		$type = 'complete';
-	else if($data->dueDate < time())
-		$type = 'overdue';
-	else
-		$type = 'action';
+if(empty($data->type)){
+    if($data->complete == 'Yes')
+        $type = 'complete';
+    else if($data->dueDate < time())
+        $type = 'overdue';
+    else
+        $type = 'action';
 } else
-	$type = $data->type;
+    $type = $data->type;
 
-if($type == 'workflow') {
+if($type == 'workflow'){
 
-	$workflowRecord = X2Model::model('Workflow')->findByPk($data->workflowId);
-	$stageRecords = X2Model::model('WorkflowStage')->findAllByAttributes(
-		array('workflowId'=>$data->workflowId),
-		new CDbCriteria(array('order'=>'id ASC'))
-	);
+    $workflowRecord = X2Model::model('Workflow')->findByPk($data->workflowId);
+    $stageRecords = X2Model::model('WorkflowStage')->findAllByAttributes(
+            array('workflowId' => $data->workflowId), new CDbCriteria(array('order' => 'id ASC'))
+    );
 
-	// see if this stage even exists; if not, delete this junk
-	if($workflowRecord === null || $data->stageNumber < 1 || $data->stageNumber > count($stageRecords)) {
-		$data->delete();
-		return;
-	}
+    // see if this stage even exists; if not, delete this junk
+    if($workflowRecord === null || $data->stageNumber < 1 || $data->stageNumber > count($stageRecords)){
+        $data->delete();
+        return;
+    }
 }
 
 // if($type == 'call') {
-	// $type = 'note';
-	// $data->type = 'note';
+// $type = 'note';
+// $data->type = 'note';
 // }
-
 ?>
 
 
 
 <div class="view" id="history-<?php echo $data->id; ?>">
-	<!--<div class="deleteButton">
-		<?php //echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button') ?>
-	</div>-->
-	<div class="icon <?php echo $type; ?>"></div>
-	<div class="header">
-		<?php
-		if(empty($data->type) || $data->type=='weblead') {
-			if ($data->complete=='Yes') {
-				echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions','Completed: ')."</span>".Formatter::formatCompleteDate($data->completeDate);
-			} else {
-                if (!empty($data->dueDate)) {
-                    echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Due: ')."</span>" . Actions::parseStatus($data->dueDate) . '</b>';
-                } elseif (!empty($data->createDate)) {
-                    echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Created: ')."</span>" . Formatter::formatLongDateTime($data->createDate) . '</b>';
-                } else {
-                    echo "&nbsp;";
+    <!--<div class="deleteButton">
+<?php //echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button')  ?>
+    </div>-->
+    <div class="icon <?php echo $type; ?>"></div>
+    <div class="header">
+<?php
+if(empty($data->type) || $data->type == 'weblead'){
+    if($data->complete == 'Yes'){
+        echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Completed: ')."</span>".Formatter::formatCompleteDate($data->completeDate);
+    }else{
+        if(!empty($data->dueDate)){
+            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Due: ')."</span>".Actions::parseStatus($data->dueDate).'</b>';
+        }elseif(!empty($data->createDate)){
+            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Created: ')."</span>".Formatter::formatLongDateTime($data->createDate).'</b>';
+        }else{
+            echo "&nbsp;";
+        }
+    }
+}elseif($data->type == 'attachment'){
+    if($data->completedBy == 'Email')
+        echo Yii::t('actions', 'Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
+    else
+        echo Yii::t('actions', 'Attachment:').' '.Formatter::formatCompleteDate($data->completeDate);
+    //User::getUserLinks($data->completedBy);
+
+    echo ' ';
+
+    //if ($data->complete=='Yes')
+    //echo Formatter::formatDate($data->completeDate);
+    //else
+    //echo Actions::parseStatus($data->dueDate);
+} elseif($data->type == 'workflow'){
+    // $actionData = explode(':',$data->actionDescription);
+    echo Yii::t('workflow', 'Workflow:').'<b> '.$workflowRecord->name.'/'.$stageRecords[$data->stageNumber - 1]->name.'</b> ';
+}elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice'))){
+    echo Yii::t('actions', 'Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
+}elseif($data->type == 'quotes'){
+    echo Yii::t('actions', 'Quote:').' '.Formatter::formatCompleteDate($data->createDate);
+}elseif(in_array($data->type, array('emailOpened', 'emailOpened_quote', 'email_opened_invoice'))){
+    echo Yii::t('actions', 'Email Opened:').' '.Formatter::formatCompleteDate($data->completeDate);
+}elseif($data->type == 'webactivity'){
+    echo Yii::t('actions', 'This contact visited your website');
+}elseif($data->type == 'note'){
+    echo Formatter::formatCompleteDate($data->completeDate);
+}elseif($data->type == 'call'){
+    echo Yii::t('actions', 'Call:').' '.Formatter::formatCompleteDate($data->completeDate); //Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
+}elseif($data->type == 'event'){
+    echo '<b>'.CHtml::link(Yii::t('calendar', 'Event').': ', '#', array('class' => 'action-frame-link', 'data-action-id' => $data->id));
+    if($data->allDay){
+        echo Formatter::formatLongDate($data->dueDate);
+        if($data->completeDate)
+            echo ' - '.Formatter::formatLongDate($data->completeDate);
+    } else{
+        echo Formatter::formatLongDateTime($data->dueDate);
+        if($data->completeDate)
+            echo ' - '.Formatter::formatLongDateTime($data->completeDate);
+    }
+    echo '</b>';
+}
+?>
+        <div class="buttons">
+        <?php
+        if(!Yii::app()->user->isGuest){
+            if(empty($data->type) || $data->type == 'weblead'){
+                if($data->complete == 'Yes')
+                    echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Uncomplete.png'), '#', array('class' => 'uncomplete-button', 'title' => $data->id, 'data-action-id' => $data->id));
+                else{
+                    echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Complete.png'), '#', array('class' => 'complete-button', 'title' => $data->id, 'data-action-id' => $data->id));
                 }
-			}
-		} elseif ($data->type == 'attachment') {
-			if($data->completedBy=='Email')
-				echo Yii::t('actions','Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
-			else
-				echo Yii::t('actions','Attachment:').' '.Formatter::formatCompleteDate($data->completeDate);
-				//User::getUserLinks($data->completedBy);
-
-			echo ' ';
-
-			//if ($data->complete=='Yes')
-				//echo Formatter::formatDate($data->completeDate);
-			//else
-				//echo Actions::parseStatus($data->dueDate);
-		} elseif ($data->type == 'workflow') {
-			// $actionData = explode(':',$data->actionDescription);
-			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
-		} elseif(in_array($data->type,array('email','emailFrom','email_quote','email_invoice'))) {
-			echo Yii::t('actions','Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
-		} elseif($data->type == 'quotes') {
-			echo Yii::t('actions','Quote:').' '.Formatter::formatCompleteDate($data->createDate);
-		} elseif(in_array($data->type, array('emailOpened','emailOpened_quote','email_opened_invoice'))) {
-			echo Yii::t('actions', 'Email Opened:'). ' '.Formatter::formatCompleteDate($data->completeDate);
-		} elseif($data->type == 'webactivity') {
-			echo Yii::t('actions','This contact visited your website');
-		} elseif($data->type == 'note') {
-			echo Formatter::formatCompleteDate($data->completeDate);
-		} elseif($data->type == 'call') {
-			echo Yii::t('actions','Call:').' '.Formatter::formatCompleteDate($data->completeDate); //Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
-		} elseif($data->type == 'event') {
-			echo '<b>'.CHtml::link(Yii::t('calendar','Event').': ','#',array('class'=>'action-frame-link','data-action-id'=>$data->id));
-			if($data->allDay) {
-				echo Formatter::formatLongDate($data->dueDate);
-				if($data->completeDate)
-					echo ' - '. Formatter::formatLongDate($data->completeDate);
-			} else {
-				echo Formatter::formatLongDateTime($data->dueDate);
-				if($data->completeDate)
-					echo ' - '. Formatter::formatLongDateTime($data->completeDate);
-			}
-			echo '</b>';
-		}
-		?>
-		<div class="buttons">
-			<?php
-			if (empty($data->type) || $data->type=='weblead') {
-				if ($data->complete=='Yes')
-					echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Uncomplete.png'),'#',array('class'=>'uncomplete-button','title'=>$data->id,'data-action-id'=>$data->id));
-				else {
-					echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Complete.png'),'#',array('class'=>'complete-button','title'=>$data->id,'data-action-id'=>$data->id));
-				}
-			}
-			if ($data->type != 'workflow'){
-				echo $data->type!='attachment'?' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'),array('/actions/actions/update','id'=>$data->id,'redirect'=>1),array()) . ' ':"";
-				echo ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'),'#',array('onclick'=>'deleteAction('.$data->id.'); return false'));
-			}
-			?>
-		</div>
-	</div>
-	<div class="description">
-		<?php
-		if($type=='attachment' && $data->completedBy!='Email')
-			echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription),true,true);
-		else if($type=='workflow') {
-
-			if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)) {
-				if($data->complete == 'Yes')
-					echo ' <b>'.Yii::t('workflow','Completed').'</b> '.date('Y-m-d H:i:s',$data->completeDate);
-				else
-					echo ' <b>'.Yii::t('workflow','Started').'</b> '.date('Y-m-d H:i:s',$data->createDate);
-			}
-			if(isset($data->actionDescription))
-				echo '<br>'.$data->actionDescription;
-
-		} elseif($type=='webactivity') {
-			if(!empty($data->actionDescription))
-				echo $data->actionDescription,'<br>';
-			echo date('Y-m-d H:i:s',$data->completeDate);
-		} elseif(in_array($data->type,array('email','emailFrom','email_quote','email_invoice','emailOpened','emailOpened_quote','emailOpened_invoice'))) {
-
-			$legacy = false;
-			if(!preg_match(InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis'),$data->actionDescription,$matches)) {
-				// Legacy pattern:
-				preg_match('/<b>(.*?)<\/b>(.*)/mis',$data->actionDescription,$matches);
-				$legacy = true;
-			}
-            if(!empty($matches)) {
-                $header = $matches[1];
-				$body = '';
-			} else {
-                $header = "No subject found";
-				$body = "(Error displaying email)";
-			}
-            if($type=='emailOpened'){
-                echo "Contact has opened the following email:<br />";
             }
-			echo $legacy ? '<strong>'.$header.'</strong> '.$body : $header.$body;
-			echo ($legacy ? '<br />':'').CHtml::link('[View email]','#',array('onclick'=>'return false;','id'=>$data->id,'class'=>'email-frame'));
-		} elseif($data->type == 'quotes') {
-			echo CHtml::link('[View quote]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));
-		} else
-			echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription));	// convert LF and CRLF to <br />
-		?>
-	</div>
-	<div class="footer">
-	<?php if(empty($data->type) || $data->type=='weblead' || $data->type=='workflow') {
-		if($data->complete == 'Yes') {
-			echo Yii::t('actions','Completed by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
-		} else {
-			$userLink = User::getUserLinks($data->assignedTo);
-			$userLink = empty($userLink)? Yii::t('actions','Anyone') : $userLink;
-			echo Yii::t('actions','Assigned to {name}',array('{name}'=>$userLink));
-		}
-	} else if($data->type == 'note' || $data->type == 'call' || $data->type == 'emailOpened') {
-		echo User::getUserLinks($data->completedBy);
-		// echo ' '.Formatter::formatDate($data->completeDate);
-	} else if($data->type == 'attachment' && $data->completedBy!='Email') {
-		echo Yii::t('media','Uploaded by {name}',array('{name}'=>User::getUserLinks($data->completedBy)));
-	} else if(in_array($data->type,array('email','emailFrom')) && $data->completedBy!='Email') {
-		echo Yii::t('media',($data->type=='email'?'Sent by {name}':'Sent to {name}'),array('{name}'=>User::getUserLinks($data->completedBy)));
-	}
-	?>
-	</div>
+            if($data->type != 'workflow'){
+                echo $data->type != 'attachment' ? ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/actions/actions/update', 'id' => $data->id, 'redirect' => 1), array()).' ' : "";
+                echo ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('onclick' => 'deleteAction('.$data->id.'); return false'));
+            }
+        }
+        ?>
+        </div>
+    </div>
+    <div class="description">
+<?php
+if($type == 'attachment' && $data->completedBy != 'Email')
+    echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription), true, true);
+else if($type == 'workflow'){
+
+    if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)){
+        if($data->complete == 'Yes')
+            echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.date('Y-m-d H:i:s', $data->completeDate);
+        else
+            echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.date('Y-m-d H:i:s', $data->createDate);
+    }
+    if(isset($data->actionDescription))
+        echo '<br>'.$data->actionDescription;
+} elseif($type == 'webactivity'){
+    if(!empty($data->actionDescription))
+        echo $data->actionDescription, '<br>';
+    echo date('Y-m-d H:i:s', $data->completeDate);
+} elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'emailOpened_invoice'))){
+
+    $legacy = false;
+    if(!preg_match(InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis'), $data->actionDescription, $matches)){
+        // Legacy pattern:
+        preg_match('/<b>(.*?)<\/b>(.*)/mis', $data->actionDescription, $matches);
+        $legacy = true;
+    }
+    if(!empty($matches)){
+        $header = $matches[1];
+        $body = '';
+    }else{
+        $header = "No subject found";
+        $body = "(Error displaying email)";
+    }
+    if($type == 'emailOpened'){
+        echo "Contact has opened the following email:<br />";
+    }
+    echo $legacy ? '<strong>'.$header.'</strong> '.$body : $header.$body;
+    echo ($legacy ? '<br />' : '').CHtml::link('[View email]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
+}elseif($data->type == 'quotes'){
+    echo CHtml::link('[View quote]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));
+} else
+    echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription)); // convert LF and CRLF to <br />
+?>
+    </div>
+    <div class="footer">
+        <?php
+        if(isset($relationshipFlag) && $relationshipFlag){
+            $relString=" | ".X2Model::getModelLink($data->associationId,X2Model::getModelName($data->associationType));
+        }else{
+            $relString="";
+        }
+        if(empty($data->type) || $data->type == 'weblead' || $data->type == 'workflow'){
+            if($data->complete == 'Yes'){
+                echo Yii::t('actions', 'Completed by {name}', array('{name}' => User::getUserLinks($data->completedBy))).$relString;
+            }else{
+                $userLink = User::getUserLinks($data->assignedTo);
+                $userLink = empty($userLink) ? Yii::t('actions', 'Anyone') : $userLink;
+                echo Yii::t('actions', 'Assigned to {name}', array('{name}' => $userLink)).$relString;
+            }
+        }else if($data->type == 'note' || $data->type == 'call' || $data->type == 'emailOpened'){
+            echo $data->completedBy == 'Guest' ? "Guest" : User::getUserLinks($data->completedBy).$relString;
+            // echo ' '.Formatter::formatDate($data->completeDate);
+        }else if($data->type == 'attachment' && $data->completedBy != 'Email'){
+            echo Yii::t('media', 'Uploaded by {name}', array('{name}' => User::getUserLinks($data->completedBy))).$relString;
+        }else if(in_array($data->type, array('email', 'emailFrom')) && $data->completedBy != 'Email'){
+            echo Yii::t('media', ($data->type == 'email' ? 'Sent by {name}' : 'Sent to {name}'), array('{name}' => User::getUserLinks($data->completedBy))).$relString;
+        }
+        ?>
+    </div>
 
 </div>

@@ -41,25 +41,20 @@ $menuItems = array(
 	array('label'=>Yii::t('opportunities','View')),
 	array('label'=>Yii::t('opportunities','Edit Opportunity'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
-	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
 	array('label'=>Yii::t('opportunities','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 );
-
+$modelType = json_encode("Opportunities");
+$modelId = json_encode($model->id);
+Yii::app()->clientScript->registerScript('widgetShowData', "
+$(function() {
+	$('body').data('modelType', $modelType);
+	$('body').data('modelId', $modelId);
+});");
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
-
-if($accountModule->visible) {
-	$createAccountButton = 	array(array('label'=>Yii::t('accounts','Create Account'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-account')));
-	array_splice($menuItems, 6, 0, $createAccountButton);
-}
-
-if($contactModule->visible) {
-	$createContactButton = array(array('label'=>Yii::t('contacts','Create Contact'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-contact')));
-	array_splice($menuItems, 6, 0, $createContactButton);
-}
 
 if($contactModule->visible && $accountModule->visible)
 	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'opportunities'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
@@ -84,7 +79,7 @@ $form = $this->beginWidget('CActiveForm', array(
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Opportunity'));
 $this->endWidget();
 
-$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'opportunity'));
+$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'opportunities'));
 
 // $this->widget('InlineTags', array('model'=>$model));
 
@@ -104,17 +99,22 @@ else
 	$accountName = json_encode('');
 $createContactUrl = $this->createUrl('/contacts/create');
 $createAccountUrl = $this->createUrl('/accounts/create');
+$createOpportunityUrl=$this->createUrl('/opportunities/create');
 $assignedTo = json_encode($model->assignedTo);
+$tooltip = json_encode(Yii::t('opportunities', 'Create a new Opportunity associated with this Opportunity.'));
 $contactTooltip = json_encode(Yii::t('opportunities', 'Create a new Contact associated with this Opportunity.'));
 $accountsTooltip = json_encode(Yii::t('opportunities', 'Create a new Account associated with this Opportunity.'));
 
 Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {
+        // init create opportunity button
+		$('#create-opportunity').initCreateOpportunityDialog('$createOpportunityUrl', 'Opportunity', {$model->id}, $accountName, $assignedTo, $tooltip);
+
 		// init create account button
 		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Opportunity', '{$model->id}', $accountName, $assignedTo, '', '', $accountsTooltip);
 
 		// init create contact button
-		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Opportunity', '{$model->id}', $accountName, $assignedTo, '', '', $contactTooltip);
+		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Opportunity', '{$model->id}', $accountName, $assignedTo, '', '', $contactTooltip, '', '', '');
 	});
 ");
 
@@ -124,7 +124,7 @@ Yii::app()->clientScript->registerScript('create-model', "
 <?php
 $this->widget('Publisher',
 	array(
-		'associationType'=>'opportunity',
+		'associationType'=>'opportunities',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
 		'halfWidth'=>true

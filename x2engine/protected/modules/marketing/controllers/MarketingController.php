@@ -125,7 +125,15 @@ class MarketingController extends x2base {
 		}
 		echo $model->content;
 	}
-    
+
+	/**
+	 * Override of {@link CommonControllerBehavior::loadModel()}; expected
+	 * behavior is in this case deference to the campaign model's
+	 * {@link Campagin::load()} function.
+	 *
+	 * @param type $id
+	 * @return type
+	 */
     public function loadModel($id) {
 		return Campaign::load($id);
 	}
@@ -652,7 +660,7 @@ class MarketingController extends x2base {
 							if($file = $media->getPath()) {
 								if(file_exists($file)) { // check file exists
 									if($url = $media->getFullUrl()) {
-										$emailBody .= CHtml::link($media->fileName, $url) . "<br>\n";
+										$emailBody .= CHtml::link($media->fileName,$media->fullUrl) . "<br>\n";
 									}
 								}
 							}

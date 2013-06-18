@@ -57,7 +57,7 @@ class X2Flow extends CActiveRecord {
 	 * @const max number of nested calls to {@link X2Flow::trigger()}
 	 */
 	const MAX_TRIGGER_DEPTH = 0;
-	
+
 	/**
 	 * @var the current depth of nested trigger calls
 	 */
@@ -146,7 +146,7 @@ class X2Flow extends CActiveRecord {
 	 */
 	public function beforeValidate() {
 		$flowData = CJSON::decode($this->flow);
-		
+
 		if($flowData === false) {
 			$this->addError('flow',Yii::t('studio','Flow configuration data appears to be corrupt.'));
 			return false;
@@ -167,8 +167,8 @@ class X2Flow extends CActiveRecord {
 			$this->createDate = $this->lastUpdated;
 		return parent::beforeValidate();
 	}
-	
-	
+
+
 	/**
 	 * Returns the current trigger stack depth {@link X2Flow::$_triggerDepth}
 	 * @return int the stack depth
@@ -176,41 +176,41 @@ class X2Flow extends CActiveRecord {
 	public static function triggerDepth() {
 		return self::$_triggerDepth;
 	}
-	
+
 	/**
 	 * Looks up and runs automation actions that match the provided trigger name and parameters.
 	 *
 	 * @param string $trigger the name of the trigger to fire
-	 * @param array $params an associative array of params, usually including 'model'=>$model, 
+	 * @param array $params an associative array of params, usually including 'model'=>$model,
 	 * the primary X2Model to which this trigger applies.
 	 * @staticvar int $triggerDepth the current depth of the call stack
 	 */
 	public static function trigger($triggerName,$params=array()) {
 		if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH)	// ...have we delved too deep?
 			return;
-			
+		
 		if(isset($params['model']) && (!is_object($params['model']) || !($params['model'] instanceof X2Model)))	// Invalid model provided
 			return false;
-				
+		
 		self::$_triggerDepth++;	// increment stack depth before doing anything that might call X2Flow::trigger()
 		
-		$flowAttributes = array('triggerType'=>$triggerName);
+		$flowAttributes = array('triggerType'=>$triggerName,'active'=>1);
 		
-		if(isset($params['model']))
+		if(isset($params['model'])) {
 			$flowAttributes['modelClass'] = get_class($params['model']);
+			$params['modelClass'] = get_class($params['model']);
+		}
 		
 		$flowTraces = array();
 		$flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
 		
 		// find all flows matching this trigger and modelClass
 		foreach($flows as &$flow) {
-			
 			$error = '';	//array($flow->name);
 			
 			$flowData = CJSON::decode($flow->flow);	// parse JSON flow data
 			// file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
 			if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
-				
 				$trigger = X2FlowTrigger::create($flowData['trigger']);
 				if($trigger === null)
 					$error = 'failed to load trigger class';
@@ -225,7 +225,6 @@ class X2Flow extends CActiveRecord {
 					} catch (Exception $e) {
 						// whatever.
 					}
-					
 				} else
 					$flowTraces[] = array($flow->name,$error);
 			} else {
@@ -252,12 +251,9 @@ class X2Flow extends CActiveRecord {
 		// if(!empty($results))
 			// file_put_contents('triggerLog.txt','	'.print_r($results,true)."\n",FILE_APPEND);
 		
-		
-		
-		
 		self::$_triggerDepth--;		// this trigger call is done; decrement the stack depth
 	}
-	
+
 	public function executeBranch(&$items,&$params) {
 		$results = array();
 		
@@ -266,12 +262,12 @@ class X2Flow extends CActiveRecord {
 				continue;
 			
 			if($item['type'] === 'X2FlowSwitch') {
-				$switch = Trigger::create($item);
-				if($switch->validateRules($params)) {
+				$switch = X2FlowItem::create($item);
+				if($switch->validate($params)) {
 					if($switch->check($params) && isset($item['trueBranch']))
-						$results[] = array($item['type'],true,$this->executeBranch($item['trueBranch']));
+						$results[] = array($item['type'],true,$this->executeBranch($item['trueBranch'],$params));
 					elseif(isset($item['falseBranch']))
-						$results[] = array($item['type'],false,$this->executeBranch($item['falseBranch']));
+						$results[] = array($item['type'],false,$this->executeBranch($item['falseBranch'],$params));
 				}
 			} else {
 				$flowAction = X2FlowAction::create($item);
@@ -280,33 +276,32 @@ class X2Flow extends CActiveRecord {
 		}
 		return $results;
 	}
-	
-	/* 
+
+	/*
 	 * Parses variables in curly brackets and evaluates expressions
-	 * 
+	 *
 	 * @param mixed $value the value as specified by 'attributes' in {@link X2FlowAction::$config}
 	 * @param string $type the X2Fields type for this value
 	 * @return mixed the parsed value
 	 */
 	public static function parseValue($value,$type,&$params=null) {
-		
 		if($params !== null) {
 			$matches = array();
 			preg_match('/^{([a-z]\w*)}$/i',trim($value),$matches);	// check for a variable
 			if(isset($matches[1])) {
 				if(isset($params[$matches[1]])) {
-					$value = $params[$matches[1]];	// don't return 
+					$value = $params[$matches[1]];	// don't return
 				} elseif(isset($params['model']) && $params['model']->hasAttribute($matches[1])) {
 					if($type === '' || $type === 'text' || $type === 'richtext')
 						return $params['model']->renderAttribute($matches[1],true,true);
 					else
 						return $params['model']->getAttribute($matches[1]);
-					
+
 				}
 			}
 		}
 		// replaceVariables($str, &$model, $vars = array(), $encode = false)
-		
+
 		switch($type) {
 			case 'boolean':
 				return (bool)$value;

@@ -5,7 +5,6 @@
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2010 Yii Software LLC
  * @license http://www.yiiframework.com/license/
- * @version $Id: jquery.yiiactiveform.js 3522 2011-12-30 13:05:40Z mdomba $
  * @since 1.1.1
  */
 
@@ -16,14 +15,18 @@
 	 * @param o object the jQuery object of the input element
 	 */
 	var getAFValue = function (o) {
-		var type = o.attr('type');
-		if(o[0].tagName.toLowerCase()=='span') {
-			var c = [];
+		var type,
+			c = [];
+		if (!o.length) {
+			return undefined;
+		}
+		if (o[0].tagName.toLowerCase() === 'span') {
 			o.find(':checked').each(function () {
 				c.push(this.value);
 			});
 			return c.join(',');
 		}
+		type = o.attr('type');
 		if (type === 'checkbox' || type === 'radio') {
 			return o.filter(':checked').val();
 		} else {
@@ -43,33 +46,35 @@
 			if (settings.validationUrl === undefined) {
 				settings.validationUrl = $form.attr('action');
 			}
-			$.each(settings.attributes, function () {
-				$.extend(this, {
-					validationDelay : settings.validationDelay,
-					validateOnChange : settings.validateOnChange,
-					validateOnType : settings.validateOnType,
-					hideErrorMessage : settings.hideErrorMessage,
-					inputContainer : settings.inputContainer,
-					errorCssClass : settings.errorCssClass,
-					successCssClass : settings.successCssClass,
-					beforeValidateAttribute : settings.beforeValidateAttribute,
-					afterValidateAttribute : settings.afterValidateAttribute,
-					validatingCssClass : settings.validatingCssClass
-				});
+			$.each(settings.attributes, function (i) {
 				this.value = getAFValue($form.find('#' + this.inputID));
+				settings.attributes[i] = $.extend({}, {
+					validationDelay: settings.validationDelay,
+					validateOnChange: settings.validateOnChange,
+					validateOnType: settings.validateOnType,
+					hideErrorMessage: settings.hideErrorMessage,
+					inputContainer: settings.inputContainer,
+					errorCssClass: settings.errorCssClass,
+					successCssClass: settings.successCssClass,
+					beforeValidateAttribute: settings.beforeValidateAttribute,
+					afterValidateAttribute: settings.afterValidateAttribute,
+					validatingCssClass: settings.validatingCssClass
+				}, this);
 			});
 			$form.data('settings', settings);
 
 			settings.submitting = false;  // whether it is waiting for ajax submission result
-			var validate = function (attribute) {
-				var changed = false;
+			var validate = function (attribute, forceValidate) {
+				if (forceValidate) {
+					attribute.status = 2;
+				}
 				$.each(settings.attributes, function () {
 					if (this.value !== getAFValue($form.find('#' + this.inputID))) {
 						this.status = 2;
-						changed = true;
+						forceValidate = true;
 					}
 				});
-				if (!changed) {
+				if (!forceValidate) {
 					return;
 				}
 
@@ -102,32 +107,33 @@
 				}, attribute.validationDelay);
 			};
 
-			$.each(settings.attributes, function () {
+			$.each(settings.attributes, function (i, attribute) {
 				if (this.validateOnChange) {
 					$form.find('#' + this.inputID).change(function () {
-						validate(this);
+						validate(attribute, false);
 					}).blur(function () {
-						if (this.status !== 2 && this.status !== 3) {
-							validate(this);
+						if (attribute.status !== 2 && attribute.status !== 3) {
+							validate(attribute, !attribute.status);
 						}
 					});
 				}
 				if (this.validateOnType) {
 					$form.find('#' + this.inputID).keyup(function () {
-						if (this.value !== getAFValue($(this))) {
-							validate(this);
+						if (attribute.value !== getAFValue($(this))) {
+							validate(attribute, false);
 						}
 					});
 				}
 			});
 
 			if (settings.validateOnSubmit) {
-				$form.find(':submit').live('mouseup keyup', function () {
+				$form.on('mouseup keyup', ':submit', function () {
 					$form.data('submitObject', $(this));
 				});
 				var validated = false;
 				$form.submit(function () {
 					if (validated) {
+						validated = false;
 						return true;
 					}
 					if (settings.timer !== undefined) {
@@ -156,8 +162,7 @@
 							}
 							settings.submitting = false;
 						});
-					}
-					else {
+					} else {
 						settings.submitting = false;
 					}
 					return false;
@@ -167,7 +172,7 @@
 			/*
 			 * In case of reseting the form we need to reset error messages
 			 * NOTE1: $form.reset - does not exist
-			 * NOTE2: $form.live('reset', ...) does not work
+			 * NOTE2: $form.on('reset', ...) does not work
 			 */
 			$form.bind('reset', function () {
 				/*
@@ -221,7 +226,7 @@
 	 * Returns the container element of the specified attribute.
 	 * @param attribute object the configuration for a particular attribute.
 	 * @param form the form jQuery object
-	 * @return jquery the jquery representation of the container
+	 * @return jQuery the jQuery representation of the container
 	 */
 	$.fn.yiiactiveform.getInputContainer = function (attribute, form) {
 		if (attribute.inputContainer === undefined) {
@@ -240,28 +245,32 @@
 	 */
 	$.fn.yiiactiveform.updateInput = function (attribute, messages, form) {
 		attribute.status = 1;
-		var hasError = messages !== null && $.isArray(messages[attribute.id]) && messages[attribute.id].length > 0,
-			$error = form.find('#' + attribute.errorID),
+		var $error, $container,
+			hasError = false,
+			$el = form.find('#' + attribute.inputID);
+		if ($el.length) {
+			hasError = messages !== null && $.isArray(messages[attribute.id]) && messages[attribute.id].length > 0;
+			$error = form.find('#' + attribute.errorID);
 			$container = $.fn.yiiactiveform.getInputContainer(attribute, form);
 
-		$container.removeClass(
-			attribute.validatingCssClass + ' ' + 
-			attribute.errorCssClass + ' ' + 
-			attribute.successCssClass
-		);
+			$container.removeClass(
+				attribute.validatingCssClass + ' ' +
+				attribute.errorCssClass + ' ' +
+				attribute.successCssClass
+			);
 
-		if (hasError) {
-			$error.html(messages[attribute.id][0]);
-			$container.addClass(attribute.errorCssClass);
-		}
-		else if (attribute.enableAjaxValidation || attribute.clientValidation) {
-			$container.addClass(attribute.successCssClass);
-		}
-		if (!attribute.hideErrorMessage) {
-			$error.toggle(hasError);
-		}
+			if (hasError) {
+				$error.html(messages[attribute.id][0]);
+				$container.addClass(attribute.errorCssClass);
+			} else if (attribute.enableAjaxValidation || attribute.clientValidation) {
+				$container.addClass(attribute.successCssClass);
+			}
+			if (!attribute.hideErrorMessage) {
+				$error.toggle(hasError);
+			}
 
-		attribute.value = getAFValue(form.find('#' + attribute.inputID));
+			attribute.value = getAFValue($el);
+		}
 		return hasError;
 	};
 
@@ -276,13 +285,15 @@
 		if (settings.summaryID === undefined) {
 			return;
 		}
-		$.each(settings.attributes, function () {
-			if (messages && $.isArray(messages[this.id])) {
-				$.each(messages[this.id], function (j, message) {
-					content = content + '<li>' + message + '</li>';
-				});
-			}
-		});
+		if (messages) {
+			$.each(settings.attributes, function () {
+				if ($.isArray(messages[this.id])) {
+					$.each(messages[this.id], function (j, message) {
+						content = content + '<li>' + message + '</li>';
+					});
+				}
+			});
+		}
 		$('#' + settings.summaryID).toggle(content !== '').find('ul').html(content);
 	};
 
@@ -299,7 +310,7 @@
 			needAjaxValidation = false,
 			messages = {};
 		$.each(settings.attributes, function () {
-			var value, 
+			var value,
 				msg = [];
 			if (this.clientValidation !== undefined && (settings.submitting || this.status === 2 || this.status === 3)) {
 				value = getAFValue($form.find('#' + this.inputID));
@@ -319,8 +330,7 @@
 				setTimeout(function () {
 					successCallback(messages);
 				}, 200);
-			}
-			else {
+			} else {
 				successCallback(messages);
 			}
 			return;
@@ -345,8 +355,7 @@
 						}
 					});
 					successCallback($.extend({}, messages, data));
-				}
-				else {
+				} else {
 					successCallback(messages);
 				}
 			},

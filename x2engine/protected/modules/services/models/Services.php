@@ -114,45 +114,8 @@ class Services extends X2Model {
 	}
 
 	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
-		$fields=Fields::model()->findAllByAttributes(array('modelName'=>'Services'));
-                foreach($fields as $field){
-                    $fieldName=$field->fieldName;
-                    switch($field->type){
-                        case 'boolean':
-                            $criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
-                            break;
-                        case 'link':
-                            $criteria->compare($field->fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
-                            break;
-                        case 'assignment':
-                            $criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
-                            break;
-                        default:
-                            $criteria->compare($field->fieldName,$this->$fieldName,true);
-                    }
-
-                }
-
-
-		$dataProvider=new SmartDataProvider(get_class($this), array(
-			'sort'=>array('defaultOrder'=>'id ASC'),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
-		$arr=$dataProvider->getData();
-		foreach($arr as $service){
-			$service->assignedTo=User::getUserLinks($service->assignedTo);
-		}
-		$dataProvider->setData($arr);
-
-		return $dataProvider;
+		return $this->searchBase($criteria);
 	}
 
 	/**
@@ -160,13 +123,7 @@ class Services extends X2Model {
 	 *
 	 */
 	public function searchWithStatusFilter() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
-		// $criteria->compare('status', '<>Program Manager investigation');
-
 		foreach($this->getFields(true) as $fieldName => $field) {
 
 			if($fieldName == 'status') { // if status exists
@@ -179,58 +136,9 @@ class Services extends X2Model {
 					$criteria->compare('status', '<>'.$hide);
 				}
 			}
-
-			switch($field->type){
-				case 'boolean':
-					$criteria->compare($fieldName,$this->compareBoolean($this->$fieldName), true);
-					break;
-				case 'link':
-					$criteria->compare($fieldName,$this->compareLookup($field->linkType, $this->$fieldName), true);
-					break;
-				case 'assignment':
-					$criteria->compare($fieldName,$this->compareAssignment($this->$fieldName), true);
-					break;
-				default:
-					$criteria->compare($fieldName,$this->$fieldName,true);
-			}
-
 		}
-
-
 		$criteria->together = true;
-		// $criteria->with = array('contactId.company');
-		// field 'account' is not in x2_services table,
-		// it is declared at the top of this class and is used
-		// by X2GridView to search the account name associated
-		// with the contact associated with this service case.
-		// Adding the field 'account' to the table x2_services will
-		// cause an SQL error in this function
-		if(isset($_GET['Services']['account'])) {
-			// $criteria->compare('company.name', $_GET['Services']['account'], true);
-		}
-
-		$dataProvider=new SmartDataProvider(get_class($this), array(
-			'sort'=>array(
-				'defaultOrder'=>'t.assignedTo ASC', // `t` is an SQL placeholder for x2_services, this prevents an SQL error caused by 3 ambiguous 'id' fields in the SQL query: one each from x2_services, x2_contacts, and x2_accounts
-		/*		'attributes'=>array(
-					'account'=>array( // let's us sort by account name
-						'asc'=>'accounts.name',
-						'desc'=>'accounts.name DESC',
-					),
-				), */
-			),
-			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
-			),
-			'criteria'=>$criteria,
-		));
-		$arr=$dataProvider->getData();
-		foreach($arr as $service){
-			$service->assignedTo=User::getUserLinks($service->assignedTo);
-		}
-		$dataProvider->setData($arr);
-
-		return $dataProvider;
+		return $this->searchBase($criteria);
 	}
 
 

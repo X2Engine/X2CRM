@@ -142,10 +142,10 @@ $(document).ready(function() {
 	$('#menuBgColor').change(function() {
 		var text = $('#menuBgColor').val();
 		if(text == '') {
-			$('#header').css('background-color','').addClass('defaultBg');
+			$('#header').css('background','').addClass('defaultBg');
 		} else {
 			$('#menuBgColor').val(text.substring(1,7));
-			$('#header').removeClass('defaultBg').css('background-color',text);
+			$('#header').removeClass('defaultBg').css('background',text);
 		}
 		highlightSave();
 	});
@@ -164,10 +164,10 @@ $(document).ready(function() {
 	$('#pageHeaderBgColor').change(function() {
 		var text = $('#pageHeaderBgColor').val();
 		if(text == '') {
-			$('.page-title').css('background-color','#444');
+			$('.page-title').css('background','#ccc');
 		} else {
 			$('#pageHeaderBgColor').val(text.substring(1,7));
-			$('.page-title').css('background-color',text);
+			$('.page-title').css('background',text);
 		}
 		highlightSave();
 	});

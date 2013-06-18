@@ -161,16 +161,16 @@ if(!function_exists('installer_t')){
 
 /**
  * Test the consistency of the $_SERVER global.
- * 
- * This function, based on the similarly-named function of the Yii requirements 
+ *
+ * This function, based on the similarly-named function of the Yii requirements
  * check, validates several essential elements of $_SERVER
- * 
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  * @parameter string $thisFile
- * @return string 
+ * @return string
  */
 function checkServerVar($thisFile = null){
 	$vars = array('HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT');
@@ -197,16 +197,16 @@ function checkServerVar($thisFile = null){
 }
 
 $canInstall = True;
-$curl = true; // 
+$curl = true; //
 $tryAccess = true; // Attempt to access the internet from the web server.
 $reqMessages = array_fill_keys(array(1, 2, 3), array()); // Severity levels
 $rbm = installer_t("required but missing");
 
 //////////////////////////////////////////////
-// TOP PRIORITY: BIG IMPORTANT REQUIREMENTS // 
+// TOP PRIORITY: BIG IMPORTANT REQUIREMENTS //
 //////////////////////////////////////////////
-// Check for a mismatch in directory ownership. Skip this step on Windows 
-// and systems where posix functions are unavailable; in such cases there's no 
+// Check for a mismatch in directory ownership. Skip this step on Windows
+// and systems where posix functions are unavailable; in such cases there's no
 // reliable way to get the UID of the actual running process.
 $uid = array_fill_keys(array('{id_own}', '{id_run}'), null);
 $uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
@@ -374,9 +374,12 @@ if(!extension_loaded('gd')){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas and will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
 }
 
-$hasMessages = array_reduce($reqMessages, function($count, $arr){
-			return $count || (bool) count($arr);
-		});
+// Determine if there are messages to show and if installation is even possible
+$hasMessages = false;
+foreach($reqMessages as $severity=>$messages) {
+	if((bool)count($messages))
+		$hasMessages = true;
+}
 $canInstall = !(bool) count($reqMessages[3]);
 
 ///////////////////////////////
@@ -387,7 +390,6 @@ $canInstall = !(bool) count($reqMessages[3]);
 // COMPOSE OUTPUT //
 ////////////////////
 $output = '';
-
 
 if(!$canInstall){
 	$output .= '<div style="width: 100%; text-align:center;"><h1>'.installer_t("Cannot $scenario X2CRM")."</h1></div>\n";
@@ -417,9 +419,11 @@ if($hasMessages){
 		}
 	}
 	$output .= "</ul>\n";
-	$output .= "<div style=\"text-align:center;\">( Severity legend: <strong>".array_reduce(array_keys($severityStyles), function($str, $severity) use($severityClasses, $severityStyles){
-						return $str."<span style=\"{$severityStyles[$severity]}\">{$severityClasses[$severity]}</span>&nbsp;";
-					})."</strong>)<br />\n";
+	$output .= "<div style=\"text-align:center;\">Severity legend: ";
+	foreach($severityClasses as $severity => $class) {
+		$output .= "<span style=\"{$severityStyles[$severity]}\">$class</span>&nbsp;";
+	}
+	$output .= "<br />\n";
 	if($canInstall)
 		$output .= '<br />'.installer_t("All other essential requirements were met.").'&nbsp;';
 	$output .= '</div><br />';

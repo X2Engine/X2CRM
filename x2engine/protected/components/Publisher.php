@@ -36,23 +36,24 @@
 
 /**
  * Widget class for displaying all available inline actions.
- * 
+ *
  * Displays tabs for "log a call","new action" and the like.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class Publisher extends X2Widget {
 	public $associationType;		// type of record to associate actions with
 	public $associationId = '';		// record to associate actions with
 	public $assignedTo = null;	// user actions will be assigned to by default
-	
+
 	// show all tabs by default
 	public $showLogACall = true;
 	public $showNewAction = true;
 	public $showNewComment = true;
 	public $showNewEvent = false;
 	public $halfWidth = false;
-	
+    public $showQuickNote = true;
+
 	public function run() {
 		$model = new Actions;
 		$model->associationType = $this->associationType;
@@ -61,7 +62,7 @@ class Publisher extends X2Widget {
 			$model->assignedTo = $this->assignedTo;
 		else
 			$model->assignedTo = Yii::app()->user->getName();
-        
+
         Yii::app()->clientScript->registerScript('loadEmails',"
             function loadFrame(id,type){
                 if(type!='Action'){
@@ -72,7 +73,7 @@ class Publisher extends X2Widget {
                 if(typeof x2ViewEmailDialog != 'undefined') {
                     if($(x2ViewEmailDialog).is(':hidden')){
                         $(x2ViewEmailDialog).remove();
-                        
+
                     }else{
                         return;
                     }
@@ -81,7 +82,7 @@ class Publisher extends X2Widget {
                 x2ViewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
 
                 x2ViewEmailDialog.dialog({
-                    title: 'View '+type, 
+                    title: 'View '+type,
                     autoOpen: false,
                     resizable: true,
                     width: '650px',
@@ -97,7 +98,7 @@ class Publisher extends X2Widget {
                         }
                     });
 
-                x2ViewEmailDialog.data('inactive', true); 
+                x2ViewEmailDialog.data('inactive', true);
                 if(x2ViewEmailDialog.data('inactive')) {
                     x2ViewEmailDialog.append(frame);
                     x2ViewEmailDialog.dialog('open').height('400px');
@@ -123,7 +124,7 @@ class Publisher extends X2Widget {
                 });
             });
         ",CClientScript::POS_HEAD);
-		
+
 		$this->render($this->halfWidth? 'publisherHalfWidth':'publisher',
 			array(
 				'model' => $model,
@@ -131,6 +132,7 @@ class Publisher extends X2Widget {
 				'showNewAction'=>$this->showNewAction,
 				'showNewComment'=>$this->showNewComment,
 				'showNewEvent'=>$this->showNewEvent,
+                'showQuickNote'=>$this->showQuickNote,
 			)
 		);
 	}

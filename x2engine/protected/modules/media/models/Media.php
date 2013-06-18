@@ -37,7 +37,7 @@
 
 /**
  * This is the model class for table "x2_media".
- * 
+ *
  * @package X2CRM.modules.media.models
  * @property integer $id
  * @property string $associationType
@@ -152,7 +152,7 @@ class Media extends X2Model {
 
 	/**
 	 * Magic path getter
-	 * 
+	 *
 	 * Obtains the full, absolute path to a file.
 	 */
 	public function getPath() {
@@ -183,11 +183,11 @@ class Media extends X2Model {
 
 	/**
 	 * Gets file size
-	 * 
-	 * Obtains and returns the file size. If it hasn't been saved in the 
+	 *
+	 * Obtains and returns the file size. If it hasn't been saved in the
 	 * database, this method does so.
-	 * 
-	 * @return type 
+	 *
+	 * @return type
 	 */
 	public function resolveSize() {
 
@@ -206,8 +206,8 @@ class Media extends X2Model {
 
 	/**
 	 * Gets dimensions of the file, if it is an image.
-	 * 
-	 * @return type 
+	 *
+	 * @return type
 	 */
 	public function resolveDimensions() {
 		if ($this->isImage()) {
@@ -226,8 +226,8 @@ class Media extends X2Model {
 
 	/**
 	 * Magic getter for human-readable file size.
-	 * 
-	 * @return type 
+	 *
+	 * @return type
 	 */
 	public function getFmtSize() {
 		return FileUtil::formatSize($this->resolveSize());
@@ -243,11 +243,11 @@ class Media extends X2Model {
 
 	/**
 	 * Gets file type info
-	 * 
+	 *
 	 * Examines the file and gets MIME info; saves it in the record if it's not
 	 * there already.
-	 * 
-	 * @return type 
+	 *
+	 * @return type
 	 */
 	public function resolveType() {
 		if (empty($this->mimetype)) {
@@ -280,7 +280,7 @@ class Media extends X2Model {
 
 	/**
 	 * Magic uploaded file URL getter method
-	 * @return type 
+	 * @return type
 	 */
 	public function getUrl() {
 		if (!isset($this->_url)) {
@@ -296,14 +296,13 @@ class Media extends X2Model {
 	public static function getFileUrl($path) {
 		if ($path) // ensure file exists
 			return Yii::app()->request->baseUrl . "/$path";
-
 		return null;
 	}
 
 	// get the full url (including e.g. example.com) to a file
 	// return null if file doesn't exist
 	public function getFullUrl() {
-		if ($path = $this->getPath()) // ensure file exists
+		if ($path = self::getFilePath($this->uploadedBy,$this->fileName)) // ensure file exists
 			return Yii::app()->getBaseUrl(true) . "/$path";
 
 		return null;
@@ -321,7 +320,7 @@ class Media extends X2Model {
 		return CHtml::link($this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
 	}
 
-	// 
+	//
 	public function fileExists() {
 		if (file_exists("uploads/media/{$this->uploadedBy}/{$this->fileName}")) // try new format
 			return true;
@@ -366,67 +365,67 @@ class Media extends X2Model {
 	public static function forbiddenFileTypes() {
 		return "exe, bat, dmg, js, jar, swf, php, pl, cgi, htaccess, py";
 	}
-    
+
     /**
      * @param string $str
      * @param boolean $makeLink
      * @param boolean $makeImage
-     * @return string 
-     */ 
+     * @return string
+     */
 	public static function attachmentSocialText($str,$makeLink = false,$makeImage = false) {
 		// $a = '<a href="/x2merge/index.php/media/16">footer.png</a>';
-		
+
 		// echo ,preg_match('/^<a href=".+(media\/[0-9]+)" target="_blank">.+<\/a>$/i',$description
 		$matches = array();
 		// die(CHtml::encode($description));
 		if(preg_match('/^<a href=".+media\/view\/([0-9]+)">.+<\/a>$/i',$str,$matches)) {
 			if(count($matches) == 2 && is_numeric($matches[1])) {
-			
+
 				$media = X2Model::model('Media')->findByPk($matches[1]);
 				if(isset($media)) {
 					$str = Yii::t('media','File:') . ' ';
-					
+
 					$fileExists = $media->fileExists();
-					
+
 					if($fileExists == false)
 					    return $str . ' ' . Yii::t('media','(deleted)');
-					
+
 					if($makeLink)
 					    $str .= $media->getMediaLink();
 					else
 					    $str .= "";
-					
+
 					if($makeImage && $media->isImage())	// to render an image, first check file extension
 					    $str .= $media->getImage();
-					
+
 					return $str;
 				}
 			}
 		}
         return x2base::convertUrls($str);
     }
-    
+
     /**
      * Generates a description message with a link and optional preview image
      * for media items.
-     * 
+     *
      * @param string $actionDescription
      * @param boolean $makeLink
      * @param boolean $makeImage
-     * @return string 
+     * @return string
      */
 	public static function attachmentActionText($actionDescription,$makeLink = false,$makeImage = false) {
-	
+
 		$data = explode(':',$actionDescription);
 		$media = null;
 		if(count($data) == 2 && is_numeric($data[1])) // ensure data is formatted properly
 			$media = X2Model::model('Media')->findByPK($data[1]); // look for an entry in the media table
-		
+
 		if($media) { // did we find an entry in the media table?
 			$str = Yii::t('media','File:') . ' ';
-			
+
 			$fileExists = $media->fileExists();
-			
+
 			if($fileExists == false)
 				return $str . $data[0] . ' ' . Yii::t('media','(deleted)');
 
@@ -437,9 +436,9 @@ class Media extends X2Model {
 
 			if($makeImage && $media->isImage())	// to render an image, first check file extension
 			    $str .= $media->getImage();
-			
+
 			return $str;
-			
+
 		} else
 			return $actionDescription;
 	}

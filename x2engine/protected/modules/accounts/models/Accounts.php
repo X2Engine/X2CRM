@@ -79,7 +79,7 @@ class Accounts extends X2Model {
 	 * @return boolean whether validation should be executed. Defaults to true.
 	 */
 	public function beforeValidate() {
-		$this->annualRevenue = x2base::parseCurrency($this->annualRevenue,false);
+		$this->annualRevenue = Formatter::parseCurrency($this->annualRevenue,false);
 		return parent::beforeValidate();
 	}
 

@@ -35,29 +35,11 @@
  *****************************************************************************************/
 
 /**
- * X2FlowTrigger 
+ * X2FlowTrigger
  * 
- * @package X2CRM.components.x2flow.actions
+ * @package X2CRM.components.x2flow.triggers
  */
-class RecordTagRemoveTrigger extends X2FlowTrigger {
+class RecordTagRemoveTrigger extends BaseTagTrigger {
 	public $title = 'Tag Removed';
 	public $info = 'Triggered by adding one of these tags to a record.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelClass' => 'modelClass',
-			'options' => array(
-				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Model::getModelTypes(true)),
-				array('name'=>'tags','label'=>Yii::t('studio','Tags'),'type'=>'tags','operators'=>array('=','list','notList')),
-			));
-	}
-
-	public function check(&$params) {
-		if(count(array_intersect($params['tags'],Tags::parseTags($this->config['options']['tags']['value']))) === 0)	// fail if none of the specified tags are in $params['tags']
-			return false;
-		
-		return $this->checkConditions($params);
-	}
 }

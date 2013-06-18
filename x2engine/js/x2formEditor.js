@@ -364,6 +364,12 @@ function deleteColumn($formSection) {
 
 // removes and recreates resize handles for the formSection table columns
 function setupColResizing($table) {
+	// if($table.data('x2-gridResizing') !== undefined) {
+		// $table.gridResizing("destroy");
+	// }
+	// $table.gridResizing({
+		// onResize:function(){ window.layoutChanged = true; },
+	// });
 	$table.colResizable({disable:true})	// remove old colResizable class, if it exists
 		.colResizable({
 			liveDrag:true,

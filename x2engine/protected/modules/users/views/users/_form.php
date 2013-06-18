@@ -146,7 +146,7 @@ $(document).ready(function() {
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'emailAddress'); ?>
-		<?php echo $form->textField($model,'emailAddress',array('size'=>20,'maxlength'=>40,'disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
+		<?php echo $form->textField($model,'emailAddress',array('size'=>20,'maxlength'=>100,'disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
 		<?php echo $form->error($model,'emailAddress'); ?>
 	</div>
 

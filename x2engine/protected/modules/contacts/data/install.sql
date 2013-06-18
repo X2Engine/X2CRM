@@ -38,7 +38,7 @@ CREATE TABLE `x2_contacts` (
 	closedate				BIGINT,
 	interest				VARCHAR(250),
 	leadstatus				VARCHAR(250),
-	dealvalue				FLOAT,
+	dealvalue				DECIMAL(10,2),
 	leadscore				INT,
 	dealstatus				VARCHAR(250),
 	timezone				VARCHAR(250)	NULL,

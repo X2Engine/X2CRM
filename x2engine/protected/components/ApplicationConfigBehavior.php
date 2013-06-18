@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -40,9 +39,13 @@
  * It loads additional config paramenters that cannot be statically
  * written in config/main
  *
+ * @property string $externalBaseUrl (read-only) the base URL of the web application,
+ *	independent of whether there is a web request.
  * @package X2CRM.components
  */
 class ApplicationConfigBehavior extends CBehavior {
+
+	private $_externalBaseUrl;
 
     /**
      * Declares events and the event handler methods.
@@ -71,7 +74,8 @@ class ApplicationConfigBehavior extends CBehavior {
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
                 Yii::import('application.components.X2WebUser');
                 Yii::import('application.components.Formatter');
-                $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
+                if(!$this->owner->user->isGuest)
+                    $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
                 if(isset($profData)){
                     if(isset($profData['timeZone'])){
                         $timezone = $profData['timeZone'];
@@ -98,7 +102,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 return;
             }
         } else{
-            // Set time zone
+            // Set time zone based on the default value
             date_default_timezone_set(Profile::model()->tableSchema->getColumn('timeZone')->defaultValue);
         }
         Yii::import('application.models.*');
@@ -122,6 +126,8 @@ class ApplicationConfigBehavior extends CBehavior {
         $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
 
 
+
+		// Set profile
         $this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username' => $uname));
         $session = X2Model::model('Session')->findByPk($sessionId);
         if(isset($this->owner->params->profile)){
@@ -129,32 +135,38 @@ class ApplicationConfigBehavior extends CBehavior {
         }
 
 
-        if($notGuest && !$noSession && !($this->owner->request->getPathInfo() == 'site/getEvents')){
-            $this->owner->user->setReturnUrl($this->owner->request->requestUri);
-            if($session !== null){
-                if($session->lastUpdated + $this->owner->params->admin->timeout < time()){
-                    SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
-                    $session->delete();
-                    $this->owner->user->logout(false);
-                }else{
-                    $session->lastUpdated = time();
-                    $session->update(array('lastUpdated'));
+		if(!$noSession){
+			if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
+				$this->owner->user->setReturnUrl($this->owner->request->requestUri);
+				if($session !== null){
+					if($session->lastUpdated + $this->owner->params->admin->timeout < time()){
+						SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
+						$session->delete();
+						$this->owner->user->logout(false);
+					}else{
+						$session->lastUpdated = time();
+						$session->update(array('lastUpdated'));
 
-                    $this->owner->params->sessionStatus = $session->status;
-                }
-            }else{
-                $this->owner->user->logout(false);
-            }
+						$this->owner->params->sessionStatus = $session->status;
+					}
+				}else{
+					$this->owner->user->logout(false);
+				}
 
 
-            $userId = $this->owner->user->getId();
-            if(!is_null($userId)){
-                $this->owner->params->groups = Groups::getUserGroups($userId);
-                $this->owner->params->roles = Roles::getUserRoles($userId);
+				$userId = $this->owner->user->getId();
+				if(!is_null($userId)){
+					$this->owner->params->groups = Groups::getUserGroups($userId);
+					$this->owner->params->roles = Roles::getUserRoles($userId);
 
-                $this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex', $userId);
-            }
-        }
+					$this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex');
+				}
+			}elseif(!($this->owner->request->getPathInfo() == 'site/getEvents')){
+				$guestRole = Roles::model()->findByAttributes(array('name' => 'Guest'));
+				if(isset($guestRole))
+					$this->owner->params->roles = array($guestRole->id);
+			}
+		}
 
         $modules = $this->owner->modules;
         $arr = array();
@@ -183,6 +195,13 @@ class ApplicationConfigBehavior extends CBehavior {
         else
             $this->owner->language = '';
 
+        $locale = $this->owner->locale;
+		$curSyms = array();
+		foreach(Yii::app()->params->supportedCurrencies as $curCode) {
+			$curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
+		}
+		$this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
+
         // set timezone
         if(!empty($this->owner->params->profile->timeZone))
             date_default_timezone_set($this->owner->params->profile->timeZone);
@@ -208,18 +227,18 @@ class ApplicationConfigBehavior extends CBehavior {
         setlocale(LC_ALL, 'en_US.UTF-8');
 
         // set base path and theme path globals for JS
-		if(!$noSession){
-			if($notGuest){
-				$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-				if(isset($profile)){
-					$where = 'fileName = "'.$profile->notificationSound.'"';
-					$uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
-					if(!empty($uploadedBy['uploadedBy'])){
-						$notificationSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
-					}else{
-						$notificationSound = Yii::app()->baseUrl.'/uploads/'.$profile->notificationSound;
-					}
-					$yiiString = '
+        if(!$noSession){
+            if($notGuest){
+                $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+                if(isset($profile)){
+                    $where = 'fileName = "'.$profile->notificationSound.'"';
+                    $uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
+                    if(!empty($uploadedBy['uploadedBy'])){
+                        $notificationSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
+                    }else{
+                        $notificationSound = Yii::app()->baseUrl.'/uploads/'.$profile->notificationSound;
+                    }
+                    $yiiString = '
                     var	yii = {
                         baseUrl: "'.Yii::app()->baseUrl.'",
                         scriptUrl: "'.Yii::app()->request->scriptUrl.'",
@@ -227,14 +246,14 @@ class ApplicationConfigBehavior extends CBehavior {
                         language: "'.(Yii::app()->language == 'en' ? '' : Yii::app()->getLanguage()).'",
                         datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                         timePickerFormat: "'.Formatter::formatTimePicker().'",
-                        profile: "'.addslashes(CJSON::encode(Yii::app()->params->profile->attributes)).'",
+                        profile: '.CJSON::encode(Yii::app()->params->profile->getAttributes()).',
                         notificationSoundPath: "'.$notificationSound.'"
                     },
                     x2 = {},
                     notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                     ';
-				}else{
-					$yiiString = '
+                }else{
+                    $yiiString = '
                 var	yii = {
                     baseUrl: "'.Yii::app()->baseUrl.'",
                     scriptUrl: "'.Yii::app()->request->scriptUrl.'",
@@ -246,9 +265,9 @@ class ApplicationConfigBehavior extends CBehavior {
                 x2 = {},
                 notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                 ';
-				}
-			}else{
-				$yiiString = '
+                }
+            }else{
+                $yiiString = '
 			var	yii = {
 				baseUrl: "'.Yii::app()->baseUrl.'",
 				scriptUrl: "'.Yii::app()->request->scriptUrl.'",
@@ -260,26 +279,50 @@ class ApplicationConfigBehavior extends CBehavior {
 			x2 = {},
 			notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 			';
-			}
+            }
 
-			Yii::app()->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
-			$cs = Yii::app()->clientScript;
-			$baseUrl = Yii::app()->request->baseUrl;
-			$jsVersion = '?'.Yii::app()->params->buildDate;
-			/* $cs->scriptMap=array(
-			  'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-			  ); */
-		}
+            Yii::app()->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
+            $cs = Yii::app()->clientScript;
+            $baseUrl = Yii::app()->request->baseUrl;
+            $jsVersion = '?'.Yii::app()->params->buildDate;
+            /* $cs->scriptMap=array(
+              'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              ); */
+        }
     }
+
+	/**
+	 * Magic getter for {@link externalBaseUrl}; in the case that web request data
+	 * isn't available, it uses a config file.
+	 * 
+	 * @return type
+	 */
+	public function getExternalBaseUrl() {
+		if(!isset($this->_externalBaseUrl)) {
+			if($this->owner->params->noSession) {
+				$this->_externalBaseUrl = '';
+				// Use webLeadConfig to construct the URL
+				$file = realpath(Yii::app()->basePath.'/../webLeadConfig.php');
+				if($file){
+					include($file);
+					if(isset($url))
+						$this->_externalBaseUrl = $url;
+				}
+			} else {
+				$this->_externalBaseUrl = $this->owner->baseUrl;
+			}
+		}
+		return $this->_externalBaseUrl;
+	}
 
 }

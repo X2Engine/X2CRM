@@ -113,7 +113,7 @@ class APIModel {
 			$this->_baseUrl = rtrim($this->_baseUrl,'/').'/index.php';
 		}
     }
-
+	
 	/**
 	 * Getter method for {@link modelErrors}
 	 * @return type
@@ -163,6 +163,46 @@ class APIModel {
 	public function getResponseCode() {
 		return $this->_responseCode;
 	}
+
+	/**
+	 * Obtain the list of tags associated with the model
+	 * @param type $modelName
+	 * @param type $modelId
+	 * @return type
+	 */
+	public function getTags($modelName,$modelId) {
+		$ch = $this->_curlHandle("api/tags?".http_build_query(array(
+					'model' => $modelName,
+					'id' => $modelId
+				)));
+		return json_decode(curl_exec($ch),1);
+	}
+
+	/**
+	 * Tag the model record
+	 * @param type $modelName
+	 * @param type $modelId
+	 * @param type $tags
+	 * @return type A
+	 */
+	public function addTags($modelName,$modelId,$tags){
+		return json_encode($this->_send("api/tags/$modelName/$modelId", array(
+			'tags' => json_encode(is_array($tags) ? $tags : array($tags))
+		)),1);
+	}
+
+	/**
+	 * Delete a tag from the model record
+	 * @param type $modelName
+	 * @param type $modelId
+	 * @param type $tag
+	 * @return type
+	 */
+	public function removeTag($modelName,$modelId,$tag) {
+		$ch = $this->_curlHandle("api/tags/$modelName/$modelId/".ltrim($tag,'#'),array(),array(CURLOPT_CUSTOMREQUEST=>'DELETE'));
+		return json_decode(curl_exec($ch),1);
+	}
+
 
 	/**
 	 * Sets the model's attributes equal to those of the model contained in the
@@ -219,11 +259,25 @@ class APIModel {
 	 * @return boolean
 	 */
 	public function modelCreateUpdate($modelName,$action,$attributes=array()) {
-        $ccUrl = "{$this->_baseUrl}/api/$action/model/$modelName";
+        $ccUrl = "api/$action/model/$modelName";
 		if($action=='update')
 			$ccUrl .= '?'.http_build_query(array('id'=>$this->id));
         $this->responseObject = $this->_send($ccUrl, array_merge($this->attributes, $attributes));
 		return $this->processResponse();
+	}
+
+	/**
+	 * Generic find-by-attributes method
+	 */
+	public function modelLookup($modelName) {
+		foreach($this->attributes as $key=>$value){
+			// Exclude null attributes from lookup
+            if(is_null($value) || $value==''){
+                unset($this->attributes[$key]);
+            }
+        }
+		$this->responseObject = $this->_send("api/lookup/model/$modelName",$this->attributes);
+		return $this->processResponse(true);
 	}
 
     /**
@@ -237,8 +291,7 @@ class APIModel {
             'visibility' => '1',
         );
         if ($leadRouting) {
-            $ccUrl = $this->_baseUrl . '/admin/getRoutingType';
-            $attributes['assignedTo'] = $this->_send($ccUrl, array_merge($this->attributes, $attributes));
+            $attributes['assignedTo'] = $this->_send('admin/getRoutingType', array_merge($this->attributes, $attributes));
 			return $this->processResponse();
         }
 		return $this->modelCreateUpdate('Contacts','create',$attributes);
@@ -260,15 +313,7 @@ class APIModel {
      * @return string Response code from the API request.  JSON string of attributes on success. 
      */
     public function contactLookup() {
-        $ccUrl = $this->_baseUrl . '/api/lookup/model/Contacts';
-        foreach($this->attributes as $key=>$value){
-			// Exclude null attributes from lookup
-            if(is_null($value) || $value==''){
-                unset($this->attributes[$key]);
-            }
-        }
-        $this->responseObject = $this->_send($ccUrl, $this->attributes);
-        return $this->processResponse(true); // Set attributes
+		return $this->modelLookup('Contacts');
     }
 
     /**
@@ -279,8 +324,7 @@ class APIModel {
     public function contactDelete($id = null) {
         if (!isset($this->id))
             $this->id = $id;
-        $ccUrl = $this->_baseUrl . '/api/delete/model/Contacts';
-        $this->responseObject = $this->_send($ccUrl, $this->attributes);
+        $this->responseObject = $this->_send('api/delete/model/Contacts', $this->attributes);
         return $this->processResponse();
     }
 
@@ -297,27 +341,63 @@ class APIModel {
      * @return type 
      */
     public function checkAccess($action){
-        $accessUrl = $this->_baseUrl . '/api/checkPermissions/action/'.$action.'/username/'.$this->_user.'/api/1';
-        $result=$this->_send($accessUrl,array());
+        $result=$this->_send('api/checkPermissions/action/'.$action.'/username/'.$this->_user.'/api/1',array());
         return $result=='true';
     }
 
+	/**
+	 * Creates a new cURL resource handle with user authentication parameters.
+	 *
+	 * @param type $url
+	 * @param type $postData
+	 * @param type $curlOpts
+	 * @return resource
+	 */
+	private function _curlHandle($url,$postData=array(),$curlOpts=array()) {
+		$post = !empty($postData);
+		// Authentication parameters
+		$authOpts = array(
+				'userKey' => $this->_userKey,
+				'user' => $this->_user
+		);
+		if(!$post) {
+			// The authentication parameters will need to go into the URL, since
+			// this won't be a POST request.
+			//
+			// if "?" is there already, concatenate with "&". Otherwise, "?"
+			$appendParams = strpos($url,'?') !== false; // use "&" to concatenates
+			$url .= ($appendParams ? '&' : '?').http_build_query($authOpts);
+		}		
+		// Curl handle
+		$ch = curl_init($this->_baseUrl.'/'.$url);
+		// Set default options for the curl resource:
+		curl_setopt_array($ch,array(
+			// Tell CURL to receive response data (and don't return null) even if
+			// the server returned with an error, so that we can have the response
+			// data and get the response code with curl_getinfo:
+			CURLOPT_HTTP200ALIASES => array(400,401,403,404,413,500,501),
+			// Make it a POST request (or not):
+			CURLOPT_POST => $post,
+			// Response capture necessary:
+			CURLOPT_RETURNTRANSFER => 1,
+		));
+		// Set custom options next so that they override defaults:
+		curl_setopt_array($ch,$curlOpts);
+		if($post) // Set payload data
+			curl_setopt($ch,CURLOPT_POSTFIELDS,array_merge($postData,$authOpts));
+
+		return $ch;
+	}
+
     /**
-     * Function that actually sends the request to the server. 
+     * Function that sends a post request to the server.
+	 * 
      * @param string $url The full request URL including base path and route for create, update etc.
      * @param mixed $postData Post data to be included with the request.
      * @return string Response code sent by API controller. 
      */
     private function _send($url, $postData){
-        $ccSession = curl_init($url);
-		// Tell CURL to receive response data (and don't return null) even if
-		// the server returned with an error, so that we can have the response
-		// and the response code:
-		curl_setopt($ccSession, CURLOPT_HTTP200ALIASES, array(400, 401, 403, 404, 500, 501));
-		// Make only a POST request:
-		curl_setopt($ccSession, CURLOPT_POST, 1);
-		curl_setopt($ccSession, CURLOPT_POSTFIELDS, array_merge(array('userKey' => $this->_userKey, 'user' => $this->_user), $postData));
-		// Response capture necessary:
+        $ccSession = $this->_curlHandle($url,$postData);
         curl_setopt($ccSession, CURLOPT_RETURNTRANSFER, 1);
         $ccResult = curl_exec($ccSession);
 		$this->_responseCode = curl_getinfo($ccSession,CURLINFO_HTTP_CODE);

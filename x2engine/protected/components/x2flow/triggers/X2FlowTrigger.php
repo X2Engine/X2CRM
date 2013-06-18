@@ -193,12 +193,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		if(!isset($paramRules['options'],$this->config['options']))
 			return false;
 		$config = &$this->config['options'];
-		
+
 		if(isset($paramRules['modelClass'])) {
 			$modelClass = $paramRules['modelClass'];
 			if($modelClass === 'modelClass') {
-				if(isset($config['modelClass']))
-					$modelClass = $config['modelClass'];
+				if(isset($config['modelClass'],$config['modelClass']['value']))
+					$modelClass = $config['modelClass']['value'];
 				else
 					return false;
 			}
@@ -209,7 +209,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	}
 
 	/**
-	 * Default conidition processor for main config panel. Checks each option against the key in $params of the same name, 
+	 * Default conidition processor for main config panel. Checks each option against the key in $params of the same name,
 	 * using an operator if provided (defaults to "=")
 	 * @return boolean the result of the test
 	 */
@@ -217,18 +217,18 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		foreach($this->config['options'] as &$option) {
 			if(!isset($option['name']) || $option['name'] === 'modelClass')	// modelClass is a special case, ignore it
 				continue;
-			
+
 			if($option['optional'] && ($option['value'] === null || $option['value'] === ''))	// if it's optional and blank, forget about it
 				continue;
-			
+
 			$value = $option['value'];
 			if(isset($option['type']))
 				$value = X2Flow::parseValue($value,$option['type'],$params);
-			
+
 			if(!$this->evalComparison($params[$option['name']],$option['optional'],$value))
 				return false;
 		}
-		
+
 		return $this->checkConditions($params);
 	}
 	/**
@@ -239,12 +239,13 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		if(isset($this->config['conditions'])){
 			foreach($this->config['conditions'] as &$condition) {
 				if(!isset($condition['type']))
-					continue;
-				$required = isset($condition['required']);
-				
+					$condition['type'] = '';
+					// continue;
+				$required = isset($condition['required']) && $condition['required'];
+
 				if(isset($condition['name']) && $required && !isset($params[$condition['name']]))	// required param missing
 					return false;
-				
+
 				if(array_key_exists($condition['type'],self::$genericConditions)) {
 					if(!self::checkCondition($condition,$params))
 						return false;
@@ -265,14 +266,14 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		$operator = isset($condition['operator'])? $condition['operator'] : '=';
 		// $type = isset($condition['type'])? $condition['type'] : null;
 		$value = isset($condition['value'])? $condition['value'] : null;
-		
-		if(isset($condition['name']) && $type === null) {	// default to a doing basic value comparison
+
+		if(isset($condition['name']) && $condition['type'] === '') {	// default to a doing basic value comparison
 			if(!isset($params[$condition['name']]))
 				return false;
-			
+
 			return self::evalComparison($params[$condition['name']],$operator,$value);
 		}
-		
+
 		switch($condition['type']) {
 			case 'attribute':
 				if(!isset($condition['name'],$model))
@@ -280,38 +281,38 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				$attr = &$condition['name'];
 				if(null === $field = $model->getField($attr))
 					return false;
-				
+
 				if($operator === 'changed') {
 					$oldAttributes = $model->getOldAttributes();
 					return !isset($oldAttributes[$attr]) || $model->getAttribute($attr) != $oldAttributes[$attr];
 				}
-				
+
 				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$params));
-				
+
 			case 'current_user':
 				return self::evalComparison(Yii::app()->user->getName(),$operator,X2Flow::parseValue($value,'assignment',$params));
-				
+
 			case 'month':
 				return self::evalComparison((int)date('n'),$operator,$value);	// jan = 1, dec = 12
-				
+
 			case 'day_of_month':
 				return self::evalComparison((int)date('j'),$operator,$value);	// 1 through 31
-				
+
 			case 'day_of_week':
 				return self::evalComparison((int)date('N'),$operator,$value);	// monday = 1, sunday = 7
-			
+
 			case 'time_of_day':	// - mktime(0,0,0)
 				return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'time',$params));	// seconds since midnight
-				
+
 			// case 'current_local_time':
-				
+
 			case 'current_time':
 				return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'dateTime',$params));
-				
+
 			case 'user_active':
 				return CActiveRecord::model('Session')->exists('user=:user AND status=1',array(':user'=>X2Flow::parseValue($value,'assignment',$params)));
-				
-				
+
+
 			case 'on_list':
 				if(!isset($model,$value))
 					return false;
@@ -321,12 +322,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				$listCriteria = $list->queryCriteria(false); // don't use access rules
 				$listCriteria->compare('t.id',$model->id);
 				return $model->exists($listCriteria);		// see if this record is on the list
-				
-				
+
+
 			case 'workflow_status':
 				if(!isset($model,$condition['workflowId'],$condition['stageNumber']))
 					return false;
-				
+
 				switch($operator) {
 					case 'started_workflow':
 						return CActiveRecord::model('Actions')->exists(
@@ -670,7 +671,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	public static function getTriggerTypes() {
 		$types = array();
 		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
-			if($file === '.' || $file === '..' || $file === 'X2FlowTrigger.php' || $file === 'X2FlowSwitch.php')
+			if(in_array($file,array('.','..','X2FlowTrigger.php','X2FlowSwitch.php','BaseTagTrigger.php'),true))
 				continue;
 			$class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
 			if($class !== null)

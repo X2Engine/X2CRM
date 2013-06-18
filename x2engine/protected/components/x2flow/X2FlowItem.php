@@ -73,9 +73,9 @@ abstract class X2FlowItem {
 			$optName = &$optRule['name'];
 			
 			if(!isset($configOptions[$optName]))	// each option must be present in $this->config and $params
-				return false;
+				continue;							// but just ignore them for future proofing
 			if($params !== null && !isset($params[$optName]))	// if params are provided, check them for this option name
-				return null;
+				return false;
 			
 			$option = &$configOptions[$optName];
 			// set optional flag

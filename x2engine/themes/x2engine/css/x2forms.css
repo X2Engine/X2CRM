@@ -51,13 +51,22 @@ div.x2-layout {
 	-webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
 	box-shadow:				0 1px 6px rgba(0,0,0,0.5); */
 }
+
+/* #main-column.half-width {border-right:1px solid #aaa;margin-right:-1px;} */
+/* .history.half-width {box-sizing:border-box;border-left:1px solid #aaa;} */
+
 div.half-width {
 	width:65%;
 	float:left;
 }
-div.half-width > div, div.half-width > form {margin-right:10px;}
-.history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;}
+#main-column > div, #main-column > form {margin:0 5px 5px 5px;}
+.history.half-width > div, .history.half-width > form {margin:0 5px 5px 0;}
 
+#main-column > div.page-title-fixed-outer {margin:0 0 5px 0;padding-right:7px;}
+#main-column.half-width > div.page-title-fixed-outer {padding-right:10px;}
+/* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
+
+div.half-width > div.page-title, #main-column > div.page-title {margin-left:0;}
 div.half-width > div.form {background:#fff;}
 div.x2-layout a {text-decoration:none;}
 div.x2-layout a:hover {text-decoration:underline;}

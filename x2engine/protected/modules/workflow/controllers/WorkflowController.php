@@ -61,14 +61,6 @@ class WorkflowController extends x2base {
 		);
 	}
 	
-	// Load model
-	public function loadModel($id) {
-		$model=Workflow::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-	
 	// Lists all workflows
 	public function actionIndex() {
 		$dataProvider = new CActiveDataProvider('Workflow');

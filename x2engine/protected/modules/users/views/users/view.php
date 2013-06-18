@@ -44,7 +44,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
-<div class="page-title">
+<div class="page-title icon users">
 	<h2><span class="no-bold"><?php echo Yii::t('users','User:'); ?></span> <?php echo $model->firstName,' ',$model->lastName; ?></h2>
 </div>
 <?php $this->widget('zii.widgets.CDetailView', array(

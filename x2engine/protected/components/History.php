@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -40,68 +41,120 @@
  * @package X2CRM.components
  */
 class History extends X2Widget {
-	public $associationType;		// type of record to associate actions with
-	public $associationId = '';		// record to associate actions with
 
-	public $historyType = 'all';
+    public $associationType;  // type of record to associate actions with
+    public $associationId = '';  // record to associate actions with
+    public $filters = true;
+    public $historyType = 'all';
+    public $pageSize = 10;
+    public $relationships = 0;
 
-	public function run() {
-		$historyTabs = array(
-			'all'=>'All',
-			'actions'=>'Actions',
-			'comments'=>'Comments',
-			'workflow'=>'Workflow',
-			'attachments'=>'Attachments',
-			'marketing'=>'Marketing',
-		);
+    public function run(){
+        if($this->filters){
+            $historyTabs = array(
+                'all' => 'All',
+                'actions' => 'Actions',
+                'comments' => 'Comments',
+                'workflow' => 'Workflow',
+                'attachments' => 'Attachments',
+                'marketing' => 'Marketing',
+                'webactivity'=>'Web Activity',
+            );
 
-		if(isset($_GET['history']) && array_key_exists($_GET['history'],$historyTabs))
-			$this->historyType = $_GET['history'];
+            if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){
+                $this->historyType = $_GET['history'];
+            }
+            if(isset($_GET['pageSize'])){
+                $this->pageSize=$_GET['pageSize'];
+            }
+            if(strcasecmp($this->associationType,'Accounts')==0){
+                $this->relationships=1;
+            }
+            if(isset($_GET['relationships'])){
+                $this->relationships=$_GET['relationships'];
+            }
+        }else{
+            $historyTabs = array();
+        }
+        Yii::app()->clientScript->registerScript('history-tabs',"
+            var relationshipFlag={$this->relationships};
+            var currentHistory='".$this->historyType."';
+            $(document).on('change','#history-selector',function(){
+                $.fn.yiiListView.update('history',{ data:{ history: $(this).val() }});
+            });
+            $(document).on('click','#history-collapse',function(e){
+                e.preventDefault();
+                $('#history .description').toggle();
+            });
+            $(document).on('click','#show-history-link',function(e){
+                e.preventDefault();
+                $.fn.yiiListView.update('history',{ data:{ pageSize: 10000 }});
+            });
+            $(document).on('click','#show-relationships-link',function(e){
+                e.preventDefault();
+                if(relationshipFlag){
+                    relationshipFlag=0;
+                }else{
+                    relationshipFlag=1;
+                }
+                $.fn.yiiListView.update('history',{ data:{ relationships: relationshipFlag }});
+            });
+        ");
+        $this->widget('zii.widgets.CListView', array(
+            'id' => 'history',
+            'dataProvider' => $this->getHistory(),
+            'viewData'=>array(
+                'relationshipFlag'=>$this->relationships,
+            ),
+            'itemView' => 'application.modules.actions.views.actions._view',
+            'htmlOptions' => array('class' => 'action list-view'),
+            'template' => '<div class="form">'.CHtml::dropDownList('history-selector',$this->historyType,$historyTabs).
+            '<span style="margin-top:5px;" class="right">'.CHtml::link('Toggle Text','#',array('id'=>'history-collapse','class'=>'x2-hint','title'=>'Click to toggle showing the full text of History items.'))
+            .' | '.CHtml::link('Show All','#',array('id'=>'show-history-link','class'=>'x2-hint','title'=>'Click to increase the page size on the History.'))
+            .' | '.CHtml::link('Relationships','#',array('id'=>'show-relationships-link','class'=>'x2-hint','title'=>'Click to toggle showing actions associated with related records.'))
+            .'</span></div> {sorter}{items}{pager}',
+        ));
+    }
 
-		foreach($historyTabs as $type => &$label) {
-			if($type == $this->historyType)
-				$label = Yii::t('app',$label);
-			else
-				$label = CHtml::link(Yii::t('app',$label),'javascript:$.fn.yiiListView.update("history", {data: "history='.$type.'"})');
-		}
+    public function getHistory(){
 
-		$historyTabs['collapse'] = '<a href="#" id="history-collapse" onclick="javascript:$(\'#history .description\').toggle();">[&ndash;]</a>';
+        $historyCriteria = array(
+            'all' => '',
+            'actions' => ' AND type IS NULL',
+            'workflow' => ' AND type="workflow"',
+            'comments' => ' AND type="note"',
+            'attachments' => ' AND type="attachment"',
+            'marketing' => ' AND type IN ("email","webactivity","weblead","email_staged","email_opened","email_clicked","email_unsubscribed")',
+            'webactivity'=>'AND type IN ("weblead","webactivity")'
+        );
+        if($this->relationships){
+            $type=$this->associationType;
+            $model=X2Model::model($type)->findByPk($this->associationId);
+            if(count($model->relatedX2Models)>0){
+                $associationCondition="((associationId={$this->associationId} AND associationType='{$this->associationType}')";
+                foreach($model->relatedX2Models as $relatedModel){
+                        $associationCondition.=" OR (associationId={$relatedModel->id} AND associationType='{$relatedModel->myModelName}')";
+                }
+                $associationCondition.=")";
+            }else{
+                $associationCondition='associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
+            }
+        }else{
+            $associationCondition='associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
+        }
+        $associationCondition=str_replace('Opportunity','opportunities',$associationCondition);
+        $associationCondition=str_replace('Quote','quotes',$associationCondition);
+        return new CActiveDataProvider('Actions', array(
+                    'criteria' => array(
+                        'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
+                        'condition' => $associationCondition.
+					'AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
+                    ),
+                    'pagination'=>array(
+                        'pageSize'=>$this->pageSize,
+                    )
+                ));
+    }
 
-
-		$this->widget('zii.widgets.CListView', array(
-			'id'=>'history',
-			'dataProvider'=>$this->getHistory(),
-			'itemView'=>'application.modules.actions.views.actions._view',
-			'htmlOptions'=>array('class'=>'action list-view'),
-			'template'=>'<div class="publisher-tabs">'.implode(' | ',array_values($historyTabs)).'</div> {sorter}{items}{pager}',
-		));
-	}
-
-	public function getHistory() {
-
-		$historyCriteria = array(
-			'all'=>'',
-			'actions'=>' AND type IS NULL',
-			'workflow'=>' AND type="workflow"',
-			'comments'=>' AND type="note"',
-			'attachments'=>' AND type="attachment"',
-			'marketing'=>' AND type IN ("email","webactivity","weblead","email_staged","email_opened","email_clicked","email_unsubscribed")',
-		);
-        
-		return new CActiveDataProvider('Actions',array(
-			'criteria'=>array(
-				'order'=>'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
-				'condition'=>'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"
-					AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
-			)
-		));
-	}
 }
-
-
-
-
-
-
-
 

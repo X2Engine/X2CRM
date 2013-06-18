@@ -124,12 +124,12 @@ class Fields extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * Finds a contact matching a full name; returns Contacts::name if a match was found, null otherwise.
 	 * @param string $type
 	 * @param string $name
-	 * @return mixed 
+	 * @return mixed
 	 */
 	public static function getLinkId($type,$name) {
 		if(strtolower($type) == 'contacts')
@@ -141,7 +141,7 @@ class Fields extends CActiveRecord {
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Parses a value for table insertion using X2Fields rules
 	 * @param string $type the type of field
@@ -155,14 +155,14 @@ class Fields extends CActiveRecord {
 		switch($this->type) {
 			case 'assignment':
 				return ($this->linkType === 'multiple')? Accounts::parseUsers($value) : $value;
-				
+
 			case 'date':
 			case 'dateTime':
 				if(ctype_digit((string)$value))		// must already be a timestamp
 					return $value;
 				$value = $this->type === 'dateTime'? Formatter::parseDateTime($value) : Formatter::parseDate($value);
 				return $value === false? null : $value;
-				
+
 			case 'link':
 				if(empty($value) || empty($this->linkType) || is_int($value))	// if it's empty, then whatever; if it's already numeric, assume it's valid
 					return $value;
@@ -187,84 +187,49 @@ class Fields extends CActiveRecord {
 	 * @param string $currencySymbol Optional currency symbol to trim off the string before conversion
 	 * @param string $percentSymbol Optional percent symbol to trim off the string before conversion
 	 */
-	public static function strToNumeric($input, $type='float',$currencySymbol='$',$percentSymbol = '%') {
+	public static function strToNumeric($input, $type='float') {
 		$sign = 1;
+		// Typecasting in the case that it's not a string
+		$inType = gettype($input);
+		if($inType != 'string') {
+			if($type == $inType)
+				return $inType;
+			else
+				return ($type == 'int' ? (int) $input : (float) $input);
+		}
+		
 		// Get rid of leading and trailing whitespace:
 		$value = trim($input);
 		if(strpos($value,'(') === 0) // Parentheses notation
 			$sign = -1;
-		if(strpos($value,'-') === 0) // Minus sign notation
+		$posNeg = strpos($value,'-');
+		if($posNeg === 0 || $posNeg === strlen($value)-1) // Minus sign notation
 			$sign = -1;
-		$value = trim($value, "-() $percentSymbol$currencySymbol" . Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency));
-
-		if($value === null || $value === '') // Turn null string into zero
+		// Strip out currency/percent symbols and digit group separators, but exclude null currency symbols:
+		$stripSymbols = array_filter(array_values(Yii::app()->params->supportedCurrencySymbols),function($s){return !empty($s);});
+		$stripSymbols[] = '%';
+		$grpSym = Yii::app()->getLocale()->getNumberSymbol('group');
+		if(!empty($grpSym) && $type!='percentage')
+			$stripSymbols[] = $grpSym;
+		$value = strtr($value,array_fill_keys($stripSymbols,''));
+		// Trim away negative symbols and any remaining whitespace:
+		$value = trim($value, "-() ");
+        $converted = strtr($value, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
+        $value = trim($converted,chr(0xC2).chr(0xA0));
+		// Turn null string into zero:
+		if($value === null || $value === '')
 			return ($type!='int')?0.0:0;
 		else if (!in_array($type, array('int', 'currency', 'float', 'percentage')))
-			return $value;
-		else if (!preg_match('/^([\d\.,]+)e?[\+\-]?\d*$/', $value)) // Unrecognized numeric string format
-			return $input;
-		if(in_array($type,array('float','currency','percentage'))) {
-			// Determine numeric format (since there's no sure-fire way to
-			// do the inverse of a number format and parse the numeric value
-			// out through CLocale or the like)
-			if(preg_match('/([,\.])\d*e?[\+\-]?\d*$/',$value,$num)) {
-				$separator = $num[1];
-				$part1NumberInd = strrpos($value,$separator);
-				$part1Number = substr($value,0,$part1NumberInd);
-				$part2Number = substr($value,$part1NumberInd+1);
-				if(preg_match('/([,\.])/',$part1Number,$num)) {
-					// This number is greater than 10^6 or is greater than 10^3
-					// and not rounded to an integer; there's a second separator.
-					if($num[1] == $separator) {
-						// The number is at least 10^6 and is rounded to an integer;
-						// 2+ separators were found, and they are exactly the same.
-						return ((float) str_replace($num[1],'',$value))*$sign;
-					} else {
-						// Thousands separator found and is not the same as 
-						// the separator nearest the end. Number is larger than
-						// 10^3 and is not rounded to an integer.
-						$part1Number = str_replace($num[1],'',$part1Number);
-						return ((float) $part1Number.$separator.$part2Number)*$sign;
-					}
-				} else {
-					// There was only one separator found. That indicates:
-					// - Less than 10^3, not rounded to an integer, or:
-					// - Between 10^3 and 10^6, and rounded to an integer, or:
-					// - Scientific notation.
-					//
-					// At this point we can only try native typecasting (which 
-					// will depend on the PHP locale), and if that fails, assume
-					// that it's rounded to an integer, and strip out any
-					// separators.
-					if((float) $value == $value) {
-						return ((float)$value)*$sign;
-					} else {
-						// Typecasting failed. Strip out all separators.
-						$value = str_replace($separator,'',$value);
-						return (float) $value == $value ? ((float) $value)*$sign : $input;
-					}
-				}
-			} else {
-				// No separators were found. It is rounded to an integer and
-				// less than a thousand. Native typecasting should work fine.
-				return ((float) $value)*$sign;
+			return $value; // Unrecognized type
+		else if (!preg_match('/^([\d\.,]+)e?[\+\-]?\d*$/', $value))
+			return $input; // Unreadable input
 
-			}
+        $value=str_replace(Yii::app()->getLocale()->getNumberSymbol('decimal'),'.',$value);
+		if(in_array($type,array('float','currency','percentage'))) {
+            return ((float) $value)*$sign;
 		} else if($type == 'int') {
 			return ((int) $value)*$sign;
 		} else
 			return $value;
-		switch ($type) {
-			case 'int':
-				return ((int) $value)*$sign;
-			case 'float':
-				return ((float) $value)*$sign;
-			case 'currency':
-				return ((float) $value)*$sign;
-			case 'percentage':
-				return ((float) $value)*$sign;
-			default: // Nothing will work. Spit the input back out.
-				return $input;
-		}
 	}
 }

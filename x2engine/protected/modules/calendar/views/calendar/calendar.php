@@ -81,9 +81,9 @@ $this->actionMenu = $this->formatMenu($menuItems);
 <?php
 
 // register fullcalendar css and js
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() .'/css/fullcalendar/fullcalendar.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar/fullcalendar.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar/gcal.js');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/gcal.js');
 
 // register jquery timepicker css and js
 // (used inside js dialog because CJuiDateTimePicker is a php library that won't work inside a js dialog)

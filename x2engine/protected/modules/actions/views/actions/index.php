@@ -50,10 +50,12 @@ function trimText($text) {
 ?>
 <div class="page-title icon actions" id="page-header">
     <h2>Actions</h2>
+
     <div class="title-bar" style="padding-left:0px;">
         <?php echo CHtml::link(Yii::t('app','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
         <?php echo CHtml::link(Yii::t('app','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
         <?php echo CHtml::link(Yii::t('app','New Action'),array('/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); ?>
+        <?php echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
     </div>
 </div>
 <?php echo $this->renderPartial('_advancedControls',$params,true); ?>

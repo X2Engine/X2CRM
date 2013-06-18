@@ -50,10 +50,7 @@ class ApiController extends x2base {
 	public $modelClass;
 	public $user;
 
-	/**
-	 * Default response format either 'json' or 'xml'
-	 */
-	private $format = 'json';
+	private $_model;
 
 	/**
 	 * Auth items to be checked against in {@link filterCheckPermissions} where
@@ -81,7 +78,7 @@ class ApiController extends x2base {
 		return array(
 			'noSession',
 			'authenticate - voip,webListener',
-			'validModel + create,view,lookup,update,delete',
+			'validModel + create,view,lookup,update,delete,tags',
 			'checkCRUDPermissions + create,view,lookup,update,delete',
 		);
 	}
@@ -264,142 +261,23 @@ class ApiController extends x2base {
 	}
 
 	/**
-	 * Updates a preexisting record.
-	 *
-	 * Usage of this function is very similar to {@link actionCreate}, although
-	 * it requires the "id" parameter that corresponds to the (auto-increment)
-	 * id field of the record in the database. Thus, URLs for post requests to
-	 * this API function should be formatted as follows:
-	 *
-	 * index.php/api/update/model/[model name]/id/[record id]
-	 *
-	 * The attributes of the model should be submitted in the $_POST array along
-	 * with 'authUser' and 'authPassword' just as in create.
+	 * Delete a model record by primary key value.
 	 */
-	public function actionUpdate() {
-		$modelSingle = X2Model::model($this->modelClass);
-		$model = $modelSingle->findByPkInArray($_GET);
-
-		// Did we find the requested model? If not, raise an error
-		if (is_null($model))
-			$this->_respondBadPk($modelSingle, $_GET);
-
-		$this->modelSetUsernameFields($model);
-		$model->setX2Fields($_POST);
-
-		// Try to save the model and perform special post-save operations based on
-		// each class:
-		if ($model->save()) {
-			switch ($this->modelClass) {
-				case 'Actions':
-					$model->syncGoogleCalendar('update');
-					break;
-				default:
-					$this->_sendResponse(200, $model->attributes,true);
-			}
-			$this->addResponseProperty('model',$model->attributes);
-			$this->_sendResponse(200, 'Model created successfully');
-		} else {
-			// Errors occurred
-			$this->addResponseProperty('modelErrors',$model->errors);
-			$msg = "<h1>Error</h1>";
-			$msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
-			$msg .= "<ul>";
-			foreach ($model->errors as $attribute => $attr_errors) {
-				$msg .= "<li>Attribute: $attribute</li>";
-				$msg .= "<ul>";
-				foreach ($attr_errors as $attr_error)
-					$msg .= "<li>$attr_error</li>";
-				$msg .= "</ul>";
-			}
-			$msg .= "</ul>";
-			$this->_sendResponse(500, $msg);
-		}
-	}
-
-	/**
-	 * Records a phone call as a notification.
-	 *
-	 * Given a phone number, if a contact matching that phone number exists, a
-	 * notification assigned to that contact's assignee will be created.
-	 * Software-based telephony systems such as Asterisk can thus immediately
-	 * notify sales reps of a phone call by making a cURL request to a url
-	 * formatted as follows:
-	 *
-	 * api/voip/data/[phone number]
-	 *
-	 * (Note: the phone number itself must not contain anything but digits, i.e.
-	 * no periods or dashes.)
-	 *
-	 * For Asterisk, one possible integration method is to insert into the
-	 * dialplan, at the appropriate position, a call to a script that uses
-	 * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone
-	 * number. The script can then make the necessary request to this action.
-	 */
-	public function actionVoip() {
-
-		if (isset($_GET['data'])) {
-
-			$matches = array();
-			if (preg_match('/\d{10,}/', $_GET['data'], $matches)) {
-
-				$contact = X2Model::model('Contacts')->findByAttributes(array('phone' => $matches[0]));
-				if (isset($contact)) {
-
-					$contact->updateLastActivity();
-
-					$notif = new Notification;
-					$notif->type = 'voip_call';
-					$notif->user = $contact->assignedTo;
-					$notif->modelType = 'Contacts';
-					$notif->modelId = $contact->id;
-					$notif->value = $matches[0];
-					$notif->createDate = time();
-					$notif->save();
-
-					X2Flow::trigger('RecordVoipInboundTrigger', array(
-						'model' => $contact,
-						'number' => $matches[0]
-					));
-
-					echo 'Notification created.';
-				} else {
-					echo 'No contact found.';
-					// $notif = new Notification;
-					// $notif->type = 'voip_call';
-					// $notif->user = ?;
-					// $notif->modelType = 'Contacts';
-					// $notif->value = $matches[0];
-					// $notif->createDate = time();
-					// $notif->save();
-				}
-			} else
-				echo 'Invalid phone number format.';
-		}
-	}
-
-	/**
-	 * Obtain a model by its record ID.
-	 *
-	 * Looks up a model by its record ID and responds with its attributes as a
-	 * JSON-encoded string.
-	 *
-	 * URLs to use this function:
-	 * index.php/view/id/[record id]
-	 *
-	 * Include 'authUser' and 'authPassword' just like in create and update.
-	 */
-	public function actionView() {
-		$modelSingle = X2Model::model($this->modelClass);
-		$model = $modelSingle->findByPkInArray($_GET);
-		// Did we find the requested model? If not, raise an error
-		if (is_null($model)) {
-			// Tell that the primary key is missing or incorrect.
-			$this->_respondBadPk($modelSingle,$_GET);
+	public function actionDelete() {
+		$model = $this->model;
+		if ($this->modelClass === 'Actions')
+				$model->syncGoogleCalendar('delete');
+		// Delete the model
+		$num = $model->delete();
+		if ($num > 0) {
+			$this->_sendResponse(200, 1);
 		} else
-			$this->_sendResponse(200, $model->attributes,true);
+			$this->_sendResponse(500, sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_POST['id']));
 	}
 
+	/**
+	 * Gets a list of contacts.
+	 */
 	public function actionList() {
 		$accessLevel = $this->getAccessLevel('Contacts', $user);
 		$listId = $_POST['id'];
@@ -472,24 +350,361 @@ class ApiController extends x2base {
 		}
 	}
 
+
 	/**
-	 * Delete a model record by primary key value.
+	 * Operations involving tags associated with a model.
+	 *
+	 * There needs to be the tagged model's primary key value in the URL's
+	 * parameters, in addition to the model's class. If DELETE, or POST, there
+	 * needs to be an array of tags, JSON-encoded, in postdata, to delete or
+	 * add to the model.
 	 */
-	public function actionDelete() {
-		$model = X2Model::model($this->modelClass)->findByPkInArray($_POST);
-		// Was a model found? If not, raise an error
-		if (is_null($model))
-			$this->_sendResponse(400, sprintf("Error: Didn't find any model <b>%s</b> with primary key value <b>%s</b>.", $this->modelClass,is_array($pk)?implode('-',$pk):$pk));
+	public function actionTags() {
+		$model = $this->model;		
+		$rType = Yii::app()->request->requestType;
+		switch($rType){
+			case 'GET':
+				// Query all tags associated with a model.
+				$this->_sendResponse(200, $model->getTags(),true);
+			case 'POST':
+				// Add tag(s).
+				if(array_key_exists('tags', $_POST))
+					$tags = json_decode($_POST['tags'], 1);
+				else if(array_key_exists('tag',$_POST))
+					$tags = array($_POST['tag']);
+				else
+					$this->_sendResponse(400, 'Parameter "tags" (json-encoded list of tags) or "tag" (single tag to add) requried.');
+				$model->addTags($tags);
+				$this->_sendResponse(200, sprintf('Record "%s" (%s) tagged with "%s"', $model->name, get_class($model), implode('","', $tags)));
+			case 'DELETE':
+				// Delete a tag
+				if(array_key_exists('tag',$_GET))
+					$tag = "#".ltrim($_GET['tag'],'#'); // Works whether or not the hash is attached. It is difficult to add the tag due to how it's a special URL character.
+				else
+					$this->_sendResponse(400, 'Please specify a tag to be deleted.');
+				$removed = $model->removeTags($tag);
+				if($removed)
+					$this->_sendResponse(200, sprintf('Tag "%s" deleted from "%s" (%s).', $tag, $model->name, get_class($model))); // .'$_GET='.var_export($_GET,1).'; $_POST='.var_export($_POST,1).'; uri='.$_SERVER['REQUEST_URI']);
+				else
+					$this->_sendResponse(404, 'Did not delete any existing tags.');
+				break;
+		}
+	}
 
-		if ($this->modelClass === 'Actions')
-				$model->syncGoogleCalendar('delete');
+	/**
+	 * Updates a preexisting record.
+	 *
+	 * Usage of this function is very similar to {@link actionCreate}, although
+	 * it requires the "id" parameter that corresponds to the (auto-increment)
+	 * id field of the record in the database. Thus, URLs for post requests to
+	 * this API function should be formatted as follows:
+	 *
+	 * index.php/api/update/model/[model name]/id/[record id]
+	 *
+	 * The attributes of the model should be submitted in the $_POST array along
+	 * with 'authUser' and 'authPassword' just as in create.
+	 */
+	public function actionUpdate() {
+		$model = $this->model;
+		$this->modelSetUsernameFields($model);
+		$model->setX2Fields($_POST);
+		
+		// Try to save the model and perform special post-save operations based on
+		// each class:
+		if ($model->save()) {
+			switch ($this->modelClass) {
+				case 'Actions':
+					$model->syncGoogleCalendar('update');
+					break;
+				default:
+					$this->_sendResponse(200, $model->attributes,true);
+			}
+			$this->addResponseProperty('model',$model->attributes);
+			$this->_sendResponse(200, 'Model created successfully');
+		} else {
+			// Errors occurred
+			$this->addResponseProperty('modelErrors',$model->errors);
+			$msg = "<h1>Error</h1>";
+			$msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
+			$msg .= "<ul>";
+			foreach ($model->errors as $attribute => $attr_errors) {
+				$msg .= "<li>Attribute: $attribute</li>";
+				$msg .= "<ul>";
+				foreach ($attr_errors as $attr_error)
+					$msg .= "<li>$attr_error</li>";
+				$msg .= "</ul>";
+			}
+			$msg .= "</ul>";
+			$this->_sendResponse(500, $msg);
+		}
+	}
 
-		// Delete the model
-		$num = $model->delete();
-		if ($num > 0) {
-			$this->_sendResponse(200, 1);
-		} else
-			$this->_sendResponse(500, sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.", $_GET['model'], $_POST['id']));
+	/**
+	 * Obtain a model by its record ID.
+	 *
+	 * Looks up a model by its record ID and responds with its attributes as a
+	 * JSON-encoded string.
+	 *
+	 * URLs to use this function:
+	 * index.php/view/id/[record id]
+	 *
+	 * Include 'authUser' and 'authPassword' just like in create and update.
+	 */
+	public function actionView() {
+		$this->_sendResponse(200,$this->model->attributes,true);
+	}
+
+	/**
+	 * Records a phone call as a notification.
+	 *
+	 * Given a phone number, if a contact matching that phone number exists, a
+	 * notification assigned to that contact's assignee will be created.
+	 * Software-based telephony systems such as Asterisk can thus immediately
+	 * notify sales reps of a phone call by making a cURL request to a url
+	 * formatted as follows:
+	 *
+	 * api/voip/data/[phone number]
+	 *
+	 * (Note: the phone number itself must not contain anything but digits, i.e.
+	 * no periods or dashes.)
+	 *
+	 * For Asterisk, one possible integration method is to insert into the
+	 * dialplan, at the appropriate position, a call to a script that uses
+	 * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone
+	 * number. The script can then make the necessary request to this action.
+	 */
+	public function actionVoip() {
+
+		if (isset($_GET['data'])) {
+
+			$matches = array();
+			if (preg_match('/\d{10,}/', $_GET['data'], $matches)) {
+				$number = ltrim($matches[0],'1');
+				$phoneCrit = new CDbCriteria(array(
+							'condition' => "modelType='Contacts' AND number LIKE :number",
+							'params' => array(':number'=>"%$number%")
+						)
+					);
+				$phoneNumber = PhoneNumber::model()->find($phoneCrit);
+				if(!empty($phoneNumber)){
+					$contact = X2Model::model('Contacts')->findByPk($phoneNumber->modelId);
+					if(isset($contact)){
+
+						$contact->updateLastActivity();
+
+						$assignees = array($contact->assignedTo);
+						if($contact->assignedTo == 'Anyone' || $contact->assignedTo == null) {
+							$users = User::model()->findAll();
+							$assignees = array_map(function($u){return $u->username;},$users);
+						}
+						$multiUser = count($assignees) > 1;
+						$usersSuccess = array();
+						$usersFailure = array();
+						// Format the phone number:
+						$formattedNumber = '';
+						$strNumber = (string) $number;
+						$strl = strlen($strNumber);
+						$formattedNumber = substr($strNumber, $strl - 4, $strl);
+						$formattedNumber = substr($strNumber, $strl - 7, 3)."-$formattedNumber";
+						if($strl >= 10){
+							$formattedNumber = substr($strNumber, $strl - 10, 3)."-$formattedNumber";
+							if($strl > 10){
+								$formattedNumber = substr($strNumber, 0, $strl - 10)."-$formattedNumber";
+							}
+						}
+						foreach($assignees as $user){
+							$notif = new Notification;
+							$notif->type = 'voip_call';
+							$notif->user = $user;
+							$notif->modelType = 'Contacts';
+							$notif->modelId = $contact->id;
+							$notif->value = $formattedNumber;
+							$notif->createDate = time();
+							if($notif->save()){
+								$usersSuccess[] = $user;
+							}else{
+								$usersFailure = array();
+							}
+						}
+
+						$failure = count($usersSuccess) == 0;
+						$partialFailure = count($usersFailure) > 0;
+						if($failure) {
+							$message = 'Saving notifications failed.';
+						} else {
+							X2Flow::trigger('RecordVoipInboundTrigger', array(
+								'model' => $contact,
+								'number' => $matches[0]
+							));
+							$message = 'Notifications created for user(s): '.implode(',',$usersSuccess);
+							if($partialFailure) {
+								$message .= '; saving notifications failed for users(s): '.implode(',',$usersFailure);
+							}
+						}
+						$this->_sendResponse($failure ? 500 : 200,$message);
+					} else {
+						$this->_sendResponse(404,'Phone number record refers to a contact that no longer exists.');
+					}
+				}else{
+					$this->_sendResponse(404,'No matching phone number found.');
+					// $notif = new Notification;
+					// $notif->type = 'voip_call';
+					// $notif->user = ?;
+					// $notif->modelType = 'Contacts';
+					// $notif->value = $matches[0];
+					// $notif->createDate = time();
+					// $notif->save();
+				}
+				
+			} else
+				$this->_sendResponse(400,'Invalid phone number format.');
+		} else {
+			$this->_sendResponse(400,'Phone number required as "data" URL parameter.');
+		}
+	}
+
+
+
+
+	/**
+	 * Checks the GET parameters for a valid model class.
+	 */
+	public function checkValidModel(){
+		Yii::log("Checking for valid model class...", 'api');
+		$noModel = empty($_GET['model']);
+		if(!$noModel)
+			$noModel = preg_match('/^\s*$/', $_GET['model']);
+		if($noModel){
+			Yii::log('Parameter "model" missing.', 'api');
+			$this->_sendResponse(400, "Model class name required."); // .'$_GET='.var_export($_GET,1).'; $_POST='.var_export($_POST,1).'; uri='.$_SERVER['REQUEST_URI']);
+		}
+		if(!class_exists($_GET['model'])){
+			Yii::log("Class {$_GET['model']} not found.", 'api');
+			$this->_sendResponse(501, "Model class \"{$_GET['model']}\" not found or does not exist.");
+		}
+		$modelRef = new $_GET['model'];
+		if(get_parent_class($modelRef) != 'X2Model'){
+			Yii::log("Class {$_GET['model']} is not a child of X2Model.", 'api');
+			$this->_sendResponse(403, "Model class \"{$_GET['model']}\" is not a child of X2Model and cannot be used in API calls.");
+		}
+		// We're all clear to proceed
+		$this->modelClass = $_GET['model'];
+	}
+
+	/**
+	 * Checks credentials for API access
+	 *
+	 * @param CFilterChain $filterChain
+	 */
+	public function filterAuthenticate($filterChain) {
+		$haveCred = false;
+		Yii::log("Checking user record.", 'api');
+		if (Yii::app()->request->requestType == 'POST') {
+			$haveCred = isset($_POST['userKey']) && isset($_POST['user']);
+			$params = $_POST;
+		} else {
+			$haveCred = isset($_GET['userKey']) && isset($_GET['user']);
+			$params = $_GET;
+		}
+
+		if ($haveCred) {
+			$this->user = User::model()->findByAttributes(array('username' => $params['user'], 'userKey' => $params['userKey']));
+			if ((bool) $this->user) {
+				if (!empty($this->user->userKey))
+					$filterChain->run();
+				else
+					$this->_sendResponse(403, "User \"{$this->user->username}\" cannot use API; userKey not set.");
+			} else {
+				Yii::log("Authentication failed; invalid user credentials; IP = {$_SERVER['REMOTE_ADDR']}; get or post params =  " . CJSON::encode($params).'', 'api');
+				$this->_sendResponse(401, "Invalid user credentials.");
+			}
+		} else {
+			Yii::log('No user credentials provided; IP = '.$_SERVER['REMOTE_ADDR'],'api');
+			$this->_sendResponse(401, "No user credentials provided.");
+		}
+	}
+
+	/**
+	 * Basic permissions check filter.
+	 *
+	 * It is meant to simplify the simpler actions where named after existing
+	 * actions (or actions listed among the keys of {@link actionAuthItemMap})
+	 *
+	 * @param type $filterChain
+	 */
+	public function filterCheckCRUDPermissions($filterChain) {
+		$model = new $this->modelClass;
+		$module = ucfirst($model->module);
+		$action = $this->action->id;
+		if(array_key_exists($action,$this->actionAuthItemMap))
+			$action = $this->actionAuthItemMap[$action];
+		else
+			$action = ucfirst($action);
+		$level = $this->actionCheckPermissions($module . $action);
+		if($level)
+			$filterChain->run();
+		else {
+			Yii::log("User \"{$this->user->username}\" denied API action; does not have permission for $module$action",'api');
+			$this->_sendResponse(403, 'This user does not have permission to perform operation "'.$action."\" on model <b>{$this->modelClass}</b>");
+		}
+	}
+
+	public function filterNoSession($filterChain) {
+		Yii::app()->params->noSession = true;
+		$filterChain->run();
+	}
+
+	/**
+	 * Ensures that the "model" parameter is present and valid.
+	 *
+	 * @param CFilterChain $filterChain
+	 */
+	public function filterValidModel($filterChain) {
+		if (!isset($this->modelClass)) {
+			$this->checkValidModel();
+			// Set user for the model:
+			X2Model::model($this->modelClass)->setSuModel($this->user);
+		}
+		$filterChain->run();
+	}
+
+	/**
+	 * Model getter; assumes $_GET parameters include the model's primary key,
+	 * but $_POST is included for backwards compatibility.
+	 */
+	public function getModel(){
+		if(!isset($this->_model)){
+			$mSingle = X2Model::model($this->modelClass);
+			$params = array_merge($_POST,$_GET);
+			$this->_model = $mSingle->findByPkInArray($params);
+			// Was a model found? If not, raise an error
+			if(empty($this->_model))
+				$this->_respondBadPk($mSingle,$params);
+		}
+		return $this->_model;
+	}
+
+	/**
+	 * A quick and dirty hack for filling in the gaps if the model requested
+	 * does not make use of the changelog behavior (which takes care of that
+	 * automatically)
+	 */
+	public function modelSetUsernameFields(&$model) {
+		$restrictedAttr = array('updatedBy');
+		if($this->action->id == 'create')
+			$restrictedAttr[] = 'createdBy';
+		foreach($restrictedAttr as $attr){
+			if($model->hasAttribute($attr)){
+				$model->$attr = $this->user->username;
+			}
+		}
+		if($model->hasAttribute('assignedTo')){
+			if(array_key_exists('assignedTo', $_POST)){
+				$model->assignedTo = $_POST['assignedTo'];
+			}else{
+				$model->assignedTo = $this->user->username;
+			}
+		}
 	}
 
 	/**
@@ -581,7 +796,7 @@ class ApiController extends x2base {
 		$pk = array();
 		if (is_array($pkc)) { // Composite primary key
 			foreach ($pkc as $colName) {
-				if (array_key_exists($colName, $_GET)) {
+				if (array_key_exists($colName, $params)) {
 					$pk[$colName] = $params[$colName];
 				}
 			}
@@ -594,126 +809,7 @@ class ApiController extends x2base {
 		if (!empty($pk)) {
 			$this->_sendResponse(404, "No record of model {$this->modelClass} found with specified primary key value (" . implode('-', array_keys($pk)) . '): ' . (implode('-', array_values($pk))));
 		} else {
-			$this->_sendResponse(400, sprintf("No GET parameters matching primary key column(s) <b>%s</b> for model <b>%s</b>.",implode('-',$pkc),$this->modelClass));
-		}
-	}
-
-	/**
-	 * Checks credentials for API access
-	 *
-	 * @param CFilterChain $filterChain
-	 */
-	public function filterAuthenticate($filterChain) {
-		$haveCred = false;
-		Yii::log("Checking user record.", 'api');
-		if (Yii::app()->request->requestType == 'POST') {
-			$haveCred = isset($_POST['userKey']) && isset($_POST['user']);
-			$params = $_POST;
-		} else {
-			$haveCred = isset($_GET['userKey']) && isset($_GET['user']);
-			$params = $_GET;
-		}
-
-		if ($haveCred) {
-			$this->user = User::model()->findByAttributes(array('username' => $params['user'], 'userKey' => $params['userKey']));
-			if ((bool) $this->user) {
-				if (!empty($this->user->userKey))
-					$filterChain->run();
-				else
-					$this->_sendResponse(403, "User \"{$this->user->username}\" cannot use API; userKey not set.");
-			} else {
-				Yii::log("Authentication failed; invalid user credentials; IP = {$_SERVER['REMOTE_ADDR']}; get or post params =  " . CJSON::encode($params).'', 'api');
-				$this->_sendResponse(401, "Invalid user credentials.");
-			}
-		} else {
-			Yii::log('No user credentials provided; IP = '.$_SERVER['REMOTE_ADDR'],'api');
-			$this->_sendResponse(401, "No user credentials provided.");
-		}
-	}
-
-	/**
-	 * Basic permissions check filter.
-	 *
-	 * It is meant to simplify the simpler actions where named after existing
-	 * actions (or actions listed among the keys of {@link actionAuthItemMap})
-	 *
-	 * @param type $filterChain
-	 */
-	public function filterCheckCRUDPermissions($filterChain) {
-		$model = new $this->modelClass;
-		$module = ucfirst($model->module);
-		$action = $this->action->id;
-		if(array_key_exists($action,$this->actionAuthItemMap))
-			$action = $this->actionAuthItemMap[$action];
-		else
-			$action = ucfirst($action);
-		$level = $this->actionCheckPermissions($module . $action);
-		if($level)
-			$filterChain->run();
-		else {
-			Yii::log("User \"{$this->user->username}\" denied API action; does not have permission for $module$action",'api');
-			$this->_sendResponse(403, 'This user does not have permission to perform operation "'.$action."\" on model <b>{$this->modelClass}</b>");
-		}
-	}
-
-	public function filterNoSession($filterChain) {
-		Yii::app()->params->noSession = true;
-		$filterChain->run();
-	}
-
-	/**
-	 * Ensures that the "model" parameter is present and valid.
-	 *
-	 * @param CFilterChain $filterChain
-	 */
-	public function filterValidModel($filterChain) {
-		if (!isset($this->modelClass)) {
-			Yii::log("Checking for valid model class...", 'api');
-			$noModel = empty($_GET['model']);
-			if(!$noModel)
-				$noModel = preg_match('/^\s*$/',$_GET['model']);
-			if ($noModel) {
-				Yii::log('Parameter "model" missing.', 'api');
-				$this->_sendResponse(400, "Model class name required.");
-			}
-			if (!class_exists($_GET['model'])) {
-				Yii::log("Class {$_GET['model']} not found.", 'api');
-				$this->_sendResponse(501, "Model class \"{$_GET['model']}\" not found or does not exist.");
-			}
-			$modelRef = new $_GET['model'];
-			if (get_parent_class($modelRef) != 'X2Model') {
-				Yii::log("Class {$_GET['model']} is not a child of X2Model.", 'api');
-				$this->_sendResponse(403, "Model class \"{$_GET['model']}\" is not a child of X2Model and cannot be used in API calls.");
-			}
-			// We're all clear to proceed
-			$this->modelClass = $_GET['model'];
-
-			// Set user for the model:
-			X2Model::model($this->modelClass)->setSuModel($this->user);
-		}
-		$filterChain->run();
-	}
-
-	/**
-	 * A quick and dirty hack for filling in the gaps if the model requested
-	 * does not make use of the changelog behavior (which takes care of that
-	 * automatically)
-	 */
-	public function modelSetUsernameFields(&$model) {
-		$restrictedAttr = array('updatedBy');
-		if($this->action->id == 'create')
-			$restrictedAttr[] = 'createdBy';
-		foreach($restrictedAttr as $attr){
-			if($model->hasAttribute($attr)){
-				$model->$attr = $this->user->username;
-			}
-		}
-		if($model->hasAttribute('assignedTo')){
-			if(array_key_exists('assignedTo', $_POST)){
-				$model->assignedTo = $_POST['assignedTo'];
-			}else{
-				$model->assignedTo = $this->user->username;
-			}
+			$this->_sendResponse(400, sprintf("No parameters matching primary key column(s) <b>%s</b> for model <b>%s</b>.",implode('-',$pkc),$this->modelClass));
 		}
 	}
 }

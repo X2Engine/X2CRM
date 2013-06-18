@@ -74,7 +74,7 @@ class Quote extends X2Model {
 	 */
 	private $_adjustmentLines;
 
-	
+
 	/**
 	 * Whether the line item set has errors in it.
 	 * @var bool
@@ -92,7 +92,7 @@ class Quote extends X2Model {
 	public function getLineItems() {
 		if (!isset($this->_lineItems)) {
 			$lineItems = $this->getRelated('products');
-			if(count(array_filter($lineItems,function($li){return $li->lineNumber === null || $li->lineNumber === '';})) > 0) {
+			if(count(array_filter($lineItems,function($li){return empty($li->lineNumber);})) > 0) {
 				// Cannot abide null line numbers. Use indexes to set initial line numbers!
 				foreach($lineItems as $i => $li) {
 					$li->lineNumber = $i;
@@ -190,12 +190,12 @@ class Quote extends X2Model {
 	 * Check a new set of line items against the existing set and update/delete as necessary
 	 *
 	 * Note: line numbers should be computed client-side and thus shouldn't need to be recalculated.
-	 * 
+	 *
 	 * @param array $items Each entry is an associative array of QuoteProduct [attribute]=>[value] pairs
 	 * @param integer $quoteId ID of quote for which to update items
 	 * @param bool $save Whether or not to save changes in the database after finishing
 	 * @return array Array of QuoteProduct instances representing the item set after changes.
-	 * @throws CException 
+	 * @throws CException
 	 */
 	public function setLineItems(array $items, $save = false) {
 		$this->_deleteLineItems = array();
@@ -256,7 +256,7 @@ class Quote extends X2Model {
 				}
 			}
 		}
-		
+
 		// Compute set changes:
 		$itemIds = array_keys($itemSet);
 		$deleteItemIds = array_diff($existingItemIds, $itemIds);
@@ -267,7 +267,10 @@ class Quote extends X2Model {
 		usort($this->_lineItems,'self::lineItemOrder');
 		$this->_deleteLineItems = array_map(function($id) use($existingItems) {return $existingItems[$id];}, $deleteItemIds);
 
-		// Remove symbols from numerical input values and convert to numeric:
+		// Remove symbols from numerical input values and convert to numeric.
+		// Behavior:
+		// - Use the quote's currency if it isn't empty.
+		// - Use the app's currency otherwise.
 		$defaultCurrency = empty($this->currency)?Yii::app()->params->admin->currency:$this->currency;
 		$curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
 		foreach($this->_lineItems as $lineItem) {
@@ -356,7 +359,7 @@ class Quote extends X2Model {
 
 	/**
 	 * Generates markup for a quote line items table.
-	 * 
+	 *
 	 * @param type $emailTable Style hooks for emailing the quote
 	 * @return string
 	 */
@@ -397,7 +400,7 @@ class Quote extends X2Model {
 			$row[] = str_replace('{c}',Yii::t('products',$columnHeader),$th);
 		}
 		$markup[] = str_replace('{c}',implode("\n",$row),$tr);
-		
+
 		// Table header ending and body
 		$markup[] = "</thead>";
 
@@ -446,7 +449,7 @@ class Quote extends X2Model {
 			$markup[] = '</tbody>';
 			$markup[] = '<tbody>';
 		}
-		
+
 		// Total:
 		$row = array($span[$pad]);
 		$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Total').'</strong>',$tdDef);
@@ -459,7 +462,7 @@ class Quote extends X2Model {
 
 		return implode("\n",$markup);
 	}
-	
+
 	public static function getNames() {
 
 		$names = array(0 => "None");
@@ -694,9 +697,10 @@ class Quote extends X2Model {
 	 * Clear out records associated with this quote before deletion.
 	 */
 	public function beforeDelete(){
+
 		QuoteProduct::model()->deleteAllByAttributes(array('quoteId'=>$this->id));
 		Relationships::model()->deleteAllByAttributes(array('firstType' => 'quotes', 'firstId' => $this->id));// delete associated actions
-		Actions::model()->deleteAllByAttributes(array('associationId'=>$id, 'associationType'=>'quotes'));
+		Actions::model()->deleteAllByAttributes(array('associationId'=>$this->id, 'associationType'=>'quotes'));
 		$event = new Events;
 		$event->type = 'record_deleted';
 		$event->subtype = 'quote';

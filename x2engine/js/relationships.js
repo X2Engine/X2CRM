@@ -52,20 +52,20 @@ $.fn.initCreateAccountDialog = function () {
 	if(x2CreateAccountDialog != null) {
 		return; // don't create a 2nd dialog, if one already exists
 	}
-	
+
 	x2CreateAccountDialog = $('<div></div>', {id: 'x2-create-action-dialog'});
-	
+
 	x2CreateAccountDialog.dialog({
-	    title: 'Create Account', 
+	    title: 'Create Account',
 	    autoOpen: false,
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
 	    hide: 'fade'
 	});
-	
+
 	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
-	
+
 	$(this).click(function() {
 		if($(this).data('createAccountUrl') != undefined) {
 			if(x2CreateAccountDialog.data('inactive')) {
@@ -92,7 +92,7 @@ $.fn.initCreateAccountDialog = function () {
 								x2CreateAccountDialog.dialog('close');
 							}
 						});
-						
+
 						return false; // prevent html submit
 					});
 					$('#Accounts_phone').val($('div.formInputBox #Contacts_phone').val());
@@ -104,7 +104,7 @@ $.fn.initCreateAccountDialog = function () {
 			}
 		}
 	});
-	
+
 	return $(this);
 }
 
@@ -127,7 +127,7 @@ $.fn.initCreateAccountDialog = function () {
  * @param string tooltip text for when the mouse hovers over the button that creates the dialog
  *
  */
-$.fn.initCreateContactDialog = function (createContactUrl, modelName, modelId, accountName, assignedTo, phone, website, tooltip) {
+$.fn.initCreateContactDialog = function (createContactUrl, modelName, modelId, accountName, assignedTo, phone, website, tooltip, leadSource, leadType, leadStatus) {
 
 	$('#create-contact').data('createContactUrl', createContactUrl);
 	$('#create-contact').data('modelName', modelName);
@@ -136,25 +136,28 @@ $.fn.initCreateContactDialog = function (createContactUrl, modelName, modelId, a
 	$('#create-contact').data('assigned-to', assignedTo);
 	$('#create-contact').data('phone', phone);
 	$('#create-contact').data('website', website);
+    $('#create-contact').data('leadSource', leadSource);
+    $('#create-contact').data('leadStatus', leadStatus);
+    $('#create-contact').data('leadType', leadType);
 	$('#create-contact').qtip({content: tooltip});
 
 	if(x2CreateContactDialog != null) {
 		return; // don't create a 2nd dialog, if one already exists
 	}
-	
+
 	x2CreateContactDialog = $('<div></div>', {id: 'x2-create-contact-dialog'});
-	
+
 	x2CreateContactDialog.dialog({
-	    title: 'Create Contact', 
+	    title: 'Create Contact',
 	    autoOpen: false,
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
 	    hide: 'fade'
 	});
-	
+
 	x2CreateContactDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
-	
+
 	$(this).click(function() {
 		if($(this).data('createContactUrl') != undefined) {
 			if(x2CreateContactDialog.data('inactive')) {
@@ -178,13 +181,19 @@ $.fn.initCreateContactDialog = function (createContactUrl, modelName, modelId, a
 						$('div.formInputBox #Contacts_phone').val($('#create-contact').data('phone'));
 					if($('#create-contact').data('website') != undefined)
 						$('#Contacts_website').val($('#create-contact').data('website'));
+                    if($('#create-contact').data('leadSource') != undefined)
+						$('#Contacts_leadSource').val($('#create-contact').data('leadSource'));
+                    if($('#create-contact').data('leadStatus') != undefined)
+						$('#Contacts_leadstatus').val($('#create-contact').data('leadStatus'));
+                    if($('#create-contact').data('leadType') != undefined)
+						$('#Contacts_leadtype').val($('#create-contact').data('leadType'));
 				});
 			} else {
 				x2CreateContactDialog.dialog('open');
 			}
 		}
 	});
-	
+
 	return $(this);
 }
 
@@ -233,13 +242,13 @@ function x2CreateContactDialogHandleSubmit(form) {
 	    	}
 	    	if($('#relationships-form').is(':hidden')) // show relationships if they are hidden
 	    		toggleRelationshipsForm();
-	    	
+
 	    	if(response['name'] != undefined && response['id'] != undefined && $('#Services_contactId').length == 1 && $('#Services_contactId_id').length == 1) {
 	    		// Services Module uses this to set field 'Contact'
 	    		$('#Services_contactId').val(response['name']);
 	    		$('#Services_contactId_id').val(response['id']);
 	    	}
-	    
+
 	    } else if (response['status'] == 'userError') {
 	    	if(response['page'] != undefined) {
 	    		x2CreateContactDialog.empty(); // clean up dialog
@@ -256,7 +265,7 @@ function x2CreateContactDialogHandleSubmit(form) {
 	    	}
 	    }
 	});
-	
+
 	return false; // prevent html submit
 }
 
@@ -291,20 +300,20 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 	if(x2CreateOpportunityDialog != null) {
 		return; // don't create a 2nd dialog, if one already exists
 	}
-	
+
 	x2CreateOpportunityDialog = $('<div></div>', {id: 'x2-create-opportunity-dialog'});
-	
+
 	x2CreateOpportunityDialog.dialog({
-	    title: 'Create Opportunity', 
+	    title: 'Create Opportunity',
 	    autoOpen: false,
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
 	    hide: 'fade'
 	});
-	
+
 	x2CreateOpportunityDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
-	
+
 	$(this).click(function() {
 		if($(this).data('createOpportunityUrl') != undefined) {
 			if(x2CreateOpportunityDialog.data('inactive')) {
@@ -341,10 +350,10 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 								x2CreateOpportunityDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
 								if($('#relationships-form').is(':hidden')) // show relationships if they are hidden
 									toggleRelationshipsForm();
-	    					
+
 							}
 						});
-						
+
 						return false; // prevent html submit
 					});
 					if($('#create-opportunity').data('account-name') != undefined)
@@ -357,7 +366,7 @@ $.fn.initCreateOpportunityDialog = function (createOpportunityUrl, modelName, mo
 			}
 		}
 	});
-	
+
 	return $(this);
 }
 
@@ -395,20 +404,20 @@ $.fn.initCreateCaseDialog = function (createCaseUrl, modelName, modelId, contact
 	if(x2CreateCaseDialog != null) {
 		return; // don't create a 2nd dialog, if one already exists
 	}
-	
+
 	x2CreateCaseDialog = $('<div></div>', {id: 'x2-create-opportunity-dialog'});
-	
+
 	x2CreateCaseDialog.dialog({
-	    title: 'Create Case', 
+	    title: 'Create Case',
 	    autoOpen: false,
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
 	    hide: 'fade'
 	});
-	
+
 	x2CreateCaseDialog.data('inactive', true); // indicate that we can append a creat action page to this dialog
-	
+
 	$(this).click(function() {
 		if($(this).data('createCaseUrl') != undefined) {
 			if(x2CreateCaseDialog.data('inactive')) {
@@ -433,7 +442,7 @@ $.fn.initCreateCaseDialog = function (createCaseUrl, modelName, modelId, contact
 			}
 		}
 	});
-	
+
 	return $(this);
 }
 
@@ -462,7 +471,7 @@ function x2CreateCaseDialogHandleSubmit(form) {
 	    	x2CreateCaseDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
 	    	if($('#relationships-form').is(':hidden')) // show relationships if they are hidden
 	    		toggleRelationshipsForm();
-	    
+
 	    } else if (response['status'] == 'userError') {
 	    	if(response['page'] != undefined) {
 	    		x2CreateCaseDialog.empty(); // clean up dialog
@@ -478,7 +487,7 @@ function x2CreateCaseDialogHandleSubmit(form) {
 	    	}
 	    }
 	});
-	
+
 	return false; // prevent html submit
 }
 
@@ -519,20 +528,20 @@ $.fn.initCreateAccountDialog2 = function (createAccountUrl, modelName, modelId, 
 	if(x2CreateAccountDialog != null) {
 		return; // don't create a 2nd dialog, if one already exists
 	}
-	
+
 	x2CreateAccountDialog = $('<div></div>', {id: 'x2-create-action-dialog'});
-	
+
 	x2CreateAccountDialog.dialog({
-	    title: 'Create Account', 
+	    title: 'Create Account',
 	    autoOpen: false,
 	    resizable: true,
 	    width: '650px',
 	    show: 'fade',
 	    hide: 'fade'
 	});
-	
+
 	x2CreateAccountDialog.data('inactive', true); // indicate that we can append a create action page to this dialog
-	
+
 	$(this).click(function() {
 		if($(this).data('createAccountUrl') != undefined) {
 			if(x2CreateAccountDialog.data('inactive')) {
@@ -559,7 +568,7 @@ $.fn.initCreateAccountDialog2 = function (createAccountUrl, modelName, modelId, 
 			}
 		}
 	});
-	
+
 	return $(this);
 }
 
@@ -621,13 +630,13 @@ function x2CreateAccountDialogHandleSubmit(form) {
 	    	}
 	    }
 	});
-	
+
 	return false; // prevent html submit
 }
 
 
 
-function toggleRelationshipsForm() {			
+function toggleRelationshipsForm() {
     if($('#relationships-form').is(':hidden')) {
     	$('.focus-mini-module').removeClass('focus-mini-module');
     	$('#relationships-form').children('.form').addClass('focus-mini-module');

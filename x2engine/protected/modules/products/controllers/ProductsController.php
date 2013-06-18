@@ -84,7 +84,7 @@ class ProductsController extends x2base {
 		if(isset($_POST['Product'])) {
 			$temp=$model->attributes;
 			$model->setX2Fields($_POST['Product']);
-			// $model->price = $this->parseCurrency($model->price,false);
+			// $model->price = Formatter::parseCurrency($model->price,false);
 			$model->createDate=time();
 			
   
@@ -172,18 +172,6 @@ class ProductsController extends x2base {
 	public function actionIndex() {
 		$model=new Product('search');
 		$this->render('index', array('model'=>$model));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model = CActiveRecord::model('Product')->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
 	}
 
 	/**

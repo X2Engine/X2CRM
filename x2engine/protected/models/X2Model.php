@@ -121,8 +121,8 @@ abstract class X2Model extends CActiveRecord {
 	}
 
     public static function getModelName($type){
-        if(array_key_exists($type,X2Model::$associationModels)){
-            return X2Model::$associationModels[$type];
+        if(array_key_exists(strtolower($type),X2Model::$associationModels)){
+            return X2Model::$associationModels[strtolower($type)];
         }else{
             if(class_exists(ucfirst($type))){
                 return ucfirst($type);
@@ -469,13 +469,22 @@ abstract class X2Model extends CActiveRecord {
 	 */
 	public static function getModelLink($id, $class) {
 		$model = X2Model::model($class)->findByPk($id);
-		if (isset($model) && !is_null($model->asa('X2LinkableBehavior')))
-			return $model->getLink();
+		if (isset($model) && !is_null($model->asa('X2LinkableBehavior'))){
+            if(isset(Yii::app()->controller) && method_exists(Yii::app()->controller,'checkPermissions')){
+                if(Yii::app()->controller->checkPermissions($model,'view')){
+                    return $model->getLink();
+                }else{
+                    return $model->name;
+                }
+            }else{
+                return $model->getLink();
+            }
 		// return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
-		elseif (is_numeric($id))
+        }elseif (is_numeric($id)){
 			return '';
-		else
+        }else{
 			return $id;
+        }
 	}
 
 	/**
@@ -675,8 +684,8 @@ abstract class X2Model extends CActiveRecord {
 				if (empty($this->$fieldName)) {
 					return '';
 				} else {
-					$mailtoLabel = isset($this->name) ? '"' . $this->name . '" <' . $this->$fieldName . '>' : $this->$fieldName;
-					return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel, array('onclick' => 'toggleEmailForm();return false;')) : $this->$fieldName;
+					$mailtoLabel = (isset($this->name) && !is_numeric($this->name)) ? '"' . $this->name . '" <' . $this->$fieldName . '>' : $this->$fieldName;
+					return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel) : $this->$fieldName;
 				}
 
 			case 'phone':
@@ -733,13 +742,7 @@ abstract class X2Model extends CActiveRecord {
 
 			case 'link':
 				if (!empty($this->$fieldName) && is_numeric($this->$fieldName)) {
-					$className = ucfirst($field->linkType);
-					if (class_exists($className))
-						$linkModel = X2Model::model($className)->findByPk($this->$fieldName);
-					if (isset($linkModel))
-						return $makeLinks ? $linkModel->createLink() : $linkModel->name;
-					else
-						return '';
+                    return $makeLinks ? X2Model::getModelLink($this->$fieldName,X2Model::getModelName($field->linkType)) : $this->$fieldName;
 				} else {
 					return $this->$fieldName;
 				}
@@ -807,7 +810,7 @@ abstract class X2Model extends CActiveRecord {
 			// ));
 
 			case 'date':
-				$this->$fieldName = Formatter::formatDate($this->$fieldName);
+				$this->$fieldName = Formatter::formatDate($this->$fieldName,'short');
 				Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 				return Yii::app()->controller->widget('CJuiDateTimePicker', array(
 							'model' => $this, //Model object
@@ -824,7 +827,7 @@ abstract class X2Model extends CActiveRecord {
 							'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
 								), true);
 			case 'dateTime':
-				$this->$fieldName = Formatter::formatDateTime($this->$fieldName);
+				$this->$fieldName = Formatter::formatDateTime($this->$fieldName,'short');
 				Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 				return Yii::app()->controller->widget('CJuiDateTimePicker', array(
 							'model' => $this, //Model object
@@ -967,7 +970,14 @@ abstract class X2Model extends CActiveRecord {
 					),$htmlOptions)) . '</div>';
 
 			case 'assignment':
-
+                return CHtml::activeDropDownList($this, $fieldName, X2Model::getAssignmentOptions(true,true), array_merge(array(
+							// 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+							// 'disabled'=>$item['readOnly']? 'disabled' : null,
+							'title' => $field->attributeLabel,
+							'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
+							'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
+					), $htmlOptions));
+                /*
 				$group = is_numeric($this->$fieldName);
 				// if(is_numeric($this->assignedTo)){
 				// $group=true;
@@ -987,7 +997,7 @@ abstract class X2Model extends CActiveRecord {
 							'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
 							'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
 					), $htmlOptions))
-					/* x2temp */
+					/* x2temp
 					. '<div class="checkboxWrapper">'
 					. CHtml::checkBox('group', $group, array_merge(array(
 								// array(
@@ -1013,7 +1023,7 @@ abstract class X2Model extends CActiveRecord {
 									}')
 					), array_merge($htmlOptions, array('style' => 'margin-left:10px;'))))
 						. '<label for="group" class="groupLabel">' . Yii::t('app', 'Group?') . '</label></div>';
-			/* end x2temp */
+			/* end x2temp
 
 			// case 'association':
 			// if($field->linkType!='multiple') {
@@ -1026,6 +1036,7 @@ abstract class X2Model extends CActiveRecord {
 			// 'multiple'=>'multiple',
 			// ),$htmlOptions));
 			// }
+                    */
 			case 'optionalAssignment': // optional assignment for users (can be left blank)
 
 				$users = User::getNames();
@@ -1063,10 +1074,13 @@ abstract class X2Model extends CActiveRecord {
                         'config'=>array(
                             'showSymbol'=>true,
                             'symbolStay'=>true,
+                            'decimal'=>Yii::app()->locale->getNumberSymbol('decimal'),
+                            'thousands'=>Yii::app()->locale->getNumberSymbol('group'),
                         )
                     ));
                return CHtml::activeTextField($this,$field->fieldName,array_merge(array(
 					'title' => $field->attributeLabel,
+                    'class' => 'currency-field',
 				),$htmlOptions));
 
 			default:
@@ -1132,14 +1146,14 @@ abstract class X2Model extends CActiveRecord {
         }
         $criteria->with=$with;
         $sort = new CSort(get_class($this));
-        $sort->multiSort = true;
+        $sort->multiSort = false;
         $sort->attributes=$this->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
         $sort->applyOrder($criteria);
 		return new SmartDataProvider(get_class($this), array(
 					'sort' => $sort,
 					'pagination' => array(
-						'pageSize' => ProfileChild::getResultsPerPage(),
+						'pageSize' => !Yii::app()->user->isGuest?ProfileChild::getResultsPerPage():20,
 					),
 					'criteria' => $criteria,
 				));

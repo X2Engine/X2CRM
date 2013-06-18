@@ -36,12 +36,29 @@
 
 
 /**
- * Methods common to controllers whether or not they are children of x2base
- * 
+ * A behavior for controllers; contains methods common to controllers whether or
+ * not they are children of x2base.
+ *
+ * All controllers that use this behavior must declare the "modelClass" property.
+ *
+ * @property X2Model $model (read-only); in the context of viewing or updating a
+ *	record, this contains the active record object corresponding to that record.
+ *	Its value is set by calling {@link getModel()} with the ID of the desired record.
  * @package application.components
  */
 class CommonControllerBehavior extends CBehavior {
 
+	/**
+	 * Stores the value of {@link $model}
+	 */
+	private $_model;
+
+	public function attach($owner){
+		if(!property_exists($owner,'modelClass'))
+			throw new CException('Property "modelClass" must be declared in all controllers that use CommonControllerBehavior, but it is not declared in '.get_class($owner));
+		parent::attach($owner);
+	}
+	
 	/**
 	 * Renders Google Analytics tracking code, if enabled.
 	 * 
@@ -76,6 +93,44 @@ class CommonControllerBehavior extends CBehavior {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the data model based on the primary key given.
+	 *
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded. Note, it is assumed that
+	 *	when this value is null, {@link _model} is set already; otherwise there's
+	 *	nothing that can be done to correctly resolve the model.
+	 */
+	public function getModel($id=null){
+		if(!isset($this->_model)) {
+			if($this->owner->modelClass == 'Admin' && empty($id)) // Special case for Admin: let the ID be the one and only record if unspecified
+				$id = 1;
+			if(empty($id)) // ID was never specified, so there's no way to tell which record to load.
+				$this->owner->redirect(array('index'));
+			else { // ID was specified, so load it.
+				$this->_model = CActiveRecord::model($this->owner->modelClass)->findByPk((int) $id);
+			}
+			if($this->_model === null) // Model record couldn't be retrieved
+				throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
+		} else if($this->_model->id != $id && !empty($id)) { // A different record is being requested
+			// Change the ID and load the different record.
+			// Note that setting the attribute to null will cause isset to return false.
+			$this->_model = null;
+			return $this->getModel($id);
+		}
+		return $this->_model;
+	}
+
+	/**
+	 * Kept for backwards compatibility with controllers (including custom ones)
+	 * that use loadModel.
+	 *
+	 * @return type
+	 */
+	public function loadModel($id) {
+		return $this->getModel($id);
 	}
 
 }

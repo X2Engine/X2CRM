@@ -93,11 +93,13 @@
 
 .quote-table td 
 {
+	padding-right:5px;
 	background-color: #FAFAFA;
 }
 
 .quote-table 
 {
+	width:100%;
 	border-color: #CCCCCC;
 	border-width: 1px;
 	border-style: solid;
@@ -111,6 +113,7 @@
 	border-color: #CCCCCC;
 	border-width: 0 0 1px 0;
 	border-style: solid;
+	text-align:left;
 }
 
 .quote-table td input.line-item-field
@@ -119,6 +122,7 @@
 	font-size: 12px;
 	font-family: Arial, Helvetica, sans-serif;
 	padding:2px;
+	box-sizing: border-box;
 	-moz-border-radius: 3px;
 	-o-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -159,7 +163,7 @@ set width of input fields in the quotes table
 .quote-table > tbody#line-items > tr > td:nth-child(2) input
 {
     margin: 0 0 0 0;
-    width: 85%;
+    width: 90%;
     float: left;
 	font-size: 12px;
 }

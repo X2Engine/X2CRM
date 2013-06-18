@@ -77,13 +77,9 @@ if($field) {
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'services-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon services"><h2>'.Yii::t('services','Service Cases').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>Yii::t('services','Service Cases'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon services">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->searchWithStatusFilter(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -93,11 +89,12 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'services',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'id'=>100,
-		'status'=>150,
-		'impact'=>150,
-		'lastUpdated'=>200,
-		'updatedBy'=>200,
+		'id' => 43,
+		'impact' => 80,
+		'status' => 233,
+		'assignedTo' => 112,
+		'lastUpdated' => 79,
+		'updatedBy' => 111,
 //		'name'=>234,
 //		'type'=>108,
 //		'annualRevenue'=>128,
@@ -123,5 +120,6 @@ $this->widget('application.components.X2GridView', array(
 		), */
 	),
 	'enableControls'=>true,
+	'fullscreen'=>true,
 ));
 ?>

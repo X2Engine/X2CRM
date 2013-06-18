@@ -36,13 +36,13 @@
 
 /**
  * X2FlowAction that reassigns a record
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordReassign extends X2FlowAction {
 	public $title = 'Reassign Record';
 	public $info = 'Assign the record to a user or group, or automatically using lead routing.';
-	
+
 	public function paramRules() {
 		$leadRoutingModes = array(
 			''=>'Free For All',
@@ -53,14 +53,14 @@ class X2FlowRecordReassign extends X2FlowAction {
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 'Contacts',
+			'modelRequired' => 1,
 			'options' => array(
 				// array('name'=>'routeMode','label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
 				array('name'=>'user','label'=>'User','type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(true,true)),
 				// array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
 			));
 	}
-	
+
 	public function execute(&$params) {
 		$user = $this->parseOption('user',$params);
 		if(CActiveRecord::model('User')->exists('username=?',array($user))) {	// make sure the user exists

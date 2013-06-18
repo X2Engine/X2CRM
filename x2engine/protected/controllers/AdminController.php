@@ -47,6 +47,8 @@
  */
 class AdminController extends Controller {
 
+	public $modelClass = 'Admin';
+	
     public $portlets = array();
     public $layout = '//layouts/column1';
 
@@ -75,6 +77,8 @@ class AdminController extends Controller {
 	 */
 	private $_noRemoteAccess;
 
+	private $_behaviors;
+
     /**
      * A list of actions to include.
      *
@@ -84,17 +88,17 @@ class AdminController extends Controller {
      * @return array An array of actions to include.
      */
     public function actions() {
-		return array(
-			'getRoleAccess' => array(
-				'class' => 'GetRoleAccessAction',
-			),
-			'editRoleAccess' => array(
-				'class' => 'EditRoleAccessAction',
-			),
-			'emailDropboxSettings' => array(
-				'class' => 'EmailDropboxSettingsAction'
-			),
-		);
+		return array_merge($this->webUpdaterActions, array(
+					'getRoleAccess' => array(
+						'class' => 'GetRoleAccessAction',
+					),
+					'editRoleAccess' => array(
+						'class' => 'EditRoleAccessAction',
+					),
+					'emailDropboxSettings' => array(
+						'class' => 'EmailDropboxSettingsAction'
+					),
+				));
 	}
 
     public function actionCalculateTranslationRedundancy(){
@@ -233,6 +237,10 @@ class AdminController extends Controller {
 	 * It will download missing files (including classes that aren't behaviors)
 	 * if any that are defined in {@link $behaviorClasses} are missing from the
 	 * local filesystem.
+	 *
+	 * It uses the same form as a typical magic getter method (private storage
+	 * property, check if it's set first and return) because the method is also
+	 * called in the override {@link createAction()}
      *
      * {@link LeadRoutingBehavior} is used to consolidate code for lead routing rules.
      * As such, it has been moved to an external file.  This file includes LeadRoutingBehavior
@@ -245,58 +253,61 @@ class AdminController extends Controller {
      *
      * @return array An array of behaviors to implement.
      */
-    public function behaviors() {
-		$missingClasses = array();
-		$behaviors = array();
-		$maxTries = 3;
-		$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine/protected';
-		$x2planUrl = 'http://x2planet.com/updates/x2engine/protected';
-		$files = array_merge( array_fill_keys( self::$behaviorClasses, 'behavior'), array_fill_keys(self::$dependencies,'dependency'));
-		$tryCurl = in_array(ini_get('allow_url_fopen'),array(0,'Off','off'));
-		foreach ($files as $class=>$type) {
-			// First try to download from the X2Engine update server...
-			$path = "components/$class.php";
-			$absPath = Yii::app()->basePath . "/$path";
-			if (!file_exists($absPath)) {
-				if(!is_dir(dirname($absPath)))
-					throw new CHttpException(500,'The components folder is missing on the webserver! This is very bad. How is this even possible?');
-				$i = 0;
-				while (!$this->copyRemote("$x2planUrl/$path", $absPath, $tryCurl) && $i < $maxTries) {
-					$i++;
-				}
-				// Try to download the file from Github...
-				if ($i >= $maxTries) {
+    public function behaviors(){
+		if(!isset($this->behaviors)){
+			$missingClasses = array();
+			$behaviors = array();
+			$maxTries = 3;
+			$GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine/protected';
+			$x2planUrl = 'http://x2planet.com/updates/x2engine/protected';
+			$files = array_merge(array_fill_keys(self::$behaviorClasses, 'behavior'), array_fill_keys(self::$dependencies, 'dependency'));
+			$tryCurl = in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off'));
+			foreach($files as $class => $type){
+				// First try to download from the X2Engine update server...
+				$path = "components/$class.php";
+				$absPath = Yii::app()->basePath."/$path";
+				if(!file_exists($absPath)){
+					if(!is_dir(dirname($absPath)))
+						throw new CHttpException(500, 'The components folder is missing on the webserver! This is very bad. How is this even possible?');
 					$i = 0;
-					while (!$this->copyRemote("$GithubUrl/$path", $path, $tryCurl) && $i < $maxTries) {
+					while(!$this->copyRemote("$x2planUrl/$path", $absPath, $tryCurl) && $i < $maxTries){
 						$i++;
 					}
+					// Try to download the file from Github...
+					if($i >= $maxTries){
+						$i = 0;
+						while(!$this->copyRemote("$GithubUrl/$path", $path, $tryCurl) && $i < $maxTries){
+							$i++;
+						}
+					}
+					// Mark the file as a failed download.
+					if($i >= $maxTries){
+						$missingClasses[] = "protected/$path";
+					}
 				}
-				// Mark the file as a failed download.
-				if ($i >= $maxTries) {
-					$missingClasses[] = "protected/$path";
+				if($type == 'behavior'){
+					$behaviors[$class] = array(
+						'class' => $class
+					);
 				}
 			}
-			if ($type == 'behavior') {
-				$behaviors[$class] = array(
-					'class' => $class
-				);
-			}
-		}
 
-		// Display error.
-		// Test:
-		// $missingClasses[] = 'FOO';
-		if(count($missingClasses))
-			$this->missingClassesException($missingClasses);
+			// Display error.
+			// Test:
+			// $missingClasses[] = 'FOO';
+			if(count($missingClasses))
+				$this->missingClassesException($missingClasses);
 
-		// Add extraneous behavior properties:
-		foreach (self::$behaviorProperties as $class => $properties) {
-			foreach ($properties as $name => $value) {
-				$behaviors[$class][$name] = $value;
+			// Add extraneous behavior properties:
+			foreach(self::$behaviorProperties as $class => $properties){
+				foreach($properties as $name => $value){
+					$behaviors[$class][$name] = $value;
+				}
 			}
+			$this->_behaviors = $behaviors;
 		}
-        return $behaviors;
-    }
+		return $this->_behaviors;
+	}
 
     /**
      * @deprecated
@@ -509,6 +520,25 @@ class AdminController extends Controller {
         }
         $str.="</table>";
         echo $str;
+    }
+
+    public function actionUserViewLog(){
+        $dataProvider=new CActiveDataProvider('ViewLog',array(
+           'sort' => array(
+                        'defaultOrder' => 'timestamp DESC',
+                    ),
+            'pagination'=>array(
+                'pageSize'=>Profile::getResultsPerPage()
+            )
+        ));
+        $this->render('userViewLog',array(
+            'dataProvider'=>$dataProvider,
+        ));
+    }
+
+    public function actionClearViewHistory(){
+        X2model::model('ViewLog')->deleteAll();
+        $this->redirect('userViewLog');
     }
 
     /**
@@ -1410,7 +1440,7 @@ class AdminController extends Controller {
                     $fieldType = "BOOLEAN";
                     break;
                 case "float":
-                    $fieldType = "FLOAT";
+                    $fieldType = "DECIMAl";
                     break;
                 case "int":
                     $fieldType = "BIGINT";
@@ -1425,7 +1455,7 @@ class AdminController extends Controller {
                     $fieldType = "BIGINT";
                     break;
                 case "currency":
-                    $fieldType = "FLOAT";
+                    $fieldType = "DECIMAL";
                     break;
                 default:
                     $fieldType = 'VARCHAR(250)';
@@ -1539,7 +1569,7 @@ class AdminController extends Controller {
                         $fieldType = "BOOLEAN";
                         break;
                     case "float":
-                        $fieldType = "FLOAT";
+                        $fieldType = "DECIMAl";
                         break;
                     case "int":
                         $fieldType = "BIGINT";
@@ -1554,7 +1584,7 @@ class AdminController extends Controller {
                         $fieldType = "BIGINT";
                         break;
                     case "currency":
-                        $fieldType = "FLOAT";
+                        $fieldType = "DECIMAl";
                         break;
                     default:
                         $fieldType = 'VARCHAR(250)';
@@ -2149,6 +2179,7 @@ class AdminController extends Controller {
 						}
 					}
 					X2Model::model('Fields')->deleteAllByAttributes(array('modelName' => $moduleName));
+                    X2Model::model('Fields')->updateAll(array('linkType'=>null,'type'=>'varchar'),"linkType='$moduleName'");
 					X2Model::model('FormLayout')->deleteAllByAttributes(array('model' => $moduleName));
 					$auth = Yii::app()->authManager;
 					$auth->removeAuthItem(ucfirst($moduleName) . 'Index');
@@ -2207,7 +2238,7 @@ class AdminController extends Controller {
                             $fieldType = "BOOLEAN";
                             break;
                         case "float":
-                            $fieldType = "FLOAT";
+                            $fieldType = "DECIMAL";
                             break;
                         case "int":
                             $fieldType = "BIGINT";
@@ -2399,7 +2430,7 @@ class AdminController extends Controller {
 
                 // if this is the default view, unset defaultView for all other forms
                 if ($layoutModel->defaultView) {
-                    $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName, 'defaultView' => 1));
+                    $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName, 'defaultView' => 1,'scenario'=>$layoutModel->scenario));
                     foreach ($layouts as &$layout) {
                         $layout->defaultView = false;
                         $layout->save();
@@ -2408,7 +2439,7 @@ class AdminController extends Controller {
                 }
                 // if this is the default form, unset defaultForm for all other forms
                 if ($layoutModel->defaultForm) {
-                    $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName, 'defaultForm' => 1));
+                    $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName, 'defaultForm' => 1,'scenario'=>$layoutModel->scenario));
                     foreach ($layouts as &$layout) {
                         $layout->defaultForm = false;
                         $layout->save();
@@ -3057,142 +3088,6 @@ class AdminController extends Controller {
     }
 
     /**
-	 * Runs the updater. It is in this action where the entire file is copied
-	 * from the remote update server.
-	 */
-	public function actionUpdater() {
-		if (!file_exists('protected/config/X2Config.php'))
-			$this->regenerateConfig();
-		include('protected/config/X2Config.php');
-
-		$context = stream_context_create(array(
-			'http' => array(
-				'timeout' => 15  // Timeout in seconds
-				)));
-
-		// Check to see if there's an update available. By this point in time
-		// (if this AdminController is running inside of a much older installation)
-		// FileUtil should have been downloaded and available.
-		$versionTest = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
-		$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
-
-		if ($updaterCheck && $versionTest) {
-			if ($updaterCheck != $updaterVersion) {
-				$this->runUpdateUpdater($updaterCheck,'updater');
-			}
-
-			if (version_compare($version,$versionTest)<0) {
-				// Fetch update data from the server:
-				$admin = Yii::app()->params->admin;
-				$unique_id = 'none';
-				if(isset($admin->unique_id))
-					if(!in_array($admin->unique_id,array(Null,'none')))
-							$unique_id = $admin->unique_id;
-				$route = '{version}/{unique_id}';
-				$params = array('{version}' => $version, '{unique_id}' => $unique_id);
-				if (isset($admin->edition)) {
-					if ($admin->edition != 'opensource') {
-						$route .= '_{edition}_{n_users}';
-						$params['{edition}'] = $admin->edition;
-						$params['{n_users}'] = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
-					}
-				}
-				$updateData = FileUtil::getContents('http://x2planet.com/installs/updates/' . strtr($route, $params));
-
-
-				if ($updateData) {
-					// Render the updater with the data
-					$updateData = CJSON::decode($updateData);
-					$updateData['newVersion'] = $versionTest;
-					$updateData['updaterCheck'] = $updaterCheck;
-
-
-					if (!isset($updateData['errors'])) {
-						$updateData['scenario'] = 'update';
-						foreach(array('updaterCheck','updaterVersion','version','unique_id') as $var)
-							$updateData[$var] = ${$var};
-						$updateData['edition'] = 'opensource';
-						if(isset(Yii::app()->params->admin->edition))
-							$updateData['edition'] = Yii::app()->params->admin->edition;
-						$updateData['url'] = 'x2planet';
-						// Ready to run the updater.
-						$newFiles = $updateData['fileList'];
-						if(!empty($updateData['nonFreeFileList']))
-							$newFiles = array_merge($newFiles,$updateData['nonFreeFileList']);
-						$this->render('updater', $updateData);
-					} else { // Scenario $updateData['errors'] is set; server denied/dropped request
-						// Redirect, with the appropriate error message
-						$this->render('updater', array(
-							'scenario' => 'error',
-							'message' => Yii::t('admin', "Could not retrieve update data."),
-							'longMessage' => Yii::t('admin', $updateData['errors'])
-						));
-					}
-				} else { // Scenario $updateData === False; request failed
-					// Redirect, with the appropriate error message
-					$this->render('updater', array(
-						'scenario' => 'error',
-						'message' => Yii::t('admin', "Could not retrieve update data."),
-						'longMessage' => Yii::t('admin', 'Error connecting to the updates server.')
-					));
-				}
-			} else { // scenario $version == $versionTest; already up-to-date.
-				Yii::app()->session['versionCheck']=true;
-				$this->render('updater',array('scenario'=>'message','version'=>$version,'message'=>Yii::t('admin','X2CRM is at the latest version!')));
-			}
-
-		} else { // $updaterCheck === False || $versionTest === False; couldn't connect to server
-			// Is it the fault of the user's server?
-			$this->checkRemoteMethods();
-			// Redirect to updater with the appropriate error message
-			$this->render('updater',array('scenario'=>'error','message'=>Yii::t('admin','Error connecting to the updates server.')));
-		}
-	}
-
-	/**
-	 * The upgrader action.
-	 */
-	public function actionUpgrader() {
-		// Remove database backup; if it exists, the user most likely came here
-		// immediately after updating to the latest version, in which case the
-		// backup is outdated (applies to the old version)
-		$this->removeDatabaseBackup();
-		$thisVersion = Yii::app()->params->version;
-		$currentVersion = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck');
-		if (version_compare($thisVersion, $currentVersion) < 0) {
-			$this->render('updater', array(
-				'scenario' => 'error',
-				'message' => 'Update required',
-				'longMessage' => "Before upgrading, you must update to the latest version ($currentVersion). " . CHtml::link(Yii::t('app', 'Update'), 'updater', array('class' => 'x2-button'))
-			));
-		} else {
-			include('protected/config/X2Config.php');
-
-			$context = stream_context_create(array(
-				'http' => array(
-					'timeout' => 15  // Timeout in seconds
-					)));
-
-			// Check to see if the updater has changed:
-			$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
-
-			if ($updaterCheck != $updaterVersion) {
-				$this->runUpdateUpdater($updaterCheck, 'upgrader');
-			}
-			$this->render('updater', array(
-				'scenario' => 'upgrade',
-				'version' => $thisVersion,
-				'unique_id' => '',
-				'url' => 'x2planet',
-				'newVersion' => $currentVersion,
-				'updaterCheck' => $updaterCheck,
-				'updaterVersion' => $updaterVersion,
-				'edition' => Yii::app()->params->admin->edition
-			));
-		}
-	}
-
-    /**
      * Control settings for the updater
      *
      * This method controls the update interval setting for the application.
@@ -3214,89 +3109,7 @@ class AdminController extends Controller {
         ));
     }
 
-    /**
-	 * Downloads files as a part of the updater.
-	 */
-	public function actionDownload($url, $route, $file) {
-		set_exception_handler('ResponseBehavior::respondWithException');
-		if (Yii::app()->request->isAjaxRequest) {
-			if ($url == 'x2planet') {
-				if ($this->downloadSourceFile($route, $file))
-					UpdaterBehavior::respond(Yii::t('admin','File {file} downloaded successfully.',array('{file}'=>$file)));
-			} else {
-				UpdaterBehavior::respond('Update server not implemented for URL provided.', true, true);
-			}
-		} else {
-			$this->_sendResponse('400', 'Update requests must be made via AJAX.');
-		}
-	}
 
-	/**
-	 * Back up the database and existing files to be deleted or replaced in an
-	 * update/upgrade.
-	 */
-	public function actionBackup() {
-		set_error_handler('ResponseBehavior::respondWithError');
-		set_exception_handler('ResponseBehavior::respondWithException');
-		if($this->makeDatabaseBackup())
-			UpdaterBehavior::respond(Yii::t('admin','Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
-	}
-
-	/**
-	 * Looks for an existing database backup.
-	 */
-	public function actionCheckDatabaseBackup() {
-		try {
-			if($this->checkDatabaseBackup())
-				UpdaterBehavior::respond(Yii::t('admin','Backup file exists and is not more than 24 hours old.'));
-		} catch (Exception $e) {
-			UpdaterBehavior::respond(Yii::t('admin','Backup does not exist or is too old.'),true,true);
-		}
-	}
-
-	/**
-	 * Yields the backup file.
-	 */
-	public function actionDownloadDatabaseBackup() {
-		$backup = realpath($this->dbBackupPath);
-		if((bool) $backup) {
-			header("Cache-Control: public");
-			header("Content-Description: File Transfer");
-			header("Content-Disposition: attachment; filename=".UpdaterBehavior::BAKFILE);
-			header("Content-type: application/octet");
-			header("Content-Transfer-Encoding: binary");
-			readfile($backup);
-		} else {
-			if(!empty($_SERVER['HTTP_REFERER']))
-				header("Location: {$_SERVER['HTTP_REFERER']}");
-			else
-				$this->redirect('index');
-		}
-
-	}
-
-    /**
-     * Finalizes an update/upgrade by applying file and database changes.
-     *
-     * This method replaces the SQL method as well as finishing copying files over.
-     * Both of these happen at once to prevent issues from files depending on SQL
-     * changes or vice versa.
-     */
-    public function actionEnactChanges($scenario=null,$autoRestore = false) {
-		set_error_handler('ResponseBehavior::respondWithError');
-		set_exception_handler('ResponseBehavior::respondWithException');
-		$autoRestore = (bool) $autoRestore;
-		if($this->enactChanges($scenario,$_POST,$autoRestore))
-			UpdaterBehavior::respond(Yii::t('admin',ucfirst($scenario).' complete.'));
-	}
-
-	/**
-	 * Retrieve the number of users
-	 */
-	public function actionGetNUsers() {
-		echo Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
-		Yii::app()->end();
-	}
 
     /**
      * Respond to a request with a specified status code and body.
@@ -3420,16 +3233,6 @@ class AdminController extends Controller {
         return false;
     }
 
-    /**
-     * Takes a Camel Cased string and echoes it as separate words.
-     * @param string $str The string to convert
-     * @return string A de-camelcased version of the string
-     */
-    function deCamelCase($str) {
-        $str = preg_replace("/(([a-z])([A-Z])|([A-Z])([A-Z][a-z]))/", "\\2\\4 \\3\\5", $str);
-        return ucfirst($str);
-    }
-
 	/**
 	 * Prints an error message explaing what has gone wrong when the classes are missing.
 	 * @param array $classes The missing dependencies
@@ -3518,29 +3321,6 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 
 	}
 
-
-	/**
-	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
-	 * in a user-friendly way and reloads the page.
-	 */
-	public function runUpdateUpdater($updaterCheck,$redirect) {
-		try {
-			if(count($classes = $this->updateUpdater($updaterCheck)))
-				$this->missingClassesException($classes);
-			$this->redirect($redirect);
-		} catch(Exception $e) {
-			$this->error500($e->getMessage());
-		}
-	}
-
-	/**
-	 * Wrapper for FileUtil
-	 * @param type $path
-	 */
-	public function rrmdir($path) {
-		FileUtil::rrmdir($path);
-	}
-
 	/**
 	 * Last-resort, built-in, fail-resistant copy method
 	 *
@@ -3599,8 +3379,6 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 
 	/**
 	 * Check whether it is possible to retrieve remote files.
-	 *
-	 * Based on the availability of CURL and allow_url_fopen (from {@
 	 */
 	public function checkRemoteMethods() {
 		if ($this->noRemoteAccess)
@@ -3611,13 +3389,14 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 	 * Explicit, attention-grabbing error message w/o bug reporter.
 	 *
 	 * This is intended for errors that are NOT bugs, but that arise from server
-	 * malconfiguration and/or missing requirements for running X2CRM.
+	 * malconfiguration and/or missing requirements for running X2CRM, as a
+	 * last-ditch effort to fail gracefully.
 	 * @param type $message
 	 */
 	public function error500($message) {
 		$app = Yii::app();
 		$email = Yii::app()->params->adminEmail;
-		$inAction = @is_subclass_of($this->action,'CAction');
+		$inAction = $this->action instanceof CAction;
 		if ($app->params->hasProperty('admin')) {
 			if ($app->params->admin->hasProperty('emailFromAddr'))
 				$email = $app->params->admin->emailFromAddr;

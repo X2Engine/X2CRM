@@ -505,7 +505,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
 		if(is_dir("{$ube->webRoot}/temp"))
 			FileUtil::rrmdir("{$ube->webRoot}/temp"); //  rename($file, "{$ube->webRoot}/requirements-original.php");
-		$ube->downloadSourceFile('updates/x2engine', $file);
+		$ube->downloadSourceFile($file,$ube->getSourceFileRoute('opensource'));
 		$this->assertFileExists("{$ube->webRoot}/temp/$file");
 		$ube->removeBackup('temp');
 	}
@@ -656,6 +656,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 				}
 			}
 			$this->dropTestTables();
+		} else {
+			$this->markTestSkipped('Skipping; TEST_LEVEL not set to 1 (this is a slow test).');
 		}
 	}
 
@@ -669,6 +671,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	public function testEnactChanges(){
 		if(self::TEST_LEVEL == 2)
 			$this->enactChanges();
+		else
+			$this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
 	}
 
 }

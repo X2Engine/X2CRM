@@ -80,7 +80,7 @@ Yii::app()->clientScript->registerScript('docViewerLoad',
 		$(this).val(ui.item.value);
 		$('#docview-box').load('" . Yii::app()->createUrl("/docs/getItem") . "?id=' + ui.item.id);
 		return false; 
-	 },
+	 }
 	});"
 );
 
@@ -95,7 +95,7 @@ $('#docview-container').resizable({
 			{Widget: 'DocViewer', 
 			 Height: { docboxHeight: parseInt($('#docview-box').css('height')) }
 			});
-	},
+	}
 });
 $('#docview-box-outer').resizable({
 	handles: 's',
@@ -107,7 +107,7 @@ $('#docview-box-outer').resizable({
 			{Widget: 'DocViewer', 
 			 Height: { docboxHeight: parseInt($('#docview-box').css('height')) }
 			});
-	},
+	}
 });
 $(document).on('submit','#docview-input',function(e){
     e.preventDefault();

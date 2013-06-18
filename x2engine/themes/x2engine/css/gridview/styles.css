@@ -33,287 +33,308 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-.grid-view-loading {
-	background:url(loading.gif) no-repeat;
-}
+.grid-view-loading {background:url(loading.gif) no-repeat;}
 
+/**
+ * --------------- Column Selector Dropdown ---------------
+ */
 ul.column-selector {
 	display:none;
 	position:absolute;
-	z-index:1000;
+	z-index:99;
 	background:#fff;
 	padding:0;
 	border:1px solid #999;
+	border-top:none;
 	max-height:300px;
 	overflow-y:scroll;
-
 	list-style-type:none;
-	border-radius:			0 0 2px 2px;
-	-moz-border-radius:		0 0 2px 2px;
-	-webkit-border-radius:	0 0 2px 2px;
-	-o-border-radius:		0 0 2px 2px;
-
-	clip:rect(1px, 1000px, 1000px, -10px);
+	clip:rect(0px,1000px,1000px,-10px);
 	-moz-box-shadow:		0 0 15px 0 rgba(0,0,0,0.5);
 	-webkit-box-shadow:		0 0 15px 0 rgba(0,0,0,0.5);
 	box-shadow:				0 0 15px 0 rgba(0,0,0,0.5);
 }
-ul.column-selector li {
-	padding:2px 5px;
-	/* width:120px; */
+ul.column-selector li {padding:2px 5px;}
+ul.column-selector li:last-child {padding-bottom:5px;}
+ul.column-selector li:hover {background:#eee;}
+/**
+ * ----------------- General Table Rules ------------------
+ */
+table {
+	width:100%;
+	margin-bottom:0.5em;
+	border-collapse:separate;
+	border-spacing:0;
 }
-ul.column-selector li:last-child {
-	padding-bottom:5px;
-}
-ul.column-selector li:hover {
-	background:#eee;
-}
-ul.column-selector input {
-	/* vertical-align:middle; */
-}
+table, th, td {vertical-align:middle;}
+caption, th, td {text-align:left;font-size:12px;font-weight:normal;float:none !important;}
+/**
+ * ---------------- X2GridView Widget CSS -----------------
+ */
+.grid-view .title-bar {display:block;overflow:hidden;}
+/* .grid-view h3, .grid-view h2 {float:left;margin:0 20px 0 0;} */
+.grid-view .summary {float:right;color:#555;}
+.grid-view .empty {font-style:italic;}
 
-.grid-view table.items.x2grid-resizable{
-	table-layout:fixed;
-	width:auto !important;
-	border:none;
-	margin-top:0;
-}
-.grid-view table.items.x2grid-resizable td, .grid-view table.items.x2grid-resizable th{overflow:hidden;}
-.grid-view table.items.x2grid-resizing{cursor:e-resize;}
-.x2grid-grips{height:0px;position:relative;}
-.x2grid-grip{
-	position:absolute;
-	top:1px;
-	/* height:27px; */
-	width:9px;
-	margin-left:-4px;
-	z-index:5;
-	cursor:e-resize;
-	/* background:rgba(255,0,0,0.1); */
-}
-.x2grid-grip:last-child{margin-left:-9px;}
-
-
-.grid-view table.items.x2grid-resizable tr.odd td{background: rgb(237, 242, 248);}
-.grid-view table.items.x2grid-resizable tr:first-child td{border-top:none;}
-.grid-view table.items.x2grid-resizable tr.odd td {padding:3px 5px;}
-.grid-view table.items.x2grid-resizable td {
-	border:solid rgb(196,214,235);
-	border-width:1px 0 0 1px;
-}
-.grid-view table.items.x2grid-resizable td div {white-space:nowrap;overflow:hidden;}
+.grid-view table {border:1px solid #aaa;margin:5px 0;}
+.grid-view.fullscreen table {border:none;margin:0;}
+/* border-collapse:separate; */
 
 
 
-
-.grid-view  .title-bar {
-	/* margin-top:3px; */
-	display:block;
-	/* padding-top:4px; */
-	overflow:auto;
-}
-.grid-view h3, .grid-view h2 {
-	float:left;
-	margin:0 20px 0 0;
-}
+/**
+ * ------------------ X2GridView Tables -------------------
+ */
 .grid-view table.items {
 	table-layout:fixed;
 	background:#fff;
-	margin-top:5px;
 	width:100%;
 	clear:both;
+}
+.grid-view table.items td, .grid-view table.items th {
+	padding:3px 5px;
+	border-right:1px solid #ccc;
+	/* border-top:1px solid #dbdad3 *//* rgb(196,214,235) */;
+	overflow:hidden;
+	white-space:nowrap;
+	word-wrap:normal;
+}
+.grid-view table.items th:first-child {border-left:none;padding-left:1px;text-indent:-1px;}
+.grid-view table.items td:last-child, .grid-view table.items th:last-child {border-right:none !important;}
+
+/* .grid-view table.items thead td {border-top-color:#666;} */
+.grid-view table.items thead th {
+	line-height:25px;
+	padding:0;
+	border-left:1px solid #e6e6e6;
+	border-right-color:#999;
+	border-bottom:1px solid #777;
+	color:#333;
+	text-align:center;
+	font-size:11px;
+	font-weight:bold;
+	-webkit-appearance:none;
+	cursor:default;
+	-moz-box-shadow:		inset 0 1px 0 #fff;
+	-webkit-box-shadow:		inset 0 1px 0 #fff;
+	box-shadow:				inset 0 1px 0 #fff;
+	background:#ddd;
+	background:-moz-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
+	background:-webkit-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
+	background:-o-linear-gradient(top,		#e0e0e0 0%, #ccc 100%);
+	background:-ms-linear-gradient(top,		#e0e0e0 0%, #ccc 100%);
+	background:linear-gradient(to bottom,	#e0e0e0 0%, #ccc 100%);
+	
+}
+/* .grid-view table.items thead tr:hover {
+	background:none;
+} */
+.grid-view table.items th a {
+	display:block;
+	color:#333;
+	font-size:11px;
+	text-decoration:none;
+}
+
+.grid-view table.items th:hover {/* background-color:#f8f8f8; */}
+
+.grid-view table.items td a {text-decoration:none;}
+.grid-view table.items td a:hover {text-decoration:underline;}
+
+/*
+ * ------------------- Rounded Borders --------------------
+ */
+.gridview.boxed table.items {
+	margin-top:5px;
 	border:1px solid #ccc;
-	border-collapse:separate; /* no border collapse to make rounded corners work */
 	border-radius:			4px;
 	-moz-border-radius:		4px;
 	-webkit-border-radius:	4px;
 	-o-border-radius:		4px;
-	
-/* 	-moz-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
-	-webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
-	box-shadow:				0 1px 6px rgba(0,0,0,0.5); */
 }
 /* rounded corner on top left TH cells in THEAD */
-.grid-view table.items th:first-child {
-	border-left-width:1px;
+.grid-view.boxed table.items th:first-child {
 	border-radius:			4px 0 0 0;
 	-moz-border-radius:		4px 0 0 0;
 	-webkit-border-radius:	4px 0 0 0;
 	-o-border-radius:		4px 0 0 0;
 }
 /* rounded corner on top right TH cells in THEAD */
-.grid-view table.items th:last-child {
+.grid-view.boxed table.items th:last-child {
 	border-radius:			0 4px 0 0;
 	-moz-border-radius:		0 4px 0 0;
 	-webkit-border-radius:	0 4px 0 0;
 	-o-border-radius:		0 4px 0 0;
 }
 /* left border on all left TD cells */
-.grid-view table.items tr td:first-child {
-	border-left-width:1px;
-}
-
-/* left border on all left TD cells */
-.grid-view table.items tr th:first-child, .grid-view table.items tr td:first-child {
-	border-left:none;
-}
+.grid-view.boxed table.items tr th:first-child, .grid-view.boxed table.items tr td:first-child {/* border-left:none; */}
 /* top border on all left TD cells */
-.grid-view table.items tr:first-child th {
-	border-top:none;
-}
-
-
-
+.grid-view.boxed table.items tr:first-child th {border-top:none;}
 /* bottom border on all bottom TD cells in TBODY */
-.grid-view table.items tbody tr:last-child td {
-/* 	border-bottom-width:1px; */
-}
+.grid-view.boxed table.items tbody tr:last-child td {/* border-bottom-width:1px; */}
 /* rounded corner on bottom left TD cells in TBODY */
-.grid-view table.items tbody tr:last-child td:first-child {
-	border-radius:0 0 0 4px;
-	-moz-border-radius:0 0 0 4px;
-	-webkit-border-radius:0 0 0 4px;
-	-o-border-radius:0 0 0 4px;
+.grid-view.boxed table.items tbody tr:last-child td:first-child {
+	border-radius:			0 0 0 4px;
+	-moz-border-radius:		0 0 0 4px;
+	-webkit-border-radius:	0 0 0 4px;
+	-o-border-radius:		0 0 0 4px;
 }
 /* rounded corner on bottom right TD cells in TBODY */
-.grid-view table.items tbody tr:last-child td:last-child {
-	border-radius:0 0 4px 0;
-	-moz-border-radius:0 0 4px 0;
-	-webkit-border-radius:0 0 4px 0;
-	-o-border-radius:0 0 4px 0;
+.grid-view.boxed table.items tbody tr:last-child td:last-child {
+	border-radius:			0 0 4px 0;
+	-moz-border-radius:		0 0 4px 0;
+	-webkit-border-radius:	0 0 4px 0;
+	-o-border-radius:		0 0 4px 0;
 }
-.grid-view table.items td, .grid-view table.items th {
-	padding:4px 5px;
-	border:solid #ccc;
-	border-width:1px 0 0 1px; /* top and right borders for all TD and TH cells */
-	font-family:sans-serif;
-	font-size:12px;
-	font-weight:normal;
+/*
+ * ---------------- Special Row Formatting ----------------
+ */
+.grid-view table.items tr.odd {background:#F5F4DE;/* #dce7f0; *//* #dce7f0; *//* background:#f7f6f0; */}
+.grid-view table.items tr.odd td {}
+.grid-view table.items tr.unviewed td {background:#eef0ff;font-weight:bold;}
+.grid-view table.items tr.selected {}
+/*
+ * ----------------------- Filters ------------------------
+ */
+.grid-view table.items tr.filters {background:#fff;}
+.grid-view table.items tr.filters td {
+	padding:0;
+	border:solid #777;
+	border-width:0 1px 1px 0;
+	border-bottom-color:#666;
+	border-right-color:#999;
+	background:#ccc;
+}
+.grid-view table.items tr.filters input, .grid-view table.items tr.filters select {
+	width:100%;
+	box-sizing:border-box;
+	margin:0;
+	padding:2px 4px;
+	border:none;
+/* 	border-radius:			3px;
+	-moz-border-radius:		3px;
+	-webkit-border-radius:	3px;
+	-o-border-radius:		3px; */
+}
 
-	word-wrap: break-word; /* Internet Explorer 5.5+ */
+/**
+ * -------------------- Column Sorting --------------------
+ */
+.grid-view table.items th.asc, .grid-view table.items th.desc {
+	/* background:url(sort_bg.gif) top left repeat-x; */
+	border-color:#3577d1;
+	-moz-box-shadow:		inset 0 1px 0 #94c3ff;
+	-webkit-box-shadow:		inset 0 1px 0 #94c3ff;
+	box-shadow:				inset 0 1px 0 #94c3ff;
+	border-left-color:#79b4ff;
+	background:#629ceb;
+	background:-moz-linear-gradient(top,	#629ceb 0%, #5594e9 100%);
+	background:-webkit-linear-gradient(top,	#629ceb 0%, #5594e9 100%);
+	background:-o-linear-gradient(top,		#629ceb 0%, #5594e9 100%);
+	background:-ms-linear-gradient(top,		#629ceb 0%, #5594e9 100%);
+	background:linear-gradient(to bottom,	#629ceb 0%, #5594e9 100%);
+	/* border-width:0 1px; */
+} /* rgb(105, 147, 204)*/
+.grid-view table.items th.asc a, .grid-view table.items th.desc a {
+	color:#fff;
+	text-shadow:0 0 2px rgba(0,0,0,0.25);
 }
-.grid-view table.items th {
-	text-align:center;
-	padding:4px 0;
-	height:auto;
-	width:auto;
-	margin:0 2px;
-	background:#eee;
-	color:#333;
-	font-size:11px;
-	font-weight:bold;
-	text-decoration:none;
-	cursor:default;
-	-moz-box-shadow:		inset 0 1px 0 0 #fff;
-	-webkit-box-shadow:		inset 0 1px 0 0 #fff;
-	box-shadow:				inset 0 1px 0 0 #fff;
-	-webkit-appearance:none;
+.grid-view table.items th.asc a {background:url(arrow_up3.png) right center no-repeat;}
+.grid-view table.items th.desc a {background:url(arrow_down3.png) right center no-repeat;}
+
+/**
+ * ------------- 2-part tables (fixed header) -------------
+ */
+.grid-view div.x2grid-header-container {
+	overflow:hidden;
+	position:relative;
+	/* border-bottom:1px solid #666; */
 }
-.grid-view table.items thead tr:hover {
-	background:none;
+/* .grid-view div.x2grid-header-container table.items tr.filters td {border-bottom:none;} */
+.grid-view div.x2grid-body-container {
+	overflow-x:auto;
+	overflow-y:hidden;
+	/* border-top:1px solid #666; */
+/* 	overflow-y:scroll;
+	max-height:710px; */
 }
-.grid-view table.items th a {
+
+/**
+ * ------------------- x2.gridResizing --------------------
+ */
+.grid-view table.items.x2grid-resizable {
+	border-collapse:separate;
+	border:none;
+	margin-top:0;
+}
+.grid-view table.items.x2grid-resizable tr:first-child td{border-top:none;}
+/* .grid-view table.items.x2grid-resizable td.hover {
+	overflow:visible;
 	display:block;
-	width:auto;
-	padding:0 12px 0 8px;
-	color:#333;
-	font-size:11px;
-	text-decoration:none;
-	background:url(arrow_both.png) right center no-repeat;
+	position:absolute;
+	padding:6px 8px 6px 5px !important;
+	z-index:3;
+	border-right:1px solid #d3d3cc/* rgb(196,214,235) * /;
+} */
+/* .grid-view table.items.x2grid-resizable td div {white-space:nowrap;overflow:hidden;} */
+.x2grid-grips {height:0px;position:relative;}
+.x2grid-grips div {
+	position:absolute;
+	top:1px;
+	width:9px;
+	margin-left:-4px;
+	z-index:2;
+	cursor:col-resize;
+	/* background:rgba(255,0,0,0.2); */
 }
 
-.grid-view table.items th:hover {
-	background-color:#f8f8f8;
-	/* text-decoration:underline; */
-}
 
-.grid-view table.items th a.asc {
-	background:url(arrow_up.png) right center no-repeat;
+/**
+ * ------------------ x2.gridColDragging ------------------
+ */
+.grid-view table.items.x2grid-helper thead th {
+	height:25px;
+	border:1px solid #ccc;
+	border-width:0 1px;
+	opacity:0.75;
+	cursor:move;
 }
-
-.grid-view table.items th a.desc {
-	background:url(arrow_down.png) right center no-repeat;
+.grid-view table.items.x2grid-helper a {cursor:move;}
+.grid-view table.items.x2grid-helper td {padding:5px 5px;}
+.grid-view table.items td.spacer, .grid-view table.items th.spacer {
+	/* padding:0 !important; */
+	border-left:none;
+	border-right:none;
+	-moz-box-shadow:		inset -1px 0 0 #999;	/* since IE has too many chromosomes, let's simulate a border! */
+	-webkit-box-shadow:		inset -1px 0 0 #999;
+	box-shadow:				inset -1px 0 0 #999;
 }
-
-.grid-view table.items tr.even {
+.grid-view table.items th.spacer:first-child {padding-left:0;}
+/**
+ * -------------- special column formatting ---------------
+ */
+.grid-view .link-column img, .grid-view .button-column img {border:0;}
+.grid-view .button-column, .grid-view .checkbox-column {text-align:center;}
+/**
+ * ------------------- Pager formatting -------------------
+ */
+.grid-view .pager {
+    border-top:1px solid #aaa;
+	padding:8px;
+	background:#fff;
+	margin:0; 
+	text-align:right;
+/* 	border-radius:			4px 4px 4px 4px;
+	-moz-border-radius:		4px 4px 4px 4px;
+	-webkit-border-radius:	4px 4px 4px 4px;
+	-o-border-radius:		4px 4px 4px 4px; */
 }
-
-.grid-view table.items tr.odd {
-}
-
-.grid-view table.items tr.unviewed td {
-	background:#eef0ff;
-	font-weight:bold;
-}
-.grid-view table.items td a {text-decoration:none;}
-.grid-view table.items td a:hover {text-decoration:underline;}
-
-.grid-view table.items tr.selected {
-}
-
-.grid-view table.items tr:hover {
-	background:#fbf5d9;
-	/* #ECFBD4;
-	*/
-}
-.grid-view table.items.x2grid-resizing tr:hover {
-	background:none;
-	/* #ECFBD4;
-	*/
-}
-
-.grid-view .link-column img {
-	border:0;
-}
-
-.grid-view .button-column {
-	text-align:center;
-	width:80px;
-}
-
-.grid-view .button-column img {
-	border:0;
-}
-
-.grid-view .checkbox-column {
-	text-align:center;
-}
-
-.grid-view .summary {
-	color:#555;
-	display:inline;
-	float:right;
-}
+/**
+ * ------------------------- Misc -------------------------
+ */
+div.scrollbar-width-test {height:100px;width:100px;position:absolute;top:-100px;left:0;overflow-x:hidden;overflow-y:scroll;/* visibility:hidden; */}
 
 .grid-view > .pager .yiiPager a {
     padding: 2px 8px 2px 8px;
 }
-
-.grid-view #JColResizer0 {
-}
-
-.grid-view .pager {
-    border: 1px solid #ccc;
-	padding:5px;
-	background:#fff;
-	margin:5px 0 0 0; 
-	text-align:right;
-	border-radius:			4px 4px 4px 4px;
-	-moz-border-radius:		4px 4px 4px 4px;
-	-webkit-border-radius:	4px 4px 4px 4px;
-	-o-border-radius:		4px 4px 4px 4px;
-}
-
-.grid-view .empty {
-	font-style:italic;
-}
-.grid-view .filters td {
-	padding:4px 5px !important;
-}
-.grid-view .filters input,.grid-view .filters select {
-	width:100%;
-	padding:0;
-	margin:0;
-}
-
 .yiiPager li a {background:#fff;}

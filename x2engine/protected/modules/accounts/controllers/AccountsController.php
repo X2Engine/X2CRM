@@ -35,9 +35,9 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.accounts.controllers 
+ * @package X2CRM.modules.accounts.controllers
  */
-class AccountsController extends x2base { 
+class AccountsController extends x2base {
 
 	public $modelClass = 'Accounts';
 
@@ -45,7 +45,7 @@ class AccountsController extends x2base {
 		return array(
                         array('allow',
                             'actions'=>array('getItems'),
-                            'users'=>array('*'), 
+                            'users'=>array('*'),
                         ),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact',
@@ -61,7 +61,7 @@ class AccountsController extends x2base {
 			),
 		);
 	}
-	
+
 	public function actions() {
 		return array(
 			'inlineEmail'=>array(
@@ -69,7 +69,7 @@ class AccountsController extends x2base {
 			),
 		);
 	}
-        
+
     public function actionGetItems(){
 		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
@@ -84,12 +84,16 @@ class AccountsController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id) {
-		$model = $this->loadModel($id);
-		parent::view($model,'accounts');
+        $model = $this->loadModel($id);
+        if($this->checkPermissions($model,'view')) {
+            parent::view($model,'accounts');
+        }else{
+            $this->redirect('index');
+        }
 	}
-	
+
 	public function actionShareAccount($id){
-		
+
 		$model=$this->loadModel($id);
 		$body="\n\n\n\n".Yii::t('accounts','Account Record Details')." <br />
 <br />".Yii::t('accounts','Name').": $model->name
@@ -105,7 +109,7 @@ class AccountsController extends x2base {
 		$status = array();
 		$email = array();
 		if(isset($_POST['email'], $_POST['body'])){
-		
+
 			$subject = Yii::t('accounts',"Account Record").": $model->name";
 			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
@@ -114,7 +118,7 @@ class AccountsController extends x2base {
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
-			
+
 			if(empty($errors))
 				$status = $this->sendUserEmail($email,$subject,$body);
 
@@ -143,7 +147,7 @@ class AccountsController extends x2base {
 	 */
 /* 	public function create($model,$oldAttributes, $api){
 		
-		$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
+		$model->annualRevenue = Formatter::parseCurrency($model->annualRevenue,false);
 		// $model->createDate=time();
 		if($api==0)
 			parent::create($model,$oldAttributes,$api);
@@ -158,7 +162,7 @@ class AccountsController extends x2base {
 		unset($users['']);
 		foreach(Groups::model()->findAll() as $group)
 			$users[$group->id]=$group->name;
-		
+
 
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->attributes;
@@ -167,8 +171,8 @@ class AccountsController extends x2base {
 				$value = '';
 			}
 			$model->setX2Fields($_POST['Accounts']);
-			
-			
+
+
 			if(isset($_POST['x2ajax'])) {
 				// if($this->create($model,$temp, '1')) { // success creating account?
 				if($model->save()) { // success creating account?
@@ -201,7 +205,7 @@ class AccountsController extends x2base {
 									$newPhone = $contact->phone;
 									$changed = true;
 								}
-								
+
 								if($changed)
 									$contact->update();
 							}
@@ -236,7 +240,7 @@ class AccountsController extends x2base {
                     $this->redirect(array('view','id'=>$model->id));
 			}
 		}
-		
+
 		if(isset($_POST['x2ajax'])) {
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
 			Yii::app()->clientScript->scriptMap['*.css'] = false;
@@ -259,11 +263,11 @@ class AccountsController extends x2base {
 		}
 
 	}
-	
+
 	// this nonsense is now done in Accounts::beforeValidate()
 /*         public function update($model, $oldAttributes,$api){
             // process currency into an INT
-            $model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
+            $model->annualRevenue = Formatter::parseCurrency($model->annualRevenue,false);
 
             if($api==0)
                 parent::update($model,$oldAttributes,$api);
@@ -284,7 +288,7 @@ class AccountsController extends x2base {
                 foreach(Groups::model()->findAll() as $group){
                     $users[$group->id]=$group->name;
                 }
-		
+
 		$curUsers=$model->assignedTo;
 		$userPieces=explode(', ',$curUsers);
 		$arr=array();
@@ -323,7 +327,7 @@ class AccountsController extends x2base {
                         }
 
 			// process currency into an INT
-			$account->annualRevenue = $this->parseCurrency($account->annualRevenue,false);
+			$account->annualRevenue = Formatter::parseCurrency($account->annualRevenue,false);
 			$changes=$this->calculateChanges($temp,$account->attributes, $account);
 			$account=$this->updateChangelog($account,$changes);
 			$account->update();
@@ -346,10 +350,10 @@ class AccountsController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Accounts'])) {
-                    
-			$temp=$model->assignedTo; 
+
+			$temp=$model->assignedTo;
 			$tempArr=$model->attributes;
-			$model->attributes=$_POST['Accounts'];  
+			$model->attributes=$_POST['Accounts'];
 			$arr=$_POST['Accounts']['assignedTo'];
 			$model->assignedTo=Accounts::parseUsers($arr);
 			if($temp!="")
@@ -369,13 +373,13 @@ class AccountsController extends x2base {
 			'contacts'=>$contacts,
 			'action'=>'Add'
 		));
-	} 
+	}
 
 	public function actionRemoveUser($id) {
 
 		$model=$this->loadModel($id);
 
-		$pieces=explode(', ',$model->assignedTo); 
+		$pieces=explode(', ',$model->assignedTo);
 		$pieces=Opportunity::editUsersInverse($pieces);
 
 		// Uncomment the following line if AJAX validation is needed
@@ -383,13 +387,13 @@ class AccountsController extends x2base {
 
 		if(isset($_POST['Accounts'])) {
 			$temp=$model->attributes;
-			$model->attributes=$_POST['Accounts'];  
+			$model->attributes=$_POST['Accounts'];
 			$arr=$_POST['Accounts']['assignedTo'];
 
 			foreach($arr as $id=>$user){
 				unset($pieces[$user]);
 			}
-			
+
 			$temp=Accounts::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
@@ -405,9 +409,9 @@ class AccountsController extends x2base {
 			'action'=>'Remove'
 		));
 	}
-        
+
         public function delete($id){
-            
+
             $model=$this->loadModel($id);
             $dataProvider=new CActiveDataProvider('Actions', array(
                 'criteria'=>array(
@@ -451,21 +455,8 @@ class AccountsController extends x2base {
 	 * Lists all models.
 	 */
 	public function actionIndex() {
-		
+
 		$model=new Accounts('search');
 		$this->render('index', array('model'=>$model));
-	}
-
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model=Accounts::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
 	}
 }

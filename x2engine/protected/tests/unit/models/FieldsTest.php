@@ -46,7 +46,7 @@ class FieldsTest extends X2DbTestCase {
 //	);
 
 	public function testStrToNumeric() {
-		
+
 		$cur =  Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency);
 		$input = " $cur 123.45 % ";
 		$this->assertEquals(123.45,Fields::strToNumeric($input,'currency'));
@@ -57,6 +57,8 @@ class FieldsTest extends X2DbTestCase {
 		$type = 'notanint';
 		$value = Fields::strToNumeric($input, $type);
 		$this->assertEquals(123.45, $value);
+
+
 
 		// Randumb string comes back as itself
 		$input = 'cockadoodledoo';
@@ -93,6 +95,11 @@ class FieldsTest extends X2DbTestCase {
 		// ...with decimal places
 		$value = Fields::strToNumeric('($10,000,000.01)','currency');
 		$this->assertEquals(-10000000.01,$value);
+
+		// Multibyte support:
+		$curSym = Yii::app()->locale->getCurrencySymbol('INR');
+		$value = Fields::strToNumeric("($curSym"."9,888.77)",'currency',$curSym);
+		$this->assertEquals(-9888.77,$value,'Failed asserting proper conversion of multibyte strings to numbers.');
 	}
 }
 

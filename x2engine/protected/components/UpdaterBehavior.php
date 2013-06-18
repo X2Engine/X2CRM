@@ -39,15 +39,23 @@ Yii::import('application.components.ResponseBehavior');
 
 /**
  * Behavior class with application updater/upgrader utilities.
- * 
+ *
+ * @property array $configVars (read-only) variables imported from the configuration
  * @property string $dbBackupCommand (read-only) command to be used for backing up the database
  * @property string $dbBackupPath (read-only) Full path to the database backup file.
  * @property string $dbCommand (read-only) command to be used for running SQL from files
  * @property array $dbParams (read-only) Database information retrieved from {@link CDbConnection}
+ * @property string $edition (read-only) The edition of the installation of X2CRM.
  * @property boolean $keepDbBackup If true, updater will not remove database backup after restoring.
+ * @property string $latestUpdaterVersion (read-only) The latest version of the updater utility according to the updates server
+ * @property string $latestVersion (read-only)  The latest version of X2CRM according to the updates server
  * @property boolean $noHalt Whether to terminate the PHP process if errors occur
+ * @property string $sourceFileRoute (read-only) Route (relative URL on the updates server) from which to download source files
  * @property string $thisPath (read-only) Absolute path to the current working directory
+ * @property string $uniqueId (read-only) Unique ID of the installation
+ * @property string $updateDataRoute (read-only) Relative URL (to the base URL of the update server) from which to get update manifests.
  * @property string $webRoot (read-only) Absolute path to the web root, even if not in a web request
+ * @property array $webUpdaterActions (read-only) array of actions in the web-based updater utility.
  * @package X2CRM.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
@@ -57,15 +65,15 @@ class UpdaterBehavior extends ResponseBehavior {
 	///////////////
 	
 	/**
-	 * SQL backup dump
+	 * SQL backup dump file
 	 */
 	const BAKFILE = 'update_backup.sql';
 	/**
-	 * SDERR output from backup/recovery process.
+	 * SDERR output from backup/recovery process
 	 */
 	const ERRFILE = 'update.err';
 	/**
-	 * STDOUT output from backup/recovery process.
+	 * STDOUT output from backup/recovery process
 	 */
 	const LOGFILE = 'update.log';
 
@@ -136,6 +144,11 @@ class UpdaterBehavior extends ResponseBehavior {
 	private $_dbParams;
 
 	/**
+	 * The application's edition.
+	 */
+	private $_edition;
+
+	/**
 	 * Set to true to retain database backups after using them to recover from a failed update.
 	 * @var boolean
 	 */
@@ -148,10 +161,42 @@ class UpdaterBehavior extends ResponseBehavior {
 	private $_thisPath;
 
 	/**
+	 * Unique ID of the install.
+	 * @var type
+	 */
+	private $_uniqueId;
+
+	/**
 	 * Absolute path to the web root
 	 * @var string
 	 */
 	private $_webRoot;
+
+
+	private $_webUpdaterActions;
+
+	/**
+	 * Base URL of the web server from which to fetch data and files
+	 */
+	public $updateServer = 'http://x2planet.com/';
+
+	/**
+	 * Version of X2CRM.
+	 */
+	public $version;
+
+	/**
+	 * Converts an array formatted like a behavior or controller actions array
+	 * entry and returns the path (relative to {@link X2WebApplication.basePath}
+	 * to the class file. {@link Yii::getPathOfAlias()} is unsafe to use,
+	 * because in cases where this function is to be used, the files may not
+	 * exist yet.
+	 *
+	 * @param array $classes An array containing a "class" => [Yii path alias] entry
+	 */
+	public static function classAliasPath($alias){
+		return preg_replace(':^application/:', '', str_replace('.', DIRECTORY_SEPARATOR, $alias)).'.php';
+	}
 
 	/**
 	 * Checks to see if a file exists and isn't very old..
@@ -228,8 +273,10 @@ class UpdaterBehavior extends ResponseBehavior {
 	 * @return boolean
 	 * @throws Exception 
 	 */
-	public function downloadSourceFile($route, $file,$maxAttempts = 5) {
-		$fileUrl = "http://x2planet.com/$route/". str_replace(' ','%20',$file);
+	public function downloadSourceFile($file,$route=null,$maxAttempts = 5) {
+		if(empty($route)) // Auto-construct a route based on ID & edition info:
+			$route = $this->sourceFileRoute;
+		$fileUrl = "{$this->updateServer}{$route}/". str_replace(' ','%20',$file);
 		$i = 0;
 		if ($file != "") {
 			$target = FileUtil::relpath($this->webRoot . "/temp/" . $file, $this->thisPath.'/');
@@ -420,6 +467,19 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
+	 * Gets configuration variables from the configuration file(s).
+	 * @return array
+	 */
+	public function getConfigVars() {
+		$configPath = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'config',self::$configFilename));
+		if(!file_exists($configPath))
+			$this->regenerateConfig();
+		include($configPath);
+		$this->version = $version;
+		return compact(array_keys(get_defined_vars()));
+	}
+
+	/**
 	 * Magic getter for {@link dbBackupCommand}
 	 * @return string
 	 * @throws Exception
@@ -504,11 +564,61 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
+	 * Backwards-compatible function for obtaining the edition of the
+	 * installation. Attempts to not fail and return a valid value even if the
+	 * installation does not yet have the database column, and even if the admin
+	 * object is not yet stored in the application parameters.
+	 * @return string
+	 */
+	public function getEdition() {
+		if(!isset($this->_edition)) {
+			if(Yii::app()->params->hasProperty('admin')) {
+				$admin = Yii::app()->params->admin;
+				if($admin->hasAttribute('edition')) {
+					$this->_edition = empty($admin->edition) ? 'opensource' : $admin->edition;
+				} else {
+					$this->_edition = 'opensource';
+				}
+			} else {
+				$this->_edition = 'opensource';
+			}
+		}
+		return $this->_edition;
+	}
+
+	/**
 	 * Magic getter for {@link keepDbBackup}
 	 * @return bool
 	 */
 	public function getKeepDbBackup() {
 		return $this->_keepDbBackup;
+	}
+
+
+	/**
+	 * Gets the latest version of the updater utility
+	 * 
+	 * @return string
+	 */
+	public function getLatestUpdaterVersion(){
+		$context = stream_context_create(array(
+			'http' => array(
+				'timeout' => 15  // Timeout in seconds
+				)));
+		return FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
+	}
+
+	/**
+	 * Gets the latest version of X2CRM
+	 *
+	 * @return type
+	 */
+	public function getLatestVersion(){
+		$context = stream_context_create(array(
+			'http' => array(
+				'timeout' => 15  // Timeout in seconds
+				)));
+		return FileUtil::getContents($this->updateServer.'installs/updates/versionCheck', 0, $context);
 	}
 
 	/**
@@ -517,6 +627,21 @@ class UpdaterBehavior extends ResponseBehavior {
 	 */
 	public function getNoHalt() {
 		return self::$_noHalt;
+	}
+
+	/**
+	 * Auto-construct a relative base URL on the updates server from which to retrieve
+	 * source files.
+	 *
+	 * @param type $edition
+	 * @param type $uniqueId
+	 * @return string
+	 */
+	public function getSourceFileRoute($edition = null,$uniqueId = null) {
+		foreach(array('edition','uniqueId') as $attr)
+			if(empty(${$attr}))
+				${$attr} = $this->$attr;
+		return $edition=='opensource'?'updates/x2engine':"installs/update/$edition/$uniqueId";
 	}
 
 	/**
@@ -530,6 +655,59 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
+	 * Backwards-compatible function for obtaining the unique id. Very similar
+	 * to getEdition in regard to its backwards compatibility.
+	 * @return type
+	 */
+	public function getUniqueId() {
+		if(!isset($this->_uniqueId)) {
+			if(Yii::app()->params->hasProperty('admin')) {
+				$admin = Yii::app()->params->admin;
+				if($admin->hasAttribute('unique_id')) {
+					$this->_uniqueId = empty($admin->unique_id) ? 'none' : $admin->unique_id;
+				} else {
+					$this->_uniqueId= 'none';
+				}
+			}
+		}
+		return $this->_uniqueId;
+	}
+
+	/**
+	 * Retrieves update data from the server.
+	 */
+	public function getUpdateData() {
+		$updateData = FileUtil::getContents($this->updateServer.$this->updateDataRoute);
+		if($updateData)
+			$updateData = CJSON::decode($updateData);
+		return $updateData;
+	}
+
+	/**
+	 * Gets a relative URL on the update server from which to obtain update data
+	 *
+	 * @param type $edition
+	 * @param type $uniqueId
+	 * @return string
+	 */
+	public function getUpdateDataRoute($version = null,$uniqueId = null,$edition = null) {
+		$route = 'installs/updates/{version}/{unique_id}';
+		$configVars = $this->configVars;
+		if(!isset($this->version) && empty($version))
+			extract($configVars);
+		foreach(array('version','uniqueId','edition') as $attr)
+			if(empty(${$attr}))
+				${$attr} = $this->$attr;
+		$params = array('{version}' => $version, '{unique_id}' => $uniqueId);
+		if($edition != 'opensource'){
+			$route .= '_{edition}_{n_users}';
+			$params['{edition}'] = $edition;
+			$params['{n_users}'] = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
+		}
+		return strtr($route, $params);
+	}
+
+	/**
 	 * Web root magic getter.
 	 * 
 	 * Resolves the absolute path to the webroot of the application without using
@@ -540,6 +718,50 @@ class UpdaterBehavior extends ResponseBehavior {
 		if (!isset($this->_webRoot))
 			$this->_webRoot = realpath(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','')));
 		return $this->_webRoot;
+	}
+
+
+	/**
+	 * Returns the actions associated with the web-based updater.
+	 *
+	 * @param bool $getter If being called as a getter, this method will attempt
+	 *	to download actions if they don't exist on the server yet. Otherwise, if
+	 *	this parameter is explicitly set to False, the return value will include
+	 *	the abstract base action class (in which case it should not be used in
+	 *	the return value of {@link CController::actions()} )
+	 * @return array An array of actions appropriate for inclusion in the return
+	 *	value of {@link CController::actions()}.
+	 */
+	public function getWebUpdaterActions($getter=true){
+		if(!isset($this->_webUpdaterActions) || !$getter){
+			$this->_webUpdaterActions = array(
+				'backup' => array('class' => 'application.components.webupdater.DatabaseBackupAction'),
+				'downloadDatabaseBackup' => array('class' => 'application.components.webupdater.DownloadDatabaseBackupAction'),
+				'enactChanges' => array('class' => 'application.components.webupdater.EnactX2CRMChangesAction'),
+				'download' => array('class' => 'application.components.webupdater.SourceFileDownloadAction'),
+				'updater' => array('class' => 'application.components.webupdater.X2CRMUpdateAction'),
+				'upgrader' => array('class' => 'application.components.webupdater.X2CRMUpgradeAction'),
+			);
+			$allClasses = array_merge($this->_webUpdaterActions, array('base'=>array('class' => 'application.components.webupdater.WebUpdaterAction')));
+			if($getter){
+				$actionsDir = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', 'webupdater', ''));
+				$refresh = !is_dir($actionsDir);
+				foreach($allClasses as $name => $properties){
+					$actionClassFile = self::classAliasPath($properties['class']);
+					$absPath = Yii::app()->basePath.DIRECTORY_SEPARATOR.$actionClassFile;
+					if(!file_exists($absPath)){
+						$refresh = true;
+						$this->downloadSourceFile("protected/$actionClassFile");
+					}
+				}
+				// Copy action files into the live install
+				if($refresh)
+					$this->restoreBackup('temp');
+			} else {
+				return $allClasses;
+			}
+		}
+		return $this->_webUpdaterActions;
 	}
 
 	/**
@@ -575,6 +797,9 @@ class UpdaterBehavior extends ResponseBehavior {
 	 */
 	public function makeDatabaseBackup() {
 		if (function_exists('proc_open')) {
+			$dataDir = Yii::app()->basePath.DIRECTORY_SEPARATOR.'data';
+			if(!is_dir($dataDir))
+				mkdir($dataDir);
 			$errFile = self::ERRFILE;
 			$descriptor = array(
 				1 => array('file', $this->dbBackupPath, 'w'),
@@ -629,12 +854,13 @@ class UpdaterBehavior extends ResponseBehavior {
 
 		$newbuildDate = $newbuildDate == null ? time() : $newbuildDate;
 		$basePath = Yii::app()->basePath;
-		if (!file_exists($basePath . '/config/' . self::$configFilename)) {
-			// App is using old config file. New one will be generated.
-			include($basePath . '/config/emailConfig.php');
-			include($basePath . '/config/dbConfig.php');
+		$configPath = implode(DIRECTORY_SEPARATOR,array($basePath,'config',self::$configFilename));
+		if (!file_exists($configPath)) {
+			// App is using the old config files. New ones will be generated.
+			include(implode(DIRECTORY_SEPARATOR,array($basePath ,'config','emailConfig.php')));
+			include(implode(DIRECTORY_SEPARATOR,array($basePath,'config','dbConfig.php')));
 		} else {
-			include($basePath . '/config/' . self::$configFilename);
+			include($configPath);
 		}
 
 		if (!isset($appName)) {
@@ -668,10 +894,9 @@ class UpdaterBehavior extends ResponseBehavior {
 			$config .= "\$$var=$q" . ${$var} . "$q;\n";
 		$config .= "?>";
 
-		if (file_put_contents($basePath . '/config/' . self::$configFilename, $config) === false) {
-			$file = 'protected/config/'.self::$configFilename;
+		if (file_put_contents($configPath, $config) === false) {
 			$contents = $this->isConsole ? "\n$config" : "<br /><pre>\n$config\n</pre>";
-			throw new Exception(Yii::t('admin',"Failed to set version info in the configuration. To fix this issue, edit {file} and ensure its contents are as follows: {contents}",array('{file}'=>$file,'{contents}'=>$contents)));
+			throw new Exception(Yii::t('admin',"Failed to set version info in the configuration. To fix this issue, edit {file} and ensure its contents are as follows: {contents}",array('{file}'=>$configPath,'{contents}'=>$contents)));
 		} else 
 			return true;
 	}
@@ -724,6 +949,8 @@ class UpdaterBehavior extends ResponseBehavior {
 		foreach ($assets as $crcDir)
 			FileUtil::rrmdir("$assetsDir/$crcDir");
 	}
+
+
 
 
 	/**
@@ -792,8 +1019,6 @@ class UpdaterBehavior extends ResponseBehavior {
 		} else
 			throw new Exception(Yii::t('admin', 'Cannot restore database; unable to spawn child process on the server.'));
 	}
-
-
 
 	/**
 	 * Magic setter for {@link keepDbBackup}
@@ -900,22 +1125,26 @@ class UpdaterBehavior extends ResponseBehavior {
 	 */
 	public function updateUpdater($updaterCheck) {
 
-		// The files involved in the update process:
+		// The files directly involved in the update process:
 		$updaterFiles = array(
-			"controllers/AdminController.php",
 			"views/admin/updater.php",
 			"components/UpdaterBehavior.php",
 			"components/FileUtil.php",
 			"components/ResponseBehavior.php",
 			"components/views/requirements.php"
 		);
+		// The web-based updater's action classes, which are defined separately:
+		$updaterActions = $this->getWebUpdaterActions(false);
+		foreach($updaterActions as $name => $properties) {
+			$updaterFiles[] = self::classAliasPath($properties['class']);
+		}
 
 		// Try to retrieve the files:
 		$failed2Retrieve = array();
 		foreach ($updaterFiles as $file) {
-			$remoteFile = "http://x2planet.com/updates/x2engine/protected/$file";
+			$remoteFile = $this->updateServer.$this->sourceFileRoute."/protected/$file";
 			try {
-				$this->downloadSourceFile("updates/x2engine","protected/$file");
+				$this->downloadSourceFile("protected/$file");
 			} catch (Exception $e) {
 				$failed2Retrieve[] = "protected/$file";
 			}
@@ -928,6 +1157,13 @@ class UpdaterBehavior extends ResponseBehavior {
 		// the app will get stuck in a redirect loop
 		$this->regenerateConfig(Null, $updaterCheck, Null);
 		return $failed2Retrieve;
+	}
+
+	/**
+	 * Public wrapper method for {@link UpdaterBehavior::respond()}
+	 */
+	public function webRespond() {
+		call_user_func('self::respond',func_get_args());
 	}
 
 }

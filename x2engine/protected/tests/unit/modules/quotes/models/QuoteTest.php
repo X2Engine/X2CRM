@@ -42,7 +42,7 @@ class QuoteTest extends X2DbTestCase {
 		}
 		ob_end_clean();
 		// These exceptions should not result in the array being changed
-		$this->assertEquals(count($this->lineItems), count($quote->lineItems), 'Exceptions thrown, but lineItems changed!');
+		$this->assertEquals(9, count($quote->lineItems), 'Exceptions thrown, but lineItems changed!');
 		$lineItems = array(
 			'preexist_keep_1' => array(
 				'id' => 1,
@@ -158,7 +158,9 @@ class QuoteTest extends X2DbTestCase {
 			),
 		);
 		$lineItemsNoAlias = array_values($lineItems);
+//		var_dump(array_map(function($li){return $li->attributes;},$quote->lineItems));
 		$quote->setLineItems($lineItemsNoAlias,true);
+//		var_dump(array_map(function($li){return $li->attributes;},$quote->lineItems));
 		$this->assertFalse($quote->hasLineItemErrors, "Quote has line item errors: " . CJSON::encode($quote->lineItemErrors));
 //		echo "\nNew line item id:lineNumber:\n";
 //		foreach ($quote->lineItems as $item)
@@ -225,6 +227,47 @@ class QuoteTest extends X2DbTestCase {
 				$this->assertEquals($value, $dbItemsByLine[$item['lineNumber']]->$attr, "Attribute value assertion failed on $alias ($attr).");
 			}
 		}
+	}
+
+	public function testLineItemsBugMay2013() {
+		$post = array(
+			'Quote' =>
+			array(
+				'name' => 'Campbell\'s Cloud & Training',
+				'status' => 'Won',
+				'locked' => '0',
+				'expirationDate' => 'Tomorrow',
+				'associatedContacts_id' => '1007',
+				'associatedContacts' => 'Theodore Black',
+				'accountName_id' => '30',
+				'accountName' => 'Evergreen Capital Partners',
+				'probability' => '82',
+				'assignedTo' => 'apelletier',
+				'description' => '',
+				'subtotal' => '',
+				'total' => '$55.00',
+				'template' => '',
+			),
+			'lineitem' =>
+			array(
+				2 =>
+				array(
+					'name' => 'Data Migration (per hour)',
+					'price' => '$55.00',
+					'quantity' => '1',
+					'adjustment' => '$0.00',
+					'description' => '',
+					'total' => '$55.00',
+					'adjustmentType' => 'linear',
+					'lineNumber' => '1',
+				),
+			),
+			'yt0' => 'Update',
+		);
+		$quote = $this->quotes('bugMay2013');
+		$this->assertEquals(2,count($quote->lineItems));
+		$quote->lineItems = $post['lineitem'];
+		$this->assertEquals(1,count($quote->lineItems));
 	}
 
 	/**

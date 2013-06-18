@@ -61,20 +61,9 @@ $menuItems = array(
 	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
 	array('label'=>Yii::t('quotes',($subscribed? 'Unsubscribe' : 'Subscribe' )), 'url'=>'#', 'linkOptions'=>array('class'=>'x2-subscribe-button', 'onclick'=>'return subscribe($(this));', 'title'=>Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}'=>$model->firstName.' '.$model->lastName)))),
 );
-
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 $serviceModule = Modules::model()->findByAttributes(array('name'=>'services'));
-
-if($accountModule->visible) {
-	$createAccountButton = 	array(array('label'=>Yii::t('accounts','Create Account'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-account')));
-	array_splice($menuItems, 6, 0, $createAccountButton);
-}
-
-if($opportunityModule->visible) {
-	$createAccountButton = 	array(array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-opportunity')));
-	array_splice($menuItems, 6, 0, $createAccountButton);
-}
 
 if($serviceModule->visible) {
 	$createCaseButton = array(array('label'=>Yii::t('services','Create Case'), 'url'=>'#', 'linkOptions'=>array('onclick'=>'return false;', 'id'=>'create-case')));
@@ -95,8 +84,8 @@ $(function() {
 	$('body').data('unsubscribeText', ". json_encode(Yii::t('contacts', 'Unsubscribe')) .");
 	$('body').data('modelType', $modelType);
 	$('body').data('modelId', $modelId);
-	
-	
+
+
 	$('.x2-subscribe-button').qtip();
 });
 
@@ -160,16 +149,21 @@ if (isset($linkModel))
 	$accountName = json_encode($linkModel->name);
 else
 	$accountName = json_encode('');
-$createOpportunityUrl = $this->createUrl('/opportunities/create');
+$createContactUrl = $this->createUrl('/contacts/create');
 $createAccountUrl = $this->createUrl('/accounts/create');
+$createOpportunityUrl=$this->createUrl('/opportunities/create');
 $createCaseUrl = $this->createUrl('/services/create');
 $assignedTo = json_encode($model->assignedTo);
 $tooltip = json_encode(Yii::t('contacts', 'Create a new Opportunity associated with this Contact.'));
+$contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact associated with this Contact.'));
 $accountsTooltip = json_encode(Yii::t('contacts', 'Create a new Account associated with this Contact.'));
 $caseTooltip = json_encode(Yii::t('contacts', 'Create a new Service Case associated with this Contact.'));
 $contactName = json_encode($model->firstName .' '. $model->lastName);
 $phone = json_encode($model->phone);
 $website = json_encode($model->website);
+$leadSource = json_encode($model->leadSource);
+$leadType = json_encode($model->leadtype);
+$leadStatus = json_encode($model->leadstatus);
 Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {
 		// init create opportunity button
@@ -177,7 +171,10 @@ Yii::app()->clientScript->registerScript('create-model', "
 
 		// init create account button
 		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Contacts', {$model->id}, $accountName, $assignedTo, $phone, $website, $accountsTooltip);
-		
+
+		// init create contact button
+		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Contacts', '{$model->id}', $accountName, $assignedTo, '', '', $contactTooltip, $leadSource, $leadType, $leadStatus);
+
 		// init create case button
 		$('#create-case').initCreateCaseDialog('$createCaseUrl', 'Contacts', {$model->id}, $contactName, $assignedTo, $caseTooltip);
 	});
@@ -189,12 +186,7 @@ Yii::app()->clientScript->registerScript('create-model', "
 <?php $this->widget('Attachments',array('associationType'=>'contacts','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 <?php
-$insertableAttributes = array();
-foreach($model->attributeLabels() as $fieldName => $label) {
-	$attr = trim($model->renderAttribute($fieldName,false));
-	if($attr !== '')
-		$insertableAttributes[$label] = $attr;
-}
+
 
 // echo CJSON::encode($insertableAttributes);
 // var_dump($insertableAttributes);
@@ -208,7 +200,6 @@ $this->widget('InlineEmailForm',
 			'modelName'=>'Contacts',
 			'modelId'=>$model->id,
 		),
-//		'insertableAttributes'=>array(Yii::t('app','Contact Attributes')=>$insertableAttributes),
 		'startHidden'=>true,
 	)
 );

@@ -90,7 +90,7 @@ $(function() {
 		stop: function(event, ui) {
 			// done resizing, save height to user profile for next time user visits page
 			$.post('$saveWidgetHeight', {Widget: 'NoteBox', Height: {noteboxHeight: parseInt($('#note-box').css('height')), notemessageHeight: parseInt($('#note-message').css('height'))}});
-		},
+		}
 	});
 	$('#note-message-container').resizable({
 		handles: 's',
@@ -99,7 +99,7 @@ $(function() {
 		stop: function(event, ui) {
 			// done resizing, save height to user profile for next time user visits page
 			$.post('$saveWidgetHeight', {Widget: 'NoteBox', Height: {noteboxHeight: parseInt($('#note-box').css('height')), notemessageHeight: parseInt($('#note-message').css('height'))}});
-		},
+		}
 	});
 	$('#note-box-container').resizable({
 		handles: 's',
@@ -108,7 +108,7 @@ $(function() {
 		stop: function(event, ui) {
 			// done resizing, save height to user profile for next time user visits page
 			$.post('$saveWidgetHeight', {Widget: 'NoteBox', Height: {noteboxHeight: parseInt($('#note-box').css('height')), notemessageHeight: parseInt($('#note-message').css('height'))}});
-		},
+		}
 	});
 });	
 

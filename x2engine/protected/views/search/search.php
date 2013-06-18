@@ -46,7 +46,7 @@ function refreshQtip() {
 					ajax: {
 						url: yii.baseUrl+"/index.php/contacts/qtip",
 						data: { id: contactId[0] },
-						method: "get",
+						method: "get"
 					}
 				},
 				style: {

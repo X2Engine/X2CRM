@@ -90,6 +90,7 @@ abstract class x2base extends X2Controller {
 	}
 
 	protected function beforeAction($action = null) {
+		// return true;
 		$auth = Yii::app()->authManager;
 		$params = array();
 		$action = $this->getAction()->getId();
@@ -240,8 +241,15 @@ abstract class x2base extends X2Controller {
 		if($type === null)	// && $model->asa('X2LinkableBehavior') !== null)	// should only happen when the model is known to have X2LinkableBehavior
 			$type = $model->module;
 
-		if(!isset($_GET['ajax']))
+		if(!isset($_GET['ajax'])){
+            $log=new ViewLog;
+            $log->user=Yii::app()->user->getName();
+            $log->recordType=get_class($model);
+            $log->recordId=$model->id;
+            $log->timestamp=time();
+            $log->save();
 			X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
+        }
 
 		$this->render('view', array_merge($params,array(
 			'model' => $model,
@@ -303,30 +311,7 @@ abstract class x2base extends X2Controller {
 
 		return $currentWorkflow[0];
     }
-
-    /**
-     * Convert currency to the proper format
-     *
-     * @param String $str The currency string
-     * @param Boolean $keepCents Whether or not to keep the cents
-     * @return String $str The modified currency string.
-     */
-    public static function parseCurrency($str, $keepCents) {
-
-        $cents = '';
-        if ($keepCents) {
-            $str = mb_ereg_match('[\.,]([0-9]{2})$', $str, $matches); // get cents
-            $cents = $matches[1];
-        }
-        $str = mb_ereg_replace('[\.,][0-9]{2}$', '', $str); // remove cents
-        $str = mb_ereg_replace('[^0-9]', '', $str);  //remove all non-numbers
-
-        if (!empty($cents))
-            $str .= ".$cents";
-
-        return $str;
-    }
-
+	
     /**
      * Used in function convertUrls
      *

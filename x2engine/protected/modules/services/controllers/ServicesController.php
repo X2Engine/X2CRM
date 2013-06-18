@@ -104,7 +104,7 @@ class ServicesController extends x2base {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	/* public function create($model,$oldAttributes, $api){
-//		$model->annualRevenue = $this->parseCurrency($model->annualRevenue,false);
+//		$model->annualRevenue = Formatter::parseCurrency($model->annualRevenue,false);
 		$model->createDate=time();
 		$model->lastUpdated=time();
 		$model->updatedBy = Yii::app()->user->name;
@@ -544,7 +544,7 @@ class ServicesController extends x2base {
 			$from = array('name' => Yii::app()->params->admin->serviceCaseFromEmailName, 'address'=> Yii::app()->params->admin->serviceCaseFromEmailAddress);
 			$status = $this->sendUserEmail(array($fullName, $email), $emailSubject, $emailBody, null, $from);
 
-			if($status[0] == 200) {
+			if($status['code'] == 200) {
 				//email action
 				$action = new Actions;
 				$action->associationType = 'services';
@@ -703,17 +703,4 @@ class ServicesController extends x2base {
         }
         return $dateRange;
     }
-
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model=Services::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
 }

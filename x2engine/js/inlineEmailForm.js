@@ -80,6 +80,15 @@ $(function() {
 	else
 		$(document).trigger('setupInlineEmailEditor');
 
+	$('body').on('click','a',function(e) {
+		if(/^mailto:/.exec(this.href)) {
+			if(typeof toggleEmailForm != 'undefined') {
+				e.preventDefault();
+				$('#email-to').val(this.href.replace('mailto:',''));
+				toggleEmailForm();
+			}
+		}
+	});
 
 	
 	setupInlineEmailForm();

@@ -26,8 +26,8 @@ CREATE TABLE x2_quotes(
 	invoiceIssuedDate		BIGINT,
 	invoicePayedDate		BIGINT,
 	template				INT	DEFAULT NULL,
-	total					FLOAT DEFAULT 0.0,
-	subtotal				FLOAT DEFAULT 0.0
+	total					DECIMAL(10,2) DEFAULT 0.0,
+	subtotal				DECIMAL(10,2) DEFAULT 0.0
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
 CREATE TABLE x2_quotes_products(
@@ -37,7 +37,7 @@ CREATE TABLE x2_quotes_products(
 	quantity				INT,
 	name					VARCHAR(100)	NOT NULL,
 	type					VARCHAR(100),
-	price					FLOAT DEFAULT 0.0,
+	price					DECIMAL(10,2) DEFAULT 0.0,
 	inventory				INT,
 	description				TEXT,
 	assignedTo				TEXT,
@@ -47,10 +47,10 @@ CREATE TABLE x2_quotes_products(
 	updatedBy				VARCHAR(20),
 	active					TINYINT,
 	currency				VARCHAR(40),
-	adjustment				FLOAT DEFAULT 0.0,
+	adjustment				DECIMAL(10,2) DEFAULT 0.0,
 	adjustmentType			VARCHAR(20),
 	lineNumber				INT NOT NULL DEFAULT 0,
-	total					FLOAT DEFAULT 0.0
+	total					DECIMAL(10,2) DEFAULT 0.0
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`
@@ -65,12 +65,12 @@ VALUES
 ("Quote",	"accountName",			"Account",				0,		0,	"link",			0,			0,		"Accounts",	 	0,		0,			""),
 ("Quote",	"salesStage",			"Opportunity Stage",	0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Quote",	"expectedCloseDate",	"Expected Close Date",	0,		0,	"date",			0,			0,		NULL,			0,		0,			""),
-("Quote",	"probability",			"Probability",			0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
+("Quote",	"probability",			"Probability",			0,		0,	"percentage",	0,			0,		NULL,			0,		0,			""),
 ("Quote",	"leadSource",			"Lead Source",			0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Quote",	"description",			"Notes",				0,		0,	"text",			0,			0,		NULL,			0,		0,			""),
 ("Quote",	"assignedTo",			"Assigned To",			0,		0,	"assignment",	0,			0,		"",			 	0,		0,			""),
 ("Quote",	"createDate",			"Create Date",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
-("Quote",	"associatedContacts",	"Contacts",				0,		0,	"link",			0,			0,		"Contacts",		0,		0,			""),
+("Quote",	"associatedContacts",	"Contact",				0,		0,	"link",			0,			0,		"Contacts",		0,		0,			""),
 ("Quote",	"lastUpdated",			"Last Updated",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Quote",	"lastActivity",			"Last Activity",		0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Quote",	"updatedBy",			"Updated By",			0,		0,	"varchar",		0,			1,		NULL,			0,		0,			""),
@@ -79,7 +79,7 @@ VALUES
 ("Quote",	"existingProducts",		"Existing Products",	0,		0,	"varchar",		0,			0,		NULL,			0,		1,			""),
 ("Quote",	"products",				"Products",				0,		0,	"varchar",		0,			0,		NULL,			0,		1,			""),
 ("Quote",	"locked",				"Locked",				0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
-("Quote", 	"invoiceStatus", 		"Status", 				0, 		0,	"dropdown", 	0, 			0, 		"114", 			0, 		0,			""),
+("Quote", 	"invoiceStatus", 		"Invoice Status", 		0, 		0,	"dropdown", 	0, 			0, 		"114", 			0, 		0,			""),
 ("Quote", 	"invoiceCreateDate", 	"Invoice Created", 		0, 		0,	"date", 		0, 			0, 		NULL, 			0, 		0,			""),
 ("Quote", 	"invoiceIssuedDate", 	"Invoice Issued", 		0, 		0,	"date", 		0, 			0, 		NULL, 			0, 		0,			""),
 ("Quote", 	"invoicePayedDate", 	"Invoice Payed", 		0, 		0,	"date", 		0, 			0, 		NULL, 			0, 		0,			""),

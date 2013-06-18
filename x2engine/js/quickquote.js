@@ -50,7 +50,9 @@ jQuery(document).ready(function ($) {
         x2.quotes = {};
         x2.quotes.view = "quickquote"; 
 
+		// Basic properties:
 		quickQuote.wrapper = $('#quote-create-form-wrapper').first();
+		quickQuote.wrapperOriginalHtml = undefined;
 		quickQuote.loadingImg = $('<img>',{
 			src:yii.themeBaseUrl+'/images/loading.gif',
 			height:32,
@@ -62,7 +64,9 @@ jQuery(document).ready(function ($) {
 			'text-align':'center',
 			'display':'block'
 		}).append(quickQuote.loadingImg);
+		quickQuote.updatingId = 0;
 
+		// Inline email properties:
 		quickQuote.inlineEmailModule = $('#inline-email-form');
 		quickQuote.inlineEmailModelName = quickQuote.inlineEmailModule.find('input[name="InlineEmail[modelName]"]');
 		quickQuote.inlineEmailModelId = quickQuote.inlineEmailModule.find('input[name="InlineEmail[modelId]"]');
@@ -86,12 +90,24 @@ jQuery(document).ready(function ($) {
 
 	quickQuote.declare();
 
+	quickQuote.moveWrapper = function(sel) {
+		quickQuote.wrapper = $(sel);
+		quickQuote.wrapperOriginalHtml = quickQuote.wrapper.html();
+	}
+
+	// Close and reset the form.
 	quickQuote.closeForm = function(e) {
 		if(e!==undefined) { // Function is being used as an event handler
 			e.stopPropagation();
 			e.preventDefault();
 		}
-		quickQuote.wrapper.slideUp('slow'); // Close
+		if(typeof quickQuote.wrapperOriginalHtml != 'undefined') {
+			quickQuote.wrapper.html(quickQuote.wrapperOriginalHtml); // Reset wrapper contents
+		} else {
+			quickQuote.wrapper.hide().html(''); // Simply close
+		}
+		quickQuote.declare(); // Reset all properties
+		$('#show-new-quote-button').show();
 	}
 
 	// This reloads everything...the entire quote form.
@@ -103,17 +119,27 @@ jQuery(document).ready(function ($) {
 			quickQuote.declare();
 			$.fn.yiiGridView.update("relationships-grid");
 			$('html,body').animate({
-				scrollTop: quickQuote.wrapper.parents('#quote-form-wrapper').first().offset().top
+				scrollTop: quickQuote.updatingId ? $('#quote-detail-' + id).offset().top : quickQuote.wrapper.parents('#quote-form-wrapper').first().offset().top
 			},300);
 		});
 	}
 
-	quickQuote.openForm = function(id) {
+	quickQuote.openForm = function(id,duplicate) {
+		$('#show-new-quote-button').hide();
+		if(!quickQuote.wrapper.is(':hidden'))
+			quickQuote.closeForm();
 		id = typeof id === 'undefined' ? 0 : id;
+		if(typeof duplicate == 'undefined') { // If not duplicating, we must be updating.
+			quickQuote.updatingId = id;
+			if(id != 0)
+				quickQuote.moveWrapper('#quote-detail-' + id);
+		}
+
 		quickQuote.wrapper.append(quickQuote.loading).show();
+		
 		$.ajax({
 			type:'GET',
-			url: id == 0 ? quickQuote.createAction : quickQuote.updateAction+'&id='+id,
+			url: (id == 0 ? quickQuote.createAction + (typeof duplicate == 'undefined' ? '' : '&duplicate='+duplicate) : quickQuote.updateAction+'&id='+id),
 			dataType:'html'
 		}).done(function (data) {
 			quickQuote.loadForm(data);
@@ -147,11 +173,14 @@ jQuery(document).ready(function ($) {
 		quickQuote.form.find('div.x2-layout.form-view > div:last-child div.formInputBox').css({
 			'margin-bottom':'-495px'
 		});
+//		$('html,body').animate({
+//			scrollTop: quickQuote.wrapper.offset().top
+//		},300);
 
 	}
 
 	quickQuote.submitForm = function(e) {
-		if(e!==undefined) { // Function is being used as an event handler
+		if(typeof e!=='undefined') { // Function is being used as an event handler
 			e.preventDefault();
 		}
 

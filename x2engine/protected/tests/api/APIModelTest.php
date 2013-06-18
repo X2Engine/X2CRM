@@ -37,6 +37,37 @@ class APIModelTest extends CURLTestCase {
 		$this->assertArrayHasKey('model', $model->responseObject);
 	}
 
+	public function testTags() {
+		$model = $this->newModel();
+		$tags = array('#this','#that');
+		// Test adding:
+//		ob_start();
+		$realModel = $this->contacts('testAnyone');
+		$response = $model->addTags('Contacts',$realModel->id,$tags);
+		$tagTable = CActiveRecord::model('Tags')->tableName();
+		$tagsOnServer = Yii::app()->db->createCommand()->select('tag')->from($tagTable)->where('itemId=:itemId AND type=:itemType',array(':itemId'=>$realModel->id,':itemType'=>get_class($realModel)))->queryColumn();
+//		var_dump($tags);
+//		var_dump($tagsOnServer);
+//		print_r(json_decode($response,1));
+		$tagsNotAdded = array_diff($tags,$tagsOnServer);
+		$this->assertEmpty($tagsNotAdded,'Failed asserting that tags were saved on the server.');
+		// Test getting:
+		$tagsFromServer = $model->getTags('Contacts',$this->contacts('testAnyone')->id);
+//		ob_end_clean();
+//		var_dump($tagsFromServer);
+//		var_dump($tagsOnServer);
+		$tagsNotRetrieved = array_diff($tagsOnServer,$tagsFromServer);
+		$this->assertEmpty($tagsNotRetrieved,'Failed asserting that all tags were properly retrieved.');
+		// Test deleting:
+		$response = $model->removeTag('Contacts',$this->contacts('testAnyone')->id,'#this');
+		$tagsOnServer = Yii::app()->db->createCommand()->select('tag')->from($tagTable)->where('itemId=:itemId AND type=:itemType',array(':itemId'=>$realModel->id,':itemType'=>get_class($realModel)))->queryColumn();
+		$tagsDeleted = array_diff($tags,$tagsOnServer);
+//		var_dump($response);
+//		var_dump($tagsDeleted);
+		$this->assertEquals(1,count($tagsDeleted),'Failed asserting that one and only one tag was deleted.');
+		$this->assertEquals('#this',$tagsDeleted[0],'Failed asserting that the right tag got deleted.');
+	}
+
 	public function testContactCRUD() {
 		$model = $this->newModel();
 		// Trigger a validation error and test that the error feedback works
@@ -73,6 +104,7 @@ class APIModelTest extends CURLTestCase {
 		$lookupModel = $this->newModel();
 		$lookupModel->attributes = $oldAttr;
 		$lookupModel->contactLookup();
+//		var_dump($lookupModel->attributes);
 		foreach($contact->attributes as $name=>$value) {
 			$this->assertArrayHasKey($name, $lookupModel->attributes, "Failed asserting that attribute $name was set in contact lookup.");
 			$this->assertEquals($value,$lookupModel->$name, "Failed asserting that attribute is not the same between existing model and looked-up model. What the heck is happening here?");

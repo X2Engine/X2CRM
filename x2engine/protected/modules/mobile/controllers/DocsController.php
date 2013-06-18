@@ -38,6 +38,9 @@
  * @package X2CRM.modules.mobile.controllers
  */
 class DocsController extends MobileController{
+
+
+	public $modelClass = 'Docs';
 	
 	 public function accessRules() {
         return array(
@@ -68,13 +71,6 @@ class DocsController extends MobileController{
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
-	}	
-	
-	public function loadModel($id) {
-		$model = Docs::model()->findByPk((int) $id);
-		if ($model === null)
-			throw new CHttpException(404, 'The requested page does not exist.');
-		return $model;
 	}
 }
 

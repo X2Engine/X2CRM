@@ -36,12 +36,13 @@
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/profileSettings.js');
-
+?>
+<div class="form">
+<?php
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'settings-form',
 	'enableAjaxValidation'=>false,
 )); ?>
-<div class="form">
 	<?php echo $form->errorSummary($model); ?>
 
 	<div class="row" style="margin-bottom:10px;">
@@ -187,8 +188,8 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('id'=>'save-changes','class'=>'x2-button')); ?>
 	</div>
-</div>
 <?php $this->endWidget(); ?>
+</div>
 <div class="form">
 	<div class="row">
 		<h3><?php echo Yii::t('profile','Upload a Background'); ?></h3>

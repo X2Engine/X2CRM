@@ -39,10 +39,18 @@
  */
 class MobileController extends Controller {
 
+	public $modelClass = 'Admin';
+
     public function init() {
         parent::init();
         $this->layout = 'mobile1';
     }
+
+	public function behaviors() {
+		return array(
+			'CommonControllerBehavior' => array('class' => 'application.components.CommonControllerBehavior')
+		);
+	}
 
     /**
      * used for jquerymobile layout

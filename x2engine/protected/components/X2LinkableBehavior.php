@@ -64,11 +64,15 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 
 		parent::attach($owner);
 
-		if(!isset($this->module)) {
-			if(isset($this->baseRoute))
-				$this->module = preg_replace('/\/.*/','',preg_replace('/^\//','',$this->baseRoute));	// try to extract it from $baseRoute (old custom modules)
-			else
-				$this->module = strtolower(get_class($this->owner)); 	// assume the model name is the same as the controller
+		if(!isset($this->module)){
+			if(!Yii::app()->params->noSession){
+				if(isset($this->baseRoute))
+					$this->module = preg_replace('/\/.*/', '', preg_replace('/^\//', '', $this->baseRoute)); // try to extract it from $baseRoute (old custom modules)
+				else
+					$this->module = strtolower(get_class($this->owner));  // assume the model name is the same as the controller
+			} else {
+				throw new Exception('Class '.get_class($owner).' has not declared its property "module" and there is no way of attempting to resolve said property.');
+			}
 		}
 
 		if(!isset($this->baseRoute))
@@ -88,16 +92,14 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	 */
 	public function getLink() {
 
-		$tag = '<span>';
-		// if(!empty($this->icon))
-			// $tag = '<span style="background-image:url('.Yii::app()->theme->baseUrl.'/images/'.$this->icon.');">';
-        if($this->owner->hasAttribute('name')){
-            return CHtml::link($tag.($this->owner->name==''?('&#35;'.$this->owner->id):($this->owner->name)).'</span>',
-                // array($this->viewRoute.'/'.$this->owner->id),array('class'=>'x2-link'));
-                array($this->viewRoute.'/'.$this->owner->id));
-        }else{
-            return '';
-        }
+		$name = $this->owner->hasAttribute('name') ? $this->owner->name : '';
+		if($name == '')
+			$name = $this->owner->hasAttribute('id') ? '&#35;'.$this->owner->id : '';
+		$url = array($this->viewRoute.'/'.$this->owner->id);
+		if(Yii::app()->params->noSession) { // Construct an absolute URL; the URL manager is unavailable.
+			$url = Yii::app()->externalBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
+		}
+		return CHtml::link('<span>'.$name.'</span>',$url);
 	}
 
 	/**

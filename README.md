@@ -1,38 +1,17 @@
-# X2CRM 3.0.2 #
-5/20/2013
+# X2CRM 3.1 #
+6/18/2013
 ## Changes ##
-* (Professional Edition only) X2Flow automation system (beta)
-  * Visual, drag-and-drop designer makes it easy to create convenient and 
-    powerful automation flows
-  * Automation flows can enact changes, create records, and a broad range of 
-    other operations ("actions") whenever certain events ("triggers") take place
-  * Supports a very extensive set of actions and triggers
-* Greatly improved Actions module; streamlined, user-friendly interface
-* New and improved Quotes module
-  * Line items can be re-ordered after adding them
-  * Can add adjustments to the total, i.e. tax and shipping; displays subtotal
-    vs. total if there are adjustments
-  * Support for arbitrary quote/invoice templates, which can be created and 
-    designed via "Create Quote" in the Docs module, and loaded/sent via email 
-    by going to the Quote's record view
-* Customizable login and notification sounds
-
-## New in 3.0.1 ##
-* Numerous bug fixes
-* Can now trigger automation on user login/logout
-* Docs module:
-  * New basic quotes template in default app data
-  * "Duplicate" button in Docs module for making copies of and customizing an
-    existing document
-* New in the API:
-  * Can manually set creation date
-  * More consistent response behavior
-  * New method listUsers: gets list of users
-
-## New in 3.0.2 ##
-* New Services reporting tool
-* Rich text editor now available for activity feed posts and email signatures
-* Bug fixes
+* Robust new resizable grid view
+* Enhancements to application UI
+	* More compact layout
+	* Better controls for user color schemes
+* Yii Framework updated to 1.1.13
+* New API action "tags" allows programmatic manipulation of tags on records
+  via the API
+* Improved record history filtering
+* The inline email form can now be used while viewing account records
+* Better support for foreign currencies in quotes & invoices
+* More bug fixes
 
 ## Release Notes ##
 ### 3.0 ###
@@ -77,11 +56,14 @@
     on the server. The source of this data is the "modelErrors" property of the
     response from the create and update actions.
 
-
+### 3.1 ###
+* In the deletion action of the API, the primary key can now be specified in
+  either the GET or POST parameters. This way, the "DELETE" request type can be
+  used for deletion, and not just the POST type of request.
 
 
 # Introduction #
-Welcome to  X2CRM v3.0.1!
+Welcome to  X2CRM v3.1!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and
@@ -165,4 +147,5 @@ to get you started!
   500 Internal Server Error  when you  try  to load the installer,  delete  the
   .htaccess file (the application will still work without it.)
 - eAccelerator may cause PHP errors on various pages  ("Invalid Opcode").  This 
-  can be fixed by disabling eAccelerator.
+  is due to a bug in eAccelerator, and can be fixed by disabling or updating
+  eAccelerator.

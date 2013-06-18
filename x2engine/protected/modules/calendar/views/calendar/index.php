@@ -110,6 +110,7 @@ $this->widget('application.components.X2GridView', array(
 		),
 	),
 	'enableControls'=>true,
+	'fullscreen'=>true,
 ));
 
 ?>

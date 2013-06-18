@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.media.controllers 
+ * @package X2CRM.modules.media.controllers
  */
 class MediaController extends x2base {
 
@@ -45,7 +45,7 @@ class MediaController extends x2base {
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-	
+
 
 	/**
 	 * Displays a particular model.
@@ -56,7 +56,7 @@ class MediaController extends x2base {
 			'model'=>$this->loadModel($id),
 		));
 	}
-	
+
 	/**
 	 * Forces download of specified media file
 	 */
@@ -69,7 +69,7 @@ class MediaController extends x2base {
 		$this->redirect(array('view','id'=>$id));
 	}
 
-	
+
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -78,9 +78,9 @@ class MediaController extends x2base {
 		$model=new Media;
 
 		if(isset($_POST['Media'])) {
-		
+
 			$temp = TempFile::model()->findByPk($_POST['TempFileId']);
-						
+
 			$userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
 			$userFolderPath = 'uploads/media/'. $userFolder;
 			// if user folder doesn't exit, try to create it
@@ -91,9 +91,9 @@ class MediaController extends x2base {
 			    	exit();
 			    }
 			}
-			
+
 			rename($temp->fullpath(), $userFolderPath .'/'. $temp->name);
-			
+
 			// save media info
 			$model->fileName = $temp->name;
 			$model->createDate = time();
@@ -105,7 +105,7 @@ class MediaController extends x2base {
 			$model->path; // File type setter is embedded in the magic getter for path
 			if($_POST['Media']['description'])
 				$model->description = $_POST['Media']['description'];
-			
+
 			if($model->save()) {
                 if(!empty($model->associationType) && !empty($model->associationId) && is_numeric($model->associationId)){
                     $note=new Actions;
@@ -135,26 +135,26 @@ class MediaController extends x2base {
                 }
 				$this->redirect(array('view','id'=>$model->id));
 			}
-		
+
 		}
 
 		$this->render('upload',array(
 			'model'=>$model,
 		));
 	}
-	
+
 	public function actionQtip($id) {
 		$model = Media::model()->findByPk($id);
 		$this->renderPartial('qtip',array('model'=>$model));
 	}
 	/**
 	 * Creates a new media object via an ajax upload
-	 * 
+	 *
 	 */
 	public function actionAjaxUpload() {
-	
+
 		$fileUrl = '';
-	
+
 		try {
 			if(Yii::app()->user->isGuest)
 				throw new Exception('You are not logged in.');
@@ -163,10 +163,10 @@ class MediaController extends x2base {
 				throw new Exception('Invalid request.');
 
 			$upload = CUploadedFile::getInstanceByName('upload');
-			
+
 			if($upload == null)
 				throw new Exception('Invalid file.');
-			
+
 			$fileName = $upload->getName();
 			$fileName = str_replace(' ','_',$fileName);
 
@@ -181,7 +181,7 @@ class MediaController extends x2base {
 					// exit();
 				}
 			}
-			
+
 			if(!$upload->saveAs($userFolderPath.DIRECTORY_SEPARATOR.$fileName))
 				throw new Exception('Error saving file');
 
@@ -191,16 +191,18 @@ class MediaController extends x2base {
 			$model->createDate = time();
 			$model->lastUpdated = time();
 			$model->uploadedBy = Yii::app()->user->name;
+            $model->associationType='none';
 			// $model->associationType = $_GET['Media']['associationType'];
 			// $model->associationId = $_GET['Media']['associationId'];
 			$model->private = true; //$_GET['Media']['private'];
 			// if($_POST['GET']['description'])
 				// $model->description = $_POST['Media']['description'];
-			
-			if(!$model->save())
+
+			if(!$model->save()){
 				throw new Exception('Error saving Media entry');
-			
-			
+            }
+
+
 			$fileUrl = $model->getFullUrl();
 
 		} catch(Exception $e) {
@@ -250,7 +252,7 @@ class MediaController extends x2base {
 			$model=$this->loadModel($id);
 			if(file_exists("uploads/{$model->uploadedBy}/{$model->fileName}"))
 				unlink("uploads/{$model->uploadedBy}/{$model->fileName}");
-			else if(file_exists("uploads/{$model->fileName}")) 
+			else if(file_exists("uploads/{$model->fileName}"))
 				unlink("uploads/{$model->fileName}");
 			$model->delete();
 
@@ -279,18 +281,6 @@ class MediaController extends x2base {
 	}
 
 	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model=Media::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-
-	/**
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated
 	 */
@@ -301,14 +291,14 @@ class MediaController extends x2base {
 			Yii::app()->end();
 		}
 	}
-	
-	
+
+
 	public function actionToggleUserMediaVisible($user) {
 		$widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings, true);
 		$mediaSettings = $widgetSettings['MediaBox'];
 		$hideUsers = $mediaSettings['hideUsers'];
 		$ret = '';
-		
+
 		if(($key = array_search($user, $hideUsers)) !== false) { // user is not visible, make them visible
 			unset($hideUsers[$key]);
 			$hideUsers = array_values($hideUsers); // reindex array so json is consistent
@@ -317,12 +307,12 @@ class MediaController extends x2base {
 			$hideUsers[] = $user;
 			$ret = 0;
 		}
-						
+
 		$mediaSettings['hideUsers'] = $hideUsers;
 		$widgetSettings['MediaBox'] = $mediaSettings;
 		Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
 		Yii::app()->params->profile->update();
-		
+
 		echo $ret;
 	}
 }

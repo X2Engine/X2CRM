@@ -61,7 +61,13 @@ if((isset($isQuickCreate) && !$isQuickCreate) || !isset($isQuickCreate)){
 }
 echo '<em style="display:block;margin:5px;">'.Yii::t('app','Fields with <span class="required">*</span> are required.')."</em>\n";
 
-$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultForm'=>1));
+// Construct criteria for finding the right form layout.
+$attributes = array('model'=>ucfirst($modelName),'defaultForm'=>1);
+// If the $scenario variable is set in the rendering context, a special
+// different form should be retrieved.
+$attributes['scenario'] = isset($scenario) ? $scenario : 'Default';
+$layout = FormLayout::model()->findByAttributes($attributes);
+
 if(isset($layout)) {
 
 echo '<div class="x2-layout form-view">';
@@ -242,4 +248,7 @@ if((isset($isQuickCreate) && !$isQuickCreate) || !isset($isQuickCreate)){
 		$this->endWidget();
 	}
 }
+Yii::app()->clientScript->registerScript('mask-currency','
+    $(".currency-field").maskMoney("mask");
+',CClientScript::POS_READY);
 ?>

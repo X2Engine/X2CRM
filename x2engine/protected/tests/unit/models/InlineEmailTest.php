@@ -17,8 +17,6 @@ class InlineEmailTest extends X2DbTestCase {
 	// Set to 1 to enable testing actual sending of email.
 
 	const TESTDELIVERY = 0;
-	// Set to 1 to enable tests that print out and require testing by sight
-	const SIGHT = 1;
 
 	public $method = 'mail'; // Set to the delivery type...
 	public $sender = array('name' => "", 'address' => ''); // Sender email..
@@ -84,11 +82,18 @@ class InlineEmailTest extends X2DbTestCase {
 		// Test body insertion:
 		$this->eml = new InlineEmail();
 		$this->eml->message = '<html><head></head><body></body>';
+		$contact = $this->contacts('testAnyone');
+		$this->eml->to = "\"$contact->name\" <{$contact->email}>";
+		$this->eml->parseMailingList('to');
+		$this->eml->targetModel = $contact;
 		$this->eml->insertTrackingImage();
 		$this->assertBodyHasTrackingImage(' On case 1: user sumbitting new/blank email without tracking image.');
 		$message = $this->eml->message;
 		$this->eml = new InlineEmail();
 		$this->eml->message = $message;
+		$this->eml->to = "\"$contact->name\" <{$contact->email}>";
+		$this->eml->parseMailingList('to');
+		$this->eml->targetModel = $contact;
 		$this->eml->insertTrackingImage();
 		$this->assertBodyHasTrackingImage(' On case 2: user submitting modified body with preexisting tracking image.');
 

@@ -108,4 +108,5 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("Clicking on an item in the Action list will slide a window over with more information.",'opensource',0,'Actions'),
 ("The gear icon in the top right can be used to restore any widgets you have hidden.",'opensource',0,'Layout'),
 ("You can drag and drop widgets on the right sidebar to re-arrange their order.",'opensource',0,'Layout'),
-("The options in the \"Quick Note\" menu on the publisher can be changed in the Dropdown Editor.",'opensource',1,'Admin');
+("The options in the \"Quick Note\" menu on the publisher can be changed in the Dropdown Editor.",'opensource',1,'Admin'),
+("You can see the history of related records by clicking \"Relationships\" on the History widget. Accounts do this by default.",'opensource',0,'Relationships');

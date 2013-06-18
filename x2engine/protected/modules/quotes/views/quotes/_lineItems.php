@@ -59,12 +59,10 @@ function insertArrowBothImage () {
        . "' alt='[" . Yii::t('quotes', 'Move') . "]' class='handle arrow-both-handle'/>";
 }
 
-$currency = null;
+$currency = Yii::app()->params->currency;;
 if (isset ($model)) {
   if (!empty ($model->currency)) {
     $currency = $model->currency;
-  } else {
-    $currency = Yii::app()->params['currency'];
   }
 }
 
@@ -242,17 +240,17 @@ if (YII_DEBUG && $debug) {
 <script>
 
   // translate ISO 4217 currency into i18n
-  var currencyTable = {
-    'USD': 'en-US',
-    'EUR': 'hsb-DE',
-    'GBP': 'en-GB',
-    'CAD': 'en-CA',
-    'JPY': 'ja-JP',
-    'CNY': 'zh-CN',
-    'CHF': 'de-CH',
-    'INR': 'hi-IN',
-    'BRL': 'pt-BR'
-  };
+//  var currencyTable = {
+//    'USD': 'en-US',
+//    'EUR': 'hsb-DE',
+//    'GBP': 'en-GB',
+//    'CAD': 'en-CA',
+//    'JPY': 'ja-JP',
+//    'CNY': 'zh-CN',
+//    'CHF': 'de-CH',
+//    'INR': 'hi-IN',
+//    'BRL': 'pt-BR'
+//  };
 
   var debug = 0;
   
@@ -295,11 +293,11 @@ if (YII_DEBUG && $debug) {
   */
   function getPrice (rowElement) {
     var price = $(rowElement).find (".price").toNumber(
-      {region: currencyTable[x2.quotes.currency]});
+      {region: x2.quotes.currency});
     if (price.val () === '') price.val (0); // convert invalid input to 0
     price = parseFloat (price.val ());
     $(rowElement).find (".price").formatCurrency(
-      {region: currencyTable[x2.quotes.currency]});
+      {region: x2.quotes.currency});
     return price;
   }
 
@@ -314,11 +312,11 @@ if (YII_DEBUG && $debug) {
         $(rowElement).find (".adjustment").val ()), 10);
     } else { // adjustmentType === 'linear' || adjustmentType === 'totalLinear'
       adjustment = $(rowElement).find (".adjustment").toNumber(
-        {region: currencyTable[x2.quotes.currency]});
+        {region: x2.quotes.currency});
       if (adjustment.val () === '') adjustment.val (0); // convert invalid input to 0
       adjustment = parseFloat (adjustment.val ());
       $(rowElement).find (".adjustment").formatCurrency(
-        {region: currencyTable[x2.quotes.currency]});
+        {region: x2.quotes.currency});
     }
     return adjustment;
   }
@@ -375,7 +373,7 @@ if (YII_DEBUG && $debug) {
     $('.line-item').each (function (index, element) {
       total = lineTotals.shift (); 
       $(element).find ('.line-item-total').val (total).formatCurrency (
-        {'region': currencyTable[x2.quotes.currency]});
+        {'region': x2.quotes.currency});
     });
   }
 
@@ -386,10 +384,10 @@ if (YII_DEBUG && $debug) {
   */
   function extractCurrency (element) {
     $(element).toNumber(
-      {'region': currencyTable[x2.quotes.currency]});
+      {'region': x2.quotes.currency});
     var currency = parseFloat ($(element).val ());
     $(element).formatCurrency(
-      {region: currencyTable[x2.quotes.currency]});
+      {region: x2.quotes.currency});
     return currency;
   }
   
@@ -422,7 +420,7 @@ if (YII_DEBUG && $debug) {
   function setSubtotal (subtotal) {
     $('#subtotal').val(subtotal.toString ());
     $('#subtotal').formatCurrency(
-      {region: currencyTable[x2.quotes.currency]});
+      {region: x2.quotes.currency});
   }
 
   /*
@@ -431,7 +429,7 @@ if (YII_DEBUG && $debug) {
   function setTotal (total) {
     $('#total').val(total.toString ());
     $('#total').formatCurrency(
-      {region: currencyTable[x2.quotes.currency]});
+      {region: x2.quotes.currency});
   }
 
   /*
@@ -461,7 +459,7 @@ if (YII_DEBUG && $debug) {
             "quantity": ['1', false],
             "adjustment": ['0', false],
             "description": ['', false],
-            "adjustment-type": ['linear', false],
+            "adjustment-type": ['linear', false]
         }
     }
 
@@ -574,11 +572,11 @@ if (YII_DEBUG && $debug) {
     }
     if (!fillLineItem) { // format default input field values 
       lineItemRow.find ('.adjustment').formatCurrency (
-        {region: currencyTable[x2.quotes.currency]});
+        {region: x2.quotes.currency});
       lineItemRow.find ('.price').formatCurrency (
-        {'region': currencyTable[x2.quotes.currency]});
+        {'region': x2.quotes.currency});
       lineItemRow.find ('.line-item-total').val (0).formatCurrency (
-        {'region': currencyTable[x2.quotes.currency]});
+        {'region': x2.quotes.currency});
       if ($('.quote-table').find ('tr.line-item').length === 1 &&
           $('.quote-table').find ('tr.adjustment').length > 0) {
         $('#subtotal-row').show ();
@@ -597,7 +595,7 @@ if (YII_DEBUG && $debug) {
             "adjustment-name": ['' /* default input value */, false /* validation error */],
             "adjustment": ['0', false],
             "description": ['', false],
-            "adjustment-type": ['totalLinear', false],
+            "adjustment-type": ['totalLinear', false]
         }
     }
 
@@ -677,13 +675,14 @@ if (YII_DEBUG && $debug) {
     }
     if (!fillAdjustment) { // format default input field values
       lineItemRow.find ('.adjustment').formatCurrency (
-      {region: currencyTable[x2.quotes.currency]});
+      {region: x2.quotes.currency});
       if ($('.quote-table').find ('tr.adjustment').length === 1) {
         $('#subtotal-row').show ();
       }
     }
 
     resetLineNums ();
+    updateTotals ();
   }
 
   function selectProductFromAutocomplete (event, ui) {
@@ -692,7 +691,7 @@ if (YII_DEBUG && $debug) {
     $(event.target).val (lineItemName);
     var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
     $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
-      formatCurrency ({region: currencyTable[x2.quotes.currency]});
+      formatCurrency ({region: x2.quotes.currency});
     validateName (event.target);
     updateTotals ();
   }
@@ -703,7 +702,7 @@ if (YII_DEBUG && $debug) {
     $(x2.quotes.clickedLineItem).val (lineItemName);
     var lineItemPrice = $(x2.quotes.clickedLineItem).attr ('name').replace (/name/, 'price');
     $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
-      formatCurrency ({region: currencyTable[x2.quotes.currency]});
+      formatCurrency ({region: x2.quotes.currency});
     validateName (x2.quotes.clickedLineItem);
     updateTotals ();
   }
@@ -869,7 +868,7 @@ if (YII_DEBUG && $debug) {
     } else if (elemClass.match (/adjustment/)) {
       var temporaryElem = $("<input>", {val: 50}); 
       var exampleCurrency = $(temporaryElem).
-        formatCurrency ({region: currencyTable[x2.quotes.currency]}).val ();
+        formatCurrency ({region: x2.quotes.currency}).val ();
       errorMessage = "Adjustment must be a currency amount or a percentage (e.g. \"" +
         exampleCurrency + "\" or \"-50%\").";
     }
@@ -892,7 +891,7 @@ if (YII_DEBUG && $debug) {
         $('.quotes-error-summary').remove ();
     }
     if ($('.quote-table').find ('input').hasClass ("error")) {
-      $('div#quotes-errors').after ($("<div>", {class: "quotes-error-summary"}).append (
+      $('div#quotes-errors').after ($("<div>", {'class': "quotes-error-summary"}).append (
         $("<p> Please fix the following input errors: </p>"),
         $("<ul>")
       ));

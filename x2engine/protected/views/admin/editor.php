@@ -39,6 +39,7 @@
 // ",CClientScript::POS_READY);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2formEditor.js');
+// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.3.min.js');
 
 if(isset($layoutModel) && !empty($layoutModel->layout)) {
@@ -111,6 +112,17 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			<?php echo CHtml::label(Yii::t('admin','Version'),'versionList'); ?>
 			<?php echo CHtml::dropDownList('id',$id,$versionList,array(
 				'id'=>'versionList'
+			)); ?>
+		</div>
+		<div class="cell">
+			<?php
+			$scenarios = array();
+			foreach(FormLayout::$scenarios as $scenario)
+				$scenarios[$scenario] = Yii::t('admin',$scenario);
+			?>
+			<?php echo CHtml::label(Yii::t('admin','Scenario'),'scenario'); ?>
+			<?php echo CHtml::dropDownList('id',empty($layoutModel)?'Default':$layoutModel->scenario,$scenarios,array(
+				'id'=>'scenario'
 			)); ?>
 		</div>
 		<div class="cell" style="padding-top:11px;">

@@ -62,13 +62,9 @@ $('.search-form form').submit(function(){
 <?php 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'quotes-grid',
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'template'=> '<div class="page-title icon quotes"><h2>'.Yii::t('quotes','Quotes').'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>Yii::t('quotes','Quotes'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -78,10 +74,11 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'quotes',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'name'=>185,
-		'probability'=>106,
-		'expectedCloseDate'=>106,
-		'assignedTo'=>94,
+		'name' => 244,
+		'probability' => 67,
+		'expectedCloseDate' => 117,
+		'assignedTo' => 120,
+		'lastActivity' => 70,
 	),
 	'specialColumns'=>array(
 		'name'=>array(
@@ -92,6 +89,7 @@ $this->widget('application.components.X2GridView', array(
 		),
 	),
 	'enableControls'=>true,
+	'fullscreen'=>true,
 ));
 
 ?>

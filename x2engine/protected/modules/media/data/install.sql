@@ -58,4 +58,7 @@ VALUES
 (1003, 'loginSound','X2_Jazz.mp3'),
 (1004, 'loginSound','X2_orchestra.mp3'),
 (1005, 'loginSound','X2_piano.mp3'),
-(1006, 'loginSound','X2_rock_and_roll.mp3');
+(1006, 'loginSound','X2_rock_and_roll.mp3'),
+(2000, 'loginSound','X2_China.mp3'),
+(2001, 'loginSound','X2_India.mp3'),
+(2002, 'loginSound','X2_Latin_America.mp3');

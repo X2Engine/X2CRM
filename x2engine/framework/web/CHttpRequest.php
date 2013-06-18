@@ -37,6 +37,7 @@
  * @property boolean $isDeleteRequest Whether this is a DELETE request.
  * @property boolean $isPutRequest Whether this is a PUT request.
  * @property boolean $isAjaxRequest Whether this is an AJAX (XMLHttpRequest) request.
+ * @property boolean $isFlashRequest Whether this is an Adobe Flash or Adobe Flex request.
  * @property string $serverName Server name.
  * @property integer $serverPort Server port number.
  * @property string $urlReferrer URL referrer, null if not present.
@@ -48,12 +49,12 @@
  * @property string $acceptTypes User browser accept types, null if not present.
  * @property integer $port Port number for insecure requests.
  * @property integer $securePort Port number for secure requests.
- * @property CCookieCollection $cookies The cookie collection.
+ * @property CCookieCollection|CHttpCookie[] $cookies The cookie collection.
  * @property string $preferredLanguage The user preferred language.
+ * @property array $preferredLanguages An array of all user accepted languages in order of preference.
  * @property string $csrfToken The random token for CSRF validation.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CHttpRequest.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
  * @since 1.0
  */
@@ -92,10 +93,9 @@ class CHttpRequest extends CApplicationComponent
 	private $_hostInfo;
 	private $_baseUrl;
 	private $_cookies;
-	private $_preferredLanguage;
+	private $_preferredLanguages;
 	private $_csrfToken;
-	private $_deleteParams;
-	private $_putParams;
+	private $_restParams;
 
 	/**
 	 * Initializes the application component.
@@ -191,6 +191,8 @@ class CHttpRequest extends CApplicationComponent
 	 * Returns the named DELETE parameter value.
 	 * If the DELETE parameter does not exist or if the current request is not a DELETE request,
 	 * the second parameter to this method will be returned.
+	 * If the DELETE request was tunneled through POST via _method parameter, the POST parameter
+	 * will be returned instead (available since version 1.1.11).
 	 * @param string $name the DELETE parameter name
 	 * @param mixed $defaultValue the default parameter value if the DELETE parameter does not exist.
 	 * @return mixed the DELETE parameter value
@@ -198,15 +200,24 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	public function getDelete($name,$defaultValue=null)
 	{
-		if($this->_deleteParams===null)
-			$this->_deleteParams=$this->getIsDeleteRequest() ? $this->getRestParams() : array();
-		return isset($this->_deleteParams[$name]) ? $this->_deleteParams[$name] : $defaultValue;
+		if($this->getIsDeleteViaPostRequest())
+			return $this->getPost($name, $defaultValue);
+
+		if($this->getIsDeleteRequest())
+		{
+			$this->getRestParams();
+			return isset($this->_restParams[$name]) ? $this->_restParams[$name] : $defaultValue;
+		}
+		else
+			return $defaultValue;
 	}
 
 	/**
 	 * Returns the named PUT parameter value.
 	 * If the PUT parameter does not exist or if the current request is not a PUT request,
 	 * the second parameter to this method will be returned.
+	 * If the PUT request was tunneled through POST via _method parameter, the POST parameter
+	 * will be returned instead (available since version 1.1.11).
 	 * @param string $name the PUT parameter name
 	 * @param mixed $defaultValue the default parameter value if the PUT parameter does not exist.
 	 * @return mixed the PUT parameter value
@@ -214,24 +225,50 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	public function getPut($name,$defaultValue=null)
 	{
-		if($this->_putParams===null)
-			$this->_putParams=$this->getIsPutRequest() ? $this->getRestParams() : array();
-		return isset($this->_putParams[$name]) ? $this->_putParams[$name] : $defaultValue;
+		if($this->getIsPutViaPostRequest())
+			return $this->getPost($name, $defaultValue);
+
+		if($this->getIsPutRequest())
+		{
+			$this->getRestParams();
+			return isset($this->_restParams[$name]) ? $this->_restParams[$name] : $defaultValue;
+		}
+		else
+			return $defaultValue;
 	}
 
 	/**
-	 * Returns the PUT or DELETE request parameters.
+	 * Returns request parameters. Typically PUT or DELETE.
 	 * @return array the request parameters
 	 * @since 1.1.7
+	 * @since 1.1.13 method became public
 	 */
-	protected function getRestParams()
+	public function getRestParams()
 	{
-		$result=array();
-		if(function_exists('mb_parse_str'))
-			mb_parse_str(file_get_contents('php://input'), $result);
-		else
-			parse_str(file_get_contents('php://input'), $result);
-		return $result;
+		if($this->_restParams===null)
+		{
+			$result=array();
+			if(function_exists('mb_parse_str'))
+				mb_parse_str($this->getRawBody(), $result);
+			else
+				parse_str($this->getRawBody(), $result);
+			$this->_restParams=$result;
+		}
+
+		return $this->_restParams;
+	}
+
+	/**
+	 * Returns the raw HTTP request body.
+	 * @return string the request body
+	 * @since 1.1.13
+	 */
+	public function getRawBody()
+	{
+		static $rawBody;
+		if($rawBody===null)
+			$rawBody=file_get_contents('php://input');
+		return $rawBody;
 	}
 
 	/**
@@ -339,13 +376,13 @@ class CHttpRequest extends CApplicationComponent
 			$scriptName=basename($_SERVER['SCRIPT_FILENAME']);
 			if(basename($_SERVER['SCRIPT_NAME'])===$scriptName)
 				$this->_scriptUrl=$_SERVER['SCRIPT_NAME'];
-			else if(basename($_SERVER['PHP_SELF'])===$scriptName)
+			elseif(basename($_SERVER['PHP_SELF'])===$scriptName)
 				$this->_scriptUrl=$_SERVER['PHP_SELF'];
-			else if(isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME'])===$scriptName)
+			elseif(isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME'])===$scriptName)
 				$this->_scriptUrl=$_SERVER['ORIG_SCRIPT_NAME'];
-			else if(($pos=strpos($_SERVER['PHP_SELF'],'/'.$scriptName))!==false)
+			elseif(($pos=strpos($_SERVER['PHP_SELF'],'/'.$scriptName))!==false)
 				$this->_scriptUrl=substr($_SERVER['SCRIPT_NAME'],0,$pos).'/'.$scriptName;
-			else if(isset($_SERVER['DOCUMENT_ROOT']) && strpos($_SERVER['SCRIPT_FILENAME'],$_SERVER['DOCUMENT_ROOT'])===0)
+			elseif(isset($_SERVER['DOCUMENT_ROOT']) && strpos($_SERVER['SCRIPT_FILENAME'],$_SERVER['DOCUMENT_ROOT'])===0)
 				$this->_scriptUrl=str_replace('\\','/',str_replace($_SERVER['DOCUMENT_ROOT'],'',$_SERVER['SCRIPT_FILENAME']));
 			else
 				throw new CException(Yii::t('yii','CHttpRequest is unable to determine the entry script URL.'));
@@ -383,15 +420,15 @@ class CHttpRequest extends CApplicationComponent
 			if(($pos=strpos($pathInfo,'?'))!==false)
 			   $pathInfo=substr($pathInfo,0,$pos);
 
-			$pathInfo=$this->urldecode($pathInfo);
+			$pathInfo=$this->decodePathInfo($pathInfo);
 
 			$scriptUrl=$this->getScriptUrl();
 			$baseUrl=$this->getBaseUrl();
 			if(strpos($pathInfo,$scriptUrl)===0)
 				$pathInfo=substr($pathInfo,strlen($scriptUrl));
-			else if($baseUrl==='' || strpos($pathInfo,$baseUrl)===0)
+			elseif($baseUrl==='' || strpos($pathInfo,$baseUrl)===0)
 				$pathInfo=substr($pathInfo,strlen($baseUrl));
-			else if(strpos($_SERVER['PHP_SELF'],$scriptUrl)===0)
+			elseif(strpos($_SERVER['PHP_SELF'],$scriptUrl)===0)
 				$pathInfo=substr($_SERVER['PHP_SELF'],strlen($scriptUrl));
 			else
 				throw new CException(Yii::t('yii','CHttpRequest is unable to determine the path info of the request.'));
@@ -402,15 +439,16 @@ class CHttpRequest extends CApplicationComponent
 	}
 
 	/**
-	 * Improved variant of urldecode.
-	 * Properly decodes both UTF-8 and ISO-8859-1 encoded URIs.
-	 *
-	 * @param string $str encoded string
-	 * @return string decoded string
+	 * Decodes the path info.
+	 * This method is an improved variant of the native urldecode() function and used in {@link getPathInfo getPathInfo()} to
+	 * decode the path part of the request URI. You may override this method to change the way the path info is being decoded.
+	 * @param string $pathInfo encoded path info
+	 * @return string decoded path info
+	 * @since 1.1.10
 	 */
-	private function urldecode($str)
+	protected function decodePathInfo($pathInfo)
 	{
-		$str = urldecode($str);
+		$pathInfo = urldecode($pathInfo);
 
 		// is it UTF-8?
 		// http://w3.org/International/questions/qa-forms-utf-8.html
@@ -423,13 +461,13 @@ class CHttpRequest extends CApplicationComponent
 		 | \xF0[\x90-\xBF][\x80-\xBF]{2}      # planes 1-3
 		 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
 		 | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
-		)*$%xs', $str))
+		)*$%xs', $pathInfo))
 		{
-			return $str;
+			return $pathInfo;
 		}
 		else
 		{
-			return utf8_encode($str);
+			return utf8_encode($pathInfo);
 		}
 	}
 
@@ -447,7 +485,7 @@ class CHttpRequest extends CApplicationComponent
 		{
 			if(isset($_SERVER['HTTP_X_REWRITE_URL'])) // IIS
 				$this->_requestUri=$_SERVER['HTTP_X_REWRITE_URL'];
-			else if(isset($_SERVER['REQUEST_URI']))
+			elseif(isset($_SERVER['REQUEST_URI']))
 			{
 				$this->_requestUri=$_SERVER['REQUEST_URI'];
 				if(!empty($_SERVER['HTTP_HOST']))
@@ -458,7 +496,7 @@ class CHttpRequest extends CApplicationComponent
 				else
 					$this->_requestUri=preg_replace('/^(http|https):\/\/[^\/]+/i','',$this->_requestUri);
 			}
-			else if(isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
+			elseif(isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
 			{
 				$this->_requestUri=$_SERVER['ORIG_PATH_INFO'];
 				if(!empty($_SERVER['QUERY_STRING']))
@@ -486,15 +524,21 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	public function getIsSecureConnection()
 	{
-		return isset($_SERVER['HTTPS']) && !strcasecmp($_SERVER['HTTPS'],'on');
+		return !empty($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
 	}
 
 	/**
 	 * Returns the request type, such as GET, POST, HEAD, PUT, DELETE.
+	 * Request type can be manually set in POST requests with a parameter named _method. Useful
+	 * for RESTful request from older browsers which do not support PUT or DELETE
+	 * natively (available since version 1.1.11).
 	 * @return string request type, such as GET, POST, HEAD, PUT, DELETE.
 	 */
 	public function getRequestType()
 	{
+		if(isset($_POST['_method']))
+			return strtoupper($_POST['_method']);
+
 		return strtoupper(isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:'GET');
 	}
 
@@ -514,7 +558,17 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	public function getIsDeleteRequest()
 	{
-		return isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'],'DELETE');
+		return (isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'],'DELETE')) || $this->getIsDeleteViaPostRequest();
+	}
+
+	/**
+	 * Returns whether this is a DELETE request which was tunneled through POST.
+	 * @return boolean whether this is a DELETE request tunneled through POST.
+	 * @since 1.1.11
+	 */
+	protected function getIsDeleteViaPostRequest()
+	{
+		return isset($_POST['_method']) && !strcasecmp($_POST['_method'],'DELETE');
 	}
 
 	/**
@@ -524,7 +578,17 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	public function getIsPutRequest()
 	{
-		return isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'],'PUT');
+		return (isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'],'PUT')) || $this->getIsPutViaPostRequest();
+	}
+
+	/**
+	 * Returns whether this is a PUT request which was tunneled through POST.
+	 * @return boolean whether this is a PUT request tunneled through POST.
+	 * @since 1.1.11
+	 */
+	protected function getIsPutViaPostRequest()
+	{
+		return isset($_POST['_method']) && !strcasecmp($_POST['_method'],'PUT');
 	}
 
 	/**
@@ -534,6 +598,16 @@ class CHttpRequest extends CApplicationComponent
 	public function getIsAjaxRequest()
 	{
 		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest';
+	}
+
+	/**
+	 * Returns whether this is an Adobe Flash or Adobe Flex request.
+	 * @return boolean whether this is an Adobe Flash or Adobe Flex request.
+	 * @since 1.1.11
+	 */
+	public function getIsFlashRequest()
+	{
+		return isset($_SERVER['HTTP_USER_AGENT']) && (stripos($_SERVER['HTTP_USER_AGENT'],'Shockwave')!==false || stripos($_SERVER['HTTP_USER_AGENT'],'Flash')!==false);
 	}
 
 	/**
@@ -702,15 +776,15 @@ class CHttpRequest extends CApplicationComponent
 
 	/**
 	 * Redirects the browser to the specified URL.
-	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
-	 * the application will be inserted at the beginning.
+	 * @param string $url URL to be redirected to. Note that when URL is not
+	 * absolute (not starting with "/") it will be relative to current request URL.
 	 * @param boolean $terminate whether to terminate the current application
 	 * @param integer $statusCode the HTTP status code. Defaults to 302. See {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html}
 	 * for details about HTTP status code.
 	 */
 	public function redirect($url,$terminate=true,$statusCode=302)
 	{
-		if(strpos($url,'/')===0)
+		if(strpos($url,'/')===0 && strpos($url,'//')!==0)
 			$url=$this->getHostInfo().$url;
 		header('Location: '.$url, true, $statusCode);
 		if($terminate)
@@ -718,27 +792,47 @@ class CHttpRequest extends CApplicationComponent
 	}
 
 	/**
+	 * Returns an array of user accepted languages in order of preference.
+	 * The returned language IDs will NOT be canonicalized using {@link CLocale::getCanonicalID}.
+	 * @return array the user accepted languages in the order of preference.
+	 * See {@link http://tools.ietf.org/html/rfc2616#section-14.4}
+	 */
+	public function getPreferredLanguages()
+	{
+		if($this->_preferredLanguages===null)
+		{
+			$sortedLanguages=array();
+			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $n=preg_match_all('/([\w\-_]+)(?:\s*;\s*q\s*=\s*(\d*\.?\d*))?/',$_SERVER['HTTP_ACCEPT_LANGUAGE'],$matches))
+			{
+				$languages=array();
+
+				for($i=0;$i<$n;++$i)
+				{
+					$q=$matches[2][$i];
+					if($q==='')
+						$q=1;
+					if($q)
+						$languages[]=array((float)$q,$matches[1][$i]);
+				}
+
+				usort($languages,create_function('$a,$b','if($a[0]==$b[0]) {return 0;} return ($a[0]<$b[0]) ? 1 : -1;'));
+				foreach($languages as $language)
+					$sortedLanguages[]=$language[1];
+			}
+			$this->_preferredLanguages=$sortedLanguages;
+		}
+		return $this->_preferredLanguages;
+	}
+
+	/**
 	 * Returns the user preferred language.
 	 * The returned language ID will be canonicalized using {@link CLocale::getCanonicalID}.
-	 * This method returns false if the user does not have language preference.
-	 * @return string the user preferred language.
+	 * @return string the user preferred language or false if the user does not have any.
 	 */
 	public function getPreferredLanguage()
 	{
-		if($this->_preferredLanguage===null)
-		{
-			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && ($n=preg_match_all('/([\w\-_]+)\s*(;\s*q\s*=\s*(\d*\.\d*))?/',$_SERVER['HTTP_ACCEPT_LANGUAGE'],$matches))>0)
-			{
-				$languages=array();
-				for($i=0;$i<$n;++$i)
-					$languages[$matches[1][$i]]=empty($matches[3][$i]) ? 1.0 : floatval($matches[3][$i]);
-				arsort($languages);
-				foreach($languages as $language=>$pref)
-					return $this->_preferredLanguage=CLocale::getCanonicalID($language);
-			}
-			return $this->_preferredLanguage=false;
-		}
-		return $this->_preferredLanguage;
+		$preferredLanguages=$this->getPreferredLanguages();
+		return !empty($preferredLanguages) ? CLocale::getCanonicalID($preferredLanguages[0]) : false;
 	}
 
 	/**
@@ -759,8 +853,7 @@ class CHttpRequest extends CApplicationComponent
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 		header("Content-type: $mimeType");
-		if(ob_get_length()===false)
-			header('Content-Length: '.(function_exists('mb_strlen') ? mb_strlen($content,'8bit') : strlen($content)));
+		header('Content-Length: '.(function_exists('mb_strlen') ? mb_strlen($content,'8bit') : strlen($content)));
 		header("Content-Disposition: attachment; filename=\"$fileName\"");
 		header('Content-Transfer-Encoding: binary');
 
@@ -768,7 +861,9 @@ class CHttpRequest extends CApplicationComponent
 		{
 			// clean up the application first because the file downloading could take long time
 			// which may cause timeout of some resources (such as DB connection)
+			ob_start();
 			Yii::app()->end(0,false);
+			ob_end_clean();
 			echo $content;
 			exit(0);
 		}
@@ -792,8 +887,8 @@ class CHttpRequest extends CApplicationComponent
 	 * As this header directive is non-standard different directives exists for different web servers applications:
 	 * <ul>
 	 * <li>Apache: {@link http://tn123.org/mod_xsendfile X-Sendfile}</li>
-	 * <li>Lighttpd v1.4: {@link http://redmine.lighttpd.net/wiki/lighttpd/X-LIGHTTPD-send-file X-LIGHTTPD-send-file}</li>
-	 * <li>Lighttpd v1.5: X-Sendfile {@link http://redmine.lighttpd.net/wiki/lighttpd/X-LIGHTTPD-send-file X-Sendfile}</li>
+	 * <li>Lighttpd v1.4: {@link http://redmine.lighttpd.net/projects/lighttpd/wiki/X-LIGHTTPD-send-file X-LIGHTTPD-send-file}</li>
+	 * <li>Lighttpd v1.5: {@link http://redmine.lighttpd.net/projects/lighttpd/wiki/X-LIGHTTPD-send-file X-Sendfile}</li>
 	 * <li>Nginx: {@link http://wiki.nginx.org/XSendfile X-Accel-Redirect}</li>
 	 * <li>Cherokee: {@link http://www.cherokee-project.com/doc/other_goodies.html#x-sendfile X-Sendfile and X-Accel-Redirect}</li>
 	 * </ul>
@@ -807,32 +902,34 @@ class CHttpRequest extends CApplicationComponent
 	 * If this option is disabled by the web server, when this method is called a download configuration dialog
 	 * will open but the downloaded file will have 0 bytes.
 	 *
+	 * <b>Known issues</b>:
+	 * There is a Bug with Internet Explorer 6, 7 and 8 when X-SENDFILE is used over an SSL connection, it will show
+	 * an error message like this: "Internet Explorer was not able to open this Internet site. The requested site is either unavailable or cannot be found.".
+	 * You can work around this problem by removing the <code>Pragma</code>-header.
+	 * 
 	 * <b>Example</b>:
 	 * <pre>
 	 * <?php
-	 *   Yii::app()->request->xSendFile('/home/user/Pictures/picture1.jpg',array(
-	 *	  'saveName'=>'image1.jpg',
-	 *	  'mimeType'=>'image/jpeg',
-	 *	  'terminate'=>false,
-	 *   ));
+	 *    Yii::app()->request->xSendFile('/home/user/Pictures/picture1.jpg',array(
+	 *        'saveName'=>'image1.jpg',
+	 *        'mimeType'=>'image/jpeg',
+	 *        'terminate'=>false,
+	 *    ));
 	 * ?>
 	 * </pre>
 	 * @param string $filePath file name with full path
 	 * @param array $options additional options:
 	 * <ul>
 	 * <li>saveName: file name shown to the user, if not set real file name will be used</li>
-	 * <li>mimeType: mime type of the file, if not set it will be guessed automatically based on the file name.</li>
+	 * <li>mimeType: mime type of the file, if not set it will be guessed automatically based on the file name, if set to null no content-type header will be sent.</li>
 	 * <li>xHeader: appropriate x-sendfile header, defaults to "X-Sendfile"</li>
 	 * <li>terminate: whether to terminate the current application after calling this method, defaults to true</li>
-	 * <li>forceDownload: specifies whether the file will be downloaded or shown inline. Defaults to true. (Since version 1.1.9.)</li>
+	 * <li>forceDownload: specifies whether the file will be downloaded or shown inline, defaults to true. (Since version 1.1.9.)</li>
+	 * <li>addHeaders: an array of additional http headers in header-value pairs (available since version 1.1.10)</li>
 	 * </ul>
-	 * @return boolean false if file not found, true otherwise.
 	 */
 	public function xSendFile($filePath, $options=array())
 	{
-		if(!is_file($filePath))
-			return false;
-
 		if(!isset($options['forceDownload']) || $options['forceDownload'])
 			$disposition='attachment';
 		else
@@ -850,14 +947,18 @@ class CHttpRequest extends CApplicationComponent
 		if(!isset($options['xHeader']))
 			$options['xHeader']='X-Sendfile';
 
-		header('Content-type: '.$options['mimeType']);
+		if($options['mimeType'] !== null)
+			header('Content-type: '.$options['mimeType']);
 		header('Content-Disposition: '.$disposition.'; filename="'.$options['saveName'].'"');
+		if(isset($options['addHeaders']))
+		{
+			foreach($options['addHeaders'] as $header=>$value)
+				header($header.': '.$value);
+		}
 		header(trim($options['xHeader']).': '.$filePath);
 
 		if(!isset($options['terminate']) || $options['terminate'])
 			Yii::app()->end();
-
-		return true;
 	}
 
 	/**
@@ -911,19 +1012,33 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	public function validateCsrfToken($event)
 	{
-		if($this->getIsPostRequest())
+		if ($this->getIsPostRequest() ||
+			$this->getIsPutRequest() ||
+			$this->getIsDeleteRequest())
 		{
-			// only validate POST requests
 			$cookies=$this->getCookies();
-			if($cookies->contains($this->csrfTokenName) && isset($_POST[$this->csrfTokenName]))
+
+			$method=$this->getRequestType();
+			switch($method)
 			{
-				$tokenFromCookie=$cookies->itemAt($this->csrfTokenName)->value;
-				$tokenFromPost=$_POST[$this->csrfTokenName];
-				$valid=$tokenFromCookie===$tokenFromPost;
+				case 'POST':
+					$userToken=$this->getPost($this->csrfTokenName);
+				break;
+				case 'PUT':
+					$userToken=$this->getPut($this->csrfTokenName);
+				break;
+				case 'DELETE':
+					$userToken=$this->getDelete($this->csrfTokenName);
+			}
+
+			if (!empty($userToken) && $cookies->contains($this->csrfTokenName))
+			{
+				$cookieToken=$cookies->itemAt($this->csrfTokenName)->value;
+				$valid=$cookieToken===$userToken;
 			}
 			else
-				$valid=false;
-			if(!$valid)
+				$valid = false;
+			if (!$valid)
 				throw new CHttpException(400,Yii::t('yii','The CSRF token could not be verified.'));
 		}
 	}
@@ -944,7 +1059,6 @@ class CHttpRequest extends CApplicationComponent
  * </pre>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CHttpRequest.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
  * @since 1.0
  */
@@ -1020,16 +1134,31 @@ class CCookieCollection extends CMap
 	 * Removes a cookie with the specified name.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a CHttpCookie object.
+	 * Since version 1.1.11, the second parameter is available that can be used to specify
+	 * the options of the CHttpCookie being removed. For example, this may be useful when dealing
+	 * with ".domain.tld" where multiple subdomains are expected to be able to manage cookies:
+	 *
+	 * <pre>
+	 * $options=array('domain'=>'.domain.tld');
+	 * Yii::app()->request->cookies['foo']=new CHttpCookie('cookie','value',$options);
+	 * Yii::app()->request->cookies->remove('cookie',$options);
+	 * </pre>
+	 *
 	 * @param mixed $name Cookie name.
+	 * @param array $options Cookie configuration array consisting of name-value pairs, available since 1.1.11.
 	 * @return CHttpCookie The removed cookie object.
 	 */
-	public function remove($name)
+	public function remove($name,$options=array())
 	{
 		if(($cookie=parent::remove($name))!==null)
 		{
 			if($this->_initialized)
+			{
+				$cookie->configure($options);
 				$this->removeCookie($cookie);
+			}
 		}
+
 		return $cookie;
 	}
 
@@ -1055,8 +1184,8 @@ class CCookieCollection extends CMap
 	protected function removeCookie($cookie)
 	{
 		if(version_compare(PHP_VERSION,'5.2.0','>='))
-			setcookie($cookie->name,null,0,$cookie->path,$cookie->domain,$cookie->secure,$cookie->httpOnly);
+			setcookie($cookie->name,'',0,$cookie->path,$cookie->domain,$cookie->secure,$cookie->httpOnly);
 		else
-			setcookie($cookie->name,null,0,$cookie->path,$cookie->domain,$cookie->secure);
+			setcookie($cookie->name,'',0,$cookie->path,$cookie->domain,$cookie->secure);
 	}
 }

@@ -169,6 +169,9 @@ $likedPost=Yii::app()->db->createCommand()
 	<?php
         ?>
     </div>
+    <div id="<?php echo $data->id ?>-like-history-box" class="like-history-box" style="display:none;clear:both;">
+        <div id="<?php echo $data->id ?>-likes" ></div>
+    </div>
     <div id="<?php echo $data->id ?>-comment-box" class="comment-box" style="display:none;clear:both;">
             <div id="<?php echo $data->id ?>-comments" ></div>
             <?php
@@ -187,9 +190,6 @@ $likedPost=Yii::app()->db->createCommand()
 
             echo "</div>";
 	          ?>
-    </div>
-    <div id="<?php echo $data->id ?>-like-history-box" class="like-history-box" style="display:none;clear:both;">
-        <div id="<?php echo $data->id ?>-likes" ></div>
     </div>
 </div>
 <?php

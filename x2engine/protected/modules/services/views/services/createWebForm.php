@@ -50,6 +50,7 @@ $this->actionMenu = $this->formatMenu($menuItems);
 </div>
 <?php
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/createWebForm.css.css');
 
 //support both the weblead capture and weblist signup
 if (empty($type)) $type = 'weblead';
@@ -58,57 +59,7 @@ $height = $type=='weblist' ? 100 : 325;
 $url = 'services/webForm';
 
 $embedcode = '<iframe src="'. Yii::app()->createAbsoluteUrl($url) .'" frameborder="0" scrolling="no" width="200" height="'. $height .'"></iframe>'; 
-?>
 
-<style type="text/css">
-#embedcode {
-	width: 95%;
-	min-height: 67px;
-	border: 1px solid #B9B9B9;
-	background: #F6F6F6;
-	color: #666;
-	-moz-box-shadow: 0 1px 0 #fff,inset 0 1px 1px rgba(0,0,0,.17);
-	-ms-box-shadow: 0 1px 0 #fff,inset 0 1px 1px rgba(0,0,0,.17);
-	-webkit-box-shadow: 0 1px 0 white,inset 0 1px 1px rgba(0, 0, 0, .17);
-	box-shadow: 0 1px 0 white,inset 0 1px 1px rgba(0, 0, 0, .17);
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-}
-
-#embedcode:focus {
-	border-color: #4496E7;
-	color: #444;
-	background: white;
-	outline: 0;
-}
-
-#iframe_example {
-	-moz-border-radius: 7px;
-	-webkit-border-radius: 7px;
-	border-radius: 7px;
-	padding: 9px;
-	background: #F0F0F0;
-}
-p.fieldhelp {
-	color: #666;
-	font-size: 12px;
-	margin: -0.3em 0 0.8em;
-	width: 193px;
-}
-p.fieldhelp.half {
-	display: inline-block;
-	width: 79px;
-	margin: 0;
-}
-input#font, select#font {
-	width: 193px;
-}
-input.half {
-	width: 69px;
-}
-</style>
-<?php
 //get form attributes only for generating json
 $formAttrs = array();
 foreach ($forms as $form) {

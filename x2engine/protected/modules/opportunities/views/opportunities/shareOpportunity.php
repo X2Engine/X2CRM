@@ -88,5 +88,5 @@ $form = $this->beginWidget('CActiveForm', array(
 	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?></span> <?php echo $model->name; ?></h2>
 </div>
 <?php
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'opportunity','form'=>$form,'currentWorkflow'=>$currentWorkflow)); 
+$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'opportunity','form'=>$form,'currentWorkflow'=>$currentWorkflow));
 $this->endWidget(); ?>

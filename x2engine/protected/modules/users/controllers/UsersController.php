@@ -64,7 +64,7 @@ class UsersController extends x2base {
 			),
 		);
 	}
-    
+
     public function actionIndex(){
         $this->redirect('admin');
     }
@@ -152,7 +152,7 @@ class UsersController extends x2base {
                         'selectedRoles'=>array(),
 		));
 	}
-	
+
 	public function actionCreateAccount(){
 		$this->layout='//layouts/login';
 		if(isset($_GET['key'])){
@@ -276,13 +276,13 @@ class UsersController extends x2base {
                                     }
                                 }
                             }
-                            
+
                             $profile=ProfileChild::model()->findByAttributes(array('username'=>$old['username']));
                             if(isset($profile)){
                                 $profile->username=$model->username;
                                 $profile->save();
                             }
-                            
+
                         }
                         foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
                             $link->delete();
@@ -321,19 +321,19 @@ class UsersController extends x2base {
                         'selectedRoles'=>$selectedRoles,
 		));
 	}
-	
+
 	public function actionInviteUsers(){
-        
+
 		if(isset($_POST['emails'])){
 			$list=$_POST['emails'];
-			
+
 			$body="Hello,
 
-You are receiving this email because your X2CRM admin has invited you to create an account.
+You are receiving this email because your X2CRM administrator has invited you to create an account.
 Please click on the link below to create an account at X2CRM!
 
 ";
-			
+
 			$subject="Create Your X2CRM User Account";
 			$list=trim($list);
 			$emails=explode(',',$list);
@@ -353,11 +353,19 @@ Please click on the link below to create an account at X2CRM!
                 }
                 $user->save();
                 $link=(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/createAccount?key='.$key);
-				mail($email,$subject,$body.$link);
+				$mail=new InlineEmail;
+                $mail->to=$email;
+                $mail->subject=$subject;
+                $mail->message=$body.$link;
+                $mail->contactFlag=false;
+                if($mail->prepareBody()){
+                    $mail->send();
+                }else{
+                }
 			}
             $this->redirect('admin');
 		}
-		
+
 		$this->render('inviteUsers');
 	}
 
@@ -372,18 +380,6 @@ Please click on the link below to create an account at X2CRM!
 	public function actionAdmin() {
 		$model=new User('search');
 		$this->render('admin',array('model'=>$model,'count'=>User::model()->countByAttributes(array('temporary'=>1))));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id) {
-		$model=User::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,Yii::t('app','The requested page does not exist.'));
-		return $model;
 	}
 
 	public function actionDelete($id) {
@@ -411,7 +407,7 @@ Please click on the link below to create an account at X2CRM!
             foreach($social as $socialItem){
                 $socialItem->delete();
             }
-                        
+
             $dataProvider=new CActiveDataProvider('Contacts', array(
 			'criteria'=>array(
 				'condition'=>"assignedTo='$model->username'",
@@ -425,12 +421,12 @@ Please click on the link below to create an account at X2CRM!
 				$contact->assignedTo="Anyone";
                                 $contact->save();
 			}
-                        
+
             $prof=ProfileChild::model()->findByAttributes(array('username'=>$model->username));
             $prof->delete();
             Yii::app()->db->createCommand("DELETE FROM x2_events where user='".$model->username."' OR (type='feed' AND associationId=".$model->id.")")->execute();
 			$model->delete();
-			
+
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -443,9 +439,9 @@ Please click on the link below to create an account at X2CRM!
 
 	public function actionAddTopContact() {
 		if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-		
+
 			//$viewId = (isset($_GET['viewId']) && is_numeric($_GET['viewId'])) ? $_GET['viewId'] : null;
-			
+
 			$id = Yii::app()->user->getId();
 			$model=$this->loadModel($id);
 
@@ -465,9 +461,9 @@ Please click on the link below to create an account at X2CRM!
 
 	public function actionRemoveTopContact() {
 		if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-		
+
 			//$viewId = (isset($_GET['viewId']) && is_numeric($_GET['viewId'])) ? $_GET['viewId'] : null;
-			
+
 			$id = Yii::app()->user->getId();
 			$model=$this->loadModel($id);
 
@@ -478,12 +474,12 @@ Please click on the link below to create an account at X2CRM!
 				unset($topContacts[$index]);
 
 			$model->topContacts = implode(',',$topContacts);
-			
+
 			if ($model->save())
 				$this->renderTopContacts();
 		}
 	}
-	
+
 	private function renderTopContacts() {
 		$this->renderPartial('application.components.views.topContacts',array(
 			'topContacts'=>User::getTopContacts(),

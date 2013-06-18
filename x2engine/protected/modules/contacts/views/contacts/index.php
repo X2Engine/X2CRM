@@ -132,7 +132,7 @@ function refreshQtip() {
 					ajax: {
 						url: yii.scriptUrl+"/contacts/qtip",
 						data: { id: contactId[0] },
-						method: "get",
+						method: "get"
 					}
 				},
 				style: {
@@ -173,31 +173,28 @@ $listActions .= '</div>';
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{pager}{items}{pager}',
+	'title'=>$heading,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon contacts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','header'=>$listActions),
+	'pager'=>array('class'=>'CLinkPager','header'=>$listActions, 'maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'gvCheckbox'=>30,
-		'name'=>210,
-		'phone'=>100,
-		'lastUpdated'=>100,
-		'leadSource'=>145,
-		// 'gvControls'=>66,
+		'gvCheckbox' => 30,
+		'name' => 125,
+		'email' => 165,
+		'leadSource' => 83,
+		'leadstatus' => 91,
+		'phone' => 107,
+		'lastActivity' => 78,
+		'gvControls' => 73,
 	),
-    'pager'=>array('class'=>'CLinkPager', 'maxButtonCount'=>10),
 	'specialColumns'=>array(
 		'name'=>array(
 			'name'=>'name',
@@ -209,6 +206,7 @@ $this->widget('application.components.X2GridView', array(
 	),
 	'enableControls'=>true,
 	'enableTags'=>true,
+	'fullscreen'=>true,
 ));
 ?>
 

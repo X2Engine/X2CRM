@@ -68,6 +68,7 @@ echo $this->renderPartial('application.components.views._form',
 		'users'=>$users,
 		'modelName'=>'Quote',
 		'isQuickCreate'=>true, // let us create the CActiveForm in this file
+		'scenario' => $quick ? 'Inline' : 'Default',
 	)
 );
 

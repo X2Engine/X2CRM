@@ -37,10 +37,11 @@
 /**
  * Provides an inline form for sending email from a view page.
  *
- * @property integer $template The default template to use when opening the form.
- * @property string $type Type; null is default (plain email). Specifies which list of templates to fetch.
  * @property X2Model $targetModel The model of the form.
- * @package X2CRM.components 
+ * @property integer $template The default template to use when opening the form.
+ * @property string $templateType The class of template. Different templates are meant for different models and scenarios.
+ * @property string $type Type; null is default (plain email). Specifies which list of templates to fetch.
+ * @package X2CRM.components
  */
 class InlineEmailForm extends X2Widget {
 
@@ -49,14 +50,15 @@ class InlineEmailForm extends X2Widget {
 	public $templateType = 'email';
 	public $model;
 	public $targetModel;
-	
+    public $contactFlag=true;
+
 	public $insertableAttributes;
 
 	public $errors = array();
 	public $startHidden = false;
 
 	public function init() {
-			
+
 		// Prepare the model for initially displayed input:
 		$this->model = new InlineEmail();
 		if(isset($this->targetModel))
@@ -73,6 +75,7 @@ class InlineEmailForm extends X2Widget {
 			$this->model->prepareBody();
 		}
 
+		// If insertable attributes aren't set, use the inline email model's getInsertableAttributes() method to generate them.
 		if((bool) $this->model->targetModel && !isset($this->insertableAttributes)) {
 			$this->insertableAttributes = $this->model->insertableAttributes;
 		}
@@ -97,7 +100,8 @@ class InlineEmailForm extends X2Widget {
 	public function run() {
 		$this->render('application.components.views.inlineEmailForm', array(
 			'model' => $this->model,
-			'type' => $this->templateType
+			'type' => $this->templateType,
+            'contactFlag'=>$this->contactFlag,
 		));
 	}
 }

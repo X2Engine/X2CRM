@@ -133,7 +133,7 @@ function refreshQtip() {
 					ajax: {
 						url: yii.baseUrl+"/index.php/contacts/qtip",
 						data: { id: contactId[0] },
-						method: "get",
+						method: "get"
 					}
 				},
 				style: {
@@ -163,7 +163,7 @@ foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) 
 	if($this->checkPermissions($list,'edit'))	// check permissions
 		$listNames[$list->id] = $list->name;
 }
-unset($listNames[$listModel->id]);	// remove current list from the list...yo dawg, I heard you like lists
+unset($listNames[$listModel->id]);	// remove current list from the list of lists...yo dawg, I heard you like lists
 $editPermissions=Yii::app()->user->checkAccess('ContactsUpdateList',$authParams);
 if($editPermissions && $listModel->type == 'static')
 	$listActions .= ' | '.CHtml::link(Yii::t('contacts','Remove From List'),'#',array('id'=>'removeFromList','class'=>'list-action'));
@@ -176,31 +176,30 @@ $listActions .= '</div>';
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">'
-		// .CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array('list','id'=>$listModel->id,'clearFilters'=>1)) . ' | '
-		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportContacts?listId='.$listModel->id)) . ' | '
-		.CHtml::link(Yii::t('app','Columns'),'javascript:void(0);',array('class'=>'column-selector-link')) . ' | '
-		.CHtml::link(Yii::t('marketing','Email List'), Yii::app()->createUrl('/marketing/create?Campaign[listId]='.$listModel->id)) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
+	'title'=>$heading,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title">{title}{buttons}'
+		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportContacts?listId='.$listModel->id),array('class'=>'x2-button'))
+		.CHtml::link(Yii::t('marketing','Email List'), Yii::app()->createUrl('/marketing/create?Campaign[listId]='.$listModel->id),array('class'=>'x2-button'))
+	.'{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','header'=>$listActions),
+	'pager'=>array('class'=>'CLinkPager','header'=>$listActions,'maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts_list'.$listModel->id,
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'gvCheckbox'=>35,
-		'name'=>180,
-		'phone'=>101,
-		'lastUpdated'=>94,
-		'leadSource'=>101,
-		'gvControls'=>74
+		'gvCheckbox' => 30,
+		'name' => 125,
+		'email' => 165,
+		'leadSource' => 83,
+		'leadstatus' => 91,
+		'phone' => 107,
+		'lastActivity' => 78,
+		'gvControls' => 73,
 	),
 	'selectableRows'=>2,
 	'specialColumns'=>array(
@@ -213,4 +212,5 @@ $this->widget('application.components.X2GridView', array(
 	),
 	'enableControls'=>true,
 	'enableTags'=>true,
+	'fullscreen'=>true,
 ));

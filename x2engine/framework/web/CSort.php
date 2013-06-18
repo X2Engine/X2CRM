@@ -39,15 +39,26 @@
  * @property string $orderBy The order-by columns represented by this sort object.
  * This can be put in the ORDER BY clause of a SQL statement.
  * @property array $directions Sort directions indexed by attribute names.
- * The sort direction is true if the corresponding attribute should be
- * sorted in descending order.
+ * The sort direction. Can be either CSort::SORT_ASC for ascending order or
+ * CSort::SORT_DESC for descending order.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CSort.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
  */
 class CSort extends CComponent
 {
+	/**
+	 * Sort ascending
+	 * @since 1.1.10
+	 */
+	const SORT_ASC = false;
+
+	/**
+	 * Sort descending
+	 * @since 1.1.10
+	 */
+	const SORT_DESC = true;
+
 	/**
 	 * @var boolean whether the sorting can be applied to multiple attributes simultaneously.
 	 * Defaults to false, which means each time the data can only be sorted by one attribute.
@@ -153,9 +164,11 @@ class CSort extends CComponent
 	 * be in descending order. For example,
 	 * <pre>
 	 * 'defaultOrder'=>array(
-	 *     'price'=>true,
+	 *     'price'=>CSort::SORT_DESC,
 	 * )
 	 * </pre>
+	 * `SORT_DESC` and `SORT_ASC` are available since 1.1.10. In earlier Yii versions you should use
+	 * `true` and `false` respectively.
 	 *
 	 * Please note when using array to specify the default order, the corresponding attributes
 	 * will be put into {@link directions} and thus affect how the sort links are rendered
@@ -201,7 +214,7 @@ class CSort extends CComponent
 	 */
 	public function applyOrder($criteria)
 	{
-		$order=$this->getOrderBy();
+		$order=$this->getOrderBy($criteria);
 		if(!empty($order))
 		{
 			if(!empty($criteria->order))
@@ -211,11 +224,12 @@ class CSort extends CComponent
 	}
 
 	/**
+	 * @param CDbCriteria $criteria the query criteria
 	 * @return string the order-by columns represented by this sort object.
 	 * This can be put in the ORDER BY clause of a SQL statement.
 	 * @since 1.1.0
 	 */
-	public function getOrderBy()
+	public function getOrderBy($criteria=null)
 	{
 		$directions=$this->getDirections();
 		if(empty($directions))
@@ -235,7 +249,7 @@ class CSort extends CComponent
 					else
 						$orders[]=isset($definition['asc']) ? $definition['asc'] : $attribute;
 				}
-				else if($definition!==false)
+				elseif($definition!==false)
 				{
 					$attribute=$definition;
 					if(isset($schema))
@@ -243,7 +257,7 @@ class CSort extends CComponent
 						if(($pos=strpos($attribute,'.'))!==false)
 							$attribute=$schema->quoteTableName(substr($attribute,0,$pos)).'.'.$schema->quoteColumnName(substr($attribute,$pos+1));
 						else
-							$attribute=CActiveRecord::model($this->modelClass)->getTableAlias(true).'.'.$schema->quoteColumnName($attribute);
+							$attribute=($criteria===null || $criteria->alias===null ? CActiveRecord::model($this->modelClass)->getTableAlias(true) : $schema->quoteTableName($criteria->alias)).'.'.$schema->quoteColumnName($attribute);
 					}
 					$orders[]=$descending?$attribute.' DESC':$attribute;
 				}
@@ -279,7 +293,7 @@ class CSort extends CComponent
 			$descending=!$directions[$attribute];
 			unset($directions[$attribute]);
 		}
-		else if(is_array($definition) && isset($definition['default']))
+		elseif(is_array($definition) && isset($definition['default']))
 			$descending=$definition['default']==='desc';
 		else
 			$descending=false;
@@ -310,7 +324,7 @@ class CSort extends CComponent
 			if(isset($definition['label']))
 				return $definition['label'];
 		}
-		else if(is_string($definition))
+		elseif(is_string($definition))
 			$attribute=$definition;
 		if($this->modelClass!==null)
 			return CActiveRecord::model($this->modelClass)->getAttributeLabel($attribute);
@@ -321,8 +335,8 @@ class CSort extends CComponent
 	/**
 	 * Returns the currently requested sort information.
 	 * @return array sort directions indexed by attribute names.
-	 * The sort direction is true if the corresponding attribute should be
-	 * sorted in descending order.
+	 * Sort direction can be either CSort::SORT_ASC for ascending order or
+	 * CSort::SORT_DESC for descending order.
 	 */
 	public function getDirections()
 	{
@@ -360,8 +374,9 @@ class CSort extends CComponent
 	/**
 	 * Returns the sort direction of the specified attribute in the current request.
 	 * @param string $attribute the attribute name
-	 * @return mixed the sort direction of the attribut. True if the attribute should be sorted in descending order,
-	 * false if in ascending order, and null if the attribute doesn't need to be sorted.
+	 * @return mixed Sort direction of the attribute. Can be either CSort::SORT_ASC
+	 * for ascending order or CSort::SORT_DESC for descending order. Value is null
+	 * if the attribute doesn't need to be sorted.
 	 */
 	public function getDirection($attribute)
 	{
@@ -373,8 +388,8 @@ class CSort extends CComponent
 	 * Creates a URL that can lead to generating sorted data.
 	 * @param CController $controller the controller that will be used to create the URL.
 	 * @param array $directions the sort directions indexed by attribute names.
-	 * The sort direction is true if the corresponding attribute should be
-	 * sorted in descending order.
+	 * The sort direction can be either CSort::SORT_ASC for ascending order or
+	 * CSort::SORT_DESC for descending order.
 	 * @return string the URL for sorting
 	 */
 	public function createUrl($controller,$directions)
@@ -406,7 +421,7 @@ class CSort extends CComponent
 	{
 		if($this->attributes!==array())
 			$attributes=$this->attributes;
-		else if($this->modelClass!==null)
+		elseif($this->modelClass!==null)
 			$attributes=CActiveRecord::model($this->modelClass)->attributeNames();
 		else
 			return false;
@@ -417,12 +432,12 @@ class CSort extends CComponent
 				if($name===$attribute)
 					return $definition;
 			}
-			else if($definition==='*')
+			elseif($definition==='*')
 			{
 				if($this->modelClass!==null && CActiveRecord::model($this->modelClass)->hasAttribute($attribute))
 					return $attribute;
 			}
-			else if($definition===$attribute)
+			elseif($definition===$attribute)
 				return $attribute;
 		}
 		return false;

@@ -58,10 +58,10 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 ?>
 
 <!--<div id="sidebar-left-container">-->
-<div id="sidebar-left">
+<!--<div id="sidebar-left">-->
 	<div class="sidebar-left">
 	<!-- sidebar -->
-	<?php 
+	<?php
 		if(isset($this->actionMenu)) {
 			$this->beginWidget('zii.widgets.CPortlet',array(
 				'title'=>Yii::t('app','Actions'),
@@ -76,8 +76,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			echo $portlet['content'];
 			$this->endWidget();
 		}
-		
-		
+
+
 		if(isset($this->modelClass) && $this->modelClass == 'Actions' && $this->showActions !== null) {
 			$this->beginWidget('zii.widgets.CPortlet', array(
 				'title'=>Yii::t('actions', 'Show Actions'),
@@ -99,7 +99,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			echo '</div>';
 			$this->endWidget();
 		}
-		
+
 		// Add Show/Hide Status for Service Cases
 		// This is a list of service case statuses. When the User checks one of the corresponding checkboxes
 		// the status will be hidden in the gridview in services/index
@@ -114,15 +114,15 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					'title'=>Yii::t('services', 'Filter By Status'),
 					'id'=>'service-case-status-filter',
 				)
-			);			
+			);
 
 			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
 			$i = 1;
-			
+
 			foreach($this->serviceCaseStatuses as $status) {
-			
+
 				$checked = !in_array($status, $hideStatus);
-				
+
 				echo "<li>\n";
 				echo CHtml::checkBox("service-case-status-filter-$i",$checked,
 					array(
@@ -173,12 +173,12 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				)
 			));
 			echo '</div>';
-			
-			
+
+
 			$this->endWidget();
 		}
-        
-        if(isset($this->modelClass) && $this->modelClass == 'BugReports') {
+
+        if(isset($this->modelClass) && $this->modelClass == 'BugReports' && !Yii::app()->user->isGuest) {
 			$hideStatus = CJSON::decode(Yii::app()->params->profile->hideBugsWithStatus); // get a list of statuses the user wants to hide
 			if(!$hideStatus) {
 				$hideStatus = array();
@@ -189,15 +189,15 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					'title'=>Yii::t('services', 'Filter By Status'),
 					'id'=>'service-case-status-filter',
 				)
-			);			
+			);
 
 			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
 			$i = 1;
-			
+
 			foreach(Dropdowns::getItems(115) as $status) {
-			
+
 				$checked = !in_array($status, $hideStatus);
-				
+
 				echo "<li>\n";
 				echo CHtml::checkBox("service-case-status-filter-$i",$checked,
 					array(
@@ -248,13 +248,13 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				)
 			));
 			echo '</div>';
-			
-			
+
+
 			$this->endWidget();
 		}
 
 		if(isset($this->modelClass) && $this->modelClass == 'X2Calendar') {
-			
+
 			$user = UserChild::model()->findByPk(Yii::app()->user->getId());
 			$showCalendars = json_decode($user->showCalendars, true);
 //			$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
@@ -310,8 +310,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 						'id'=>'calendar-filter',
 					)
 				);
-				echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
-				foreach($this->calendarFilter as $filterName=>$filter) { 
+				echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+				foreach($this->calendarFilter as $filterName=>$filter) {
 					echo "<li>\n";
 					if($filter)
 						$checked = 'true';
@@ -344,8 +344,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					$filterDisplayName = ucwords($filterName); // capitalize filter name for label
 					echo "<label for=\"$filterName\" class=\"$class\" title=\"$title\">".Yii::t('calendar',$filterDisplayName)."</label>";
 					echo "</li>\n";
-				} 
-				echo "</ul>\n"; 
+				}
+				echo "</ul>\n";
 				$this->endWidget();
 			}
 
@@ -418,10 +418,10 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					'id'=>'filter-controls',
 				)
 			);
-			echo '<div class="x2-button-group">'; 
-			echo '<a href="#" id="simple-filters" class="x2-button'.($profile->fullFeedControls?"":" disabled-link").'" style="width:45px">Simple</a>';
-            echo '<a href="#" id="full-filters" class="x2-button'.($profile->fullFeedControls?" disabled-link":"").'" style="width:45px">Full</a>';
-			echo "</div>\n"; 
+			echo '<div class="x2-button-group">';
+			echo '<a href="#" id="simple-filters" class="x2-button'.($profile->fullFeedControls?"":" disabled-link").'" style="width:42px">Simple</a>';
+            echo '<a href="#" id="full-filters" class="x2-button'.($profile->fullFeedControls?" disabled-link":"").'" style="width:42px">Full</a>';
+			echo "</div>\n";
 			$this->endWidget();
             $filterList=json_decode($profile->feedFilters,true);
             echo "<div id='full-controls'".($profile->fullFeedControls?"":"style='display:none;'").">";
@@ -435,8 +435,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                     )
 				)
 			);
-			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
-			foreach($visibility as $value=>$label) { 
+			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+			foreach($visibility as $value=>$label) {
 				echo "<li>\n";
 				$checked = in_array($value,$visFilters)?false:true;
 				$title = '';
@@ -451,8 +451,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				$filterDisplayName = $label; // capitalize filter name for label
 				echo "<label for=\"$value\" title=\"$title\">".Yii::t('app',$label)."</label>";
 				echo "</li>\n";
-			} 
-			echo "</ul>\n"; 
+			}
+			echo "</ul>\n";
 			$this->endWidget();
 			$userFilters=$filters['users'];
 			$this->beginWidget('zii.widgets.CPortlet',
@@ -464,8 +464,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                     )
 				)
 			);
-			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
-			foreach($users as $username=>$name) { 
+			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+			foreach($users as $username=>$name) {
 				echo "<li>\n";
 				$checked = in_array($username,$userFilters)?false:true;
 				$title = '';
@@ -480,8 +480,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				$filterDisplayName = $name; // capitalize filter name for label
 				echo "<label for=\"$username\" title=\"$title\">".$name."</label>";
 				echo "</li>\n";
-			} 
-			echo "</ul>\n"; 
+			}
+			echo "</ul>\n";
 			$this->endWidget();
 			$typeFilters=$filters['types'];
 			$this->beginWidget('zii.widgets.CPortlet',
@@ -493,8 +493,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                     )
 				)
 			);
-			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
-			foreach($eventTypes as $type=>$name) { 
+			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+			foreach($eventTypes as $type=>$name) {
 				echo "<li>\n";
 				$checked = in_array($type,$typeFilters)?false:true;
 				$title = '';
@@ -509,8 +509,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				$filterDisplayName = $name; // capitalize filter name for label
 				echo "<label for=\"$type\" title=\"$title\">".$name."</label>";
 				echo "</li>\n";
-			} 
-			echo "</ul>\n"; 
+			}
+			echo "</ul>\n";
 			$this->endWidget();
 			$subFilters=$filters['subtypes'];
 			$this->beginWidget('zii.widgets.CPortlet',
@@ -522,8 +522,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                     )
 				)
 			);
-			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
-			foreach($socialSubtypes as $key=>$value) { 
+			echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+			foreach($socialSubtypes as $key=>$value) {
 				echo "<li>\n";
 				$checked = in_array($key,$subFilters)?false:true;
 				$title = '';
@@ -538,10 +538,10 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                     $filterDisplayName = $value; // capitalize filter name for label
                     echo "<label for=\"$key\" title=\"$title\">".Yii::t('app',$value)."</label>";
                     echo "</li>\n";
-                } 
-                echo "</ul>\n"; 
+                }
+                echo "</ul>\n";
                 $this->endWidget();
-                
+
                 $this->beginWidget('zii.widgets.CPortlet',
                     array(
                         'title'=>Yii::t('app', 'Options').CHtml::link(CHtml::image($themeURL."/images/icons/".((!isset($filterList['options']) || $filterList['options'])?"Collapse":"Expand")."_Widget.png"),"#",array('title'=>'options','class'=>'activity-control-link','style'=>'float:right;padding-right:5px;')),
@@ -551,8 +551,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                         )
                     )
                 );
-                echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">'; 
-                foreach(array('setDefault'=>"Set Default") as $key=>$value) { 
+                echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
+                foreach(array('setDefault'=>"Set Default") as $key=>$value) {
                     echo "<li>\n";
                     $checked = false;
                     $title = '';
@@ -568,14 +568,14 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				$filterDisplayName = $value; // capitalize filter name for label
 				echo "<label for=\"$key\" title=\"$title\">".Yii::t('app',$value)."</label>";
 				echo "</li>\n";
-			} 
+			}
 			echo "</ul>\n";
 			echo "<br />";
-			
+
 			echo CHtml::link(Yii::t('app','Apply Filters'),'#',array('class'=>'x2-button','id'=>'apply-feed-filters'));
 			$this->endWidget();
             echo "</div>";
-            
+
             echo "<div id='simple-controls'".($profile->fullFeedControls?"style='display:none;'":"").">";
             $this->beginWidget('zii.widgets.CPortlet',
 				array(
@@ -584,9 +584,9 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				)
 			);
             echo CHtml::link('All','#',array('class'=>'x2-button filter-control-button','id'=>'all-button','style'=>'width:107px;'))."<br>";
-			foreach($eventTypes as $type=>$name) { 
+			foreach($eventTypes as $type=>$name) {
                 echo CHtml::link($name,'#',array('class'=>'x2-button filter-control-button','id'=>$type.'-button','style'=>'width:107px;'))."<br>";
-			} 
+			}
 			$this->endWidget();
             echo "</div>";
             Yii::app()->clientScript->registerScript('feed-filters','
@@ -598,28 +598,28 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 							visibility.push($(this).attr("name"));
 						}
 					});
-					
+
 					var users=new Array();
 					$.each($(".users.filter-checkbox"),function(){
 						if(typeof $(this).attr("checked")=="undefined"){
 							users.push($(this).attr("name"));
 						}
 					});
-					
+
 					var eventTypes=new Array();
 					$.each($(".event-type.filter-checkbox"),function(){
 						if(typeof $(this).attr("checked")=="undefined"){
 							eventTypes.push($(this).attr("name"));
 						}
 					});
-					
+
 					var subtypes=new Array();
 					$.each($(".subtypes.filter-checkbox"),function(){
 						if(typeof $(this).attr("checked")=="undefined"){
 							subtypes.push($(this).attr("name"));
 						}
 					});
-					
+
 					var defaultCheckbox=$("#filter-default");
 					var defaultFilters=false;
 					if($(defaultCheckbox).attr("checked")=="checked"){
@@ -707,7 +707,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 
 		?>
 	</div>
-</div>
+<!--</div>-->
 <!--</div>-->
 
 <div id="flexible-content">
@@ -715,7 +715,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 		<?php
 		$this->widget('SortableWidgets', array(
 			//list of items
-			'portlets'=>$this->portlets, 
+			'portlets'=>$this->portlets,
 			'jQueryOptions'=>array(
 				'opacity'=>0.6,	//set the dragged object's opacity to 0.6
 				'handle'=>'.portlet-decoration',	//specify tag to be used as handle

@@ -155,7 +155,10 @@ class NotificationsController extends CController {
 					'id'=>$model->id,
 					'viewed'=>$model->viewed,
 					'date'=>Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short'),$model->createDate),
-					'text'=>$msg
+					'text'=>$msg,
+					'timestamp'=>$model->createDate,
+					'modelId' => $model->modelId,
+					'type'=>$model->type,
 				);
 			}
 		}
