@@ -51,8 +51,8 @@ $(function() {
 	$('body').data('modelId', $modelId);
 });");
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title"><h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php echo $model->name; ?></h2></div>
+<div id="main-column" class="half-width">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>
 
 <?php

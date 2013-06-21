@@ -9,7 +9,7 @@ CREATE TABLE `x2_docs` (
 	createdBy				VARCHAR(60)		NOT NULL,
 	createDate				BIGINT,
 	editPermissions			VARCHAR(250),
-	updatedBy				VARCHAR(40),
+	updatedBy				VARCHAR(50),
 	lastUpdated				BIGINT,
     visibility              TINYINT
 ) COLLATE = utf8_general_ci;

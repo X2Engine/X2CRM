@@ -34,59 +34,60 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.util.*');
+// Import the main models to be used:
+Yii::import('application.models.Profile');
+Yii::import('application.models.*');
+
 
 /**
- * Base action class for actions associated with the updater utility.
+ * Test for JSONFieldsBehavior.
  *
- * The updater is kept separate from the rest of the application like this to
- * enable updating it to the latest version pre-emptively without harming any
- * other part of the application with incompatibilities. For this reason,
- * coupling between actions and the controller is intentionally kept very loose
- * and limited to use of ubiquitous methods like {@link CController::render()},
- * with the exception of "error500" (which was in AdminController as of the
- * switch to the new self-contained updater utility).
+ * It is not a database test because only the transformation of data (as
+ * performed by packAttribute and unpackAttribute) need be tested. Testing that
+ * involves database interaction is already covered by {@link TransformedFieldStorageBehaviorTest}.
  *
- * References to the application singleton and controller are thus accompanied
- * by or wrapped in a slew of conditional statements for purposes of backwards
- * compatibility.
- *
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.tests.unit.components
+ * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
-abstract class WebUpdaterAction extends CAction{
+class JSONFieldsBehaviorTest extends X2DbTestCase {
 
-	/**
-	 * Override of CAction's construct; all child classes need to have the
-	 * behavior {@link UpdaterBehavior} attached and enabled.
-	 * 
-	 * @param type $controller
-	 * @param type $id 
-	 */
-	public function __construct($controller, $id){
-		parent::__construct($controller, $id);
-		$this->attachBehaviors(array(
-			'UpdaterBehavior' => array(
-				'class' => 'application.components.UpdaterBehavior',
-				'isConsole' => false,
-			)
-		));
-		// Be certain we can continue safely:
-		$this->checkDependencies();
-	}
+	public $fixtures = array(
+		'profile' => 'Profile'
+	);
 
-    /**
-	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
-	 * in a user-friendly way and reloads the page.
-	 */
-	public function runUpdateUpdater($updaterCheck, $redirect){
-		try{
-			if(count($classes = $this->updateUpdater($updaterCheck)))
-				$this->controller->missingClassesException($classes);
-			$this->controller->redirect($redirect);
-		}catch(Exception $e){
-			$this->controller->error500($e->getMessage());
-		}
+    /*static private function instantiateJSONFieldsBehavior ($transformAttributes) {
+        $behavior = new JSONFieldsBehavior ();
+        $behavior->transformAttributes = $transformAttributes;
+        return $behavior;
+    }
+
+    
+    static private function instantiateProfileModel () {
+        $profile = new Profile ();
+        return $profile;
+    }*/
+
+	public function testPackUnpackAttribute() {
+        /*$transformAttributes = array('theme' => array (
+            'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor', 
+            'pageHeaderTextColor', 'activityFeedWidgetBgColor', 
+            'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling', 
+            'pageOpacity', 'themeName', 'private', 'owner'));*/
+        //$model = self::instantiateProfileModel ();
+
+
+        $model = $this->profile ('testProfile');
+        $model->theme = array (
+            'backgroundColor'=>0, 'menuBgColor'=>0, 'menuTextColor'=>0,
+            'pageHeaderBgColor'=>0, 'pageHeaderTextColor'=>0, 
+            'activityFeedWidgetBgColor'=>0, 'activityFeedWidgetTextColor'=>0, 
+            'backgroundImg'=>0, 'backgroundTiling'=>0, 'pageOpacity'=>0, 
+            'themeName'=>0, 'private'=>0);
+        $model->save ();
+		
+		// Verify that "owner" field got added:
+		$this->assertArrayHasKey('owner', $model->theme);
 	}
 }
+
 ?>

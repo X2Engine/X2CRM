@@ -4,11 +4,11 @@ CREATE TABLE `x2_services` (
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	createDate			BIGINT,
 	lastUpdated			BIGINT,
-	updatedBy			VARCHAR(20),
+	updatedBy			VARCHAR(50),
 	description			TEXT,
 	contactId			varchar(250),
 	assignedTo			TEXT,
-	name				VARCHAR(40),
+	name				VARCHAR(255),
 	impact				VARCHAR(40),
 	status				VARCHAR(40),
 	subject				TEXT,
@@ -17,7 +17,7 @@ CREATE TABLE `x2_services` (
 	resolution			TEXT,
 	subIssue			VARCHAR(40),
 	origin				VARCHAR(40),
-	escalatedTo			VARCHAR(20),
+	escalatedTo			VARCHAR(50),
 	lastActivity		BIGINT,
 	parentCase			INT
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;

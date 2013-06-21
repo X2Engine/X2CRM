@@ -35,6 +35,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.*');
+
 /**
  * Administrative, app-wide configuration actions.
  *
@@ -48,7 +50,7 @@
 class AdminController extends Controller {
 
 	public $modelClass = 'Admin';
-	
+
     public $portlets = array();
     public $layout = '//layouts/column1';
 
@@ -69,7 +71,7 @@ class AdminController extends Controller {
 	 * depend on, but that aren't directly used by it as behaviors.
 	 * @var type
 	 */
-	public static $dependencies = array('FileUtil','ResponseBehavior','views/requirements');
+	public static $dependencies = array('util/FileUtil','util/EncryptUtil','ResponseBehavior','views/requirements');
 
 	/**
 	 * Stores value of {@link $noRemoteAccess}
@@ -238,6 +240,18 @@ class AdminController extends Controller {
 	 * if any that are defined in {@link $behaviorClasses} are missing from the
 	 * local filesystem.
 	 *
+	 * The reason for all this is that in older versions, the updater utility,
+	 * when updating itself, will download the latest version of
+	 * AdminController. This necessitates downloading all of its dependencies,
+	 * so that AdminController can still run properly, in order to be backwards-
+	 * compatible.
+	 *
+	 * The reason for all this is that in older versions, the updater utility,
+	 * when updating itself, will download the latest version of
+	 * AdminController. This necessitates downloading all of its dependencies,
+	 * so that AdminController can still run properly, in order to be backwards-
+	 * compatible.
+	 *
 	 * It uses the same form as a typical magic getter method (private storage
 	 * property, check if it's set first and return) because the method is also
 	 * called in the override {@link createAction()}
@@ -267,8 +281,9 @@ class AdminController extends Controller {
 				$path = "components/$class.php";
 				$absPath = Yii::app()->basePath."/$path";
 				if(!file_exists($absPath)){
-					if(!is_dir(dirname($absPath)))
-						throw new CHttpException(500, 'The components folder is missing on the webserver! This is very bad. How is this even possible?');
+					if(!is_dir(dirname($absPath))) {
+						mkdir(dirname($absPath));
+					}
 					$i = 0;
 					while(!$this->copyRemote("$x2planUrl/$path", $absPath, $tryCurl) && $i < $maxTries){
 						$i++;
@@ -2187,7 +2202,7 @@ class AdminController extends Controller {
                     $auth->removeItemChild('DefaultRole', ucfirst($moduleName) . 'Index');
                     $auth->removeItemChild('administrator', ucfirst($moduleName) . 'Admin');
 
-					$this->rrmdir('protected/modules/' . $moduleName);
+					FileUtil::rrmdir('protected/modules/' . $moduleName);
 				} else {
 					$module->delete();
 				}

@@ -35,6 +35,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.*');
+
 /**
  * Test case for tests that involve manipulating or getting info about file system objects.
  *

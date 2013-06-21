@@ -76,6 +76,27 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modco
 $userList=array_keys(User::getNames());
 $tempUserList=array_diff($userList,$tempUserList);
 $usersGroups=implode(",",$tempUserList);
+
+// this is a hack to temporarily improve behavior of file attachment menu
+Yii::app()->clientScript->registerScript('attachmentMenuBehavior','
+
+$("#submitAttach").hide (); 
+
+function submitAttachment () {
+    $("#submitAttach").click (); 
+}
+
+$("#toggle-attachment-menu-button").click (function () {
+    if ($("#attachments").is (":visible")) {
+        console.log ("show");
+        $("#save-button").bind ("click", submitAttachment);
+    } else {
+        console.log ("not show");
+        $("#save-button").unbind ("click", submitAttachment);
+    }
+});
+');
+
 Yii::app()->clientScript->registerScript('miscellaneous','
 
 if ($("#sticky-feed .empty").length !== 0) {
@@ -114,6 +135,21 @@ $(document).on ("myFocus", function () {
         animateEditorVerticalResize (editorMinHeight, newHeight, 300);
         $("#post-buttons").slideDown (400); 
     }
+});
+
+$("html").click (function () {
+    var editorText = window.newPostEditor.getData();
+
+    if (x2.whatsNew.editorIsExpanded && editorText === "") {
+
+        initMinimizeEditor ();
+        finishMinimizeEditor ();
+    }
+});
+
+// enables detection of a click outside the publisher div
+$("#post-form, #attachment-form").click (function (event) {
+    event.stopPropagation ();
 });
 
 if($(":checkbox:checked").length > ($(":checkbox").length)/2){
@@ -208,7 +244,51 @@ function updateComments(id){
         }
     });
 }
-var firstEventId='.$firstEventId.';
+
+/*
+Called before finishMinimizeEditor (), prevents forced toolbar collapse from refocusing 
+on editor.
+*/
+function initMinimizeEditor () {
+
+    window.newPostEditor.focusManager.blur (true);
+    window.newPostEditor.focusManager.lock ();
+}
+
+/*
+Called after initMinimizeEditor (), minimizes the editor.
+*/
+function finishMinimizeEditor () {
+
+    if ($("[title=\'Collapse Toolbar\']").length !== 0) {
+        window.newPostEditor.execCommand ("toolbarCollapse");
+    }
+    var editorCurrentHeight = parseInt (
+        window.newPostEditor.ui.space ("contents").getStyle("height").replace (/px/, ""), 10);
+    var editorMinHeight = window.newPostEditor.config.height;
+    animateEditorVerticalResize (editorCurrentHeight, editorMinHeight, 300);
+    if (window.newPostEditor.getData () !== "") {
+        window.newPostEditor.setData ("", function () { 
+            window.newPostEditor.fire ("blur"); 
+        });
+    }
+    $("#save-button").removeClass("highlight");
+    $("#post-buttons").slideUp (400); 
+    x2.whatsNew.editorIsExpanded = false;
+
+    // focus on dummy input field to negate forced toolbar collapse refocusing on editor
+    $("body").append ($("<input>", {"id": "dummy-input"}));
+    var x = window.scrollX;
+    var y = window.scrollY;
+    $("#dummy-input").focus ();
+    window.scrollTo (x, y); // prevent scroll from focus event
+    $("#dummy-input").remove ();
+
+    window.newPostEditor.focusManager.unlock ();
+
+    $("#attachments").hide ();
+}
+
 function publishPost(){
 
     var editorText = window.newPostEditor.getData();
@@ -231,9 +311,7 @@ function publishPost(){
         of: $("#post-form")
     });
 
-    // prevent forced toolbar collapse from refocusing on editor
-    window.newPostEditor.focusManager.blur (true);
-    window.newPostEditor.focusManager.lock ();
+    initMinimizeEditor ();
 
     $.ajax({
         url:"publishPost",
@@ -246,36 +324,17 @@ function publishPost(){
             "subtype":$("#Events_subtype").val()
         },
         success:function(){
-            if ($("[title=\'Collapse Toolbar\']").length !== 0) {
-                window.newPostEditor.execCommand ("toolbarCollapse");
-            }
-            var editorCurrentHeight = parseInt (
-                window.newPostEditor.ui.space ("contents").getStyle("height").replace (/px/, ""), 10);
-            var editorMinHeight = window.newPostEditor.config.height;
-            animateEditorVerticalResize (editorCurrentHeight, editorMinHeight, 300);
-            if (window.newPostEditor.getData () !== "") {
-                window.newPostEditor.setData ("", function () { 
-                    window.newPostEditor.fire ("blur"); 
-                });
-            }
-            $("#save-button").removeClass("highlight");
-            $("#post-buttons").slideUp (400); 
-            x2.whatsNew.editorIsExpanded = false;
-
-            // focus on dummy input field to negate forced toolbar collapse refocusing on editor
-            $("body").append ($("<input>", {"id": "dummy-input"}));
-            var x = window.scrollX;
-            var y = window.scrollY;
-            $("#dummy-input").focus ();
-            window.scrollTo (x, y); // prevent scroll from focus event
-            $("#dummy-input").remove ();
+            finishMinimizeEditor ();
+        },
+        failure:function(){
+            window.newPostEditor.focusManager.unlock ();
         },
         complete:function(){
             $(editorOverlay).remove ();
-            window.newPostEditor.focusManager.unlock ();
         }
     });
 }
+
 function commentSubmit(id){
         var text=$("#"+id+"-comment").val();
         $("#"+id+"-comment").val("");
@@ -364,7 +423,7 @@ $(document).ready(function(){
     if(minimize==true){
         $("#min-posts").click();
     }
-    $(".date-break.first").after("<div class=\"list-view\"><div id=\"new-events\" class=\"items\" style=\"display:none;border-bottom:solid;\"></div></div>");
+    $(".date-break.first").after("<div class=\"list-view\"><div id=\"new-events\" class=\"items\" style=\"display:none;border-bottom:solid #BABABA;\"></div></div>");
 });
 var username="'.Yii::app()->user->getName().'";
 var usergroups="'.$usersGroups.'";
@@ -964,7 +1023,7 @@ $(document).on("submit","#attachment-form-form",function(){
         }
         echo $form->dropDownList($feed,'subtype',array_map('translateOptions',json_decode(Dropdowns::model()->findByPk(113)->options,true)));
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
-		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();"));
+		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();", 'id'=>"toggle-attachment-menu-button"));
 		echo "</div>";
         ?>
 	</div>

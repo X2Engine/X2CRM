@@ -58,10 +58,12 @@ if($name == "InlineRelationships") {
 		<span class="x2widget-title">
 			<b><?php echo Yii::t('app', $widget['title']) . $relationshipCount; ?></b>
 		</span>
-    	<div class="portlet-minimize">
-    		<a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize"><?php echo $widget['minimize']? CHtml::image($themeUrl.'/images/icons/Expand_Widget.png') : CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png'); ?></a>
-    		<a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#"><?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png'); ?></a>
-    	</div>
+        <?php if(!Yii::app()->user->isGuest){ ?>
+            <div class="portlet-minimize">
+                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize"><?php echo $widget['minimize']? CHtml::image($themeUrl.'/images/icons/Expand_Widget.png') : CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png'); ?></a>
+                <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#"><?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png'); ?></a>
+            </div>
+        <?php } ?>
     </div>
     <div class="x2widget-container" style="<?php echo $widget['minimize']? 'display: none;' : ''; ?>">
     	<?php if(isset($this->controller)) { // not ajax ?>

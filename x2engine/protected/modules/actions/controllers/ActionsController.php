@@ -596,7 +596,6 @@ class ActionsController extends x2base {
     public function actionQuickUpdate($id){
         $model = $this->loadModel($id);
         if(isset($_POST['Actions'])){
-            $temp = $model->attributes;
             $model->setX2Fields($_POST['Actions']);
             $model->actionDescription = $_POST['Actions']['actionDescription'];
 
@@ -606,7 +605,7 @@ class ActionsController extends x2base {
             }elseif(empty($model->completeDate)){
                 $model->completeDate = $model->dueDate;
             }
-
+            
             // $changes = $this->calculateChanges($temp, $model->attributes, $model);
             // $model = $this->updateChangelog($model,$changes);
 

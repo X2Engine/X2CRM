@@ -104,7 +104,7 @@ CREATE TABLE x2_changelog(
 	type					VARCHAR(50)		NOT NULL,
 	itemId					INT				NOT NULL,
     recordName              VARCHAR(255),
-	changedBy				VARCHAR(50)		NOT NULL,
+	changedBy				VARCHAR(255)	NOT NULL,
 	changed					TEXT			NULL,
     fieldName				VARCHAR(255),
     oldValue				TEXT,
@@ -130,7 +130,9 @@ DROP TABLE IF EXISTS x2_dropdowns;
 CREATE TABLE x2_dropdowns (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
-	options					TEXT
+	options					TEXT,
+    parent                  INT,
+    parentVal               VARCHAR(250)
 ) AUTO_INCREMENT=1000 COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_fields;
@@ -185,7 +187,7 @@ DROP TABLE IF EXISTS x2_lists;
 /*&*/
 CREATE TABLE x2_lists (
 	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	assignedTo				VARCHAR(20),
+	assignedTo				VARCHAR(255),
 	name					VARCHAR(100)	NOT NULL,
 	description				VARCHAR(250)	NULL,
 	type					VARCHAR(20)		NULL,
@@ -303,8 +305,8 @@ DROP TABLE IF EXISTS x2_profile;
 /*&*/
 CREATE TABLE x2_profile(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	fullName				VARCHAR(60)		NOT NULL,
-	username				VARCHAR(20)		NOT NULL,
+	fullName				VARCHAR(255)	NOT NULL,
+	username				VARCHAR(50)		NOT NULL,
 	officePhone				VARCHAR(40),
 	cellPhone				VARCHAR(40),
 	emailAddress			VARCHAR(255)	NOT NULL,
@@ -312,7 +314,7 @@ CREATE TABLE x2_profile(
 	status					TINYINT			NOT NULL,
 	tagLine					VARCHAR(255),
 	lastUpdated				BIGINT,
-	updatedBy				VARCHAR(20),
+	updatedBy				VARCHAR(255),
 	avatar					TEXT,
 	allowPost				TINYINT			DEFAULT 1,
 	language				VARCHAR(40)		DEFAULT "",
@@ -322,7 +324,7 @@ CREATE TABLE x2_profile(
 	widgetOrder				TEXT,
 	widgetSettings			TEXT,
 	activityFeedOrder       TINYINT         DEFAULT 0,
-    backgroundColor			VARCHAR(6)		NULL,
+    /*backgroundColor			VARCHAR(6)		NULL,
 	menuBgColor				VARCHAR(6)		NULL,
 	menuTextColor			VARCHAR(6)		NULL,
 	pageHeaderBgColor		VARCHAR(6)		NULL,
@@ -330,10 +332,11 @@ CREATE TABLE x2_profile(
     activityFeedWidgetBgColor       VARCHAR(6)              NULL,
     activityFeedWidgetTextColor     VARCHAR(6)              NULL,
 	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
-    loginSound              VARCHAR(100)    NULL DEFAULT "",
-    notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
 	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
-	pageOpacity				INT				NULL,
+	pageOpacity				INT				NULL,*/
+    theme                   TEXT,
+    notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
+    loginSound              VARCHAR(100)    NULL DEFAULT "",
 	startPage				VARCHAR(30)		NULL,
 	showSocialMedia			TINYINT			NOT NULL DEFAULT 0,
 	showDetailView			TINYINT			NOT NULL DEFAULT 1,
@@ -419,7 +422,7 @@ DROP TABLE IF EXISTS x2_sessions;
 /*&*/
 CREATE TABLE x2_sessions(
 	id						CHAR(40)		PRIMARY KEY,
-	user					VARCHAR(20),
+	user					VARCHAR(255),
 	lastUpdated				BIGINT,
 	IP						VARCHAR(40)		NOT NULL,
 	status					TINYINT			NOT NULL DEFAULT 0
@@ -430,7 +433,7 @@ DROP TABLE IF EXISTS x2_session_log;
 CREATE TABLE x2_session_log(
 	id						INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
     sessionId               CHAR(40),
-	user					VARCHAR(40),
+	user					VARCHAR(255),
 	timestamp				BIGINT,
 	status					VARCHAR(250)
 ) COLLATE = utf8_general_ci;
@@ -475,10 +478,10 @@ DROP TABLE IF EXISTS x2_urls;
 /*&*/
 CREATE TABLE x2_urls(
 	id					INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	title					VARCHAR(20)				NOT NULL,
+	title				VARCHAR(20)				NOT NULL,
 	url					VARCHAR(256),
-	userid					INT,
-	timestamp				INT
+	userid				INT,
+	timestamp			INT
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_track_emails;
@@ -512,9 +515,9 @@ CREATE TABLE x2_locations(
 DROP TABLE IF EXISTS x2_maps;
 /*&*/
 CREATE TABLE x2_maps(
-    id			INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id                  INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
     owner               VARCHAR(250),
-    name    		VARCHAR(250),
+    name                VARCHAR(250),
     contactId           INT,
     params              TEXT,
     centerLat           FLOAT,

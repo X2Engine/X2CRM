@@ -59,10 +59,13 @@ div.half-width {
 	width:65%;
 	float:left;
 }
+#main-column {margin-top:5px;}
 #main-column > div, #main-column > form {margin:0 5px 5px 5px;}
+.history {padding:0 5px;}
+.history.half-width {padding:0;}
 .history.half-width > div, .history.half-width > form {margin:0 5px 5px 0;}
 
-#main-column > div.page-title-fixed-outer {margin:0 0 5px 0;padding-right:7px;}
+#main-column > div.page-title-fixed-outer {margin:0 0 5px 0;/* padding-right:7px; */}
 #main-column.half-width > div.page-title-fixed-outer {padding-right:10px;}
 /* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
 

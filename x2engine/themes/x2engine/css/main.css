@@ -43,6 +43,18 @@ body.login {
 	/* background:url(../images/login_white_bg.png) repeat-x left center; */
 }
 
+/**
+ * ----------------- General Table Rules ------------------
+ */
+table {
+	width:100%;
+	margin-bottom:0.5em;
+	border-collapse:separate;
+	border-spacing:0;
+}
+table, th, td {vertical-align:middle;}
+caption, th, td {text-align:left;font-size:12px;font-weight:normal;float:none !important;}
+
 
 /* div, span, a {
 	-webkit-touch-callout: none;
@@ -1310,7 +1322,7 @@ div.vcrPager div.summary a {
 }
 div.vcrPager div.summary a:hover {text-decoration:underline;}
 div.page-title div.vcrPager a.x2-button {margin:5px 0 0 2px;padding:0 12px;}
-	
+
 
 
 /* ul.vcrPager {

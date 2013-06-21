@@ -343,7 +343,7 @@ x2.fieldUtils = {
 				return $('<input type="text" />').attr(safeAttributes);
 		}
 	},
-	/* 
+	/**
 	 * Generates an operator dropdown from a flat array of operators, using x2.operatorList to get human-readable labels
 	 */
 	buildOperatorDropdown:function(operators,val) {
@@ -354,7 +354,7 @@ x2.fieldUtils = {
 		}
 		return this.createInput({"type":"dropdown","name":"operator","options":operatorOptions,"value":val});
 	},
-	/* 
+	/**
 	 * Generates an HTML <select> element with the specified name and options
 	 */
 	buildDropdown:function(options,attributes) {

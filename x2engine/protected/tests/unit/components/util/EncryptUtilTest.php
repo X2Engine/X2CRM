@@ -37,56 +37,31 @@
 Yii::import('application.components.util.*');
 
 /**
- * Base action class for actions associated with the updater utility.
+ * Test for the standalone encryption utilities class.
  *
- * The updater is kept separate from the rest of the application like this to
- * enable updating it to the latest version pre-emptively without harming any
- * other part of the application with incompatibilities. For this reason,
- * coupling between actions and the controller is intentionally kept very loose
- * and limited to use of ubiquitous methods like {@link CController::render()},
- * with the exception of "error500" (which was in AdminController as of the
- * switch to the new self-contained updater utility).
- *
- * References to the application singleton and controller are thus accompanied
- * by or wrapped in a slew of conditional statements for purposes of backwards
- * compatibility.
- *
- * @package X2CRM.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.tests.unit.components.util
  */
-abstract class WebUpdaterAction extends CAction{
+class EncryptUtilTest extends FileOperTestCase {
 
-	/**
-	 * Override of CAction's construct; all child classes need to have the
-	 * behavior {@link UpdaterBehavior} attached and enabled.
-	 * 
-	 * @param type $controller
-	 * @param type $id 
-	 */
-	public function __construct($controller, $id){
-		parent::__construct($controller, $id);
-		$this->attachBehaviors(array(
-			'UpdaterBehavior' => array(
-				'class' => 'application.components.UpdaterBehavior',
-				'isConsole' => false,
-			)
-		));
-		// Be certain we can continue safely:
-		$this->checkDependencies();
+	public function testEncryptDecrypt() {
+		$enc = new EncryptUtil();
+		$enc->key = EncryptUtil::genKey();
+		$expectedValue = 'helloworld';
+		$encrypted = $enc->encrypt($expectedValue);
+		$this->assertNotEquals($expectedValue,$encrypted,'Failed asserting data was encrypted.');
+		$decrypted = $enc->decrypt($encrypted);
+		$this->assertEquals($expectedValue,$decrypted,'Failed asserting that data was preserved in encryption/decryption.');
 	}
 
-    /**
-	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
-	 * in a user-friendly way and reloads the page.
-	 */
-	public function runUpdateUpdater($updaterCheck, $redirect){
-		try{
-			if(count($classes = $this->updateUpdater($updaterCheck)))
-				$this->controller->missingClassesException($classes);
-			$this->controller->redirect($redirect);
-		}catch(Exception $e){
-			$this->controller->error500($e->getMessage());
-		}
+	public function testFileSaving() {
+//		$this->setupTestDirs();
+//		$keyFile = $this->files[0];
+//		$IVFile = $this->files[1];
+//		$enc = new EncryptUtil();
+//		$this->removeTestDirs();
 	}
+
 }
+
 ?>

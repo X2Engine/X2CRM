@@ -74,6 +74,7 @@ class ApplicationConfigBehavior extends CBehavior {
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
                 Yii::import('application.components.X2WebUser');
                 Yii::import('application.components.Formatter');
+                Yii::import('application.components.TransformedFieldStorageBehavior');
                 if(!$this->owner->user->isGuest)
                     $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
                 if(isset($profData)){
@@ -109,6 +110,7 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
+        Yii::import('application.components.util.*');
         Yii::import('application.modules.media.models.Media');
         Yii::import('application.modules.groups.models.Groups');
         // Yii::import('application.components.ERememberFiltersBehavior');
@@ -304,7 +306,7 @@ class ApplicationConfigBehavior extends CBehavior {
 	/**
 	 * Magic getter for {@link externalBaseUrl}; in the case that web request data
 	 * isn't available, it uses a config file.
-	 * 
+	 *
 	 * @return type
 	 */
 	public function getExternalBaseUrl() {

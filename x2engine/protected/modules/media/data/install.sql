@@ -4,7 +4,7 @@ CREATE TABLE x2_media(
 	id				INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	associationType	VARCHAR(40)		NOT NULL,
 	associationId	INT,
-	uploadedBy		VARCHAR(40),
+	uploadedBy		VARCHAR(50),
 	fileName		VARCHAR(100),
 	createDate		BIGINT,
 	lastUpdated		BIGINT,

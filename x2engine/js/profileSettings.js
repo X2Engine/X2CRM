@@ -114,7 +114,7 @@ $(document).ready(function() {
 			$('#pageHeaderTextColor').change();
 		}
 	});
-        $('#activityFeedWidgetBgColor').modcoder_excolor({
+    $('#prefs-activity-feed-widget-bg-color').modcoder_excolor({
 		hue_bar : 3,
 		hue_slider : 5,
 		border_color : '#aaa',
@@ -124,7 +124,7 @@ $(document).ready(function() {
 		background_color : '#f0f0f0',
 		backlight : false,
 		callback_on_ok : function() {
-			$('#activityFeedWidgetBgColor').change();
+			$('#prefs-activity-feed-widget-bg-color').change();
 		}
 	});
 
@@ -181,33 +181,34 @@ $(document).ready(function() {
 		}
 		highlightSave();
 	});
-        $('#activityFeedWidgetBgColor').change(function() {
-		var text = $('#activityFeedWidgetBgColor').val();
+    $('#prefs-activity-feed-widget-bg-color').change(function() {
+		var text = $('#prefs-activity-feed-widget-bg-color').val();
 		if(text == '') {
-			$('.chat-box').css('background-color','#fff');
-                        $('.chat-box').css('color', '#ffffff');
+			$('#chat-box').css('background-color','#fff');
+            //$('#chat-box').css('color', '#ffffff');
 		} else {
-			$('#activityFeedWidgetBgColor').val(text.substring(1,7));
-			$('.chat-box').css('background-color',text);
-                        $('.chat-box').css('color', text);
+			$('#prefs-activity-feed-widget-bg-color').val(text.substring(1,7));
+			$('#chat-box').css('background-color',text);
+            //$('#chat-box').css('color', text);
 		}
 		highlightSave();
 	});
         
-        function convertTextColor(colorString){
-            var redHex = colorString.slice(1,2);
-            var greenHex = colorString.slice(3,4);
-            var blueHex = colorString.slice(5,6);
+    function convertTextColor(colorString){
+        var redHex = colorString.slice(1,2);
+        var greenHex = colorString.slice(3,4);
+        var blueHex = colorString.slice(5,6);
             
-            var red = parseInt(redHex, 16);
-            var green = parseInt(greenHex, 16);
-            var blue = parseInt(blueHex, 16);
+        var red = parseInt(redHex, 16);
+        var green = parseInt(greenHex, 16);
+        var blue = parseInt(blueHex, 16);
             
-            if((red*0.299 + green*0.587 + blue*0.114) > 186){
-                return '#000000';
-            }
-            else return '#ffffff';
+        if((red*0.299 + green*0.587 + blue*0.114) > 186){
+            return '#000000';
+        } else {
+            return '#ffffff';
         }
+    }
 
 	$('#backgroundTiling').change(function() {
 		var val = $(this).val();
@@ -216,13 +217,28 @@ $(document).ready(function() {
 			case 'repeat-x':
 			case 'repeat-y':
 			case 'repeat':
-				$("body").css({"background-attachment":"","background-size":"","background-position":"","background-repeat":val});
+				$("body").css({
+                    "background-attachment":"",
+                    "background-size":"",
+                    "background-position":"",
+                    "background-repeat":val
+                });
 				break;
 			case 'center':
-				$("body").css({"background-attachment":"","background-size":"","background-repeat":"no-repeat","background-position":"center center"});
+				$("body").css({
+                    "background-attachment":"",
+                    "background-size":"",
+                    "background-repeat":"no-repeat",
+                    "background-position":"center center"
+                });
 				break;
 			case 'stretch':
-				$("body").css({"background-attachment":"fixed","background-size":"cover","background-position":"","background-repeat":""});
+				$("body").css({
+                    "background-attachment":"fixed",
+                    "background-size":"cover",
+                    "background-position":"",
+                    "background-repeat":""
+                });
 				noBorders = true;
 				break;
 		}
@@ -271,11 +287,11 @@ function deleteSound(sound, id){
 
 //js to change background image
 function setBackground(filename) {
-	$.ajax({
+	/*$.ajax({
 		url: yii.scriptUrl+'/profile/setBackground',
 		type: 'post',
 		data: 'name='+filename
-	});
+	});*/
 		// success: function(response) {
 			// if(response=='success') {
 		if(filename=='') {
@@ -286,13 +302,15 @@ function setBackground(filename) {
 				$('body').css('background-image','none').removeClass("no-borders");
 		} else {
 			// $('#header').removeClass('defaultBg').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')');
-			$('body').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')').toggleClass("no-borders",($('#backgroundTiling').val() == 'stretch'));
+			$('body').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')').
+                toggleClass("no-borders",($('#backgroundTiling').val() == 'stretch'));
 			$(window).trigger('resize');
 		}
 			// }
 		// }
 	// });
 }
+
 function deleteBackground(id,filename) {
 	$.ajax({
 		url: yii.scriptUrl+'/profile/deleteBackground',
@@ -301,12 +319,16 @@ function deleteBackground(id,filename) {
 		success: function(response) {
 			if(response=='success') {
 				$('#background_'+id).hide();
-				if($('#header').css('background-image').indexOf(filename) > -1) {		// if this is the current background,
-					if($('#backgroundColor').val() == '')							// remove it from the page
-						$('#header').addClass('defaultBg').css('background-image','');
-					else
-						$('#header').removeClass('defaultBg').css('background-image','');
 
+		        // if this is the current background,
+				if($('#header').css('background-image').indexOf(filename) > -1) {
+
+					// remove it from the page
+					if($('#backgroundColor').val() == '') {
+						$('#header').addClass('defaultBg').css('background-image','');
+					} else {
+						$('#header').removeClass('defaultBg').css('background-image','');
+                    }
 				}
 			}
 		}
@@ -314,60 +336,59 @@ function deleteBackground(id,filename) {
 }
 
 // background uploader
-function showAttach() {
-	e=document.getElementById('attachments');
-	if(e.style.display=='none')
-		e.style.display='block';
-	else
-		e.style.display='none';
+function showAttach () {
+	var e = document.getElementById ('attachments');
+	if(e.style.display == 'none') {
+		e.style.display = 'block';
+	} else {
+		e.style.display = 'none';
+    }
 }
-var ar_ext = ['png', 'jpg','jpe','jpeg','gif','svg'];        // array with allowed extensions
 
-function checkName() {
+var ar_ext = ['png', 'jpg','jpe','jpeg','gif','svg']; // array with allowed extensions
+function checkName(id) {
 // - www.coursesweb.net
-	// get the file name and split it to separe the extension
-	var name = $('#backgroundImg').val();
+	// get the file name and split it to separate the extension
+    var selector = "#" + id;
+	var name = $(selector).val();
 	var ar_name = name.split('.');
 
 	// check the file extension
 	var re = 0;
-	for(var i=0; i<ar_ext.length; i++) {
+	for(var i = 0; i < ar_ext.length; i++) {
 		if(ar_ext[i] == ar_name[1].toLowerCase()) {
 			re = 1;
 			break;
 		}
 	}
 	// if re is 1, the extension is in the allowed list
-	if(re==1) {
-		// enable submit
-		$('#upload-button').removeAttr('disabled');
-	} else {
-		// delete the file name, disable Submit, Alert message
-		$('#backgroundImg').val('');
-		$('#upload-button').attr('disabled','disabled');
+	if(re == 1) { // enable submit
+	    $(selector).parents ('.upload-box').find ('.submit-upload').removeAttr('disabled','disabled');
+	} else { // delete the file name, disable Submit, Alert message
+		$(selector).val('');
+	    $(selector).parents ('.upload-box').find ('.submit-upload').attr('disabled','disabled');
 		alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
 	}
 }
 
 var s_ext = ['mp3', 'wav', 'aiff'];
-
-function checkSoundName() {
-    var name = $('#sound').val();
+function checkSoundName(id) {
+    var selector = "#" + id;
+    var name = $(selector).val();
     var ar_name = name.split('.');
 
-    var re=0;
-    for(var i=0; i<s_ext.length; i++){
+    var re = 0;
+    for (var i = 0; i < s_ext.length; i++) {
         if(s_ext[i] == ar_name[1].toLowerCase()) {
             re = 1;
             break;
         }
     }
     if(re==1){
-        $('#sound-upload-button').removeAttr('disabled');
-    } else {
-		// delete the file name, disable Submit, Alert message
-	$('#sound').val('');
-	$('#sound-upload-button').attr('disabled','disabled');
-	alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
+	    $(selector).parents ('.upload-box').find ('.submit-upload').removeAttr('disabled','disabled');
+    } else { // delete the file name, disable Submit, Alert message
+	    $(selector).val('');
+	    $(selector).parents ('.upload-box').find ('.submit-upload').attr('disabled','disabled');
+	    alert('\".'+ ar_name[1]+ '\" is not an file type allowed for upload');
     }
 }

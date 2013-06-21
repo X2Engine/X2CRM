@@ -40,7 +40,7 @@
  * the like in order to be portable/stand-alone (so it can be used outside the
  * app, i.e. by the installer).
  * 
- * @package X2CRM.components
+ * @package X2CRM.components.util
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class FileUtil {

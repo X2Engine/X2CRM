@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.FileUtil');
+Yii::import('application.components.util.FileUtil');
 Yii::import('application.modules.media.models.Media');
 
 /**

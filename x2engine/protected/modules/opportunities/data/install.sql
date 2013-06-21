@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `x2_opportunities`;
 /*&*/
 CREATE TABLE x2_opportunities(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name					VARCHAR(40)		NOT NULL,
+	name					VARCHAR(255)	NOT NULL,
 	accountName				VARCHAR(100),
 	quoteAmount				DECIMAL(10,2),
 	salesStage				VARCHAR(20),
@@ -15,7 +15,7 @@ CREATE TABLE x2_opportunities(
 	associatedContacts		TEXT,
 	lastUpdated				BIGINT,
 	lastActivity			BIGINT,
-	updatedBy				VARCHAR(20)
+	updatedBy				VARCHAR(50)
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`

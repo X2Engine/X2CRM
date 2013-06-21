@@ -39,7 +39,7 @@ Yii::import('application.components.webupdater.*');
 /**
  * Downloads a file as a part of the updater.
  * 
- * @package application.components.webupdater
+ * @package X2CRM.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class SourceFileDownloadAction extends WebUpdaterAction {

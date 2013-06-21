@@ -33,7 +33,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
-
 (100,	'Product Status',	'{"Active":"Active","Inactive":"Inactive"}'),
 (101,	'Currency List',	'{"USD":"USD","EUR":"EUR","GBP":"GBP","CAD":"CAD","JPY":"JPY","CNY":"CNY","CHF":"CHF","INR":"INR","BRL":"BRL"}'),
 (102,	'Lead Type',		'{"None":"None","Web":"Web","In Person":"In Person","Phone":"Phone","E-Mail":"E-Mail"}'),
@@ -51,7 +50,11 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (114,	'Invoice Status',	'{"Pending":"Pending","Issued":"Issued","Paid":"Paid","Open":"Open","Canceled":"Canceled","Other":"Other"}'),
 (115,	'Bug Status',       '{"Unconfirmed":"Unconfirmed","Confirmed":"Confirmed","In Progress":"In Progress","Closed (Resolved Internally)":"Closed (Resolved Internally)","Closed (Unable to Reproduce)":"Closed (Unable to Reproduce)","Closed (Duplicate)":"Closed (Duplicate)","Merged Into Base Code":"Merged Into Base Code"}'),
 (116,	'Bug Severity',     '{"5":"Blocker","4":"Critical","3":"Major","2":"Normal","1":"Minor","0":"Feature Request"}'),
-(117,	'Action Quick Note','{"Call logged.":"Call logged.","Follow up.":"Follow up.","Waiting to hear back.":"Waiting to hear back."}');
+(117,	'Quick Note',       '{"Contacted":"Contacted","Not Contacted":"Not Contacted"}');
+/*&*/
+INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES
+(118,	'Contacted Quick Note','{"Not interested.":"Not interested.","Requested follow up call.":"Requested follow up call.","Contact made.":"Contact made."}', 117, 'Contacted'),
+(119,	'Not Contacted Quick Note','{"No answer.":"No answer.","Wrong number.":"Wrong number.","Left voicemail.":"Left voicemail."}', 117, 'Not Contacted');
 /*&*/
 ALTER TABLE x2_profile CHANGE `language` language varchar(40) DEFAULT '{language}', CHANGE `timeZone` timeZone varchar(100) DEFAULT '{timezone}';
 /*&*/

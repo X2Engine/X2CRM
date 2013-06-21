@@ -46,12 +46,24 @@
         <?php if($showNewEvent){ ?><li><a href="#new-event"><b>+</b><?php echo Yii::t('actions', 'Event'); ?></a></li><?php } ?>
     </ul>
     <div class="form">
-        <?php if($showQuickNote){ ?>
-            <div class="row">
-                <?php echo CHtml::label('Quick Note', 'quickNote', array('style' => 'display:inline-block;')); ?>
-                <?php echo CHtml::dropDownList('quickNote', '', array_merge(array('' => '-'), Dropdowns::getItems(117))); ?>
-            </div>
-        <?php } ?>
+        <div id="log-a-call">
+            <?php if($showQuickNote){ ?>
+                <div class="row">
+                    <?php echo CHtml::label('Quick Note', 'quickNote', array('style' => 'display:inline-block;')); ?>
+                    <?php
+                    echo CHtml::dropDownList('quickNote', '', array_merge(array('' => '-'), Dropdowns::getItems(117)), array(
+                        'ajax' => array(
+                            'type' => 'GET', //request type
+                            'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
+                            'data' => 'js:{"val":$(this).val(),"dropdownId":"117"}',
+                            'update' => '#quickNote2',
+                            'complete' => 'function() { $("#Actions_actionDescription").val(""); } '
+                            )));
+                    ?>
+                    <?php echo CHtml::dropDownList('quickNote2', '', array('' => '-')); ?>
+                </div>
+            <?php } ?>
+        </div>
         <div class="row">
             <?php
             echo CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/PublisherCreate'), array(
@@ -84,8 +96,8 @@
                 <?php
                 $this->widget('CCaptcha', array(
                     'captchaAction' => 'actions/captcha',
-                    'buttonOptions'=>array(
-                        'style'=>'display:block;',
+                    'buttonOptions' => array(
+                        'style' => 'display:block;',
                     ),
                 ));
                 ?>
@@ -153,42 +165,15 @@
                         '2' => Yii::t('actions', 'Medium'),
                         '3' => Yii::t('actions', 'High')));
                     ?>
+                    <?php echo $form->label($model, 'color'); ?>
+					<?php echo $form->dropDownList($model, 'color', Actions::getColors()); ?>
                 </div>
                 <?php /* Assinged To */ ?>
                 <div class="cell">
 
                     <?php /* Users */ ?>
                     <?php echo $form->label($model, 'assignedTo'); ?>
-                    <?php echo $form->dropDownList($model, 'assignedTo', $users, array('id' => 'actionsAssignedToDropdown')); ?>
-
-                    <?php
-                    /* Groups */
-                    echo "<br />";
-                    $url = $this->controller->createUrl('/groups/getGroups');
-                    echo "<label>".Yii::t('app', 'Group?')."</label>";
-                    echo CHtml::checkBox('group', '', array(
-                        'id' => 'groupCheckbox',
-                        'ajax' => array(
-                            'type' => 'POST', //request type
-                            'url' => $url, //url to call.
-                            //Style: CController::createUrl('currentController/methodToCall')
-                            'update' => '#actionsAssignedToDropdown', //selector to update
-                            'data' => 'js:{checked: $(this).attr("checked")=="checked"}',
-                            'complete' => 'function(){
-									if($("#groupCheckbox").attr("checked")!="checked"){
-										$("#groupCheckbox").attr("checked","checked");
-										$("#Actions_visibility option[value=\'2\']").remove();
-									} else {
-										$("#groupCheckbox").removeAttr("checked");
-										$("#Actions_visibility").append(
-											$("<option></option>").val("2").html("User\'s Groups")
-										);
-
-									}
-								}'
-                        )
-                    ));
-                    ?>
+                    <?php echo $form->dropDownList($model, 'assignedTo', X2Model::getAssignmentOptions(true,true), array('id' => 'actionsAssignedToDropdown')); ?>
                 </div>
                 <div class="cell">
                     <?php echo $form->label($model, 'visibility'); ?>
@@ -196,8 +181,6 @@
                     <?php echo $form->dropDownList($model, 'visibility', array(0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'), 2 => Yii::t('actions', "User's Group"))); ?>
                 </div>
             </div>
-        </div>
-        <div id="log-a-call">
         </div>
         <div id="new-action">
         </div>
@@ -219,7 +202,7 @@ $(function() {
 	$('#tabs').tabs({
 		activate: function(event, ui) { tabSelected(event, ui); },
 	});
-    $(document).on('change','#quickNote',function(){
+    $(document).on('change','#quickNote2',function(){
         $('#Actions_actionDescription').val($(this).val());
     });
 

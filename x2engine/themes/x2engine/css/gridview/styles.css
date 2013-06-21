@@ -57,17 +57,7 @@ ul.column-selector {
 ul.column-selector li {padding:2px 5px;}
 ul.column-selector li:last-child {padding-bottom:5px;}
 ul.column-selector li:hover {background:#eee;}
-/**
- * ----------------- General Table Rules ------------------
- */
-table {
-	width:100%;
-	margin-bottom:0.5em;
-	border-collapse:separate;
-	border-spacing:0;
-}
-table, th, td {vertical-align:middle;}
-caption, th, td {text-align:left;font-size:12px;font-weight:normal;float:none !important;}
+
 /**
  * ---------------- X2GridView Widget CSS -----------------
  */
@@ -303,8 +293,8 @@ caption, th, td {text-align:left;font-size:12px;font-weight:normal;float:none !i
 .grid-view table.items.x2grid-helper td {padding:5px 5px;}
 .grid-view table.items td.spacer, .grid-view table.items th.spacer {
 	/* padding:0 !important; */
-	border-left:none;
-	border-right:none;
+	border-left:none !important;
+	border-right:none !important;
 	-moz-box-shadow:		inset -1px 0 0 #999;	/* since IE has too many chromosomes, let's simulate a border! */
 	-webkit-box-shadow:		inset -1px 0 0 #999;
 	box-shadow:				inset -1px 0 0 #999;

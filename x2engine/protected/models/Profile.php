@@ -37,6 +37,8 @@
 
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.modules.users.models.*');
+Yii::import('application.extensions.CSerializeBehavior');
+Yii::import('application.components.JSONFieldsBehavior');
 
 /**
  * This is the model class for table "x2_profile".
@@ -65,13 +67,25 @@ class Profile extends CActiveRecord {
                 'class' => 'X2LinkableBehavior',
                 'baseRoute' => '/profile',
                 'autoCompleteSource' => null,
-				'module' => 'profile'
+                'module' => 'profile'
             ),
             'ERememberFiltersBehavior' => array(
                 'class' => 'application.components.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
-            )
+            ),
+            /*'CSerializeBehavior' => array(
+               'class' => 'application.extensions.CSerializeBehavior',
+               'serialAttributes' => array('theme')
+            ),*/
+            'JSONFieldsBehavior' => array(
+               'class' => 'application.components.JSONFieldsBehavior',
+               'transformAttributes' => array('theme' => array (
+                   'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor', 
+                   'pageHeaderTextColor', 'activityFeedWidgetBgColor', 
+                   'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling', 
+                   'pageOpacity', 'themeName', 'private', 'owner'))
+           )
         );
     }
 
@@ -83,16 +97,15 @@ class Profile extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, allowPost, resultsPerPage, pageOpacity', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, allowPost, resultsPerPage', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView', 'boolean'), //,showWorkflow
-            array('backgroundColor, menuBgColor, menuTextColor, pageHeaderBgColor, pageHeaderTextColor, activityFeedWidgetBgColor', 'length', 'max' => 6),
-            array('backgroundTiling,emailUseSignature', 'length', 'max' => 10),
+            array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
             array('fullName', 'length', 'max' => 60),
             array('username, updatedBy', 'length', 'max' => 20),
             array('officePhone, cellPhone, language', 'length', 'max' => 40),
-            array('timeZone, backgroundImg', 'length', 'max' => 100),
+            array('timeZone', 'length', 'max' => 100),
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
             array('widgetOrder, emailSignature', 'length', 'max' => 512),
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
@@ -136,7 +149,7 @@ class Profile extends CActiveRecord {
             'widgetOrder' => Yii::t('profile', 'Widget Order'),
             'widgetSettings' => Yii::t('profile', 'Widget Settings'),
             'resultsPerPage' => Yii::t('profile', 'Results Per Page'),
-            'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
+            /*'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
             'menuBgColor' => Yii::t('profile', 'Menu Color'),
             'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
             'pageHeaderBgColor' => Yii::t('profile', 'Page Header Color'),
@@ -144,7 +157,7 @@ class Profile extends CActiveRecord {
             'activityFeedWidgetBgColor' => Yii::t('profile', 'Activity Feed Widget Background Color'),
             'backgroundColor' => Yii::t('profile', 'Background Color'),
             'backgroundTiling' => Yii::t('profile', 'Background Tiling'),
-            'pageOpacity' => Yii::t('profile', 'Page Opacity'),
+            'pageOpacity' => Yii::t('profile', 'Page Opacity'),*/
             'startPage' => Yii::t('profile', 'Start Page'),
             'showSocialMedia' => Yii::t('profile', 'Show Social Media'),
             'showDetailView' => Yii::t('profile', 'Show Detail View'),
@@ -194,7 +207,7 @@ class Profile extends CActiveRecord {
     }
 
     // public static function getSocialMedia() {
-    // $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preference for contact social media info
+    // $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());    // get user's preference for contact social media info
     // return $model->showSocialMedia;
     // }
 
@@ -251,7 +264,7 @@ class Profile extends CActiveRecord {
     public static function getResultsPerPage(){
         if(!Yii::app()->user->isGuest)
             $resultsPerPage = Yii::app()->params->profile->resultsPerPage;
-        // $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());	// get user's preferred results per page
+        // $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());    // get user's preferred results per page
         // $resultsPerPage = $model->resultsPerPage;
 
         return empty($resultsPerPage) ? 15 : $resultsPerPage;
@@ -769,5 +782,6 @@ class Profile extends CActiveRecord {
         $this->layout = json_encode($layout);
         $this->update();
     }
+
 
 }

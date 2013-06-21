@@ -51,13 +51,13 @@ $(function() {
 	$('body').data('modelId', $modelId);
 });");
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title icon products">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo Yii::t('products','Product:'); ?></span> <?php echo $model->name; ?></h2>
 	<a class="x2-button icon edit right" href="update/<?php echo $model->id;?>"><span></span></a>
 </div>
+<div id="main-column" class="half-width">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Product')); ?>
 
 <div class="form">

@@ -40,8 +40,8 @@ $(function() {
 	
 	$('a.x2-link').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'body',iframeFix:true});
 
-	if(window.fullscreen)
-		$('body').addClass('no-widgets');
+	// if(window.fullscreen)
+		// $('body').addClass('no-widgets');
 		
 	//widget collapsing
 	// var widgetHoverTimeout = null;

@@ -42,8 +42,8 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
+<div id="main-column" class="half-width">
 <?php 
 
 $parts = explode('.',$model->fileName);			// split filename on '.'

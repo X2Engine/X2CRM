@@ -55,7 +55,7 @@ $action = $inlineForm? array('/actions/create','inline'=>1) : null;
             var tabs=$( "#tabs" ).tabs();
             $("#actions-newCreate-form").submit(function(){
                $("#save-button1").val(tabs.tabs('option', 'selected'));
-           }) 
+           })
     });
 
 </script>
@@ -83,9 +83,9 @@ echo $form->errorSummary($actionModel);
 <div id="tabs-1">
 
 </div>
-	
+
 <div id="tabs-2">
-		
+
 
 <div class="row">
 	<?php
@@ -163,9 +163,9 @@ echo $form->errorSummary($actionModel);
 	<div class="cell">
 		<?php echo $form->label($actionModel,'priority'); ?>
 		<?php echo $form->dropDownList($actionModel,'priority',array(
-			'Low'=>Yii::t('actions','Low'),
-			'Medium'=>Yii::t('actions','Medium'),
-			'High'=>Yii::t('actions','High')));
+			'1'=>Yii::t('actions','Low'),
+			'2'=>Yii::t('actions','Medium'),
+			'3'=>Yii::t('actions','High')));
 		//echo $form->error($actionModel,'priority'); ?>
 	</div>
 	<div class="cell">
@@ -202,7 +202,7 @@ echo $form->errorSummary($actionModel);
 			));
 		/* end x2temp */ ?>
 	</div>
-        
+
 	<div class="cell">
 		<?php echo $form->label($actionModel,'visibility'); ?>
 		<?php
@@ -211,13 +211,13 @@ echo $form->errorSummary($actionModel);
 			$visibility[2]='User\'s Groups';
 			/* end x2temp */
 			?>
-		<?php echo $form->dropDownList($actionModel,'visibility',$visibility); ?> 
+		<?php echo $form->dropDownList($actionModel,'visibility',$visibility); ?>
 		<?php //echo $form->error($actionModel,'visibility'); ?>
 	</div>
 	<div class="cell">
 		<?php echo $form->label($actionModel,'reminder'); ?>
 		<?php //echo $form->checkBox($actionModel,'reminder',array('value'=>'Yes','uncheckedValue'=>'No')); ?>
-		<?php echo $form->dropDownList($actionModel,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?> 
+		<?php echo $form->dropDownList($actionModel,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?>
 	</div>
 </div>
 </div>

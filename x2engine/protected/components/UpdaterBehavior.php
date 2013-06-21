@@ -36,6 +36,7 @@
  *****************************************************************************************/
 
 Yii::import('application.components.ResponseBehavior');
+Yii::import('application.components.util.*');
 
 /**
  * Behavior class with application updater/upgrader utilities.
@@ -176,6 +177,19 @@ class UpdaterBehavior extends ResponseBehavior {
 	private $_webUpdaterActions;
 
 	/**
+	 * List of files used by the behavior
+	 * @var array
+	 */
+	public $updaterFiles = array(
+			"views/admin/updater.php",
+			"components/UpdaterBehavior.php",
+			"components/util/FileUtil.php",
+			"components/util/EncryptUtil.php",
+			"components/ResponseBehavior.php",
+			"components/views/requirements.php"
+		);
+
+	/**
 	 * Base URL of the web server from which to fetch data and files
 	 */
 	public $updateServer = 'http://x2planet.com/';
@@ -195,7 +209,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	 * @param array $classes An array containing a "class" => [Yii path alias] entry
 	 */
 	public static function classAliasPath($alias){
-		return preg_replace(':^application/:', '', str_replace('.', DIRECTORY_SEPARATOR, $alias)).'.php';
+		return preg_replace(':^application/:', '', str_replace('.', '/', $alias)).'.php';
 	}
 
 	/**
@@ -216,6 +230,32 @@ class UpdaterBehavior extends ResponseBehavior {
 				throw new Exception(Yii::t('admin','Cannot restore database; the backup is over 24 hours old and may thus be unreliable.'),2);
 		}
 		return true;
+	}
+
+	/**
+	 * Checks whether all dependencies of the updater exist on the server, and
+	 * downloads any that don't.
+	 */
+	public function checkDependencies() {
+		// Check all dependencies:
+		$dependencies = $this->updaterFiles;
+		// Add web updater actions to the files to be checked
+		$webUpdaterActions = $this->getWebUpdaterActions(false);
+		foreach($webUpdaterActions as $name => $properties)
+			$dependencies[] = self::classAliasPath($properties['class']);
+		$actionsDir = Yii::app()->basePath.'/components/webupdater/';
+		$utilDir = Yii::app()->basePath.'/components/util/';
+		$refresh = !is_dir($actionsDir) || !is_dir($utilDir); // We're downloading/saving new files
+		foreach($dependencies as $relPath){
+			$absPath = Yii::app()->basePath."/$relPath";
+			if(!file_exists($absPath)){
+				$refresh = true;
+				$this->downloadSourceFile("protected/$relPath");
+			}
+		}
+		// Copy files into the live installation:
+		if($refresh)
+			$this->restoreBackup('temp');
 	}
 	
 	/**
@@ -276,7 +316,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	public function downloadSourceFile($file,$route=null,$maxAttempts = 5) {
 		if(empty($route)) // Auto-construct a route based on ID & edition info:
 			$route = $this->sourceFileRoute;
-		$fileUrl = "{$this->updateServer}{$route}/". str_replace(' ','%20',$file);
+		$fileUrl = "{$this->updateServer}{$route}/". strtr($file,array(' '=>'%20',"\\"=>'/'));
 		$i = 0;
 		if ($file != "") {
 			$target = FileUtil::relpath($this->webRoot . "/temp/" . $file, $this->thisPath.'/');
@@ -728,7 +768,8 @@ class UpdaterBehavior extends ResponseBehavior {
 	 *	to download actions if they don't exist on the server yet. Otherwise, if
 	 *	this parameter is explicitly set to False, the return value will include
 	 *	the abstract base action class (in which case it should not be used in
-	 *	the return value of {@link CController::actions()} )
+	 *	the return value of {@link CController::actions()} ) for purposes of
+	 *	checking dependencies.
 	 * @return array An array of actions appropriate for inclusion in the return
 	 *	value of {@link CController::actions()}.
 	 */
@@ -744,19 +785,7 @@ class UpdaterBehavior extends ResponseBehavior {
 			);
 			$allClasses = array_merge($this->_webUpdaterActions, array('base'=>array('class' => 'application.components.webupdater.WebUpdaterAction')));
 			if($getter){
-				$actionsDir = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', 'webupdater', ''));
-				$refresh = !is_dir($actionsDir);
-				foreach($allClasses as $name => $properties){
-					$actionClassFile = self::classAliasPath($properties['class']);
-					$absPath = Yii::app()->basePath.DIRECTORY_SEPARATOR.$actionClassFile;
-					if(!file_exists($absPath)){
-						$refresh = true;
-						$this->downloadSourceFile("protected/$actionClassFile");
-					}
-				}
-				// Copy action files into the live install
-				if($refresh)
-					$this->restoreBackup('temp');
+				$this->checkDependencies();
 			} else {
 				return $allClasses;
 			}
@@ -1126,13 +1155,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	public function updateUpdater($updaterCheck) {
 
 		// The files directly involved in the update process:
-		$updaterFiles = array(
-			"views/admin/updater.php",
-			"components/UpdaterBehavior.php",
-			"components/FileUtil.php",
-			"components/ResponseBehavior.php",
-			"components/views/requirements.php"
-		);
+		$updaterFiles = $this->updaterFiles;
 		// The web-based updater's action classes, which are defined separately:
 		$updaterActions = $this->getWebUpdaterActions(false);
 		foreach($updaterActions as $name => $properties) {

@@ -45,8 +45,8 @@ $this->actionMenu = $this->formatMenu(array(
     array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 ));
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title"><h2><?php echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php echo $model->name; ?></h2></div>
+<div id="main-column" class="half-width">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'BugReports')); ?>
 
 <?php $this->widget('Attachments',array('associationType'=>'bugReports','associationId'=>$model->id,'startHidden'=>true)); ?>

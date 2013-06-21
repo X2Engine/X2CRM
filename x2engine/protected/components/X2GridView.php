@@ -470,15 +470,23 @@ class X2GridView extends CGridView {
 	*/
  	public function renderItems() {
 		if($this->dataProvider->getItemCount() > 0 || $this->showTableOnEmpty) {
-			echo '<div class="x2grid-header-container"><table class="',$this->itemsCssClass,'">';
+			if($this->enableGvSettings)
+				echo '<div class="x2grid-header-container">';
+				
+			echo '<table class="',$this->itemsCssClass,'">';
 			$this->renderTableHeader();
-			echo '</table></div><div class="x2grid-body-container"><table class="',$this->itemsCssClass,"\">\n";
+			
+			if($this->enableGvSettings)
+				echo '</table></div><div class="x2grid-body-container"><table class="',$this->itemsCssClass,"\">\n";
 			ob_start();
 			$this->renderTableBody();
 			$body = ob_get_clean();
 			$this->renderTableFooter();
 			echo $body; // TFOOT must appear before TBODY according to the standard.
-			echo '</table></div>';
+			echo '</table>';
+			
+			if($this->enableGvSettings)
+				echo '</div>';
 		} else {
 			$this->renderEmptyText();
 		}
@@ -552,7 +560,7 @@ class X2GridView extends CGridView {
 				// // $column->id = null;
 				// $column->headerHtmlOptions['colWidth'] = null;
 			// }
-			echo "</colgroup>\n";
+			// echo "</colgroup>\n";
 		
 		
 			echo "<thead>\n";

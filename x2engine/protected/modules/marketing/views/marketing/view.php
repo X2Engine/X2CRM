@@ -41,6 +41,28 @@ Yii::app()->clientScript->registerCss('campaignContentCss','
 #Campaign_content_field .formInputBox iframe {width:100%;background:#fff;border:0;}
 ');
 
+Yii::app()->clientScript->registerScript('mailer-status-update','
+$("#docIframe").parent().resizable({
+	minHeight:100,
+	handles:"s,se",
+	resize: function(event, ui) {
+		$(this).css("width","");
+		
+		$(\'<div class="ui-resizable-iframeFix" style="background: #fff;"></div>\') 
+			.css({
+				width: this.offsetWidth+"px", height: this.offsetHeight+"px", 
+				position: "absolute", opacity: "0.001", zIndex: 1000 
+			}) 
+			.css($(this).offset()) 
+			.appendTo("body");
+	},
+	stop: function(event, ui) {
+		$(this).css("width","");
+		$("div.ui-resizable-iframeFix").each(function() { this.parentNode.removeChild(this); }); //Remove frame helpers 
+	}
+});
+',CClientScript::POS_READY);
+
 $this->pageTitle = $model->name; 
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $authParams['assignedTo']=$model->createdBy;
@@ -53,17 +75,17 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
     array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
-	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
+	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ),$authParams);
 
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title icon marketing">
 	<h2><?php echo $model->name; ?></h2>
 	<?php if(Yii::app()->user->checkAccess('MarketingUpdate',$authParams)) { ?>
 		<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update/'.$model->id);?>"><span></span></a>
 	<?php } ?>
 </div>
+<div id="main-column" class="half-width">
 <?php
 foreach(Yii::app()->user->getFlashes() as $key => $message) {
 	echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
@@ -76,7 +98,7 @@ $this->renderPartial('application.components.views._detailView',array(
 	'model'=>$model,
 	'modelName'=>'Campaign',
 	'specialFields'=>array(
-		'content'=>'<iframe src="'.$this->createUrl('/marketing/viewContent/'.$model->id).'" id="docIframe" frameBorder="0" height="400" width="100%" style="background:#fff;"></iframe>'
+		'content'=>'<div style="height:350px;"><iframe src="'.$this->createUrl('/marketing/viewContent/'.$model->id).'" id="docIframe" frameBorder="0" style="height:100%;background:#fff;"></iframe></div>'
 	)
 
 )); ?>
@@ -317,14 +339,14 @@ if(isset($contactList)) {
 		'template'=>'{summary}{items}{pager}',
 		'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).')
 			. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
-			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
-			    	'ajax' => array(
-			    		'url' => $this->createUrl('/profile/setResultsPerPage'),
-			    		'complete' => "function(response) { $.fn.yiiGridView.update('contacts-grid', {data: {'id_page': 1}}) }",
-			    		'data' => "js: {results: $(this).val()}",
-			    	),
-			    	'style' => 'margin: 0;',
-			    ))
+				. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+						'ajax' => array(
+							'url' => $this->createUrl('/profile/setResultsPerPage'),
+							'complete' => "function(response) { $.fn.yiiGridView.update('contacts-grid', {data: {'id_page': 1}}) }",
+							'data' => "js: {results: $(this).val()}",
+						),
+						'style' => 'margin: 0;',
+					))
 			. ' </div>'
 			. Yii::t('app', 'results per page.'),
 		'dataProvider'=>$contactList->campaignDataProvider(Profile::getResultsPerPage()),

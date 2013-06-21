@@ -133,7 +133,7 @@ class Services extends X2Model {
 					$hideStatus = array();
 				}
 				foreach($hideStatus as $hide) {
-					$criteria->compare('status', '<>'.$hide);
+					$criteria->compare('t.status', '<>'.$hide);
 				}
 			}
 		}

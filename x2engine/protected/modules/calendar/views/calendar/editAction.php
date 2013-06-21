@@ -90,7 +90,7 @@ $form=$this->beginWidget('CActiveForm', array(
 				'onChange'=>'giveSaveButtonFocus();',
 			),
 		));
-		
+
 		if($isEvent) {
 			echo $form->label($model, 'endDate', array('class'=>'dialog-label'));
 			$defaultDate = Formatter::formatDate($model->completeDate, 'medium');
@@ -116,26 +116,26 @@ $form=$this->beginWidget('CActiveForm', array(
 		}
 
 		?>
-		
+
 
 		<?php echo $form->label($model, 'allDay', array('class'=>'dialog-label')); ?>
 		<?php echo $form->checkBox($model, 'allDay', array('onChange'=>'giveSaveButtonFocus();')); ?>
 	</div>
-	
+
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,'priority', array('class'=>'dialog-label')); ?>
 		<?php echo $form->dropDownList($model,'priority',
 			array(
-				'Low'=>Yii::t('actions','Low'),
-				'Medium'=>Yii::t('actions','Medium'),
-				'High'=>Yii::t('actions','High')
+				'1'=>Yii::t('actions','Low'),
+				'2'=>Yii::t('actions','Medium'),
+				'3'=>Yii::t('actions','High')
 			),
 			array('onChange'=>'giveSaveButtonFocus();'));
 		?>
 		<?php echo $form->label($model, 'color', array('class'=>'dialog-label')); ?>
 		<?php echo $form->dropDownList($model, 'color', Actions::getColors(), array('onChange'=>'giveSaveButtonFocus();')); ?>
 	</div>
-	
+
 	<div class="cell dialog-cell">
 		<?php
 		if($model->assignedTo == null && is_numeric($model->calendarId)) { // assigned to calendar instead of user?
@@ -177,7 +177,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		));
 		/* end x2temp */ ?>
 	</div>
-	
+
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,'visibility', array('class'=>'dialog-label')); ?>
  		<?php
@@ -186,12 +186,12 @@ $form=$this->beginWidget('CActiveForm', array(
  		$visibility[2]='User\'s Groups';
  		/* end x2temp */
  		?>
-		<?php echo $form->dropDownList($model,'visibility',$visibility, array('id'=>'dialog_Actions_visibility', 'onChange'=>'giveSaveButtonFocus();')); ?> 
+		<?php echo $form->dropDownList($model,'visibility',$visibility, array('id'=>'dialog_Actions_visibility', 'onChange'=>'giveSaveButtonFocus();')); ?>
 	</div>
 
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,'reminder', array('class'=>'dialog-label')); ?>
-		<?php echo $form->dropDownList($model,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes')), array('onChange'=>'giveSaveButtonFocus();')); ?> 
+		<?php echo $form->dropDownList($model,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes')), array('onChange'=>'giveSaveButtonFocus();')); ?>
 	</div>
 
 </div>

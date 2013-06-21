@@ -111,7 +111,7 @@ class History extends X2Widget {
             'template' => '<div class="form">'.CHtml::dropDownList('history-selector',$this->historyType,$historyTabs).
             '<span style="margin-top:5px;" class="right">'.CHtml::link('Toggle Text','#',array('id'=>'history-collapse','class'=>'x2-hint','title'=>'Click to toggle showing the full text of History items.'))
             .' | '.CHtml::link('Show All','#',array('id'=>'show-history-link','class'=>'x2-hint','title'=>'Click to increase the page size on the History.'))
-            .' | '.CHtml::link('Relationships','#',array('id'=>'show-relationships-link','class'=>'x2-hint','title'=>'Click to toggle showing actions associated with related records.'))
+            .((!Yii::app()->user->isGuest)?' | '.CHtml::link('Relationships','#',array('id'=>'show-relationships-link','class'=>'x2-hint','title'=>'Click to toggle showing actions associated with related records.')):'')
             .'</span></div> {sorter}{items}{pager}',
         ));
     }

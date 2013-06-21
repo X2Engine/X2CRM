@@ -7,7 +7,6 @@ return array(
 		'emailAddress' => 'admin@test.com',
 		'lastUpdated' => time(),
 		'status' => 1,
-		'backgroundImg' => null,
 	),
 	array(
 		'username' => 'testuser',
@@ -15,7 +14,6 @@ return array(
 		'emailAddress' => 'sales@rep.com',
 		'lastUpdated' => time(),
 		'status' => 1,
-		'backgroundImg' => null,
 		'emailSignature' => 'Hello, testing, I am a signature'
 	),
 );

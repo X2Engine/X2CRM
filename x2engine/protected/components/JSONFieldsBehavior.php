@@ -34,59 +34,64 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.util.*');
-
 /**
- * Base action class for actions associated with the updater utility.
+ * Enables transparent serialization and storage of array objects in database
+ * fields as JSON strings.
  *
- * The updater is kept separate from the rest of the application like this to
- * enable updating it to the latest version pre-emptively without harming any
- * other part of the application with incompatibilities. For this reason,
- * coupling between actions and the controller is intentionally kept very loose
- * and limited to use of ubiquitous methods like {@link CController::render()},
- * with the exception of "error500" (which was in AdminController as of the
- * switch to the new self-contained updater utility).
- *
- * References to the application singleton and controller are thus accompanied
- * by or wrapped in a slew of conditional statements for purposes of backwards
- * compatibility.
- *
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.components
+ * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
-abstract class WebUpdaterAction extends CAction{
+class JSONFieldsBehavior extends TransformedFieldStorageBehavior {
+
+	protected $hasOptions = true;
+
+	public function packAttribute($name){
+		$fields = $this->transformAttributes[$name];
+        $model = $this->getOwner();
+        $attribute = $model->$name;
+
+        $attrKeys = array ();
+        if ($attribute != null) {
+            $attrKeys = array_keys ($attribute);
+        } else {
+            $attribute = array ();
+        }
+
+        // ensure that all fields are contained in attribute keys
+        foreach ($fields as $val) {
+            if (!in_array ($val, $attrKeys)) {
+                $attribute[$val] = null;
+            }
+        }
+
+		return CJSON::encode ($attribute);
+	}
 
 	/**
-	 * Override of CAction's construct; all child classes need to have the
-	 * behavior {@link UpdaterBehavior} attached and enabled.
-	 * 
-	 * @param type $controller
-	 * @param type $id 
+	 *
+	 * @param string $name The attribute to be unpacked
+	 * @return type
 	 */
-	public function __construct($controller, $id){
-		parent::__construct($controller, $id);
-		$this->attachBehaviors(array(
-			'UpdaterBehavior' => array(
-				'class' => 'application.components.UpdaterBehavior',
-				'isConsole' => false,
-			)
-		));
-		// Be certain we can continue safely:
-		$this->checkDependencies();
-	}
+	public function unpackAttribute($name){
+		$fields = $this->transformAttributes[$name];
+        $model = $this->getOwner();
+        $attribute = CJSON::decode ($model->$name);
 
-    /**
-	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
-	 * in a user-friendly way and reloads the page.
-	 */
-	public function runUpdateUpdater($updaterCheck, $redirect){
-		try{
-			if(count($classes = $this->updateUpdater($updaterCheck)))
-				$this->controller->missingClassesException($classes);
-			$this->controller->redirect($redirect);
-		}catch(Exception $e){
-			$this->controller->error500($e->getMessage());
-		}
+        $attrKeys = array ();
+        if ($attribute != null) {
+            $attrKeys = array_keys ($attribute);
+        } else {
+            $attribute = array ();
+        }
+
+        // ensure that all fields are contained in attribute keys
+        foreach ($fields as $val) {
+            if (!in_array ($val, $attrKeys)) {
+                $attribute[$val] = null;
+            }
+        }
+		return $attribute;
 	}
 }
+
 ?>

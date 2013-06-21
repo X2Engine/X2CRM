@@ -526,6 +526,10 @@ $.widget("x2.gvSettings", {
 		this._setupGridviewDragging(self);
 		this._compareGridviewSettings(self);
 		
+		this.element.find('.yiiPager').on('click','a',function() {
+			$('html,body').animate({scrollTop:0},500,'swing');
+		});
+		
 		// var headerHeight = this.tables.eq(0).height();
 		// this.tables.eq(0).parent().css('margin-right',this.getScrollbarWidth()+'px');
 		// this.tables.eq(1).parent().css({
@@ -633,7 +637,6 @@ $.widget("x2.gvSettings", {
 	},
 
 	_saveColumnSelection: function(object,self) {
-		var o = self.options;
 		// $(document).unbind('click.columnSelector');
 		var data = $(object).closest('form').serialize()+'&viewName='+self.options.viewName;
 		if(data !== null && data != '') {

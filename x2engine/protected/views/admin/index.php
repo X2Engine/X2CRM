@@ -103,7 +103,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	</div><br>
 	<?php if(Yii::app()->params->edition==='pro'): ?>
 	<div class="row">
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Automation Flows'),array('/studio/flowIndex')); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Flow'),array('/studio/flowIndex')); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?></div>
 	</div>
 	<?php endif; ?>
 </div>

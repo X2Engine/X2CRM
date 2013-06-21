@@ -45,8 +45,7 @@ class SiteController extends x2base {
     // Declares class-based actions.
     //public $layout = '//layouts/main';
 
-	public $modelClass = 'Admin';
-
+    public $modelClass = 'Admin';
     public $portlets = array();
 
     public function filters(){
@@ -72,11 +71,13 @@ class SiteController extends x2base {
                     'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
                     'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
                     'whatsNew', 'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
-                    'loadPosts', 'addComment', 'flagPost', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters', 'getTip', 'share', 'activityFeedOrder', 'likePost', 'loadLikeHistory'),
+                    'loadPosts', 'addComment', 'flagPost', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters',
+                    'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
+                    'dynamicDropdown'),
                 'users' => array('@'),
             ),
             array('allow',
-                'actions' => array('motd', 'stickyPost'),
+                'actions' => array('motd'),
                 'users' => array('admin'),
             ),
             array('deny',
@@ -604,19 +605,68 @@ class SiteController extends x2base {
     }
 
     public function actionStickyPost($id){
-        $event = X2Model::model('Events')->findByPk($id);
-        if(isset($event)){
-            $event->sticky = !$event->sticky;
-            $event->update(array('sticky'));
+        if(Yii::app()->user->checkAccess('AdminIndex')){
+            $event = X2Model::model('Events')->findByPk($id);
+            if(isset($event)){
+                $event->sticky = !$event->sticky;
+                $event->update(array('sticky'));
+            }
+            echo (date("M j", time()) == date("M j", $event->timestamp) ? Yii::t('app', "Today") : Yii::app()->locale->dateFormatter->formatDateTime($event->timestamp, 'long', null));
         }
-        echo (date("M j", time()) == date("M j", $event->timestamp) ? Yii::t('app', "Today") : Yii::app()->locale->dateFormatter->formatDateTime($event->timestamp, 'long', null));
     }
 
     public function actionActivityFeedOrder(){
+        $profile=Yii::app()->params->profile;
+        if(isset($profile)){
+            $profile->activityFeedOrder=!$profile->activityFeedOrder;
+            $profile->update(array('activityFeedOrder'));
+        }
+    }
+
+    public function actionActivityFeedWidgetBgColor($color){
         $profile = Yii::app()->params->profile;
         if(isset($profile)){
-            $profile->activityFeedOrder = !$profile->activityFeedOrder;
-            $profile->update(array('activityFeedOrder'));
+            $theme = $profile->theme;
+            $theme['activityFeedWidgetBgColor'] = $color;
+            $profile->theme = $theme;
+            $profile->update(array('theme'));
+        }
+    }
+    // Outputs white or black depending on input color
+    // @param $colorString a string representing a hex number
+    // @param $testType standardText or linkText
+    function convertTextColor($colorString, $textType){
+        // Split the string to red, green and blue components
+        // Convert hex strings into ints
+        $red   = intval(substr($colorString, 0, 2), 16);
+        $green = intval(substr($colorString, 2, 2), 16);
+        $blue  = intval(substr($colorString, 4, 2), 16);
+        if($textType == 'standardText') {
+            return (((($red*299)+($green*587)+($blue*114))/1000) >= 128) ? 'black' : 'white';
+        }
+        else if ($textType == 'linkText') {
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+              return '#fff000';  // Yellow links
+            }
+            else return '#0645AD'; // Blue link color
+        }
+        else if ($textType == 'visitedLinkText') {
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+                return '#ede100';  // Yellow links
+            }
+            else return '#0B0080'; // Blue link color
+        }
+        else if ($textType == 'activeLinkText') {
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+                return '#fff000';  // Yellow links
+            }
+            else return '#0645AD'; // Blue link color
+        }
+        else if ($textType == 'hoverLinkText') {
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+             return '#fff761';  // Yellow links
+            }
+            else return '#3366BB'; // Blue link color
         }
     }
 
@@ -644,6 +694,37 @@ class SiteController extends x2base {
                 ->order('rand()')
                 ->queryRow();
         echo json_encode($tip);
+    }
+
+    public function actionDynamicDropdown($val, $dropdownId, $field = false, $module = null){
+        $dropdown = X2Model::model('Dropdowns')->findByAttributes(array('parent' => $dropdownId, 'parentVal' => $val));
+        if(isset($dropdown)){
+            if(!$field){
+                echo CHtml::tag('option', array('value' => ''), CHtml::encode('-'), true);
+                $data = json_decode($dropdown->options, true);
+                foreach($data as $value => $name){
+                    echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+                }
+            }else{
+                $fieldRecord = X2Model::model('Fields')->findByAttributes(array('modelName' => $module, 'type' => 'dependentDropdown', 'linkType' => $dropdownId));
+                if(isset($fieldRecord)){ // Look up dependentDropdown field with a link to the master dropdown.
+                    $htmlStr = CHtml::tag('option', array('value' => ''), CHtml::encode('Select an option'), true);
+                    $data = json_decode($dropdown->options, true);
+                    foreach($data as $value => $name){ // Build an HTML string of the dropdown response.
+                        $htmlStr .= CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+                    }
+                    echo CJSON::encode(array($fieldRecord->fieldName, $htmlStr)); // Echo back the field name to update + the dropdown HTMl.
+                }
+            }
+        }else{
+            if(!$field){
+                echo CHtml::tag('option', array('value' => ''), '-', true);
+            }else{
+                $fieldRecord = X2Model::model('Fields')->findByAttributes(array('modelName' => $module, 'type' => 'dependentDropdown', 'linkType' => $dropdownId));
+                if(isset($fieldRecord))
+                    echo CJSON::encode(array($fieldRecord->fieldName,CHtml::tag('option', array('value' => ''), '-', true)));
+            }
+        }
     }
 
     public function actionToggleFeedControls(){
@@ -1082,6 +1163,9 @@ class SiteController extends x2base {
                     $name = $newName;
                 }
                 $username = Yii::app()->user->name;
+                //echo ($username);
+                //echo ($name);
+                //Yii::app ()->end ();
                 if(FileUtil::ccopy($temp->getTempName(), "uploads/media/$username/$name")){
                     if(isset($_POST['associationId']))
                         $model->associationId = $_POST['associationId'];
@@ -1118,18 +1202,18 @@ class SiteController extends x2base {
                     }else if($model->associationType == 'docs'){
                         $this->redirect(array('docs/index'));
                     }else if($model->associationType == 'loginSound' || $model->associationType == 'notificationSound'){
-                        $profile = Yii::app()->params->profile;
+                        /*$profile = Yii::app()->params->profile;
                         if($model->associationType == 'loginSound'){
                             $profile->loginSound = $name;
                         }else{
                             $profile->notificationSound = $name;
                         }
-                        $profile->update(array($model->associationType));
+                        $profile->update(array($model->associationType));*/
                         $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
                     }elseif($model->associationType == 'bg' || $model->associationType == 'bg-private'){
-                        $profile = Yii::app()->params->profile;
+                        /*$profile = Yii::app()->params->profile;
                         $profile->backgroundImg = $name;
-                        $profile->update(array('backgroundImg'));
+                        $profile->update(array('backgroundImg'));*/
                         $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
                     }else{
                         $note = new Actions;
@@ -1609,8 +1693,8 @@ class SiteController extends x2base {
                 }
 
                 if($model->validate() && $model->login()){  // user successfully logged in
-                    $adminUser=X2Model::model('User')->findByPk(1);
-                    if(isset($adminUser) && $adminUser->username==Yii::app()->user->getName())
+                    $adminUser = X2Model::model('User')->findByPk(1);
+                    if(isset($adminUser) && $adminUser->username == Yii::app()->user->getName())
                         $this->checkUpdates();   // check for updates if admin
                     else
                         Yii::app()->session['versionCheck'] = true; // ...or don't

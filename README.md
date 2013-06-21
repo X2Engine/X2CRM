@@ -1,10 +1,9 @@
-# X2CRM 3.1 #
-6/18/2013
+# X2CRM 3.1.1 #
+6/21/2013
 ## Changes ##
 * Robust new resizable grid view
 * Enhancements to application UI
-	* More compact layout
-	* Better controls for user color schemes
+* Better controls for user color schemes
 * Yii Framework updated to 1.1.13
 * New API action "tags" allows programmatic manipulation of tags on records
   via the API
@@ -12,6 +11,10 @@
 * The inline email form can now be used while viewing account records
 * Better support for foreign currencies in quotes & invoices
 * More bug fixes
+
+## New in 3.1.1 ##
+* Fixed bug creating new windows when notifications are received
+* Reverted some changes to UI
 
 ## Release Notes ##
 ### 3.0 ###
@@ -63,7 +66,7 @@
 
 
 # Introduction #
-Welcome to  X2CRM v3.1!
+Welcome to  X2CRM v3.1.1!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

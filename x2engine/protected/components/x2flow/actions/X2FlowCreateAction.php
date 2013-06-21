@@ -36,13 +36,13 @@
 
 /**
  * X2FlowAction that creates a new action
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowCreateAction extends X2FlowAction {
 	public $title = 'Create Action';
 	public $info = 'Creates a new action for the specified user.';
-	
+
 	public function paramRules() {
 		$visOptions = array(
 			1 => Yii::t('actions','Public'),
@@ -50,13 +50,13 @@ class X2FlowCreateAction extends X2FlowAction {
 			2 => Yii::t('actions','User\'s Groups')
 		);
 		$priorityOptions = array(
-			'Low' => Yii::t('actions','Low'),
-			'Medium' => Yii::t('actions','Medium'),
-			'High' => Yii::t('actions','High')
+			'1' => Yii::t('actions','Low'),
+			'2' => Yii::t('actions','Medium'),
+			'3' => Yii::t('actions','High')
 		);
 		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
 		$assignmentOptions = X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
-		
+
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'options' => array(
@@ -69,30 +69,30 @@ class X2FlowCreateAction extends X2FlowAction {
 				// array('name'=>'reminder','label'=>Yii::t('actions','Remind Me'),'type'=>'checkbox','default'=>false),
 			));
 	}
-	
+
 	public function execute(&$params) {
 		$options = $this->config['options'];
-		
+
 		$action = new Actions;
-		
+
 		$action->subject = $this->parseOption('subject',$params);
 		$action->actionDescription = $this->parseOption('description',$params);
 		$action->priority = $this->parseOption('priority',$params);
 		$action->visibility = $this->parseOption('visibility',$params);
 		// $action->
-		
+
 		if(isset($params['model']))
 			$action->assignedTo = $this->parseOption('assignedTo',$params);
-		
+
 		// replaceVariables($str, &$model, $vars = array(), $encode = false)
-		
+
 		// if(isset($this->config['attributes']))
 			// $this->setModelAttributes($action,$this->config['attributes'],$params);
-		
+
 		return $action->save();
-		
-		
-		
+
+
+
 		// if($this->parseOption('reminder',$params)) {
 			// $notif=new Notification;
 			// $notif->modelType='Actions';

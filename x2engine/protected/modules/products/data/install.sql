@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS x2_products;
 /*&*/
 CREATE TABLE x2_products(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name					VARCHAR(100)	NOT NULL,
+	name					VARCHAR(255)	NOT NULL,
 	type					VARCHAR(100),
 	price					DECIMAL(10,2),
 	inventory				INT,
@@ -10,7 +10,7 @@ CREATE TABLE x2_products(
 	createDate				BIGINT,
 	lastUpdated				BIGINT,
 	lastActivity			BIGINT,
-	updatedBy				VARCHAR(20),
+	updatedBy				VARCHAR(50),
 	status					VARCHAR(20),
 	currency				VARCHAR(40),
 	adjustment				DECIMAL(10,2)

@@ -239,19 +239,6 @@ if (YII_DEBUG && $debug) {
 
 <script>
 
-  // translate ISO 4217 currency into i18n
-//  var currencyTable = {
-//    'USD': 'en-US',
-//    'EUR': 'hsb-DE',
-//    'GBP': 'en-GB',
-//    'CAD': 'en-CA',
-//    'JPY': 'ja-JP',
-//    'CNY': 'zh-CN',
-//    'CHF': 'de-CH',
-//    'INR': 'hi-IN',
-//    'BRL': 'pt-BR'
-//  };
-
   var debug = 0;
   
   function consoleLog(obj) {

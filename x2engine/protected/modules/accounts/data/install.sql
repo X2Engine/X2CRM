@@ -2,9 +2,9 @@ DROP TABLE IF EXISTS `x2_accounts`;
 /*&*/
 CREATE TABLE `x2_accounts` (
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name				VARCHAR(40)		NOT NULL,
-	website				VARCHAR(40),
-	type				VARCHAR(60),
+	name				VARCHAR(255)	NOT NULL,
+	website				VARCHAR(255),
+	type				VARCHAR(255),
     visibility          TINYINT         DEFAULT 1,
 	annualRevenue		DECIMAL(10,2),
 	phone				VARCHAR(40),
@@ -22,7 +22,7 @@ CREATE TABLE `x2_accounts` (
 	description			TEXT,
 	lastUpdated			BIGINT,
 	lastActivity		BIGINT,
-	updatedBy			VARCHAR(20)
+	updatedBy			VARCHAR(50)
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`

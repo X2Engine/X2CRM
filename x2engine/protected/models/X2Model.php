@@ -847,13 +847,39 @@ abstract class X2Model extends CActiveRecord {
 								), true);
 			case 'dropdown':
 				$dropdowns = Dropdowns::getItems($field->linkType);
-				return CHtml::activeDropDownList($this, $field->fieldName, $dropdowns, array_merge(
+                $dependencyCount = X2Model::model('Dropdowns')->countByAttributes(array('parent'=>$field->linkType));
+                $fieldDependencyCount = X2Model::model('Fields')->countByAttributes(array('modelName'=>$field->modelName,'type'=>'dependentDropdown','linkType'=>$field->linkType));
+				if($dependencyCount > 0 && $fieldDependencyCount > 0){
+                    $ajaxArray=array('ajax' => array(
+                                        'type' => 'GET', //request type
+                                        'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
+                                        'data' => 'js:{"val":$(this).val(),"dropdownId":"'.$field->linkType.'", "field":true, "module":"'.$field->modelName.'"}',
+                                        'success' => 'function(data){
+                                            if(data){
+                                                data=JSON.parse(data);
+                                                if(data[0] && data[1]){
+                                                    $("#'.$field->modelName.'_"+data[0]).html(data[1]);
+                                                }
+                                            }
+                                        }',
+                                    ));
+                }else{
+                    $ajaxArray=array();
+                }
+                return CHtml::activeDropDownList($this, $field->fieldName, $dropdowns, array_merge(
+										array(
+                                            'title' => $field->attributeLabel,
+                                            'empty' => Yii::t('app', "Select an option"),
+										),
+                                        $htmlOptions,
+                                        $ajaxArray
+								));
+            case 'dependentDropdown':
+                return CHtml::activeDropDownList($this, $field->fieldName, array(''=>'-'), array_merge(
 										array(
 									'title' => $field->attributeLabel,
-									'empty' => Yii::t('app', "Select an option"),
 										), $htmlOptions
 								));
-
 			case 'parentCase':
 				$caseIds = Yii::app()->db->createCommand()->select('id')->from('x2_services')->queryAll();
 				$cases = array();

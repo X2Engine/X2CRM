@@ -39,6 +39,7 @@ Yii::import('application.components.webupdater.*');
 /**
  * Description of X2CRMUpdateAction
  *
+ * @package X2CRM.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class X2CRMUpdateAction extends WebUpdaterAction {

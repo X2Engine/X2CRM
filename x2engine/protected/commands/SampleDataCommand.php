@@ -35,6 +35,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.*');
+
 /**
  * Sample/dummy data exporter.
  * 

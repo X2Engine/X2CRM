@@ -545,7 +545,11 @@ class InlineEmail extends CFormModel {
      */
     public function getSignature(){
         if(!isset($this->_signature)){
-            $this->_signature = $this->getUserProfile()->getSignature(true);
+            $profile = $this->getUserProfile();
+            if(!empty($profile))
+                $this->_signature = $this->getUserProfile()->getSignature(true);
+            else
+                $this->_signature = null;
         }
         return $this->_signature;
     }
@@ -905,21 +909,21 @@ class InlineEmail extends CFormModel {
             $action->visibility = isset($model->visibility) ? $model->visibility : 1;
             $action->assignedTo = $this->userProfile->username;
             if($this->modelName == 'Quote'){
-                // Is an email being sent to the primary
-                // contact on the quote? If so, the user is "issuing" the quote or
-                // invoice, and it should have a special type.
-                if(!empty($this->targetModel->contact)){
-                    if(array_key_exists($this->targetModel->contact->email, $recipientContacts)){
-                        $action->associationType = get_class($model);
-                        $action->associationId = $model->id;
-                        $action->type .= '_'.($model->type == 'invoice' ? 'invoice' : 'quote');
-                        $action->visibility = $model->visibility;
-                        $action->assignedTo = $model->assignedTo;
-                    }
-                }
-            }
+				// Is an email being sent to the primary
+				// contact on the quote? If so, the user is "issuing" the quote or
+				// invoice, and it should have a special type.
+				if(!empty($this->targetModel->contact)){
+					if(array_key_exists($this->targetModel->contact->email, $recipientContacts)){
+						$action->associationType = get_class($model);
+						$action->associationId = $model->id;
+						$action->type .= '_'.($model->type == 'invoice' ? 'invoice' : 'quote');
+						$action->visibility = 1;
+						$action->assignedTo = $model->assignedTo;
+					}
+				}
+			}
 
-            if($action->save()){
+            if($makeEvent && $action->save()){
                 $this->trackEmail($action->id);
                 // Create a corresponding event record. Note that special cases
                 // may have to be written in the method Events->getText to
@@ -1009,7 +1013,6 @@ class InlineEmail extends CFormModel {
         // over. If the target model is a contact, and the one recipient is the
         // contact itself, the action will be as declared before the above loop,
         // and it will thus still be properly associated with that contact.
-
     }
 
     /**

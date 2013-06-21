@@ -34,59 +34,49 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.util.*');
+Yii::import('application.modules.contacts.models.*');
 
 /**
- * Base action class for actions associated with the updater utility.
+ * Tests the field transforming behavior using mocks & stubs in PHPUnit
  *
- * The updater is kept separate from the rest of the application like this to
- * enable updating it to the latest version pre-emptively without harming any
- * other part of the application with incompatibilities. For this reason,
- * coupling between actions and the controller is intentionally kept very loose
- * and limited to use of ubiquitous methods like {@link CController::render()},
- * with the exception of "error500" (which was in AdminController as of the
- * switch to the new self-contained updater utility).
- *
- * References to the application singleton and controller are thus accompanied
- * by or wrapped in a slew of conditional statements for purposes of backwards
- * compatibility.
- *
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.tests.unit.components
+ * @author Demitri Morgan
  */
-abstract class WebUpdaterAction extends CAction{
+class TransformedFieldStorageBehaviorTest extends X2DbTestCase {
 
-	/**
-	 * Override of CAction's construct; all child classes need to have the
-	 * behavior {@link UpdaterBehavior} attached and enabled.
-	 * 
-	 * @param type $controller
-	 * @param type $id 
-	 */
-	public function __construct($controller, $id){
-		parent::__construct($controller, $id);
-		$this->attachBehaviors(array(
-			'UpdaterBehavior' => array(
-				'class' => 'application.components.UpdaterBehavior',
-				'isConsole' => false,
-			)
-		));
-		// Be certain we can continue safely:
-		$this->checkDependencies();
-	}
+	public $fixtures = array('contacts'=>'Contacts');
 
-    /**
-	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
-	 * in a user-friendly way and reloads the page.
-	 */
-	public function runUpdateUpdater($updaterCheck, $redirect){
-		try{
-			if(count($classes = $this->updateUpdater($updaterCheck)))
-				$this->controller->missingClassesException($classes);
-			$this->controller->redirect($redirect);
-		}catch(Exception $e){
-			$this->controller->error500($e->getMessage());
-		}
+	public function testPackUnpack() {
+		// We'll be working with a simple x10, x 1/10 pack/unpack operation.
+		$valueMap = array(
+			array('name',10),
+			array('email',20),
+		);
+		$invValueMap = array(
+			array('name',1),
+			array('email',2),
+		);
+		$tfsb = $this->getMockForAbstractClass('TransformedFieldStorageBehavior');
+		$tfsb->expects($this->any())->method('packAttribute')->will($this->returnValueMap($valueMap));
+		$tfsb->expects($this->any())->method('unpackAttribute')->will($this->returnValueMap($invValueMap));
+		$tfsb->transformAttributes = array('name','email');
+		$this->assertEquals($tfsb->transformAttributes,$tfsb->transformAttributeNames, 'Failed asserting transformAttributeNames was set properly.');
+		$contact = $this->contacts('testUser');
+		$contact->name = 1;
+		$contact->email = 2;
+		$tfsb->attach($contact);
+		// First test by calling manually...
+		$tfsb->packAll();
+		$this->assertEquals(10,$contact->name);
+		$this->assertEquals(20,$contact->email);
+		$tfsb->unpackAll();
+		$this->assertEquals(1,$contact->name);
+		$this->assertEquals(2,$contact->email);
+		// Test that saving doesn't impact its value as seen from within the code (transparency):
+		$contact->save();
+		$this->assertEquals(1,$contact->name);
+		$this->assertEquals(2,$contact->email);
 	}
 }
+
 ?>

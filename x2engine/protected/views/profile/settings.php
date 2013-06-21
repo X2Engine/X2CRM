@@ -51,6 +51,7 @@ echo $this->renderPartial('_settings', array(
     'model' => $model,
     'languages' => $languages,
     'times' => $times,
+    'myThemes' => $myThemes,
     'myBackgrounds' => $myBackgrounds,
     'myLoginSounds' => $myLoginSounds,
     'myNotificationSounds' => $myNotificationSounds,

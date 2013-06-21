@@ -111,7 +111,6 @@ $this->actionMenu[] = array('label'=>($model->type == 'invoice'? Yii::t('quotes'
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -131,6 +130,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<a class="x2-button right" href="convertToInvoice/<?php echo $model->id;?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
 <?php } ?>
 </div>
+<div id="main-column" class="half-width">
 <?php
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'quotes-form',

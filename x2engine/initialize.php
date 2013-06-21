@@ -646,7 +646,8 @@ function installStage($stage) {
 		respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
 
-include('protected/components/FileUtil.php');
+require_once('protected/components/util/FileUtil.php');
+require_once('protected/components/util/EncryptUtil.php');
 
 
 //////////////////////////////////

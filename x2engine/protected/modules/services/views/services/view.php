@@ -55,7 +55,6 @@ $(function() {
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
-<div id="main-column" class="half-width">
 <div class="page-title icon services">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -65,6 +64,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<a class="x2-button icon email right" href="#" onclick="toggleEmailForm(); return false;" <?php if(empty($model->contactId)){echo ' style="display:none"';}?>><span></span></a>
 	<?php //} ?>
 </div>
+<div id="main-column" class="half-width">
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'services-form',
 	'enableAjaxValidation'=>false,

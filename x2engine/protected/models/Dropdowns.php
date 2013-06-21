@@ -136,4 +136,13 @@ class Dropdowns extends CActiveRecord {
 			return $index;
 		}
 	}
+
+    public function getDropdownIndex($id,$key){
+		$arr=Dropdowns::getItems($id);
+		if(array_search($key,$arr)!==false){
+			return array_search($key,$arr);
+		}else{
+			return $key;
+		}
+	}
 }

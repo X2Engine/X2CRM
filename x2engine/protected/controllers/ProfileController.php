@@ -58,7 +58,8 @@ class ProfileController extends x2base {
                 'actions' => array(
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 'profiles',
                     'settings', 'addComment', 'setSound', 'deleteSound', 'setBackground', 'deleteBackground',
-                    'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost'),
+                    'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost',
+                    'loadTheme', 'createTheme'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -171,11 +172,47 @@ class ProfileController extends x2base {
     }
 
     /**
+     */
+    public function actionLoadTheme ($themeName) {
+        $theme = Yii::app()->db->createCommand()
+            ->select('description')
+            ->from('x2_media')
+            ->where('fileName=:fileName and associationType="theme"',array(':fileName'=>$themeName))
+            ->queryScalar();
+        echo $theme;
+    }
+
+    /**
+     */
+    public function actionCreateTheme ($themeName, $themeAttributes) {
+        $theme = new Media;
+        $theme->fileName = $themeName;
+        $theme->associationType = "theme";
+        $theme->uploadedBy = Yii::app()->user->name;
+        $theme->description = $themeAttributes;
+        $theme->save ();
+    }
+
+    /**
      * Display/set user profile settings.
      */
     public function actionSettings(){
         $model = $this->loadModel(Yii::app()->user->getId());
 
+        if (isset($_POST['Profile']) || isset($_POST['preferences'])) {
+            if (isset($_POST['Profile'])) {
+                $model->attributes = $_POST['Profile'];
+    
+                if ($model->save()){
+                    //$this->redirect(array('view','id'=>$model->id));
+                }
+            }
+            if (isset($_POST['preferences'])) {
+                $model->theme = $_POST['preferences'];
+                $model->save ();
+            }
+            $this->refresh();
+        }
 
         $modules = Modules::model()->findAllByAttributes(array('visible' => 1));
         $menuItems = array();
@@ -188,14 +225,6 @@ class ProfileController extends x2base {
         }
         $menuItems = array('' => Yii::t('app', "What's New")) + $menuItems;
 
-        if(isset($_POST['Profile'])){
-            $model->attributes = $_POST['Profile'];
-
-            if($model->save()){
-                //$this->redirect(array('view','id'=>$model->id));
-            }
-            $this->refresh();
-        }
         $languageDirs = scandir('./protected/messages'); // scan for installed language folders
 
         $languages = array('en' => 'English');
@@ -207,6 +236,12 @@ class ProfileController extends x2base {
         }
         $times = $this->getTimeZones();
 
+        $myThemeProvider = new CActiveDataProvider('Media', array(
+                    'criteria' => array(
+                        'condition' => "(associationType = 'theme-private' AND associationId = '".Yii::app()->user->getId()."') OR associationType = 'theme'",
+                        'order' => 'createDate DESC'
+                    ),
+                ));
         $myBackgroundProvider = new CActiveDataProvider('Media', array(
                     'criteria' => array(
                         'condition' => "(associationType = 'bg-private' AND associationId = '".Yii::app()->user->getId()."') OR associationType = 'bg'",
@@ -241,6 +276,7 @@ class ProfileController extends x2base {
             'model' => $model,
             'languages' => $languages,
             'times' => $times,
+            'myThemes' => $myThemeProvider,
             'myBackgrounds' => $myBackgroundProvider,
             'myLoginSounds' => $myLoginSoundProvider,
             'myNotificationSounds' => $myNotificationSoundProvider,
@@ -349,7 +385,7 @@ class ProfileController extends x2base {
     public function actionSetBackground(){
         if(isset($_POST['name'])){
 
-            $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+            $profile = X2Model::model('Profile')->findByPk(Yii::app()->user->getId());
 
             $profile->backgroundImg = $_POST['name'];
 

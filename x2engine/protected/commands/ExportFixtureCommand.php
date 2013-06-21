@@ -35,6 +35,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.*');
+
 /**
  * Exports a table in the live database (or a range of records in it) to a fixture/init script
  *

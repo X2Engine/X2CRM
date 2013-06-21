@@ -106,7 +106,6 @@ function subscribe(link) {
 $layout = Yii::app()->params->profile->getLayout();
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
-<div id="main-column">
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
 	<div class="page-title-fixed-inner">
@@ -123,7 +122,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 		</div>
 	</div>
 </div>
-
+<div id="main-column">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts')); ?>
 
 <?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'contacts')); ?>

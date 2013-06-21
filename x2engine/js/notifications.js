@@ -464,7 +464,7 @@ $(function() {
 		// loop through the notifications backwards (they're ordered by ID descending, so start with the oldest)
 		for (var i = notifData.length - 1; i >= 0; --i) {
 			var timeNow = new Date();
-			if(notifData[i].type='voip_call' && timeNow.getTime()/1000-notifData[i].timestamp < 20 && windowId==masterId) { // Screen pop only if less than 20 seconds ago and master window
+			if(notifData[i].type=='voip_call' && timeNow.getTime()/1000-notifData[i].timestamp < 20 && windowId==masterId) { // Screen pop only if less than 20 seconds ago and master window
 				window.open(yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId);
 			}
 			var notif = $(document.createElement('div'))
@@ -544,9 +544,14 @@ $(function() {
 		// var scrollToBottom = $('#chat-box').prop('scrollTop') >= $('#chat-box').prop('scrollHeight') - $('#chat-box').height();
 
 		var feedOrder = yii.profile.activityFeedOrder;
-		scrollToBottom = !feedOrder;
-		
-		
+        if(feedOrder==0){
+            scrollToBottom=true;
+        }else{
+            scrollToBottom=false;
+        }
+		//scrollToBottom = !feedOrder;
+
+
 		for (var i in messages) {
 			//console.debug(messages[i][0]);
 			if (messages[i].length != 5)	// skip messages we already have
@@ -560,9 +565,9 @@ $(function() {
 			var msgHtml = '<div class="message">';
 			msgHtml += messages[i][3] + ' <span class="comment-age">(' + messages[i][4] + ')</span>' +
 					'</div>';
-			
+
 			//if top is true prepend to the list printing out in reverse order
-			if(feedOrder)
+			if(feedOrder==1)
 				$('#chat-box').prepend(msgHtml);
 			else
 				$('#chat-box').append(msgHtml);	// add new messages to chat window

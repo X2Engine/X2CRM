@@ -131,9 +131,11 @@ $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
 	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
 
+$fullscreen = Yii::app()->user->isGuest || Yii::app()->session['fullscreen'];
+
 $cs->registerScript('fullscreenToggle', '
 window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
-window.fullscreen = '.(Yii::app()->session['fullscreen'] ? 'true' : 'false').';
+window.fullscreen = '.($fullscreen ? 'true' : 'false').';
 ', CClientScript::POS_HEAD);
 
 $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
@@ -144,7 +146,13 @@ if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
 
 $backgroundImg = '';
 $defaultOpacity = 1;
-$themeCss = '';
+
+$preferences = null;
+$profile = CActiveRecord::model ('Profile')->findByPk (Yii::app()->user->id);
+if ($profile != null) {
+    $preferences = $profile->theme;
+} 
+    
 
 $logoMissing = false;
 $checkFiles = array(
@@ -161,47 +169,41 @@ if($logoMissing)
     $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
-// if(empty($profile->backgroundImg))
+// if(!$preferences['backgroundImg'])
 // $backgroundImg = CHtml::image('','',array('id'=>'bg','style'=>'display:none;'));
 // else
-// $backgroundImg = CHtml::image($baseUrl.'/uploads/'.$profile->backgroundImg,'',array('id'=>'bg'));
+// $backgroundImg = CHtml::image($baseUrl.'/uploads/'.$preferences['backgroundImg'],'',array('id'=>'bg'));
 
 
 $themeCss = '';
-if(!empty($profile->menuTextColor))
-    $themeCss .= 'ul.main-menu > li > a, ul.main-menu > li > span {color:#'.$profile->menuTextColor.";}\n";
-// if(!empty($profile->pageHeaderBgColor))
-    // $themeCss .= 'div.page-title {background-color:#'.$profile->pageHeaderBgColor.";}\n";
-if(!empty($profile->pageHeaderTextColor))
-    $themeCss .= 'div.page-title, div.page-title h2 {color:#'.$profile->pageHeaderTextColor.";}\n";
+if ($preferences != null && $preferences['menuTextColor'])
+    $themeCss .= 'ul.main-menu > li > a, ul.main-menu > li > span {color:#'.$preferences['menuTextColor'].";}\n";
+// if ($preferences != null && $preferences['pageHeaderBgColor'])
+    // $themeCss .= 'div.page-title {background-color:#'.$preferences['pageHeaderBgColor'].";}\n";
+if ($preferences != null && $preferences['pageHeaderTextColor'])
+    $themeCss .= 'div.page-title, div.page-title h2 {color:#'.$preferences['pageHeaderTextColor'].";}\n";
 // calculate a slight gradient for menu bar color
-if(!empty($profile->menuBgColor)) {
-	$rgb = X2Color::hex2rgb($profile->menuBgColor);
+if ($preferences != null && $preferences['menuBgColor']) {
+	$rgb = X2Color::hex2rgb($preferences['menuBgColor']);
 	$darkerBgColor = '#'.X2Color::rgb2hex(floor($rgb[0]*0.85),floor($rgb[1]*0.85),floor($rgb[2]*0.85));
 	$themeCss .= '#header {';
-	$themeCss .= X2Color::gradientCss('#'.$profile->menuBgColor,$darkerBgColor)."}\n";
+	$themeCss .= X2Color::gradientCss('#'.$preferences['menuBgColor'],$darkerBgColor)."}\n";
 	// $themeCss .= '.main-menu > li:hover, .main-menu > li.active {background:rgba('.floor($rgb[0]*0.4).','.floor($rgb[1]*0.4).','.floor($rgb[2]*0.4).',0.5);}';
 }
 // calculate a slight gradient for menu bar color
-if(!empty($profile->pageHeaderBgColor)) {
-	$rgb = X2Color::hex2rgb($profile->pageHeaderBgColor);
+if ($preferences != null && $preferences['pageHeaderBgColor']) {
+	$rgb = X2Color::hex2rgb($preferences['pageHeaderBgColor']);
 	$darkerBgColor = '#'.X2Color::rgb2hex(floor($rgb[0]*0.85),floor($rgb[1]*0.85),floor($rgb[2]*0.85));
 	$themeCss .= 'div.page-title {';
-	$themeCss .= X2Color::gradientCss('#'.$profile->pageHeaderBgColor,$darkerBgColor).'}';
+	$themeCss .= X2Color::gradientCss('#'.$preferences['pageHeaderBgColor'],$darkerBgColor).'}';
 	// $themeCss .= '.main-menu > li:hover, .main-menu > li.active {background:rgba('.floor($rgb[0]*0.4).','.floor($rgb[1]*0.4).','.floor($rgb[2]*0.4).',0.5);}';
 }
 
 
-if(!empty($profile->activityFeedWidgetBgColor)){
+if ($preferences != null && $preferences['activityFeedWidgetBgColor']){
 	$themeCss .= '#chat-box {
-		background:#'.$profile->activityFeedWidgetBgColor.';
-		color:'.convertTextColor($profile->activityFeedWidgetBgColor.'', 'standardText').';
-	 }
-	 #chat-box a:link     { color: '.convertTextColor($profile->activityFeedWidgetBgColor.'', 'linkText').'; }
-	 #chat-box a:visited  { color: '.convertTextColor($profile->activityFeedWidgetBgColor.'', 'visitedLinkText').'; }
-	 #chat-box a:active   { color: '.convertTextColor($profile->activityFeedWidgetBgColor.'', 'activeLinkText').'; }
-	 #chat-box a:hover    { color: '.convertTextColor($profile->activityFeedWidgetBgColor.'', 'hoverLinkText').'; }
-	 ';
+		background-color:#'.$preferences['activityFeedWidgetBgColor'].';
+	 }';
 }
 
 // Outputs white or black depending on input color
@@ -303,7 +305,7 @@ foreach($standardMenuItems as $key => $value){
             $menuItems[$key] = array('label' => Yii::t('app', $value), 'url' => array("/$key/$defaultAction"), 'active' => (strtolower($module) == strtolower($key) && (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null);
     } else{
         $page = Docs::model()->findByAttributes(array('name' => ucfirst(mb_ereg_replace('&#58;', ':', $value))));
-        if(isset($page)){
+        if(isset($page) && Yii::app()->user->checkAccess('DocsView')){
             $id = $page->id;
             $menuItems[$key] = array('label' => ucfirst($value), 'url' => array('/docs/'.$id.'?static=true'), 'active' => Yii::app()->request->requestUri == $scriptUrl.'/docs/'.$id.'?static=true' ? true : null);
         }
@@ -447,17 +449,17 @@ if(method_exists($this,'renderGaCode'))
 </head>
 <body style="<?php
 	$noBorders = false;
-	if(!empty($profile->backgroundColor))
-		echo 'background-color:#'.$profile->backgroundColor.';';
+	if ($preferences != null && $preferences['backgroundColor'])
+		echo 'background-color:#'.$preferences['backgroundColor'].';';
 
-	if(!empty($profile->backgroundImg)) {
+	if ($preferences != null && $preferences['backgroundImg']) {
 
-		if(file_exists('uploads/'.$profile->backgroundImg))
-			echo 'background-image:url('.$baseUrl.'/uploads/'.$profile->backgroundImg.');';
+		if(file_exists('uploads/'.$preferences['backgroundImg']))
+			echo 'background-image:url('.$baseUrl.'/uploads/'.$preferences['backgroundImg'].');';
 		else
-			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.$profile->backgroundImg.');';
+			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.$preferences['backgroundImg'].');';
 
-		switch($bgTiling = $profile->backgroundTiling) {
+		switch($bgTiling = $preferences['backgroundTiling']) {
 			case 'repeat-x':
 			case 'repeat-y':
 			case 'repeat':
@@ -472,12 +474,12 @@ if(method_exists($this,'renderGaCode'))
 				$noBorders = true;
 		}
 	}
-?>"<?php if($noBorders) echo ' class="no-borders"'; ?>>
+?>" class="<?php if($noBorders) echo 'no-borders"'; if($fullscreen) echo ' no-widgets'; ?>">
 
 <div id="page-container">
 <div id="page">
 <?php //echo $backgroundImg; ?>
-	<div id="header" <?php echo empty($profile->menuBgColor)? 'class="defaultBg"' : 'style="background-color:#'.$profile->menuBgColor.';"'; ?>>
+	<div id="header" <?php echo !$preferences['menuBgColor']? 'class="defaultBg"' : 'style="background-color:#'.$preferences['menuBgColor'].';"'; ?>>
 		<div id="header-inner">
 			<div id="main-menu-bar">
 				<?php

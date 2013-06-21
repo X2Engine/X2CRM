@@ -38,6 +38,10 @@
 
 Yii::import('zii.widgets.jui.CJuiWidget');
 
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/profileSettings.js');
+
+
 /**
  * CJuiSortable class.
  *
@@ -122,11 +126,11 @@ class SortableWidgets extends CJuiWidget {
 
 				if(!$visible)
 					$widgetHideList[] = '#widget_'.$class;
-				
+
 				// $minimizeLink = '<div class="collapse-widget '.($visible? 'collapse-widget' : 'expand-widget').'"></div><div class="close-widget"></div>';
-				
-				
-				
+
+
+
 				$minimizeLink = CHtml::link(
 					$visible ? CHtml::image($themeURL.'/images/icons/Collapse_Widget.png', '', array('class' => 'collapse-widget')) : CHtml::image($themeURL.'/images/icons/Expand_Widget.png', '', array('class' => 'expand-widget'))
 					, '#', array('class' => 'portlet-minimize-button')
@@ -140,30 +144,67 @@ class SortableWidgets extends CJuiWidget {
 				// $t1 = microtime(true);
 				$profile = yii::app()->params->profile;
 				if($profile->activityFeedOrder){
+                                    ?>
+                                        <script>
+                                            $("topDown").addClass('selected');
+                                        </script>
+                                    <?php
 					$activityFeedOrderSelect = 'top';
 				}else{
+                                    ?>
+                                        <script>
+                                            $("bottomUp").addClass('selected');
+                                        </script>
+                                    <?php
 					$activityFeedOrderSelect = 'bottom';
 				}
+                $preferences;
+                $profile = CActiveRecord::model ('Profile')->findByPk (Yii::app()->user->id);
+                $activityFeedWidgetBgColor = '';
+                if ($profile != null) {
+                    $preferences = $profile->theme;
+                    $activityFeedWidgetBgColor = $preferences['activityFeedWidgetBgColor']; // replace after new behavior added to profile model
+                }
 				if(!empty($widget)){
 					$this->beginWidget('zii.widgets.CPortlet', array(
-						'title' => '<div '.(($class == 'ChatBox')?'style="text-align:left"':'').'>'.(
-						$class == 'ChatBox' ?
-								CHtml::dropDownList("activityFeedDropDown", $activityFeedOrderSelect, array('top' => 'Top Down', 'bottom' => 'Bottom Up'), array('style' => 'float:left;margin-top:-1px;'))
-								.CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration:none;margin-left:10px;')) :
-								Yii::t('app', Yii::app()->params->registeredWidgets[$class])
-						).'<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible ? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
-						'id' => $properties['id']
+						'title' => '<div id="widget-dropdown" class="dropdown">'
+                                            .($class == 'ChatBox' ?
+                                                //CHtml::dropDownList("activityFeedDropDown", $activityFeedOrderSelect, array('top' => 'Top Down', 'bottom' => 'Bottom Up'), array('style' => 'float:left;margin-top:-1px;')).
+						//CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration:none;margin-left:100px;')).
+                                                CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration: none; margin-right:34px;')).'
+                                                    <script>
+                                                        $(\'#widget-dropdown a\').css("text-align", "none");
+                                                        $(\'#widget-dropdown a\').css("text-align", "center !important");
+                                                    </script>
+                                                <span style="float:left">
+                                                    <img src="'.Yii::app()->theme->baseUrl.'/images/widgets.png" style="opacity:0.3"
+                                                                onmouseout="this.style.opacity=0.3;"
+                                                                onmouseover="this.style.opacity=1" />
+                                                </span>
+                                                <ul class="closed">
+                                                    <div style="text-align: left">Activity Feed Order</div>
+                                                    <hr>
+                                                    <topDown style="font-weight:normal; float: left; margin-right: 3px;">Top Down</topDown>
+                                                    <bottomUp style="font-weight:normal; float: left">Bottom Up</bottomUp>
+                                                    <hr>
+                                                    <div style="text-align: left">Background Color</div>
+                                                    <colorPicker style="padding: 0px !important;">'.
+                                                         CHtml::textField('activityFeedWidgetBgColor', $activityFeedWidgetBgColor).
+                                                    '</colorPicker>
+                                                    </ul> '
+                                                        : Yii::t('app', Yii::app()->params->registeredWidgets[$class])) .
+
+                                                    '<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible ? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
+                                                        'id' => $properties['id']
 					));
 					echo $widget;
 					$this->endWidget();
-					// echo ($t1-$t0);
+//					// echo ($t1-$t0);
 				}else{
 					echo '<div ', CHtml::renderAttributes(array('style' => 'display;none;', 'id' => $properties['id'])), '></div>';
 				}
 			}
 		}
-
-
 		Yii::app()->clientScript->registerScript('setWidgetState', '
 			$(document).ready(function() {
 				$("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
@@ -171,6 +212,167 @@ class SortableWidgets extends CJuiWidget {
 
 		echo CHtml::closeTag($this->tagName);
 	}
-
 }
+?>
+<style>
+    #sidebar-right .selected {
+        color:white;
+        background:black;
+    }
+    #sidebar-right .hover {
+        background:grey;
+    }
+    #sidebar-right hr {
+        margin: 0px;
+        padding: 0;
+    }
+    #sidebar-right colorPicker > span {
+        padding: 0px 0px 0px 0px !important;
+    }
+    #widget_ChatBox input{
+        padding: 1px 1px 1px 1px !important;
+        float: none;
+        border: 1px solid #aaa;
+        -moz-border-radius: 3px;
+        -o-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
+    }
+</style>
+<script>
+$(document).ready(function() {
+    $("topDown").hover(function(){
+        if(!$(this).hasClass('selected')){
+            $(this).toggleClass('hover');
+        }
+    });
+    $("bottomUp").hover(function(){
+        if(!$(this).hasClass('selected')){
+            $(this).toggleClass('hover');
+        }
+    });
+    $("topDown").click(function(){
+        if($(this).hasClass('selected')) return;
+        else {
+            $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+            yii.profile['activityFeedOrder']=1;
+            $(this).addClass('selected');
+            $(this).removeClass('hover');
+            var chatbox = $('#chat-box');
+            chatbox.children().each(function(i,child){chatbox.prepend(child)});
+            chatbox.prop('scrollTop',0);
+            $("bottomUp").removeClass('selected');
+        }
+    });
+    $("bottomUp").click(function(){
+        if($(this).hasClass('selected')) return;
+        else {
+            $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+            yii.profile['activityFeedOrder']=0;
+            $(this).addClass('selected');
+            $(this).removeClass('hover');
+            var chatbox = $('#chat-box');
+            var scroll=chatbox.prop('scrollHeight');
+            chatbox.children().each(function(i,child){chatbox.prepend(child)});
+            chatbox.prop('scrollTop',scroll);
+            $("topDown").removeClass('selected');
+        }
+    });
+    $('#activityFeedWidgetBgColor').modcoder_excolor({
+            hue_bar : 3,
+            hue_slider : 5,
+            border_color : '#aaa',
+            sb_border_color : '#d6d6d6',
+            round_corners : false,
+            shadow_color : '#000000',
+            background_color : '#f0f0f0',
+            backlight : false,
+            callback_on_ok : function() {
+                $('#activityFeedWidgetBgColor').change();
+            }
+    });
+    $('#activityFeedWidgetBgColor').change(function() {
+        var color = $('#activityFeedWidgetBgColor').val();
+        $('#activityFeedWidgetBgColor').val(color.substring(1,7));
+        //console.log(color);
+        $.ajax({
+            url: yii.baseUrl + '/index.php/site/activityFeedWidgetBgColor',
+            data: 'color='+ color.substring(1,7),
+            success:function(){
+                $('#chat-box').css("background-color", color);
+                //$('#chat-box').css("color", convertTextColor(color, 'standardText'));
+                // Check for a dark color
+                /*if(convertTextColor(color, 'linkText') == '#fff000'){
+                    $('#chat-box a').removeClass();
+                    $('#chat-box a').addClass('dark_background');
+                }
+                // Light color
+                else {
+                    $('#chat-box a').removeClass();
+                    $('#chat-box a').addClass("light_background");
+                }
+                // Set color correctly if transparent is selected
+                if(color == ""){
+                    $('#chat-box').css("color", "rgb(51, 51, 51)");
+                    $('#chat-box a').removeClass();
+                    $('#chat-box a').addClass("light_background");
+                }*/
+            }
+        });
+    });
+ });
 
+// @param $colorString a string representing a hex number
+// @param $testType standardText or linkText
+function convertTextColor( colorString, textType){
+    // Split the string to red, green and blue components
+    // Convert hex strings into ints
+    var red   = parseInt(colorString.substring(1,3), 16);
+    var green = parseInt(colorString.substring(3,5), 16);
+    var blue  = parseInt(colorString.substring(5,7), 16);
+
+    if(textType == 'standardText') {
+        if((((red*299)+(green*587)+(blue*114))/1000) >= 128) {
+            return 'black';
+        }
+        else {
+            return 'white';
+        }
+    }
+    else if (textType == 'linkText') {
+        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+            return '#fff000';  // Yellow links
+        }
+        else return '#0645AD'; // Blue link color
+    }
+    else if (textType == 'visitedLinkText') {
+        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+            return '#ede100';  // Yellow links
+        }
+        else return '#0B0080'; // Blue link color
+    }
+    else if (textType == 'activeLinkText') {
+        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+            return '#fff000';  // Yellow links
+        }
+        else return '#0645AD'; // Blue link color
+    }
+    else if (textType == 'hoverLinkText') {
+        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+            return '#fff761';  // Yellow links
+        }
+        else return '#3366BB'; // Blue link color
+    }
+}
+</script>
+<style>
+    .dark_background:link { color: #fff000 !important; }
+    .dark_background:active { color: #fff000 !important; }
+    .dark_background:hover { color: #F0E030 !important; }
+    .dark_background:visited { color: #ede100 !important; }
+
+    .light_background:link { color: #0645AD !important; }
+    .light_background:active { color: #0645AD !important; }
+    .light_background:hover { color: #3366BB !important; }
+    .light_background:visited { color: #0B0080 !important; }
+</style>

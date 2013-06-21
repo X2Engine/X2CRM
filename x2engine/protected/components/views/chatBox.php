@@ -88,12 +88,23 @@ $chatContainerFixHeight = $chatContainerHeight + 10;
 
 <script>
 $("#activityFeedDropDown").change(function() {
-	yii.profile.activityFeedOrder = !yii.profile.activityFeedOrder;
-	var chatbox = $('#chat-box');
+
+
+    var chatbox = $('#chat-box');
+    var scroll=chatbox.prop('scrollHeight');
+	if(yii.profile.activityFeedOrder==1){
+        yii.profile.activityFeedOrder=0;
+    }else{
+        scroll=0;
+        yii.profile.activityFeedOrder=1;
+    }
 	chatbox.children().each(function(i,child){chatbox.prepend(child)});
-	chatbox.prop('scrollTop',chatbox.prop('scrollHeight'));
-	
+	chatbox.prop('scrollTop',scroll);
+
+    chatbox.css ('background-color', chatbox.data ('background-color'));
+
 	$.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+
 })
 </script>
 <div id="chat-container-fix" style="height:<?php echo $chatContainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->

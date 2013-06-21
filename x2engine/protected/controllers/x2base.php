@@ -193,8 +193,14 @@ abstract class x2base extends X2Controller {
 
         $view = false;
         $edit = false;
+        $module = $this->module;
+        if(isset($module)){
+            $moduleAdmin = Yii::app()->user->checkAccess(ucfirst($module->name).'Admin');
+        }else{
+            $moduleAdmin = false;
+        }
         // if we're the admin, visibility is public, there is no visibility/assignedTo, or it's directly assigned to the user, then we're done
-        if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
+        if ((Yii::app()->user->checkAccess('AdminIndex') || $moduleAdmin) || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
 
             $edit = true;
         } elseif (!$model->hasAttribute('visibility') || $model->visibility == 1) {
@@ -311,7 +317,7 @@ abstract class x2base extends X2Controller {
 
 		return $currentWorkflow[0];
     }
-	
+
     /**
      * Used in function convertUrls
      *

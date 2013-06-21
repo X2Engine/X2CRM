@@ -42,7 +42,7 @@ $this->actionMenu = array(
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'changelog-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template'=>'<div class="page-title icon x2flow"><h2>'.Yii::t('studio','Automation Flows').'</h2>'
+        'template'=>'<div class="page-title icon x2flow"><h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>'
 		// .CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
 		.'{summary}</div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),

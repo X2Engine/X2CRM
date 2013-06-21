@@ -42,7 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
-	array('label'=>Yii::t('marketing','Marketing Automation'),'url'=>array('/studio/flowIndex'))//(Yii::app()->params->edition==='pro')),
+	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'))//(Yii::app()->params->edition==='pro')),
 ));
 
 Yii::app()->clientScript->registerScript('search', "

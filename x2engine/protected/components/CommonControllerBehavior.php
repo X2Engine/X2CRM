@@ -44,7 +44,7 @@
  * @property X2Model $model (read-only); in the context of viewing or updating a
  *	record, this contains the active record object corresponding to that record.
  *	Its value is set by calling {@link getModel()} with the ID of the desired record.
- * @package application.components
+ * @package X2CRM.components
  */
 class CommonControllerBehavior extends CBehavior {
 

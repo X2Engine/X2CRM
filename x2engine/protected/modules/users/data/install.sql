@@ -2,9 +2,9 @@ DROP TABLE IF EXISTS x2_users;
 /*&*/
 CREATE TABLE x2_users (
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	firstName				VARCHAR(20),
-	lastName				VARCHAR(40),
-	username				VARCHAR(20),
+	firstName				VARCHAR(100),
+	lastName				VARCHAR(120),
+	username				VARCHAR(50),
 	password				VARCHAR(100),
 	title					VARCHAR(50),
 	department				VARCHAR(40),
@@ -16,8 +16,8 @@ CREATE TABLE x2_users (
 	emailAddress			VARCHAR(100)	NOT NULL,
 	status					TINYINT			NOT NULL,
     temporary               TINYINT         DEFAULT 0,
-	lastUpdated				VARCHAR(30),
-	updatedBy				VARCHAR(20),
+	lastUpdated				VARCHAR(50),
+	updatedBy				VARCHAR(50),
 	recentItems				VARCHAR(100),
 	topContacts				VARCHAR(100),
 	lastLogin				INT				DEFAULT 0,
@@ -33,6 +33,6 @@ CREATE TABLE x2_users (
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_modules` 
-			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable) 
+INSERT INTO `x2_modules`
+			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	("users",			"Users",			1,			14,				0,			0,			1,			0,		0);

@@ -34,13 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.FileUtil');
+Yii::import('application.components.util.FileUtil');
 
 /**
  * Test case for {@link FileUtil}
  * 
  * @author Demitri Morgan <demitri@x2engine.com>
- * @package X2CRM.tests.unit.components 
+ * @package X2CRM.tests.unit.components.util
  */
 class FileUtilTest extends FileOperTestCase {
 
