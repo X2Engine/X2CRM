@@ -244,6 +244,18 @@ abstract class X2Model extends CActiveRecord {
 	}
 
 	/**
+	 * Runs when a model is deleted.
+	 * Clears any entries in <tt>x2_phone_numbers</tt>.
+	 * Fires onAfterDelete event.
+	 */
+	public function afterDelete() {
+		X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this)));	// clear out old phone numbers
+		
+		if($this->hasEventHandler('onAfterDelete'))
+			$this->onAfterDelete(new CEvent($this));
+	}
+
+	/**
 	 * Runs when a model is saved.
 	 * Scans attributes for phone numbers and index them in <tt>x2_phone_numbers</tt>.
 	 * Updates <tt>x2_relationships</tt> table based on link type fields.
@@ -470,21 +482,21 @@ abstract class X2Model extends CActiveRecord {
 	public static function getModelLink($id, $class) {
 		$model = X2Model::model($class)->findByPk($id);
 		if (isset($model) && !is_null($model->asa('X2LinkableBehavior'))){
-            if(isset(Yii::app()->controller) && method_exists(Yii::app()->controller,'checkPermissions')){
-                if(Yii::app()->controller->checkPermissions($model,'view')){
-                    return $model->getLink();
-                }else{
-                    return $model->name;
-                }
-            }else{
-                return $model->getLink();
-            }
+			if(isset(Yii::app()->controller) && method_exists(Yii::app()->controller,'checkPermissions')){
+				if(Yii::app()->controller->checkPermissions($model,'view')){
+					return $model->getLink();
+				}else{
+					return $model->name;
+				}
+			}else{
+				return $model->getLink();
+			}
 		// return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
-        }elseif (is_numeric($id)){
+		}elseif (is_numeric($id)){
 			return '';
-        }else{
+		}else{
 			return $id;
-        }
+		}
 	}
 
 	/**
@@ -741,12 +753,11 @@ abstract class X2Model extends CActiveRecord {
 				return $text;
 
 			case 'link':
-				if (!empty($this->$fieldName) && is_numeric($this->$fieldName)) {
-                    return $makeLinks ? X2Model::getModelLink($this->$fieldName,X2Model::getModelName($field->linkType)) : $this->$fieldName;
-				} else {
+				$linkedModel = $this->getLinkedModel($fieldName);
+				if($linkedModel === null)
 					return $this->$fieldName;
-				}
-
+				else
+					return $makeLinks ? $linkedModel->getLink() : $linkedModel->name;
 			case 'boolean':
 				return $textOnly ? $this->$fieldName : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
 
@@ -1194,8 +1205,8 @@ abstract class X2Model extends CActiveRecord {
                     $linkType=$field->linkType;
                     if(class_exists(ucfirst($linkType)) && X2Model::model(ucfirst($linkType))->hasAttribute('name')){
                         $attributes[$fieldName]=array(
-                            'asc'=>'IF('.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') ASC',
-                            'desc'=>'IF('.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') DESC',
+                            'asc'=>'IF(t.'.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') ASC',
+                            'desc'=>'IF(t.'.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') DESC',
                         );
                     }else{
                        $attributes[$fieldName]=array(
@@ -1227,6 +1238,9 @@ abstract class X2Model extends CActiveRecord {
 					break;
 				case 'assignment':
 					$criteria->compare('t.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
+					break;
+                case 'dropdown':
+					$criteria->compare('t.'.$fieldName, $this->compareDropdown($field->linkType,$this->$fieldName), true);
 					break;
 				case 'phone':
 				// $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
@@ -1270,6 +1284,20 @@ abstract class X2Model extends CActiveRecord {
 		$groupIds = Yii::app()->db->createCommand()->select('id')->from('x2_groups')->where(array('like', 'name', "%$data%"))->queryColumn();
 
 		return (count($groupIds) + count($userNames) == 0) ? -1 : $userNames + $groupIds;
+	}
+
+    protected function compareDropdown($ddId, $value) {
+		if (is_null($value) || $value == '')
+			return null;
+		$dropdown=X2Model::model('Dropdowns')->findByPk($ddId);
+		if (isset($dropdown)) {
+			if(!is_null($dropdown->getDropdownIndex($ddId,$value))){
+				return $dropdown->getDropdownIndex($ddId,$value);
+			}else{
+				return -1;
+			}
+		}
+		return -1;
 	}
 
 	/**
@@ -1495,8 +1523,8 @@ abstract class X2Model extends CActiveRecord {
 
 		if($showGroups === true) {
 			$groups = Groups::getNames();
-			if(count($groups))
-				$users = array_merge($users,array(''=>'--------------------'),$groups);
+			if(count($groups)>0)
+				$users = $users + array(''=>'--------------------') + $groups;
 		}
 		return $users;
 	}

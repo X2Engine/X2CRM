@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 
-$canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex');
+$canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->params->isAdmin;
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),

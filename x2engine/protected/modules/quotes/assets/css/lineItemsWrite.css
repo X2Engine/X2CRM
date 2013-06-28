@@ -33,6 +33,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+#quote-template-dropdown {
+    margin-top: 5px;
+}
+
+.quote-table .input-cell {
+    padding-right: 8px;
+}
+
 .quote-table input {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -163,7 +171,7 @@ set width of input fields in the quotes table
 .quote-table > tbody#line-items > tr > td:nth-child(2) input
 {
     margin: 0 0 0 0;
-    width: 90%;
+    width: 85%;
     float: left;
 	font-size: 12px;
 }

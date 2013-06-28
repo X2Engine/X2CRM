@@ -85,7 +85,7 @@ class DbProfileLogRoute extends CProfileLogRoute
 	 */
 	protected function render($view,$data)
 	{
-        if(Yii::app()->user->checkAccess('AdminIndex')){
+        if(Yii::app()->params->isAdmin){
             $countLimit = $this->countLimit;
             $slowQueryMin = $this->slowQueryMin;
 

@@ -34,6 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
+
 $menuItems = array(
 	array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
 	array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
@@ -43,14 +46,12 @@ $menuItems = array(
 $this->actionMenu = $this->formatMenu($menuItems);
 
 ?>
-<div class="span-12">
 <div class="page-title icon services"><h2><?php echo Yii::t('marketing','Service Cases Web Form'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('marketing','Create a public form to receive new services cases. When the form is submitted, a new service case will be created, and the case # will be sent to the email address provided in the form.'); ?>
 </div>
 <?php
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/createWebForm.css.css');
+Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/createWebForm.css');
 
 //support both the weblead capture and weblist signup
 if (empty($type)) $type = 'weblead';
@@ -97,6 +98,9 @@ function generateQuery(params) {
 }
 
 function updateParams() {
+    if ($(this).data ('ignoreChange')) {
+        return;
+    }
 	var params = [];
 	if (listId != null) {
 		params.push('lid='+listId);
@@ -119,7 +123,6 @@ function clearFields() {
 	$.each(fields, function(i, field) {
 		$('#'+field).val('');
 	});
-	$('.modcoder_excolor_clrbox').css('background-color','').css('background-image','url(<?php echo Yii::app()->getBaseUrl().'/js/modcoder_excolor/transp.gif'; ?>)');
 }
 
 function updateFields(form) {
@@ -129,7 +132,7 @@ function updateFields(form) {
 			$('#'+key).val(value);
 		}
 		if ($.inArray(key, colorfields) != -1) {
-			$('#'+key).next('.modcoder_excolor_clrbox').css('background-image','').css('background-color', value);
+            $('#'+key).spectrum ("set", $('#'+key).val ());
 		}
 	});
 }
@@ -164,13 +167,13 @@ $(function() {
 	$('#embedcode').focus();
 
 	$.each(colorfields, function(i, field) {
-		$('#'+field).modcoder_excolor({
-			callback_on_ok: function() { updateParams(); }
-		});
-	});
+        var selector = '#' + field;
+        setupSpectrum ($(selector));
+        $(selector).on ('change', updateParams);
+    });
 	
 	$.each(fields, function(i, field) {
-		$('#'+field).on('change', function() { updateParams(); });
+		$('#'+field).on('change', updateParams);
 	});
 	
 	$('#save').click(function(e) {
@@ -193,14 +196,21 @@ $(function() {
 		} 
 		updateParams();
 		$('#embedcode').focus();
+    	$.each(colorfields, function(i, field) {
+            if ($('#'+field).val () === '') {
+                addCheckerImage ($('#'+field));
+            } else {
+                removeCheckerImage ($('#'+field));
+            }
+        });
 	});
 
 	if (listId != null) { updateParams(); }
 });
 </script>
 
-<div class="form">
-
+<div class="form" id="web-form">
+<div class="span-12" style="overflow:auto">
 <div class="cell">
 	<h4><?php echo Yii::t('marketing','Embed Code') .':'; ?></h4>
 	<textarea id="embedcode"><?php echo $embedcode; ?></textarea>

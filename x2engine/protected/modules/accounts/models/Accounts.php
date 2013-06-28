@@ -113,10 +113,10 @@ class Accounts extends X2Model {
 
 	public static function parseUsersTwo($arr){
 		$str="";
-		foreach($arr as $user=>$name){
-			$str.=$user.", ";
-		}
-		$str=substr($str,0,strlen($str)-2);
+		if(is_array($arr)){
+            $arr=array_keys($arr);
+            $str=implode(', ',$arr);
+        }
 
 		return $str;
 	}

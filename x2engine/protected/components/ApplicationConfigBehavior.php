@@ -106,6 +106,8 @@ class ApplicationConfigBehavior extends CBehavior {
             // Set time zone based on the default value
             date_default_timezone_set(Profile::model()->tableSchema->getColumn('timeZone')->defaultValue);
         }
+
+		// Import directories
         Yii::import('application.models.*');
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
@@ -125,12 +127,17 @@ class ApplicationConfigBehavior extends CBehavior {
             $notGuest = !$this->owner->user->isGuest;
         }
 
+		// Set up encryption:
+		// $key = Yii::app()->basePath.'/config/encryption.key';
+		// $iv = Yii::app()->basePath.'/config/encryption.iv';
+		// EncryptedFieldsBehavior::setup($key,$iv);
+		
         $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
 
 
 
 		// Set profile
-        $this->owner->params->profile = CActiveRecord::model('Profile')->findByAttributes(array('username' => $uname));
+        $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username' => $uname));
         $session = X2Model::model('Session')->findByPk($sessionId);
         if(isset($this->owner->params->profile)){
             $_SESSION['fullscreen'] = $this->owner->params->profile->fullscreen;
@@ -184,7 +191,8 @@ class ApplicationConfigBehavior extends CBehavior {
                 $modules[] = $key;
         }
         $this->owner->setModules($modules);
-        $adminProf = ProfileChild::model()->findByPk(1);
+        $adminProf = X2Model::model('Profile')->findByPk(1);
+        $this->owner->params->adminProfile=$adminProf;
 
         // set currency
         $this->owner->params->currency = $this->owner->params->admin->currency;
@@ -218,7 +226,14 @@ class ApplicationConfigBehavior extends CBehavior {
 
 
         // set edition
-        $this->owner->params->edition = $this->owner->params->admin->edition;
+        if (YII_DEBUG) {
+            if (PRO_VERSION)
+                $this->owner->params->edition = 'pro';
+            else
+                $this->owner->params->edition = 'opensource';
+        } else {
+            $this->owner->params->edition = $this->owner->params->admin->edition;
+        }
 
         if($this->owner->params->edition === 'pro'){
             $proLogo = 'images/x2engine_crm_pro.png';
@@ -231,7 +246,7 @@ class ApplicationConfigBehavior extends CBehavior {
         // set base path and theme path globals for JS
         if(!$noSession){
             if($notGuest){
-                $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+                $profile = $this->owner->params->profile;
                 if(isset($profile)){
                     $where = 'fileName = "'.$profile->notificationSound.'"';
                     $uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();

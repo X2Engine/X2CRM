@@ -57,9 +57,9 @@ class ProfileController extends x2base {
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array(
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 'profiles',
-                    'settings', 'addComment', 'setSound', 'deleteSound', 'setBackground', 'deleteBackground',
+                    'settings', 'addComment', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost',
-                    'loadTheme', 'createTheme'),
+                    'loadTheme', 'createTheme', 'saveTheme'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -144,7 +144,7 @@ class ProfileController extends x2base {
                 if($postParent->associationId == Yii::app()->user->getId())
                     $post->delete();
             }
-            if($post->user == Yii::app()->user->getName() || $post->associationId == Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')){
+            if($post->user == Yii::app()->user->getName() || $post->associationId == Yii::app()->user->getId() || Yii::app()->params->isAdmin){
                 if($post->delete()){
 
                 }
@@ -183,14 +183,63 @@ class ProfileController extends x2base {
     }
 
     /**
+    Overwrite an existing theme that the user uploaded.
      */
-    public function actionCreateTheme ($themeName, $themeAttributes) {
+    public function actionSaveTheme ($themeAttributes) {
+        $themeAttributesArr = CJSON::decode ($themeAttributes);
+        if (!in_array ('themeName', array_keys ($themeAttributesArr))) return;
+
+        $themeModel = X2Model::model('Media')->findByAttributes (array (
+            'uploadedBy' => Yii::app()->user->name,
+            'fileName' => $themeAttributesArr['themeName'],
+            'associationType' => 'theme'
+        ));
+        if ($themeModel !== null) {
+            $themeModel->fileName = $themeAttributesArr['themeName'];
+            $themeModel->description = $themeAttributes;
+            if ($themeModel->save ()) {
+                echo Yii::t('profile', 'Theme saved successfully.');
+            }
+        }
+    }
+
+    private static function getThemeErrorMsg () {
+        $errorArr = array (
+            'success'=> false,
+            'errorListHeader'=> Yii::t('profile', 'Please fix the following errors:'),
+            'errorMsg'=> Yii::t('profile', 'Theme name already exists or is invalid.'));
+        return CJSON::encode ($errorArr);
+    }
+
+    private static function getThemeSuccessMsg () {
+        $successArr = array (
+            'success' => true,
+            'msg' => Yii::t('profile', 'Theme created successfully.'));
+        return CJSON::encode ($successArr);
+    }
+
+    /**
+    Create a new theme record in the Media table, prevent duplicate filenames.
+    If theme cannot be saved, error message object is returned.
+     */
+    public function actionCreateTheme ($themeAttributes) {
+        $themeAttributesArr = CJSON::decode ($themeAttributes);
+        if (!in_array ('themeName', array_keys ($themeAttributesArr)) ||
+            !in_array ('themeName', array_keys ($themeAttributesArr))) {
+            echo self::getThemeErrorMsg ();
+        }
         $theme = new Media;
-        $theme->fileName = $themeName;
+        $theme->setScenario ('themeCreate');
+        $theme->fileName = $themeAttributesArr['themeName'];
+        $theme->private = $themeAttributesArr['private'];
         $theme->associationType = "theme";
         $theme->uploadedBy = Yii::app()->user->name;
         $theme->description = $themeAttributes;
-        $theme->save ();
+        if (!$theme->save ()) {
+            echo self::getThemeErrorMsg ();
+        } else {
+            echo self::getThemeSuccessMsg ();
+        }
     }
 
     /**
@@ -238,7 +287,7 @@ class ProfileController extends x2base {
 
         $myThemeProvider = new CActiveDataProvider('Media', array(
                     'criteria' => array(
-                        'condition' => "(associationType = 'theme-private' AND associationId = '".Yii::app()->user->getId()."') OR associationType = 'theme'",
+                        'condition' => "((private = 1 AND uploadedBy = '".Yii::app()->user->name."') OR private = 0) AND associationType = 'theme'",
                         'order' => 'createDate DESC'
                     ),
                 ));
@@ -292,7 +341,7 @@ class ProfileController extends x2base {
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id){
-        if($id == Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex')){
+        if($id == Yii::app()->user->getId() || Yii::app()->params->isAdmin){
             $model = $this->loadModel($id);
             $users = User::getNames();
             $accounts = Accounts::getNames();
@@ -380,23 +429,6 @@ class ProfileController extends x2base {
     }
 
     /**
-     * Set the background image.
-     */
-    public function actionSetBackground(){
-        if(isset($_POST['name'])){
-
-            $profile = X2Model::model('Profile')->findByPk(Yii::app()->user->getId());
-
-            $profile->backgroundImg = $_POST['name'];
-
-            if($profile->save()){
-                echo "success";
-            }
-            //$this->redirect(array('profile/settings','id'=>Yii::app()->user->getId()));
-        }
-    }
-
-    /**
      * Delete a background image.
      *
      * @param type $id
@@ -416,20 +448,6 @@ class ProfileController extends x2base {
             if($image->delete()){
                 unlink('uploads/'.$image->fileName); // delete file
                 echo 'success';
-            }
-        }
-    }
-
-    /**
-     * Sets login/notification sound.
-     * @param String $sound Which sound should be set.
-     */
-    public function actionSetSound($sound){
-        if(isset($_POST['name'])){
-            $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-            $profile->$sound = $_POST['name'];
-            if($profile->update(array($sound))){
-                echo "success";
             }
         }
     }

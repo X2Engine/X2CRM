@@ -663,7 +663,7 @@ class ActionsController extends x2base {
                 if(ctype_digit((string) $action->assignedTo)) // we have an action assigned to a group? Then check if we are in the group
                     $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
 
-                if(Yii::app()->user->getName() == $action->assignedTo || $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || Yii::app()->user->checkAccess('AdminIndex')){ // make sure current user can edit this action
+                if(Yii::app()->user->getName() == $action->assignedTo || $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || Yii::app()->params->isAdmin){ // make sure current user can edit this action
                     if($operation === 'complete')
                         $action->complete();  // $this->completeNotification('admin',$action->id);
                     elseif($operation === 'uncomplete')
@@ -765,7 +765,7 @@ class ActionsController extends x2base {
             $inGroup = Groups::inGroup(Yii::app()->user->id, $model->assignedTo);
         }
 
-        if(Yii::app()->user->getName() == $model->assignedTo || $model->assignedTo == 'Anyone' || $model->assignedTo == "" || $inGroup || Yii::app()->user->checkAccess('AdminIndex')){
+        if(Yii::app()->user->getName() == $model->assignedTo || $model->assignedTo == 'Anyone' || $model->assignedTo == "" || $inGroup || Yii::app()->params->isAdmin){
 
             if(isset($_POST['note']) && !empty($_POST['note']))
                 $model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];

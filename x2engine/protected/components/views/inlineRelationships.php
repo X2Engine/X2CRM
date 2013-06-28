@@ -37,7 +37,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 // init qtip for contact names
 Yii::app()->clientScript->registerScript('contact-qtip', '
 function refreshQtip() {
-	$(".contact-name").each(function (i) {
+	$("#relationships-grid .contact-name").each(function (i) {
 		var contactId = $(this).attr("href").match(/\\d+$/);
 
 		if(typeof contactId != null && contactId.length) {

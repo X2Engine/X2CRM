@@ -37,7 +37,7 @@
 /**
  * @package X2CRM.components.x2flow
  */
-abstract class X2FlowItem {
+abstract class X2FlowItem extends CComponent {
 	/**
 	 * $var string the text label for this action
 	 */

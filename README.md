@@ -1,5 +1,5 @@
-# X2CRM 3.1.1 #
-6/21/2013
+# X2CRM 3.1.2 #
+6/28/2013
 ## Changes ##
 * Robust new resizable grid view
 * Enhancements to application UI
@@ -15,6 +15,15 @@
 ## New in 3.1.1 ##
 * Fixed bug creating new windows when notifications are received
 * Reverted some changes to UI
+
+## New in 3.1.2 ##
+* Improvements to theme settings
+  * You can now save themes
+  * Set custom gridview row colors
+* Improved X2Flow Automation look and feel
+* X2Flow can now use Lead Routing Rules to assign records
+* Customizable <HEAD> tag on web lead forms
+* Numerous bug fixes
 
 ## Release Notes ##
 ### 3.0 ###

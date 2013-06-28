@@ -47,7 +47,7 @@ $responding = false;
 $dbConfig = array();
 // All configuration values, including statistics
 $config = array();
-// Values from the form sent back to the form, url-encoded, in GET parameters 
+// Values from the form sent back to the form, url-encoded, in GET parameters
 // (so it works w/o javascript, in the case of the user visiting initialize.php
 // before the installation is complete)
 $userData = array();
@@ -151,7 +151,7 @@ $confMap = array(
 
 /**
  * Function for communicating status messages to the installer (whether command line or browser)
- * 
+ *
  * @param $message The message with which to respond
  * @param $error The error, if any
  */
@@ -172,7 +172,7 @@ function respond($message, $error = Null) {
 
 /**
  * Wrapper for "die"; agnostic to whether the installation is web or command line
- * 
+ *
  * @param string $message
  */
 function RIP($message) {
@@ -187,11 +187,11 @@ function RIP($message) {
 
 /**
  * Error-handling function: displays info about what went horribly wrong if anything
- * 
+ *
  * @param type $no
  * @param type $st
  * @param type $fi
- * @param type $ln 
+ * @param type $ln
  */
 function respondWithError($no, $st, $fi = Null, $ln = Null) {
 	RIP("PHP Error [$no]: $st ($fi, L$ln)");
@@ -199,7 +199,7 @@ function respondWithError($no, $st, $fi = Null, $ln = Null) {
 
 /**
  * Exception-handling function: displays full exception message, if any wasn't caught.
- * 
+ *
  * @param Exception $exception
  */
 function respondWithException($exception) {
@@ -208,8 +208,8 @@ function respondWithException($exception) {
 
 /**
  * Shutdown function for fatal errors
- * 
- * @global boolean $responding 
+ *
+ * @global boolean $responding
  */
 function respondFatalErrorMessage() {
 	global $responding;
@@ -288,9 +288,9 @@ if (isset($_POST['testDb'])) {
 
 /**
  * Collect base configuration from the default pre-install app config file
- * 
+ *
  * @global array $config
- * @global array $confMap 
+ * @global array $confMap
  */
 function baseConfig() {
 	global $config, $confKeys, $confMap;
@@ -314,9 +314,9 @@ function baseConfig() {
 
 /**
  * Collect variables into the main configuration (command-line installation)
- * 
+ *
  * @global array $config
- * @global array $confMap 
+ * @global array $confMap
  */
 function installConfig() {
 	global $config, $confMap, $confKeys;
@@ -377,9 +377,9 @@ function outputErrors() {
 
 /**
  * Add an error message to the response array.
- * 
+ *
  * @global type $response
- * @param type $message 
+ * @param type $message
  */
 function addError($message) {
 	global $response;
@@ -399,9 +399,9 @@ function addSqlError($message) {
 
 /**
  * Backwards-compatible wrapper function for adding validation errors.
- * 
+ *
  * @param type $attr
- * @param type $error 
+ * @param type $error
  */
 function addValidationError($attr, $error) {
 	global $response, $silent;
@@ -417,9 +417,9 @@ function addValidationError($attr, $error) {
 
 /**
  * Installs a named module
- * 
+ *
  * @global PDO $dbo
- * @param type $module 
+ * @param type $module
  */
 function installModule($module, $respond = True) {
 	global $dbo;
@@ -430,7 +430,7 @@ function installModule($module, $respond = True) {
 		$install = require_once($regFile);
 		foreach ($install['install'] as $sql) {
 			// Install a module.
-			// For each element in the register script's "install" array, if it's a 
+			// For each element in the register script's "install" array, if it's a
 			// string, treat it as a path to an SQL script. Otherwise, if an array,
 			// treat as a list of SQL statements.
 			$sqlComm = $sql;
@@ -459,7 +459,7 @@ function installModule($module, $respond = True) {
 
 /**
  * Runs a named stage of the installation.
- * 
+ *
  * @param $stage The named stage of installation.
  */
 function installStage($stage) {
@@ -534,10 +534,15 @@ function installStage($stage) {
 				}
 			} else
 				$filename = 'protected/config/X2Config.php';
-			$handle = fopen($filename, 'w') or RIP(installer_t('Could not create configuration file.'));
+			$handle = fopen($filename, 'w') or RIP(installer_tr('Could not create configuration file: {filename}.',array('{filename}'=>$filename)));
 
+			// Write core application configuration:
 			fwrite($handle, $X2Config);
 			fclose($handle);
+			
+			// Create an encryption key for credential storage:
+			// $encryption = new EncryptUtil('protected/config/encryption.key','protected/config/encryption.iv');
+			// $encryption->saveNew();
 
 			$dbConfig['{adminPass}'] = md5($config['adminPass']);
 			$dbConfig['{adminUserKey}'] = $config['adminUserKey'];
@@ -629,7 +634,7 @@ function installStage($stage) {
 					RIP(installer_t("Could not find installation stage database script") . " $stagePath");
 				}
 			} else {
-				// This is the dummy data stage, and we need to clear out all unneeded files. 
+				// This is the dummy data stage, and we need to clear out all unneeded files.
 				// However, we should leave the files alone if this is a testing database reinstall.
 				$stageLabels[$stage] = sprintf($stageLabels[$stage], 'remove');
 				if (($paths = @require_once(realpath('protected/data/dummy_data_files.php'))) && !$config['test_db']) {
@@ -858,6 +863,7 @@ if (!$silent && $complete):
 			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />
 			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/form.css" />
 			<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
+            <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/ui-elements.css" />
 			<link rel="icon" href="images/favicon.ico" type="image/x-icon">
 				<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 				<style type="text/css">

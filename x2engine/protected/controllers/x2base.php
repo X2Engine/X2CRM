@@ -176,7 +176,7 @@ abstract class x2base extends X2Controller {
      * @return boolean
      */
     public function editPermissions(&$model) {
-        if (Yii::app()->user->checkAccess('AdminIndex') || !$model->hasAttribute('assignedTo'))
+        if (Yii::app()->params->isAdmin || !$model->hasAttribute('assignedTo'))
             return true;
         else
             return $model->assignedTo == Yii::app()->user->getName() || in_array($model->assignedTo, Yii::app()->params->groups);
@@ -200,7 +200,7 @@ abstract class x2base extends X2Controller {
             $moduleAdmin = false;
         }
         // if we're the admin, visibility is public, there is no visibility/assignedTo, or it's directly assigned to the user, then we're done
-        if ((Yii::app()->user->checkAccess('AdminIndex') || $moduleAdmin) || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
+        if ((Yii::app()->params->isAdmin || $moduleAdmin) || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
 
             $edit = true;
         } elseif (!$model->hasAttribute('visibility') || $model->visibility == 1) {

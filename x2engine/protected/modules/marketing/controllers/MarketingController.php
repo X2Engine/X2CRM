@@ -1046,20 +1046,14 @@ class MarketingController extends x2base {
 	 * Create a web lead form with a custom style
 	 */
 	public function actionWebleadForm() {
-		if(file_exists(__DIR__ . '/pro/actionWebleadForm.php')) {
-			include(__DIR__ . '/pro/actionWebleadForm.php');
-			return;
-		}
-		
-		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-			if (empty($_POST['name'])) {
+		if(!empty($_POST)) {
+			if(empty($_POST['name'])) {
 				echo json_encode(array('errors'=>array('name'=>Yii::t('marketing','Name cannot be blank.'))));
 				return;
 			}
-
 			$type = !empty($_POST['type']) ? $_POST['type'] : 'weblead';
 			$model = WebForm::model()->findByAttributes(array('name'=>$_POST['name'], 'type'=>$type));
-			if (!isset($model)) {
+			if($model === null) {
 				$model = new WebForm;
 				$model->name = $_POST['name'];
 				$model->type = $type;
@@ -1069,40 +1063,30 @@ class MarketingController extends x2base {
 				$model->createdBy = Yii::app()->user->getName();
 				$model->createDate = time();
 			}
-
 			//grab web lead configuration and stash in 'params'
 			$whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
 			$config = array_filter(array_intersect_key($_POST, array_flip($whitelist)));
 			//restrict param values, alphanumeric, # for color vals, comma for tag list
 			$config = preg_replace('/[^a-zA-Z0-9#,]/', '', $config);
-			if (!empty($config)) $model->params = $config;
-			else $model->params = null;
-
+			$model->params = empty($config)? null : $config;
+			
 			$model->updatedBy = Yii::app()->user->getName();
 			$model->lastUpdated = time();
-
-			if ($model->save()) {
+			
+			if(file_exists(__DIR__ . '/pro/actionWebleadFormPro.php') && Yii::app()->params->edition === 'pro')
+				include(__DIR__ . '/pro/actionWebleadFormPro.php');
+			
+			if($model->save())
 				echo json_encode($model->attributes);
-			} else {
+			else
 				echo json_encode(array('errors'=>$model->getErrors()));
-			}
+			
 		} else {
-            if(Yii::app()->user->getName()!='admin'){
-            $condition = 'AND visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-            if(!empty($groupLinks))
-                $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-
-            $condition .= 'OR (visibility=2 AND assignedTo IN 
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-            }else{
-                $condition="";
-            }
+			$condition = Yii::app()->params->isAdmin? 'TRUE' : X2Model::getAccessConditions(2);
+			
 			//this get request is for weblead type only, marketing/weblist/view supplies the form that posts for weblist type
-			$forms = WebForm::model()->findAll('type="weblead" '.$condition);
-			$this->render('webleadForm', array('forms'=>$forms));
+			$forms = WebForm::model()->findAll('type="weblead" AND '.$condition);
+			$this->render('webleadForm',array('forms'=>$forms));
 		}
 	}
 

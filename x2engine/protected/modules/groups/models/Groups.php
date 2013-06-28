@@ -60,7 +60,7 @@ class Groups extends X2Model {
 			)
 		));
 	}
-	
+
 	/**
 	 * @return array validation rules for model attributes.
 	 */
@@ -75,16 +75,17 @@ class Groups extends X2Model {
 			array('id, name', 'safe', 'on'=>'search'),
 		);
 	}
-	
+
 	public static function getNames() {
-		
+
 		$groupNames = array();
 		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_groups')->order('name ASC')->queryAll(false);
-		foreach($data as $row)
+        foreach($data as $row){
 			$groupNames[$row[0]] = $row[1];
-		
+        }
+
 		return $groupNames;
-		
+
 		// $groupArray = X2Model::model('Groups')->findAll();
 		// $names = array();
 		// foreach ($groupArray as $group) {
@@ -112,7 +113,7 @@ class Groups extends X2Model {
 			'name' => 'Name',
 		);
 	}
-	
+
 	// public static function getLink($id) {
 		// $groupName = Yii::app()->db->createCommand()->select('name')->from('x2_groups')->where('id='.$id)->queryScalar();
 
@@ -139,7 +140,7 @@ class Groups extends X2Model {
 			),
 		));
 	}
-	
+
 	/* inGroup
 	 *
 	 * Find out if a user belongs to a group
@@ -150,7 +151,7 @@ class Groups extends X2Model {
 
 	/* Looks up groups to which the specified user belongs.
 	 * Uses cache to lookup/store groups.
-	 * 
+	 *
 	 * @param Integer $userId user to look up groups for
 	 * @param Boolean $cache whether to use cache
 	 * @return Array array of groupIds
@@ -163,15 +164,15 @@ class Groups extends X2Model {
 		} else {
 			$userGroups = array();
 		}
-		
+
 		$userGroups[$userId] = Yii::app()->db->createCommand()	// get array of groupIds
 			->select('groupId')
 			->from('x2_group_to_user')
 			->where('userId=' . $userId)->queryColumn();
-		
+
 		if($cache === true)
 			Yii::app()->cache->set('user_groups',$userGroups,259200); // cache user groups for 3 days
-		
+
 		return $userGroups[$userId];
 	}
 }

@@ -54,8 +54,8 @@ $('.search-form form').submit(function(){
 ");
 
 function trimText($text) {
-	if(strlen($text)>150)
-		return substr($text,0,147).'...';
+	if(mb_strlen($text,'UTF-8')>150)
+		return mb_substr($text,0,147,'UTF-8').'...';
 	else
 		return $text;
 }
@@ -65,8 +65,8 @@ function trimText($text) {
 	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
-<?php 
-	$canDelete = Yii::app()->user->checkAccess('AdminIndex');
+<?php
+	$canDelete = Yii::app()->params->isAdmin;
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'product-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',

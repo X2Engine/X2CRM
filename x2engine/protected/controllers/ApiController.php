@@ -512,6 +512,7 @@ class ApiController extends x2base {
 								$formattedNumber = substr($strNumber, 0, $strl - 10)."-$formattedNumber";
 							}
 						}
+						// Create notifications:
 						foreach($assignees as $user){
 							$notif = new Notification;
 							$notif->type = 'voip_call';
@@ -526,7 +527,6 @@ class ApiController extends x2base {
 								$usersFailure = array();
 							}
 						}
-
 						$failure = count($usersSuccess) == 0;
 						$partialFailure = count($usersFailure) > 0;
 						if($failure) {
@@ -541,6 +541,14 @@ class ApiController extends x2base {
 								$message .= '; saving notifications failed for users(s): '.implode(',',$usersFailure);
 							}
 						}
+
+						// Create an event record for the feed:
+						$event = new Events();
+						$event->type = 'voip_call';
+						$event->associationType = get_class($contact);
+						$event->associationId = $contact->id;
+						$event->save();
+
 						$this->_sendResponse($failure ? 500 : 200,$message);
 					} else {
 						$this->_sendResponse(404,'Phone number record refers to a contact that no longer exists.');

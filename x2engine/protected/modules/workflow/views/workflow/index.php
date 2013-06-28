@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$isAdmin = (Yii::app()->user->checkAccess('AdminIndex'));
+$isAdmin = (Yii::app()->params->isAdmin);
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('workflow','All Workflows')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),

@@ -42,18 +42,6 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
 	.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
 	.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
 
-$hideWidgetUrl = json_encode($this->createUrl('/site/hideWidget'));
-$showWidgetUrl = json_encode($this->createUrl('/site/showWidget'));
-$minimizeWidgetUrl = json_encode($this->createUrl('/site/minimizeWidget'));
-$reorderWidgetsUrl = json_encode($this->createUrl('/site/reorderWidgets'));
-Yii::app()->clientScript->registerScript('widget-urls', "
-$(function() {
-    $('body').data('hideWidgetUrl', $hideWidgetUrl);
-    $('body').data('showWidgetUrl', $showWidgetUrl);
-    $('body').data('minimizeWidgetUrl', $minimizeWidgetUrl);
-    $('body').data('reorderWidgetsUrl', $reorderWidgetsUrl);
-});",CClientScript::POS_END);
-
 $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew';
 ?>
 
@@ -62,7 +50,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 	<div class="sidebar-left">
 	<!-- sidebar -->
 	<?php
-		if(isset($this->actionMenu)) {
+		if(isset($this->actionMenu) && !empty($this->actionMenu)) {
 			$this->beginWidget('zii.widgets.CPortlet',array(
 				'title'=>Yii::t('app','Actions'),
 				'id'=>'actions'
@@ -255,7 +243,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 
 		if(isset($this->modelClass) && $this->modelClass == 'X2Calendar') {
 
-			$user = UserChild::model()->findByPk(Yii::app()->user->getId());
+			$user = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 			$showCalendars = json_decode($user->showCalendars, true);
 //			$editableCalendars = X2Calendar::getEditableCalendarNames(); // list of calendars current user can edit
 			$editableUserCalendars = X2CalendarPermissions::getEditableUserCalendarNames(); // list of user calendars current user can edit

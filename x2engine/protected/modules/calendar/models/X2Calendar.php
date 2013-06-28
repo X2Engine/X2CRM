@@ -82,7 +82,7 @@ class X2Calendar extends CActiveRecord
 		foreach ($userArray as $user) {
 			if(in_array(Yii::app()->user->name, explode(',', $user->calendarViewPermission)) || 
 				!$user->setCalendarPermissions || // user hasn't set up calendar permissions?
-				Yii::app()->user->checkAccess('AdminIndex') || 
+				Yii::app()->params->isAdmin || 
 				Yii::app()->user->name == $user->username) {
 				$first = $user->firstName;
 				$last = $user->lastName;
@@ -100,7 +100,7 @@ class X2Calendar extends CActiveRecord
 		$names = array('Anyone' => 'Anyone');
 		foreach ($userArray as $user) {
 			if(in_array(Yii::app()->user->name, explode(',', $user->calendarEditPermission)) || 
-				Yii::app()->user->checkAccess('AdminIndex') || 
+				Yii::app()->params->isAdmin || 
 				Yii::app()->user->name == $user->username) {
 				$first = $user->firstName;
 				$last = $user->lastName;
@@ -116,7 +116,7 @@ class X2Calendar extends CActiveRecord
 		
 		$names = array();
 
-		if(Yii::app()->user->checkAccess('AdminIndex')) { // admin sees all
+		if(Yii::app()->params->isAdmin) { // admin sees all
 			$groups = Yii::app()->db->createCommand()->select()->from('x2_groups')->queryAll();			
 		} else {
 			$groups = Yii::app()->db->createCommand()->select('x2_groups.id, x2_groups.name')->from('x2_group_to_user')->join('x2_groups', 'groupId = x2_groups.id')->where('userId='.Yii::app()->user->id)->queryAll();

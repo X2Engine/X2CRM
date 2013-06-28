@@ -53,4 +53,4 @@ $this->actionMenu = $this->formatMenu(array(
 	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
 	<a class="x2-button highlight right" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>
 </div>
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users, 'modelName'=>'Opportunity')); ?>
+<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'modelName'=>'Opportunity')); ?>

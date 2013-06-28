@@ -34,6 +34,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss("viewProfile", "
+
+.avatar-upload {
+    border: 3px solid #f8f8f8;
+    -webkit-border-radius:8px;
+	-moz-border-radius:8px;
+	-o-border-radius:8px;
+	border-radius:8px;
+}
+
+");
+
 Yii::app()->clientScript->registerScript('avatarUploader',"
 function showAttach() {
 	e=document.getElementById('attachments');
@@ -111,7 +123,8 @@ $attributeLabels = $model->attributeLabels();
 				$imgSize[1] = round($imgSize[1] * $scaleFactor);
 				// echo var_dump($imgSize);
 
-				echo '<img width="'.$imgSize[0].'" height="'.$imgSize[1].'" src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
+				echo '<img width="'.$imgSize[0].'" height="'.$imgSize[1].'" class="avatar-upload" '.
+                    'src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
 			} else
 				echo '<img width="45" height="45" src='.Yii::app()->request->baseUrl."/uploads/default.png".'>';
 			?>

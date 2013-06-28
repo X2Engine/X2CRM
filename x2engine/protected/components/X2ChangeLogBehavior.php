@@ -363,7 +363,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 							$notif->value = $new;			// record the new value
 						} else {
 							$notif->comparison = $criteria->comparisonOperator;  // otherwise record the operator type
-							$notif->value = substr($criteria->modelValue, 0, 250); // and the comparison value
+							$notif->value = mb_substr($criteria->modelValue, 0, 250, 'UTF-8'); // and the comparison value
 						}
 						$notif->user = $user;
 						$notif->createdBy = $this->editingUsername;

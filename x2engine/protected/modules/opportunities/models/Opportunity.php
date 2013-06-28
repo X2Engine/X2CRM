@@ -38,7 +38,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_opportunities".
- * 
+ *
  * @package X2CRM.modules.opportunities.models
  */
 class Opportunity extends X2Model {
@@ -66,7 +66,7 @@ class Opportunity extends X2Model {
 			)
 		));
 	}
-	
+
 	/**
 	 * Formats data for associatedContacts before saving
 	 * @return boolean whether or not to save
@@ -74,7 +74,7 @@ class Opportunity extends X2Model {
 	public function beforeSave() {
 		if(isset($this->associatedContacts))
 			$this->associatedContacts = self::parseContacts($this->associatedContacts);
-			
+
 		return parent::beforeSave();
 	}
 
@@ -83,7 +83,7 @@ class Opportunity extends X2Model {
 		$names = array(0=>'None');
 		foreach($arr as $opportunity)
 			$names[$opportunity->id] = $opportunity->name;
-		
+
 		return $names;
 	}
 
@@ -93,11 +93,11 @@ class Opportunity extends X2Model {
 
 	public static function parseUsersTwo($arr){
 		$str="";
-		foreach($arr as $user=>$name){
-			$str.=$user.", ";
-		}
-		$str=substr($str,0,strlen($str)-2);
-						
+        if(is_array($arr)){
+            $arr=array_keys($arr);
+            $str=implode(', ',$arr);
+        }
+
 		return $str;
 	}
 
@@ -144,7 +144,7 @@ class Opportunity extends X2Model {
                 unset($arr[$id]);
             }
 		}
-		
+
 		return $arr;
 	}
 
@@ -162,16 +162,16 @@ class Opportunity extends X2Model {
 	}
 
 	public static function editUsersInverse($arr) {
-		
+
 		$data=array();
-		
+
 		foreach($arr as $username){
 			if($username!='' && !is_numeric($username))
 				$data[]=User::model()->findByAttributes(array('username'=>$username));
 			elseif(is_numeric($username))
 				$data[]=Groups::model()->findByPK($username);
 		}
-		
+
 		$temp=array();
 		if(isset($data)){
 			foreach($data as $item){
@@ -188,13 +188,13 @@ class Opportunity extends X2Model {
 
 	public static function editContactsInverse($arr) {
 		$data=array();
-		
+
 		foreach($arr as $id){
 			if($id!='')
 				$data[]=X2Model::model('Contacts')->findByPk($id);
 		}
 		$temp=array();
-		
+
 		foreach($data as $item){
 			$temp[$item->id]=$item->firstName.' '.$item->lastName;
 		}
@@ -215,11 +215,11 @@ class Opportunity extends X2Model {
 
 		return $this->searchBase($criteria);
 	}
-	
+
 	/**
 	 * Base search method for all data providers.
 	 * Sets up record-level security checks.
-	 * 
+	 *
 	 * @param CDbCriteria $criteria starting criteria for this search
 	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
 	 */
@@ -231,6 +231,6 @@ class Opportunity extends X2Model {
 
 		return parent::searchBase($criteria);
 	}
-        
- 
+
+
 }

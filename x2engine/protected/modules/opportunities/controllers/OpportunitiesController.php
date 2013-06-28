@@ -40,12 +40,12 @@
 class OpportunitiesController extends x2base {
 
 	public $modelClass = 'Opportunity';
-		
+
 	public function accessRules() {
 		return array(
 			array('allow',
 				'actions'=>array('getItems'),
-				'users'=>array('*'), 
+				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact',
@@ -78,7 +78,7 @@ class OpportunitiesController extends x2base {
 		echo CJSON::encode($result);
 		Yii::app()->end();
 	}
-		
+
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -87,12 +87,12 @@ class OpportunitiesController extends x2base {
 		$type = 'opportunities';
 		$model = $this->loadModel($id);
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
-		
+
 		parent::view($model, $type);
 	}
-	
+
 	public function actionShareOpportunity($id){
-		
+
 		$model=$this->loadModel($id);
 		$body="\n\n\n\n".Yii::t('opportunities','Opportunity Record Details')." <br />
 <br />".Yii::t('opportunities','Name').": $model->name
@@ -102,14 +102,14 @@ class OpportunitiesController extends x2base {
 <br />".Yii::t('opportunities','Lead Source').": $model->leadSource
 <br />".Yii::t('opportunities','Probability').": $model->probability
 <br />".Yii::t('app','Link').": ".CHtml::link($model->name,'http://'.Yii::app()->request->getServerName().$this->createUrl('/opportunities/'.$model->id));
-		
+
 		$body = trim($body);
 
 		$errors = array();
 		$status = array();
 		$email = array();
 		if(isset($_POST['email'], $_POST['body'])){
-		
+
 			$subject = Yii::t('opportunities','Opportunity Record Details');
 			$email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
 			$body = $_POST['body'];
@@ -118,7 +118,7 @@ class OpportunitiesController extends x2base {
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
-			
+
 			if(empty($errors))
 				$status = $this->sendUserEmail($email,$subject,$body);
 
@@ -140,12 +140,12 @@ class OpportunitiesController extends x2base {
 			'errors'=>$errors
 		));
 	}
-	
+
 	/* public function create($model,$oldAttributes,$api=0) {
-		
+
 		// process currency into an INT
 //		$model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
-		
+
 		if(isset($model->associatedContacts))
 			$model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
 		$model->createDate = time();
@@ -176,7 +176,7 @@ class OpportunitiesController extends x2base {
 
 		if(isset($_POST['Opportunity'])) {
 			$temp=$model->attributes;
-			
+
 			$model->setX2Fields($_POST['Opportunity']);
 			// die(var_dump($model));
 			/* foreach($_POST['Opportunity'] as $name => &$value) {
@@ -249,7 +249,7 @@ class OpportunitiesController extends x2base {
 					$this->redirect(array('view','id'=>$model->id));
 			}
 		}
-		
+
 		if(isset($_POST['x2ajax'])) {
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
 			Yii::app()->clientScript->scriptMap['*.css'] = false;
@@ -261,9 +261,9 @@ class OpportunitiesController extends x2base {
 			));
 		}
 	}
-        
+
 	/* public function update($model,$oldAttributes,$api=0){
-		
+
 		// process currency into an INT
 		// $model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
 
@@ -284,7 +284,7 @@ class OpportunitiesController extends x2base {
 		// if($model->expectedCloseDate!=""){
 			// $model->expectedCloseDate=strtotime($model->expectedCloseDate);
 		// }
-		
+
 		parent::update($model,$oldAttributes,'0');
 	} */
 
@@ -295,18 +295,14 @@ class OpportunitiesController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$users=User::getNames();
-		unset($users['admin']);
-		unset($users['']);
-		foreach(Groups::model()->findAll() as $group)
-			$users[$group->id]=$group->name;
-		
 		$model->assignedTo = explode(' ',$model->assignedTo);
-		
-		$model->associatedContacts = explode(' ',$model->associatedContacts);
-		
+        if(!empty($model->associatedContacts))
+            $model->associatedContacts = explode(' ',$model->associatedContacts);
+
 		if(isset($_POST['Opportunity'])) {
 			$model->setX2Fields($_POST['Opportunity']);
+            if(!empty($model->associatedContacts))
+                $model->associatedContacts=implode(', ',$model->associatedContacts);
 
 			// $this->update($model,$temp);
 			$model->save();
@@ -315,7 +311,6 @@ class OpportunitiesController extends x2base {
 
 		$this->render('update',array(
 			'model'=>$model,
-			'users'=>$users,
 		));
 	}
 	/*
@@ -328,11 +323,11 @@ class OpportunitiesController extends x2base {
                                 $opportunity->$field=$_POST['Opportunity'][$field];
                             }
                         }
-			
+
 			// process currency into an INT
 			$opportunity->quoteAmount = Formatter::parseCurrency($opportunity->quoteAmount,false);
-			
-			
+
+
 			if($opportunity->expectedCloseDate!=""){
 				$opportunity->expectedCloseDate=strtotime($opportunity->expectedCloseDate);
 			}
@@ -357,11 +352,11 @@ class OpportunitiesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Opportunity'])) {
-			$temp=$model->assignedTo; 
+			$temp=$model->assignedTo;
                         $tempArr=$model->attributes;
-			$model->attributes=$_POST['Opportunity'];  
+			$model->attributes=$_POST['Opportunity'];
 			$arr=$_POST['Opportunity']['assignedTo'];
-			
+
 
 			$model->assignedTo=Opportunity::parseUsers($arr);
 			if($temp!="")
@@ -399,9 +394,9 @@ class OpportunitiesController extends x2base {
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Opportunity'])) {
-			$temp=$model->associatedContacts; 
+			$temp=$model->associatedContacts;
             $tempArr=$model->attributes;
-			$model->attributes=$_POST['Opportunity'];  
+			$model->attributes=$_POST['Opportunity'];
 			$arr=$_POST['Opportunity']['associatedContacts'];
 			foreach($arr as $contactId) {
 				$rel=new Relationships;
@@ -417,7 +412,7 @@ class OpportunitiesController extends x2base {
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
-		$this->render('addContact',array( 
+		$this->render('addContact',array(
 			'model'=>$model,
 			'users'=>$users,
 			'contacts'=>$contacts,
@@ -437,14 +432,14 @@ class OpportunitiesController extends x2base {
 
 		if(isset($_POST['Opportunity'])) {
                         $temp=$model->attributes;
-			$model->attributes=$_POST['Opportunity'];  
+			$model->attributes=$_POST['Opportunity'];
 			$arr=$_POST['Opportunity']['assignedTo'];
-			
-			
+
+
 			foreach($arr as $id=>$user){
 				unset($pieces[$user]);
 			}
-			
+
 			$temp=Opportunity::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
@@ -477,10 +472,10 @@ class OpportunitiesController extends x2base {
 
 		if(isset($_POST['Opportunity'])) {
 			$temp=$model->attributes;
-			$model->attributes=$_POST['Opportunity'];  
+			$model->attributes=$_POST['Opportunity'];
 			$arr=$_POST['Opportunity']['associatedContacts'];
-			
-			
+
+
 			foreach($arr as $id=>$contact) {
 				$rel=X2Model::model('Relationships')->findByAttributes(array('firstType'=>'Contacts','firstId'=>$contact,'secondType'=>'Opportunity','secondId'=>$model->id));
 				if(isset($rel))
@@ -507,19 +502,19 @@ class OpportunitiesController extends x2base {
 		$model=new Opportunity('search');
 		$this->render('index', array('model'=>$model));
 	}
-	
+
 	public function delete($id) {
 		$model = $this->loadModel($id);
-		
+
 		CActiveDataProvider::model('Actions')->deleteAllByAttributes(array('associationType'=>'opportunities','associationId'=>$id));
-		
+
 		$this->cleanUpTags($model);
 		$model->delete();
 	}
 
 	public function actionDelete($id) {
 		$model=$this->loadModel($id);
-        
+
 		if(Yii::app()->request->isPostRequest) {
             $event=new Events;
             $event->type='record_deleted';
@@ -534,11 +529,11 @@ class OpportunitiesController extends x2base {
 		} else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-			
+
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
-	
+
 	public function actionGetTerms(){
 		$sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);

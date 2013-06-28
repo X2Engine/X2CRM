@@ -881,6 +881,8 @@ class InlineEmail extends CFormModel {
         // The email record, with action header for display purposes:
         $emailRecordBody = $this->insertInBody(self::insertedPattern('ah', $this->actionHeader), 1, 1);
         $now = time();
+		$recipientContacts = array_filter($this->recipientContacts);
+		
         if(!empty($this->targetModel)){
             $model = $this->targetModel;
             if((bool) $model){
@@ -889,8 +891,6 @@ class InlineEmail extends CFormModel {
                     $model->save();
                 }
             }
-
-            $recipientContacts = array_filter($this->recipientContacts);
 
             $action = new Actions;
             // These attributes will be the same regardless of the type of

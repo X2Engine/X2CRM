@@ -73,7 +73,7 @@ class SiteController extends x2base {
                     'whatsNew', 'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
                     'loadPosts', 'addComment', 'flagPost', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
-                    'dynamicDropdown'),
+                    'dynamicDropdown','stickyPost'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -201,7 +201,7 @@ class SiteController extends x2base {
                 $visibility = str_replace('Public', '1', $visibility);
                 $visibility = str_replace('Private', '0', $visibility);
                 $visibilityFilter = explode(",", $visibility);
-                if(!Yii::app()->user->checkAccess('AdminIndex')){
+                if(!Yii::app()->params->isAdmin){
                     $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."' OR visibility=1)";
                 }else{
                     $visibilityCondition = "";
@@ -605,7 +605,7 @@ class SiteController extends x2base {
     }
 
     public function actionStickyPost($id){
-        if(Yii::app()->user->checkAccess('AdminIndex')){
+        if(Yii::app()->params->isAdmin){
             $event = X2Model::model('Events')->findByPk($id);
             if(isset($event)){
                 $event->sticky = !$event->sticky;
@@ -674,7 +674,7 @@ class SiteController extends x2base {
         //opensource or pro
         $edition = yii::app()->params->admin->edition;
         //True or False
-        $admin = Yii::app()->user->checkAccess('AdminIndex');
+        $admin = Yii::app()->params->isAdmin;
         //Check user type and editon to deliever an appropriate tip
         if($edition == 'pro'){
             if($admin){
@@ -1341,8 +1341,8 @@ class SiteController extends x2base {
         if(Yii::app()->user->isGuest)
             $this->redirect(array('/site/login'));
         else{
-            $profile = X2Model::model('profile')->findByPk(Yii::app()->user->getId());
-            if(Yii::app()->user->checkAccess('AdminIndex')){
+            $profile = Yii::app()->params->profile;
+            if(Yii::app()->params->isAdmin){
                 $admin = &Yii::app()->params->admin;
                 if(Yii::app()->session['versionCheck'] == false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()))
                     Yii::app()->session['alertUpdate'] = true;
@@ -1448,6 +1448,7 @@ class SiteController extends x2base {
                 echo $error['message'];
             }else{
                 $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+                $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
                 if($error['code'] == '404'){
                     $request = Yii::app()->request->requestUri;
                     if(preg_match('/opportunity/', $request)){
@@ -1493,7 +1494,8 @@ class SiteController extends x2base {
                                     'x2version' => $x2version,
                                     'adminEmail' => $email,
                                     'user' => Yii::app()->user->getName(),
-                                    'isAdmin' => Yii::app()->user->checkAccess('AdminIndex'),
+                                    'isAdmin' => Yii::app()->params->isAdmin,
+                                    'userAgent' => $userAgent,
                                 ))));
 
                 $errorReport = base64_encode(serialize(array_merge($error, array(
@@ -1505,7 +1507,8 @@ class SiteController extends x2base {
                                     'x2version' => $x2version,
                                     'adminEmail' => $email,
                                     'user' => Yii::app()->user->getName(),
-                                    'isAdmin' => Yii::app()->user->checkAccess('AdminIndex'),
+                                    'isAdmin' => Yii::app()->params->isAdmin,
+                                    'userAgent' => $userAgent,
                                 ))));
 
                 $this->render('error', array_merge($error, array(
@@ -1539,7 +1542,7 @@ class SiteController extends x2base {
                     'x2version' => $x2version,
                     'adminEmail' => $email,
                     'user' => Yii::app()->user->getName(),
-                    'isAdmin' => Yii::app()->user->checkAccess('AdminIndex'),
+                    'isAdmin' => Yii::app()->params->isAdmin,
                 )));
 
         $errorReport = base64_encode(serialize(array(
@@ -1547,7 +1550,7 @@ class SiteController extends x2base {
                     'x2version' => $x2version,
                     'adminEmail' => $email,
                     'user' => Yii::app()->user->getName(),
-                    'isAdmin' => Yii::app()->user->checkAccess('AdminIndex'),
+                    'isAdmin' => Yii::app()->params->isAdmin,
                 )));
 
         $this->render('bugReport', array(

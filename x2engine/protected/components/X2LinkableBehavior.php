@@ -99,7 +99,11 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 		if(Yii::app()->params->noSession) { // Construct an absolute URL; the URL manager is unavailable.
 			$url = Yii::app()->externalBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
 		}
-		return CHtml::link('<span>'.$name.'</span>',$url);
+        if($this->owner instanceof Contacts){
+            return CHtml::link('<span>'.$name.'</span>',$url,array('class'=>'contact-name'));
+        }else{
+            return CHtml::link('<span>'.$name.'</span>',$url);
+        }
 	}
 
 	/**

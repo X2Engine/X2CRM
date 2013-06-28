@@ -37,7 +37,7 @@
 
 <?php
 if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
-	if(Yii::app()->user->checkAccess('AdminIndex')) {
+	if(Yii::app()->params->isAdmin) {
 		$menuItems = array(
 			array('label'=>Yii::t('calendar', 'Calendar')),
 			array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
@@ -56,7 +56,7 @@ if(Yii::app()->params->admin->googleIntegration) { // menu if google integration
 		);
 	}
 } else {
-	if(Yii::app()->user->checkAccess('AdminIndex')) {
+	if(Yii::app()->params->isAdmin) {
 		$menuItems = array(
 			array('label'=>Yii::t('calendar', 'Calendar')),
 			array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),

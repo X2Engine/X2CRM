@@ -50,7 +50,7 @@ class X2FlowEmail extends X2FlowAction {
 			'options' => array(
 				array('name'=>'to','label'=>'To:','type'=>'email'),
 				array('name'=>'from','label'=>'From:','type'=>'email'),
-				array('name'=>'template','label'=>'Template','type'=>'dropdown','options'=>array_merge(array(''=>Yii::t('studio','Custom')),Docs::getEmailTemplates()),'optional'=>1),
+				array('name'=>'template','label'=>'Template','type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
 				array('name'=>'subject','label'=>'Subject'),
 				array('name'=>'cc','label'=>'CC:','optional'=>1,'type'=>'email'),
 				array('name'=>'bcc','label'=>'BCC:','optional'=>1,'type'=>'email'),

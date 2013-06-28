@@ -65,6 +65,8 @@ abstract class X2FlowTrigger extends X2FlowItem {
 			'contains' => Yii::t('studio','contains'),
 			'noContains' => Yii::t('studio','does not contain'),
 			'changed' => Yii::t('studio','changed'),
+			'before' => Yii::t('studio','before'),
+			'after' => Yii::t('studio','after'),
 		);
 	}
 
@@ -90,8 +92,8 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		'day_of_week'		=> 'Day of Week',
 		'day_of_month'		=> 'Day of Month',
 		'time_of_day'		=> 'Time of Day',
-		'current_time'		=> 'Current Timestamp',
-		'user_active'		=> 'User Active?',
+		'current_time'		=> 'Current Time',
+		'user_active'		=> 'User Logged In',
 		'on_list'			=> 'On List',
 		// 'workflow_status'	=> 'Workflow Status',
 		// 'current_local_time' => ''),
@@ -101,12 +103,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		switch($type) {
 			case 'current_user':
 				return array(
-					'name'=>'user',
-					'label'=>Yii::t('studio','Current User'),
+					'name' => 'user',
+					'label' => Yii::t('studio','Current User'),
 					'type' => 'dropdown',
 					'multiple' => 1,
 					'options' => X2Model::getAssignmentOptions(false,false),
-					'operators'=>array('=','<>','list','notList','contains','noContains')
+					'operators'=>array('=','<>','list','notList')
 				);
 
 			case 'month':
@@ -115,55 +117,55 @@ abstract class X2FlowTrigger extends X2FlowItem {
 					'type' => 'dropdown',
 					'multiple' => 1,
 					'options' => Yii::app()->locale->monthNames,
-					'operators'=>array('=','<>','list','notList','contains','noContains')
+					'operators'=>array('=','<>','list','notList')
 				);
 
 			case 'day_of_week':
 				return array(
-					'label'=>Yii::t('studio','Day of Week'),
+					'label' => Yii::t('studio','Day of Week'),
 					'type' => 'dropdown',
 					'multiple' => 1,
 					'options' => Yii::app()->locale->weekDayNames,
-					'operators'=>array('=','<>','list','notList','contains','noContains')
+					'operators'=>array('=','<>','list','notList')
 				);
 
 			case 'day_of_month':
 				$days = array_keys(array_fill(1,31,1));
 				return array(
-					'label'=>Yii::t('studio','Day of Month'),
+					'label' => Yii::t('studio','Day of Month'),
 					'type' => 'dropdown',
 					'multiple' => 1,
 					'options' => array_combine($days,$days),
-					'operators'=>array('=','<>','list','notList','contains','noContains')
+					'operators'=>array('=','<>','list','notList')
 				);
 
 			case 'time_of_day':
 				return array(
-					'label'=>Yii::t('studio','Time of Day'),
-					'type'=>'time',
-					'operators'=>array('<','>')
+					'label' => Yii::t('studio','Time of Day'),
+					'type' => 'time',
+					'operators'=>array('before','after')
 				);
 
 			// case 'current_local_time':
 
 			case 'current_time':
 				return array(
-					'label'=>Yii::t('studio','Current Timestamp'),
-					'type'=>'dateTime',
-					'operators'=>array('<','>')
+					'label' => Yii::t('studio','Current Time'),
+					'type' => 'dateTime',
+					'operators'=>array('before','after')
 				);
 
 			case 'user_active':
 				return array(
-					'label'=>Yii::t('studio','User Active?'),
+					'label' => Yii::t('studio','User Logged In'),
 					'type' => 'dropdown',
 					'options' => X2Model::getAssignmentOptions(false,false)
 				);
 
 			case 'on_list':
 				return array(
-					'label'=>Yii::t('studio','On List'),
-					'type'=>'lookup',
+					'label' => Yii::t('studio','On List'),
+					'type' => 'lookup',
 					'linkType'=>'X2List',
 					'linkSource'=>Yii::app()->controller->createUrl(CActiveRecord::model('X2List')->autoCompleteSource)
 				);

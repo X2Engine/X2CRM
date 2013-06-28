@@ -356,7 +356,8 @@ class ServicesController extends x2base {
 	 *
 	 */
 	public function actionCreateWebForm() {
-		if(file_exists(__DIR__ . '/pro/actionCreateWebForm.php')) {
+		if(file_exists(__DIR__ . '/pro/actionCreateWebForm.php') &&
+           Yii::app()->params->edition === 'pro') {
 			include(__DIR__ . '/pro/actionCreateWebForm.php');
 			return;
 		}
@@ -426,7 +427,8 @@ class ServicesController extends x2base {
 	 *
 	 */
 	public function actionWebForm() {
-		if(file_exists(__DIR__ . '/pro/actionWebForm.php')) {
+		if(file_exists(__DIR__ . '/pro/actionWebForm.php') &&
+           Yii::app()->params->edition === 'pro') {
 			include(__DIR__ . '/pro/actionWebForm.php');
 			return;
 		}

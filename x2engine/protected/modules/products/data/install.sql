@@ -4,7 +4,7 @@ CREATE TABLE x2_products(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(255)	NOT NULL,
 	type					VARCHAR(100),
-	price					DECIMAL(10,2),
+	price					DECIMAL(18,2),
 	inventory				INT,
 	description				TEXT,
 	createDate				BIGINT,
@@ -13,7 +13,7 @@ CREATE TABLE x2_products(
 	updatedBy				VARCHAR(50),
 	status					VARCHAR(20),
 	currency				VARCHAR(40),
-	adjustment				DECIMAL(10,2)
+	adjustment				DECIMAL(18,2)
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`

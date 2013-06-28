@@ -58,7 +58,7 @@ class WebForm extends CActiveRecord {
 			array('assignedTo, createdBy, updatedBy', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, type, description, modelName, fields, params, css, visibility, assignedTo, createdBy, updatedBy, createDate, lastUpdated', 'safe', 'on'=>'search'),
+			array('id, name, type, description, modelName, fields, params, css, header, visibility, assignedTo, createdBy, updatedBy, createDate, lastUpdated', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -72,6 +72,7 @@ class WebForm extends CActiveRecord {
 			'fields'=>Yii::t('marketing', 'Fields'),
 			'params'=>Yii::t('marketing', 'Parameters'),
 			'css'=>Yii::t('marketing', 'CSS'),
+			'header'=>Yii::t('marketing', 'Header Code'),
 			'visibility'=>Yii::t('marketing', 'Visibility'),
 			'assignedTo'=>Yii::t('marketing', 'Assigned To'),
 			'createdBy'=>Yii::t('marketing', 'Created By'),

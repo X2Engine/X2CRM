@@ -4,7 +4,7 @@ CREATE TABLE x2_opportunities(
 	id						INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(255)	NOT NULL,
 	accountName				VARCHAR(100),
-	quoteAmount				DECIMAL(10,2),
+	quoteAmount				DECIMAL(18,2),
 	salesStage				VARCHAR(20),
 	expectedCloseDate		BIGINT,
 	probability				FLOAT,

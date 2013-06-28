@@ -36,6 +36,11 @@
  *****************************************************************************************/
 
 Yii::import('application.components.ResponseBehavior');
+// Extra safeguard, in case automatic creation fails, to maintain that the
+// utilities alias is valid:
+$utilDir = Yii::app()->basePath.'/components/util';
+if(!is_dir($utilDir))
+	mkdir($utilDir);
 Yii::import('application.components.util.*');
 
 /**
@@ -426,27 +431,34 @@ class UpdaterBehavior extends ResponseBehavior {
 		if((bool) count($params['sqlList']))
 			$this->enactDatabaseChanges($params['sqlList'],$autoRestore);
 
-		// The hardest part of the update (database changes) is now done. If any
-		// errors occurred in the database changes, they should have thrown 
-		// exceptions with appropriate messages by now.
-		// 
-		// Now, copy the cache of downloaded files into the live install:
-		$this->restoreBackup("temp");
-		// Delete old files:
-		if (array_key_exists('deletionList', $params))
-			if (is_array($params['deletionList']) && !empty($params['deletionList']))
-				$this->removeFiles($params['deletionList']);
-		if ($scenario == 'update') {
-			$this->resetAssets();
-			// Apply configuration changes and clear out the assets folder:
-			$this->regenerateConfig($params['version'], null, $params['buildDate']);
-		} else if ($scenario == 'upgrade') {
-			// Change the edition and product key to reflect the upgrade:
-			$admin = Yii::app()->params->admin = CActiveRecord::model('Admin')->findByPk(1);
-			$admin->edition = $params['edition'];
-			$admin->unique_id = $params['unique_id'];
-			$admin->save();
+		try{
+			// The hardest part of the update (database changes) is now done. If any
+			// errors occurred in the database changes, they should have thrown
+			// exceptions with appropriate messages by now.
+			//
+			// Now, copy the cache of downloaded files into the live install:
+			$this->restoreBackup("temp");
+			// Delete old files:
+			if(array_key_exists('deletionList', $params))
+				if(is_array($params['deletionList']) && !empty($params['deletionList']))
+					$this->removeFiles($params['deletionList']);
+			$lastException = null;
+
+			if($scenario == 'update'){
+				$this->resetAssets();
+				// Apply configuration changes and clear out the assets folder:
+				$this->regenerateConfig($params['version'], null, $params['buildDate']);
+			}else if($scenario == 'upgrade'){
+				// Change the edition and product key to reflect the upgrade:
+				$admin = Yii::app()->params->admin = CActiveRecord::model('Admin')->findByPk(1);
+				$admin->edition = $params['edition'];
+				$admin->unique_id = $params['unique_id'];
+				$admin->save();
+			}
+		}catch(Exception $e){
+			$lastException = $e;
 		}
+
 		// Clear the cache!
 		$cache = Yii::app()->cache;
 		if(!empty($cache))
@@ -461,7 +473,14 @@ class UpdaterBehavior extends ResponseBehavior {
 		if(!$this->keepDbBackup)
 			$this->removeDatabaseBackup();
 		// Done.
-		return true;
+		if(empty($lastException))
+			return true;
+		else {
+			// Put message into log.
+			$message = Yii::t('admin','Update finished, but with error(s): {message}.',array('{message}'=>$lastException->getMessage()));
+			$this->logError($message);
+			throw new Exception($message);
+		}
 	}
 
 	/**
@@ -794,6 +813,16 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
+	 * Appends a message to the error log.
+	 * @param string $message
+	 */
+	public function logError($message) {
+		$fh = fopen(Yii::app()->basePath.'/data/'.self::ERRFILE,'a');
+		fwrite($fh,strftime('Update failure %h %e, %r : ').$message);
+		fclose($fh);
+	}
+
+	/**
 	 * Creates a backup of a list of files in a specified folder.
 	 * 
 	 * @param array $fileList List of files with paths relative to the web root
@@ -923,11 +952,24 @@ class UpdaterBehavior extends ResponseBehavior {
 			$config .= "\$$var=$q" . ${$var} . "$q;\n";
 		$config .= "?>";
 
+
 		if (file_put_contents($configPath, $config) === false) {
 			$contents = $this->isConsole ? "\n$config" : "<br /><pre>\n$config\n</pre>";
 			throw new Exception(Yii::t('admin',"Failed to set version info in the configuration. To fix this issue, edit {file} and ensure its contents are as follows: {contents}",array('{file}'=>$configPath,'{contents}'=>$contents)));
-		} else 
+		} else {
+			// Create a new encryption key if none exists
+			$key = Yii::app()->basePath.'/config/encryption.key';
+			$iv = Yii::app()->basePath.'/config/encryption.iv';
+			if(!file_exists($key) || !file_exists($iv)){
+				try {
+					$encryption = new EncryptUtil($key, $iv);
+					$encryption->saveNew();
+				} catch(Exception $e) {
+					throw new Exception(Yii::t('admin',"Succeeded in setting the version info in the configuration, but failed to create a secure encryption key. The error message was: {message}",array('{message}'=>$e->getMessage())));
+				}
+			}
 			return true;
+		}
 	}
 
 	/**
@@ -1005,9 +1047,9 @@ class UpdaterBehavior extends ResponseBehavior {
 		if ($success)
 			$this->removeBackup($dir);
 		else {
-			$message = Yii::t('admin','Failed to copy one or more files from {dir} into X2CRM.',array('{dir}'=>$dir));
+			$message = Yii::t('admin','Failed to copy one or more files from {dir} into X2CRM. You may need to copy them manually.',array('{dir}'=>$dir));
 			if(!empty($copiedFiles)) {
-				$message .= Yii::t('admin','Check that they exist: {fileList}',array('{fileList}' => implode(', ',$copiedFiles)));
+				$message .= ' '.Yii::t('admin','Check that they exist: {fileList}',array('{fileList}' => implode(', ',$copiedFiles)));
 			}
 			throw new Exception($message);
 		}

@@ -187,7 +187,7 @@ class AdminController extends Controller {
         $auth = Yii::app()->authManager;
         $action = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
         $authItem = $auth->getAuthItem($action);
-        if (Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->user->checkAccess('AdminIndex')) {
+        if (Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->params->isAdmin) {
             return true;
         } elseif (Yii::app()->user->isGuest) {
 			Yii::app()->user->returnUrl = Yii::app()->request->requestUri;
@@ -1121,10 +1121,7 @@ class AdminController extends Controller {
                 $this->redirect('addCriteria');
             }
             if (isset($arr)) {
-                foreach ($arr as $user) {
-                    $str.=$user . ", ";
-                }
-                $str = substr($str, 0, -2);
+                $str=implode(', ',$arr);
             }
             $criteria->users = $str;
             if ($criteria->modelType != null && $criteria->comparisonOperator != null) {
@@ -1520,7 +1517,7 @@ class AdminController extends Controller {
         }elseif(preg_match('/\W/', $fieldName) || preg_match('/^[^a-zA-Z]+/', $fieldName)){
             echo Yii::t('admin','Field names can only contain alphanumeric characters.');
         }else{
-            $field=X2Model::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>$fieldName));
+            $field=X2Model::model('Fields')->findByAttributes(array('modelName'=>$modelName,'fieldName'=>'c_'.$fieldName));
             if(isset($field)){
                 echo Yii::t('admin',"That model & field name combination is already in use.");
             }else{
@@ -1599,7 +1596,7 @@ class AdminController extends Controller {
                         $fieldType = "BIGINT";
                         break;
                     case "currency":
-                        $fieldType = "DECIMAl";
+                        $fieldType = "DECIMAL(18,2)";
                         break;
                     default:
                         $fieldType = 'VARCHAR(250)';
@@ -1910,7 +1907,7 @@ class AdminController extends Controller {
      */
     public function actionToggleDefaultLogo() {
 
-        $adminProf = ProfileChild::model()->findByPk(1);
+        $adminProf = Yii::app()->params->adminProfile;
         $logo = Media::model()->findByAttributes(array('associationId' => $adminProf->id, 'associationType' => 'logo'));
         if (!isset($logo)) {
 
@@ -2763,7 +2760,7 @@ class AdminController extends Controller {
     public function actionPrepareExport() {
         $file = 'data.csv';
         $fp = fopen($file, 'w+');
-        fputcsv($fp, array(Yii::app()->params->version));
+        fputcsv($fp, array('v'.Yii::app()->params->version));
         fclose($fp);
     }
 
@@ -2802,6 +2799,9 @@ class AdminController extends Controller {
                 $tempAttributes = array_merge($tempAttributes, $record->attributes);
                 if($model=='Actions'){
                     $tempAttributes['actionDescription']=$record->actionDescription;
+                }
+                if($model=='Profile'){
+                    $tempAttributes['theme']=json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
                 fputcsv($fp, $tempAttributes);
@@ -3002,9 +3002,15 @@ class AdminController extends Controller {
                         }
                         $model->disableBehavior('changelog');
                         $model->disableBehavior('X2TimestampBehavior');
+                        if($model instanceof User || $model instanceof Profile){
+                            if($model->id=='1'){
+                                continue;
+                            }
+                            $model->setScenario('import');
+                        }
                         $lookup = X2Model::model($modelType)->findByPk($model->id);
                         $lookupFlag = isset($lookup);
-                        if($model->validate() || $modelType=="User"){
+                        if($model->validate() || $modelType=="User" || $modelType=='Profile'){
                             $saveFlag=true;
                             if ($lookupFlag) {
                                 if ($_SESSION['overwrite'] == 1) {
@@ -3033,7 +3039,7 @@ class AdminController extends Controller {
                                 }
                             }
                             if ($saveFlag && $model->save()) {
-                                if($modelType!="Admin" && !(($modelType=="User" || $modelType=="Profile") && ($model->username=='admin' || $model->username=='api'))){
+                                if($modelType!="Admin" && !(($modelType=="User" || $modelType=="Profile") && ($model->id=='1' || $model->username=='api'))){
                                     $importLink=new Imports;
                                     $importLink->modelType=$modelType;
                                     $importLink->modelId=$model->id;
@@ -3273,7 +3279,7 @@ https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engin
 
 	public function actionAuthGraph() {
 
-		if(!Yii::app()->user->checkAccess('AdminIndex'))
+		if(!Yii::app()->params->isAdmin)
 			return;
 
 		$allTasks = array();

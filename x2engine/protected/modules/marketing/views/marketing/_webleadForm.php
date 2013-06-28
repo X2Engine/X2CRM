@@ -34,206 +34,35 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
 //support both the weblead capture and weblist signup
-if (empty($type)) $type = 'weblead';
+if(empty($type))
+	$type = 'weblead';
 
-$height = $type=='weblist' ? 100 : 325;
-$url = $type=='weblist' ? 'marketing/weblist/weblist' : 'contacts/weblead';
+$height = $type == 'weblist' ? 100 : 350;
+$url = $type == 'weblist' ? 'marketing/weblist/weblist' : 'contacts/weblead';
 
-$embedcode = '<iframe src="'. Yii::app()->createAbsoluteUrl($url) .'" frameborder="0" scrolling="no" width="200" height="'. $height .'"></iframe>'; 
-?>
+$embedcode = '<iframe src="'. Yii::app()->createAbsoluteUrl($url) .'" frameborder="0" scrolling="no" width="200" height="'. $height .'"></iframe>';
 
-<style type="text/css">
-#embedcode {
-	width: 95%;
-	min-height: 67px;
-	border: 1px solid #B9B9B9;
-	background: #F6F6F6;
-	color: #666;
-	-moz-box-shadow: 0 1px 0 #fff,inset 0 1px 1px rgba(0,0,0,.17);
-	-ms-box-shadow: 0 1px 0 #fff,inset 0 1px 1px rgba(0,0,0,.17);
-	-webkit-box-shadow: 0 1px 0 white,inset 0 1px 1px rgba(0, 0, 0, .17);
-	box-shadow: 0 1px 0 white,inset 0 1px 1px rgba(0, 0, 0, .17);
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-}
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/css/webleadForm.css','all');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/webleadFormDesigner.js');
 
-#embedcode:focus {
-	border-color: #4496E7;
-	color: #444;
-	background: white;
-	outline: 0;
-}
-
-#iframe_example {
-	-moz-border-radius: 7px;
-	-webkit-border-radius: 7px;
-	border-radius: 7px;
-	padding: 9px;
-	background: #F0F0F0;
-}
-p.fieldhelp {
-	color: #666;
-	font-size: 12px;
-	margin: -0.3em 0 0.8em;
-	width: 193px;
-}
-p.fieldhelp.half {
-	display: inline-block;
-	width: 79px;
-	margin: 0;
-}
-input#font, select#font {
-	width: 193px;
-}
-input.half {
-	width: 69px;
-}
-</style>
-<?php
-//get form attributes only for generating json
+// get form attributes only for generating json
 $formAttrs = array();
 foreach ($forms as $form) {
 	$formAttrs[] = $form->attributes;
 }
+Yii::app()->clientScript->registerScript('webleadForm','
+var savedforms = '.CJSON::encode($formAttrs).';
+var embedcode = "'. addslashes($embedcode) .'";
+var listId = '.(!empty($id) ? $id : 'null').';
+var fields = ["fg","bgc","font","bs","bc","tags"];
+var colorfields = ["fg","bgc","bc"];
+',CClientScript::POS_HEAD);
 ?>
-<script>
-var savedforms = <?php echo json_encode($formAttrs); ?>;
-var embedcode = '<?php echo $embedcode; ?>';
-var listId = <?php echo !empty($id) ? $id : 'null'; ?>;
-var fields = ['fg','bgc','font','bs','bc','tags'];
-var colorfields = ['fg','bgc','bc'];
-
-function sanitizeInput(value) {
-	return encodeURIComponent(value.trim().replace(/[^a-zA-Z0-9#,]/g, ''));
-}
-
-function generateQuery(params) {
-	var query = '';
-	var first = true;
-
-	for (var i=0; i<params.length; i++) {
-		if (params[i].search(/^[^=]+=[^=]+$/) != -1) {
-			if (first) {
-				query += '?'; first = false;
-			} else {
-				query += '&';
-			}
-
-			query += params[i];	
-		}
-	}
-
-	return query;
-}
-
-function updateParams() {
-	var params = [];
-	if (listId != null) {
-		params.push('lid='+listId);
-	}
-
-	$.each(fields, function(i, field) {
-		var value = sanitizeInput($('#'+field).val());
-		if (value.length > 0) { params.push(field+'='+value); }
-	});
-
-	var query = generateQuery(params);
-	var newembed = embedcode.replace(/(src=\"[^\"]*)/, "$1" + query);
-
-	$('#embedcode').val(newembed);
-	$('#iframe_example').html(newembed);
-}
-
-function clearFields() {
-	$('#name').val('');
-	$.each(fields, function(i, field) {
-		$('#'+field).val('');
-	});
-	$('.modcoder_excolor_clrbox').css('background-color','').css('background-image','url(<?php echo Yii::app()->getBaseUrl().'/js/modcoder_excolor/transp.gif'; ?>)');
-}
-
-function updateFields(form) {
-	$('#name').val(form.name);
-	$.each(form.params, function(key, value) {
-		if ($.inArray(key, fields) != -1) {
-			$('#'+key).val(value);
-		}
-		if ($.inArray(key, colorfields) != -1) {
-			$('#'+key).next('.modcoder_excolor_clrbox').css('background-image','').css('background-color', value);
-		}
-	});
-}
-	
-function saved(data, status, xhr) {
-	var newForm = $.parseJSON(data);
-	if (typeof newForm.errors !== "undefined") { return; }
-	newForm.params = $.parseJSON(newForm.params);
-	var index = -1;
-	$.each(savedforms, function(i, el) {
-		if (newForm.id == el.id) {
-			index = i;
-		}
-	});
-	if (index != -1) {
-		savedforms.splice(index, 1, newForm);
-	} else {
-		savedforms.push(newForm);
-		$('#saved-forms').append('<option value="'+newForm.id+'">'+newForm.name+'</option>');
-	}
-	$('#saved-forms').val(newForm.id);
-	alert("<?php echo Yii::t('marketing','Form Saved'); ?>");
-}
-
-$(function() {
-	$('#embedcode').focus(function() {
-		$(this).select();
-	});
-	$('#embedcode').mouseup(function(e) {
-		e.preventDefault();
-	});
-	$('#embedcode').focus();
-
-	$.each(colorfields, function(i, field) {
-		$('#'+field).modcoder_excolor({
-			callback_on_ok: function() { updateParams(); }
-		});
-	});
-	
-	$.each(fields, function(i, field) {
-		$('#'+field).on('change', function() { updateParams(); });
-	});
-	
-	$('#save').click(function(e) {
-		if ($.trim($('#name').val()).length == 0) {
-			$('#name').addClass('error');
-			$('[for="name"]').addClass('error');
-			$('#save').after('<div class="errorMessage"><?php echo Yii::t('marketing','Name cannot be blank.'); ?></div>');
-			e.preventDefault(); //has no effect
-		}
-	});
-
-	$('#saved-forms').on('change', function() {
-		var id = $(this).val();
-		clearFields();
-		if (id != 0) {
-			var match = $.grep(savedforms, function(el, i) {
-				return id == el.id;
-			});
-			updateFields(match[0]);
-		} 
-		updateParams();
-		$('#embedcode').focus();
-	});
-
-	if (listId != null) { updateParams(); }
-});
-</script>
-
-<div class="form">
+<div class="form" id="web-lead-form">
 <div class="row">
 	<h4><?php echo Yii::t('marketing','Embed Code') .':'; ?></h4>
 	<textarea id="embedcode"><?php echo $embedcode; ?></textarea><br>

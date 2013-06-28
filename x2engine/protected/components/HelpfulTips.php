@@ -53,7 +53,7 @@ class HelpfulTips extends X2Widget {
             //opensource or pro
             $edition = yii::app()->params->admin->edition;
             //True or False
-            $admin = Yii::app()->user->checkAccess('AdminIndex');
+            $admin = Yii::app()->params->isAdmin;
             //Check user type and editon to deliever an appropriate tip
             if($edition == 'pro'){
                 if($admin){

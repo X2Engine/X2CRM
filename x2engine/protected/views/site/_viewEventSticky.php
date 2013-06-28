@@ -59,7 +59,7 @@ $commentCount=X2Model::model('Events')->countByAttributes(array(
     'associationId'=>$data->id,
 ));
 ?>
-    
+
 
     <?php
     if(!isset($_SESSION['stickyFlag']) || !$_SESSION['stickyFlag']){
@@ -75,58 +75,37 @@ $commentCount=X2Model::model('Events')->countByAttributes(array(
     <div class="event-text-box">
 	<div class="deleteButton">
 		<?php
-        if(($data->type=='feed') && ($data->user==Yii::app()->user->getName()  || Yii::app()->user->checkAccess('AdminIndex'))){
+        if(($data->type=='feed') && ($data->user==Yii::app()->user->getName()  || Yii::app()->params->isAdmin)){
             echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'),array('profile/updatePost','id'=>$data->id))." ";
         }
-		if((($data->user==Yii::app()->user->getName() || $data->associationId==Yii::app()->user->getId()) && ($data->type=='feed')) || Yii::app()->user->checkAccess('AdminIndex'))
+		if((($data->user==Yii::app()->user->getName() || $data->associationId==Yii::app()->user->getId()) && ($data->type=='feed')) || Yii::app()->params->isAdmin)
 			echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'),'#',array('class'=>'delete-link','id'=>$data->id.'-delete'));?>
 	</div>
     <span class="event-text">
 	<?php
-    if($data->associationType=='Media'){
-        $authorRecord = X2Model::model('User')->findByAttributes(array('username'=>$data->user));
-                if(Yii::app()->user->getName()==$data->user){
-                    $author=Yii::t('app','You');
-                }else{
-                    $author = $authorRecord->name;
-                }
-                if($authorRecord->id != $data->associationId && $data->associationId != 0) {
-                    $temp=Profile::model()->findByPk($data->associationId);
-                    if(Yii::app()->user->getId()==$temp->id){
-                        $recipient=Yii::t('app','You');
-                    }else{
-                        $recipient=$temp->fullName;
-                    }
-                    $modifier=' &raquo; ';
-                } else {
-                    $recipient='';
-                    $modifier='';
-                }
-        echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,array('profile/view','id'=>$data->associationId)).": ".Media::attachmentSocialText($data->text,true,true);
-    }else{
         echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
-    }
+    
     ?>
     </span>
         <br />
     <span class="comment-age"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span> | <span>
-        <?php echo CHtml::link(Yii::t('app','Comments').' (<span id="'.$data->id.'-comment-count">'.($commentCount>0?"<b>".$commentCount."</b>":$commentCount).'</span>)','#',array('class'=>'comment-link','id'=>$data->id.'-link')); ?> 
-        <?php echo CHtml::link(Yii::t('app','Hide comments'),'#',array('class'=>'comment-hide-link','id'=>$data->id.'-hide-link','style'=>'display:none;')); ?> 
-        | 
-        <?php 
+        <?php echo CHtml::link(Yii::t('app','Comments').' (<span id="'.$data->id.'-comment-count">'.($commentCount>0?"<b>".$commentCount."</b>":$commentCount).'</span>)','#',array('class'=>'comment-link','id'=>$data->id.'-link')); ?>
+        <?php echo CHtml::link(Yii::t('app','Hide comments'),'#',array('class'=>'comment-hide-link','id'=>$data->id.'-hide-link','style'=>'display:none;')); ?>
+        |
+        <?php
         $important=($data->important==1);
         echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>$important?'display:none;':'','title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
         echo CHtml::link(Yii::t('app','Cancel Broadcast'),'#',array('class'=>'unimportant-link','id'=>$data->id.'-unimportant-link','style'=>$important?'':'display:none;')); ?>
-        
-        <?php 
-        if(Yii::app()->user->checkAccess('AdminIndex')){
+
+        <?php
+        if(Yii::app()->params->isAdmin){
             echo " | ";
             $sticky=($data->sticky==1);
             echo CHtml::link(Yii::t('app','Make Sticky'),'#',array('class'=>'sticky-link x2-hint','id'=>$data->id.'-sticky-link','style'=>$sticky?'display:none;':'','title'=>Yii::t('app','Making an event sticky will cause it to always show up at the top of the feed.')));
             echo CHtml::link(Yii::t('app','Undo Sticky'),'#',array('class'=>'unsticky-link','id'=>$data->id.'-unsticky-link','style'=>$sticky?'':'display:none;'));
         }?>
     </span>
-	<?php 
+	<?php
         ?>
     </div>
     <div id="<?php echo $data->id ?>-comment-box" class="comment-box" style="display:none;clear:both;">
@@ -144,9 +123,9 @@ $commentCount=X2Model::model('Events')->countByAttributes(array(
             echo CHtml::textArea($data->id.'-comment','',array('class'=>'comment-textbox'));
             echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button comment-submit'));
             echo CHtml::endForm();
-	
+
             echo "</div>";
-	
+
 	?>
         </div>
 </div>

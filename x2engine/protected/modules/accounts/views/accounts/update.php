@@ -52,4 +52,4 @@ $this->actionMenu = $this->formatMenu(array(
 	<a class="x2-button highlight right" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>
 </div>
 
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users, 'modelName'=>'accounts')); ?>
+<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'modelName'=>'accounts')); ?>

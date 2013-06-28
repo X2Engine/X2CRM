@@ -39,7 +39,7 @@
 // Yii::setPathOfAlias('local','path/to/local-folder');
 // This is the testing application configuration. Any writable
 // CWebApplication properties can be configured here.
-$config = require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'main.php');
+$config = require(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'main.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'X2Config-test.php');
 
 $config['components']['db'] = array(
@@ -64,6 +64,11 @@ $config['components']['log']['routes'] = array(
 	)
 );
 $config['params']['automatedTesting'] = true;
+
+$custom = dirname(__FILE__).'/../../custom/protected/config/test.php';
+if($custom = realpath($custom)) {
+	include($custom);
+}
 
 return $config;
 

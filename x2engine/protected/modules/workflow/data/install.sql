@@ -16,8 +16,8 @@ CREATE TABLE x2_workflow_stages(
 	stageNumber				INT,
 	name					VARCHAR(40),
 	description				TEXT,
-	conversionRate			DECIMAL(10,2),
-	value					DECIMAL(10,2),
+	conversionRate			DECIMAL(18,2),
+	value					DECIMAL(18,2),
 	requirePrevious			INT				DEFAULT 0,
 	requireComment			TINYINT			DEFAULT 0,
 	FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE

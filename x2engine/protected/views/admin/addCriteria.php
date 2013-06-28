@@ -48,7 +48,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 			'name'=>'modelValue',
 			'header'=>Yii::t('admin','Condition'),
-			'value'=>'"When a(n) ".substr($data->modelType,0,-1)."\'s ".$data->modelField." is ".
+			'value'=>'"When a(n) ".mb_substr($data->modelType,0,-1,"UTF-8")."\'s ".$data->modelField." is ".
                             (($data->comparisonOperator=="change")?"changed":$data->comparisonOperator)
                             ." ".$data->modelValue.", ".
                             (($data->type==\'notification\')?"notify":($data->type=="action"?"create an action for":($data->type=="assignment"?"assign to":"")))
@@ -64,7 +64,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'80%'),
 		),
-		
+
 	),
 ));
 ?>
@@ -93,42 +93,42 @@ $this->widget('zii.widgets.grid.CGridView', array(
                 'url'=>$this->createUrl('admin/getAttributes?criteria=1'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#'.CHtml::activeId($model,'modelField'), //selector to update
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
             <?php echo $form->error($model,'modelType'); ?>
 	</div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'modelField'); ?>
             <?php echo $form->dropDownList($model,'modelField',array(),array('empty'=>'Select a model first')); ?>
             <?php echo $form->error($model,'modelField'); ?>
         </div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'comparisonOperator'); ?>
             <?php echo $form->dropDownList($model,'comparisonOperator',array('='=>'=','<'=>'<','>'=>'>','change'=>'On Change'),array('empty'=>'Select a comparison operator.')); ?>
             <?php echo $form->error($model,'comparisonOperator'); ?>
         </div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'modelValue'); ?>
             <?php echo $form->textField($model,'modelValue'); ?>
             <?php echo $form->error($model,'modelValue'); ?>
         </div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'users'); ?>
             <?php echo $form->dropDownList($model,'users',$users,array('multiple'=>'multiple','size'=>7)); ?>
             <?php echo $form->error($model,'users'); ?>
         </div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'type'); ?>
             <?php echo $form->dropDownList($model,'type',array('notification'=>'Notification','action'=>'Action','assignment'=>'Assignment Change')); ?>
             <?php echo $form->error($model,'type'); ?>
         </div>
-        
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>

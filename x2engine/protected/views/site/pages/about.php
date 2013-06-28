@@ -123,11 +123,10 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 				<a href="http://code.google.com/p/google-api-php-client/" target="_blank"><?php echo Yii::t('about','Project'); ?></a>
 				<a href="http://www.apache.org/licenses/" target="_blank" class="no-underline" title="Apache License 2.0">[Apache]</a></li>
 			<li>Modernizr:
-				<a href="http://http://modernizr.com" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="http://modernizr.com" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 				<a href="http://modernizr.com/license/" target="_blank" class="no-underline" title="New BSD License">[New BSD]</a></li>
-			<li>ExColor:
-				<a href="http://modcoder.org" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
-				<a href="http://modcoder.org/?page=license" target="_blank" class="no-underline" title="License">[License]</a></li>
+			<li>Spectrum: <a href="http://bgrins.github.io/spectrum/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
+				<a href="https://github.com/bgrins/spectrum/blob/master/LICENSE" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 			<li>colResizable: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>
 				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 			<li>formatCurrency: <a href="http://code.google.com/p/jquery-formatcurrency/" target="_blank"><?php echo Yii::t('about','Developer'); ?></a>

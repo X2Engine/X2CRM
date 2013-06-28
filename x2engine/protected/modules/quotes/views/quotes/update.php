@@ -135,7 +135,8 @@ foreach($templateRec as $tmplRec){
 	$templates[$tmplRec['id']] = $tmplRec['name'];
 }
 if(!$quick){
-	echo '<div style="display:inline-block">';
+	echo '<div style="display:inline-block" ' .
+          'id="quote-template-dropdown">';
 	echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
 	echo $form->dropDownList($model, 'template', $templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint', 'title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".', array('{crQu}' => Yii::t('docs', 'Create Quote')))), '[?]');
 	echo '</div><br />';

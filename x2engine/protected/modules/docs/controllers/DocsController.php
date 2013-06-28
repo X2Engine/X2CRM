@@ -85,7 +85,7 @@ class DocsController extends x2base {
 
 	public function actionGetItem($id) {
         $model = $this->loadModel($id);
-        if((($model->visibility==1 || ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || Yii::app()->user->checkAccess('AdminIndex'))){ 
+        if((($model->visibility==1 || ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || Yii::app()->params->isAdmin)){ 
             echo $model->text;
         }
 	}
@@ -107,7 +107,7 @@ class DocsController extends x2base {
 		if (!isset($model) || 
 			   !(($model->visibility==1 || 
 				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || 
-				Yii::app()->user->checkAccess('AdminIndex')|| $editFlag))
+				Yii::app()->params->isAdmin|| $editFlag))
 			$this->redirect(array('docs/index'));
 
 		$this->render('view', array(
@@ -248,7 +248,7 @@ class DocsController extends x2base {
 	
 	public function actionChangePermissions($id){
 		$model = $this->loadModel($id);
-		if(Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->user->getName()==$model->createdBy) {
+		if(Yii::app()->params->isAdmin || Yii::app()->user->getName()==$model->createdBy) {
 			$users = User::getNames();
 			unset($users['admin']);
 			unset($users['Anyone']);

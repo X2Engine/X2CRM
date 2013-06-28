@@ -51,14 +51,9 @@ else
 		<td width="25%">
 			<b><?php echo $link; ?></b>
 		</td>
-                <?php
-                    $str=Yii::app()->request->getServerName();
-                    if(substr($str,0,4)=='www.')
-                        $str=substr($str,4);
-                ?>
 		<td class="label" width="15%"><?php echo $model->getAttributeLabel('email'); ?></td>
 		<td>
-			<b><?php echo CHtml::mailto($model->email,$model->email."?cc=dropbox@".$str); ?></b>
+			<b><?php echo CHtml::mailto($model->email,$model->email); ?></b>
 		</td>
 	</tr>
 	<tr>

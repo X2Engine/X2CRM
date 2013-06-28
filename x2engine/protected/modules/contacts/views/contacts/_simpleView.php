@@ -61,14 +61,14 @@ function toggleSocialMedia() {
 			$('#social-media').hide();
 			$('#social-media-toggle').css('border-bottom-width','1px');
 		});
-		
+
 		button.html('[+]');
 	} else {
 		$('#social-media').show();
 		$('#social-media').stop();
 		$('#social-media').animate({height:socialMediaHeight,paddingBottom:5},400,'swing');
 		$('#social-media-toggle').css('border-bottom-width','0');
-		
+
 		button.html('[&ndash;]');
 	}
 
@@ -105,7 +105,7 @@ function humanUrl($url) {
 					echo '<b>'.$model->title.'</b>';
 				if(!empty($model->title) && !empty($model->company))
 					echo ', ';
-				
+
 				if(!empty($model->accountId) && $model->accountId!=0) {
 					$accountModel = X2Model::model('Accounts')->findByPk($model->accountId);
 					if($accountModel != null)
@@ -135,10 +135,7 @@ function humanUrl($url) {
 		<div class="row">
 			<div class="cell span-6">
 				<?php
-				$str=Yii::app()->request->getServerName();
-                                if(substr($str,0,4)=='www.')
-                                    $str=substr($str,4);
-				if(!empty($model->email)) echo CHtml::mailto($model->email,$model->email."?cc=dropbox@".$str);
+				if(!empty($model->email)) echo CHtml::mailto($model->email,$model->email);
 				?>
 			</div>
 			<div class="cell">
@@ -164,7 +161,7 @@ function humanUrl($url) {
 			</div>
 		</div>
 		<div class="row social-media" id="social-media">
-		<?php 
+		<?php
 		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png');
 		if(!empty($model->skype))
 			echo '<div class="span-6">'.CHtml::link($img.' '.$model->skype,'skype:'.$model->skype.'?call')."</div>\n";
@@ -203,14 +200,14 @@ function humanUrl($url) {
 		<?php
 		if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
 			//$assignedUser = $users[$model->assignedTo];
-			
+
 			$assignedUser = X2Model::model('User')->findByAttributes(array('username'=>$model->assignedTo));
 			$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
 		} else
 			//echo $form->label($model,'assignedTo');
 			$userLink = Yii::t('app','anyone');
-		
-		//$assignedUser 
+
+		//$assignedUser
 		echo $userLink;
 		?>
 	</td>
@@ -227,7 +224,7 @@ function humanUrl($url) {
 	</td>
 	<td class="label"><b><?php echo $attributeLabels['visibility']; ?></b></td>
 	<td>
-		<?php 
+		<?php
 		echo CHtml::dropDownList('visibility',$model->visibility,array(
 			1=>Yii::t('contacts','Public'),
 			0=>Yii::t('contacts','Private')
@@ -257,14 +254,14 @@ function humanUrl($url) {
 			<?php
 			if(!empty($model->assignedTo) && $model->assignedTo != 'Anyone' && isset($users[$model->assignedTo])) {
 				//$assignedUser = $users[$model->assignedTo];
-				
+
 				$assignedUser = X2Model::model('User')->findByAttributes(array('username'=>$model->assignedTo));
 				$userLink = CHtml::link($assignedUser->name,array('profile/view','id'=>$assignedUser->id));
 			} else
 				//echo $form->label($model,'assignedTo');
 				$userLink = Yii::t('app','anyone');
-			
-			//$assignedUser 
+
+			//$assignedUser
 			echo Yii::t('contacts','Assigned to {name}',array('{name}'=>$userLink));
 			?>
 		</div>
@@ -329,7 +326,7 @@ function humanUrl($url) {
 	</div>
 	<div class="row shadow">
 	<div id="social-media" class="cell social-media">
-		<?php 
+		<?php
 		$img =  CHtml::image(Yii::app()->theme->getBaseUrl().'/images/etc/skype.png');
 		if(!empty($model->skype))
 			echo '<div class="span-6">'.CHtml::link($img.' '.$model->skype,'skype:'.$model->skype.'?call')."</div>\n";

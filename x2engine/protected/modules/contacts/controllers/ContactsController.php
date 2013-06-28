@@ -131,7 +131,7 @@ class ContactsController extends x2base {
 	 */
 	public function actionView($id) {
 		$contact = $this->loadModel($id);
-		
+
 		if(isset($this->portlets['TimeZone'])) {
 			$this->portlets['TimeZone']['params']['localTime'] = false;
 			$this->portlets['TimeZone']['params']['model'] = &$contact;
@@ -163,10 +163,13 @@ class ContactsController extends x2base {
                             (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
                     $criteria->addCondition($condition);
                 }
-
+                $count = X2Model::model('Contacts')->count($criteria);
+                if(!isset($_GET['showAll']) || $_GET['showAll']!='true')
+                    $criteria->limit=5;
 				$duplicates = Contacts::model()->findAll($criteria);
 				if(count($duplicates) > 0) {
 					$this->render('duplicateCheck', array(
+                        'count' => $count,
 						'newRecord' => $contact,
 						'duplicates' => $duplicates,
 						'ref' => 'view'
@@ -574,10 +577,7 @@ class ContactsController extends x2base {
 			}
 			$model->dupeCheck = 1;
             $model->disableBehavior('X2TimestampBehavior');
-			if($model->save() && $_POST['ref'] !== 'create' && $_POST['ref'] !== 'update'){
-				echo $model->id;
-                return;
-            }
+			if($model->save()){}
 
 			// if($_POST['ref']=='create') {
 				// $this->create($model, $temp, 1);
@@ -800,9 +800,13 @@ class ContactsController extends x2base {
 								(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 						$criteria->addCondition($condition);
 					}
+                    $count=X2Model::model('Contacts')->count($criteria);
+                    if(!isset($_GET['viewAll']) || $_GET['viewAll']!='true')
+                        $criteria->limit=5;
 					$duplicates = X2Model::model('Contacts')->findAll($criteria);
 					if(count($duplicates) > 0) {
 						$this->render('duplicateCheck', array(
+                            'count' => $count,
 							'newRecord' => $model,
 							'duplicates' => $duplicates,
 							'ref' => 'create'
@@ -876,7 +880,9 @@ class ContactsController extends x2base {
 		else
 			return parent::update($model, $oldAttributes, $api);
 	} */
-
+	public function actionTest() {
+		$this->render('test');
+	}
 
 	public function actionTrigger() {
 		die();
@@ -2261,7 +2267,8 @@ class ContactsController extends x2base {
 
 	public function actionWeblead() {
 
-		if(file_exists(__DIR__ . '/pro/actionWeblead.php')) {
+		if(file_exists(__DIR__ . '/pro/actionWeblead.php') && 
+           Yii::app()->params->admin->edition === 'pro') {
 			include(__DIR__ . '/pro/actionWeblead.php');
 			return;
 		}

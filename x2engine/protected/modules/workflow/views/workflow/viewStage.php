@@ -48,7 +48,7 @@ function getStageMembers(stage) {
 	});
 }
 ",CClientScript::POS_HEAD);
-$isAdmin = (Yii::app()->user->checkAccess('AdminIndex'));
+$isAdmin = (Yii::app()->params->isAdmin);
 $this->menu=array(
 	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),

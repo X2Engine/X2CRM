@@ -71,12 +71,6 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
     echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
 } ?>
 
-<div class="search-form" style="display:none">
-<?php /* $this->renderPartial('_search',array(
-	'model'=>$model, 
-        'users'=>User::getNames(),
-)); */ ?> 
-</div><!-- search-form -->
 <?php
 $attributeLabels = CActiveRecord::model('X2List')->attributeLabels();
 
@@ -84,7 +78,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'lists-grid',
 	'enableSorting'=>false,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'htmlOptions'=>array('class'=>'grid-view contact-lists'),
+	'htmlOptions'=>array('class'=>'grid-view contact-lists fullscreen'),
 	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 		. '<div class="form no-border" style="display:inline;"> '
@@ -132,6 +126,6 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 )); ?>
-<br>
-<?php
-echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/createList'),array('class'=>'x2-button'));
+<div class="form">
+<?php echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/createList'),array('class'=>'x2-button')); ?>
+</div>

@@ -55,8 +55,8 @@ $('.search-form form').submit(function(){
 ");
 
 function trimText($text) {
-	if(strlen($text)>150)
-		return substr($text,0,147).'...';
+	if(mb_strlen($text,'UTF-8')>150)
+		return mb_substr($text,0,147,'UTF-8').'...';
 	else
 		return $text;
 }

@@ -53,7 +53,7 @@ $fullname = Yii::app()->params->profile->fullName;
 		$toggleUserMediaVisibleUrl = $this->controller->createUrl('/media/toggleUserMediaVisible') ."?user=$username";
 		$visible = !in_array($username, $hideUsers);
 		if(!$visible)
-		    $minimizeUserMedia .= "$('$username-media').hide();\n";		
+		    $minimizeUserMedia .= "$('$username-media').hide();\n";
 		$minimizeLink = CHtml::ajaxLink($visible? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success'=>"function(response) { toggleUserMedia($(\"#$username-media\"), $('#$username-media-showhide'), response); }", 'type'=>'GET'), array('id'=>"$username-media-showhide", 'class'=>'media-library-showhide')); // javascript function togglePortletVisible defined in js/layout.js
 		?>
 		<strong><?php echo $fullname; ?></strong>
@@ -64,7 +64,7 @@ $fullname = Yii::app()->params->profile->fullName;
 				->select('id, uploadedBy, fileName, description')
 				->where('uploadedBy=:username', array(':username'=>$username))
 				->from('x2_media')
-				->queryAll();				
+				->queryAll();
 		?>
 		<?php //$myMediaItems = Media::model()->findAllByAttributes(array('uploadedBy'=>$username)); // get current user's media ?>
 
@@ -75,8 +75,8 @@ $fullname = Yii::app()->params->profile->fullName;
 				echo '<span class="media-item">';
 				$path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
 				$filename = $item['fileName'];
-				if(strlen($filename) > 35) {
-					$filename = substr($filename, 0, 35) . '…';
+				if(mb_strlen($filename,'UTF-8') > 35) {
+					$filename = mb_substr($filename, 0, 32,'UTF-8') . '…';
 				}
 				echo CHtml::link($filename, array('/media', 'view'=>$item['id']),array(
 					'class'=>'x2-link media'.(Media::isImageExt($item['fileName'])? ' image-file' : ''),
@@ -85,7 +85,7 @@ $fullname = Yii::app()->params->profile->fullName;
 					'data-url'=>Media::getFullFileUrl($path),
 				));
 				echo '</span>';
-				
+
 				if(Media::isImageExt($item['fileName'])) {
 					$imageLink = Media::getFileUrl($path);
 					$image = CHtml::image($imageLink, '', array('class'=>'media-hover-image'));
@@ -95,7 +95,7 @@ $fullname = Yii::app()->params->profile->fullName;
 						$imageTooltips .= "$('#$id').qtip({content: '$image', position: {my: 'top right', at: 'bottom left'}});\n";
 				} else if($item['description']) {
     				$imageTooltips .= "$('#$id').qtip({content: '{$item['description']}', position: {my: 'top right', at: 'bottom left'}});\n";
-    			} 
+    			}
 			} ?>
 			<br>
 			<br>
@@ -106,8 +106,8 @@ $fullname = Yii::app()->params->profile->fullName;
 				->where('username!=:username', array(':username'=>Yii::app()->user->name))
 				->from('x2_profile')
 				->queryAll();
-		
-		$admin = Yii::app()->user->checkAccess('AdminIndex');
+
+		$admin = Yii::app()->params->isAdmin;
 		 ?>
 
 		<?php foreach($users as $user) { ?>
@@ -132,8 +132,8 @@ $fullname = Yii::app()->params->profile->fullName;
     							echo '<span class="media-item">';
     							$path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
    								$filename = $item['fileName'];
-								if(strlen($filename) > 45) {
-									$filename = substr($filename, 0, 35) . '…';
+								if(mb_strlen($filename,'UTF-8') > 35) {
+									$filename = mb_substr($filename, 0, 32,'UTF-8') . '…';
 								}
     							echo CHtml::link($filename, array('/media', 'view'=>$item['id']), array(
 									'class'=>'x2-link media media-library-item'.(Media::isImageExt($item['fileName'])? ' image-file' : ''),

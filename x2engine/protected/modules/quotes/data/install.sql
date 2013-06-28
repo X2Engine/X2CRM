@@ -26,8 +26,8 @@ CREATE TABLE x2_quotes(
 	invoiceIssuedDate		BIGINT,
 	invoicePayedDate		BIGINT,
 	template				INT	DEFAULT NULL,
-	total					DECIMAL(10,2) DEFAULT 0.0,
-	subtotal				DECIMAL(10,2) DEFAULT 0.0
+	total					DECIMAL(18,2) DEFAULT 0.0,
+	subtotal				DECIMAL(18,2) DEFAULT 0.0
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
 CREATE TABLE x2_quotes_products(
@@ -37,7 +37,7 @@ CREATE TABLE x2_quotes_products(
 	quantity				INT,
 	name					VARCHAR(100)	NOT NULL,
 	type					VARCHAR(100),
-	price					DECIMAL(10,2) DEFAULT 0.0,
+	price					DECIMAL(18,2) DEFAULT 0.0,
 	inventory				INT,
 	description				TEXT,
 	assignedTo				TEXT,
@@ -47,10 +47,10 @@ CREATE TABLE x2_quotes_products(
 	updatedBy				VARCHAR(50),
 	active					TINYINT,
 	currency				VARCHAR(40),
-	adjustment				DECIMAL(10,2) DEFAULT 0.0,
+	adjustment				DECIMAL(18,2) DEFAULT 0.0,
 	adjustmentType			VARCHAR(20),
 	lineNumber				INT NOT NULL DEFAULT 0,
-	total					DECIMAL(10,2) DEFAULT 0.0
+	total					DECIMAL(18,2) DEFAULT 0.0
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`

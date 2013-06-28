@@ -6,7 +6,7 @@ CREATE TABLE `x2_accounts` (
 	website				VARCHAR(255),
 	type				VARCHAR(255),
     visibility          TINYINT         DEFAULT 1,
-	annualRevenue		DECIMAL(10,2),
+	annualRevenue		DECIMAL(18,2),
 	phone				VARCHAR(40),
 	tickerSymbol		VARCHAR(10),
 	employees			INT,

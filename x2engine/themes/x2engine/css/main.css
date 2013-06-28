@@ -770,9 +770,9 @@ div.workflow-status {display:block;float:left;line-height:20px;height:24px;width
 	border-top:1px solid #ddd;
 	padding:2px 5px 10px 5px;
 }
-.list-view .view.top-level.activity-feed {
+/*.list-view .view.top-level.activity-feed {
 	padding:10px 10px 15px 5px;
-}
+}*/
 .list-view .view.top-level.date-break{
     text-align:center;
     font-weight:bold;
@@ -819,7 +819,9 @@ div.img-box{
 	float:left;
 	height:45px;
 	width:30px;
-    padding-bottom:5px
+    padding-bottom:5px;
+	background-repeat:no-repeat;
+	background-position:center center;
 /* 	border:1px solid #ddd;
 	border-width:1px 0 0 1px; */
 	border-radius:4px 0 0 0;
@@ -831,102 +833,42 @@ div.event-text-box{
     margin-left:50px;
 }
 
-div.img-box.action_complete{
-    background:url(../images/eventIcons/action_complete.png) no-repeat center center;
+div.img-box.action_complete {background-image:url(../images/eventIcons/action_complete.png);}
+div.img-box.action_reminder {background-image:url(../images/eventIcons/action_reminder.png);}
+div.img-box.calendar_event {background-image:url();}
+div.img-box.case_escalated {background-image:url(../images/eventIcons/case_escalated.png);}
+div.img-box.doc_update {background-image:url(../images/eventIcons/doc_update.png);}
+div.img-box.email_from {background-image:url(../images/eventIcons/email_from.png);}
+div.img-box.email_opened {background-image:url(../images/eventIcons/email_opened.png);}
+div.img-box.email_sent {background-image:url(../images/eventIcons/email_sent.png);}
+div.img-box.feed {background-image:url(../../../uploads/default.png);}
+div.img-box.invoice_emailed {background-image:url(../images/eventIcons/invoice_emailed.png);}
+div.img-box.media {background-image:url(../images/eventIcons/media.png);}
+div.img-box.notif {background-image:url(../images/eventIcons/notif.png);}
+div.img-box.voip_call {background-image:url(../images/eventIcons/voip_call.png);}
+div.img-box.quote_emailed {background-image:url(../images/eventIcons/quote_emailed.png);}
+div.img-box.record_create {background-image:url(../images/eventIcons/record_create.png);}
+div.img-box.record_deleted {background-image:url(../images/eventIcons/record_deleted.png);}
+div.img-box.web_activity {background-image:url(../images/eventIcons/web_activity.png);}
+div.img-box.weblead_create {background-image:url(../images/eventIcons/weblead_create.png);}
+div.img-box.workflow_complete {background-image:url(../images/eventIcons/workflow_complete.png);}
+div.img-box.workflow_revert {background-image:url(../images/eventIcons/workflow_revert.png);}
+div.img-box.workflow_start {background-image:url(../images/eventIcons/workflow_start.png);}
+div.img-box.plus-sign {
+	background-image:url(../images/Plus_sign.png);
+	height:20px;
+	width:65px;
 }
-div.img-box.action_reminder{
-    background:url(../images/eventIcons/action_reminder.png) no-repeat center center;
-}
-div.img-box.calendar_event{
-    background:url() no-repeat center center;
-}
-div.img-box.case_escalated{
-    background:url(../images/eventIcons/case_escalated.png) no-repeat center center;
-}
-div.img-box.doc_update{
-    background:url(../images/eventIcons/doc_update.png) no-repeat center center;
-}
-div.img-box.email_from{
-    background:url(../images/eventIcons/email_from.png) no-repeat center center;
-}
-div.img-box.email_opened{
-    background:url(../images/eventIcons/email_opened.png) no-repeat center center;
-}
-div.img-box.email_sent{
-    background:url(../images/eventIcons/email_sent.png)  no-repeat center center;
-}
-div.img-box.feed{
-    background:url(../../../uploads/default.png)  no-repeat center center;
-}
-div.img-box.invoice_emailed{
-    background:url(../images/eventIcons/invoice_emailed.png)  no-repeat center center;
-}
-div.img-box.media{
-    background:url(../images/eventIcons/media.png)  no-repeat center center;
-}
-div.img-box.notif{
-    background:url(../images/eventIcons/notif.png)  no-repeat center center;
-}
-div.img-box.quote_emailed{
-    background:url(../images/eventIcons/quote_emailed.png)  no-repeat center center;
-}
-div.img-box.record_create{
-    background:url(../images/eventIcons/record_create.png)  no-repeat center center;
-}
-div.img-box.record_deleted{
-    background:url(../images/eventIcons/record_deleted.png)  no-repeat center center;
-}
-div.img-box.web_activity{
-    background:url(../images/eventIcons/web_activity.png)  no-repeat center center;
-}
-div.img-box.weblead_create{
-    background:url(../images/eventIcons/weblead_create.png)  no-repeat center center;
-}
-div.img-box.workflow_complete{
-    background:url(../images/eventIcons/workflow_complete.png)  no-repeat center center;
-}
-div.img-box.workflow_revert{
-    background:url(../images/eventIcons/workflow_revert.png)  no-repeat center center;
-}
-div.img-box.workflow_start{
-    background:url(../images/eventIcons/workflow_start.png)  no-repeat center center;
-}
-div.img-box.plus-sign{
-    background:url(../images/Plus_sign.png)  no-repeat center center;
-    height:20px;
-    width:65px;
-}
-
-div.img-box.record_create.Quote-create{
-    background:url(../images/quotes.png)  no-repeat center center;
-}
-div.img-box.record_create.Contacts-create{
-    background:url(../images/contacts.png)  no-repeat center center;
-}
-div.img-box.record_create.Campaign-create{
-    background:url(../images/marketing.png)  no-repeat center center;
-}
-div.img-box.record_create.Actions-create{
-    background:url(../images/actions.png)  no-repeat center center;
-}
-div.img-box.record_create.Accounts-create{
-    background:url(../images/accounts.png)  no-repeat center center;
-}
-div.img-box.record_create.Opportunity-create{
-    background:url(../images/opportunities.png)  no-repeat center center;
-}
-div.img-box.record_create.Product-create{
-    background:url(../images/products.png)  no-repeat center center;
-}
-div.img-box.record_create.Docs-create{
-    background:url(../images/docs.png)  no-repeat center center;
-}
-div.img-box.record_create.Services-create{
-    background:url(../images/services.png)  no-repeat center center;
-}
-div.img-box.record_create.Groups-create{
-    background:url(../images/groups.png)  no-repeat center center;
-}
+div.img-box.record_create.Quote-create {background-image:url(../images/quotes.png);}
+div.img-box.record_create.Contacts-create {background-image:url(../images/contacts.png);}
+div.img-box.record_create.Campaign-create {background-image:url(../images/marketing.png);}
+div.img-box.record_create.Actions-create {background-image:url(../images/actions.png);}
+div.img-box.record_create.Accounts-create {background-image:url(../images/accounts.png);}
+div.img-box.record_create.Opportunity-create {background-image:url(../images/opportunities.png);}
+div.img-box.record_create.Product-create {background-image:url(../images/products.png);}
+div.img-box.record_create.Docs-create {background-image:url(../images/docs.png);}
+div.img-box.record_create.Services-create {background-image:url(../images/services.png);}
+div.img-box.record_create.Groups-create {background-image:url(../images/groups.png);}
 
 .action-description, a.action-description {text-decoration:none;color:black;}
 .action.list-view .view {
@@ -1013,6 +955,7 @@ div.img-box.record_create.Groups-create{
 .action.list-view .icon.event {			background-image:url(../images/calendar.png); }
 .action.list-view .icon.emailFrom {		background-image:url(../images/action_email.png);}
 .action.list-view .icon.quotes {		background-image:url(../images/quotes.png);}
+
 div.control-button.icon.complete-button{
     background:url('../images/icons/Complete.png') no-repeat center center;
     height:17px;
@@ -1425,3 +1368,43 @@ td.fc-today div div.fc-day-number {
     width: 20px !important;
     height: 20px !important;
 }
+
+/***********************************************************************
+Error message container
+***********************************************************************/
+
+.error-summary-container {
+    background: #FEE;
+    border: 2px solid #C00;
+    font-size: 0.9em;
+    padding: 5px;
+    margin-bottom: 1px;
+    margin-top: 5px;
+}
+
+.error-summary-container p {
+    margin: 0;
+    padding: 5px;
+}
+
+.error-summary-container ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+}
+
+/***********************************************************************
+Feedback message container
+***********************************************************************/
+
+.feedback-container {
+    margin-top: 8px;
+    text-align: left;
+    margin-bottom: 0;
+}
+
+.feedback-container span {
+    margin-bottom: 0;
+    padding: 0 0 0 0;
+}
+
+

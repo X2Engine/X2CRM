@@ -707,7 +707,7 @@ body.no-widgets #sidebar-right {display:none;}
 	-moz-border-radius:		0 0 4px 4px;
 	-webkit-border-radius:	0 0 4px 4px;
 	-o-border-radius:		0 0 4px 4px;
-	
+
 }
 /* .portlet:last-child .portlet-content {
 	border-radius:			0 0 4px 4px;
@@ -756,7 +756,7 @@ body.no-widgets #content-container {margin-right:0;}
 	-webkit-border-radius:	4px;
 	-o-border-radius:		4px;
 	background:#fff;
-	
+
 }
 #content-fullscreen {
 	position:relative;
@@ -810,7 +810,7 @@ div.page-title.icon.opportunities h2 {background-image:url('../images/opportunit
 div.page-title.icon.services h2 {background-image:url('../images/services.png');}
 div.page-title.icon.workflow h2 {background-image:url('../images/workflow.png');}
 div.page-title.icon.marketing h2 {background-image:url('../images/marketing.png');}
-div.page-title.icon.x2flow h2 {background-image:url('../images/x2flow.png');}
+div.page-title.icon.x2flow h2 {background-image:url('../images/x2flow.png');background-position:left center;}
 div.page-title.icon.docs h2 {background-image:url('../images/docs.png');}
 div.page-title.icon.groups h2 {background-image:url('../images/groups.png');}
 div.page-title.icon.media h2 {background-image:url('../images/media.png');}
@@ -954,8 +954,9 @@ div.page-title .x2-button.filter-button span {background:url(../images/icons/fil
 div.page-title .x2-button.column-selector-link span {background:url(../images/icons/columns-button.png) center center no-repeat;}
 
 div.page-title .x2-button.right {display:block;vertical-align:top;margin:5px 5px 0 0;}
+div.page-title .x2-button.left {display:block;vertical-align:top;margin:5px 5px 0 0;}
 
-
+div.page-title .x2-button span {display:block;height:24px;width:24px;}
 
 /**
  * ------------ Fullscreen (no widgets) Rules -------------

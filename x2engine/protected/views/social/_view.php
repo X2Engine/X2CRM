@@ -34,17 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$authorRecord = User::model()->findByAttributes(array('username'=>$data->user));
-$author = $authorRecord->firstName.' '.$authorRecord->lastName;
 ?>
 <div class="view top-level">
 	<div class="deleteButton">
-		<?php 
+		<?php
 		$parent=Events::model()->findByPk($data->associationId);
-		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex'))
+		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->params->isAdmin)
 			echo CHtml::link('[x]',array('profile/deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
-	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)); ?> <span class="comment-age"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span><br />
+	<?php echo User::getUserLinks($data->user) ?> <span class="comment-age"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span><br />
 	<?php echo $data->text; ?>
 </div>
 

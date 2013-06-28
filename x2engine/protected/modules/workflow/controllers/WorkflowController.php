@@ -260,7 +260,7 @@ class WorkflowController extends x2base {
 				if(Yii::app()->params->admin->workflowBackdateWindow > 0 && (time() - $model->completeDate) > Yii::app()->params->admin->workflowBackdateWindow)
 					$editable = false;
 					
-				if(Yii::app()->user->checkAccess('WorkflowAdmin') || Yii::app()->user->checkAccess('AdminIndex'))
+				if(Yii::app()->user->checkAccess('WorkflowAdmin') || Yii::app()->params->isAdmin)
 					$editable = true;
 					
 				$minDate = Yii::app()->params->admin->workflowBackdateRange;
@@ -269,14 +269,14 @@ class WorkflowController extends x2base {
 				else
 					$minDate = '-'.$minDate;	// otherwise, we can only go back this far
 					
-				if(Yii::app()->user->checkAccess('WorkflowAdmin') || Yii::app()->user->checkAccess('AdminIndex'))
+				if(Yii::app()->user->checkAccess('WorkflowAdmin') || Yii::app()->params->isAdmin)
 					$minDate = null;
 
 				$this->renderPartialAjax('_workflowDetail',array(
 					'model'=>$model,
 					'editable'=>$editable,
 					'minDate'=>$minDate,
-					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment || Yii::app()->user->checkAccess('AdminIndex'),
+					'allowReassignment'=>Yii::app()->params->admin->workflowBackdateReassignment || Yii::app()->params->isAdmin,
 				),false);
 			}
 		}
@@ -296,7 +296,7 @@ class WorkflowController extends x2base {
 			$action->completeDate = Formatter::parseDate($_POST['Actions']['completeDate']);
 			$action->actionDescription = $_POST['Actions']['actionDescription'];
 
-			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->user->checkAccess('AdminIndex') || Yii::app()->params->admin->workflowBackdateReassignment))
+			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->params->isAdmin || Yii::app()->params->admin->workflowBackdateReassignment))
 				$action->completedBy = $_POST['Actions']['completedBy'];
 
 			// don't save if createDate isn't valid

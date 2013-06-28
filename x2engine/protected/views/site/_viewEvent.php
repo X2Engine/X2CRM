@@ -33,13 +33,18 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$profile=X2Model::model('Profile')->findByAttributes(array('username'=>$data->user));
-if(isset($profile) && !empty($profile->avatar) && file_exists($profile->avatar)){
-	$avatar = $profile->avatar;
-}elseif(isset($profile)){
-	$avatar = 'uploads/default.png';
+
+Yii::app()->params->isAdmin = Yii::app()->user->checkAccess('AdminIndex');
+
+$avatar=Yii::app()->db->createCommand()
+        ->select('avatar')
+        ->from('x2_profile')
+        ->where('username=:user',array(':user'=>$data->user))
+        ->queryScalar();
+if(!empty($avatar) && file_exists($avatar)){
+	$avatar = $avatar;
 }else{
-    $avatar="";
+	$avatar = 'uploads/default.png';
 }
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $typeFile = $data->type;
@@ -117,15 +122,20 @@ $likedPost=Yii::app()->db->createCommand()
     }
 ?>
     <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>
-    <?php echo (!empty($avatar) && $data->type=='feed')?CHtml::image(Yii::app()->request->baseUrl."/".$avatar,'',array('height'=>45,'width'=>45)):""; ?>
+    <?php 
+        if (!empty($avatar) && $data->type=='feed') { // add css class to uploaded avatar images to round corners
+            $CSSClass = $avatar == 'uploads/default.png' ? 'default-avatar-image' : 'avatar-image';
+            echo CHtml::image(Yii::app()->request->baseUrl."/".$avatar,'',array('class'=>$CSSClass,'height'=>45,'width'=>45));
+        }
+        ?>
     </div>
     <div class="event-text-box">
 	<div class="deleteButton">
 		<?php
-        if(($data->type=='feed') && ($data->user==Yii::app()->user->getName()  || Yii::app()->user->checkAccess('AdminIndex'))){
+        if(($data->type=='feed') && ($data->user==Yii::app()->user->getName()  || Yii::app()->params->isAdmin)){
             echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'),array('profile/updatePost','id'=>$data->id))." ";
         }
-		if((($data->user==Yii::app()->user->getName() || $data->associationId==Yii::app()->user->getId()) && ($data->type=='feed')) || Yii::app()->user->checkAccess('AdminIndex'))
+		if((($data->user==Yii::app()->user->getName() || $data->associationId==Yii::app()->user->getId()) && ($data->type=='feed')) || Yii::app()->params->isAdmin)
 			echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'),'#',array('class'=>'delete-link','id'=>$data->id.'-delete'));?>
 	</div>
     <span class="event-text">
@@ -143,7 +153,7 @@ $likedPost=Yii::app()->db->createCommand()
         echo CHtml::link(Yii::t('app','Cancel Broadcast'),'#',array('class'=>'unimportant-link','id'=>$data->id.'-unimportant-link','style'=>($important?'':'display:none;'))); ?>
 
         <?php
-        if(Yii::app()->user->checkAccess('AdminIndex')){
+        if(Yii::app()->params->isAdmin){
             echo " | ";
             $sticky=($data->sticky==1);
             echo CHtml::link(Yii::t('app','Make Sticky'),'#',array('class'=>'sticky-link x2-hint','id'=>$data->id.'-sticky-link','style'=>($sticky?'display:none;':''),'title'=>Yii::t('app','Making an event sticky will cause it to always show up at the top of the feed.')));

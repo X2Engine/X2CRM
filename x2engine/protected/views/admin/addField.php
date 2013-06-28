@@ -96,11 +96,11 @@
                 'url' => CController::createUrl('admin/getFieldType'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update' => '#dropdown', //selector to update
-            //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+            //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
             //leave out the data key to pass all form values through
                 )));
         ?>
-<?php echo $form->error($model, 'type'); ?> 
+<?php echo $form->error($model, 'type'); ?>
     </div>
 
     <div class="row" id="dropdown">
@@ -122,7 +122,7 @@
     <div class="row" id ="relevance_box" style="display:none">
         <?php echo $form->labelEx($model, 'relevance'); ?>
 <?php echo $form->dropDownList($model, 'relevance', array('Low' => 'Low', "Medium" => "Medium", "High" => "High"), array("id" => "relevance", 'options' => array('Medium' => array('selected' => true)))); ?>
-<?php echo $form->error($model, 'relevance'); ?> 
+<?php echo $form->error($model, 'relevance'); ?>
     </div>
 
 
@@ -136,7 +136,7 @@
     function validateField(){
         if($('#Fields_fieldName').val()=="" || $('#Fields_attributeLabel').val()==""){
             alert("You must enter a field name and attribute label.");
-            return false; 
+            return false;
         }else{
             var fieldName=$('#Fields_fieldName').val();
             var modelName=$('#Fields_modelName').val();

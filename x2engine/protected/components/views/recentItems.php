@@ -49,9 +49,9 @@ foreach($recentItems as $item) {
 	echo '<li>';
 	if ($item['type']=='t') {	//item is a action
 		$description = CHtml::encode($item['model']->actionDescription);
-		if(strlen($description)>123)
-			$description = substr($description,0,120).'...';
-		
+		if(mb_strlen($description,'UTF-8')>120)
+			$description = mb_substr($description,0,117,'UTF-8').'...';
+
 		$link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).'</strong><br />'.Media::attachmentActionText($description);
 		//$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
 		echo CHtml::link($link,'#',array('class'=>'action-frame-link','data-action-id'=>$item['model']->id));

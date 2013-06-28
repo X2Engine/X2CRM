@@ -38,8 +38,6 @@
 
 Yii::import('zii.widgets.jui.CJuiWidget');
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/modcoder_excolor/jquery.modcoder.excolor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/profileSettings.js');
 
 
 /**
@@ -119,7 +117,7 @@ class SortableWidgets extends CJuiWidget {
 		}else{
 			$layout = array();
 		}
-
+        $profile = yii::app()->params->profile;
 		foreach($this->portlets as $class => $properties){
 			if(!in_array($class, array_keys($layout['hiddenRight']))){ // show widget if it isn't hidden
 				$visible = ($properties['visibility'] == '1');
@@ -142,24 +140,23 @@ class SortableWidgets extends CJuiWidget {
 				$widget = $this->widget($class, $properties['params'], true);
 
 				// $t1 = microtime(true);
-				$profile = yii::app()->params->profile;
+
 				if($profile->activityFeedOrder){
                                     ?>
                                         <script>
-                                            $("topDown").addClass('selected');
+                                            $("#topDown").addClass('selected');
                                         </script>
                                     <?php
 					$activityFeedOrderSelect = 'top';
 				}else{
                                     ?>
                                         <script>
-                                            $("bottomUp").addClass('selected');
+                                            $("#bottomUp").addClass('selected');
                                         </script>
                                     <?php
 					$activityFeedOrderSelect = 'bottom';
 				}
                 $preferences;
-                $profile = CActiveRecord::model ('Profile')->findByPk (Yii::app()->user->id);
                 $activityFeedWidgetBgColor = '';
                 if ($profile != null) {
                     $preferences = $profile->theme;
@@ -181,15 +178,15 @@ class SortableWidgets extends CJuiWidget {
                                                                 onmouseout="this.style.opacity=0.3;"
                                                                 onmouseover="this.style.opacity=1" />
                                                 </span>
-                                                <ul class="closed">
+                                                <ul class="closed" id="feed-widget-gear-menu">
                                                     <div style="text-align: left">Activity Feed Order</div>
                                                     <hr>
-                                                    <topDown style="font-weight:normal; float: left; margin-right: 3px;">Top Down</topDown>
-                                                    <bottomUp style="font-weight:normal; float: left">Bottom Up</bottomUp>
+                                                    <div id="topDown" style="font-weight:normal; float: left; margin-right: 3px;">Top Down</div>
+                                                    <div id="bottomUp" style="font-weight:normal; float: left">Bottom Up</div>
                                                     <hr>
                                                     <div style="text-align: left">Background Color</div>
                                                     <colorPicker style="padding: 0px !important;">'.
-                                                         CHtml::textField('activityFeedWidgetBgColor', $activityFeedWidgetBgColor).
+                                                         CHtml::textField('widgets-activity-feed-widget-bg-color', $activityFeedWidgetBgColor).
                                                     '</colorPicker>
                                                     </ul> '
                                                         : Yii::t('app', Yii::app()->params->registeredWidgets[$class])) .
@@ -209,12 +206,28 @@ class SortableWidgets extends CJuiWidget {
 			$(document).ready(function() {
 				$("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
 			});', CClientScript::POS_HEAD);
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
 		echo CHtml::closeTag($this->tagName);
 	}
 }
 ?>
 <style>
+    /* override spectrum color picker css */
+    #feed-widget-gear-menu .sp-replacer {
+        padding: 0px !important;
+    }
+    #feed-widget-gear-menu .sp-dd {
+        height: 13px !important;
+    }
+    #feed-widget-gear-menu .sp-preview
+    {
+        width:20px !important;
+        height: 17px !important;
+        margin-right: 5px !important;
+    }
+
     #sidebar-right .selected {
         color:white;
         background:black;
@@ -241,17 +254,17 @@ class SortableWidgets extends CJuiWidget {
 </style>
 <script>
 $(document).ready(function() {
-    $("topDown").hover(function(){
+    $("#topDown").hover(function(){
         if(!$(this).hasClass('selected')){
             $(this).toggleClass('hover');
         }
     });
-    $("bottomUp").hover(function(){
+    $("#bottomUp").hover(function(){
         if(!$(this).hasClass('selected')){
             $(this).toggleClass('hover');
         }
     });
-    $("topDown").click(function(){
+    $("#topDown").click(function(){
         if($(this).hasClass('selected')) return;
         else {
             $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
@@ -261,10 +274,10 @@ $(document).ready(function() {
             var chatbox = $('#chat-box');
             chatbox.children().each(function(i,child){chatbox.prepend(child)});
             chatbox.prop('scrollTop',0);
-            $("bottomUp").removeClass('selected');
+            $("#bottomUp").removeClass('selected');
         }
     });
-    $("bottomUp").click(function(){
+    $("#bottomUp").click(function(){
         if($(this).hasClass('selected')) return;
         else {
             $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
@@ -275,31 +288,24 @@ $(document).ready(function() {
             var scroll=chatbox.prop('scrollHeight');
             chatbox.children().each(function(i,child){chatbox.prepend(child)});
             chatbox.prop('scrollTop',scroll);
-            $("topDown").removeClass('selected');
+            $("#topDown").removeClass('selected');
         }
     });
-    $('#activityFeedWidgetBgColor').modcoder_excolor({
-            hue_bar : 3,
-            hue_slider : 5,
-            border_color : '#aaa',
-            sb_border_color : '#d6d6d6',
-            round_corners : false,
-            shadow_color : '#000000',
-            background_color : '#f0f0f0',
-            backlight : false,
-            callback_on_ok : function() {
-                $('#activityFeedWidgetBgColor').change();
-            }
-    });
-    $('#activityFeedWidgetBgColor').change(function() {
-        var color = $('#activityFeedWidgetBgColor').val();
-        $('#activityFeedWidgetBgColor').val(color.substring(1,7));
-        //console.log(color);
+
+    function saveWidgetBgColor () {
+        if ($(this).data ('ignoreChange')) {
+            return;
+        }
+        var color = $(this).val();
         $.ajax({
             url: yii.baseUrl + '/index.php/site/activityFeedWidgetBgColor',
-            data: 'color='+ color.substring(1,7),
+            data: 'color='+ color,
             success:function(){
-                $('#chat-box').css("background-color", color);
+		        if(color == '') {
+			        $('#chat-box').css('background-color', '#fff');
+		        } else {
+			        $('#chat-box').css('background-color', '#' + color);
+		        }
                 //$('#chat-box').css("color", convertTextColor(color, 'standardText'));
                 // Check for a dark color
                 /*if(convertTextColor(color, 'linkText') == '#fff000'){
@@ -319,7 +325,13 @@ $(document).ready(function() {
                 }*/
             }
         });
-    });
+    }
+
+    setupSpectrum ($('#widgets-activity-feed-widget-bg-color'), true);
+
+    $('#widgets-activity-feed-widget-bg-color').change(saveWidgetBgColor);
+
+
  });
 
 // @param $colorString a string representing a hex number

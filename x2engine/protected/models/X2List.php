@@ -172,7 +172,7 @@ class X2List extends CActiveRecord {
 	}
 
 	public static function load($id) {
-        // if(Yii::app()->user->checkAccess('AdminIndex')) {
+        // if(Yii::app()->params->isAdmin) {
             // $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
 			// /* x2temp */
 			// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();

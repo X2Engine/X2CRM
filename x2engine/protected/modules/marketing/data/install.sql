@@ -43,6 +43,7 @@ CREATE TABLE x2_web_forms(
 	fields					TEXT,
 	params					TEXT,
 	css						TEXT,
+	header					TEXT,
 	visibility				INT				NOT NULL,
 	assignedTo				VARCHAR(50)		NOT NULL,
 	createdBy				VARCHAR(50)		NOT NULL,

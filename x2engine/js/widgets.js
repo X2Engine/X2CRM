@@ -55,7 +55,7 @@ $(function() {
 		hoverClass: 'x2-state-hover',
 		drop: function(event, ui) { // add a tag to this model
 			// from the server get the widget and add it to the center widgets list
-			$.post($('body').data('showWidgetUrl'), {
+			$.post(yii.scriptUrl+'/site/showWidget', {
 					name: ui.draggable.attr('id'),
 					block: 'center',
 					modelType: $('body').data('modelType'),
@@ -71,7 +71,7 @@ $(function() {
 	// handle when user rearranges widgets
 	$('#content-widgets').sortable({
 		update: function(event, ui) {
-			$.post($('body').data('reorderWidgetsUrl'), $(this).sortable('serialize') + '&block=center');
+			$.post(yii.scriptUrl+'/site/reorderWidgets', $(this).sortable('serialize') + '&block=center');
 		}
 	});
 	
@@ -88,7 +88,7 @@ $(function() {
 
 
 function handleWidgetMenuItemClick(menuItem) {
-	$.post($('body').data('showWidgetUrl'), {
+	$.post(yii.scriptUrl+'/site/showWidget', {
 	    	name: menuItem.attr('id'),
 	    	block: 'center',
 	    	modelType: $('body').data('modelType'),
@@ -105,7 +105,7 @@ function handleWidgetMenuItemClick(menuItem) {
 	    	}
 	    	
 	    	$('#content-widgets').prepend(response); // add widget to center widgets list
-	    	$.post($('body').data('reorderWidgetsUrl'), $('#content-widgets').sortable('serialize') + '&block=center');
+	    	$.post(yii.scriptUrl+'/site/reorderWidgets', $('#content-widgets').sortable('serialize') + '&block=center');
 	});
 	
 	return true;
@@ -116,7 +116,7 @@ $.fn.hideWidget = function() {
 	$(this).each(function() {
 		var widget = $(this);
 		var widgetName = $(this).attr('id').slice(9); // slice of the "x2widget_" from the id to get widget name
-		$.post($('body').data('hideWidgetUrl'), {name: widgetName}, function(response) {
+		$.post(yii.scriptUrl+'/site/hideWidget', {name: widgetName}, function(response) {
 			widget.slideUp(function() {
 				widget.remove();
 				$('#widget-menu').replaceWith(response);
@@ -134,7 +134,7 @@ $.fn.hideWidget = function() {
 
 // adds a widget to the right side widget bar
 function handleWidgetRightMenuItemClick(menuItem) {
-	$.post($('body').data('showWidgetUrl'), {
+	$.post(yii.scriptUrl+'/site/showWidget', {
 	    	name: menuItem.attr('id'),
 	    	block: 'right'
 	    }, 
@@ -142,7 +142,7 @@ function handleWidgetRightMenuItemClick(menuItem) {
 	    	window.location.reload(true);
 	  //  	$('#' + menuItem.attr('id')).parent().remove(); // remove widget from menu
 	  //  	$('#content-widgets').append(response); // add widget to center widgets list
-	  //  	$.post($('body').data('reorderWidgetsUrl'), $('#content-widgets').sortable('serialize') + '&block=center');
+	  //  	$.post(yii.scriptUrl+'/site/reorderWidgets', $('#content-widgets').sortable('serialize') + '&block=center');
 	});
 	
 	return true;
@@ -153,7 +153,7 @@ $.fn.hideWidgetRight = function() {
 	$(this).each(function() {
 		var widget = $(this);
 		var widgetName = $(this).attr('id').slice(7); // slice of the "x2widget_" from the id to get widget name
-		$.post($('body').data('hideWidgetUrl'), {name: widgetName}, function(response) {
+		$.post(yii.scriptUrl+'/site/hideWidget', {name: widgetName}, function(response) {
 			widget.slideUp(function() {
 				widget.remove();
 				$('#widget-menu').replaceWith(response);
@@ -179,7 +179,7 @@ $.fn.minimizeWidget = function() {
 		var widgetName = $(this).attr('id').slice(9); // slice of the "x2widget_" from the id to get widget name
 		var min = widget.find('.x2widget-container').is(':hidden') == false; // are we minimizing?
 
-		$.post($('body').data('minimizeWidgetUrl'), {name: widgetName, minimize: min}, function(response) {
+		$.post(yii.scriptUrl+'/site/minimizeWidget', {name: widgetName, minimize: min}, function(response) {
 			if(min == true) {
 				widget.find('.x2widget-container').slideUp();
 				widget.find('.x2widget-minimize').html('<img src="'+yii.themeBaseUrl+'/images/icons/Expand_Widget.png" />');

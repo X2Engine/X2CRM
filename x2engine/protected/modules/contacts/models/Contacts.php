@@ -150,7 +150,7 @@ class Contacts extends X2Model {
 
 			$message .="<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
 
-			$adminProfile = CActiveRecord::model('Profile')->findByPk(1);
+			$adminProfile = Yii::app()->params->adminProfile;;
 			foreach ($result as $subscription) {
                 $subscription=array();
                 if(isset($subscription['user_id'])){
@@ -276,7 +276,7 @@ class Contacts extends X2Model {
 			// (SELECT username FROM x2_group_to_user WHERE groupId IN
 			// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 
-        // if(Yii::app()->user->getName()!='admin' && !Yii::app()->user->checkAccess('AdminIndex'))
+        // if(Yii::app()->user->getName()!='admin' && !Yii::app()->params->isAdmin)
             // $parameters['condition']=$condition;
 		// $criteria->scopes=array('findAll'=>array($parameters));
 
@@ -343,7 +343,7 @@ class Contacts extends X2Model {
 		// $parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		/* x2temp */
 
-		// if(Yii::app()->user->checkAccess('AdminIndex'))
+		// if(Yii::app()->params->isAdmin)
 			// $accessLevel = 3;
 		// elseif(Yii::app()->user->checkAccess('ContactsView'))
 			// $accessLevel = 2;

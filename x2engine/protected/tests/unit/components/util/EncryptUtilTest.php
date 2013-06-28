@@ -44,10 +44,19 @@ Yii::import('application.components.util.*');
  */
 class EncryptUtilTest extends FileOperTestCase {
 
+	/**
+	 * Random stuff that includes multibyte characters has been tossed into this
+	 * string just to give the test a nice big set of characters to work with
+	 * when verifying correctness.
+	 * @var type
+	 */
+	public $junkToEncrypt = 'helloworldal;sЭти пользователи могут редактировать свои календаряdfjkasj8398c802930rlc851093261不支持电子邮件92356129056123906これらのメッセージの受信を停止するには、ここをクリックしてください51239512d9o8f983j23,.,אנא לחץ על כל המשתמשים החדשים שאתה רוצה להוסיף.';
+
+
 	public function testEncryptDecrypt() {
 		$enc = new EncryptUtil();
 		$enc->key = EncryptUtil::genKey();
-		$expectedValue = 'helloworld';
+		$expectedValue = $this->junkToEncrypt;
 		$encrypted = $enc->encrypt($expectedValue);
 		$this->assertNotEquals($expectedValue,$encrypted,'Failed asserting data was encrypted.');
 		$decrypted = $enc->decrypt($encrypted);
@@ -55,11 +64,27 @@ class EncryptUtilTest extends FileOperTestCase {
 	}
 
 	public function testFileSaving() {
-//		$this->setupTestDirs();
-//		$keyFile = $this->files[0];
-//		$IVFile = $this->files[1];
-//		$enc = new EncryptUtil();
-//		$this->removeTestDirs();
+		$this->setupTestDirs();
+		$bd = $this->baseDir;
+		$keyFile = "$bd/{$this->relFileList[0]}";
+		$IVFile = "$bd/{$this->relFileList[1]}";
+		// Remove them to test that they get properly created:
+		unlink($keyFile);
+		unlink($IVFile);
+		$enc = new EncryptUtil($keyFile,$IVFile,true);
+		// Generate/save new key & IV into files.
+		$enc->saveNew();
+		// Test that files got created:
+		$this->assertFileExists($keyFile);
+		$this->assertFileExists($IVFile);
+		// Now encrypt a value with this instance:
+		$expected = $this->junkToEncrypt;
+		$encrypted = $enc->encrypt($expected);
+		// ...Then try creating a new instance, and testing that the values
+		// between instantiations are constistent
+		$enc = new EncryptUtil($keyFile,$IVFile,true);
+		$this->assertEquals($expected,$enc->decrypt($encrypted),'Failed asserting the encryption key and IV were properly saved and re-used.');
+		$this->removeTestDirs();
 	}
 
 }

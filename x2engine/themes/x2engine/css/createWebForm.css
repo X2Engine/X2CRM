@@ -33,6 +33,20 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/* override spectrum color picker css */
+div#web-form .sp-replacer {
+    padding: 0px !important;
+}
+div#web-form .sp-dd {
+    height: 13px !important;
+}
+div#web-form .sp-preview
+{
+    width:20px !important;
+    height: 17px !important;
+    margin-right: 5px !important;
+}
+
 #embedcode {
 	width: 95%;
 	min-height: 67px;

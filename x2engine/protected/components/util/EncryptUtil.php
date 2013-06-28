@@ -42,12 +42,6 @@
  */
 class EncryptUtil {
 
-	/**
-	 * Whether all the necessary dependencies are installed to use encryption.
-	 * @var bool
-	 */
-	public $canEncrypt;
-
 	public static $generatedValues = array('IV','key');
 
 	private $_IV;
@@ -58,12 +52,16 @@ class EncryptUtil {
 	private $_key;
 
 	/**
+	 * Whether all the necessary dependencies are installed to use encryption.
+	 * @var bool
+	 */
+	public $canEncrypt;
+
+	/**
 	 * File for storing IV length (for encoding purposes)
 	 * @var type
 	 */
 	public $IVFile;
-
-
 
 	/**
 	 * A file for storing an encryption key
@@ -115,6 +113,11 @@ class EncryptUtil {
 	 * Magic getter that obtains a value for an attribute from a file, or by
 	 * generating new values.
 	 *
+	 * The assumption is made: if no storage files are specified, the instance
+	 * creates new keys for a single usage without complaining, and does not
+	 * store them. Otherwise, if files are specified but do not exist, a new
+	 * encryption key is generated (to be stored when {@link saveNew()} is called).
+	 *
 	 * @return string
 	 * @throws Exception
 	 */
@@ -130,11 +133,10 @@ class EncryptUtil {
 					if($file){
 						$this->$pp = file_get_contents($file);
 						$set = true;
-					} else {
-						throw new Exception(ucfirst($name).' file not found.');
 					}
 				}
-				if(!(isset($this->$pp)||$set)) // must use "$set" because the file may in some cases be empty
+				// Must use "$set" because the file may in some cases be empty.
+				if(!(isset($this->$pp)||$set))
 					$this->$pp = call_user_func("self::$gf");
 			}
 			return $this->$pp;
@@ -172,24 +174,26 @@ class EncryptUtil {
 
 	/**
 	 * Generates and saves an encryption key/IV length in files specified by
-	 * {@link _keyFile} and {@link _IVFile}
+	 * {@link _keyFile} and {@link _IVFile}. Throws an exception if the key
+	 * couldn't be made securely.
 	 * 
 	 * @param type $safe
 	 * @return type
 	 * @throws Exception
 	 */
 	public function saveNew($safe=true) {
-		foreach(array('key', 'IV') as $att){
-			if(!isset($this->_keyFile))
-				throw new Exception('Cannot save key; path to key file not set.');
-			$file = realpath($this->keyFile);
-			if(!$file)
-				throw new Exception("Specified key file at {$this->keyFile} not found.");
-			if($safe && !$this->getKey(true))
-				throw new Exception('Strength of the encryption key could not be verified.');
-			file_put_contents($file, $this->key);
-			return $this->key;
+		foreach(array('key', 'IV') as $attr){
+			$sf = $attr.'File';
+			if(!isset($this->$sf))
+				throw new Exception("Cannot save $attr; path to $sf not set.");
+			$dir = dirname($this->$sf);
+			if(!realpath($dir))
+				throw new Exception(ucfirst($attr)." file's containing directory at $dir not found.");
+			file_put_contents($this->$sf, $this->$attr);
 		}
+		if($safe && !$this->key)
+			throw new Exception('Strength of the encryption key could not be verified.');
+		return $this->key;
 	}
 }
 

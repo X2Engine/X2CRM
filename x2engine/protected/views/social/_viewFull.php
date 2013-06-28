@@ -57,7 +57,7 @@ $commentDataProvider=new CActiveDataProvider('Events', array(
 <div class="view top-level">
 	<div class="deleteButton">
 		<?php
-		if($data->user==Yii::app()->user->getName() || $data->associationId==Yii::app()->user->getId() || Yii::app()->user->checkAccess('AdminIndex'))
+		if($data->user==Yii::app()->user->getName() || $data->associationId==Yii::app()->user->getId() || Yii::app()->params->isAdmin)
 			echo CHtml::link('[x]',array('deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
 	<?php echo CHtml::link(Yii::t('profile','Reply'),'#',array('onclick'=>"$('#addReply-".$data->id."').toggle();",'class'=>'x2-button float')); ?>

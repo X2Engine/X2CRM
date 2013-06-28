@@ -37,59 +37,90 @@
 /**
  * Enables transparent serialization and storage of array objects in database
  * fields as JSON strings.
- *
  * @package X2CRM.components
  * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
 class JSONFieldsBehavior extends TransformedFieldStorageBehavior {
 
+	protected $_fields;
+
 	protected $hasOptions = true;
 
+	/**
+	 * Given two associative arrays, returns an array with the same set of keys
+	 * as the first, but with key/value pairs from the second if they are present.
+	 * Any keys in the second and not in the first will be ignored/dropped.
+	 * 
+	 * @param array $expectedFields The array with key => default value pairs
+	 * @param array $currentFields The array to copy values from
+	 * @return array
+	 */
+	public static function normalizeToArray($expectedFields,$currentFields) {
+		// Expected keys: defined in expectedFields
+		$expKeys = array_keys($expectedFields);
+		// Current keys: in the array to compare against
+		$curKeys = array_keys($currentFields);
+		// Keys to save: both already present in the current fields and defined in the expected fields
+		$savKeys = array_intersect($expKeys,$curKeys);
+		// New keys: that are not present in the current fields but defined in the expected fields
+		$newKeys = array_diff($expKeys,$curKeys);
+		// The array to return, with normalized data:
+		$fields = array();
+
+		// Use existing values
+		foreach($savKeys as $fieldName)
+			$fields[$fieldName] = $currentFields[$fieldName];
+		// Use default values as defined in the expected fields
+		foreach($newKeys as $fieldName)
+			$fields[$fieldName] = $expectedFields[$fieldName];
+		
+		return $fields;
+	}
+
+	/**
+	 * Returns an array defining the expected structure of the JSON-bearing
+	 * attribute specified by $name.
+	 *
+	 * Child classes can override this method to specify default values for
+	 * fields in the embedded JSON object other than null (in this class, all
+	 * embedded fields within all attributes are null by default).
+	 *
+	 * @param
+	 * @return type 
+	 */
+	public function fields($name) {
+		if(!isset($this->_fields)) {
+			$this->_fields = array();
+			// Assume all are null by default:
+			foreach($this->transformAttributes as $attr => $fields)
+				$this->_fields[$attr] = array_fill_keys($fields,null);
+		}
+		return $this->_fields[$name];
+	}
+
+	/**
+	 * Normalizes the attribute array to the structure defined in {@link fields}
+	 * and then JSON-encodes it to prepare it for saving.
+	 * @param type $name
+	 * @return type
+	 */
 	public function packAttribute($name){
-		$fields = $this->transformAttributes[$name];
-        $model = $this->getOwner();
-        $attribute = $model->$name;
-
-        $attrKeys = array ();
-        if ($attribute != null) {
-            $attrKeys = array_keys ($attribute);
-        } else {
-            $attribute = array ();
-        }
-
-        // ensure that all fields are contained in attribute keys
-        foreach ($fields as $val) {
-            if (!in_array ($val, $attrKeys)) {
-                $attribute[$val] = null;
-            }
-        }
-
+		$fields = $this->fields($name);
+		$attribute = $this->getOwner()->$name;
+        $attribute = is_array($attribute) ? self::normalizeToArray($fields,$attribute) : $fields;
 		return CJSON::encode ($attribute);
 	}
 
 	/**
-	 *
+	 * JSON-decodes the value stored in the database column for the attribute,
+	 * and then normalizes it to the structure defined in {@link fields}
 	 * @param string $name The attribute to be unpacked
 	 * @return type
 	 */
 	public function unpackAttribute($name){
-		$fields = $this->transformAttributes[$name];
-        $model = $this->getOwner();
-        $attribute = CJSON::decode ($model->$name);
-
-        $attrKeys = array ();
-        if ($attribute != null) {
-            $attrKeys = array_keys ($attribute);
-        } else {
-            $attribute = array ();
-        }
-
-        // ensure that all fields are contained in attribute keys
-        foreach ($fields as $val) {
-            if (!in_array ($val, $attrKeys)) {
-                $attribute[$val] = null;
-            }
-        }
+		$fields = $this->fields($name);
+		$attribute = CJSON::decode ($this->getOwner()->$name);
+		$attribute = is_array($attribute) ? self::normalizeToArray($fields,$attribute) : $fields;
 		return $attribute;
 	}
 }

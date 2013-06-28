@@ -35,41 +35,40 @@
  *****************************************************************************************/
 
 // check if we need to load a model
-if(!isset($model) && isset($modelType) && isset($modelId)) {
-	// didn't get passed a model, but we have the modelType and modelId, so load the model
-	$model = X2Model::model($modelType)->findByPk($modelId);
+if(!isset($model) && isset($modelType) && isset($modelId)){
+    // didn't get passed a model, but we have the modelType and modelId, so load the model
+    $model = X2Model::model($modelType)->findByPk($modelId);
 }
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $relationshipCount = ""; // only used in InlineRelationships title; shows the number of relationships
-if($name == "InlineRelationships") {
-	$modelName = ucwords($modelType);
-	$count = Relationships::model()->count(array(
-	    'condition' => "(firstType=\"$modelName\" AND firstId=\"{$model->id}\") OR (secondType=\"$modelName\" AND secondId=\"{$model->id}\")",
-	));
-	if(is_numeric($count)) {
-		$relationshipCount = " ($count)";
-	}
+if($name == "InlineRelationships"){
+    $modelName = ucwords($modelType);
+    $relationshipsDataProvider = new CArrayDataProvider($model->relatedX2Models, array(
+                'id' => 'relationships-gridview',
+                'sort' => array('attributes' => array('name', 'myModelName', 'createDate', 'assignedTo')),
+                'pagination' => array('pageSize' => 10)
+            ));
+    $relationshipCount = " (".count($relationshipsDataProvider->data).")";
 }
-
 ?>
 
 <div class="x2-widget form" id="x2widget_<?php echo $name; ?>">
-	<div class="x2widget-header" onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false">
-		<span class="x2widget-title">
-			<b><?php echo Yii::t('app', $widget['title']) . $relationshipCount; ?></b>
-		</span>
+    <div class="x2widget-header" onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false">
+        <span class="x2widget-title">
+            <b><?php echo Yii::t('app', $widget['title']).$relationshipCount; ?></b>
+        </span>
         <?php if(!Yii::app()->user->isGuest){ ?>
             <div class="portlet-minimize">
-                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize"><?php echo $widget['minimize']? CHtml::image($themeUrl.'/images/icons/Expand_Widget.png') : CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png'); ?></a>
+                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize"><?php echo $widget['minimize'] ? CHtml::image($themeUrl.'/images/icons/Expand_Widget.png') : CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png'); ?></a>
                 <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#"><?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png'); ?></a>
             </div>
         <?php } ?>
     </div>
-    <div class="x2widget-container" style="<?php echo $widget['minimize']? 'display: none;' : ''; ?>">
-    	<?php if(isset($this->controller)) { // not ajax ?>
-    		<?php $this->render('x2widget', array('widget'=>$widget, 'name'=>$name, 'model'=>$model, 'modelType'=>$modelType)); ?>
-    	<?php } else { // we are in an ajax call ?>
-    		<?php $this->renderPartial('application.components.views.x2widget', array('widget'=>$widget, 'name'=>$name, 'model'=>$model, 'modelType'=>$modelType)); ?>
-    	<?php } ?>
+    <div class="x2widget-container" style="<?php echo $widget['minimize'] ? 'display: none;' : ''; ?>">
+        <?php if(isset($this->controller)){ // not ajax  ?>
+            <?php $this->render('x2widget', array('widget' => $widget, 'name' => $name, 'model' => $model, 'modelType' => $modelType)); ?>
+        <?php }else{ // we are in an ajax call ?>
+            <?php $this->renderPartial('application.components.views.x2widget', array('widget' => $widget, 'name' => $name, 'model' => $model, 'modelType' => $modelType)); ?>
+        <?php } ?>
     </div>
 </div>

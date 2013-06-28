@@ -81,10 +81,11 @@ class Profile extends CActiveRecord {
             'JSONFieldsBehavior' => array(
                'class' => 'application.components.JSONFieldsBehavior',
                'transformAttributes' => array('theme' => array (
-                   'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor', 
-                   'pageHeaderTextColor', 'activityFeedWidgetBgColor', 
-                   'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling', 
-                   'pageOpacity', 'themeName', 'private', 'owner'))
+                   'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
+                   'pageHeaderTextColor', 'activityFeedWidgetBgColor',
+                   'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
+                   'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
+                   'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'))
            )
         );
     }
@@ -111,7 +112,7 @@ class Profile extends CActiveRecord {
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search'),
+            array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
         );
     }
 
@@ -198,7 +199,7 @@ class Profile extends CActiveRecord {
     public static function setDetailView($value){
         $model = ProfileChild::model()->findByPk(Yii::app()->user->getId()); // set user's preference for contact detail view
         $model->showDetailView = ($value == 1) ? 1 : 0;
-        $model->save();
+        $model->upadte(array('showDetailView'));
     }
 
     public static function getDetailView(){
@@ -309,7 +310,7 @@ class Profile extends CActiveRecord {
             }else{
                 Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings); // encode array in JSON
             }
-            return Yii::app()->params->profile->save();
+            return Yii::app()->params->profile->update(array('gridviewSettings'));
         }else{
             return null;
         }
@@ -344,7 +345,7 @@ class Profile extends CActiveRecord {
         }else{
             Yii::app()->params->profile->formSettings = json_encode($formSettings); // encode array in JSON
         }
-        return Yii::app()->params->profile->save();
+        return Yii::app()->params->profile->update(array('formSettings'));
     }
 
     public static function getWidgets(){
@@ -390,7 +391,7 @@ class Profile extends CActiveRecord {
         if($updateRecord){
             $model->widgetOrder = implode(':', $widgetNames); // update database fields
             $model->widgets = implode(':', $visibility);   // if there are new widgets
-            $model->save();
+            $model->update(array('widgetOrder','widgets'));
         }
 
         return $widgetList;
@@ -420,14 +421,14 @@ class Profile extends CActiveRecord {
             );
 
             Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
-            Yii::app()->params->profile->update();
+            Yii::app()->params->profile->update(array('widgetSettings'));
         }
 
         $widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings);
         if(!isset($widgetSettings->MediaBox)){
             $widgetSettings->MediaBox = array('mediaBoxHeight' => 150, 'hideUsers' => array());
             Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
-            Yii::app()->params->profile->update();
+            Yii::app()->params->profile->update(array('widgetSettings'));
         }
 
         return json_decode(Yii::app()->params->profile->widgetSettings);
@@ -478,12 +479,12 @@ class Profile extends CActiveRecord {
                     $testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);
                     if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
                         $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
-                        $this->update();
+                        $this->update(array('syncGoogleCalendarAccessToken'));
                     }
 
-                    $summary = $action->actionDescription;
+                    $summary = $action->actionDescriptionTemp;
                     if($action->associationType == 'contacts' || $action->associationType == 'contact')
-                        $summary = $action->associationName.' - '.$action->actionDescription;
+                        $summary = $action->associationName.' - '.$action->actionDescriptionTemp;
 
                     $event = new Google_Event();
                     $event->setSummary($summary);
@@ -559,7 +560,7 @@ class Profile extends CActiveRecord {
                     $testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);
                     if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
                         $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
-                        $this->update();
+                        $this->update(array('syncGoogleCalendarAccessToken'));
                     }
 
                     $summary = $action->actionDescription;
@@ -743,7 +744,7 @@ class Profile extends CActiveRecord {
         if(!$layout){ // layout hasn't been initialized?
             $layout = $this->initLayout(); // initilize layout
             Yii::app()->params->profile->layout = json_encode($layout);
-            Yii::app()->params->profile->update();
+            Yii::app()->params->profile->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
         }
@@ -780,7 +781,7 @@ class Profile extends CActiveRecord {
      */
     public function saveLayout($layout){
         $this->layout = json_encode($layout);
-        $this->update();
+        $this->update(array('layout'));
     }
 
 

@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$viewFile = Yii::app()->params->edition === 'pro'? '_webleadFormPro' : '_webleadForm';
+
 $this->pageTitle = Yii::t('marketing','Web Lead Form');
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
@@ -41,12 +43,15 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Contact Lists'),'url'=>array('/contacts/lists')),
 	array('label'=>Yii::t('marketing','Newsletters'),'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form')),
+	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker'),'visible'=>(Yii::app()->params->edition==='pro')),
 	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ));
 ?>
 <div class="page-title icon marketing"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
 <div class="form">
-<?php echo Yii::t('marketing','Create a public form to receive new contacts.'),'<br>',Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?>
+<?php echo Yii::t('marketing','Create a public form to receive new contacts.'),'<br>',
+	Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?>
 </div>
-<?php $this->renderPartial('_webleadForm', array('forms'=>$forms)); ?>
+<?php
+$this->renderPartial($viewFile,array('forms'=>$forms));
 

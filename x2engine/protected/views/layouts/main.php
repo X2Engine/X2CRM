@@ -36,7 +36,7 @@
 
 $isGuest = Yii::app()->user->isGuest;
 $auth = Yii::app()->authManager;
-$isAdmin = !$isGuest && (Yii::app()->user->checkAccess('AdminIndex'));
+$isAdmin = !$isGuest && (Yii::app()->params->isAdmin);
 $isUser = !($isGuest || $isAdmin);
 if(Yii::app()->session['alertUpdate']){
     ?><script>
@@ -99,8 +99,8 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
 	->registerScriptFile($baseUrl.'/js/relationships.js')
 	->registerScriptFile($baseUrl.'/js/widgets.js')
 	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
-    ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion);
-
+    ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js');
 
 if(Yii::app()->session['translate'])
     $cs->registerScriptFile($baseUrl.'/js/translator.js');
@@ -113,8 +113,8 @@ $cs->registerScript('datepickerLanguage', "
 // MoneyMask extension:
 $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
 $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
-Yii::app()->getClientScript()->registerScriptFile("$aMmPath/jquery.maskMoney.js");
-Yii::app()->clientScript->registerCoreScript('jquery');
+$cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
+$cs->registerCoreScript('jquery');
 
 // blueprint CSS framework
 $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
@@ -131,7 +131,9 @@ $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
 	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
 
-$fullscreen = Yii::app()->user->isGuest || Yii::app()->session['fullscreen'];
+$cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
+
+$fullscreen = Yii::app()->user->isGuest || $profile->fullscreen;
 
 $cs->registerScript('fullscreenToggle', '
 window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
@@ -148,11 +150,10 @@ $backgroundImg = '';
 $defaultOpacity = 1;
 
 $preferences = null;
-$profile = CActiveRecord::model ('Profile')->findByPk (Yii::app()->user->id);
 if ($profile != null) {
     $preferences = $profile->theme;
-} 
-    
+}
+
 
 $logoMissing = false;
 $checkFiles = array(
@@ -184,10 +185,13 @@ if ($preferences != null && $preferences['pageHeaderTextColor'])
     $themeCss .= 'div.page-title, div.page-title h2 {color:#'.$preferences['pageHeaderTextColor'].";}\n";
 // calculate a slight gradient for menu bar color
 if ($preferences != null && $preferences['menuBgColor']) {
-	$rgb = X2Color::hex2rgb($preferences['menuBgColor']);
-	$darkerBgColor = '#'.X2Color::rgb2hex(floor($rgb[0]*0.85),floor($rgb[1]*0.85),floor($rgb[2]*0.85));
-	$themeCss .= '#header {';
-	$themeCss .= X2Color::gradientCss('#'.$preferences['menuBgColor'],$darkerBgColor)."}\n";
+	//$rgb = X2Color::hex2rgb($preferences['menuBgColor']);
+	//$darkerBgColor = '#'.X2Color::rgb2hex(floor($rgb[0]*0.85),floor($rgb[1]*0.85),floor($rgb[2]*0.85));
+	//$themeCss .= '#header {';
+	//$themeCss .= X2Color::gradientCss('#'.$preferences['menuBgColor'],$darkerBgColor)."}\n";
+	$themeCss .= '#header {
+        background: #' . $preferences['menuBgColor'] . ' !important;
+    }';
 	// $themeCss .= '.main-menu > li:hover, .main-menu > li.active {background:rgba('.floor($rgb[0]*0.4).','.floor($rgb[1]*0.4).','.floor($rgb[2]*0.4).',0.5);}';
 }
 // calculate a slight gradient for menu bar color
@@ -202,7 +206,17 @@ if ($preferences != null && $preferences['pageHeaderBgColor']) {
 
 if ($preferences != null && $preferences['activityFeedWidgetBgColor']){
 	$themeCss .= '#chat-box {
-		background-color:#'.$preferences['activityFeedWidgetBgColor'].';
+		background-color: #'.$preferences['activityFeedWidgetBgColor'].';
+	 }';
+}
+if ($preferences != null && $preferences['gridViewRowColorEven']){
+	$themeCss .= 'div.grid-view table.items tr.even {
+		background: #'.$preferences['gridViewRowColorEven'].' !important;
+	 }';
+}
+if ($preferences != null && $preferences['gridViewRowColorOdd']){
+	$themeCss .= 'div.x2-gridview tr.odd {
+		background: #'.$preferences['gridViewRowColorOdd'].' !important;
 	 }';
 }
 
@@ -474,12 +488,12 @@ if(method_exists($this,'renderGaCode'))
 				$noBorders = true;
 		}
 	}
-?>" class="<?php if($noBorders) echo 'no-borders"'; if($fullscreen) echo ' no-widgets'; ?>">
+?>" class="<?php if($noBorders) echo 'no-borders'; if($fullscreen) echo ' no-widgets'; ?>">
 
 <div id="page-container">
 <div id="page">
 <?php //echo $backgroundImg; ?>
-	<div id="header" <?php echo !$preferences['menuBgColor']? 'class="defaultBg"' : 'style="background-color:#'.$preferences['menuBgColor'].';"'; ?>>
+	<div id="header" <?php echo !$preferences['menuBgColor']? 'class="defaultBg"' : ''; ?>>
 		<div id="header-inner">
 			<div id="main-menu-bar">
 				<?php
@@ -555,15 +569,17 @@ if(method_exists($this,'renderGaCode'))
 		if(Yii::app()->session['translate'])
 			echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
 
-		if(isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
+		if($preferences != null &&
+           ($preferences['loginSound'] || $preferences['notificationSound']) &&
+           isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
+
 			$_SESSION['playLoginSound'] = false;
-			$profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-			$where = 'fileName = "'.$profile->loginSound.'"';
+			$where = 'fileName = "'.$preferences['loginSound'].'"';
 			$uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
 			if(!empty($uploadedBy['uploadedBy'])){
-				$loginSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->loginSound;
+				$loginSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$preferences['loginSound'];
 			}else{
-				$loginSound = Yii::app()->baseUrl.'/uploads/'.$profile->loginSound;
+				$loginSound = Yii::app()->baseUrl.'/uploads/'.$preferences['loginSound'];
 			}
 			echo "";
 			Yii::app()->clientScript->registerScript('playLoginSound', '

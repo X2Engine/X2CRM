@@ -133,7 +133,7 @@ class Docs extends X2Model {
 		$criteria->compare('lastUpdated', $this->lastUpdated);
 		$criteria->compare('type', $this->type);
 
-		if (!Yii::app()->user->checkAccess('AdminIndex')) {
+		if (!Yii::app()->params->isAdmin) {
 			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="' . Yii::app()->user->getName() . '" OR editPermissions LIKE "%' . Yii::app()->user->getName() . '%"';
 			/* x2temp */
 			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
@@ -175,7 +175,7 @@ class Docs extends X2Model {
 	 * @param bool $encode Encode replacement values if true; use renderAttribute otherwise.
 	 * @return string
 	 */
-	public static function replaceVariables($str,&$model,$vars = array(),$encode = false) {
+	public static function replaceVariables($str,$model,$vars = array(),$encode = false) {
 		if($encode) {
 			foreach(array_keys($vars) as $key)
 				$vars[$key] = CHtml::encode($vars[$key]);
@@ -256,7 +256,7 @@ class Docs extends X2Model {
 		if(in_array($type, array('email', 'quote'))){
 			// $criteria = new CDbCriteria(array('order'=>'lastUpdated DESC'));
 			$condition = 'TRUE';
-			if(!Yii::app()->user->checkAccess('AdminIndex')){
+			if(!Yii::app()->params->isAdmin){
 				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
 				/* x2temp */
 				$uid = self::model()->suID;

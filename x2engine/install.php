@@ -283,6 +283,7 @@ $timezones = array(
 	<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/main.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/form.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/install.css" />
+    <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/ui-elements.css" />
 
 	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="js/backgroundImage.js"></script>
@@ -291,7 +292,7 @@ $timezones = array(
 	<script type="text/javascript" src="js/webtoolkit.sha256.js"></script>
 
 	<script type="text/javascript">
-		
+
 	function validate(form) {
 		if(form.adminPass.value == form.adminPass2.value) {
 			return true;
@@ -300,7 +301,7 @@ $timezones = array(
 			return false;
 		}
 	}
-	
+
 
 	function installStage(stages,formData,form,nDone,responseData) {
 		var thisStage = stages[0],stagesRemaining = stages.slice(1);
@@ -322,7 +323,7 @@ $timezones = array(
 							errorList.append($('<li>').text(data.errors[i]).addClass('error'));
 							form.find("#"+i).addClass('error');
 						}
-						box.append(errorList);	
+						box.append(errorList);
 					} else {
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					}
@@ -363,7 +364,7 @@ $timezones = array(
 			document.forms[form.attr('id')].submit();
 		}
 	}
-	
+
 	submitExternalForm = function() {
 		(function($){
 			var form = $('form#install');
@@ -372,14 +373,14 @@ $timezones = array(
 			installStage(stages,form.serialize(),form,0);
 		})(jQuery);
 	}
-	
-	
+
+
 	function changeLang(lang) {
 		window.location=('install.php?language='+lang);
 	}
 	$(function() {
 		$('#db-test-button').click(testDB);
-		
+
 		$('#currency').change(function() {
 			if($('#currency').val() == 'other')
 				$('#currency2').fadeIn(300);
@@ -398,8 +399,8 @@ $timezones = array(
 		$("#install").find("#<?php echo implode(',#', $errorCss); ?>").addClass('error');
 <?php endif; ?>
 	});
-			
-			
+
+
 	function testDB() {
 		var data = $('#install').serialize()+'&testDb=1';
 		$.ajax({
@@ -438,7 +439,7 @@ $timezones = array(
 
 
 	    <div class="wide form" id="install-form">
-		<?php 
+		<?php
 		$thisFile = __FILE__;
 		$reqCheck = 'protected/components/views/requirements.php';
 		if(file_exists($reqCheck))
@@ -497,15 +498,15 @@ $timezones = array(
 			<h2><?php echo installer_t('Visible Modules'); ?></h2><hr>
 			<div id="menu_items" class="row">
 				<?php echo installer_t('Choose which modules will be visible in the main menu. Any of these can be re-enabled after installation if necessary.'); ?><br /><br />
-				<?php 
+				<?php
 				$modules = require_once(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php');
 				$disabledByDefault = array('products','quotes','bugReports');
-				foreach($modules as $moduleName): 
+				foreach($modules as $moduleName):
 					$item = "menu_$moduleName"; ?>
 					<div class="checkbox-grid-cell">
 					<label for="<?php echo $item ?>"><?php echo function_exists('ucfirst')?ucfirst($moduleName):$moduleName; ?></label><input type="checkbox" name="<?php echo $item ?>" id="<?php echo $item; ?>" value="1"<?php echo getField($item,1,!in_array($moduleName,$disabledByDefault))?' checked=1':''; ?> />
 					</div>
-				<?php endforeach; ?> 
+				<?php endforeach; ?>
 			</div>
 
 		    <h2><?php echo installer_t('Database Connection Info'); ?></h2><hr>
@@ -528,7 +529,7 @@ $timezones = array(
 		    <div id="db-test-box"><input type="button" id="db-test-button" class="x2-button" value="<?php echo installer_t('Test Connection'); ?>" />
 			<div id="response-box"><?php echo $dbStatus; ?></div>
 		    </div>
-			
+
 <div></div>
 
 		    <br /><br /><br />
@@ -580,9 +581,9 @@ $timezones = array(
 	    <div id="footer">
 
 
-		Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br /> 
+		Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 <?php echo installer_t('All Rights Reserved.'); ?>
 	    </div>
-	</div>  
+	</div>
     </body>
 </html>

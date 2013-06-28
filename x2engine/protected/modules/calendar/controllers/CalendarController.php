@@ -442,9 +442,9 @@ class CalendarController extends x2base {
         foreach($actions as $action) {
             if($action['visibility'] >= 1 || // don't show private actions,
                 $action['assignedTo'] == Yii::app()->user->name || // unless they belong to current user
-                Yii::app()->user->checkAccess('AdminIndex')) { // admin sees all
+                Yii::app()->params->isAdmin) { // admin sees all
                 $description = strip_tags($action['actionDescription']);
-                $title = substr($description, 0, 30);
+                $title = mb_substr($description, 0, 30, 'UTF-8');
                   if($action['type'] == 'event') {
                     $events[] = array(
                         'title'=>$title,
@@ -505,7 +505,7 @@ class CalendarController extends x2base {
                 }
             }
         }
-        echo json_encode($events);
+        echo CJSON::encode($events);
     }
 
     public function actionJsonFeedGroup($groupId, $start, $end) {
@@ -534,9 +534,9 @@ class CalendarController extends x2base {
         foreach($actions as $action) {
             if($action['visibility'] >= 1 || // don't show private actions,
                 $action['assignedTo'] == Yii::app()->user->name || // unless they belong to current user
-                Yii::app()->user->checkAccess('AdminIndex')) { // admin sees all
+                Yii::app()->params->isAdmin) { // admin sees all
                 $description = $action['actionDescription'];
-                $title = substr($description, 0, 30);
+                $title = mb_substr($description, 0, 30, 'UTF-8');
                   if($action['type'] == 'event') {
                     $events[] = array(
                         'title'=>$title,
@@ -597,7 +597,7 @@ class CalendarController extends x2base {
                 }
             }
         }
-        echo json_encode($events);
+        echo CJSON::encode($events);
     }
 
 
@@ -611,7 +611,7 @@ class CalendarController extends x2base {
         $filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
         $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
         foreach($actions as $action) {
-            if($action->visibility >= 1 || $action->assignedTo == Yii::app()->user->name || Yii::app()->user->checkAccess('AdminIndex')) { // don't show private actions, unless they belong to current user
+            if($action->visibility >= 1 || $action->assignedTo == Yii::app()->user->name || Yii::app()->params->isAdmin) { // don't show private actions, unless they belong to current user
                 if(in_array($action->type, $possibleFilters)) // type of action user might filter?
                     if(!in_array($action->type, $filter)) // filter actions user doesn't want to see
                         continue;
@@ -619,7 +619,7 @@ class CalendarController extends x2base {
                     if($action->complete == 'Yes')
                         continue;
                 $description = $action->actionDescription;
-                $title = substr($description, 0, 30);
+                $title = mb_substr($description, 0, 30, 'UTF-8');
                   if($action->type == 'event') {
                     $events[] = array(
                         'title'=>$title,
@@ -680,7 +680,7 @@ class CalendarController extends x2base {
                 }
             }
         }
-        echo json_encode($events);
+        echo CJSON::encode($events);
     }
 
     public function actionJsonFeedGoogle($calendarId) {
@@ -703,7 +703,7 @@ class CalendarController extends x2base {
                         $end = date("Y-m-d", strtotime($googleEvent['end']['date']) - 86400); // subtract a day because google saves all day events with one extra day
                     }
                 }
-                $title = substr($description, 0, 30);
+                $title = mb_substr($description, 0, 30, 'UTF-8');
                 if(isset($googleEvent['colorId'])) {
                     $colorTable = array(
                         10=>'Green',
@@ -732,7 +732,7 @@ class CalendarController extends x2base {
             }
         }
 
-        echo json_encode($events);
+        echo CJSON::encode($events);
     }
 
     /**
@@ -1092,7 +1092,7 @@ class CalendarController extends x2base {
                 'sharedCalendars'=>array(),
                 'googleCalendars'=>array()
             );
-            $user->showCalendars = json_encode($showCalendars);
+            $user->showCalendars = CJSON::encode($showCalendars);
 
             $user->update();
         }
@@ -1118,7 +1118,7 @@ class CalendarController extends x2base {
                     unset($showCalendars[$calendarType][$key]);
 
             print_r($showCalendars);
-            $user->showCalendars = json_encode($showCalendars);
+            $user->showCalendars = CJSON::encode($showCalendars);
             $user->update();
         }
     }

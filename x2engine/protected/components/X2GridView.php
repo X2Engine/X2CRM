@@ -38,48 +38,48 @@ Yii::import('zii.widgets.grid.CGridView');
 
 /**
  * Custom grid view display function.
- * 
- * Displays a dynamic grid view that permits save-able resizing and reordering of 
- * columns and also the adding of new columns based on the available fields for 
+ *
+ * Displays a dynamic grid view that permits save-able resizing and reordering of
+ * columns and also the adding of new columns based on the available fields for
  * the model.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class X2GridView extends CGridView {
 	public $selectableRows = 0;
-	
+
 	public $modelName;
 	public $viewName;
 	public $enableGvSettings = true;
-	
+
 	public $fullscreen = false;
-	
+
 	public $defaultGvSettings;
 	// jquery for generating defaults:
 	// var a=''; $('.x2-gridview tr:first th:not(:last)').each(function(i,elem){a+="\t\t'"+$(elem).attr("id").substr(2)+"' => "+$(elem).width()+",\n";}); a;
-	
+
 	public $specialColumns;
 	public $excludedColumns;
 	public $enableControls = false;
 	public $enableTags = false;
-	
+
 	public $summaryText;
-	
+
 	public $buttons = array();
 	public $title;
-	
+
 	protected $allFields = array();
 	protected $allFieldNames = array();
 	protected $specialColumnNames = array();
 	protected $gvSettings = null;
 	protected $columnSelectorId;
 	protected $columnSelectorHtml;
-	
+
 	protected $ajax = false;
-	
-	
+
+
 	public static function getFilterHint() {
-	
+
 		$text = Yii::t('app','<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.');
 		$text .= '<ul class="filter-hint">';
 		$text .= '<li><b>&lt;</b> '		.Yii::t('app','less than')				.'</li>';
@@ -92,28 +92,28 @@ class X2GridView extends CGridView {
 
 		return X2Info::hint($text,false);
 	}
-	
-	
+
+
 	public function init() {
 		$this->baseScriptUrl = Yii::app()->theme->getBaseUrl().'/css/gridview';
-		
+
 		$this->excludedColumns = empty($this->excludedColumns)?array():array_fill_keys($this->excludedColumns,1);
 //		die(var_dump($this->excludedColumns));
 		// $this->id is the rendered HTML element's ID, i.e. "contacts-grid"
 		$this->ajax = isset($_GET['ajax']) && $_GET['ajax']===$this->id;
 		if($this->ajax)
 			ob_clean();
-		
+
 		// $this->selectionChanged = 'js:function() { console.debug($.fn.yiiGridView.getSelection("'.$this->id.'")); }';
-		
+
 		// if(empty($this->modelName))
 			// $this->modelName = $this->getId();
 		if(empty($this->viewName))
 			$this->viewName = $this->modelName;
 		if($this->modelName=='Quotes')
 			$this->modelName='Quote';
-		
-		
+
+
 		$this->columnSelectorId = $this->getId() . '-column-selector';
 
 		// Get gridview settings by looking in the URL:
@@ -121,7 +121,7 @@ class X2GridView extends CGridView {
 			$this->gvSettings = json_decode($_GET['gvSettings'],true);
 			// unset($_GET['gvSettings']);
 			// die(var_dump($this->gvSettings));
-			
+
 			ProfileChild::setGridviewSettings($this->gvSettings,$this->viewName);
 		} else {
 			$this->gvSettings = ProfileChild::getGridviewSettings($this->viewName);
@@ -131,7 +131,7 @@ class X2GridView extends CGridView {
 			$this->gvSettings = $this->defaultGvSettings;
 		// die(var_dump($this->gvSettings));
 		// die(var_dump(ProfileChild::getGridviewSettings($this->viewName)));
-		
+
 		// load names from $specialColumns into $specialColumnNames
 		foreach($this->specialColumns as $columnName => &$columnData) {
 			if(isset($columnData['header']))
@@ -139,21 +139,21 @@ class X2GridView extends CGridView {
 			else
 				$this->specialColumnNames[$columnName] = X2Model::model($this->modelName)->getAttributeLabel($columnName);
 		}
-		
+
 		// start allFieldNames with the special fields
 		if(!empty($this->specialColumnNames))
 			$this->allFieldNames = $this->specialColumnNames;
-		
+
 		// add controls column if specified
 		if($this->enableControls)
 			$this->allFieldNames['gvControls'] = Yii::t('app','Tools');
-		
+
 		$this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
 
 		// load fields from DB
 		// $fields=Fields::model()->findAllByAttributes(array('modelName'=>ucwords($this->modelName)));
 		$fields = X2Model::model($this->modelName)->getFields();
-		
+
 		$fieldPermissions = array();
 		if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
 			$rolePermissions = Yii::app()->db->createCommand()
@@ -168,7 +168,7 @@ class X2GridView extends CGridView {
 					$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
 			}
 		}
-		
+
 		// Begin setting fields
 		foreach($fields as $field) {
 			if (isset($this->excludedColumns[$field->fieldName]))
@@ -176,15 +176,15 @@ class X2GridView extends CGridView {
 			if((!isset($fieldPermissions[$field->id]) || $fieldPermissions[$field->id] > 0))
 				$this->allFields[$field->fieldName] = $field;
 		}
-		
+
 		// add tags column if specified
 		if($this->enableTags)
 			$this->allFieldNames['tags'] = Yii::t('app','Tags');
-		
+
 		foreach($this->allFields as $fieldName=>&$field) {
 			$this->allFieldNames[$fieldName] = X2Model::model($this->modelName)->getAttributeLabel($field->fieldName);
 		}
-		
+
 		// update columns if user has submitted data
 		if(isset($_GET['columns']) && isset($_GET['viewName']) && $_GET['viewName'] == $this->viewName) {	// has the user changed column visibility?
 
@@ -203,11 +203,11 @@ class X2GridView extends CGridView {
 		unset($_GET['columns']);	// prevents columns data from ending up in sort/pagination links
 		unset($_GET['viewName']);
 		unset($_GET['gvSettings']);
-/* 
+/*
 		// adding/removing columns changes the total width,
 		// so let's scale the columns to match the correct total (590px)
 		$totalWidth = array_sum(array_values($this->gvSettings));
-		
+
 		if($totalWidth > 0) {
 			$widthFactor = (585 ) / $totalWidth; //- count($this->gvSettings)
 			$sum = 0;
@@ -228,26 +228,26 @@ class X2GridView extends CGridView {
 		$datePickerJs = '';
 
 		foreach($this->gvSettings as $columnName => $width) {
-			
+
 			// $width = (!empty($width) && is_numeric($width))? 'width:'.$width.'px;' : null;	// make sure width is reasonable, then convert it to CSS
 			$width = (!empty($width) && is_numeric($width))? $width : null;	// make sure width is reasonable
-			
+
 			// $isDate = in_array($columnName,array('createDate','completeDate','lastUpdated','dueDate', 'expectedCloseDate', 'expirationDate', 'timestamp','lastactivity'));
-			
+
 			$isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
-			
+
 			$lang = (Yii::app()->language == 'en')? '':Yii::app()->getLanguage();
-			
+
 			//if($isDate)
 				//$datePickerJs .= ' $("#'.$columnName.'DatePicker").datepicker('
 					//.'$.extend({showMonthAfterYear:false}, {"dateFormat":"'.Formatter::formatDatePicker().'"})); ';
 					// .'{"showAnim":"fold","dateFormat":"yy-mm-dd","changeMonth":"true","showButtonPanel":"true","changeYear":"true","constrainInput":"false"}));';
-			
-			
+
+
 			$newColumn = array();
 
 			if(array_key_exists($columnName,$this->specialColumnNames)) {
-				
+
 				$newColumn = $this->specialColumns[$columnName];
 				// $newColumn['name'] = 'lastName';
 				$newColumn['id'] = 'C_'.$columnName;
@@ -264,12 +264,12 @@ class X2GridView extends CGridView {
 				$newColumn['id'] = 'C_'.$columnName;
 				$newColumn['header'] = X2Model::model($this->modelName)->getAttributeLabel($columnName);
 				$newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
-				
+
 				if($isCurrency) {
-					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data->'.$columnName.',Yii::app()->params->currency)';
+					$newColumn['value'] = 'Yii::app()->locale->numberFormatter->formatCurrency($data["'.$columnName.'"],Yii::app()->params->currency)';
 					$newColumn['type'] = 'raw';
 				} else if($columnName == 'assignedTo' || $columnName == 'updatedBy') {
-					$newColumn['value'] = 'empty($data->'.$columnName.')?Yii::t("app","Anyone"):User::getUserLinks($data->'.$columnName.')';
+					$newColumn['value'] = 'empty($data["'.$columnName.'"])?Yii::t("app","Anyone"):User::getUserLinks($data["'.$columnName.'"])';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='date') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Formatter::formatLongDate($data["'.$columnName.'"])';
@@ -278,16 +278,16 @@ class X2GridView extends CGridView {
 				} elseif($this->allFields[$columnName]->type=='dateTime') {
 					$newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : Yii::app()->dateFormatter->formatDateTime($data["'.$columnName.'"],"medium")';
 				} elseif($this->allFields[$columnName]->type=='link') {
-					$newColumn['value'] = '!is_numeric($data->'.$columnName.')?$data->'.$columnName.':(is_null($data->'.$columnName.'Model)?$data->'.$columnName.':$data->'.$columnName.'Model->getLink())';
+					$newColumn['value'] = '!is_numeric($data["'.$columnName.'"])?$data["'.$columnName.'"]:X2Model::getModelLink($data["'.$columnName.'"],X2Model::getModelName("'.$this->allFields[$columnName]->linkType.'"))';
 					$newColumn['type'] = 'raw';
 				} elseif($this->allFields[$columnName]->type=='boolean') {
-					$newColumn['value']='$data->'.$columnName.'==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
+					$newColumn['value']='$data["'.$columnName.'"]==1?Yii::t("actions","Yes"):Yii::t("actions","No")';
 					$newColumn['type'] = 'raw';
 				}elseif($this->allFields[$columnName]->type=='phone'){
                     $newColumn['type'] = 'raw';
-                    $newColumn['value'] = 'X2Model::getPhoneNumber("'.$columnName.'","'.$this->modelName.'",$data->id)';
+                    $newColumn['value'] = 'X2Model::getPhoneNumber("'.$columnName.'","'.$this->modelName.'",$data["id"])';
                 }
-			
+
 
 				if(Yii::app()->language == 'en') {
 					$format =  "M d, yy";
@@ -297,7 +297,7 @@ class X2GridView extends CGridView {
 		    		$format = str_replace('MM', 'mm', $format);
 		    		$format = str_replace('M','m', $format);
 		    	}
-		    	
+
 				/* $newColumn['filter'] = $isDate? $this->widget("zii.widgets.jui.CJuiDatePicker",array(
 					'model'=>$this->filter, //Model object
 					// 'id'=>$columnName.'DatePicker',
@@ -309,9 +309,9 @@ class X2GridView extends CGridView {
 					), // jquery plugin options
 					'language'=>$lang,
 				),true) : null; */
-				
+
 				$columns[] = $newColumn;
-					
+
 			} else if($columnName == 'gvControls') {
 				$newColumn['id'] = 'C_gvControls';
 				$newColumn['class'] = 'CButtonColumn';
@@ -319,9 +319,9 @@ class X2GridView extends CGridView {
 				$newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
 				if(Yii::app()->user->getName() != 'admin')
 					$newColumn['template'] = '{view}{update}';
-					
+
 				$columns[] = $newColumn;
-				
+
 			} else if($columnName == 'tags') {
 				$newColumn['id'] = 'C_'.'tags';
 				// $newColumn['class'] = 'CDataColumn';
@@ -330,25 +330,25 @@ class X2GridView extends CGridView {
 				$newColumn['value'] = 'Tags::getTagLinks("'.$this->modelName.'",$data->id,2)';
 				$newColumn['type'] = 'raw';
 				$newColumn['filter'] = CHtml::textField('tagField',isset($_GET['tagField'])? $_GET['tagField'] : '');
-				
-				
+
+
 				$columns[] = $newColumn;
 			} else if ($columnName == 'gvCheckbox') {
 				$newColumn['id'] = 'C_gvCheckbox';
 				$newColumn['class'] = 'CCheckBoxColumn';
 				$newColumn['selectableRows'] = 2;
 				$newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
-					
+
 				$columns[] = $newColumn;
 			}
-		}		
+		}
 		$columns[] = array('value'=>'','header'=>''/* ,'headerHtmlOptions'=>array('style'=>'width:0px;') */);		// one blank column for the resizing widget
 
 		$this->columns = $columns;
-		
-		
+
+
 		natcasesort($this->allFieldNames); // sort column names
-		
+
 		// generate column selector HTML
 		$this->columnSelectorHtml = CHtml::beginForm(array('site/saveGvSettings'),'get')
 			.'<ul class="column-selector" id="'.$this->columnSelectorId.'">';
@@ -363,29 +363,29 @@ class X2GridView extends CGridView {
 		// Yii::app()->clientScript->renderBodyBegin($columnHtml);
 		// Yii::app()->clientScript->registerScript(__CLASS__.'#'.$this->getId().'_columnSelector',
 		// "$('#".$this->getId()." table').after('".addcslashes($columnHtml,"'")."');
-		
+
 		// ",CClientScript::POS_READY);
 		$themeURL = Yii::app()->theme->getBaseUrl();
-		
+
 		Yii::app()->clientScript->registerScript('logos',base64_decode(
 			'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
 			.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
 			.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
-		
+
 		// add a dropdown to the summary text that let's user set how many rows to show on each page
 		$this->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
-		
+
 			// . '<div class="form no-border" style="display: block;padding-top: 5px;margin: 0 0 0 5px;float: right;">
 				// <a class="x2-button" style="padding:0 15px;">&lt;</a>
 				// <a class="x2-button" style="padding:0 15px;">&gt;</a>
 			// </div>'
-		
+
 			. '<div class="form no-border" style="display:inline;"> '
 			. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 					'ajax' => array(
 						'url' => $this->controller->createUrl('/profile/setResultsPerPage'),
-						'complete' => "function(response) { 
-							\$.fn.yiiGridView.update('{$this->id}', {" . 
+						'complete' => "function(response) {
+							\$.fn.yiiGridView.update('{$this->id}', {" .
 								(isset($this->modelName)? "data: {'{$this->modelName}_page': 1}," : "") . "
 								complete: function(jqXHR, status) {
 									if(typeof(refreshQtip) == 'function') {
@@ -400,14 +400,14 @@ class X2GridView extends CGridView {
 			. ' </div>';
 			// . Yii::t('app', ' results per page');
 
-			
-			
+
+
 		// $this->afterAjaxUpdate = 'function(id, data) { '.$datePickerJs.' }';
 		// if(!empty($this->afterAjaxUpdate))
 			// $this->afterAjaxUpdate = "var callback = ".$this->afterAjaxUpdate."; if(typeof callback == 'function') callback();";
-		
+
 		// $this->afterAjaxUpdate = " function(id,data) { ".$this->afterAjaxUpdate." ".$datePickerJs;
-				
+
 		// if($this->enableGvSettings) {
 			// $this->afterAjaxUpdate.="
 			// $('#".$this->getId()." table').gvSettings({
@@ -417,15 +417,15 @@ class X2GridView extends CGridView {
 			// });";
 		// }
 		// $this->afterAjaxUpdate .= " } ";
-			
+
 		if(isset(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts'){
 			// after user moves to a different page, make sure the tool tips get added to the newly showing rows
 			$this->afterAjaxUpdate = 'js: function(id, data) { refreshQtip(); $(".qtip-hint").qtip({content:false}); }';
         }
 		parent::init();
 	}
-	
-	public function run() { 
+
+	public function run() {
 		$this->registerClientScript();
 
 		// give this a special class so the javascript can tell it apart from the regular, lame gridviews
@@ -434,13 +434,13 @@ class X2GridView extends CGridView {
 		$this->htmlOptions['class'] .= ' x2-gridview';
 		if($this->fullscreen)
 			$this->htmlOptions['class'] .= ' fullscreen';
-		
+
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
 
 		$this->renderContent();
 		$this->renderKeys();
 
-		
+
 		if($this->ajax) {
 			// remove any external JS and CSS files
 			Yii::app()->clientScript->scriptMap['*.js'] = false;
@@ -452,18 +452,18 @@ class X2GridView extends CGridView {
 			$output = '';
 			Yii::app()->getClientScript()->renderBodyEnd($output);
 			echo $output;
-			
+
 			echo CHtml::closeTag($this->tagName);
 			ob_flush();
-			
-			
+
+
 			Yii::app()->end();;
 		}
 		echo CHtml::closeTag($this->tagName);
-		
+
 	}
-	
-	
+
+
 
 	/**
 	* Renders the data items for the grid view.
@@ -472,10 +472,10 @@ class X2GridView extends CGridView {
 		if($this->dataProvider->getItemCount() > 0 || $this->showTableOnEmpty) {
 			if($this->enableGvSettings)
 				echo '<div class="x2grid-header-container">';
-				
+
 			echo '<table class="',$this->itemsCssClass,'">';
 			$this->renderTableHeader();
-			
+
 			if($this->enableGvSettings)
 				echo '</table></div><div class="x2grid-body-container"><table class="',$this->itemsCssClass,"\">\n";
 			ob_start();
@@ -484,7 +484,7 @@ class X2GridView extends CGridView {
 			$this->renderTableFooter();
 			echo $body; // TFOOT must appear before TBODY according to the standard.
 			echo '</table>';
-			
+
 			if($this->enableGvSettings)
 				echo '</div>';
 		} else {
@@ -494,7 +494,7 @@ class X2GridView extends CGridView {
 
 	/**
 	 * Override of {@link CGridView::registerClientScript()}.
-	 * 
+	 *
 	 * Adds scripts essential to modifying the gridview (and saving its configuration).
 	 */
 	public function registerClientScript() {
@@ -503,7 +503,7 @@ class X2GridView extends CGridView {
 		if($this->enableGvSettings) {
 			if(!$this->ajax)
 				Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
-			
+
 			Yii::app()->clientScript->registerScript(__CLASS__.'#'.$this->getId().'_gvSettings',
 			"$('#".$this->getId()."').gvSettings({
 				viewName:'".$this->viewName."',
@@ -513,14 +513,14 @@ class X2GridView extends CGridView {
 			});",CClientScript::POS_READY);
 		}
 	}
-	
+
 	/**
-	 * Echoes the markup for the gridview's table header. 
+	 * Echoes the markup for the gridview's table header.
 	 */
 	public function renderTableHeader() {
 		if(!$this->hideHeader) {
 			// echo "<colgroup>";
-			
+
 			$sortDirections = $this->dataProvider->getSort()->getDirections();
 			foreach($this->columns as $column) {
 				// determine sort state for this column (adapted from CSort::link())
@@ -534,23 +534,23 @@ class X2GridView extends CGridView {
 					}
 				}
 				// echo ($column->headerHtmlOptions['colWidth'] === 0)? '<col>' : '<col style="width:'.$column->headerHtmlOptions['colWidth'].'px">';
-				
+
 				// $column->headerHtmlOptions['colWidth'] = null;
 			}
 			// echo "</colgroup>\n";
 			echo "<thead>\n";
-			
+
 			if($this->filterPosition===self::FILTER_POS_HEADER)
 				$this->renderFilter();
-			
+
 			echo "<tr>\n";
 			foreach($this->columns as $column)
 				$column->renderHeaderCell();
 			echo "</tr>\n";
-			
+
 			if($this->filterPosition===self::FILTER_POS_BODY)
 				$this->renderFilter();
-			
+
 			echo "</thead>\n";
 		}
 		else if($this->filter!==null && ($this->filterPosition===self::FILTER_POS_HEADER || $this->filterPosition===self::FILTER_POS_BODY)) {
@@ -561,8 +561,8 @@ class X2GridView extends CGridView {
 				// $column->headerHtmlOptions['colWidth'] = null;
 			// }
 			// echo "</colgroup>\n";
-		
-		
+
+
 			echo "<thead>\n";
 			$this->renderFilter();
 			echo "</thead>\n";

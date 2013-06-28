@@ -81,7 +81,7 @@ x2.fieldUtils = {
 	getOperators:function(fieldType) {
 		switch(fieldType) {
 			case 'date':
-				var ops = ['=','<>','<','>','empty','notEmpty']; break;
+				var ops = ['=','<>','before','after','empty','notEmpty']; break;
 			case 'rating':
 			case 'currency':
 				var ops = ['=','<>','<','>','empty','notEmpty','list','notList']; break;
@@ -350,7 +350,12 @@ x2.fieldUtils = {
 		var operatorOptions = [];
 		for(var i=0;i<operators.length;i++) {
 			if(x2.operatorList[operators[i]])
-				operatorOptions.push([operators[i],x2.operatorList[operators[i]]]);
+				if(operators[i] === 'before')
+					operatorOptions.push(['<',x2.operatorList[operators[i]]]);		// the 'before' and 'after' operators act
+				else if(operators[i] === 'after')									// just like '<' and '>' in the back end,
+					operatorOptions.push(['>',x2.operatorList[operators[i]]]);		// but they have different labels
+				else
+					operatorOptions.push([operators[i],x2.operatorList[operators[i]]]);
 		}
 		return this.createInput({"type":"dropdown","name":"operator","options":operatorOptions,"value":val});
 	},

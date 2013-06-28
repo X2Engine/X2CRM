@@ -86,7 +86,7 @@ $(document).ready(function() {
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'password'); ?>
-		<?php echo $form->passwordField($model,'password',array('size'=>20,'maxlength'=>20)); ?>
+		<?php echo $form->passwordField($model,'password',array('size'=>20,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'password'); ?>
 	</div>
 	
