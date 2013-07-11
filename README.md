@@ -1,28 +1,17 @@
-# X2CRM 3.1.2 #
-6/28/2013
+# X2CRM 3.2 #
+7/10/2013
 ## Changes ##
-* Robust new resizable grid view
-* Enhancements to application UI
-* Better controls for user color schemes
-* Yii Framework updated to 1.1.13
-* New API action "tags" allows programmatic manipulation of tags on records
-  via the API
-* Improved record history filtering
-* The inline email form can now be used while viewing account records
-* Better support for foreign currencies in quotes & invoices
-* More bug fixes
-
-## New in 3.1.1 ##
-* Fixed bug creating new windows when notifications are received
-* Reverted some changes to UI
-
-## New in 3.1.2 ##
-* Improvements to theme settings
-  * You can now save themes
-  * Set custom gridview row colors
-* Improved X2Flow Automation look and feel
-* X2Flow can now use Lead Routing Rules to assign records
-* Customizable <HEAD> tag on web lead forms
+* Enhancements to X2Flow Automation
+  * Improved UI is more intuitive
+  * You can now set time delays to run actions at a later date
+  * New cronjob endpoint for time-based events
+* New multi-account email system
+  * You can now create and manage unlimited SMTP accounts for email integration
+* Advanced Google Drive integration
+  * Upload, view and access your Drive files from within X2CRM
+  * Effortlessly attach files to emails
+  * General improvements to Google integration
+* New charting system on the home page feed lets you visualize new leads and user activity
 * Numerous bug fixes
 
 ## Release Notes ##
@@ -75,7 +64,7 @@
 
 
 # Introduction #
-Welcome to  X2CRM v3.1.1!
+Welcome to  X2CRM!
 X2CRM is a next-generation,  open source social sales application for small and 
 medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and

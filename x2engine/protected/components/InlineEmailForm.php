@@ -98,6 +98,7 @@ class InlineEmailForm extends X2Widget {
 	}
 
 	public function run() {
+		// First get user credentials:
 		$this->render('application.components.views.inlineEmailForm', array(
 			'model' => $this->model,
 			'type' => $this->templateType,

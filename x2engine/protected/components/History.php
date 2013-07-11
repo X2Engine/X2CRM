@@ -60,18 +60,21 @@ class History extends X2Widget {
                 'marketing' => 'Marketing',
                 'webactivity'=>'Web Activity',
             );
-
+            $profile=Yii::app()->params->profile;
+            $this->pageSize=$profile->historyShowAll?10000:10;
+            $this->relationships=$profile->historyShowRels;
             if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){
                 $this->historyType = $_GET['history'];
             }
             if(isset($_GET['pageSize'])){
                 $this->pageSize=$_GET['pageSize'];
-            }
-            if(strcasecmp($this->associationType,'Accounts')==0){
-                $this->relationships=1;
+                $profile->historyShowAll=$this->pageSize>10?1:0;
+                $profile->update(array('historyShowAll'));
             }
             if(isset($_GET['relationships'])){
                 $this->relationships=$_GET['relationships'];
+                $profile->historyShowRels=$this->relationships;
+                $profile->update(array('historyShowRels'));
             }
         }else{
             $historyTabs = array();
@@ -89,6 +92,10 @@ class History extends X2Widget {
             $(document).on('click','#show-history-link',function(e){
                 e.preventDefault();
                 $.fn.yiiListView.update('history',{ data:{ pageSize: 10000 }});
+            });
+            $(document).on('click','#hide-history-link',function(e){
+                e.preventDefault();
+                $.fn.yiiListView.update('history',{ data:{ pageSize: 10 }});
             });
             $(document).on('click','#show-relationships-link',function(e){
                 e.preventDefault();
@@ -110,7 +117,8 @@ class History extends X2Widget {
             'htmlOptions' => array('class' => 'action list-view'),
             'template' => '<div class="form">'.CHtml::dropDownList('history-selector',$this->historyType,$historyTabs).
             '<span style="margin-top:5px;" class="right">'.CHtml::link('Toggle Text','#',array('id'=>'history-collapse','class'=>'x2-hint','title'=>'Click to toggle showing the full text of History items.'))
-            .' | '.CHtml::link('Show All','#',array('id'=>'show-history-link','class'=>'x2-hint','title'=>'Click to increase the page size on the History.'))
+            .' | '.CHtml::link('Show All','#',array('id'=>'show-history-link','class'=>'x2-hint','title'=>'Click to increase the number of History items shown.','style'=>$this->pageSize>10?'display:none;':''))
+            .CHtml::link('Show Less','#',array('id'=>'hide-history-link','class'=>'x2-hint','title'=>'Click to decrease the number of History items shown.','style'=>$this->pageSize>10?'':'display:none;'))
             .((!Yii::app()->user->isGuest)?' | '.CHtml::link('Relationships','#',array('id'=>'show-relationships-link','class'=>'x2-hint','title'=>'Click to toggle showing actions associated with related records.')):'')
             .'</span></div> {sorter}{items}{pager}',
         ));

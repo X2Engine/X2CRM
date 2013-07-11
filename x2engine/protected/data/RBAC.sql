@@ -73,7 +73,8 @@ CREATE TABLE x2_auth_cache(
 	INDEX (userId)
 ) COLLATE = utf8_general_ci;
 /*&*/
-INSERT INTO `x2_auth_item` VALUES ('AccountsAddUser',0,'',NULL,'N;'),
+INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
+('AccountsAddUser',0,'',NULL,'N;'),
 ('AccountsAdmin',0,'',NULL,'N;'),
 ('AccountsAdminAccess',1,'',NULL,'N;'),
 ('AccountsBasicAccess',1,'',NULL,'N;'),
@@ -408,6 +409,8 @@ INSERT INTO `x2_auth_item` VALUES ('AccountsAddUser',0,'',NULL,'N;'),
 ('MediaUpdateAccess',1,'',NULL,'N;'),
 ('MediaUpload',0,'',NULL,'N;'),
 ('MediaView',0,'',NULL,'N;'),
+('MediaRecursiveDriveFiles',0,'',NULL,'N;'),
+('MediaRefreshDriveCache',0,'',NULL,'N;'),
 ('MediaQtip',0,'',NULL,'N;'),
 ('OpportunitiesAddContact',0,'',NULL,'N;'),
 ('OpportunitiesAddUser',0,'',NULL,'N;'),
@@ -660,7 +663,8 @@ INSERT INTO `x2_auth_item` VALUES ('AccountsAddUser',0,'',NULL,'N;'),
 ('BugReportsUpdatePrivate',1,'','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('BugReportsDeletePrivate',1,'','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;');
 /*&*/
-INSERT INTO `x2_auth_item_child` VALUES ('AccountsUpdateAccess','AccountsAddUser'),
+INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
+('AccountsUpdateAccess','AccountsAddUser'),
 ('AccountsUpdatePrivate','AccountsAddUser'),
 ('AccountsAdminAccess','AccountsAdmin'),
 ('administrator','AccountsAdminAccess'),
@@ -787,6 +791,7 @@ INSERT INTO `x2_auth_item_child` VALUES ('AccountsUpdateAccess','AccountsAddUser
 ('FieldsTask','AdminManageFields'),
 ('GeneralAdminSettingsTask','AdminManageModules'),
 ('GeneralAdminSettingsTask','AdminWorkflowSettings'),
+('GeneralAdminSettingsTask','AdminUpdater'),
 ('GeneralAdminSettingsTask','AdminUpdaterSettings'),
 ('GeneralAdminSettingsTask','AdminManageSessions'),
 ('GeneralAdminSettingsTask','AdminToggleSession'),
@@ -1014,6 +1019,8 @@ INSERT INTO `x2_auth_item_child` VALUES ('AccountsUpdateAccess','AccountsAddUser
 ('MarketingPrivateUpdateAccess','MarketingUpdatePrivate'),
 ('MarketingReadOnlyAccess','MarketingView'),
 ('MarketingViewPrivate','MarketingView'),
+('AuthenticatedSiteFunctionsTask','MediaRecursiveDriveFiles'),
+('AuthenticatedSiteFunctionsTask','MediaRefreshDriveCache'),
 ('MarketingPrivateReadOnlyAccess','MarketingViewPrivate'),
 ('LeadRoutingTask','MarketingWebLeadForm'),
 ('MarketingAdminAccess','MarketingWebleadForm'),

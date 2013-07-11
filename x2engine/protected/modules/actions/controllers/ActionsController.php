@@ -310,6 +310,7 @@ class ActionsController extends x2base {
 
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
+            $model->actionDescription = $_POST['Actions']['actionDescription'];
             if($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $notif = new Notification;
@@ -335,7 +336,7 @@ class ActionsController extends x2base {
                         $notif2->save();
                     }
                 }
-                $model->actionDescription = $_POST['Actions']['actionDescription'];
+
                 $model->syncGoogleCalendar('create');
                 $this->redirect(array('index'));
             }
@@ -428,8 +429,8 @@ class ActionsController extends x2base {
             if(!empty($model->type))
                 $model->disableBehavior('changelog');
 
+            $model->actionDescription = $_POST['Actions']['actionDescription'];
             if($model->save()){ // action saved to database *
-                $model->actionDescription = $_POST['Actions']['actionDescription'];
                 if(isset($event)){
                     $event->associationId = $model->id;
                     $event->save();
@@ -605,24 +606,9 @@ class ActionsController extends x2base {
             }elseif(empty($model->completeDate)){
                 $model->completeDate = $model->dueDate;
             }
-            
-            // $changes = $this->calculateChanges($temp, $model->attributes, $model);
-            // $model = $this->updateChangelog($model,$changes);
-
-            if(!is_numeric($model->assignedTo)){ // assigned to user
-                $profile = ProfileChild::model()->findByAttributes(array('username' => $model->assignedTo));
-                if(isset($profile))
-                    $profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
-            } else{ // Assigned to group
-                $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
-                foreach($groups as $group){
-                    $profile = ProfileChild::model()->findByPk($group['userId']);
-                    if(isset($profile))
-                        $profile->updateGoogleCalendarEvent($model);
-                }
+            if($model->save()){
+                $model->syncGoogleCalendar('update');
             }
-
-            $model->update();
         }
     }
 
@@ -825,82 +811,86 @@ class ActionsController extends x2base {
     }
 
     /**
-     * Called when a Contact opens an email sent from Inline Email Form. Inline Email Form
-     * appends an image to the email with src pointing to this function. This function
-     * creates an action associated with the Contact indicating that the email was opened.
-     *
-     * @param integer $uid The unique id of the recipient
-     * @param string $type 'open', 'click', or 'unsub'
-     *
-     */
-    public function actionEmailOpened($uid, $type){
-        if($type == 'open' && Yii::app()->user->isGuest){
-            $track = TrackEmail::model()->findByAttributes(array('uniqueId' => $uid));
-            if($track && $track->opened == null){
-                $action = $track->action;
-                if($action){
-                    $note = new Actions;
-                    switch($action->type){
-                        case 'email_quote':
-                            $note->type = 'emailOpened_quote';
-                            break;
-                        case 'email_invoice':
-                            $note->type = 'emailOpened_invoice';
-                            break;
-                        default:
-                            $note->type = 'emailOpened';
-                    }
-                    $now = time();
-                    $note->createDate = $now;
-                    $note->lastUpdated = $now;
-                    $note->completeDate = $now;
-                    $note->complete = 'Yes';
-                    $note->updatedBy = 'admin';
-                    $note->associationType = $action->associationType;
-                    $note->associationId = $action->associationId;
-                    $note->associationName = $action->associationName;
-                    $note->visibility = $action->visibility;
-                    $note->assignedTo = $action->assignedTo;
-                    $note->actionDescription = Yii::t('marketing', 'Contact has opened the email sent on ');
-                    $note->actionDescription .= Formatter::formatLongDateTime($action->createDate)."<br>";
-                    $note->actionDescription .= $action->actionDescription;
-                    if($note->save()){
-                        $event = new Events;
-                        $event->type = 'email_opened';
-                        switch($action->type){
-                            case 'email_quote':
-                                $event->subtype = 'quote';
-                                break;
-                            case 'email_invoice':
-                                $event->subtype = 'invoice';
-                                break;
-                            default:
-                                $event->subtype = 'email';
-                        }
-                        $contact = X2Model::model('Contacts')->findByPk($action->associationId);
-                        if(isset($contact)){
-                            $event->user = $contact->assignedTo;
-                        }
-                        $event->associationType = 'Contacts';
-                        $event->associationId = $note->associationId;
-                        if($action->associationType == 'services'){
-                            $case = X2Model::model('Services')->findByPk($action->associationId);
-                            if(isset($case) && is_numeric($case->contactId)){
-                                $event->associationId = $case->contactId;
-                            }
-                        }
-                        $event->save();
-                        $track->opened = $now;
-                        $track->update();
-                    }
-                }
-            }
+	 * Called when a Contact opens an email sent from Inline Email Form. Inline Email Form
+	 * appends an image to the email with src pointing to this function. This function
+	 * creates an action associated with the Contact indicating that the email was opened.
+	 *
+	 * @param integer $uid The unique id of the recipient
+	 * @param string $type 'open', 'click', or 'unsub'
+	 *
+	 */
+	public function actionEmailOpened($uid, $type){
+		// If the request is coming from within the web application, ignore it.
+		$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '' ;
+		$baseUrl = Yii::app()->request->getBaseUrl(true);
+		$fromApp = strpos($referrer, $baseUrl) === 0;
 
-            //return a one pixel transparent png
-            header('Content-Type: image/png');
-            echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
-        }
-    }
+		if($type == 'open' && !$fromApp){
+			$track = TrackEmail::model()->findByAttributes(array('uniqueId' => $uid));
+			if($track && $track->opened == null){
+				$action = $track->action;
+				if($action){
+					$note = new Actions;
+					switch($action->type){
+						case 'email_quote':
+							$note->type = 'emailOpened_quote';
+							break;
+						case 'email_invoice':
+							$note->type = 'emailOpened_invoice';
+							break;
+						default:
+							$note->type = 'emailOpened';
+					}
+					$now = time();
+					$note->createDate = $now;
+					$note->lastUpdated = $now;
+					$note->completeDate = $now;
+					$note->complete = 'Yes';
+					$note->updatedBy = 'admin';
+					$note->associationType = $action->associationType;
+					$note->associationId = $action->associationId;
+					$note->associationName = $action->associationName;
+					$note->visibility = $action->visibility;
+					$note->assignedTo = $action->assignedTo;
+					$note->actionDescription = Yii::t('marketing', 'Contact has opened the email sent on ');
+					$note->actionDescription .= Formatter::formatLongDateTime($action->createDate)."<br>";
+					$note->actionDescription .= $action->actionDescription;
+					if($note->save()){
+						$event = new Events;
+						$event->type = 'email_opened';
+						switch($action->type){
+							case 'email_quote':
+								$event->subtype = 'quote';
+								break;
+							case 'email_invoice':
+								$event->subtype = 'invoice';
+								break;
+							default:
+								$event->subtype = 'email';
+						}
+						$contact = X2Model::model('Contacts')->findByPk($action->associationId);
+						if(isset($contact)){
+							$event->user = $contact->assignedTo;
+						}
+						$event->associationType = 'Contacts';
+						$event->associationId = $note->associationId;
+						if($action->associationType == 'services'){
+							$case = X2Model::model('Services')->findByPk($action->associationId);
+							if(isset($case) && is_numeric($case->contactId)){
+								$event->associationId = $case->contactId;
+							}
+						}
+						$event->save();
+						$track->opened = $now;
+						$track->update();
+					}
+				}
+			}
+		}
+		//return a one pixel transparent png
+		header('Content-Type: image/png');
+		echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
+	}
 
     // Lists all actions assigned to this user
      public function actionIndex(){

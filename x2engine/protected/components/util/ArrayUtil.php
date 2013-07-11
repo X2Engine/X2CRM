@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -35,20 +36,43 @@
  *****************************************************************************************/
 
 /**
- * X2FlowTrigger 
+ * Standalone class with miscellaneous array functions
  * 
- * @package X2CRM.components.x2flow.actions
+ * @package
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
-class UserLogoutTrigger extends X2FlowTrigger {
-	public $title = 'User Signed Out';
-	public $info = 'Triggered when a user signs out of X2CRM.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'options' => array(
-				array('name'=>'user','type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(false,false),'operators'=>array('=','<>','inList','notList'),'optional'=>1),
-			));
+class ArrayUtil {
+
+	/**
+	 * Given two associative arrays, returns an array with the same set of keys
+	 * as the first, but with key/value pairs from the second if they are present.
+	 * Any keys in the second and not in the first will be ignored/dropped.
+	 *
+	 * @param array $expectedFields The array with key => default value pairs
+	 * @param array $currentFields The array to copy values from
+	 * @return array
+	 */
+	public static function normalizeToArray($expectedFields, $currentFields){
+		// Expected keys: defined in expectedFields
+		$expKeys = array_keys($expectedFields);
+		// Current keys: in the array to compare against
+		$curKeys = array_keys($currentFields);
+		// Keys to save: both already present in the current fields and defined in the expected fields
+		$savKeys = array_intersect($expKeys, $curKeys);
+		// New keys: that are not present in the current fields but defined in the expected fields
+		$newKeys = array_diff($expKeys, $curKeys);
+		// The array to return, with normalized data:
+		$fields = array();
+
+		// Use existing values
+		foreach($savKeys as $fieldName)
+			$fields[$fieldName] = $currentFields[$fieldName];
+		// Use default values as defined in the expected fields
+		foreach($newKeys as $fieldName)
+			$fields[$fieldName] = $expectedFields[$fieldName];
+
+		return $fields;
 	}
 }
+
+?>

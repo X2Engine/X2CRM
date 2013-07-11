@@ -35,6 +35,7 @@ class Google_OAuth2 extends Google_Auth {
   public $state;
   public $accessType = 'offline';
   public $approvalPrompt = 'force';
+  public $requestVisibleActions;
 
   /** @var Google_AssertionCredentials $assertionCredentials */
   public $assertionCredentials;
@@ -53,7 +54,7 @@ class Google_OAuth2 extends Google_Auth {
    */
   public function __construct() {
     global $apiConfig;
-    
+
     if (! empty($apiConfig['developer_key'])) {
       $this->developerKey = $apiConfig['developer_key'];
     }
@@ -69,7 +70,7 @@ class Google_OAuth2 extends Google_Auth {
     if (! empty($apiConfig['oauth2_redirect_uri'])) {
       $this->redirectUri = $apiConfig['oauth2_redirect_uri'];
     }
-    
+
     if (! empty($apiConfig['oauth2_access_type'])) {
       $this->accessType = $apiConfig['oauth2_access_type'];
     }
@@ -77,6 +78,7 @@ class Google_OAuth2 extends Google_Auth {
     if (! empty($apiConfig['oauth2_approval_prompt'])) {
       $this->approvalPrompt = $apiConfig['oauth2_approval_prompt'];
     }
+
   }
 
   /**
@@ -117,7 +119,7 @@ class Google_OAuth2 extends Google_Auth {
     $authUrl = $this->createAuthUrl($service['scope']);
     header('Location: ' . $authUrl);
     return true;
-  } 
+  }
 
   /**
    * Create a URL to obtain user authorization.
@@ -133,8 +135,15 @@ class Google_OAuth2 extends Google_Auth {
         'client_id=' . urlencode($this->clientId),
         'scope=' . urlencode($scope),
         'access_type=' . urlencode($this->accessType),
-        'approval_prompt=' . urlencode($this->approvalPrompt)
+        'approval_prompt=' . urlencode($this->approvalPrompt),
     );
+
+    // if the list of scopes contains plus.login, add request_visible_actions
+    // to auth URL
+    if(strpos($scope, 'plus.login') && count($this->requestVisibleActions) > 0) {
+        $params[] = 'request_visible_actions=' .
+            urlencode($this->requestVisibleActions);
+    }
 
     if (isset($this->state)) {
       $params[] = 'state=' . urlencode($this->state);

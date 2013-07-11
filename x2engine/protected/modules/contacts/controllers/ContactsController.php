@@ -738,7 +738,7 @@ class ContactsController extends x2base {
 					$primaryAccountLink = '';
 					$newPhone = '';
 					$newWebsite = '';
-					if(isset($_POST['ModelName']) && isset($_POST['ModelId'])) {
+					if(isset($_POST['ModelName']) && !empty($_POST['ModelId'])) {
 						Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Contacts', $model->id);
 
 						if($_POST['ModelName'] == 'Accounts') {
@@ -1009,13 +1009,15 @@ class ContactsController extends x2base {
 							(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 					$criteria->addCondition($condition);
 				}
+                $count = X2Model::model('Contacts')->count($criteria);
 				if(!empty($criteria) && $criteriaFlag) {
 					$duplicates = X2Model::model('Contacts')->findAll($criteria);
 					if(count($duplicates) > 0) {
 						$this->render('duplicateCheck', array(
 							'newRecord' => $model,
 							'duplicates' => $duplicates,
-							'ref' => 'update'
+							'ref' => 'update',
+                            'count' => $count,
 						));
 						$renderFlag=false;
 					} else {
@@ -2035,7 +2037,7 @@ class ContactsController extends x2base {
 							}
 							if(!empty($_SESSION['comment'])){
 								$action=new Actions;
-								$action->associationType="Contacts";
+								$action->associationType="contacts";
 								$action->associationId=$model->id;
 								$action->actionDescription=$_SESSION['comment'];
 								$action->createDate=time();
@@ -2267,7 +2269,7 @@ class ContactsController extends x2base {
 
 	public function actionWeblead() {
 
-		if(file_exists(__DIR__ . '/pro/actionWeblead.php') && 
+		if(file_exists(__DIR__ . '/pro/actionWeblead.php') &&
            Yii::app()->params->admin->edition === 'pro') {
 			include(__DIR__ . '/pro/actionWeblead.php');
 			return;

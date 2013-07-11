@@ -392,7 +392,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						$action->lastUpdated = time();
 						$action->updatedBy = 'admin';
 						$action->visibility = 1;
-						$action->associationType = strtolower($modelClass);
+						$action->associationType = lcfirst($modelClass);
 						$action->associationId = $model->id;
 						$action->associationName = $model->name;
 						$action->save();

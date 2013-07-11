@@ -198,6 +198,7 @@ $this->widget('InlineEmailForm',
 			// 'redirect'=>'contacts/'.$model->id,
 			'modelName'=>'Contacts',
 			'modelId'=>$model->id,
+			'targetModel'=>$model,
 		),
 		'startHidden'=>true,
 	)

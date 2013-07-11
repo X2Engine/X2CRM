@@ -76,7 +76,7 @@ $(function() {
 	<table frame="border">
 		<td>
 			<?php if($googleIntegration) { ?>
-				<?php if ($client->getAccessToken()) { ?>
+				<?php if (!$auth->getErrors() && $auth->getAccessToken()) { ?>
 					<?php echo $form->labelEx($model, 'googleCalendarName'); ?>
 					<?php echo $form->dropDownList($model, 'syncGoogleCalendarId', $googleCalendarList); ?>
 					<br />
@@ -85,7 +85,7 @@ $(function() {
 					<?php } ?>
 					<?php echo CHtml::link(Yii::t('calendar', "Don't Sync My Actions To Google Calendar"), $this->createUrl('') . '?unlinkGoogleCalendar'); ?>
 				<?php } else { ?>
-					<?php echo CHtml::link(Yii::t('calendar', "Sync My Actions To Google Calendar"), $client->createAuthUrl()); ?>
+					<?php echo CHtml::link(Yii::t('calendar', "Sync My Actions To Google Calendar"), $auth->getAuthorizationUrl(null)); ?>
 				<?php } ?>
 			<?php }else{
                 echo Yii::t('calendar','Google Integration is not configured on this server.');
@@ -95,7 +95,7 @@ $(function() {
 </div>
 
 <?php
-if($googleIntegration){
+if($googleIntegration && !$auth->getErrors()){
     echo '	<div class="row buttons">'."\n";
     echo '		'.CHtml::submitButton(Yii::t('app','Sync'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
     echo "	</div>\n";

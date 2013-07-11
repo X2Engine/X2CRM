@@ -516,7 +516,7 @@ class Events extends CActiveRecord {
         }
         return $text;
     }
-	
+
 	public static $eventLabels = array(
 		'feed' => 'Social Posts',
 		'comment' => 'Comment',
@@ -539,11 +539,11 @@ class Events extends CActiveRecord {
 		'media' => 'Media',
 		'voip_call' => 'VOIP Call',
 	);
-	
+
     public static function parseType($type) {
 		if(array_key_exists($type,self::$eventLabels))
 			$type = self::$eventLabels[$type];
-		
+
 		return Yii::t('app', $type);
     }
 

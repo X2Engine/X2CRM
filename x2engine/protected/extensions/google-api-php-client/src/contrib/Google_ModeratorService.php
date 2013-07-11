@@ -386,7 +386,7 @@
      * @param string $seriesId The decimal ID of the Series.
      * @param array $optParams Optional parameters.
      *
-     * @opt_param string lang The language code for the language the client prefers resuls in.
+     * @opt_param string lang The language code for the language the client prefers results in.
      * @opt_param string max-results Maximum number of results to return.
      * @opt_param bool includeVotes Specifies whether to include the current user's vote
      * @opt_param string start-index Index of the first result to be retrieved.
@@ -850,7 +850,7 @@
      * @param string $submissionId The decimal ID of the Submission within the Series.
      * @param array $optParams Optional parameters.
      *
-     * @opt_param string lang The language code for the language the client prefers resuls in.
+     * @opt_param string lang The language code for the language the client prefers results in.
      * @opt_param bool includeVotes Specifies whether to include the current user's vote
      * @return Google_Submission
      */

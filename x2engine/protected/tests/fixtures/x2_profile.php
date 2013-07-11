@@ -1,6 +1,7 @@
 <?php
 return array(
 	'testProfile' => array(
+		'id' => 12345,
         'allowPost' => '1',
         'language' => 'en',
         'timeZone' => 'US/Pacific',
@@ -18,12 +19,11 @@ return array(
         'fullscreen' => '0',
         'fullFeedControls' => '0',
         'oldActions' => '0',
-        'id' => null, 
-        'fullName' => 'Profile TestingUser',
-        'username' => 'profiletest',
+        'fullName' => 'Sales Rep',
+        'username' => 'testuser', // testuser
         'officePhone' => null, 
         'cellPhone' => null, 
-        'emailAddress' => 'profile@tester.com',
+        'emailAddress' => 'sales@rep.com',
         'notes' => null, 
         'status' => 1,
         'tagLine' => null, 

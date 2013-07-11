@@ -39,9 +39,16 @@
  * @package X2CRM.tests
  */
 class CActiveRecordBehaviorTestCase extends CTestCase {
-	public function newMock() {
-		return $this->getMockForAbstractClass('CActiveMock');
-		
+
+	public static function setUpBeforeClass() {
+		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();
+		Yii::app()->db->createCommand('CREATE TABLE `'.CActiveMock::MOCK_TABLE.'` (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, foo BLOB,bar TEXT, flag TINYINT NOT NULL DEFAULT 0)')->execute();
+		parent::setUpBeforeClass();
+	}
+
+	public static function tearDownAfterClass(){
+		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();
+		parent::tearDownAfterClass();
 	}
 }
 
@@ -49,12 +56,18 @@ class CActiveRecordBehaviorTestCase extends CTestCase {
  * Child class of CActiveRecord for doing mocks in tests of CActiveRecordBehavior
  * @package X2CRM.tests
  */
-abstract class CActiveMock extends CActiveRecord {
+class CActiveMock extends CActiveRecord {
 
-	public $foo;
+	const MOCK_TABLE = 'x2_mock_model_table';
+
+	public function rules() {
+		return array(
+			array('foo,bar,flag','safe')
+		);
+	}
 
 	public function tableName() {
-		return 'x2_admin'; // An existing database table, just so that CActiveRecord doesn't complain
+		return self::MOCK_TABLE;
 	}
 }
 

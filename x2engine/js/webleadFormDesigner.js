@@ -50,7 +50,7 @@ function generateQuery(params) {
 				query += '&';
 			}
 
-			query += params[i];	
+			query += params[i];
 		}
 	}
 
@@ -96,7 +96,7 @@ function updateFields(form) {
 		}
 	});
 }
-	
+
 function saved(data, status, xhr) {
 	var newForm = $.parseJSON(data);
 	if (typeof newForm.errors !== "undefined") { return; }
@@ -131,11 +131,11 @@ $(function() {
         setupSpectrum ($(selector));
         $(selector).on ('change', updateParams);
 	});
-	
+
 	$.each(fields, function(i, field) {
 		$('#'+field).on('change', updateParams);
 	});
-	
+
 	$('#save').click(function(e) {
 		if ($.trim($('#name').val()).length == 0) {
 			$('#name').addClass('error');
@@ -153,7 +153,7 @@ $(function() {
 				return id == el.id;
 			});
 			updateFields(match[0]);
-		} 
+		}
 		updateParams();
 		$('#embedcode').focus();
     	$.each(colorfields, function(i, field) {

@@ -33,8 +33,60 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+div#filter-controls div.portlet-content {
+    text-align: center;
+}
+
+div#full-controls-button-container {
+    text-align: center;
+}
+
+a#toggle-filters-link {
+    margin-top: -8px;
+    margin-bottom: 4px;
+}
+
+
+#chart-container #chart {
+    width: 98%;
+    height: 200px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+#chart-container a {
+    text-decoration: none;
+}
+
+#chart-container button.selected {
+    border: 1px solid black;
+}
+
+#chart-container .datepicker-row {
+    margin-top: -4px;
+}
+
+/*#chart-container .top-button-row {
+}*/
+
+#chart-container {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-bottom: 15px;
+}
+
+#chart-container a.x2-button {
+    margin: 0px -4px 0 0;
+}
+
+/* temporary change to allow small buttons, this should exist across the app */
+#chart-container .x2-small-button  {
+    padding: 0 4px 0 4px !important;
+    margin: 0 0 0 0;
+}
+
 #cke_Events_text {
-  margin-bottom: 6px !important;
+    margin-bottom: 6px !important;
 }
 
 /* collapse bottom bar */

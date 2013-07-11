@@ -74,8 +74,15 @@ abstract class X2FlowItem extends CComponent {
 			
 			if(!isset($configOptions[$optName]))	// each option must be present in $this->config and $params
 				continue;							// but just ignore them for future proofing
-			if($params !== null && !isset($params[$optName]))	// if params are provided, check them for this option name
-				return false;
+				
+			// if($params !== null && !isset($params[$optName]))	// if params are provided, check them for this option name
+				// return false;
+			// this is disabled because it doesn't work if every option in $options doesn't correspond to a $param. 
+			// the ultimate solution is to separate params and options completely. if a trigger/action is going to 
+			// require params, it should define this separately. the reason for the way it is now is that you can 
+			// set up an action with very little code. by assuming $params corresponds to $options, check() can 
+			// treat each option like a condition and compare it to the param.
+			
 			
 			$option = &$configOptions[$optName];
 			// set optional flag
@@ -135,5 +142,26 @@ abstract class X2FlowItem extends CComponent {
 		foreach($options as $value => &$label)
 			$dropdownData[] = array($value,Yii::t('studio',$label));
 		return $dropdownData;
+	}
+	
+	/**
+	 * Calculates a time offset from a number and a unit
+	 * @param int $time the number of time units to add
+	 * @param string $unit the unit of time
+	 * @return mixed the calculated timestamp, or false if the $unit is invalid
+	 */
+	public static function calculateTimeOffset($time,$unit) {
+		switch($unit) {
+			case 'mins':
+				return $time * 60;
+			case 'hours':
+				return $time * 3600;
+			case 'days':
+				return $time * 86400;
+			case 'months':
+				return $time * 2629743;	// average seconds in a month
+			default:
+				return false;
+		}
 	}
 }

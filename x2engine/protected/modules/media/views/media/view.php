@@ -42,9 +42,9 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
+<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->drive?$model->title:$model->fileName; ?></h2></div>
 <div id="main-column" class="half-width">
-<?php 
+<?php
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
 
@@ -78,9 +78,9 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				<?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
 			</div>
 		<?php } ?>
-				
+
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
-			
+
 				<div class="formSection showSection">
 					<div class="tableWrapper">
 						<table>
@@ -95,17 +95,17 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php } ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
-								
+
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
 											<label><?php echo Yii::t('media', 'Association Name'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php if($model->associationType && $model->associationType != 'bg') { ?>
-													<?php 
+													<?php
 														if(!empty($model->associationId) && is_numeric($model->associationId) && $modelName=X2Model::getModelName($model->associationType)) {
 															$linkModel = X2Model::model($modelName)->findByPk($model->associationId);
 															if(isset($linkModel)){
@@ -119,14 +119,14 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php } ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-				
+
 				<div class="formSection showSection">
 					<div class="tableWrapper">
 						<table>
@@ -139,14 +139,34 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php echo CHtml::checkbox('private', $model->private, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-				
+
+                <div class="formSection showSection">
+					<div class="tableWrapper">
+						<table>
+							<tbody>
+								<tr class="formSectionRow">
+									<td style="width: 300px">
+										<div class="formItem leftLabel">
+											<label><?php echo Yii::t('media', 'Google Drive'); ?></label>
+											<div class="formInputBox" style="width: 200px; height: auto;">
+												<?php echo CHtml::checkbox('drive', $model->drive, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
+											</div>
+										</div>
+
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
 				<div class="formSection showSection">
 					<div class="tableWrapper">
 						<table>
@@ -159,7 +179,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php echo $model->description; ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
 							</tbody>
@@ -168,11 +188,12 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 				</div>
 			</div>
 <?php
-if(empty($fileView))
-    echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
+if(!$model->drive && empty($fileView)){
+    echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;'));
+}elseif(empty($fileView)){
+    echo CHtml::link(Yii::t('media', 'View in Google Drive'),"https://drive.google.com/file/d/".$model->fileName,array('class'=>'x2-button', 'style'=>'margin-top: 5px;','target'=>'_blank'));
+}?>
 
-		
-	
 
 </div>
 <style>

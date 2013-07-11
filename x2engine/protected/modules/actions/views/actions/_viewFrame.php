@@ -215,19 +215,22 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
     </body>
 </html>
 <script>
-    $('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional['<?php echo $language; ?>'], {'dateFormat':'<?php echo $dateFormat; ?>','timeFormat':'<?php echo $timeFormat; ?>','ampm':true,'changeMonth':true,'changeYear':true}));
-    $('#actions-frameUpdate-form').submit(function(e){
-        var data=$(this).serializeArray();
-        var id=<?php echo $model->id; ?>;
-        e.preventDefault();
-        $.ajax({
-            url:'update?id='+id,
-            type:'POST',
-            data:data,
-            success:function(data){
-                $('iframe', parent.document).attr('src', $('iframe', parent.document).attr('src'));
-                window.parent.$('#history-'+id).replaceWith(data);
-            }
+    $(document).on('ready',function(){
+        $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
+        $('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional['<?php echo $language; ?>'], {'dateFormat':'<?php echo $dateFormat; ?>','timeFormat':'<?php echo $timeFormat; ?>','ampm':true,'changeMonth':true,'changeYear':true}));
+        $('#actions-frameUpdate-form').submit(function(e){
+            var data=$(this).serializeArray();
+            var id=<?php echo $model->id; ?>;
+            e.preventDefault();
+            $.ajax({
+                url:'update?id='+id,
+                type:'POST',
+                data:data,
+                success:function(data){
+                    $('iframe', parent.document).attr('src', $('iframe', parent.document).attr('src'));
+                    window.parent.$('#history-'+id).replaceWith(data);
+                }
+            });
         });
     });
 </script>

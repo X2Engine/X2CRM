@@ -18,18 +18,26 @@ class InlineEmailTest extends X2DbTestCase {
 
 	const TESTDELIVERY = 0;
 
+	public static function referenceFixtures(){
+		return array(
+			'docs' => 'Docs',
+			'quote' => 'Quote',
+			'contacts' => 'Contacts',
+			'profile' => 'Profile',
+			'user' => 'User'
+		);
+	}
+
+	public $fixtures = array(
+		'actions' => 'Actions',
+		'actionText' => 'ActionText',
+		'trackEmail' => 'TrackEmail',
+		'events' => 'Events',
+	);
+
 	public $method = 'mail'; // Set to the delivery type...
 	public $sender = array('name' => "", 'address' => ''); // Sender email..
 	public $recipient = array(array(/* Name: */ '', /* Address: */ '')); // Recipient email addresses...
-	public $fixtures = array(
-		'actions' => 'Actions',
-		'contacts' => 'Contacts',
-		'quote' => 'Quote',
-		'trackEmail' => 'TrackEmail',
-		'events' => 'Events',
-		'docs' => 'Docs'
-	);
-
 	/**
 	 * Email model.
 	 * @var InlineEmail
@@ -147,7 +155,7 @@ class InlineEmailTest extends X2DbTestCase {
 		$this->eml->template = $template->id;
 		$this->eml->modelId = $this->contacts('testAnyone')->id;
 		$this->eml->modelName = 'Contacts';
-		$this->eml->userProfile = Profile::model()->findByAttributes(array('username' => 'testuser'));
+		$this->eml->userProfile = $profile = $this->profile('testProfile');
 		$this->assertEquals($template->id,$this->eml->templateModel->id,'Failed asserting that the template was properly chosen.');
 		$this->eml->prepareBody();
 		$this->assertEquals(str_replace('{name}', $this->contacts['testAnyone']['name'], $template->subject), $this->eml->subject);

@@ -60,7 +60,7 @@ $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelTy
 <?php
 $this->widget('Publisher',
 	array(
-		'associationType'=>'BugReports',
+		'associationType'=>'bugReports',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
 		'halfWidth'=>true

@@ -36,11 +36,11 @@
 
 /**
  * Class for the widget that displays which users are online.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class OnlineUsers extends X2Widget {
-	
+
 	public $visibility;
 	public function init() {
 		parent::init();
@@ -48,9 +48,9 @@ class OnlineUsers extends X2Widget {
 
 	public function run() {
 		x2base::cleanUpSessions();
-		
+
 		// $criteria = new CDbCriteria(array('condition'=>'','distinct'=>true)
-		
+
 
 		// $sessions = Session::model()->findAll($criteria);
 		// $str = "";
@@ -64,7 +64,7 @@ class OnlineUsers extends X2Widget {
 		// }
 
 		$onlineUsers = User::getUserLinks(Session::getOnlineUsers());
-		
+
 		$this->render('onlineUsers',array(
 			'users'=>$onlineUsers,
 		)); //array(

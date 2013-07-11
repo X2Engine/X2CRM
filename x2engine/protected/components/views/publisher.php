@@ -36,152 +36,185 @@
 ?>
 
 <?php $users = User::getNames(); ?>
-<?php $form = $this->beginWidget('CActiveForm', array('id'=>'publisher-form')); ?>
+<?php $form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); ?>
 
 <div id="tabs">
-	<ul>
-		<li class="publisher-label">
-			<?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'publisher-saving-icon', 'style'=>'position: absolute; width: 14px; opacity: 0.0')); ?>
-			<span class="publisher-text"> <?php echo Yii::t('actions','Publisher'); ?></span>
-		</li>
-		<?php if($showLogACall) { ?><li><a href="#log-a-call"><?php echo Yii::t('actions','Log A Call'); ?></a></li><?php } ?>
-		<?php if($showNewAction) { ?><li><a href="#new-action"><?php echo Yii::t('actions','New Action'); ?></a></li><?php } ?>
-		<?php if($showNewComment) { ?><li><a href="#new-comment"><?php echo Yii::t('actions','New Comment'); ?></a></li><?php } ?>
-		<?php if($showNewEvent) { ?><li><a href="#new-event"><?php echo Yii::t('actions','New Event'); ?></a></li><?php } ?>
-	</ul>
-	<div class="form">
-		<div class="row">
-			<b><?php echo $form->labelEx($model,'actionDescription'); ?></b>
-			<div class="text-area-wrapper">
-				<?php echo $form->textArea($model,'actionDescription',array('rows'=>3, 'cols'=>40)); ?>
-			</div>
-		</div>
-		<?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab ?>
-		<?php echo $form->hiddenField($model,'associationType'); ?>
-		<?php echo $form->hiddenField($model,'associationId'); ?>
+    <ul>
+        <li class="publisher-label">
+            <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif', Yii::t('app', 'Loading'), array('id' => 'publisher-saving-icon', 'style' => 'position: absolute; width: 14px; opacity: 0.0')); ?>
+            <span class="publisher-text"> <?php echo Yii::t('actions', 'Publisher'); ?></span>
+        </li>
+        <?php if($showLogACall){ ?><li><a href="#log-a-call"><?php echo Yii::t('actions', 'Log A Call'); ?></a></li><?php } ?>
+        <?php if($showNewAction){ ?><li><a href="#new-action"><?php echo Yii::t('actions', 'New Action'); ?></a></li><?php } ?>
+        <?php if($showNewComment){ ?><li><a href="#new-comment"><?php echo Yii::t('actions', 'New Comment'); ?></a></li><?php } ?>
+        <?php if($showNewEvent){ ?><li><a href="#new-event"><?php echo Yii::t('actions', 'New Event'); ?></a></li><?php } ?>
+    </ul>
+    <div class="form">
+        <div class="row">
+            <b><?php echo $form->labelEx($model, 'actionDescription'); ?></b>
+            <div class="text-area-wrapper">
+                <?php echo $form->textArea($model, 'actionDescription', array('rows' => 3, 'cols' => 40)); ?>
+            </div>
+        </div>
+        <?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab ?>
+        <?php echo $form->hiddenField($model, 'associationType'); ?>
+        <?php echo $form->hiddenField($model, 'associationId'); ?>
 
-		<div id="action-event-panel">
-			<div class="row">
-				<div class="cell">
-					<?php echo $form->label($model,'dueDate', array('id'=>'due-date-label')); ?>
+        <div id="action-event-panel">
+            <div class="row">
+                <div class="cell">
+                    <?php echo $form->label($model, 'dueDate', array('id' => 'due-date-label')); ?>
 
-					<?php // label for New Event ?>
-					<?php echo CHtml::label(Yii::t('actions', 'Start Date'), 'Actions_dueDate', array('id'=>'start-date-label', 'style'=>'display: none;')); ?>
+                    <?php // label for New Event ?>
+                    <?php echo CHtml::label(Yii::t('actions', 'Start Date'), 'Actions_dueDate', array('id' => 'start-date-label', 'style' => 'display: none;')); ?>
 
-					<?php
-					Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-					$this->widget('CJuiDateTimePicker',array(
-						'model'=>$model, //Model object
-						'attribute'=>'dueDate', //attribute name
-						'mode'=>'datetime', //use "time","date" or "datetime" (default)
-						'options'=>array(
-							'dateFormat'=> Formatter::formatDatePicker('medium'),
-							'timeFormat'=> Formatter::formatTimePicker(),
-							'ampm'=> Formatter::formatAMPM(),
-							'changeMonth'=>true,
-							'changeYear'=>true
-						), // jquery plugin options
-						'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-						'htmlOptions'=>array('onClick'=>"$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
-					));
+                    <?php
+                    Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+                    $this->widget('CJuiDateTimePicker', array(
+                        'model' => $model, //Model object
+                        'attribute' => 'dueDate', //attribute name
+                        'mode' => 'datetime', //use "time","date" or "datetime" (default)
+                        'options' => array(
+                            'dateFormat' => Formatter::formatDatePicker('medium'),
+                            'timeFormat' => Formatter::formatTimePicker(),
+                            'ampm' => Formatter::formatAMPM(),
+                            'changeMonth' => true,
+                            'changeYear' => true
+                        ), // jquery plugin options
+                        'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                        'htmlOptions' => array('onClick' => "$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
+                    ));
+                    ?>
+                </div>
+                <div class="cell">
+                    <?php echo $form->label($model, 'priority'); ?>
+                    <?php
+                    echo $form->dropDownList($model, 'priority', array(
+                        '1' => Yii::t('actions', 'Low'),
+                        '2' => Yii::t('actions', 'Medium'),
+                        '3' => Yii::t('actions', 'High')));
+                    ?>
+                </div>
+                <div class="cell">
+                    <?php echo $form->label($model, 'assignedTo'); ?>
+                    <?php echo $form->dropDownList($model, 'assignedTo', X2Model::getAssignmentOptions(true, true), array('id' => 'actionsAssignedToDropdown')); ?>
+                </div>
 
-					echo CHtml::label(Yii::t('actions', 'End Date'), 'Actions_completeDate', array('id'=>'end-date-label', 'style'=>'display: none;'));
+                <div class="cell">
+                    <?php echo $form->label($model, 'visibility'); ?>
+                    <?php $model->visibility = 1; // default visibility = public ?>
+                    <?php echo $form->dropDownList($model, 'visibility', array(0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'), 2 => Yii::t('actions', "User's Group"))); ?>
+                </div>
 
-					$model->dueDate = Formatter::formatDateTime(time());
-					Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-					$this->widget('CJuiDateTimePicker', array(
-						'model'=>$model, //Model object
-						'attribute'=>'completeDate', //attribute name
-						'mode'=>'datetime', //use "time","date" or "datetime" (default)
-						'options'=>array(
-							'dateFormat'=> Formatter::formatDatePicker('medium'),
-							'timeFormat'=> Formatter::formatTimePicker(),
-							'ampm'=> Formatter::formatAMPM(),
-							'changeMonth'=>true,
-							'changeYear'=>true,
-						), // jquery plugin options
-						'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-						'htmlOptions'=>array(
-							'onClick'=>"$('#ui-datepicker-div').css('z-index', '20');", // fix datepicker so it's always on top
-							'style'=>'display: none;',
-							'id'=>'end-date-input',
-						),
-					));
-					?>
-					<?php echo $form->label($model, 'allDay'); ?>
-					<?php echo $form->checkBox($model, 'allDay'); ?>
-				</div>
-				<div class="cell">
-					<?php echo $form->label($model,'priority'); ?>
-					<?php echo $form->dropDownList($model, 'priority', array(
-						'1'=>Yii::t('actions','Low'),
-						'2'=>Yii::t('actions','Medium'),
-						'3'=>Yii::t('actions','High')));
-					?>
+                <div class="cell">
+                    <?php echo $form->label($model, 'reminder'); ?>
+                    <?php echo $form->dropDownList($model, 'reminder', array('No' => Yii::t('actions', 'No'), 'Yes' => Yii::t('actions', 'Yes'))); ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="cell">
+                    <?php
+                    echo CHtml::label(Yii::t('actions', 'End Date'), 'Actions_completeDate', array('id' => 'end-date-label', 'style' => 'display: none;'));
 
-					<?php echo $form->label($model, 'color'); ?>
-					<?php echo $form->dropDownList($model, 'color', Actions::getColors()); ?>
-				</div>
-				<?php /* Assinged To */ ?>
-				<div class="cell">
+                    $model->dueDate = Formatter::formatDateTime(time());
+                    Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+                    $this->widget('CJuiDateTimePicker', array(
+                        'model' => $model, //Model object
+                        'attribute' => 'completeDate', //attribute name
+                        'mode' => 'datetime', //use "time","date" or "datetime" (default)
+                        'options' => array(
+                            'dateFormat' => Formatter::formatDatePicker('medium'),
+                            'timeFormat' => Formatter::formatTimePicker(),
+                            'ampm' => Formatter::formatAMPM(),
+                            'changeMonth' => true,
+                            'changeYear' => true,
+                        ), // jquery plugin options
+                        'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                        'htmlOptions' => array(
+                            'onClick' => "$('#ui-datepicker-div').css('z-index', '20');", // fix datepicker so it's always on top
+                            'style' => 'display: none;',
+                            'id' => 'end-date-input',
+                        ),
+                    ));
+                    ?>
+                </div>
+                <div class="cell">
+                    <?php echo $form->label($model, 'color'); ?>
+                    <?php echo $form->dropDownList($model, 'color', Actions::getColors()); ?>
+                </div>
+                <div class="cell">
+                    <?php echo $form->label($model, 'associationType'); ?>
+                    <?php
+                    echo $form->dropDownList($model, 'associationType', array_merge(array('none' => 'None'), Admin::getModelList()), array(
+                        'ajax' => array(
+                            'type' => 'POST', //request type
+                            'url' => Yii::app()->controller->createUrl('/actions/parseType'), //url to call.
+                            //Style: CController::createUrl('currentController/methodToCall')
+                            'update' => '#', //selector to update
+                            'success' => 'function(data){
+                                        if(data){
+                                            $("#auto_select").autocomplete("option","source",data);
+                                            $("#auto_select").val("");
+                                            $("#auto_complete").show();
+                                        }else{
+                                            $("#auto_complete").hide();
+                                        }
+                                    }'
+                        )
+                            )
+                    );
+                    echo $form->error($model, 'associationType');
+                    if ($model->associationType != 'none') {
+                        $linkModel = X2Model::getModelName($model->associationType);
+                    } else {
+                        $linkModel = null;
+                    }
+                    if (class_exists($linkModel)) {
+                        $linkSource = Yii::app()->controller->createUrl(X2Model::model($linkModel)->autoCompleteSource);
+                    } else {
+                        $linkSource = "";
+                    }
+                    ?>
+                </div>
+                <div class="cell" id="auto_complete" style="display:none;">
+                    <?php
+                    echo $form->label($model, 'associationName');
+                    $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                        'name' => 'auto_select',
+                        'value' => $model->associationName,
+                        'source' => $linkSource,
+                        'options' => array(
+                            'minLength' => '2',
+                            'select' => 'js:function( event, ui ) {
+                            $("#' . CHtml::activeId($model, 'associationId') . '").val(ui.item.id);
+                            $(this).val(ui.item.value);
+                            return false;
+                        }',
+                        ),
+                    ));
+                    ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="cell">
+                    <?php echo $form->label($model, 'allDay'); ?>
+                    <?php echo $form->checkBox($model, 'allDay'); ?>
+                </div>
+            </div>
 
-					<?php /* Users */ ?>
-					<?php echo $form->label($model,'assignedTo'); ?>
-					<?php echo $form->dropDownList($model,'assignedTo',$users,array('id'=>'actionsAssignedToDropdown')); ?>
-
-					<?php /* Groups */
-						echo "<br />";
-						$url=$this->controller->createUrl('/groups/getGroups');
-						echo "<label>".Yii::t('app','Group?')."</label>";
-						echo CHtml::checkBox('group','',array(
-							'id'=>'groupCheckbox',
-							'ajax'=>array(
-								'type'=>'POST', //request type
-								'url'=>$url, //url to call.
-								//Style: CController::createUrl('currentController/methodToCall')
-								'update'=>'#actionsAssignedToDropdown', //selector to update
-								'data'=>'js:{checked: $(this).attr("checked")=="checked"}',
-								'complete'=>'function(){
-									if($("#groupCheckbox").attr("checked")!="checked"){
-										$("#groupCheckbox").attr("checked","checked");
-										$("#Actions_visibility option[value=\'2\']").remove();
-									} else {
-										$("#groupCheckbox").removeAttr("checked");
-										$("#Actions_visibility").append(
-											$("<option></option>").val("2").html("User\'s Groups")
-										);
-
-									}
-								}'
-							)
-						));
-					?>
-				</div>
-
-				<div class="cell">
-					<?php echo $form->label($model,'visibility'); ?>
-					<?php $model->visibility = 1; // default visibility = public ?>
-					<?php echo $form->dropDownList($model,'visibility',array(0=>Yii::t('actions','Private'), 1=>Yii::t('actions','Public'), 2=>Yii::t('actions', "User's Group"))); ?>
-				</div>
-
-				<div class="cell">
-					<?php echo $form->label($model,'reminder'); ?>
-					<?php echo $form->dropDownList($model,'reminder',array('No'=>Yii::t('actions','No'),'Yes'=>Yii::t('actions','Yes'))); ?>
-				</div>
-			</div>
-		</div>
-		<div id="log-a-call"></div>
-		<div id="new-action"></div>
-		<div id="new-comment"></div>
-		<div id="new-event"></div>
-	</div>
-	<div class="row buttons">
-		<?php echo CHtml::ajaxSubmitButton(Yii::t('app','Save'),
-			array('/actions/publisherCreate'),
-			array(
-				'beforeSend'=>"function() {
+        </div>
+    </div>
+    <div id="log-a-call"></div>
+    <div id="new-action"></div>
+    <div id="new-comment"></div>
+    <div id="new-event"></div>
+</div>
+<div class="row buttons">
+    <?php
+    echo CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/publisherCreate'), array(
+        'beforeSend' => "function() {
 					if($('#Actions_actionDescription').val() == '') {
-						alert('". addslashes(Yii::t('actions', 'Please enter a description.')) ."');
+						alert('".addslashes(Yii::t('actions', 'Please enter a description.'))."');
 						return false;
 					} else {
 						// show saving... icon
@@ -191,19 +224,17 @@
 
 					return true; // form is sane: submit!
 				 }",
-				 'success'=>"function() { publisherUpdates(); resetPublisher();
+        'success' => "function() { publisherUpdates(); resetPublisher();
 				 		\$('.publisher-text').animate({opacity: 1.0});
 						\$('#publisher-saving-icon').animate({opacity: 0.0}); }",
-				'type'=>'POST',
-			),
-			array('id'=>'save-publisher', 'class'=>'x2-button'));
-		?>
-	</div>
+        'type' => 'POST',
+            ), array('id' => 'save-publisher', 'class' => 'x2-button'));
+    ?>
+</div>
 </div>
 
 
 <?php
-
 $this->endWidget();
 
 // set date, time, and region format for when javascript replaces datetimepicker
@@ -213,11 +244,11 @@ $timeformat = Formatter::formatTimePicker();
 $ampmformat = Formatter::formatAMPM();
 $region = Yii::app()->locale->getLanguageId(Yii::app()->locale->getId());
 if($region == 'en')
-	$region = '';
+    $region = '';
 
 $eventFix = "";
-if($showNewEvent == true && $showLogACall == false && $showNewComment == false && $showNewAction == false) {
-	$eventFix = "
+if($showNewEvent == true && $showLogACall == false && $showNewComment == false && $showNewAction == false){
+    $eventFix = "
 		// switch labels Due Date vs Start Date
 		$('#due-date-label').css('display', 'none');
 		$('#start-date-label').css('display', 'block');
@@ -232,7 +263,7 @@ if($showNewEvent == true && $showLogACall == false && $showNewComment == false &
 }
 
 // save default values of fields for when the publisher is submitted and then reset
-Yii::app()->clientScript->registerScript('defaultValues',"
+Yii::app()->clientScript->registerScript('defaultValues', "
 $(function() {
 
 	// turn on jquery taps for the publisher

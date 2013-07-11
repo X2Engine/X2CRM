@@ -79,7 +79,7 @@ $this->widget('application.components.X2GridView', array(
 		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
 		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
 		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}', 
+		.'{summary}</div></div>{items}{pager}',
 	 */
 	'dataProvider' => $model->search(),
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
@@ -109,7 +109,7 @@ $this->widget('application.components.X2GridView', array(
 			'name' => 'fileName',
 			'header' => Yii::t('media','File Name'),
 			'type' => 'raw',
-			'value' => 'CHtml::link(CHtml::encode($data["fileName"]), array("view","id"=>$data->id), array("class" => "media-name"))',
+			'value' => '$data["drive"]?CHtml::link($data["title"],array("view","id"=>$data->id), array("class" => "media-name")):CHtml::link(CHtml::encode($data["fileName"]), array("view","id"=>$data->id), array("class" => "media-name"))',
 		),
 		'uploadedBy' => array(
 			'name' => 'uploadedBy',

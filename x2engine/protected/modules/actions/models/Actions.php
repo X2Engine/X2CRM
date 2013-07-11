@@ -44,8 +44,7 @@ Yii::import('application.models.X2Model');
 class Actions extends X2Model {
 
     public $verifyCode;
-
-    public $actionDescriptionTemp="";
+    public $actionDescriptionTemp = "";
 
     /**
      * Returns the static model of the specified AR class.
@@ -78,18 +77,18 @@ class Actions extends X2Model {
         );
     }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		return array(
-			array('allDay','boolean'),
-			array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('id,assignedTo,actionDescription,visibility,associationId,associationType,associationName,dueDate,
-				priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy,color','safe'),
-            array('verifyCode', 'captcha', 'allowEmpty'=>!CCaptcha::checkRequirements(),'on'=>'guestCreate'),
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        return array(
+            array('allDay', 'boolean'),
+            array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
+            array('id,assignedTo,actionDescription,visibility,associationId,associationType,associationName,dueDate,
+				priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy,color', 'safe'),
+            array('verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 'on' => 'guestCreate'),
+        );
+    }
 
     /**
      * @return array relational rules.
@@ -124,6 +123,15 @@ class Actions extends X2Model {
 
             $this->dueDate = Formatter::parseDateTime($this->dueDate);
             $this->completeDate = Formatter::parseDateTime($this->completeDate);
+        }
+        if(!isset($this->actionText)){
+            $actionText = new ActionText;
+            $actionText->actionId = $this->id;
+            $actionText->text = $this->actionDescriptionTemp;
+            $actionText->save();
+        }else{
+            $this->actionText->text=$this->actionDescriptionTemp;
+            $this->actionText->save();
         }
         return parent::beforeSave();
     }
@@ -163,10 +171,6 @@ class Actions extends X2Model {
             $notif->modelId = $this->id;
             $notif->save();
         }
-        $actionText = new ActionText;
-        $actionText->actionId = $this->id;
-        $actionText->text = $this->actionDescriptionTemp;
-        $actionText->save();
         parent::afterCreate();
     }
 
@@ -181,16 +185,12 @@ class Actions extends X2Model {
     }
 
     public function setActionDescription($value){
-        if(!$this->isNewRecord && (is_null($this->actionText) || X2Model::model('ActionText')->updateByPk($this->id, array('text' => $value)) == 0 && count(X2Model::model('ActionText')->findByPk($this->id)) == 0)){
-            $actionText = new ActionText;
-            if(empty($this->id)){
-                $this->save();
-            }
-            $actionText->actionId = $this->id;
-            $actionText->text = $value;
-            $actionText->save();
+        if(isset($this->actionText)){
+            $this->actionDescriptionTemp = $value;
+            $this->actionText->text=$value;
+            $this->actionText->save();
         }else{
-            $this->actionDescriptionTemp=$value;
+            $this->actionDescriptionTemp = $value;
         }
     }
 
@@ -535,9 +535,9 @@ class Actions extends X2Model {
 
     public function searchBase($criteria){
 
-       $this->compareAttributes($criteria);
-       $criteria->with='actionText';
-       $criteria->compare('actionText.text',$this->actionDescriptionTemp,true);
+        $this->compareAttributes($criteria);
+        $criteria->with = 'actionText';
+        $criteria->compare('actionText.text', $this->actionDescriptionTemp, true);
         if(!empty($criteria->order)){
             $criteria->order = $order = "sticky DESC, ".$criteria->order;
         }else{
@@ -576,9 +576,9 @@ class Actions extends X2Model {
                 if($operation === 'create')
                     $profile->syncActionToGoogleCalendar($this); // create action to Google Calendar
                 elseif($operation === 'update')
-                    $profile->deleteGoogleCalendarEvent($this); // update action to Google Calendar
+                    $profile->updateGoogleCalendarEvent($this); // update action to Google Calendar
                 elseif($operation === 'delete')
-                    $profile->updateGoogleCalendarEvent($this); // delete action in Google Calendar
+                    $profile->deleteGoogleCalendarEvent($this); // delete action in Google Calendar
             }
         }
     }

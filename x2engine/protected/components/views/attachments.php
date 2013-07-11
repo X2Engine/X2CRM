@@ -44,7 +44,7 @@ function checkName(el, sbm) {
 	var ar_name = name.split('.');
 
 	ar_ext = ar_name[ar_name.length - 1].toLowerCase();
-	
+
 	// check the file extension
 	var re = 1;
 	for(i in illegal_ext) {
@@ -63,26 +63,37 @@ function checkName(el, sbm) {
 		// delete the file name, disable Submit, Alert message
 		el.value = '';
 		$(sbm).attr('disabled','disabled');
-		
-		var filenameError = ".json_encode(Yii::t('app','"{X}" is not an allowed filetype.')).";
+
+		var filenameError = ".json_encode(Yii::t('app', '"{X}" is not an allowed filetype.')).";
 		alert(filenameError.replace('{X}',ar_ext));
 	}
 }
-",CClientScript::POS_HEAD);
+", CClientScript::POS_HEAD);
 ?>
 <div id="attachment-form-top"></div>
 <div id="attachment-form"<?php if($startHidden) echo ' style="display:none;"'; ?>>
-<div class="form">
-<b><?php echo Yii::t('app','Attach a File'); ?></b><br />
-<?php
-	echo CHtml::form(array('/site/upload'),'post',array('enctype'=>'multipart/form-data','id'=>'attachment-form-form')); 
-	echo CHtml::hiddenField('associationType',$this->associationType);
-	echo CHtml::hiddenField('associationId',$this->associationId);
-    echo CHtml::hiddenField('attachmentText','');
-	echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private')));
-	echo CHtml::fileField('upload','',array('id'=>'upload','onchange'=>"checkName(this, '#submitAttach')"));
-	echo CHtml::submitButton('Submit',array('id'=>'submitAttach','disabled'=>'disabled','class'=>'x2-button','style'=>'display:inline'));
-	echo CHtml::endForm();
-?>
-</div>
+    <div class="form">
+        <b><?php echo Yii::t('app', 'Attach a File'); ?></b><br />
+        <?php
+        echo CHtml::form(array('/site/upload'), 'post', array('enctype' => 'multipart/form-data', 'id' => 'attachment-form-form'));
+        echo "<div class='row'>";
+        echo CHtml::hiddenField('associationType', $this->associationType);
+        echo CHtml::hiddenField('associationId', $this->associationId);
+        echo CHtml::hiddenField('attachmentText', '');
+        echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private')));
+        echo CHtml::fileField('upload', '', array('id' => 'upload', 'onchange' => "checkName(this, '#submitAttach')"));
+        echo CHtml::submitButton('Submit', array('id' => 'submitAttach', 'disabled' => 'disabled', 'class' => 'x2-button', 'style' => 'display:inline'));
+        echo "</div>";
+        if(Yii::app()->params->admin->googleIntegration){
+            $auth = new GoogleAuthenticator();
+            if($auth->getAccessToken()){
+                echo "<div class='row'>";
+                echo CHtml::label('Save to Google Drive?', 'drive');
+                echo CHtml::checkBox('drive');
+                echo "</div>";
+            }
+        }
+        echo CHtml::endForm();
+        ?>
+    </div>
 </div>

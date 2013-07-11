@@ -104,7 +104,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
 			}
 		}else{ // $updaterCheck === False || $versionTest === False; couldn't connect to server
 			// Is it the fault of the user's server?
-			$this->checkRemoteMethods();
+			$this->controller->checkRemoteMethods();
 			// Redirect to updater with the appropriate error message
 			$this->controller->render('updater', array('scenario' => 'error', 'message' => Yii::t('admin', 'Could not connect to the updates server, or an error occurred on the updates server.')));
 		}

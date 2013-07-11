@@ -106,4 +106,4 @@ VALUES
 ("Contacts",		"timezone",             "Timezone",             0,		0,	"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"dupeCheck",			"Duplicate Check",		0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
 ("Contacts",		"doNotEmail",			"Do Not Email",			0,		0,	"boolean",		0,			0,		NULL,			0,		0,			""),
-("Contacts",		"trackingKey",			"Web Tracking Key",		0,		0,	"varchar",		0,			0,		NULL,			0,		0,			"");
+("Contacts",		"trackingKey",			"Web Tracking Key",		0,		0,	"varchar",		0,			1,		NULL,			0,		0,			"");

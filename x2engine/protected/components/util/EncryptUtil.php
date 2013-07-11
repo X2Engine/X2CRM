@@ -35,7 +35,8 @@
  *****************************************************************************************/
 
 /**
- * Standalone encryption utilities class.
+ * Standalone encryption utilities class that can retrieve necessary encryption
+ * key/encoding from files.
  *
  * @package X2CRM.components.util
  * @author Demitri Morgan <demitri@x2engine.com>
@@ -157,7 +158,7 @@ class EncryptUtil {
 	 */
 	public function encrypt($data){
 		if($this->key)
-			return rtrim(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->key, $data, MCRYPT_MODE_ECB, $this->IV),"\0");
+			return base64_encode(rtrim(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->key, $data, MCRYPT_MODE_ECB, $this->IV),"\0"));
 		else
 			return $data;
 	}
@@ -167,7 +168,7 @@ class EncryptUtil {
 	 */
 	public function decrypt($data){
 		if($this->key)
-			return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256,$this->key, $data, MCRYPT_MODE_ECB, $this->IV),"\0");
+			return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256,$this->key, base64_decode($data), MCRYPT_MODE_ECB, $this->IV),"\0");
 		else
 			return $data;
 	}

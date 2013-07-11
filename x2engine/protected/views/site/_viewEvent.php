@@ -122,7 +122,7 @@ $likedPost=Yii::app()->db->createCommand()
     }
 ?>
     <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>
-    <?php 
+    <?php
         if (!empty($avatar) && $data->type=='feed') { // add css class to uploaded avatar images to round corners
             $CSSClass = $avatar == 'uploads/default.png' ? 'default-avatar-image' : 'avatar-image';
             echo CHtml::image(Yii::app()->request->baseUrl."/".$avatar,'',array('class'=>$CSSClass,'height'=>45,'width'=>45));
@@ -192,7 +192,7 @@ $likedPost=Yii::app()->db->createCommand()
                 'get',
                 array(
                     'id'=>'addReply-'.$data->id,
-                    'onsubmit'=>'commentSubmit('.$data->id.');return false;'
+                    // 'onsubmit'=>'commentSubmit('.$data->id.');return false;'
                 ));
             echo CHtml::textArea($data->id.'-comment','',array('class'=>'comment-textbox'));
             echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button comment-submit'));

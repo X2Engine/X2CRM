@@ -29,9 +29,9 @@ if (! function_exists('http_build_query')) {
   throw new Exception('Google PHP API Client requires http_build_query()');
 }
 
-if (! ini_get('date.timezone') && function_exists('date_default_timezone_set')) {
-  date_default_timezone_set('UTC');
-}
+//if (! ini_get('date.timezone') && function_exists('date_default_timezone_set')) {
+//  date_default_timezone_set('UTC');
+//}
 
 // hack around with the include paths a bit so the library 'just works'
 set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
@@ -271,7 +271,7 @@ class Google_Client {
   public function getClientId() {
     return self::$auth->clientId;
   }
-  
+
   /**
    * Set the OAuth 2.0 Client Secret.
    * @param string $clientSecret
@@ -357,6 +357,28 @@ class Google_Client {
   }
 
   /**
+   * Returns the list of scopes set on the client
+   * @return array the list of scopes
+   *
+   */
+  public function getScopes() {
+     return $this->scopes;
+  }
+
+  /**
+   * If 'plus.login' is included in the list of requested scopes, you can use
+   * this method to define types of app activities that your app will write.
+   * You can find a list of available types here:
+   * @link https://developers.google.com/+/api/moment-types
+   *
+   * @param array $requestVisibleActions Array of app activity types
+   */
+  public function setRequestVisibleActions($requestVisibleActions) {
+    self::$auth->requestVisibleActions =
+            join(" ", $requestVisibleActions);
+  }
+
+  /**
    * Declare if objects should be returned by the api service classes.
    *
    * @param boolean $useObjects True if objects should be returned by the service classes.
@@ -430,7 +452,7 @@ class Google_ServiceException extends Google_Exception {
     } else {
       parent::__construct($message, $code);
     }
-    
+
     $this->errors = $errors;
   }
 

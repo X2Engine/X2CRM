@@ -90,6 +90,10 @@ class Contacts extends X2Model {
 
 			$this->name = $str;
 		}
+		if($this->trackingKey === null) {
+			$this->trackingKey = self::getNewTrackingKey();
+			$this->update(array('trackingKey'));
+		}
 	}
 
 	/**

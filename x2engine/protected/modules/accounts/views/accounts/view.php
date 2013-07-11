@@ -88,7 +88,12 @@ $this->endWidget();
 $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'accounts'));
 
 ?><?php
-$accountContacts = implode(', ',array_map(function($c){return '"'.$c->name.'" <'.$c->email.'>';},array_filter($model->relatedX2Models,function($m){return get_class($m) == 'Contacts';})));
+$accountContactsArray = array();
+foreach($model->relatedX2Models as $relatedModel)
+	if($relatedModel instanceof Contacts)
+		if($relatedModel->email != '')
+			$accountContactsArray[] = '"'.$relatedModel->name.'" <'.$relatedModel->email.'>';
+$accountContacts = implode(', ',$accountContactsArray);
 // Limit insertable attributes
 $insertableAttributes = array();
 foreach($model->attributeLabels() as $fieldName => $label) {

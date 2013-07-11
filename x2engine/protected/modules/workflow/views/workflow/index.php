@@ -51,7 +51,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'name'=>'name',
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:75%;'),
+			'headerHtmlOptions'=>array('style'=>'width:65%;'),
+		),
+		array(
+			'name'=>'isDefault',
+			'value'=>'$data->isDefault? Yii::t("app","Yes") : ""',
+			'type'=>'raw',
 		),
 		array(
 			'name'=>'Stages',

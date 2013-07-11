@@ -118,14 +118,14 @@ class Session extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	public static function getOnlineUsers($useTimeout = false) {
 		// $sessions = Session::model()->findAllByAttributes(array('status'=>1));
 		// $temp = array();
 		// foreach($sessions as $session)
 			// $temp[] = $session->user;
 		// return $temp;
-		
+
 		$query = Yii::app()->db->createCommand()->selectDistinct('user')->from('x2_sessions')->where('status=1');
 		if($useTimeout)
 			$query = $query->where('lastUpdated > "'.(time()-900).'"');

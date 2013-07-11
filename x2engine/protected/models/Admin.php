@@ -61,7 +61,7 @@ class Admin extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('emailFromName, emailFromAddr, serviceCaseFromEmailName, serviceCaseFromEmailAddress, serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
+			array('emailType,emailFromName, emailFromAddr, serviceCaseFromEmailName, serviceCaseFromEmailAddress, serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
 			array('timeout, webTrackerCooldown, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly'=>true),
 			// accounts, sales, 
 			array('chatPollTime', 'numerical', 'max'=>10000, 'min'=>100),

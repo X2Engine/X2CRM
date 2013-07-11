@@ -667,9 +667,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	 * @param Array $vars variables to be used in this param's calculations
 	 * @return
 	 */
-	// public static function checkCondition($vars) {
-	// }
-
 	public static function getTriggerTypes() {
 		$types = array();
 		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {

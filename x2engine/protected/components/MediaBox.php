@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -36,17 +37,29 @@
 
 /**
  * Class for the media library box widget.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class MediaBox extends X2Widget {
-	
-	public $visibility;
-	public function init() {
-		parent::init();
-	}
 
-	public function run() {
-		$this->render('mediaBox',array()); //array(
-	}
+    public $visibility;
+    public $drive = 0;
+
+    public function init(){
+        $this->drive = Yii::app()->params->profile->mediaWidgetDrive && Yii::app()->params->admin->googleIntegration;
+        if(Yii::app()->params->admin->googleIntegration){
+            $auth = new GoogleAuthenticator();
+            if(!isset($_SESSION['driveFiles']) && $auth->getAccessToken()){
+                Yii::import('application.modules.media.controllers.MediaController');
+                $mediaController = new MediaController('MediaController');
+                $_SESSION['driveFiles'] = $mediaController->printFolder('root');
+            }
+        }
+        parent::init();
+    }
+
+    public function run(){
+        $this->render('mediaBox', array()); //array(
+    }
+
 }

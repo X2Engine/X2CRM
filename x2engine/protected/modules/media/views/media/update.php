@@ -42,14 +42,14 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('media', 'Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
 ));
 ?>
-<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->fileName; ?></h2></div>
+<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->drive?$model->title:$model->fileName; ?></h2></div>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
    'id'=>'media-form',
    'enableAjaxValidation'=>false,
 )); ?>
 
-<?php 
+<?php
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
 
@@ -85,11 +85,11 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 			</td>
 		<?php } ?>
 
-		
+
 		<td style="vertical-align: top;">
-		
+
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
-			
+
 				<div class="formSection showSection">
 					<div class="formSectionHeader">
 						<span class="sectionTitle"><?php echo Yii::t('media', 'Association'); ?></span>
@@ -112,17 +112,17 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 													), array('onChange'=>'showAssociationAutoComplete(this)')); ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
-								
+
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
 											<label><?php echo Yii::t('media', 'Association Name'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php
-												
+
 													// contacts association auto-complete
 													$linkSource = $this->createUrl(X2Model::model('Contacts')->autoCompleteSource);
 													$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
@@ -141,7 +141,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 															'id'=>'contacts-auto-select',
 														),
 													));
-													
+
 													// accounts association auto-complete
 													$linkSource = $this->createUrl(X2Model::model('Accounts')->autoCompleteSource);
 													$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
@@ -160,7 +160,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 															'id'=>'accounts-auto-select',
 														),
 													));
-													
+
 													// opportunities association auto-complete
 													$linkSource = $this->createUrl(X2Model::model('Opportunity')->autoCompleteSource);
 													$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
@@ -179,20 +179,20 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 															'id'=>'opportunities-auto-select',
 														),
 													));
-												
-													
+
+
 													echo $form->hiddenField($model, 'associationId', array('id'=>'association-id'));
 												?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-				
+
 				<div class="formSection showSection">
 					<div class="formSectionHeader">
 						<span class="sectionTitle"><?php echo Yii::t('media', 'Permission'); ?></span>
@@ -208,14 +208,14 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php echo $form->checkbox($model, 'private'); ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-				
+
 				<div class="formSection showSection">
 					<div class="formSectionHeader">
 						<span class="sectionTitle"><?php echo Yii::t('media', 'Description'); ?></span>
@@ -230,7 +230,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 												<?php echo $form->textarea($model, 'description', array('rows'=>5)); ?>
 											</div>
 										</div>
-										
+
 									</td>
 								</tr>
 							</tbody>
@@ -240,9 +240,9 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 
 			</div>
 
-		
+
 		</td>
-	
+
 	</tr>
 </table>
 

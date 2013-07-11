@@ -34,59 +34,52 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// Import the main models to be used:
-Yii::import('application.models.Profile');
 Yii::import('application.models.*');
-
+Yii::import('application.components.*');
+Yii::import('application.components.util.*');
 
 /**
  * Test for JSONFieldsBehavior.
  *
- * It is not a database test because only the transformation of data (as
- * performed by packAttribute and unpackAttribute) need be tested. Testing that
- * involves database interaction is already covered by {@link TransformedFieldStorageBehaviorTest}.
- *
  * @package X2CRM.tests.unit.components
  * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
-class JSONFieldsBehaviorTest extends X2DbTestCase {
+class JSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
 
-	public $fixtures = array(
-		'profile' => 'Profile'
-	);
-
-    /*static private function instantiateJSONFieldsBehavior ($transformAttributes) {
-        $behavior = new JSONFieldsBehavior ();
-        $behavior->transformAttributes = $transformAttributes;
-        return $behavior;
-    }
-
-    
-    static private function instantiateProfileModel () {
-        $profile = new Profile ();
-        return $profile;
-    }*/
-
-	public function testPackUnpackAttribute() {
-        /*$transformAttributes = array('theme' => array (
-            'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor', 
-            'pageHeaderTextColor', 'activityFeedWidgetBgColor', 
-            'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling', 
-            'pageOpacity', 'themeName', 'private', 'owner'));*/
-        //$model = self::instantiateProfileModel ();
+		public $arrayTemplate = array(
+			'this' => null,
+			'that' => 1,
+			'theNextThing' => 'hello',
+		);
+		public $arrayOld = array(
+			'this' => 'here I am',
+			'that' => 0,
+			'deleteMe' => 'nnnyeh.'
+		);
 
 
-        $model = $this->profile ('testProfile');
-        $model->theme = array (
-            'backgroundColor'=>0, 'menuBgColor'=>0, 'menuTextColor'=>0,
-            'pageHeaderBgColor'=>0, 'pageHeaderTextColor'=>0, 
-            'activityFeedWidgetBgColor'=>0, 'activityFeedWidgetTextColor'=>0, 
-            'backgroundImg'=>0, 'backgroundTiling'=>0, 'pageOpacity'=>0, 
-            'themeName'=>0, 'private'=>0);
-        $model->save ();
-		
-		// Verify that "owner" field got added:
-		$this->assertArrayHasKey('owner', $model->theme);
+	public function testPackAttribute() {
+		$model = new CActiveMock();
+		$model->foo = $this->arrayOld;
+		$jfb = new JSONFieldsBehavior();
+		$jfb->transformAttributes = array('foo' => array_keys($this->arrayTemplate));
+		$jfb->attach($model);
+		$template = array_fill_keys(array_keys($this->arrayTemplate),null);
+		$expected = ArrayUtil::normalizeToArray($template,$this->arrayOld);
+		$model->raiseEvent('onBeforeSave',new CModelEvent($model));
+		$this->assertEquals($expected,CJSON::decode($model->foo));
+	}
+
+	public function testUnpackAttribute() {
+		$model = new CActiveMock();
+		$model->foo = CJSON::encode($this->arrayOld);
+		$jfb = new JSONFieldsBehavior();
+		$jfb->transformAttributes = array('foo' => array_keys($this->arrayTemplate));
+		$jfb->attach($model);
+		$template = array_fill_keys(array_keys($this->arrayTemplate),null);
+		$expected = ArrayUtil::normalizeToArray($template,$this->arrayOld);
+		$model->raiseEvent('onAfterSave',new CModelEvent($model));
+		$this->assertEquals($expected,$model->foo);
 	}
 }
 

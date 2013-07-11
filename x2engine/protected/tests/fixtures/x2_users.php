@@ -2,6 +2,7 @@
 
 return array(
 	'testUser' => array(
+		'id' => 12345,
 		'username' => 'testuser',
 		'firstName' => 'Sales',
 		'lastName' => 'Rep',

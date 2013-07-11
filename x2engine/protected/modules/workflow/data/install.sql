@@ -5,8 +5,9 @@ DROP TABLE IF EXISTS x2_workflow_stages;
 DROP TABLE IF EXISTS x2_workflows;
 /*&*/
 CREATE TABLE x2_workflows(
-	id						INT					NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
+	isDefault				TINYINT			NOT NULL DEFAULT 0,
 	lastUpdated				BIGINT
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/

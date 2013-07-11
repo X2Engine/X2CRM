@@ -183,6 +183,8 @@ $preferences = $model->theme;
 
 $passVariablesToClientScript = "
     x2.profileSettings = {};
+    x2.profileSettings.checkerImagePath = '".
+        Yii::app()->theme->getBaseUrl() . "/images/checkers.gif';
     x2.profileSettings.createThemeHint = '" .  
         Yii::t ('preferences', 
                 'Save your current theme settings as a predefined theme.') . "';

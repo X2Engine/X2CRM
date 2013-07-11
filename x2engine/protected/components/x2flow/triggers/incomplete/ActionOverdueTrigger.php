@@ -42,23 +42,26 @@
 class ActionOverdueTrigger extends X2FlowTrigger {
 	public $title = 'Action Overdue';
 	public $info = 'Triggers when an action becomes overdue. Cronjob must be configured to trigger reliably.';
-	
+
 	public function paramRules() {
+		
+		$units = array(
+			'mins'=>Yii::t('studio','minutes'),
+			'hours'=>Yii::t('studio','hours'),
+			'days'=>Yii::t('studio','days'),
+			'months'=>Yii::t('studio','months'),
+		);
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'modelClass' => 'Actions',
 			'options' => array(
-				array('name'=>'duration','label'=>Yii::t('studio','Time Overdue (s)'),'type'=>'numeric','optional'=>1),
+				array('name'=>'time','label'=>'Time Overdue'),
+				array('name'=>'unit','label'=>'Unit','type'=>'dropdown','options'=>$units),
 			));
 	}
 	
-	public static function checkCondition($condition,&$params) {
-		if(isset($condition['name']) && $condition['name'] === 'duration') {
-			if(empty($condition['value']))
-				return $params['model']->dueDate < time();
-			return $params['model']->dueDate < time() - (int)$condition['value'];
-		}
-		return parent::checkCondition($condition,$params);
+	public function check(&$params) {
+		return true;
 	}
 }

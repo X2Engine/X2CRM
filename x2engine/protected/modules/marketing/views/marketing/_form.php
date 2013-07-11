@@ -84,7 +84,17 @@ $("#Campaign_templateDropdown").change(function() {
 			}
 		});
 	}
-});',CClientScript::POS_READY);
+});
+
+$("#Campaign_type").change(function(){
+
+	if($(this).val() == "Email")
+		$("#Campaign_sendAs").parents(".formItem").fadeIn();
+	else
+		$("#Campaign_sendAs").parents(".formItem").fadeOut();
+});
+
+',CClientScript::POS_READY);
 
 $this->renderPartial('application.components.views._form', array(
 	'model'=>$model,

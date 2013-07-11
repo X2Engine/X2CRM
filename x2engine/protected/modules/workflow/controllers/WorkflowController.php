@@ -98,20 +98,11 @@ class WorkflowController extends x2base {
 			'model'=>$this->loadModel($id),'viewStage'=>$viewStage, 'dateRange'=>$dateRange,
 		));
 	}
-
-	
-	
-	
-	
-	
 	
 	// Creates a new Workflow model
 	// Creates 1 or more associated WorkflowStage models
 	// If creation is successful, the browser will be redirected to the 'view' page.
 	public function actionCreate() {
-	
-	
-	
 		$workflowModel = new Workflow;
 		$workflowModel->lastUpdated = time();
 
@@ -203,7 +194,6 @@ class WorkflowController extends x2base {
 						));
 				}
 				$workflowModel->save();
-
 			}
 		}
 		$this->render('update',array(

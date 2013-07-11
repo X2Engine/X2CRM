@@ -113,6 +113,30 @@ CREATE TABLE x2_changelog(
 	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
+DROP TABLE IF EXISTS x2_credentials;
+/*&*/
+CREATE TABLE x2_credentials(
+	id			INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name		VARCHAR(50)	NOT NULL, -- Descriptive title
+	userId		INT	NULL, -- Null userId indicates system-wide account, i.e. marketing email
+	private		TINYINT NOT NULL DEFAULT 1, -- If userId is null, anyone can use it
+	isEncrypted	TINYINT NOT NULL DEFAULT 0, -- Set to 1 when encryption was used on save.
+	modelClass	VARCHAR(50)	NOT NULL, -- The class of embedded model used for handling authentication data
+	createDate	BIGINT DEFAULT NULL,
+	lastUpdated	BIGINT DEFAULT NULL,
+	auth		TEXT, -- encrypted (hopefully) authentication data
+	INDEX(userId)
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_credentials_default;
+/*&*/
+CREATE TABLE x2_credentials_default(
+	userId		INT NOT NULL, -- User ID
+	serviceType	VARCHAR(50) NOT NULL, -- "email", "google" etc.
+	credId		INT UNSIGNED NOT NULL, -- Credentials record id
+	PRIMARY KEY(`userId`,`serviceType`)
+) COLLATE = utf8_general_ci;
+/*&*/
 DROP TABLE IF EXISTS x2_criteria;
 /*&*/
 CREATE TABLE x2_criteria(
@@ -365,6 +389,10 @@ CREATE TABLE x2_profile(
     hideBugsWithStatus		TEXT,
     actionFilters           TEXT,
     oldActions              TINYINT         DEFAULT 0,
+    mediaWidgetDrive        TINYINT         DEFAULT 0,
+    historyShowAll          TINYINT         DEFAULT 0,
+    historyShowRels         TINYINT         DEFAULT 0,
+    googleRefreshToken      VARCHAR(255),
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

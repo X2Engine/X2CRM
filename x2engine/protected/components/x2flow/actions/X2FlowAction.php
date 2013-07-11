@@ -79,7 +79,7 @@ abstract class X2FlowAction extends X2FlowItem {
 		return X2Flow::parseValue($options[$name]['value'],$type,$params);
 	}
 
-	/* 
+	/**
 	 * @return mixed either a string containing the notification type for this flow's trigger, or null
 	 */
 	public function getNotifType() {
@@ -87,7 +87,7 @@ abstract class X2FlowAction extends X2FlowItem {
 			return $this->trigger->notifType;
 		return null;
 	}
-	/* 
+	/**
 	 * @return mixed either a string containing the notification type for this flow's trigger, or null
 	 */
 	public function getEventType() {
@@ -96,7 +96,7 @@ abstract class X2FlowAction extends X2FlowItem {
 		return null;
 	}
 	
-	/* 
+	/**
 	 * Sets model fields using the provided attributes and values.
 	 * 
 	 * @param CActiveRecord $model the model to set fields on
@@ -111,7 +111,7 @@ abstract class X2FlowAction extends X2FlowItem {
 				continue;
 			
 			if(null !== $field = $model->getField($attr['name']))
-				$model->setAttribute($attr['name'],X2Flow::parseValue($attr['value'],$field->type,$model));	// first do variable/expression evaluation, // then process with X2Fields::parseValue()
+				$model->setAttribute($attr['name'],X2Flow::parseValue($attr['value'],$field->type,$params));	// first do variable/expression evaluation, // then process with X2Fields::parseValue()
 		}
 		return true;
 	}
@@ -125,6 +125,7 @@ abstract class X2FlowAction extends X2FlowItem {
 			if($class !== null)
 				$types[get_class($class)] = $class->title;
 		}
+		ksort($types);
 		return $types;
 	}
 }

@@ -123,6 +123,11 @@ function level7(){
 	}
 }
 
+// Throws an exception when encountering an error for easier handling.
+function exceptionForError($no, $st, $fi = Null, $ln = Null){
+	throw new Exception("Error [$no]: $st $fi L$ln");
+}
+
 set_error_handler('abandonAllHope');
 set_exception_handler('yeWhoEnterHere');
 register_shutdown_function('level7');
@@ -217,8 +222,11 @@ if(function_exists('posix_geteuid')){
 	}
 }
 // Check that the directory is writable. Print an error message one way or another.
-if(!is_writable(realpath('.')) || !is_writable(realpath(__FILE__))){
+if(!is_writable(dirname(__FILE__))){
 	$reqMessages[3][] = installer_t("This directory is not writable by PHP processes run by the webserver.");
+}
+if(!is_writable(__FILE__)) {
+	$reqMessages[3][] = installer_t("Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.");
 }
 
 // Check PHP version
@@ -270,13 +278,29 @@ if(!extension_loaded('json')){
 }
 // Miscellaneous functions:
 $requiredFunctions = array(
-	'mb_regex_encoding'
+	'mb_regex_encoding',
+	'getcwd',
+	'chmod'
 );
-foreach($requiredFunctions as $function){
+$missingFunctions = array();
+foreach($requiredFunctions as $function)
 	if(!function_exists($function))
-		$reqMessages[3][] = installer_t('The following required PHP function is missing or disabled:')." $function";
+		$missingFunctions[] = $function;
+if(count($missingFunctions))
+	$reqMessages[3][] = installer_t('The following required PHP function(s) is/are missing or disabled: ').implode(', ',$missingFunctions);
+// Check for the permissions to run chmod on files owned by the web server:
+if(!in_array('chmod', $missingFunctions)) {
+	set_error_handler('exceptionForError');
+	try{
+		// Attempt to change the permissions of the current file and then change them back again
+		$fp = fileperms(__FILE__); // original permissions
+		chmod(__FILE__,octdec(100700));
+		chmod(__FILE__,$fp);
+	}catch (Exception $e){
+		$reqMessages[3][] = installer_t('PHP scripts are not permitted to run the function "chmod".');
+	}
+	restore_error_handler();
 }
-
 ///////////////////////////////////////////////////////////
 // MEDIUM-PRIORITY: IMPORTANT FUNCTIONALITY REQUIREMENTS //
 ///////////////////////////////////////////////////////////
@@ -335,6 +359,10 @@ if(!is_writable($ssp)){
 ////////////////////////////////////////////////////////////
 // LOW PRIORITY: MISCELLANEOUS FUNCTIONALITY REQUIREMENTS //
 ////////////////////////////////////////////////////////////
+// Check encryption methods
+if(!(extension_loaded('openssl') && extension_loaded('mcrypt'))) {
+	$reqMessages[1][] = installer_t('The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
+}
 // Check the availability of email delivery messages.
 $canDo = array();
 $canDo['phpmail'] = @ini_get('sendmail_path') && function_exists('mail');
@@ -353,7 +381,7 @@ if(function_exists('is_executable')){
 	$canDo['qmail'] = false;
 }
 if(!($canDo['phpmail'] || (($canDo['sendmail'] || $canDo['qmail'] ) && $canDo['shell']))){
-	$reqMessages[1][] = installer_t("No methods for sending email are available on this server. As a result of this, none of X2CRM's email-related functionality will work unless using the SMTP method of delivery.");
+	$reqMessages[1][] = installer_t("No methods for sending email are available on this server. As a result of this, the legacy email delivery methods (Sendmail, PHPMail and QMail) will not be available.");
 }else{
 	if(!($canDo['shell'] && ($canDo['sendmail'] || $canDo['qmail']))){
 		$reqMessages[1][] = installer_t('The "sendmail" and "qmail" methods for email delivery cannot be used on this server.');

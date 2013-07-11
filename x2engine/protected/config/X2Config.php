@@ -1,12 +1,12 @@
 <?php
 $appName = 'X2Engine';
-$email = '';
-$host = '';
-$user = '';
+$email = 'a@b.com';
+$host = 'localhost';
+$user = 'root';
 $pass = '';
 $dbname = 'x2engine';
-$version = '3.1.2';
-$buildDate = 1372456603;
-$updaterVersion = '3.1.2';
-$language = 'en';
+$version = '3.2';
+$buildDate = 1373499313;
+$updaterVersion = '3.2';
+$language='en';
 ?>

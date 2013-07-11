@@ -256,31 +256,35 @@ class User extends CActiveRecord {
             $users = explode(', ', $users);
         }
         $links = array();
+        $userCache = Yii::app()->params->userCache;
         foreach($users as $user){
-            $userCache = Yii::app()->params->userCache;
             if($user == 'Anyone' || $user == 'Email'){  // skip these, they aren't users
                 continue;
             }else if(is_numeric($user)){  // this is a group
                 if(isset($userCache[$user])){
-                    $links[] = $userCache[$user];
+                    $group=$userCache[$user];
+                    $links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);
                     if(isset($group)){
                         $groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                        $userCache[$user] = $groupLink;
+                        $userCache[$user] = $group;
                         $links[] = $groupLink;
                     }
                 }
             }else{
                 if(isset($userCache[$user])){
-                    $links[] = $userCache[$user];
+                    $model=$userCache[$user];
+                    $linkText = $useFullName ? $model->name : $user;
+                    $userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
+                    $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
                         $linkText = $useFullName ? $model->name : $user;
                         $userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                        $userCache[$user] = $userLink;
+                        $userCache[$user] = $model;
                         $links[] = $userLink;
                     }
                 }

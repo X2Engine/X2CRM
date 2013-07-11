@@ -36,6 +36,8 @@
  *****************************************************************************************/
 
 /**
+ * Standalone file manipulation class.
+ * 
  * Miscellaneous file system utilities. It is not a child class of CComponent or 
  * the like in order to be portable/stand-alone (so it can be used outside the
  * app, i.e. by the installer).

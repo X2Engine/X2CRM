@@ -62,7 +62,7 @@ class SiteController extends x2base {
     public function accessRules(){
         return array(
             array('allow',
-                'actions' => array('login', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error'),
+                'actions' => array('login', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -73,7 +73,7 @@ class SiteController extends x2base {
                     'whatsNew', 'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
                     'loadPosts', 'addComment', 'flagPost', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
-                    'dynamicDropdown','stickyPost'),
+                    'dynamicDropdown', 'stickyPost', 'getEventsBetween','mediaWidgetToggle'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -616,9 +616,9 @@ class SiteController extends x2base {
     }
 
     public function actionActivityFeedOrder(){
-        $profile=Yii::app()->params->profile;
+        $profile = Yii::app()->params->profile;
         if(isset($profile)){
-            $profile->activityFeedOrder=!$profile->activityFeedOrder;
+            $profile->activityFeedOrder = !$profile->activityFeedOrder;
             $profile->update(array('activityFeedOrder'));
         }
     }
@@ -632,41 +632,53 @@ class SiteController extends x2base {
             $profile->update(array('theme'));
         }
     }
+
+    public function actionMediaWidgetToggle(){
+        $profile = Yii::app()->params->profile;
+        if(isset($profile)){
+            $profile->mediaWidgetDrive = !$profile->mediaWidgetDrive;
+            $profile->update(array('mediaWidgetDrive'));
+        }
+    }
+
     // Outputs white or black depending on input color
     // @param $colorString a string representing a hex number
     // @param $testType standardText or linkText
     function convertTextColor($colorString, $textType){
         // Split the string to red, green and blue components
         // Convert hex strings into ints
-        $red   = intval(substr($colorString, 0, 2), 16);
+        $red = intval(substr($colorString, 0, 2), 16);
         $green = intval(substr($colorString, 2, 2), 16);
-        $blue  = intval(substr($colorString, 4, 2), 16);
-        if($textType == 'standardText') {
-            return (((($red*299)+($green*587)+($blue*114))/1000) >= 128) ? 'black' : 'white';
-        }
-        else if ($textType == 'linkText') {
-            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
-              return '#fff000';  // Yellow links
-            }
-            else return '#0645AD'; // Blue link color
-        }
-        else if ($textType == 'visitedLinkText') {
-            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
-                return '#ede100';  // Yellow links
-            }
-            else return '#0B0080'; // Blue link color
-        }
-        else if ($textType == 'activeLinkText') {
-            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
+        $blue = intval(substr($colorString, 4, 2), 16);
+        if($textType == 'standardText'){
+            return (((($red * 299) + ($green * 587) + ($blue * 114)) / 1000) >= 128) ? 'black' : 'white';
+        }else if($textType == 'linkText'){
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))){
                 return '#fff000';  // Yellow links
             }
-            else return '#0645AD'; // Blue link color
+            else
+                return '#0645AD'; // Blue link color
         }
-        else if ($textType == 'hoverLinkText') {
-            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))) {
-             return '#fff761';  // Yellow links
+        else if($textType == 'visitedLinkText'){
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))){
+                return '#ede100';  // Yellow links
             }
-            else return '#3366BB'; // Blue link color
+            else
+                return '#0B0080'; // Blue link color
+        }
+        else if($textType == 'activeLinkText'){
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))){
+                return '#fff000';  // Yellow links
+            }
+            else
+                return '#0645AD'; // Blue link color
+        }
+        else if($textType == 'hoverLinkText'){
+            if(((($red < 100) || ($green < 100)) && $blue > 80) || (($red < 80) && ($green < 80) && ($blue < 80))){
+                return '#fff761';  // Yellow links
+            }
+            else
+                return '#3366BB'; // Blue link color
         }
     }
 
@@ -722,7 +734,7 @@ class SiteController extends x2base {
             }else{
                 $fieldRecord = X2Model::model('Fields')->findByAttributes(array('modelName' => $module, 'type' => 'dependentDropdown', 'linkType' => $dropdownId));
                 if(isset($fieldRecord))
-                    echo CJSON::encode(array($fieldRecord->fieldName,CHtml::tag('option', array('value' => ''), '-', true)));
+                    echo CJSON::encode(array($fieldRecord->fieldName, CHtml::tag('option', array('value' => ''), '-', true)));
             }
         }
     }
@@ -917,7 +929,7 @@ class SiteController extends x2base {
         Yii::app()->session['fullscreen'] = (isset($_GET['fs']) && $_GET['fs'] == 1);
         $profile = Yii::app()->params->profile;
         $profile->fullscreen = (isset($_GET['fs']) && $_GET['fs'] == 1);
-        $profile->save();
+        $profile->update(array('fullscreen'));
         // echo var_dump(Yii::app()->session['fullscreen']);
         echo 'Success';
     }
@@ -984,7 +996,7 @@ class SiteController extends x2base {
 
                 Yii::app()->params->profile->widgets = implode(':', $visibility);
 
-                if(Yii::app()->params->profile->save()){
+                if(Yii::app()->params->profile->update(array('widgets'))){
                     echo 'success';
                 }
             }
@@ -1144,115 +1156,212 @@ class SiteController extends x2base {
      */
     public function actionUpload(){
         if(isset($_FILES['upload'])){
-            $model = new Media;
-            $temp = CUploadedFile::getInstanceByName('upload');
-            if(isset($temp)){
-                $name = $temp->getName();
-                $name = str_replace(' ', '_', $name);
-                $check = Media::model()->findAllByAttributes(array('fileName' => $name));
-                if(count($check) != 0){
-                    $count = 1;
-                    $newName = $name;
-                    $arr = explode('.', $name);
-                    $name = $arr[0];
-                    while(count($check) != 0){
-                        $newName = $name.'('.$count.').'.$temp->getExtensionName();
-                        $check = Media::model()->findAllByAttributes(array('fileName' => $newName));
-                        $count++;
-                    }
-                    $name = $newName;
+            if(isset($_POST['drive']) && $_POST['drive']){
+                $auth = new GoogleAuthenticator();
+                if($auth->getAccessToken()){
+                    $service = $auth->getDriveService();
                 }
-                $username = Yii::app()->user->name;
-                //echo ($username);
-                //echo ($name);
-                //Yii::app ()->end ();
-                if(FileUtil::ccopy($temp->getTempName(), "uploads/media/$username/$name")){
-                    if(isset($_POST['associationId']))
-                        $model->associationId = $_POST['associationId'];
-                    if(isset($_POST['associationType']))
-                        $model->associationType = $_POST['associationType'];
-                    if(isset($_POST['private']))
-                        $model->private = $_POST['private'];
-                    $model->uploadedBy = Yii::app()->user->getName();
-                    $model->createDate = time();
-                    $model->lastUpdated = time();
-                    $model->fileName = $name;
-                    if($model->save()){
+                $createdFile = null;
+                if(isset($service, $_SESSION['access_token'], $_FILES['upload'])){
+                    try{
+                        $file = new Google_DriveFile();
+                        $file->setTitle($_FILES['upload']['name']);
+                        $file->setDescription('Uploaded by X2CRM');
+                        $file->setMimeType($_FILES['upload']['type']);
 
+                        $data = file_get_contents($_FILES['upload']['tmp_name']);
+                        $createdFile = $service->files->insert($file, array(
+                            'data' => $data,
+                            'mimeType' => $_FILES['upload']['type'],
+                                ));
+                        if(is_array($createdFile)){
+                            $model = new Media;
+                            $model->fileName = $createdFile['id'];
+                            $model->title = $createdFile['title'];
+                            if(isset($_POST['associationId']))
+                                $model->associationId = $_POST['associationId'];
+                            if(isset($_POST['associationType']))
+                                $model->associationType = $_POST['associationType'];
+                            if(isset($_POST['private']))
+                                $model->private = $_POST['private'];
+                            $model->uploadedBy = Yii::app()->user->getName();
+                            $model->mimetype = $createdFile['mimeType'];
+                            $model->filesize = $createdFile['fileSize'];
+                            $model->drive = 1;
+                            $model->save();
+                            if($model->associationType == 'feed'){
+                                $event = new Events;
+                                $event->user = Yii::app()->user->getName();
+                                if(isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])){
+                                    $event->text = $_POST['attachmentText'];
+                                }else{
+                                    $event->text = Yii::t('app', 'Attached file: ');
+                                }
+                                $event->type = 'media';
+                                $event->timestamp = time();
+                                $event->lastUpdated = time();
+                                $event->associationId = $model->id;
+                                $event->associationType = 'Media';
+                                $event->save();
+                                $this->redirect(array('site/whatsNew'));
+                            }elseif($model->associationType == 'docs'){
+                                $this->redirect(array('docs/index'));
+                            }elseif(!empty($model->associationType) && !empty($model->associationId)){
+                                $note = new Actions;
+                                $note->createDate = time();
+                                $note->dueDate = time();
+                                $note->completeDate = time();
+                                $note->complete = 'Yes';
+                                $note->visibility = '1';
+                                $note->completedBy = Yii::app()->user->getName();
+                                if($model->private){
+                                    $note->assignedTo = Yii::app()->user->getName();
+                                    $note->visibility = '0';
+                                }else{
+                                    $note->assignedTo = 'Anyone';
+                                }
+                                $note->type = 'attachment';
+                                $note->associationId = $_POST['associationId'];
+                                $note->associationType = $_POST['associationType'];
+
+                                $association = $this->getAssociation($note->associationType, $note->associationId);
+                                if($association != null)
+                                    $note->associationName = $association->name;
+
+                                $note->actionDescription = $model->fileName.':'.$model->id;
+                                if($note->save()){
+                                    $this->redirect(array($model->associationType.'/'.$model->associationId));
+                                }
+                            }else{
+                                $this->redirect(array('media/'.$model->id));
+                            }
+                        }else{
+                            throw new CHttpException('400', 'Invalid request.');
+                        }
+                    }catch(Google_AuthException $e){
+                        unset($_SESSION['access_token']);
+                        $auth->setErrors($e->getMessage());
+                        $service = null;
+                        $createdFile = null;
                     }
-                    if($model->associationType == 'feed'){
-                        $event = new Events;
-                        $event->user = Yii::app()->user->getName();
-                        if(isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])){
-                            $event->text = $_POST['attachmentText'];
-                        }else{
-                            $event->text = Yii::t('app', 'Attached file: ');
-                        }
-                        $event->type = 'media';
-                        $event->timestamp = time();
-                        $event->lastUpdated = time();
-                        $event->associationId = $model->id;
-                        $event->associationType = 'Media';
-                        if($event->save()){
-                            $this->redirect('whatsNew');
-                        }else{
-                            unlink('uploads/'.$name);
-                        }
-                        $this->redirect(array('site/whatsNew'));
-                    }else if($model->associationType == 'docs'){
-                        $this->redirect(array('docs/index'));
-                    }else if($model->associationType == 'loginSound' || $model->associationType == 'notificationSound'){
-                        /*$profile = Yii::app()->params->profile;
-                        if($model->associationType == 'loginSound'){
-                            $profile->loginSound = $name;
-                        }else{
-                            $profile->notificationSound = $name;
-                        }
-                        $profile->update(array($model->associationType));*/
-                        $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
-                    }elseif($model->associationType == 'bg' || $model->associationType == 'bg-private'){
-                        /*$profile = Yii::app()->params->profile;
-                        $profile->backgroundImg = $name;
-                        $profile->update(array('backgroundImg'));*/
-                        $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
+                }else{
+                    if(isset($_SERVER['HTTP_REFERER'])){
+                        $this->redirect($_SERVER['HTTP_REFERER']);
                     }else{
-                        $note = new Actions;
-                        $note->createDate = time();
-                        $note->dueDate = time();
-                        $note->completeDate = time();
-                        $note->complete = 'Yes';
-                        $note->visibility = '1';
-                        $note->completedBy = Yii::app()->user->getName();
-                        if($model->private){
-                            $note->assignedTo = Yii::app()->user->getName();
-                            $note->visibility = '0';
-                        }else{
-                            $note->assignedTo = 'Anyone';
-                        }
-                        $note->type = 'attachment';
-                        $note->associationId = $_POST['associationId'];
-                        $note->associationType = $_POST['associationType'];
-
-                        $association = $this->getAssociation($note->associationType, $note->associationId);
-                        if($association != null)
-                            $note->associationName = $association->name;
-
-                        $note->actionDescription = $model->fileName.':'.$model->id;
-                        if($note->save()){
-
-                        }else{
-                            unlink('uploads/'.$name);
-                        }
-                        if($model->associationType == 'product')
-                            $this->redirect(array('/products/'.$model->associationId));
-                        $this->redirect(array($model->associationType.'/'.$model->associationId));
+                        throw new CHttpException('400', 'Invalid request');
                     }
                 }
             }else{
-                if(isset($_SERVER['HTTP_REFERER'])){
-                    $this->redirect($_SERVER['HTTP_REFERER']);
+                $model = new Media;
+                $temp = CUploadedFile::getInstanceByName('upload');
+                if(isset($temp)){
+                    $name = $temp->getName();
+                    $name = str_replace(' ', '_', $name);
+                    $check = Media::model()->findAllByAttributes(array('fileName' => $name));
+                    if(count($check) != 0){
+                        $count = 1;
+                        $newName = $name;
+                        $arr = explode('.', $name);
+                        $name = $arr[0];
+                        while(count($check) != 0){
+                            $newName = $name.'('.$count.').'.$temp->getExtensionName();
+                            $check = Media::model()->findAllByAttributes(array('fileName' => $newName));
+                            $count++;
+                        }
+                        $name = $newName;
+                    }
+                    $username = Yii::app()->user->name;
+                    //echo ($username);
+                    //echo ($name);
+                    //Yii::app ()->end ();
+                    if(FileUtil::ccopy($temp->getTempName(), "uploads/media/$username/$name")){
+                        if(isset($_POST['associationId']))
+                            $model->associationId = $_POST['associationId'];
+                        if(isset($_POST['associationType']))
+                            $model->associationType = $_POST['associationType'];
+                        if(isset($_POST['private']))
+                            $model->private = $_POST['private'];
+                        $model->uploadedBy = Yii::app()->user->getName();
+                        $model->createDate = time();
+                        $model->lastUpdated = time();
+                        $model->fileName = $name;
+                        if($model->save()){
+
+                        }
+                        if($model->associationType == 'feed'){
+                            $event = new Events;
+                            $event->user = Yii::app()->user->getName();
+                            if(isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])){
+                                $event->text = $_POST['attachmentText'];
+                            }else{
+                                $event->text = Yii::t('app', 'Attached file: ');
+                            }
+                            $event->type = 'media';
+                            $event->timestamp = time();
+                            $event->lastUpdated = time();
+                            $event->associationId = $model->id;
+                            $event->associationType = 'Media';
+                            if($event->save()){
+                                $this->redirect('whatsNew');
+                            }else{
+                                unlink('uploads/'.$name);
+                            }
+                            $this->redirect(array('site/whatsNew'));
+                        }else if($model->associationType == 'docs'){
+                            $this->redirect(array('docs/index'));
+                        }else if($model->associationType == 'loginSound' || $model->associationType == 'notificationSound'){
+                            /* $profile = Yii::app()->params->profile;
+                              if($model->associationType == 'loginSound'){
+                              $profile->loginSound = $name;
+                              }else{
+                              $profile->notificationSound = $name;
+                              }
+                              $profile->update(array($model->associationType)); */
+                            $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
+                        }elseif($model->associationType == 'bg' || $model->associationType == 'bg-private'){
+                            /* $profile = Yii::app()->params->profile;
+                              $profile->backgroundImg = $name;
+                              $profile->update(array('backgroundImg')); */
+                            $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
+                        }else{
+                            $note = new Actions;
+                            $note->createDate = time();
+                            $note->dueDate = time();
+                            $note->completeDate = time();
+                            $note->complete = 'Yes';
+                            $note->visibility = '1';
+                            $note->completedBy = Yii::app()->user->getName();
+                            if($model->private){
+                                $note->assignedTo = Yii::app()->user->getName();
+                                $note->visibility = '0';
+                            }else{
+                                $note->assignedTo = 'Anyone';
+                            }
+                            $note->type = 'attachment';
+                            $note->associationId = $_POST['associationId'];
+                            $note->associationType = $_POST['associationType'];
+
+                            $association = $this->getAssociation($note->associationType, $note->associationId);
+                            if($association != null)
+                                $note->associationName = $association->name;
+
+                            $note->actionDescription = $model->fileName.':'.$model->id;
+                            if($note->save()){
+
+                            }else{
+                                unlink('uploads/'.$name);
+                            }
+                            if($model->associationType == 'product')
+                                $this->redirect(array('/products/'.$model->associationId));
+                            $this->redirect(array($model->associationType.'/'.$model->associationId));
+                        }
+                    }
                 }else{
-                    throw new CHttpException('400', 'Invalid request');
+                    if(isset($_SERVER['HTTP_REFERER'])){
+                        $this->redirect($_SERVER['HTTP_REFERER']);
+                    }else{
+                        throw new CHttpException('400', 'Invalid request');
+                    }
                 }
             }
         }else{
@@ -1739,94 +1848,131 @@ class SiteController extends x2base {
             $this->redirect(Yii::app()->homeUrl);
             return;
         }
-        if(isset($_SESSION['access_token'])){
-            require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
-            require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php';
-
-            $client = new Google_Client();
-            $client->setApplicationName("X2Engine CRM");
-            // Visit https://code.google.com/apis/console to generate your
-            // oauth2_client_id, oauth2_client_secret, and to register your oauth2_redirect_uri.
-            $admin = Admin::model()->findByPk(1);
-            $client->setClientId($admin->googleClientId);
-            $client->setClientSecret($admin->googleClientSecret);
-            $client->setRedirectUri('http://www.x2developer.com/x2jake/site/googleLogin');
-            //$client->setDeveloperKey('insert_your_developer_key');
-            $oauth2 = new Google_Oauth2Service($client);
-
-            $client->setAccessToken($_SESSION['access_token']);
-
-            $user = $oauth2->userinfo->get();
-            $email = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
-
-            $userRecord = User::model()->findByAttributes(array('emailAddress' => $email));
-            $profileRecord = Profile::model()->findByAttributes(array(), "emailAddress='$email' OR googleId='$email'");
-            if(isset($userRecord) || isset($profileRecord)){
-                if(!isset($userRecord)){
-                    $userRecord = User::model()->findByPk($profileRecord->id);
+        require_once 'protected/components/GoogleAuthenticator.php';
+        $auth = new GoogleAuthenticator();
+        if(Yii::app()->params->admin->googleIntegration && $token = $auth->getAccessToken()){
+            try{
+                $user = $auth->getUserInfo($token);
+                $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
+                $userRecord = User::model()->findByAttributes(array('emailAddress' => $email));
+                $profileRecord = Profile::model()->findByAttributes(array(), "emailAddress=:email OR googleId=:email", array(':email' => $email));
+                if(isset($profileRecord)){
+                    $auth->storeCredentials($profileRecord->id, $_SESSION['access_token']);
                 }
-                $username = $userRecord->username;
-                $password = $userRecord->password;
-                $model->username = $username;
-                $model->password = $password;
-                if($model->login(true)){
-                    $ip = $this->getRealIp();
-
-                    x2base::cleanUpSessions();
-                    if(isset($_SESSION['sessionId']))
-                        $sessionId = $_SESSION['sessionId'];
-                    else
-                        $sessionId = $_SESSION['sessionId'] = session_id();
-
-                    $session = X2Model::model('Session')->findByPk($sessionId);
-
-                    // if this client has already tried to log in, increment their attempt count
-                    if($session === null){
-                        $session = new Session;
-                        $session->id = $sessionId;
-                        $session->user = $model->username;
-                        $session->lastUpdated = time();
-                        $session->status = 1;
-                        $session->IP = $ip;
-                    }else{
-                        $session->lastUpdated = time();
+                if(isset($userRecord) || isset($profileRecord)){
+                    if(!isset($userRecord)){
+                        $userRecord = User::model()->findByPk($profileRecord->id);
                     }
-                    // x2base::cleanUpSessions();
-                    // $session = X2Model::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
-                    // if(isset($session)) {
-                    // $session->lastUpdated = time();
-                    // } else {
-                    // $session = new Session;
-                    // $session->user = $model->username;
-                    // $session->lastUpdated = time();
-                    // $session->status = 1;
-                    // $session->IP = $ip;
-                    // }
-                    $session->save();
-                    SessionLog::logSession($userRecord->username, $sessionId, 'googleLogin');
-                    $userRecord->login = time();
-                    $userRecord->save();
-                    Yii::app()->session['versionCheck'] = true;
+                    $username = $userRecord->username;
+                    $password = $userRecord->password;
+                    $model->username = $username;
+                    $model->password = $password;
+                    if($model->login(true)){
+                        $ip = $this->getRealIp();
 
-                    Yii::app()->session['loginTime'] = time();
-                    $session->status = 1;
+                        x2base::cleanUpSessions();
+                        if(isset($_SESSION['sessionId']))
+                            $sessionId = $_SESSION['sessionId'];
+                        else
+                            $sessionId = $_SESSION['sessionId'] = session_id();
 
-                    if(Yii::app()->user->returnUrl == 'site/index')
-                        $this->redirect('index');
-                    else
-                        $this->redirect(Yii::app()->user->returnUrl);
-                } else{
-                    print_r($model->getErrors());
+                        $session = X2Model::model('Session')->findByPk($sessionId);
+
+                        // if this client has already tried to log in, increment their attempt count
+                        if($session === null){
+                            $session = new Session;
+                            $session->id = $sessionId;
+                            $session->user = $model->username;
+                            $session->lastUpdated = time();
+                            $session->status = 1;
+                            $session->IP = $ip;
+                        }else{
+                            $session->lastUpdated = time();
+                        }
+                        // x2base::cleanUpSessions();
+                        // $session = X2Model::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
+                        // if(isset($session)) {
+                        // $session->lastUpdated = time();
+                        // } else {
+                        // $session = new Session;
+                        // $session->user = $model->username;
+                        // $session->lastUpdated = time();
+                        // $session->status = 1;
+                        // $session->IP = $ip;
+                        // }
+                        $session->save();
+                        SessionLog::logSession($userRecord->username, $sessionId, 'googleLogin');
+                        $userRecord->login = time();
+                        $userRecord->save();
+                        Yii::app()->session['versionCheck'] = true;
+
+                        Yii::app()->session['loginTime'] = time();
+                        $session->status = 1;
+
+                        if(Yii::app()->user->returnUrl == 'site/index')
+                            $this->redirect('index');
+                        else
+                            $this->redirect(Yii::app()->user->returnUrl);
+                    } else{
+                        print_r($model->getErrors());
+                    }
+                }else{
+                    $this->render('googleLogin', array(
+                        'failure' => 'email',
+                        'email' => $email,
+                    ));
                 }
-            }else{
+            }catch(Google_AuthException $e){
+                unset($_SESSION['access_token']);
+                $auth->setErrors($e->getMessage());
                 $this->render('googleLogin', array(
-                    'failure' => 'email',
-                    'email' => $email,
-                ));
+                        'failure' => $auth->getErrors(),
+                    ));
             }
         }else{
             $this->render('googleLogin');
         }
+    }
+
+    public function actionStoreToken(){
+        $code = file_get_contents('php://input');
+        require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
+        $client = new Google_Client();
+        $client->setClientId(Yii::app()->params->admin->googleClientId);
+        $client->setClientSecret(Yii::app()->params->admin->googleClientSecret);
+        $client->setRedirectUri('postmessage');
+        $client->setAccessType('offline');
+        $client->authenticate($code);
+        $token = json_decode($client->getAccessToken());
+        // Verify the token
+        $reqUrl = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='.
+                $token->access_token;
+        $req = new Google_HttpRequest($reqUrl);
+
+        $tokenInfo = json_decode(
+                $client::getIo()->authenticatedRequest($req)->getResponseBody());
+        // If there was an error in the token info, abort.
+        if(isset($tokenInfo->error) && $tokenInfo->error){
+            return new Response($tokenInfo->error, 500);
+        }
+        // Make sure the token we got is for our app.
+        if($tokenInfo->audience != Yii::app()->params->admin->googleClientId){
+            return new Response(
+                            "Token's client ID does not match app's.", 401);
+        }
+
+        // Store the token in the session for later use.
+        $_SESSION['token'] = json_encode($token);
+        $_SESSION['access_token'] = json_encode($token);
+        $auth = new GoogleAuthenticator();
+        $user = $auth->getUserInfo($client->getAccessToken());
+        $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
+        $profileRecord = Profile::model()->findByAttributes(array(), "emailAddress=:email OR googleId=:email", array(':email' => $email));
+        if(isset($profileRecord)){
+            $auth->storeCredentials($profileRecord->id, $_SESSION['access_token']);
+        }
+        $response = 'Successfully connected with token: '.print_r($token, true);
+        echo $response;
     }
 
     /**
@@ -1835,10 +1981,10 @@ class SiteController extends x2base {
     public function actionToggleShowTags($tags){
         if($tags == 'allUsers'){
             Yii::app()->params->profile->tagsShowAllUsers = true;
-            Yii::app()->params->profile->update();
+            Yii::app()->params->profile->update(array('tagsShowAllUsers'));
         }else if($tags == 'justMe'){
             Yii::app()->params->profile->tagsShowAllUsers = false;
-            Yii::app()->params->profile->update();
+            Yii::app()->params->profile->update(array('tagsShowAllUsers'));
         }
     }
 
@@ -2286,4 +2432,36 @@ class SiteController extends x2base {
         }
     }
 
+    function actionGetEventsBetween($startTimestamp, $endTimestamp, $type){
+
+        $command = Yii::app()->db->createCommand()
+                ->select(
+                        'type, timestamp, COUNT(type) AS count,'.
+                        'YEAR(FROM_UNIXTIME(timestamp)) AS year,'.
+                        'MONTH(FROM_UNIXTIME(timestamp)) AS month,'.
+                        'WEEK(FROM_UNIXTIME(timestamp)) AS week,'.
+                        'DAY(FROM_UNIXTIME(timestamp)) AS day,'.
+                        'HOUR(from_unixtime(timestamp)) as hour')
+                ->from('x2_events');
+        if($type !== 'any'){
+            $command->where(
+                    'timestamp BETWEEN :startTimestamp AND :endTimestamp AND type=:type', array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp,
+                'type' => $type));
+        }else{
+            $command->where(
+                    'timestamp BETWEEN :startTimestamp AND :endTimestamp', array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp));
+        }
+        $events = $command->group(
+                        'HOUR(FROM_UNIXTIME(timestamp)),'.
+                        'DAY(FROM_UNIXTIME(timestamp)),'.
+                        'WEEK(FROM_UNIXTIME(timestamp)),'.
+                        'MONTH(FROM_UNIXTIME(timestamp)),'.
+                        'YEAR(FROM_UNIXTIME(timestamp)),'.
+                        'type, timestamp')
+                ->order('year DESC, month DESC, week DESC, day DESC, hour desc')
+                ->queryAll();
+        echo CJSON::encode($events);
+    }
+
 }
+

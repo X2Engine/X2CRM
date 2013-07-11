@@ -93,6 +93,7 @@ $form=$this->beginWidget('CActiveForm', array(
 			'qmail' => @is_executable('/var/qmail/bin/sendmail')
 		);
 		$mailMethods = array();
+		$mailMethods[null] = '--------';
 		if((bool) @ini_get('sendmail_path'))
 			if(@is_executable(@ini_get('sendmail_path')))
 				$mailMethods['mail'] = Yii::t('admin','PHP Mail');

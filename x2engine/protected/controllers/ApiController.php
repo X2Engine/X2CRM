@@ -77,20 +77,19 @@ class ApiController extends x2base {
 	public function filters() {
 		return array(
 			'noSession',
-			'authenticate - voip,webListener',
+			'authenticate - voip,webListener,x2cron',
 			'validModel + create,view,lookup,update,delete,tags',
 			'checkCRUDPermissions + create,view,lookup,update,delete',
 		);
 	}
 
 	public function actions() {
-		if (class_exists('WebListenerAction'))
-			return array(
-				'webListener' => array(
-					'class' => 'WebListenerAction',
-				),
-			);
-		return array();
+		$actions = array();
+		if(class_exists('WebListenerAction'))
+			$actions['webListener'] = array('class' => 'WebListenerAction');
+		if(class_exists('X2CronAction'))
+			$actions['x2cron'] = array('class' => 'X2CronAction');
+		return $actions;
 	}
 
 	/**
@@ -472,8 +471,9 @@ class ApiController extends x2base {
 	 * dialplan, at the appropriate position, a call to a script that uses
 	 * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone
 	 * number. The script can then make the necessary request to this action.
+	 * @param bool $actionHist If set to 1, create an action history item for the contact.
 	 */
-	public function actionVoip() {
+	public function actionVoip($actionHist=0) {
 
 		if (isset($_GET['data'])) {
 
@@ -512,6 +512,7 @@ class ApiController extends x2base {
 								$formattedNumber = substr($strNumber, 0, $strl - 10)."-$formattedNumber";
 							}
 						}
+						$time = time();
 						// Create notifications:
 						foreach($assignees as $user){
 							$notif = new Notification;
@@ -520,13 +521,32 @@ class ApiController extends x2base {
 							$notif->modelType = 'Contacts';
 							$notif->modelId = $contact->id;
 							$notif->value = $formattedNumber;
-							$notif->createDate = time();
+							$notif->createDate = $time;
 							if($notif->save()){
 								$usersSuccess[] = $user;
 							}else{
 								$usersFailure = array();
 							}
 						}
+						if($actionHist){
+							// Create an action:
+							$action = new Actions();
+							$action->assignedTo = 'Anyone';
+							$action->visibility = 1;
+							$action->associationId = $contact->id;
+							$action->associationType = 'contacts';
+							$action->associationName = $contact->name;
+							$action->dueDate = $time;
+							$action->createDate = $time;
+							$action->completeDate = $time;
+							$action->lastUpdated = $time;
+							$action->type = 'call';
+							$action->complete = 'Yes';
+							$action->completedBy = 'Anyone';
+							$action->save();
+							$action->actionText = Yii::t('app', 'Phone system reported inbound call from contact.');
+						}
+
 						$failure = count($usersSuccess) == 0;
 						$partialFailure = count($usersFailure) > 0;
 						if($failure) {

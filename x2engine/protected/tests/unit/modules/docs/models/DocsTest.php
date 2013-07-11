@@ -12,13 +12,15 @@ Yii::import('application.modules.users.models.*');
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class DocsTest extends X2DbTestCase {
-	
-	public $fixtures = array(
-		'accounts' => 'Accounts',
-		'contacts' => 'Contacts',
-		'quotes' => 'Quote',
-	);
-	
+
+	public static function referenceFixtures(){
+		return array(
+			'accounts' => 'Accounts',
+			'contacts' => 'Contacts',
+			'quotes' => 'Quote',
+		);
+	}
+
 	public function testReplaceVariables() {
 		// Test replacement in emails:
 		$contact = $this->contacts('testAnyone');

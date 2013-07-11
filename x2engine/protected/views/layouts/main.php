@@ -357,7 +357,7 @@ array_unshift($menuItems, array(
     'label' => CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->name, $logoOptions),
     'url' => array('/site/whatsNew'),
     'active' => false,
-    'itemOptions' => array('id' => 'search-bar-title', 'class' => 'special')
+    'itemOptions' => array('id' => 'search-bar-title', 'class' => 'special','title'=>Yii::t('app','Go to Activity Feed'))
 ));
 
 

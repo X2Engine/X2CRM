@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -34,21 +35,21 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.*');
+
 /**
- * X2FlowTrigger 
- * 
- * @package X2CRM.components.x2flow.actions
+ * Sets up a cryptographic key for X2CRM.
+ * @package X2CRM.commands
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
-class UserLoginTrigger extends X2FlowTrigger {
-	public $title = 'User Signed In';
-	public $info = 'Triggered when a user signs in to X2CRM.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'options' => array(
-				array('name'=>'user','type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(false,false),'operators'=>array('=','<>','inList','notList'),'optional'=>1),
-			));
+class CryptSetupCommand {
+
+	public function run() {
+		
+		$encryption = new EncryptUtil('protected/config/encryption.key','protected/config/encryption.iv');
+		$encryption->saveNew();
 	}
+
 }
+
+?>

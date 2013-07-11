@@ -21,7 +21,7 @@ CREATE TABLE x2_campaigns (
 	lastUpdated				BIGINT	 		NOT NULL,
 	lastActivity			BIGINT,
 	updatedBy				VARCHAR(50),
-
+	sendAs					INT NOT NULL DEFAULT -1,
 	PRIMARY KEY (id),
 	FOREIGN KEY (masterId) REFERENCES x2_campaigns(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
@@ -81,4 +81,8 @@ VALUES
 ("Campaign",		"launchDate",			"Launch Date",			0,		0,	"dateTime",		0,			0,		NULL,			0,		0,			""),
 ("Campaign",		"lastUpdated",			"Last Updated",			0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
 ("Campaign",		"lastActivity",			"Last Activity",		0,		0,	"dateTime",		0,			1,		NULL,			0,		0,			""),
-("Campaign",		"updatedBy",			"Updated By",			0,		0,	"assignment",	0,			1,		NULL,			0,		0,			"");
+("Campaign",		"updatedBy",			"Updated By",			0,		0,	"assignment",	0,			1,		NULL,			0,		0,			""),
+("Campaign",		"sendAs",				"Send As",				0,		0,	"credentials",	0,			0,		"email",		0,		0,			"");
+/*&*/
+INSERT INTO `x2_form_layouts` (`id`, `model`, `version`, `scenario`, `layout`, `defaultView`, `defaultForm`, `createDate`, `lastUpdated`) VALUES (13,'Campaign','Form','Default','{\"version\":\"3.2\",\"sections\":[{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"483\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_sendAs\",\"labelType\":\"left\",\"readOnly\":\"undefined\",\"height\":\"22\",\"width\":\"154\",\"tabindex\":\"undefined\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"226\",\"tabindex\":\"0\"},{\"name\":\"formItem_template\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"133\",\"tabindex\":\"0\"},{\"name\":\"formItem_content\",\"labelType\":\"none\",\"readOnly\":\"0\",\"height\":\"229\",\"width\":\"563\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}',0,1,1373388579,1373388579);
+

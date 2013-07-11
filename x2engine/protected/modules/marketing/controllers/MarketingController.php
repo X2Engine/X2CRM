@@ -588,30 +588,18 @@ class MarketingController extends x2base {
 		
 		//setup campaign email settings
 		try {
-			$phpMail = $this->getPhpMailer();
-			
-			// lookup campaign owner's email address
-			$profile = X2Model::model('Profile')->findByAttributes(array('username'=>$campaign->createdBy));
-			if($profile !== null) {
-				$fromEmail = $profile->emailAddress;
-				$fromName = $profile->fullName;
-			} else {	//use site defaults otherwise
+			$phpMail = $this->getPhpMailer($campaign->sendAs);
+			if($campaign->sendAs == -1){
+				// Legacy behavior: set reply-to and other miscellaneous fields
+				// that wouldn't get set if an email account record were being used
+				//
+				// lookup campaign owner's email address
+				$profile = X2Model::model('Profile')->findByAttributes(array('username' => $campaign->createdBy));
 				$fromEmail = Yii::app()->params->admin->emailFromAddr;
 				$fromName = Yii::app()->params->admin->emailFromName;
+				$phpMail->AddReplyTo($fromEmail, $fromName);
+				$phpMail->SetFrom($fromEmail, $fromName);
 			}
-			$phpMail->AddReplyTo($fromEmail, $fromName);
-			$phpMail->SetFrom($fromEmail, $fromName);
-			// $phpMail->Subject = $campaign->subject;
-	/*		$attachments = $campaign->attachments;
-			foreach($attachments as $attachment) {
-				$media = $attachment->mediaFile;
-				if($media) {
-					if($file = $media->getPath()) {
-						if(file_exists($file)) // check file exists
-							$phpMail->AddAttachment($file);
-					}
-				}
-			} */
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -925,7 +913,7 @@ class MarketingController extends x2base {
 				X2ListItem::model()->updateAll(array('unsubscribed'=>time()), 'emailAddress=:email AND unsubscribed=0', array('email'=>$email));
 				$message = Yii::t('marketing','You have been unsubscribed');
 				echo '<html><head><title>'. $message .'</title></head><body>'. $message .'</body></html>';
-			} 
+			}
 			return;
 		}
 		
@@ -1006,23 +994,28 @@ class MarketingController extends x2base {
 			$message = Yii::t('marketing','You have been unsubscribed');
 			echo '<html><head><title>'. $message .'</title></head><body>'. $message .'</body></html>';
 			
-		} elseif($type == 'open') {
-			$item->markOpened();
-			$action->disableBehavior('changelog');
-			$action->type = 'email_opened';
-			$event->type = 'email_opened';
-			$notif->type = 'email_opened';
-            $event->save();
-			
-			if($contact === null)
-				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing','has opened the email').".";
-			else
-				$action->actionDescription = Yii::t('marketing','Campaign').': '.$item->list->campaign->name."\n\n".Yii::t('marketing','Contact has opened the email').".";
-			
+		} elseif($type == 'open'){
 			//return a one pixel transparent gif
 			header('Content-Type: image/gif');
 			echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+			// Check if it has been marked as opened already. If so, exit;
+			// nothing more need be done.
+			if($item->opened != 0){
+				Yii::app()->end();
+			}else{
+				$item->markOpened();
+				$action->disableBehavior('changelog');
+				$action->type = 'email_opened';
+				$event->type = 'email_opened';
+				$notif->type = 'email_opened';
+				$event->save();
 
+				if($contact === null)
+					$action->actionDescription = Yii::t('marketing', 'Campaign').': '.$item->list->campaign->name."\n\n".$item->emailAddress.' '.Yii::t('marketing', 'has opened the email').".";
+				else
+					$action->actionDescription = Yii::t('marketing', 'Campaign').': '.$item->list->campaign->name."\n\n".Yii::t('marketing', 'Contact has opened the email').".";
+			}
+			
 		} elseif($type == 'click') {
 			$item->markClicked($url);
 			

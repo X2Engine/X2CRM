@@ -59,7 +59,7 @@ $('.search-form form').submit(function(){
 ?>
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
-	'model'=>$model, 
+	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
 <?php
@@ -149,13 +149,13 @@ $this->widget('application.components.X2GridView', array(
 		'createdBy' => array(
 			'header'=>Yii::t('docs','Created By'),
 			'name'=>'createdBy',
-			'value'=>'User::getUserLinks($data->createdBy,true,false)',
+			'value'=>'User::getUserLinks($data->createdBy,true,true)',
 			'type'=>'raw',
 		),
 		'updatedBy' => array(
 			'header'=>Yii::t('docs','Updated By'),
 			'name'=>'updatedBy',
-			'value'=>'User::getUserLinks($data->updatedBy,true,false)',
+			'value'=>'User::getUserLinks($data->updatedBy,true,true)',
 			'type'=>'raw',
 		),
 	),
@@ -170,31 +170,30 @@ $this->widget('application.components.X2GridView', array(
 ?>
 <br />
 <?php
-//	$this->widget('zii.widgets.grid.CGridView', array(
-//	'id'=>'attachments-grid',
-//	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-//	'template'=> '<h2>'.Yii::t('docs','Uploaded Documents').'</h2><div class="title-bar">'
-//		.'{summary}</div>{items}{pager}',
-//	'dataProvider'=>$attachments,
-//	'columns'=>array(
-//		array(
-//			'name'=>'fileName',
-//			'value'=>'$data->getMediaLink()',
-//			'type'=>'raw',
-//			'htmlOptions'=>array('width'=>'30%'),
-//		),
-//		array(
-//			'name'=>'uploadedBy',
-//			'value'=>'User::getUserLinks($data->uploadedBy)',
-//			'type'=>'raw',
-//		),
-//		array(
-//			'name'=>'createDate',
-//			'type'=>'raw',
-//			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
-//		),
-//	),
-//)); 
+	$this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'attachments-grid',
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<div class="page-title icon docs"><h2>'.Yii::t('docs','Uploaded Docs').'</h2>{summary}</div>{items}{pager}',
+	'dataProvider'=>$attachments,
+	'columns'=>array(
+		array(
+			'name'=>'fileName',
+			'value'=>'$data->getMediaLink()',
+			'type'=>'raw',
+			'htmlOptions'=>array('width'=>'30%'),
+		),
+		array(
+			'name'=>'uploadedBy',
+			'value'=>'User::getUserLinks($data->uploadedBy)',
+			'type'=>'raw',
+		),
+		array(
+			'name'=>'createDate',
+			'type'=>'raw',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
+		),
+	),
+));
 	?>
 
 <?php

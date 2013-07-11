@@ -131,10 +131,12 @@ product selection drop-down menu.
 if (!$readOnly && isset ($products)) {
   $passVariablesToClientScript .= "x2.quotes.productNames = [];" ;
   $passVariablesToClientScript .= "x2.quotes.productPrices = {};" ;
+  $passVariablesToClientScript .= "x2.quotes.productDescriptions = {};" ;
   foreach ($products as $prod) {
-    $passVariablesToClientScript .= "x2.quotes.productNames.push ('" . addslashes ($prod->name) . "');\n";
-    $passVariablesToClientScript .= "x2.quotes.productPrices['" . addslashes ($prod->name) . "'] = '".
+    $passVariablesToClientScript .= "x2.quotes.productNames.push (" . CJSON::encode($prod->name) . ");\n";
+    $passVariablesToClientScript .= "x2.quotes.productPrices[" . CJSON::encode($prod->name) . "] = '".
                                     $prod->price . "';\n";
+	$passVariablesToClientScript .= "x2.quotes.productDescriptions[" . CJSON::encode($prod->name) . "] = ".CJSON::encode($prod->description).";\n";
   }
   $passVariablesToClientScript .= "
     x2.quotes.arrowBothImageSource = '" . 
@@ -677,8 +679,11 @@ if (YII_DEBUG && $debug) {
     var lineItemName = ui.item.label;
     $(event.target).val (lineItemName);
     var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
+    var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
+	console.debug(lineItemDescription);
     $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
       formatCurrency ({region: x2.quotes.currency});
+    $('[name="' + lineItemDescription + '"]').val (x2.quotes.productDescriptions[lineItemName]);
     validateName (event.target);
     updateTotals ();
   }
@@ -688,8 +693,10 @@ if (YII_DEBUG && $debug) {
     var lineItemName = ui.item.text ();
     $(x2.quotes.clickedLineItem).val (lineItemName);
     var lineItemPrice = $(x2.quotes.clickedLineItem).attr ('name').replace (/name/, 'price');
+    var lineItemDescription = $(x2.quotes.clickedLineItem).attr ('name').replace (/name/, 'description');
     $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
       formatCurrency ({region: x2.quotes.currency});
+    $('[name="' + lineItemDescription + '"]').val (x2.quotes.productDescriptions[lineItemName]);
     validateName (x2.quotes.clickedLineItem);
     updateTotals ();
   }

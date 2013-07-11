@@ -57,6 +57,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckedi
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/emailEditor.js');
 
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.js');
+Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.barRenderer.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.categoryAxisRenderer.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.pointLabels.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.dateAxisRenderer.js');
+Yii::app()->clientScript->registerCoreScript('cookie');
+
 
 $passVarsToClientScript = "
     x2.whatsNew = {};
@@ -68,18 +76,35 @@ $passVarsToClientScript = "
     x2.whatsNew.translations = {};
 ";
 
+$longMonthNames = Yii::app()->getLocale ()->getMonthNames ();
+$shortMonthNames = Yii::app()->getLocale ()->getMonthNames ('abbreviated');
+
 $translations = array (
     'Uncheck Filters' => Yii::t('app','Uncheck Filters'),
     'Check Filters' => Yii::t('app','Check Filters'),
     'Enter text here...' => Yii::t('app','Enter text here...')
 );
-    
+
+$englishMonthNames =
+    array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December');
+$englishMonthAbbrs =
+    array ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
+    'Dec');
+
+foreach ($longMonthNames as $key=>$val) {
+    $translations[$englishMonthNames[$key - 1]] = $val;
+}
+foreach ($shortMonthNames as $key=>$val) {
+    $translations[$englishMonthAbbrs[$key - 1]] = $val;
+}
 
 // pass array of predefined theme uploadedBy attributes to client
 foreach ($translations as $key=>$val) {
   $passVarsToClientScript .= "x2.whatsNew.translations['".
     $key. "'] = '" . $val . "';";
 }
+
 
 Yii::app()->clientScript->registerScript(
     'passVarsToClientScript', $passVarsToClientScript,
@@ -99,13 +124,100 @@ $usersGroups=implode(",",$tempUserList);
         echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
         echo CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button right'));
 		echo CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button right'));
-        echo CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button right'));
+        /*echo CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button right'));*/
         echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
         echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button right'));
+        echo CHtml::link(Yii::t('app','Show Chart'),'#',array('id'=>'show-chart','class'=>'x2-button right'));
+        echo CHtml::link(Yii::t('app','Hide Chart'),'#',array('id'=>'hide-chart','class'=>'x2-button right', 'style'=>'display:none;'));
+
 
 		?>
 	</div>
 </div>
+
+
+<div id="chart-container" class='form' style='display: none;'>
+
+    <div class="row top-button-row">
+        <select id="first-metric">
+        <?php
+        $eventTypes = array (
+            'any'=>Yii::t('feed', 'All Events'),
+            'notif'=>Yii::t('feed', 'Notifications'),
+            'feed'=>Yii::t('feed', 'Feed Events'),
+            'comment'=>Yii::t('feed', 'Comments'),
+            'record_created'=>Yii::t('feed', 'Records Created'),
+            'record_deleted'=>Yii::t('feed', 'Records Deleted'),
+            'weblead_create'=>Yii::t('feed', 'Webleads Created'),
+            'workflow_start'=>Yii::t('feed', 'Workflows Started'),
+            'workflow_complete'=>Yii::t('feed', 'Workflows Completed'),
+            'workflow_revert'=>Yii::t('feed', 'Workflows Reverted'),
+            'email_sent'=>Yii::t('feed', 'Emails Sent'),
+            'email_opened'=>Yii::t('feed', 'Emails Opened'),
+            'web_activity'=>Yii::t('feed', 'Web Activity'),
+            'case_escalated'=>Yii::t('feed', 'Cases Escalated'),
+            'calendar_event'=>Yii::t('feed', 'Calendar Events'),
+            'action_reminder'=>Yii::t('feed', 'Action Reminders'),
+            'action_complete'=>Yii::t('feed', 'Actions Completed'),
+            'doc_update'=>Yii::t('feed', 'Docs Updated'),
+            'email_from'=>Yii::t('feed', 'Emails Received'),
+            'voip_calls'=>Yii::t('feed', 'Voip Calls'),
+            'media'=>Yii::t('feed', 'Media Events'));
+
+        foreach ($eventTypes as $key=>$type) { ?>
+            <option value='<?php echo $key; ?>'>
+            <?php echo $type; ?>
+            </option>
+        <?php } ?>
+        </select>
+        <?php echo Yii::t ('feed', 'vs.'); ?>
+        <select id="second-metric">
+            <option value="" id="second-metric-default">
+                <?php echo Yii::t ('feed', '- Select an event type -'); ?>
+            </option>
+        <?php
+        foreach ($eventTypes as $key=>$type) { ?>
+            <option value='<?php echo $key; ?>'>
+            <?php echo $type; ?>
+            </option>
+        <?php } ?>
+        </select>
+        <a href="#" id="clear-metric-button">[x]</a>
+
+        <div id='bin-size-button-set' class="x2-button-group right">
+            <a href="#" id='hour-bin-size' class='disabled-link x2-button '>
+                Per Hour
+            </a>
+            <a href="#" id='day-bin-size' class='x2-button'>
+                Per Day
+            </a>
+            <a href="#" id='week-bin-size' class='x2-button '>
+                Per Week
+            </a>
+            <a href="#" id='month-bin-size' class='x2-button '>
+                Per Month
+            </a>
+        </div>
+    </div>
+
+    <div class="row datepicker-row">
+        <div class="left">
+        <input id="chart-datepicker-from">
+        </input>
+        -
+        <input id="chart-datepicker-to">
+        </input>
+        </div>
+    </div>
+
+    <div id="chart" class='jqplot-target'>
+    </div>
+</div>
+
+
+
+
+
 <div class="form" id="post-form" style="clear:both">
 	<?php $feed=new Events; ?>
 	<?php $form = $this->beginWidget('CActiveForm', array(
@@ -136,11 +248,10 @@ $usersGroups=implode(",",$tempUserList);
 	<?php $this->endWidget(); ?>
 </div>
 
-
-
 <div id="attachments" style="display:none;">
 <?php $this->widget('Attachments',array('associationType'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
 </div>
+
 <?php
 $this->widget('zii.widgets.CListView', array(
     'dataProvider'=>$stickyDataProvider,

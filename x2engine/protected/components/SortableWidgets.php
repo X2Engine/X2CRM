@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -38,8 +37,6 @@
 
 Yii::import('zii.widgets.jui.CJuiWidget');
 
-
-
 /**
  * CJuiSortable class.
  *
@@ -51,30 +48,30 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  */
 class SortableWidgets extends CJuiWidget {
 
-	/**
-	 * @var array list of sortable items (id=>item content).
-	 * Note that the item contents will not be HTML-encoded.
-	 */
-	public $portlets = array();
-	public $jQueryOptions = array();
+    /**
+     * @var array list of sortable items (id=>item content).
+     * Note that the item contents will not be HTML-encoded.
+     */
+    public $portlets = array();
+    public $jQueryOptions = array();
 
-	/**
-	 * @var string the name of the container element that contains all items. Defaults to 'ul'.
-	 */
-	public $tagName = 'div';
+    /**
+     * @var string the name of the container element that contains all items. Defaults to 'ul'.
+     */
+    public $tagName = 'div';
 
-	/**
-	 * Run this widget.
-	 * This method registers necessary javascript and renders the needed HTML code.
-	 */
-	public function run(){
-		$themeURL = Yii::app()->theme->getBaseUrl();
-		Yii::app()->clientScript->registerScript('logos', base64_decode(
-						'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
-						.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
-						.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
+    /**
+     * Run this widget.
+     * This method registers necessary javascript and renders the needed HTML code.
+     */
+    public function run(){
+        $themeURL = Yii::app()->theme->getBaseUrl();
+        Yii::app()->clientScript->registerScript('logos', base64_decode(
+                        'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
+                        .'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
+                        .'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
 
-		Yii::app()->clientScript->registerScript('toggleWidgetState', "
+        Yii::app()->clientScript->registerScript('toggleWidgetState', "
 			function toggleWidgetState(widget,state) {
 				if($('#widget_' + widget).hasClass('ui-sortable-helper') == false) {
 					$.ajax({
@@ -100,75 +97,84 @@ class SortableWidgets extends CJuiWidget {
 			}
 		", CClientScript::POS_HEAD);
 
-		$id = $this->getId(); //get generated id
-		if(isset($this->htmlOptions['id']))
-			$id = $this->htmlOptions['id'];
-		else
-			$this->htmlOptions['id'] = $id;
+        $id = $this->getId(); //get generated id
+        if(isset($this->htmlOptions['id']))
+            $id = $this->htmlOptions['id'];
+        else
+            $this->htmlOptions['id'] = $id;
 
-		$options = empty($this->jQueryOptions) ? '' : CJavaScript::encode($this->jQueryOptions);
-		Yii::app()->getClientScript()->registerScript('SortableWidgets'.'#'.$id, "jQuery('#{$id}').sortable({$options});");
+        $options = empty($this->jQueryOptions) ? '' : CJavaScript::encode($this->jQueryOptions);
+        Yii::app()->getClientScript()->registerScript('SortableWidgets'.'#'.$id, "jQuery('#{$id}').sortable({$options});");
 
-		echo CHtml::openTag($this->tagName, $this->htmlOptions)."\n";
+        echo CHtml::openTag($this->tagName, $this->htmlOptions)."\n";
 
-		$widgetHideList = array();
-		if(!Yii::app()->user->isGuest){
-			$layout = Yii::app()->params->profile->getLayout();
-		}else{
-			$layout = array();
-		}
+        $widgetHideList = array();
+        if(!Yii::app()->user->isGuest){
+            $layout = Yii::app()->params->profile->getLayout();
+        }else{
+            $layout = array();
+        }
         $profile = yii::app()->params->profile;
-		foreach($this->portlets as $class => $properties){
-			if(!in_array($class, array_keys($layout['hiddenRight']))){ // show widget if it isn't hidden
-				$visible = ($properties['visibility'] == '1');
+        foreach($this->portlets as $class => $properties){
+            if(!in_array($class, array_keys($layout['hiddenRight']))){ // show widget if it isn't hidden
+                $visible = ($properties['visibility'] == '1');
 
-				if(!$visible)
-					$widgetHideList[] = '#widget_'.$class;
+                if(!$visible)
+                    $widgetHideList[] = '#widget_'.$class;
 
-				// $minimizeLink = '<div class="collapse-widget '.($visible? 'collapse-widget' : 'expand-widget').'"></div><div class="close-widget"></div>';
+                // $minimizeLink = '<div class="collapse-widget '.($visible? 'collapse-widget' : 'expand-widget').'"></div><div class="close-widget"></div>';
 
 
 
-				$minimizeLink = CHtml::link(
-					$visible ? CHtml::image($themeURL.'/images/icons/Collapse_Widget.png', '', array('class' => 'collapse-widget')) : CHtml::image($themeURL.'/images/icons/Expand_Widget.png', '', array('class' => 'expand-widget'))
-					, '#', array('class' => 'portlet-minimize-button')
-				)
-						.' '.CHtml::link(CHtml::image($themeURL.'/images/icons/Close_Widget.png'), '#', array('onclick' => "$('#widget_$class').hideWidgetRight(); return false;"));
+                $minimizeLink = CHtml::link(
+                                $visible ? CHtml::image($themeURL.'/images/icons/Collapse_Widget.png', '', array('class' => 'collapse-widget')) : CHtml::image($themeURL.'/images/icons/Expand_Widget.png', '', array('class' => 'expand-widget'))
+                                , '#', array('class' => 'portlet-minimize-button')
+                        )
+                        .' '.CHtml::link(CHtml::image($themeURL.'/images/icons/Close_Widget.png'), '#', array('onclick' => "$('#widget_$class').hideWidgetRight(); return false;"));
 
-				// $t0 = microtime(true);
-				// for($i=0;$i<100;$i++)
-				$widget = $this->widget($class, $properties['params'], true);
+                // $t0 = microtime(true);
+                // for($i=0;$i<100;$i++)
+                $widget = $this->widget($class, $properties['params'], true);
 
-				// $t1 = microtime(true);
+                // $t1 = microtime(true);
 
-				if($profile->activityFeedOrder){
-                                    ?>
-                                        <script>
-                                            $("#topDown").addClass('selected');
-                                        </script>
-                                    <?php
-					$activityFeedOrderSelect = 'top';
-				}else{
-                                    ?>
-                                        <script>
-                                            $("#bottomUp").addClass('selected');
-                                        </script>
-                                    <?php
-					$activityFeedOrderSelect = 'bottom';
-				}
+                if($profile->activityFeedOrder){
+                    ?>
+                    <script>
+                        $("#topDown").addClass('selected');
+                    </script>
+                    <?php
+                    $activityFeedOrderSelect = 'top';
+                }else{
+                    ?>
+                    <script>
+                        $("#bottomUp").addClass('selected');
+                    </script>
+                    <?php
+                    $activityFeedOrderSelect = 'bottom';
+                }
+                if($profile->mediaWidgetDrive){
+                    ?>
+                    <script>
+                        $("#drive-selector").addClass('selected');
+                    </script>
+                    <?php
+                }else{
+                    ?>
+                    <script>
+                        $("#media-selector").addClass('selected');
+                    </script>
+                    <?php
+                }
                 $preferences;
                 $activityFeedWidgetBgColor = '';
-                if ($profile != null) {
+                if($profile != null){
                     $preferences = $profile->theme;
                     $activityFeedWidgetBgColor = $preferences['activityFeedWidgetBgColor']; // replace after new behavior added to profile model
                 }
-				if(!empty($widget)){
-					$this->beginWidget('zii.widgets.CPortlet', array(
-						'title' => '<div id="widget-dropdown" class="dropdown">'
-                                            .($class == 'ChatBox' ?
-                                                //CHtml::dropDownList("activityFeedDropDown", $activityFeedOrderSelect, array('top' => 'Top Down', 'bottom' => 'Bottom Up'), array('style' => 'float:left;margin-top:-1px;')).
-						//CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration:none;margin-left:100px;')).
-                                                CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration: none; margin-right:34px;')).'
+                if(!empty($widget)){
+                    if($class == "ChatBox"){
+                        $header = CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration: none; margin-right:34px;')).'
                                                     <script>
                                                         $(\'#widget-dropdown a\').css("text-align", "none");
                                                         $(\'#widget-dropdown a\').css("text-align", "center !important");
@@ -186,31 +192,59 @@ class SortableWidgets extends CJuiWidget {
                                                     <hr>
                                                     <div style="text-align: left">Background Color</div>
                                                     <colorPicker style="padding: 0px !important;">'.
-                                                         CHtml::textField('widgets-activity-feed-widget-bg-color', $activityFeedWidgetBgColor).
-                                                    '</colorPicker>
-                                                    </ul> '
-                                                        : Yii::t('app', Yii::app()->params->registeredWidgets[$class])) .
-
-                                                    '<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible ? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
-                                                        'id' => $properties['id']
-					));
-					echo $widget;
-					$this->endWidget();
+                                CHtml::textField('widgets-activity-feed-widget-bg-color', $activityFeedWidgetBgColor).
+                                '</colorPicker>
+                                                    </ul> ';
+                    }elseif($class == "MediaBox" && Yii::app()->params->admin->googleIntegration){
+                        $auth = new GoogleAuthenticator();
+                        if($auth->getAccessToken()){
+                            $header = '<div style="margin-right:15%;display:inline-block;">'.Yii::t('app', 'Media').'</div>
+                                                <span style="float:left">
+                                                    <img src="'.Yii::app()->theme->baseUrl.'/images/widgets.png" style="opacity:0.3"
+                                                                onmouseout="this.style.opacity=0.3;"
+                                                                onmouseover="this.style.opacity=1" />
+                                                </span>
+                                                <ul class="closed" id="media-widget-gear-menu">
+                                                    <div style="text-align: left">Media Widget Settings</div>
+                                                    <hr>
+                                                    <div id="media-selector" style="font-weight:normal; float: left; margin-right: 3px;">X2 Media</div>
+                                                    <div id="drive-selector" style="font-weight:normal; float: left">Google Drive</div>
+                                                    <hr>
+                                                    <div style="text-align: left">Refresh Google Drive Cache</div>
+                                                    <hr>
+                                                    <a href="#" class="x2-button" id="drive-refresh" style="font-weight:normal; float: left">Refresh Files</a>
+                                                    <hr>
+                                                </ul> ';
+                        }else{
+                            $header = Yii::t('app', Yii::app()->params->registeredWidgets[$class]);
+                        }
+                    }else{
+                        $header = Yii::t('app', Yii::app()->params->registeredWidgets[$class]);
+                    }
+                    $this->beginWidget('zii.widgets.CPortlet', array(
+                        'title' => '<div id="widget-dropdown" class="dropdown">'
+                        .$header.
+                        '<div class="portlet-minimize" onclick="toggleWidgetState(\''.$class.'\','.($visible ? 0 : 1).'); return false;">'.$minimizeLink.'</div></div>',
+                        'id' => $properties['id']
+                    ));
+                    echo $widget;
+                    $this->endWidget();
 //					// echo ($t1-$t0);
-				}else{
-					echo '<div ', CHtml::renderAttributes(array('style' => 'display;none;', 'id' => $properties['id'])), '></div>';
-				}
-			}
-		}
-		Yii::app()->clientScript->registerScript('setWidgetState', '
+                }else{
+                    echo '<div ', CHtml::renderAttributes(array('style' => 'display;none;', 'id' => $properties['id'])), '></div>';
+                }
+            }
+        }
+        Yii::app()->clientScript->registerScript('setWidgetState', '
 			$(document).ready(function() {
 				$("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
 			});', CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
+                Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
-		echo CHtml::closeTag($this->tagName);
-	}
+        echo CHtml::closeTag($this->tagName);
+    }
+
 }
 ?>
 <style>
@@ -253,62 +287,108 @@ class SortableWidgets extends CJuiWidget {
     }
 </style>
 <script>
-$(document).ready(function() {
-    $("#topDown").hover(function(){
-        if(!$(this).hasClass('selected')){
-            $(this).toggleClass('hover');
-        }
-    });
-    $("#bottomUp").hover(function(){
-        if(!$(this).hasClass('selected')){
-            $(this).toggleClass('hover');
-        }
-    });
-    $("#topDown").click(function(){
-        if($(this).hasClass('selected')) return;
-        else {
-            $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
-            yii.profile['activityFeedOrder']=1;
-            $(this).addClass('selected');
-            $(this).removeClass('hover');
-            var chatbox = $('#chat-box');
-            chatbox.children().each(function(i,child){chatbox.prepend(child)});
-            chatbox.prop('scrollTop',0);
-            $("#bottomUp").removeClass('selected');
-        }
-    });
-    $("#bottomUp").click(function(){
-        if($(this).hasClass('selected')) return;
-        else {
-            $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
-            yii.profile['activityFeedOrder']=0;
-            $(this).addClass('selected');
-            $(this).removeClass('hover');
-            var chatbox = $('#chat-box');
-            var scroll=chatbox.prop('scrollHeight');
-            chatbox.children().each(function(i,child){chatbox.prepend(child)});
-            chatbox.prop('scrollTop',scroll);
-            $("#topDown").removeClass('selected');
-        }
-    });
+    $(document).ready(function() {
+        $("#topDown").hover(function(){
+            if(!$(this).hasClass('selected')){
+                $(this).toggleClass('hover');
+            }
+        });
+        $("#bottomUp").hover(function(){
+            if(!$(this).hasClass('selected')){
+                $(this).toggleClass('hover');
+            }
+        });
+        $("#media-selector").hover(function(){
+            if(!$(this).hasClass('selected')){
+                $(this).toggleClass('hover');
+            }
+        });
+        $("#drive-selector").hover(function(){
+            if(!$(this).hasClass('selected')){
+                $(this).toggleClass('hover');
+            }
+        });
+        $("#topDown").click(function(){
+            if($(this).hasClass('selected')) return;
+            else {
+                $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+                yii.profile['activityFeedOrder']=1;
+                $(this).addClass('selected');
+                $(this).removeClass('hover');
+                var chatbox = $('#chat-box');
+                chatbox.children().each(function(i,child){chatbox.prepend(child)});
+                chatbox.prop('scrollTop',0);
+                $("#bottomUp").removeClass('selected');
+            }
+        });
+        $("#bottomUp").click(function(){
+            if($(this).hasClass('selected')) return;
+            else {
+                $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+                yii.profile['activityFeedOrder']=0;
+                $(this).addClass('selected');
+                $(this).removeClass('hover');
+                var chatbox = $('#chat-box');
+                var scroll=chatbox.prop('scrollHeight');
+                chatbox.children().each(function(i,child){chatbox.prepend(child)});
+                chatbox.prop('scrollTop',scroll);
+                $("#topDown").removeClass('selected');
+            }
+        });
+        $("#media-selector").click(function(){
+            if($(this).hasClass('selected')) return;
+            else {
+                $.ajax({url:yii.baseUrl+"/index.php/site/mediaWidgetToggle"});
+                yii.profile['mediaWidgetDrive']=0;
+                $(this).addClass('selected');
+                $(this).removeClass('hover');
+                $("#media-widget-gear-menu").removeClass('open');
+                $("#drive-selector").removeClass('selected');
+                $('#drive-table').hide();
+                $('#x2-media-list').show();
+            }
+        });
+        $("#drive-selector").click(function(){
+            if($(this).hasClass('selected')) return;
+            else {
+                $.ajax({url:yii.baseUrl+"/index.php/site/mediaWidgetToggle"});
+                yii.profile['mediaWidgetDrive']=1;
+                $(this).addClass('selected');
+                $(this).removeClass('hover');
+                $("#media-widget-gear-menu").removeClass('open');
+                $("#media-selector").removeClass('selected');
+                $('#drive-table').show();
+                $('#x2-media-list').hide();
+            }
+        });
+        $("#drive-refresh").click(function(e){
+            e.preventDefault();
+            $.ajax({
+                'url':'<?php echo Yii::app()->controller->createUrl('/media/refreshDriveCache') ?>',
+                'success':function(data){
+                    $('#drive-table').html(data);
+                }
+            });
+            $("#media-widget-gear-menu").removeClass('open');
+        });
 
-    function saveWidgetBgColor () {
-        if ($(this).data ('ignoreChange')) {
-            return;
-        }
-        var color = $(this).val();
-        $.ajax({
-            url: yii.baseUrl + '/index.php/site/activityFeedWidgetBgColor',
-            data: 'color='+ color,
-            success:function(){
-		        if(color == '') {
-			        $('#chat-box').css('background-color', '#fff');
-		        } else {
-			        $('#chat-box').css('background-color', '#' + color);
-		        }
-                //$('#chat-box').css("color", convertTextColor(color, 'standardText'));
-                // Check for a dark color
-                /*if(convertTextColor(color, 'linkText') == '#fff000'){
+        function saveWidgetBgColor () {
+            if ($(this).data ('ignoreChange')) {
+                return;
+            }
+            var color = $(this).val();
+            $.ajax({
+                url: yii.baseUrl + '/index.php/site/activityFeedWidgetBgColor',
+                data: 'color='+ color,
+                success:function(){
+                    if(color == '') {
+                        $('#chat-box').css('background-color', '#fff');
+                    } else {
+                        $('#chat-box').css('background-color', '#' + color);
+                    }
+                    //$('#chat-box').css("color", convertTextColor(color, 'standardText'));
+                    // Check for a dark color
+                    /*if(convertTextColor(color, 'linkText') == '#fff000'){
                     $('#chat-box a').removeClass();
                     $('#chat-box a').addClass('dark_background');
                 }
@@ -323,59 +403,59 @@ $(document).ready(function() {
                     $('#chat-box a').removeClass();
                     $('#chat-box a').addClass("light_background");
                 }*/
+                }
+            });
+        }
+
+        setupSpectrum ($('#widgets-activity-feed-widget-bg-color'), true);
+
+        $('#widgets-activity-feed-widget-bg-color').change(saveWidgetBgColor);
+
+
+    });
+
+    // @param $colorString a string representing a hex number
+    // @param $testType standardText or linkText
+    function convertTextColor( colorString, textType){
+        // Split the string to red, green and blue components
+        // Convert hex strings into ints
+        var red   = parseInt(colorString.substring(1,3), 16);
+        var green = parseInt(colorString.substring(3,5), 16);
+        var blue  = parseInt(colorString.substring(5,7), 16);
+
+        if(textType == 'standardText') {
+            if((((red*299)+(green*587)+(blue*114))/1000) >= 128) {
+                return 'black';
             }
-        });
-    }
-
-    setupSpectrum ($('#widgets-activity-feed-widget-bg-color'), true);
-
-    $('#widgets-activity-feed-widget-bg-color').change(saveWidgetBgColor);
-
-
- });
-
-// @param $colorString a string representing a hex number
-// @param $testType standardText or linkText
-function convertTextColor( colorString, textType){
-    // Split the string to red, green and blue components
-    // Convert hex strings into ints
-    var red   = parseInt(colorString.substring(1,3), 16);
-    var green = parseInt(colorString.substring(3,5), 16);
-    var blue  = parseInt(colorString.substring(5,7), 16);
-
-    if(textType == 'standardText') {
-        if((((red*299)+(green*587)+(blue*114))/1000) >= 128) {
-            return 'black';
+            else {
+                return 'white';
+            }
         }
-        else {
-            return 'white';
+        else if (textType == 'linkText') {
+            if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+                return '#fff000';  // Yellow links
+            }
+            else return '#0645AD'; // Blue link color
+        }
+        else if (textType == 'visitedLinkText') {
+            if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+                return '#ede100';  // Yellow links
+            }
+            else return '#0B0080'; // Blue link color
+        }
+        else if (textType == 'activeLinkText') {
+            if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+                return '#fff000';  // Yellow links
+            }
+            else return '#0645AD'; // Blue link color
+        }
+        else if (textType == 'hoverLinkText') {
+            if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
+                return '#fff761';  // Yellow links
+            }
+            else return '#3366BB'; // Blue link color
         }
     }
-    else if (textType == 'linkText') {
-        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
-            return '#fff000';  // Yellow links
-        }
-        else return '#0645AD'; // Blue link color
-    }
-    else if (textType == 'visitedLinkText') {
-        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
-            return '#ede100';  // Yellow links
-        }
-        else return '#0B0080'; // Blue link color
-    }
-    else if (textType == 'activeLinkText') {
-        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
-            return '#fff000';  // Yellow links
-        }
-        else return '#0645AD'; // Blue link color
-    }
-    else if (textType == 'hoverLinkText') {
-        if((((red < 100) || (green < 100)) && blue > 80) || ((red < 80) && (green < 80) && (blue < 80))) {
-            return '#fff761';  // Yellow links
-        }
-        else return '#3366BB'; // Blue link color
-    }
-}
 </script>
 <style>
     .dark_background:link { color: #fff000 !important; }

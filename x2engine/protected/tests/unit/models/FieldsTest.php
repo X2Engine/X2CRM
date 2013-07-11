@@ -39,12 +39,8 @@
  * @package X2CRM.tests.unit.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class FieldsTest extends X2DbTestCase {
+class FieldsTest extends CTestCase {
 	
-//	public $fixtures = array(
-//		'opportunities' => 'Opportunity'
-//	);
-
 	public function testStrToNumeric() {
 
 		$cur =  Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency);

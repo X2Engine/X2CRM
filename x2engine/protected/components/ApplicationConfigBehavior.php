@@ -128,9 +128,14 @@ class ApplicationConfigBehavior extends CBehavior {
         }
 
 		// Set up encryption:
-		// $key = Yii::app()->basePath.'/config/encryption.key';
-		// $iv = Yii::app()->basePath.'/config/encryption.iv';
-		// EncryptedFieldsBehavior::setup($key,$iv);
+		$key = Yii::app()->basePath.'/config/encryption.key';
+		$iv = Yii::app()->basePath.'/config/encryption.iv';
+		if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)) {
+			EncryptedFieldsBehavior::setup($key,$iv);
+		} else {
+			// Use unsafe method with encryption
+			EncryptedFieldsBehavior::setupUnsafe();
+		}
 		
         $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
 

@@ -71,6 +71,7 @@ class Workflow extends CActiveRecord {
 			array('name', 'required'),
 			array('lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>250),
+			array('isDefault', 'boolean'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, name, lastUpdated', 'safe', 'on'=>'search'),
@@ -102,8 +103,19 @@ class Workflow extends CActiveRecord {
 		return array(
 			'id' => 'ID',
 			'name' => Yii::t('workflow','Workflow Name'),
+			'isDefault' => Yii::t('workflow','Default Workflow'),
 			'lastUpdated' => Yii::t('workflow','Last Updated'),
 		);
+	}
+	
+	/**
+	 * If this workflow is the default, unset isDefault flag on all other workflows
+	 */
+	public function afterSave() {
+		if($this->isDefault)
+			Yii::app()->db->createCommand('UPDATE x2_workflows SET isDefault=0 WHERE id != ?')->execute(array($this->id));
+		
+		parent::afterSave();
 	}
 
 	public static function getList($enableNone=true) {
@@ -456,6 +468,7 @@ class Workflow extends CActiveRecord {
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
+		$criteria->compare('isDefault',$this->isDefault,true);
 		$criteria->compare('lastUpdated',$this->lastUpdated);
 
 		return new CActiveDataProvider(get_class($this), array(

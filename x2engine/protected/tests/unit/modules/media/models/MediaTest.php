@@ -44,9 +44,11 @@ Yii::import('application.modules.media.models.Media');
  */
 class MediaTest extends X2DbTestCase {
 	
-	public $fixtures = array(
-		'media' => 'Media'
-	);
+	public static function referenceFixtures(){
+		return array(
+			'media' => 'Media'
+		);
+	}
 	
 	public function getRootPath() {
 		return realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');

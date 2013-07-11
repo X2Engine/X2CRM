@@ -40,7 +40,7 @@
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowEmail extends X2FlowAction {
-	public $title = 'Send Email';
+	public $title = 'Email';
 	public $info = 'Send a template or custom email to the specified address.';
 	
 	public function paramRules() {

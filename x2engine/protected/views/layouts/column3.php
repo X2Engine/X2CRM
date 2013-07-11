@@ -560,7 +560,10 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			echo "</ul>\n";
 			echo "<br />";
 
+            echo "<div id='full-controls-button-container'>";
+            echo CHtml::link(Yii::t('app','Uncheck Filters'),'#',array('id'=>'toggle-filters-link','class'=>'x2-button'));
 			echo CHtml::link(Yii::t('app','Apply Filters'),'#',array('class'=>'x2-button','id'=>'apply-feed-filters'));
+            echo "</div>";
 			$this->endWidget();
             echo "</div>";
 

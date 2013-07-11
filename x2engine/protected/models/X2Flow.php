@@ -205,12 +205,37 @@ class X2Flow extends CActiveRecord {
 		$flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
 		
 		// find all flows matching this trigger and modelClass
-		foreach($flows as &$flow) {
-			$error = '';	//array($flow->name);
+		foreach($flows as &$flow)
+			$flowTraces[] = self::executeFlow($flow,$params);
+		
+		
+		// file_put_contents('triggerLog.txt',$triggerName.":\n",FILE_APPEND);
+		// file_put_contents('triggerLog.txt',print_r($flowTraces,true).":\n",FILE_APPEND);
+		
+		self::$_triggerDepth--;		// this trigger call is done; decrement the stack depth
+	}
+	
+	
+	/**
+	 * Executes a flow, starting by checking the trigger, passing params to each trigger/action, and 
+	 * calling {@link X2Flow::executeBranch()}
+	 *
+	 * @param X2Flow &$flow the object representing the flow to run
+	 * @param array &$params an associative array of params, usually including 'model'=>$model,
+	 * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to null.
+	 * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
+	 */
+	public static function executeFlow(&$flow,&$params,$flowPath=null) {
+		$error = '';	//array($flow->name);
+		
+		$flowData = CJSON::decode($flow->flow);	// parse JSON flow data
+		// file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
+		
+		if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
 			
-			$flowData = CJSON::decode($flow->flow);	// parse JSON flow data
-			// file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
-			if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
+			$error = '';
+			
+			if($flowPath === null) {
 				$trigger = X2FlowTrigger::create($flowData['trigger']);
 				if($trigger === null)
 					$error = 'failed to load trigger class';
@@ -221,57 +246,107 @@ class X2Flow extends CActiveRecord {
 				
 				if(empty($error)) {
 					try {
-						$flowTraces[] = array($flow->name,$flow->executeBranch($flowData['items'],$params));
+						return array($flow->name,$flow->executeBranch(array(0),$flowData['items'],$params));
 					} catch (Exception $e) {
+						return $e->getMessage();
 						// whatever.
 					}
-				} else
-					$flowTraces[] = array($flow->name,$error);
-			} else {
-				$flowTraces[] = array($flow->name,'invalid flow data');
+				} else {
+					return array($flow->name,$error);
+				}
+			} else {	// $flowPath provided, skip to the specified position using X2Flow::traverse()
+				try {
+					return array($flow->name,$flow->traverse($flowPath,$flowData['items'],$params));
+				} catch (Exception $e) {
+					return $e->getMessage();
+					// whatever.
+				}
 			}
+		} else {
+			return array($flow->name,'invalid flow data');
 		}
-		// echo '<div class="flowTrace">';
-		// var_dump($flowTraces);
-		// if(!empty($flowTraces))
-			// die();
-		
-		// file_put_contents('triggerLog.txt',$triggerName.":\n",FILE_APPEND);
-		// file_put_contents('triggerLog.txt',print_r($flowTraces,true).":\n",FILE_APPEND);
-		
-		
-		// var_dump($params['model']->getChanges());
-		// echo '</div>';
-		
-		// $modelClass = '';
-		// if(isset($params['model']))
-			// $modelClass = ' ('.get_class($params['model']).' #'.$params['model']->id.')';
-		
-		// file_put_contents('triggerLog.txt',"\n".$triggerName.' -> '.$modelClass.' ['.implode(',',array_keys($params))."]\n",FILE_APPEND);
-		// if(!empty($results))
-			// file_put_contents('triggerLog.txt','	'.print_r($results,true)."\n",FILE_APPEND);
-		
-		self::$_triggerDepth--;		// this trigger call is done; decrement the stack depth
 	}
-
-	public function executeBranch(&$items,&$params) {
+	
+	/**
+	 * Recursive method for traversing a flow tree using $flowPath, allowing us to 
+	 * instantly skip to any point in a flow. This is used for delayed execution with X2CronAction.
+	 * 
+	 * @param array $flowPath directions to the current position in the flow tree
+	 * @param array $flowItems the items in this branch
+	 * @param array &$params an associative array of params, usually including 'model'=>$model,
+	 * @param integer $pathIndex the position $flowPath to start at (for recursion), defaults to 0
+	 */
+	public function traverse($flowPath,&$flowItems,&$params,$pathIndex=0) {
+		if(is_bool($flowPath[$pathIndex])) {	// if it's true or false, skip directly to the next true/false fork
+			foreach($flowItems as &$item) {
+				if($item['type'] === 'X2FlowSwitch') {
+					if($flowPath[$pathIndex] && isset($item['trueBranch'])) {
+						if(isset($flowPath[$pathIndex+1]))
+							return array($item['type'],true,$this->traverse($flowPath,$item['trueBranch'],$params,$pathIndex+1));
+						else
+							return array($item['type'],true,$this->executeBranch($flowPath,$item['trueBranch'],$params));
+						
+					} elseif(!$flowPath[$pathIndex] && isset($item['falseBranch'])) {
+						if(isset($flowPath[$pathIndex+1]))
+							return array($item['type'],false,$this->traverse($flowPath,$item['falseBranch'],$params,$pathIndex+1));
+						else
+							return array($item['type'],false,$this->executeBranch($flowPath,$item['falseBranch'],$params));
+					}
+				}
+			}
+			return false;
+		} else {	// we're in the final branch, so just execute it starting at the specified index
+			if(isset($flowItems[$pathIndex]))
+				return $this->executeBranch($flowPath,$flowItems,$params,$flowPath[$pathIndex]);
+		}
+		
+	}
+	
+	/**
+	 * Executes each action in a given branch, starting at $start.
+	 *
+	 * @param array $flowPath directions to the current position in the flow tree
+	 * @param array $flowItems the items in this branch
+	 * @param array &$params an associative array of params, usually including 'model'=>$model,
+	 * @param integer $start the position in the branch to start at, defaults to 0
+	 */
+	public function executeBranch($flowPath,&$flowItems,&$params,$start=0) {
 		$results = array();
 		
-		foreach($items as &$item) {
+		for($i=$start;$i<count($flowItems);$i++) {
+			$item = &$flowItems[$i];
 			if(!isset($item['type']) || !class_exists($item['type']))
 				continue;
 			
 			if($item['type'] === 'X2FlowSwitch') {
 				$switch = X2FlowItem::create($item);
 				if($switch->validate($params)) {
-					if($switch->check($params) && isset($item['trueBranch']))
-						$results[] = array($item['type'],true,$this->executeBranch($item['trueBranch'],$params));
-					elseif(isset($item['falseBranch']))
-						$results[] = array($item['type'],false,$this->executeBranch($item['falseBranch'],$params));
+					array_pop($flowPath);	// flowPath only contains switch decisions and the index on the current branch
+											// now that we're at another switch, we can throw out the previous branch index
+											// eg: $flowPath = array(true,false,3) means go to true at the first fork, 
+											// go to false at the second fork, then go to item 3
+					
+					if($switch->check($params) && isset($item['trueBranch'])) {
+						$flowPath[] = true;
+						$flowPath[] = 0;	// they're now on 
+						$results[] = array($item['type'],true,$this->executeBranch($flowPath,$item['trueBranch'],$params));
+					} elseif(isset($item['falseBranch'])) {
+						$flowPath[] = false;
+						$flowPath[] = 0;
+						$results[] = array($item['type'],false,$this->executeBranch($flowPath,$item['falseBranch'],$params));
+					}
 				}
 			} else {
 				$flowAction = X2FlowAction::create($item);
-				$results[] = array($item['type'],$flowAction->validate($params) && $flowAction->execute($params));
+				if($item['type'] === 'X2FlowWait') {
+					$flowAction->flowPath = $flowPath;
+					$flowAction->flowId = $this->id;
+					$results[] = array($item['type'],$flowAction->validate($params) && $flowAction->execute($params));
+					break;
+				} else {
+					$flowPath[count($flowPath)-1]++;	// increment the index in the current branch
+					$results[] = array($item['type'],$flowAction->validate($params) && $flowAction->execute($params));
+				}
 			}
 		}
 		return $results;

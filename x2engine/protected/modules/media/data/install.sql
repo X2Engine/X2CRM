@@ -6,13 +6,15 @@ CREATE TABLE x2_media(
 	associationId	INT,
 	uploadedBy		VARCHAR(50),
 	fileName		VARCHAR(100),
+    title           VARCHAR(255),
 	createDate		BIGINT,
 	lastUpdated		BIGINT,
 	private			TINYINT         DEFAULT 0,
 	description		TEXT,
 	mimetype		VARCHAR(250),
 	filesize		INT,
-	dimensions		VARCHAR(40)
+	dimensions		VARCHAR(40),
+    drive           TINYINT         DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`
@@ -27,12 +29,14 @@ VALUES
 ("Media",	"associationId",	"Association ID",		0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
 ("Media",	"uploadedBy",		"Uploaded By",			0,			0,			"assignment",	0,			1,			NULL,			0,			0,			""),
 ("Media",	"fileName",			"File Name",			0,			0,			"varchar",		0,			0,			NULL,			1,			0,			"High"),
+("Media",	"title",			"Title",                0,			0,			"varchar",		0,			0,			NULL,			1,			0,			"High"),
 ("Media",	"createDate",		"Create Date",			0,			0,			"dateTime",		0,			1,			NULL,			0,			0,			""),
 ("Media",	"lastUpdated",		"Last Updated",			0,			0,			"dateTime",		0,			1,			NULL,			0,			0,			""),
 ("Media",	"private",			"Private",				0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
 ("Media",	"description",		"Description",			0,			0,			"text",			0,			0,			NULL,			1,			0,			"Medium"),
 ("Media",	"mimetype",			"MIME Info",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			""),
 ("Media",	"filesize",			"File Size",			0,			0,			"int",			0,			1,			NULL,			0,			0,			""),
+("Media",	"drive",			"Drive",				0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
 ("Media",	"dimensions",		"Dimensions",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			"");
 /*&*/
 INSERT INTO x2_media

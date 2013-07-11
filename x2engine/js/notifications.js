@@ -132,6 +132,9 @@ $(function() {
 			lastNotifId = 0,
 			lastEventId = 0;
 	lastTimestamp = 0;
+	
+	var fetchUpdates = true;
+
 
 	iwcMode = $.jStorage.storageAvailable(),
 			windowId = +new Date() + Math.floor(Math.random() * 1000), // generate ID from timestamp and random number
@@ -354,58 +357,68 @@ $(function() {
 	 * the IWC system
 	 */
 	function getUpdates(firstCall) {
-		$.ajax({
-			type: 'GET',
-			url: yii.scriptUrl + '/notifications/get',
-			data: {
-				lastNotifId: lastNotifId,
-				lastEventId: lastEventId,
-				lastTimestamp: lastTimestamp
-			}
-		}).done(function(response) {
+		if(fetchUpdates) {
+			$.ajax({
+				type: 'GET',
+				url: yii.scriptUrl + '/notifications/get',
+				data: {
+					lastNotifId: lastNotifId,
+					lastEventId: lastEventId,
+					lastTimestamp: lastTimestamp
+				},
+				dataType: 'json'
+			}).done(function(response) {
 
-			if (iwcMode)
-				notifTimeout = setTimeout(checkMasterId, notifUpdateInterval);	// call checkMasterId, which will then call getUpdates
-			else
-				notifTimeout = setTimeout(getUpdates, notifUpdateInterval);		// there's no IWC, so call getUpdates directly
+				if (iwcMode)
+					notifTimeout = setTimeout(checkMasterId, notifUpdateInterval);	// call checkMasterId, which will then call getUpdates
+				else
+					notifTimeout = setTimeout(getUpdates, notifUpdateInterval);		// there's no IWC, so call getUpdates directly
 
-			if (response == '')	// if there's no new data, we're done
-				return;
+				if (response == null || typeof response != 'object')	// if there's no new data, we're done
+					return;
 
-			try {
-				var data = $.parseJSON(response);
+				if(typeof response.sessionError != 'undefined') {
+					fetchUpdates = confirm(response.sessionError);
+					if(fetchUpdates) {
+						window.location = window.location;
+					}
+				}
+				
+				try {
+					var data = response; //$.parseJSON(response);
 
-				if (data.notifData.length) {
-					notifCount = data.notifCount;
-					addNotifications(data.notifData, false);		// add new notifications to the notif box (prepend)
+					if (data.notifData.length) {
+						notifCount = data.notifCount;
+						addNotifications(data.notifData, false);		// add new notifications to the notif box (prepend)
 
-					if (!firstCall) {
-						playNotificationSound();
-						openNotifications();
+						if (!firstCall) {
+							playNotificationSound();
+							openNotifications();
 
-						if (iwcMode) {	// tell other windows about it
-							$.jStorage.publish("x2iwc_notif", {
-								origin: windowId,
-								data: data.notifData,
-								notifCount: data.notifCount
-							});
+							if (iwcMode) {	// tell other windows about it
+								$.jStorage.publish("x2iwc_notif", {
+									origin: windowId,
+									data: data.notifData,
+									notifCount: data.notifCount
+								});
+							}
 						}
 					}
-				}
-				if (data.chatData) {
-					if (iwcMode && !firstCall) {	// tell other windows about it
-						$.jStorage.publish("x2iwc_chat", {
-							origin: windowId,
-							data: data.chatData
-						});
+					if (data.chatData) {
+						if (iwcMode && !firstCall) {	// tell other windows about it
+							$.jStorage.publish("x2iwc_chat", {
+								origin: windowId,
+								data: data.chatData
+							});
+						}
+						addChatMessages(data.chatData);
 					}
-					addChatMessages(data.chatData);
-				}
-			} catch (e) {
-			}	// ignore if JSON is being an idiot
-		}).fail(function() {
-			clearTimeout(notifTimeout);
-		});
+				} catch (e) {
+				}	// ignore if JSON is being an idiot
+			}).fail(function() {
+				clearTimeout(notifTimeout);
+			});
+		}
 		return false;
 	}
 

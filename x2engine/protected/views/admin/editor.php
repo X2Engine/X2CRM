@@ -185,6 +185,9 @@ echo CHtml::hiddenField('layout','',array('id'=>'layoutHiddenField'));
 			case 'percentage':
 				$type = 'percentageIcon';
 				break;
+			case 'credentials':
+				$type ='dropdownIcon';
+				break;
 			default:
 				$type = 'varcharIcon';
 		}

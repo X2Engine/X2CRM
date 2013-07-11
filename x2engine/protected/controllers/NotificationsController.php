@@ -58,6 +58,14 @@ class NotificationsController extends CController {
 	 */
 	public function actionGet() {
 
+		if(Yii::app()->user->isGuest) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+				'sessionError'=>Yii::t('app','Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.')
+			));
+			Yii::app()->end();
+		}
+
 		if(!isset($_GET['lastNotifId']))	// if the client doesn't specify the last
 			$_GET['lastNotifId'] = 0;		// message ID received, send everything
 
@@ -101,6 +109,7 @@ class NotificationsController extends CController {
 		}
 
 		if(!empty($notifications) || !empty($chatMessages)) {
+			header('Content-type: application/json');
 			echo CJSON::encode(array(
 				'notifCount'=>$notifCount,
 				'notifData'=>$notifications,

@@ -684,6 +684,7 @@ div.x2-sortlist a.del {
 	cursor:pointer;
 	background:url(../images/list_delete.png) top left no-repeat;
 }
+
 div.workflow-funnel-box {
 	display:block;
 	float:left;
@@ -869,6 +870,19 @@ div.img-box.record_create.Product-create {background-image:url(../images/product
 div.img-box.record_create.Docs-create {background-image:url(../images/docs.png);}
 div.img-box.record_create.Services-create {background-image:url(../images/services.png);}
 div.img-box.record_create.Groups-create {background-image:url(../images/groups.png);}
+
+.drive-icon{
+    display:inline-block;
+    height:16px;
+    width:16px;
+}
+
+div.loading-icon {
+    background:url(../images/loading.gif) no-repeat;
+    height:32px;
+    width:32px;
+    display:inline-block;
+}
 
 .action-description, a.action-description {text-decoration:none;color:black;}
 .action.list-view .view {
@@ -1408,3 +1422,10 @@ Feedback message container
 }
 
 
+/***********************************************************************
+Credentials storage manager
+***********************************************************************/
+.credentials-storage {
+	margin:10px;
+	padding:10px;
+}

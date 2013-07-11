@@ -47,6 +47,7 @@ Yii::app()->clientScript->registerCssFile($themeURL.'/css/screen.css'.$jsVersion
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/print.css'.$jsVersion,'print');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css'.$jsVersion,'screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css'.$jsVersion,'screen, projection');
+Yii::app()->clientScript->registerCssFile($themeURL.'/css/ui-elements.css'.$jsVersion,'screen, projection');
 
 
 $backgroundImg = '';
@@ -71,15 +72,15 @@ if(empty(Yii::app()->params->profile->backgroundImg))
 	$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/defaultBg.jpg','',array('id'=>'bg'));
 else
 	$backgroundImg = CHtml::image(Yii::app()->getBaseUrl().'/uploads/'.Yii::app()->params->profile->backgroundImg,'',array('id'=>'bg'));
-	
+
 if(!empty(Yii::app()->params->profile->backgroundColor)) {
 	$themeCss .= 'body {background-color:#'.Yii::app()->params->profile->backgroundColor.";}\n";
-	
+
 	if(!empty($backgroundImg)) {
 		$shadowRgb = 'rgb(0,0,0,0.5)';	// use a black shadow if there is an image
 	} else {
 		$shadowColor = X2Color::hex2rgb(Yii::app()->params->profile->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
-		
+
 		foreach($shadowColor as &$value) {
 			$value = floor(0.5*$value);
 		}
@@ -101,7 +102,7 @@ if(!empty(Yii::app()->params->profile->menuTextColor))
 Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
 
-	
+
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" lang="<?php echo Yii::app()->language; ?>">
 <head>

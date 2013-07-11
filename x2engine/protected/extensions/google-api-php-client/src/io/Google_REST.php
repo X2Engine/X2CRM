@@ -52,7 +52,7 @@ class Google_REST {
     $body = $response->getResponseBody();
     $decoded = null;
     
-    if ($code != '200' && $code != '201' && $code != '204') {
+    if ((intVal($code)) >= 300) {
       $decoded = json_decode($body, true);
       $err = 'Error calling ' . $response->getRequestMethod() . ' ' . $response->getUrl();
       if ($decoded != null && isset($decoded['error']['message'])  && isset($decoded['error']['code'])) {

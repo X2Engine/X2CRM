@@ -73,7 +73,7 @@ $apiConfig = array(
               'https://www.googleapis.com/auth/userinfo.email',
           )
       ),
-      'plus' => array('scope' => 'https://www.googleapis.com/auth/plus.me'),
+      'plus' => array('scope' => 'https://www.googleapis.com/auth/plus.login'),
       'siteVerification' => array('scope' => 'https://www.googleapis.com/auth/siteverification'),
       'tasks' => array('scope' => 'https://www.googleapis.com/auth/tasks'),
       'urlshortener' => array('scope' => 'https://www.googleapis.com/auth/urlshortener')

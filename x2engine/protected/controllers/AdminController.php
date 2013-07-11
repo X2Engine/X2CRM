@@ -104,6 +104,7 @@ class AdminController extends Controller {
 	}
 
     public function actionCalculateTranslationRedundancy(){
+        $max=array('file1'=>null,'file2'=>null,'redundancy'=>0);
         $files=scandir('protected/messages/template');
         $languageList=array();
         foreach($files as $file){
@@ -114,10 +115,17 @@ class AdminController extends Controller {
         for($i=0;$i<count($languageList);$i++){
             for($j=$i+1;$j<count($languageList);$j++){
                 $intersect=array_intersect($languageList[$keys[$i]],$languageList[$keys[$j]]);
-                $unique=(count($languageList[$keys[$i]])-count($intersect)) + (count($languageList[$keys[$j]])-count($intersect));
-                echo "For ".$keys[$i]." to ".$keys[$j]." ".round(count($intersect)/$unique*100,2)."% items identical.<br />";
+                $unique=count($languageList[$keys[$i]]) + count($languageList[$keys[$j]]) - count($intersect);
+                $redundancy=round(count($intersect)/$unique*100,2);
+                echo "Betweem ".$keys[$i]." and ".$keys[$j].": ".$redundancy."% items identical.<br />";
+                if($redundancy > $max['redundancy']){
+                    $max['file1']=$keys[$i];
+                    $max['file2']=$keys[$j];
+                    $max['redundancy']=$redundancy;
+                }
             }
         }
+        echo "<br>The most redundant files are ".$max['file1']." and ".$max['file2']. " with a redundancy of ".$max['redundancy']."%";
     }
 
     public function actionFindMissingPermissions(){
@@ -187,7 +195,16 @@ class AdminController extends Controller {
         $auth = Yii::app()->authManager;
         $action = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
         $authItem = $auth->getAuthItem($action);
-        if (Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->params->isAdmin) {
+		// Backwards-compatible way (to make updates safe) of determining if the user has admin rights.
+		$imAdmin = false;
+		if(Yii::app()->params->hasProperty('isAdmin')) {
+			$imAdmin = Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->params->isAdmin;
+		} else if(version_compare(Yii::app()->params->version, '2.0')>=0) {
+			$imAdmin = Yii::app()->user->checkAccess('AdminIndex') || is_null($authItem);
+		} else {
+			$imAdmin = Yii::app()->user->name == 'admin';
+		}
+        if ($imAdmin) {
             return true;
         } elseif (Yii::app()->user->isGuest) {
 			Yii::app()->user->returnUrl = Yii::app()->request->requestUri;
@@ -1449,10 +1466,10 @@ class AdminController extends Controller {
             $fieldType = $model->type;
             switch ($fieldType) {
                 case "boolean":
-                    $fieldType = "BOOLEAN";
+                    $fieldType = "BOOLEAN NOT NULL DEFAULT 0";
                     break;
                 case "float":
-                    $fieldType = "DECIMAl";
+                    $fieldType = "FLOAT";
                     break;
                 case "int":
                     $fieldType = "BIGINT";
@@ -1467,7 +1484,7 @@ class AdminController extends Controller {
                     $fieldType = "BIGINT";
                     break;
                 case "currency":
-                    $fieldType = "DECIMAL";
+                    $fieldType = "DECIMAL(18,2)";
                     break;
                 default:
                     $fieldType = 'VARCHAR(250)';

@@ -198,7 +198,11 @@ else if($type == 'workflow'){
     if($type == 'emailOpened'){
         echo "Contact has opened the following email:<br />";
     }
-    echo $legacy ? '<strong>'.$header.'</strong> '.$body : $header.$body;
+    if(!Yii::app()->user->isGuest){
+        echo $legacy ? '<strong>'.$header.'</strong> '.$body : $header.$body;
+    }else{
+        echo $body;
+    }
     echo ($legacy ? '<br />' : '').CHtml::link('[View email]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
 }elseif($data->type == 'quotes'){
     echo CHtml::link('[View quote]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));

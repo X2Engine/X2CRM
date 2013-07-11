@@ -74,19 +74,19 @@ class Profile extends CActiveRecord {
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
-            /*'CSerializeBehavior' => array(
-               'class' => 'application.extensions.CSerializeBehavior',
-               'serialAttributes' => array('theme')
-            ),*/
+            /* 'CSerializeBehavior' => array(
+              'class' => 'application.extensions.CSerializeBehavior',
+              'serialAttributes' => array('theme')
+              ), */
             'JSONFieldsBehavior' => array(
-               'class' => 'application.components.JSONFieldsBehavior',
-               'transformAttributes' => array('theme' => array (
-                   'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
-                   'pageHeaderTextColor', 'activityFeedWidgetBgColor',
-                   'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
-                   'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                   'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'))
-           )
+                'class' => 'application.components.JSONFieldsBehavior',
+                'transformAttributes' => array('theme' => array(
+                        'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
+                        'pageHeaderTextColor', 'activityFeedWidgetBgColor',
+                        'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
+                        'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'))
+            )
         );
     }
 
@@ -150,15 +150,15 @@ class Profile extends CActiveRecord {
             'widgetOrder' => Yii::t('profile', 'Widget Order'),
             'widgetSettings' => Yii::t('profile', 'Widget Settings'),
             'resultsPerPage' => Yii::t('profile', 'Results Per Page'),
-            /*'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
-            'menuBgColor' => Yii::t('profile', 'Menu Color'),
-            'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
-            'pageHeaderBgColor' => Yii::t('profile', 'Page Header Color'),
-            'pageHeaderTextColor' => Yii::t('profile', 'Page Header Text Color'),
-            'activityFeedWidgetBgColor' => Yii::t('profile', 'Activity Feed Widget Background Color'),
-            'backgroundColor' => Yii::t('profile', 'Background Color'),
-            'backgroundTiling' => Yii::t('profile', 'Background Tiling'),
-            'pageOpacity' => Yii::t('profile', 'Page Opacity'),*/
+            /* 'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
+              'menuBgColor' => Yii::t('profile', 'Menu Color'),
+              'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
+              'pageHeaderBgColor' => Yii::t('profile', 'Page Header Color'),
+              'pageHeaderTextColor' => Yii::t('profile', 'Page Header Text Color'),
+              'activityFeedWidgetBgColor' => Yii::t('profile', 'Activity Feed Widget Background Color'),
+              'backgroundColor' => Yii::t('profile', 'Background Color'),
+              'backgroundTiling' => Yii::t('profile', 'Background Tiling'),
+              'pageOpacity' => Yii::t('profile', 'Page Opacity'), */
             'startPage' => Yii::t('profile', 'Start Page'),
             'showSocialMedia' => Yii::t('profile', 'Show Social Media'),
             'showDetailView' => Yii::t('profile', 'Show Detail View'),
@@ -216,8 +216,6 @@ class Profile extends CActiveRecord {
 
         $adminRule = Yii::app()->params->admin->emailUseSignature;
         $userRule = $this->emailUseSignature;
-
-        $userModel = X2Model::model('User')->findByPk($this->id);
         $signature = '';
 
         switch($adminRule){
@@ -248,8 +246,8 @@ class Profile extends CActiveRecord {
             '/\{group\}/',
             '/\{email\}/',
                 ), array(
-            $userModel->firstName,
-            $userModel->lastName,
+            $this->user->firstName,
+            $this->user->lastName,
             $this->officePhone,
             '',
             $html ? CHtml::mailto($this->emailAddress) : $this->emailAddress,
@@ -391,7 +389,7 @@ class Profile extends CActiveRecord {
         if($updateRecord){
             $model->widgetOrder = implode(':', $widgetNames); // update database fields
             $model->widgets = implode(':', $visibility);   // if there are new widgets
-            $model->update(array('widgetOrder','widgets'));
+            $model->update(array('widgetOrder', 'widgets'));
         }
 
         return $widgetList;
@@ -459,32 +457,34 @@ class Profile extends CActiveRecord {
             $admin = Yii::app()->params->admin;
             if($admin->googleIntegration){
                 if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
-                    // Google Calendar Libraries
-                    $timezone = date_default_timezone_get();
-                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
-                    date_default_timezone_set($timezone);
-
-                    $client = new Google_Client();
-                    $client->setClientId($admin->googleClientId);
-                    $client->setClientSecret($admin->googleClientSecret);
-                    //$client->setDeveloperKey($admin->googleAPIKey);
-                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-                    $googleCalendar = new Google_CalendarService($client);
+//                    // Google Calendar Libraries
+//                    $timezone = date_default_timezone_get();
+//                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+//                    date_default_timezone_set($timezone);
+//
+//                    $client = new Google_Client();
+//                    $client->setClientId($admin->googleClientId);
+//                    $client->setClientSecret($admin->googleClientSecret);
+//                    //$client->setDeveloperKey($admin->googleAPIKey);
+//                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
+//                    $googleCalendar = new Google_CalendarService($client);
+                    $auth = new GoogleAuthenticator();
+                    $googleCalendar = $auth->getCalendarService();
 
                     // check if the access token needs to be refreshed
                     // note that the google library automatically refreshes the access token if we need a new one,
                     // we just need to check if this happend by calling a google api function that requires authorization,
                     // and, if the access token has changed, save this new access token
                     $testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);
-                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
-                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
-                        $this->update(array('syncGoogleCalendarAccessToken'));
-                    }
+//                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
+//                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
+//                        $this->update(array('syncGoogleCalendarAccessToken'));
+//                    }
 
-                    $summary = $action->actionDescriptionTemp;
+                    $summary = $action->actionDescription;
                     if($action->associationType == 'contacts' || $action->associationType == 'contact')
-                        $summary = $action->associationName.' - '.$action->actionDescriptionTemp;
+                        $summary = $action->associationName.' - '.$action->actionDescription;
 
                     $event = new Google_Event();
                     $event->setSummary($summary);
@@ -539,35 +539,40 @@ class Profile extends CActiveRecord {
             $admin = Yii::app()->params->admin;
             if($admin->googleIntegration){
                 if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
-                    // Google Calendar Libraries
-                    $timezone = date_default_timezone_get();
-                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
-                    date_default_timezone_set($timezone);
-
-                    $client = new Google_Client();
-                    $client->setClientId($admin->googleClientId);
-                    $client->setClientSecret($admin->googleClientSecret);
-                    //$client->setDeveloperKey($admin->googleAPIKey);
-                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-                    $client->setUseObjects(true); // return objects instead of arrays
-                    $googleCalendar = new Google_CalendarService($client);
+//                    // Google Calendar Libraries
+//                    $timezone = date_default_timezone_get();
+//                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
+//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+//                    date_default_timezone_set($timezone);
+//
+//                    $client = new Google_Client();
+//                    $client->setClientId($admin->googleClientId);
+//                    $client->setClientSecret($admin->googleClientSecret);
+//                    //$client->setDeveloperKey($admin->googleAPIKey);
+//                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
+//                    $client->setUseObjects(true); // return objects instead of arrays
+//                    $googleCalendar = new Google_CalendarService($client);
+                    $auth = new GoogleAuthenticator();
+                    $googleCalendar = $auth->getCalendarService();
 
                     // check if the access token needs to be refreshed
                     // note that the google library automatically refreshes the access token if we need a new one,
                     // we just need to check if this happend by calling a google api function that requires authorization,
                     // and, if the access token has changed, save this new access token
                     $testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);
-                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
-                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
-                        $this->update(array('syncGoogleCalendarAccessToken'));
-                    }
+//                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
+//                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
+//                        $this->update(array('syncGoogleCalendarAccessToken'));
+//                    }
 
                     $summary = $action->actionDescription;
                     if($action->associationType == 'contacts' || $action->associationType == 'contact')
                         $summary = $action->associationName.' - '.$action->actionDescription;
 
                     $event = $googleCalendar->events->get($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
+                    if(is_array($event)){
+                        $event = new Google_Event($event);
+                    }
                     $event->setSummary($summary);
                     if(empty($action->dueDate)){
                         $action->dueDate = time();
@@ -783,6 +788,5 @@ class Profile extends CActiveRecord {
         $this->layout = json_encode($layout);
         $this->update(array('layout'));
     }
-
 
 }

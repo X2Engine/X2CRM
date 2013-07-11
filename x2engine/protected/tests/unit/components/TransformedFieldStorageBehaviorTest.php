@@ -44,6 +44,10 @@ Yii::import('application.modules.contacts.models.*');
  */
 class TransformedFieldStorageBehaviorTest extends X2DbTestCase {
 
+	public static function referenceFixtures(){
+		return null;
+	}
+
 	public $fixtures = array('contacts'=>'Contacts');
 
 	public function testPackUnpack() {
@@ -60,7 +64,6 @@ class TransformedFieldStorageBehaviorTest extends X2DbTestCase {
 		$tfsb->expects($this->any())->method('packAttribute')->will($this->returnValueMap($valueMap));
 		$tfsb->expects($this->any())->method('unpackAttribute')->will($this->returnValueMap($invValueMap));
 		$tfsb->transformAttributes = array('name','email');
-		$this->assertEquals($tfsb->transformAttributes,$tfsb->transformAttributeNames, 'Failed asserting transformAttributeNames was set properly.');
 		$contact = $this->contacts('testUser');
 		$contact->name = 1;
 		$contact->email = 2;

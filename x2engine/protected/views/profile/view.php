@@ -41,8 +41,9 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
-	array('label'=>Yii::t('profile','Reset Widgets'),'url'=>array('resetWidgets','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId()))
-);
+	array('label'=>Yii::t('profile','Reset Widgets'),'url'=>array('resetWidgets','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
+	array('label'=>Yii::t('profile','Manage Apps'),'url'=>array('manageCredentials','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId()))
+		);
 
 Yii::app()->clientScript->registerScript('highlightButton','
 $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })

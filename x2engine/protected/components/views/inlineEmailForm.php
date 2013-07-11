@@ -84,6 +84,10 @@ if(!empty($model->status)) {
 		<?php echo $form->errorSummary($model, Yii::t('app', "Please fix the following errors:"), null, array('style'=>'margin-bottom: 5px;')); ?>
 	</div>
 	<div class="row">
+		<?php echo $form->label($model,'credId', array('class'=>'x2-email-label')); ?>
+		<?php echo Credentials::selectorField($model,'credId'); ?>
+	</div><!-- .row -->
+	<div class="row">
 		<?php //echo $form->error($model,'to'); ?>
 		<?php echo $form->label($model,'to', array('class'=>'x2-email-label')); ?>
 		<?php echo $form->textField($model,'to',array('id'=>'email-to','style'=>'width:400px;', 'tabindex'=>'1'));?>
@@ -104,7 +108,7 @@ if(!empty($model->status)) {
 		<?php echo $form->label($model,'subject', array('class'=>'x2-email-label')); ?>
 		<?php echo $form->textField($model,'subject', array('style'=>'width: 265px;', 'tabindex'=>'4')); ?>
 		<?php
-			
+
 		$templateList = Docs::getEmailTemplates($type);
 		$templateList = array('0' => Yii::t('docs', 'Custom Message')) + $templateList;
 		echo $form->label($model, 'template', array('class' => 'x2-email-label', 'style' => 'float: none; margin-left: 10px; vertical-align: text-top;'));

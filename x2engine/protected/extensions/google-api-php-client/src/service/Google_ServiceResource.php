@@ -33,6 +33,7 @@ class Google_ServiceResource {
       'trace' => array('type' => 'string', 'location' => 'query'),
       'userIp' => array('type' => 'string', 'location' => 'query'),
       'userip' => array('type' => 'string', 'location' => 'query'),
+      'quotaUser' => array('type' => 'string', 'location' => 'query'),
       'file' => array('type' => 'complex', 'location' => 'body'),
       'data' => array('type' => 'string', 'location' => 'body'),
       'mimeType' => array('type' => 'string', 'location' => 'header'),
@@ -168,9 +169,17 @@ class Google_ServiceResource {
       return $httpRequest;
     }
 
-    // Terminate immediatly if this is a resumable request.
+    // Terminate immediately if this is a resumable request.
     if (isset($parameters['uploadType']['value'])
-        && 'resumable' == $parameters['uploadType']['value']) {
+        && Google_MediaFileUpload::UPLOAD_RESUMABLE_TYPE == $parameters['uploadType']['value']) {
+      $contentTypeHeader = array();
+      if (isset($contentType) && $contentType) {
+        $contentTypeHeader['content-type'] = $contentType;
+      }
+      $httpRequest->setRequestHeaders($contentTypeHeader);
+      if ($postBody) {
+        $httpRequest->setPostBody($postBody);
+      }
       return $httpRequest;
     }
 

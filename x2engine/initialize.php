@@ -541,8 +541,10 @@ function installStage($stage) {
 			fclose($handle);
 			
 			// Create an encryption key for credential storage:
-			// $encryption = new EncryptUtil('protected/config/encryption.key','protected/config/encryption.iv');
-			// $encryption->saveNew();
+			if(extension_loaded('openssl') && extension_loaded('mcrypt')){
+				$encryption = new EncryptUtil('protected/config/encryption.key', 'protected/config/encryption.iv');
+				$encryption->saveNew();
+			}
 
 			$dbConfig['{adminPass}'] = md5($config['adminPass']);
 			$dbConfig['{adminUserKey}'] = $config['adminUserKey'];

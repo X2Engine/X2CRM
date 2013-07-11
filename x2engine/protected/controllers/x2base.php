@@ -312,9 +312,18 @@ abstract class x2base extends X2Controller {
 			->limit(1)
 			->queryRow(false);
 
-		if($currentWorkflow === false || !isset($currentWorkflow[0]))
+		if($currentWorkflow === false || !isset($currentWorkflow[0])) {
+			
+			$defaultWorkflow = Yii::app()->db->createCommand()
+				->select('id')
+				->from('x2_workflows')
+				->where('isDefault=1')
+				->limit(1)
+				->queryScalar();
+			if($defaultWorkflow !== false)
+				return $defaultWorkflow;
 			return 0;
-
+		}
 		return $currentWorkflow[0];
     }
 
@@ -399,7 +408,7 @@ abstract class x2base extends X2Controller {
         // Make sure all links open in new window, and have http:// if missing
         $text = preg_replace(
                 array('/<a([^>]+)target=("[^"]+"|\'[^\']\'|[^\s]+)([^>]+)/i',
-            '/<a([^>]+href="?\'?)(www\.|ftp\.)/i'), array('<a\\1\\3',
+            '/<a([^>]+href="?\'?)(www\.|ftp\.)/i'), array('<a\\1 target=\\2\\3',
             '<a\\1http://\\2'), $text
         );
 
@@ -980,37 +989,10 @@ abstract class x2base extends X2Controller {
         }
     }
 
-    public function getPhpMailer() {
-
-        require_once('protected/components/phpMailer/class.phpmailer.php');
-
-        $phpMail = new PHPMailer(true); // the true param means it will throw exceptions on errors, which we need to catch
-        $phpMail->CharSet = 'utf-8';
-
-        switch (Yii::app()->params->admin->emailType) {
-            case 'sendmail':
-                $phpMail->IsSendmail();
-                break;
-            case 'qmail':
-                $phpMail->IsQmail();
-                break;
-            case 'smtp':
-                $phpMail->IsSMTP();
-
-                $phpMail->Host = Yii::app()->params->admin->emailHost;
-                $phpMail->Port = Yii::app()->params->admin->emailPort;
-                $phpMail->SMTPSecure = Yii::app()->params->admin->emailSecurity;
-                if (Yii::app()->params->admin->emailUseAuth == 'admin') {
-                    $phpMail->SMTPAuth = true;
-                    $phpMail->Username = Yii::app()->params->admin->emailUser;
-                    $phpMail->Password = Yii::app()->params->admin->emailPass;
-                }
-                break;
-            case 'mail':
-            default:
-                $phpMail->IsMail();
-        }
-        return $phpMail;
+    public function getPhpMailer($sendAs = -1) {
+		$mail = new InlineEmail;
+		$mail->credId = $sendAs;
+        return $mail->mailer;
     }
 
     function throwException($message) {

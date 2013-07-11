@@ -60,6 +60,8 @@ var embedcode = "'. addslashes($embedcode) .'";
 var listId = '.(!empty($id) ? $id : 'null').';
 var fields = ["fg","bgc","font","bs","bc","tags"];
 var colorfields = ["fg","bgc","bc"];
+x2.formSavedMsg = "'.addSlashes(Yii::t('marketing','Form Saved')).'";
+x2.nameRequiredMsg = "'.addSlashes(Yii::t('marketing','Name cannot be blank.')).'";
 ',CClientScript::POS_HEAD);
 ?>
 <div class="form" id="web-lead-form">
@@ -89,13 +91,13 @@ var colorfields = ["fg","bgc","bc"];
 		<?php echo CHtml::label(Yii::t('marketing','Background Color'), 'bgc'); ?>
 		<?php echo CHtml::textField('bgc'); ?>
 		<p class="fieldhelp"><?php echo Yii::t('marketing','Default') .': '. Yii::t('marketing','transparent'); ?></p>
-	</div> 
+	</div>
 	<?php $fontInput = new FontPickerInput(array('name'=>'font')); ?>
 	<div class="row">
 		<?php echo CHtml::label(Yii::t('marketing','Font'), 'font'); ?>
 		<?php echo $fontInput->render(); ?>
 		<p class="fieldhelp"><?php echo Yii::t('marketing','Default') .': Arial, Helvetica'; ?></p>
-	</div> 
+	</div>
 	<div class="row">
 		<?php echo CHtml::label(Yii::t('marketing','Border'), 'border'); ?>
 		<p class="fieldhelp half"><?php echo Yii::t('marketing','Size') .' ('. Yii::t('marketing','pixels') .')'; ?></p>
@@ -103,12 +105,12 @@ var colorfields = ["fg","bgc","bc"];
 		<?php echo CHtml::textField('bs', '', array('class'=>'half')); ?>
 		<?php echo CHtml::textField('bc', '', array('class'=>'half')); ?>
 		<p class="fieldhelp"><?php echo Yii::t('marketing','Default') .': '. Yii::t('marketing','none'); ?></p>
-	</div> 
+	</div>
 	<div class="row" <?php if ($type != 'weblead') echo 'style="display: none;"'; ?>>
 		<?php echo CHtml::label(Yii::t('marketing','Tags'), 'tags'); ?>
 		<?php echo CHtml::textField('tags'); ?>
 		<p class="fieldhelp"><em><?php echo Yii::t('marketing','Example') .': web,newlead,urgent'; ?></em><br/><?php echo Yii::t('marketing','These tags will be applied to any contact created by the form.'); ?></p>
-	</div> 
+	</div>
 	<div style="display: none;">
 		<?php echo CHtml::hiddenField('type', $type); ?>
 	</div>

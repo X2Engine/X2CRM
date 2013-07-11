@@ -100,6 +100,12 @@ class InlineEmail extends CFormModel {
      */
     public $cc;
 
+	/**
+	 * ID of the credentials record to use for SMTP authentication
+	 * @var integer
+	 */
+	public $credId = -1;
+
     /**
      * @var string BCC email address(es), if applicable
      */
@@ -238,7 +244,7 @@ class InlineEmail extends CFormModel {
             array('message', 'required', 'on' => 'custom'),
             array('to,cc,bcc', 'parseMailingList'),
             array('emailSendTime', 'date', 'allowEmpty' => true, 'timestampAttribute' => 'emailSendTimeParsed'),
-            array('to, cc, bcc, message, template, modelId, modelName, subject', 'safe'),
+            array('to, cc, credId, bcc, message, template, modelId, modelName, subject', 'safe'),
         );
     }
 
@@ -257,6 +263,7 @@ class InlineEmail extends CFormModel {
             'template' => Yii::t('app', 'Template:'),
             'modelName' => Yii::t('app', 'Model Name'),
             'modelId' => Yii::t('app', 'Model ID'),
+			'credId' => Yii::t('app','Send As:'),
         );
     }
 
@@ -475,29 +482,66 @@ class InlineEmail extends CFormModel {
             $phpMail = new PHPMailer(true); // the true param means it will throw exceptions on errors, which we need to catch
             $phpMail->CharSet = 'utf-8';
 
-            switch(Yii::app()->params->admin->emailType){
-                case 'sendmail':
-                    $phpMail->IsSendmail();
-                    break;
-                case 'qmail':
-                    $phpMail->IsQmail();
-                    break;
-                case 'smtp':
-                    $phpMail->IsSMTP();
+			if($this->credId != -1)
+				$cred = Credentials::model()->findByPk($this->credId);
+			if(!empty($cred)){ // Use an individual user email account if specified and valid
+				$phpMail->IsSMTP();
+				$phpMail->Host = $cred->auth->server;
+				$phpMail->Port = $cred->auth->port;
+				$phpMail->SMTPSecure = $cred->auth->security;
+				if(!empty($cred->auth->password)){
+					$phpMail->SMTPAuth = true;
+					$cred->auth->emailUser('user');
+					$phpMail->Username = $cred->auth->user;
+					$phpMail->Password = $cred->auth->password;
+				}
+			}else{ // Use the system default (legacy method)
+				switch(Yii::app()->params->admin->emailType){
+					case 'sendmail':
+						$phpMail->IsSendmail();
+						break;
+					case 'qmail':
+						$phpMail->IsQmail();
+						break;
+					case 'smtp':
+						$phpMail->IsSMTP();
 
-                    $phpMail->Host = Yii::app()->params->admin->emailHost;
-                    $phpMail->Port = Yii::app()->params->admin->emailPort;
-                    $phpMail->SMTPSecure = Yii::app()->params->admin->emailSecurity;
-                    if(Yii::app()->params->admin->emailUseAuth == 'admin'){
-                        $phpMail->SMTPAuth = true;
-                        $phpMail->Username = Yii::app()->params->admin->emailUser;
-                        $phpMail->Password = Yii::app()->params->admin->emailPass;
-                    }
-                    break;
-                case 'mail':
-                default:
-                    $phpMail->IsMail();
-            }
+						$phpMail->Host = Yii::app()->params->admin->emailHost;
+						$phpMail->Port = Yii::app()->params->admin->emailPort;
+						$phpMail->SMTPSecure = Yii::app()->params->admin->emailSecurity;
+						if(Yii::app()->params->admin->emailUseAuth == 'admin'){
+							$phpMail->SMTPAuth = true;
+							$phpMail->Username = Yii::app()->params->admin->emailUser;
+							$phpMail->Password = Yii::app()->params->admin->emailPass;
+						}
+
+
+						break;
+					case 'mail':
+					default:
+						$phpMail->IsMail();
+				}
+			}
+
+			// Set sender info:
+			if(!empty($cred)){ // Use the specified credentials (which should have the sender name):
+				$phpMail->AddReplyTo($cred->auth->email,$cred->auth->senderName);
+				$phpMail->SetFrom($cred->auth->email,$cred->auth->senderName);
+				$this->from = array('address' => $cred->auth->email,'name' => $cred->auth->senderName);
+			}else{ // Use sender specified in attributes/system (legacy method):
+				$from = $this->from;
+				if($from == null){ // if no from address (or not formatted properly)
+					if(empty($this->userProfile->emailAddress))
+						throw new Exception('Your profile doesn\'t have a valid email address.');
+
+					$phpMail->AddReplyTo($this->userProfile->emailAddress, $this->userProfile->fullName);
+					$phpMail->SetFrom($this->userProfile->emailAddress, $this->userProfile->fullName);
+				} else{
+					$phpMail->AddReplyTo($from['address'], $from['name']);
+					$phpMail->SetFrom($from['address'], $from['name']);
+				}
+			}
+
             $this->_mailer = $phpMail;
         }
         return $this->_mailer;
@@ -724,6 +768,7 @@ class InlineEmail extends CFormModel {
                 $this->insertInBody($sig);
             }
         }
+        $this->insertInBody("<div>&nbsp;</div>");
     }
 
     /**
@@ -815,9 +860,7 @@ class InlineEmail extends CFormModel {
 
             if(!empty($this->templateModel)){
                 // Replace variables in the subject and body of the email
-                if(empty($this->subject)){
-                    $this->subject = Docs::replaceVariables($this->templateModel->subject, $this->targetModel);
-                }
+                $this->subject = Docs::replaceVariables($this->templateModel->subject, $this->targetModel);
                 // if(!empty($this->targetModel)) {
                 $this->message = Docs::replaceVariables($this->templateModel->text, $this->targetModel, array('{signature}' => self::insertedPattern('signature', $this->signature)));
                 // } else {
@@ -882,7 +925,7 @@ class InlineEmail extends CFormModel {
         $emailRecordBody = $this->insertInBody(self::insertedPattern('ah', $this->actionHeader), 1, 1);
         $now = time();
 		$recipientContacts = array_filter($this->recipientContacts);
-		
+
         if(!empty($this->targetModel)){
             $model = $this->targetModel;
             if((bool) $model){
@@ -904,7 +947,7 @@ class InlineEmail extends CFormModel {
 
             // These attributes are context-sensitive and subject to change:
             $action->associationId = $model->id;
-            $action->associationType = get_class($model);
+            $action->associationType = lcfirst(get_class($model));
             $action->type = 'email';
             $action->visibility = isset($model->visibility) ? $model->visibility : 1;
             $action->assignedTo = $this->userProfile->username;
@@ -914,7 +957,7 @@ class InlineEmail extends CFormModel {
 				// invoice, and it should have a special type.
 				if(!empty($this->targetModel->contact)){
 					if(array_key_exists($this->targetModel->contact->email, $recipientContacts)){
-						$action->associationType = get_class($model);
+						$action->associationType = lcfirst(get_class($model));
 						$action->associationId = $model->id;
 						$action->type .= '_'.($model->type == 'invoice' ? 'invoice' : 'quote');
 						$action->visibility = 1;
@@ -981,7 +1024,7 @@ class InlineEmail extends CFormModel {
 
                 // These attributes are context-sensitive and subject to change:
                 $action->associationId = $contact->id;
-                $action->associationType = 'Contacts';
+                $action->associationType = 'contacts';
                 $action->type = 'email';
                 $action->visibility = isset($contact->visibility) ? $contact->visibility : 1;
                 $action->assignedTo = $this->userProfile->username;
@@ -1029,21 +1072,10 @@ class InlineEmail extends CFormModel {
         $subject = $this->subject;
         $message = $this->message;
         $attachments = $this->attachments;
-        $from = $this->from;
 
         $phpMail = $this->mailer;
 
         try{
-            if($from == null){ // if no from address (or not formatted properly)
-                if(empty($this->userProfile->emailAddress))
-                    throw new Exception('Your profile doesn\'t have a valid email address.');
-
-                $phpMail->AddReplyTo($this->userProfile->emailAddress, $this->userProfile->fullName);
-                $phpMail->SetFrom($this->userProfile->emailAddress, $this->userProfile->fullName);
-            } else{
-                $phpMail->AddReplyTo($from['address'], $from['name']);
-                $phpMail->SetFrom($from['address'], $from['name']);
-            }
 
             $this->addEmailAddresses($phpMail, $addresses);
 
